@@ -808,13 +808,13 @@
                                 break;
                             case 2: // added to comparelist
                                 that.updateWishlist(response);
-                                eModal.alert({
-                                    title: response.cTitle,
-                                    message: response.cNotification,
-                                    keyboard: true,
-                                    tabindex: -1,
-                                    buttons: false
-                                });
+                                // eModal.alert({
+                                //     title: response.cTitle,
+                                //     message: response.cNotification,
+                                //     keyboard: true,
+                                //     tabindex: -1,
+                                //     buttons: false
+                                // });
                                 break;
                         }
                     }
@@ -869,6 +869,14 @@
             var $navContainerWish = $(this.options.selector.navContainerWish);
             var $navBadgeWish = $(this.options.selector.navBadgeWish);
 
+            if (data.wlPosRemove) {
+                let $action = $('button[data-wlPos="' + data.wlPosRemove + '"]')
+                $action.removeClass("on-list");
+                $action.next().removeClass("press");
+            }
+            if (data.wlPosAdd) {
+                $('button[data-productID="' + data.productID + '"]').closest('form').find('input[name="wlPos"]').val(data.wlPosAdd)
+            }
             $.evo.io().call('updateWishlistDropdown', [$navContainerWish, $navBadgeWish], this, function(error, data) {
                 if (error) {
                     return;
@@ -897,16 +905,19 @@
         },
 
         handleProductAction: function(action, data) {
+            let $action = $(action);
             switch (action.name) {
                 case this.options.action.compareList:
-                    if ($(action).hasClass('action-tip-animation-b')) {
-                        if ($(action).hasClass('on-list')) {
-                            $(action).removeClass("on-list", 1000);
-                            $(action).next().removeClass("press", 1000);
+                    if ($action.hasClass('action-tip-animation-b')) {
+                        if ($action.hasClass('on-list')) {
+                            $action.removeClass("on-list", 1000);
+                            $action.next().removeClass("press", 1000);
+                            $action.next().next().addClass("press", 1000);
                             return this.removeFromCompareList(data);
                         } else {
-                            $(action).addClass("on-list", 1000);
-                            $(action).next().addClass("press", 1000);
+                            $action.addClass("on-list", 1000);
+                            $action.next().addClass("press", 1000);
+                            $action.next().next().removeClass("press", 1000);
                             return this.addToComparelist(data);
                         }
                     } else {
@@ -916,8 +927,24 @@
                     return this.removeFromCompareList(data);
                 case this.options.action.wishList:
                     data[this.options.input.quantity] = $('#buy_form_'+data.a+' '+this.options.selector.quantity).val();
-                    return this.addToWishlist(data);
+                    if ($action.hasClass('action-tip-animation-b')) {
+                        if ($action.hasClass('on-list')) {
+                            $action.removeClass("on-list", 1000);
+                            $action.next().removeClass("press", 1000);
+                            $action.next().next().addClass("press", 1000);
+                            data.a = data.wlPos;
+                            return this.removeFromWishList(data);
+                        } else {
+                            $action.addClass("on-list", 1000);
+                            $action.next().addClass("press", 1000);
+                            $action.next().next().removeClass("press", 1000);
+                            return this.addToWishlist(data);
+                        }
+                    } else {
+                        return this.addToWishlist(data);
+                    }
                 case this.options.action.wishListRemove:
+                    console.log(data);
                     return this.removeFromWishList(data);
             }
 

@@ -464,10 +464,16 @@ class IOMethods
 
         Cart::checkAdditions();
 
-        $response->nType  = 2;
-        $response->nCount = \count($_SESSION['Wunschliste']->CWunschlistePos_arr);
-        $response->cTitle = Shop::Lang()->get('goToWishlist');
-        $buttons          = [
+        foreach ($_SESSION['Wunschliste']->CWunschlistePos_arr as $wlPos) {
+            if ($wlPos->kArtikel === $kArtikel) {
+                $response->wlPosAdd = $wlPos->kWunschlistePos;
+            }
+        }
+        $response->nType     = 2;
+        $response->nCount    = \count($_SESSION['Wunschliste']->CWunschlistePos_arr);
+        $response->productID = $kArtikel;
+        $response->cTitle    = Shop::Lang()->get('goToWishlist');
+        $buttons             = [
             (object)[
                 'href'    => '#',
                 'fa'      => 'fa fa-arrow-circle-right',
@@ -542,9 +548,10 @@ class IOMethods
         $_GET['wlplo']       = $kArtikel;
 
         Frontend::getInstance()->setStandardSessionVars();
-        $response->nType  = 2;
-        $response->nCount = \count($_SESSION['Wunschliste']->CWunschlistePos_arr);
-        $response->cTitle = Shop::Lang()->get('goToWishlist');
+        $response->nType       = 2;
+        $response->wlPosRemove = $kArtikel;
+        $response->nCount      = \count($_SESSION['Wunschliste']->CWunschlistePos_arr);
+        $response->cTitle      = Shop::Lang()->get('goToWishlist');
 
         $response->cNavBadge = $smarty->assign('Einstellungen', $conf)
                                        ->fetch('layout/header_shop_nav_wish.tpl');

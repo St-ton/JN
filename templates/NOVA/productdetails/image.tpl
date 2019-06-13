@@ -6,7 +6,18 @@
 {if isset($smarty.session.Vergleichsliste)}
     {foreach $smarty.session.Vergleichsliste->oArtikel_arr as $product}
         {if $product->kArtikel === $Artikel->kArtikel}
-            {assign var='isOnCompareList' value=true}
+            {$isOnCompareList=true}
+            {break}
+        {/if}
+    {/foreach}
+{/if}
+{assign var='isOnWishList' value=false}
+{assign var='wishlistPos' value=0}
+{if isset($smarty.session.Wunschliste)}
+    {foreach $smarty.session.Wunschliste->CWunschlistePos_arr as $product}
+        {if $product->kArtikel === $Artikel->kArtikel}
+            {$isOnWishList=true}
+            {$wishlistPos=$product->kWunschlistePos}
             {break}
         {/if}
     {/foreach}
@@ -35,14 +46,18 @@
                                         <span class="far fa-list-alt"></span>
                                     {/button}
                                     <div class="action-tip-animation">Auf die Vergleichsliste!</div>
+                                    <div class="action-tip-animation">Von Vergleichliste entfernt!</div>
                                 {/if}
                                 {if $Einstellungen.global.global_wunschliste_anzeigen === 'Y'}
-                                    {button name="Wunschliste" type="submit" class="wishlist badge badge-circle"
+                                    {button name="Wunschliste" type="submit" class="wishlist badge badge-circle-1 action-tip-animation-b {if $isOnWishList}on-list{/if}"
                                     title="{lang key='addToWishlist' section='productDetails'}"
-                                    data=["toggle"=>"tooltip", "placement"=>"top"]
+                                    data=["toggle"=>"tooltip", "placement"=>"top", "wlPos" => $wishlistPos, "productID" => $Artikel->kArtikel]
                                     }
                                         <span class="far fa-heart"></span>
                                     {/button}
+                                    <div class="action-tip-animation">Auf den Wunschzettel!</div>
+                                    <div class="action-tip-animation">Von Wunschzettel entfernt!</div>
+                                    {input type="hidden" name="wlPos" value=$wishlistPos}
                                 {/if}
                             </div>
                         {/block}

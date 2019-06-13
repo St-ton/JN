@@ -13581,7 +13581,8 @@ ul.partlist-items {
     text-align: right;
   }
   .list .product-cell .price_wrapper .price {
-    font-size: 1.09375rem;
+    font-size: 1.0000375rem;
+    font-weight: bold;
   }
 }
 
@@ -14032,6 +14033,7 @@ aside .badge-light {
 }
 
 .product-cell .h4.title {
+  font-family: "Open Sans", Helvetica, Arial, sans-serif;
   font-weight: 400;
 }
 .product-cell .h4.title a {
@@ -14239,10 +14241,15 @@ a[data-toggle=collapse][aria-expanded=true] i.fa-chevron-down,
   padding: 0.2rem 0.45rem;
 }
 
-.product-offer .price {
-  font-size: 1.6250325rem;
+.price {
+  font-family: "Montserrat", Helvetica, Arial, sans-serif;
+  font-size: 1.0000375rem;
   font-weight: bold;
   color: #525252;
+}
+
+.product-offer .price {
+  font-size: 1.6250325rem;
 }
 
 .price-note {

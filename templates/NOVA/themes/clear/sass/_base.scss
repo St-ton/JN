@@ -1024,7 +1024,7 @@ ul.partlist-items {
     }
 
     .product-detail-cell { text-align: right; }
-    .price_wrapper .price { font-size: $font-size-base * 1.25; }
+    .price_wrapper .price { font-size: $h2-font-size;  font-weight: bold;}
   }
 }
 
@@ -1478,6 +1478,7 @@ $jqcloud-classes: 7;
 
 .product-cell {
   .h4.title {
+    font-family: $font-family-sans-serif;
     font-weight: $font-weight-normal;
     a {
       text-decoration: underline;
@@ -1693,10 +1694,14 @@ a[data-toggle="collapse"][aria-expanded=true],
 
 
 //price
-.product-offer .price {
-  font-size: $h1-font-size * 1.3;
+.price {
+  font-family: $headings-font-family;
+  font-size: $h2-font-size;
   font-weight: bold;
   color: $gray-dark;
+}
+.product-offer .price {
+  font-size: $h1-font-size * 1.3;
 }
 .price-note { font-size: 12px; }
 

@@ -132,7 +132,7 @@
                 <Option Value="12"><![CDATA[max. 12]]></Option>
                 <Option Value="-1"><![CDATA[keine Beschr&auml;nkung]]></Option>
             </Setting>
-            <Setting Description="Overlays in Listenansichten" Key="ribbon_type" Type="select" Value="a">
+            <Setting Description="Overlays in Listenansichten" Key="ribbon_type" Type="select" Value="c">
                 <Option Value="a">Variante A</Option>
                 <Option Value="b">Variante B</Option>
                 <Option Value="c">Variante C</Option>

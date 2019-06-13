@@ -319,7 +319,7 @@
                     function onApplySelectedArticles(selectedArticles)
                     {
                         if (selectedArticles.length > 0) {
-                            $('#articleSelectionInfo').val(selectedArticles.length + {__('product')});
+                            $('#articleSelectionInfo').val(selectedArticles.length + ' {__('product')}');
                             $('#cArtikel').val(selectedArticles.join(';') + ';');
                         } else {
                             $('#articleSelectionInfo').val('{__('all')}' + ' {__('products')}');
@@ -431,7 +431,7 @@
                         function onApplySelectedCustomers(selectedCustomers)
                         {
                             if (selectedCustomers.length > 0) {
-                                $('#customerSelectionInfo').val(selectedCustomers.length + {__('customers')});
+                                $('#customerSelectionInfo').val(selectedCustomers.length + ' {__('customers')}');
                                 $('#cKunden').val(selectedCustomers.join(';'));
                             } else {
                                 $('#customerSelectionInfo').val('{__('all')}' + ' {__('customer')}');

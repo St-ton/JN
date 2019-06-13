@@ -1,12 +1,12 @@
 @charset "UTF-8";
+@import "../base/wow/animate.css";
+@import "../base/slider/slider.css";
 /*!
  * Bootstrap v4.3.1 (https://getbootstrap.com/)
  * Copyright 2011-2019 The Bootstrap Authors
  * Copyright 2011-2019 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  */
-@import "../base/wow/animate.css";
-@import "../base/slider/slider.css";
 :root {
   --blue: #007bff;
   --indigo: #6610f2;
@@ -11825,7 +11825,6 @@ input[type=file].file-loading, .file-loading input[type=file] {
 
 .badge-circle {
   background-color: #fff;
-  border-color: #707070;
   -webkit-box-shadow: none;
   box-shadow: none;
   min-width: 44px;
@@ -11854,6 +11853,45 @@ input[type=file].file-loading, .file-loading input[type=file] {
   border-color: #F8BF00;
   color: #fff;
   opacity: 1;
+}
+
+.badge-circle-1 {
+  background-color: #fff;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+  min-width: 44px;
+  width: 44px;
+  height: 44px;
+  border: 1.5px solid #707070;
+  opacity: 0.8;
+  color: #707070;
+  font-size: 18px !important;
+  line-height: 15px !important;
+  border-radius: 50% !important;
+  padding: 10px 12px 8px;
+  margin: 0 4px 4px;
+  transition: 0.2s;
+}
+.badge-circle-1::before {
+  display: none;
+}
+.badge-circle-1.circle-small {
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  font-size: 14px !important;
+  line-height: 12px !important;
+}
+.badge-circle-1:hover {
+  color: #696969;
+  opacity: 1;
+}
+.badge-circle-1.on-list {
+  animation: size 0.4s;
+  color: #fff;
+  opacity: 1;
+  border: 1.5px solid #F8BF00;
+  background-color: #F8BF00;
 }
 
 #add-to-cart .btn .btn-basket-check {
@@ -14950,6 +14988,51 @@ input.form-control[name=wishlist-url] {
 .slick-down:hover,
 .slick-up:hover {
   opacity: 1;
+}
+
+/* Action buttons */
+.action-tip-animation {
+  position: absolute;
+  bottom: 60px;
+  left: -50px;
+  right: 0;
+  visibility: hidden;
+  transition: 0.6s;
+  z-index: -2;
+  font-size: 2px;
+  color: transparent;
+  font-weight: 400;
+}
+.action-tip-animation.press {
+  bottom: 110px;
+  font-size: 12px;
+  font-weight: 700;
+  visibility: visible;
+  animation: fade 1.5s;
+}
+
+@keyframes fade {
+  0% {
+    color: #transparent;
+  }
+  50% {
+    color: #525252;
+  }
+  100% {
+    color: #transparent;
+  }
+}
+@keyframes size {
+  0% {
+    padding: 10px 12px 8px;
+  }
+  50% {
+    padding: 14px 16px 12px;
+    margin-top: -4px;
+  }
+  100% {
+    padding: 10px 12px 8px;
+  }
 }
 
 /*# sourceMappingURL=clear.css.map */

@@ -36,7 +36,7 @@
             return $.ajax({
                 type: "POST",
                 dataType: "json",
-                url: this.getBaseURL() + this.options.ioUrl,
+                url: this.options.ioUrl,
                 data: {'io': JSON.stringify(req)},
                 success: function (data, textStatus, jqXHR) {
                     that.handleResponse(data, context);

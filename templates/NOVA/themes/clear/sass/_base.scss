@@ -2426,3 +2426,37 @@ input.form-control[name="wishlist-url"] {
     opacity: 1;
   }
 }
+
+/* Action buttons */
+.action-tip-animation {
+  position: absolute;
+  bottom: 60px;
+  left: -50px;
+  right: 0;
+  visibility: hidden;
+  transition: .6s;
+  z-index: -2;
+  font-size: 2px;
+  color: transparent;
+  font-weight: 400;
+  &.press {
+    bottom: 110px;
+    font-size: 12px;
+    font-weight: 700;
+    visibility: visible;
+    animation: fade 1.5s;
+  }
+}
+
+@keyframes fade {
+  0% {color:#transparent;}
+  50% {color:#525252;}
+  100% {color:#transparent;}
+}
+
+@keyframes size {
+  0% {padding:10px 12px 8px;}
+  50% {padding:14px 16px 12px;
+    margin-top:-4px;}
+  100% {padding:10px 12px 8px;}
+}

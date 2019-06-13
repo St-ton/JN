@@ -2,6 +2,15 @@
  * @copyright (c) JTL-Software-GmbH
  * @license https://jtl-url.de/jtlshoplicense
  *}
+{assign var='isOnCompareList' value=false}
+{if isset($smarty.session.Vergleichsliste)}
+    {foreach $smarty.session.Vergleichsliste->oArtikel_arr as $product}
+        {if $product->kArtikel === $Artikel->kArtikel}
+            {assign var='isOnCompareList' value=true}
+            {break}
+        {/if}
+    {/foreach}
+{/if}
 {block name='productlist-productlist-actions'}
     {form action="#" method="post" class="product-actions actions-small d-none d-md-flex" data=["toggle" => "product-actions"]}
         {buttongroup class="actions btn-group-justified d-flex" size="sm" aria=["label" => "..."] role="group"}
@@ -9,12 +18,13 @@
                 {if !($Artikel->nIstVater && $Artikel->kVaterArtikel === 0)}
                     {if $Einstellungen.artikeluebersicht.artikeluebersicht_vergleichsliste_anzeigen === 'Y'}
                         {block name='productlist-productlist-actions-comparelist'}
-                            {button name="Vergleichsliste" type="submit" class="circle-small compare badge badge-circle"
+                            {button name="Vergleichsliste" type="submit" class="circle-small compare badge badge-circle-1 action-tip-animation-b {if $isOnCompareList}on-list{/if}"
                                 title={lang key='addToCompare' section='productOverview'}
                                 data=["toggle"=>"tooltip", "placement"=>"top"]
                             }
                                 <span class="far fa-list-alt"></span>
                             {/button}
+                            <div class="action-tip-animation">Auf die Vergleichsliste!</div>
                         {/block}
                     {/if}
                     {if $Einstellungen.global.global_wunschliste_anzeigen === 'Y' && $Einstellungen.artikeluebersicht.artikeluebersicht_wunschzettel_anzeigen === 'Y'}

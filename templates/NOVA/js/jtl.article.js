@@ -683,13 +683,13 @@
                                 break;
                             case 2: // added to comparelist
                                 that.updateComparelist(response);
-                                eModal.alert({
-                                    title: response.cTitle,
-                                    message: response.cNotification,
-                                    keyboard: true,
-                                    tabindex: -1,
-                                    buttons: false
-                                });
+                                // eModal.alert({
+                                //     title: response.cTitle,
+                                //     message: response.cNotification,
+                                //     keyboard: true,
+                                //     tabindex: -1,
+                                //     buttons: false
+                                // });
                                 break;
                         }
                     }
@@ -899,7 +899,19 @@
         handleProductAction: function(action, data) {
             switch (action.name) {
                 case this.options.action.compareList:
-                    return this.addToComparelist(data);
+                    if ($(action).hasClass('action-tip-animation-b')) {
+                        if ($(action).hasClass('on-list')) {
+                            $(action).removeClass("on-list", 1000);
+                            $(action).next().removeClass("press", 1000);
+                            return this.removeFromCompareList(data);
+                        } else {
+                            $(action).addClass("on-list", 1000);
+                            $(action).next().addClass("press", 1000);
+                            return this.addToComparelist(data);
+                        }
+                    } else {
+                        return this.addToComparelist(data);
+                    }
                 case this.options.action.compareListRemove:
                     return this.removeFromCompareList(data);
                 case this.options.action.wishList:

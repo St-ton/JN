@@ -186,8 +186,6 @@ class Wunschliste
      * @param array  $attributes
      * @param float  $qty
      * @return int
-     * @throws \JTL\Exceptions\CircularReferenceException
-     * @throws \JTL\Exceptions\ServiceNotFoundException
      */
     public function fuegeEin(int $productID, string $productName, array $attributes, $qty): int
     {
@@ -229,9 +227,12 @@ class Wunschliste
             $kWunschlistePos = (int)$position->kWunschlistePos;
             $position->erstellePosEigenschaften($attributes);
             $product = new Artikel();
-            $product->fuelleArtikel($productID, Artikel::getDefaultOptions());
-            $position->Artikel           = $product;
-            $this->CWunschlistePos_arr[] = $position;
+            try {
+                $product->fuelleArtikel($productID, Artikel::getDefaultOptions());
+                $position->Artikel           = $product;
+                $this->CWunschlistePos_arr[] = $position;
+            } catch (Exception $e) {
+            }
         }
 
         \executeHook(\HOOK_WUNSCHLISTE_CLASS_FUEGEEIN);

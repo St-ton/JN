@@ -119,7 +119,6 @@ final class Images extends AbstractSync
     private function getConfig(): array
     {
         $config = Shop::getSettings([\CONF_BILDER]);
-
         if (!$config['bilder']['bilder_kategorien_breite']) {
             $config['bilder']['bilder_kategorien_breite'] = 100;
         }
@@ -1323,31 +1322,26 @@ final class Images extends AbstractSync
     /**
      * @param resource $im
      * @param resource $brand
-     * @param object   $oBranding
+     * @param object   $conf
      * @return mixed
      */
-    private function brandImage($im, $brand, $oBranding)
+    private function brandImage($im, $brand, $conf)
     {
         if (!$brand
-            || (isset($oBranding->oBrandingEinstellung->nAktiv) && (int)$oBranding->oBrandingEinstellung->nAktiv === 0)
+            || !isset($conf->oBrandingEinstellung->cBrandingBild)
+            || (isset($conf->oBrandingEinstellung->nAktiv) && (int)$conf->oBrandingEinstellung->nAktiv === 0)
         ) {
             return $im;
         }
-        // file_exists will return true even if cBrandingBild is not set - check before to avoid warning
-        if (!isset($oBranding->oBrandingEinstellung->cBrandingBild)) {
-            return $im;
-        }
-        $brandingImage = \PFAD_ROOT . \PFAD_BRANDINGBILDER . $oBranding->oBrandingEinstellung->cBrandingBild;
+        $brandingImage = \PFAD_ROOT . \PFAD_BRANDINGBILDER . $conf->oBrandingEinstellung->cBrandingBild;
         if (!\file_exists($brandingImage)) {
             return $im;
         }
-
-        $position     = $oBranding->oBrandingEinstellung->cPosition;
-        $transparency = $oBranding->oBrandingEinstellung->dTransparenz;
-        $brandingSize = $oBranding->oBrandingEinstellung->dGroesse;
-        $randabstand  = $oBranding->oBrandingEinstellung->dRandabstand / 100;
+        $position     = $conf->oBrandingEinstellung->cPosition;
+        $transparency = $conf->oBrandingEinstellung->dTransparenz;
+        $brandingSize = $conf->oBrandingEinstellung->dGroesse;
+        $margin       = $conf->oBrandingEinstellung->dRandabstand / 100;
         $branding     = $this->imageloadAlpha($brandingImage, 0, 0, true);
-
         if ($im && $branding) {
             $imageWidth        = \imagesx($im);
             $imageHeight       = \imagesy($im);
@@ -1355,56 +1349,53 @@ final class Images extends AbstractSync
             $brandingHeight    = \imagesy($branding);
             $brandingNewWidth  = $brandingWidth;
             $brandingNewHeight = $brandingHeight;
-            $image_branding    = $branding;
-            // branding auf diese Breite skalieren
+            $imageBranding     = $branding;
             if ($brandingSize > 0) {
                 $brandingNewWidth  = \round(($imageWidth * $brandingSize) / 100.0);
                 $brandingNewHeight = \round(($brandingNewWidth / $brandingWidth) * $brandingHeight);
-
-                $image_branding = $this->imageloadAlpha($brandingImage, $brandingNewWidth, $brandingNewHeight, true);
+                $imageBranding    = $this->imageloadAlpha($brandingImage, $brandingNewWidth, $brandingNewHeight, true);
             }
-            // position bestimmen
             $brandingPosX = 0;
             $brandingPosY = 0;
             switch ($position) {
                 case 'oben':
                     $brandingPosX = $imageWidth / 2 - $brandingNewWidth / 2;
-                    $brandingPosY = $imageHeight * $randabstand;
+                    $brandingPosY = $imageHeight * $margin;
                     break;
 
                 case 'oben-rechts':
-                    $brandingPosX = $imageWidth - $brandingNewWidth - $imageWidth * $randabstand;
-                    $brandingPosY = $imageHeight * $randabstand;
+                    $brandingPosX = $imageWidth - $brandingNewWidth - $imageWidth * $margin;
+                    $brandingPosY = $imageHeight * $margin;
                     break;
 
                 case 'rechts':
-                    $brandingPosX = $imageWidth - $brandingNewWidth - $imageWidth * $randabstand;
+                    $brandingPosX = $imageWidth - $brandingNewWidth - $imageWidth * $margin;
                     $brandingPosY = $imageHeight / 2 - $brandingNewHeight / 2;
                     break;
 
                 case 'unten-rechts':
-                    $brandingPosX = $imageWidth - $brandingNewWidth - $imageWidth * $randabstand;
-                    $brandingPosY = $imageHeight - $brandingNewHeight - $imageHeight * $randabstand;
+                    $brandingPosX = $imageWidth - $brandingNewWidth - $imageWidth * $margin;
+                    $brandingPosY = $imageHeight - $brandingNewHeight - $imageHeight * $margin;
                     break;
 
                 case 'unten':
                     $brandingPosX = $imageWidth / 2 - $brandingNewWidth / 2;
-                    $brandingPosY = $imageHeight - $brandingNewHeight - $imageHeight * $randabstand;
+                    $brandingPosY = $imageHeight - $brandingNewHeight - $imageHeight * $margin;
                     break;
 
                 case 'unten-links':
-                    $brandingPosX = $imageWidth * $randabstand;
-                    $brandingPosY = $imageHeight - $brandingNewHeight - $imageHeight * $randabstand;
+                    $brandingPosX = $imageWidth * $margin;
+                    $brandingPosY = $imageHeight - $brandingNewHeight - $imageHeight * $margin;
                     break;
 
                 case 'links':
-                    $brandingPosX = $imageWidth * $randabstand;
+                    $brandingPosX = $imageWidth * $margin;
                     $brandingPosY = $imageHeight / 2 - $brandingNewHeight / 2;
                     break;
 
                 case 'oben-links':
-                    $brandingPosX = $imageWidth * $randabstand;
-                    $brandingPosY = $imageHeight * $randabstand;
+                    $brandingPosX = $imageWidth * $margin;
+                    $brandingPosY = $imageHeight * $margin;
                     break;
 
                 case 'zentriert':
@@ -1414,12 +1405,11 @@ final class Images extends AbstractSync
             }
             $brandingPosX = \round($brandingPosX);
             $brandingPosY = \round($brandingPosY);
-            // bild mit branding composen
             \imagealphablending($im, true);
             \imagesavealpha($im, true);
             $this->imagecopymergeAlpha(
                 $im,
-                $image_branding,
+                $imageBranding,
                 $brandingPosX,
                 $brandingPosY,
                 0,
@@ -1428,8 +1418,6 @@ final class Images extends AbstractSync
                 $brandingNewHeight,
                 100 - $transparency
             );
-
-            return $im;
         }
 
         return $im;
@@ -1497,7 +1485,6 @@ final class Images extends AbstractSync
                 }
             }
         }
-        // The image copy
         \imagecopy($dst_im, $src_im, $dst_x, $dst_y, $src_x, $src_y, $src_w, $src_h);
 
         return true;
@@ -1514,26 +1501,27 @@ final class Images extends AbstractSync
         }
         $size = \getimagesize($imgFilename);
         $type = $size[2];
+        $ext  = false;
         switch ($type) {
             case \IMAGETYPE_JPEG:
-                return 'jpg';
+                $ext = 'jpg';
                 break;
 
             case \IMAGETYPE_PNG:
                 if (\function_exists('imagecreatefrompng')) {
-                    return 'png';
+                    $ext = 'png';
                 }
                 break;
 
             case \IMAGETYPE_GIF:
                 if (\function_exists('imagecreatefromgif')) {
-                    return 'gif';
+                    $ext = 'gif';
                 }
                 break;
 
             case \IMAGETYPE_BMP:
                 if (\function_exists('imagecreatefromwbmp')) {
-                    return 'bmp';
+                    $ext = 'bmp';
                 }
                 break;
 
@@ -1541,7 +1529,7 @@ final class Images extends AbstractSync
                 break;
         }
 
-        return false;
+        return $ext;
     }
 
     /**
@@ -1665,11 +1653,7 @@ final class Images extends AbstractSync
      */
     private function getNewFilename(string $path): string
     {
-        $format = \strtolower($this->config['bilder']['bilder_dateiformat']);
-        $path   = \substr($path, 0, -3);
-        $path  .= $format;
-
-        return $path;
+        return \substr($path, 0, -3) . \strtolower($this->config['bilder']['bilder_dateiformat']);
     }
 
     /**
@@ -1684,21 +1668,26 @@ final class Images extends AbstractSync
         if (!$format || !$im) {
             return false;
         }
-
         $path = $this->getNewFilename($path);
-
+        $img  = false;
         switch (\strtolower($format)) {
             case 'jpg':
-                return \function_exists('imagejpeg') ? \imagejpeg($im, $path, $quality) : false;
+                $img = \function_exists('imagejpeg') ? \imagejpeg($im, $path, $quality) : false;
+                break;
             case 'png':
-                return \function_exists('imagepng') ? \imagepng($im, $path) : false;
+                $img = \function_exists('imagepng') ? \imagepng($im, $path) : false;
+                break;
             case 'gif':
-                return \function_exists('imagegif') ? \imagegif($im, $path) : false;
+                $img = \function_exists('imagegif') ? \imagegif($im, $path) : false;
+                break;
             case 'bmp':
-                return \function_exists('imagewbmp') ? \imagewbmp($im, $path) : false;
+                $img = \function_exists('imagewbmp') ? \imagewbmp($im, $path) : false;
+                break;
+            default:
+                break;
         }
 
-        return false;
+        return $img;
     }
 
     /**

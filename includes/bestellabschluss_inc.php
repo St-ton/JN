@@ -37,8 +37,8 @@ use JTL\Shop;
  */
 function bestellungKomplett(): int
 {
-    $oCheckBox               = new CheckBox();
-    $_SESSION['cPlausi_arr'] = $oCheckBox->validateCheckBox(
+    $checkBox                = new CheckBox();
+    $_SESSION['cPlausi_arr'] = $checkBox->validateCheckBox(
         CHECKBOX_ORT_BESTELLABSCHLUSS,
         Frontend::getCustomerGroup()->getID(),
         $_POST,
@@ -1207,16 +1207,16 @@ function finalisiereBestellung($orderNo = '', bool $sendMail = true): Bestellung
         $mailer->send($mail->createFromTemplateID(MAILTEMPLATE_BESTELLBESTAETIGUNG, $obj));
     }
     $_SESSION['Kunde'] = $oKunde;
-    $kKundengruppe     = Frontend::getCustomerGroup()->getID();
+    $customerGroupID   = Frontend::getCustomerGroup()->getID();
     $checkBox          = new CheckBox();
     $checkBox->triggerSpecialFunction(
         CHECKBOX_ORT_BESTELLABSCHLUSS,
-        $kKundengruppe,
+        $customerGroupID,
         true,
         $_POST,
         ['oBestellung' => $order, 'oKunde' => $oKunde]
     );
-    $checkBox->checkLogging(CHECKBOX_ORT_BESTELLABSCHLUSS, $kKundengruppe, $_POST, true);
+    $checkBox->checkLogging(CHECKBOX_ORT_BESTELLABSCHLUSS, $customerGroupID, $_POST, true);
 
     return $order;
 }

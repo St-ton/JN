@@ -11,12 +11,11 @@ use JTL\Cache\JTLCacheInterface;
 use JTL\Catalog\Product\Artikel;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
-use JTL\Helpers\Text;
 use JTL\Mapper\PageTypeToLinkType;
 use JTL\News\Category;
 use JTL\News\Item;
-use JTL\Shop;
 use JTL\Session\Frontend;
+use JTL\Shop;
 use stdClass;
 use function Functional\map;
 use function Functional\reindex;
@@ -399,7 +398,7 @@ class LanguageHelper
         if (isset($this->byISO[$isoCode]->kSprachISO)) {
             return (int)$this->byISO[$isoCode]->kSprachISO;
         }
-        $langISO            = $this->mappedGetLangIDFromIso($isoCode);
+        $langISO               = $this->mappedGetLangIDFromIso($isoCode);
         $this->byISO[$isoCode] = $langISO;
 
         return isset($langISO->kSprachISO) ? (int)$langISO->kSprachISO : false;
@@ -789,9 +788,9 @@ class LanguageHelper
         $kSprachISO  = $this->mappekISO($iso);
         if ($kSprachISO === 0 || $kSprachISO === false) {
             // Sprache noch nicht installiert
-            $oSprachISO       = new stdClass();
-            $oSprachISO->cISO = $iso;
-            $kSprachISO       = $this->db->insert('tsprachiso', $oSprachISO);
+            $langIso       = new stdClass();
+            $langIso->cISO = $iso;
+            $kSprachISO    = $this->db->insert('tsprachiso', $langIso);
         }
 
         while (($data = \fgetcsv($handle, 4048, ';')) !== false) {

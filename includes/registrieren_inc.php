@@ -46,11 +46,11 @@ function kundeSpeichern(array $post)
         : checkKundenFormular(1, 0);
     $knd                = getKundendaten($post, 1, 0);
     $customerAttributes = getKundenattribute($post);
-    $kKundengruppe      = Frontend::getCustomerGroup()->getID();
-    $oCheckBox          = new CheckBox();
+    $customerGroupID    = Frontend::getCustomerGroup()->getID();
+    $checkBox           = new CheckBox();
     $fehlendeAngaben    = array_merge(
         $fehlendeAngaben,
-        $oCheckBox->validateCheckBox(CHECKBOX_ORT_REGISTRIERUNG, $kKundengruppe, $post, true)
+        $checkBox->validateCheckBox(CHECKBOX_ORT_REGISTRIERUNG, $customerGroupID, $post, true)
     );
 
     if (isset($post['shipping_address'])) {
@@ -76,13 +76,13 @@ function kundeSpeichern(array $post)
 
     if ($nReturnValue) {
         // CheckBox Spezialfunktion ausführen
-        $oCheckBox->triggerSpecialFunction(
+        $checkBox->triggerSpecialFunction(
             CHECKBOX_ORT_REGISTRIERUNG,
-            $kKundengruppe,
+            $customerGroupID,
             true,
             $post,
             ['oKunde' => $knd]
-        )->checkLogging(CHECKBOX_ORT_REGISTRIERUNG, $kKundengruppe, $post, true);
+        )->checkLogging(CHECKBOX_ORT_REGISTRIERUNG, $customerGroupID, $post, true);
 
         if ($edit && $_SESSION['Kunde']->kKunde > 0) {
             $knd->cAbgeholt = 'N';
@@ -99,22 +99,22 @@ function kundeSpeichern(array $post)
             $_SESSION['Kunde']->getCustomerAttributes()->load($_SESSION['Kunde']->kKunde);
         } else {
             // Guthaben des Neukunden aufstocken insofern er geworben wurde
-            $oNeukunde     = $db->select(
+            $oNeukunde       = $db->select(
                 'tkundenwerbenkunden',
                 'cEmail',
                 $knd->cMail,
                 'nRegistriert',
                 0
             );
-            $kKundengruppe = Frontend::getCustomerGroup()->getID();
+            $customerGroupID = Frontend::getCustomerGroup()->getID();
             if (isset($oNeukunde->kKundenWerbenKunden, $conf['kundenwerbenkunden']['kwk_kundengruppen'])
                 && $oNeukunde->kKundenWerbenKunden > 0
                 && (int)$conf['kundenwerbenkunden']['kwk_kundengruppen'] > 0
             ) {
-                $kKundengruppe = (int)$conf['kundenwerbenkunden']['kwk_kundengruppen'];
+                $customerGroupID = (int)$conf['kundenwerbenkunden']['kwk_kundengruppen'];
             }
 
-            $knd->kKundengruppe     = $kKundengruppe;
+            $knd->kKundengruppe     = $customerGroupID;
             $knd->kSprache          = Shop::getLanguage();
             $knd->cAbgeholt         = 'N';
             $knd->cSperre           = 'N';

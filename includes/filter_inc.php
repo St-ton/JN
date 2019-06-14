@@ -1021,7 +1021,7 @@ function baueArtikelAnzahl($filterSQL, &$oSuchergebnisse, $productsPerPage = 20,
         'nLimitN'          => &$limit
     ]);
     $conf                 = Shop::getSettings([CONF_ARTIKELUEBERSICHT]);
-    $page                = $GLOBALS['NaviFilter']->nSeite ?? 1;
+    $page                 = $GLOBALS['NaviFilter']->nSeite ?? 1;
     $nSettingMaxPageCount = (int)$conf['artikeluebersicht']['artikeluebersicht_max_seitenzahl'];
 
     $oSuchergebnisse->GesamtanzahlArtikel = $qty->nGesamtAnzahl;

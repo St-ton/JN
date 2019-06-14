@@ -7,31 +7,31 @@
 use JTL\Shop;
 
 /**
- * @param string $cBetreff
- * @param string $cText
- * @param array  $kKundengruppe_arr
- * @param array  $kNewsKategorie_arr
+ * @param string $subject
+ * @param string $text
+ * @param array  $customerGroupIDs
+ * @param array  $newsCategoryIDs
  * @return array
  * @deprecated since 5.0.0
  */
-function pruefeNewsPost($cBetreff, $cText, $kKundengruppe_arr, $kNewsKategorie_arr)
+function pruefeNewsPost($subject, $text, $customerGroupIDs, $newsCategoryIDs)
 {
     trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
     $checks = [];
     // Betreff prüfen
-    if (mb_strlen($cBetreff) === 0) {
+    if (mb_strlen($subject) === 0) {
         $checks['cBetreff'] = 1;
     }
     // Text prüfen
-    if (mb_strlen($cText) === 0) {
+    if (mb_strlen($text) === 0) {
         $checks['cText'] = 1;
     }
     // Kundengruppe prüfen
-    if (!is_array($kKundengruppe_arr) || count($kKundengruppe_arr) === 0) {
+    if (!is_array($customerGroupIDs) || count($customerGroupIDs) === 0) {
         $checks['kKundengruppe_arr'] = 1;
     }
     // Newskategorie prüfen
-    if (!is_array($kNewsKategorie_arr) || count($kNewsKategorie_arr) === 0) {
+    if (!is_array($newsCategoryIDs) || count($newsCategoryIDs) === 0) {
         $checks['kNewsKategorie_arr'] = 1;
     }
 

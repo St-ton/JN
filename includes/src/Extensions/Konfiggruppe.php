@@ -128,10 +128,10 @@ class Konfiggruppe implements JsonSerializable
      */
     private function loadFromDB(int $id = 0, int $languageID = 0): self
     {
-        $oObj = Shop::Container()->getDB()->select('tkonfiggruppe', 'kKonfiggruppe', $id);
-        if (isset($oObj->kKonfiggruppe) && $oObj->kKonfiggruppe > 0) {
-            foreach (\array_keys(\get_object_vars($oObj)) as $member) {
-                $this->$member = $oObj->$member;
+        $data = Shop::Container()->getDB()->select('tkonfiggruppe', 'kKonfiggruppe', $id);
+        if (isset($data->kKonfiggruppe) && $data->kKonfiggruppe > 0) {
+            foreach (\array_keys(\get_object_vars($data)) as $member) {
+                $this->$member = $data->$member;
             }
             if (!$languageID) {
                 $languageID = Shop::getLanguageID();

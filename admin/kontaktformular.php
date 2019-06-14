@@ -141,11 +141,11 @@ if ($step === 'uebersicht') {
         if (!$subject->cKundengruppen) {
             $groups = __('alle');
         } else {
-            foreach (explode(';', $subject->cKundengruppen) as $kKundengruppe) {
-                if (!is_numeric($kKundengruppe)) {
+            foreach (explode(';', $subject->cKundengruppen) as $customerGroupID) {
+                if (!is_numeric($customerGroupID)) {
                     continue;
                 }
-                $kndgrp  = $db->select('tkundengruppe', 'kKundengruppe', (int)$kKundengruppe);
+                $kndgrp  = $db->select('tkundengruppe', 'kKundengruppe', (int)$customerGroupID);
                 $groups .= ' ' . $kndgrp->cName;
             }
         }
@@ -203,8 +203,8 @@ function getGesetzteKundengruppen($link)
 
         return $ret;
     }
-    foreach (array_filter(explode(';', $link->cKundengruppen)) as $kKundengruppe) {
-        $ret[$kKundengruppe] = true;
+    foreach (array_filter(explode(';', $link->cKundengruppen)) as $customerGroupID) {
+        $ret[$customerGroupID] = true;
     }
 
     return $ret;

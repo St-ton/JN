@@ -108,7 +108,7 @@ class AuswahlAssistentOrt
                             'kSprache',
                             AuswahlAssistentGruppe::getLanguage($this->kAuswahlAssistentGruppe)
                         );
-                        $link      = Shop::Container()->getDB()->select(
+                        $link       = Shop::Container()->getDB()->select(
                             'tlinksprache',
                             'kLink',
                             $this->kKey,

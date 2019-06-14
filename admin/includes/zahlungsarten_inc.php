@@ -91,33 +91,32 @@ function getHinweisTexteShop(int $kZahlungsart)
 }
 
 /**
- * @param Zahlungsart $zahlungsart
+ * @param Zahlungsart $paymentMethod
  * @return array
  */
-function getGesetzteKundengruppen($zahlungsart)
+function getGesetzteKundengruppen($paymentMethod)
 {
     $ret = [];
-    if (!isset($zahlungsart->cKundengruppen) || !$zahlungsart->cKundengruppen) {
+    if (!isset($paymentMethod->cKundengruppen) || !$paymentMethod->cKundengruppen) {
         $ret[0] = true;
 
         return $ret;
     }
-    $kdgrp = explode(';', $zahlungsart->cKundengruppen);
-    foreach ($kdgrp as $kKundengruppe) {
-        $ret[$kKundengruppe] = true;
+    foreach (explode(';', $paymentMethod->cKundengruppen) as $customerGroupID) {
+        $ret[$customerGroupID] = true;
     }
 
     return $ret;
 }
 
 /**
- * @param string $cSearch
+ * @param string $query
  * @return array $allShippingsByName
  */
-function getPaymentMethodsByName($cSearch)
+function getPaymentMethodsByName($query)
 {
     $paymentMethodsByName = [];
-    foreach (explode(',', $cSearch) as $cSearchPos) {
+    foreach (explode(',', $query) as $cSearchPos) {
         // Leerzeichen löschen
         trim($cSearchPos);
         // Nur Eingaben mit mehr als 2 Zeichen

@@ -180,14 +180,14 @@ class Exportformat
     /**
      * Exportformat constructor.
      *
-     * @param int              $kExportformat
+     * @param int              $id
      * @param DbInterface|null $db
      */
-    public function __construct(int $kExportformat = 0, DbInterface $db = null)
+    public function __construct(int $id = 0, DbInterface $db = null)
     {
         $this->db = $db ?? Shop::Container()->getDB();
-        if ($kExportformat > 0) {
-            $this->loadFromDB($kExportformat);
+        if ($id > 0) {
+            $this->loadFromDB($id);
         }
     }
 
@@ -229,25 +229,25 @@ class Exportformat
     /**
      * Loads database member into class member
      *
-     * @param int $kExportformat
+     * @param int $id
      * @return $this
      */
-    private function loadFromDB(int $kExportformat = 0): self
+    private function loadFromDB(int $id = 0): self
     {
-        $oObj = $this->db->query(
+        $data = $this->db->query(
             'SELECT texportformat.*, tkampagne.cParameter AS campaignParameter, tkampagne.cWert AS campaignValue
                FROM texportformat
                LEFT JOIN tkampagne 
                   ON tkampagne.kKampagne = texportformat.kKampagne
                   AND tkampagne.nAktiv = 1
-               WHERE texportformat.kExportformat = ' . $kExportformat,
+               WHERE texportformat.kExportformat = ' . $id,
             ReturnType::SINGLE_OBJECT
         );
-        if (isset($oObj->kExportformat) && $oObj->kExportformat > 0) {
-            foreach (\get_object_vars($oObj) as $k => $v) {
+        if (isset($data->kExportformat) && $data->kExportformat > 0) {
+            foreach (\get_object_vars($data) as $k => $v) {
                 $this->$k = $v;
             }
-            $this->setConfig($kExportformat);
+            $this->setConfig($id);
             if (!$this->getKundengruppe()) {
                 $this->setKundengruppe(Kundengruppe::getDefaultGroupID());
             }

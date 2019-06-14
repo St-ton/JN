@@ -229,16 +229,16 @@ if (Request::verifyGPCDataInt('abonnieren') > 0) {
         $smarty->assign('oFehlendeAngaben', (object)['cUnsubscribeEmail' => 1]);
     }
 } elseif (isset($_GET['show']) && (int)$_GET['show'] > 0) {
-    $kKundengruppe = Frontend::getCustomer()->getID();
-    $option        = 'anzeigen';
-    $history       = $db->query(
+    $customerGroupID = Frontend::getCustomer()->getID();
+    $option          = 'anzeigen';
+    $history         = $db->query(
         "SELECT kNewsletterHistory, nAnzahl, cBetreff, cHTMLStatic, cKundengruppeKey,
             DATE_FORMAT(dStart, '%d.%m.%Y %H:%i') AS Datum
             FROM tnewsletterhistory
             WHERE kNewsletterHistory = " . (int)$_GET['show'],
         ReturnType::SINGLE_OBJECT
     );
-    if ($history->kNewsletterHistory > 0 && pruefeNLHistoryKundengruppe($kKundengruppe, $history->cKundengruppeKey)) {
+    if ($history->kNewsletterHistory > 0 && pruefeNLHistoryKundengruppe($customerGroupID, $history->cKundengruppeKey)) {
         $smarty->assign('oNewsletterHistory', $history);
     }
 }

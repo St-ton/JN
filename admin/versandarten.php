@@ -666,12 +666,12 @@ if ($step === 'uebersicht') {
             'cName',
             'cISOSprache'
         );
-        foreach (Text::parseSSK($method->cKundengruppen) as $kKundengruppe) {
-            if ((int)$kKundengruppe === -1) {
+        foreach (Text::parseSSK($method->cKundengruppen) as $customerGroupID) {
+            if ((int)$customerGroupID === -1) {
                 $method->cKundengruppenName_arr[] = __('allCustomerGroups');
             } else {
                 foreach ($customerGroups as $oKundengruppen) {
-                    if ((int)$oKundengruppen->kKundengruppe === (int)$kKundengruppe) {
+                    if ((int)$oKundengruppen->kKundengruppe === (int)$customerGroupID) {
                         $method->cKundengruppenName_arr[] = $oKundengruppen->cName;
                     }
                 }

@@ -185,11 +185,11 @@ class Plugins
 
         if (isset($params['categoryBoxNumber']) && (int)$params['categoryBoxNumber'] > 0) {
             $list2 = [];
-            foreach ($list as $key => $oList) {
-                if (isset($oList->categoryFunctionAttributes[\KAT_ATTRIBUT_KATEGORIEBOX])
-                    && $oList->categoryFunctionAttributes[\KAT_ATTRIBUT_KATEGORIEBOX] == $params['categoryBoxNumber']
+            foreach ($list as $key => $item) {
+                if (isset($item->categoryFunctionAttributes[\KAT_ATTRIBUT_KATEGORIEBOX])
+                    && $item->categoryFunctionAttributes[\KAT_ATTRIBUT_KATEGORIEBOX] == $params['categoryBoxNumber']
                 ) {
-                    $list2[$key] = $oList;
+                    $list2[$key] = $item;
                 }
             }
             $list = $list2;

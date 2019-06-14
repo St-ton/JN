@@ -73,25 +73,25 @@ class Lieferschein
     /**
      * Constructor
      *
-     * @param int    $kLieferschein
+     * @param int    $id
      * @param object $data
      */
-    public function __construct(int $kLieferschein = 0, $data = null)
+    public function __construct(int $id = 0, $data = null)
     {
-        if ($kLieferschein > 0) {
-            $this->loadFromDB($kLieferschein, $data);
+        if ($id > 0) {
+            $this->loadFromDB($id, $data);
         }
     }
 
     /**
-     * @param int    $kLieferschein
+     * @param int    $id
      * @param object $data
      * @return $this
      */
-    private function loadFromDB(int $kLieferschein = 0, $data = null): self
+    private function loadFromDB(int $id = 0, $data = null): self
     {
         $db   = Shop::Container()->getDB();
-        $item = $db->select('tlieferschein', 'kLieferschein', $kLieferschein);
+        $item = $db->select('tlieferschein', 'kLieferschein', $id);
         if ($item !== null && $item->kLieferschein > 0) {
             foreach (\array_keys(\get_object_vars($item)) as $member) {
                 $setter = 'set' . \mb_substr($member, 1);
@@ -105,7 +105,7 @@ class Lieferschein
             $items = $db->selectAll(
                 'tlieferscheinpos',
                 'kLieferschein',
-                $kLieferschein,
+                $id,
                 'kLieferscheinPos'
             );
             foreach ($items as $deliveryItem) {
@@ -129,7 +129,7 @@ class Lieferschein
             $shippings = $db->selectAll(
                 'tversand',
                 'kLieferschein',
-                $kLieferschein,
+                $id,
                 'kVersand'
             );
             foreach ($shippings as $shipping) {
@@ -141,10 +141,10 @@ class Lieferschein
     }
 
     /**
-     * @param bool $bPrim
+     * @param bool $primary
      * @return bool|int
      */
-    public function save(bool $bPrim = true)
+    public function save(bool $primary = true)
     {
         $ins                   = new stdClass();
         $ins->kInetBestellung  = $this->kInetBestellung;
@@ -156,7 +156,7 @@ class Lieferschein
         $ins->bEmailVerschickt = $this->bEmailVerschickt ? 1 : 0;
         $kPrim                 = Shop::Container()->getDB()->insert('tlieferschein', $ins);
         if ($kPrim > 0) {
-            return $bPrim ? $kPrim : true;
+            return $primary ? $kPrim : true;
         }
 
         return false;

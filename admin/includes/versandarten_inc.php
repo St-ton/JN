@@ -193,8 +193,8 @@ function gibGesetzteKundengruppen($customerGroupsString)
  */
 function getShippingLanguage(int $shippingMethodID, $languages)
 {
-    $localized = [];
-    $oVersandartSprache_arr      = Shop::Container()->getDB()->selectAll(
+    $localized              = [];
+    $oVersandartSprache_arr = Shop::Container()->getDB()->selectAll(
         'tversandartsprache',
         'kVersandart',
         $shippingMethodID

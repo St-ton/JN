@@ -94,10 +94,10 @@ class PaymentMethods extends AbstractItem
 
             $this->db->insert('tpluginzahlungsartklasse', $paymentClass);
 
-            $iso                    = '';
-            $allLanguages           = LanguageHelper::getAllLanguages(2);
-            $bZahlungsartStandard   = false;
-            $oZahlungsartSpracheStd = new stdClass();
+            $iso                  = '';
+            $allLanguages         = LanguageHelper::getAllLanguages(2);
+            $bZahlungsartStandard = false;
+            $localized            = new stdClass();
             foreach ($data['MethodLanguage'] as $l => $loc) {
                 $l = (string)$l;
                 \preg_match('/[0-9]+\sattr/', $l, $hits1);
@@ -112,11 +112,11 @@ class PaymentMethods extends AbstractItem
                     $localizedMethod->cGebuehrname = $loc['ChargeName'];
                     $localizedMethod->cHinweisText = $loc['InfoText'];
                     if (!$bZahlungsartStandard) {
-                        $oZahlungsartSpracheStd = $localizedMethod;
-                        $bZahlungsartStandard   = true;
+                        $localized            = $localizedMethod;
+                        $bZahlungsartStandard = true;
                     }
-                    $kZahlungsartTMP = $this->db->insert('tzahlungsartsprache', $localizedMethod);
-                    if (!$kZahlungsartTMP) {
+                    $tmpID = $this->db->insert('tzahlungsartsprache', $localizedMethod);
+                    if (!$tmpID) {
                         return InstallCode::SQL_CANNOT_SAVE_PAYMENT_METHOD_LOCALIZATION;
                     }
 
@@ -126,13 +126,13 @@ class PaymentMethods extends AbstractItem
                     }
                 }
             }
-            foreach ($allLanguages as $oSprachAssoc) {
-                $oZahlungsartSpracheStd->cISOSprache = $oSprachAssoc->cISO;
-                $kZahlungsartTMP                     = $this->db->insert(
+            foreach ($allLanguages as $language) {
+                $localized->cISOSprache = $language->cISO;
+                $tmpID                  = $this->db->insert(
                     'tzahlungsartsprache',
-                    $oZahlungsartSpracheStd
+                    $localized
                 );
-                if (!$kZahlungsartTMP) {
+                if (!$tmpID) {
                     return InstallCode::SQL_CANNOT_SAVE_PAYMENT_METHOD_LANGUAGE;
                 }
             }

@@ -953,17 +953,17 @@ class AccountController
      */
     private function addAllWishlistProductsToCart(): void
     {
-        $cURLID       = Text::filterXSS(Request::verifyGPDataString('wlid'));
-        $kWunschliste = Request::verifyGPCDataInt('wl');
-        $wishlist     = Wunschliste::getWishListDataByID($kWunschliste);
-        $wishlist     = new Wunschliste($wishlist->kWunschliste);
+        $cURLID     = Text::filterXSS(Request::verifyGPDataString('wlid'));
+        $wishListID = Request::verifyGPCDataInt('wl');
+        $wishlist   = Wunschliste::getWishListDataByID($wishListID);
+        $wishlist   = new Wunschliste($wishlist->kWunschliste);
         if (\count($wishlist->CWunschlistePos_arr) === 0) {
             return;
         }
         foreach ($wishlist->CWunschlistePos_arr as $wishlistPosition) {
             $attributeValues = Product::isVariChild($wishlistPosition->kArtikel)
                 ? Product::getVarCombiAttributeValues($wishlistPosition->kArtikel)
-                : Wunschliste::getAttributesByID($kWunschliste, $wishlistPosition->kWunschlistePos);
+                : Wunschliste::getAttributesByID($wishListID, $wishlistPosition->kWunschlistePos);
             if (!$wishlistPosition->Artikel->bHasKonfig
                 && !$wishlistPosition->bKonfig
                 && isset($wishlistPosition->Artikel->inWarenkorbLegbar)
@@ -978,7 +978,7 @@ class AccountController
         }
         \header(
             'Location: ' . $this->linkService->getStaticRoute('jtl.php') .
-            '?wl=' . $kWunschliste .
+            '?wl=' . $wishListID .
             '&wlid=' . $cURLID .
             '&wlidmsg=2',
             true,

@@ -86,11 +86,11 @@ function pruefeUnregistriertBestellen($post): int
     $missingInput       = checkKundenFormular(0);
     $Kunde              = getKundendaten($post, 0);
     $customerAttributes = getKundenattribute($post);
-    $kKundengruppe      = Frontend::getCustomerGroup()->getID();
-    $oCheckBox          = new CheckBox();
-    $missingInput       = array_merge($missingInput, $oCheckBox->validateCheckBox(
+    $customerGroupID    = Frontend::getCustomerGroup()->getID();
+    $checkBox           = new CheckBox();
+    $missingInput       = array_merge($missingInput, $checkBox->validateCheckBox(
         CHECKBOX_ORT_REGISTRIERUNG,
-        $kKundengruppe,
+        $customerGroupID,
         $post,
         true
     ));
@@ -121,13 +121,13 @@ function pruefeUnregistriertBestellen($post): int
 
     if ($nReturnValue) {
         // CheckBox Spezialfunktion ausführen
-        $oCheckBox->triggerSpecialFunction(
+        $checkBox->triggerSpecialFunction(
             CHECKBOX_ORT_REGISTRIERUNG,
-            $kKundengruppe,
+            $customerGroupID,
             true,
             $post,
             ['oKunde' => $Kunde]
-        )->checkLogging(CHECKBOX_ORT_REGISTRIERUNG, $kKundengruppe, $post, true);
+        )->checkLogging(CHECKBOX_ORT_REGISTRIERUNG, $customerGroupID, $post, true);
         $Kunde->nRegistriert = 0;
         $_SESSION['Kunde']   = $Kunde;
         if (isset($_SESSION['Warenkorb']->kWarenkorb)
@@ -633,11 +633,11 @@ function gibStepLieferadresse()
 {
     global $Lieferadresse;
 
-    $smarty        = Shop::Smarty();
-    $kKundengruppe = Frontend::getCustomerGroup()->getID();
+    $smarty          = Shop::Smarty();
+    $customerGroupID = Frontend::getCustomerGroup()->getID();
     if (Frontend::getCustomer()->kKunde > 0) {
-        $Lieferadressen = [];
-        $data           = Shop::Container()->getDB()->query(
+        $addresses = [];
+        $data      = Shop::Container()->getDB()->query(
             'SELECT DISTINCT(kLieferadresse)
                 FROM tlieferadresse
                 WHERE kKunde = ' . Frontend::getCustomer()->getID(),
@@ -645,14 +645,14 @@ function gibStepLieferadresse()
         );
         foreach ($data as $item) {
             if ($item->kLieferadresse > 0) {
-                $Lieferadressen[] = new Lieferadresse($item->kLieferadresse);
+                $addresses[] = new Lieferadresse($item->kLieferadresse);
             }
         }
-        $smarty->assign('Lieferadressen', $Lieferadressen);
-        $kKundengruppe = Frontend::getCustomer()->kKundengruppe;
+        $smarty->assign('Lieferadressen', $addresses);
+        $customerGroupID = Frontend::getCustomer()->kKundengruppe;
     }
-    $smarty->assign('laender', ShippingMethod::getPossibleShippingCountries($kKundengruppe, false, true))
-           ->assign('LieferLaender', ShippingMethod::getPossibleShippingCountries($kKundengruppe))
+    $smarty->assign('laender', ShippingMethod::getPossibleShippingCountries($customerGroupID, false, true))
+           ->assign('LieferLaender', ShippingMethod::getPossibleShippingCountries($customerGroupID))
            ->assign('Kunde', $_SESSION['Kunde'] ?? null)
            ->assign('kLieferadresse', $_SESSION['Bestellung']->kLieferadresse ?? null);
     if (isset($_SESSION['Bestellung']->kLieferadresse) && (int)$_SESSION['Bestellung']->kLieferadresse === -1) {
@@ -679,17 +679,17 @@ function gibStepZahlung()
     if (!$plz) {
         $plz = Frontend::getCustomer()->cPLZ;
     }
-    $kKundengruppe = Frontend::getCustomer()->kKundengruppe ?? null;
-    if (!$kKundengruppe) {
-        $kKundengruppe = Frontend::getCustomerGroup()->getID();
+    $customerGroupID = Frontend::getCustomer()->kKundengruppe ?? null;
+    if (!$customerGroupID) {
+        $customerGroupID = Frontend::getCustomerGroup()->getID();
     }
     $shippingMethods = ShippingMethod::getPossibleShippingMethods(
         $lieferland,
         $plz,
         ShippingMethod::getShippingClasses(Frontend::getCart()),
-        $kKundengruppe
+        $customerGroupID
     );
-    $packagings      = ShippingMethod::getPossiblePackagings($kKundengruppe);
+    $packagings      = ShippingMethod::getPossiblePackagings($customerGroupID);
     if (!empty($packagings) && $cart->posTypEnthalten(C_WARENKORBPOS_TYP_VERPACKUNG)) {
         foreach ($cart->PositionenArr as $item) {
             if ($item->nPosTyp === C_WARENKORBPOS_TYP_VERPACKUNG) {
@@ -704,12 +704,12 @@ function gibStepZahlung()
 
     if (is_array($shippingMethods) && count($shippingMethods) > 0) {
         $shippingMethod = gibAktiveVersandart($shippingMethods);
-        $paymentMethods = gibZahlungsarten($shippingMethod, $kKundengruppe);
+        $paymentMethods = gibZahlungsarten($shippingMethod, $customerGroupID);
         if (!is_array($paymentMethods) || count($paymentMethods) === 0) {
             Shop::Container()->getLogService()->error(
                 'Es konnte keine Zahlungsart für folgende Daten gefunden werden: Versandart: ' .
                 $_SESSION['Versandart']->kVersandart .
-                ', Kundengruppe: ' . $kKundengruppe
+                ', Kundengruppe: ' . $customerGroupID
             );
         }
 
@@ -845,17 +845,17 @@ function gibStepVersand(): void
     if (!$plz) {
         $plz = Frontend::getCustomer()->cPLZ;
     }
-    $kKundengruppe = Frontend::getCustomer()->kKundengruppe ?? null;
-    if (!$kKundengruppe) {
-        $kKundengruppe = Frontend::getCustomerGroup()->getID();
+    $customerGroupID = Frontend::getCustomer()->kKundengruppe ?? null;
+    if (!$customerGroupID) {
+        $customerGroupID = Frontend::getCustomerGroup()->getID();
     }
     $shippingMethods = ShippingMethod::getPossibleShippingMethods(
         $lieferland,
         $plz,
         ShippingMethod::getShippingClasses($cart),
-        $kKundengruppe
+        $customerGroupID
     );
-    $packagings      = ShippingMethod::getPossiblePackagings($kKundengruppe);
+    $packagings      = ShippingMethod::getPossiblePackagings($customerGroupID);
     if (!empty($packagings) && $cart->posTypEnthalten(C_WARENKORBPOS_TYP_VERPACKUNG)) {
         foreach ($cart->PositionenArr as $item) {
             if ($item->nPosTyp === C_WARENKORBPOS_TYP_VERPACKUNG) {
@@ -881,7 +881,7 @@ function gibStepVersand(): void
         Shop::Container()->getLogService()->error(
             'Es konnte keine Versandart für folgende Daten gefunden werden: Lieferland: ' . $lieferland .
             ', PLZ: ' . $plz . ', Versandklasse: ' . ShippingMethod::getShippingClasses(Frontend::getCart()) .
-            ', Kundengruppe: ' . $kKundengruppe
+            ', Kundengruppe: ' . $customerGroupID
         );
     }
     Shop::Smarty()->assign('Kunde', Frontend::getCustomer())
@@ -3188,7 +3188,7 @@ function setzeSessionLieferadresse(array $post): void
  */
 function setzeSmartyLieferadresse(): void
 {
-    $kKundengruppe = Frontend::getCustomerGroup()->getID();
+    $customerGroupID = Frontend::getCustomerGroup()->getID();
     if (Frontend::getCustomer()->getID() > 0) {
         $shippingAddresses = [];
         $deliveryData      = Shop::Container()->getDB()->selectAll(
@@ -3202,11 +3202,11 @@ function setzeSmartyLieferadresse(): void
                 $shippingAddresses[] = new Lieferadresse($item->kLieferadresse);
             }
         }
-        $kKundengruppe = Frontend::getCustomer()->kKundengruppe;
+        $customerGroupID = Frontend::getCustomer()->kKundengruppe;
         Shop::Smarty()->assign('Lieferadressen', $shippingAddresses)
             ->assign('GuthabenLocalized', Frontend::getCustomer()->gibGuthabenLocalized());
     }
-    Shop::Smarty()->assign('LieferLaender', ShippingMethod::getPossibleShippingCountries($kKundengruppe))
+    Shop::Smarty()->assign('LieferLaender', ShippingMethod::getPossibleShippingCountries($customerGroupID))
         ->assign('Kunde', Frontend::getCustomer())
         ->assign('KuponMoeglich', Kupon::couponsAvailable())
         ->assign('kLieferadresse', $_SESSION['Bestellung']->kLieferadresse);
@@ -3222,7 +3222,7 @@ function setzeSmartyLieferadresse(): void
 function setzeFehlerSmartyLieferadresse($missingData, array $post): void
 {
     /** @var array('Kunde' => Kunde) $_SESSION */
-    $kKundengruppe = Frontend::getCustomerGroup()->getID();
+    $customerGroupID = Frontend::getCustomerGroup()->getID();
     if (Frontend::getCustomer()->getID() > 0) {
         $shippingAddresses = [];
         $deliveryData      = Shop::Container()->getDB()->selectAll(
@@ -3236,13 +3236,13 @@ function setzeFehlerSmartyLieferadresse($missingData, array $post): void
                 $shippingAddresses[] = new Lieferadresse($item->kLieferadresse);
             }
         }
-        $kKundengruppe = Frontend::getCustomer()->kKundengruppe;
+        $customerGroupID = Frontend::getCustomer()->kKundengruppe;
         Shop::Smarty()->assign('Lieferadressen', $shippingAddresses)
             ->assign('GuthabenLocalized', Frontend::getCustomer()->gibGuthabenLocalized());
     }
     setzeFehlendeAngaben($missingData, 'shipping_address');
-    Shop::Smarty()->assign('laender', ShippingMethod::getPossibleShippingCountries($kKundengruppe, false, true))
-        ->assign('LieferLaender', ShippingMethod::getPossibleShippingCountries($kKundengruppe))
+    Shop::Smarty()->assign('laender', ShippingMethod::getPossibleShippingCountries($customerGroupID, false, true))
+        ->assign('LieferLaender', ShippingMethod::getPossibleShippingCountries($customerGroupID))
         ->assign('Kunde', Frontend::getCustomer())
         ->assign('KuponMoeglich', Kupon::couponsAvailable())
         ->assign('kLieferadresse', $_SESSION['Bestellung']->kLieferadresse)

@@ -63,12 +63,12 @@ switch ($action) {
             $slider->load($kSlider, false);
             $slider->set((object)$_REQUEST);
             // extensionpoint
-            $languageID    = (int)$_POST['kSprache'];
-            $kKundengruppe = $_POST['kKundengruppe'];
-            $pageType      = (int)$_POST['nSeitenTyp'];
-            $cKey          = $_POST['cKey'];
-            $cKeyValue     = '';
-            $cValue        = '';
+            $languageID      = (int)$_POST['kSprache'];
+            $customerGroupID = $_POST['kKundengruppe'];
+            $pageType        = (int)$_POST['nSeitenTyp'];
+            $cKey            = $_POST['cKey'];
+            $cKeyValue       = '';
+            $cValue          = '';
             if ($pageType === PAGE_ARTIKEL) {
                 $cKey      = 'kArtikel';
                 $cKeyValue = 'article_key';
@@ -107,7 +107,7 @@ switch ($action) {
                     );
                     $extension                = new stdClass();
                     $extension->kSprache      = $languageID;
-                    $extension->kKundengruppe = $kKundengruppe;
+                    $extension->kKundengruppe = $customerGroupID;
                     $extension->nSeite        = $pageType;
                     $extension->cKey          = $cKey;
                     $extension->cValue        = $cValue;

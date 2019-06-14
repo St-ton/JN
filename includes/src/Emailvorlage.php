@@ -91,36 +91,36 @@ class Emailvorlage
     /**
      * Constructor
      *
-     * @param int  $kEmailvorlage
-     * @param bool $bPlugin
+     * @param int  $id
+     * @param bool $plugin
      */
-    public function __construct(int $kEmailvorlage = 0, bool $bPlugin = false)
+    public function __construct(int $id = 0, bool $plugin = false)
     {
         \trigger_error(__CLASS__. ' is deprecated.', \E_USER_DEPRECATED);
-        if ($kEmailvorlage > 0) {
-            $this->loadFromDB($kEmailvorlage, $bPlugin);
+        if ($id > 0) {
+            $this->loadFromDB($id, $plugin);
         }
     }
 
     /**
      * Loads database member into class member
      *
-     * @param int  $kEmailvorlage
-     * @param bool $bPlugin
+     * @param int  $id
+     * @param bool $plugin
      * @return $this
      */
-    private function loadFromDB(int $kEmailvorlage, bool $bPlugin): self
+    private function loadFromDB(int $id, bool $plugin): self
     {
-        $cTableSetting = $bPlugin ? 'tpluginemailvorlageeinstellungen' : 'temailvorlageeinstellungen';
-        $oObj          = Shop::Container()->getDB()->select('temailvorlage', 'kEmailvorlage', $kEmailvorlage);
+        $table = $plugin ? 'tpluginemailvorlageeinstellungen' : 'temailvorlageeinstellungen';
+        $data  = Shop::Container()->getDB()->select('temailvorlage', 'kEmailvorlage', $id);
 
-        if (isset($oObj->kEmailvorlage) && $oObj->kEmailvorlage > 0) {
-            foreach (\array_keys(\get_object_vars($oObj)) as $member) {
-                $this->$member = $oObj->$member;
+        if (isset($data->kEmailvorlage) && $data->kEmailvorlage > 0) {
+            foreach (\array_keys(\get_object_vars($data)) as $member) {
+                $this->$member = $data->$member;
             }
             // Settings
             $this->oEinstellung_arr = Shop::Container()->getDB()->selectAll(
-                $cTableSetting,
+                $table,
                 'kEmailvorlage',
                 $this->kEmailvorlage
             );

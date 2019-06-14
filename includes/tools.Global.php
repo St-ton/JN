@@ -647,14 +647,14 @@ function pruefeVariBoxAnzahl($variBoxAnzahl_arr = [])
 }
 
 /**
- * @param string $cPfad
+ * @param string $path
  * @return string
  * @deprecated since 5.0.0 - not used in core anymore
  */
-function gibArtikelBildPfad($cPfad)
+function gibArtikelBildPfad($path)
 {
-    return mb_strlen(trim($cPfad)) > 0
-        ? $cPfad
+    return mb_strlen(trim($path)) > 0
+        ? $path
         : BILD_KEIN_ARTIKELBILD_VORHANDEN;
 }
 
@@ -895,13 +895,10 @@ function gibGuenstigsteVersandkosten($cISO, $Artikel, $barzahlungZulassen, $cust
 }
 
 /**
- * @param int $kWaehrung
- * @param int $ArtSort
- * @param int $ArtZahl
  * @return bool
  * @deprecated since 5.0.0
  */
-function setFsession($kWaehrung, $ArtSort, $ArtZahl)
+function setFsession()
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return false;
@@ -1757,28 +1754,28 @@ function baueSuchSpecialURL(int $kKey)
 /**
  * Bekommmt ein Array von Objekten und baut ein assoziatives Array
  *
- * @param array $oObjekt_arr
- * @param string $cKey
+ * @param array $objects
+ * @param string $keyName
  * @return array
  * @deprecated since 5.0.0
  */
-function baueAssocArray(array $oObjekt_arr, $cKey)
+function baueAssocArray(array $objects, $keyName)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Try \Functional\reindex() instead.', E_USER_DEPRECATED);
-    $oObjektAssoc_arr = [];
-    foreach ($oObjekt_arr as $oObjekt) {
-        if (is_object($oObjekt)) {
-            $oMember_arr = array_keys(get_object_vars($oObjekt));
-            if (is_array($oMember_arr) && count($oMember_arr) > 0) {
-                $oObjektAssoc_arr[$oObjekt->$cKey] = new stdClass();
-                foreach ($oMember_arr as $oMember) {
-                    $oObjektAssoc_arr[$oObjekt->$cKey]->$oMember = $oObjekt->$oMember;
+    $res = [];
+    foreach ($objects as $item) {
+        if (is_object($item)) {
+            $members = array_keys(get_object_vars($item));
+            if (is_array($members) && count($members) > 0) {
+                $res[$item->$keyName] = new stdClass();
+                foreach ($members as $oMember) {
+                    $res[$item->$keyName]->$oMember = $item->$oMember;
                 }
             }
         }
     }
 
-    return $oObjektAssoc_arr;
+    return $res;
 }
 
 /**
@@ -2218,14 +2215,14 @@ function memberCopy($src, &$dest)
 }
 
 /**
- * @param object $oObj
+ * @param object $object
  * @return mixed
  * @deprecated since 5.0.0
  */
-function deepCopy($oObj)
+function deepCopy($object)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use ObjectHelper::deepCopy() instead.', E_USER_DEPRECATED);
-    return GeneralObject::deepCopy($oObj);
+    return GeneralObject::deepCopy($object);
 }
 
 /**

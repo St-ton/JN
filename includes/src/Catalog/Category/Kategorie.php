@@ -496,7 +496,7 @@ class Kategorie
         if ($this->kOberKategorie !== null && $this->kOberKategorie > 0) {
             return (int)$this->kOberKategorie;
         }
-        $oObj = Shop::Container()->getDB()->query(
+        $data = Shop::Container()->getDB()->query(
             'SELECT kOberKategorie
                 FROM tkategorie
                 WHERE kOberKategorie > 0
@@ -504,7 +504,7 @@ class Kategorie
             ReturnType::SINGLE_OBJECT
         );
 
-        return isset($oObj->kOberKategorie) ? (int)$oObj->kOberKategorie : false;
+        return isset($data->kOberKategorie) ? (int)$data->kOberKategorie : false;
     }
 
     /**

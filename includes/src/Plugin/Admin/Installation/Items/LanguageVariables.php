@@ -51,8 +51,8 @@ class LanguageVariables extends AbstractItem
             // Ist der erste Standard Link gesetzt worden? => wird etwas weiter unten gebraucht
             // Falls Shopsprachen vom Plugin nicht berücksichtigt wurden, werden diese weiter unten
             // nachgetragen. Dafür wird die erste Sprache vom Plugin als Standard genutzt.
-            $bVariableStandard   = false;
-            $oVariableSpracheStd = new stdClass();
+            $isDefault  = false;
+            $defaultVar = new stdClass();
             // Nur eine Sprache vorhanden
             if (isset($langVar['VariableLocalized attr'])
                 && \is_array($langVar['VariableLocalized attr'])
@@ -67,9 +67,9 @@ class LanguageVariables extends AbstractItem
                 $this->db->insert('tpluginsprachvariablesprache', $localized);
 
                 // Erste PluginSprachVariableSprache vom Plugin als Standard setzen
-                if (!$bVariableStandard) {
-                    $oVariableSpracheStd = $localized;
-                    $bVariableStandard   = true;
+                if (!$isDefault) {
+                    $defaultVar = $localized;
+                    $isDefault  = true;
                 }
 
                 if (isset($languages[\mb_convert_case($localized->cISO, \MB_CASE_LOWER)])) {
@@ -96,9 +96,9 @@ class LanguageVariables extends AbstractItem
 
                         $this->db->insert('tpluginsprachvariablesprache', $localized);
                         // Erste PluginSprachVariableSprache vom Plugin als Standard setzen
-                        if (!$bVariableStandard) {
-                            $oVariableSpracheStd = $localized;
-                            $bVariableStandard   = true;
+                        if (!$isDefault) {
+                            $defaultVar = $localized;
+                            $isDefault  = true;
                         }
 
                         if (isset($languages[\mb_convert_case($localized->cISO, \MB_CASE_LOWER)])) {
@@ -108,9 +108,9 @@ class LanguageVariables extends AbstractItem
                     }
                 }
             }
-            foreach ($languages as $oSprachAssoc) {
-                $oVariableSpracheStd->cISO = \mb_convert_case($oSprachAssoc->cISO, \MB_CASE_UPPER);
-                if (!$this->db->insert('tpluginsprachvariablesprache', $oVariableSpracheStd)) {
+            foreach ($languages as $language) {
+                $defaultVar->cISO = \mb_convert_case($language->cISO, \MB_CASE_UPPER);
+                if (!$this->db->insert('tpluginsprachvariablesprache', $defaultVar)) {
                     return InstallCode::SQL_CANNOT_SAVE_LANG_VAR_LOCALIZATION;
                 }
             }

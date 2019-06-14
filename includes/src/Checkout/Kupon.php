@@ -140,29 +140,29 @@ class Kupon
      */
     public $translationList;
 
-    /**
-     * Kupon constructor.
-     *
-     * @param int $kKupon
-     */
-    public function __construct(int $kKupon = 0)
-    {
-        if ($kKupon > 0) {
-            $this->loadFromDB($kKupon);
-        }
-    }
-
     public const TYPE_STANDARD    = 'standard';
     public const TYPE_SHIPPING    = 'versandkupon';
     public const TYPE_NEWCUSTOMER = 'neukundenkupon';
 
     /**
-     * @param int $kKupon
+     * Kupon constructor.
+     *
+     * @param int $id
+     */
+    public function __construct(int $id = 0)
+    {
+        if ($id > 0) {
+            $this->loadFromDB($id);
+        }
+    }
+
+    /**
+     * @param int $id
      * @return bool|Kupon
      */
-    private function loadFromDB(int $kKupon = 0)
+    private function loadFromDB(int $id = 0)
     {
-        $couponResult = Shop::Container()->getDB()->select('tkupon', 'kKupon', $kKupon);
+        $couponResult = Shop::Container()->getDB()->select('tkupon', 'kKupon', $id);
 
         if ($couponResult !== null && $couponResult->kKupon > 0) {
             $couponResult->translationList = $this->getTranslation($couponResult->kKupon);

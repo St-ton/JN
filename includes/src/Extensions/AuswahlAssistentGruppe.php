@@ -173,20 +173,20 @@ class AuswahlAssistentGruppe
     {
         $checks = $this->checkGroup($params);
         if (\count($checks) === 0) {
-            $oObj = GeneralObject::copyMembers($this);
+            $data = GeneralObject::copyMembers($this);
 
             $this->nAktiv                  = (int)$this->nAktiv;
             $this->kSprache                = (int)$this->kSprache;
             $this->nStartseite             = (int)$this->nStartseite;
             $this->kAuswahlAssistentGruppe = (int)$this->kAuswahlAssistentGruppe;
             unset(
-                $oObj->cSprache,
-                $oObj->nStartseite,
-                $oObj->cKategorie,
-                $oObj->oAuswahlAssistentOrt_arr,
-                $oObj->oAuswahlAssistentFrage_arr
+                $data->cSprache,
+                $data->nStartseite,
+                $data->cKategorie,
+                $data->oAuswahlAssistentOrt_arr,
+                $data->oAuswahlAssistentFrage_arr
             );
-            $groupID = Shop::Container()->getDB()->insert('tauswahlassistentgruppe', $oObj);
+            $groupID = Shop::Container()->getDB()->insert('tauswahlassistentgruppe', $data);
             if ($groupID > 0) {
                 AuswahlAssistentOrt::saveLocation($params, $groupID);
 

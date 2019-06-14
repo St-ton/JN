@@ -449,14 +449,14 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                 );
                 if ($survey->kUmfrage > 0) {
                     $survey->cKundengruppe_arr = [];
-                    foreach (Text::parseSSK($survey->cKundengruppe) as $kKundengruppe) {
-                        if ($kKundengruppe == -1) {
+                    foreach (Text::parseSSK($survey->cKundengruppe) as $customerGroupID) {
+                        if ($customerGroupID == -1) {
                             $survey->cKundengruppe_arr[] = 'Alle';
                         } else {
                             $oKundengruppe = $db->select(
                                 'tkundengruppe',
                                 'kKundengruppe',
-                                (int)$kKundengruppe
+                                (int)$customerGroupID
                             );
                             if (!empty($oKundengruppe->cName)) {
                                 $survey->cKundengruppe_arr[] = $oKundengruppe->cName;
@@ -535,14 +535,14 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
         );
         foreach ($surveys as $i => $survey) {
             $survey->cKundengruppe_arr = [];
-            foreach (Text::parseSSK($survey->cKundengruppe) as $kKundengruppe) {
-                if ($kKundengruppe == -1) {
+            foreach (Text::parseSSK($survey->cKundengruppe) as $customerGroupID) {
+                if ($customerGroupID == -1) {
                     $surveys[$i]->cKundengruppe_arr[] = 'Alle';
                 } else {
                     $oKundengruppe = $db->query(
                         'SELECT cName
                             FROM tkundengruppe
-                            WHERE kKundengruppe = ' . (int)$kKundengruppe,
+                            WHERE kKundengruppe = ' . (int)$customerGroupID,
                         ReturnType::SINGLE_OBJECT
                     );
                     if (!empty($oKundengruppe->cName)) {

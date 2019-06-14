@@ -114,15 +114,14 @@ if (isset($_SESSION['Kunde']) && $_SESSION['Kunde']) {
     }
 
     if (!isset($_SESSION['Versandart']) || !is_object($_SESSION['Versandart'])) {
-        $land          = $_SESSION['Lieferadresse']->cLand ?? $_SESSION['Kunde']->cLand;
-        $plz           = $_SESSION['Lieferadresse']->cPLZ ?? $_SESSION['Kunde']->cPLZ;
-        $kKundengruppe = Frontend::getCustomerGroup()->getID();
-
+        $land            = $_SESSION['Lieferadresse']->cLand ?? $_SESSION['Kunde']->cLand;
+        $plz             = $_SESSION['Lieferadresse']->cPLZ ?? $_SESSION['Kunde']->cPLZ;
+        $customerGroupID = Frontend::getCustomerGroup()->getID();
         $shippingMethods = ShippingMethod::getPossibleShippingMethods(
             $land,
             $plz,
             ShippingMethod::getShippingClasses($cart),
-            $kKundengruppe
+            $customerGroupID
         );
 
         if (empty($shippingMethods)) {
@@ -135,7 +134,7 @@ if (isset($_SESSION['Kunde']) && $_SESSION['Kunde']) {
             $activeVersandart = gibAktiveVersandart($shippingMethods);
             pruefeVersandartWahl(
                 $activeVersandart,
-                ['kVerpackung' => array_keys(gibAktiveVerpackung(ShippingMethod::getPossiblePackagings($kKundengruppe)))]
+                ['kVerpackung' => array_keys(gibAktiveVerpackung(ShippingMethod::getPossiblePackagings($customerGroupID)))]
             );
         }
     }

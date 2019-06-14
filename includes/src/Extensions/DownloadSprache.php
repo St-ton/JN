@@ -83,10 +83,10 @@ class DownloadSprache
      */
     public function save(bool $primary = false)
     {
-        $oObj      = $this->kopiereMembers();
-        $kDownload = Shop::Container()->getDB()->insert('tdownloadsprache', $oObj);
-        if ($kDownload > 0) {
-            return $primary ? $kDownload : true;
+        $data = $this->kopiereMembers();
+        $id   = Shop::Container()->getDB()->insert('tdownloadsprache', $data);
+        if ($id > 0) {
+            return $primary ? $id : true;
         }
 
         return false;

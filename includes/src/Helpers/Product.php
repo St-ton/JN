@@ -596,9 +596,9 @@ class Product
     public static function isStuecklisteKomponente(int $productID, bool $info = false)
     {
         if ($productID > 0) {
-            $oObj = Shop::Container()->getDB()->select('tstueckliste', 'kArtikel', $productID);
-            if (isset($oObj->kStueckliste) && $oObj->kStueckliste > 0) {
-                return $info ? $oObj : true;
+            $data = Shop::Container()->getDB()->select('tstueckliste', 'kArtikel', $productID);
+            if (isset($data->kStueckliste) && $data->kStueckliste > 0) {
+                return $info ? $data : true;
             }
         }
 

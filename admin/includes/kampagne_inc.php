@@ -340,55 +340,55 @@ function holeKampagneDetailStats($kKampagne, $oKampagneDef_arr)
 }
 
 /**
- * @param int    $kKampagne
- * @param object $oKampagneDef
+ * @param int    $campaignID
+ * @param object $definition
  * @param string $cStamp
- * @param string $cStampText
+ * @param string $text
  * @param array  $members
- * @param string $cBlaetterSQL1
+ * @param string $sql
  * @return array
  */
-function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStampText, &$members, $cBlaetterSQL1)
+function holeKampagneDefDetailStats($campaignID, $definition, $cStamp, &$text, &$members, $sql)
 {
     $cryptoService = Shop::Container()->getCryptoService();
     $data          = [];
-    if ((int)$kKampagne > 0 && (int)$oKampagneDef->kKampagneDef > 0 && mb_strlen($cStamp) > 0) {
+    if ((int)$campaignID > 0 && (int)$definition->kKampagneDef > 0 && mb_strlen($cStamp) > 0) {
         $cSQLSELECT = '';
         $cSQLWHERE  = '';
         baueDefDetailSELECTWHERE($cSQLSELECT, $cSQLWHERE, $cStamp);
 
-        $oStats_arr = Shop::Container()->getDB()->query(
+        $stats = Shop::Container()->getDB()->query(
             'SELECT kKampagne, kKampagneDef, kKey ' . $cSQLSELECT . '
                 FROM tkampagnevorgang
                 ' . $cSQLWHERE . '
-                    AND kKampagne = ' . (int)$kKampagne . '
-                    AND kKampagneDef = ' . (int)$oKampagneDef->kKampagneDef . $cBlaetterSQL1,
+                    AND kKampagne = ' . (int)$campaignID . '
+                    AND kKampagneDef = ' . (int)$definition->kKampagneDef . $sql,
             ReturnType::ARRAY_OF_OBJECTS
         );
         // Stamp Text
         switch ((int)$_SESSION['Kampagne']->nDetailAnsicht) {
             case 1:    // Jahr
-                $cStampText = $oStats_arr[0]->cStampText;
+                $text = $stats[0]->cStampText;
                 break;
             case 2:    // Monat
-                $cStampTextParts_arr = isset($oStats_arr[0]->cStampText)
-                    ? explode('.', $oStats_arr[0]->cStampText)
+                $textParts = isset($stats[0]->cStampText)
+                    ? explode('.', $stats[0]->cStampText)
                     : [];
-                $cMonat              = $cStampTextParts_arr [0] ?? '';
-                $cJahr               = $cStampTextParts_arr [1] ?? '';
-                $cStampText          = mappeENGMonat($cMonat) . ' ' . $cJahr;
+                $month     = $textParts [0] ?? '';
+                $year      = $textParts [1] ?? '';
+                $text      = mappeENGMonat($month) . ' ' . $year;
                 break;
             case 3:    // Woche
-                $nDatum_arr = ermittleDatumWoche($oStats_arr[0]->cStampText);
-                $cStampText = date('d.m.Y', $nDatum_arr[0]) . ' - ' . date('d.m.Y', $nDatum_arr[1]);
+                $dates = ermittleDatumWoche($stats[0]->cStampText);
+                $text  = date('d.m.Y', $dates[0]) . ' - ' . date('d.m.Y', $dates[1]);
                 break;
             case 4:    // Tag
-                $cStampText = $oStats_arr[0]->cStampText;
+                $text = $stats[0]->cStampText;
                 break;
         }
 
         // Kampagnendefinitionen
-        switch ((int)$oKampagneDef->kKampagneDef) {
+        switch ((int)$definition->kKampagneDef) {
             case KAMPAGNE_DEF_HIT:    // HIT
                 $data = Shop::Container()->getDB()->query(
                     'SELECT tkampagnevorgang.kKampagne, tkampagnevorgang.kKampagneDef, tkampagnevorgang.kKey ' .
@@ -411,9 +411,9 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                         LEFT JOIN tbesucherarchiv ON tbesucherarchiv.kBesucher = tkampagnevorgang.kKey
                         LEFT JOIN tbesucherbot ON tbesucherbot.kBesucherBot = tbesucher.kBesucherBot
                         " . $cSQLWHERE . '
-                            AND kKampagne = ' . (int)$kKampagne . '
-                            AND kKampagneDef = ' . (int)$oKampagneDef->kKampagneDef . '
-                        ORDER BY tkampagnevorgang.dErstellt DESC' . $cBlaetterSQL1,
+                            AND kKampagne = ' . (int)$campaignID . '
+                            AND kKampagneDef = ' . (int)$definition->kKampagneDef . '
+                        ORDER BY tkampagnevorgang.dErstellt DESC' . $sql,
                     ReturnType::ARRAY_OF_OBJECTS
                 );
 
@@ -464,8 +464,8 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                         LEFT JOIN tbestellung ON tbestellung.kBestellung = tkampagnevorgang.kKey
                         LEFT JOIN tkunde ON tkunde.kKunde = tbestellung.kKunde
                         " . $cSQLWHERE . '
-                            AND kKampagne = ' . (int)$kKampagne . '
-                            AND kKampagneDef = ' . (int)$oKampagneDef->kKampagneDef . '
+                            AND kKampagne = ' . (int)$campaignID . '
+                            AND kKampagneDef = ' . (int)$definition->kKampagneDef . '
                         ORDER BY tkampagnevorgang.dErstellt DESC',
                     ReturnType::ARRAY_OF_OBJECTS
                 );
@@ -520,8 +520,8 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                         FROM tkampagnevorgang
                         LEFT JOIN tkunde ON tkunde.kKunde = tkampagnevorgang.kKey
                         " . $cSQLWHERE . '
-                            AND kKampagne = ' . (int)$kKampagne . '
-                            AND kKampagneDef = ' . (int)$oKampagneDef->kKampagneDef . '
+                            AND kKampagne = ' . (int)$campaignID . '
+                            AND kKampagneDef = ' . (int)$definition->kKampagneDef . '
                         ORDER BY tkampagnevorgang.dErstellt DESC',
                     ReturnType::ARRAY_OF_OBJECTS
                 );
@@ -576,8 +576,8 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                         LEFT JOIN tbestellung ON tbestellung.kBestellung = tkampagnevorgang.kKey
                         LEFT JOIN tkunde ON tkunde.kKunde = tbestellung.kKunde
                         " . $cSQLWHERE . '
-                            AND kKampagne = ' . (int)$kKampagne . '
-                            AND kKampagneDef = ' . (int)$oKampagneDef->kKampagneDef . '
+                            AND kKampagne = ' . (int)$campaignID . '
+                            AND kKampagneDef = ' . (int)$definition->kKampagneDef . '
                         ORDER BY tkampagnevorgang.dErstellt DESC',
                     ReturnType::ARRAY_OF_OBJECTS
                 );
@@ -645,8 +645,8 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                             ON tproduktanfragehistory.kProduktanfrageHistory = tkampagnevorgang.kKey
                         LEFT JOIN tartikel ON tartikel.kArtikel = tproduktanfragehistory.kArtikel
                         " . $cSQLWHERE . '
-                            AND kKampagne = ' . (int)$kKampagne . '
-                            AND kKampagneDef = ' . (int)$oKampagneDef->kKampagneDef . '
+                            AND kKampagne = ' . (int)$campaignID . '
+                            AND kKampagneDef = ' . (int)$definition->kKampagneDef . '
                         ORDER BY tkampagnevorgang.dErstellt DESC',
                     ReturnType::ARRAY_OF_OBJECTS
                 );
@@ -698,8 +698,8 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                         LEFT JOIN tartikel 
                                 ON tartikel.kArtikel = tverfuegbarkeitsbenachrichtigung.kArtikel
                         " . $cSQLWHERE . '
-                            AND kKampagne = ' . (int)$kKampagne . '
-                            AND kKampagneDef = ' . (int)$oKampagneDef->kKampagneDef . '
+                            AND kKampagne = ' . (int)$campaignID . '
+                            AND kKampagneDef = ' . (int)$definition->kKampagneDef . '
                         ORDER BY tkampagnevorgang.dErstellt DESC',
                     ReturnType::ARRAY_OF_OBJECTS
                 );
@@ -733,8 +733,8 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                         LEFT JOIN tkunde 
                                 ON tkunde.kKunde = tkampagnevorgang.kKey
                         " . $cSQLWHERE . '
-                            AND kKampagne = ' . (int)$kKampagne . '
-                            AND kKampagneDef = ' . (int)$oKampagneDef->kKampagneDef . '
+                            AND kKampagne = ' . (int)$campaignID . '
+                            AND kKampagneDef = ' . (int)$definition->kKampagneDef . '
                         ORDER BY tkampagnevorgang.dErstellt DESC',
                     ReturnType::ARRAY_OF_OBJECTS
                 );
@@ -785,8 +785,8 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                         LEFT JOIN tkunde ON tkunde.kKunde = twunschliste.kKunde
                         LEFT JOIN tartikel ON tartikel.kArtikel = twunschlistepos.kArtikel
                         " . $cSQLWHERE . '
-                            AND kKampagne = ' . (int)$kKampagne . '
-                            AND kKampagneDef = ' . (int)$oKampagneDef->kKampagneDef . '
+                            AND kKampagne = ' . (int)$campaignID . '
+                            AND kKampagneDef = ' . (int)$definition->kKampagneDef . '
                         ORDER BY tkampagnevorgang.dErstellt DESC',
                     ReturnType::ARRAY_OF_OBJECTS
                 );
@@ -821,7 +821,7 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                 }
                 break;
             case KAMPAGNE_DEF_WARENKORB:    // WARENKORB
-                $kKundengruppe = Kundengruppe::getDefaultGroupID();
+                $customerGroupID = Kundengruppe::getDefaultGroupID();
 
                 $data = Shop::Container()->getDB()->query(
                     'SELECT tkampagnevorgang.kKampagne, tkampagnevorgang.kKampagneDef, tkampagnevorgang.kKey ' .
@@ -837,12 +837,12 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                         FROM tkampagnevorgang
                         LEFT JOIN tartikel ON tartikel.kArtikel = tkampagnevorgang.kKey
                         LEFT JOIN tpreis ON tpreis.kArtikel = tartikel.kArtikel
-                            AND tpreis.kKundengruppe = " . $kKundengruppe . '
+                            AND tpreis.kKundengruppe = " . $customerGroupID . '
                         LEFT JOIN tpreisdetail ON tpreisdetail.kPreis = tpreis.kPreis
                             AND tpreisdetail.nAnzahlAb = 0
                         ' . $cSQLWHERE . '
-                            AND tkampagnevorgang.kKampagne = ' . (int)$kKampagne . '
-                            AND tkampagnevorgang.kKampagneDef = ' . (int)$oKampagneDef->kKampagneDef . '
+                            AND tkampagnevorgang.kKampagne = ' . (int)$campaignID . '
+                            AND tkampagnevorgang.kKampagneDef = ' . (int)$definition->kKampagneDef . '
                         ORDER BY tkampagnevorgang.dErstellt DESC',
                     ReturnType::ARRAY_OF_OBJECTS
                 );
@@ -889,8 +889,8 @@ function holeKampagneDefDetailStats($kKampagne, $oKampagneDef, $cStamp, &$cStamp
                         LEFT JOIN tnewsletterempfaenger
                             ON tnewsletterempfaenger.kNewsletterEmpfaenger = tnewslettertrack.kNewsletterEmpfaenger
                         " . $cSQLWHERE . '
-                            AND tkampagnevorgang.kKampagne = ' . (int)$kKampagne . '
-                            AND tkampagnevorgang.kKampagneDef = ' . (int)$oKampagneDef->kKampagneDef . '
+                            AND tkampagnevorgang.kKampagne = ' . (int)$campaignID . '
+                            AND tkampagnevorgang.kKampagneDef = ' . (int)$definition->kKampagneDef . '
                         ORDER BY tkampagnevorgang.dErstellt DESC',
                     ReturnType::ARRAY_OF_OBJECTS
                 );

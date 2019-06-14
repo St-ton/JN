@@ -70,8 +70,8 @@ function gibNewskommentarFehler($nPlausiValue_arr)
 function holeNewsKategorien($cDatumSQL, $bActiveOnly = false)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    $languageID     = Shop::getLanguageID();
-    $sql         = '';
+    $languageID   = Shop::getLanguageID();
+    $sql          = '';
     $activeFilter = $bActiveOnly ? ' AND tnewskategorie.nAktiv = 1 ' : '';
     if (mb_strlen($cDatumSQL) > 0) {
         $sql = '   JOIN tnewskategorienews 

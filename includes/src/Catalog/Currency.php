@@ -294,12 +294,12 @@ class Currency
     }
 
     /**
-     * @param string $cURL
+     * @param string $url
      * @return Currency
      */
-    public function setURL(string $cURL): self
+    public function setURL(string $url): self
     {
-        $this->cURL = $cURL;
+        $this->cURL = $url;
 
         return $this;
     }
@@ -313,12 +313,12 @@ class Currency
     }
 
     /**
-     * @param string $cURLFull
+     * @param string $url
      * @return Currency
      */
-    public function setURLFull(string $cURLFull): self
+    public function setURLFull(string $url): self
     {
-        $this->cURLFull = $cURLFull;
+        $this->cURLFull = $url;
 
         return $this;
     }
@@ -361,10 +361,10 @@ class Currency
         $res        = '';
         $currencies = Frontend::getCurrencies();
         if (\count($currencies) > 0) {
-            $priceNet      = (float)\str_replace(',', '.', $priceNet ?? 0);
-            $priceGross    = (float)\str_replace(',', '.', $priceGross ?? 0);
-            $oSteuerklasse = Shop::Container()->getDB()->select('tsteuerklasse', 'cStandard', 'Y');
-            $taxClassID    = $oSteuerklasse !== null ? (int)$oSteuerklasse->kSteuerklasse : 1;
+            $priceNet   = (float)\str_replace(',', '.', $priceNet ?? 0);
+            $priceGross = (float)\str_replace(',', '.', $priceGross ?? 0);
+            $taxClass   = Shop::Container()->getDB()->select('tsteuerklasse', 'cStandard', 'Y');
+            $taxClassID = $taxClass !== null ? (int)$taxClass->kSteuerklasse : 1;
             if ((float)$priceNet > 0) {
                 $priceNet   = (float)$priceNet;
                 $priceGross = Tax::getGross((float)$priceNet, Tax::getSalesTax($taxClassID));
@@ -375,39 +375,39 @@ class Currency
 
             $res = '<span class="preisstring ' . $class . '">';
             foreach ($currencies as $i => $currency) {
-                $cPreisLocalized       = \number_format(
+                $priceLocalized = \number_format(
                     $priceNet * $currency->getConversionFactor(),
                     2,
                     $currency->getDecimalSeparator(),
                     $currency->getThousandsSeparator()
                 );
-                $cPreisBruttoLocalized = \number_format(
+                $grossLocalized = \number_format(
                     $priceGross * $currency->getConversionFactor(),
                     2,
                     $currency->getDecimalSeparator(),
                     $currency->getThousandsSeparator()
                 );
                 if ($currency->getForcePlacementBeforeNumber() === true) {
-                    $cPreisLocalized       = $currency->getHtmlEntity() . ' ' . $cPreisLocalized;
-                    $cPreisBruttoLocalized = $currency->getHtmlEntity() . ' ' . $cPreisBruttoLocalized;
+                    $priceLocalized = $currency->getHtmlEntity() . ' ' . $priceLocalized;
+                    $grossLocalized = $currency->getHtmlEntity() . ' ' . $grossLocalized;
                 } else {
-                    $cPreisLocalized       = $cPreisLocalized . ' ' . $currency->getHtmlEntity();
-                    $cPreisBruttoLocalized = $cPreisBruttoLocalized . ' ' . $currency->getHtmlEntity();
+                    $priceLocalized = $priceLocalized . ' ' . $currency->getHtmlEntity();
+                    $grossLocalized = $grossLocalized . ' ' . $currency->getHtmlEntity();
                 }
                 // Wurde geändert weil der Preis nun als Betrag gesehen wird
                 // und die Steuer direkt in der Versandart als eSteuer Flag eingestellt wird
                 if ($i > 0) {
                     $res .= $forceTax
-                        ? ('<br><strong>' . $cPreisBruttoLocalized . '</strong>' .
-                            ' (<em>' . $cPreisLocalized . ' ' .
+                        ? ('<br><strong>' . $grossLocalized . '</strong>' .
+                            ' (<em>' . $priceLocalized . ' ' .
                             Shop::Lang()->get('net') . '</em>)')
-                        : ('<br> ' . $cPreisBruttoLocalized);
+                        : ('<br> ' . $grossLocalized);
                 } else {
                     $res .= $forceTax
-                        ? ('<strong>' . $cPreisBruttoLocalized . '</strong>' .
-                            ' (<em>' . $cPreisLocalized . ' ' .
+                        ? ('<strong>' . $grossLocalized . '</strong>' .
+                            ' (<em>' . $priceLocalized . ' ' .
                             Shop::Lang()->get('net') . '</em>)')
-                        : '<strong>' . $cPreisBruttoLocalized . '</strong>';
+                        : '<strong>' . $grossLocalized . '</strong>';
                 }
             }
             $res .= '</span>';
@@ -421,7 +421,7 @@ class Currency
      *
      * @param float  $price
      * @param string $iso - EUR / USD
-     * @param int    $id  - kWaehrung
+     * @param int    $id - kWaehrung
      * @param bool   $round
      * @param int    $precision
      * @return float|bool

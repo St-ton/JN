@@ -15,10 +15,10 @@ require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('WAREHOUSE_VIEW', true, true);
 /** @global \JTL\Smarty\JTLSmarty $smarty */
 $cStep       = 'uebersicht';
-$cAction     = (isset($_POST['a']) && Form::validateToken()) ? $_POST['a'] : null;
+$action      = (isset($_POST['a']) && Form::validateToken()) ? $_POST['a'] : null;
 $alertHelper = Shop::Container()->getAlertService();
 
-if ($cAction === 'update') {
+if ($action === 'update') {
     Shop::Container()->getDB()->query('UPDATE twarenlager SET nAktiv = 0', ReturnType::AFFECTED_ROWS);
     if (isset($_REQUEST['kWarenlager'])
         && is_array($_REQUEST['kWarenlager'])
@@ -39,12 +39,12 @@ if ($cAction === 'update') {
 
             foreach ($assocLang as $languageID => $name) {
                 if (mb_strlen(trim($name)) > 1) {
-                    $oObj              = new stdClass();
-                    $oObj->kWarenlager = (int)$kWarenlager;
-                    $oObj->kSprache    = (int)$languageID;
-                    $oObj->cName       = htmlspecialchars(trim($name), ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
+                    $data              = new stdClass();
+                    $data->kWarenlager = (int)$kWarenlager;
+                    $data->kSprache    = (int)$languageID;
+                    $data->cName       = htmlspecialchars(trim($name), ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
 
-                    Shop::Container()->getDB()->insert('twarenlagersprache', $oObj);
+                    Shop::Container()->getDB()->insert('twarenlagersprache', $data);
                 }
             }
         }

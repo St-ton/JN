@@ -3583,7 +3583,7 @@ class Artikel
             ReturnType::ARRAY_OF_OBJECTS
         );
 
-        $langSeo    = true;
+        $langSeo  = true;
         $assocSeo = [];
         foreach (Frontend::getLanguages() as $language) {
             foreach ($seoData as $oSeo) {
@@ -4539,13 +4539,13 @@ class Artikel
             }
             // VariationskombiKinder Lagerbestand 0
             if ($this->kVaterArtikel > 0) {
-                $oVariKinder_arr = Shop::Container()->getDB()->selectAll(
+                $variChildren = Shop::Container()->getDB()->selectAll(
                     'tartikel',
                     'kVaterArtikel',
                     (int)$this->kVaterArtikel,
                     'fLagerbestand, cLagerBeachten, cLagerKleinerNull'
                 );
-                $bLieferbar      = \array_reduce($oVariKinder_arr, function ($carry, $item) {
+                $bLieferbar   = \array_reduce($variChildren, function ($carry, $item) {
                     return $carry
                         || $item->fLagerbestand > 0
                         || $item->cLagerBeachten === 'N'
@@ -6630,48 +6630,48 @@ class Artikel
     }
 
     /**
-     * @param array $mEigenschaft_arr
+     * @param array $attributes
      * @return array
      */
-    public function keyValueVariations(array $mEigenschaft_arr): array
+    public function keyValueVariations(array $attributes): array
     {
-        $nKeyValue_arr = [];
-        foreach ($mEigenschaft_arr as $kKey => $mEigenschaft) {
+        $keyValueVariations = [];
+        foreach ($attributes as $kKey => $mEigenschaft) {
             if (\is_object($mEigenschaft)) {
                 $kKey = $mEigenschaft->kEigenschaft;
             }
-            if (!isset($nKeyValue_arr[$kKey])) {
-                $nKeyValue_arr[$kKey] = [];
+            if (!isset($keyValueVariations[$kKey])) {
+                $keyValueVariations[$kKey] = [];
             }
             if (\is_object($mEigenschaft) && isset($mEigenschaft->Werte)) {
                 foreach ($mEigenschaft->Werte as $mEigenschaftWert) {
-                    $nKeyValue_arr[$kKey][] = \is_object($mEigenschaftWert)
+                    $keyValueVariations[$kKey][] = \is_object($mEigenschaftWert)
                         ? $mEigenschaftWert->kEigenschaftWert
                         : $mEigenschaftWert;
                 }
             } else {
-                $kValue_arr = $mEigenschaft;
+                $valueIDs = $mEigenschaft;
                 if (\is_object($mEigenschaft)) {
-                    $kValue_arr = [$mEigenschaft->kEigenschaftWert];
+                    $valueIDs = [$mEigenschaft->kEigenschaftWert];
                 } elseif (!\is_array($mEigenschaft)) {
-                    $kValue_arr = (array)$kValue_arr;
+                    $valueIDs = (array)$valueIDs;
                 }
-                $nKeyValue_arr[$kKey] = \array_merge($nKeyValue_arr[$kKey], $kValue_arr);
+                $keyValueVariations[$kKey] = \array_merge($keyValueVariations[$kKey], $valueIDs);
             }
         }
 
-        return $nKeyValue_arr;
+        return $keyValueVariations;
     }
 
     /**
-     * @param array $nEigenschaft_arr
-     * @param array $kGesetzteEigeschaftWert_arr
+     * @param array $attributes
+     * @param array $setData
      * @return array
      */
-    public function getPossibleVariationsBySelection(array $nEigenschaft_arr, array $kGesetzteEigeschaftWert_arr): array
+    public function getPossibleVariationsBySelection(array $attributes, array $setData): array
     {
         $possibleVariations = [];
-        foreach ($nEigenschaft_arr as $kEigenschaft => $nEigenschaftWert_arr) {
+        foreach ($attributes as $kEigenschaft => $nEigenschaftWert_arr) {
             $i            = 2;
             $cSQL         = [];
             $kEigenschaft = (int)$kEigenschaft;
@@ -6679,7 +6679,7 @@ class Artikel
                 'customerGroupID' => Frontend::getCustomerGroup()->getID(),
                 'where'           => $kEigenschaft
             ];
-            foreach ($kGesetzteEigeschaftWert_arr as $kGesetzteEigenschaft => $kEigenschaftWert) {
+            foreach ($setData as $kGesetzteEigenschaft => $kEigenschaftWert) {
                 $kGesetzteEigenschaft = (int)$kGesetzteEigenschaft;
                 $kEigenschaftWert     = (int)$kEigenschaftWert;
                 if ($kEigenschaft !== $kGesetzteEigenschaft) {

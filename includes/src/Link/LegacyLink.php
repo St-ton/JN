@@ -574,47 +574,47 @@ class LegacyLink extends MainModel
     }
 
     /**
-     * @param null|int    $kKey
-     * @param null|object $oObj
-     * @param null|mixed  $xOption
+     * @param null|int    $id
+     * @param null|object $data
+     * @param null|mixed  $option
      * @param null|int    $kLinkgruppe
      */
-    public function __construct($kKey = null, $oObj = null, $xOption = null, int $kLinkgruppe = null)
+    public function __construct($id = null, $data = null, $option = null, int $kLinkgruppe = null)
     {
-        if (\is_object($oObj)) {
-            $this->loadObject($oObj);
-        } elseif ($kKey !== null) {
-            $this->load((int)$kKey, $oObj, $xOption, $kLinkgruppe);
+        if (\is_object($data)) {
+            $this->loadObject($data);
+        } elseif ($id !== null) {
+            $this->load((int)$id, $data, $option, $kLinkgruppe);
         }
     }
 
     /**
-     * @param int         $kKey
-     * @param object|null $oObj
-     * @param mixed|null  $xOption
+     * @param int         $id
+     * @param object|null $data
+     * @param mixed|null  $option
      * @param int         $kLinkgruppe
      * @return $this
      */
-    public function load($kKey, $oObj = null, $xOption = null, int $kLinkgruppe = null): self
+    public function load($id, $data = null, $option = null, int $kLinkgruppe = null): self
     {
         if ($kLinkgruppe > 0) {
-            $oObj = Shop::Container()->getDB()->queryPrepared(
+            $data = Shop::Container()->getDB()->queryPrepared(
                 'SELECT tlink.* 
                     FROM tlink 
                     JOIN tlinkgroupassociations t 
                         ON tlink.kLink = t.linkID
                     WHERE tlink.kLink = :lid
                     AND t.linkGroupID = :lgid',
-                ['lid' => (int)$kKey, 'lgid' => $kLinkgruppe],
+                ['lid' => (int)$id, 'lgid' => $kLinkgruppe],
                 ReturnType::SINGLE_OBJECT
             );
         } else {
-            $oObj = Shop::Container()->getDB()->select('tlink', 'kLink', (int)$kKey);
+            $data = Shop::Container()->getDB()->select('tlink', 'kLink', (int)$id);
         }
-        if (!empty($oObj->kLink)) {
-            $this->loadObject($oObj);
+        if (!empty($data->kLink)) {
+            $this->loadObject($data);
 
-            if ($xOption) {
+            if ($option) {
                 $this->oSub_arr = self::getSub($this->getLink(), $this->getLinkgruppe());
             }
         }

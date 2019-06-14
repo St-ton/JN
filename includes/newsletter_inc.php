@@ -57,11 +57,11 @@ function fuegeNewsletterEmpfaengerEin($customer, $validate = false): stdClass
     $nlCustomer          = null;
     if (!$validate || Text::filterEmailAddress($customer->cEmail) !== false) {
         $plausi->nPlausi_arr = newsletterAnmeldungPlausi();
-        $kKundengruppe       = Frontend::getCustomerGroup()->getID();
+        $customerGroupID     = Frontend::getCustomerGroup()->getID();
         $checkBox            = new CheckBox();
         $plausi->nPlausi_arr = array_merge(
             $plausi->nPlausi_arr,
-            $checkBox->validateCheckBox(CHECKBOX_ORT_NEWSLETTERANMELDUNG, $kKundengruppe, $_POST, true)
+            $checkBox->validateCheckBox(CHECKBOX_ORT_NEWSLETTERANMELDUNG, $customerGroupID, $_POST, true)
         );
 
         $plausi->cPost_arr['cAnrede']   = $customer->cAnrede;
@@ -99,12 +99,12 @@ function fuegeNewsletterEmpfaengerEin($customer, $validate = false): stdClass
             } else {
                 $checkBox->triggerSpecialFunction(
                     CHECKBOX_ORT_NEWSLETTERANMELDUNG,
-                    $kKundengruppe,
+                    $customerGroupID,
                     true,
                     $_POST,
                     ['oKunde' => $customer]
                 );
-                $checkBox->checkLogging(CHECKBOX_ORT_NEWSLETTERANMELDUNG, $kKundengruppe, $_POST, true);
+                $checkBox->checkLogging(CHECKBOX_ORT_NEWSLETTERANMELDUNG, $customerGroupID, $_POST, true);
                 unset($recipient);
                 $recipient                     = new stdClass();
                 $recipient->kSprache           = Shop::getLanguage();

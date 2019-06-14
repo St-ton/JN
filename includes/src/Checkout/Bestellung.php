@@ -780,8 +780,8 @@ class Bestellung
                 $this->oLieferschein_arr[] = $slip;
             }
             // Wenn Konfig-Vater, alle Kinder ueberpruefen
-            foreach ($this->oLieferschein_arr as &$oLieferschein) {
-                foreach ($oLieferschein->oPosition_arr as &$deliveryPosition) {
+            foreach ($this->oLieferschein_arr as &$deliverySlip) {
+                foreach ($deliverySlip->oPosition_arr as &$deliveryPosition) {
                     if ($deliveryPosition->kKonfigitem == 0 && !empty($deliveryPosition->cUnique)) {
                         $bAlleAusgeliefert = true;
                         foreach ($this->Positionen as $oKind) {
@@ -797,7 +797,7 @@ class Bestellung
                 }
                 unset($deliveryPosition);
             }
-            unset($oLieferschein);
+            unset($deliverySlip);
         }
         // Fallback for Non-Beta
         if ((int)$this->cStatus === \BESTELLUNG_STATUS_VERSANDT) {

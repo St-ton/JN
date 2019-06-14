@@ -174,6 +174,11 @@ class Preise
     public $SonderpreisBis_de;
 
     /**
+     * @var int
+     */
+    public $discountPercentage = 0;
+
+    /**
      * Preise constructor.
      * @param int $kKundengruppe
      * @param int $kArtikel
@@ -464,6 +469,9 @@ class Preise
                 Tax::getGross($fPreis * $factor, $this->fUst),
                 $fPreis * $factor
             ];
+        }
+        if (!empty($this->alterVKNetto)) {
+            $this->discountPercentage = (int)((($this->alterVKNetto - $this->fVKNetto) * 100) / $this->alterVKNetto);
         }
 
         return $this;

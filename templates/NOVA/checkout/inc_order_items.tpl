@@ -211,7 +211,7 @@
                                                             id="quantity[{$oPosition@index}]" class="quantity text-right" name="anzahl[{$oPosition@index}]"
                                                             aria=["label"=>"{lang key='quantity'}"]
                                                             value=$oPosition->nAnzahl
-                                                            data=["decimals"=>"{if $oPosition->Artikel->fAbnahmeintervall > 0}2{else}0{/if}"]
+                                                            data=["decimals"=>{getDecimalLength quantity=$oPosition->Artikel->fAbnahmeintervall}]
                                                         }
                                                         {inputgroupaddon append=true}
                                                             {if $oPosition->cEinheit}

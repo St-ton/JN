@@ -780,17 +780,8 @@ class Cart
         $kArtikel      = (int)$product->kArtikel; // relevant für die Berechnung von Artikelsummen im Warenkorb
         $redirectParam = [];
         $conf          = Shop::getSettings([\CONF_GLOBAL]);
-        if ($product->fAbnahmeintervall > 0) {
-            $dVielfache = \function_exists('bcdiv')
-                ? \round(
-                    $product->fAbnahmeintervall
-                    * \ceil(\bcdiv((string)$qty, $product->fAbnahmeintervall, $accuracy + 1)),
-                    2
-                )
-                : \round($product->fAbnahmeintervall * \ceil($qty / $product->fAbnahmeintervall), $accuracy);
-            if ($dVielfache != $qty) {
-                $redirectParam[] = \R_ARTIKELABNAHMEINTERVALL;
-            }
+        if ($product->fAbnahmeintervall > 0 && !self::isMultiple($qty, $product->fAbnahmeintervall)) {
+            $redirectParam[] = \R_ARTIKELABNAHMEINTERVALL;
         }
         if ((int)$qty != $qty && $product->cTeilbar !== 'Y') {
             $qty = \max((int)$qty, 1);
@@ -1616,53 +1607,36 @@ class Cart
                 //stückzahlen verändert?
                 if (isset($_POST['anzahl'][$i])) {
                     $Artikel = new Artikel();
-                    $Artikel->fuelleArtikel(
-                        $position->kArtikel,
-                        Artikel::getDefaultOptions()
-                    );
-
-                    $_POST['anzahl'][$i] = \str_replace(',', '.', $_POST['anzahl'][$i]);
-
-                    if ((int)$_POST['anzahl'][$i] != $_POST['anzahl'][$i] && $Artikel->cTeilbar !== 'Y') {
-                        $_POST['anzahl'][$i] = \ceil($_POST['anzahl'][$i]);
-                    }
                     $gueltig = true;
-                    if ($Artikel->fAbnahmeintervall > 0) {
-                        if (\function_exists('bcdiv')) {
-                            $dVielfache = \round(
-                                $Artikel->fAbnahmeintervall *
-                                \ceil(\bcdiv($_POST['anzahl'][$i], $Artikel->fAbnahmeintervall, 3)),
-                                2
-                            );
-                        } else {
-                            $dVielfache = \round(
-                                $Artikel->fAbnahmeintervall * \ceil($_POST['anzahl'][$i] / $Artikel->fAbnahmeintervall),
-                                2
-                            );
-                        }
-
-                        if ($dVielfache != $_POST['anzahl'][$i]) {
-                            $gueltig       = false;
-                            $cartNotices[] = Shop::Lang()->get('wkPurchaseintervall', 'messages');
-                        }
+                    $Artikel->fuelleArtikel($position->kArtikel, Artikel::getDefaultOptions());
+                    $quantity = (float)\str_replace(',', '.', $_POST['anzahl'][$i]);
+                    if ($Artikel->cTeilbar !== 'Y' && \ceil($quantity) !== $quantity) {
+                        $quantity = \ceil($quantity);
                     }
-                    if ((float)$_POST['anzahl'][$i] + $cart->gibAnzahlEinesArtikels(
+                    if ($Artikel->fAbnahmeintervall > 0
+                        && !self::isMultiple($quantity, $Artikel->fAbnahmeintervall)
+                    ) {
+                        $gueltig       = false;
+                        $cartNotices[] = Shop::Lang()->get('wkPurchaseintervall', 'messages');
+                    }
+                    if ($quantity + $cart->gibAnzahlEinesArtikels(
                         $position->kArtikel,
                         $i
                     ) < $position->Artikel->fMindestbestellmenge) {
                         $gueltig       = false;
                         $cartNotices[] = \lang_mindestbestellmenge(
                             $position->Artikel,
-                            (float)$_POST['anzahl'][$i]
+                            $quantity
                         );
                     }
-                    if ($Artikel->cLagerBeachten === 'Y' && $Artikel->cLagerVariation !== 'Y'
+                    if ($Artikel->cLagerBeachten === 'Y'
+                        && $Artikel->cLagerVariation !== 'Y'
                         && $Artikel->cLagerKleinerNull !== 'Y'
                     ) {
                         foreach ($Artikel->getAllDependentProducts(true) as $dependent) {
                             /** @var Artikel $product */
                             $product = $dependent->product;
-                            if ($product->fPackeinheit * ((float)$_POST['anzahl'][$i] * $dependent->stockFactor
+                            if ($product->fPackeinheit * ($quantity * $dependent->stockFactor
                                     + Frontend::getCart()->getDependentAmount(
                                         $product->kArtikel,
                                         true,
@@ -1680,13 +1654,13 @@ class Cart
                                 $cartNotices[] = $msg;
                             }
                             $_SESSION['Warenkorb']->PositionenArr[$i]->nAnzahl =
-                                $_SESSION['Warenkorb']->getMaxAvailableAmount($i, (float)$_POST['anzahl'][$i]);
+                                $_SESSION['Warenkorb']->getMaxAvailableAmount($i, $quantity);
                         }
                     }
                     // maximale Bestellmenge des Artikels beachten
                     if (isset($Artikel->FunktionsAttribute[\FKT_ATTRIBUT_MAXBESTELLMENGE])
                         && $Artikel->FunktionsAttribute[\FKT_ATTRIBUT_MAXBESTELLMENGE] > 0
-                        && $_POST['anzahl'][$i] > $Artikel->FunktionsAttribute[\FKT_ATTRIBUT_MAXBESTELLMENGE]
+                        && $quantity > $Artikel->FunktionsAttribute[\FKT_ATTRIBUT_MAXBESTELLMENGE]
                     ) {
                         $gueltig       = false;
                         $cartNotices[] = Shop::Lang()->get('wkMaxorderlimit', 'messages');
@@ -1698,7 +1672,7 @@ class Cart
                     ) {
                         foreach ($position->WarenkorbPosEigenschaftArr as $eWert) {
                             $EigenschaftWert = new EigenschaftWert($eWert->kEigenschaftWert);
-                            if ($EigenschaftWert->fPackeinheit * ((float)$_POST['anzahl'][$i] +
+                            if ($EigenschaftWert->fPackeinheit * ($quantity +
                                     $cart->gibAnzahlEinerVariation(
                                         $position->kArtikel,
                                         $eWert->kEigenschaftWert,
@@ -1716,7 +1690,7 @@ class Cart
                     }
 
                     if ($gueltig) {
-                        $position->nAnzahl = (float)$_POST['anzahl'][$i];
+                        $position->nAnzahl = $quantity;
                         $position->fPreis  = $Artikel->gibPreis(
                             $position->nAnzahl,
                             $position->WarenkorbPosEigenschaftArr
@@ -2034,5 +2008,18 @@ class Cart
     public static function validateCartConfig(): void
     {
         Konfigurator::postcheckBasket($_SESSION['Warenkorb']);
+    }
+
+    /**
+     * @param float $quantity
+     * @param float $multiple
+     * @return bool
+     */
+    public static function isMultiple(float $quantity, float $multiple): bool
+    {
+        $eps      = 1E-10;
+        $residual = $quantity / $multiple;
+
+        return \abs($residual - \round($residual)) < $eps;
     }
 }

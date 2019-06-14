@@ -8,7 +8,8 @@
         {assign var=titles value=false}
         <div class="card-columns">
         {foreach $Artikel->oMedienDatei_arr as $oMedienDatei}
-            {if ($cMedienTyp == $oMedienDatei->cMedienTyp && $oMedienDatei->cAttributTab|count_characters == 0) || ($oMedienDatei->cAttributTab|count_characters > 0 && $cMedienTyp == $oMedienDatei->cAttributTab)}
+            {if ($mediaType->name == $oMedienDatei->cMedienTyp && $oMedienDatei->cAttributTab|count_characters == 0)
+            || ($oMedienDatei->cAttributTab|count_characters > 0 && $mediaType->name == $oMedienDatei->cAttributTab)}
                 {if $oMedienDatei->nErreichbar == 0}
                     {block name='productdetails-mediafilealert'}
                         {col}

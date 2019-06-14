@@ -63,9 +63,8 @@
                     {/if}
                 </div>
             {/block}
-
-            {if $isCurrenctCustomer === true}
-                {row}
+            {row}
+                {if $isCurrenctCustomer === true}
                     {block name='snippets-wishlist-actions'}
                         {col cols=2 md=1 class="mb-2"}
                             {dropdown variant="link" class="no-chevron wishlist-options" text="<i class='fas fa-ellipsis-v'></i>"}
@@ -151,6 +150,7 @@
                             {/dropdown}
                         {/col}
                     {/block}
+
                     {block name='snippets-wishlist-wishlists'}
                         {col cols=10 md=5 class="mb-2"}
                             {dropdown id='wlName' variant='light' text=$CWunschliste->cName}
@@ -162,50 +162,52 @@
                             {/dropdown}
                         {/col}
                     {/block}
-                    {block name='snippets-wishlist-search'}
-                        {col cols=12 md=6 class="mb-2"}
-                            {if $hasItems === true || !empty($wlsearch)}
-                                <div id="wishlist-search">
-                                    {form
-                                    method="post"
-                                    action="{get_static_route id='wunschliste.php'}"
-                                    name="WunschlisteSuche"
-                                    class="form-inline"
-                                    }
-                                    {block name='snippets-wishlist-search-form-inputs-hidden'}
-                                        {if $CWunschliste->nOeffentlich == 1 && !empty($cURLID)}
-                                            {input type="hidden" name="wlid" value=cURLID}
-                                        {else}
-                                            {input type="hidden" name="kWunschliste" value=$CWunschliste->kWunschliste}
-                                        {/if}
-                                    {/block}
-                                    {block name='snippets-wishlist-search-form-inputs'}
-                                        {inputgroup}
-                                            {input name="cSuche" size="35" type="text" value=$wlsearch placeholder="{lang key='wishlistSearch' section='login'}"}
+                {/if}
+                {block name='snippets-wishlist-search'}
+                    {col cols=12 md=6 class="mb-2"}
+                        {if $hasItems === true || !empty($wlsearch)}
+                            <div id="wishlist-search">
+                                {form
+                                method="post"
+                                action="{get_static_route id='wunschliste.php'}"
+                                name="WunschlisteSuche"
+                                class="form-inline"
+                                }
+                                {block name='snippets-wishlist-search-form-inputs-hidden'}
+                                    {if $CWunschliste->nOeffentlich == 1 && !empty($cURLID)}
+                                        {input type="hidden" name="wlid" value=$cURLID}
+                                    {/if}
+                                    {input type="hidden" name="kWunschliste" value=$CWunschliste->kWunschliste}
+                                    {input type="hidden" name="action" value="search"}
+                                {/block}
+                                {block name='snippets-wishlist-search-form-inputs'}
+                                    {inputgroup}
+                                        {input name="cSuche" size="35" type="text" value=$wlsearch placeholder="{lang key='wishlistSearch' section='login'}"}
+                                        {inputgroupaddon append=true}
+                                        {block name='snippets-wishlist-search-form-submit'}
+                                            {button type="submit"}
+                                                <i class="fa fa-search"></i> {lang key='wishlistSearchBTN' section='login'}
+                                            {/button}
+                                        {/block}
+                                        {/inputgroupaddon}
+                                        {if !empty($wlsearch)}
+                                            {block name='snippets-wishlist-search-form-remove-search'}
                                             {inputgroupaddon append=true}
-                                            {block name='snippets-wishlist-search-form-submit'}
-                                                {button name="action" value="search" type="submit"}
-                                                    <i class="fa fa-search"></i> {lang key='wishlistSearchBTN' section='login'}
+                                                {button type="submit" name="cSuche" value=""}
+                                                    <i class="fa fa-undo"></i> {lang key='wishlistRemoveSearch' section='login'}
                                                 {/button}
-                                            {/block}
                                             {/inputgroupaddon}
-                                            {if !empty($wlsearch)}
-                                                {block name='snippets-wishlist-search-form-remove-search'}
-                                                {inputgroupaddon append=true}
-                                                    {link href="{get_static_route id='wunschliste.php'}?wl={$CWunschliste->kWunschliste}" class="btn btn-secondary"}
-                                                        {lang key='wishlistRemoveSearch' section='login'}
-                                                    {/link}
-                                                {/inputgroupaddon}
-                                                {/block}
-                                            {/if}
-                                        {/inputgroup}
-                                    {/block}
-                                    {/form}
-                                </div>
-                            {/if}
-                        {/col}
-                    {/block}
-                {/row}
+                                            {/block}
+                                        {/if}
+                                    {/inputgroup}
+                                {/block}
+                                {/form}
+                            </div>
+                        {/if}
+                    {/col}
+                {/block}
+            {/row}
+            {if $isCurrenctCustomer === true}
                 {block name='snippets-wishlist-visibility'}
                     {block name='snippets-wishlist-visibility-hr-top'}
                         <hr class="mt-2 mb-2">
@@ -389,6 +391,9 @@
                         {block name='snippets-wishlist-form-basket-inputs-hidden'}
                             {input type="hidden" name="wla" value="1"}
                             {input type="hidden" name="kWunschliste" value=$CWunschliste->kWunschliste}
+                            {if $CWunschliste->nOeffentlich == 1 && !empty($cURLID)}
+                                {input type="hidden" name="wlid" value=$cURLID}
+                            {/if}
                             {if !empty($wlsearch)}
                                 {input type="hidden" name="wlsearch" value="1"}
                                 {input type="hidden" name="cSuche" value=$wlsearch}

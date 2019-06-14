@@ -109,7 +109,7 @@ $cache       = Shop::Container()->getCache()->setJtlCacheConfig(
 );
 $logger      = Shop::Container()->getLogService()->withName('dbeS');
 $pluginHooks = Helper::getHookList();
-$oSprache    = LanguageHelper::getInstance($db, $cache);
+$language    = LanguageHelper::getInstance($db, $cache);
 $fileID      = $_REQUEST['id'] ?? null;
 Shop::bootstrap();
 ob_start('handleError');

@@ -4,16 +4,15 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Alert\Alert;
+use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Seo;
-use JTL\Nice;
-use JTL\Shop;
-use JTL\Sprache;
 use JTL\Helpers\Text;
+use JTL\Nice;
 use JTL\Pagination\Pagination;
-use JTL\DB\ReturnType;
-use JTL\Alert\Alert;
+use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'umfrage_inc.php';
@@ -31,9 +30,7 @@ setzeSprache();
 if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
     $smarty->assign('cTab', Request::verifyGPDataString('tab'));
 }
-$Sprachen    = Sprache::getAllLanguages();
-$oSpracheTMP = $db->select('tsprache', 'kSprache', (int)$_SESSION['kSprache']);
-$oNice       = Nice::getInstance();
+$oNice = Nice::getInstance();
 if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
     if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
         $alertHelper->addAlert(Alert::TYPE_SUCCESS, saveAdminSectionSettings(CONF_UMFRAGE, $_POST), 'saveSettings');
@@ -56,7 +53,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                 $survey->kKundengruppe_arr = Text::parseSSK($survey->cKundengruppe);
 
                 $smarty->assign('oUmfrage', $survey)
-                       ->assign('s1', Request::verifyGPCDataInt('s1'));
+                    ->assign('s1', Request::verifyGPCDataInt('s1'));
             } else {
                 $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorPollNotFound'), 'errorPollNotFound');
                 $step = 'umfrage_uebersicht';
@@ -435,7 +432,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
             }
 
             $smarty->assign('oUmfrageFrage', $question)
-                   ->assign('kUmfrageTMP', $kUmfrageTMP);
+                ->assign('kUmfrageTMP', $kUmfrageTMP);
         }
         // Umfrage Detail
         if ((isset($_GET['ud']) && (int)$_GET['ud'] === 1) || $step === 'umfrage_vorschau') {
@@ -556,8 +553,8 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
         }
 
         $smarty->assign('oConfig_arr', getAdminSectionSettings(CONF_UMFRAGE))
-               ->assign('oUmfrage_arr', $surveys)
-               ->assign('oPagination', $pagination);
+            ->assign('oUmfrage_arr', $surveys)
+            ->assign('oPagination', $pagination);
     }
     $customerGroups = $db->query(
         'SELECT kKundengruppe, cName
@@ -565,6 +562,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
             ORDER BY cStandard DESC',
         ReturnType::ARRAY_OF_OBJECTS
     );
+    $langData       = $db->select('tsprache', 'kSprache', (int)$_SESSION['kSprache']);
     $coupons        = $db->query(
         "SELECT tkupon.kKupon, tkuponsprache.cName
             FROM tkupon
@@ -574,18 +572,17 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                 AND (tkupon.dGueltigBis >= NOW() OR tkupon.dGueltigBis IS NULL)
                 AND (tkupon.nVerwendungenBisher <= tkupon.nVerwendungen OR tkupon.nVerwendungen = 0)
                 AND tkupon.cAktiv = 'Y'
-                AND tkuponsprache.cISOSprache = '" . $oSpracheTMP->cISO . "'
+                AND tkuponsprache.cISOSprache = '" . $langData->cISO . "'
             ORDER BY tkupon.cName",
         ReturnType::ARRAY_OF_OBJECTS
     );
 
     $smarty->assign('oKundengruppe_arr', $customerGroups)
-           ->assign('oKupon_arr', $coupons);
+        ->assign('oKupon_arr', $coupons);
 } else {
     $smarty->assign('noModule', true);
 }
 
-$smarty->assign('Sprachen', $Sprachen)
-       ->assign('kSprache', $_SESSION['kSprache'])
-       ->assign('step', $step)
-       ->display('umfrage.tpl');
+$smarty->assign('kSprache', $_SESSION['kSprache'])
+    ->assign('step', $step)
+    ->display('umfrage.tpl');

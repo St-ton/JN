@@ -6,17 +6,17 @@
 
 namespace JTL\Helpers;
 
-use function Functional\map;
 use JTL\Alert\Alert;
 use JTL\Cart\Warenkorb;
 use JTL\Catalog\Currency;
-use JTL\DB\ReturnType;
-use JTL\Link\Link;
 use JTL\Catalog\Product\Preise;
+use JTL\DB\ReturnType;
+use JTL\Language\LanguageHelper;
+use JTL\Link\Link;
 use JTL\Session\Frontend;
 use JTL\Shop;
-use JTL\Sprache;
 use stdClass;
+use function Functional\map;
 
 /**
  * Class Tax
@@ -64,7 +64,7 @@ class Tax
             ReturnType::SINGLE_OBJECT
         );
         if (!empty($Firma->cLand)) {
-            $merchantCountryCode = Sprache::getIsoCodeByCountryName($Firma->cLand);
+            $merchantCountryCode = LanguageHelper::getIsoCodeByCountryName($Firma->cLand);
         }
         if (\defined('STEUERSATZ_STANDARD_LAND')) {
             $merchantCountryCode = STEUERSATZ_STANDARD_LAND;
@@ -122,7 +122,7 @@ class Tax
             $redirURL  = Shop::Container()->getLinkService()->getStaticRoute('bestellvorgang.php') .
                 '?editRechnungsadresse=1';
             $urlHelper = new URL(Shop::getURL() . $_SERVER['REQUEST_URI']);
-            $country   = Sprache::getCountryCodeByCountryName($deliveryCountryCode);
+            $country   = LanguageHelper::getCountryCodeByCountryName($deliveryCountryCode);
 
             Shop::Container()->getLogService()->error('Keine Steuerzone für "' . $country . '" hinterlegt!');
 

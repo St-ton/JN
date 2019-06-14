@@ -7,38 +7,38 @@
 namespace JTL\Catalog\Product;
 
 use DateTime;
-use function Functional\map;
+use JTL\Catalog\Category\Kategorie;
+use JTL\Catalog\Category\KategorieListe;
+use JTL\Catalog\Hersteller;
+use JTL\Catalog\Trennzeichen;
+use JTL\Catalog\UnitsOfMeasure;
+use JTL\Catalog\Warenlager;
+use JTL\Checkout\Versandart;
+use JTL\Country\Country;
+use JTL\Customer\Kundengruppe;
 use JTL\DB\ReturnType;
-use JTL\Extensions\Download;
-use JTL\Extensions\Konfigurator;
-use JTL\Extensions\Konfigitem;
 use JTL\Exceptions\CircularReferenceException;
 use JTL\Exceptions\ServiceNotFoundException;
+use JTL\Extensions\Download;
+use JTL\Extensions\Konfigitem;
+use JTL\Extensions\Konfigurator;
 use JTL\Filter\Metadata;
 use JTL\Helpers\Product;
 use JTL\Helpers\Request;
 use JTL\Helpers\SearchSpecial;
 use JTL\Helpers\ShippingMethod;
-use JTL\Helpers\Text;
 use JTL\Helpers\Tax;
+use JTL\Helpers\Text;
 use JTL\Helpers\URL;
-use JTL\Catalog\Hersteller;
-use JTL\Catalog\Category\Kategorie;
-use JTL\Catalog\Category\KategorieListe;
-use JTL\Customer\Kundengruppe;
+use JTL\Language\LanguageHelper;
 use JTL\Media\Image;
 use JTL\Media\MediaImage;
 use JTL\Media\MediaImageRequest;
 use JTL\Session\Frontend;
 use JTL\Shop;
-use JTL\Sprache;
-use JTL\Catalog\Trennzeichen;
-use JTL\Catalog\UnitsOfMeasure;
-use JTL\Checkout\Versandart;
-use JTL\Catalog\Warenlager;
 use stdClass;
+use function Functional\map;
 use function Functional\select;
-use JTL\Country\Country;
 
 /**
  * Class Artikel
@@ -1509,7 +1509,7 @@ class Artikel
             '*',
             'nSort'
         );
-        $isDefaultLanguage    = Sprache::isDefaultLanguageActive();
+        $isDefaultLanguage    = LanguageHelper::isDefaultLanguageActive();
         foreach ($attributes as $att) {
             $attribute            = new stdClass();
             $attribute->nSort     = (int)$att->nSort;
@@ -1723,7 +1723,7 @@ class Artikel
             $languageID = Shop::getLanguageID();
         }
         $db                     = Shop::Container()->getDB();
-        $kDefaultLanguage       = Sprache::getDefaultLanguage()->kSprache;
+        $kDefaultLanguage       = LanguageHelper::getDefaultLanguage()->kSprache;
         $this->oMedienDatei_arr = [];
         $mediaTypes             = [];
         // Funktionsattribut gesetzt? Tab oder Beschreibung
@@ -2037,7 +2037,7 @@ class Artikel
      */
     protected function execVariationSQL(int $languageID, int $customerGroupID, bool $exportWorkaround = false)
     {
-        $isDefaultLang = Sprache::isDefaultLanguageActive();
+        $isDefaultLang = LanguageHelper::isDefaultLanguageActive();
         // Nicht Standardsprache?
         $sqlEigenschaft              = new stdClass();
         $sqlEigenschaftWert          = new stdClass();
@@ -2359,7 +2359,7 @@ class Artikel
         $currency       = Frontend::getCurrency();
         $currencyFactor = $currency->getConversionFactor();
         $imageBaseURL   = Shop::getImageBaseURL();
-        $isDefaultLang  = Sprache::isDefaultLanguageActive();
+        $isDefaultLang  = LanguageHelper::isDefaultLanguageActive();
         $mayViewPrices  = Frontend::getCustomerGroup()->mayViewPrices();
 
         $variations = $this->execVariationSQL($languageID, $customerGroupID, $exportWorkaround);
@@ -3266,7 +3266,7 @@ class Artikel
         $cVorschauSQL = ' IN (' . \implode(',', $checked) . ') ';
         if ($this->conf['artikeldetails']['artikeldetails_varikombi_vorschautext'] === 'S') {
             $oEigenschaft = null;
-            if ($languageID > 0 && !Sprache::isDefaultLanguageActive()) {
+            if ($languageID > 0 && !LanguageHelper::isDefaultLanguageActive()) {
                 $oEigenschaft = Shop::Container()->getDB()->query(
                     'SELECT teigenschaftsprache.cName
                         FROM teigenschaftsprache
@@ -3540,21 +3540,20 @@ class Artikel
 
     /**
      * @param int $productID
-     * @param int $langID
+     * @param int $languageID
      * @return stdClass
      */
-    public function baueArtikelSprache(int $productID, int $langID): stdClass
+    public function baueArtikelSprache(int $productID, int $languageID): stdClass
     {
         $lang          = new stdClass();
         $lang->cSELECT = '';
         $lang->cJOIN   = '';
-
-        if ($langID > 0 && !Sprache::isDefaultLanguageActive()) {
+        if ($languageID > 0 && !LanguageHelper::isDefaultLanguageActive()) {
             $lang->cSELECT = 'tartikelsprache.cName AS cName_spr, tartikelsprache.cBeschreibung AS cBeschreibung_spr,
                               tartikelsprache.cKurzBeschreibung AS cKurzBeschreibung_spr, ';
             $lang->cJOIN   = ' LEFT JOIN tartikelsprache
                                    ON tartikelsprache.kArtikel = ' . $productID . ' 
-                                   AND tartikelsprache.kSprache = ' . $langID;
+                                   AND tartikelsprache.kSprache = ' . $languageID;
         }
 
         return $lang;
@@ -3584,23 +3583,23 @@ class Artikel
             ReturnType::ARRAY_OF_OBJECTS
         );
 
-        $bSprachSeo    = true;
-        $oSeoAssoc_arr = [];
+        $langSeo    = true;
+        $assocSeo = [];
         foreach (Frontend::getLanguages() as $language) {
             foreach ($seoData as $oSeo) {
                 $oSeo->kSprache = (int)$oSeo->kSprache;
                 if ($language->kSprache === $oSeo->kSprache) {
                     if ($oSeo->cSeo === '') {
-                        $bSprachSeo = false;
+                        $langSeo = false;
                         break;
                     }
                     if (\mb_strlen($oSeo->cSeo) > 0) {
-                        $oSeoAssoc_arr[$oSeo->kSprache] = $oSeo;
+                        $assocSeo[$oSeo->kSprache] = $oSeo;
                     }
                 }
             }
-            if ($bSprachSeo && isset($oSeoAssoc_arr[$language->kSprache])) {
-                $this->cSprachURL_arr[$language->cISO] = $oSeoAssoc_arr[$language->kSprache]->cSeo;
+            if ($langSeo && isset($assocSeo[$language->kSprache])) {
+                $this->cSprachURL_arr[$language->cISO] = $assocSeo[$language->kSprache]->cSeo;
             }
         }
 
@@ -3776,8 +3775,8 @@ class Artikel
             $langID = Shop::getLanguageID();
         }
         if (!$langID) {
-            $oSprache = Sprache::getDefaultLanguage();
-            $langID   = $oSprache->kSprache;
+            $defaultLanguage = LanguageHelper::getDefaultLanguage();
+            $langID          = $defaultLanguage->kSprache;
         }
         $this->kSprache = $langID;
         $this->options  = (object)\array_merge((array)$this->options, (array)$options);
@@ -3852,7 +3851,7 @@ class Artikel
         $oSQLArtikelSprache          = new stdClass();
         $oSQLArtikelSprache->cSELECT = '';
         $oSQLArtikelSprache->cJOIN   = '';
-        if ($langID > 0 && !Sprache::isDefaultLanguageActive()) {
+        if ($langID > 0 && !LanguageHelper::isDefaultLanguageActive()) {
             $oSQLArtikelSprache = $this->baueArtikelSprache($productID, $langID);
         }
         $db = Shop::Container()->getDB();
@@ -3866,7 +3865,7 @@ class Artikel
         // Work Around um an kStueckliste zu kommen
         $oStueckliste    = $db->query(
             'SELECT kStueckliste, fLagerbestand
-                FROM tartikel 
+                FROM tartikel
                 WHERE kArtikel = ' . $productID,
             ReturnType::SINGLE_OBJECT
         );
@@ -3876,7 +3875,7 @@ class Artikel
                 $oStueckliste->fLagerbestand = 0;
             }
             $cStuecklisteSQL = 'IF(tartikel.kStueckliste > 0,
-                                (SELECT LEAST(IFNULL(FLOOR(MIN(tartikel.fLagerbestand / tstueckliste.fAnzahl)), 
+                                (SELECT LEAST(IFNULL(FLOOR(MIN(tartikel.fLagerbestand / tstueckliste.fAnzahl)),
                                 9999999), ' .
                 $oStueckliste->fLagerbestand . ') AS fMin
                                 FROM tartikel
@@ -3899,38 +3898,38 @@ class Artikel
 
         // Artikel SQL
         $productSQL = '
-            SELECT tartikel.kArtikel, tartikel.kHersteller, tartikel.kLieferstatus, tartikel.kSteuerklasse, 
-                tartikel.kEinheit, tartikel.kVPEEinheit, tartikel.kVersandklasse, tartikel.kEigenschaftKombi, 
+            SELECT tartikel.kArtikel, tartikel.kHersteller, tartikel.kLieferstatus, tartikel.kSteuerklasse,
+                tartikel.kEinheit, tartikel.kVPEEinheit, tartikel.kVersandklasse, tartikel.kEigenschaftKombi,
                 tartikel.kVaterArtikel, tartikel.kStueckliste, tartikel.kWarengruppe,
                 tartikel.cArtNr, tartikel.cName, tartikel.cBeschreibung, tartikel.cAnmerkung, ' .
                 $cStuecklisteSQL . '
                 tartikel.fMwSt,
-                IF (tartikelabnahme.fMindestabnahme IS NOT NULL, 
+                IF (tartikelabnahme.fMindestabnahme IS NOT NULL,
                     tartikelabnahme.fMindestabnahme, tartikel.fMindestbestellmenge) AS fMindestbestellmenge,
-                IF (tartikelabnahme.fIntervall IS NOT NULL, 
+                IF (tartikelabnahme.fIntervall IS NOT NULL,
                     tartikelabnahme.fIntervall, tartikel.fAbnahmeintervall) AS fAbnahmeintervall,
                 tartikel.cBarcode, tartikel.cTopArtikel,
                 tartikel.fGewicht, tartikel.fArtikelgewicht, tartikel.cNeu, tartikel.cKurzBeschreibung, tartikel.fUVP,
-                tartikel.cLagerBeachten, tartikel.cLagerKleinerNull, tartikel.cLagerVariation, tartikel.cTeilbar, 
-                tartikel.fPackeinheit, tartikel.cVPE, tartikel.fVPEWert, tartikel.cVPEEinheit, tartikel.cSuchbegriffe, 
-                tartikel.nSort, tartikel.dErscheinungsdatum, tartikel.dErstellt, tartikel.dLetzteAktualisierung, 
-                tartikel.cSerie, tartikel.cISBN, tartikel.cASIN, tartikel.cHAN, tartikel.cUNNummer, tartikel.cGefahrnr, 
+                tartikel.cLagerBeachten, tartikel.cLagerKleinerNull, tartikel.cLagerVariation, tartikel.cTeilbar,
+                tartikel.fPackeinheit, tartikel.cVPE, tartikel.fVPEWert, tartikel.cVPEEinheit, tartikel.cSuchbegriffe,
+                tartikel.nSort, tartikel.dErscheinungsdatum, tartikel.dErstellt, tartikel.dLetzteAktualisierung,
+                tartikel.cSerie, tartikel.cISBN, tartikel.cASIN, tartikel.cHAN, tartikel.cUNNummer, tartikel.cGefahrnr,
                 tartikel.nIstVater, date_format(tartikel.dErscheinungsdatum, \'%d.%m.%Y\') AS Erscheinungsdatum_de,
-                tartikel.cTaric, tartikel.cUPC, tartikel.cHerkunftsland, tartikel.cEPID, tartikel.fZulauf, 
+                tartikel.cTaric, tartikel.cUPC, tartikel.cHerkunftsland, tartikel.cEPID, tartikel.fZulauf,
                 tartikel.dZulaufDatum, DATE_FORMAT(tartikel.dZulaufDatum, \'%d.%m.%Y\') AS dZulaufDatum_de,
                 tartikel.fLieferantenlagerbestand, tartikel.fLieferzeit,
                 tartikel.dMHD, DATE_FORMAT(tartikel.dMHD, \'%d.%m.%Y\') AS dMHD_de,
-                tartikel.kMassEinheit, tartikel.kGrundPreisEinheit, tartikel.fMassMenge, tartikel.fGrundpreisMenge, 
-                tartikel.fBreite, tartikel.fHoehe, tartikel.fLaenge, tartikel.nLiefertageWennAusverkauft, 
+                tartikel.kMassEinheit, tartikel.kGrundPreisEinheit, tartikel.fMassMenge, tartikel.fGrundpreisMenge,
+                tartikel.fBreite, tartikel.fHoehe, tartikel.fLaenge, tartikel.nLiefertageWennAusverkauft,
                 tartikel.nAutomatischeLiefertageberechnung, tartikel.nBearbeitungszeit, me.cCode AS cMasseinheitCode,
-                mes.cName AS cMasseinheitName, gpme.cCode AS cGrundpreisEinheitCode, 
+                mes.cName AS cMasseinheitName, gpme.cCode AS cGrundpreisEinheitCode,
                 gpmes.cName AS cGrundpreisEinheitName,
                 ' . $oSQLSeo->cSELECT . '
                 ' . $oSQLArtikelSprache->cSELECT . '
-                thersteller.cName AS cName_thersteller, thersteller.cHomepage, 
+                thersteller.cName AS cName_thersteller, thersteller.cHomepage,
                 thersteller.nSortNr AS nSortNr_thersteller, thersteller.cBildpfad AS cBildpfad_thersteller,
                 therstellersprache.cMetaTitle AS cMetaTitle_spr, therstellersprache.cMetaKeywords AS cMetaKeywords_spr,
-                therstellersprache.cMetaDescription AS cMetaDescription_spr, 
+                therstellersprache.cMetaDescription AS cMetaDescription_spr,
                 therstellersprache.cBeschreibung AS cBeschreibung_hst_spr,
                 tsonderpreise.fNettoPreis, tartikelext.fDurchschnittsBewertung,
                  tlieferstatus.cName AS cName_tlieferstatus, teinheit.cName AS teinheitcName,
@@ -3942,10 +3941,10 @@ class Artikel
                 round(tbestseller.fAnzahl) >= ' . $nSchwelleBestseller . ' AS bIsBestseller,
                 round(tartikelext.fDurchschnittsBewertung) >= ' . $nSchwelleTopBewertet . ' AS bIsTopBewertet
                 FROM tartikel
-                LEFT JOIN tartikelabnahme 
-                    ON tartikel.kArtikel = tartikelabnahme.kArtikel 
+                LEFT JOIN tartikelabnahme
+                    ON tartikel.kArtikel = tartikelabnahme.kArtikel
                     AND tartikelabnahme.kKundengruppe = ' . $customerGroupID . '
-                LEFT JOIN tartikelsonderpreis 
+                LEFT JOIN tartikelsonderpreis
                     ON tartikelsonderpreis.kArtikel = tartikel.kArtikel
                     AND tartikelsonderpreis.cAktiv = \'Y\'
                     AND (tartikelsonderpreis.nAnzahl <= tartikel.fLagerbestand OR tartikelsonderpreis.nIstAnzahl = 0)
@@ -3953,33 +3952,33 @@ class Artikel
                     AND tsonderpreise.kKundengruppe = ' . $customerGroupID . '
                 ' . $oSQLSeo->cJOIN . '
                 ' . $oSQLArtikelSprache->cJOIN . '
-                LEFT JOIN tbestseller 
+                LEFT JOIN tbestseller
                 ON tbestseller.kArtikel = tartikel.kArtikel
-                LEFT JOIN thersteller 
+                LEFT JOIN thersteller
                     ON thersteller.kHersteller = tartikel.kHersteller
-                LEFT JOIN therstellersprache 
+                LEFT JOIN therstellersprache
                     ON therstellersprache.kHersteller = tartikel.kHersteller
                     AND therstellersprache.kSprache = ' . $langID . '
-                LEFT JOIN tartikelext 
+                LEFT JOIN tartikelext
                     ON tartikelext.kArtikel = tartikel.kArtikel
-                LEFT JOIN tlieferstatus 
+                LEFT JOIN tlieferstatus
                     ON tlieferstatus.kLieferstatus = tartikel.kLieferstatus
                     AND tlieferstatus.kSprache = ' . $langID . '
-                LEFT JOIN teinheit 
+                LEFT JOIN teinheit
                     ON teinheit.kEinheit = tartikel.kEinheit
                     AND teinheit.kSprache = ' . $langID . '
-                LEFT JOIN tartikelsichtbarkeit 
+                LEFT JOIN tartikelsichtbarkeit
                     ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
                     AND tartikelsichtbarkeit.kKundengruppe = ' . $customerGroupID . '
-                LEFT JOIN tversandklasse 
+                LEFT JOIN tversandklasse
                     ON tversandklasse.kVersandklasse = tartikel.kVersandklasse
                 LEFT JOIN tmasseinheit me ON me.kMassEinheit = tartikel.kMassEinheit
-                LEFT JOIN tmasseinheitsprache mes 
+                LEFT JOIN tmasseinheitsprache mes
                     ON mes.kMassEinheit = me.kMassEinheit
                     AND mes.kSprache = ' . $langID . '
-                LEFT JOIN tmasseinheit gpme 
+                LEFT JOIN tmasseinheit gpme
                     ON gpme.kMassEinheit = tartikel.kGrundpreisEinheit
-                LEFT JOIN tmasseinheitsprache gpmes 
+                LEFT JOIN tmasseinheitsprache gpmes
                     ON gpmes.kMassEinheit = gpme.kMassEinheit
                     AND gpmes.kSprache = ' . $langID . '
                 WHERE tartikel.kArtikel = ' . $productID . '
@@ -4171,7 +4170,7 @@ class Artikel
                 \PFAD_HERSTELLERBILDER_KLEIN . $tmpProduct->cBildpfad_thersteller;
         }
         // Lokalisieren
-        if ($langID > 0 && !Sprache::isDefaultLanguageActive()) {
+        if ($langID > 0 && !LanguageHelper::isDefaultLanguageActive()) {
             //VPE-Einheit
             $oVPEEinheitRes = $db->query(
                 'SELECT cName
@@ -4253,15 +4252,15 @@ class Artikel
             $oKindSonderpreis = $db->query(
                 'SELECT COUNT(a.kArtikel) AS nVariationsAufpreisVorhanden
                     FROM tartikel AS a
-                    JOIN tpreis AS p 
-                        ON p.kArtikel = a.kArtikel 
+                    JOIN tpreis AS p
+                        ON p.kArtikel = a.kArtikel
                         AND p.kKundengruppe = ' . $customerGroupID . '
-                    JOIN tpreisdetail AS d 
+                    JOIN tpreisdetail AS d
                         ON d.kPreis = p.kPreis
-                    LEFT JOIN tartikelsonderpreis AS asp 
+                    LEFT JOIN tartikelsonderpreis AS asp
                         ON asp.kArtikel = a.kArtikel
-                    LEFT JOIN tsonderpreise AS sp 
-                        ON sp.kArtikelSonderpreis = asp.kArtikelSonderpreis 
+                    LEFT JOIN tsonderpreise AS sp
+                        ON sp.kArtikelSonderpreis = asp.kArtikelSonderpreis
                         AND sp.kKundengruppe = ' . $customerGroupID . '
                     WHERE a.kVaterArtikel = ' . $tmpProduct->kArtikel . '
                         AND COALESCE(sp.fNettoPreis, d.fVKNetto) - ' . $fVKNetto . ' > 0.0001',
@@ -4430,13 +4429,13 @@ class Artikel
     public function getPriceData($productID, $customerGroupID)
     {
         $tmp = Shop::Container()->getDB()->queryPrepared(
-            'SELECT tartikel.kArtikel, tartikel.kEinheit, tartikel.kVPEEinheit, tartikel.kSteuerklasse, 
+            'SELECT tartikel.kArtikel, tartikel.kEinheit, tartikel.kVPEEinheit, tartikel.kSteuerklasse,
                 tartikel.fPackeinheit, tartikel.cVPE, tartikel.fVPEWert, tartikel.cVPEEinheit
-                FROM tartikel 
-                LEFT JOIN tartikelsichtbarkeit 
+                FROM tartikel
+                LEFT JOIN tartikelsichtbarkeit
                     ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
                     AND tartikelsichtbarkeit.kKundengruppe = :kKundengruppe
-                WHERE tartikelsichtbarkeit.kArtikel IS NULL 
+                WHERE tartikelsichtbarkeit.kArtikel IS NULL
                     AND tartikel.kArtikel = :kArtikel',
             ['kArtikel' => $productID, 'kKundengruppe' => $customerGroupID],
             ReturnType::SINGLE_OBJECT
@@ -4472,10 +4471,10 @@ class Artikel
         $categories = Shop::Container()->getDB()->query(
             'SELECT tkategorieartikel.kKategorie
                 FROM tkategorieartikel
-                LEFT JOIN tkategoriesichtbarkeit 
+                LEFT JOIN tkategoriesichtbarkeit
                     ON tkategoriesichtbarkeit.kKategorie = tkategorieartikel.kKategorie
                     AND tkategoriesichtbarkeit.kKundengruppe = ' . $kKdgKey . '
-                JOIN tkategorie 
+                JOIN tkategorie
                     ON tkategorie.kKategorie = tkategorieartikel.kKategorie
                 WHERE tkategoriesichtbarkeit.kKategorie IS NULL
                     AND tkategorieartikel.kKategorie > 0
@@ -5074,7 +5073,7 @@ class Artikel
      */
     public function setzeSprache(int $languageID): self
     {
-        $defaultLanguage = Sprache::getDefaultLanguage(false);
+        $defaultLanguage = LanguageHelper::getDefaultLanguage(false);
         if ($this->kArtikel <= 0 || $languageID === $defaultLanguage->kSprache) {
             return $this;
         }
@@ -5082,7 +5081,7 @@ class Artikel
         $localized = Shop::Container()->getDB()->query(
             'SELECT tartikelsprache.cName, tseo.cSeo, tartikelsprache.cKurzBeschreibung, tartikelsprache.cBeschreibung
                 FROM tartikelsprache
-                LEFT JOIN tseo 
+                LEFT JOIN tseo
                     ON tseo.cKey = \'kArtikel\'
                     AND tseo.kKey = tartikelsprache.kArtikel
                     AND tseo.kSprache = tartikelsprache.kSprache
@@ -5194,15 +5193,15 @@ class Artikel
      */
     public function gibAttributWertNachName($name, $languageID = 0)
     {
-        if ($this->kArtikel === null || $this->kArtikel <= 0 || Sprache::isDefaultLanguageActive()) {
+        if ($this->kArtikel === null || $this->kArtikel <= 0 || LanguageHelper::isDefaultLanguageActive()) {
             return false;
         }
         if (!$languageID) {
             if (isset($_SESSION['kSprache'])) {
                 $languageID = $_SESSION['kSprache'];
             } else {
-                $oSprache   = Sprache::getDefaultLanguage();
-                $languageID = $oSprache->kSprache;
+                $defaultLanguage = LanguageHelper::getDefaultLanguage();
+                $languageID      = $defaultLanguage->kSprache;
             }
         }
         $languageID = (int)$languageID;
@@ -5516,8 +5515,8 @@ class Artikel
         $shippingID = null
     ) {
         if (!isset($_SESSION['cISOSprache'])) {
-            $oSprache = Sprache::getDefaultLanguage();
-            Shop::setLanguage($oSprache->kSprache, $oSprache->cISO);
+            $defaultLanguage = LanguageHelper::getDefaultLanguage();
+            Shop::setLanguage($defaultLanguage->kSprache, $defaultLanguage->cISO);
         }
         if ($purchaseQuantity !== null) {
             $purchaseQuantity = (float)$purchaseQuantity;
@@ -5541,8 +5540,8 @@ class Artikel
         $nAllPieces = Shop::Container()->getDB()->query(
             'SELECT tartikel.kArtikel, tstueckliste.fAnzahl
                 FROM tartikel
-                JOIN tstueckliste 
-                    ON tstueckliste.kArtikel = tartikel.kArtikel 
+                JOIN tstueckliste
+                    ON tstueckliste.kArtikel = tartikel.kArtikel
                     AND tstueckliste.kStueckliste = ' . (int)$this->kStueckliste,
             ReturnType::AFFECTED_ROWS
         );
@@ -5894,15 +5893,15 @@ class Artikel
             $return['oArtikelArr'] = Shop::Container()->getDB()->queryPrepared(
                 'SELECT tartikelmerkmal.kArtikel, tartikel.kVaterArtikel
                     FROM tartikelmerkmal
-                        JOIN tartikel 
+                        JOIN tartikel
                             ON tartikel.kArtikel = tartikelmerkmal.kArtikel
                             AND tartikel.kVaterArtikel != :kArtikel
                             AND (tartikel.nIstVater = 1 OR tartikel.kEigenschaftKombi = 0)
-                        JOIN tartikelmerkmal similarMerkmal 
+                        JOIN tartikelmerkmal similarMerkmal
                             ON similarMerkmal.kArtikel = :kArtikel
                             AND similarMerkmal.kMerkmal = tartikelmerkmal.kMerkmal
                             AND similarMerkmal.kMerkmalWert = tartikelmerkmal.kMerkmalWert
-                        LEFT JOIN tartikelsichtbarkeit 
+                        LEFT JOIN tartikelsichtbarkeit
                             ON tartikelsichtbarkeit.kArtikel = tartikel.kArtikel
                             AND tartikelsichtbarkeit.kKundengruppe = :customerGroupID
                     WHERE tartikelsichtbarkeit.kArtikel IS NULL
@@ -5929,13 +5928,13 @@ class Artikel
                             WHERE kArtikel = ' . $productID . '
                                 AND nSort <= 10
                         ) AS ssSuchCache
-                        JOIN tsuchcachetreffer 
+                        JOIN tsuchcachetreffer
                             ON tsuchcachetreffer.kSuchCache = ssSuchCache.kSuchCache
                             AND tsuchcachetreffer.kArtikel != ' . $productID . '
-                        LEFT JOIN tartikelsichtbarkeit 
+                        LEFT JOIN tartikelsichtbarkeit
                             ON tsuchcachetreffer.kArtikel = tartikelsichtbarkeit.kArtikel
                             AND tartikelsichtbarkeit.kKundengruppe = ' . $customerGroupID . '
-                        JOIN tartikel 
+                        JOIN tartikel
                             ON tartikel.kArtikel = tsuchcachetreffer.kArtikel
                             AND tartikel.kVaterArtikel != ' . $productID . '
                         WHERE tartikelsichtbarkeit.kArtikel IS NULL
@@ -5956,13 +5955,13 @@ class Artikel
                             FROM ttagartikel
                             WHERE kArtikel = ' . $productID . '
                         ) AS ssTag
-                        JOIN ttagartikel 
+                        JOIN ttagartikel
                             ON ttagartikel.kTag = ssTag.kTag
                             AND ttagartikel.kArtikel != ' . $productID . '
-                        LEFT JOIN tartikelsichtbarkeit 
+                        LEFT JOIN tartikelsichtbarkeit
                             ON ttagartikel.kArtikel = tartikelsichtbarkeit.kArtikel
                             AND tartikelsichtbarkeit.kKundengruppe = ' . $customerGroupID . '
-                        JOIN tartikel 
+                        JOIN tartikel
                             ON tartikel.kArtikel = ttagartikel.kArtikel
                             AND tartikel.kVaterArtikel != ' . $productID . '
                         WHERE tartikelsichtbarkeit.kArtikel IS NULL
@@ -5990,8 +5989,8 @@ class Artikel
             return false;
         }
         $filterSQL = $visibilityFilter !== 1
-            ? ' AND (tartikel.fLagerbestand > 0 
-                    OR tartikel.cLagerBeachten = \'N\' 
+            ? ' AND (tartikel.fLagerbestand > 0
+                    OR tartikel.cLagerBeachten = \'N\'
                     OR tartikel.cLagerKleinerNull = \'Y\')'
             : '';
         Shop::Container()->getDB()->delete('tartikelmerkmal', 'kArtikel', $parentID);
@@ -6000,7 +5999,7 @@ class Artikel
             'INSERT INTO tartikelmerkmal
                 (SELECT tartikelmerkmal.kMerkmal, tartikelmerkmal.kMerkmalWert, ' . $parentID . '
                     FROM tartikelmerkmal
-                    JOIN tartikel 
+                    JOIN tartikel
                         ON tartikel.kArtikel = tartikelmerkmal.kArtikel
                     WHERE tartikel.kVaterArtikel = ' . $parentID . '
                     ' . $filterSQL . '
@@ -6041,7 +6040,7 @@ class Artikel
             Shop::set(
                 'checkCategoryDiscount',
                 Shop::Container()->getDB()->query(
-                    'SELECT COUNT(kArtikel) AS cnt 
+                    'SELECT COUNT(kArtikel) AS cnt
                           FROM tartikelkategorierabatt',
                     ReturnType::SINGLE_OBJECT
                 )->cnt > 0
@@ -6494,8 +6493,8 @@ class Artikel
                 $languageID = $_SESSION['kSprache'];
             }
             if (!$languageID) {
-                $oSprache   = Sprache::getDefaultLanguage();
-                $languageID = $oSprache->kSprache;
+                $defaultLanguage = LanguageHelper::getDefaultLanguage();
+                $languageID      = $defaultLanguage->kSprache;
             }
         }
         $tags = Shop::Container()->getDB()->query(
@@ -6503,16 +6502,16 @@ class Artikel
                                                         FROM ttagartikel
                                                           WHERE kTag = ttag.kTag) AS Anzahl
                 FROM ttag
-                JOIN ttagartikel 
+                JOIN ttagartikel
                     ON ttagartikel.kTag = ttag.kTag
-                LEFT JOIN tseo 
+                LEFT JOIN tseo
                     ON tseo.cKey = \'kTag\'
                     AND tseo.kKey = ttag.kTag
                     AND tseo.kSprache = ' . $languageID . '
                 WHERE ttag.nAktiv = 1
                     AND ttag.kSprache = ' . $languageID . '
                     AND ttagartikel.kArtikel = ' . (int)$this->kArtikel . '
-                GROUP BY ttag.kTag 
+                GROUP BY ttag.kTag
                 ORDER BY ttagartikel.nAnzahlTagging DESC ' . $tagLimit,
             ReturnType::ARRAY_OF_OBJECTS
         );
@@ -6696,7 +6695,7 @@ class Artikel
             $oEigenschaft_arr = Shop::Container()->getDB()->executeQueryPrepared(
                 'SELECT e1.*, k.cName, k.cLagerBeachten, k.cLagerKleinerNull, k.fLagerbestand
                     FROM teigenschaftkombiwert e1
-                    INNER JOIN tartikel k 
+                    INNER JOIN tartikel k
                         ON e1.kEigenschaftKombi = k.kEigenschaftKombi
                     ' . $cSQLStr . '
                     LEFT JOIN tartikelsichtbarkeit

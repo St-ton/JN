@@ -5,8 +5,8 @@
  */
 
 use JTL\Customer\Kundengruppe;
+use JTL\Language\LanguageHelper;
 use JTL\Shop;
-use JTL\Sprache;
 use JTL\Sitemap\Config\DefaultConfig;
 use JTL\Sitemap\Export;
 use JTL\Sitemap\ItemRenderers\DefaultRenderer;
@@ -29,7 +29,11 @@ $exporter     = new Export(
     new DefaultSchemaRenderer(),
     $config
 );
-$exporter->generate([Kundengruppe::getDefaultGroupID()], Sprache::getAllLanguages(), $exportConfig->getFactories());
+$exporter->generate(
+    [Kundengruppe::getDefaultGroupID()],
+    LanguageHelper::getAllLanguages(),
+    $exportConfig->getFactories()
+);
 
 if (isset($_REQUEST['update']) && (int)$_REQUEST['update'] === 1) {
     header('Location: sitemapexport.php?update=1');

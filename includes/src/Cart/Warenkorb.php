@@ -1680,19 +1680,19 @@ class Warenkorb
         }
         $specialPosition        = new stdClass();
         $specialPosition->cName = [];
-        foreach ($_SESSION['Sprachen'] as $Sprache) {
-            $localized                              = Shop::Container()->getDB()->select(
+        foreach ($_SESSION['Sprachen'] as $language) {
+            $localized                               = Shop::Container()->getDB()->select(
                 'tkuponsprache',
                 'kKupon',
                 (int)$coupon->kKupon,
                 'cISOSprache',
-                $Sprache->cISO,
+                $language->cISO,
                 null,
                 null,
                 false,
                 'cName'
             );
-            $specialPosition->cName[$Sprache->cISO] = $localized->cName;
+            $specialPosition->cName[$language->cISO] = $localized->cName;
         }
         $this->loescheSpezialPos(\C_WARENKORBPOS_TYP_KUPON);
         $this->erstelleSpezialPos(

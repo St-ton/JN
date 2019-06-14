@@ -6,8 +6,8 @@
 
 namespace JTL\Plugin\Admin\Installation\Items;
 
+use JTL\Language\LanguageHelper;
 use JTL\Plugin\InstallCode;
-use JTL\Sprache;
 use stdClass;
 
 /**
@@ -29,7 +29,7 @@ class LanguageVariables extends AbstractItem
      */
     public function install(): int
     {
-        $languages = Sprache::getAllLanguages(2);
+        $languages = LanguageHelper::getAllLanguages(2);
         foreach ($this->getNode() as $t => $langVar) {
             $t = (string)$t;
             \preg_match('/[0-9]+/', $t, $hits1);

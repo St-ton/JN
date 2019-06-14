@@ -16,8 +16,6 @@ use JTL\Checkout\Lieferadresse;
 use JTL\Checkout\Nummern;
 use JTL\Checkout\Rechnungsadresse;
 use JTL\Checkout\ZahlungsInfo;
-use JTL\Customer\CustomerAttribute;
-use JTL\Customer\CustomerAttributes;
 use JTL\Customer\Kunde;
 use JTL\DB\ReturnType;
 use JTL\Extensions\Upload;
@@ -27,12 +25,12 @@ use JTL\Helpers\Request;
 use JTL\Helpers\Tax;
 use JTL\Helpers\Text;
 use JTL\Kampagne;
+use JTL\Language\LanguageHelper;
 use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
 use JTL\Plugin\Helper;
 use JTL\Session\Frontend;
 use JTL\Shop;
-use JTL\Sprache;
 
 /**
  * @return int
@@ -534,7 +532,7 @@ function unhtmlSession(): void
     $shippingAddress->cAdressZusatz = Text::unhtmlentities($deliveryAddress->cAdressZusatz);
     $shippingAddress->cMobil        = Text::unhtmlentities($deliveryAddress->cMobil);
 
-    $shippingAddress->angezeigtesLand = Sprache::getCountryCodeByCountryName($shippingAddress->cLand);
+    $shippingAddress->angezeigtesLand = LanguageHelper::getCountryCodeByCountryName($shippingAddress->cLand);
 
     $deliveryAddress = $shippingAddress;
 }

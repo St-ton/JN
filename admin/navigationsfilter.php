@@ -4,11 +4,10 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Alert\Alert;
+use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Shop;
-use JTL\Sprache;
-use JTL\DB\ReturnType;
-use JTL\Alert\Alert;
 
 /**
  * @global \JTL\Smarty\JTLSmarty     $smarty
@@ -50,5 +49,4 @@ $priceRangeFilters = $db->query(
 
 $smarty->assign('oConfig_arr', getAdminSectionSettings(CONF_NAVIGATIONSFILTER))
        ->assign('oPreisspannenfilter_arr', $priceRangeFilters)
-       ->assign('Sprachen', Sprache::getAllLanguages())
        ->display('navigationsfilter.tpl');

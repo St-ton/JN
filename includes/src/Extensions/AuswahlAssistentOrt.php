@@ -77,14 +77,14 @@ class AuswahlAssistentOrt
                 $this->oOrt_arr[] = new self((int)$loc->kAuswahlAssistentOrt, 0, $backend);
             }
         } elseif ($locationID > 0) {
-            $oOrt = Shop::Container()->getDB()->select(
+            $localtion = Shop::Container()->getDB()->select(
                 'tauswahlassistentort',
                 'kAuswahlAssistentOrt',
                 $locationID
             );
-            if (isset($oOrt->kAuswahlAssistentOrt) && $oOrt->kAuswahlAssistentOrt > 0) {
-                foreach (\array_keys(\get_object_vars($oOrt)) as $member) {
-                    $this->$member = $oOrt->$member;
+            if (isset($localtion->kAuswahlAssistentOrt) && $localtion->kAuswahlAssistentOrt > 0) {
+                foreach (\array_keys(\get_object_vars($localtion)) as $member) {
+                    $this->$member = $localtion->$member;
                 }
                 $this->kAuswahlAssistentGruppe = (int)$this->kAuswahlAssistentGruppe;
                 $this->kAuswahlAssistentOrt    = (int)$this->kAuswahlAssistentOrt;
@@ -94,32 +94,32 @@ class AuswahlAssistentOrt
                         if ($backend) {
                             unset($_SESSION['oKategorie_arr'], $_SESSION['oKategorie_arr_new']);
                         }
-                        $oKategorie = new Kategorie(
+                        $category = new Kategorie(
                             $this->kKey,
                             AuswahlAssistentGruppe::getLanguage($this->kAuswahlAssistentGruppe)
                         );
 
-                        $this->cOrt = $oKategorie->cName . '(Kategorie)';
+                        $this->cOrt = $category->cName . '(Kategorie)';
                         break;
 
                     case \AUSWAHLASSISTENT_ORT_LINK:
-                        $oSprache   = Shop::Container()->getDB()->select(
+                        $language   = Shop::Container()->getDB()->select(
                             'tsprache',
                             'kSprache',
                             AuswahlAssistentGruppe::getLanguage($this->kAuswahlAssistentGruppe)
                         );
-                        $oLink      = Shop::Container()->getDB()->select(
+                        $link      = Shop::Container()->getDB()->select(
                             'tlinksprache',
                             'kLink',
                             $this->kKey,
                             'cISOSprache',
-                            $oSprache->cISO,
+                            $language->cISO,
                             null,
                             null,
                             false,
                             'cName'
                         );
-                        $this->cOrt = isset($oLink->cName) ? ($oLink->cName . '(CMS)') : null;
+                        $this->cOrt = isset($link->cName) ? ($link->cName . '(CMS)') : null;
                         break;
 
                     case \AUSWAHLASSISTENT_ORT_STARTSEITE:

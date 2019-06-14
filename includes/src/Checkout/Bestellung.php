@@ -18,8 +18,8 @@ use JTL\Extensions\Upload;
 use JTL\Helpers\Cart;
 use JTL\Helpers\ShippingMethod;
 use JTL\Helpers\Tax;
+use JTL\Language\LanguageHelper;
 use JTL\Shop;
-use JTL\Sprache;
 use PaymentMethod;
 use stdClass;
 
@@ -552,7 +552,7 @@ class Bestellung
         $defaultOptions           = Artikel::getDefaultOptions();
         $languageID               = Shop::getLanguage();
         if (!$languageID) {
-            $language             = Sprache::getDefaultLanguage();
+            $language             = LanguageHelper::getDefaultLanguage();
             $languageID           = (int)$language->kSprache;
             $_SESSION['kSprache'] = $languageID;
         }
@@ -1045,7 +1045,7 @@ class Bestellung
         if (\is_array($this->Positionen) && \count($this->Positionen) > 0) {
             $minDeliveryDays = 0;
             $maxDeliveryDays = 0;
-            $lang            = Sprache::getIsoFromLangID((int)$this->kSprache);
+            $lang            = LanguageHelper::getIsoFromLangID((int)$this->kSprache);
             foreach ($this->Positionen as $item) {
                 $item->nPosTyp = (int)$item->nPosTyp;
                 if ($item->nPosTyp !== \C_WARENKORBPOS_TYP_ARTIKEL

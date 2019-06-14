@@ -319,29 +319,29 @@ function setzeSprache()
 {
     if (Form::validateToken() && Request::verifyGPCDataInt('sprachwechsel') === 1) {
         // Wähle explizit gesetzte Sprache als aktuelle Sprache
-        $oSprache = Shop::Container()->getDB()->select('tsprache', 'kSprache', (int)$_POST['kSprache']);
+        $language = Shop::Container()->getDB()->select('tsprache', 'kSprache', (int)$_POST['kSprache']);
 
-        if ((int)$oSprache->kSprache > 0) {
-            $_SESSION['kSprache']    = (int)$oSprache->kSprache;
-            $_SESSION['cISOSprache'] = $oSprache->cISO;
+        if ((int)$language->kSprache > 0) {
+            $_SESSION['kSprache']    = (int)$language->kSprache;
+            $_SESSION['cISOSprache'] = $language->cISO;
         }
     }
 
     if (!isset($_SESSION['kSprache'])) {
         // Wähle Standardsprache als aktuelle Sprache
-        $oSprache = Shop::Container()->getDB()->select('tsprache', 'cShopStandard', 'Y');
+        $language = Shop::Container()->getDB()->select('tsprache', 'cShopStandard', 'Y');
 
-        if ((int)$oSprache->kSprache > 0) {
-            $_SESSION['kSprache']    = (int)$oSprache->kSprache;
-            $_SESSION['cISOSprache'] = $oSprache->cISO;
+        if ((int)$language->kSprache > 0) {
+            $_SESSION['kSprache']    = (int)$language->kSprache;
+            $_SESSION['cISOSprache'] = $language->cISO;
         }
     }
     if (isset($_SESSION['kSprache']) && empty($_SESSION['cISOSprache'])) {
         // Fehlendes cISO ergänzen
-        $oSprache = Shop::Container()->getDB()->select('tsprache', 'kSprache', (int)$_SESSION['kSprache']);
+        $language = Shop::Container()->getDB()->select('tsprache', 'kSprache', (int)$_SESSION['kSprache']);
 
-        if ((int)$oSprache->kSprache > 0) {
-            $_SESSION['cISOSprache'] = $oSprache->cISO;
+        if ((int)$language->kSprache > 0) {
+            $_SESSION['cISOSprache'] = $language->cISO;
         }
     }
 }

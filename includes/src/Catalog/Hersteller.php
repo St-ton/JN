@@ -9,9 +9,9 @@ namespace JTL\Catalog;
 
 use JTL\DB\ReturnType;
 use JTL\Helpers\Text;
+use JTL\Language\LanguageHelper;
 use JTL\Session;
 use JTL\Shop;
-use JTL\Sprache;
 use stdClass;
 
 /**
@@ -137,7 +137,7 @@ class Hersteller
         //noCache param to avoid problem with de-serialization of class properties with jtl search
         $languageID = $languageID > 0 ? $languageID : Shop::getLanguageID();
         if ($languageID === 0) {
-            $language   = Sprache::getDefaultLanguage();
+            $language   = LanguageHelper::getDefaultLanguage();
             $languageID = (int)$language->kSprache;
         }
         $cacheID   = 'manuf_' . $id . '_' . $languageID . Shop::Container()->getCache()->getBaseID();

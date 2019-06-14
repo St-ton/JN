@@ -6,12 +6,12 @@
 
 namespace JTL\Helpers;
 
-use JTL\DB\ReturnType;
 use JTL\Catalog\Category\Kategorie;
 use JTL\Catalog\Category\KategorieListe;
+use JTL\DB\ReturnType;
+use JTL\Language\LanguageHelper;
 use JTL\Session\Frontend;
 use JTL\Shop;
-use JTL\Sprache;
 
 /**
  * Class Category
@@ -131,7 +131,7 @@ class Category
             $descriptionSelect   = ", '' AS cBeschreibung";
             $shopURL             = Shop::getURL(true);
             $imageBaseURL        = Shop::getImageBaseURL();
-            $isDefaultLang       = Sprache::isDefaultLanguageActive();
+            $isDefaultLang       = LanguageHelper::isDefaultLanguageActive();
             $visibilityWhere     = ' AND tartikelsichtbarkeit.kArtikel IS NULL';
             $depthWhere          = self::$limitReached === true
                 ? ' AND node.nLevel <= ' . \CATEGORY_FULL_LOAD_MAX_LEVEL
@@ -351,7 +351,7 @@ class Category
         $descriptionSelect   = ", '' AS cBeschreibung";
         $shopURL             = Shop::getURL(true);
         $imageBaseURL        = Shop::getImageBaseURL();
-        $isDefaultLang       = Sprache::isDefaultLanguageActive();
+        $isDefaultLang       = LanguageHelper::isDefaultLanguageActive();
         $visibilityWhere     = ' AND tartikelsichtbarkeit.kArtikel IS NULL';
         $getDescription      = (!(isset(self::$config['template']['megamenu']['show_maincategory_info'])
             && isset(self::$config['template']['megamenu']['show_categories'])

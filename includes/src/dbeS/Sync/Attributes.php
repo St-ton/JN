@@ -9,7 +9,7 @@ namespace JTL\dbeS\Sync;
 use JTL\DB\ReturnType;
 use JTL\dbeS\Starter;
 use JTL\Helpers\Seo;
-use JTL\Sprache;
+use JTL\Language\LanguageHelper;
 use stdClass;
 
 /**
@@ -73,7 +73,7 @@ final class Attributes extends AbstractSync
     private function handleInserts(array $xml): void
     {
         $attributeValues = []; // Merkt sich alle MerkmalWerte die von der Wawi geschickt werden
-        $defaultLanguage = Sprache::getDefaultLanguage();
+        $defaultLanguage = LanguageHelper::getDefaultLanguage();
         if (isset($xml['merkmale']['tmerkmal']) && \is_array($xml['merkmale']['tmerkmal'])) {
             $attributes = $this->mapper->mapArray($xml['merkmale'], 'tmerkmal', 'mMerkmal');
             $mmCount    = \count($attributes);

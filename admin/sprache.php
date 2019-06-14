@@ -6,14 +6,14 @@
  * @global smarty
  */
 
+use JTL\Alert\Alert;
+use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
-use JTL\Shop;
 use JTL\Pagination\Filter;
-use JTL\Pagination\Pagination;
-use JTL\DB\ReturnType;
 use JTL\Pagination\Operation;
-use JTL\Alert\Alert;
+use JTL\Pagination\Pagination;
+use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
@@ -27,7 +27,7 @@ $tab         = $_REQUEST['tab'] ?? 'variables';
 $step        = 'overview';
 $lang        = Shop::Lang();
 setzeSprache();
-$cISOSprache = $_SESSION['cISOSprache'];
+$langCode = $_SESSION['cISOSprache'];
 
 if (isset($_FILES['csvfile']['tmp_name'])
     && Form::validateToken()
@@ -35,35 +35,30 @@ if (isset($_FILES['csvfile']['tmp_name'])
 ) {
     $csvFilename = $_FILES['csvfile']['tmp_name'];
     $importType  = Request::verifyGPCDataInt('importType');
-    $res         = $lang->import($csvFilename, $cISOSprache, $importType);
+    $res         = $lang->import($csvFilename, $langCode, $importType);
 
-    if ($res === false) {
-        $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorImport'), 'errorImport');
-    } else {
+    if ($res !== false) {
         $alertHelper->addAlert(Alert::TYPE_SUCCESS, sprintf(__('successImport'), $res), 'successImport');
+    } else {
+        $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorImport'), 'errorImport');
     }
 }
 
-$langIso            = $lang->getLangIDFromIso($cISOSprache);
-$langIsoID          = $langIso->kSprachISO ?? 0;
+$langIsoID          = $lang->getLangIDFromIso($langCode)->kSprachISO ?? 0;
 $installedLanguages = $lang->getInstalled();
-$availableLanguages = $lang->getAvailable();
+$availableLanguages = $lang->gibInstallierteSprachen();
 $sections           = $lang->getSections();
-$langIsActive       = false;
+$langActive         = false;
 
 if (count($installedLanguages) !== count($availableLanguages)) {
     $alertHelper->addAlert(Alert::TYPE_NOTE, __('newLangAvailable'), 'newLangAvailable');
 }
 
 foreach ($installedLanguages as $language) {
-    if ($language->cISO === $cISOSprache) {
-        $langIsActive = true;
+    if ($language->getIso() === $langCode) {
+        $langActive = true;
         break;
     }
-}
-
-foreach ($availableLanguages as $language) {
-    $language->bImported = in_array($language, $installedLanguages);
 }
 
 if (isset($_REQUEST['action']) && Form::validateToken()) {
@@ -99,11 +94,11 @@ if (isset($_REQUEST['action']) && Form::validateToken()) {
             $variable->bOverwrite_arr = $_REQUEST['bOverwrite_arr'] ?? [];
             $errors                   = [];
             $variable->cSprachsektion = Shop::Container()->getDB()
-                                             ->select(
-                                                 'tsprachsektion',
-                                                 'kSprachsektion',
-                                                 (int)$variable->kSprachsektion
-                                             )
+                ->select(
+                    'tsprachsektion',
+                    'kSprachsektion',
+                    (int)$variable->kSprachsektion
+                )
                 ->cName;
 
             $data = Shop::Container()->getDB()->queryPrepared(
@@ -119,15 +114,15 @@ if (isset($_REQUEST['action']) && Form::validateToken()) {
                 ReturnType::ARRAY_OF_OBJECTS
             );
 
-            foreach ($data as $item) {
-                $variable->cWertAlt_arr[$item->cISO] = $item->cWert;
+            foreach ($oWertDB_arr as $oWertDB) {
+                $variable->cWertAlt_arr[$oWertDB->cISO] = $oWertDB->cWert;
             }
 
             if (!preg_match('/([\w\d]+)/', $variable->cName)) {
                 $errors[] = __('errorVarFormat');
             }
 
-            if (count($variable->bOverwrite_arr) !== count($data)) {
+            if (count($variable->bOverwrite_arr) !== count($oWertDB_arr)) {
                 $errors[] = sprintf(
                     __('errorVarExistsForLang'),
                     implode(
@@ -173,15 +168,15 @@ if (isset($_REQUEST['action']) && Form::validateToken()) {
             break;
         case 'saveall':
             // geaenderte Variablen speichern
-            $cChanged_arr = [];
-            foreach ($_REQUEST['cWert_arr'] as $kSektion => $cSektionWert_arr) {
-                foreach ($cSektionWert_arr as $cName => $cWert) {
-                    if ((int)$_REQUEST['bChanged_arr'][$kSektion][$cName] === 1) {
+            $modified = [];
+            foreach ($_REQUEST['cWert_arr'] as $kSektion => $sectionValues) {
+                foreach ($sectionValues as $name => $cWert) {
+                    if ((int)$_REQUEST['bChanged_arr'][$kSektion][$name] === 1) {
                         // wurde geaendert => speichern
                         $lang
-                            ->setzeSprache($cISOSprache)
-                            ->set((int)$kSektion, $cName, $cWert);
-                        $cChanged_arr[] = $cName;
+                            ->setzeSprache($langCode)
+                            ->set((int)$kSektion, $name, $cWert);
+                        $modified[] = $name;
                     }
                 }
             }
@@ -191,8 +186,8 @@ if (isset($_REQUEST['action']) && Form::validateToken()) {
 
             $alertHelper->addAlert(
                 Alert::TYPE_SUCCESS,
-                count($cChanged_arr) > 0
-                    ? __('successVarChange') . implode(', ', $cChanged_arr)
+                count($modified) > 0
+                    ? __('successVarChange') . implode(', ', $modified)
                     : __('errorVarChangeNone'),
                 'varChangeMessage'
             );
@@ -201,7 +196,7 @@ if (isset($_REQUEST['action']) && Form::validateToken()) {
         case 'clearlog':
             // Liste nicht gefundener Variablen leeren
             $lang
-                ->setzeSprache($cISOSprache)
+                ->setzeSprache($langCode)
                 ->clearLog();
             Shop::Container()->getCache()->flushTags([CACHING_GROUP_LANGUAGE]);
             Shop::Container()->getDB()->query('UPDATE tglobals SET dLetzteAenderung = NOW()', ReturnType::DEFAULT);
@@ -219,9 +214,9 @@ if ($step === 'newvar') {
         ->assign('oSprache_arr', $availableLanguages);
 } elseif ($step === 'overview') {
     $filter                      = new Filter('langvars');
-    $selectField                 = $filter->addSelectfield('Sektion', 'sw.kSprachsektion', 0);
+    $selectField                 = $filter->addSelectfield('Sektion', 'sw.kSprachsektion');
     $selectField->reloadOnChange = true;
-    $selectField->addSelectOption('(' . __('all') . ')', '', Operation::CUSTOM);
+    $selectField->addSelectOption('(' . __('all') . ')', '');
 
     foreach ($sections as $oSektion) {
         $selectField->addSelectOption($oSektion->cName, $oSektion->kSprachsektion, Operation::EQUALS);
@@ -232,8 +227,8 @@ if ($step === 'newvar') {
         ['sw.cName', 'sw.cWert'],
         Operation::CONTAINS
     );
-    $selectField = $filter->addSelectfield(__('systemOwn'), 'bSystem', 0);
-    $selectField->addSelectOption(__('both'), '', Operation::CUSTOM);
+    $selectField = $filter->addSelectfield(__('systemOwn'), 'bSystem');
+    $selectField->addSelectOption(__('both'), '');
     $selectField->addSelectOption(__('system'), '1', Operation::EQUALS);
     $selectField->addSelectOption(__('own'), '0', Operation::EQUALS);
     $filter->assemble();
@@ -251,7 +246,7 @@ if ($step === 'newvar') {
 
     handleCsvExportAction(
         'langvars',
-        $cISOSprache . '_' . date('YmdHis') . '.slf',
+        $langCode . '_' . date('YmdHis') . '.slf',
         $values,
         ['cSektionName', 'cName', 'cWert', 'bSystem'],
         [],
@@ -277,7 +272,7 @@ if ($step === 'newvar') {
         ->assign('oFilter', $filter)
         ->assign('oPagination', $pagination)
         ->assign('oWert_arr', $pagination->getPageItems())
-        ->assign('bSpracheAktiv', $langIsActive)
+        ->assign('bSpracheAktiv', $langActive)
         ->assign('oSprache_arr', $availableLanguages)
         ->assign('oNotFound_arr', $notFound);
 }

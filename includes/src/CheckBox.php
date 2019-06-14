@@ -11,6 +11,7 @@ use JTL\Customer\Kundengruppe;
 use JTL\DB\ReturnType;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Text;
+use JTL\Language\LanguageHelper;
 use JTL\Link\Link;
 use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
@@ -409,10 +410,12 @@ class CheckBox
         if (!\is_array($checkboxIDs) || \count($checkboxIDs) === 0) {
             return false;
         }
-        $db = Shop::Container()->getDB();
-        foreach ($checkboxIDs as $id) {
-            $db->update('tcheckbox', 'kCheckBox', (int)$id, (object)['nAktiv' => 1]);
-        }
+        Shop::Container()->getDB()->query(
+            'UPDATE tcheckbox
+                SET nAktiv = 1
+                WHERE kCheckBox IN (' . \implode(',', \array_map('\intval', $checkboxIDs)) . ');',
+            ReturnType::DEFAULT
+        );
         Shop::Container()->getCache()->flushTags(['checkbox']);
 
         return true;
@@ -427,10 +430,12 @@ class CheckBox
         if (!\is_array($checkboxIDs) || \count($checkboxIDs) === 0) {
             return false;
         }
-        $db = Shop::Container()->getDB();
-        foreach ($checkboxIDs as $id) {
-            $db->update('tcheckbox', 'kCheckBox', (int)$id, (object)['nAktiv' => 0]);
-        }
+        Shop::Container()->getDB()->query(
+            'UPDATE tcheckbox
+                SET nAktiv = 0
+                WHERE kCheckBox IN (' . \implode(',', \array_map('\intval', $checkboxIDs)) . ');',
+            ReturnType::DEFAULT
+        );
         Shop::Container()->getCache()->flushTags(['checkbox']);
 
         return true;
@@ -538,7 +543,7 @@ class CheckBox
      */
     private function getSprachKeyByISO(string $iso): int
     {
-        $lang = Sprache::getLangIDFromIso($iso);
+        $lang = LanguageHelper::getLangIDFromIso($iso);
 
         return (int)($lang->kSprachISO ?? 0);
     }

@@ -19,6 +19,7 @@ use JTL\Helpers\Request;
 use JTL\Helpers\ShippingMethod;
 use JTL\Helpers\Tax;
 use JTL\Helpers\Text;
+use JTL\Language\LanguageModel;
 use JTL\Session\Frontend;
 use JTL\Smarty\ContextType;
 use JTL\Smarty\ExportSmarty;
@@ -769,16 +770,9 @@ class Exportformat
             : (new Currency())->getDefault();
         Tax::setTaxRates();
         $net       = $this->db->select('tkundengruppe', 'kKundengruppe', $this->getKundengruppe());
-        $languages = map($this->db->query(
-            'SELECT *  FROM tsprache',
-            ReturnType::ARRAY_OF_OBJECTS
-        ), function ($lang) {
-            $lang->kSprache = (int)$lang->kSprache;
-
-            return $lang;
-        });
-        $langISO   = first($languages, function ($l) {
-            return $l->kSprache === $this->getSprache();
+        $languages = Shop::Lang()->gibInstallierteSprachen();
+        $langISO   = first($languages, function (LanguageModel $l) {
+            return $l->getId() === $this->getSprache();
         });
 
         $_SESSION['Kundengruppe']  = (new Kundengruppe($this->getKundengruppe()))

@@ -6,15 +6,15 @@
 
 namespace JTL\Catalog\Category;
 
+use JTL\Customer\Kundengruppe;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Category;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Helpers\URL;
-use JTL\Customer\Kundengruppe;
+use JTL\Language\LanguageHelper;
 use JTL\Session\Frontend;
 use JTL\Shop;
-use JTL\Sprache;
 use stdClass;
 
 /**
@@ -177,7 +177,7 @@ class Kategorie
         if (!$languageID) {
             $languageID = Shop::getLanguageID();
             if (!$languageID) {
-                $tmpLang    = Sprache::getDefaultLanguage();
+                $tmpLang    = LanguageHelper::getDefaultLanguage();
                 $languageID = $tmpLang->kSprache;
             }
         }
@@ -205,7 +205,7 @@ class Kategorie
         $oSQLKategorie->cSELECT = '';
         $oSQLKategorie->cJOIN   = '';
         $oSQLKategorie->cWHERE  = '';
-        if (!$recall && $languageID > 0 && !Sprache::isDefaultLanguageActive(false, $languageID)) {
+        if (!$recall && $languageID > 0 && !LanguageHelper::isDefaultLanguageActive(false, $languageID)) {
             $oSQLKategorie->cSELECT = 'tkategoriesprache.cName AS cName_spr, 
                 tkategoriesprache.cBeschreibung AS cBeschreibung_spr, 
                 tkategoriesprache.cMetaDescription AS cMetaDescription_spr,
@@ -232,10 +232,10 @@ class Kategorie
             ReturnType::SINGLE_OBJECT
         );
         if ($oKategorie === null || $oKategorie === false) {
-            if (!$recall && !Sprache::isDefaultLanguageActive(false, $languageID)) {
+            if (!$recall && !LanguageHelper::isDefaultLanguageActive(false, $languageID)) {
                 if (\defined('EXPERIMENTAL_MULTILANG_SHOP') && EXPERIMENTAL_MULTILANG_SHOP === true) {
                     if ($tmpLang === null) {
-                        $tmpLang = Sprache::getDefaultLanguage();
+                        $tmpLang = LanguageHelper::getDefaultLanguage();
                     }
                     $kDefaultLang = (int)$tmpLang->kSprache;
                     if ($kDefaultLang !== $languageID) {
@@ -253,7 +253,7 @@ class Kategorie
         if ((!isset($oKategorie->cSeo) || $oKategorie->cSeo === null || $oKategorie->cSeo === '')
             && \defined('EXPERIMENTAL_MULTILANG_SHOP') && EXPERIMENTAL_MULTILANG_SHOP === true
         ) {
-            $kDefaultLang = (int)($tmpLang->kSprache ?? Sprache::getDefaultLanguage()->kSprache);
+            $kDefaultLang = (int)($tmpLang->kSprache ?? LanguageHelper::getDefaultLanguage()->kSprache);
             if ($languageID !== $kDefaultLang) {
                 $oSeo = $db->select(
                     'tseo',
@@ -326,7 +326,7 @@ class Kategorie
         /** @deprecated since version 4.05 - use categoryFunctionAttributes instead */
         $this->KategorieAttribute = &$this->categoryFunctionAttributes;
         // lokalisieren
-        if ($languageID > 0 && !Sprache::isDefaultLanguageActive()) {
+        if ($languageID > 0 && !LanguageHelper::isDefaultLanguageActive()) {
             if (isset($oKategorie->cName_spr) && \mb_strlen($oKategorie->cName_spr) > 0) {
                 $this->cName = $oKategorie->cName_spr;
                 unset($oKategorie->cName_spr);

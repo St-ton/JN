@@ -42,7 +42,7 @@ switch ($cAction) {
         $cAction = benutzerverwaltungActionGroupDelete($messages);
         break;
     case 'quick_change_language':
-        benutzerverwaltungActionQuickChangeLanguage($smarty, $messages);
+        benutzerverwaltungActionQuickChangeLanguage();
         break;
 }
 

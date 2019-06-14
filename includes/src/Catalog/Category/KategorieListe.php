@@ -9,9 +9,9 @@ namespace JTL\Catalog\Category;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Text;
 use JTL\Helpers\URL;
+use JTL\Language\LanguageHelper;
 use JTL\Session\Frontend;
 use JTL\Shop;
-use JTL\Sprache;
 
 /**
  * Class KategorieListe
@@ -281,7 +281,7 @@ class KategorieListe
                 self::$wasModified = true;
             }
             //ist nicht im cache, muss holen
-            $cSortSQLName = (!Sprache::isDefaultLanguageActive())
+            $cSortSQLName = (!LanguageHelper::isDefaultLanguageActive())
                 ? 'tkategoriesprache.cName, '
                 : '';
             if (!$categoryID) {
@@ -312,7 +312,7 @@ class KategorieListe
 
             $categoryList['kKategorieVonUnterkategorien_arr'][$categoryID] = [];
             $imageBaseURL                                                  = Shop::getImageBaseURL();
-            $oSpracheTmp                                                   = Sprache::getDefaultLanguage();
+            $defaultLanguage                                               = LanguageHelper::getDefaultLanguage();
             foreach ($categories as $i => $category) {
                 $category->kKategorie     = (int)$category->kKategorie;
                 $category->kOberKategorie = (int)$category->kOberKategorie;
@@ -337,7 +337,7 @@ class KategorieListe
                 if ((!isset($category->cSeo) || $category->cSeo === null || $category->cSeo === '')
                     && \defined('EXPERIMENTAL_MULTILANG_SHOP') && EXPERIMENTAL_MULTILANG_SHOP === true
                 ) {
-                    $kDefaultLang = (int)$oSpracheTmp->kSprache;
+                    $kDefaultLang = (int)$defaultLanguage->kSprache;
                     if ($languageID !== $kDefaultLang) {
                         $oSeo = $db->select(
                             'tseo',
@@ -357,7 +357,10 @@ class KategorieListe
 
                 $category->cURL     = URL::buildURL($category, \URLART_KATEGORIE);
                 $category->cURLFull = URL::buildURL($category, \URLART_KATEGORIE, true);
-                if ($languageID > 0 && !Sprache::isDefaultLanguageActive() && \mb_strlen($category->cName_spr) > 0) {
+                if ($languageID > 0
+                    && !LanguageHelper::isDefaultLanguageActive()
+                    && \mb_strlen($category->cName_spr) > 0
+                ) {
                     $category->cName         = $category->cName_spr;
                     $category->cBeschreibung = $category->cBeschreibung_spr;
                 }
@@ -430,7 +433,7 @@ class KategorieListe
         if ((int)$conf['global']['kategorien_anzeigefilter'] === \EINSTELLUNGEN_KATEGORIEANZEIGEFILTER_ALLE) {
             return true;
         }
-        $languageID = (int)Sprache::getDefaultLanguage()->kSprache;
+        $languageID = (int)LanguageHelper::getDefaultLanguage()->kSprache;
         if ((int)$conf['global']['kategorien_anzeigefilter'] === \EINSTELLUNGEN_KATEGORIEANZEIGEFILTER_NICHTLEERE) {
             $categoryList = self::getCategoryList($customerGroupID, $languageID);
             if (isset($categoryList['ks'][$categoryID])) {

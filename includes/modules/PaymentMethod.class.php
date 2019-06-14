@@ -141,7 +141,7 @@ class PaymentMethod
      */
     public function getReturnURL($order)
     {
-        if (!isset($_SESSION['Zahlungsart']->nWaehrendBestellung)
+        if (isset($_SESSION['Zahlungsart']->nWaehrendBestellung)
             && (int)$_SESSION['Zahlungsart']->nWaehrendBestellung > 0
         ) {
             return Shop::getURL() . '/bestellvorgang.php';

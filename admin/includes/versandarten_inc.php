@@ -187,48 +187,48 @@ function gibGesetzteKundengruppen($customerGroupsString)
 }
 
 /**
- * @param int   $kVersandart
- * @param array $oSprache_arr
+ * @param int   $shippingMethodID
+ * @param array $languages
  * @return array
  */
-function getShippingLanguage(int $kVersandart, $oSprache_arr)
+function getShippingLanguage(int $shippingMethodID, $languages)
 {
-    $oVersandartSpracheAssoc_arr = [];
+    $localized = [];
     $oVersandartSprache_arr      = Shop::Container()->getDB()->selectAll(
         'tversandartsprache',
         'kVersandart',
-        $kVersandart
+        $shippingMethodID
     );
-    if (is_array($oSprache_arr)) {
-        foreach ($oSprache_arr as $oSprache) {
-            $oVersandartSpracheAssoc_arr[$oSprache->cISO] = new stdClass();
+    if (is_array($languages)) {
+        foreach ($languages as $language) {
+            $localized[$language->cISO] = new stdClass();
         }
     }
     foreach ($oVersandartSprache_arr as $oVersandartSprache) {
         if (isset($oVersandartSprache->kVersandart) && $oVersandartSprache->kVersandart > 0) {
-            $oVersandartSpracheAssoc_arr[$oVersandartSprache->cISOSprache] = $oVersandartSprache;
+            $localized[$oVersandartSprache->cISOSprache] = $oVersandartSprache;
         }
     }
 
-    return $oVersandartSpracheAssoc_arr;
+    return $localized;
 }
 
 /**
- * @param int $kVersandzuschlag
+ * @param int $feeID
  * @return array
  */
-function getZuschlagNames(int $kVersandzuschlag)
+function getZuschlagNames(int $feeID)
 {
     $names = [];
-    if (!$kVersandzuschlag) {
+    if (!$feeID) {
         return $names;
     }
-    $zuschlagnamen = Shop::Container()->getDB()->selectAll(
+    $localized = Shop::Container()->getDB()->selectAll(
         'tversandzuschlagsprache',
         'kVersandzuschlag',
-        $kVersandzuschlag
+        $feeID
     );
-    foreach ($zuschlagnamen as $name) {
+    foreach ($localized as $name) {
         $names[$name->cISOSprache] = $name->cName;
     }
 
@@ -236,14 +236,14 @@ function getZuschlagNames(int $kVersandzuschlag)
 }
 
 /**
- * @param string $cSearch
+ * @param string $query
  * @return array
  */
-function getShippingByName(string $cSearch)
+function getShippingByName(string $query)
 {
     $byName = [];
     $db     = Shop::Container()->getDB();
-    foreach (explode(',', $cSearch) as $cSearchPos) {
+    foreach (explode(',', $query) as $cSearchPos) {
         $cSearchPos = trim($cSearchPos);
         if (mb_strlen($cSearchPos) > 2) {
             $shippingByName_arr = $db->queryPrepared(

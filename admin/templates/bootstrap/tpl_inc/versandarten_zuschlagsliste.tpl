@@ -13,10 +13,10 @@
             <div class="table-responsive">
                 <table class="list table">
                     <tbody>
-                    {foreach $sprachen as $sprache}
-                        {assign var=cISO value=$sprache->cISO}
+                    {foreach $sprachen as $language}
+                        {assign var=cISO value=$language->getIso()}
                         <tr>
-                            <td width="35%">{__('showedName')} ({$sprache->cNameDeutsch})</td>
+                            <td width="35%">{__('showedName')} ({$language->getLocalizedName()})</td>
                             <td>{$zuschlag->angezeigterName[$cISO]}</td>
                         </tr>
                     {/foreach}
@@ -103,12 +103,12 @@
                         <input class="form-control" type="text" id="cName" name="cName" value="{if isset($oVersandzuschlag->cName)}{$oVersandzuschlag->cName}{/if}" tabindex="1" required/>
                     </div>
                     {assign var=idx value=1}
-                    {foreach $sprachen as $sprache}
-                        {assign var=cISO value=$sprache->cISO}
+                    {foreach $sprachen as $language}
+                        {assign var=cISO value=$language->getIso()}
                         {assign var=idx value=$idx+1}
                         <div class="input-group">
                             <span class="input-group-addon">
-                                <label for="cName_{$cISO}">{__('showedName')} ({$sprache->cNameDeutsch})</label>
+                                <label for="cName_{$cISO}">{__('showedName')} ({$language->getLocalizedName()})</label>
                             </span>
                             <input class="form-control" type="text" id="cName_{$cISO}" name="cName_{$cISO}" value="{if isset($oVersandzuschlag->oVersandzuschlagSprache_arr.$cISO->cName)}{$oVersandzuschlag->oVersandzuschlagSprache_arr.$cISO->cName}{/if}" tabindex="{$idx}" />
                         </div>

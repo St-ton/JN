@@ -8,14 +8,14 @@ namespace JTL\Extensions;
 
 use JsonSerializable;
 use JTL\Catalog\Product\Artikel;
-use JTL\DB\ReturnType;
-use JTL\Helpers\Text;
-use JTL\Helpers\Tax;
-use JTL\Nice;
 use JTL\Catalog\Product\Preise;
+use JTL\DB\ReturnType;
+use JTL\Helpers\Tax;
+use JTL\Helpers\Text;
+use JTL\Language\LanguageHelper;
+use JTL\Nice;
 use JTL\Session\Frontend;
 use JTL\Shop;
-use JTL\Sprache;
 use stdClass;
 
 /**
@@ -219,7 +219,7 @@ class Konfigitem implements JsonSerializable
             }
 
             if (!$languageID) {
-                $languageID = Shop::getLanguageID() ?? Sprache::getDefaultLanguage()->kSprache;
+                $languageID = Shop::getLanguageID() ?? LanguageHelper::getDefaultLanguage()->kSprache;
             }
             if (!$customerGroupID) {
                 $customerGroupID = Frontend::getCustomerGroup()->getID();

@@ -6,9 +6,9 @@
 
 namespace JTL\Extensions;
 
+use JTL\Language\LanguageHelper;
 use JTL\Nice;
 use JTL\Shop;
-use JTL\Sprache;
 use stdClass;
 
 /**
@@ -75,7 +75,7 @@ class Konfigitemsprache
             'kSprache',
             $languageID
         );
-        $defaultLanguage = Sprache::getDefaultLanguage();
+        $defaultLanguage = LanguageHelper::getDefaultLanguage();
         if ($item !== null && empty($item->cName)) {
             $localized   = Shop::Container()->getDB()->select(
                 'tkonfigitemsprache',

@@ -4,22 +4,22 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Catalog\Category\KategorieListe;
+use JTL\Catalog\Product\Artikel;
+use JTL\Customer\Kundengruppe;
+use JTL\DB\ReturnType;
+use JTL\Filter\Config;
+use JTL\Filter\ProductFilter;
 use JTL\Helpers\Request;
 use JTL\Helpers\Tax;
+use JTL\Helpers\Text;
 use JTL\Helpers\URL;
-use JTL\Catalog\Product\Artikel;
+use JTL\Language\LanguageHelper;
 use JTL\Media\Image;
-use JTL\Catalog\Category\KategorieListe;
-use JTL\Customer\Kundengruppe;
+use JTL\Media\MediaImage;
+use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Shopsetting;
-use JTL\Sprache;
-use JTL\Helpers\Text;
-use JTL\Media\MediaImage;
-use JTL\DB\ReturnType;
-use JTL\Session\Frontend;
-use JTL\Filter\ProductFilter;
-use JTL\Filter\Config;
 
 /**
  * @param string $nDatei
@@ -218,9 +218,9 @@ function generateSitemapXML()
     //  YYYY-MM-DD (eg 1997-07-16)
     //  YYYY-MM-DDThh:mmTZD (eg 1997-07-16T19:20+01:00)
     $defaultCustomerGroupID  = Kundengruppe::getDefaultGroupID();
-    $Sprachen                = Sprache::getAllLanguages();
-    $oSpracheAssoc_arr       = gibAlleSprachenAssoc($Sprachen);
-    $defaultLang             = Sprache::getDefaultLanguage(true);
+    $languages               = LanguageHelper::getAllLanguages();
+    $languageAssoc           = gibAlleSprachenAssoc($languages);
+    $defaultLang             = LanguageHelper::getDefaultLanguage(true);
     $defaultLangID           = (int)$defaultLang->kSprache;
     $_SESSION['kSprache']    = $defaultLangID;
     $_SESSION['cISOSprache'] = $defaultLang->cISO;
@@ -361,7 +361,7 @@ function generateSitemapXML()
         }
     }
     // Artikel sonstige Sprachen
-    foreach ($Sprachen as $SpracheTMP) {
+    foreach ($languages as $SpracheTMP) {
         if ($SpracheTMP->kSprache === $defaultLangID) {
             continue;
         }
@@ -448,7 +448,7 @@ function generateSitemapXML()
             ReturnType::QUERYSINGLE
         );
         while (($tlink = $res->fetch(PDO::FETCH_OBJ)) !== false) {
-            if (spracheEnthalten($tlink->cISOSprache, $Sprachen)) {
+            if (spracheEnthalten($tlink->cISOSprache, $languages)) {
                 $oSeo = $db->queryPrepared(
                     "SELECT cSeo
                         FROM tseo
@@ -457,7 +457,7 @@ function generateSitemapXML()
                             AND kSprache = :langID",
                     [
                         'linkID' => $tlink->kLink,
-                        'langID' => $oSpracheAssoc_arr[$tlink->cISOSprache]
+                        'langID' => $languageAssoc[$tlink->cISOSprache]
                     ],
                     ReturnType::SINGLE_OBJECT
                 );
@@ -524,7 +524,7 @@ function generateSitemapXML()
                 $tkategorie->kKategorie,
                 'kKategorie',
                 date_format(date_create($tkategorie->dLetzteAktualisierung), 'c'),
-                $Sprachen,
+                $languages,
                 $defaultLangID,
                 $nArtikelProSeite,
                 $conf
@@ -548,7 +548,7 @@ function generateSitemapXML()
             }
         }
         // Kategorien sonstige Sprachen
-        foreach ($Sprachen as $SpracheTMP) {
+        foreach ($languages as $SpracheTMP) {
             $res = $db->queryPrepared(
                 "SELECT tkategorie.kKategorie, tkategorie.dLetzteAktualisierung, tseo.cSeo
                     FROM tkategoriesprache, tkategorie
@@ -574,7 +574,7 @@ function generateSitemapXML()
                     $tkategorie->kKategorie,
                     'kKategorie',
                     date_format(date_create($tkategorie->dLetzteAktualisierung), 'c'),
-                    $Sprachen,
+                    $languages,
                     $SpracheTMP->kSprache,
                     $nArtikelProSeite,
                     $conf
@@ -619,7 +619,7 @@ function generateSitemapXML()
                 $oTag->kTag,
                 'kTag',
                 null,
-                $Sprachen,
+                $languages,
                 $defaultLangID,
                 $nArtikelProSeite,
                 $conf
@@ -641,7 +641,7 @@ function generateSitemapXML()
             }
         }
         // Tags sonstige Sprachen
-        foreach ($Sprachen as $SpracheTMP) {
+        foreach ($languages as $SpracheTMP) {
             if ($SpracheTMP->kSprache === $defaultLangID) {
                 continue;
             }
@@ -663,7 +663,7 @@ function generateSitemapXML()
                     $oTag->kTag,
                     'kTag',
                     null,
-                    $Sprachen,
+                    $languages,
                     $SpracheTMP->kSprache,
                     $nArtikelProSeite,
                     $conf
@@ -705,7 +705,7 @@ function generateSitemapXML()
                 $oHersteller->kHersteller,
                 'kHersteller',
                 null,
-                $Sprachen,
+                $languages,
                 $defaultLangID,
                 $nArtikelProSeite,
                 $conf
@@ -747,7 +747,7 @@ function generateSitemapXML()
                 $oSuchanfrage->kSuchanfrage,
                 'kSuchanfrage',
                 null,
-                $Sprachen,
+                $languages,
                 $defaultLangID,
                 $nArtikelProSeite,
                 $conf
@@ -769,7 +769,7 @@ function generateSitemapXML()
             }
         }
         // Livesuche sonstige Sprachen
-        foreach ($Sprachen as $SpracheTMP) {
+        foreach ($languages as $SpracheTMP) {
             if ($SpracheTMP->kSprache === $defaultLangID) {
                 continue;
             }
@@ -791,7 +791,7 @@ function generateSitemapXML()
                     $oSuchanfrage->kSuchanfrage,
                     'kSuchanfrage',
                     null,
-                    $Sprachen,
+                    $languages,
                     $SpracheTMP->kSprache,
                     $nArtikelProSeite,
                     $conf
@@ -1142,17 +1142,17 @@ function baueExportURL(int $kKey, $cKey, $lastUpdate, $languages, $langID, $prod
 }
 
 /**
- * @param array $Sprachen
+ * @param array $languages
  * @return array
  * @deprecated since 5.0.0
  */
-function gibAlleSprachenAssoc($Sprachen)
+function gibAlleSprachenAssoc($languages)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    $oSpracheAssoc_arr = [];
-    foreach ($Sprachen as $oSprache) {
-        $oSpracheAssoc_arr[$oSprache->cISO] = (int)$oSprache->kSprache;
+    $assoc = [];
+    foreach ($languages as $language) {
+        $assoc[$language->cISO] = (int)$language->kSprache;
     }
 
-    return $oSpracheAssoc_arr;
+    return $assoc;
 }

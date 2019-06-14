@@ -5,16 +5,16 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use JTL\Helpers\Form;
+use JTL\Alert\Alert;
+use JTL\Boxes\Admin\BoxAdmin;
 use JTL\Customer\Kundengruppe;
+use JTL\DB\ReturnType;
+use JTL\Helpers\Form;
+use JTL\Language\LanguageHelper;
+use JTL\Pagination\Pagination;
 use JTL\Shop;
 use JTL\Slide;
 use JTL\Slider;
-use JTL\Sprache;
-use JTL\DB\ReturnType;
-use JTL\Boxes\Admin\BoxAdmin;
-use JTL\Alert\Alert;
-use JTL\Pagination\Pagination;
 
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . 'toolsajax.server.php';
@@ -146,7 +146,7 @@ switch ($action) {
         }
         $slider = new Slider($db);
         $slider->load($kSlider, false);
-        $smarty->assign('oSprachen_arr', Sprache::getInstance()->gibInstallierteSprachen())
+        $smarty->assign('oSprachen_arr', LanguageHelper::getInstance()->gibInstallierteSprachen())
                ->assign('oKundengruppe_arr', Kundengruppe::getGroups())
                ->assign('oExtension', holeExtension($kSlider));
 
@@ -172,7 +172,7 @@ switch ($action) {
 
     case 'new':
         $smarty->assign('checked', 'checked="checked"')
-               ->assign('oSprachen_arr', Sprache::getInstance()->gibInstallierteSprachen())
+               ->assign('oSprachen_arr', LanguageHelper::getInstance()->gibInstallierteSprachen())
                ->assign('oKundengruppe_arr', Kundengruppe::getGroups())
                ->assign('oSlider', new Slider($db));
         break;

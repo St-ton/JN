@@ -32,6 +32,7 @@ use JTL\Helpers\ShippingMethod;
 use JTL\Helpers\Tax;
 use JTL\Helpers\Text;
 use JTL\Kampagne;
+use JTL\Language\LanguageHelper;
 use JTL\Pagination\Pagination;
 use JTL\Services\JTL\AlertServiceInterface;
 use JTL\Services\JTL\LinkServiceInterface;
@@ -40,7 +41,6 @@ use JTL\Shop;
 use JTL\Shopsetting;
 use JTL\SimpleMail;
 use JTL\Smarty\JTLSmarty;
-use JTL\Sprache;
 use Session;
 use stdClass;
 use Vergleichsliste;
@@ -107,7 +107,7 @@ class AccountController
         if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
             $customer = new Kunde($_SESSION['Kunde']->kKunde);
             if ($customer->kKunde > 0) {
-                $customer->angezeigtesLand = Sprache::getCountryCodeByCountryName($customer->cLand);
+                $customer->angezeigtesLand = LanguageHelper::getCountryCodeByCountryName($customer->cLand);
                 Frontend::getInstance()->setCustomer($customer);
             }
         }
@@ -472,7 +472,7 @@ class AccountController
         if ((int)$_SESSION['kSprache'] !== (int)$customer->kSprache && !empty($oISOSprache->cISO)) {
             $_SESSION['kSprache']        = (int)$customer->kSprache;
             $_SESSION['cISOSprache']     = $oISOSprache->cISO;
-            $_SESSION['currentLanguage'] = Sprache::getAllLanguages(1)[$customer->kSprache];
+            $_SESSION['currentLanguage'] = LanguageHelper::getAllLanguages(1)[$customer->kSprache];
             Shop::setLanguage($customer->kSprache, $oISOSprache->cISO);
             Shop::Lang()->setzeSprache($oISOSprache->cISO);
         }
@@ -1088,7 +1088,7 @@ class AccountController
             }
         }
         $step                               = 'bestellung';
-        $_SESSION['Kunde']->angezeigtesLand = Sprache::getCountryCodeByCountryName($_SESSION['Kunde']->cLand);
+        $_SESSION['Kunde']->angezeigtesLand = LanguageHelper::getCountryCodeByCountryName($_SESSION['Kunde']->cLand);
         $this->smarty->assign('Bestellung', $order)
             ->assign('billingAddress', $order->oRechnungsadresse)
             ->assign('Lieferadresse', $order->Lieferadresse ?? null);

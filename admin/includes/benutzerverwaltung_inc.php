@@ -4,21 +4,23 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use JTL\Backend\TwoFA;
-use JTL\Helpers\Request;
-use JTL\IO\IOResponse;
-use JTL\Shop;
-use JTL\Helpers\Text;
-use JTL\DB\ReturnType;
-use JTL\Smarty\JTLSmarty;
 use JTL\Alert\Alert;
+use JTL\Backend\TwoFA;
+use JTL\DB\ReturnType;
+use JTL\Helpers\Request;
+use JTL\Helpers\Text;
+use JTL\IO\IOResponse;
+use JTL\Language\LanguageHelper;
+use JTL\Shop;
+use JTL\Smarty\JTLSmarty;
 use function Functional\map;
+use function Functional\group;
 
 /**
  * @param int $kAdminlogin
  * @return null|stdClass
  */
-function getAdmin(int $kAdminlogin)
+function getAdmin(int $kAdminlogin): ?stdClass
 {
     return Shop::Container()->getDB()->select('tadminlogin', 'kAdminlogin', $kAdminlogin);
 }
@@ -58,7 +60,7 @@ function getAdminGroups(): array
 function getAdminDefPermissions(): array
 {
     $groups = Shop::Container()->getDB()->selectAll('tadminrechtemodul', [], [], '*', 'nSort ASC');
-    $perms  = \Functional\group(Shop::Container()->getDB()->selectAll('tadminrecht', [], []), function ($e) {
+    $perms  = group(Shop::Container()->getDB()->selectAll('tadminrecht', [], []), function ($e) {
         return $e->kAdminrechtemodul;
     });
     foreach ($groups as $group) {
@@ -79,7 +81,7 @@ function getAdminDefPermissions(): array
  * @param int $kAdminlogingruppe
  * @return null|stdClass
  */
-function getAdminGroup(int $kAdminlogingruppe)
+function getAdminGroup(int $kAdminlogingruppe): ?stdClass
 {
     return Shop::Container()->getDB()->select('tadminlogingruppe', 'kAdminlogingruppe', $kAdminlogingruppe);
 }
@@ -88,7 +90,7 @@ function getAdminGroup(int $kAdminlogingruppe)
  * @param int $groupID
  * @return array
  */
-function getAdminGroupPermissions(int $groupID)
+function getAdminGroupPermissions(int $groupID): array
 {
     $permissions = [];
     $data        = Shop::Container()->getDB()->selectAll('tadminrechtegruppe', 'kAdminlogingruppe', $groupID);
@@ -104,7 +106,7 @@ function getAdminGroupPermissions(int $groupID)
  * @param string|int $value
  * @return bool
  */
-function getInfoInUse($row, $value)
+function getInfoInUse($row, $value): bool
 {
     return is_object(Shop::Container()->getDB()->select('tadminlogin', $row, $value));
 }
@@ -112,9 +114,10 @@ function getInfoInUse($row, $value)
 /**
  * @param string $languageTag
  */
-function changeAdminUserLanguage(string $languageTag)
+function changeAdminUserLanguage(string $languageTag): void
 {
     $_SESSION['AdminAccount']->language = $languageTag;
+    $_SESSION['Sprachen']               = LanguageHelper::getInstance()->gibInstallierteSprachen();
 
     Shop::Container()->getDB()->update(
         'tadminlogin',
@@ -128,7 +131,7 @@ function changeAdminUserLanguage(string $languageTag)
  * @param int $kAdminlogin
  * @return array
  */
-function benutzerverwaltungGetAttributes(int $kAdminlogin)
+function benutzerverwaltungGetAttributes(int $kAdminlogin): array
 {
     $extAttribs = Shop::Container()->getDB()->selectAll(
         'tadminloginattribut',
@@ -222,7 +225,7 @@ function benutzerverwaltungDeleteAttributes(stdClass $oAccount): bool
  * @param array $messages
  * @return string
  */
-function benutzerverwaltungActionAccountLock(array &$messages)
+function benutzerverwaltungActionAccountLock(array &$messages): string
 {
     $kAdminlogin = (int)$_POST['id'];
     $account     = Shop::Container()->getDB()->select('tadminlogin', 'kAdminlogin', $kAdminlogin);
@@ -256,7 +259,7 @@ function benutzerverwaltungActionAccountLock(array &$messages)
  * @param array $messages
  * @return string
  */
-function benutzerverwaltungActionAccountUnLock(array &$messages)
+function benutzerverwaltungActionAccountUnLock(array &$messages): string
 {
     $kAdminlogin = (int)$_POST['id'];
     $account     = Shop::Container()->getDB()->select('tadminlogin', 'kAdminlogin', $kAdminlogin);
@@ -285,7 +288,7 @@ function benutzerverwaltungActionAccountUnLock(array &$messages)
  * @param array     $messages
  * @return string
  */
-function benutzerverwaltungActionAccountEdit(JTLSmarty $smarty, array &$messages)
+function benutzerverwaltungActionAccountEdit(JTLSmarty $smarty, array &$messages): string
 {
     $_SESSION['AdminAccount']->TwoFA_valid = true;
 
@@ -362,7 +365,8 @@ function benutzerverwaltungActionAccountEdit(JTLSmarty $smarty, array &$messages
                     WHERE kAdminlogingruppe = 1',
                 ReturnType::SINGLE_OBJECT
             );
-            if ((int)$oOldAcc->kAdminlogingruppe === ADMINGROUP
+            if ($oOldAcc !== null
+                && (int)$oOldAcc->kAdminlogingruppe === ADMINGROUP
                 && (int)$oTmpAcc->kAdminlogingruppe !== ADMINGROUP
                 && $oCount->nCount <= 1
             ) {
@@ -495,7 +499,7 @@ function benutzerverwaltungActionAccountEdit(JTLSmarty $smarty, array &$messages
  * @param array $messages
  * @return string
  */
-function benutzerverwaltungActionAccountDelete(array &$messages)
+function benutzerverwaltungActionAccountDelete(array &$messages): string
 {
     $kAdminlogin = (int)$_POST['id'];
     $oCount      = Shop::Container()->getDB()->query(
@@ -539,7 +543,7 @@ function benutzerverwaltungActionAccountDelete(array &$messages)
  * @param array     $messages
  * @return string
  */
-function benutzerverwaltungActionGroupEdit(JTLSmarty $smarty, array &$messages)
+function benutzerverwaltungActionGroupEdit(JTLSmarty $smarty, array &$messages): string
 {
     $db                = Shop::Container()->getDB();
     $bDebug            = isset($_POST['debug']);
@@ -635,7 +639,7 @@ function benutzerverwaltungActionGroupEdit(JTLSmarty $smarty, array &$messages)
  * @param array $messages
  * @return string
  */
-function benutzerverwaltungActionGroupDelete(array &$messages)
+function benutzerverwaltungActionGroupDelete(array &$messages): string
 {
     $kAdminlogingruppe = (int)$_POST['id'];
     $oResult           = Shop::Container()->getDB()->query(
@@ -662,22 +666,20 @@ function benutzerverwaltungActionGroupDelete(array &$messages)
 }
 
 /**
- * @param JTLSmarty $smarty
- * @param array     $messages
+ *
  */
-function benutzerverwaltungActionQuickChangeLanguage(JTLSmarty $smarty, array &$messages)
+function benutzerverwaltungActionQuickChangeLanguage()
 {
     $language = Request::verifyGPDataString('language');
     changeAdminUserLanguage($language);
-
     header('Location: ' . $_SERVER['HTTP_REFERER']);
 }
 
 /**
- * @param string     $cTab
+ * @param string     $tab
  * @param array|null $messages
  */
-function benutzerverwaltungRedirect($cTab = '', array &$messages = null)
+function benutzerverwaltungRedirect($tab = '', array &$messages = null)
 {
     if (isset($messages['notice']) && !empty($messages['notice'])) {
         $_SESSION['benutzerverwaltung.notice'] = $messages['notice'];
@@ -691,8 +693,8 @@ function benutzerverwaltungRedirect($cTab = '', array &$messages = null)
     }
 
     $urlParams = null;
-    if (!empty($cTab)) {
-        $urlParams = ['tab' => Text::filterXSS($cTab)];
+    if (!empty($tab)) {
+        $urlParams = ['tab' => Text::filterXSS($tab)];
     }
 
     header('Location: benutzerverwaltung.php' . (is_array($urlParams)
@@ -753,7 +755,7 @@ function benutzerverwaltungFinalize($step, JTLSmarty $smarty, array &$messages)
  * @return IOResponse
  * @throws Exception
  */
-function getRandomPasswordIO()
+function getRandomPasswordIO(): IOResponse
 {
     $response = new IOResponse();
     $password = Shop::Container()->getPasswordService()->generate(PASSWORD_DEFAULT_LENGTH);

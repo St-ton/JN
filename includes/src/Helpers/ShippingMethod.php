@@ -6,18 +6,18 @@
 
 namespace JTL\Helpers;
 
-use function Functional\some;
-use JTL\Catalog\Product\Artikel;
 use JTL\Cart\Warenkorb;
-use JTL\DB\ReturnType;
-use JTL\Customer\Kundengruppe;
+use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\Preise;
+use JTL\Checkout\Versandart;
+use JTL\Country\Country;
+use JTL\Customer\Kundengruppe;
+use JTL\DB\ReturnType;
+use JTL\Language\LanguageHelper;
 use JTL\Session\Frontend;
 use JTL\Shop;
-use JTL\Sprache;
-use JTL\Checkout\Versandart;
 use stdClass;
-use JTL\Country\Country;
+use function Functional\some;
 
 /**
  * Class ShippingMethod
@@ -226,18 +226,18 @@ class ShippingMethod
             $shippingMethod->angezeigterHinweistext    = [];
             $shippingMethod->cLieferdauer              = [];
             $shippingMethod->specificShippingcosts_arr = null;
-            foreach ($_SESSION['Sprachen'] as $Sprache) {
+            foreach ($_SESSION['Sprachen'] as $language) {
                 $localized = $db->select(
                     'tversandartsprache',
                     'kVersandart',
                     (int)$shippingMethod->kVersandart,
                     'cISOSprache',
-                    $Sprache->cISO
+                    $language->cISO
                 );
                 if (isset($localized->cName)) {
-                    $shippingMethod->angezeigterName[$Sprache->cISO]        = $localized->cName;
-                    $shippingMethod->angezeigterHinweistext[$Sprache->cISO] = $localized->cHinweistextShop;
-                    $shippingMethod->cLieferdauer[$Sprache->cISO]           = $localized->cLieferdauer;
+                    $shippingMethod->angezeigterName[$language->cISO]        = $localized->cName;
+                    $shippingMethod->angezeigterHinweistext[$language->cISO] = $localized->cHinweistextShop;
+                    $shippingMethod->cLieferdauer[$language->cISO]           = $localized->cLieferdauer;
                 }
             }
             if ($shippingMethod->fEndpreis < $minSum) {
@@ -334,7 +334,7 @@ class ShippingMethod
                         Frontend::getCart()->PositionenArr
                     ))
                     ->assign('Versandarten', $shippingMethods)
-                    ->assign('Versandland', Sprache::getCountryCodeByCountryName($country))
+                    ->assign('Versandland', LanguageHelper::getCountryCodeByCountryName($country))
                     ->assign('VersandPLZ', Text::filterXSS($zip));
             } else {
                 $errorMsg = Shop::Lang()->get('noDispatchAvailable');
@@ -835,8 +835,8 @@ class ShippingMethod
                         if ($price >= 0 && $limit > 0 && $amount <= $limit) {
                             $item        = new stdClass();
                             $item->cName = [];
-                            foreach ($_SESSION['Sprachen'] as $Sprache) {
-                                $item->cName[$Sprache->cISO] = Shop::Lang()->get('shippingFor', 'checkout') .
+                            foreach ($_SESSION['Sprachen'] as $language) {
+                                $item->cName[$language->cISO] = Shop::Lang()->get('shippingFor', 'checkout') .
                                     ' ' . $product->cName . ' (' . $countries . ')';
                             }
                             $item->fKosten = $price;
@@ -864,8 +864,8 @@ class ShippingMethod
                     $item = new stdClass();
                     //posname lokalisiert ablegen
                     $item->cName = [];
-                    foreach ($_SESSION['Sprachen'] as $Sprache) {
-                        $item->cName[$Sprache->cISO] = Shop::Lang()->get('shippingFor', 'checkout') . ' ' .
+                    foreach ($_SESSION['Sprachen'] as $language) {
+                        $item->cName[$language->cISO] = Shop::Lang()->get('shippingFor', 'checkout') . ' ' .
                             $product->cName . ' (' . $countries . ')';
                     }
                     $item->fKosten = (float)\str_replace(',', '.', $fKosten) * $amount;

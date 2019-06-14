@@ -6,15 +6,10 @@
 
 namespace JTL;
 
-use JTL\DB\ReturnType;
-use JTL\Mail\Renderer\SmartyRenderer;
-use JTL\Mail\Hydrator\TestHydrator;
-use Exception;
-use JTL\Smarty\MailSmarty;
-
 /**
  * Class Emailvorlage
  * @package JTL
+ * @deprecated since 5.0.0
  */
 class Emailvorlage
 {
@@ -101,6 +96,7 @@ class Emailvorlage
      */
     public function __construct(int $kEmailvorlage = 0, bool $bPlugin = false)
     {
+        \trigger_error(__CLASS__. ' is deprecated.', \E_USER_DEPRECATED);
         if ($kEmailvorlage > 0) {
             $this->loadFromDB($kEmailvorlage, $bPlugin);
         }
@@ -394,6 +390,7 @@ class Emailvorlage
      */
     public static function load(string $modulId, $isPlugin = false): ?self
     {
+        \trigger_error(__CLASS__. ' is deprecated.', \E_USER_DEPRECATED);
         $obj = Shop::Container()->getDB()->select(
             'temailvorlage',
             'cModulId',

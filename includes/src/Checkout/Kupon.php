@@ -706,19 +706,19 @@ class Kupon
     {
         $translationList = [];
         if (isset($_SESSION['Sprachen'])) {
-            foreach ($_SESSION['Sprachen'] as $Sprache) {
-                $name_spr                        = Shop::Container()->getDB()->select(
+            foreach ($_SESSION['Sprachen'] as $language) {
+                $localized                        = Shop::Container()->getDB()->select(
                     'tkuponsprache',
                     'kKupon',
                     $kKupon,
                     'cISOSprache',
-                    $Sprache->cISO,
+                    $language->cISO,
                     null,
                     null,
                     false,
                     'cName'
                 );
-                $translationList[$Sprache->cISO] = $name_spr->cName ?? '';
+                $translationList[$language->cISO] = $localized->cName ?? '';
             }
         }
 
@@ -1056,27 +1056,27 @@ class Kupon
 
         $special        = new stdClass();
         $special->cName = $coupon->translationList;
-        foreach ($_SESSION['Sprachen'] as $Sprache) {
+        foreach ($_SESSION['Sprachen'] as $language) {
             if ($coupon->cWertTyp === 'prozent'
                 && $coupon->nGanzenWKRabattieren === 0
                 && $coupon->cKuponTyp !== self::TYPE_NEWCUSTOMER
             ) {
-                $special->cName[$Sprache->cISO] .= ' ' . $coupon->fWert . '% ';
-                $discount                        = Shop::Container()->getDB()->select(
+                $special->cName[$language->cISO] .= ' ' . $coupon->fWert . '% ';
+                $discount                         = Shop::Container()->getDB()->select(
                     'tsprachwerte',
                     'cName',
                     'discountForArticle',
                     'kSprachISO',
-                    $Sprache->kSprache,
+                    $language->kSprache,
                     null,
                     null,
                     false,
                     'cWert'
                 );
 
-                $special->discountForArticle[$Sprache->cISO] = $discount->cWert;
+                $special->discountForArticle[$language->cISO] = $discount->cWert;
             } elseif ($coupon->cWertTyp === 'prozent') {
-                $special->cName[$Sprache->cISO] .= ' ' . $coupon->fWert . '%';
+                $special->cName[$language->cISO] .= ' ' . $coupon->fWert . '%';
             }
         }
         if (isset($productNames)) {

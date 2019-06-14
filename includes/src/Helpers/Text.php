@@ -8,8 +8,8 @@ namespace JTL\Helpers;
 
 use Exception;
 use JTL\DB\ReturnType;
+use JTL\Language\LanguageHelper;
 use JTL\Shop;
-use JTL\Sprache;
 use stdClass;
 
 /**
@@ -648,7 +648,7 @@ class Text
             return $text;
         }
         if (!isset($_SESSION['kSprache'])) {
-            $language   = Sprache::getDefaultLanguage();
+            $language   = LanguageHelper::getDefaultLanguage();
             $languageID = (int)$language->kSprache;
         } else {
             $languageID = Shop::getLanguageID();
@@ -684,7 +684,7 @@ class Text
                     $item->cKey     = 'kArtikel';
                     $table          = 'tartikel';
                     $locSQL         = '';
-                    if (Shop::getLanguageID() > 0 && !Sprache::isDefaultLanguageActive()) {
+                    if (Shop::getLanguageID() > 0 && !LanguageHelper::isDefaultLanguageActive()) {
                         $table  = 'tartikelsprache';
                         $locSQL = ' AND tartikelsprache.kSprache = ' . Shop::getLanguageID();
                     }
@@ -711,7 +711,7 @@ class Text
                     $item->cKey       = 'kKategorie';
                     $table            = 'tkategorie';
                     $locSQL           = '';
-                    if ($languageID > 0 && !Sprache::isDefaultLanguageActive()) {
+                    if ($languageID > 0 && !LanguageHelper::isDefaultLanguageActive()) {
                         $table  = 'tkategoriesprache';
                         $locSQL = ' AND tkategoriesprache.kSprache = ' . $languageID;
                     }

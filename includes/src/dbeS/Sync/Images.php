@@ -1353,7 +1353,7 @@ final class Images extends AbstractSync
             if ($brandingSize > 0) {
                 $brandingNewWidth  = \round(($imageWidth * $brandingSize) / 100.0);
                 $brandingNewHeight = \round(($brandingNewWidth / $brandingWidth) * $brandingHeight);
-                $imageBranding    = $this->imageloadAlpha($brandingImage, $brandingNewWidth, $brandingNewHeight, true);
+                $imageBranding     = $this->imageloadAlpha($brandingImage, $brandingNewWidth, $brandingNewHeight, true);
             }
             $brandingPosX = 0;
             $brandingPosY = 0;

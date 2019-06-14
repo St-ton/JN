@@ -98,14 +98,8 @@ $similarArticles = (int)$Einstellungen['artikeldetails']['artikeldetails_aehnlic
     : [];
 // Lade VariationKombiKind
 if (Shop::$kVariKindArtikel > 0) {
-    $oVariKindArtikel      = new Artikel();
-    $options               = Artikel::getDefaultOptions();
-    $options->nVariationen = 1;
-    if (isset($Einstellungen['artikeldetails']['artikeldetails_stueckliste_anzeigen'])
-        && $Einstellungen['artikeldetails']['artikeldetails_stueckliste_anzeigen'] === 'Y'
-    ) {
-        $options->nStueckliste = 1;
-    }
+    $oVariKindArtikel = new Artikel();
+    $options          = Artikel::getDetailOptions();
     $oVariKindArtikel->fuelleArtikel(Shop::$kVariKindArtikel, $options);
     if ($oVariKindArtikel !== null && $oVariKindArtikel->kArtikel > 0) {
         $oVariKindArtikel->verfuegbarkeitsBenachrichtigung = gibVerfuegbarkeitsformularAnzeigen(

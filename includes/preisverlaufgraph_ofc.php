@@ -39,12 +39,12 @@ function expandPriceArray($data, $max)
 }
 
 if (isset($_GET['kArtikel'])) {
-    $session       = Frontend::getInstance();
-    $conf          = Shop::getSettings([CONF_PREISVERLAUF]);
-    $kArtikel      = (int)$_GET['kArtikel'];
-    $kKundengruppe = (int)$_GET['kKundengruppe'];
-    $kSteuerklasse = (int)$_GET['kSteuerklasse'];
-    $nMonat        = (int)$conf['preisverlauf']['preisverlauf_anzahl_monate'];
+    $session         = Frontend::getInstance();
+    $conf            = Shop::getSettings([CONF_PREISVERLAUF]);
+    $productID       = (int)$_GET['kArtikel'];
+    $customerGroupID = (int)$_GET['kKundengruppe'];
+    $taxClassID      = (int)$_GET['kSteuerklasse'];
+    $month           = (int)$conf['preisverlauf']['preisverlauf_anzahl_monate'];
 
     if (count($conf) > 0) {
         $priceConfig           = new stdClass();
@@ -53,7 +53,7 @@ if (isset($_GET['kArtikel'])) {
             ? 0
             : $_GET['fMwSt'];
 
-        $history = (new Preisverlauf())->gibPreisverlauf($kArtikel, $kKundengruppe, $nMonat);
+        $history = (new Preisverlauf())->gibPreisverlauf($productID, $customerGroupID, $month);
         $history = array_reverse($history);
         $data    = [];
         foreach ($history as $item) {

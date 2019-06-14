@@ -55,26 +55,26 @@ class Trennzeichen
     /**
      * Trennzeichen constructor.
      *
-     * @param int $kTrennzeichen
+     * @param int $id
      */
-    public function __construct(int $kTrennzeichen = 0)
+    public function __construct(int $id = 0)
     {
-        if ($kTrennzeichen > 0) {
-            $this->loadFromDB($kTrennzeichen);
+        if ($id > 0) {
+            $this->loadFromDB($id);
         }
     }
 
     /**
      * Loads database member into class member
      *
-     * @param int $kTrennzeichen
+     * @param int $id
      * @return $this
      */
-    private function loadFromDB(int $kTrennzeichen = 0): self
+    private function loadFromDB(int $id = 0): self
     {
-        $cacheID = 'units_lfdb_' . $kTrennzeichen;
+        $cacheID = 'units_lfdb_' . $id;
         if (($data = Shop::Container()->getCache()->get($cacheID)) === false) {
-            $data = Shop::Container()->getDB()->select('ttrennzeichen', 'kTrennzeichen', $kTrennzeichen);
+            $data = Shop::Container()->getDB()->select('ttrennzeichen', 'kTrennzeichen', $id);
             Shop::Container()->getCache()->set($cacheID, $data, [\CACHING_GROUP_CORE]);
         }
         if (isset($data->kTrennzeichen) && $data->kTrennzeichen > 0) {
@@ -91,23 +91,23 @@ class Trennzeichen
      * so try to use static class variable and object cache to avoid
      * unnecessary sql request
      *
-     * @param int $nEinheit
-     * @param int $kSprache
+     * @param int $unitID
+     * @param int $languageID
      * @return mixed
      */
-    private static function getUnitObject(int $nEinheit, int $kSprache)
+    private static function getUnitObject(int $unitID, int $languageID)
     {
-        if (isset(self::$unitObject[$kSprache][$nEinheit])) {
-            return self::$unitObject[$kSprache][$nEinheit];
+        if (isset(self::$unitObject[$languageID][$unitID])) {
+            return self::$unitObject[$languageID][$unitID];
         }
-        $cacheID = 'units_' . $nEinheit . '_' . $kSprache;
+        $cacheID = 'units_' . $unitID . '_' . $languageID;
         if (($data = Shop::Container()->getCache()->get($cacheID)) === false) {
             $data = Shop::Container()->getDB()->select(
                 'ttrennzeichen',
                 'nEinheit',
-                $nEinheit,
+                $unitID,
                 'kSprache',
-                $kSprache
+                $languageID
             );
             if ($data !== null) {
                 $data->kTrennzeichen   = (int)$data->kTrennzeichen;
@@ -118,10 +118,10 @@ class Trennzeichen
 
             Shop::Container()->getCache()->set($cacheID, $data, [\CACHING_GROUP_CORE]);
         }
-        if (!isset(self::$unitObject[$kSprache])) {
-            self::$unitObject[$kSprache] = [];
+        if (!isset(self::$unitObject[$languageID])) {
+            self::$unitObject[$languageID] = [];
         }
-        self::$unitObject[$kSprache][$nEinheit] = $data;
+        self::$unitObject[$languageID][$unitID] = $data;
 
         return $data;
     }
@@ -129,27 +129,27 @@ class Trennzeichen
     /**
      * Loads database member into class member
      *
-     * @param int $nEinheit
-     * @param int $kSprache
-     * @param int $fAmount
+     * @param int $unitID
+     * @param int $languageID
+     * @param int $qty
      * @return int|string|Trennzeichen
      */
-    public static function getUnit(int $nEinheit, int $kSprache, $fAmount = -1)
+    public static function getUnit(int $unitID, int $languageID, $qty = -1)
     {
-        if (!$kSprache) {
-            $oSprache = Sprache::getDefaultLanguage();
-            $kSprache = (int)$oSprache->kSprache;
+        if (!$languageID) {
+            $oSprache   = Sprache::getDefaultLanguage();
+            $languageID = (int)$oSprache->kSprache;
         }
 
-        if ($nEinheit > 0 && $kSprache > 0) {
-            $data = self::getUnitObject($nEinheit, $kSprache);
-            if ($data === null && self::insertMissingRow($nEinheit, $kSprache) === 1) {
-                $data = self::getUnitObject($nEinheit, $kSprache);
+        if ($unitID > 0 && $languageID > 0) {
+            $data = self::getUnitObject($unitID, $languageID);
+            if ($data === null && self::insertMissingRow($unitID, $languageID) === 1) {
+                $data = self::getUnitObject($unitID, $languageID);
             }
             if (isset($data->kTrennzeichen) && $data->kTrennzeichen > 0) {
-                return $fAmount >= 0
+                return $qty >= 0
                     ? \number_format(
-                        (float)$fAmount,
+                        (float)$qty,
                         $data->nDezimalstellen,
                         $data->cDezimalZeichen,
                         $data->cTausenderZeichen
@@ -158,17 +158,17 @@ class Trennzeichen
             }
         }
 
-        return $fAmount;
+        return $qty;
     }
 
     /**
      * Insert missing trennzeichen
      *
-     * @param int $unit
+     * @param int $unitID
      * @param int $languageID
      * @return mixed|bool
      */
-    public static function insertMissingRow(int $unit, int $languageID)
+    public static function insertMissingRow(int $unitID, int $languageID)
     {
         // Standardwert [kSprache][nEinheit]
         $rows = [];
@@ -189,10 +189,10 @@ class Trennzeichen
                 'cTausenderZeichen' => '.'
             ];
         }
-        if ($unit > 0 && $languageID > 0) {
-            if (!isset($rows[$languageID][$unit])) {
-                $rows[$languageID]        = [];
-                $rows[$languageID][$unit] = [
+        if ($unitID > 0 && $languageID > 0) {
+            if (!isset($rows[$languageID][$unitID])) {
+                $rows[$languageID]          = [];
+                $rows[$languageID][$unitID] = [
                     'nDezimalstellen'   => 2,
                     'cDezimalZeichen'   => ',',
                     'cTausenderZeichen' => '.'
@@ -204,9 +204,9 @@ class Trennzeichen
                 "INSERT INTO `ttrennzeichen` 
                     (`kTrennzeichen`, `kSprache`, `nEinheit`, `nDezimalstellen`, `cDezimalZeichen`, `cTausenderZeichen`)
                     VALUES (
-                      NULL, {$languageID}, {$unit}, {$rows[$languageID][$unit]['nDezimalstellen']}, 
-                      '{$rows[$languageID][$unit]['cDezimalZeichen']}',
-                    '{$rows[$languageID][$unit]['cTausenderZeichen']}')",
+                      NULL, {$languageID}, {$unitID}, {$rows[$languageID][$unitID]['nDezimalstellen']}, 
+                      '{$rows[$languageID][$unitID]['cDezimalZeichen']}',
+                    '{$rows[$languageID][$unitID]['cTausenderZeichen']}')",
                 ReturnType::AFFECTED_ROWS
             );
         }
@@ -215,25 +215,25 @@ class Trennzeichen
     }
 
     /**
-     * @param int $kSprache
+     * @param int $languageID
      * @return array
      */
-    public static function getAll(int $kSprache): array
+    public static function getAll(int $languageID): array
     {
-        $cacheID = 'units_all_' . $kSprache;
+        $cacheID = 'units_all_' . $languageID;
         if (($all = Shop::Container()->getCache()->get($cacheID)) === false) {
             $all = [];
-            if ($kSprache > 0) {
+            if ($languageID > 0) {
                 $data = Shop::Container()->getDB()->selectAll(
                     'ttrennzeichen',
                     'kSprache',
-                    $kSprache,
+                    $languageID,
                     'kTrennzeichen',
                     'nEinheit'
                 );
                 foreach ($data as $item) {
-                    $oTrennzeichen                     = new self($item->kTrennzeichen);
-                    $all[$oTrennzeichen->getEinheit()] = $oTrennzeichen;
+                    $sep                     = new self((int)$item->kTrennzeichen);
+                    $all[$sep->getEinheit()] = $sep;
                 }
             }
             Shop::Container()->getCache()->set($cacheID, $all, [\CACHING_GROUP_CORE]);
@@ -243,10 +243,10 @@ class Trennzeichen
     }
 
     /**
-     * @param bool $bPrim
+     * @param bool $primary
      * @return bool|int
      */
-    public function save(bool $bPrim = true)
+    public function save(bool $primary = true)
     {
         $data = new stdClass();
         foreach (\array_keys(\get_object_vars($this)) as $member) {
@@ -254,10 +254,10 @@ class Trennzeichen
         }
         unset($data->kTrennzeichen);
 
-        $kPrim = Shop::Container()->getDB()->insert('ttrennzeichen', $data);
+        $id = Shop::Container()->getDB()->insert('ttrennzeichen', $data);
 
-        if ($kPrim > 0) {
-            return $bPrim ? $kPrim : true;
+        if ($id > 0) {
+            return $primary ? $id : true;
         }
 
         return false;
@@ -298,12 +298,12 @@ class Trennzeichen
     }
 
     /**
-     * @param int $kSprache
+     * @param int $languageID
      * @return $this
      */
-    public function setSprache(int $kSprache): self
+    public function setSprache(int $languageID): self
     {
-        $this->kSprache = $kSprache;
+        $this->kSprache = $languageID;
 
         return $this;
     }

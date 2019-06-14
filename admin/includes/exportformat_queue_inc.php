@@ -270,11 +270,11 @@ function holeExportformatQueueBearbeitet($hours)
     } else {
         $hours = (int)$hours;
     }
-    $kSprache = isset($_SESSION['kSprache']) ? (int)$_SESSION['kSprache'] : null;
-    if (!$kSprache) {
-        $oSpracheTMP = Shop::Container()->getDB()->select('tsprache', 'cShopStandard', 'Y');
-        if (isset($oSpracheTMP->kSprache) && $oSpracheTMP->kSprache > 0) {
-            $kSprache = (int)$oSpracheTMP->kSprache;
+    $languageID = isset($_SESSION['kSprache']) ? (int)$_SESSION['kSprache'] : null;
+    if (!$languageID) {
+        $language = Shop::Container()->getDB()->select('tsprache', 'cShopStandard', 'Y');
+        if (isset($language->kSprache) && $language->kSprache > 0) {
+            $languageID = (int)$language->kSprache;
         } else {
             return false;
         }
@@ -297,7 +297,7 @@ function holeExportformatQueueBearbeitet($hours)
                     ON twaehrung.kWaehrung = texportformat.kWaehrung
             WHERE DATE_SUB(NOW(), INTERVAL :hrs HOUR) < texportformatqueuebearbeitet.dZuletztGelaufen
             ORDER BY texportformatqueuebearbeitet.dZuletztGelaufen DESC",
-        ['lid' => $kSprache, 'hrs' => $hours],
+        ['lid' => $languageID, 'hrs' => $hours],
         ReturnType::ARRAY_OF_OBJECTS
     );
 }

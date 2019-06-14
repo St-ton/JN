@@ -691,10 +691,10 @@ function gibStepZahlung()
     );
     $packagings      = ShippingMethod::getPossiblePackagings($kKundengruppe);
     if (!empty($packagings) && $cart->posTypEnthalten(C_WARENKORBPOS_TYP_VERPACKUNG)) {
-        foreach ($cart->PositionenArr as $position) {
-            if ($position->nPosTyp === C_WARENKORBPOS_TYP_VERPACKUNG) {
+        foreach ($cart->PositionenArr as $item) {
+            if ($item->nPosTyp === C_WARENKORBPOS_TYP_VERPACKUNG) {
                 foreach ($packagings as $oPack) {
-                    if ($oPack->cName === $position->cName[$oPack->cISOSprache]) {
+                    if ($oPack->cName === $item->cName[$oPack->cISOSprache]) {
                         $oPack->bWarenkorbAktiv = true;
                     }
                 }
@@ -819,9 +819,9 @@ function gibStepBestaetigung($get)
         && !empty($_SESSION['Versandart']->angezeigterHinweistext[$_SESSION['cISOSprache']])
         && count($cart->PositionenArr) > 0
     ) {
-        foreach ($cart->PositionenArr as $oPosition) {
-            if ((int)$oPosition->nPosTyp === C_WARENKORBPOS_TYP_VERSANDPOS) {
-                $oPosition->cHinweis = $_SESSION['Versandart']->angezeigterHinweistext[$_SESSION['cISOSprache']];
+        foreach ($cart->PositionenArr as $item) {
+            if ((int)$item->nPosTyp === C_WARENKORBPOS_TYP_VERSANDPOS) {
+                $item->cHinweis = $_SESSION['Versandart']->angezeigterHinweistext[$_SESSION['cISOSprache']];
             }
         }
     }
@@ -857,11 +857,11 @@ function gibStepVersand(): void
     );
     $packagings      = ShippingMethod::getPossiblePackagings($kKundengruppe);
     if (!empty($packagings) && $cart->posTypEnthalten(C_WARENKORBPOS_TYP_VERPACKUNG)) {
-        foreach ($cart->PositionenArr as $oPos) {
-            if ($oPos->nPosTyp === C_WARENKORBPOS_TYP_VERPACKUNG) {
-                foreach ($packagings as $oPack) {
-                    if ($oPack->cName === $oPos->cName[$oPack->cISOSprache]) {
-                        $oPack->bWarenkorbAktiv = true;
+        foreach ($cart->PositionenArr as $item) {
+            if ($item->nPosTyp === C_WARENKORBPOS_TYP_VERPACKUNG) {
+                foreach ($packagings as $packaging) {
+                    if ($packaging->cName === $item->cName[$packaging->cISOSprache]) {
+                        $packaging->bWarenkorbAktiv = true;
                     }
                 }
             }
@@ -2328,15 +2328,15 @@ function kuponAnnehmen($coupon)
 function gibGesamtsummeKuponartikelImWarenkorb($coupon, array $cartPositions)
 {
     $total = 0;
-    foreach ($cartPositions as $position) {
-        if ($position->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL
-            && warenkorbKuponFaehigArtikel($coupon, [$position])
-            && warenkorbKuponFaehigHersteller($coupon, [$position])
-            && warenkorbKuponFaehigKategorien($coupon, [$position])
+    foreach ($cartPositions as $item) {
+        if ($item->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL
+            && warenkorbKuponFaehigArtikel($coupon, [$item])
+            && warenkorbKuponFaehigHersteller($coupon, [$item])
+            && warenkorbKuponFaehigKategorien($coupon, [$item])
         ) {
-            $total += $position->fPreis *
-                $position->nAnzahl *
-                ((100 + Tax::getSalesTax($position->kSteuerklasse)) / 100);
+            $total += $item->fPreis
+                * $item->nAnzahl
+                * ((100 + Tax::getSalesTax($item->kSteuerklasse)) / 100);
         }
     }
 
@@ -2345,77 +2345,74 @@ function gibGesamtsummeKuponartikelImWarenkorb($coupon, array $cartPositions)
 
 /**
  * @param Kupon|object $coupon
- * @param array $cartPositions
+ * @param array $items
  * @return bool
  */
-function warenkorbKuponFaehigArtikel($coupon, array $cartPositions): bool
+function warenkorbKuponFaehigArtikel($coupon, array $items): bool
 {
-    if (!empty($coupon->cArtikel)) {
-        foreach ($cartPositions as $position) {
-            if ($position->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL
-                && preg_match('/;' . preg_quote($position->Artikel->cArtNr, '/') . ';/i', $coupon->cArtikel)
-            ) {
-                return true;
-            }
+    if (empty($coupon->cArtikel)) {
+        return true;
+    }
+    foreach ($items as $item) {
+        if ($item->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL
+            && preg_match('/;' . preg_quote($item->Artikel->cArtNr, '/') . ';/i', $coupon->cArtikel)
+        ) {
+            return true;
         }
-
-        return false;
     }
 
-    return true;
-}
-
-/**
- * @param Kupon|object $Kupon
- * @param array $cartPositions
- * @return bool
- */
-function warenkorbKuponFaehigHersteller($Kupon, array $cartPositions): bool
-{
-    if (!empty($Kupon->cHersteller) && (int)$Kupon->cHersteller !== -1) {
-        foreach ($cartPositions as $Pos) {
-            if ($Pos->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL
-                && preg_match('/;' . preg_quote($Pos->Artikel->kHersteller, '/') . ';/i', $Kupon->cHersteller)
-            ) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    return true;
+    return false;
 }
 
 /**
  * @param Kupon|object $coupon
- * @param array $cartPositions
+ * @param array $items
  * @return bool
  */
-function warenkorbKuponFaehigKategorien($coupon, array $cartPositions): bool
+function warenkorbKuponFaehigHersteller($coupon, array $items): bool
 {
-    if (!empty($coupon->cKategorien) && (int)$coupon->cKategorien !== -1) {
-        $products = [];
-        foreach ($cartPositions as $Pos) {
-            if (empty($Pos->Artikel)) {
-                continue;
-            }
-            $products[] = $Pos->Artikel->kVaterArtikel !== 0 ? $Pos->Artikel->kVaterArtikel : $Pos->Artikel->kArtikel;
+    if (empty($coupon->cHersteller) || (int)$coupon->cHersteller === -1) {
+        return true;
+    }
+    foreach ($items as $item) {
+        if ($item->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL
+            && preg_match('/;' . preg_quote($item->Artikel->kHersteller, '/') . ';/i', $coupon->cHersteller)
+        ) {
+            return true;
         }
-        //check if at least one product is in at least one category valid for this coupon
-        $category = Shop::Container()->getDB()->query(
-            'SELECT kKategorie
-                FROM tkategorieartikel
-                  WHERE kArtikel IN (' . \implode(',', $products) . ')
-                    AND kKategorie IN (' . str_replace(';', ',', trim($coupon->cKategorien, ';')) . ')
-                    LIMIT 1',
-            ReturnType::SINGLE_OBJECT
-        );
-
-        return !empty($category);
     }
 
-    return true;
+    return false;
+}
+
+/**
+ * @param Kupon|object $coupon
+ * @param array $items
+ * @return bool
+ */
+function warenkorbKuponFaehigKategorien($coupon, array $items): bool
+{
+    if (empty($coupon->cKategorien) || (int)$coupon->cKategorien === -1) {
+        return true;
+    }
+    $products = [];
+    foreach ($items as $item) {
+        if (empty($item->Artikel)) {
+            continue;
+        }
+        $products[] = $item->Artikel->kVaterArtikel !== 0 ? $item->Artikel->kVaterArtikel : $item->Artikel->kArtikel;
+    }
+    //check if at least one product is in at least one category valid for this coupon
+    $category = Shop::Container()->getDB()->query(
+        'SELECT kKategorie
+            FROM tkategorieartikel
+              WHERE kArtikel IN (' . \implode(',', $products) . ')
+                AND kKategorie IN (' . str_replace(';', ',', trim($coupon->cKategorien, ';')) . ')
+                LIMIT 1',
+        ReturnType::SINGLE_OBJECT
+    );
+
+    return !empty($category);
 }
 
 /**
@@ -2424,7 +2421,7 @@ function warenkorbKuponFaehigKategorien($coupon, array $cartPositions): bool
  * @param int   $htmlentities
  * @return Kunde
  */
-function getKundendaten($post, $kundenaccount, $htmlentities = 1)
+function getKundendaten(array $post, $kundenaccount, $htmlentities = 1)
 {
     $mapping = [
         'anrede'         => 'cAnrede',
@@ -2485,7 +2482,7 @@ function getKundendaten($post, $kundenaccount, $htmlentities = 1)
  * @param array $post
  * @return CustomerAttributes
  */
-function getKundenattribute($post): CustomerAttributes
+function getKundenattribute(array $post): CustomerAttributes
 {
     $customerAttributes = new CustomerAttributes(Session::getCustomer()->getID());
     /** @var CustomerAttribute $customerAttribute */
@@ -2525,7 +2522,7 @@ function getNonEditableCustomerFields(): array
  * @param array $post
  * @return Lieferadresse
  */
-function getLieferdaten($post)
+function getLieferdaten(array $post)
 {
     $post = Text::filterXSS($post);
     //erstelle neue Lieferadresse
@@ -2560,16 +2557,16 @@ function getLieferdaten($post)
 }
 
 /**
- * @param array $cartPositions
+ * @param array $items
  * @return string
  */
-function getArtikelQry(array $cartPositions): string
+function getArtikelQry(array $items): string
 {
     $ret = '';
-    foreach ($cartPositions as $Pos) {
-        if (isset($Pos->Artikel->cArtNr) && mb_strlen($Pos->Artikel->cArtNr) > 0) {
+    foreach ($items as $item) {
+        if (isset($item->Artikel->cArtNr) && mb_strlen($item->Artikel->cArtNr) > 0) {
             $ret .= " OR FIND_IN_SET('" .
-                str_replace('%', '\%', Shop::Container()->getDB()->escape($Pos->Artikel->cArtNr))
+                str_replace('%', '\%', Shop::Container()->getDB()->escape($item->Artikel->cArtNr))
                 . "', REPLACE(cArtikel, ';', ',')) > 0";
         }
     }
@@ -2603,26 +2600,26 @@ function freeGiftStillValid(): bool
 {
     $cart  = Frontend::getCart();
     $valid = true;
-    foreach ($cart->PositionenArr as $oPosition) {
-        if ($oPosition->nPosTyp !== C_WARENKORBPOS_TYP_GRATISGESCHENK) {
+    foreach ($cart->PositionenArr as $item) {
+        if ($item->nPosTyp !== C_WARENKORBPOS_TYP_GRATISGESCHENK) {
             continue;
         }
         // Prüfen ob der Artikel wirklich ein Gratisgeschenk ist und ob die Mindestsumme erreicht wird
-        $oArtikelGeschenk = Shop::Container()->getDB()->queryPrepared(
+        $girft = Shop::Container()->getDB()->queryPrepared(
             'SELECT kArtikel
                 FROM tartikelattribut
                 WHERE kArtikel = :pid
                    AND cName = :attr
                    AND CAST(cWert AS DECIMAL) <= :sum',
             [
-                'pid'  => $oPosition->kArtikel,
+                'pid'  => $item->kArtikel,
                 'attr' => FKT_ATTRIBUT_GRATISGESCHENK,
                 'sum'  => $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true)
             ],
             ReturnType::SINGLE_OBJECT
         );
 
-        if (empty($oArtikelGeschenk->kArtikel)) {
+        if (empty($girft->kArtikel)) {
             $cart->loescheSpezialPos(C_WARENKORBPOS_TYP_GRATISGESCHENK);
             $valid = false;
         }

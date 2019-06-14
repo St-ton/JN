@@ -120,8 +120,7 @@ if (isset($_POST['fragezumprodukt']) && (int)$_POST['fragezumprodukt'] === 1) {
 } elseif (isset($_POST['benachrichtigung_verfuegbarkeit']) && (int)$_POST['benachrichtigung_verfuegbarkeit'] === 1) {
     $productNotices = Product::checkAvailabilityMessage($productNotices);
 }
-$kKategorie         = $AktuellerArtikel->gibKategorie();
-$AktuelleKategorie  = new Kategorie($kKategorie);
+$AktuelleKategorie  = new Kategorie($AktuellerArtikel->gibKategorie());
 $expandedCategories = new KategorieListe();
 $expandedCategories->getOpenCategories($AktuelleKategorie);
 $ratingPage   = Request::verifyGPCDataInt('btgseite');

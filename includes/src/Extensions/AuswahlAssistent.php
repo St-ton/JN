@@ -95,35 +95,35 @@ class AuswahlAssistent
     /**
      * AuswahlAssistent constructor.
      *
-     * @param string $cKey
-     * @param int    $kKey
-     * @param int    $kSprache
-     * @param bool   $bOnlyActive
+     * @param string $keyName
+     * @param int    $id
+     * @param int    $languageID
+     * @param bool   $activeOnly
      */
-    public function __construct($cKey, int $kKey, int $kSprache = 0, bool $bOnlyActive = true)
+    public function __construct($keyName, int $id, int $languageID = 0, bool $activeOnly = true)
     {
         $this->config = Shop::getSettings(\CONF_AUSWAHLASSISTENT)['auswahlassistent'];
 
-        if ($kSprache === 0) {
-            $kSprache = Shop::getLanguageID();
+        if ($languageID === 0) {
+            $languageID = Shop::getLanguageID();
         }
 
-        if ($kKey > 0
-            && $kSprache > 0
-            && !empty($cKey)
+        if ($id > 0
+            && $languageID > 0
+            && !empty($keyName)
             && Nice::getInstance()->checkErweiterung(\SHOP_ERWEITERUNG_AUSWAHLASSISTENT)
         ) {
-            $this->loadFromDB($cKey, $kKey, $kSprache, $bOnlyActive);
+            $this->loadFromDB($keyName, $id, $languageID, $activeOnly);
         }
     }
 
     /**
-     * @param string $cKey
-     * @param int    $kKey
-     * @param int    $kSprache
-     * @param bool   $bOnlyActive
+     * @param string $keyName
+     * @param int    $id
+     * @param int    $languageID
+     * @param bool   $activeOnly
      */
-    private function loadFromDB($cKey, int $kKey, int $kSprache, bool $bOnlyActive = true): void
+    private function loadFromDB($keyName, int $id, int $languageID, bool $activeOnly = true): void
     {
         $item = Shop::Container()->getDB()->queryPrepared(
             'SELECT *
@@ -133,11 +133,11 @@ class AuswahlAssistent
                             AND ao.cKey = :ckey
                             AND ao.kKey = :kkey
                             AND ag.kSprache = :ksprache' .
-            ($bOnlyActive ? ' AND ag.nAktiv = 1' : ''),
+            ($activeOnly ? ' AND ag.nAktiv = 1' : ''),
             [
-                'ckey'     => $cKey,
-                'kkey'     => $kKey,
-                'ksprache' => $kSprache
+                'ckey'     => $keyName,
+                'kkey'     => $id,
+                'ksprache' => $languageID
             ],
             ReturnType::SINGLE_OBJECT
         );
@@ -157,7 +157,7 @@ class AuswahlAssistent
                 'SELECT kAuswahlAssistentFrage AS id
                     FROM tauswahlassistentfrage
                     WHERE kAuswahlAssistentGruppe = :groupID' .
-                ($bOnlyActive ? ' AND nAktiv = 1 ' : ' ') .
+                ($activeOnly ? ' AND nAktiv = 1 ' : ' ') .
                 'ORDER BY nSort',
                 ['groupID' => $this->kAuswahlAssistentGruppe],
                 ReturnType::ARRAY_OF_OBJECTS

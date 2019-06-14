@@ -101,9 +101,9 @@ function get_product_list($params, $smarty)
         if (!is_array($params['kArtikel'])) {
             $params['kArtikel'] = [$params['kArtikel']];
         }
-        foreach ($params['kArtikel'] as $kArtikel) {
+        foreach ($params['kArtikel'] as $productID) {
             $product    = new Artikel();
-            $products[] = $product->fuelleArtikel($kArtikel, Artikel::getDefaultOptions());
+            $products[] = $product->fuelleArtikel($productID, Artikel::getDefaultOptions());
         }
     } else {
         $products = (new ProductFilter(

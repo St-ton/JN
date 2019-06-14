@@ -77,25 +77,25 @@ final class Upload
     public static function gibWarenkorbUploads(Warenkorb $cart): array
     {
         $uploads = [];
-        foreach ($cart->PositionenArr as $position) {
-            if ($position->nPosTyp !== \C_WARENKORBPOS_TYP_ARTIKEL || empty($position->Artikel->kArtikel)) {
+        foreach ($cart->PositionenArr as $item) {
+            if ($item->nPosTyp !== \C_WARENKORBPOS_TYP_ARTIKEL || empty($item->Artikel->kArtikel)) {
                 continue;
             }
             $attributes = [];
-            if (!empty($position->WarenkorbPosEigenschaftArr)) {
-                foreach ($position->WarenkorbPosEigenschaftArr as $attribute) {
+            if (!empty($item->WarenkorbPosEigenschaftArr)) {
+                foreach ($item->WarenkorbPosEigenschaftArr as $attribute) {
                     $attributes[$attribute->kEigenschaft] = \is_string($attribute->cEigenschaftWertName)
                         ? $attribute->cEigenschaftWertName
                         : \reset($attribute->cEigenschaftWertName);
                 }
             }
             $upload         = new stdClass();
-            $upload->cName  = $position->Artikel->cName;
-            $upload->prodID = $position->Artikel->kArtikel;
-            if (!empty($position->WarenkorbPosEigenschaftArr)) {
-                $upload->WarenkorbPosEigenschaftArr = $position->WarenkorbPosEigenschaftArr;
+            $upload->cName  = $item->Artikel->cName;
+            $upload->prodID = $item->Artikel->kArtikel;
+            if (!empty($item->WarenkorbPosEigenschaftArr)) {
+                $upload->WarenkorbPosEigenschaftArr = $item->WarenkorbPosEigenschaftArr;
             }
-            $upload->oUpload_arr = self::gibArtikelUploads($position->Artikel->kArtikel, $attributes);
+            $upload->oUpload_arr = self::gibArtikelUploads($item->Artikel->kArtikel, $attributes);
             if (\count($upload->oUpload_arr) > 0) {
                 $uploads[] = $upload;
             }

@@ -99,7 +99,7 @@ function bestellungInDB($nBezahlt = 0, $orderNo = '')
     $customer          = Frontend::getCustomer();
     $deliveryAddress   = Frontend::getDeliveryAddress();
     $order->cBestellNr = empty($orderNo) ? baueBestellnummer() : $orderNo;
-    $cartPositions     = [];
+    $cartItems         = [];
     $db                = Shop::Container()->getDB();
     $cart              = Frontend::getCart();
     if (Frontend::getCustomer()->getID() <= 0) {
@@ -161,30 +161,30 @@ function bestellungInDB($nBezahlt = 0, $orderNo = '')
     //füge alle Warenkorbpositionen ein
     if (is_array($cart->PositionenArr) && count($cart->PositionenArr) > 0) {
         $productFilter = (int)$conf['global']['artikel_artikelanzeigefilter'];
-        /** @var WarenkorbPos $position */
-        foreach ($cart->PositionenArr as $position) {
-            if ($position->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL) {
-                $position->fLagerbestandVorAbschluss = $position->Artikel->fLagerbestand !== null
-                    ? (double)$position->Artikel->fLagerbestand
+        /** @var WarenkorbPos $item */
+        foreach ($cart->PositionenArr as $item) {
+            if ($item->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL) {
+                $item->fLagerbestandVorAbschluss = $item->Artikel->fLagerbestand !== null
+                    ? (double)$item->Artikel->fLagerbestand
                     : 0;
             }
-            $position->cName         = Text::unhtmlentities(is_array($position->cName)
-                ? $position->cName[$_SESSION['cISOSprache']]
-                : $position->cName);
-            $position->cLieferstatus = isset($position->cLieferstatus[$_SESSION['cISOSprache']])
-                ? Text::unhtmlentities($position->cLieferstatus[$_SESSION['cISOSprache']])
+            $item->cName         = Text::unhtmlentities(is_array($item->cName)
+                ? $item->cName[$_SESSION['cISOSprache']]
+                : $item->cName);
+            $item->cLieferstatus = isset($item->cLieferstatus[$_SESSION['cISOSprache']])
+                ? Text::unhtmlentities($item->cLieferstatus[$_SESSION['cISOSprache']])
                 : '';
-            $position->kWarenkorb    = $cart->kWarenkorb;
-            $position->fMwSt         = Tax::getSalesTax($position->kSteuerklasse);
-            $position->kWarenkorbPos = $position->insertInDB();
-            if (is_array($position->WarenkorbPosEigenschaftArr) && count($position->WarenkorbPosEigenschaftArr) > 0) {
+            $item->kWarenkorb    = $cart->kWarenkorb;
+            $item->fMwSt         = Tax::getSalesTax($item->kSteuerklasse);
+            $item->kWarenkorbPos = $item->insertInDB();
+            if (is_array($item->WarenkorbPosEigenschaftArr) && count($item->WarenkorbPosEigenschaftArr) > 0) {
                 $idx = Shop::getLanguageCode();
                 // Bei einem Varkombikind dürfen nur FREIFELD oder PFLICHT-FREIFELD gespeichert werden,
                 // da sonst eventuelle Aufpreise in der Wawi doppelt berechnet werden
-                if (isset($position->Artikel->kVaterArtikel) && $position->Artikel->kVaterArtikel > 0) {
-                    foreach ($position->WarenkorbPosEigenschaftArr as $o => $WKPosEigenschaft) {
+                if (isset($item->Artikel->kVaterArtikel) && $item->Artikel->kVaterArtikel > 0) {
+                    foreach ($item->WarenkorbPosEigenschaftArr as $o => $WKPosEigenschaft) {
                         if ($WKPosEigenschaft->cTyp === 'FREIFELD' || $WKPosEigenschaft->cTyp === 'PFLICHT-FREIFELD') {
-                            $WKPosEigenschaft->kWarenkorbPos        = $position->kWarenkorbPos;
+                            $WKPosEigenschaft->kWarenkorbPos        = $item->kWarenkorbPos;
                             $WKPosEigenschaft->cEigenschaftName     = $WKPosEigenschaft->cEigenschaftName[$idx];
                             $WKPosEigenschaft->cEigenschaftWertName = $WKPosEigenschaft->cEigenschaftWertName[$idx];
                             $WKPosEigenschaft->cFreifeldWert        = $WKPosEigenschaft->cEigenschaftWertName;
@@ -192,8 +192,8 @@ function bestellungInDB($nBezahlt = 0, $orderNo = '')
                         }
                     }
                 } else {
-                    foreach ($position->WarenkorbPosEigenschaftArr as $o => $WKPosEigenschaft) {
-                        $WKPosEigenschaft->kWarenkorbPos        = $position->kWarenkorbPos;
+                    foreach ($item->WarenkorbPosEigenschaftArr as $o => $WKPosEigenschaft) {
+                        $WKPosEigenschaft->kWarenkorbPos        = $item->kWarenkorbPos;
                         $WKPosEigenschaft->cEigenschaftName     = $WKPosEigenschaft->cEigenschaftName[$idx];
                         $WKPosEigenschaft->cEigenschaftWertName = $WKPosEigenschaft->cEigenschaftWertName[$idx];
                         if ($WKPosEigenschaft->cTyp === 'FREIFELD' || $WKPosEigenschaft->cTyp === 'PFLICHT-FREIFELD') {
@@ -204,42 +204,42 @@ function bestellungInDB($nBezahlt = 0, $orderNo = '')
                 }
             }
             //bestseller tabelle füllen
-            if ($position->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL && is_object($position->Artikel)) {
+            if ($item->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL && is_object($item->Artikel)) {
                 //Lagerbestand verringern
                 aktualisiereLagerbestand(
-                    $position->Artikel,
-                    $position->nAnzahl,
-                    $position->WarenkorbPosEigenschaftArr,
+                    $item->Artikel,
+                    $item->nAnzahl,
+                    $item->WarenkorbPosEigenschaftArr,
                     $productFilter
                 );
-                aktualisiereBestseller($position->kArtikel, $position->nAnzahl);
+                aktualisiereBestseller($item->kArtikel, $item->nAnzahl);
                 //xsellkauf füllen
-                foreach ($cart->PositionenArr as $pos) {
-                    if ($pos->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL && $pos->kArtikel != $position->kArtikel) {
-                        aktualisiereXselling($position->kArtikel, $pos->kArtikel);
+                foreach ($cart->PositionenArr as $cartItem) {
+                    if ($cartItem->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL && $cartItem->kArtikel != $item->kArtikel) {
+                        aktualisiereXselling($item->kArtikel, $cartItem->kArtikel);
                     }
                 }
-                $cartPositions[] = $position;
-                Shop::Container()->getCache()->flushTags([CACHING_GROUP_ARTICLE . '_' . $position->kArtikel]);
-            } elseif ($position->nPosTyp === C_WARENKORBPOS_TYP_GRATISGESCHENK) {
+                $cartItems[] = $item;
+                Shop::Container()->getCache()->flushTags([CACHING_GROUP_ARTICLE . '_' . $item->kArtikel]);
+            } elseif ($item->nPosTyp === C_WARENKORBPOS_TYP_GRATISGESCHENK) {
                 aktualisiereLagerbestand(
-                    $position->Artikel,
-                    $position->nAnzahl,
-                    $position->WarenkorbPosEigenschaftArr,
+                    $item->Artikel,
+                    $item->nAnzahl,
+                    $item->WarenkorbPosEigenschaftArr,
                     $productFilter
                 );
-                $cartPositions[] = $position;
-                Shop::Container()->getCache()->flushTags([CACHING_GROUP_ARTICLE . '_' . $position->kArtikel]);
+                $cartItems[] = $item;
+                Shop::Container()->getCache()->flushTags([CACHING_GROUP_ARTICLE . '_' . $item->kArtikel]);
             }
 
-            $order->Positionen[] = $position;
+            $order->Positionen[] = $item;
         }
         // Falls die Einstellung global_wunschliste_artikel_loeschen_nach_kauf auf Y (Ja) steht und
         // Artikel vom aktuellen Wunschzettel gekauft wurden, sollen diese vom Wunschzettel geloescht werden
         if (isset($_SESSION['Wunschliste']->kWunschliste) && $_SESSION['Wunschliste']->kWunschliste > 0) {
             Wunschliste::pruefeArtikelnachBestellungLoeschen(
                 $_SESSION['Wunschliste']->kWunschliste,
-                $cartPositions
+                $cartItems
             );
         }
     }
@@ -540,42 +540,42 @@ function unhtmlSession(): void
 }
 
 /**
- * @param int       $kArtikel
+ * @param int       $productID
  * @param int|float $amount
  */
-function aktualisiereBestseller(int $kArtikel, $amount): void
+function aktualisiereBestseller(int $productID, $amount): void
 {
-    if (!$kArtikel || !$amount) {
+    if (!$productID || !$amount) {
         return;
     }
-    $best_obj = Shop::Container()->getDB()->select('tbestseller', 'kArtikel', $kArtikel);
-    if (isset($best_obj->kArtikel) && $best_obj->kArtikel > 0) {
+    $data = Shop::Container()->getDB()->select('tbestseller', 'kArtikel', $productID);
+    if (isset($data->kArtikel) && $data->kArtikel > 0) {
         Shop::Container()->getDB()->queryPrepared(
             'UPDATE tbestseller SET fAnzahl = fAnzahl + :mnt WHERE kArtikel = :aid',
-            ['mnt' => $amount, 'aid' => $kArtikel],
+            ['mnt' => $amount, 'aid' => $productID],
             ReturnType::DEFAULT
         );
     } else {
-        $Bestseller           = new stdClass();
-        $Bestseller->kArtikel = $kArtikel;
-        $Bestseller->fAnzahl  = $amount;
-        Shop::Container()->getDB()->insert('tbestseller', $Bestseller);
+        $bestseller           = new stdClass();
+        $bestseller->kArtikel = $productID;
+        $bestseller->fAnzahl  = $amount;
+        Shop::Container()->getDB()->insert('tbestseller', $bestseller);
     }
-    if (Product::isVariCombiChild($kArtikel)) {
-        aktualisiereBestseller(Product::getParent($kArtikel), $amount);
+    if (Product::isVariCombiChild($productID)) {
+        aktualisiereBestseller(Product::getParent($productID), $amount);
     }
 }
 
 /**
- * @param int $kArtikel
- * @param int $kZielArtikel
+ * @param int $productID
+ * @param int $targetID
  */
-function aktualisiereXselling(int $kArtikel, int $kZielArtikel): void
+function aktualisiereXselling(int $productID, int $targetID): void
 {
-    if (!$kArtikel || !$kZielArtikel) {
+    if (!$productID || !$targetID) {
         return;
     }
-    $obj = Shop::Container()->getDB()->select('txsellkauf', 'kArtikel', $kArtikel, 'kXSellArtikel', $kZielArtikel);
+    $obj = Shop::Container()->getDB()->select('txsellkauf', 'kArtikel', $productID, 'kXSellArtikel', $targetID);
     if (isset($obj->nAnzahl) && $obj->nAnzahl > 0) {
         Shop::Container()->getDB()->queryPrepared(
             'UPDATE txsellkauf
@@ -583,15 +583,15 @@ function aktualisiereXselling(int $kArtikel, int $kZielArtikel): void
               WHERE kArtikel = :pid
                 AND kXSellArtikel = :xs',
             [
-                'pid' => $kArtikel,
-                'xs'  => $kZielArtikel
+                'pid' => $productID,
+                'xs'  => $targetID
             ],
             ReturnType::DEFAULT
         );
     } else {
         $xs                = new stdClass();
-        $xs->kArtikel      = $kArtikel;
-        $xs->kXSellArtikel = $kZielArtikel;
+        $xs->kArtikel      = $productID;
+        $xs->kXSellArtikel = $targetID;
         $xs->nAnzahl       = 1;
         Shop::Container()->getDB()->insert('txsellkauf', $xs);
     }
@@ -868,15 +868,15 @@ function AktualisiereLagerStuecklisten($product, $amount = null, $bStueckliste =
  */
 function KuponVerwendungen($order): void
 {
-    $db               = Shop::Container()->getDB();
-    $cart             = Frontend::getCart();
-    $kKupon           = 0;
-    $cKuponTyp        = '';
-    $fKuponwertBrutto = 0;
+    $db          = Shop::Container()->getDB();
+    $cart        = Frontend::getCart();
+    $kKupon      = 0;
+    $cKuponTyp   = '';
+    $couponGross = 0;
     if (isset($_SESSION['VersandKupon']->kKupon) && $_SESSION['VersandKupon']->kKupon > 0) {
-        $kKupon           = (int)$_SESSION['VersandKupon']->kKupon;
-        $cKuponTyp        = Kupon::TYPE_SHIPPING;
-        $fKuponwertBrutto = $_SESSION['Versandart']->fPreis;
+        $kKupon      = (int)$_SESSION['VersandKupon']->kKupon;
+        $cKuponTyp   = Kupon::TYPE_SHIPPING;
+        $couponGross = $_SESSION['Versandart']->fPreis;
     }
     if (isset($_SESSION['NeukundenKupon']->kKupon) && $_SESSION['NeukundenKupon']->kKupon > 0) {
         $kKupon    = (int)$_SESSION['NeukundenKupon']->kKupon;
@@ -886,15 +886,15 @@ function KuponVerwendungen($order): void
         $kKupon    = (int)$_SESSION['Kupon']->kKupon;
         $cKuponTyp = Kupon::TYPE_STANDARD;
     }
-    foreach ($cart->PositionenArr as $position) {
-        $position->nPosTyp = (int)$position->nPosTyp;
+    foreach ($cart->PositionenArr as $item) {
+        $item->nPosTyp = (int)$item->nPosTyp;
         if (!isset($_SESSION['VersandKupon'])
-            && ($position->nPosTyp === C_WARENKORBPOS_TYP_KUPON
-                || $position->nPosTyp === C_WARENKORBPOS_TYP_NEUKUNDENKUPON)
+            && ($item->nPosTyp === C_WARENKORBPOS_TYP_KUPON
+                || $item->nPosTyp === C_WARENKORBPOS_TYP_NEUKUNDENKUPON)
         ) {
-            $fKuponwertBrutto = Tax::getGross(
-                $position->fPreisEinzelNetto,
-                Tax::getSalesTax($position->kSteuerklasse)
+            $couponGross = Tax::getGross(
+                $item->fPreisEinzelNetto,
+                Tax::getSalesTax($item->kSteuerklasse)
             ) * (-1);
         }
     }
@@ -932,7 +932,7 @@ function KuponVerwendungen($order): void
         $couponOrder->kKunde             = $cart->kKunde;
         $couponOrder->cBestellNr         = $order->cBestellNr;
         $couponOrder->fGesamtsummeBrutto = $order->fGesamtsumme;
-        $couponOrder->fKuponwertBrutto   = $fKuponwertBrutto;
+        $couponOrder->fKuponwertBrutto   = $couponGross;
         $couponOrder->cKuponTyp          = $cKuponTyp;
         $couponOrder->dErstellt          = 'NOW()';
 
@@ -1089,14 +1089,14 @@ function fakeBestellung()
     $order->cBestellNr = date('dmYHis') . mb_substr($order->cSession, 0, 4);
     if (is_array($cart->PositionenArr) && count($cart->PositionenArr) > 0) {
         $order->Positionen = [];
-        foreach ($cart->PositionenArr as $i => $position) {
+        foreach ($cart->PositionenArr as $i => $item) {
             $order->Positionen[$i] = new WarenkorbPos();
-            foreach (array_keys(get_object_vars($position)) as $member) {
-                $order->Positionen[$i]->$member = $position->$member;
+            foreach (array_keys(get_object_vars($item)) as $member) {
+                $order->Positionen[$i]->$member = $item->$member;
             }
 
             $order->Positionen[$i]->cName = $order->Positionen[$i]->cName[$_SESSION['cISOSprache']];
-            $order->Positionen[$i]->fMwSt = Tax::getSalesTax($position->kSteuerklasse);
+            $order->Positionen[$i]->fMwSt = Tax::getSalesTax($item->kSteuerklasse);
             $order->Positionen[$i]->setzeGesamtpreisLocalized();
         }
     }
@@ -1153,15 +1153,15 @@ function pruefeVerfuegbarkeit(): array
 {
     $res  = ['cArtikelName_arr' => []];
     $conf = Shop::getSettings([CONF_GLOBAL]);
-    foreach (Frontend::getCart()->PositionenArr as $oPosition) {
-        if ($oPosition->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL
-            && isset($oPosition->Artikel->cLagerBeachten)
-            && $oPosition->Artikel->cLagerBeachten === 'Y'
-            && $oPosition->Artikel->cLagerKleinerNull === 'Y'
+    foreach (Frontend::getCart()->PositionenArr as $item) {
+        if ($item->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL
+            && isset($item->Artikel->cLagerBeachten)
+            && $item->Artikel->cLagerBeachten === 'Y'
+            && $item->Artikel->cLagerKleinerNull === 'Y'
             && $conf['global']['global_lieferverzoegerung_anzeigen'] === 'Y'
-            && $oPosition->nAnzahl > $oPosition->Artikel->fLagerbestand
+            && $item->nAnzahl > $item->Artikel->fLagerbestand
         ) {
-            $res['cArtikelName_arr'][] = $oPosition->Artikel->cName;
+            $res['cArtikelName_arr'][] = $item->Artikel->cName;
         }
     }
 

@@ -4,18 +4,18 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use JTL\Helpers\Product;
-use JTL\Helpers\Category;
-use JTL\Helpers\Request;
-use JTL\Catalog\Product\ArtikelListe;
-use JTL\Catalog\Product\Bestseller;
 use JTL\Catalog\Category\Kategorie;
 use JTL\Catalog\Category\KategorieListe;
+use JTL\Catalog\Product\ArtikelListe;
+use JTL\Catalog\Product\Bestseller;
+use JTL\Extensions\AuswahlAssistent;
+use JTL\Helpers\Category;
+use JTL\Helpers\Product;
+use JTL\Helpers\Request;
 use JTL\Redirect;
+use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Shopsetting;
-use JTL\Session\Frontend;
-use JTL\Extensions\AuswahlAssistent;
 
 if (!defined('PFAD_ROOT')) {
     http_response_code(400);
@@ -35,12 +35,12 @@ $hasError           = false;
 $params             = Shop::getParameters();
 /** @var \JTL\Filter\ProductFilter $NaviFilter */
 if ($NaviFilter->hasCategory()) {
-    $kKategorie                  = $NaviFilter->getCategory()->getValue();
-    $_SESSION['LetzteKategorie'] = $kKategorie;
+    $categoryID                  = $NaviFilter->getCategory()->getValue();
+    $_SESSION['LetzteKategorie'] = $categoryID;
     if ($AktuelleKategorie->kKategorie === null) {
         // temp. workaround: do not return 404 when non-localized existing category is loaded
-        if (Category::categoryExists($kKategorie)) {
-            $AktuelleKategorie->loadFromDB($kKategorie);
+        if (Category::categoryExists($categoryID)) {
+            $AktuelleKategorie->loadFromDB($categoryID);
         } else {
             Shop::$is404     = true;
             $params['is404'] = true;

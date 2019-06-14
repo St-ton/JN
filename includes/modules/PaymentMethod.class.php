@@ -601,11 +601,11 @@ class PaymentMethod
     }
 
     /**
-     * @param int $kBestellung
-     * @param int $kSprache
+     * @param int $orderID
+     * @param int $languageID
      * @return object
      */
-    public function createInvoice($kBestellung, $kSprache)
+    public function createInvoice($orderID, $languageID)
     {
         $oInvoice        = new stdClass();
         $oInvoice->nType = 0;
@@ -615,17 +615,17 @@ class PaymentMethod
     }
 
     /**
-     * @param int $kBestellung
+     * @param int $orderID
      * @return $this
      */
-    public function reactivateOrder($kBestellung)
+    public function reactivateOrder($orderID)
     {
-        $kBestellung = (int)$kBestellung;
-        $this->sendMail($kBestellung, MAILTEMPLATE_BESTELLUNG_RESTORNO);
+        $orderID = (int)$orderID;
+        $this->sendMail($orderID, MAILTEMPLATE_BESTELLUNG_RESTORNO);
         $_upd                = new stdClass();
         $_upd->cStatus       = BESTELLUNG_STATUS_IN_BEARBEITUNG;
         $_upd->dBezahltDatum = 'NOW()';
-        Shop::Container()->getDB()->update('tbestellung', 'kBestellung', $kBestellung, $_upd);
+        Shop::Container()->getDB()->update('tbestellung', 'kBestellung', $orderID, $_upd);
 
         return $this;
     }

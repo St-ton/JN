@@ -41,15 +41,15 @@ use JTL\Optin\OptinAvailAgain;
 class Product
 {
     /**
-     * @param int $kArtikel
+     * @param int $productID
      * @return bool
      */
-    public static function isVariChild(int $kArtikel): bool
+    public static function isVariChild(int $productID): bool
     {
         $product = Shop::Container()->getDB()->select(
             'tartikel',
             'kArtikel',
-            $kArtikel,
+            $productID,
             null,
             null,
             null,
@@ -155,13 +155,13 @@ class Product
      * z.b. $properties[kEigenschaft] = EigenschaftWert
      *
      * @former: gibAlleKindEigenschaftenZuVater()
-     * @param int $kArtikel
-     * @param int $kKundengruppe
+     * @param int $productID
+     * @param int $customerGroupID
      * @return array
      */
-    public static function getChildPropertiesForParent(int $kArtikel, int $kKundengruppe): array
+    public static function getChildPropertiesForParent(int $productID, int $customerGroupID): array
     {
-        $varCombinations = self::getPossibleVariationCombinations($kArtikel, $kKundengruppe);
+        $varCombinations = self::getPossibleVariationCombinations($productID, $customerGroupID);
         $properties      = [];
         foreach ($varCombinations as $comb) {
             if (!isset($properties[$comb->kEigenschaft]) || !\is_array($properties[$comb->kEigenschaft])) {
@@ -573,7 +573,7 @@ class Product
      */
     public static function isParent(int $productID): bool
     {
-        $oArtikelTMP = Shop::Container()->getDB()->select(
+        $data = Shop::Container()->getDB()->select(
             'tartikel',
             'kArtikel',
             $productID,
@@ -585,7 +585,7 @@ class Product
             'nIstVater'
         );
 
-        return isset($oArtikelTMP->nIstVater) && $oArtikelTMP->nIstVater > 0;
+        return isset($data->nIstVater) && $data->nIstVater > 0;
     }
 
     /**
@@ -1042,9 +1042,9 @@ class Product
                 if (!self::checkProductQuestionFloodProtection(
                     (int)$conf['artikeldetails']['produktfrage_sperre_minuten']
                 )) {
-                    $checkBox      = new CheckBox();
-                    $kKundengruppe = Frontend::getCustomerGroup()->getID();
-                    $inquiry       = self::getProductQuestionFormDefaults();
+                    $checkBox        = new CheckBox();
+                    $customerGroupID = Frontend::getCustomerGroup()->getID();
+                    $inquiry         = self::getProductQuestionFormDefaults();
 
                     \executeHook(\HOOK_ARTIKEL_INC_FRAGEZUMPRODUKT);
                     if (empty($inquiry->cNachname)) {
@@ -1055,11 +1055,11 @@ class Product
                     }
                     $checkBox->triggerSpecialFunction(
                         \CHECKBOX_ORT_FRAGE_ZUM_PRODUKT,
-                        $kKundengruppe,
+                        $customerGroupID,
                         true,
                         $_POST,
                         ['oKunde' => $inquiry, 'oNachricht' => $inquiry]
-                    )->checkLogging(\CHECKBOX_ORT_FRAGE_ZUM_PRODUKT, $kKundengruppe, $_POST, true);
+                    )->checkLogging(\CHECKBOX_ORT_FRAGE_ZUM_PRODUKT, $customerGroupID, $_POST, true);
                     Shop::Smarty()->assign('PositiveFeedback', self::sendProductQuestion());
                 } else {
                     $notices[] = Shop::Lang()->get('questionNotPossible', 'messages');
@@ -1336,11 +1336,11 @@ class Product
             $ret['captcha'] = 2;
         }
         // CheckBox Plausi
-        $oCheckBox     = new CheckBox();
-        $kKundengruppe = Frontend::getCustomerGroup()->getID();
-        $ret           = \array_merge(
+        $checkBox        = new CheckBox();
+        $customerGroupID = Frontend::getCustomerGroup()->getID();
+        $ret             = \array_merge(
             $ret,
-            $oCheckBox->validateCheckBox(\CHECKBOX_ORT_FRAGE_VERFUEGBARKEIT, $kKundengruppe, $_POST, true)
+            $checkBox->validateCheckBox(\CHECKBOX_ORT_FRAGE_VERFUEGBARKEIT, $customerGroupID, $_POST, true)
         );
 
         return $ret;
@@ -1765,57 +1765,57 @@ class Product
         // Ist die Anzahl der Bewertungen für einen bestimmten Artikel, in einer bestimmten Sprache größer als
         // die im Backend eingestellte maximale Anzahl an Bewertungen für eine Seite?
         if ($ratingCount > $pageCount) {
-            $nBlaetterAnzahl_arr = [];
+            $counts = [];
             // Anzahl an Seiten
-            $nSeiten     = \ceil($ratingCount / $pageCount);
-            $nMaxAnzeige = 5; // Zeige in der Navigation nur maximal X Seiten an
-            $nAnfang     = 0; // Wenn die aktuelle Seite - $nMaxAnzeige größer 0 ist, wird nAnfang gesetzt
-            $nEnde       = 0; // Wenn die aktuelle Seite + $nMaxAnzeige <= $nSeitenist, wird nEnde gesetzt
-            $nVoherige   = $ratingPage - 1; // Zum zurück blättern in der Navigation
-            if ($nVoherige === 0) {
-                $nVoherige = 1;
+            $pages = \ceil($ratingCount / $pageCount);
+            $max   = 5; // Zeige in der Navigation nur maximal X Seiten an
+            $start = 0; // Wenn die aktuelle Seite - $nMaxAnzeige größer 0 ist, wird nAnfang gesetzt
+            $end   = 0; // Wenn die aktuelle Seite + $nMaxAnzeige <= $nSeitenist, wird nEnde gesetzt
+            $prev  = $ratingPage - 1; // Zum zurück blättern in der Navigation
+            if ($prev === 0) {
+                $prev = 1;
             }
-            $nNaechste = $ratingPage + 1; // Zum vorwärts blättern in der Navigation
-            if ($nNaechste >= $nSeiten) {
-                $nNaechste = $nSeiten;
+            $next = $ratingPage + 1; // Zum vorwärts blättern in der Navigation
+            if ($next >= $pages) {
+                $next = $pages;
             }
             // Ist die maximale Anzahl an Seiten > als die Anzahl erlaubter Seiten in der Navigation?
-            if ($nSeiten > $nMaxAnzeige) {
+            if ($pages > $max) {
                 // Diese Variablen ermitteln die aktuellen Seiten in der Navigation, die angezeigt werden sollen.
                 // Begrenzt durch $nMaxAnzeige.
                 // Ist die aktuelle Seite nach dem abzug der Begrenzung größer oder gleich 1?
-                if (($ratingPage - $nMaxAnzeige) >= 1) {
-                    $nAnfang = 1;
-                    $nVon    = ($ratingPage - $nMaxAnzeige) + 1;
+                if (($ratingPage - $max) >= 1) {
+                    $start = 1;
+                    $nVon  = ($ratingPage - $max) + 1;
                 } else {
-                    $nAnfang = 0;
-                    $nVon    = 1;
+                    $start = 0;
+                    $nVon  = 1;
                 }
                 // Ist die aktuelle Seite nach dem addieren der Begrenzung kleiner als die maximale Anzahl der Seiten
-                if (($ratingPage + $nMaxAnzeige) < $nSeiten) {
-                    $nEnde = $nSeiten;
-                    $nBis  = ($ratingPage + $nMaxAnzeige) - 1;
+                if (($ratingPage + $max) < $pages) {
+                    $end  = $pages;
+                    $nBis = ($ratingPage + $max) - 1;
                 } else {
-                    $nEnde = 0;
-                    $nBis  = $nSeiten;
+                    $end  = 0;
+                    $nBis = $pages;
                 }
                 // Baue die Seiten für die Navigation
                 for ($i = $nVon; $i <= $nBis; $i++) {
-                    $nBlaetterAnzahl_arr[] = $i;
+                    $counts[] = $i;
                 }
             } else {
                 // Baue die Seiten für die Navigation
-                for ($i = 1; $i <= $nSeiten; $i++) {
-                    $nBlaetterAnzahl_arr[] = $i;
+                for ($i = 1; $i <= $pages; $i++) {
+                    $counts[] = $i;
                 }
             }
             // Blaetter Objekt um später in Smarty damit zu arbeiten
-            $navigation->nSeiten             = $nSeiten;
-            $navigation->nVoherige           = $nVoherige;
-            $navigation->nNaechste           = $nNaechste;
-            $navigation->nAnfang             = $nAnfang;
-            $navigation->nEnde               = $nEnde;
-            $navigation->nBlaetterAnzahl_arr = $nBlaetterAnzahl_arr;
+            $navigation->nSeiten             = $pages;
+            $navigation->nVoherige           = $prev;
+            $navigation->nNaechste           = $next;
+            $navigation->nAnfang             = $start;
+            $navigation->nEnde               = $end;
+            $navigation->nBlaetterAnzahl_arr = $counts;
             $navigation->nAktiv              = 1;
         }
 
@@ -1992,11 +1992,11 @@ class Product
             );
             if (\is_array($productAttributes) && \count($productAttributes) > 0) {
                 $defaultOptions = Artikel::getDefaultOptions();
-                foreach ($productAttributes as $oArtikelMerkmal) {
+                foreach ($productAttributes as $productAttribute) {
                     $product = new Artikel();
-                    $id      = ($oArtikelMerkmal->kVaterArtikel > 0)
-                        ? $oArtikelMerkmal->kVaterArtikel
-                        : $oArtikelMerkmal->kArtikel;
+                    $id      = ($productAttribute->kVaterArtikel > 0)
+                        ? $productAttribute->kVaterArtikel
+                        : $productAttribute->kArtikel;
                     $product->fuelleArtikel($id, $defaultOptions);
                     if ($product->kArtikel > 0) {
                         $products[] = $product;
@@ -2028,11 +2028,11 @@ class Product
                 );
                 if (\count($searchCacheHits) > 0) {
                     $defaultOptions = Artikel::getDefaultOptions();
-                    foreach ($searchCacheHits as $oArtikelSuchcacheTreffer) {
+                    foreach ($searchCacheHits as $hit) {
                         $product = new Artikel();
-                        $id      = ($oArtikelSuchcacheTreffer->kVaterArtikel > 0)
-                            ? $oArtikelSuchcacheTreffer->kVaterArtikel
-                            : $oArtikelSuchcacheTreffer->kArtikel;
+                        $id      = ($hit->kVaterArtikel > 0)
+                            ? $hit->kVaterArtikel
+                            : $hit->kArtikel;
                         $product->fuelleArtikel($id, $defaultOptions);
                         if ($product->kArtikel > 0) {
                             $products[] = $product;
@@ -2258,21 +2258,21 @@ class Product
             $configItems        = [];
             $configItemAmounts  = [];
             $configGroupAmounts = [];
-            /** @var WarenkorbPos $oPosition */
-            foreach ($cart->PositionenArr as &$oPosition) {
-                if ($oPosition->cUnique !== $basePosition->cUnique || !$oPosition->istKonfigKind()) {
+            /** @var WarenkorbPos $item */
+            foreach ($cart->PositionenArr as &$item) {
+                if ($item->cUnique !== $basePosition->cUnique || !$item->istKonfigKind()) {
                     continue;
                 }
-                $configItem                                      = new Konfigitem($oPosition->kKonfigitem);
+                $configItem                                      = new Konfigitem($item->kKonfigitem);
                 $configItems[]                                   = $configItem->getKonfigitem();
-                $configItemAmounts[$configItem->getKonfigitem()] = $oPosition->nAnzahl / $basePosition->nAnzahl;
+                $configItemAmounts[$configItem->getKonfigitem()] = $item->nAnzahl / $basePosition->nAnzahl;
                 if ($configItem->ignoreMultiplier()) {
-                    $configGroupAmounts[$configItem->getKonfiggruppe()] = $oPosition->nAnzahl;
+                    $configGroupAmounts[$configItem->getKonfiggruppe()] = $item->nAnzahl;
                 } else {
-                    $configGroupAmounts[$configItem->getKonfiggruppe()] = $oPosition->nAnzahl / $basePosition->nAnzahl;
+                    $configGroupAmounts[$configItem->getKonfiggruppe()] = $item->nAnzahl / $basePosition->nAnzahl;
                 }
             }
-            unset($oPosition);
+            unset($item);
 
             $smarty->assign('fAnzahl', $basePosition->nAnzahl)
                    ->assign('kEditKonfig', $configID)

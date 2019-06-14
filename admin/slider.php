@@ -63,17 +63,17 @@ switch ($action) {
             $slider->load($kSlider, false);
             $slider->set((object)$_REQUEST);
             // extensionpoint
-            $kSprache      = (int)$_POST['kSprache'];
+            $languageID    = (int)$_POST['kSprache'];
             $kKundengruppe = $_POST['kKundengruppe'];
-            $nSeite        = (int)$_POST['nSeitenTyp'];
+            $pageType      = (int)$_POST['nSeitenTyp'];
             $cKey          = $_POST['cKey'];
             $cKeyValue     = '';
             $cValue        = '';
-            if ($nSeite === PAGE_ARTIKEL) {
+            if ($pageType === PAGE_ARTIKEL) {
                 $cKey      = 'kArtikel';
                 $cKeyValue = 'article_key';
                 $cValue    = $_POST[$cKeyValue];
-            } elseif ($nSeite === PAGE_ARTIKELLISTE) {
+            } elseif ($pageType === PAGE_ARTIKELLISTE) {
                 $aFilter_arr = [
                     'kTag'         => 'tag_key',
                     'kMerkmalWert' => 'attribute_key',
@@ -84,7 +84,7 @@ switch ($action) {
 
                 $cKeyValue = $aFilter_arr[$cKey];
                 $cValue    = $_POST[$cKeyValue];
-            } elseif ($nSeite === PAGE_EIGENE) {
+            } elseif ($pageType === PAGE_EIGENE) {
                 $cKey      = 'kLink';
                 $cKeyValue = 'link_key';
                 $cValue    = $_POST[$cKeyValue];
@@ -106,9 +106,9 @@ switch ($action) {
                         ['slider', $slider->getID()]
                     );
                     $extension                = new stdClass();
-                    $extension->kSprache      = $kSprache;
+                    $extension->kSprache      = $languageID;
                     $extension->kKundengruppe = $kKundengruppe;
-                    $extension->nSeite        = $nSeite;
+                    $extension->nSeite        = $pageType;
                     $extension->cKey          = $cKey;
                     $extension->cValue        = $cValue;
                     $extension->cClass        = 'slider';

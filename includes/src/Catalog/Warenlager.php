@@ -597,21 +597,21 @@ class Warenlager extends MainModel
     }
 
     /**
-     * @param int        $kArtikel
-     * @param int|null   $kSprache
+     * @param int        $productID
+     * @param int|null   $langID
      * @param null|array $config
-     * @param bool       $bActive
+     * @param bool       $active
      * @return array
      */
     public static function getByProduct(
-        int $kArtikel,
-        int $kSprache = null,
+        int $productID,
+        int $langID = null,
         $config = null,
-        bool $bActive = true
+        bool $active = true
     ): array {
         $warehouses = [];
-        if ($kArtikel > 0) {
-            $sql  = $bActive ? ' AND twarenlager.nAktiv = 1' : '';
+        if ($productID > 0) {
+            $sql  = $active ? ' AND twarenlager.nAktiv = 1' : '';
             $data = Shop::Container()->getDB()->queryPrepared(
                 "SELECT tartikelwarenlager.*
                     FROM tartikelwarenlager
@@ -619,11 +619,11 @@ class Warenlager extends MainModel
                         ON twarenlager.kWarenlager = tartikelwarenlager.kWarenlager
                        {$sql}
                     WHERE tartikelwarenlager.kArtikel = :articleID",
-                ['articleID' => $kArtikel],
+                ['articleID' => $productID],
                 ReturnType::ARRAY_OF_OBJECTS
             );
             foreach ($data as $item) {
-                $warehouse               = new self($item->kWarenlager, null, $kSprache);
+                $warehouse               = new self($item->kWarenlager, null, $langID);
                 $warehouse->fBestand     = $item->fBestand;
                 $warehouse->fZulauf      = $item->fZulauf;
                 $warehouse->dZulaufDatum = $item->dZulaufDatum;

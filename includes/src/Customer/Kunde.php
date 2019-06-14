@@ -850,56 +850,56 @@ class Kunde
     }
 
     /**
-     * @param string $cAnrede
-     * @param int    $kSprache
-     * @param int    $kKunde
+     * @param string $salutation
+     * @param int    $languageID
+     * @param int    $customerID
      * @return mixed
      * @former mappeKundenanrede()
      */
-    public static function mapSalutation($cAnrede, int $kSprache, int $kKunde = 0)
+    public static function mapSalutation($salutation, int $languageID, int $customerID = 0)
     {
-        if (($kSprache > 0 || $kKunde > 0) && $cAnrede !== '') {
-            if ($kSprache === 0 && $kKunde > 0) {
-                $oKunde = Shop::Container()->getDB()->queryPrepared(
+        if (($languageID > 0 || $customerID > 0) && $salutation !== '') {
+            if ($languageID === 0 && $customerID > 0) {
+                $data = Shop::Container()->getDB()->queryPrepared(
                     'SELECT kSprache
                         FROM tkunde
                         WHERE kKunde = :cid',
-                    ['cid' => $kKunde],
+                    ['cid' => $customerID],
                     ReturnType::SINGLE_OBJECT
                 );
-                if (isset($oKunde->kSprache) && $oKunde->kSprache > 0) {
-                    $kSprache = (int)$oKunde->kSprache;
+                if (isset($data->kSprache) && $data->kSprache > 0) {
+                    $languageID = (int)$data->kSprache;
                 }
             }
-            $cISOSprache = '';
-            if ($kSprache > 0) { // Kundensprache, falls gesetzt
-                $oSprache = Shop::Container()->getDB()->select('tsprache', 'kSprache', $kSprache);
-                if (isset($oSprache->kSprache) && $oSprache->kSprache > 0) {
-                    $cISOSprache = $oSprache->cISO;
+            $isoCode = '';
+            if ($languageID > 0) { // Kundensprache, falls gesetzt
+                $langData = Shop::Container()->getDB()->select('tsprache', 'kSprache', $languageID);
+                if (isset($langData->kSprache) && $langData->kSprache > 0) {
+                    $isoCode = $langData->cISO;
                 }
             } else { // Ansonsten Standardsprache
-                $oSprache = Shop::Container()->getDB()->select('tsprache', 'cShopStandard', 'Y');
-                if (isset($oSprache->kSprache) && $oSprache->kSprache > 0) {
-                    $cISOSprache = $oSprache->cISO;
+                $langData = Shop::Container()->getDB()->select('tsprache', 'cShopStandard', 'Y');
+                if (isset($langData->kSprache) && $langData->kSprache > 0) {
+                    $isoCode = $langData->cISO;
                 }
             }
-            $cName       = $cAnrede === 'm' ? 'salutationM' : 'salutationW';
-            $oSprachWert = Shop::Container()->getDB()->queryPrepared(
+            $name  = $salutation === 'm' ? 'salutationM' : 'salutationW';
+            $value = Shop::Container()->getDB()->queryPrepared(
                 'SELECT tsprachwerte.cWert
                     FROM tsprachwerte
                     JOIN tsprachiso
                         ON tsprachiso.cISO = :ciso
                     WHERE tsprachwerte.kSprachISO = tsprachiso.kSprachISO
                         AND tsprachwerte.cName = :cname',
-                ['ciso' => $cISOSprache, 'cname' => $cName],
+                ['ciso' => $isoCode, 'cname' => $name],
                 ReturnType::SINGLE_OBJECT
             );
-            if (isset($oSprachWert->cWert) && $oSprachWert->cWert !== '') {
-                $cAnrede = $oSprachWert->cWert;
+            if (isset($value->cWert) && $value->cWert !== '') {
+                $salutation = $value->cWert;
             }
         }
 
-        return $cAnrede;
+        return $salutation;
     }
 
     /**

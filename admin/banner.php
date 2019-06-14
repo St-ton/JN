@@ -69,18 +69,18 @@ if (!empty($_POST) && (isset($_POST['cName']) || isset($_POST['kImageMap'])) && 
             $oBanner->update($kImageMap, $cName, $cBannerPath, $vDatum, $bDatum);
         }
         // extensionpoint
-        $kSprache      = (int)$_POST['kSprache'];
-        $kKundengruppe = (int)$_POST['kKundengruppe'];
-        $nSeite        = (int)$_POST['nSeitenTyp'];
-        $cKey          = $_POST['cKey'];
-        $cKeyValue     = '';
-        $cValue        = '';
+        $languageID      = (int)$_POST['kSprache'];
+        $customerGroupID = (int)$_POST['kKundengruppe'];
+        $pageType        = (int)$_POST['nSeitenTyp'];
+        $cKey            = $_POST['cKey'];
+        $cKeyValue       = '';
+        $cValue          = '';
 
-        if ($nSeite === PAGE_ARTIKEL) {
+        if ($pageType === PAGE_ARTIKEL) {
             $cKey      = 'kArtikel';
             $cKeyValue = 'article_key';
             $cValue    = $_POST[$cKeyValue] ?? null;
-        } elseif ($nSeite === PAGE_ARTIKELLISTE) {
+        } elseif ($pageType === PAGE_ARTIKELLISTE) {
             $aFilter_arr = [
                 'kTag'         => 'tag_key',
                 'kMerkmalWert' => 'attribute_key',
@@ -90,7 +90,7 @@ if (!empty($_POST) && (isset($_POST['cName']) || isset($_POST['kImageMap'])) && 
             ];
             $cKeyValue   = $aFilter_arr[$cKey];
             $cValue      = $_POST[$cKeyValue] ?? null;
-        } elseif ($nSeite === PAGE_EIGENE) {
+        } elseif ($pageType === PAGE_EIGENE) {
             $cKey      = 'kLink';
             $cKeyValue = 'link_key';
             $cValue    = $_POST[$cKeyValue] ?? null;
@@ -105,9 +105,9 @@ if (!empty($_POST) && (isset($_POST['cName']) || isset($_POST['kImageMap'])) && 
         } else {
             $db->delete('textensionpoint', ['cClass', 'kInitial'], ['ImageMap', $kImageMap]);
             $oExtension                = new stdClass();
-            $oExtension->kSprache      = $kSprache;
-            $oExtension->kKundengruppe = $kKundengruppe;
-            $oExtension->nSeite        = $nSeite;
+            $oExtension->kSprache      = $languageID;
+            $oExtension->kKundengruppe = $customerGroupID;
+            $oExtension->nSeite        = $pageType;
             $oExtension->cKey          = $cKey;
             $oExtension->cValue        = $cValue;
             $oExtension->cClass        = 'ImageMap';

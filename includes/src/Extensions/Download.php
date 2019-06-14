@@ -105,16 +105,16 @@ class Download
     private $licenseOK;
 
     /**
-     * @param int  $kDownload
-     * @param int  $kSprache
-     * @param bool $bInfo
-     * @param int  $kBestellung
+     * @param int  $id
+     * @param int  $languageID
+     * @param bool $info
+     * @param int  $orderID
      */
-    public function __construct(int $kDownload = 0, int $kSprache = 0, bool $bInfo = true, int $kBestellung = 0)
+    public function __construct(int $id = 0, int $languageID = 0, bool $info = true, int $orderID = 0)
     {
         $this->licenseOK = self::checkLicense();
-        if ($kDownload > 0 && $this->licenseOK === true) {
-            $this->loadFromDB($kDownload, $kSprache, $bInfo, $kBestellung);
+        if ($id > 0 && $this->licenseOK === true) {
+            $this->loadFromDB($id, $languageID, $info, $orderID);
         }
     }
 
@@ -254,26 +254,26 @@ class Download
      */
     public static function getDownloads($keys = [], int $languageID = 0): array
     {
-        $kArtikel    = isset($keys['kArtikel']) ? (int)$keys['kArtikel'] : 0;
-        $kBestellung = isset($keys['kBestellung']) ? (int)$keys['kBestellung'] : 0;
-        $kKunde      = isset($keys['kKunde']) ? (int)$keys['kKunde'] : 0;
-        $downloads   = [];
-        if (($kArtikel > 0 || $kBestellung > 0 || $kKunde > 0) && $languageID > 0 && self::checkLicense()) {
+        $productID  = isset($keys['kArtikel']) ? (int)$keys['kArtikel'] : 0;
+        $orderID    = isset($keys['kBestellung']) ? (int)$keys['kBestellung'] : 0;
+        $customerID = isset($keys['kKunde']) ? (int)$keys['kKunde'] : 0;
+        $downloads  = [];
+        if (($productID > 0 || $orderID > 0 || $customerID > 0) && $languageID > 0 && self::checkLicense()) {
             $cSQLSelect = 'tartikeldownload.kDownload';
-            $cSQLWhere  = 'kArtikel = ' . $kArtikel;
+            $cSQLWhere  = 'kArtikel = ' . $productID;
             $cSQLJoin   = 'LEFT JOIN tdownload ON tartikeldownload.kDownload = tdownload.kDownload';
-            if ($kBestellung > 0) {
+            if ($orderID > 0) {
                 $cSQLSelect = 'tbestellung.kBestellung, tbestellung.kKunde, tartikeldownload.kDownload';
                 $cSQLWhere  = 'tartikeldownload.kArtikel = twarenkorbpos.kArtikel';
-                $cSQLJoin   = 'JOIN tbestellung ON tbestellung.kBestellung = ' . $kBestellung . '
+                $cSQLJoin   = 'JOIN tbestellung ON tbestellung.kBestellung = ' . $orderID . '
                                JOIN tdownload ON tdownload.kDownload = tartikeldownload.kDownload
                                JOIN twarenkorbpos ON twarenkorbpos.kWarenkorb = tbestellung.kWarenkorb
                                     AND twarenkorbpos.nPosTyp = ' . \C_WARENKORBPOS_TYP_ARTIKEL;
-            } elseif ($kKunde > 0) {
+            } elseif ($customerID > 0) {
                 $cSQLSelect = 'MAX(tbestellung.kBestellung) AS kBestellung, tbestellung.kKunde, 
                     tartikeldownload.kDownload';
                 $cSQLWhere  = 'tartikeldownload.kArtikel = twarenkorbpos.kArtikel';
-                $cSQLJoin   = 'JOIN tbestellung ON tbestellung.kKunde = ' . $kKunde . '
+                $cSQLJoin   = 'JOIN tbestellung ON tbestellung.kKunde = ' . $customerID . '
                                JOIN tdownload ON tdownload.kDownload = tartikeldownload.kDownload
                                JOIN twarenkorbpos ON twarenkorbpos.kWarenkorb = tbestellung.kWarenkorb
                                     AND twarenkorbpos.nPosTyp = ' . \C_WARENKORBPOS_TYP_ARTIKEL;
@@ -295,7 +295,7 @@ class Download
                     true,
                     (int)($download->kBestellung ?? 0)
                 );
-                if (($kBestellung > 0 || $kKunde > 0) && $downloads[$i]->getAnzahl() > 0) {
+                if (($orderID > 0 || $customerID > 0) && $downloads[$i]->getAnzahl() > 0) {
                     $download->kKunde      = (int)$download->kKunde;
                     $download->kBestellung = (int)$download->kBestellung;
 
@@ -322,10 +322,10 @@ class Download
      */
     public static function hasDownloads($cart): bool
     {
-        foreach ($cart->PositionenArr as $oPosition) {
-            if ($oPosition->nPosTyp === \C_WARENKORBPOS_TYP_ARTIKEL
-                && isset($oPosition->Artikel->oDownload_arr)
-                && \count($oPosition->Artikel->oDownload_arr) > 0
+        foreach ($cart->PositionenArr as $item) {
+            if ($item->nPosTyp === \C_WARENKORBPOS_TYP_ARTIKEL
+                && isset($item->Artikel->oDownload_arr)
+                && \count($item->Artikel->oDownload_arr) > 0
             ) {
                 return true;
             }
@@ -400,9 +400,9 @@ class Download
             if (!\is_array($download->oArtikelDownload_arr) || \count($download->oArtikelDownload_arr) === 0) {
                 return self::ERROR_PRODUCT_NOT_FOUND;
             }
-            foreach ($order->Positionen as &$position) {
-                foreach ($download->oArtikelDownload_arr as &$oArtikelDownload) {
-                    if ($position->kArtikel != $oArtikelDownload->kArtikel) {
+            foreach ($order->Positionen as &$item) {
+                foreach ($download->oArtikelDownload_arr as &$donwloadItem) {
+                    if ($item->kArtikel != $donwloadItem->kArtikel) {
                         continue;
                     }
                     // Check Anzahl

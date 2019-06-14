@@ -614,18 +614,18 @@ function verschickeMail($mail)
             }
         }
         if (isset($mail->oAttachment_arr) && count($mail->oAttachment_arr) > 0) {
-            foreach ($mail->oAttachment_arr as $oAttachment) {
-                if (empty($oAttachment->cEncoding)) {
-                    $oAttachment->cEncoding = 'base64';
+            foreach ($mail->oAttachment_arr as $attachment) {
+                if (empty($attachment->cEncoding)) {
+                    $attachment->cEncoding = 'base64';
                 }
-                if (empty($oAttachment->cType)) {
-                    $oAttachment->cType = 'application/octet-stream';
+                if (empty($attachment->cType)) {
+                    $attachment->cType = 'application/octet-stream';
                 }
                 $phpmailer->addAttachment(
-                    $oAttachment->cFilePath,
-                    $oAttachment->cName,
-                    $oAttachment->cEncoding,
-                    $oAttachment->cType
+                    $attachment->cFilePath,
+                    $attachment->cName,
+                    $attachment->cEncoding,
+                    $attachment->cType
                 );
             }
         }

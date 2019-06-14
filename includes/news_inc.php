@@ -70,11 +70,11 @@ function gibNewskommentarFehler($nPlausiValue_arr)
 function holeNewsKategorien($cDatumSQL, $bActiveOnly = false)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    $kSprache     = Shop::getLanguageID();
-    $cSQL         = '';
+    $languageID     = Shop::getLanguageID();
+    $sql         = '';
     $activeFilter = $bActiveOnly ? ' AND tnewskategorie.nAktiv = 1 ' : '';
     if (mb_strlen($cDatumSQL) > 0) {
-        $cSQL = '   JOIN tnewskategorienews 
+        $sql = '   JOIN tnewskategorienews 
                         ON tnewskategorienews.kNewsKategorie = tnewskategorie.kNewsKategorie
                     JOIN tnews 
                         ON tnews.kNews = tnewskategorienews.kNews
@@ -90,13 +90,13 @@ function holeNewsKategorien($cDatumSQL, $bActiveOnly = false)
             FROM tnewskategorie
             JOIN tnewskategoriesprache t 
                 ON t.kNewsKategorie = tnewskategorie.kNewsKategorie
-            " . $cSQL . "
+            " . $sql . "
             LEFT JOIN tseo 
                 ON tseo.cKey = 'kNewsKategorie'
                 AND tseo.kKey = tnewskategorie.kNewsKategorie
-                AND tseo.kSprache = " . $kSprache . '
-                AND tnewskategorie.kSprache = ' . $kSprache . '
-            WHERE t.languageID = ' . $kSprache
+                AND tseo.kSprache = " . $languageID . '
+                AND tnewskategorie.kSprache = ' . $languageID . '
+            WHERE t.languageID = ' . $languageID
             . $activeFilter . '
             GROUP BY tnewskategorie.kNewsKategorie
             ORDER BY tnewskategorie.nSort',

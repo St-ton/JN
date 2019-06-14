@@ -98,17 +98,15 @@ class ProductStream extends Portlet
     /**
      * @param PortletInstance $instance
      * @return Artikel[]
-     * @throws \JTL\Exceptions\CircularReferenceException
-     * @throws \JTL\Exceptions\ServiceNotFoundException
      */
     public function getFilteredProducts(PortletInstance $instance): array
     {
         $products = [];
         $options  = Artikel::getDefaultOptions();
 
-        foreach ($this->getFilteredProductIds($instance) as $kArtikel) {
+        foreach ($this->getFilteredProductIds($instance) as $productID) {
             $product = new Artikel();
-            $product->fuelleArtikel($kArtikel, $options);
+            $product->fuelleArtikel($productID, $options);
             $products[] = $product;
         }
 

@@ -87,45 +87,45 @@ class WarenkorbPersPos
     public $Artikel;
 
     /**
-     * @param int        $kArtikel
-     * @param string     $cArtikelName
-     * @param float      $fAnzahl
+     * @param int        $productID
+     * @param string     $productName
+     * @param float      $qty
      * @param int        $kWarenkorbPers
-     * @param string     $cUnique
+     * @param string     $unique
      * @param int        $kKonfigitem
-     * @param int|string $nPosTyp
-     * @param string     $cResponsibility
+     * @param int|string $type
+     * @param string     $responsibility
      */
     public function __construct(
-        int $kArtikel,
-        $cArtikelName,
-        $fAnzahl,
+        int $productID,
+        $productName,
+        $qty,
         int $kWarenkorbPers,
-        $cUnique = '',
+        $unique = '',
         int $kKonfigitem = 0,
-        int $nPosTyp = \C_WARENKORBPOS_TYP_ARTIKEL,
-        string $cResponsibility = 'core'
+        int $type = \C_WARENKORBPOS_TYP_ARTIKEL,
+        string $responsibility = 'core'
     ) {
-        $this->kArtikel        = $kArtikel;
-        $this->cArtikelName    = $cArtikelName;
-        $this->fAnzahl         = $fAnzahl;
+        $this->kArtikel        = $productID;
+        $this->cArtikelName    = $productName;
+        $this->fAnzahl         = $qty;
         $this->dHinzugefuegt   = 'NOW()';
         $this->kWarenkorbPers  = $kWarenkorbPers;
-        $this->cUnique         = $cUnique;
-        $this->cResponsibility = !empty($cResponsibility) ? $cResponsibility : 'core';
+        $this->cUnique         = $unique;
+        $this->cResponsibility = !empty($responsibility) ? $responsibility : 'core';
         $this->kKonfigitem     = $kKonfigitem;
-        $this->nPosTyp         = $nPosTyp;
+        $this->nPosTyp         = $type;
     }
 
     /**
-     * @param array $oEigenschaftwerte_arr
+     * @param array $attrValues
      * @return $this
      */
-    public function erstellePosEigenschaften(array $oEigenschaftwerte_arr): self
+    public function erstellePosEigenschaften(array $attrValues): self
     {
-        foreach ($oEigenschaftwerte_arr as $oEigenschaftwerte) {
+        foreach ($attrValues as $oEigenschaftwerte) {
             if (isset($oEigenschaftwerte->kEigenschaft)) {
-                $oWarenkorbPersPosEigenschaft = new WarenkorbPersPosEigenschaft(
+                $attr = new WarenkorbPersPosEigenschaft(
                     $oEigenschaftwerte->kEigenschaft,
                     $oEigenschaftwerte->kEigenschaftWert ?? 0,
                     $oEigenschaftwerte->cFreifeldWert ?? null,
@@ -133,8 +133,8 @@ class WarenkorbPersPos
                     $oEigenschaftwerte->cEigenschaftWertName ?? null,
                     $this->kWarenkorbPersPos
                 );
-                $oWarenkorbPersPosEigenschaft->schreibeDB();
-                $this->oWarenkorbPersPosEigenschaft_arr[] = $oWarenkorbPersPosEigenschaft;
+                $attr->schreibeDB();
+                $this->oWarenkorbPersPosEigenschaft_arr[] = $attr;
             }
         }
 
@@ -146,17 +146,17 @@ class WarenkorbPersPos
      */
     public function schreibeDB(): self
     {
-        $oTemp                   = new stdClass();
-        $oTemp->kWarenkorbPers   = $this->kWarenkorbPers;
-        $oTemp->kArtikel         = $this->kArtikel;
-        $oTemp->cArtikelName     = $this->cArtikelName;
-        $oTemp->fAnzahl          = $this->fAnzahl;
-        $oTemp->dHinzugefuegt    = $this->dHinzugefuegt;
-        $oTemp->cUnique          = $this->cUnique;
-        $oTemp->cResponsibility  = !empty($this->cResponsibility) ? $this->cResponsibility : 'core';
-        $oTemp->kKonfigitem      = $this->kKonfigitem;
-        $oTemp->nPosTyp          = $this->nPosTyp;
-        $this->kWarenkorbPersPos = Shop::Container()->getDB()->insert('twarenkorbperspos', $oTemp);
+        $ins                     = new stdClass();
+        $ins->kWarenkorbPers     = $this->kWarenkorbPers;
+        $ins->kArtikel           = $this->kArtikel;
+        $ins->cArtikelName       = $this->cArtikelName;
+        $ins->fAnzahl            = $this->fAnzahl;
+        $ins->dHinzugefuegt      = $this->dHinzugefuegt;
+        $ins->cUnique            = $this->cUnique;
+        $ins->cResponsibility    = !empty($this->cResponsibility) ? $this->cResponsibility : 'core';
+        $ins->kKonfigitem        = $this->kKonfigitem;
+        $ins->nPosTyp            = $this->nPosTyp;
+        $this->kWarenkorbPersPos = Shop::Container()->getDB()->insert('twarenkorbperspos', $ins);
 
         return $this;
     }
@@ -166,23 +166,23 @@ class WarenkorbPersPos
      */
     public function updateDB(): int
     {
-        $oTemp                    = new stdClass();
-        $oTemp->kWarenkorbPersPos = $this->kWarenkorbPersPos;
-        $oTemp->kWarenkorbPers    = $this->kWarenkorbPers;
-        $oTemp->kArtikel          = $this->kArtikel;
-        $oTemp->cArtikelName      = $this->cArtikelName;
-        $oTemp->fAnzahl           = $this->fAnzahl;
-        $oTemp->dHinzugefuegt     = $this->dHinzugefuegt;
-        $oTemp->cUnique           = $this->cUnique;
-        $oTemp->cResponsibility   = !empty($this->cResponsibility) ? $this->cResponsibility : 'core';
-        $oTemp->kKonfigitem       = $this->kKonfigitem;
-        $oTemp->nPosTyp           = $this->nPosTyp;
+        $upd                    = new stdClass();
+        $upd->kWarenkorbPersPos = $this->kWarenkorbPersPos;
+        $upd->kWarenkorbPers    = $this->kWarenkorbPers;
+        $upd->kArtikel          = $this->kArtikel;
+        $upd->cArtikelName      = $this->cArtikelName;
+        $upd->fAnzahl           = $this->fAnzahl;
+        $upd->dHinzugefuegt     = $this->dHinzugefuegt;
+        $upd->cUnique           = $this->cUnique;
+        $upd->cResponsibility   = !empty($this->cResponsibility) ? $this->cResponsibility : 'core';
+        $upd->kKonfigitem       = $this->kKonfigitem;
+        $upd->nPosTyp           = $this->nPosTyp;
 
         return Shop::Container()->getDB()->update(
             'twarenkorbperspos',
             'kWarenkorbPersPos',
             $this->kWarenkorbPersPos,
-            $oTemp
+            $upd
         );
     }
 

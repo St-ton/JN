@@ -1149,9 +1149,9 @@ final class Images extends AbstractSync
         }
         // Kategoriebilder löschen Wawi > .99923
         if (isset($xml['del_bilder']['kKategorie'])) {
-            foreach ((array)$xml['del_bilder']['kKategorie'] as $kKategorie) {
-                if ((int)$kKategorie > 0) {
-                    $this->deleteCategoryImage(null, $kKategorie);
+            foreach ((array)$xml['del_bilder']['kKategorie'] as $categoryID) {
+                if ((int)$categoryID > 0) {
+                    $this->deleteCategoryImage(null, $categoryID);
                 }
             }
         }

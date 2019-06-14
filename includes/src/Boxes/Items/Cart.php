@@ -23,8 +23,8 @@ final class Cart extends AbstractBox
         $this->addMapping('elemente', 'Items');
         if (isset($_SESSION['Warenkorb']->PositionenArr)) {
             $products = [];
-            foreach ($_SESSION['Warenkorb']->PositionenArr as $position) {
-                $products[] = $position;
+            foreach ($_SESSION['Warenkorb']->PositionenArr as $item) {
+                $products[] = $item;
             }
             $this->setItems(\array_reverse($products));
         }

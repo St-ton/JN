@@ -84,31 +84,31 @@ function getManufacturers($selHerst = '')
 
 /**
  * @param string $selKats
- * @param int    $kKategorie
+ * @param int    $categoryID
  * @param int    $tiefe
  * @return array
  */
-function getCategories($selKats = '', $kKategorie = 0, $tiefe = 0)
+function getCategories($selKats = '', $categoryID = 0, $tiefe = 0)
 {
     $selected = Text::parseSSK($selKats);
     $arr      = [];
-    $kats     = Shop::Container()->getDB()->selectAll(
+    $items    = Shop::Container()->getDB()->selectAll(
         'tkategorie',
         'kOberKategorie',
-        (int)$kKategorie,
+        (int)$categoryID,
         'kKategorie, cName'
     );
-    $kCount   = count($kats);
-    for ($o = 0; $o < $kCount; $o++) {
+    $count    = count($items);
+    for ($o = 0; $o < $count; $o++) {
         for ($i = 0; $i < $tiefe; $i++) {
-            $kats[$o]->cName = '--' . $kats[$o]->cName;
+            $items[$o]->cName = '--' . $items[$o]->cName;
         }
-        $kats[$o]->selected = 0;
-        if (in_array($kats[$o]->kKategorie, $selected)) {
-            $kats[$o]->selected = 1;
+        $items[$o]->selected = 0;
+        if (in_array($items[$o]->kKategorie, $selected)) {
+            $items[$o]->selected = 1;
         }
-        $arr[] = $kats[$o];
-        $arr   = array_merge($arr, getCategories($selKats, $kats[$o]->kKategorie, $tiefe + 1));
+        $arr[] = $items[$o];
+        $arr   = array_merge($arr, getCategories($selKats, $items[$o]->kKategorie, $tiefe + 1));
     }
 
     return $arr;

@@ -1429,9 +1429,9 @@ final class Shop
         if ((self::$kArtikel > 0 && !self::$kKategorie)
             || (self::$kArtikel > 0 && self::$kKategorie > 0 && self::$show === 1)
         ) {
-            $kVaterArtikel = Product::getParent(self::$kArtikel);
-            if ($kVaterArtikel > 0) {
-                $kArtikel = $kVaterArtikel;
+            $parentID = Product::getParent(self::$kArtikel);
+            if ($parentID > 0) {
+                $productID = $parentID;
                 //save data from child article POST and add to redirect
                 $cRP = '';
                 if (\is_array($_POST) && \count($_POST) > 0) {
@@ -1442,7 +1442,7 @@ final class Shop
                     $cRP = '&cRP=' . \base64_encode($cRP);
                 }
                 \http_response_code(301);
-                \header('Location: ' . self::getURL() . '/?a=' . $kArtikel . $cRP);
+                \header('Location: ' . self::getURL() . '/?a=' . $productID . $cRP);
                 exit();
             }
 

@@ -336,14 +336,14 @@ class CheckBox
 
     /**
      * @param int   $location
-     * @param int   $kKundengruppe
+     * @param int   $customerGroupID
      * @param array $post
-     * @param bool  $bAktiv
+     * @param bool  $active
      * @return $this
      */
-    public function checkLogging(int $location, int $kKundengruppe, array $post, bool $bAktiv = false): self
+    public function checkLogging(int $location, int $customerGroupID, array $post, bool $active = false): self
     {
-        $checkBoxes = $this->getCheckBoxFrontend($location, $kKundengruppe, $bAktiv, false, false, true);
+        $checkBoxes = $this->getCheckBoxFrontend($location, $customerGroupID, $active, false, false, true);
         $db         = Shop::Container()->getDB();
         foreach ($checkBoxes as $checkBox) {
             //@todo: casting to bool does not seem to be a good idea.

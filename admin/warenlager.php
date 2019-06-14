@@ -35,15 +35,15 @@ if ($cAction === 'update') {
         );
     }
     if (is_array($_REQUEST['cNameSprache']) && count($_REQUEST['cNameSprache']) > 0) {
-        foreach ($_REQUEST['cNameSprache'] as $kWarenlager => $cSpracheAssoc_arr) {
+        foreach ($_REQUEST['cNameSprache'] as $kWarenlager => $assocLang) {
             Shop::Container()->getDB()->delete('twarenlagersprache', 'kWarenlager', (int)$kWarenlager);
 
-            foreach ($cSpracheAssoc_arr as $kSprache => $cName) {
-                if (mb_strlen(trim($cName)) > 1) {
+            foreach ($assocLang as $languageID => $name) {
+                if (mb_strlen(trim($name)) > 1) {
                     $oObj              = new stdClass();
                     $oObj->kWarenlager = (int)$kWarenlager;
-                    $oObj->kSprache    = (int)$kSprache;
-                    $oObj->cName       = htmlspecialchars(trim($cName), ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
+                    $oObj->kSprache    = (int)$languageID;
+                    $oObj->cName       = htmlspecialchars(trim($name), ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
 
                     Shop::Container()->getDB()->insert('twarenlagersprache', $oObj);
                 }

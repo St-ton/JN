@@ -387,24 +387,24 @@ class Exportformat
     }
 
     /**
-     * @param int $kKundengruppe
+     * @param int $customerGroupID
      * @return $this
      */
-    public function setKundengruppe(int $kKundengruppe): self
+    public function setKundengruppe(int $customerGroupID): self
     {
-        $this->kKundengruppe = $kKundengruppe;
+        $this->kKundengruppe = $customerGroupID;
 
         return $this;
     }
 
     /**
      * /**
-     * @param int $kSprache
+     * @param int $languageID
      * @return $this
      */
-    public function setSprache(int $kSprache): self
+    public function setSprache(int $languageID): self
     {
-        $this->kSprache = $kSprache;
+        $this->kSprache = $languageID;
 
         return $this;
     }

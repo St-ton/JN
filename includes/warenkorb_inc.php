@@ -13,7 +13,7 @@ use JTL\Helpers\Cart;
 function loescheWarenkorbPositionen($nPos_arr)
 {
     trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
-    Cart::deleteCartPositions($nPos_arr);
+    Cart::deleteCartItems($nPos_arr);
 }
 
 /**
@@ -23,7 +23,7 @@ function loescheWarenkorbPositionen($nPos_arr)
 function loescheWarenkorbPosition($nPos)
 {
     trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
-    Cart::deleteCartPositions([$nPos]);
+    Cart::deleteCartItems([$nPos]);
 }
 
 /**
@@ -51,7 +51,7 @@ function checkeSchnellkauf()
 function loescheAlleSpezialPos()
 {
     trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
-    Cart::deleteAllSpecialPositions();
+    Cart::deleteAllSpecialItems();
 }
 
 /**

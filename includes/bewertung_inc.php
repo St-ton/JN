@@ -261,11 +261,11 @@ function aktualisiereDurchschnitt(int $productID, string $activate): bool
 
     if (isset($avg->fDurchschnitt) && $avg->fDurchschnitt > 0) {
         Shop::Container()->getDB()->delete('tartikelext', 'kArtikel', $productID);
-        $oArtikelExt                          = new stdClass();
-        $oArtikelExt->kArtikel                = $productID;
-        $oArtikelExt->fDurchschnittsBewertung = (float)$avg->fDurchschnitt;
+        $ins                          = new stdClass();
+        $ins->kArtikel                = $productID;
+        $ins->fDurchschnittsBewertung = (float)$avg->fDurchschnitt;
 
-        Shop::Container()->getDB()->insert('tartikelext', $oArtikelExt);
+        Shop::Container()->getDB()->insert('tartikelext', $ins);
     }
 
     return true;
@@ -279,12 +279,12 @@ function aktualisiereDurchschnitt(int $productID, string $activate): bool
 function pruefeKundeArtikelBewertet(int $productID, int $customerID): int
 {
     if ($customerID > 0) {
-        $oBewertung = Shop::Container()->getDB()->select(
+        $item = Shop::Container()->getDB()->select(
             'tbewertung',
             ['kKunde', 'kArtikel', 'kSprache'],
             [$customerID, $productID, Shop::getLanguageID()]
         );
-        if (isset($oBewertung->kKunde) && $oBewertung->kKunde > 0) {
+        if (isset($item->kKunde) && $item->kKunde > 0) {
             return 1;
         }
     }

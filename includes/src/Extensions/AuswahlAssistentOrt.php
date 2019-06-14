@@ -275,14 +275,14 @@ class AuswahlAssistentOrt
     }
 
     /**
-     * @param int $kKategorie
-     * @param int $kSprache
+     * @param int $categoryID
+     * @param int $languageID
      * @param int $groupID
      * @return bool
      */
-    public static function isCategoryTaken(int $kKategorie, int $kSprache, int $groupID = 0): bool
+    public static function isCategoryTaken(int $categoryID, int $languageID, int $groupID = 0): bool
     {
-        if ($kKategorie === 0 || $kSprache === 0) {
+        if ($categoryID === 0 || $languageID === 0) {
             return false;
         }
         $locationSQL = $groupID > 0
@@ -298,8 +298,8 @@ class AuswahlAssistentOrt
                     AND o.kKey = :catID',
             [
                 'keyID'  => \AUSWAHLASSISTENT_ORT_KATEGORIE,
-                'catID'  => $kKategorie,
-                'langID' => $kSprache
+                'catID'  => $categoryID,
+                'langID' => $languageID
             ],
             ReturnType::SINGLE_OBJECT
         );
@@ -308,46 +308,46 @@ class AuswahlAssistentOrt
     }
 
     /**
-     * @param int $kLink
-     * @param int $kSprache
+     * @param int $linkID
+     * @param int $languageID
      * @param int $groupID
      * @return bool
      */
-    public static function isLinkTaken(int $kLink, int $kSprache, int $groupID = 0): bool
+    public static function isLinkTaken(int $linkID, int $languageID, int $groupID = 0): bool
     {
-        if ($kLink === 0 || $kSprache === 0) {
+        if ($linkID === 0 || $languageID === 0) {
             return false;
         }
-        $cOrtSQL = $groupID > 0
+        $condSQL = $groupID > 0
             ? ' AND o.kAuswahlAssistentGruppe != ' . $groupID
             : '';
-        $oOrt    = Shop::Container()->getDB()->queryPrepared(
+        $data    = Shop::Container()->getDB()->queryPrepared(
             'SELECT kAuswahlAssistentOrt
                 FROM tauswahlassistentort AS o
                 JOIN tauswahlassistentgruppe AS g
                     ON g.kAuswahlAssistentGruppe = o.kAuswahlAssistentGruppe
                     AND g.kSprache = :langID
-                WHERE o.cKey = :keyID' . $cOrtSQL . '
+                WHERE o.cKey = :keyID' . $condSQL . '
                     AND o.kKey = :linkID',
             [
-                'langID' => $kSprache,
+                'langID' => $languageID,
                 'keyID'  => \AUSWAHLASSISTENT_ORT_LINK,
-                'linkID' => $kLink
+                'linkID' => $linkID
             ],
             ReturnType::SINGLE_OBJECT
         );
 
-        return isset($oOrt->kAuswahlAssistentOrt) && $oOrt->kAuswahlAssistentOrt > 0;
+        return isset($data->kAuswahlAssistentOrt) && $data->kAuswahlAssistentOrt > 0;
     }
 
     /**
-     * @param int $kSprache
+     * @param int $languageID
      * @param int $groupID
      * @return bool
      */
-    public static function isStartPageTaken(int $kSprache, int $groupID = 0): bool
+    public static function isStartPageTaken(int $languageID, int $groupID = 0): bool
     {
-        if ($kSprache === 0) {
+        if ($languageID === 0) {
             return false;
         }
         $locationSQL = $groupID > 0
@@ -361,7 +361,7 @@ class AuswahlAssistentOrt
                     AND g.kSprache = :langID
                 WHERE o.cKey = :keyID' . $locationSQL . '
                     AND o.kKey = 1',
-            ['langID' => $kSprache, 'keyID' => \AUSWAHLASSISTENT_ORT_STARTSEITE],
+            ['langID' => $languageID, 'keyID' => \AUSWAHLASSISTENT_ORT_STARTSEITE],
             ReturnType::SINGLE_OBJECT
         );
 
@@ -369,15 +369,15 @@ class AuswahlAssistentOrt
     }
 
     /**
-     * @param string $cKey
-     * @param int    $kKey
-     * @param int    $kSprache
-     * @param bool   $bBackend
+     * @param string $keyName
+     * @param int    $id
+     * @param int    $languageID
+     * @param bool   $backend
      * @return AuswahlAssistentOrt|null
      */
-    public static function getLocation($cKey, int $kKey, int $kSprache, bool $bBackend = false): ?self
+    public static function getLocation($keyName, int $id, int $languageID, bool $backend = false): ?self
     {
-        if ($kKey > 0 && $kSprache > 0 && \mb_strlen($cKey) > 0) {
+        if ($id > 0 && $languageID > 0 && \mb_strlen($keyName) > 0) {
             $item = Shop::Container()->getDB()->executeQueryPrepared(
                 'SELECT kAuswahlAssistentOrt
                     FROM tauswahlassistentort AS o
@@ -387,15 +387,15 @@ class AuswahlAssistentOrt
                     WHERE o.cKey = :keyID
                         AND o.kKey = :kkey',
                 [
-                    'langID' => $kSprache,
-                    'keyID'  => $cKey,
-                    'kkey'   => $kKey
+                    'langID' => $languageID,
+                    'keyID'  => $keyName,
+                    'kkey'   => $id
                 ],
                 ReturnType::SINGLE_OBJECT
             );
 
             if (isset($item->kAuswahlAssistentOrt) && $item->kAuswahlAssistentOrt > 0) {
-                return new self((int)$item->kAuswahlAssistentOrt, 0, $bBackend);
+                return new self((int)$item->kAuswahlAssistentOrt, 0, $backend);
             }
         }
 

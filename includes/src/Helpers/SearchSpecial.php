@@ -147,22 +147,22 @@ class SearchSpecial
 
     /**
      * @param int $limit
-     * @param int $kKundengruppe
+     * @param int $customerGroupID
      * @return array
      * @former gibTopAngebote()
      * @since 5.0.0
      */
-    public static function getTopOffers(int $limit = 20, int $kKundengruppe = 0): array
+    public static function getTopOffers(int $limit = 20, int $customerGroupID = 0): array
     {
-        if (!$kKundengruppe) {
-            $kKundengruppe = Kundengruppe::getDefaultGroupID();
+        if (!$customerGroupID) {
+            $customerGroupID = Kundengruppe::getDefaultGroupID();
         }
-        $topArticles = Shop::Container()->getDB()->query(
+        $top = Shop::Container()->getDB()->query(
             'SELECT tartikel.kArtikel
                 FROM tartikel
                 LEFT JOIN tartikelsichtbarkeit 
                     ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                    AND tartikelsichtbarkeit.kKundengruppe = ' . $kKundengruppe . "
+                    AND tartikelsichtbarkeit.kKundengruppe = ' . $customerGroupID . "
                 WHERE tartikelsichtbarkeit.kArtikel IS NULL
                     AND tartikel.cTopArtikel = 'Y'
                     " . self::getParentSQL() . '
@@ -170,20 +170,20 @@ class SearchSpecial
             ReturnType::ARRAY_OF_OBJECTS
         );
 
-        return self::randomizeAndLimit($topArticles, \min(\count($topArticles), $limit));
+        return self::randomizeAndLimit($top, \min(\count($top), $limit));
     }
 
     /**
      * @param int $limit
-     * @param int $kKundengruppe
+     * @param int $customerGroupID
      * @return array
      * @former gibBestseller()
      * @since 5.0.0
      */
-    public static function getBestsellers(int $limit = 20, int $kKundengruppe = 0): array
+    public static function getBestsellers(int $limit = 20, int $customerGroupID = 0): array
     {
-        if (!$kKundengruppe) {
-            $kKundengruppe = Kundengruppe::getDefaultGroupID();
+        if (!$customerGroupID) {
+            $customerGroupID = Kundengruppe::getDefaultGroupID();
         }
         $config      = Shop::getSettings([\CONF_GLOBAL]);
         $minAmount   = isset($config['global']['global_bestseller_minanzahl'])
@@ -194,7 +194,7 @@ class SearchSpecial
                 FROM tbestseller, tartikel
                 LEFT JOIN tartikelsichtbarkeit 
                     ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                    AND tartikelsichtbarkeit.kKundengruppe = ' . $kKundengruppe . '
+                    AND tartikelsichtbarkeit.kKundengruppe = ' . $customerGroupID . '
                 WHERE tartikelsichtbarkeit.kArtikel IS NULL
                     AND tbestseller.kArtikel = tartikel.kArtikel
                     AND round(tbestseller.fAnzahl) >= ' . $minAmount . '
@@ -209,15 +209,15 @@ class SearchSpecial
 
     /**
      * @param int $limit
-     * @param int $kKundengruppe
+     * @param int $customerGroupID
      * @return array
      * @former gibSonderangebote()
      * @since 5.0.0
      */
-    public static function getSpecialOffers(int $limit = 20, int $kKundengruppe = 0): array
+    public static function getSpecialOffers(int $limit = 20, int $customerGroupID = 0): array
     {
-        if (!$kKundengruppe) {
-            $kKundengruppe = Kundengruppe::getDefaultGroupID();
+        if (!$customerGroupID) {
+            $customerGroupID = Kundengruppe::getDefaultGroupID();
         }
         $specialOffers = Shop::Container()->getDB()->query(
             'SELECT tartikel.kArtikel, tsonderpreise.fNettoPreis
@@ -228,10 +228,10 @@ class SearchSpecial
                     ON tsonderpreise.kArtikelSonderpreis = tartikelsonderpreis.kArtikelSonderpreis
                 LEFT JOIN tartikelsichtbarkeit 
                     ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                    AND tartikelsichtbarkeit.kKundengruppe = ' . $kKundengruppe . '
+                    AND tartikelsichtbarkeit.kKundengruppe = ' . $customerGroupID . '
                 WHERE tartikelsichtbarkeit.kArtikel IS NULL
                     AND tartikelsonderpreis.kArtikel = tartikel.kArtikel
-                    AND tsonderpreise.kKundengruppe = ' . $kKundengruppe . "
+                    AND tsonderpreise.kKundengruppe = ' . $customerGroupID . "
                     AND tartikelsonderpreis.cAktiv = 'Y'
                     AND tartikelsonderpreis.dStart <= NOW()
                     AND (tartikelsonderpreis.dEnde IS NULL OR tartikelsonderpreis.dEnde >= CURDATE())
@@ -246,18 +246,18 @@ class SearchSpecial
 
     /**
      * @param int $limit
-     * @param int $kKundengruppe
+     * @param int $customerGroupID
      * @return array
      * @former gibNeuImSortiment()
      * @since 5.0.0
      */
-    public static function getNewProducts(int $limit, int $kKundengruppe = 0): array
+    public static function getNewProducts(int $limit, int $customerGroupID = 0): array
     {
         if (!$limit) {
             $limit = 20;
         }
-        if (!$kKundengruppe) {
-            $kKundengruppe = Kundengruppe::getDefaultGroupID();
+        if (!$customerGroupID) {
+            $customerGroupID = Kundengruppe::getDefaultGroupID();
         }
         $config = Shop::getSettings([\CONF_BOXEN]);
         $days   = ($config['boxen']['box_neuimsortiment_alter_tage'] > 0)
@@ -268,7 +268,7 @@ class SearchSpecial
                 FROM tartikel
                 LEFT JOIN tartikelsichtbarkeit 
                     ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                    AND tartikelsichtbarkeit.kKundengruppe = ' . $kKundengruppe . "
+                    AND tartikelsichtbarkeit.kKundengruppe = ' . $customerGroupID . "
                 WHERE tartikelsichtbarkeit.kArtikel IS NULL
                     AND tartikel.cNeu = 'Y'
                     AND dErscheinungsdatum <= NOW()

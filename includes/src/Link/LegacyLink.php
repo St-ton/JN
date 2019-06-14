@@ -248,12 +248,12 @@ class LegacyLink extends MainModel
     }
 
     /**
-     * @param int $kSprache
+     * @param int $languageID
      * @return $this
      */
-    public function setSprache(int $kSprache): self
+    public function setSprache(int $languageID): self
     {
-        $this->kSprache = $kSprache;
+        $this->kSprache = $languageID;
 
         return $this;
     }

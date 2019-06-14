@@ -142,14 +142,14 @@ class Konfigitem implements JsonSerializable
     /**
      * Constructor
      *
-     * @param int $kKonfigitem
-     * @param int $kSprache
-     * @param int $kKundengruppe
+     * @param int $id
+     * @param int $languageID
+     * @param int $customerGroupID
      */
-    public function __construct(int $kKonfigitem = 0, int $kSprache = 0, int $kKundengruppe = 0)
+    public function __construct(int $id = 0, int $languageID = 0, int $customerGroupID = 0)
     {
-        if ($kKonfigitem > 0) {
-            $this->loadFromDB($kKonfigitem, $kSprache, $kKundengruppe);
+        if ($id > 0) {
+            $this->loadFromDB($id, $languageID, $customerGroupID);
         }
     }
 
@@ -366,23 +366,23 @@ class Konfigitem implements JsonSerializable
     }
 
     /**
-     * @param int $kArtikel
+     * @param int $productID
      * @return $this
      */
-    public function setArtikelKey(int $kArtikel): self
+    public function setArtikelKey(int $productID): self
     {
-        $this->kArtikel = $kArtikel;
+        $this->kArtikel = $productID;
 
         return $this;
     }
 
     /**
-     * @param Artikel $oArtikel
+     * @param Artikel $product
      * @return $this
      */
-    public function setArtikel(Artikel $oArtikel): self
+    public function setArtikel(Artikel $product): self
     {
-        $this->oArtikel = $oArtikel;
+        $this->oArtikel = $product;
 
         return $this;
     }

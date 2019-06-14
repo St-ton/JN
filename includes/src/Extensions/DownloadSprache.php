@@ -37,13 +37,13 @@ class DownloadSprache
     protected $cBeschreibung;
 
     /**
-     * @param int $kDownload
-     * @param int $kSprache
+     * @param int $downloadID
+     * @param int $languageID
      */
-    public function __construct(int $kDownload = 0, int $kSprache = 0)
+    public function __construct(int $downloadID = 0, int $languageID = 0)
     {
-        if ($kDownload > 0 && $kSprache > 0) {
-            $this->loadFromDB($kDownload, $kSprache);
+        if ($downloadID > 0 && $languageID > 0) {
+            $this->loadFromDB($downloadID, $languageID);
         }
     }
 
@@ -56,21 +56,21 @@ class DownloadSprache
     }
 
     /**
-     * @param int $kDownload
-     * @param int $kSprache
+     * @param int $downloadID
+     * @param int $languageID
      */
-    private function loadFromDB(int $kDownload, int $kSprache): void
+    private function loadFromDB(int $downloadID, int $languageID): void
     {
-        $oDownloadSprache = Shop::Container()->getDB()->select(
+        $localized = Shop::Container()->getDB()->select(
             'tdownloadsprache',
             'kDownload',
-            $kDownload,
+            $downloadID,
             'kSprache',
-            $kSprache
+            $languageID
         );
-        if ($oDownloadSprache !== null && (int)$oDownloadSprache->kDownload > 0) {
-            foreach (\array_keys(\get_object_vars($oDownloadSprache)) as $member) {
-                $this->$member = $oDownloadSprache->$member;
+        if ($localized !== null && (int)$localized->kDownload > 0) {
+            foreach (\array_keys(\get_object_vars($localized)) as $member) {
+                $this->$member = $localized->$member;
             }
             $this->kSprache  = (int)$this->kSprache;
             $this->kDownload = (int)$this->kDownload;
@@ -78,15 +78,15 @@ class DownloadSprache
     }
 
     /**
-     * @param bool $bPrimary
+     * @param bool $primary
      * @return bool|int
      */
-    public function save(bool $bPrimary = false)
+    public function save(bool $primary = false)
     {
         $oObj      = $this->kopiereMembers();
         $kDownload = Shop::Container()->getDB()->insert('tdownloadsprache', $oObj);
         if ($kDownload > 0) {
-            return $bPrimary ? $kDownload : true;
+            return $primary ? $kDownload : true;
         }
 
         return false;
@@ -110,23 +110,23 @@ class DownloadSprache
     }
 
     /**
-     * @param int $kDownload
+     * @param int $downloadID
      * @return $this
      */
-    public function setDownload(int $kDownload): self
+    public function setDownload(int $downloadID): self
     {
-        $this->kDownload = $kDownload;
+        $this->kDownload = $downloadID;
 
         return $this;
     }
 
     /**
-     * @param int $kSprache
+     * @param int $languageID
      * @return $this
      */
-    public function setSprache(int $kSprache): self
+    public function setSprache(int $languageID): self
     {
-        $this->kSprache = $kSprache;
+        $this->kSprache = $languageID;
 
         return $this;
     }

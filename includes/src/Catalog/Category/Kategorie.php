@@ -135,57 +135,57 @@ class Kategorie
     public $cKurzbezeichnung = '';
 
     /**
-     * @param int  $kKategorie
-     * @param int  $kSprache
-     * @param int  $kKundengruppe
+     * @param int  $id
+     * @param int  $languageID
+     * @param int  $customerGroupID
      * @param bool $noCache
      */
-    public function __construct(int $kKategorie = 0, int $kSprache = 0, int $kKundengruppe = 0, bool $noCache = false)
+    public function __construct(int $id = 0, int $languageID = 0, int $customerGroupID = 0, bool $noCache = false)
     {
-        if ($kKategorie > 0) {
-            $this->loadFromDB($kKategorie, $kSprache, $kKundengruppe, false, $noCache);
+        if ($id > 0) {
+            $this->loadFromDB($id, $languageID, $customerGroupID, false, $noCache);
         }
     }
 
     /**
-     * @param int  $kKategorie
-     * @param int  $kSprache
-     * @param int  $kKundengruppe
+     * @param int  $id
+     * @param int  $languageID
+     * @param int  $customerGroupID
      * @param bool $recall - used for internal hacking only
      * @param bool $noCache
      * @return $this
      */
     public function loadFromDB(
-        int $kKategorie,
-        int $kSprache = 0,
-        int $kKundengruppe = 0,
+        int $id,
+        int $languageID = 0,
+        int $customerGroupID = 0,
         bool $recall = false,
         bool $noCache = false
     ): self {
-        $oSpracheTmp   = null;
+        $tmpLang       = null;
         $catAttributes = null;
-        if (!$kKundengruppe) {
-            $kKundengruppe = Frontend::getCustomerGroup()->getID();
+        if (!$customerGroupID) {
+            $customerGroupID = Frontend::getCustomerGroup()->getID();
         }
-        if (!$kKundengruppe) {
-            $kKundengruppe = Kundengruppe::getDefaultGroupID();
+        if (!$customerGroupID) {
+            $customerGroupID = Kundengruppe::getDefaultGroupID();
             if (!isset($_SESSION['Kundengruppe']->kKundengruppe)) { //auswahlassistent admin fix
                 $_SESSION['Kundengruppe']                = new stdClass();
-                $_SESSION['Kundengruppe']->kKundengruppe = $kKundengruppe;
+                $_SESSION['Kundengruppe']->kKundengruppe = $customerGroupID;
             }
         }
-        if (!$kSprache) {
-            $kSprache = Shop::getLanguageID();
-            if (!$kSprache) {
-                $oSpracheTmp = Sprache::getDefaultLanguage();
-                $kSprache    = $oSpracheTmp->kSprache;
+        if (!$languageID) {
+            $languageID = Shop::getLanguageID();
+            if (!$languageID) {
+                $tmpLang    = Sprache::getDefaultLanguage();
+                $languageID = $tmpLang->kSprache;
             }
         }
-        $this->kSprache = $kSprache;
+        $this->kSprache = $languageID;
         //exculpate session
-        $cacheID = \CACHING_GROUP_CATEGORY . '_' . $kKategorie .
-            '_' . $kSprache .
-            '_cg_' . $kKundengruppe .
+        $cacheID = \CACHING_GROUP_CATEGORY . '_' . $id .
+            '_' . $languageID .
+            '_cg_' . $customerGroupID .
             '_ssl_' . Request::checkSSL();
         if (!$noCache && ($category = Shop::Container()->getCache()->get($cacheID)) !== false) {
             foreach (\get_object_vars($category) as $k => $v) {
@@ -205,14 +205,14 @@ class Kategorie
         $oSQLKategorie->cSELECT = '';
         $oSQLKategorie->cJOIN   = '';
         $oSQLKategorie->cWHERE  = '';
-        if (!$recall && $kSprache > 0 && !Sprache::isDefaultLanguageActive(false, $kSprache)) {
+        if (!$recall && $languageID > 0 && !Sprache::isDefaultLanguageActive(false, $languageID)) {
             $oSQLKategorie->cSELECT = 'tkategoriesprache.cName AS cName_spr, 
                 tkategoriesprache.cBeschreibung AS cBeschreibung_spr, 
                 tkategoriesprache.cMetaDescription AS cMetaDescription_spr,
                 tkategoriesprache.cMetaKeywords AS cMetaKeywords_spr, 
                 tkategoriesprache.cTitleTag AS cTitleTag_spr, ';
             $oSQLKategorie->cJOIN   = ' JOIN tkategoriesprache ON tkategoriesprache.kKategorie = tkategorie.kKategorie';
-            $oSQLKategorie->cWHERE  = ' AND tkategoriesprache.kSprache = ' . $kSprache;
+            $oSQLKategorie->cWHERE  = ' AND tkategoriesprache.kSprache = ' . $languageID;
         }
         $oKategorie = $db->query(
             'SELECT tkategorie.kKategorie, ' . $oSQLKategorie->cSELECT . ' tkategorie.kOberKategorie, 
@@ -221,28 +221,28 @@ class Kategorie
                 FROM tkategorie
                 ' . $oSQLKategorie->cJOIN . '
                 LEFT JOIN tkategoriesichtbarkeit ON tkategoriesichtbarkeit.kKategorie = tkategorie.kKategorie
-                    AND tkategoriesichtbarkeit.kKundengruppe = ' . $kKundengruppe . "
+                    AND tkategoriesichtbarkeit.kKundengruppe = ' . $customerGroupID . "
                 LEFT JOIN tseo ON tseo.cKey = 'kKategorie'
-                    AND tseo.kKey = " . $kKategorie . '
-                    AND tseo.kSprache = ' . $kSprache . '
+                    AND tseo.kKey = " . $id . '
+                    AND tseo.kSprache = ' . $languageID . '
                 LEFT JOIN tkategoriepict ON tkategoriepict.kKategorie = tkategorie.kKategorie
-                WHERE tkategorie.kKategorie = ' . $kKategorie . '
+                WHERE tkategorie.kKategorie = ' . $id . '
                     ' . $oSQLKategorie->cWHERE . '
                     AND tkategoriesichtbarkeit.kKategorie IS NULL',
             ReturnType::SINGLE_OBJECT
         );
         if ($oKategorie === null || $oKategorie === false) {
-            if (!$recall && !Sprache::isDefaultLanguageActive(false, $kSprache)) {
+            if (!$recall && !Sprache::isDefaultLanguageActive(false, $languageID)) {
                 if (\defined('EXPERIMENTAL_MULTILANG_SHOP') && EXPERIMENTAL_MULTILANG_SHOP === true) {
-                    if ($oSpracheTmp === null) {
-                        $oSpracheTmp = Sprache::getDefaultLanguage();
+                    if ($tmpLang === null) {
+                        $tmpLang = Sprache::getDefaultLanguage();
                     }
-                    $kDefaultLang = (int)$oSpracheTmp->kSprache;
-                    if ($kDefaultLang !== $kSprache) {
-                        return $this->loadFromDB($kKategorie, $kDefaultLang, $kKundengruppe, true);
+                    $kDefaultLang = (int)$tmpLang->kSprache;
+                    if ($kDefaultLang !== $languageID) {
+                        return $this->loadFromDB($id, $kDefaultLang, $customerGroupID, true);
                     }
-                } elseif (Category::categoryExists($kKategorie)) {
-                    return $this->loadFromDB($kKategorie, $kSprache, $kKundengruppe, true);
+                } elseif (Category::categoryExists($id)) {
+                    return $this->loadFromDB($id, $languageID, $customerGroupID, true);
                 }
             }
 
@@ -253,8 +253,8 @@ class Kategorie
         if ((!isset($oKategorie->cSeo) || $oKategorie->cSeo === null || $oKategorie->cSeo === '')
             && \defined('EXPERIMENTAL_MULTILANG_SHOP') && EXPERIMENTAL_MULTILANG_SHOP === true
         ) {
-            $kDefaultLang = (int)($oSpracheTmp->kSprache ?? Sprache::getDefaultLanguage()->kSprache);
-            if ($kSprache !== $kDefaultLang) {
+            $kDefaultLang = (int)($tmpLang->kSprache ?? Sprache::getDefaultLanguage()->kSprache);
+            if ($languageID !== $kDefaultLang) {
                 $oSeo = $db->select(
                     'tseo',
                     'cKey',
@@ -275,7 +275,7 @@ class Kategorie
             $this->mapData($oKategorie);
         }
         $imageBaseURL             = Shop::getImageBaseURL();
-        $helper                   = Category::getInstance($kSprache, $kKundengruppe);
+        $helper                   = Category::getInstance($languageID, $customerGroupID);
         $this->cURL               = URL::buildURL($this, \URLART_KATEGORIE);
         $this->cURLFull           = URL::buildURL($this, \URLART_KATEGORIE, true);
         $this->cKategoriePfad_arr = $helper->getPath($this, false);
@@ -298,7 +298,7 @@ class Kategorie
                     FROM tkategorieattribut
                     LEFT JOIN tkategorieattributsprache 
                         ON tkategorieattributsprache.kAttribut = tkategorieattribut.kKategorieAttribut
-                        AND tkategorieattributsprache.kSprache = ' . $kSprache . '
+                        AND tkategorieattributsprache.kSprache = ' . $languageID . '
                     WHERE kKategorie = ' . (int)$this->kKategorie . '
                     ORDER BY tkategorieattribut.bIstFunktionsAttribut DESC, tkategorieattribut.nSort',
                 ReturnType::ARRAY_OF_OBJECTS
@@ -326,7 +326,7 @@ class Kategorie
         /** @deprecated since version 4.05 - use categoryFunctionAttributes instead */
         $this->KategorieAttribute = &$this->categoryFunctionAttributes;
         // lokalisieren
-        if ($kSprache > 0 && !Sprache::isDefaultLanguageActive()) {
+        if ($languageID > 0 && !Sprache::isDefaultLanguageActive()) {
             if (isset($oKategorie->cName_spr) && \mb_strlen($oKategorie->cName_spr) > 0) {
                 $this->cName = $oKategorie->cName_spr;
                 unset($oKategorie->cName_spr);
@@ -363,7 +363,7 @@ class Kategorie
             && !empty($this->categoryAttributes[\ART_ATTRIBUT_SHORTNAME]->cWert))
             ? $this->categoryAttributes[\ART_ATTRIBUT_SHORTNAME]->cWert
             : $this->cName;
-        $cacheTags              = [\CACHING_GROUP_CATEGORY . '_' . $kKategorie, \CACHING_GROUP_CATEGORY];
+        $cacheTags              = [\CACHING_GROUP_CATEGORY . '_' . $id, \CACHING_GROUP_CATEGORY];
         \executeHook(\HOOK_KATEGORIE_CLASS_LOADFROMDB, [
             'oKategorie' => &$this,
             'cacheTags'  => &$cacheTags,

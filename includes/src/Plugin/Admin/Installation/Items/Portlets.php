@@ -36,14 +36,14 @@ class Portlets extends AbstractItem
             if (\mb_strlen($hits2[0]) !== \mb_strlen($i)) {
                 continue;
             }
-            $oPortlet = (object)[
+            $opcPortlet = (object)[
                 'kPlugin' => $this->plugin->kPlugin,
                 'cTitle'  => $portlet['Title'],
                 'cClass'  => $portlet['Class'],
                 'cGroup'  => $portlet['Group'],
                 'bActive' => (int)$portlet['Active'],
             ];
-            if (!$this->db->insert('topcportlet', $oPortlet)) {
+            if (!$this->db->insert('topcportlet', $opcPortlet)) {
                 return InstallCode::SQL_CANNOT_SAVE_PORTLET;
             }
         }

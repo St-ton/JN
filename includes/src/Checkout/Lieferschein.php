@@ -74,23 +74,24 @@ class Lieferschein
      * Constructor
      *
      * @param int    $kLieferschein
-     * @param object $oData
+     * @param object $data
      */
-    public function __construct(int $kLieferschein = 0, $oData = null)
+    public function __construct(int $kLieferschein = 0, $data = null)
     {
         if ($kLieferschein > 0) {
-            $this->loadFromDB($kLieferschein, $oData);
+            $this->loadFromDB($kLieferschein, $data);
         }
     }
 
     /**
      * @param int    $kLieferschein
-     * @param object $oData
+     * @param object $data
      * @return $this
      */
-    private function loadFromDB(int $kLieferschein = 0, $oData = null): self
+    private function loadFromDB(int $kLieferschein = 0, $data = null): self
     {
-        $item = Shop::Container()->getDB()->select('tlieferschein', 'kLieferschein', $kLieferschein);
+        $db   = Shop::Container()->getDB();
+        $item = $db->select('tlieferschein', 'kLieferschein', $kLieferschein);
         if ($item !== null && $item->kLieferschein > 0) {
             foreach (\array_keys(\get_object_vars($item)) as $member) {
                 $setter = 'set' . \mb_substr($member, 1);
@@ -101,39 +102,38 @@ class Lieferschein
                 }
             }
 
-            $positions = Shop::Container()->getDB()->selectAll(
+            $items = $db->selectAll(
                 'tlieferscheinpos',
                 'kLieferschein',
                 $kLieferschein,
                 'kLieferscheinPos'
             );
-            foreach ($positions as $position) {
-                $pos                           = new Lieferscheinpos($position->kLieferscheinPos);
-                $pos->oLieferscheinPosInfo_arr = [];
+            foreach ($items as $deliveryItem) {
+                $slip                           = new Lieferscheinpos((int)$deliveryItem->kLieferscheinPos);
+                $slip->oLieferscheinPosInfo_arr = [];
 
-                $posInfos = Shop::Container()->getDB()->selectAll(
+                $infos = $db->selectAll(
                     'tlieferscheinposinfo',
                     'kLieferscheinPos',
-                    (int)$position->kLieferscheinPos,
+                    (int)$deliveryItem->kLieferscheinPos,
                     'kLieferscheinPosInfo'
                 );
-                if (\is_array($posInfos) && !empty($posInfos)) {
-                    foreach ($posInfos as $posInfo) {
-                        $pos->oLieferscheinPosInfo_arr[] = new Lieferscheinposinfo($posInfo->kLieferscheinPosInfo);
+                if (!empty($infos)) {
+                    foreach ($infos as $info) {
+                        $slip->oLieferscheinPosInfo_arr[] = new Lieferscheinposinfo((int)$info->kLieferscheinPosInfo);
                     }
                 }
-
-                $this->oLieferscheinPos_arr[] = $pos;
+                $this->oLieferscheinPos_arr[] = $slip;
             }
 
-            $shippings = Shop::Container()->getDB()->selectAll(
+            $shippings = $db->selectAll(
                 'tversand',
                 'kLieferschein',
                 $kLieferschein,
                 'kVersand'
             );
             foreach ($shippings as $shipping) {
-                $this->oVersand_arr[] = new Versand($shipping->kVersand, $oData);
+                $this->oVersand_arr[] = new Versand($shipping->kVersand, $data);
             }
         }
 

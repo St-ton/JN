@@ -109,17 +109,17 @@ class AuswahlAssistentGruppe
                     $group->kAuswahlAssistentGruppe,
                     $activeOnly
                 );
-                $oAuswahlAssistentOrt             = new AuswahlAssistentOrt(
+                $localtion                        = new AuswahlAssistentOrt(
                     0,
                     $this->kAuswahlAssistentGruppe,
                     $bBackend
                 );
-                $this->oAuswahlAssistentOrt_arr   = $oAuswahlAssistentOrt->oOrt_arr;
-                foreach ($this->oAuswahlAssistentOrt_arr as $oAuswahlAssistentOrt) {
-                    if ($oAuswahlAssistentOrt->cKey === \AUSWAHLASSISTENT_ORT_KATEGORIE) {
-                        $this->cKategorie .= $oAuswahlAssistentOrt->kKey . ';';
+                $this->oAuswahlAssistentOrt_arr   = $localtion->oOrt_arr;
+                foreach ($this->oAuswahlAssistentOrt_arr as $localtion) {
+                    if ($localtion->cKey === \AUSWAHLASSISTENT_ORT_KATEGORIE) {
+                        $this->cKategorie .= $localtion->kKey . ';';
                     }
-                    if ($oAuswahlAssistentOrt->cKey === \AUSWAHLASSISTENT_ORT_STARTSEITE) {
+                    if ($localtion->cKey === \AUSWAHLASSISTENT_ORT_STARTSEITE) {
                         $this->nStartseite = 1;
                     }
                 }

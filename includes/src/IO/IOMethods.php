@@ -386,6 +386,7 @@ class IOMethods
 
         Frontend::getInstance()->setStandardSessionVars();
         $response->nType     = 2;
+        $response->productID = $kArtikel;
         $response->nCount    = isset($_SESSION['Vergleichsliste']->oArtikel_arr) ?
             \count($_SESSION['Vergleichsliste']->oArtikel_arr) : 0;
         $response->cTitle    = Shop::Lang()->get('compare');

@@ -760,6 +760,12 @@
             }
             this.registerProductActions($('#shop-nav'));
 
+            if (data.productID) {
+                let $action = $('button[data-product-id-cl="' + data.productID + '"]')
+                $action.removeClass("on-list");
+                $action.next().removeClass("press");
+            }
+
             for (var ind in data.cBoxContainer) {
                 var $list = $(this.options.selector.boxContainer+ind);
 
@@ -870,12 +876,13 @@
             var $navBadgeWish = $(this.options.selector.navBadgeWish);
 
             if (data.wlPosRemove) {
-                let $action = $('button[data-wlPos="' + data.wlPosRemove + '"]')
+                let $action = $('button[data-wl-pos="' + data.wlPosRemove + '"]')
                 $action.removeClass("on-list");
                 $action.next().removeClass("press");
             }
             if (data.wlPosAdd) {
-                $('button[data-productID="' + data.productID + '"]').closest('form').find('input[name="wlPos"]').val(data.wlPosAdd)
+                $('button[data-product-id-wl="' + data.productID + '"]').attr('data-wl-pos', data.wlPosAdd);
+                $('button[data-product-id-wl="' + data.productID + '"]').closest('form').find('input[name="wlPos"]').val(data.wlPosAdd)
             }
             $.evo.io().call('updateWishlistDropdown', [$navContainerWish, $navBadgeWish], this, function(error, data) {
                 if (error) {

@@ -39,9 +39,11 @@
                         {block name='productdetails-image-actions'}
                             <div class="actions btn-group btn-group-xs btn-group-justified" data-toggle="product-actions">
                                 {if $Einstellungen.artikeldetails.artikeldetails_vergleichsliste_anzeigen === 'Y'}
-                                    {button name="Vergleichsliste" type="submit" class="compare badge badge-circle-1 action-tip-animation-b {if $isOnCompareList}on-list{/if}"
-                                    title="{lang key='addToCompare' section='productOverview'}"
-                                    data=["toggle"=>"tooltip", "placement"=>"top"]
+                                    {button name="Vergleichsliste"
+                                        type="submit"
+                                        class="compare badge badge-circle-1 action-tip-animation-b {if $isOnCompareList}on-list{/if}"
+                                        title="{lang key='addToCompare' section='productOverview'}"
+                                        data=["toggle"=>"tooltip", "placement"=>"top", "product-id-cl" => $Artikel->kArtikel]
                                     }
                                         <span class="far fa-list-alt"></span>
                                     {/button}
@@ -49,9 +51,11 @@
                                     <div class="action-tip-animation">Von Vergleichliste entfernt!</div>
                                 {/if}
                                 {if $Einstellungen.global.global_wunschliste_anzeigen === 'Y'}
-                                    {button name="Wunschliste" type="submit" class="wishlist badge badge-circle-1 action-tip-animation-b {if $isOnWishList}on-list{/if}"
-                                    title="{lang key='addToWishlist' section='productDetails'}"
-                                    data=["toggle"=>"tooltip", "placement"=>"top", "wlPos" => $wishlistPos, "productID" => $Artikel->kArtikel]
+                                    {button name="Wunschliste"
+                                        type="submit"
+                                        class="wishlist badge badge-circle-1 action-tip-animation-b {if $isOnWishList}on-list{/if}"
+                                        title="{lang key='addToWishlist' section='productDetails'}"
+                                        data=["toggle"=>"tooltip", "placement"=>"top", "wl-pos" => $wishlistPos, "product-id-wl" => $Artikel->kArtikel]
                                     }
                                         <span class="far fa-heart"></span>
                                     {/button}

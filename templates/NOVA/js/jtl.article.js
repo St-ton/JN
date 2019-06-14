@@ -683,13 +683,6 @@
                                 break;
                             case 2: // added to comparelist
                                 that.updateComparelist(response);
-                                // eModal.alert({
-                                //     title: response.cTitle,
-                                //     message: response.cNotification,
-                                //     keyboard: true,
-                                //     tabindex: -1,
-                                //     buttons: false
-                                // });
                                 break;
                         }
                     }
@@ -814,13 +807,6 @@
                                 break;
                             case 2: // added to comparelist
                                 that.updateWishlist(response);
-                                // eModal.alert({
-                                //     title: response.cTitle,
-                                //     message: response.cNotification,
-                                //     keyboard: true,
-                                //     tabindex: -1,
-                                //     buttons: false
-                                // });
                                 break;
                         }
                     }

@@ -4,9 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use JTL\Sprache;
-use JTL\Shop;
 use JTL\Alert\Alert;
+use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
@@ -21,7 +20,6 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1) {
     );
 }
 $smarty->assign('oConfig_arr', getAdminSectionSettings(CONF_PREISVERLAUF))
-       ->assign('sprachen', Sprache::getAllLanguages())
        ->display('preisverlauf.tpl');
 
 /**

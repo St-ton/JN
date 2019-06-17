@@ -9,11 +9,10 @@ namespace JTL\Mail\Validator;
 use Exception;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
+use JTL\Language\LanguageHelper;
 use JTL\Mail\Hydrator\HydratorInterface;
 use JTL\Mail\Renderer\RendererInterface;
 use JTL\Mail\Template\TemplateFactory;
-use JTL\Shop;
-use JTL\Sprache;
 
 /**
  * Class SyntaxChecker
@@ -90,7 +89,7 @@ final class SyntaxChecker
             return '';
         }
 
-        foreach (Sprache::getAllLanguages() as $lang) {
+        foreach (LanguageHelper::getAllLanguages() as $lang) {
             $template->load($lang->kSprache, 1);
             $model = $template->getModel();
             if ($model === null) {

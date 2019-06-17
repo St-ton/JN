@@ -10,13 +10,8 @@
         {/navitem}
     {/block}
     {block name='layout-header-nav-icons-login'}
-        {navitem tag="div" class="mr-2 mr-md-3" aria=['expanded' => 'false'] data=['toggle' => 'collapse', 'target' => '#nav-account-collapse']}
+        {navitem tag="div" aria=['expanded' => 'false'] data=['toggle' => 'collapse', 'target' => '#nav-account-collapse']}
             <span class="fas fa-user mr-md-3"></span>
-            {if empty($smarty.session.Kunde->kKunde)}
-                <span class="d-none d-md-inline-block">{lang key='login'}</span>
-            {else}
-                <span class="d-none d-md-inline-block">{lang key='hello'}, {$smarty.session.Kunde->cVorname} {$smarty.session.Kunde->cNachname}</span>
-            {/if}
         {/navitem}
     {/block}
     {block name='layout-header-nav-icons-include-header-shop-nav-compare'}

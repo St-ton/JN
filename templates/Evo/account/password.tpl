@@ -7,9 +7,8 @@
 {/block}
 
 {block name='content'}
-    <h1>{lang key='forgotPassword' section='global'}</h1>
-    
     {include file='snippets/extension.tpl'}
+    <h1>{lang key='forgotPassword' section='global'}</h1>
     {if $step === 'formular'}
         {$alertList->displayAlertByKey('forgotPasswordDesc')}
         <div class="row">

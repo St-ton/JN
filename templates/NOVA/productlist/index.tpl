@@ -28,11 +28,13 @@
             {else}
                 {assign var=style value='gallery'}
                 {assign var=grid value='6'}
-                {assign var=gridmd value='6'}
+                {assign var=gridmd value='4'}
+                {assign var=gridxl value='3'}
                 {if !$bExclusive || empty($boxes.left)}
                     {assign var=gridmd value='4'}
                 {/if}
             {/if}
+
             {if !empty($Suchergebnisse->getError())}
                 {block name='productlist-index-alert'}
                     {alert variant="danger"}{$Suchergebnisse->getError()}{/alert}
@@ -51,7 +53,7 @@
                 {include file='snippets/opc_mount_point.tpl' id='opc_before_products'}
                 {row class=$style id="product-list" itemprop="mainEntity" itemscope=true itemtype="http://schema.org/ItemList"}
                     {foreach $Suchergebnisse->getProducts() as $Artikel}
-                        {col cols={$grid} md="{if isset($gridmd)}{$gridmd}{/if}" class="product-wrapper mb-5" itemprop="itemListElement" itemscope=true itemtype="http://schema.org/Product"}
+                        {col cols={$grid} md="{if isset($gridmd)}{$gridmd}{/if}" xl="{if isset($gridxl)}{$gridxl}{/if}" class="product-wrapper {if !($style === 'list' && $Artikel@last)}mb-4{/if}" itemprop="itemListElement" itemscope=true itemtype="http://schema.org/Product"}
                             {if $style === 'list'}
                                 {block name='productlist-index-include-item-list'}
                                     {include file='productlist/item_list.tpl' tplscope=$style}
@@ -66,6 +68,7 @@
                 {/row}
                 {/if}
             {/block}
+
             {block name='productlist-index-include-productlist-footer'}
                 {include file='productlist/footer.tpl'}
             {/block}

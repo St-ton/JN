@@ -4,22 +4,22 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Catalog\Category\KategorieListe;
+use JTL\Catalog\Product\Artikel;
+use JTL\Customer\Kundengruppe;
+use JTL\DB\ReturnType;
+use JTL\Filter\Config;
+use JTL\Filter\ProductFilter;
 use JTL\Helpers\Request;
 use JTL\Helpers\Tax;
+use JTL\Helpers\Text;
 use JTL\Helpers\URL;
-use JTL\Catalog\Product\Artikel;
+use JTL\Language\LanguageHelper;
 use JTL\Media\Image;
-use JTL\Catalog\Category\KategorieListe;
-use JTL\Customer\Kundengruppe;
+use JTL\Media\MediaImage;
+use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Shopsetting;
-use JTL\Sprache;
-use JTL\Helpers\Text;
-use JTL\Media\MediaImage;
-use JTL\DB\ReturnType;
-use JTL\Session\Frontend;
-use JTL\Filter\ProductFilter;
-use JTL\Filter\Config;
 
 /**
  * @param string $nDatei
@@ -218,9 +218,9 @@ function generateSitemapXML()
     //  YYYY-MM-DD (eg 1997-07-16)
     //  YYYY-MM-DDThh:mmTZD (eg 1997-07-16T19:20+01:00)
     $defaultCustomerGroupID  = Kundengruppe::getDefaultGroupID();
-    $Sprachen                = Sprache::getAllLanguages();
+    $Sprachen                = LanguageHelper::getAllLanguages();
     $oSpracheAssoc_arr       = gibAlleSprachenAssoc($Sprachen);
-    $defaultLang             = Sprache::getDefaultLanguage(true);
+    $defaultLang             = LanguageHelper::getDefaultLanguage(true);
     $defaultLangID           = (int)$defaultLang->kSprache;
     $_SESSION['kSprache']    = $defaultLangID;
     $_SESSION['cISOSprache'] = $defaultLang->cISO;

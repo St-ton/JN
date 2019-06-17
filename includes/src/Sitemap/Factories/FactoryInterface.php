@@ -8,6 +8,7 @@ namespace JTL\Sitemap\Factories;
 
 use Generator;
 use JTL\DB\DbInterface;
+use JTL\Language\LanguageModel;
 
 /**
  * Interface FactoryInterface
@@ -25,8 +26,8 @@ interface FactoryInterface
     public function __construct(DbInterface $db, array $config, string $baseURL, string $baseImageURL);
 
     /**
-     * @param array $languages
-     * @param array $customerGroups
+     * @param array           $languages
+     * @param LanguageModel[] $customerGroups
      * @return Generator
      */
     public function getCollection(array $languages, array $customerGroups): Generator;

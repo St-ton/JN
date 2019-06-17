@@ -86,8 +86,9 @@
                                 {navitem class="{if $category->kKategorie == $activeId
                                         || ((isset($activeParent)
                                             && isset($activeParent->kKategorie))
-                                        && $activeParent->kKategorie == $category->kKategorie)}active{/if}"
+                                        && $activeParent->kKategorie == $category->kKategorie)} active{/if}"
                                     href=$category->cURLFull
+                                    router-class="px-2"
                                 }
                                     {$category->cKurzbezeichnung}
                                 {/navitem}

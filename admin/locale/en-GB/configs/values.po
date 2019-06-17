@@ -2473,3 +2473,12 @@ msgstr "Yes"
 
 msgid "ftp_ssl_value(0)"
 msgstr "No"
+
+msgid "hersteller_anzeigen_als_value(T)"
+msgstr "Text"
+
+msgid "hersteller_anzeigen_als_value(BT)"
+msgstr "Image and Text"
+
+msgid "hersteller_anzeigen_als_value(B)"
+msgstr "Image"

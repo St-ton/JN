@@ -2482,3 +2482,12 @@ msgstr "Template-gesteuert"
 
 msgid "cron_type_value(s2s)"
 msgstr "Curl Server-to-Server"
+
+msgid "hersteller_anzeigen_als_value(T)"
+msgstr "Text"
+
+msgid "hersteller_anzeigen_als_value(BT)"
+msgstr "Bild und Text"
+
+msgid "hersteller_anzeigen_als_value(B)"
+msgstr "Bild"

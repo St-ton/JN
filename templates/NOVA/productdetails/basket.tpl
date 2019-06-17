@@ -41,7 +41,7 @@
                                     {/inputgrouptext}
                                 {/inputgroupappend}
                             {/if}
-                            {button aria=["label"=>"{lang key='addToCart'}"] name="inWarenkorb" type="submit" value="{lang key='addToCart'}" class="ml-4" block=true variant="primary"}
+                            {button aria=["label"=>"{lang key='addToCart'}"] name="inWarenkorb" type="submit" value="{lang key='addToCart'}" class="ml-4" variant="primary"}
                                 <span class="btn-basket-check">
                                     <span class="fas fa-shopping-cart d-sm-none"></span><span class="d-none d-sm-block">{lang key='addToCart'}</span>
                                 </span>

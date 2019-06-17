@@ -26,18 +26,18 @@ $notice          = '';
 $errorMsg        = '';
 $step            = 'plugin_uebersicht';
 $invalidateCache = false;
-$bError          = false;
+$hasError        = false;
 $updated         = false;
-$kPlugin         = Request::verifyGPCDataInt('kPlugin');
+$pluginID        = Request::verifyGPCDataInt('kPlugin');
 $db              = Shop::Container()->getDB();
 $cache           = Shop::Container()->getCache();
-$oPlugin         = null;
+$plugin          = null;
 $alertHelper     = Shop::Container()->getAlertService();
-if ($step === 'plugin_uebersicht' && $kPlugin > 0) {
+if ($step === 'plugin_uebersicht' && $pluginID > 0) {
     if (Request::verifyGPCDataInt('Setting') === 1) {
         $updated = true;
         if (!Form::validateToken()) {
-            $bError = true;
+            $hasError = true;
         } else {
             $plgnConf = isset($_POST['kPluginAdminMenu'])
                 ? $db->queryPrepared(
@@ -47,7 +47,7 @@ if ($step === 'plugin_uebersicht' && $kPlugin > 0) {
                             AND kPlugin = :plgn
                             AND cConf != 'N'
                             AND kPluginAdminMenu = :kpm",
-                    ['plgn' => $kPlugin, 'kpm' => (int)$_POST['kPluginAdminMenu']],
+                    ['plgn' => $pluginID, 'kpm' => (int)$_POST['kPluginAdminMenu']],
                     ReturnType::ARRAY_OF_OBJECTS
                 )
                 : [];
@@ -55,10 +55,10 @@ if ($step === 'plugin_uebersicht' && $kPlugin > 0) {
                 $db->delete(
                     'tplugineinstellungen',
                     ['kPlugin', 'cName'],
-                    [$kPlugin, $current->cWertName]
+                    [$pluginID, $current->cWertName]
                 );
                 $upd          = new stdClass();
-                $upd->kPlugin = $kPlugin;
+                $upd->kPlugin = $pluginID;
                 $upd->cName   = $current->cWertName;
                 if (isset($_POST[$current->cWertName])) {
                     if (is_array($_POST[$current->cWertName])) {
@@ -78,12 +78,12 @@ if ($step === 'plugin_uebersicht' && $kPlugin > 0) {
                     $upd->cWert = null;
                 }
                 if (!$db->insert('tplugineinstellungen', $upd)) {
-                    $bError = true;
+                    $hasError = true;
                 }
                 $invalidateCache = true;
             }
         }
-        if ($bError) {
+        if ($hasError) {
             $errorMsg = __('errorConfigSave');
         } else {
             $notice = __('successConfigSave');
@@ -95,19 +95,19 @@ if ($step === 'plugin_uebersicht' && $kPlugin > 0) {
     if (mb_strlen(Request::verifyGPDataString('cPluginTab')) > 0) {
         $smarty->assign('defaultTabbertab', Request::verifyGPDataString('cPluginTab'));
     }
-    $data = $db->select('tplugin', 'kPlugin', $kPlugin);
+    $data = $db->select('tplugin', 'kPlugin', $pluginID);
     if ($data !== null) {
-        $loader  = Helper::getLoader((int)$data->bExtension === 1, $db, $cache);
-        $oPlugin = $loader->init($kPlugin, $invalidateCache);
+        $loader = Helper::getLoader((int)$data->bExtension === 1, $db, $cache);
+        $plugin = $loader->init($pluginID, $invalidateCache);
     }
-    if ($oPlugin !== null) {
-        if (ADMIN_MIGRATION && $oPlugin instanceof Plugin) {
+    if ($plugin !== null) {
+        if (ADMIN_MIGRATION && $plugin instanceof Plugin) {
             Shop::Container()->getGetText()->loadAdminLocale('pages/dbupdater');
             $manager    = new MigrationManager(
                 $db,
-                $oPlugin->getPaths()->getBasePath() . PFAD_PLUGIN_MIGRATIONS,
-                $oPlugin->getPluginID(),
-                $oPlugin->getMeta()->getSemVer()
+                $plugin->getPaths()->getBasePath() . PFAD_PLUGIN_MIGRATIONS,
+                $plugin->getPluginID(),
+                $plugin->getMeta()->getSemVer()
             );
             $migrations = count($manager->getMigrations());
             if ($migrations > 0) {
@@ -115,27 +115,27 @@ if ($step === 'plugin_uebersicht' && $kPlugin > 0) {
                        ->assign('updatesAvailable', $migrations > count($manager->getExecutedMigrations()));
             }
         }
-        $smarty->assign('oPlugin', $oPlugin);
+        $smarty->assign('oPlugin', $plugin);
         if ($updated === true) {
             executeHook(HOOK_PLUGIN_SAVE_OPTIONS, [
-                'plugin'   => $oPlugin,
-                'hasError' => &$bError,
+                'plugin'   => $plugin,
+                'hasError' => &$hasError,
                 'msg'      => &$notice,
                 'error'    => $errorMsg,
-                'options'  => $oPlugin->getConfig()->getOptions()
+                'options'  => $plugin->getConfig()->getOptions()
             ]);
         }
-        foreach ($oPlugin->getAdminMenu()->getItems() as $menu) {
+        foreach ($plugin->getAdminMenu()->getItems() as $menu) {
             if ($menu->isMarkdown === true) {
                 $parseDown  = new Parsedown();
                 $content    = $parseDown->text(Text::convertUTF8(file_get_contents($menu->file)));
                 $menu->html = $smarty->assign('content', $content)->fetch($menu->tpl);
             } elseif ($menu->configurable === false
                 && $menu->file !== ''
-                && file_exists($oPlugin->getPaths()->getAdminPath() . $menu->file)
+                && file_exists($plugin->getPaths()->getAdminPath() . $menu->file)
             ) {
                 ob_start();
-                require $oPlugin->getPaths()->getAdminPath() . $menu->file;
+                require $plugin->getPaths()->getAdminPath() . $menu->file;
                 $menu->html = ob_get_contents();
                 ob_end_clean();
             } elseif ($menu->configurable === true) {
@@ -148,7 +148,7 @@ if ($step === 'plugin_uebersicht' && $kPlugin > 0) {
 $alertHelper->addAlert(Alert::TYPE_NOTE, $notice, 'pluginNotice');
 $alertHelper->addAlert(Alert::TYPE_ERROR, $errorMsg, 'pluginError');
 
-$smarty->assign('oPlugin', $oPlugin)
+$smarty->assign('oPlugin', $plugin)
        ->assign('step', $step)
        ->assign('hasDifferentVersions', false)
        ->assign('currentDatabaseVersion', 0)

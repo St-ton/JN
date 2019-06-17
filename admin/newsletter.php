@@ -387,7 +387,7 @@ if (Form::validateToken()) {
                        ->assign('oNewsletterVorlage', $newsletterTPL);
             }
         } elseif (isset($_POST['speichern_und_senden'])) { // Vorlage speichern und senden
-            unset($newsletterTPL, $oNewsletter, $oKunde, $oEmailempfaenger);
+            unset($newsletterTPL, $oNewsletter, $customer, $oEmailempfaenger);
 
             $newsletterTPL = speicherVorlage($_POST);
             if ($newsletterTPL !== false) {
@@ -439,10 +439,10 @@ if (Form::validateToken()) {
                 $manufacturers = gibHerstellerObjekte($manufacturerIDs, $campaign);
                 $categories    = gibKategorieObjekte($categoryIDs, $campaign);
                 // Kunden Dummy bauen
-                $oKunde            = new stdClass();
-                $oKunde->cAnrede   = 'm';
-                $oKunde->cVorname  = 'Max';
-                $oKunde->cNachname = 'Mustermann';
+                $customer            = new stdClass();
+                $customer->cAnrede   = 'm';
+                $customer->cVorname  = 'Max';
+                $customer->cNachname = 'Mustermann';
                 // Emailempfaenger dummy bauen
                 $oEmailempfaenger              = new stdClass();
                 $oEmailempfaenger->cEmail      = $conf['newsletter']['newsletter_emailtest'];
@@ -513,7 +513,7 @@ if (Form::validateToken()) {
                     $categories,
                     $campaign,
                     $oEmailempfaenger,
-                    $oKunde
+                    $customer
                 );
                 $hist->cKundengruppe    = $groupString;
                 $hist->cKundengruppeKey = ';' . $cKundengruppeKey . ';';
@@ -535,10 +535,10 @@ if (Form::validateToken()) {
             $manufacturers   = gibHerstellerObjekte($manufacturerIDs, $campaign);
             $categories      = gibKategorieObjekte($categoryIDs, $campaign);
             // dummy customer
-            $oKunde            = new stdClass();
-            $oKunde->cAnrede   = 'm';
-            $oKunde->cVorname  = 'Max';
-            $oKunde->cNachname = 'Mustermann';
+            $customer            = new stdClass();
+            $customer->cAnrede   = 'm';
+            $customer->cVorname  = 'Max';
+            $customer->cNachname = 'Mustermann';
             // dummy recipient
             $oEmailempfaenger              = new stdClass();
             $oEmailempfaenger->cEmail      = $conf['newsletter']['newsletter_emailtest'];
@@ -559,7 +559,7 @@ if (Form::validateToken()) {
                     $manufacturers,
                     $categories,
                     $campaign,
-                    $oKunde
+                    $customer
                 );
             }
             if ($result !== true) {
@@ -730,11 +730,11 @@ if ($step === 'uebersicht') {
         ReturnType::ARRAY_OF_OBJECTS
     );
     foreach ($inactiveRecipients as $recipient) {
-        $oKunde               = new Kunde($recipient->kKunde ?? null);
-        $recipient->cNachname = $oKunde->cNachname;
+        $customer             = new Kunde($recipient->kKunde ?? null);
+        $recipient->cNachname = $customer->cNachname;
     }
 
-    $history       = $db->queryPrepared(
+    $history              = $db->queryPrepared(
         "SELECT kNewsletterHistory, nAnzahl, cBetreff, cKundengruppe,  
             DATE_FORMAT(dStart, '%d.%m.%Y %H:%i') AS Datum
             FROM tnewsletterhistory
@@ -745,13 +745,13 @@ if ($step === 'uebersicht') {
         ['lid' => (int)$_SESSION['kSprache']],
         ReturnType::ARRAY_OF_OBJECTS
     );
-    $kundengruppen = $db->query(
+    $customerGroupsByName = $db->query(
         'SELECT * 
             FROM tkundengruppe 
             ORDER BY cName',
         ReturnType::ARRAY_OF_OBJECTS
     );
-    $smarty->assign('kundengruppen', $kundengruppen)
+    $smarty->assign('kundengruppen', $customerGroupsByName)
            ->assign('oKundengruppe_arr', $customerGroups)
            ->assign('oNewsletterQueue_arr', $queue)
            ->assign('oNewsletterVorlage_arr', $templates)

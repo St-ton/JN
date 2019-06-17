@@ -305,17 +305,17 @@ class CheckBox
         array $post,
         array $params = []
     ): self {
-        $checkBoxes = $this->getCheckBoxFrontend($location, $customerGroupID, $active, true, true);
-        foreach ($checkBoxes as $checkBox) {
-            if (!isset($post[$checkBox->cID])) {
+        $checkboxes = $this->getCheckBoxFrontend($location, $customerGroupID, $active, true, true);
+        foreach ($checkboxes as $checkbox) {
+            if (!isset($post[$checkbox->cID])) {
                 continue;
             }
-            if ($checkBox->oCheckBoxFunktion->kPlugin > 0) {
-                $params['oCheckBox'] = $checkBox;
+            if ($checkbox->oCheckBoxFunktion->kPlugin > 0) {
+                $params['oCheckBox'] = $checkbox;
                 \executeHook(\HOOK_CHECKBOX_CLASS_TRIGGERSPECIALFUNCTION, $params);
             } else {
                 // Festdefinierte Shopfunktionen
-                switch ($checkBox->oCheckBoxFunktion->cID) {
+                switch ($checkbox->oCheckBoxFunktion->cID) {
                     case 'jtl_newsletter': // Newsletteranmeldung
                         $params['oKunde'] = GeneralObject::copyMembers($params['oKunde']);
                         $this->sfCheckBoxNewsletter($params['oKunde']);
@@ -323,7 +323,7 @@ class CheckBox
 
                     case 'jtl_adminmail': // CheckBoxMail
                         $params['oKunde'] = GeneralObject::copyMembers($params['oKunde']);
-                        $this->sfCheckBoxMailToAdmin($params['oKunde'], $checkBox, $location);
+                        $this->sfCheckBoxMailToAdmin($params['oKunde'], $checkbox, $location);
                         break;
 
                     default:
@@ -344,11 +344,11 @@ class CheckBox
      */
     public function checkLogging(int $location, int $customerGroupID, array $post, bool $active = false): self
     {
-        $checkBoxes = $this->getCheckBoxFrontend($location, $customerGroupID, $active, false, false, true);
+        $checkboxes = $this->getCheckBoxFrontend($location, $customerGroupID, $active, false, false, true);
         $db         = Shop::Container()->getDB();
-        foreach ($checkBoxes as $checkBox) {
+        foreach ($checkboxes as $checkBox) {
             //@todo: casting to bool does not seem to be a good idea.
-            //$cPost_arr looks like this: array ( [CheckBox_31] => Y, [CheckBox_24] => Y, [abschluss] => 1)
+            //$post looks like this: array ( [CheckBox_31] => Y, [CheckBox_24] => Y, [abschluss] => 1)
             $checked          = isset($post[$checkBox->cID])
                 ? (bool)$post[$checkBox->cID]
                 : false;

@@ -96,9 +96,9 @@ if ($link->getLinkType() === LINKTYP_STARTSEITE) {
     $alertHelper->addAlert(Alert::TYPE_DANGER, Shop::Lang()->get('pageNotFound'), 'pageNotFound');
 } elseif ($link->getLinkType() === LINKTYP_GRATISGESCHENK) {
     if ($conf['sonstiges']['sonstiges_gratisgeschenk_nutzen'] === 'Y') {
-        $oArtikelGeschenk_arr = CMS::getFreeGifts($conf);
-        if (is_array($oArtikelGeschenk_arr) && count($oArtikelGeschenk_arr) > 0) {
-            $smarty->assign('oArtikelGeschenk_arr', $oArtikelGeschenk_arr);
+        $freeGifts = CMS::getFreeGifts($conf);
+        if (count($freeGifts) > 0) {
+            $smarty->assign('oArtikelGeschenk_arr', $freeGifts);
         } else {
             $alertHelper->addAlert(
                 Alert::TYPE_ERROR,

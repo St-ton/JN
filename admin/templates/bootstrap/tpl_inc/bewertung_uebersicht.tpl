@@ -26,7 +26,7 @@
     <div class="tab-content">
         <div id="freischalten" class="tab-pane fade {if !isset($cTab) || $cTab === 'freischalten'} active in{/if}">
             {if $inactiveReviews|count > 0}
-                {include file='tpl_inc/pagination.tpl' oPagination=$oPagiInaktiv cAnchor='freischalten'}
+                {include file='tpl_inc/pagination.tpl' $pagination=$oPagiInaktiv cAnchor='freischalten'}
                 <form method="post" action="bewertung.php">
                     {$jtl_token}
                     <input type="hidden" name="bewertung_nicht_aktiv" value="1" />
@@ -94,7 +94,7 @@
         </div>
         <div id="letzten50" class="tab-pane fade {if isset($cTab) && $cTab === 'letzten50'} active in{/if}">
             {if $activeReviews|count > 0}
-                {include file='tpl_inc/pagination.tpl' oPagination=$oPagiAktiv cAnchor='letzten50'}
+                {include file='tpl_inc/pagination.tpl' $pagination=$oPagiAktiv cAnchor='letzten50'}
                 <form name="letzten50" method="post" action="bewertung.php">
                     {$jtl_token}
                     <input type="hidden" name="bewertung_aktiv" value="1" />

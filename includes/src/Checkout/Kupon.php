@@ -242,12 +242,12 @@ class Kupon
     }
 
     /**
-     * @param int $kKupon
+     * @param int $id
      * @return $this
      */
-    public function setKupon(int $kKupon): self
+    public function setKupon(int $id): self
     {
-        $this->kKupon = $kKupon;
+        $this->kKupon = $id;
 
         return $this;
     }
@@ -275,12 +275,12 @@ class Kupon
     }
 
     /**
-     * @param string $cName
+     * @param string $name
      * @return $this
      */
-    public function setName($cName): self
+    public function setName($name): self
     {
-        $this->cName = Shop::Container()->getDB()->escape($cName);
+        $this->cName = Shop::Container()->getDB()->escape($name);
 
         return $this;
     }
@@ -699,10 +699,10 @@ class Kupon
     }
 
     /**
-     * @param int $kKupon
+     * @param int $id
      * @return array $translationList
      */
-    public function getTranslation(int $kKupon = 0): array
+    public function getTranslation(int $id = 0): array
     {
         $translationList = [];
         if (isset($_SESSION['Sprachen'])) {
@@ -710,7 +710,7 @@ class Kupon
                 $localized                        = Shop::Container()->getDB()->select(
                     'tkuponsprache',
                     'kKupon',
-                    $kKupon,
+                    $id,
                     'cISOSprache',
                     $language->cISO,
                     null,
@@ -1036,17 +1036,17 @@ class Kupon
             if ($coupon->nGanzenWKRabattieren === 0) {
                 $productNames = [];
                 if (\is_array($cart->PositionenArr) && \count($cart->PositionenArr) > 0) {
-                    $articlePrice = 0;
-                    foreach ($cart->PositionenArr as $oWKPosition) {
-                        $articlePrice += Cart::checkSetPercentCouponWKPos($oWKPosition, $coupon)->fPreis;
-                        if (!empty(Cart::checkSetPercentCouponWKPos($oWKPosition, $coupon)->cName)) {
+                    $productPrice = 0;
+                    foreach ($cart->PositionenArr as $item) {
+                        $productPrice += Cart::checkSetPercentCouponWKPos($item, $coupon)->fPreis;
+                        if (!empty(Cart::checkSetPercentCouponWKPos($item, $coupon)->cName)) {
                             $productNames[] = Cart::checkSetPercentCouponWKPos(
-                                $oWKPosition,
+                                $item,
                                 $coupon
                             )->cName;
                         }
                     }
-                    $couponPrice = ($articlePrice / 100) * (float)$coupon->fWert;
+                    $couponPrice = ($productPrice / 100) * (float)$coupon->fWert;
                 }
             } else { //Rabatt ermitteln für den ganzen WK
                 $couponPrice = ($cart->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL], true) / 100.0)

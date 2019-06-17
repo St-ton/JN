@@ -75,15 +75,15 @@ function generiereRSSXML()
                 ORDER BY dLetzteAktualisierung DESC',
             ReturnType::ARRAY_OF_OBJECTS
         );
-        foreach ($products as $artikel) {
-            $url  = URL::buildURL($artikel, URLART_ARTIKEL, true);
+        foreach ($products as $product) {
+            $url  = URL::buildURL($product, URLART_ARTIKEL, true);
             $xml .= '
         <item>
-            <title>' . wandelXMLEntitiesUm($artikel->cName) . '</title>
-            <description>' . wandelXMLEntitiesUm($artikel->cKurzBeschreibung) . '</description>
+            <title>' . wandelXMLEntitiesUm($product->cName) . '</title>
+            <description>' . wandelXMLEntitiesUm($product->cKurzBeschreibung) . '</description>
             <link>' . $url . '</link>
             <guid>' . $url . '</guid>
-            <pubDate>' . bauerfc2822datum($artikel->dLetzteAktualisierung) . '</pubDate>
+            <pubDate>' . bauerfc2822datum($product->dLetzteAktualisierung) . '</pubDate>
         </item>';
         }
     }

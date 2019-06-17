@@ -200,12 +200,12 @@ class Konfiggruppe implements JsonSerializable
     }
 
     /**
-     * @param int $kKonfiggruppe
+     * @param int $id
      * @return $this
      */
-    public function setKonfiggruppe(int $kKonfiggruppe): self
+    public function setKonfiggruppe(int $id): self
     {
-        $this->kKonfiggruppe = $kKonfiggruppe;
+        $this->kKonfiggruppe = $id;
 
         return $this;
     }
@@ -335,21 +335,21 @@ class Konfiggruppe implements JsonSerializable
      */
     public function quantityEquals(): bool
     {
-        $bEquals = false;
+        $equal = false;
         if (\count($this->oItem_arr) > 0) {
-            $oItem = $this->oItem_arr[0];
-            if ($oItem->getMin() == $oItem->getMax()) {
-                $bEquals = true;
-                $nKey    = $oItem->getMin();
-                foreach ($this->oItem_arr as &$oItem) {
-                    if (!($oItem->getMin() == $oItem->getMax() && $oItem->getMin() == $nKey)) {
-                        $bEquals = false;
+            $item = $this->oItem_arr[0];
+            if ($item->getMin() == $item->getMax()) {
+                $equal = true;
+                $nKey  = $item->getMin();
+                foreach ($this->oItem_arr as &$item) {
+                    if (!($item->getMin() == $item->getMax() && $item->getMin() == $nKey)) {
+                        $equal = false;
                     }
                 }
             }
         }
 
-        return $bEquals;
+        return $equal;
     }
 
     /**
@@ -357,14 +357,14 @@ class Konfiggruppe implements JsonSerializable
      */
     public function getInitQuantity()
     {
-        $fQuantity = 1;
-        foreach ($this->oItem_arr as &$oItem) {
-            if ($oItem->getSelektiert()) {
-                $fQuantity = $oItem->getInitial();
+        $qty = 1;
+        foreach ($this->oItem_arr as &$item) {
+            if ($item->getSelektiert()) {
+                $qty = $item->getInitial();
             }
         }
 
-        return $fQuantity;
+        return $qty;
     }
 
     /**

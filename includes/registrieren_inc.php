@@ -41,16 +41,16 @@ function kundeSpeichern(array $post)
     $edit = (int)$post['editRechnungsadresse'];
     $step = 'formular';
     Shop::Smarty()->assign('cPost_arr', Text::filterXSS($post));
-    $fehlendeAngaben    = (!$edit)
+    $missingData        = (!$edit)
         ? checkKundenFormular(1)
         : checkKundenFormular(1, 0);
     $knd                = getKundendaten($post, 1, 0);
     $customerAttributes = getKundenattribute($post);
     $customerGroupID    = Frontend::getCustomerGroup()->getID();
-    $checkBox           = new CheckBox();
-    $fehlendeAngaben    = array_merge(
-        $fehlendeAngaben,
-        $checkBox->validateCheckBox(CHECKBOX_ORT_REGISTRIERUNG, $customerGroupID, $post, true)
+    $checkbox           = new CheckBox();
+    $missingData        = array_merge(
+        $missingData,
+        $checkbox->validateCheckBox(CHECKBOX_ORT_REGISTRIERUNG, $customerGroupID, $post, true)
     );
 
     if (isset($post['shipping_address'])) {
@@ -61,22 +61,22 @@ function kundeSpeichern(array $post)
         } elseif (isset($post['kLieferadresse']) && (int)$post['kLieferadresse'] > 0) {
             pruefeLieferdaten($post);
         } elseif (isset($post['register']['shipping_address'])) {
-            pruefeLieferdaten($post['register']['shipping_address'], $fehlendeAngaben);
+            pruefeLieferdaten($post['register']['shipping_address'], $missingData);
         }
     } elseif (isset($post['lieferdaten']) && (int)$post['lieferdaten'] === 1) {
         // compatibility with older template
-        pruefeLieferdaten($post, $fehlendeAngaben);
+        pruefeLieferdaten($post, $missingData);
     }
-    $nReturnValue = angabenKorrekt($fehlendeAngaben);
+    $nReturnValue = angabenKorrekt($missingData);
 
     executeHook(HOOK_REGISTRIEREN_PAGE_REGISTRIEREN_PLAUSI, [
         'nReturnValue'    => &$nReturnValue,
-        'fehlendeAngaben' => &$fehlendeAngaben
+        'fehlendeAngaben' => &$missingData
     ]);
 
     if ($nReturnValue) {
         // CheckBox Spezialfunktion ausführen
-        $checkBox->triggerSpecialFunction(
+        $checkbox->triggerSpecialFunction(
             CHECKBOX_ORT_REGISTRIERUNG,
             $customerGroupID,
             true,
@@ -190,7 +190,7 @@ function kundeSpeichern(array $post)
         if ((int)$post['checkout'] === 1) {
             //weiterleitung zum checkout
             $_SESSION['checkout.register']        = 1;
-            $_SESSION['checkout.fehlendeAngaben'] = $fehlendeAngaben;
+            $_SESSION['checkout.fehlendeAngaben'] = $missingData;
             $_SESSION['checkout.cPost_arr']       = $post;
 
             //keep shipping address on error
@@ -202,10 +202,10 @@ function kundeSpeichern(array $post)
                                       ->getStaticRoute('bestellvorgang.php', true) . '?reg=1', true, 303);
             exit;
         }
-        Shop::Smarty()->assign('fehlendeAngaben', $fehlendeAngaben);
+        Shop::Smarty()->assign('fehlendeAngaben', $missingData);
         $Kunde = $knd;
 
-        return $fehlendeAngaben;
+        return $missingData;
     }
 
     return [];

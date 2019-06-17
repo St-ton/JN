@@ -329,10 +329,10 @@ class Konfigitem implements JsonSerializable
     }
 
     /**
-     * @param int $kKonfiggruppe
+     * @param int $groupID
      * @return Konfigitem[]
      */
-    public static function fetchAll(int $kKonfiggruppe): array
+    public static function fetchAll(int $groupID): array
     {
         $items = [];
         $data  = Shop::Container()->getDB()->queryPrepared(
@@ -340,12 +340,12 @@ class Konfigitem implements JsonSerializable
                 FROM tkonfigitem 
                 WHERE kKonfiggruppe = :groupID 
                 ORDER BY nSort ASC',
-            ['groupID' => $kKonfiggruppe],
+            ['groupID' => $groupID],
             ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($data as &$item) {
-            $kKonfigitem = (int)$item->kKonfigitem;
-            $item        = new self($kKonfigitem);
+            $id   = (int)$item->kKonfigitem;
+            $item = new self($id);
             if ($item->isValid()) {
                 $items[] = $item;
             }
@@ -355,12 +355,12 @@ class Konfigitem implements JsonSerializable
     }
 
     /**
-     * @param int $kKonfigitem
+     * @param int $id
      * @return $this
      */
-    public function setKonfigitem(int $kKonfigitem): self
+    public function setKonfigitem(int $id): self
     {
-        $this->kKonfigitem = $kKonfigitem;
+        $this->kKonfigitem = $id;
 
         return $this;
     }

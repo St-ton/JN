@@ -41,7 +41,7 @@ class Plugins
     {
         $limit            = (int)($params['nLimit'] ?? 10);
         $sort             = (int)($params['nSortierung'] ?? 0);
-        $cAssign          = (isset($params['cAssign']) && \strlen($params['cAssign']) > 0)
+        $assignTo         = (isset($params['cAssign']) && \strlen($params['cAssign']) > 0)
             ? $params['cAssign']
             : 'oCustomArtikel_arr';
         $attributeFilters = isset($params['cMerkmalFilter'])
@@ -81,9 +81,9 @@ class Plugins
             if (!\is_array($params['kArtikel'])) {
                 $params['kArtikel'] = [$params['kArtikel']];
             }
-            foreach ($params['kArtikel'] as $kArtikel) {
+            foreach ($params['kArtikel'] as $productID) {
                 $product    = new Artikel();
-                $products[] = $product->fuelleArtikel($kArtikel, Artikel::getDefaultOptions());
+                $products[] = $product->fuelleArtikel($productID, Artikel::getDefaultOptions());
             }
         } else {
             $products = (new ProductFilter(
@@ -97,7 +97,7 @@ class Plugins
                 ->all();
         }
 
-        $smarty->assign($cAssign, $products);
+        $smarty->assign($assignTo, $products);
 
         if (isset($params['bReturn'])) {
             return $products;

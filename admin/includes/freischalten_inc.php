@@ -108,21 +108,21 @@ function gibNewskommentarFreischalten($cSQL, $cSuchSQL, bool $checkLanguage = tr
         ReturnType::ARRAY_OF_OBJECTS
     );
     foreach ($newsComments as $comment) {
-        $oKunde = new Kunde($comment->kKunde ?? 0);
+        $customer = new Kunde($comment->kKunde ?? 0);
 
-        $comment->cNachname = $oKunde->cNachname;
+        $comment->cNachname = $customer->cNachname;
     }
 
     return $newsComments;
 }
 
 /**
- * @param string $cSQL
- * @param object $cSuchSQL
+ * @param string $sql
+ * @param object $searchSQL
  * @param bool   $checkLanguage
  * @return array
  */
-function gibNewsletterEmpfaengerFreischalten($cSQL, $cSuchSQL, bool $checkLanguage = true): array
+function gibNewsletterEmpfaengerFreischalten($sql, $searchSQL, bool $checkLanguage = true): array
 {
     $cond = $checkLanguage === true
         ? ' AND kSprache = ' . (int)$_SESSION['kSprache']
@@ -133,8 +133,8 @@ function gibNewsletterEmpfaengerFreischalten($cSQL, $cSuchSQL, bool $checkLangua
             DATE_FORMAT(dLetzterNewsletter, '%d.%m.%Y  %H:%i') AS dLetzterNewsletter_de
             FROM tnewsletterempfaenger
             WHERE nAktiv = 0
-                " . $cSuchSQL->cWhere . $cond .
-        ' ORDER BY ' . $cSuchSQL->cOrder . $cSQL,
+                " . $searchSQL->cWhere . $cond .
+        ' ORDER BY ' . $searchSQL->cOrder . $sql,
         ReturnType::ARRAY_OF_OBJECTS
     );
 }
@@ -215,8 +215,8 @@ function schalteTagsFrei($tags): bool
             WHERE kTag IN (' . implode(',', $tags) . ')',
         ReturnType::ARRAY_OF_OBJECTS
     );
-    foreach ($products as $_article) {
-        $cacheTags[] = CACHING_GROUP_ARTICLE . '_' . $_article->kArtikel;
+    foreach ($products as $product) {
+        $cacheTags[] = CACHING_GROUP_ARTICLE . '_' . $product->kArtikel;
     }
     foreach ($tags as $kTag) {
         $kTag = (int)$kTag;

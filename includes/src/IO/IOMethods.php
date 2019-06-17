@@ -789,9 +789,9 @@ class IOMethods
 
         // Alle Variationen ohne Freifeld
         $keyValueVariations = $product->keyValueVariations($product->VariationenOhneFreifeld);
-        foreach ($valueIDs as $kKey => $cVal) {
-            if (!isset($keyValueVariations[$kKey])) {
-                unset($valueIDs[$kKey]);
+        foreach ($valueIDs as $index => $value) {
+            if (!isset($keyValueVariations[$index])) {
+                unset($valueIDs[$index]);
             }
         }
 
@@ -807,14 +807,14 @@ class IOMethods
             Shop::getLanguage(),
             $product->fGewicht + $weightDiff
         );
-        $weightArticleTotal = Trennzeichen::getUnit(
+        $weightProductTotal = Trennzeichen::getUnit(
             \JTL_SEPARATOR_WEIGHT,
             Shop::getLanguage(),
             $product->fArtikelgewicht + $weightDiff
         );
         $cUnitWeightLabel   = Shop::Lang()->get('weightUnit');
 
-        $nNettoPreise = Frontend::getCustomerGroup()->getIsMerchant();
+        $isNet        = Frontend::getCustomerGroup()->getIsMerchant();
         $fVKNetto     = $product->gibPreis($fAnzahl, $valueIDs, Frontend::getCustomerGroup()->getID());
         $fVK          = [
             Tax::getGross($fVKNetto, $_SESSION['Steuersatz'][$product->kSteuerklasse]),
@@ -833,14 +833,14 @@ class IOMethods
 
         $objResponse->jsfunc(
             '$.evo.article().setPrice',
-            $fVK[$nNettoPreise],
-            $cVKLocalized[$nNettoPreise],
+            $fVK[$isNet],
+            $cVKLocalized[$isNet],
             $cPriceLabel,
             $wrapper
         );
         $objResponse->jsfunc('$.evo.article().setArticleWeight', [
             [$product->fGewicht, $weightTotal . ' ' . $cUnitWeightLabel],
-            [$product->fArtikelgewicht, $weightArticleTotal . ' ' . $cUnitWeightLabel],
+            [$product->fArtikelgewicht, $weightProductTotal . ' ' . $cUnitWeightLabel],
         ], $wrapper);
 
         if (!empty($product->staffelPreis_arr)) {
@@ -864,8 +864,8 @@ class IOMethods
 
             $objResponse->jsfunc(
                 '$.evo.article().setStaffelPrice',
-                $fStaffelVK[$nNettoPreise],
-                $cStaffelVK[$nNettoPreise],
+                $fStaffelVK[$isNet],
+                $cStaffelVK[$isNet],
                 $wrapper
             );
         }
@@ -888,9 +888,9 @@ class IOMethods
 
             $objResponse->jsfunc(
                 '$.evo.article().setVPEPrice',
-                $product->cLocalizedVPE[$nNettoPreise],
-                $fStaffelVPE[$nNettoPreise],
-                $cStaffelVPE[$nNettoPreise],
+                $product->cLocalizedVPE[$isNet],
+                $fStaffelVPE[$isNet],
+                $cStaffelVPE[$isNet],
                 $wrapper
             );
         }

@@ -270,7 +270,7 @@ if ($step === 'newvar') {
 
     $smarty
         ->assign('oFilter', $filter)
-        ->assign('oPagination', $pagination)
+        ->assign('$pagination', $pagination)
         ->assign('oWert_arr', $pagination->getPageItems())
         ->assign('bSpracheAktiv', $langActive)
         ->assign('oSprache_arr', $availableLanguages)

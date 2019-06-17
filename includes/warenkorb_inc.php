@@ -7,23 +7,23 @@
 use JTL\Helpers\Cart;
 
 /**
- * @param array $nPos_arr
+ * @param array $items
  * @deprecated since 5.0.0
  */
-function loescheWarenkorbPositionen($nPos_arr)
+function loescheWarenkorbPositionen($items)
 {
     trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
-    Cart::deleteCartItems($nPos_arr);
+    Cart::deleteCartItems($items);
 }
 
 /**
- * @param int $nPos
+ * @param int $item
  * @deprecated since 5.0.0
  */
-function loescheWarenkorbPosition($nPos)
+function loescheWarenkorbPosition($item)
 {
     trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
-    Cart::deleteCartItems([$nPos]);
+    Cart::deleteCartItems([$item]);
 }
 
 /**

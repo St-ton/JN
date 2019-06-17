@@ -252,11 +252,11 @@ class PaymentMethods extends AbstractItem
                                         $cWert = $option['value'];
                                         $nSort = $option['sort'];
                                         $yx    = \mb_substr($y, 0, \mb_strpos($y, ' '));
-                                        $cName = $config['SelectboxOptions'][0]['Option'][$yx];
+                                        $name  = $config['SelectboxOptions'][0]['Option'][$yx];
 
                                         $plgnConfValues                           = new stdClass();
                                         $plgnConfValues->kPluginEinstellungenConf = $kPluginEinstellungenConf;
-                                        $plgnConfValues->cName                    = $cName;
+                                        $plgnConfValues->cName                    = $name;
                                         $plgnConfValues->cWert                    = $cWert;
                                         $plgnConfValues->nSort                    = $nSort;
 
@@ -289,11 +289,11 @@ class PaymentMethods extends AbstractItem
                                         $cWert = $option['value'];
                                         $nSort = $option['sort'];
                                         $yx    = \mb_substr($y, 0, \mb_strpos($y, ' '));
-                                        $cName = $config['RadioOptions'][0]['Option'][$yx];
+                                        $name  = $config['RadioOptions'][0]['Option'][$yx];
 
                                         $plgnConfValues                           = new stdClass();
                                         $plgnConfValues->kPluginEinstellungenConf = $kPluginEinstellungenConf;
-                                        $plgnConfValues->cName                    = $cName;
+                                        $plgnConfValues->cName                    = $name;
                                         $plgnConfValues->cWert                    = $cWert;
                                         $plgnConfValues->nSort                    = $nSort;
 

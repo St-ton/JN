@@ -284,7 +284,7 @@ class Warenkorb
      * @param array       $attributeValues
      * @param int         $type
      * @param string|bool $unique
-     * @param int         $kKonfigitem
+     * @param int         $configItemID
      * @param bool        $setzePositionsPreise
      * @param string      $responsibility
      * @return $this
@@ -295,7 +295,7 @@ class Warenkorb
         array $attributeValues,
         int $type = \C_WARENKORBPOS_TYP_ARTIKEL,
         $unique = false,
-        int $kKonfigitem = 0,
+        int $configItemID = 0,
         bool $setzePositionsPreise = true,
         string $responsibility = 'core'
     ): self {
@@ -352,7 +352,7 @@ class Warenkorb
         }
         $options               = Artikel::getDefaultOptions();
         $options->nVariationen = 1;
-        if ($kKonfigitem > 0) {
+        if ($configItemID > 0) {
             $options->nKeineSichtbarkeitBeachten = 1;
         }
         $cartItem          = new WarenkorbPos();
@@ -369,7 +369,7 @@ class Warenkorb
         $cartItem->cEinheit          = $cartItem->Artikel->cEinheit;
         $cartItem->cUnique           = $unique;
         $cartItem->cResponsibility   = $responsibility;
-        $cartItem->kKonfigitem       = $kKonfigitem;
+        $cartItem->kKonfigitem       = $configItemID;
         $cartItem->setzeGesamtpreisLocalized();
         $cartItem->cName         = [];
         $cartItem->cLieferstatus = [];
@@ -628,7 +628,7 @@ class Warenkorb
      * @param bool         $grossPrice
      * @param string       $message
      * @param string|bool  $unique
-     * @param int          $kKonfigitem
+     * @param int          $configItemID
      * @param int          $productID
      * @return $this
      */
@@ -642,7 +642,7 @@ class Warenkorb
         bool $grossPrice = true,
         string $message = '',
         $unique = false,
-        int $kKonfigitem = 0,
+        int $configItemID = 0,
         int $productID = 0
     ): self {
         if ($delSamePosType) {
@@ -655,7 +655,7 @@ class Warenkorb
         $cartItem->kSteuerklasse = $taxClassID;
         $cartItem->fPreis        = $price;
         $cartItem->cUnique       = $unique;
-        $cartItem->kKonfigitem   = $kKonfigitem;
+        $cartItem->kKonfigitem   = $configItemID;
         $cartItem->kArtikel      = $productID;
         //fixes #4967
         if (\is_object($_SESSION['Kundengruppe']) && Frontend::getCustomerGroup()->isMerchant()) {

@@ -27,11 +27,11 @@ function holeAktiveGeschenke($cSQL): array
         );
     }
     if (count($data) > 0) {
-        $articleOptions                            = Artikel::getDefaultOptions();
-        $articleOptions->nKeinLagerbestandBeachten = 1;
-        foreach ($data as $oAktiveGeschenkTMP) {
+        $options                            = Artikel::getDefaultOptions();
+        $options->nKeinLagerbestandBeachten = 1;
+        foreach ($data as $item) {
             $product = new Artikel();
-            $product->fuelleArtikel($oAktiveGeschenkTMP->kArtikel, $articleOptions, 0, 0, true);
+            $product->fuelleArtikel($item->kArtikel, $options, 0, 0, true);
             if ($product->kArtikel > 0) {
                 $res[] = $product;
             }
@@ -63,21 +63,21 @@ function holeHaeufigeGeschenke($cSQL): array
     }
 
     if (count($data) > 0) {
-        $articleOptions                            = Artikel::getDefaultOptions();
-        $articleOptions->nKeinLagerbestandBeachten = 1;
-        foreach ($data as $oHaeufigGeschenkTMP) {
+        $options                            = Artikel::getDefaultOptions();
+        $options->nKeinLagerbestandBeachten = 1;
+        foreach ($data as $item) {
             $product = new Artikel();
-            $product->fuelleArtikel($oHaeufigGeschenkTMP->kArtikel, $articleOptions, 0, 0, true);
+            $product->fuelleArtikel($item->kArtikel, $options, 0, 0, true);
             if ($product->kArtikel > 0) {
-                $product->nGGAnzahl = $oHaeufigGeschenkTMP->nAnzahl;
-                $dateParts          = Date::getDateParts($oHaeufigGeschenkTMP->lastOrdered);
+                $product->nGGAnzahl = $item->nAnzahl;
+                $dateParts          = Date::getDateParts($item->lastOrdered);
                 $lastOrdered        = $dateParts['cTag'] . '.' . $dateParts['cMonat'] . '.' .
                     $dateParts['cJahr'] . ' ' .
                     $dateParts['cStunde'] . ':' . $dateParts['cMinute'] . ':' . $dateParts['cSekunde'];
                 $res[]              = (object)[
                     'artikel'       => $product,
                     'lastOrdered'   => $lastOrdered,
-                    'avgOrderValue' => $oHaeufigGeschenkTMP->avgOrderValue
+                    'avgOrderValue' => $item->avgOrderValue
                 ];
             }
         }
@@ -106,21 +106,21 @@ function holeLetzten100Geschenke($cSQL): array
     }
 
     if (count($data) > 0) {
-        $articleOptions                            = Artikel::getDefaultOptions();
-        $articleOptions->nKeinLagerbestandBeachten = 1;
-        foreach ($data as $oLetzten100GeschenkTMP) {
+        $options                            = Artikel::getDefaultOptions();
+        $options->nKeinLagerbestandBeachten = 1;
+        foreach ($data as $item) {
             $product = new Artikel();
-            $product->fuelleArtikel($oLetzten100GeschenkTMP->kArtikel, $articleOptions, 0, 0, true);
+            $product->fuelleArtikel($item->kArtikel, $options, 0, 0, true);
             if ($product->kArtikel > 0) {
-                $product->nGGAnzahl = $oLetzten100GeschenkTMP->nAnzahl;
-                $dateParts          = Date::getDateParts($oLetzten100GeschenkTMP->orderCreated);
+                $product->nGGAnzahl = $item->nAnzahl;
+                $dateParts          = Date::getDateParts($item->orderCreated);
                 $orderCreated       = $dateParts['cTag'] . '.' . $dateParts['cMonat'] . '.' .
                     $dateParts['cJahr'] . ' ' .
                     $dateParts['cStunde'] . ':' . $dateParts['cMinute'] . ':' . $dateParts['cSekunde'];
                 $res[]              = (object)[
                     'artikel'      => $product,
                     'orderCreated' => $orderCreated,
-                    'orderValue'   => $oLetzten100GeschenkTMP->fGesamtsumme
+                    'orderValue'   => $item->fGesamtsumme
                 ];
             }
         }

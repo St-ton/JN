@@ -320,7 +320,7 @@ class Status
         $invalidCouponsFound = false;
         foreach ($pollCoupons as $coupon) {
             if ($coupon->kKupon > 0) {
-                $kKupon = Shop::Container()->getDB()->select(
+                $couponID = Shop::Container()->getDB()->select(
                     'tkupon',
                     'kKupon',
                     $coupon->kKupon,
@@ -332,7 +332,7 @@ class Status
                     'kKupon'
                 );
 
-                $invalidCouponsFound = empty($kKupon);
+                $invalidCouponsFound = empty($couponID);
             }
         }
 

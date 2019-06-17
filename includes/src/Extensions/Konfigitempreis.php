@@ -48,13 +48,13 @@ class Konfigitempreis
 
     /**
      * Konfigitempreis constructor.
-     * @param int $kKonfigitem
+     * @param int $configItemID
      * @param int $customerGroupID
      */
-    public function __construct(int $kKonfigitem = 0, int $customerGroupID = 0)
+    public function __construct(int $configItemID = 0, int $customerGroupID = 0)
     {
-        if ($kKonfigitem > 0 && $customerGroupID > 0) {
-            $this->loadFromDB($kKonfigitem, $customerGroupID);
+        if ($configItemID > 0 && $customerGroupID > 0) {
+            $this->loadFromDB($configItemID, $customerGroupID);
         }
     }
 
@@ -67,15 +67,15 @@ class Konfigitempreis
     }
 
     /**
-     * @param int $kKonfigitem
+     * @param int $configItemID
      * @param int $customerGroupID
      */
-    private function loadFromDB(int $kKonfigitem = 0, int $customerGroupID = 0): void
+    private function loadFromDB(int $configItemID = 0, int $customerGroupID = 0): void
     {
         $item = Shop::Container()->getDB()->select(
             'tkonfigitempreis',
             'kKonfigitem',
-            $kKonfigitem,
+            $configItemID,
             'kKundengruppe',
             $customerGroupID
         );
@@ -95,10 +95,10 @@ class Konfigitempreis
     }
 
     /**
-     * @param bool $bPrim
+     * @param bool $primary
      * @return bool|int
      */
-    public function save(bool $bPrim = true)
+    public function save(bool $primary = true)
     {
         $ins = new stdClass();
         foreach (\array_keys(\get_object_vars($this)) as $member) {
@@ -109,7 +109,7 @@ class Konfigitempreis
         $kPrim = Shop::Container()->getDB()->insert('tkonfigitempreis', $ins);
 
         if ($kPrim > 0) {
-            return $bPrim ? $kPrim : true;
+            return $primary ? $kPrim : true;
         }
 
         return false;

@@ -210,15 +210,15 @@ function newsletterAnmeldungPlausi(): array
 }
 
 /**
- * @param int $kKunde
+ * @param int $customerID
  * @return bool
  */
-function pruefeObBereitsAbonnent(int $kKunde): bool
+function pruefeObBereitsAbonnent(int $customerID): bool
 {
-    if ($kKunde <= 0) {
+    if ($customerID <= 0) {
         return false;
     }
-    $recipient = Shop::Container()->getDB()->select('tnewsletterempfaenger', 'kKunde', $kKunde);
+    $recipient = Shop::Container()->getDB()->select('tnewsletterempfaenger', 'kKunde', $customerID);
 
     return isset($recipient->kKunde) && $recipient->kKunde > 0;
 }

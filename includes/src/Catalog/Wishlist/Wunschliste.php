@@ -934,18 +934,18 @@ class Wunschliste
 
     /**
      * @param int $wishListID
-     * @param int $wishListPositionID
+     * @param int $itemID
      * @return array|bool
      */
-    public static function getAttributesByID(int $wishListID, int $wishListPositionID)
+    public static function getAttributesByID(int $wishListID, int $itemID)
     {
-        if ($wishListID > 0 && $wishListPositionID > 0) {
+        if ($wishListID > 0 && $itemID > 0) {
             // $oEigenschaftwerte_arr anlegen
             $data       = [];
             $attributes = Shop::Container()->getDB()->selectAll(
                 'twunschlisteposeigenschaft',
                 'kWunschlistePos',
-                $wishListPositionID
+                $itemID
             );
             foreach ($attributes as $attribute) {
                 $value                       = new stdClass();
@@ -965,13 +965,13 @@ class Wunschliste
     }
 
     /**
-     * @param int $id
+     * @param int $itemID
      * @return object|bool
      */
-    public static function getWishListPositionDataByID(int $id)
+    public static function getWishListPositionDataByID(int $itemID)
     {
-        if ($id > 0) {
-            $item = Shop::Container()->getDB()->select('twunschlistepos', 'kWunschlistePos', $id);
+        if ($itemID > 0) {
+            $item = Shop::Container()->getDB()->select('twunschlistepos', 'kWunschlistePos', $itemID);
             if (!empty($item->kWunschliste)) {
                 $product = new Artikel();
                 $product->fuelleArtikel($item->kArtikel, Artikel::getDefaultOptions());

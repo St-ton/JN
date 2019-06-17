@@ -756,9 +756,9 @@ function gibStepZahlungZusatzschritt($post): void
     $paymentMethod = gibZahlungsart((int)$post['Zahlungsart']);
     $smarty        = Shop::Smarty();
     // Wenn Zahlungsart = Lastschrift ist => versuche Kundenkontodaten zu holen
-    $oKundenKontodaten = gibKundenKontodaten(Frontend::getCustomer()->kKunde);
-    if (isset($oKundenKontodaten->kKunde) && $oKundenKontodaten->kKunde > 0) {
-        $smarty->assign('oKundenKontodaten', $oKundenKontodaten);
+    $customerAccountData = gibKundenKontodaten(Frontend::getCustomer()->kKunde);
+    if (isset($customerAccountData->kKunde) && $customerAccountData->kKunde > 0) {
+        $smarty->assign('oKundenKontodaten', $customerAccountData);
     }
     if (!isset($post['zahlungsartzusatzschritt']) || !$post['zahlungsartzusatzschritt']) {
         $smarty->assign('ZahlungsInfo', $_SESSION['Zahlungsart']->ZahlungsInfo ?? null);
@@ -2450,8 +2450,8 @@ function getKundendaten(array $post, $kundenaccount, $htmlentities = 1)
     if ($kundenaccount !== 0) {
         $mapping['pass'] = 'cPasswort';
     }
-    $kKunde   = Frontend::getCustomer()->kKunde;
-    $customer = new Kunde($kKunde);
+    $customerID = Frontend::getCustomer()->kKunde;
+    $customer   = new Kunde($customerID);
     foreach ($mapping as $external => $internal) {
         if (isset($post[$external])) {
             $val = Text::filterXSS($post[$external]);

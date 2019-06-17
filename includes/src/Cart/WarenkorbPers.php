@@ -47,14 +47,14 @@ class WarenkorbPers
     public $cWarenwertLocalized;
 
     /**
-     * @param int  $kKunde
-     * @param bool $bArtikel
+     * @param int  $customerID
+     * @param bool $addProducts
      */
-    public function __construct(int $kKunde = 0, bool $bArtikel = false)
+    public function __construct(int $customerID = 0, bool $addProducts = false)
     {
-        if ($kKunde > 0) {
-            $this->kKunde = $kKunde;
-            $this->ladeWarenkorbPers($bArtikel);
+        if ($customerID > 0) {
+            $this->kKunde = $customerID;
+            $this->ladeWarenkorbPers($addProducts);
         }
     }
 
@@ -183,7 +183,7 @@ class WarenkorbPers
      */
     public function entfernePos(int $id): self
     {
-        $oKunde = Shop::Container()->getDB()->queryPrepared(
+        $customer = Shop::Container()->getDB()->queryPrepared(
             'SELECT twarenkorbpers.kKunde
                 FROM twarenkorbpers
                 JOIN twarenkorbperspos 
@@ -193,7 +193,7 @@ class WarenkorbPers
             ReturnType::SINGLE_OBJECT
         );
         // Prüfen ob der eingeloggte Kunde auch der Besitzer der zu löschenden WarenkorbPersPos ist
-        if (isset($oKunde->kKunde) && (int)$oKunde->kKunde === Frontend::getCustomer()->getID()) {
+        if (isset($customer->kKunde) && (int)$customer->kKunde === Frontend::getCustomer()->getID()) {
             // Alle Eigenschaften löschen
             Shop::Container()->getDB()->delete('twarenkorbpersposeigenschaft', 'kWarenkorbPersPos', $id);
             // Die Position mit ID $id löschen
@@ -479,7 +479,7 @@ class WarenkorbPers
      * @param float  $amount
      * @param array  $attributeValues
      * @param bool   $unique
-     * @param int    $kKonfigitem
+     * @param int    $configItemID
      * @param int    $type
      * @param string $responsibility
      */
@@ -488,7 +488,7 @@ class WarenkorbPers
         $amount,
         $attributeValues,
         $unique = false,
-        int $kKonfigitem = 0,
+        int $configItemID = 0,
         int $type = \C_WARENKORBPOS_TYP_ARTIKEL,
         string $responsibility = 'core'
     ): void {
@@ -538,21 +538,21 @@ class WarenkorbPers
                         $attributeValues,
                         $amount,
                         $unique,
-                        $kKonfigitem,
+                        $configItemID,
                         $type,
                         $responsibility
                     );
                 }
             }
-        } elseif ($productID === 0 && !empty($kKonfigitem)) {
+        } elseif ($productID === 0 && !empty($configItemID)) {
             // Konfigitems ohne Artikelbezug
             (new WarenkorbPers(Frontend::getCustomer()->getID()))->fuegeEin(
                 $productID,
-                (new Konfigitemsprache($kKonfigitem, Shop::getLanguageID()))->getName(),
+                (new Konfigitemsprache($configItemID, Shop::getLanguageID()))->getName(),
                 $attributeValues,
                 $amount,
                 $unique,
-                $kKonfigitem,
+                $configItemID,
                 $type,
                 $responsibility
             );

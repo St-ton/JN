@@ -20,36 +20,35 @@ if (Request::verifyGPCDataInt('kK') > 0
     && Request::verifyGPCDataInt('kN') > 0
     && Request::verifyGPCDataInt('kNE') > 0
 ) {
-    $kKampagne             = Request::verifyGPCDataInt('kK');
-    $kNewsletter           = Request::verifyGPCDataInt('kN');
-    $kNewsletterEmpfaenger = Request::verifyGPCDataInt('kNE');
+    $campaignID   = Request::verifyGPCDataInt('kK');
+    $newsletterID = Request::verifyGPCDataInt('kN');
+    $recipientID  = Request::verifyGPCDataInt('kNE');
     // Prüfe ob der Newsletter vom Newsletterempfänger bereits geöffnet wurde.
-    $oNewsletterTrackTMP = Shop::Container()->getDB()->select(
+    $tracking = Shop::Container()->getDB()->select(
         'tnewslettertrack',
         'kKampagne',
-        $kKampagne,
+        $campaignID,
         'kNewsletter',
-        $kNewsletter,
+        $newsletterID,
         'kNewsletterEmpfaenger',
-        $kNewsletterEmpfaenger,
+        $recipientID,
         false,
         'kNewsletterTrack'
     );
-    if (!isset($oNewsletterTrackTMP->kNewsletterTrack)) {
-        $oNewsletterTrack                        = new stdClass();
-        $oNewsletterTrack->kKampagne             = $kKampagne;
-        $oNewsletterTrack->kNewsletter           = $kNewsletter;
-        $oNewsletterTrack->kNewsletterEmpfaenger = $kNewsletterEmpfaenger;
-        $oNewsletterTrack->dErstellt             = 'NOW()';
+    if (!isset($tracking->kNewsletterTrack)) {
+        $newTracking                        = new stdClass();
+        $newTracking->kKampagne             = $campaignID;
+        $newTracking->kNewsletter           = $newsletterID;
+        $newTracking->kNewsletterEmpfaenger = $recipientID;
+        $newTracking->dErstellt             = 'NOW()';
 
-        $kNewsletterTrack = Shop::Container()->getDB()->insert('tnewslettertrack', $oNewsletterTrack);
-
-        if ($kNewsletterTrack > 0) {
-            $oKampagne = new Kampagne($kKampagne);
+        $id = Shop::Container()->getDB()->insert('tnewslettertrack', $newTracking);
+        if ($id > 0) {
+            $campaign = new Kampagne($campaignID);
             // Kampagnenbesucher in die Session
-            $_SESSION['Kampagnenbesucher'] = $oKampagne;
+            $_SESSION['Kampagnenbesucher'] = $campaign;
 
-            Kampagne::setCampaignAction(KAMPAGNE_DEF_NEWSLETTER, $kNewsletterTrack, 1);
+            Kampagne::setCampaignAction(KAMPAGNE_DEF_NEWSLETTER, $id, 1);
         }
     }
 }

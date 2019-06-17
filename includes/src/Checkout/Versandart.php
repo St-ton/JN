@@ -282,28 +282,28 @@ class Versandart
     }
 
     /**
-     * @param array       $objectArr
+     * @param array       $objects
      * @param string      $table
      * @param string      $key
      * @param mixed       $value
      * @param null|string $unsetKey
      */
-    private static function cloneShippingSection(array $objectArr, $table, $key, int $value, $unsetKey = null): void
+    private static function cloneShippingSection(array $objects, $table, $key, int $value, $unsetKey = null): void
     {
-        if ($value > 0 && \is_array($objectArr) && \count($objectArr) > 0 && \mb_strlen($key) > 0) {
-            foreach ($objectArr as $Obj) {
-                $kKeyPrim = $Obj->$unsetKey;
+        if ($value > 0 && \is_array($objects) && \count($objects) > 0 && \mb_strlen($key) > 0) {
+            foreach ($objects as $item) {
+                $primary = $item->$unsetKey;
                 if ($unsetKey !== null) {
-                    unset($Obj->$unsetKey);
+                    unset($item->$unsetKey);
                 }
-                $Obj->$key = $value;
-                if ($table === 'tversandartzahlungsart' && empty($Obj->fAufpreis)) {
-                    $Obj->fAufpreis = 0;
+                $item->$key = $value;
+                if ($table === 'tversandartzahlungsart' && empty($item->fAufpreis)) {
+                    $item->fAufpreis = 0;
                 }
-                $kKey = Shop::Container()->getDB()->insert($table, $Obj);
+                $id = Shop::Container()->getDB()->insert($table, $item);
 
-                if ($kKey > 0 && $table === 'tversandzuschlag') {
-                    self::cloneShippingSectionSpecial($kKeyPrim, $kKey);
+                if ($id > 0 && $table === 'tversandzuschlag') {
+                    self::cloneShippingSectionSpecial($primary, $id);
                 }
             }
         }

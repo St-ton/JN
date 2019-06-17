@@ -25,7 +25,7 @@ defined('PLZIMPORT_REGEX') || define(
  */
 function plzimportGetPLZOrt(): array
 {
-    $plzOrt_arr = Shop::Container()->getDB()->query(
+    $items = Shop::Container()->getDB()->query(
         'SELECT tplz.cLandISO, tland.cDeutsch, tland.cKontinent, COUNT(tplz.kPLZ) AS nPLZOrte, backup.nBackup
             FROM tplz
             INNER JOIN tland ON tland.cISO = tplz.cLandISO
@@ -38,19 +38,18 @@ function plzimportGetPLZOrt(): array
             ORDER BY tplz.cLandISO',
         ReturnType::ARRAY_OF_OBJECTS
     );
-
-    foreach ($plzOrt_arr as $key => $oPLZOrt) {
-        $fName = PFAD_UPLOADS . $oPLZOrt->cLandISO . '.tab';
-        if (($country = Shop::Container()->getCountryService()->getCountry($oPLZOrt->cLandISO)) !== null) {
-            $oPLZOrt->cDeutsch   = $country->getName();
-            $oPLZOrt->cKontinent = $country->getContinent();
+    foreach ($items as $key => $item) {
+        $fName = PFAD_UPLOADS . $item->cLandISO . '.tab';
+        if (($country = Shop::Container()->getCountryService()->getCountry($item->cLandISO)) !== null) {
+            $item->cDeutsch   = $country->getName();
+            $item->cKontinent = $country->getContinent();
         }
         if (is_file($fName)) {
-            $plzOrt_arr[$key]->cImportFile = $oPLZOrt->cLandISO . '.tab';
+            $items[$key]->cImportFile = $item->cLandISO . '.tab';
         }
     }
 
-    return $plzOrt_arr;
+    return $items;
 }
 
 /**

@@ -4,22 +4,23 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Catalog\Product\Preise;
+use JTL\Customer\Kundengruppe;
+use JTL\DB\ReturnType;
 use JTL\Helpers\Date;
 use JTL\Helpers\Request;
 use JTL\Kampagne;
-use JTL\Customer\Kundengruppe;
 use JTL\Linechart;
-use JTL\Catalog\Product\Preise;
-use JTL\Shop;
-use JTL\DB\ReturnType;
 use JTL\Session\Frontend;
+use JTL\Shop;
+use function Functional\reindex;
 
 /**
  * @return array
  */
 function holeAlleKampagnenDefinitionen()
 {
-    return \Functional\reindex(
+    return reindex(
         Shop::Container()->getDB()->query(
             'SELECT *
                 FROM tkampagnedef
@@ -33,105 +34,103 @@ function holeAlleKampagnenDefinitionen()
 }
 
 /**
- * @param int $kKampagne
+ * @param int $id
  * @return mixed
  */
-function holeKampagne(int $kKampagne)
+function holeKampagne(int $id)
 {
     return Shop::Container()->getDB()->query(
         "SELECT *, DATE_FORMAT(dErstellt, '%d.%m.%Y %H:%i:%s') AS dErstellt_DE
             FROM tkampagne
-            WHERE kKampagne = " . $kKampagne,
+            WHERE kKampagne = " . $id,
         ReturnType::SINGLE_OBJECT
     );
 }
 
 /**
- * @param int $kKampagneDef
+ * @param int $definitionID
  * @return mixed
  */
-function holeKampagneDef(int $kKampagneDef)
+function holeKampagneDef(int $definitionID)
 {
-    return Shop::Container()->getDB()->select('tkampagnedef', 'kKampagneDef', $kKampagneDef);
+    return Shop::Container()->getDB()->select('tkampagnedef', 'kKampagneDef', $definitionID);
 }
 
 /**
- * @param array $oKampagne_arr
- * @param array $oKampagneDef_arr
+ * @param array $campaigns
+ * @param array $definitions
  * @return array
  */
-function holeKampagneGesamtStats($oKampagne_arr, $oKampagneDef_arr)
+function holeKampagneGesamtStats($campaigns, $definitions)
 {
-    $oKampagneStat_arr = [];
-    $cSQL              = '';
-    $cDatum_arr        = Date::getDateParts($_SESSION['Kampagne']->cStamp);
+    $stats     = [];
+    $sql       = '';
+    $dateParts = Date::getDateParts($_SESSION['Kampagne']->cStamp);
     switch ((int)$_SESSION['Kampagne']->nAnsicht) {
         case 1:    // Monat
-            $cSQL = "WHERE '" . $cDatum_arr['cJahr'] . '-' .
-                $cDatum_arr['cMonat'] . "' = DATE_FORMAT(dErstellt, '%Y-%m')";
+            $sql = "WHERE '" . $dateParts['cJahr'] . '-' .
+                $dateParts['cMonat'] . "' = DATE_FORMAT(dErstellt, '%Y-%m')";
             break;
         case 2:    // Woche
-            $cDatum_arr = ermittleDatumWoche($cDatum_arr['cJahr'] . '-' .
-                $cDatum_arr['cMonat'] . '-' . $cDatum_arr['cTag']);
-            $cSQL       = 'WHERE dErstellt BETWEEN FROM_UNIXTIME(' .
-                $cDatum_arr[0] . ", '%Y-%m-%d %H:%i:%s') AND FROM_UNIXTIME(" .
-                $cDatum_arr[1] . ", '%Y-%m-%d %H:%i:%s')";
+            $dateParts = ermittleDatumWoche($dateParts['cJahr'] . '-' .
+                $dateParts['cMonat'] . '-' . $dateParts['cTag']);
+            $sql       = 'WHERE dErstellt BETWEEN FROM_UNIXTIME(' .
+                $dateParts[0] . ", '%Y-%m-%d %H:%i:%s') AND FROM_UNIXTIME(" .
+                $dateParts[1] . ", '%Y-%m-%d %H:%i:%s')";
             break;
         case 3:    // Tag
-            $cSQL = "WHERE '" . $cDatum_arr['cJahr'] . '-' .
-                $cDatum_arr['cMonat'] . '-' .
-                $cDatum_arr['cTag'] . "' = DATE_FORMAT(dErstellt, '%Y-%m-%d')";
+            $sql = "WHERE '" . $dateParts['cJahr'] . '-' .
+                $dateParts['cMonat'] . '-' .
+                $dateParts['cTag'] . "' = DATE_FORMAT(dErstellt, '%Y-%m-%d')";
             break;
     }
 
-    if (is_array($oKampagne_arr)
-        && count($oKampagne_arr) > 0
-        && is_array($oKampagneDef_arr)
-        && count($oKampagneDef_arr)
+    if (is_array($campaigns)
+        && count($campaigns) > 0
+        && is_array($definitions)
+        && count($definitions)
     ) {
-        foreach ($oKampagne_arr as $oKampagne) {
-            foreach ($oKampagneDef_arr as $oKampagneDef) {
-                $oKampagneStat_arr[$oKampagne->kKampagne][$oKampagneDef->kKampagneDef] = 0;
-                $oKampagneStat_arr['Gesamt'][$oKampagneDef->kKampagneDef]              = 0;
+        foreach ($campaigns as $campaign) {
+            foreach ($definitions as $definition) {
+                $stats[$campaign->kKampagne][$definition->kKampagneDef] = 0;
+                $stats['Gesamt'][$definition->kKampagneDef]             = 0;
             }
         }
     }
 
-    $oStats_arr = Shop::Container()->getDB()->query(
+    $data = Shop::Container()->getDB()->query(
         'SELECT kKampagne, kKampagneDef, SUM(fWert) AS fAnzahl
             FROM tkampagnevorgang
-            ' . $cSQL . '
+            ' . $sql . '
             GROUP BY kKampagne, kKampagneDef',
         ReturnType::ARRAY_OF_OBJECTS
     );
-    foreach ($oStats_arr as $oStats) {
-        $oKampagneStat_arr[$oStats->kKampagne][$oStats->kKampagneDef] = $oStats->fAnzahl;
+    foreach ($data as $item) {
+        $stats[$item->kKampagne][$item->kKampagneDef] = $item->fAnzahl;
     }
-    // Sortierung
     if (isset($_SESSION['Kampagne']->nSort) && $_SESSION['Kampagne']->nSort > 0) {
-        $oSort_arr = [];
-        if ((int)$_SESSION['Kampagne']->nSort > 0 && count($oKampagneStat_arr) > 0) {
-            foreach ($oKampagneStat_arr as $i => $oKampagneStatDef_arr) {
-                $oSort_arr[$i] = $oKampagneStatDef_arr[$_SESSION['Kampagne']->nSort];
+        $sort = [];
+        if ((int)$_SESSION['Kampagne']->nSort > 0 && count($stats) > 0) {
+            foreach ($stats as $i => $stat) {
+                $sort[$i] = $stat[$_SESSION['Kampagne']->nSort];
             }
         }
         if ($_SESSION['Kampagne']->cSort === 'ASC') {
-            uasort($oSort_arr, 'kampagneSortASC');
+            uasort($sort, 'kampagneSortASC');
         } else {
-            uasort($oSort_arr, 'kampagneSortDESC');
+            uasort($sort, 'kampagneSortDESC');
         }
-        $oKampagneStatTMP_arr = [];
-        foreach ($oSort_arr as $i => $oSort_arrTmp) {
-            $oKampagneStatTMP_arr[$i] = $oKampagneStat_arr[$i];
+        $tmpStats = [];
+        foreach ($sort as $i => $oSort_arrTmp) {
+            $tmpStats[$i] = $stats[$i];
         }
-        $oKampagneStat_arr = $oKampagneStatTMP_arr;
+        $stats = $tmpStats;
     }
-    // Gesamtstats
-    foreach ($oStats_arr as $oStats) {
-        $oKampagneStat_arr['Gesamt'][$oStats->kKampagneDef] += $oStats->fAnzahl;
+    foreach ($data as $item) {
+        $stats['Gesamt'][$item->kKampagneDef] += $item->fAnzahl;
     }
 
-    return $oKampagneStat_arr;
+    return $stats;
 }
 
 /**
@@ -163,15 +162,15 @@ function kampagneSortASC($a, $b)
 }
 
 /**
- * @param int   $kKampagne
- * @param array $oKampagneDef_arr
+ * @param int   $campaignID
+ * @param array $definitions
  * @return array
  */
-function holeKampagneDetailStats($kKampagne, $oKampagneDef_arr)
+function holeKampagneDetailStats($campaignID, $definitions)
 {
     // Zeitraum
-    $cSQLWHERE           = '';
-    $nAnzahlTageProMonat = date(
+    $whereSQL     = '';
+    $daysPerMonth = date(
         't',
         mktime(
             0,
@@ -183,119 +182,113 @@ function holeKampagneDetailStats($kKampagne, $oKampagneDef_arr)
         )
     );
     // Int String Work Around
-    $cMonat = $_SESSION['Kampagne']->cFromDate_arr['nMonat'];
-    if ($cMonat < 10) {
-        $cMonat = '0' . $cMonat;
+    $month = $_SESSION['Kampagne']->cFromDate_arr['nMonat'];
+    if ($month < 10) {
+        $month = '0' . $month;
     }
-    $cTag = $_SESSION['Kampagne']->cFromDate_arr['nTag'];
-    if ($cTag < 10) {
-        $cTag = '0' . $cTag;
+    $day = $_SESSION['Kampagne']->cFromDate_arr['nTag'];
+    if ($day < 10) {
+        $day = '0' . $day;
     }
 
     switch ((int)$_SESSION['Kampagne']->nDetailAnsicht) {
         case 1:    // Jahr
-            $cSQLWHERE = " WHERE dErstellt BETWEEN '" . $_SESSION['Kampagne']->cFromDate_arr['nJahr'] . '-' .
+            $whereSQL = " WHERE dErstellt BETWEEN '" . $_SESSION['Kampagne']->cFromDate_arr['nJahr'] . '-' .
                 $_SESSION['Kampagne']->cFromDate_arr['nMonat'] . "-01' AND '" .
                 $_SESSION['Kampagne']->cToDate_arr['nJahr'] . '-' .
-                $_SESSION['Kampagne']->cToDate_arr['nMonat'] . '-' . $nAnzahlTageProMonat . "'";
+                $_SESSION['Kampagne']->cToDate_arr['nMonat'] . '-' . $daysPerMonth . "'";
             if ($_SESSION['Kampagne']->cFromDate_arr['nJahr'] == $_SESSION['Kampagne']->cToDate_arr['nJahr']) {
-                $cSQLWHERE = " WHERE DATE_FORMAT(dErstellt, '%Y') = '" .
+                $whereSQL = " WHERE DATE_FORMAT(dErstellt, '%Y') = '" .
                     $_SESSION['Kampagne']->cFromDate_arr['nJahr'] . "'";
             }
             break;
         case 2:    // Monat
-            $cSQLWHERE = " WHERE dErstellt BETWEEN '" . $_SESSION['Kampagne']->cFromDate_arr['nJahr'] . '-' .
+            $whereSQL = " WHERE dErstellt BETWEEN '" . $_SESSION['Kampagne']->cFromDate_arr['nJahr'] . '-' .
                 $_SESSION['Kampagne']->cFromDate_arr['nMonat'] .
                 "-01' AND '" . $_SESSION['Kampagne']->cToDate_arr['nJahr'] . '-' .
-                $_SESSION['Kampagne']->cToDate_arr['nMonat'] . '-' . $nAnzahlTageProMonat . "'";
+                $_SESSION['Kampagne']->cToDate_arr['nMonat'] . '-' . $daysPerMonth . "'";
             if ($_SESSION['Kampagne']->cFromDate_arr['nJahr'] == $_SESSION['Kampagne']->cToDate_arr['nJahr']
                 && $_SESSION['Kampagne']->cFromDate_arr['nMonat'] == $_SESSION['Kampagne']->cToDate_arr['nMonat']
             ) {
-                $cSQLWHERE = " WHERE DATE_FORMAT(dErstellt, '%Y-%m') = '" .
-                    $_SESSION['Kampagne']->cFromDate_arr['nJahr'] . '-' . $cMonat . "'";
+                $whereSQL = " WHERE DATE_FORMAT(dErstellt, '%Y-%m') = '" .
+                    $_SESSION['Kampagne']->cFromDate_arr['nJahr'] . '-' . $month . "'";
             }
             break;
         case 3:    // Woche
             $cDatumWocheAnfang_arr = ermittleDatumWoche($_SESSION['Kampagne']->cFromDate);
             $cDatumWocheEnde_arr   = ermittleDatumWoche($_SESSION['Kampagne']->cToDate);
-            $cSQLWHERE             = " WHERE dErstellt BETWEEN '" .
+            $whereSQL              = " WHERE dErstellt BETWEEN '" .
                 date('Y-m-d H:i:s', $cDatumWocheAnfang_arr[0]) . "' AND '" .
                 date('Y-m-d H:i:s', $cDatumWocheEnde_arr[1]) . "'";
             break;
         case 4:    // Tag
-            $cSQLWHERE = " WHERE dErstellt BETWEEN '" . $_SESSION['Kampagne']->cFromDate .
+            $whereSQL = " WHERE dErstellt BETWEEN '" . $_SESSION['Kampagne']->cFromDate .
                 "' AND '" . $_SESSION['Kampagne']->cToDate . "'";
             if ($_SESSION['Kampagne']->cFromDate == $_SESSION['Kampagne']->cToDate) {
-                $cSQLWHERE = " WHERE DATE_FORMAT(dErstellt, '%Y-%m-%d') = '" .
-                    $_SESSION['Kampagne']->cFromDate_arr['nJahr'] . '-' . $cMonat . '-' . $cTag . "'";
+                $whereSQL = " WHERE DATE_FORMAT(dErstellt, '%Y-%m-%d') = '" .
+                    $_SESSION['Kampagne']->cFromDate_arr['nJahr'] . '-' . $month . '-' . $day . "'";
             }
             break;
     }
 
     switch ((int)$_SESSION['Kampagne']->nDetailAnsicht) {
         case 1:    // Jahr
-            $cSQLSELECT  = "DATE_FORMAT(dErstellt, '%Y') AS cDatum";
-            $cSQLGROUPBY = 'GROUP BY YEAR(dErstellt)';
+            $selectSQL = "DATE_FORMAT(dErstellt, '%Y') AS cDatum";
+            $groupSQL  = 'GROUP BY YEAR(dErstellt)';
             break;
         case 2:    // Monat
-            $cSQLSELECT  = "DATE_FORMAT(dErstellt, '%Y-%m') AS cDatum";
-            $cSQLGROUPBY = 'GROUP BY MONTH(dErstellt), YEAR(dErstellt)';
+            $selectSQL = "DATE_FORMAT(dErstellt, '%Y-%m') AS cDatum";
+            $groupSQL  = 'GROUP BY MONTH(dErstellt), YEAR(dErstellt)';
             break;
         case 3:    // Woche
-            $cSQLSELECT  = 'WEEK(dErstellt, 1) AS cDatum';
-            $cSQLGROUPBY = 'GROUP BY WEEK(dErstellt, 1), YEAR(dErstellt)';
+            $selectSQL = 'WEEK(dErstellt, 1) AS cDatum';
+            $groupSQL  = 'GROUP BY WEEK(dErstellt, 1), YEAR(dErstellt)';
             break;
         case 4:    // Tag
-            $cSQLSELECT  = "DATE_FORMAT(dErstellt, '%Y-%m-%d') AS cDatum";
-            $cSQLGROUPBY = 'GROUP BY DAY(dErstellt), YEAR(dErstellt), MONTH(dErstellt)';
+            $selectSQL = "DATE_FORMAT(dErstellt, '%Y-%m-%d') AS cDatum";
+            $groupSQL  = 'GROUP BY DAY(dErstellt), YEAR(dErstellt), MONTH(dErstellt)';
             break;
         default:
             return [];
     }
     // Zeitraum
-    $cZeitraum_arr = gibDetailDatumZeitraum();
-
-    $oStats_arr = Shop::Container()->getDB()->query(
-        'SELECT kKampagne, kKampagneDef, SUM(fWert) AS fAnzahl, ' . $cSQLSELECT . '
+    $timeSpans = gibDetailDatumZeitraum();
+    $stats     = Shop::Container()->getDB()->query(
+        'SELECT kKampagne, kKampagneDef, SUM(fWert) AS fAnzahl, ' . $selectSQL . '
             FROM tkampagnevorgang
-            ' . $cSQLWHERE . '
-                AND kKampagne = ' . $kKampagne . '
-            ' . $cSQLGROUPBY . ', kKampagneDef',
+            ' . $whereSQL . '
+                AND kKampagne = ' . $campaignID . '
+            ' . $groupSQL . ', kKampagneDef',
         ReturnType::ARRAY_OF_OBJECTS
     );
     // Vorbelegen
-    $oStatsAssoc_arr = [];
-    if (is_array($oKampagneDef_arr)
-        && is_array($cZeitraum_arr['cDatum'])
-        && count($oKampagneDef_arr) > 0
-        && count($cZeitraum_arr['cDatum']) > 0
+    $statsAssoc = [];
+    if (is_array($definitions)
+        && is_array($timeSpans['cDatum'])
+        && count($definitions) > 0
+        && count($timeSpans['cDatum']) > 0
     ) {
-        foreach ($cZeitraum_arr['cDatum'] as $i => $cZeitraum) {
-            if (!isset($oStatsAssoc_arr[$cZeitraum]['cDatum'])) {
-                $oStatsAssoc_arr[$cZeitraum]['cDatum'] = $cZeitraum_arr['cDatumFull'][$i];
+        foreach ($timeSpans['cDatum'] as $i => $timeSpan) {
+            if (!isset($statsAssoc[$timeSpan]['cDatum'])) {
+                $statsAssoc[$timeSpan]['cDatum'] = $timeSpans['cDatumFull'][$i];
             }
 
-            foreach ($oKampagneDef_arr as $oKampagneDef) {
-                $oStatsAssoc_arr[$cZeitraum][$oKampagneDef->kKampagneDef] = 0;
+            foreach ($definitions as $definition) {
+                $statsAssoc[$timeSpan][$definition->kKampagneDef] = 0;
             }
         }
     }
     // Finde den maximalen Wert heraus, um die Höhe des Graphen zu ermitteln
-    $nGraphMaxAssoc_arr = []; // Assoc Array key = kKampagneDef
-    if (is_array($oStats_arr)
-        && is_array($oKampagneDef_arr)
-        && count($oStats_arr) > 0
-        && count($oKampagneDef_arr) > 0
-    ) {
-        foreach ($oStats_arr as $oStats) {
-            foreach ($oKampagneDef_arr as $oKampagneDef) {
-                if (isset($oStatsAssoc_arr[$oStats->cDatum][$oKampagneDef->kKampagneDef])) {
-                    $oStatsAssoc_arr[$oStats->cDatum][$oStats->kKampagneDef] = $oStats->fAnzahl;
-
-                    if (!isset($nGraphMaxAssoc_arr[$oStats->kKampagneDef])) {
-                        $nGraphMaxAssoc_arr[$oStats->kKampagneDef] = $oStats->fAnzahl;
-                    } elseif ($nGraphMaxAssoc_arr[$oStats->kKampagneDef] < $oStats->fAnzahl) {
-                        $nGraphMaxAssoc_arr[$oStats->kKampagneDef] = $oStats->fAnzahl;
+    $graphMax = []; // Assoc Array key = kKampagneDef
+    if (is_array($stats) && is_array($definitions) && count($stats) > 0 && count($definitions) > 0) {
+        foreach ($stats as $stat) {
+            foreach ($definitions as $definition) {
+                if (isset($statsAssoc[$stat->cDatum][$definition->kKampagneDef])) {
+                    $statsAssoc[$stat->cDatum][$stat->kKampagneDef] = $stat->fAnzahl;
+                    if (!isset($graphMax[$stat->kKampagneDef])) {
+                        $graphMax[$stat->kKampagneDef] = $stat->fAnzahl;
+                    } elseif ($graphMax[$stat->kKampagneDef] < $stat->fAnzahl) {
+                        $graphMax[$stat->kKampagneDef] = $stat->fAnzahl;
                     }
                 }
             }
@@ -304,39 +297,38 @@ function holeKampagneDetailStats($kKampagne, $oKampagneDef_arr)
     if (!isset($_SESSION['Kampagne']->oKampagneDetailGraph)) {
         $_SESSION['Kampagne']->oKampagneDetailGraph = new stdClass();
     }
-    $_SESSION['Kampagne']->oKampagneDetailGraph->oKampagneDetailGraph_arr = $oStatsAssoc_arr;
-    $_SESSION['Kampagne']->oKampagneDetailGraph->nGraphMaxAssoc_arr       = $nGraphMaxAssoc_arr;
+    $_SESSION['Kampagne']->oKampagneDetailGraph->oKampagneDetailGraph_arr = $statsAssoc;
+    $_SESSION['Kampagne']->oKampagneDetailGraph->nGraphMaxAssoc_arr       = $graphMax;
 
     // Maximal 31 Einträge pro Graph
     if (count($_SESSION['Kampagne']->oKampagneDetailGraph->oKampagneDetailGraph_arr) > 31) {
-        $nVonKey = count($_SESSION['Kampagne']->oKampagneDetailGraph->oKampagneDetailGraph_arr) - 31;
-
-        $oTMP_arr = [];
-        foreach ($_SESSION['Kampagne']->oKampagneDetailGraph->oKampagneDetailGraph_arr as $i => $oKampagneDetailGraph) {
-            if ($nVonKey <= 0) {
-                $oTMP_arr[$i] = $oKampagneDetailGraph;
+        $key     = count($_SESSION['Kampagne']->oKampagneDetailGraph->oKampagneDetailGraph_arr) - 31;
+        $tmpData = [];
+        foreach ($_SESSION['Kampagne']->oKampagneDetailGraph->oKampagneDetailGraph_arr as $i => $graph) {
+            if ($key <= 0) {
+                $tmpData[$i] = $graph;
             }
-            $nVonKey--;
+            $key--;
         }
 
-        $_SESSION['Kampagne']->oKampagneDetailGraph->oKampagneDetailGraph_arr = $oTMP_arr;
+        $_SESSION['Kampagne']->oKampagneDetailGraph->oKampagneDetailGraph_arr = $tmpData;
     }
     // Gesamtstats
-    if (is_array($oStatsAssoc_arr) && count($oStatsAssoc_arr) > 0) {
-        foreach ($oStatsAssoc_arr as $oStatsDefAssoc_arr) {
-            foreach ($oStatsDefAssoc_arr as $kKampagneDef => $oStatsDefAssoc) {
-                if ($kKampagneDef !== 'cDatum') {
-                    if (!isset($oStatsAssoc_arr['Gesamt'][$kKampagneDef])) {
-                        $oStatsAssoc_arr['Gesamt'][$kKampagneDef] = $oStatsDefAssoc;
+    if (is_array($statsAssoc) && count($statsAssoc) > 0) {
+        foreach ($statsAssoc as $statDefinitionsAssoc) {
+            foreach ($statDefinitionsAssoc as $definitionID => $oStatsDefAssoc) {
+                if ($definitionID !== 'cDatum') {
+                    if (!isset($statsAssoc['Gesamt'][$definitionID])) {
+                        $statsAssoc['Gesamt'][$definitionID] = $oStatsDefAssoc;
                     } else {
-                        $oStatsAssoc_arr['Gesamt'][$kKampagneDef] += $oStatsDefAssoc;
+                        $statsAssoc['Gesamt'][$definitionID] += $oStatsDefAssoc;
                     }
                 }
             }
         }
     }
 
-    return $oStatsAssoc_arr;
+    return $statsAssoc;
 }
 
 /**
@@ -1303,19 +1295,18 @@ function mappeFehlerCodeSpeichern($nReturnValue)
 }
 
 /**
- * @param array $kKampagne_arr
+ * @param array $campaignIDs
  * @return int
  */
-function loescheGewaehlteKampagnen($kKampagne_arr)
+function loescheGewaehlteKampagnen($campaignIDs)
 {
-    if (is_array($kKampagne_arr) && count($kKampagne_arr) > 0) {
-        foreach ($kKampagne_arr as $i => $kKampagne) {
-            if ($kKampagne >= 1000) {
+    if (is_array($campaignIDs) && count($campaignIDs) > 0) {
+        foreach ($campaignIDs as $i => $campaignID) {
+            if ($campaignID >= 1000) {
                 // Nur alle externen Kampagnen sind löschbar
-
-                $oKampagne = new Kampagne($kKampagne);
-                if ($oKampagne->kKampagne !== null && $oKampagne->kKampagne > 0) {
-                    $oKampagne->deleteInDB();
+                $campaign = new Kampagne($campaignID);
+                if ($campaign->kKampagne !== null && $campaign->kKampagne > 0) {
+                    $campaign->deleteInDB();
                 }
             }
         }
@@ -1328,9 +1319,9 @@ function loescheGewaehlteKampagnen($kKampagne_arr)
 }
 
 /**
- * @param array $cDatumNow_arr
+ * @param array $dateData
  */
-function setzeDetailZeitraum($cDatumNow_arr)
+function setzeDetailZeitraum($dateData)
 {
     // 1 = Jahr
     // 2 = Monat
@@ -1340,22 +1331,22 @@ function setzeDetailZeitraum($cDatumNow_arr)
         $_SESSION['Kampagne']->nDetailAnsicht = 2;
     }
     if (!isset($_SESSION['Kampagne']->cFromDate_arr)) {
-        $_SESSION['Kampagne']->cFromDate_arr['nJahr']  = (int)$cDatumNow_arr['cJahr'];
-        $_SESSION['Kampagne']->cFromDate_arr['nMonat'] = (int)$cDatumNow_arr['cMonat'];
-        $_SESSION['Kampagne']->cFromDate_arr['nTag']   = (int)$cDatumNow_arr['cTag'];
+        $_SESSION['Kampagne']->cFromDate_arr['nJahr']  = (int)$dateData['cJahr'];
+        $_SESSION['Kampagne']->cFromDate_arr['nMonat'] = (int)$dateData['cMonat'];
+        $_SESSION['Kampagne']->cFromDate_arr['nTag']   = (int)$dateData['cTag'];
     }
     if (!isset($_SESSION['Kampagne']->cToDate_arr)) {
-        $_SESSION['Kampagne']->cToDate_arr['nJahr']  = (int)$cDatumNow_arr['cJahr'];
-        $_SESSION['Kampagne']->cToDate_arr['nMonat'] = (int)$cDatumNow_arr['cMonat'];
-        $_SESSION['Kampagne']->cToDate_arr['nTag']   = (int)$cDatumNow_arr['cTag'];
+        $_SESSION['Kampagne']->cToDate_arr['nJahr']  = (int)$dateData['cJahr'];
+        $_SESSION['Kampagne']->cToDate_arr['nMonat'] = (int)$dateData['cMonat'];
+        $_SESSION['Kampagne']->cToDate_arr['nTag']   = (int)$dateData['cTag'];
     }
     if (!isset($_SESSION['Kampagne']->cFromDate)) {
-        $_SESSION['Kampagne']->cFromDate = (int)$cDatumNow_arr['cJahr'] . '-' .
-            (int)$cDatumNow_arr['cMonat'] . '-' . (int)$cDatumNow_arr['cTag'];
+        $_SESSION['Kampagne']->cFromDate = (int)$dateData['cJahr'] . '-' .
+            (int)$dateData['cMonat'] . '-' . (int)$dateData['cTag'];
     }
     if (!isset($_SESSION['Kampagne']->cToDate)) {
-        $_SESSION['Kampagne']->cToDate = (int)$cDatumNow_arr['cJahr'] . '-' .
-            (int)$cDatumNow_arr['cMonat'] . '-' . (int)$cDatumNow_arr['cTag'];
+        $_SESSION['Kampagne']->cToDate = (int)$dateData['cJahr'] . '-' .
+            (int)$dateData['cMonat'] . '-' . (int)$dateData['cTag'];
     }
     // Ansicht und Zeitraum
     if (Request::verifyGPCDataInt('zeitraum') === 1) {
@@ -1397,7 +1388,7 @@ function setzeDetailZeitraum($cDatumNow_arr)
  */
 function checkGesamtStatZeitParam()
 {
-    $cStamp = '';
+    $stamp = '';
     if (mb_strlen(Request::verifyGPDataString('cZeitParam')) > 0) {
         $span      = base64_decode(Request::verifyGPDataString('cZeitParam'));
         $spanParts = explode(' - ', $span);
@@ -1423,24 +1414,24 @@ function checkGesamtStatZeitParam()
             (int)$startMonth . '-' .
             (int)$startDay;
         // Int String Work Around
-        $cMonat = $_SESSION['Kampagne']->cFromDate_arr['nMonat'];
-        if ($cMonat < 10) {
-            $cMonat = '0' . $cMonat;
+        $month = $_SESSION['Kampagne']->cFromDate_arr['nMonat'];
+        if ($month < 10) {
+            $month = '0' . $month;
         }
 
-        $cTag = $_SESSION['Kampagne']->cFromDate_arr['nTag'];
-        if ($cTag < 10) {
-            $cTag = '0' . $cTag;
+        $day = $_SESSION['Kampagne']->cFromDate_arr['nTag'];
+        if ($day < 10) {
+            $day = '0' . $day;
         }
 
         switch ((int)$_SESSION['Kampagne']->nAnsicht) {
             case 1:    // Monat
                 $_SESSION['Kampagne']->nDetailAnsicht = 2;
-                $cStamp                               = $_SESSION['Kampagne']->cFromDate_arr['nJahr'] . '-' . $cMonat;
+                $stamp                                = $_SESSION['Kampagne']->cFromDate_arr['nJahr'] . '-' . $month;
                 break;
             case 2: // Woche
                 $_SESSION['Kampagne']->nDetailAnsicht = 3;
-                $cStamp                               = date(
+                $stamp                                = date(
                     'W',
                     mktime(
                         0,
@@ -1454,64 +1445,64 @@ function checkGesamtStatZeitParam()
                 break;
             case 3: // Tag
                 $_SESSION['Kampagne']->nDetailAnsicht = 4;
-                $cStamp                               = $_SESSION['Kampagne']->cFromDate_arr['nJahr'] . '-' .
-                    $cMonat . '-' . $cTag;
+                $stamp                                = $_SESSION['Kampagne']->cFromDate_arr['nJahr'] . '-' .
+                    $month . '-' . $day;
                 break;
         }
     }
 
-    return $cStamp;
+    return $stamp;
 }
 
 /**
- * @param string $cMonat
+ * @param string $month
  * @return string
  */
-function mappeENGMonat($cMonat)
+function mappeENGMonat($month)
 {
-    $cMonatDE = '';
-    if (mb_strlen($cMonat) > 0) {
-        switch ($cMonat) {
+    $translation = '';
+    if (mb_strlen($month) > 0) {
+        switch ($month) {
             case '01':
-                $cMonatDE .= Shop::Lang()->get('january', 'news');
+                $translation .= Shop::Lang()->get('january', 'news');
                 break;
             case '02':
-                $cMonatDE .= Shop::Lang()->get('february', 'news');
+                $translation .= Shop::Lang()->get('february', 'news');
                 break;
             case '03':
-                $cMonatDE .= Shop::Lang()->get('march', 'news');
+                $translation .= Shop::Lang()->get('march', 'news');
                 break;
             case '04':
-                $cMonatDE .= Shop::Lang()->get('april', 'news');
+                $translation .= Shop::Lang()->get('april', 'news');
                 break;
             case '05':
-                $cMonatDE .= Shop::Lang()->get('may', 'news');
+                $translation .= Shop::Lang()->get('may', 'news');
                 break;
             case '06':
-                $cMonatDE .= Shop::Lang()->get('june', 'news');
+                $translation .= Shop::Lang()->get('june', 'news');
                 break;
             case '07':
-                $cMonatDE .= Shop::Lang()->get('july', 'news');
+                $translation .= Shop::Lang()->get('july', 'news');
                 break;
             case '08':
-                $cMonatDE .= Shop::Lang()->get('august', 'news');
+                $translation .= Shop::Lang()->get('august', 'news');
                 break;
             case '09':
-                $cMonatDE .= Shop::Lang()->get('september', 'news');
+                $translation .= Shop::Lang()->get('september', 'news');
                 break;
             case '10':
-                $cMonatDE .= Shop::Lang()->get('october', 'news');
+                $translation .= Shop::Lang()->get('october', 'news');
                 break;
             case '11':
-                $cMonatDE .= Shop::Lang()->get('november', 'news');
+                $translation .= Shop::Lang()->get('november', 'news');
                 break;
             case '12':
-                $cMonatDE .= Shop::Lang()->get('december', 'news');
+                $translation .= Shop::Lang()->get('december', 'news');
                 break;
         }
     }
 
-    return $cMonatDE;
+    return $translation;
 }
 
 /**
@@ -1519,7 +1510,7 @@ function mappeENGMonat($cMonat)
  */
 function GetTypes()
 {
-    $Serienames = [
+    return [
         1  => 'Hit',
         2  => 'Verkauf',
         3  => 'Anmeldung',
@@ -1531,33 +1522,31 @@ function GetTypes()
         9  => 'Produkt in den Warenkorb',
         10 => 'Angeschaute Newsletter'
     ];
-
-    return $Serienames;
 }
 
 /**
- * @param int $Type
+ * @param int $type
  * @return string
  */
-function GetKampTypeName($Type)
+function GetKampTypeName($type)
 {
     $Serienames = GetTypes();
 
-    return $Serienames[$Type] ?? '';
+    return $Serienames[$type] ?? '';
 }
 
 /**
- * @param array $Stats
- * @param mixed $Type
+ * @param array $stats
+ * @param mixed $type
  * @return Linechart
  */
-function PrepareLineChartKamp($Stats, $Type)
+function PrepareLineChartKamp($stats, $type)
 {
     $chart = new Linechart(['active' => false]);
-    if (is_array($Stats) && count($Stats) > 0) {
+    if (is_array($stats) && count($stats) > 0) {
         $chart->setActive(true);
         $data = [];
-        foreach ($Stats as $Date => $Dates) {
+        foreach ($stats as $Date => $Dates) {
             if (mb_strpos($Date, 'Gesamt') === false) {
                 $x = '';
                 foreach ($Dates as $Key => $Stat) {
@@ -1565,7 +1554,7 @@ function PrepareLineChartKamp($Stats, $Type)
                         $x = $Dates[$Key];
                     }
 
-                    if ($Key == $Type) {
+                    if ($Key == $type) {
                         $obj    = new stdClass();
                         $obj->y = (float)$Stat;
 
@@ -1575,7 +1564,7 @@ function PrepareLineChartKamp($Stats, $Type)
                 }
             }
         }
-        $chart->addSerie(GetKampTypeName($Type), $data);
+        $chart->addSerie(GetKampTypeName($type), $data);
         $chart->memberToJSON();
     }
 

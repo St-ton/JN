@@ -88,14 +88,14 @@ class SearchSpecial
     }
 
     /**
-     * @param int $kKey
+     * @param int $key
      * @return mixed|string
      * @former baueSuchSpecialURL()
      * @since 5.0.0
      */
-    public static function buildURL(int $kKey)
+    public static function buildURL(int $key)
     {
-        $cacheID = 'bsurl_' . $kKey . '_' . Shop::getLanguageID();
+        $cacheID = 'bsurl_' . $key . '_' . Shop::getLanguageID();
         if (($url = Shop::Container()->getCache()->get($cacheID)) !== false) {
             \executeHook(\HOOK_BOXEN_INC_SUCHSPECIALURL);
 
@@ -108,12 +108,12 @@ class SearchSpecial
             'cKey',
             'suchspecial',
             'kKey',
-            $kKey,
+            $key,
             false,
             'cSeo'
         ) ?? new stdClass();
 
-        $oSeo->kSuchspecial = $kKey;
+        $oSeo->kSuchspecial = $key;
         \executeHook(\HOOK_BOXEN_INC_SUCHSPECIALURL);
         $url = URL::buildURL($oSeo, \URLART_SEARCHSPECIALS);
         Shop::Container()->getCache()->set($cacheID, $url, [\CACHING_GROUP_CATEGORY]);

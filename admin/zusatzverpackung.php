@@ -116,9 +116,9 @@ if ($action === 'save') {
         foreach ($oVerpackungSprach_arr as $oVerpackungSprach) {
             $packaging->oSprach_arr[$oVerpackungSprach->cISOSprache] = $oVerpackungSprach;
         }
-        $oKundengruppe                = gibKundengruppeObj($packaging->cKundengruppe);
-        $packaging->kKundengruppe_arr = $oKundengruppe->kKundengruppe_arr;
-        $packaging->cKundengruppe_arr = $oKundengruppe->cKundengruppe_arr;
+        $customerGroup                = gibKundengruppeObj($packaging->cKundengruppe);
+        $packaging->kKundengruppe_arr = $customerGroup->kKundengruppe_arr;
+        $packaging->cKundengruppe_arr = $customerGroup->cKundengruppe_arr;
     }
     $smarty->assign('kVerpackung', $packaging->kVerpackung)
         ->assign('oVerpackungEdit', $packaging);
@@ -160,28 +160,28 @@ $packagingCount = $db->query(
     ReturnType::SINGLE_OBJECT
 );
 $itemsPerPage   = 10;
-$oPagination    = (new Pagination('standard'))
+$pagination     = (new Pagination('standard'))
     ->setItemsPerPageOptions([$itemsPerPage, $itemsPerPage * 2, $itemsPerPage * 5])
     ->setItemCount($packagingCount->count)
     ->assemble();
 $packagings     = $db->query(
     'SELECT * FROM tverpackung 
        ORDER BY cName' .
-    ($oPagination->getLimitSQL() !== '' ? ' LIMIT ' . $oPagination->getLimitSQL() : ''),
+    ($pagination->getLimitSQL() !== '' ? ' LIMIT ' . $pagination->getLimitSQL() : ''),
     ReturnType::ARRAY_OF_OBJECTS
 );
 
 foreach ($packagings as $i => $packaging) {
-    $oKundengruppe                = gibKundengruppeObj($packaging->cKundengruppe);
-    $packaging->kKundengruppe_arr = $oKundengruppe->kKundengruppe_arr;
-    $packaging->cKundengruppe_arr = $oKundengruppe->cKundengruppe_arr;
+    $customerGroup                = gibKundengruppeObj($packaging->cKundengruppe);
+    $packaging->kKundengruppe_arr = $customerGroup->kKundengruppe_arr;
+    $packaging->cKundengruppe_arr = $customerGroup->cKundengruppe_arr;
 }
 
 $smarty->assign('oKundengruppe_arr', $customerGroups)
     ->assign('oSteuerklasse_arr', $taxClasses)
     ->assign('oVerpackung_arr', $packagings)
     ->assign('step', $step)
-    ->assign('oPagination', $oPagination)
+    ->assign('$pagination', $pagination)
     ->assign('action', $action)
     ->display('zusatzverpackung.tpl');
 
@@ -252,9 +252,9 @@ function holdInputOnError($packaging, $customerGroupIDs, $packagingID, &$smarty)
 
     if ($customerGroupIDs && $customerGroupIDs[0] !== '-1') {
         $packaging->cKundengruppe     = ';' . implode(';', $customerGroupIDs) . ';';
-        $oKundengruppe                = gibKundengruppeObj($packaging->cKundengruppe);
-        $packaging->kKundengruppe_arr = $oKundengruppe->kKundengruppe_arr;
-        $packaging->cKundengruppe_arr = $oKundengruppe->cKundengruppe_arr;
+        $customerGroup                = gibKundengruppeObj($packaging->cKundengruppe);
+        $packaging->kKundengruppe_arr = $customerGroup->kKundengruppe_arr;
+        $packaging->cKundengruppe_arr = $customerGroup->cKundengruppe_arr;
     } else {
         $packaging->cKundengruppe = '-1';
     }

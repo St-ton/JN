@@ -139,24 +139,24 @@ class AuswahlAssistentOrt
     {
         if ($groupID > 0 && \is_array($params) && \count($params) > 0) {
             if (isset($params['cKategorie']) && \mb_strlen($params['cKategorie']) > 0) {
-                foreach (\explode(';', $params['cKategorie']) as $cKategorie) {
-                    if ((int)$cKategorie > 0 && \mb_strlen($cKategorie) > 0) {
+                foreach (\explode(';', $params['cKategorie']) as $key) {
+                    if ((int)$key > 0 && \mb_strlen($key) > 0) {
                         $ins                          = new stdClass();
                         $ins->kAuswahlAssistentGruppe = $groupID;
                         $ins->cKey                    = \AUSWAHLASSISTENT_ORT_KATEGORIE;
-                        $ins->kKey                    = $cKategorie;
+                        $ins->kKey                    = $key;
 
                         Shop::Container()->getDB()->insert('tauswahlassistentort', $ins);
                     }
                 }
             }
             if (isset($params['kLink_arr']) && \is_array($params['kLink_arr']) && \count($params['kLink_arr']) > 0) {
-                foreach ($params['kLink_arr'] as $kLink) {
-                    if ((int)$kLink > 0) {
+                foreach ($params['kLink_arr'] as $key) {
+                    if ((int)$key > 0) {
                         $ins                          = new stdClass();
                         $ins->kAuswahlAssistentGruppe = $groupID;
                         $ins->cKey                    = \AUSWAHLASSISTENT_ORT_LINK;
-                        $ins->kKey                    = $kLink;
+                        $ins->kKey                    = $key;
 
                         Shop::Container()->getDB()->insert('tauswahlassistentort', $ins);
                     }
@@ -220,17 +220,17 @@ class AuswahlAssistentOrt
             if (!\is_numeric($categories[0])) {
                 $checks['cKategorie'] = 2;
             }
-            foreach ($categories as $cKategorie) {
-                if ((int)$cKategorie > 0 && \mb_strlen($cKategorie) > 0) {
+            foreach ($categories as $key) {
+                if ((int)$key > 0 && \mb_strlen($key) > 0) {
                     if ($update) {
                         if (self::isCategoryTaken(
-                            $cKategorie,
+                            $key,
                             $params['kSprache'],
                             $params['kAuswahlAssistentGruppe']
                         )) {
                             $checks['cKategorie'] = 3;
                         }
-                    } elseif (self::isCategoryTaken($cKategorie, $params['kSprache'])) {
+                    } elseif (self::isCategoryTaken($key, $params['kSprache'])) {
                         $checks['cKategorie'] = 3;
                     }
                 }
@@ -241,17 +241,17 @@ class AuswahlAssistentOrt
             && \is_array($params['kLink_arr'])
             && \count($params['kLink_arr']) > 0
         ) {
-            foreach ($params['kLink_arr'] as $kLink) {
-                if ((int)$kLink > 0) {
+            foreach ($params['kLink_arr'] as $key) {
+                if ((int)$key > 0) {
                     if ($update) {
                         if (self::isLinkTaken(
-                            $kLink,
+                            $key,
                             $params['kSprache'],
                             $params['kAuswahlAssistentGruppe']
                         )) {
                             $checks['kLink_arr'] = 1;
                         }
-                    } elseif (self::isLinkTaken($kLink, $params['kSprache'])) {
+                    } elseif (self::isLinkTaken($key, $params['kSprache'])) {
                         $checks['kLink_arr'] = 1;
                     }
                 }

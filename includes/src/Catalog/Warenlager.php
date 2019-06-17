@@ -263,12 +263,12 @@ class Warenlager extends MainModel
     }
 
     /**
-     * @param string $cName
+     * @param string $name
      * @return $this
      */
-    public function setName($cName): self
+    public function setName($name): self
     {
-        $this->cName = $cName;
+        $this->cName = $name;
 
         return $this;
     }

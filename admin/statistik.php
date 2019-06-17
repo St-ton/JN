@@ -81,6 +81,6 @@ $smarty->assign('headline', $statsTypeName)
        ->assign('STATS_ADMIN_TYPE_EINSTIEGSSEITEN', STATS_ADMIN_TYPE_EINSTIEGSSEITEN)
        ->assign('nPosAb', $pagination->getFirstPageItem())
        ->assign('nPosBis', $pagination->getFirstPageItem() + $pagination->getPageItemCount())
-       ->assign('oPagination', $pagination)
+       ->assign('$pagination', $pagination)
        ->assign('oFilter', $filter)
        ->display('statistik.tpl');

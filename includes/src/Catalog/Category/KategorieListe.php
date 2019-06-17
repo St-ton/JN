@@ -62,25 +62,25 @@ class KategorieListe
             $levels = 3;
         }
         // 1st level
-        $objArr1 = $this->holUnterkategorien(0, $customerGroupID, $languageID);
-        foreach ($objArr1 as $obj1) {
-            $cat1           = $obj1;
+        $level1items = $this->holUnterkategorien(0, $customerGroupID, $languageID);
+        foreach ($level1items as $level1item) {
+            $cat1           = $level1item;
             $cat1->children = [];
             if ($levels > 1) {
                 // 2nd level
-                $objArr2 = $this->holUnterkategorien($cat1->kKategorie, $customerGroupID, $languageID);
-                foreach ($objArr2 as $obj2) {
-                    $kategorie2           = $obj2;
-                    $kategorie2->children = [];
+                $level2items = $this->holUnterkategorien($cat1->kKategorie, $customerGroupID, $languageID);
+                foreach ($level2items as $level2item) {
+                    $cat2           = $level2item;
+                    $cat2->children = [];
                     if ($levels > 2) {
                         // 3rd level
-                        $kategorie2->children = $this->holUnterkategorien(
-                            $kategorie2->kKategorie,
+                        $cat2->children = $this->holUnterkategorien(
+                            $cat2->kKategorie,
                             $customerGroupID,
                             $languageID
                         );
                     }
-                    $cat1->children[] = $kategorie2;
+                    $cat1->children[] = $cat2;
                 }
             }
             $this->elemente[] = $cat1;

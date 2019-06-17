@@ -111,11 +111,11 @@ function getAdminSectionSettings($configSectionID)
 
 /**
  * @param array $settingsIDs
- * @param array $cPost_arr
+ * @param array $post
  * @param array $tags
  * @return string
  */
-function saveAdminSettings(array $settingsIDs, array &$cPost_arr, $tags = [CACHING_GROUP_OPTION])
+function saveAdminSettings(array $settingsIDs, array &$post, $tags = [CACHING_GROUP_OPTION])
 {
     array_walk($settingsIDs, function (&$i) {
         $i = (int)$i;
@@ -132,7 +132,7 @@ function saveAdminSettings(array $settingsIDs, array &$cPost_arr, $tags = [CACHI
     }
     foreach ($confData as $config) {
         $val                        = new stdClass();
-        $val->cWert                 = $cPost_arr[$config->cWertName] ?? null;
+        $val->cWert                 = $post[$config->cWertName] ?? null;
         $val->cName                 = $config->cWertName;
         $val->kEinstellungenSektion = (int)$config->kEinstellungenSektion;
         switch ($config->cInputTyp) {
@@ -178,40 +178,40 @@ function bearbeiteListBox($listBoxes, $cWertName, int $configSectionID)
             ['kEinstellungenSektion', 'cName'],
             [$configSectionID, $cWertName]
         );
-        foreach ($listBoxes as $cListBox) {
-            $oAktWert                        = new stdClass();
-            $oAktWert->cWert                 = $cListBox;
-            $oAktWert->cName                 = $cWertName;
-            $oAktWert->kEinstellungenSektion = $configSectionID;
+        foreach ($listBoxes as $listBox) {
+            $newConf                        = new stdClass();
+            $newConf->cWert                 = $listBox;
+            $newConf->cName                 = $cWertName;
+            $newConf->kEinstellungenSektion = $configSectionID;
 
-            $db->insert('teinstellungen', $oAktWert);
+            $db->insert('teinstellungen', $newConf);
         }
     } elseif ($cWertName === 'bewertungserinnerung_kundengruppen' || $cWertName === 'kwk_kundengruppen') {
         // Leere Kundengruppen Work Around
-        $oKundengruppe = $db->select('tkundengruppe', 'cStandard', 'Y');
-        if ($oKundengruppe->kKundengruppe > 0) {
+        $customerGroup = $db->select('tkundengruppe', 'cStandard', 'Y');
+        if ($customerGroup->kKundengruppe > 0) {
             $db->delete(
                 'teinstellungen',
                 ['kEinstellungenSektion', 'cName'],
                 [$configSectionID, $cWertName]
             );
-            $oAktWert                        = new stdClass();
-            $oAktWert->cWert                 = $oKundengruppe->kKundengruppe;
-            $oAktWert->cName                 = $cWertName;
-            $oAktWert->kEinstellungenSektion = CONF_BEWERTUNG;
+            $newConf                        = new stdClass();
+            $newConf->cWert                 = $customerGroup->kKundengruppe;
+            $newConf->cName                 = $cWertName;
+            $newConf->kEinstellungenSektion = CONF_BEWERTUNG;
 
-            $db->insert('teinstellungen', $oAktWert);
+            $db->insert('teinstellungen', $newConf);
         }
     }
 }
 
 /**
  * @param int   $configSectionID
- * @param array $cPost_arr
+ * @param array $post
  * @param array $tags
  * @return string
  */
-function saveAdminSectionSettings(int $configSectionID, array &$cPost_arr, $tags = [CACHING_GROUP_OPTION])
+function saveAdminSectionSettings(int $configSectionID, array &$post, $tags = [CACHING_GROUP_OPTION])
 {
     if (!Form::validateToken()) {
         return __('errorCSRF');
@@ -228,7 +228,7 @@ function saveAdminSectionSettings(int $configSectionID, array &$cPost_arr, $tags
     }
     foreach ($confData as $config) {
         $val                        = new stdClass();
-        $val->cWert                 = $cPost_arr[$config->cWertName] ?? null;
+        $val->cWert                 = $post[$config->cWertName] ?? null;
         $val->cName                 = $config->cWertName;
         $val->kEinstellungenSektion = $configSectionID;
         switch ($config->cInputTyp) {

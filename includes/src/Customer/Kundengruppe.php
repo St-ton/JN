@@ -561,9 +561,9 @@ class Kundengruppe
         ) {
             return $_SESSION['Kundengruppe']->getID();
         }
-        $oKundengruppe = self::getDefault();
-        if (isset($oKundengruppe->kKundengruppe) && $oKundengruppe->kKundengruppe > 0) {
-            return (int)$oKundengruppe->kKundengruppe;
+        $customerGroup = self::getDefault();
+        if (isset($customerGroup->kKundengruppe) && $customerGroup->kKundengruppe > 0) {
+            return (int)$customerGroup->kKundengruppe;
         }
 
         return 0;

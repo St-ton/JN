@@ -390,8 +390,8 @@ class AuswahlAssistent
     }
 
     /**
-     * @param string             $cKey
-     * @param int                $kKey
+     * @param string             $keyName
+     * @param int                $id
      * @param int                $languageID
      * @param JTLSmarty|null     $smarty
      * @param array              $selected
@@ -399,8 +399,8 @@ class AuswahlAssistent
      * @return self|null
      */
     public static function startIfRequired(
-        $cKey,
-        int $kKey,
+        $keyName,
+        int $id,
         int $languageID = 0,
         $smarty = null,
         $selected = [],
@@ -413,7 +413,7 @@ class AuswahlAssistent
         $filterCount = $pf !== null ? $pf->getFilterCount() : 0;
         // only start if no filters are already set
         if ($filterCount === 0) {
-            $wizard = new self($cKey, $kKey, $languageID, true);
+            $wizard = new self($keyName, $id, $languageID, true);
             // only start if the respective selection wizard group is enabled (active)
             if ($wizard->isActive()) {
                 foreach (\array_filter($selected, '\is_numeric') as $kMerkmalWert) {

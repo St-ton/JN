@@ -24,7 +24,7 @@ class PriceRange
     /**
      * @var stdClass
      */
-    private $articleData;
+    private $productData;
 
     /**
      * @var int
@@ -64,11 +64,11 @@ class PriceRange
     /**
      * PriceRange constructor.
      *
-     * @param int $articleID
+     * @param int $productID
      * @param int $customerGroupID
      * @param int $customerID
      */
-    public function __construct(int $articleID, int $customerGroupID = 0, int $customerID = 0)
+    public function __construct(int $productID, int $customerGroupID = 0, int $customerID = 0)
     {
         if ($customerGroupID === 0) {
             $customerGroupID = Frontend::getCustomerGroup()->getID();
@@ -81,10 +81,10 @@ class PriceRange
         $this->customerGroupID            = $customerGroupID;
         $this->customerID                 = $customerID;
         $this->discount                   = 0;
-        $this->articleData                = Shop::Container()->getDB()->select(
+        $this->productData                = Shop::Container()->getDB()->select(
             'tartikel',
             'kArtikel',
-            $articleID,
+            $productID,
             null,
             null,
             null,
@@ -92,8 +92,8 @@ class PriceRange
             false,
             'kArtikel, kSteuerklasse, fLagerbestand, fStandardpreisNetto fNettoPreis'
         );
-        $this->articleData->kArtikel      = (int)$this->articleData->kArtikel;
-        $this->articleData->kSteuerklasse = (int)$this->articleData->kSteuerklasse;
+        $this->productData->kArtikel      = (int)$this->productData->kArtikel;
+        $this->productData->kSteuerklasse = (int)$this->productData->kSteuerklasse;
 
         $this->loadPriceRange();
     }
@@ -117,10 +117,10 @@ class PriceRange
                     )
                 ORDER BY nRangeType ASC LIMIT 1',
             [
-                'articleID'     => $this->articleData->kArtikel,
+                'articleID'     => $this->productData->kArtikel,
                 'customerGroup' => $this->customerGroupID,
                 'customerID'    => $this->customerID,
-                'stock'         => $this->articleData->fLagerbestand,
+                'stock'         => $this->productData->fLagerbestand,
             ],
             ReturnType::SINGLE_OBJECT
         );
@@ -129,15 +129,15 @@ class PriceRange
             $this->minNettoPrice = (float)$priceRange->fVKNettoMin;
             $this->maxNettoPrice = (float)$priceRange->fVKNettoMax;
         } else {
-            $this->minNettoPrice = $this->articleData->fNettoPreis;
-            $this->maxNettoPrice = $this->articleData->fNettoPreis;
+            $this->minNettoPrice = $this->productData->fNettoPreis;
+            $this->maxNettoPrice = $this->productData->fNettoPreis;
         }
 
-        if (Konfigurator::hasKonfig($this->articleData->kArtikel)) {
+        if (Konfigurator::hasKonfig($this->productData->kArtikel)) {
             $this->loadConfiguratorRange();
         }
 
-        $ust = Tax::getSalesTax($this->articleData->kSteuerklasse);
+        $ust = Tax::getSalesTax($this->productData->kSteuerklasse);
 
         $this->minBruttoPrice = Tax::getGross($this->minNettoPrice, $ust);
         $this->maxBruttoPrice = Tax::getGross($this->maxNettoPrice, $ust);
@@ -171,7 +171,7 @@ class PriceRange
 	                tkonfigitem.bPreis,
                     IF(tkonfigitem.bPreis = 0, tkonfigitempreis.kSteuerklasse, tartikel.kSteuerklasse)',
             [
-                'articleID'     => $this->articleData->kArtikel,
+                'articleID'     => $this->productData->kArtikel,
                 'customerGroup' => $this->customerGroupID,
             ],
             ReturnType::ARRAY_OF_OBJECTS
@@ -256,7 +256,7 @@ class PriceRange
             $maxPrices[] = $maxPrice;
         }
 
-        $ust = Tax::getSalesTax($this->articleData->kSteuerklasse);
+        $ust = Tax::getSalesTax($this->productData->kSteuerklasse);
 
         // Die jeweiligen Min- und Maxpreise sind die Summen aus allen Konfig-Gruppen
         $this->minNettoPrice += Tax::getNet(\array_sum($minPrices), $ust, 4);
@@ -276,7 +276,7 @@ class PriceRange
 
             $this->discount = $discount;
 
-            $ust = Tax::getSalesTax($this->articleData->kSteuerklasse);
+            $ust = Tax::getSalesTax($this->productData->kSteuerklasse);
 
             $this->minNettoPrice *= (1 - $this->discount);
             $this->maxNettoPrice *= (1 - $this->discount);

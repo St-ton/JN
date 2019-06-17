@@ -49,23 +49,23 @@ function gibJahrMonatVonDateTime($cDateTimeStr)
 }
 
 /**
- * @param int    $kUmfrageFrage
- * @param string $cTyp
- * @param array  $cNameOption_arr
- * @param array  $cNameAntwort_arr
- * @param array  $nSortAntwort_arr
- * @param array  $nSortOption_arr
+ * @param int    $questionID
+ * @param string $type
+ * @param array  $nameOptions
+ * @param array  $nameAnwers
+ * @param array  $sortAnwers
+ * @param array  $sortOptions
  * @param array  $answers
  * @param array  $matrixOptions
  * @return stdClass
  */
 function updateAntwortUndOption(
-    $kUmfrageFrage,
-    $cTyp,
-    $cNameOption_arr = [],
-    $cNameAntwort_arr = [],
-    $nSortAntwort_arr = [],
-    $nSortOption_arr = [],
+    $questionID,
+    $type,
+    $nameOptions = [],
+    $nameAnwers = [],
+    $sortAnwers = [],
+    $sortOptions = [],
     $answers = [],
     $matrixOptions = []
 ) {
@@ -74,12 +74,12 @@ function updateAntwortUndOption(
     $res->nAnzahlOptionen  = count($matrixOptions);
 
     $db = Shop::Container()->getDB();
-    if ($cTyp !== QuestionType::TEXT_SMALL & $cTyp !== QuestionType::TEXT_BIG) {
+    if ($type !== QuestionType::TEXT_SMALL & $type !== QuestionType::TEXT_BIG) {
         if (is_array($answers) && count($answers) > 0) {
             foreach ($answers as $i => $kUmfrageFrageAntwort) {
                 $_upd        = new stdClass();
-                $_upd->cName = $cNameAntwort_arr[$i];
-                $_upd->nSort = (int)$nSortAntwort_arr[$i];
+                $_upd->cName = $nameAnwers[$i];
+                $_upd->nSort = (int)$sortAnwers[$i];
                 $db->update(
                     'tumfragefrageantwort',
                     'kUmfrageFrageAntwort',
@@ -88,12 +88,12 @@ function updateAntwortUndOption(
                 );
             }
         }
-        if ($cTyp === QuestionType::MATRIX_SINGLE || $cTyp === QuestionType::MATRIX_MULTI) {
+        if ($type === QuestionType::MATRIX_SINGLE || $type === QuestionType::MATRIX_MULTI) {
             if (is_array($matrixOptions) && count($matrixOptions) > 0) {
                 foreach ($matrixOptions as $j => $kUmfrageMatrixOption) {
                     $_upd        = new stdClass();
-                    $_upd->cName = $cNameOption_arr[$j];
-                    $_upd->nSort = (int)$nSortOption_arr[$j];
+                    $_upd->cName = $nameOptions[$j];
+                    $_upd->nSort = (int)$sortOptions[$j];
                     $db->update(
                         'tumfragematrixoption',
                         'kUmfrageMatrixOption',
@@ -537,9 +537,9 @@ function holeUmfrageStatistik(int $surveyID)
         if ($customerGroupID == -1) {
             $stats->cKundengruppe_arr[] = 'Alle';
         } else {
-            $oKundengruppe = $db->select('tkundengruppe', 'kKundengruppe', (int)$customerGroupID);
-            if (!empty($oKundengruppe->cName)) {
-                $stats->cKundengruppe_arr[] = $oKundengruppe->cName;
+            $customerGroup = $db->select('tkundengruppe', 'kKundengruppe', (int)$customerGroupID);
+            if (!empty($customerGroup->cName)) {
+                $stats->cKundengruppe_arr[] = $customerGroup->cName;
             }
         }
     }

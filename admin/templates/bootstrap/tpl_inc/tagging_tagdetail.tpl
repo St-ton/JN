@@ -6,7 +6,7 @@
         <p class="alert alert-info">{__('noDataAvailable')}</p>
     {/if}
     {if isset($oTagArtikel_arr) && $oTagArtikel_arr|@count > 0}
-        {include file='tpl_inc/pagination.tpl' oPagination=$oPagiTagDetail}
+        {include file='tpl_inc/pagination.tpl' $pagination=$oPagiTagDetail}
         <!-- Tag Detailansicht -->
         <form method="post" action="tagging.php">
             {$jtl_token}

@@ -44,22 +44,22 @@ class AdminFavorite
 
     /**
      * AdminFavorite constructor.
-     * @param int $kAdminfav
+     * @param int $id
      */
-    public function __construct(int $kAdminfav = 0)
+    public function __construct(int $id = 0)
     {
-        if ($kAdminfav > 0) {
-            $this->loadFromDB($kAdminfav);
+        if ($id > 0) {
+            $this->loadFromDB($id);
         }
     }
 
     /**
-     * @param int $kAdminfav
+     * @param int $id
      * @return $this
      */
-    public function loadFromDB(int $kAdminfav): self
+    public function loadFromDB(int $id): self
     {
-        $obj = Shop::Container()->getDB()->select('tadminfavs', 'kAdminfav', $kAdminfav);
+        $obj = Shop::Container()->getDB()->select('tadminfavs', 'kAdminfav', $id);
         foreach (\get_object_vars($obj) as $k => $v) {
             $this->$k = $v;
         }
@@ -90,16 +90,16 @@ class AdminFavorite
     }
 
     /**
-     * @param int $kAdminlogin
+     * @param int $adminID
      * @return array
      */
-    public static function fetchAll(int $kAdminlogin): array
+    public static function fetchAll(int $adminID): array
     {
         try {
             $favs = Shop::Container()->getDB()->selectAll(
                 'tadminfavs',
                 'kAdminlogin',
-                $kAdminlogin,
+                $adminID,
                 'kAdminfav, cTitel, cUrl',
                 'nSort ASC'
             );
@@ -162,15 +162,15 @@ class AdminFavorite
     }
 
     /**
-     * @param int $id
-     * @param int $kAdminfav
+     * @param int $adminID
+     * @param int $favID
      */
-    public static function remove($id, int $kAdminfav = 0): void
+    public static function remove($adminID, int $favID = 0): void
     {
-        if ($kAdminfav > 0) {
-            Shop::Container()->getDB()->delete('tadminfavs', ['kAdminfav', 'kAdminlogin'], [$kAdminfav, $id]);
+        if ($favID > 0) {
+            Shop::Container()->getDB()->delete('tadminfavs', ['kAdminfav', 'kAdminlogin'], [$favID, $adminID]);
         } else {
-            Shop::Container()->getDB()->delete('tadminfavs', 'kAdminlogin', $id);
+            Shop::Container()->getDB()->delete('tadminfavs', 'kAdminlogin', $adminID);
         }
     }
 }

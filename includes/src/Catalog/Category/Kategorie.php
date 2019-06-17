@@ -201,25 +201,25 @@ class Kategorie
         }
         $db = Shop::Container()->getDB();
 
-        $oSQLKategorie          = new stdClass();
-        $oSQLKategorie->cSELECT = '';
-        $oSQLKategorie->cJOIN   = '';
-        $oSQLKategorie->cWHERE  = '';
+        $catSQL          = new stdClass();
+        $catSQL->cSELECT = '';
+        $catSQL->cJOIN   = '';
+        $catSQL->cWHERE  = '';
         if (!$recall && $languageID > 0 && !LanguageHelper::isDefaultLanguageActive(false, $languageID)) {
-            $oSQLKategorie->cSELECT = 'tkategoriesprache.cName AS cName_spr, 
+            $catSQL->cSELECT = 'tkategoriesprache.cName AS cName_spr, 
                 tkategoriesprache.cBeschreibung AS cBeschreibung_spr, 
                 tkategoriesprache.cMetaDescription AS cMetaDescription_spr,
                 tkategoriesprache.cMetaKeywords AS cMetaKeywords_spr, 
                 tkategoriesprache.cTitleTag AS cTitleTag_spr, ';
-            $oSQLKategorie->cJOIN   = ' JOIN tkategoriesprache ON tkategoriesprache.kKategorie = tkategorie.kKategorie';
-            $oSQLKategorie->cWHERE  = ' AND tkategoriesprache.kSprache = ' . $languageID;
+            $catSQL->cJOIN   = ' JOIN tkategoriesprache ON tkategoriesprache.kKategorie = tkategorie.kKategorie';
+            $catSQL->cWHERE  = ' AND tkategoriesprache.kSprache = ' . $languageID;
         }
-        $oKategorie = $db->query(
-            'SELECT tkategorie.kKategorie, ' . $oSQLKategorie->cSELECT . ' tkategorie.kOberKategorie, 
+        $item = $db->query(
+            'SELECT tkategorie.kKategorie, ' . $catSQL->cSELECT . ' tkategorie.kOberKategorie, 
                 tkategorie.nSort, tkategorie.dLetzteAktualisierung,
                 tkategorie.cName, tkategorie.cBeschreibung, tseo.cSeo, tkategoriepict.cPfad, tkategoriepict.cType
                 FROM tkategorie
-                ' . $oSQLKategorie->cJOIN . '
+                ' . $catSQL->cJOIN . '
                 LEFT JOIN tkategoriesichtbarkeit ON tkategoriesichtbarkeit.kKategorie = tkategorie.kKategorie
                     AND tkategoriesichtbarkeit.kKundengruppe = ' . $customerGroupID . "
                 LEFT JOIN tseo ON tseo.cKey = 'kKategorie'
@@ -227,19 +227,19 @@ class Kategorie
                     AND tseo.kSprache = ' . $languageID . '
                 LEFT JOIN tkategoriepict ON tkategoriepict.kKategorie = tkategorie.kKategorie
                 WHERE tkategorie.kKategorie = ' . $id . '
-                    ' . $oSQLKategorie->cWHERE . '
+                    ' . $catSQL->cWHERE . '
                     AND tkategoriesichtbarkeit.kKategorie IS NULL',
             ReturnType::SINGLE_OBJECT
         );
-        if ($oKategorie === null || $oKategorie === false) {
+        if ($item === null || $item === false) {
             if (!$recall && !LanguageHelper::isDefaultLanguageActive(false, $languageID)) {
                 if (\defined('EXPERIMENTAL_MULTILANG_SHOP') && EXPERIMENTAL_MULTILANG_SHOP === true) {
                     if ($tmpLang === null) {
                         $tmpLang = LanguageHelper::getDefaultLanguage();
                     }
-                    $kDefaultLang = (int)$tmpLang->kSprache;
-                    if ($kDefaultLang !== $languageID) {
-                        return $this->loadFromDB($id, $kDefaultLang, $customerGroupID, true);
+                    $defaultLangID = (int)$tmpLang->kSprache;
+                    if ($defaultLangID !== $languageID) {
+                        return $this->loadFromDB($id, $defaultLangID, $customerGroupID, true);
                     }
                 } elseif (Category::categoryExists($id)) {
                     return $this->loadFromDB($id, $languageID, $customerGroupID, true);
@@ -250,29 +250,29 @@ class Kategorie
         }
 
         //EXPERIMENTAL_MULTILANG_SHOP
-        if ((!isset($oKategorie->cSeo) || $oKategorie->cSeo === null || $oKategorie->cSeo === '')
+        if ((!isset($item->cSeo) || $item->cSeo === null || $item->cSeo === '')
             && \defined('EXPERIMENTAL_MULTILANG_SHOP') && EXPERIMENTAL_MULTILANG_SHOP === true
         ) {
-            $kDefaultLang = (int)($tmpLang->kSprache ?? LanguageHelper::getDefaultLanguage()->kSprache);
-            if ($languageID !== $kDefaultLang) {
+            $defaultLangID = (int)($tmpLang->kSprache ?? LanguageHelper::getDefaultLanguage()->kSprache);
+            if ($languageID !== $defaultLangID) {
                 $oSeo = $db->select(
                     'tseo',
                     'cKey',
                     'kKategorie',
                     'kSprache',
-                    $kDefaultLang,
+                    $defaultLangID,
                     'kKey',
-                    (int)$oKategorie->kKategorie
+                    (int)$item->kKategorie
                 );
                 if (isset($oSeo->cSeo)) {
-                    $oKategorie->cSeo = $oSeo->cSeo;
+                    $item->cSeo = $oSeo->cSeo;
                 }
             }
         }
         //EXPERIMENTAL_MULTILANG_SHOP END
 
-        if (isset($oKategorie->kKategorie) && $oKategorie->kKategorie > 0) {
-            $this->mapData($oKategorie);
+        if (isset($item->kKategorie) && $item->kKategorie > 0) {
+            $this->mapData($item);
         }
         $imageBaseURL             = Shop::getImageBaseURL();
         $helper                   = Category::getInstance($languageID, $customerGroupID);
@@ -283,9 +283,9 @@ class Kategorie
         $this->cBildURL           = \BILD_KEIN_KATEGORIEBILD_VORHANDEN;
         $this->cBild              = $imageBaseURL . \BILD_KEIN_KATEGORIEBILD_VORHANDEN;
         $this->nBildVorhanden     = 0;
-        if (isset($oKategorie->cPfad) && \mb_strlen($oKategorie->cPfad) > 0) {
-            $this->cBildURL       = \PFAD_KATEGORIEBILDER . $oKategorie->cPfad;
-            $this->cBild          = $imageBaseURL . \PFAD_KATEGORIEBILDER . $oKategorie->cPfad;
+        if (isset($item->cPfad) && \mb_strlen($item->cPfad) > 0) {
+            $this->cBildURL       = \PFAD_KATEGORIEBILDER . $item->cPfad;
+            $this->cBild          = $imageBaseURL . \PFAD_KATEGORIEBILDER . $item->cPfad;
             $this->nBildVorhanden = 1;
         }
         $this->categoryFunctionAttributes = [];
@@ -327,25 +327,25 @@ class Kategorie
         $this->KategorieAttribute = &$this->categoryFunctionAttributes;
         // lokalisieren
         if ($languageID > 0 && !LanguageHelper::isDefaultLanguageActive()) {
-            if (isset($oKategorie->cName_spr) && \mb_strlen($oKategorie->cName_spr) > 0) {
-                $this->cName = $oKategorie->cName_spr;
-                unset($oKategorie->cName_spr);
+            if (isset($item->cName_spr) && \mb_strlen($item->cName_spr) > 0) {
+                $this->cName = $item->cName_spr;
+                unset($item->cName_spr);
             }
-            if (isset($oKategorie->cBeschreibung_spr) && \mb_strlen($oKategorie->cBeschreibung_spr) > 0) {
-                $this->cBeschreibung = $oKategorie->cBeschreibung_spr;
-                unset($oKategorie->cBeschreibung_spr);
+            if (isset($item->cBeschreibung_spr) && \mb_strlen($item->cBeschreibung_spr) > 0) {
+                $this->cBeschreibung = $item->cBeschreibung_spr;
+                unset($item->cBeschreibung_spr);
             }
-            if (isset($oKategorie->cMetaDescription_spr) && \mb_strlen($oKategorie->cMetaDescription_spr) > 0) {
-                $this->cMetaDescription = $oKategorie->cMetaDescription_spr;
-                unset($oKategorie->cMetaDescription_spr);
+            if (isset($item->cMetaDescription_spr) && \mb_strlen($item->cMetaDescription_spr) > 0) {
+                $this->cMetaDescription = $item->cMetaDescription_spr;
+                unset($item->cMetaDescription_spr);
             }
-            if (isset($oKategorie->cMetaKeywords_spr) && \mb_strlen($oKategorie->cMetaKeywords_spr) > 0) {
-                $this->cMetaKeywords = $oKategorie->cMetaKeywords_spr;
-                unset($oKategorie->cMetaKeywords_spr);
+            if (isset($item->cMetaKeywords_spr) && \mb_strlen($item->cMetaKeywords_spr) > 0) {
+                $this->cMetaKeywords = $item->cMetaKeywords_spr;
+                unset($item->cMetaKeywords_spr);
             }
-            if (isset($oKategorie->cTitleTag_spr) && \mb_strlen($oKategorie->cTitleTag_spr) > 0) {
-                $this->cTitleTag = $oKategorie->cTitleTag_spr;
-                unset($oKategorie->cTitleTag_spr);
+            if (isset($item->cTitleTag_spr) && \mb_strlen($item->cTitleTag_spr) > 0) {
+                $this->cTitleTag = $item->cTitleTag_spr;
+                unset($item->cTitleTag_spr);
             }
         }
         if ($this->kKategorie > 0) {
@@ -462,25 +462,25 @@ class Kategorie
             return null;
         }
         if (!empty($this->cBildURL)) {
-            $res = $this->cBildURL;
+            $data = $this->cBildURL;
         } else {
             $cacheID = 'gkb_' . $this->kKategorie;
-            if (($res = Shop::Container()->getCache()->get($cacheID)) === false) {
-                $resObj = Shop::Container()->getDB()->select('tkategoriepict', 'kKategorie', (int)$this->kKategorie);
-                $res    = (isset($resObj->cPfad) && $resObj->cPfad)
-                    ? \PFAD_KATEGORIEBILDER . $resObj->cPfad
+            if (($data = Shop::Container()->getCache()->get($cacheID)) === false) {
+                $item = Shop::Container()->getDB()->select('tkategoriepict', 'kKategorie', (int)$this->kKategorie);
+                $data = (isset($item->cPfad) && $item->cPfad)
+                    ? \PFAD_KATEGORIEBILDER . $item->cPfad
                     : \BILD_KEIN_KATEGORIEBILD_VORHANDEN;
                 Shop::Container()->getCache()->set(
                     $cacheID,
-                    $res,
+                    $data,
                     [\CACHING_GROUP_CATEGORY . '_' . $this->kKategorie, \CACHING_GROUP_CATEGORY]
                 );
             }
         }
 
         return $full === false
-            ? $res
-            : (Shop::getImageBaseURL() . $res);
+            ? $data
+            : (Shop::getImageBaseURL() . $data);
     }
 
     /**
@@ -539,7 +539,7 @@ class Kategorie
         if (!Shop::get('checkCategoryVisibility')) {
             return true;
         }
-        $obj = Shop::Container()->getDB()->select(
+        $data = Shop::Container()->getDB()->select(
             'tkategoriesichtbarkeit',
             'kKategorie',
             (int)$categoryId,
@@ -547,7 +547,7 @@ class Kategorie
             (int)$customerGroupId
         );
 
-        return empty($obj->kKategorie);
+        return empty($data->kKategorie);
     }
 
     /**

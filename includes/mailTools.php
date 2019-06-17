@@ -52,15 +52,15 @@ function sendeMail($moduleID, $data, $mail = null)
         (int)$data->tkunde->kKundengruppe
     );
     if (isset($data->tkunde->kSprache) && $data->tkunde->kSprache > 0) {
-        $kundengruppensprache = $db->select(
+        $groupLang = $db->select(
             'tkundengruppensprache',
             'kKundengruppe',
             (int)$data->tkunde->kKundengruppe,
             'kSprache',
             (int)$data->tkunde->kSprache
         );
-        if (isset($kundengruppensprache->cName) && $kundengruppensprache->cName !== $data->tkundengruppe->cName) {
-            $data->tkundengruppe->cName = $kundengruppensprache->cName;
+        if (isset($groupLang->cName) && $groupLang->cName !== $data->tkundengruppe->cName) {
+            $data->tkundengruppe->cName = $groupLang->cName;
         }
     }
     if (isset($_SESSION['currentLanguage']->kSprache)) {
@@ -82,7 +82,7 @@ function sendeMail($moduleID, $data, $mail = null)
                 : $db->select('tsprache', 'cShopStandard', 'Y');
         }
     }
-    $oKunde                = lokalisiereKunde($lang, $data->tkunde);
+    $customer              = lokalisiereKunde($lang, $data->tkunde);
     $AGB                   = new stdClass();
     $WRB                   = new stdClass();
     $WRBForm               = new stdClass();
@@ -103,7 +103,7 @@ function sendeMail($moduleID, $data, $mail = null)
 
     $smarty->assign('int_lang', $lang)//assign the current language for includeMailTemplate()
            ->assign('Firma', $data->tfirma)
-           ->assign('Kunde', $oKunde)
+           ->assign('Kunde', $customer)
            ->assign('Einstellungen', $config)
            ->assign('Kundengruppe', $data->tkundengruppe)
            ->assign('NettoPreise', $data->tkundengruppe->nNettoPreise)
@@ -117,21 +117,21 @@ function sendeMail($moduleID, $data, $mail = null)
 
     $data = lokalisiereInhalt($data);
     // ModulId von einer Plugin Emailvorlage vorhanden?
-    $cTable        = 'temailvorlage';
-    $cTableSprache = 'temailvorlagesprache';
-    $cTableSetting = 'temailvorlageeinstellungen';
-    $cSQLWhere     = " cModulId = '" . $moduleID . "'";
+    $table             = 'temailvorlage';
+    $tableLocalization = 'temailvorlagesprache';
+    $tableSetting      = 'temailvorlageeinstellungen';
+    $where             = " cModulId = '" . $moduleID . "'";
     if (mb_strpos($moduleID, 'kPlugin') !== false) {
         [$cPlugin, $kPlugin, $cModulId] = explode('_', $moduleID);
-        $cTableSetting                  = 'tpluginemailvorlageeinstellungen';
-        $cSQLWhere                      = ' kPlugin = ' . $kPlugin . " AND cModulId = '" . $cModulId . "'";
+        $tableSetting                   = 'tpluginemailvorlageeinstellungen';
+        $where                          = ' kPlugin = ' . $kPlugin . " AND cModulId = '" . $cModulId . "'";
         $smarty->assign('oPluginMail', $data);
     }
 
     $mailTPL = $db->query(
         'SELECT *
-            FROM ' . $cTable . '
-            WHERE ' . $cSQLWhere,
+            FROM ' . $table . '
+            WHERE ' . $where,
         ReturnType::SINGLE_OBJECT
     );
     // Email aktiv?
@@ -143,7 +143,7 @@ function sendeMail($moduleID, $data, $mail = null)
     // Emailvorlageneinstellungen laden
     if (isset($mailTPL->kEmailvorlage) && $mailTPL->kEmailvorlage > 0) {
         $mailTPL->oEinstellung_arr = $db->selectAll(
-            $cTableSetting,
+            $tableSetting,
             'kEmailvorlage',
             $mailTPL->kEmailvorlage
         );
@@ -165,7 +165,7 @@ function sendeMail($moduleID, $data, $mail = null)
     }
     $mail->kEmailvorlage = $mailTPL->kEmailvorlage;
     $localization        = $db->select(
-        $cTableSprache,
+        $tableLocalization,
         ['kEmailvorlage', 'kSprache'],
         [(int)$mailTPL->kEmailvorlage, (int)$lang->kSprache]
     );

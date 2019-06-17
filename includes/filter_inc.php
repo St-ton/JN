@@ -521,36 +521,36 @@ function gibNaviMetaTitle($NaviFilter, $oSuchergebnisse, $globalMeta)
 }
 
 /**
- * @param array  $articles
+ * @param array  $products
  * @param object $NaviFilter
  * @param object $oSuchergebnisse
  * @param array  $globalMeta
  * @return string
  * @deprecated since 5.0.0
  */
-function gibNaviMetaDescription($articles, $NaviFilter, $oSuchergebnisse, $globalMeta)
+function gibNaviMetaDescription($products, $NaviFilter, $oSuchergebnisse, $globalMeta)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $sr = new SearchResults();
     $sr->convert($oSuchergebnisse);
 
     return (new JTL\Filter\Metadata(updateNaviFilter($NaviFilter)))->generateMetaDescription(
-        $articles,
+        $products,
         $sr,
         $globalMeta
     );
 }
 
 /**
- * @param array  $articles
+ * @param array  $products
  * @param object $NaviFilter
  * @return mixed|string
  * @deprecated since 5.0.0
  */
-function gibNaviMetaKeywords($articles, $NaviFilter)
+function gibNaviMetaKeywords($products, $NaviFilter)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return (new JTL\Filter\Metadata(updateNaviFilter($NaviFilter)))->generateMetaKeywords($articles);
+    return (new JTL\Filter\Metadata(updateNaviFilter($NaviFilter)))->generateMetaKeywords($products);
 }
 
 /**

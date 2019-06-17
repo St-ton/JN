@@ -114,12 +114,12 @@ class Staat
     }
 
     /**
-     * @param string $cName
+     * @param string $name
      * @return $this
      */
-    public function setName(string $cName): self
+    public function setName(string $name): self
     {
-        $this->cName = $cName;
+        $this->cName = $name;
 
         return $this;
     }
@@ -136,13 +136,13 @@ class Staat
     }
 
     /**
-     * @param string $cLandIso
+     * @param string $iso
      * @return array|null
      */
-    public static function getRegions(string $cLandIso): ?array
+    public static function getRegions(string $iso): ?array
     {
-        if (\mb_strlen($cLandIso) === 2) {
-            $countries = Shop::Container()->getDB()->selectAll('tstaat', 'cLandIso', $cLandIso, '*', 'cName');
+        if (\mb_strlen($iso) === 2) {
+            $countries = Shop::Container()->getDB()->selectAll('tstaat', 'cLandIso', $iso, '*', 'cName');
             if (\is_array($countries) && \count($countries) > 0) {
                 $states = [];
                 foreach ($countries as $country) {

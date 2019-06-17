@@ -360,26 +360,26 @@ class Bestellung
 
     /**
      * Bestellung constructor.
-     * @param int  $kBestellung
-     * @param bool $bFill
+     * @param int  $id
+     * @param bool $init
      */
-    public function __construct(int $kBestellung = 0, bool $bFill = false)
+    public function __construct(int $id = 0, bool $init = false)
     {
-        if ($kBestellung > 0) {
-            $this->loadFromDB($kBestellung);
-            if ($bFill) {
+        if ($id > 0) {
+            $this->loadFromDB($id);
+            if ($init) {
                 $this->fuelleBestellung();
             }
         }
     }
 
     /**
-     * @param int $kBestellung
+     * @param int $id
      * @return $this
      */
-    public function loadFromDB(int $kBestellung): self
+    public function loadFromDB(int $id): self
     {
-        $obj = Shop::Container()->getDB()->select('tbestellung', 'kBestellung', $kBestellung);
+        $obj = Shop::Container()->getDB()->select('tbestellung', 'kBestellung', $id);
         if ($obj !== null && $obj->kBestellung > 0) {
             foreach (\get_object_vars($obj) as $k => $v) {
                 $this->$k = $v;
@@ -450,11 +450,11 @@ class Bestellung
         }
         // Kunde holen
         if ($this->kKunde !== null && $this->kKunde > 0) {
-            $oKunde = new Kunde($this->kKunde);
+            $customer = new Kunde($this->kKunde);
 
-            if ($oKunde->kKunde !== null && $oKunde->kKunde > 0) {
-                unset($oKunde->cPasswort, $oKunde->fRabatt, $oKunde->fGuthaben, $oKunde->cUSTID);
-                $this->oKunde = $oKunde;
+            if ($customer->kKunde !== null && $customer->kKunde > 0) {
+                unset($customer->cPasswort, $customer->fRabatt, $customer->fGuthaben, $customer->cUSTID);
+                $this->oKunde = $customer;
             }
         }
 
@@ -968,15 +968,15 @@ class Bestellung
     }
 
     /**
-     * @param int $kBestellung
+     * @param int $orderID
      * @return int|bool
      */
-    public static function getOrderNumber(int $kBestellung)
+    public static function getOrderNumber(int $orderID)
     {
         $data = Shop::Container()->getDB()->select(
             'tbestellung',
             'kBestellung',
-            $kBestellung,
+            $orderID,
             null,
             null,
             null,

@@ -335,36 +335,34 @@ class Download
     }
 
     /**
-     * @param int $kDownload
-     * @param int $kKunde
-     * @param int $kBestellung
+     * @param int $downloadID
+     * @param int $customerID
+     * @param int $orderID
      * @return int
      */
-    public static function getFile(int $kDownload, int $kKunde, int $kBestellung): int
+    public static function getFile(int $downloadID, int $customerID, int $orderID): int
     {
-        if ($kDownload > 0 && $kKunde > 0 && $kBestellung > 0) {
-            $oDownload = new self($kDownload, 0, false);
-            $nReturn   = $oDownload::checkFile($oDownload->kDownload, $kKunde, $kBestellung);
-            if ($nReturn === 1) {
+        if ($downloadID > 0 && $customerID > 0 && $orderID > 0) {
+            $download = new self($downloadID, 0, false);
+            $res      = $download::checkFile($download->kDownload, $customerID, $orderID);
+            if ($res === self::ERROR_NONE) {
                 (new DownloadHistory())
-                    ->setDownload($kDownload)
-                    ->setKunde($kKunde)
-                    ->setBestellung($kBestellung)
+                    ->setDownload($downloadID)
+                    ->setKunde($customerID)
+                    ->setBestellung($orderID)
                     ->setErstellt('NOW()')
                     ->save();
 
                 self::send_file_to_browser(
-                    \PFAD_DOWNLOADS . $oDownload->getPfad(),
+                    \PFAD_DOWNLOADS . $download->getPfad(),
                     'application/octet-stream'
                 );
-
-                return 1;
             }
 
-            return $nReturn;
+            return $res;
         }
 
-        return 7;
+        return self::ERROR_MISSING_PARAMS;
     }
 
     /**
@@ -377,25 +375,25 @@ class Download
      * 6 = Maximales Datum wurde erreicht
      * 7 = Paramter fehlen
      *
-     * @param int $kDownload
-     * @param int $kKunde
-     * @param int $kBestellung
+     * @param int $downloadID
+     * @param int $customerID
+     * @param int $orderID
      * @return int
      */
-    public static function checkFile(int $kDownload, int $kKunde, int $kBestellung): int
+    public static function checkFile(int $downloadID, int $customerID, int $orderID): int
     {
-        if ($kDownload > 0 && $kKunde > 0 && $kBestellung > 0) {
-            $order = new Bestellung($kBestellung);
+        if ($downloadID > 0 && $customerID > 0 && $orderID > 0) {
+            $order = new Bestellung($orderID);
             // Existiert die Bestellung und wurde Sie bezahlt?
             if ($order->kBestellung <= 0 || empty($order->dBezahltDatum) || $order->dBezahltDatum === null) {
                 return self::ERROR_ORDER_NOT_FOUND;
             }
             // Stimmt der Kunde?
-            if ((int)$order->kKunde !== $kKunde) {
+            if ((int)$order->kKunde !== $customerID) {
                 return self::ERROR_INVALID_CUSTOMER;
             }
             $order->fuelleBestellung();
-            $download = new self($kDownload, 0, false);
+            $download = new self($downloadID, 0, false);
             // Gibt es einen Artikel der zum Download passt?
             if (!\is_array($download->oArtikelDownload_arr) || \count($download->oArtikelDownload_arr) === 0) {
                 return self::ERROR_PRODUCT_NOT_FOUND;
@@ -407,7 +405,7 @@ class Download
                     }
                     // Check Anzahl
                     if ($download->getAnzahl() > 0) {
-                        $history = DownloadHistory::getOrderHistory($kKunde, $kBestellung);
+                        $history = DownloadHistory::getOrderHistory($customerID, $orderID);
                         if (\count($history[$download->kDownload]) >= $download->getAnzahl()) {
                             return self::ERROR_DOWNLOAD_LIMIT_REACHED;
                         }

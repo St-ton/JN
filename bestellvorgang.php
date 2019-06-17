@@ -58,12 +58,12 @@ if (Download::hasDownloads($cart)) {
 if ($conf['kaufabwicklung']['bestellvorgang_kaufabwicklungsmethode'] === 'NO'
     && Request::verifyGPCDataInt('wk') === 1
 ) {
-    $kKunde         = $_SESSION['Kunde']->kKunde ?? 0;
-    $oWarenkorbPers = new WarenkorbPers($kKunde);
+    $customerID = $_SESSION['Kunde']->kKunde ?? 0;
+    $persCart   = new WarenkorbPers($customerID);
     if (!(isset($_POST['login']) && (int)$_POST['login'] === 1
         && $conf['global']['warenkorbpers_nutzen'] === 'Y'
         && $conf['kaufabwicklung']['warenkorb_warenkorb2pers_merge'] === 'P'
-        && count($oWarenkorbPers->oWarenkorbPersPos_arr) > 0)
+        && count($persCart->oWarenkorbPersPos_arr) > 0)
     ) {
         pruefeAjaxEinKlick();
     }

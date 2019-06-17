@@ -73,7 +73,7 @@ if (empty($AktuellerArtikel->kArtikel)) {
 
     return;
 }
-$similarArticles = (int)$conf['artikeldetails']['artikeldetails_aehnlicheartikel_anzahl'] > 0
+$similarProducts = (int)$conf['artikeldetails']['artikeldetails_aehnlicheartikel_anzahl'] > 0
     ? $AktuellerArtikel->holeAehnlicheArtikel()
     : [];
 if (Shop::$kVariKindArtikel > 0) {
@@ -210,7 +210,7 @@ $smarty->assign('nMaxUploadSize', $maxSize)
        ->assign('oUploadSchema_arr', Upload::gibArtikelUploads($AktuellerArtikel->kArtikel))
        ->assign('showMatrix', $AktuellerArtikel->showMatrix())
        ->assign('arNichtErlaubteEigenschaftswerte', $nonAllowed)
-       ->assign('oAehnlicheArtikel_arr', $similarArticles)
+       ->assign('oAehnlicheArtikel_arr', $similarProducts)
        ->assign('UVPlocalized', $AktuellerArtikel->cUVPLocalized)
        ->assign('UVPBruttolocalized', Preise::getLocalizedPriceString($AktuellerArtikel->fUVPBrutto))
        ->assign('Artikel', $AktuellerArtikel)

@@ -142,17 +142,17 @@ final class Upload
 
     /**
      * @param Warenkorb $cart
-     * @param int       $kBestellung
+     * @param int       $orderID
      */
-    public static function speicherUploadDateien(Warenkorb $cart, int $kBestellung): void
+    public static function speicherUploadDateien(Warenkorb $cart, int $orderID): void
     {
         foreach (self::gibWarenkorbUploads($cart) as $scheme) {
             foreach ($scheme->oUpload_arr as $upload) {
                 $info = $_SESSION['Uploader'][$upload->cUnique] ?? null;
                 if ($info !== null && \is_object($info)) {
-                    self::setzeUploadQueue($kBestellung, $upload->kCustomID);
+                    self::setzeUploadQueue($orderID, $upload->kCustomID);
                     self::setzeUploadDatei(
-                        $kBestellung,
+                        $orderID,
                         \UPLOAD_TYP_BESTELLUNG,
                         $info->cName,
                         $upload->cUnique,

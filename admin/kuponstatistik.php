@@ -92,9 +92,9 @@ $nCouponAmountAll       = 0;
 $tmpUser                = [];
 $date                   = [];
 foreach ($usedCouponsOrder as $key => $usedCouponOrder) {
-    $oKunde                              = new Kunde($usedCouponOrder['kKunde'] ?? 0);
-    $usedCouponsOrder[$key]['cUserName'] = $oKunde->cVorname . ' ' . $oKunde->cNachname;
-    unset($oKunde);
+    $customer                            = new Kunde($usedCouponOrder['kKunde'] ?? 0);
+    $usedCouponsOrder[$key]['cUserName'] = $customer->cVorname . ' ' . $customer->cNachname;
+    unset($customer);
     $usedCouponsOrder[$key]['nCouponValue']        =
         Preise::getLocalizedPriceWithoutFactor($usedCouponOrder['fKuponwertBrutto']);
     $usedCouponsOrder[$key]['nShoppingCartAmount'] =

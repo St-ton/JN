@@ -461,15 +461,15 @@ final class Controller
         }
         $newsCategory->kNewsKategorie = $categoryID;
         foreach ($languages as $language) {
-            $iso   = $language->getIso();
-            $cSeo  = $this->getSeo($post, $languages, $iso);
-            $cName = \htmlspecialchars($post['cName_' . $iso] ?? '', $flag, \JTL_CHARSET);
+            $iso  = $language->getIso();
+            $seo  = $this->getSeo($post, $languages, $iso);
+            $name = \htmlspecialchars($post['cName_' . $iso] ?? '', $flag, \JTL_CHARSET);
 
             $loc                  = new stdClass();
             $loc->kNewsKategorie  = $categoryID;
             $loc->languageID      = $language->getId();
             $loc->languageCode    = $iso;
-            $loc->name            = $cName;
+            $loc->name            = $name;
             $loc->description     = $post['cBeschreibung_' . $iso];
             $loc->metaTitle       = \htmlspecialchars($post['cMetaTitle_' . $iso] ?? '', $flag, \JTL_CHARSET);
             $loc->metaDescription = \htmlspecialchars($post['cMetaDescription_' . $iso] ?? '', $flag, \JTL_CHARSET);
@@ -478,7 +478,7 @@ final class Controller
             $seoData->cKey     = 'kNewsKategorie';
             $seoData->kKey     = $categoryID;
             $seoData->kSprache = $loc->languageID;
-            $seoData->cSeo     = Seo::checkSeo(Seo::getSeo($cSeo));
+            $seoData->cSeo     = Seo::checkSeo(Seo::getSeo($seo));
             if (empty($seoData->cSeo)) {
                 continue;
             }

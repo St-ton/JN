@@ -330,11 +330,11 @@ class Controller
         } elseif ($this->config['news']['news_kommentare_eingeloggt'] === 'N') {
             if ($checkedOK) {
                 if (Frontend::getCustomer()->getID() > 0) {
-                    $cName  = Frontend::getCustomer()->cVorname . ' ' . Frontend::getCustomer()->cNachname[0] . '.';
-                    $cEmail = Frontend::getCustomer()->cMail;
+                    $name  = Frontend::getCustomer()->cVorname . ' ' . Frontend::getCustomer()->cNachname[0] . '.';
+                    $email = Frontend::getCustomer()->cMail;
                 } else {
-                    $cName  = Text::filterXSS($data['cName'] ?? '');
-                    $cEmail = Text::filterXSS($data['cEmail'] ?? '');
+                    $name  = Text::filterXSS($data['cName'] ?? '');
+                    $email = Text::filterXSS($data['cEmail'] ?? '');
                 }
                 $comment         = new stdClass();
                 $comment->kNews  = (int)$data['kNews'];
@@ -343,8 +343,8 @@ class Controller
                     ? 0
                     : 1;
 
-                $comment->cName      = $cName;
-                $comment->cEmail     = $cEmail;
+                $comment->cName      = $name;
+                $comment->cEmail     = $email;
                 $comment->cKommentar = Text::htmlentities(Text::filterXSS($data['cKommentar']));
                 $comment->dErstellt  = 'now()';
 
@@ -455,10 +455,10 @@ class Controller
     }
 
     /**
-     * @param bool $bActiveOnly
+     * @param bool $activeOnly
      * @return stdClass
      */
-    public static function getFilterSQL(bool $bActiveOnly = false): stdClass
+    public static function getFilterSQL(bool $activeOnly = false): stdClass
     {
         $sql              = new stdClass();
         $sql->cSortSQL    = '';
@@ -503,7 +503,7 @@ class Controller
                 (int)$_SESSION['NewsNaviFilter']->nNewsKat;
         }
 
-        if ($bActiveOnly) {
+        if ($activeOnly) {
             $sql->cNewsKatSQL .= ' JOIN tnewskategorie 
                                     ON tnewskategorie.kNewsKategorie = tnewskategorienews.kNewsKategorie
                                     AND tnewskategorie.nAktiv = 1';
@@ -513,16 +513,16 @@ class Controller
     }
 
     /**
-     * @param object $oSQL
+     * @param object $sql
      * @return stdClass[]
      */
-    private function getNewsDates($oSQL): array
+    private function getNewsDates($sql): array
     {
         $dateData = $this->db->query(
             'SELECT MONTH(tnews.dGueltigVon) AS nMonat, YEAR(tnews.dGueltigVon) AS nJahr
                 FROM tnews 
                 JOIN tnewskategorienews 
-                    ON tnewskategorienews.kNews = tnews.kNews' . $oSQL->cNewsKatSQL . "
+                    ON tnewskategorienews.kNews = tnews.kNews' . $sql->cNewsKatSQL . "
                 JOIN tnewssprache
                     ON tnewssprache.kNews = tnews.kNews
                 WHERE tnews.nAktiv = 1
@@ -537,10 +537,10 @@ class Controller
         );
         $dates    = [];
         foreach ($dateData as $date) {
-            $oTMP        = new stdClass();
-            $oTMP->cWert = $date->nMonat . '-' . $date->nJahr;
-            $oTMP->cName = self::mapDateName((string)$date->nMonat, (int)$date->nJahr, Shop::getLanguageCode());
-            $dates[]     = $oTMP;
+            $item        = new stdClass();
+            $item->cWert = $date->nMonat . '-' . $date->nJahr;
+            $item->cName = self::mapDateName((string)$date->nMonat, (int)$date->nJahr, Shop::getLanguageCode());
+            $dates[]     = $item;
         }
 
         return $dates;

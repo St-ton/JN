@@ -1113,9 +1113,9 @@ final class Images extends AbstractSync
         // Artikelbilder löschen Wawi <= .99923
         if (isset($xml['del_bilder']['kArtikelPict'])) {
             if (\is_array($xml['del_bilder']['kArtikelPict'])) {
-                foreach ($xml['del_bilder']['kArtikelPict'] as $kArtikelPict) {
-                    if ((int)$kArtikelPict > 0) {
-                        $this->deleteArtikelPict((int)$kArtikelPict);
+                foreach ($xml['del_bilder']['kArtikelPict'] as $pictID) {
+                    if ((int)$pictID > 0) {
+                        $this->deleteArtikelPict((int)$pictID);
                     }
                 }
             } elseif ((int)$xml['del_bilder']['kArtikelPict'] > 0) {

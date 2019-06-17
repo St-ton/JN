@@ -49,13 +49,13 @@ class ImageMap implements IExtensionPoint
     }
 
     /**
-     * @param int  $kInitial
+     * @param int  $id
      * @param bool $fetchAll
      * @return $this
      */
-    public function init($kInitial, $fetchAll = false): self
+    public function init($id, $fetchAll = false): self
     {
-        $imageMap = $this->fetch($kInitial, $fetchAll);
+        $imageMap = $this->fetch($id, $fetchAll);
         if (\is_object($imageMap)) {
             Shop::Smarty()->assign('oImageMap', $imageMap);
         }
@@ -81,16 +81,16 @@ class ImageMap implements IExtensionPoint
     }
 
     /**
-     * @param int  $kImageMap
+     * @param int  $id
      * @param bool $fetchAll
      * @param bool $fill
      * @return stdClass|bool
      */
-    public function fetch(int $kImageMap, bool $fetchAll = false, bool $fill = true)
+    public function fetch(int $id, bool $fetchAll = false, bool $fill = true)
     {
         $cSQL = 'SELECT *
                     FROM timagemap
-                    WHERE kImageMap = ' . $kImageMap;
+                    WHERE kImageMap = ' . $id;
         if (!$fetchAll) {
             $cSQL .= ' AND (CURDATE() >= DATE(vDatum)) AND (bDatum IS NULL OR CURDATE() <= DATE(bDatum) OR bDatum = 0)';
         }
@@ -159,32 +159,32 @@ class ImageMap implements IExtensionPoint
     }
 
     /**
-     * @param string $cTitel
-     * @param string $cBildPfad
-     * @param string $vDatum
-     * @param string $bDatum
+     * @param string $title
+     * @param string $imagePath
+     * @param string $dateFrom
+     * @param string $dateUntil
      * @return int
      */
-    public function save($cTitel, $cBildPfad, $vDatum, $bDatum): int
+    public function save($title, $imagePath, $dateFrom, $dateUntil): int
     {
         $ins            = new stdClass();
-        $ins->cTitel    = $cTitel;
-        $ins->cBildPfad = $cBildPfad;
-        $ins->vDatum    = $vDatum ?? 'NOW()';
-        $ins->bDatum    = $bDatum ?? '_DBNULL_';
+        $ins->cTitel    = $title;
+        $ins->cBildPfad = $imagePath;
+        $ins->vDatum    = $dateFrom ?? 'NOW()';
+        $ins->bDatum    = $dateUntil ?? '_DBNULL_';
 
         return $this->db->insert('timagemap', $ins);
     }
 
     /**
-     * @param int    $kImageMap
+     * @param int    $id
      * @param string $title
      * @param string $imagePath
      * @param string $dateFrom
      * @param string $dateUntil
      * @return bool
      */
-    public function update(int $kImageMap, $title, $imagePath, $dateFrom, $dateUntil): bool
+    public function update(int $id, $title, $imagePath, $dateFrom, $dateUntil): bool
     {
         if (empty($dateFrom)) {
             $dateFrom = 'NOW()';
@@ -198,16 +198,16 @@ class ImageMap implements IExtensionPoint
         $upd->vDatum    = $dateFrom;
         $upd->bDatum    = $dateUntil;
 
-        return $this->db->update('timagemap', 'kImageMap', $kImageMap, $upd) >= 0;
+        return $this->db->update('timagemap', 'kImageMap', $id, $upd) >= 0;
     }
 
     /**
-     * @param int $kImageMap
+     * @param int $id
      * @return bool
      */
-    public function delete(int $kImageMap): bool
+    public function delete(int $id): bool
     {
-        return $this->db->delete('timagemap', 'kImageMap', $kImageMap) >= 0;
+        return $this->db->delete('timagemap', 'kImageMap', $id) >= 0;
     }
 
     /**

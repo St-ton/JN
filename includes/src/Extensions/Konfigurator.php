@@ -195,29 +195,29 @@ class Konfigurator
         }
         $errors = [];
         foreach (self::getKonfig($productID) as $group) {
-            $itemCount     = 0;
-            $kKonfiggruppe = $group->getKonfiggruppe();
+            $itemCount = 0;
+            $groupID   = $group->getKonfiggruppe();
             foreach ($configItems as $configItem) {
-                if ($configItem->getKonfiggruppe() == $kKonfiggruppe) {
+                if ($configItem->getKonfiggruppe() == $groupID) {
                     $itemCount++;
                 }
             }
             if ($itemCount < $group->getMin() && $group->getMin() > 0) {
                 if ($group->getMin() == $group->getMax()) {
-                    $errors[$kKonfiggruppe] =
+                    $errors[$groupID] =
                         Shop::Lang()->get('configChooseNComponents', 'productDetails', $group->getMin());
                 } else {
-                    $errors[$kKonfiggruppe] =
+                    $errors[$groupID] =
                         Shop::Lang()->get('configChooseMinComponents', 'productDetails', $group->getMin());
                 }
-                $errors[$kKonfiggruppe] .= self::langComponent($group->getMin() > 1);
+                $errors[$groupID] .= self::langComponent($group->getMin() > 1);
             } elseif ($itemCount > $group->getMax() && $group->getMax() > 0) {
                 if ($group->getMin() == $group->getMax()) {
-                    $errors[$kKonfiggruppe] =
+                    $errors[$groupID] =
                         Shop::Lang()->get('configChooseNComponents', 'productDetails', $group->getMin()) .
                         self::langComponent($group->getMin() > 1);
                 } else {
-                    $errors[$kKonfiggruppe] =
+                    $errors[$groupID] =
                         Shop::Lang()->get('configChooseMaxComponents', 'productDetails', $group->getMax()) .
                         self::langComponent($group->getMax() > 1);
                 }

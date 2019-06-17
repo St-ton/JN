@@ -352,12 +352,12 @@ foreach ($settings as $i => $setting) {
         );
         $getText->localizeConfigValues($setting, $setting->ConfWerte);
     }
-    $oSetValue              = $db->select(
+    $setValue               = $db->select(
         'teinstellungen',
         ['kEinstellungenSektion', 'cName'],
         [CONF_CACHING, $setting->cWertName]
     );
-    $setting->gesetzterWert = $oSetValue->cWert ?? null;
+    $setting->gesetzterWert = $setValue->cWert ?? null;
 }
 $advancedSettings = $db->query(
     'SELECT * 
@@ -380,12 +380,12 @@ for ($i = 0; $i < $settingsCount; ++$i) {
         );
         $getText->localizeConfigValues($advancedSettings[$i], $advancedSettings[$i]->ConfWerte);
     }
-    $oSetValue                           = $db->select(
+    $setValue                            = $db->select(
         'teinstellungen',
         ['kEinstellungenSektion', 'cName'],
         [CONF_CACHING, $advancedSettings[$i]->cWertName]
     );
-    $advancedSettings[$i]->gesetzterWert = $oSetValue->cWert ?? null;
+    $advancedSettings[$i]->gesetzterWert = $setValue->cWert ?? null;
 }
 if (function_exists('opcache_get_status')) {
     $_opcacheStatus             = opcache_get_status();

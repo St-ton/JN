@@ -185,12 +185,12 @@ class Konfigitemsprache
     }
 
     /**
-     * @param string $cName
+     * @param string $name
      * @return $this
      */
-    public function setName(string $cName): self
+    public function setName(string $name): self
     {
-        $this->cName = Shop::Container()->getDB()->escape($cName);
+        $this->cName = Shop::Container()->getDB()->escape($name);
 
         return $this;
     }

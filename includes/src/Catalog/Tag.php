@@ -70,13 +70,13 @@ class Tag
     }
 
     /**
-     * @param string $cName
+     * @param string $name
      * @return mixed - returns Object if found in DB, else false
      */
-    public function getByName($cName = '')
+    public function getByName($name = '')
     {
-        $cName = Text::filterXSS($cName);
-        $obj   = Shop::Container()->getDB()->select('ttag', 'kSprache', Shop::getLanguage(), 'cName', $cName);
+        $name = Text::filterXSS($name);
+        $obj  = Shop::Container()->getDB()->select('ttag', 'kSprache', Shop::getLanguage(), 'cName', $name);
         if (!empty($obj)) {
             foreach (\get_object_vars($obj) as $k => $v) {
                 $this->$k = $v;

@@ -62,7 +62,7 @@
     <div class="tab-content">
         <div id="inaktiv" class="tab-pane fade{if !isset($cTab) || $cTab === 'inaktiv'} active in{/if}">
             {if $oNewsKommentar_arr && $oNewsKommentar_arr|@count > 0}
-                {include file='tpl_inc/pagination.tpl' oPagination=$oPagiKommentar cAnchor='inaktiv'}
+                {include file='tpl_inc/pagination.tpl' $pagination=$oPagiKommentar cAnchor='inaktiv'}
                 <form method="post" action="news.php">
                     {$jtl_token}
                     <input type="hidden" name="news" value="1" />
@@ -134,7 +134,7 @@
             {/if}
         </div>
         <div id="aktiv" class="tab-pane fade{if isset($cTab) && $cTab === 'aktiv'} active in{/if}">
-            {include file='tpl_inc/pagination.tpl' oPagination=$oPagiNews cAnchor='aktiv'}
+            {include file='tpl_inc/pagination.tpl' $pagination=$oPagiNews cAnchor='aktiv'}
             <form name="news" method="post" action="news.php">
                 {$jtl_token}
                 <input type="hidden" name="news" value="1" />
@@ -231,7 +231,7 @@
         </div>
         <!-- #inaktiv -->
         <div id="kategorien" class="tab-pane fade{if isset($cTab) && $cTab === 'kategorien'} active in{/if}">
-            {include file='tpl_inc/pagination.tpl' oPagination=$oPagiKats cAnchor='kategorien'}
+            {include file='tpl_inc/pagination.tpl' $pagination=$oPagiKats cAnchor='kategorien'}
             <form name="news" method="post" action="news.php">
                 {$jtl_token}
                 <input type="hidden" name="news" value="1" />

@@ -513,12 +513,12 @@ class ShippingMethod
                     // 1D
                     $cVariation0                         = \mb_substr($product['cInputData'], 1);
                     [$kEigenschaft0, $kEigenschaftWert0] = \explode(':', $cVariation0);
-                    $kKindArtikel                        = Product::getChildProductIDByAttribute(
+                    $childProductID                      = Product::getChildProductIDByAttribute(
                         $tmpProduct->kArtikel,
                         $kEigenschaft0,
                         $kEigenschaftWert0
                     );
-                    $child->fuelleArtikel($kKindArtikel, $defaultOptions);
+                    $child->fuelleArtikel($childProductID, $defaultOptions);
                     // Summen pro Steuerklasse summieren
                     if (!\array_key_exists($child->kSteuerklasse, $perTaxClass)) {
                         $perTaxClass[$child->kSteuerklasse] = 0;
@@ -544,14 +544,14 @@ class ShippingMethod
                     [$kEigenschaft0, $kEigenschaftWert0] = \explode(':', $cVariation0);
                     [$kEigenschaft1, $kEigenschaftWert1] = \explode(':', $cVariation1);
 
-                    $kKindArtikel = Product::getChildProductIDByAttribute(
+                    $childProductID = Product::getChildProductIDByAttribute(
                         $tmpProduct->kArtikel,
                         $kEigenschaft0,
                         $kEigenschaftWert0,
                         $kEigenschaft1,
                         $kEigenschaftWert1
                     );
-                    $child->fuelleArtikel($kKindArtikel, $defaultOptions);
+                    $child->fuelleArtikel($childProductID, $defaultOptions);
                     // Summen pro Steuerklasse summieren
                     if (!\array_key_exists($child->kSteuerklasse, $perTaxClass)) {
                         $perTaxClass[$child->kSteuerklasse] = 0;
@@ -1102,8 +1102,8 @@ class ShippingMethod
             && (!empty($product->FunktionsAttribute[\FKT_ATTRIBUT_VERSANDKOSTEN])
                 || !empty($product->FunktionsAttribute[\FKT_ATTRIBUT_VERSANDKOSTEN_GESTAFFELT]))
         ) {
-            $fArticleSpecific = self::gibArtikelabhaengigeVersandkosten($iso, $product, 1);
-            $price           += $fArticleSpecific->fKosten ?? 0;
+            $productSpecific = self::gibArtikelabhaengigeVersandkosten($iso, $product, 1);
+            $price          += $productSpecific->fKosten ?? 0;
         }
         if ($price >= $shippingMethod->fDeckelung && $shippingMethod->fDeckelung > 0) {
             $price = $shippingMethod->fDeckelung;

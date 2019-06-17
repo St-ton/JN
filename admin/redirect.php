@@ -120,7 +120,7 @@ $pagination
     ])
     ->assemble();
 
-$oRedirect_arr = Redirect::getRedirects(
+$list = Redirect::getRedirects(
     $filter->getWhereSQL(),
     $pagination->getOrderSQL(),
     $pagination->getLimitSQL()
@@ -130,16 +130,16 @@ handleCsvExportAction(
     'redirects',
     'redirects.csv',
     function () use ($filter, $pagination, $redirectCount) {
-        $db        = Shop::Container()->getDB();
-        $cWhereSQL = $filter->getWhereSQL();
-        $cOrderSQL = $pagination->getOrderSQL();
+        $db    = Shop::Container()->getDB();
+        $where = $filter->getWhereSQL();
+        $order = $pagination->getOrderSQL();
 
         for ($i = 0; $i < $redirectCount; $i += 1000) {
             $oRedirectIter = $db->query(
                 'SELECT cFromUrl, cToUrl
                     FROM tredirect' .
-                    ($cWhereSQL !== '' ? ' WHERE ' . $cWhereSQL : '') .
-                    ($cOrderSQL !== '' ? ' ORDER BY ' . $cOrderSQL : '') .
+                    ($where !== '' ? ' WHERE ' . $where : '') .
+                    ($order !== '' ? ' ORDER BY ' . $order : '') .
                     ' LIMIT ' . $i . ', 1000',
                 ReturnType::QUERYSINGLE
             );
@@ -152,7 +152,7 @@ handleCsvExportAction(
 );
 
 $smarty->assign('oFilter', $filter)
-       ->assign('oPagination', $pagination)
-       ->assign('oRedirect_arr', $oRedirect_arr)
+       ->assign('$pagination', $pagination)
+       ->assign('oRedirect_arr', $list)
        ->assign('nTotalRedirectCount', Redirect::getRedirectCount())
        ->display('redirect.tpl');

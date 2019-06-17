@@ -155,20 +155,20 @@ function lang_bestellstatus(int $state): string
 /**
  * @param Artikel   $product
  * @param int|float $amount
- * @param int       $kKonfigitem
+ * @param int       $configItemID
  * @return string
  */
-function lang_mindestbestellmenge($product, $amount, int $kKonfigitem = 0)
+function lang_mindestbestellmenge($product, $amount, int $configItemID = 0)
 {
     if ($product->cEinheit) {
         $product->cEinheit = ' ' . $product->cEinheit;
     }
-    $cName = $product->cName;
-    if ($kKonfigitem > 0 && class_exists('Konfigitem')) {
-        $cName = (new Konfigitem($kKonfigitem))->getName();
+    $name = $product->cName;
+    if ($configItemID > 0 && class_exists('Konfigitem')) {
+        $name = (new Konfigitem($configItemID))->getName();
     }
 
-    return Shop::Lang()->get('product') . ' &quot;' . $cName . '&quot; ' .
+    return Shop::Lang()->get('product') . ' &quot;' . $name . '&quot; ' .
         Shop::Lang()->get('hasMbm', 'messages') . ' (' .
         $product->fMindestbestellmenge . $product->cEinheit . '). ' .
         Shop::Lang()->get('yourQuantity', 'messages') . ' ' .

@@ -136,15 +136,15 @@ function gibNichtErlaubteEigenschaftswerte(int $nEigenschaftWert)
  * @param null|string|array $redirectParam
  * @param bool              $renew
  * @param null|Artikel      $product
- * @param null|float        $fAnzahl
- * @param int               $kKonfigitem
+ * @param null|float        $qty
+ * @param int               $configItemID
  * @return array
  * @deprecated since 5.0.0
  */
-function baueArtikelhinweise($redirectParam = null, $renew = false, $product = null, $fAnzahl = null, $kKonfigitem = 0)
+function baueArtikelhinweise($redirectParam = null, $renew = false, $product = null, $qty = null, $configItemID = 0)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return Product::getProductMessages($redirectParam, $renew, $product, $fAnzahl, $kKonfigitem);
+    return Product::getProductMessages($redirectParam, $renew, $product, $qty, $configItemID);
 }
 
 /**
@@ -247,14 +247,14 @@ function buildConfig($productID, $qty, $variations, $configGroups, $configGroupA
 }
 
 /**
- * @param int                   $kKonfig
+ * @param int                   $configID
  * @param \JTL\Smarty\JTLSmarty $smarty
  * @deprecated since 5.0.0
  */
-function holeKonfigBearbeitenModus($kKonfig, $smarty)
+function holeKonfigBearbeitenModus($configID, $smarty)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    Product::getEditConfigMode($kKonfig, $smarty);
+    Product::getEditConfigMode($configID, $smarty);
 }
 
 

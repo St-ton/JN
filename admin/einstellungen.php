@@ -16,10 +16,10 @@ require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'einstellungen_inc.php';
 /** @global \JTL\Smarty\JTLSmarty     $smarty */
 /** @global \JTL\Backend\AdminAccount $oAccount */
-$kSektion = isset($_REQUEST['kSektion']) ? (int)$_REQUEST['kSektion'] : 0;
-$bSuche   = isset($_REQUEST['einstellungen_suchen']) && (int)$_REQUEST['einstellungen_suchen'] === 1;
-$db       = Shop::Container()->getDB();
-$getText  = Shop::Container()->getGetText();
+$sectionID = isset($_REQUEST['kSektion']) ? (int)$_REQUEST['kSektion'] : 0;
+$bSuche    = isset($_REQUEST['einstellungen_suchen']) && (int)$_REQUEST['einstellungen_suchen'] === 1;
+$db        = Shop::Container()->getDB();
+$getText   = Shop::Container()->getGetText();
 
 $getText->loadConfigLocales(true, true);
 
@@ -27,7 +27,7 @@ if ($bSuche) {
     $oAccount->permission('SETTINGS_SEARCH_VIEW', true, true);
 }
 
-switch ($kSektion) {
+switch ($sectionID) {
     case 1:
         $oAccount->permission('SETTINGS_GLOBAL_VIEW', true, true);
         break;
@@ -63,14 +63,14 @@ switch ($kSektion) {
         break;
 }
 
-$standardwaehrung = $db->select('twaehrung', 'cStandard', 'Y');
-$section          = null;
-$step             = 'uebersicht';
-$oSections        = [];
-$alertHelper      = Shop::Container()->getAlertService();
-if ($kSektion > 0) {
+$defaultCurrency = $db->select('twaehrung', 'cStandard', 'Y');
+$section         = null;
+$step            = 'uebersicht';
+$oSections       = [];
+$alertHelper     = Shop::Container()->getAlertService();
+if ($sectionID > 0) {
     $step    = 'einstellungen bearbeiten';
-    $section = $db->select('teinstellungensektion', 'kEinstellungenSektion', $kSektion);
+    $section = $db->select('teinstellungensektion', 'kEinstellungenSektion', $sectionID);
     $smarty->assign('kEinstellungenSektion', $section->kEinstellungenSektion);
 } else {
     $section = $db->select('teinstellungensektion', 'kEinstellungenSektion', CONF_GLOBAL);
@@ -84,7 +84,7 @@ if ($bSuche) {
 }
 if (isset($_POST['einstellungen_bearbeiten'])
     && (int)$_POST['einstellungen_bearbeiten'] === 1
-    && $kSektion > 0
+    && $sectionID > 0
     && Form::validateToken()
 ) {
     // Einstellungssuche
@@ -101,7 +101,7 @@ if (isset($_POST['einstellungen_bearbeiten'])
         $confData = $oSQL->oEinstellung_arr;
         $smarty->assign('cSearch', $oSQL->cSearch);
     } else {
-        $section  = $db->select('teinstellungensektion', 'kEinstellungenSektion', $kSektion);
+        $section  = $db->select('teinstellungensektion', 'kEinstellungenSektion', $sectionID);
         $confData = $db->query(
             'SELECT *
                 FROM teinstellungenconf
@@ -156,11 +156,11 @@ if (isset($_POST['einstellungen_bearbeiten'])
     $db->query('UPDATE tglobals SET dLetzteAenderung = NOW()', ReturnType::DEFAULT);
     $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successConfigSave'), 'successConfigSave');
     $tagsToFlush = [CACHING_GROUP_OPTION];
-    if ($kSektion === 1 || $kSektion === 4 || $kSektion === 5) {
+    if ($sectionID === 1 || $sectionID === 4 || $sectionID === 5) {
         $tagsToFlush[] = CACHING_GROUP_CORE;
         $tagsToFlush[] = CACHING_GROUP_ARTICLE;
         $tagsToFlush[] = CACHING_GROUP_CATEGORY;
-    } elseif ($kSektion === 8) {
+    } elseif ($sectionID === 8) {
         $tagsToFlush[] = CACHING_GROUP_BOX;
     }
     Shop::Container()->getCache()->flushTags($tagsToFlush);
@@ -176,7 +176,7 @@ if ($step === 'uebersicht') {
     );
     $sectionCount = count($sections);
     for ($i = 0; $i < $sectionCount; $i++) {
-        $anz_einstellunen = $db->queryPrepared(
+        $confCount = $db->queryPrepared(
             "SELECT COUNT(*) AS anz
                 FROM teinstellungenconf
                 WHERE kEinstellungenSektion = :sid
@@ -187,7 +187,7 @@ if ($step === 'uebersicht') {
             ReturnType::SINGLE_OBJECT
         );
 
-        $sections[$i]->anz = $anz_einstellunen->anz;
+        $sections[$i]->anz = $confCount->anz;
         $getText->localizeConfigSection($sections[$i]);
     }
     $smarty->assign('Sektionen', $sections);
@@ -276,8 +276,8 @@ if ($step === 'einstellungen bearbeiten') {
 }
 
 $smarty->configLoad('german.conf', 'einstellungen')
-       ->assign('cPrefDesc', $smarty->getConfigVars('prefDesc' . $kSektion))
-       ->assign('cPrefURL', $smarty->getConfigVars('prefURL' . $kSektion))
+       ->assign('cPrefDesc', $smarty->getConfigVars('prefDesc' . $sectionID))
+       ->assign('cPrefURL', $smarty->getConfigVars('prefURL' . $sectionID))
        ->assign('step', $step)
-       ->assign('waehrung', $standardwaehrung->cName)
+       ->assign('waehrung', $defaultCurrency->cName)
        ->display('einstellungen.tpl');

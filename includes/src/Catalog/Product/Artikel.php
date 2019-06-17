@@ -1092,7 +1092,7 @@ class Artikel
      */
     public function gibKategorie(): int
     {
-        $oKategorieartikel = null;
+        $categoryProducts = null;
         if ($this->kArtikel > 0) {
             $id = (int)$this->kArtikel;
             // Ist der Artikel in Variationskombi Kind? Falls ja, hol den Vater und die Kategorie von ihm
@@ -1111,10 +1111,10 @@ class Artikel
 
                 return (int)$this->oKategorie_arr[0];
             }
-            $categoryFilter    = isset($_SESSION['LetzteKategorie'])
+            $categoryFilter   = isset($_SESSION['LetzteKategorie'])
                 ? ' AND tkategorieartikel.kKategorie = ' . (int)$_SESSION['LetzteKategorie']
                 : '';
-            $oKategorieartikel = Shop::Container()->getDB()->query(
+            $categoryProducts = Shop::Container()->getDB()->query(
                 'SELECT tkategorieartikel.kKategorie
                     FROM tkategorieartikel
                     LEFT JOIN tkategoriesichtbarkeit 
@@ -1131,8 +1131,8 @@ class Artikel
             );
         }
 
-        return (isset($oKategorieartikel->kKategorie) && $oKategorieartikel->kKategorie > 0)
-            ? (int)$oKategorieartikel->kKategorie
+        return (isset($categoryProducts->kKategorie) && $categoryProducts->kKategorie > 0)
+            ? (int)$categoryProducts->kKategorie
             : 0;
     }
 
@@ -1214,10 +1214,10 @@ class Artikel
         $customerID   = Frontend::getCustomer()->getID();
         $this->Preise = new Preise($customerGroupID, $this->kArtikel, $customerID, (int)$this->kSteuerklasse);
         // Varkombi Kind?
-        $articleID = ($this->kEigenschaftKombi > 0 && $this->kVaterArtikel > 0)
+        $productID = ($this->kEigenschaftKombi > 0 && $this->kVaterArtikel > 0)
             ? $this->kVaterArtikel
             : $this->kArtikel;
-        $this->Preise->rabbatierePreise($this->getDiscount($customerGroupID, $articleID));
+        $this->Preise->rabbatierePreise($this->getDiscount($customerGroupID, $productID));
         $price = $this->Preise->fVKNetto;
         foreach ($this->Preise->fPreis_arr as $i => $fPreis) {
             if ($this->Preise->nAnzahl_arr[$i] <= $amount) {
@@ -1383,10 +1383,10 @@ class Artikel
     private function prepareImageDetails($image, $json = true)
     {
         $result = [
-            'xs' => $this->getArticleImageSize($image, 'xs'),
-            'sm' => $this->getArticleImageSize($image, 'sm'),
-            'md' => $this->getArticleImageSize($image, 'md'),
-            'lg' => $this->getArticleImageSize($image, 'lg')
+            'xs' => $this->getProductImageSize($image, 'xs'),
+            'sm' => $this->getProductImageSize($image, 'sm'),
+            'md' => $this->getProductImageSize($image, 'md'),
+            'lg' => $this->getProductImageSize($image, 'lg')
         ];
         $result = (object)$result;
 
@@ -1398,7 +1398,7 @@ class Artikel
      * @param string   $size
      * @return object
      */
-    private function getArticleImageSize($image, $size)
+    private function getProductImageSize($image, $size)
     {
         switch ($size) {
             case 'xs':
@@ -1477,14 +1477,14 @@ class Artikel
     {
         $this->FunktionsAttribute = [];
         if ($this->kArtikel > 0) {
-            $ArtikelAttribute = Shop::Container()->getDB()->selectAll(
+            $attributes = Shop::Container()->getDB()->selectAll(
                 'tartikelattribut',
                 'kArtikel',
                 (int)$this->kArtikel,
                 'cName, cWert',
                 'kArtikelAttribut'
             );
-            foreach ($ArtikelAttribute as $att) {
+            foreach ($attributes as $att) {
                 $this->FunktionsAttribute[\mb_convert_case($att->cName, \MB_CASE_LOWER)] = $att->cWert;
             }
         }
@@ -3784,15 +3784,15 @@ class Artikel
         if ($noCache === false) {
             $baseID        = Shop::Container()->getCache()->getBaseID(false, false, $customerGroupID, $langID);
             $taxClass      = isset($_SESSION['Steuersatz']) ? \implode('_', $_SESSION['Steuersatz']) : '';
-            $kKunde        = isset($_SESSION['Kunde']) ? (int)$_SESSION['Kunde']->kKunde : 0;
-            $productHash   = \md5($baseID . $this->getOptionsHash($options) . $taxClass . $kKunde);
+            $customerID    = isset($_SESSION['Kunde']) ? (int)$_SESSION['Kunde']->kKunde : 0;
+            $productHash   = \md5($baseID . $this->getOptionsHash($options) . $taxClass . $customerID);
             $cacheID       = 'fa_' . $productID . '_' . $productHash;
             $this->cacheID = $cacheID;
-            if (($artikel = Shop::Container()->getCache()->get($cacheID)) !== false) {
-                if ($artikel === null) {
+            if (($product = Shop::Container()->getCache()->get($cacheID)) !== false) {
+                if ($product === null) {
                     return null;
                 }
-                foreach (\get_object_vars($artikel) as $k => $v) {
+                foreach (\get_object_vars($product) as $k => $v) {
                     $this->$k = $v;
                 }
                 // Rabatt beachten
@@ -4466,14 +4466,14 @@ class Artikel
      */
     private function getCategories(int $productID = 0, int $customerGroupID = 0): array
     {
-        $productID  = $productID > 0 ? $productID : (int)$this->kArtikel;
-        $kKdgKey    = $customerGroupID > 0 ? $customerGroupID : Frontend::getCustomerGroup()->getID();
-        $categories = Shop::Container()->getDB()->query(
+        $productID       = $productID > 0 ? $productID : (int)$this->kArtikel;
+        $customerGroupID = $customerGroupID > 0 ? $customerGroupID : Frontend::getCustomerGroup()->getID();
+        $categories      = Shop::Container()->getDB()->query(
             'SELECT tkategorieartikel.kKategorie
                 FROM tkategorieartikel
                 LEFT JOIN tkategoriesichtbarkeit
                     ON tkategoriesichtbarkeit.kKategorie = tkategorieartikel.kKategorie
-                    AND tkategoriesichtbarkeit.kKundengruppe = ' . $kKdgKey . '
+                    AND tkategoriesichtbarkeit.kKundengruppe = ' . $customerGroupID . '
                 JOIN tkategorie
                     ON tkategorie.kKategorie = tkategorieartikel.kKategorie
                 WHERE tkategoriesichtbarkeit.kKategorie IS NULL
@@ -5601,9 +5601,9 @@ class Artikel
             foreach ($this->oKonfig_arr as $gruppe) {
                 /** @var Konfigitem $piece */
                 foreach ($gruppe->oItem_arr as $piece) {
-                    $konfigItemArticle = $piece->getArtikel();
-                    if (!empty($konfigItemArticle)) {
-                        $konfigItemArticle->getDeliveryTime(
+                    $konfigItemProduct = $piece->getArtikel();
+                    if (!empty($konfigItemProduct)) {
+                        $konfigItemProduct->getDeliveryTime(
                             $countryCode,
                             $purchaseQuantity * (float)$piece->getInitial(),
                             null,
@@ -5611,11 +5611,11 @@ class Artikel
                             $shippingID
                         );
                         // find shortest shipping time in configuration
-                        if (isset($konfigItemArticle->nMaxDeliveryDays)) {
-                            $maxDeliveryDays = \min($maxDeliveryDays, $konfigItemArticle->nMaxDeliveryDays);
+                        if (isset($konfigItemProduct->nMaxDeliveryDays)) {
+                            $maxDeliveryDays = \min($maxDeliveryDays, $konfigItemProduct->nMaxDeliveryDays);
                         }
-                        if (isset($konfigItemArticle->nMinDeliveryDays)) {
-                            $minDeliveryDays = \min($minDeliveryDays, $konfigItemArticle->nMinDeliveryDays);
+                        if (isset($konfigItemProduct->nMinDeliveryDays)) {
+                            $minDeliveryDays = \min($minDeliveryDays, $konfigItemProduct->nMinDeliveryDays);
                         }
                     }
                 }
@@ -5785,7 +5785,7 @@ class Artikel
      */
     public function holeAehnlicheArtikel(): array
     {
-        return $this->buildProductsFromSimilarArticles();
+        return $this->buildProductsFromSimilarProducts();
     }
 
     /**
@@ -5795,10 +5795,11 @@ class Artikel
      * @throws CircularReferenceException
      * @throws ServiceNotFoundException
      */
-    private function buildProductsFromSimilarArticles(): array
+    private function buildProductsFromSimilarProducts(): array
     {
         $data     = $this->similarProducts; //this was created at fuelleArtikel() before and therefore cached
         $products = $data['oArtikelArr'];
+        $keys     = $data['kArtikelXSellerKey_arr'];
         $similar  = [];
         if (\is_array($products) && \count($products) > 0) {
             $defaultOptions = self::getDefaultOptions();
@@ -5817,14 +5818,11 @@ class Artikel
             'oArtikel_arr' => &$similar
         ]);
 
-        if (\count($similar) > 0
-            && \is_array($data['kArtikelXSellerKey_arr'])
-            && \count($data['kArtikelXSellerKey_arr']) > 0
-        ) {
+        if (\count($similar) > 0 && \is_array($keys) && \count($keys) > 0) {
             // remove x-sellers
             foreach ($similar as $i => $product) {
-                foreach ($data['kArtikelXSellerKey_arr'] as $kArtikelXSellerKey) {
-                    if ($product->kArtikel === (int)$kArtikelXSellerKey) {
+                foreach ($keys as $xsellID) {
+                    if ($product->kArtikel === (int)$xsellID) {
                         unset($similar[$i]);
                     }
                 }
@@ -5848,131 +5846,110 @@ class Artikel
         // Gibt es X-Seller? Aus der Artikelmenge der änhlichen Artikel, dann alle X-Seller rausfiltern
         $xSeller  = Product::getXSelling($productID, $this->nIstVater > 0);
         $xSellIDs = [];
-        if ($xSeller !== null
-            && isset($xSeller->Standard->XSellGruppen)
-            && \is_array($xSeller->Standard->XSellGruppen)
-            && \count($xSeller->Standard->XSellGruppen) > 0
-        ) {
-            foreach ($xSeller->Standard->XSellGruppen as $xSeller) {
-                if (\is_array($xSeller->Artikel) && \count($xSeller->Artikel) > 0) {
-                    foreach ($xSeller->Artikel as $item) {
-                        $item->kArtikel = (int)$item->kArtikel;
-                        if (!\in_array($item->kArtikel, $xSellIDs, true)) {
-                            $xSellIDs[] = $item->kArtikel;
-                        }
+        if ($xSeller !== null) {
+            foreach ($xSeller->Standard->XSellGruppen as $group) {
+                foreach ($group->Artikel as $item) {
+                    $id = (int)$item->kArtikel;
+                    if (!\in_array($id, $xSellIDs, true)) {
+                        $xSellIDs[] = $id;
                     }
                 }
             }
         }
-        if (isset($xSeller->Kauf->XSellGruppen)
-            && \is_array($xSeller->Kauf->XSellGruppen)
-            && \count($xSeller->Kauf->XSellGruppen) > 0
-        ) {
-            foreach ($xSeller->Kauf->XSellGruppen as $xSeller) {
-                if (\is_array($xSeller->Artikel) && \count($xSeller->Artikel) > 0) {
-                    foreach ($xSeller->Artikel as $item) {
-                        $item->kArtikel = (int)$item->kArtikel;
-                        if (!\in_array($item->kArtikel, $xSellIDs, true)) {
-                            $xSellIDs[] = $item->kArtikel;
-                        }
-                    }
-                }
-            }
-        }
-        $xSellSQL = '';
-        if (\count($xSellIDs) > 0) {
-            $xSellSQL = ' AND tartikel.kArtikel NOT IN (' . \implode(',', $xSellIDs) . ') ';
-        }
+        $xSellSQL                         = \count($xSellIDs) > 0
+            ? ' AND tartikel.kArtikel NOT IN (' . \implode(',', $xSellIDs) . ') '
+            : '';
         $return['kArtikelXSellerKey_arr'] = $xSellIDs;
-        if ($productID > 0) {
-            $customerGroupID = Frontend::getCustomerGroup()->getID();
-            if ((int)$this->conf['artikeldetails']['artikeldetails_aehnlicheartikel_anzahl'] > 0) {
-                $limitSQL = ' LIMIT ' . (int)$this->conf['artikeldetails']['artikeldetails_aehnlicheartikel_anzahl'];
-            }
-            $lagerFilter           = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
-            $return['oArtikelArr'] = Shop::Container()->getDB()->queryPrepared(
-                'SELECT tartikelmerkmal.kArtikel, tartikel.kVaterArtikel
-                    FROM tartikelmerkmal
-                        JOIN tartikel
-                            ON tartikel.kArtikel = tartikelmerkmal.kArtikel
-                            AND tartikel.kVaterArtikel != :kArtikel
-                            AND (tartikel.nIstVater = 1 OR tartikel.kEigenschaftKombi = 0)
-                        JOIN tartikelmerkmal similarMerkmal
-                            ON similarMerkmal.kArtikel = :kArtikel
-                            AND similarMerkmal.kMerkmal = tartikelmerkmal.kMerkmal
-                            AND similarMerkmal.kMerkmalWert = tartikelmerkmal.kMerkmalWert
-                        LEFT JOIN tartikelsichtbarkeit
-                            ON tartikelsichtbarkeit.kArtikel = tartikel.kArtikel
-                            AND tartikelsichtbarkeit.kKundengruppe = :customerGroupID
+        if ($productID === 0 || $productID === null) {
+            return $return;
+        }
+        $customerGroupID = Frontend::getCustomerGroup()->getID();
+        if ((int)$this->conf['artikeldetails']['artikeldetails_aehnlicheartikel_anzahl'] > 0) {
+            $limitSQL = ' LIMIT ' . (int)$this->conf['artikeldetails']['artikeldetails_aehnlicheartikel_anzahl'];
+        }
+        $lagerFilter           = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
+        $return['oArtikelArr'] = Shop::Container()->getDB()->queryPrepared(
+            'SELECT tartikelmerkmal.kArtikel, tartikel.kVaterArtikel
+                FROM tartikelmerkmal
+                    JOIN tartikel
+                        ON tartikel.kArtikel = tartikelmerkmal.kArtikel
+                        AND tartikel.kVaterArtikel != :kArtikel
+                        AND (tartikel.nIstVater = 1 OR tartikel.kEigenschaftKombi = 0)
+                    JOIN tartikelmerkmal similarMerkmal
+                        ON similarMerkmal.kArtikel = :kArtikel
+                        AND similarMerkmal.kMerkmal = tartikelmerkmal.kMerkmal
+                        AND similarMerkmal.kMerkmalWert = tartikelmerkmal.kMerkmalWert
+                    LEFT JOIN tartikelsichtbarkeit
+                        ON tartikelsichtbarkeit.kArtikel = tartikel.kArtikel
+                        AND tartikelsichtbarkeit.kKundengruppe = :customerGroupID
+                WHERE tartikelsichtbarkeit.kArtikel IS NULL
+                    AND tartikelmerkmal.kArtikel != :kArtikel
+                    ' . $lagerFilter . '
+                    ' . $xSellSQL . '
+                GROUP BY tartikelmerkmal.kArtikel
+                ORDER BY COUNT(tartikelmerkmal.kMerkmal) DESC ' .
+                $limitSQL,
+            [
+                'kArtikel'        => $productID,
+                'customerGroupID' => $customerGroupID
+            ],
+            ReturnType::ARRAY_OF_OBJECTS
+        );
+        if (!\is_array($return['oArtikelArr']) || \count($return['oArtikelArr']) < 1) {
+            // Falls es keine Merkmale gibt, in tsuchcachetreffer und ttagartikel suchen
+            $return['oArtikelArr'] = Shop::Container()->getDB()->query(
+                'SELECT tsuchcachetreffer.kArtikel, tartikel.kVaterArtikel
+                    FROM
+                    (
+                        SELECT kSuchCache
+                        FROM tsuchcachetreffer
+                        WHERE kArtikel = ' . $productID . '
+                            AND nSort <= 10
+                    ) AS ssSuchCache
+                    JOIN tsuchcachetreffer
+                        ON tsuchcachetreffer.kSuchCache = ssSuchCache.kSuchCache
+                        AND tsuchcachetreffer.kArtikel != ' . $productID . '
+                    LEFT JOIN tartikelsichtbarkeit
+                        ON tsuchcachetreffer.kArtikel = tartikelsichtbarkeit.kArtikel
+                        AND tartikelsichtbarkeit.kKundengruppe = ' . $customerGroupID . '
+                    JOIN tartikel
+                        ON tartikel.kArtikel = tsuchcachetreffer.kArtikel
+                        AND tartikel.kVaterArtikel != ' . $productID . '
                     WHERE tartikelsichtbarkeit.kArtikel IS NULL
-                        AND tartikelmerkmal.kArtikel != :kArtikel
-                        ' . $lagerFilter . '
+                        ' . Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL() . '
                         ' . $xSellSQL . '
-                    GROUP BY tartikelmerkmal.kArtikel
-                    ORDER BY COUNT(tartikelmerkmal.kMerkmal) DESC ' .
+                    GROUP BY tsuchcachetreffer.kArtikel
+                    ORDER BY COUNT(*) DESC ' .
                     $limitSQL,
-                [
-                    'kArtikel'        => $productID,
-                    'customerGroupID' => $customerGroupID
-                ],
                 ReturnType::ARRAY_OF_OBJECTS
             );
-            if (!\is_array($return['oArtikelArr']) || \count($return['oArtikelArr']) < 1) {
-                // Falls es keine Merkmale gibt, in tsuchcachetreffer und ttagartikel suchen
-                $return['oArtikelArr'] = Shop::Container()->getDB()->query(
-                    'SELECT tsuchcachetreffer.kArtikel, tartikel.kVaterArtikel
-                        FROM
-                        (
-                            SELECT kSuchCache
-                            FROM tsuchcachetreffer
-                            WHERE kArtikel = ' . $productID . '
-                                AND nSort <= 10
-                        ) AS ssSuchCache
-                        JOIN tsuchcachetreffer
-                            ON tsuchcachetreffer.kSuchCache = ssSuchCache.kSuchCache
-                            AND tsuchcachetreffer.kArtikel != ' . $productID . '
-                        LEFT JOIN tartikelsichtbarkeit
-                            ON tsuchcachetreffer.kArtikel = tartikelsichtbarkeit.kArtikel
-                            AND tartikelsichtbarkeit.kKundengruppe = ' . $customerGroupID . '
-                        JOIN tartikel
-                            ON tartikel.kArtikel = tsuchcachetreffer.kArtikel
-                            AND tartikel.kVaterArtikel != ' . $productID . '
-                        WHERE tartikelsichtbarkeit.kArtikel IS NULL
-                            ' . Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL() . '
-                            ' . $xSellSQL . '
-                        GROUP BY tsuchcachetreffer.kArtikel
-                        ORDER BY COUNT(*) DESC ' .
-                        $limitSQL,
-                    ReturnType::ARRAY_OF_OBJECTS
-                );
-            }
-            if (!\is_array($return['oArtikelArr']) || \count($return['oArtikelArr']) < 1) {
-                $return['oArtikelArr'] = Shop::Container()->getDB()->query(
-                    'SELECT ttagartikel.kArtikel, tartikel.kVaterArtikel
-                        FROM
-                        (
-                            SELECT kTag
-                            FROM ttagartikel
-                            WHERE kArtikel = ' . $productID . '
-                        ) AS ssTag
-                        JOIN ttagartikel
-                            ON ttagartikel.kTag = ssTag.kTag
-                            AND ttagartikel.kArtikel != ' . $productID . '
-                        LEFT JOIN tartikelsichtbarkeit
-                            ON ttagartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                            AND tartikelsichtbarkeit.kKundengruppe = ' . $customerGroupID . '
-                        JOIN tartikel
-                            ON tartikel.kArtikel = ttagartikel.kArtikel
-                            AND tartikel.kVaterArtikel != ' . $productID . '
-                        WHERE tartikelsichtbarkeit.kArtikel IS NULL
-                            ' . Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL() . '
-                            ' . $xSellSQL . '
-                        GROUP BY ttagartikel.kArtikel
-                        ORDER BY COUNT(*) DESC ' .
-                        $limitSQL,
-                    ReturnType::ARRAY_OF_OBJECTS
-                );
-            }
+        }
+        if (!\is_array($return['oArtikelArr']) || \count($return['oArtikelArr']) < 1) {
+            $return['oArtikelArr'] = Shop::Container()->getDB()->query(
+                'SELECT ttagartikel.kArtikel, tartikel.kVaterArtikel
+                    FROM
+                    (
+                        SELECT kTag
+                        FROM ttagartikel
+                        WHERE kArtikel = ' . $productID . '
+                    ) AS ssTag
+                    JOIN ttagartikel
+                        ON ttagartikel.kTag = ssTag.kTag
+                        AND ttagartikel.kArtikel != ' . $productID . '
+                    LEFT JOIN tartikelsichtbarkeit
+                        ON ttagartikel.kArtikel = tartikelsichtbarkeit.kArtikel
+                        AND tartikelsichtbarkeit.kKundengruppe = ' . $customerGroupID . '
+                    JOIN tartikel
+                        ON tartikel.kArtikel = ttagartikel.kArtikel
+                        AND tartikel.kVaterArtikel != ' . $productID . '
+                    WHERE tartikelsichtbarkeit.kArtikel IS NULL
+                        ' . Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL() . '
+                        ' . $xSellSQL . '
+                    GROUP BY ttagartikel.kArtikel
+                    ORDER BY COUNT(*) DESC ' .
+                    $limitSQL,
+                ReturnType::ARRAY_OF_OBJECTS
+            );
         }
 
         return $return;
@@ -6445,10 +6422,10 @@ class Artikel
     }
 
     /**
-     * @param KategorieListe $KategorieListe
+     * @param KategorieListe $categoryList
      * @return string
      */
-    public function getMetaDescription(KategorieListe $KategorieListe): string
+    public function getMetaDescription(KategorieListe $categoryList): string
     {
         $description = $this->metaDescription;
         if ($description !== null && \mb_strlen($description) > 0) {
@@ -6462,11 +6439,11 @@ class Artikel
         $description = ($this->cName !== null && \mb_strlen($this->cName) > 0)
             ? ($prefix . $this->cName . ' in ')
             : '';
-        if (\count($KategorieListe->elemente) > 0) {
+        if (\count($categoryList->elemente) > 0) {
             $categoryNames = [];
-            foreach ($KategorieListe->elemente as $_cat) {
-                if (!empty($_cat->kKategorie)) {
-                    $categoryNames[] = $_cat->cName;
+            foreach ($categoryList->elemente as $category) {
+                if (!empty($category->kKategorie)) {
+                    $categoryNames[] = $category->cName;
                 }
             }
             $description .= \implode(', ', $categoryNames);
@@ -6636,27 +6613,27 @@ class Artikel
     public function keyValueVariations(array $attributes): array
     {
         $keyValueVariations = [];
-        foreach ($attributes as $kKey => $mEigenschaft) {
-            if (\is_object($mEigenschaft)) {
-                $kKey = $mEigenschaft->kEigenschaft;
+        foreach ($attributes as $key => $value) {
+            if (\is_object($value)) {
+                $key = $value->kEigenschaft;
             }
-            if (!isset($keyValueVariations[$kKey])) {
-                $keyValueVariations[$kKey] = [];
+            if (!isset($keyValueVariations[$key])) {
+                $keyValueVariations[$key] = [];
             }
-            if (\is_object($mEigenschaft) && isset($mEigenschaft->Werte)) {
-                foreach ($mEigenschaft->Werte as $mEigenschaftWert) {
-                    $keyValueVariations[$kKey][] = \is_object($mEigenschaftWert)
+            if (\is_object($value) && isset($value->Werte)) {
+                foreach ($value->Werte as $mEigenschaftWert) {
+                    $keyValueVariations[$key][] = \is_object($mEigenschaftWert)
                         ? $mEigenschaftWert->kEigenschaftWert
                         : $mEigenschaftWert;
                 }
             } else {
-                $valueIDs = $mEigenschaft;
-                if (\is_object($mEigenschaft)) {
-                    $valueIDs = [$mEigenschaft->kEigenschaftWert];
-                } elseif (!\is_array($mEigenschaft)) {
+                $valueIDs = $value;
+                if (\is_object($value)) {
+                    $valueIDs = [$value->kEigenschaftWert];
+                } elseif (!\is_array($value)) {
                     $valueIDs = (array)$valueIDs;
                 }
-                $keyValueVariations[$kKey] = \array_merge($keyValueVariations[$kKey], $valueIDs);
+                $keyValueVariations[$key] = \array_merge($keyValueVariations[$key], $valueIDs);
             }
         }
 

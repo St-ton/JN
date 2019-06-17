@@ -1,5 +1,5 @@
 {if $oVerpackung_arr|@count > 0}
-    {include file='tpl_inc/pagination.tpl' oPagination=$oPagination}
+    {include file='tpl_inc/pagination.tpl' $pagination=$pagination}
 {/if}
 
 <form method="post" action="zusatzverpackung.php">

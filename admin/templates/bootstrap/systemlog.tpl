@@ -15,7 +15,7 @@
     <div role="tabpanel" class="tab-pane fade{if $cTab === 'log'} active in{/if}" id="log">
         {if $nTotalLogCount !== 0}
             {include file='tpl_inc/filtertools.tpl' oFilter=$oFilter}
-            {include file='tpl_inc/pagination.tpl' oPagination=$oPagination}
+            {include file='tpl_inc/pagination.tpl' $pagination=$pagination}
         {/if}
 
         <div class="panel panel-default">

@@ -700,7 +700,7 @@ class DemoDataInstaller
             if ($articleID > 0) {
                 $_maxImages = $this->faker->numberBetween(1, 3);
                 for ($k = 0; $k < $_maxImages; ++$k) {
-                    $this->createArticleImage($_article->kArtikel, $_name, $k + 1);
+                    $this->createProductImage($_article->kArtikel, $_name, $k + 1);
                 }
                 $_numRatings = $this->faker->numberBetween(0, 6);
                 for ($j = 0; $j < $_numRatings; ++$j) {
@@ -882,19 +882,19 @@ class DemoDataInstaller
     }
 
     /**
-     * @param int    $articleID
+     * @param int    $productID
      * @param string $string
      * @param int    $imageNumber
      */
-    private function createArticleImage(int $articleID, $string, $imageNumber): void
+    private function createProductImage(int $productID, $string, $imageNumber): void
     {
         $maxPk = (int)$this->pdo->query(
             'SELECT max(kArtikelPict) AS maxPk FROM tartikelpict',
             ReturnType::SINGLE_OBJECT
         )->maxPk;
 
-        if ($articleID > 0) {
-            $file = '1024_1024_' . md5($string . $articleID . $imageNumber) . '.jpg';
+        if ($productID > 0) {
+            $file = '1024_1024_' . md5($string . $productID . $imageNumber) . '.jpg';
             $path = PFAD_ROOT . 'media/image/storage/' . $file;
 
             if ($this->createImage($path, $string, 1024, 1024) === true) {
@@ -903,7 +903,7 @@ class DemoDataInstaller
                 $_image->kBild            = $this->pdo->insert('tbild', $_image);
                 $_image->kArtikelPict     = $maxPk + 1;
                 $_image->kMainArtikelBild = 0;
-                $_image->kArtikel         = $articleID;
+                $_image->kArtikel         = $productID;
                 $_image->nNr              = $imageNumber;
                 $this->pdo->insert('tartikelpict', $_image);
             }

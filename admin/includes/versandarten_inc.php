@@ -10,39 +10,39 @@ use JTL\Helpers\Text;
 use JTL\Shop;
 
 /**
- * @param float $fPreis
- * @param float $fSteuersatz
+ * @param float $price
+ * @param float $taxRate
  * @return float
  */
-function berechneVersandpreisBrutto($fPreis, $fSteuersatz)
+function berechneVersandpreisBrutto($price, $taxRate)
 {
-    return $fPreis > 0
-        ? round((float)($fPreis * ((100 + $fSteuersatz) / 100)), 2)
+    return $price > 0
+        ? round((float)($price * ((100 + $taxRate) / 100)), 2)
         : 0.0;
 }
 
 /**
- * @param float $fPreis
- * @param float $fSteuersatz
+ * @param float $price
+ * @param float $taxRate
  * @return float
  */
-function berechneVersandpreisNetto($fPreis, $fSteuersatz)
+function berechneVersandpreisNetto($price, $taxRate)
 {
-    return $fPreis > 0
-        ? round($fPreis * ((100 / (100 + $fSteuersatz)) * 100) / 100, 2)
+    return $price > 0
+        ? round($price * ((100 / (100 + $taxRate)) * 100) / 100, 2)
         : 0.0;
 }
 
 /**
- * @param array  $obj_arr
+ * @param array  $objects
  * @param string $key
  * @return array
  */
-function reorganizeObjectArray($obj_arr, $key)
+function reorganizeObjectArray($objects, $key)
 {
     $res = [];
-    if (is_array($obj_arr)) {
-        foreach ($obj_arr as $obj) {
+    if (is_array($objects)) {
+        foreach ($objects as $obj) {
             $arr  = get_object_vars($obj);
             $keys = array_keys($arr);
             if (in_array($key, $keys)) {
@@ -97,17 +97,17 @@ function bauePot($arr, $key)
 }
 
 /**
- * @param string $cVersandklassen
+ * @param string $shippingClasses
  * @return array
  */
-function gibGesetzteVersandklassen($cVersandklassen)
+function gibGesetzteVersandklassen($shippingClasses)
 {
-    if (trim($cVersandklassen) === '-1') {
+    if (trim($shippingClasses) === '-1') {
         return ['alle' => true];
     }
     $gesetzteVK = [];
     $uniqueIDs  = [];
-    $cVKarr     = explode(' ', trim($cVersandklassen));
+    $cVKarr     = explode(' ', trim($shippingClasses));
     // $cVersandklassen is a string like "1 3-4 5-6-7 6-8 7-8 3-7 3-8 5-6 5-7"
     foreach ($cVKarr as $idString) {
         // we want the single kVersandklasse IDs to reduce the possible amount of combinations
@@ -130,17 +130,17 @@ function gibGesetzteVersandklassen($cVersandklassen)
 }
 
 /**
- * @param string $cVersandklassen
+ * @param string $shippingClasses
  * @return array
  */
-function gibGesetzteVersandklassenUebersicht($cVersandklassen)
+function gibGesetzteVersandklassenUebersicht($shippingClasses)
 {
-    if (trim($cVersandklassen) === '-1') {
+    if (trim($shippingClasses) === '-1') {
         return ['Alle'];
     }
-    $gesetzteVK = [];
-    $uniqueIDs  = [];
-    $cVKarr     = explode(' ', trim($cVersandklassen));
+    $active    = [];
+    $uniqueIDs = [];
+    $cVKarr    = explode(' ', trim($shippingClasses));
     // $cVersandklassen is a string like "1 3-4 5-6-7 6-8 7-8 3-7 3-8 5-6 5-7"
     foreach ($cVKarr as $idString) {
         // we want the single kVersandklasse IDs to reduce the possible amount of combinations
@@ -148,20 +148,20 @@ function gibGesetzteVersandklassenUebersicht($cVersandklassen)
             $uniqueIDs[] = (int)$kVersandklasse;
         }
     }
-    $PVersandklassen = P(Shop::Container()->getDB()->query(
+    $items = P(Shop::Container()->getDB()->query(
         'SELECT * 
             FROM tversandklasse 
             WHERE kVersandklasse IN (' . implode(',', $uniqueIDs) . ')
             ORDER BY kVersandklasse',
         ReturnType::ARRAY_OF_OBJECTS
     ));
-    foreach ($PVersandklassen as $vk) {
-        if (in_array($vk->kVersandklasse, $cVKarr, true)) {
-            $gesetzteVK[] = $vk->cName;
+    foreach ($items as $item) {
+        if (in_array($item->kVersandklasse, $cVKarr, true)) {
+            $active[] = $item->cName;
         }
     }
 
-    return $gesetzteVK;
+    return $active;
 }
 
 /**
@@ -193,8 +193,8 @@ function gibGesetzteKundengruppen($customerGroupsString)
  */
 function getShippingLanguage(int $shippingMethodID, $languages)
 {
-    $localized              = [];
-    $oVersandartSprache_arr = Shop::Container()->getDB()->selectAll(
+    $localized        = [];
+    $localizedMethods = Shop::Container()->getDB()->selectAll(
         'tversandartsprache',
         'kVersandart',
         $shippingMethodID
@@ -204,9 +204,9 @@ function getShippingLanguage(int $shippingMethodID, $languages)
             $localized[$language->cISO] = new stdClass();
         }
     }
-    foreach ($oVersandartSprache_arr as $oVersandartSprache) {
-        if (isset($oVersandartSprache->kVersandart) && $oVersandartSprache->kVersandart > 0) {
-            $localized[$oVersandartSprache->cISOSprache] = $oVersandartSprache;
+    foreach ($localizedMethods as $localizedMethod) {
+        if (isset($localizedMethod->kVersandart) && $localizedMethod->kVersandart > 0) {
+            $localized[$localizedMethod->cISOSprache] = $localizedMethod;
         }
     }
 

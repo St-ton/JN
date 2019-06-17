@@ -92,7 +92,7 @@ class WarenkorbPersPos
      * @param float      $qty
      * @param int        $kWarenkorbPers
      * @param string     $unique
-     * @param int        $kKonfigitem
+     * @param int        $configItemID
      * @param int|string $type
      * @param string     $responsibility
      */
@@ -102,7 +102,7 @@ class WarenkorbPersPos
         $qty,
         int $kWarenkorbPers,
         $unique = '',
-        int $kKonfigitem = 0,
+        int $configItemID = 0,
         int $type = \C_WARENKORBPOS_TYP_ARTIKEL,
         string $responsibility = 'core'
     ) {
@@ -113,7 +113,7 @@ class WarenkorbPersPos
         $this->kWarenkorbPers  = $kWarenkorbPers;
         $this->cUnique         = $unique;
         $this->cResponsibility = !empty($responsibility) ? $responsibility : 'core';
-        $this->kKonfigitem     = $kKonfigitem;
+        $this->kKonfigitem     = $configItemID;
         $this->nPosTyp         = $type;
     }
 
@@ -123,14 +123,14 @@ class WarenkorbPersPos
      */
     public function erstellePosEigenschaften(array $attrValues): self
     {
-        foreach ($attrValues as $oEigenschaftwerte) {
-            if (isset($oEigenschaftwerte->kEigenschaft)) {
+        foreach ($attrValues as $value) {
+            if (isset($value->kEigenschaft)) {
                 $attr = new WarenkorbPersPosEigenschaft(
-                    $oEigenschaftwerte->kEigenschaft,
-                    $oEigenschaftwerte->kEigenschaftWert ?? 0,
-                    $oEigenschaftwerte->cFreifeldWert ?? null,
-                    $oEigenschaftwerte->cEigenschaftName ?? null,
-                    $oEigenschaftwerte->cEigenschaftWertName ?? null,
+                    $value->kEigenschaft,
+                    $value->kEigenschaftWert ?? 0,
+                    $value->cFreifeldWert ?? null,
+                    $value->cEigenschaftName ?? null,
+                    $value->cEigenschaftWertName ?? null,
                     $this->kWarenkorbPersPos
                 );
                 $attr->schreibeDB();

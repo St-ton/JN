@@ -68,7 +68,7 @@
             <div class="panel panel-default">
                 {if $bSpracheAktiv}
                     {include file='tpl_inc/filtertools.tpl' oFilter=$oFilter}
-                    {include file='tpl_inc/pagination.tpl' oPagination=$oPagination}
+                    {include file='tpl_inc/pagination.tpl' $pagination=$pagination}
                 {/if}
                 <form action="sprache.php" method="post">
                     {$jtl_token}

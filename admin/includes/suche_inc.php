@@ -19,11 +19,10 @@ function adminSearch($query, $standalonePage = false): ?string
     require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'versandarten_inc.php';
     require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'zahlungsarten_inc.php';
 
-    $adminMenuItems = adminMenuSearch($query);
-    $settings       = bearbeiteEinstellungsSuche($query);
-    $shippings      = getShippingByName($query);
-    $paymentMethods = getPaymentMethodsByName($query);
-
+    $adminMenuItems  = adminMenuSearch($query);
+    $settings        = bearbeiteEinstellungsSuche($query);
+    $shippings       = getShippingByName($query);
+    $paymentMethods  = getPaymentMethodsByName($query);
     $groupedSettings = [];
     $currentGroup    = null;
 

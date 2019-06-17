@@ -670,9 +670,9 @@ if ($step === 'uebersicht') {
             if ((int)$customerGroupID === -1) {
                 $method->cKundengruppenName_arr[] = __('allCustomerGroups');
             } else {
-                foreach ($customerGroups as $oKundengruppen) {
-                    if ((int)$oKundengruppen->kKundengruppe === (int)$customerGroupID) {
-                        $method->cKundengruppenName_arr[] = $oKundengruppen->cName;
+                foreach ($customerGroups as $customerGroup) {
+                    if ((int)$customerGroup->kKundengruppe === (int)$customerGroupID) {
+                        $method->cKundengruppenName_arr[] = $customerGroup->cName;
                     }
                 }
             }

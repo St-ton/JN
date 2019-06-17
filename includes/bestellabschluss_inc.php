@@ -37,8 +37,8 @@ use JTL\Shop;
  */
 function bestellungKomplett(): int
 {
-    $checkBox                = new CheckBox();
-    $_SESSION['cPlausi_arr'] = $checkBox->validateCheckBox(
+    $checkbox                = new CheckBox();
+    $_SESSION['cPlausi_arr'] = $checkbox->validateCheckBox(
         CHECKBOX_ORT_BESTELLABSCHLUSS,
         Frontend::getCustomerGroup()->getID(),
         $_POST,
@@ -87,19 +87,19 @@ function gibFehlendeEingabe(): int
 }
 
 /**
- * @param int    $nBezahlt
+ * @param int    $cleared
  * @param string $orderNo
  */
-function bestellungInDB($nBezahlt = 0, $orderNo = '')
+function bestellungInDB($cleared = 0, $orderNo = '')
 {
     unhtmlSession();
     $order             = new Bestellung();
     $customer          = Frontend::getCustomer();
     $deliveryAddress   = Frontend::getDeliveryAddress();
-    $order->cBestellNr = empty($orderNo) ? baueBestellnummer() : $orderNo;
-    $cartItems         = [];
     $db                = Shop::Container()->getDB();
     $cart              = Frontend::getCart();
+    $order->cBestellNr = empty($orderNo) ? baueBestellnummer() : $orderNo;
+    $cartItems         = [];
     if (Frontend::getCustomer()->getID() <= 0) {
         $customerAttributes      = $customer->getCustomerAttributes();
         $customer->kKundengruppe = Frontend::getCustomerGroup()->getID();
@@ -241,33 +241,31 @@ function bestellungInDB($nBezahlt = 0, $orderNo = '')
             );
         }
     }
-    $oRechnungsadresse = new Rechnungsadresse();
-
-    $oRechnungsadresse->kKunde        = $customer->kKunde;
-    $oRechnungsadresse->cAnrede       = $customer->cAnrede;
-    $oRechnungsadresse->cTitel        = $customer->cTitel;
-    $oRechnungsadresse->cVorname      = $customer->cVorname;
-    $oRechnungsadresse->cNachname     = $customer->cNachname;
-    $oRechnungsadresse->cFirma        = $customer->cFirma;
-    $oRechnungsadresse->cZusatz       = $customer->cZusatz;
-    $oRechnungsadresse->cStrasse      = $customer->cStrasse;
-    $oRechnungsadresse->cHausnummer   = $customer->cHausnummer;
-    $oRechnungsadresse->cAdressZusatz = $customer->cAdressZusatz;
-    $oRechnungsadresse->cPLZ          = $customer->cPLZ;
-    $oRechnungsadresse->cOrt          = $customer->cOrt;
-    $oRechnungsadresse->cBundesland   = $customer->cBundesland;
-    $oRechnungsadresse->cLand         = $customer->cLand;
-    $oRechnungsadresse->cTel          = $customer->cTel;
-    $oRechnungsadresse->cMobil        = $customer->cMobil;
-    $oRechnungsadresse->cFax          = $customer->cFax;
-    $oRechnungsadresse->cUSTID        = $customer->cUSTID;
-    $oRechnungsadresse->cWWW          = $customer->cWWW;
-    $oRechnungsadresse->cMail         = $customer->cMail;
+    $billingAddress                = new Rechnungsadresse();
+    $billingAddress->kKunde        = $customer->kKunde;
+    $billingAddress->cAnrede       = $customer->cAnrede;
+    $billingAddress->cTitel        = $customer->cTitel;
+    $billingAddress->cVorname      = $customer->cVorname;
+    $billingAddress->cNachname     = $customer->cNachname;
+    $billingAddress->cFirma        = $customer->cFirma;
+    $billingAddress->cZusatz       = $customer->cZusatz;
+    $billingAddress->cStrasse      = $customer->cStrasse;
+    $billingAddress->cHausnummer   = $customer->cHausnummer;
+    $billingAddress->cAdressZusatz = $customer->cAdressZusatz;
+    $billingAddress->cPLZ          = $customer->cPLZ;
+    $billingAddress->cOrt          = $customer->cOrt;
+    $billingAddress->cBundesland   = $customer->cBundesland;
+    $billingAddress->cLand         = $customer->cLand;
+    $billingAddress->cTel          = $customer->cTel;
+    $billingAddress->cMobil        = $customer->cMobil;
+    $billingAddress->cFax          = $customer->cFax;
+    $billingAddress->cUSTID        = $customer->cUSTID;
+    $billingAddress->cWWW          = $customer->cWWW;
+    $billingAddress->cMail         = $customer->cMail;
 
     executeHook(HOOK_BESTELLABSCHLUSS_INC_BESTELLUNGINDB_RECHNUNGSADRESSE);
 
-    $kRechnungsadresse = $oRechnungsadresse->insertInDB();
-
+    $billingAddressID = $billingAddress->insertInDB();
     if (isset($_POST['kommentar'])) {
         $_SESSION['kommentar'] = mb_substr(strip_tags($_POST['kommentar']), 0, 1000);
     } elseif (!isset($_SESSION['kommentar'])) {
@@ -277,7 +275,7 @@ function bestellungInDB($nBezahlt = 0, $orderNo = '')
     $order->kKunde            = $cart->kKunde;
     $order->kWarenkorb        = $cart->kWarenkorb;
     $order->kLieferadresse    = $cart->kLieferadresse;
-    $order->kRechnungsadresse = $kRechnungsadresse;
+    $order->kRechnungsadresse = $billingAddressID;
     $order->kZahlungsart      = $_SESSION['Zahlungsart']->kZahlungsart;
     $order->kVersandart       = $_SESSION['Versandart']->kVersandart;
     $order->kSprache          = Shop::getLanguage();
@@ -318,11 +316,11 @@ function bestellungInDB($nBezahlt = 0, $orderNo = '')
 
     executeHook(HOOK_BESTELLABSCHLUSS_INC_BESTELLUNGINDB, ['oBestellung' => &$order]);
 
-    $kBestellung = $order->insertInDB();
+    $orderID = $order->insertInDB();
 
     $logger = Shop::Container()->getLogService();
     if ($logger->isHandling(JTLLOG_LEVEL_DEBUG)) {
-        $logger->withName('kBestellung')->debug('Bestellung gespeichert: ' . print_r($order, true), [$kBestellung]);
+        $logger->withName('kBestellung')->debug('Bestellung gespeichert: ' . print_r($order, true), [$orderID]);
     }
     //BestellID füllen
     $bestellid              = new stdClass();
@@ -359,21 +357,21 @@ function bestellungInDB($nBezahlt = 0, $orderNo = '')
 }
 
 /**
- * @param int  $kKunde
- * @param int  $kBestellung
- * @param bool $bZahlungAgain
+ * @param int  $customerID
+ * @param int  $orderID
+ * @param bool $payAgain
  * @return bool
  */
-function saveZahlungsInfo(int $kKunde, int $kBestellung, bool $bZahlungAgain = false): bool
+function saveZahlungsInfo(int $customerID, int $orderID, bool $payAgain = false): bool
 {
     /** @var array('Warenkorb' => Warenkorb) $_SESSION */
 
-    if (!$kKunde || !$kBestellung) {
+    if (!$customerID || !$orderID) {
         return false;
     }
     $_SESSION['ZahlungsInfo']               = new ZahlungsInfo();
-    $_SESSION['ZahlungsInfo']->kBestellung  = $kBestellung;
-    $_SESSION['ZahlungsInfo']->kKunde       = $kKunde;
+    $_SESSION['ZahlungsInfo']->kBestellung  = $orderID;
+    $_SESSION['ZahlungsInfo']->kKunde       = $customerID;
     $_SESSION['ZahlungsInfo']->cKartenTyp   = isset($_SESSION['Zahlungsart']->ZahlungsInfo->cKartenTyp)
         ? Text::unhtmlentities($_SESSION['Zahlungsart']->ZahlungsInfo->cKartenTyp)
         : null;
@@ -405,7 +403,7 @@ function saveZahlungsInfo(int $kKunde, int $kBestellung, bool $bZahlungAgain = f
         ? Text::unhtmlentities($_SESSION['Zahlungsart']->ZahlungsInfo->cInhaber)
         : null;
 
-    if (!$bZahlungAgain) {
+    if (!$payAgain) {
         $cart                = Frontend::getCart();
         $cart->kZahlungsInfo = $_SESSION['ZahlungsInfo']->insertInDB();
         $cart->updateInDB();
@@ -415,7 +413,7 @@ function saveZahlungsInfo(int $kKunde, int $kBestellung, bool $bZahlungAgain = f
     if (isset($_SESSION['Zahlungsart']->ZahlungsInfo->cKontoNr)
         || isset($_SESSION['Zahlungsart']->ZahlungsInfo->cIBAN)
     ) {
-        Shop::Container()->getDB()->delete('tkundenkontodaten', 'kKunde', $kKunde);
+        Shop::Container()->getDB()->delete('tkundenkontodaten', 'kKunde', $customerID);
         speicherKundenKontodaten($_SESSION['Zahlungsart']->ZahlungsInfo);
     }
 
@@ -423,19 +421,19 @@ function saveZahlungsInfo(int $kKunde, int $kBestellung, bool $bZahlungAgain = f
 }
 
 /**
- * @param object $oZahlungsinfo
+ * @param object $paymentInfo
  */
-function speicherKundenKontodaten($oZahlungsinfo): void
+function speicherKundenKontodaten($paymentInfo): void
 {
     $cryptoService   = Shop::Container()->getCryptoService();
     $data            = new stdClass();
     $data->kKunde    = Frontend::getCart()->kKunde;
-    $data->cBLZ      = $cryptoService->encryptXTEA($oZahlungsinfo->cBLZ ?? '');
-    $data->nKonto    = $cryptoService->encryptXTEA($oZahlungsinfo->cKontoNr ?? '');
-    $data->cInhaber  = $cryptoService->encryptXTEA($oZahlungsinfo->cInhaber ?? '');
-    $data->cBankName = $cryptoService->encryptXTEA($oZahlungsinfo->cBankName ?? '');
-    $data->cIBAN     = $cryptoService->encryptXTEA($oZahlungsinfo->cIBAN ?? '');
-    $data->cBIC      = $cryptoService->encryptXTEA($oZahlungsinfo->cBIC ?? '');
+    $data->cBLZ      = $cryptoService->encryptXTEA($paymentInfo->cBLZ ?? '');
+    $data->nKonto    = $cryptoService->encryptXTEA($paymentInfo->cKontoNr ?? '');
+    $data->cInhaber  = $cryptoService->encryptXTEA($paymentInfo->cInhaber ?? '');
+    $data->cBankName = $cryptoService->encryptXTEA($paymentInfo->cBankName ?? '');
+    $data->cIBAN     = $cryptoService->encryptXTEA($paymentInfo->cIBAN ?? '');
+    $data->cBIC      = $cryptoService->encryptXTEA($paymentInfo->cBIC ?? '');
 
     Shop::Container()->getDB()->insert('tkundenkontodaten', $data);
 }
@@ -604,17 +602,17 @@ function aktualisiereXselling(int $productID, int $targetID): void
  */
 function aktualisiereLagerbestand(Artikel $product, $amount, $attributeValues, int $productFilter = 1)
 {
-    $artikelBestand = (float)$product->fLagerbestand;
-    $db             = Shop::Container()->getDB();
+    $inventory = (float)$product->fLagerbestand;
+    $db        = Shop::Container()->getDB();
     if ($amount <= 0 || $product->cLagerBeachten !== 'Y') {
-        return $artikelBestand;
+        return $inventory;
     }
     if ($product->cLagerVariation === 'Y'
         && is_array($attributeValues)
         && count($attributeValues) > 0
     ) {
-        foreach ($attributeValues as $eWert) {
-            $EigenschaftWert = new EigenschaftWert($eWert->kEigenschaftWert);
+        foreach ($attributeValues as $value) {
+            $EigenschaftWert = new EigenschaftWert($value->kEigenschaftWert);
             if ($EigenschaftWert->fPackeinheit == 0) {
                 $EigenschaftWert->fPackeinheit = 1;
             }
@@ -623,7 +621,7 @@ function aktualisiereLagerbestand(Artikel $product, $amount, $attributeValues, i
                     SET fLagerbestand = fLagerbestand - :inv
                     WHERE kEigenschaftWert = :aid',
                 [
-                    'aid' => (int)$eWert->kEigenschaftWert,
+                    'aid' => (int)$value->kEigenschaftWert,
                     'inv' => $amount * $EigenschaftWert->fPackeinheit
                 ],
                 ReturnType::DEFAULT
@@ -632,10 +630,10 @@ function aktualisiereLagerbestand(Artikel $product, $amount, $attributeValues, i
         updateStock($product->kArtikel, $amount, $product->fPackeinheit);
     } elseif ($product->fPackeinheit > 0) {
         if ($product->kStueckliste > 0) {
-            $artikelBestand = aktualisiereStuecklistenLagerbestand($product, $amount);
+            $inventory = aktualisiereStuecklistenLagerbestand($product, $amount);
         } else {
             updateStock($product->kArtikel, $amount, $product->fPackeinheit);
-            $tmpArtikel = $db->select(
+            $tmpProduct = $db->select(
                 'tartikel',
                 'kArtikel',
                 (int)$product->kArtikel,
@@ -646,14 +644,14 @@ function aktualisiereLagerbestand(Artikel $product, $amount, $attributeValues, i
                 false,
                 'fLagerbestand'
             );
-            if ($tmpArtikel !== null) {
-                $artikelBestand = (float)$tmpArtikel->fLagerbestand;
+            if ($tmpProduct !== null) {
+                $inventory = (float)$tmpProduct->fLagerbestand;
             }
             // Stücklisten Komponente
             if (Product::isStuecklisteKomponente($product->kArtikel)) {
                 aktualisiereKomponenteLagerbestand(
                     $product->kArtikel,
-                    $artikelBestand,
+                    $inventory,
                     $product->cLagerKleinerNull === 'Y'
                 );
             }
@@ -665,7 +663,7 @@ function aktualisiereLagerbestand(Artikel $product, $amount, $attributeValues, i
         }
     }
 
-    return $artikelBestand;
+    return $inventory;
 }
 
 /**
@@ -681,7 +679,7 @@ function updateStock(int $productID, $amount, $packeinheit)
             WHERE kArtikel = :productID',
         [
             'amountSubstract' => $amount * $packeinheit,
-            'productID' => $productID
+            'productID'       => $productID
         ],
         ReturnType::DEFAULT
     );
@@ -868,20 +866,20 @@ function KuponVerwendungen($order): void
 {
     $db          = Shop::Container()->getDB();
     $cart        = Frontend::getCart();
-    $kKupon      = 0;
+    $couponID    = 0;
     $cKuponTyp   = '';
     $couponGross = 0;
     if (isset($_SESSION['VersandKupon']->kKupon) && $_SESSION['VersandKupon']->kKupon > 0) {
-        $kKupon      = (int)$_SESSION['VersandKupon']->kKupon;
+        $couponID    = (int)$_SESSION['VersandKupon']->kKupon;
         $cKuponTyp   = Kupon::TYPE_SHIPPING;
         $couponGross = $_SESSION['Versandart']->fPreis;
     }
     if (isset($_SESSION['NeukundenKupon']->kKupon) && $_SESSION['NeukundenKupon']->kKupon > 0) {
-        $kKupon    = (int)$_SESSION['NeukundenKupon']->kKupon;
+        $couponID  = (int)$_SESSION['NeukundenKupon']->kKupon;
         $cKuponTyp = Kupon::TYPE_NEWCUSTOMER;
     }
     if (isset($_SESSION['Kupon']->kKupon) && $_SESSION['Kupon']->kKupon > 0) {
-        $kKupon    = (int)$_SESSION['Kupon']->kKupon;
+        $couponID  = (int)$_SESSION['Kupon']->kKupon;
         $cKuponTyp = Kupon::TYPE_STANDARD;
     }
     foreach ($cart->PositionenArr as $item) {
@@ -896,12 +894,12 @@ function KuponVerwendungen($order): void
             ) * (-1);
         }
     }
-    if ($kKupon > 0) {
+    if ($couponID > 0) {
         $db->queryPrepared(
             'UPDATE tkupon
               SET nVerwendungenBisher = nVerwendungenBisher + 1
               WHERE kKupon = :couponID',
-            ['couponID' => $kKupon],
+            ['couponID' => $couponID],
             ReturnType::DEFAULT
         );
 
@@ -911,9 +909,9 @@ function KuponVerwendungen($order): void
                 ON DUPLICATE KEY UPDATE
                   nVerwendungen = nVerwendungen + 1',
             [
-                'couponID'   => $kKupon,
-                'email' => Kupon::hash(Frontend::getCustomer()->cMail),
-                'used' => 1
+                'couponID' => $couponID,
+                'email'    => Kupon::hash(Frontend::getCustomer()->cMail),
+                'used'     => 1
             ],
             ReturnType::DEFAULT
         );
@@ -925,7 +923,7 @@ function KuponVerwendungen($order): void
         ]);
 
         $couponOrder                     = new KuponBestellung();
-        $couponOrder->kKupon             = $kKupon;
+        $couponOrder->kKupon             = $couponID;
         $couponOrder->kBestellung        = $order->kBestellung;
         $couponOrder->kKunde             = $cart->kKunde;
         $couponOrder->cBestellNr         = $order->cBestellNr;
@@ -943,16 +941,16 @@ function KuponVerwendungen($order): void
  */
 function baueBestellnummer(): string
 {
-    $conf           = Shop::getSettings([CONF_KAUFABWICKLUNG]);
-    $oNummer        = new Nummern(JTL_GENNUMBER_ORDERNUMBER);
-    $nBestellnummer = 1;
-    $nIncrement     = isset($conf['kaufabwicklung']['bestellabschluss_bestellnummer_anfangsnummer'])
+    $conf      = Shop::getSettings([CONF_KAUFABWICKLUNG]);
+    $number    = new Nummern(JTL_GENNUMBER_ORDERNUMBER);
+    $orderNo   = 1;
+    $increment = isset($conf['kaufabwicklung']['bestellabschluss_bestellnummer_anfangsnummer'])
         ? (int)$conf['kaufabwicklung']['bestellabschluss_bestellnummer_anfangsnummer']
         : 1;
-    if ($oNummer) {
-        $nBestellnummer = $oNummer->getNummer() + $nIncrement;
-        $oNummer->setNummer($oNummer->getNummer() + 1);
-        $oNummer->update();
+    if ($number) {
+        $orderNo = $number->getNummer() + $increment;
+        $number->setNummer($number->getNummer() + 1);
+        $number->update();
     }
 
     /*
@@ -961,36 +959,36 @@ function baueBestellnummer(): string
     *   %d = -aktueller Tag
     *   %W = -aktuelle KW
     */
-    $cPraefix = str_replace(
+    $prefix = str_replace(
         ['%Y', '%m', '%d', '%W'],
         [date('Y'), date('m'), date('d'), date('W')],
         $conf['kaufabwicklung']['bestellabschluss_bestellnummer_praefix']
     );
-    $cSuffix  = str_replace(
+    $suffix = str_replace(
         ['%Y', '%m', '%d', '%W'],
         [date('Y'), date('m'), date('d'), date('W')],
         $conf['kaufabwicklung']['bestellabschluss_bestellnummer_suffix']
     );
 
-    return $cPraefix . $nBestellnummer . $cSuffix;
+    return $prefix . $orderNo . $suffix;
 }
 
 /**
- * @param Bestellung $oBestellung
+ * @param Bestellung $order
  */
-function speicherUploads($oBestellung): void
+function speicherUploads($order): void
 {
-    if (!empty($oBestellung->kBestellung) && Upload::checkLicense()) {
-        Upload::speicherUploadDateien(Frontend::getCart(), $oBestellung->kBestellung);
+    if (!empty($order->kBestellung) && Upload::checkLicense()) {
+        Upload::speicherUploadDateien(Frontend::getCart(), $order->kBestellung);
     }
 }
 
 /**
- * @param Bestellung $bestellung
+ * @param Bestellung $order
  */
-function setzeSmartyWeiterleitung(Bestellung $bestellung): void
+function setzeSmartyWeiterleitung(Bestellung $order): void
 {
-    speicherUploads($bestellung);
+    speicherUploads($order);
     $logger = Shop::Container()->getLogService();
     if ($logger->isHandling(JTLLOG_LEVEL_DEBUG)) {
         $logger->withName('cModulId')->debug(
@@ -999,20 +997,21 @@ function setzeSmartyWeiterleitung(Bestellung $bestellung): void
             [$_SESSION['Zahlungsart']->cModulId]
         );
     }
-    $kPlugin = Helper::getIDByModuleID($_SESSION['Zahlungsart']->cModulId);
-    if ($kPlugin > 0) {
-        $loader             = Helper::getLoaderByPluginID($kPlugin);
-        $oPlugin            = $loader->init($kPlugin);
-        $GLOBALS['oPlugin'] = $oPlugin;
-        if ($oPlugin !== null) {
-            require_once $oPlugin->getPaths()->getVersionedPath() . PFAD_PLUGIN_PAYMENTMETHOD .
-                $oPlugin->oPluginZahlungsKlasseAssoc_arr[$_SESSION['Zahlungsart']->cModulId]->cClassPfad;
-            $pluginClass = $oPlugin->oPluginZahlungsKlasseAssoc_arr[$_SESSION['Zahlungsart']->cModulId]->cClassName;
+    $pluginID = Helper::getIDByModuleID($_SESSION['Zahlungsart']->cModulId);
+    if ($pluginID > 0) {
+        $loader             = Helper::getLoaderByPluginID($pluginID);
+        $plugin             = $loader->init($pluginID);
+        $GLOBALS['oPlugin'] = $plugin;
+        if ($plugin !== null) {
+            $methods = $plugin->getPaymentMethods()->getMethodsAssoc();
+            require_once $plugin->getPaths()->getVersionedPath() . PFAD_PLUGIN_PAYMENTMETHOD .
+                $methods[$_SESSION['Zahlungsart']->cModulId]->cClassPfad;
+            $pluginClass = $methods[$_SESSION['Zahlungsart']->cModulId]->cClassName;
             /** @var PaymentMethod $paymentMethod */
             $paymentMethod           = new $pluginClass($_SESSION['Zahlungsart']->cModulId);
             $paymentMethod->cModulId = $_SESSION['Zahlungsart']->cModulId;
-            $paymentMethod->preparePaymentProcess($bestellung);
-            Shop::Smarty()->assign('oPlugin', $oPlugin);
+            $paymentMethod->preparePaymentProcess($order);
+            Shop::Smarty()->assign('oPlugin', $plugin);
         }
     } elseif ($_SESSION['Zahlungsart']->cModulId === 'za_kreditkarte_jtl'
         || $_SESSION['Zahlungsart']->cModulId === 'za_lastschrift_jtl'
@@ -1199,24 +1198,24 @@ function finalisiereBestellung($orderNo = '', bool $sendMail = true): Bestellung
         )->format('d.m.Y') . ' - ' .
         Date::dateAddWeekday($order->dErstellt, $order->oEstimatedDelivery->longestMax)->format('d.m.Y');
     }
-    $oKunde = new Kunde();
-    $oKunde->kopiereSession();
+    $customer = new Kunde();
+    $customer->kopiereSession();
     if ($sendMail === true) {
         $mailer = Shop::Container()->get(Mailer::class);
         $mail   = new Mail();
         $mailer->send($mail->createFromTemplateID(MAILTEMPLATE_BESTELLBESTAETIGUNG, $obj));
     }
-    $_SESSION['Kunde'] = $oKunde;
+    $_SESSION['Kunde'] = $customer;
     $customerGroupID   = Frontend::getCustomerGroup()->getID();
-    $checkBox          = new CheckBox();
-    $checkBox->triggerSpecialFunction(
+    $checkbox          = new CheckBox();
+    $checkbox->triggerSpecialFunction(
         CHECKBOX_ORT_BESTELLABSCHLUSS,
         $customerGroupID,
         true,
         $_POST,
-        ['oBestellung' => $order, 'oKunde' => $oKunde]
+        ['oBestellung' => $order, 'oKunde' => $customer]
     );
-    $checkBox->checkLogging(CHECKBOX_ORT_BESTELLABSCHLUSS, $customerGroupID, $_POST, true);
+    $checkbox->checkLogging(CHECKBOX_ORT_BESTELLABSCHLUSS, $customerGroupID, $_POST, true);
 
     return $order;
 }

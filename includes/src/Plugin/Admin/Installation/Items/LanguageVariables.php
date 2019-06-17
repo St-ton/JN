@@ -86,13 +86,13 @@ class LanguageVariables extends AbstractItem
                     \preg_match('/[0-9]+\sattr/', $i, $hits1);
 
                     if (isset($hits1[0]) && \mb_strlen($hits1[0]) === \mb_strlen($i)) {
-                        $cISO                             = $loc['iso'];
+                        $iso                              = $loc['iso'];
                         $yx                               = \mb_substr($i, 0, \mb_strpos($i, ' '));
-                        $cName                            = $langVar['VariableLocalized'][$yx];
+                        $name                             = $langVar['VariableLocalized'][$yx];
                         $localized                        = new stdClass();
                         $localized->kPluginSprachvariable = $id;
-                        $localized->cISO                  = $cISO;
-                        $localized->cName                 = \preg_replace('/\s+/', ' ', $cName);
+                        $localized->cISO                  = $iso;
+                        $localized->cName                 = \preg_replace('/\s+/', ' ', $name);
 
                         $this->db->insert('tpluginsprachvariablesprache', $localized);
                         // Erste PluginSprachVariableSprache vom Plugin als Standard setzen

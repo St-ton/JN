@@ -29,7 +29,7 @@
                     </p>
                 </form>
                 {if $oUmfrage_arr|@count > 0 && $oUmfrage_arr}
-                    {include file='tpl_inc/pagination.tpl' oPagination=$oPagination cAnchor='umfrage'}
+                    {include file='tpl_inc/pagination.tpl' $pagination=$pagination cAnchor='umfrage'}
                     <form name="umfrage" method="post" action="umfrage.php">
                         {$jtl_token}
                         <input type="hidden" name="umfrage" value="1" />

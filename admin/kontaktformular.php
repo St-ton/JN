@@ -76,13 +76,13 @@ if (isset($_POST['betreff']) && (int)$_POST['betreff'] === 1 && Form::validateTo
         if ((int)$_POST['nSort'] > 0) {
             $newSubject->nSort = (int)$_POST['nSort'];
         }
-        $kKontaktBetreff = 0;
+        $subjectID = 0;
         if ((int)$_POST['kKontaktBetreff'] === 0) {
-            $kKontaktBetreff = $db->insert('tkontaktbetreff', $newSubject);
+            $subjectID = $db->insert('tkontaktbetreff', $newSubject);
             $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successSubjectCreate'), 'successSubjectCreate');
         } else {
-            $kKontaktBetreff = (int)$_POST['kKontaktBetreff'];
-            $db->update('tkontaktbetreff', 'kKontaktBetreff', $kKontaktBetreff, $newSubject);
+            $subjectID = (int)$_POST['kKontaktBetreff'];
+            $db->update('tkontaktbetreff', 'kKontaktBetreff', $subjectID, $newSubject);
             $alertHelper->addAlert(
                 Alert::TYPE_SUCCESS,
                 sprintf(__('successSubjectSave'), $newSubject->cName),
@@ -90,7 +90,7 @@ if (isset($_POST['betreff']) && (int)$_POST['betreff'] === 1 && Form::validateTo
             );
         }
         $localized                  = new stdClass();
-        $localized->kKontaktBetreff = $kKontaktBetreff;
+        $localized->kKontaktBetreff = $subjectID;
         foreach ($languages as $language) {
             $code                   = $language->getIso();
             $localized->cISOSprache = $code;
@@ -105,7 +105,7 @@ if (isset($_POST['betreff']) && (int)$_POST['betreff'] === 1 && Form::validateTo
             $db->delete(
                 'tkontaktbetreffsprache',
                 ['kKontaktBetreff', 'cISOSprache'],
-                [$kKontaktBetreff, $code]
+                [$subjectID, $code]
             );
             $db->insert('tkontaktbetreffsprache', $localized);
         }

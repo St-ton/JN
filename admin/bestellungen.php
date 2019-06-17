@@ -44,12 +44,12 @@ if (Request::verifyGPCDataInt('zuruecksetzen') === 1 && Form::validateToken()) {
 }
 
 if ($step === 'bestellungen_uebersicht') {
-    $oPagination     = (new Pagination('bestellungen'))
+    $pagination      = (new Pagination('bestellungen'))
         ->setItemCount(gibAnzahlBestellungen($cSuchFilter))
         ->assemble();
-    $oBestellung_arr = gibBestellungsUebersicht(' LIMIT ' . $oPagination->getLimitSQL(), $cSuchFilter);
+    $oBestellung_arr = gibBestellungsUebersicht(' LIMIT ' . $pagination->getLimitSQL(), $cSuchFilter);
     $smarty->assign('oBestellung_arr', $oBestellung_arr)
-           ->assign('oPagination', $oPagination);
+           ->assign('$pagination', $pagination);
 }
 
 $smarty->assign('cSuche', $cSuchFilter)

@@ -161,12 +161,12 @@ class Konfiggruppesprache implements JsonSerializable
     }
 
     /**
-     * @param string $cName
+     * @param string $name
      * @return $this
      */
-    public function setName($cName): self
+    public function setName($name): self
     {
-        $this->cName = Shop::Container()->getDB()->escape($cName);
+        $this->cName = Shop::Container()->getDB()->escape($name);
 
         return $this;
     }

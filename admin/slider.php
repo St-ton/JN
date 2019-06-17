@@ -197,7 +197,7 @@ $pagination = (new Pagination('sliders'))
     ->setItemArray($sliders)
     ->assemble();
 
-$smarty->assign('cAction', $action)
+$smarty->assign('action', $action)
        ->assign('kSlider', $kSlider)
        ->assign('validPageTypes', (new BoxAdmin($db))->getMappedValidPageTypes())
        ->assign('pagination', $pagination)

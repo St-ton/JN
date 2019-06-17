@@ -17,7 +17,7 @@
     <div class="tab-content">
         <div id="letztenvergleiche" class="tab-pane fade {if !isset($cTab) || $cTab === 'letztenvergleiche'} active in{/if}">
             {if $Letzten20Vergleiche && $Letzten20Vergleiche|@count > 0}
-                {include file='tpl_inc/pagination.tpl' oPagination=$oPagination cAnchor='letztenvergleiche'}
+                {include file='tpl_inc/pagination.tpl' $pagination=$pagination cAnchor='letztenvergleiche'}
                 <div class="settings panel panel-default table-responsive">
                     <table  class="table table-striped">
                         <tr>

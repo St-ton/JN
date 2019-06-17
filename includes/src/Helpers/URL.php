@@ -6,10 +6,10 @@
 
 namespace JTL\Helpers;
 
+use JTL\Language\LanguageHelper;
 use JTL\Link\LinkInterface;
 use JTL\News\Item;
 use JTL\Shop;
-use JTL\Sprache;
 
 /**
  * Class URL
@@ -273,7 +273,7 @@ class URL
         if ($obj instanceof LinkInterface) {
             return $obj->getURL();
         }
-        $lang   = !Sprache::isDefaultLanguageActive(true)
+        $lang   = !LanguageHelper::isDefaultLanguageActive(true)
             ? ('&lang=' . Shop::getLanguageCode())
             : '';
         $prefix = $full === false ? '' : Shop::getURL() . '/';

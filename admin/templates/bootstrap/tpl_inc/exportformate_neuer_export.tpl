@@ -27,8 +27,8 @@
                         <span class="input-group-addon"><label for="kSprache">{__('language')}</label></span>
                         <span class="input-group-wrap">
                             <select class="form-control" name="kSprache" id="kSprache">
-                                {foreach $sprachen as $sprache}
-                                    <option value="{$sprache->kSprache}" {if isset($Exportformat->kSprache) && $Exportformat->kSprache == $sprache->kSprache || (isset($cPlausiValue_arr.kSprache) && $cPlausiValue_arr.kSprache == $sprache->kSprache)}selected{/if}>{$sprache->cNameDeutsch}</option>
+                                {foreach $sprachen as $language}
+                                    <option value="{$language->getId()}" {if isset($Exportformat->kSprache) && $Exportformat->kSprache == $language->getId() || (isset($cPlausiValue_arr.kSprache) && $cPlausiValue_arr.kSprache == $language->getId())}selected{/if}>{$language->getLocalizedName()}</option>
                                 {/foreach}
                             </select>
                         </span>

@@ -8,9 +8,9 @@ namespace JTL\Smarty;
 
 use JTL\Backend\AdminTemplate;
 use JTL\Events\Dispatcher;
+use JTL\Language\LanguageHelper;
 use JTL\Plugin\Helper;
 use JTL\Shop;
-use JTL\Sprache;
 use JTL\Template;
 
 /**
@@ -139,7 +139,7 @@ class JTLSmarty extends \SmartyBC
      */
     private function init($parent = null): void
     {
-        $pluginCollection = new PluginCollection($this->config, Sprache::getInstance());
+        $pluginCollection = new PluginCollection($this->config, LanguageHelper::getInstance());
         $this->registerPlugin(self::PLUGIN_FUNCTION, 'lang', [$pluginCollection, 'translate'])
              ->registerPlugin(self::PLUGIN_MODIFIER, 'replace_delim', [$pluginCollection, 'replaceDelimiters'])
              ->registerPlugin(self::PLUGIN_MODIFIER, 'count_characters', [$pluginCollection, 'countCharacters'])

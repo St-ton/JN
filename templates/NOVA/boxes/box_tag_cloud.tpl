@@ -21,7 +21,6 @@
         </script>
     {/block}
     {card class="box box-tagcloud mb-7" id="sidebox{$oBox->getID()}" title="{lang key='tagcloud'}"}
-        <hr class="mt-0 mb-4">
         {block name='boxes-box-tag-cloud-content'}
             <div class="tagcloud"></div>
         {/block}

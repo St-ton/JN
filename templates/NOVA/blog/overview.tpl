@@ -3,16 +3,19 @@
  * @license https://jtl-url.de/jtlshoplicense
  *}
 {block name='blog-overview'}
-    {block name='blog-overview-heading'}
-        {include file='snippets/opc_mount_point.tpl' id='opc_before_heading'}
-        <h1>{lang key='news' section='news'}</h1>
-    {/block}
+    {container}
+        {block name='blog-overview-heading'}
+            {include file='snippets/opc_mount_point.tpl' id='opc_before_heading'}
+            <h1>{lang key='news' section='news'}</h1>
+        {/block}
 
-    {block name='blog-overview-include-extension'}
-        {include file='snippets/extension.tpl'}
-    {/block}
+        {block name='blog-overview-include-extension'}
+            {include file='snippets/extension.tpl'}
+        {/block}
+    {/container}
     {include file='snippets/opc_mount_point.tpl' id='opc_before_filter'}
     {block name='filter'}
+        {container}
         {row}
             {col}
             {get_static_route id='news.php' assign=routeURL}
@@ -75,51 +78,56 @@
                 {/block}
             {/col}
         {/row}
+        {/container}
     {/block}
     {block name='blog-overview-category'}
         {if $noarchiv === 1}
             {block name='blog-overview-alert-no-archive'}
+                {container}
                 {alert variant="info"}{lang key='noNewsArchiv' section='news'}.{/alert}
+                {/container}
             {/block}
         {elseif !empty($oNewsUebersicht_arr)}
-            <div id="newsContent" itemprop="mainEntity" itemscope itemtype="https://schema.org/Blog">
-                {if $oNewsCat->getID() > 0}
-                    {block name='blog-overview-subheading'}
-                        {include file='snippets/opc_mount_point.tpl' id='opc_before_news_category_heading'}
-                        <h2>{$oNewsCat->getName()}</h2>
-                    {/block}
-                    {block name='blog-overview-preview-image'}
-                        {row}
-                            {if !empty($oNewsCat->getPreviewImage())}
-                                {col cols=12 sm=8}{$oNewsCat->getDescription()}{/col}
-                                {col cols=12 sm=4}{image src=$oNewsCat->getPreviewImage() center=true fluid=true}{/col}
-                            {else}
-                                {col sm=12}{$oNewsCat->getDescription()}{/col}
-                            {/if}
-                        {/row}
-                    <hr>
-                    {/block}
-                    {block name='blog-overview-include-pagination'}
-                        {include file='snippets/pagination.tpl' oPagination=$oPagination cThisUrl='news.php' parts=['label']}
-                    {/block}
-                {/if}
-                {include file='snippets/opc_mount_point.tpl' id='opc_before_news_list'}
-                {row class="mt-4"}
-                    {block name='blog-overview-previews'}
-                        {foreach $oNewsUebersicht_arr as $oNewsUebersicht}
-                            {col cols=12 md=6}
-                                {block name='blog-overview-include-preview'}
-                                    {include file='blog/preview.tpl'}
-                                {/block}
-                            {/col}
-                        {/foreach}
-                    {/block}
-                {/row}
-            </div>
-            {include file='snippets/opc_mount_point.tpl' id='opc_after_news_list'}
-            {block name='blog-overview-include-pagination'}
-                {include file='snippets/pagination.tpl' oPagination=$oPagination cThisUrl='news.php' parts=['pagi']}
-            {/block}
+            {container}
+                <div id="newsContent" itemprop="mainEntity" itemscope itemtype="https://schema.org/Blog">
+                    {if $oNewsCat->getID() > 0}
+                        {block name='blog-overview-subheading'}
+                            {include file='snippets/opc_mount_point.tpl' id='opc_before_news_category_heading'}
+                            <h2>{$oNewsCat->getName()}</h2>
+                        {/block}
+                        {block name='blog-overview-preview-image'}
+                            {row}
+                                {if !empty($oNewsCat->getPreviewImage())}
+                                    {col cols=12 sm=8}{$oNewsCat->getDescription()}{/col}
+                                    {col cols=12 sm=4}{image src=$oNewsCat->getPreviewImage() center=true fluid=true}{/col}
+                                {else}
+                                    {col sm=12}{$oNewsCat->getDescription()}{/col}
+                                {/if}
+                            {/row}
+                        <hr>
+                        {/block}
+                        {block name='blog-overview-include-pagination'}
+                            {include file='snippets/pagination.tpl' oPagination=$oPagination cThisUrl='news.php' parts=['label']}
+                        {/block}
+                    {/if}
+                    {include file='snippets/opc_mount_point.tpl' id='opc_before_news_list'}
+                    {row class="mt-4"}
+                        {block name='blog-overview-previews'}
+                            {foreach $oNewsUebersicht_arr as $oNewsUebersicht}
+                                {col cols=12 md=6}
+                                    {block name='blog-overview-include-preview'}
+                                        {include file='blog/preview.tpl'}
+                                    {/block}
+                                {/col}
+                            {/foreach}
+                        {/block}
+                    {/row}
+                </div>
+                {include file='snippets/opc_mount_point.tpl' id='opc_after_news_list'}
+                {block name='blog-overview-include-pagination'}
+                    {include file='snippets/pagination.tpl' oPagination=$oPagination cThisUrl='news.php' parts=['pagi']}
+                {/block}
+            {/container}
         {/if}
     {/block}
 {/block}

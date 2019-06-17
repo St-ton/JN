@@ -41,13 +41,13 @@
                             text="
                                 {foreach $smarty.session.Sprachen as $Sprache}
                                     {if $Sprache->kSprache == $smarty.session.kSprache}
-                                        {if $lang === 'ger'}{$Sprache->cNameDeutsch}{else}{$Sprache->cNameEnglisch}{/if}
+                                        {$Sprache->displayLanguage}
                                     {/if}
                                 {/foreach}"
                         }
                             {foreach $smarty.session.Sprachen as $oSprache}
-                                {dropdownitem href="{if isset($oSprache->cURLFull)}{$oSprache->cURLFull}{else}{$oSprache->cURL}{/if}" rel="nofollow" }
-                                    {if $lang === 'ger'}{$oSprache->cNameDeutsch}{else}{$oSprache->cNameEnglisch}{/if}
+                                {dropdownitem href="{$oSprache->cURL}" rel="nofollow" }
+                                    {$oSprache->displayLanguage}
                                 {/dropdownitem}
                             {/foreach}
                         {/dropdown}

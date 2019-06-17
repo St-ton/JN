@@ -7,12 +7,12 @@
 namespace JTL\Plugin\Admin\Installation\Items;
 
 use JTL\Helpers\PaymentMethod;
+use JTL\Language\LanguageHelper;
 use JTL\Plugin\Admin\InputType;
 use JTL\Plugin\Data\Config;
 use JTL\Plugin\Helper;
 use JTL\Plugin\InstallCode;
 use JTL\Shop;
-use JTL\Sprache;
 use stdClass;
 
 /**
@@ -95,7 +95,7 @@ class PaymentMethods extends AbstractItem
             $this->db->insert('tpluginzahlungsartklasse', $paymentClass);
 
             $iso                    = '';
-            $allLanguages           = Sprache::getAllLanguages(2);
+            $allLanguages           = LanguageHelper::getAllLanguages(2);
             $bZahlungsartStandard   = false;
             $oZahlungsartSpracheStd = new stdClass();
             foreach ($data['MethodLanguage'] as $l => $loc) {

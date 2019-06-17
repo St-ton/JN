@@ -248,35 +248,35 @@ class WarenkorbPos
         //posname lokalisiert ablegen
         $newAttributes->cEigenschaftName     = [];
         $newAttributes->cEigenschaftWertName = [];
-        foreach ($_SESSION['Sprachen'] as $Sprache) {
-            $newAttributes->cEigenschaftName[$Sprache->cISO]     = $attribute->cName;
-            $newAttributes->cEigenschaftWertName[$Sprache->cISO] = $attributeValue->cName;
+        foreach ($_SESSION['Sprachen'] as $language) {
+            $newAttributes->cEigenschaftName[$language->cISO]     = $attribute->cName;
+            $newAttributes->cEigenschaftWertName[$language->cISO] = $attributeValue->cName;
 
-            if ($Sprache->cStandard !== 'Y') {
+            if ($language->cStandard !== 'Y') {
                 $eigenschaft_spr = $db->select(
                     'teigenschaftsprache',
                     'kEigenschaft',
                     (int)$newAttributes->kEigenschaft,
                     'kSprache',
-                    (int)$Sprache->kSprache
+                    (int)$language->kSprache
                 );
                 if (!empty($eigenschaft_spr->cName)) {
-                    $newAttributes->cEigenschaftName[$Sprache->cISO] = $eigenschaft_spr->cName;
+                    $newAttributes->cEigenschaftName[$language->cISO] = $eigenschaft_spr->cName;
                 }
                 $eigenschaftwert_spr = $db->select(
                     'teigenschaftwertsprache',
                     'kEigenschaftWert',
                     (int)$newAttributes->kEigenschaftWert,
                     'kSprache',
-                    (int)$Sprache->kSprache
+                    (int)$language->kSprache
                 );
                 if (!empty($eigenschaftwert_spr->cName)) {
-                    $newAttributes->cEigenschaftWertName[$Sprache->cISO] = $eigenschaftwert_spr->cName;
+                    $newAttributes->cEigenschaftWertName[$language->cISO] = $eigenschaftwert_spr->cName;
                 }
             }
 
             if ($freifeld || \mb_strlen(\trim($freifeld)) > 0) {
-                $newAttributes->cEigenschaftWertName[$Sprache->cISO] = $db->escape($freifeld);
+                $newAttributes->cEigenschaftWertName[$language->cISO] = $db->escape($freifeld);
             }
         }
         $this->WarenkorbPosEigenschaftArr[] = $newAttributes;

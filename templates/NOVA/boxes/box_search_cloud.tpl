@@ -21,7 +21,6 @@
         </script>
     {/block}
     {card class="box box-searchcloud mb-7" id="sidebox{$oBox->getID()}" title="{lang key='searchcloud'}"}
-        <hr class="mt-0 mb-4">
         {block name='boxes-box-search-cloud-content'}
             <div class="searchcloud"></div>
         {/block}

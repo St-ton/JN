@@ -7,8 +7,8 @@
 namespace JTL\Checkout;
 
 use JTL\Customer\Kunde;
+use JTL\Language\LanguageHelper;
 use JTL\Shop;
-use JTL\Sprache;
 
 /**
  * Class Lieferadresse
@@ -62,7 +62,7 @@ class Lieferadresse extends Adresse
         $this->fromObject($obj);
         // Anrede mappen
         $this->cAnredeLocalized = Kunde::mapSalutation($this->cAnrede, 0, $this->kKunde);
-        $this->angezeigtesLand  = Sprache::getCountryCodeByCountryName($this->cLand);
+        $this->angezeigtesLand  = LanguageHelper::getCountryCodeByCountryName($this->cLand);
         if ($this->kLieferadresse > 0) {
             $this->decrypt();
         }

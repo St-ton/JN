@@ -122,6 +122,26 @@ $transition: 0.5s;
       left: 0;
     }
 
+    input[type=checkbox] {
+      display: none;
+
+      + label {
+        cursor: pointer;
+        margin: 0;
+
+        &:before {
+          content: "\f0c8";
+          font-family: "Font Awesome 5 Free", sans-serif;
+          margin-right: 10px;
+        }
+      }
+
+      &:checked + label:before {
+        content: "\f14a";
+        font-weight: 900;
+      }
+    }
+
     #opc-header {
       padding: 16px;
       background-color: $primary-color;
@@ -234,10 +254,6 @@ $transition: 0.5s;
           margin-right: 8px;
         }
       }
-
-      #opc-bulk-dropdown {
-        width: 50%;
-      }
     }
 
     #opc-sidebar-content {
@@ -273,28 +289,6 @@ $transition: 0.5s;
             .opc-draft-info .opc-draft-info-line {
               visibility: hidden;
             }
-          }
-
-          .opc-draft-name {
-            cursor: pointer;
-            margin: 0;
-          }
-
-          input[type=checkbox] {
-            display: none;
-
-            + label {
-              &:before {
-                content: "\f0c8";
-                font-family: "Font Awesome 5 Free", sans-serif;
-                margin-right: 10px;
-              }
-            }
-          }
-
-          input[type=checkbox]:checked + label:before {
-            content: "\f14a";
-            font-weight: 900;
           }
 
           .opc-draft-status {

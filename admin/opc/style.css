@@ -95,6 +95,22 @@
 #opc #opc-sidebar.opc-open {
   left: 0;
 }
+#opc #opc-sidebar input[type=checkbox] {
+  display: none;
+}
+#opc #opc-sidebar input[type=checkbox] + label {
+  cursor: pointer;
+  margin: 0;
+}
+#opc #opc-sidebar input[type=checkbox] + label:before {
+  content: "";
+  font-family: "Font Awesome 5 Free", sans-serif;
+  margin-right: 10px;
+}
+#opc #opc-sidebar input[type=checkbox]:checked + label:before {
+  content: "";
+  font-weight: 900;
+}
 #opc #opc-sidebar #opc-header {
   padding: 16px;
   background-color: #5cbcf6;
@@ -189,9 +205,6 @@
 #opc #opc-sidebar #opc-sidebar-tools #opc-bulk-actions #opc-bulk-actions-label {
   margin-right: 8px;
 }
-#opc #opc-sidebar #opc-sidebar-tools #opc-bulk-dropdown {
-  width: 50%;
-}
 #opc #opc-sidebar #opc-sidebar-content {
   margin: 0;
   margin-top: 16px;
@@ -221,22 +234,6 @@
 }
 #opc #opc-sidebar #opc-sidebar-content #opc-draft-list .opc-draft:hover .opc-draft-info .opc-draft-info-line {
   visibility: hidden;
-}
-#opc #opc-sidebar #opc-sidebar-content #opc-draft-list .opc-draft .opc-draft-name {
-  cursor: pointer;
-  margin: 0;
-}
-#opc #opc-sidebar #opc-sidebar-content #opc-draft-list .opc-draft input[type=checkbox] {
-  display: none;
-}
-#opc #opc-sidebar #opc-sidebar-content #opc-draft-list .opc-draft input[type=checkbox] + label:before {
-  content: "";
-  font-family: "Font Awesome 5 Free", sans-serif;
-  margin-right: 10px;
-}
-#opc #opc-sidebar #opc-sidebar-content #opc-draft-list .opc-draft input[type=checkbox]:checked + label:before {
-  content: "";
-  font-weight: 900;
 }
 #opc #opc-sidebar #opc-sidebar-content #opc-draft-list .opc-draft .opc-draft-status {
   font-size: 12px;

@@ -21,17 +21,17 @@
 
         function deleteOpcDraft(draftKey)
         {
-            if(confirm("Wollen Sie diesen Entwurf wirklich löschen?")) {
+            if (confirm("Wollen Sie diesen Entwurf wirklich löschen?")) {
                 $.ajax({
                     method: 'post',
-                    url: 'admin/onpage-composer.php',
+                    url: '{$ShopURL}/admin/onpage-composer.php',
                     data: {
                         action: 'discard',
                         pageKey: draftKey,
                         jtl_token: '{$adminSessionToken}'
                     },
                     success: function(jqxhr) {
-                        if(jqxhr === 'ok') {
+                        if (jqxhr === 'ok') {
                             let draftItem = $('#opc-draft-' + draftKey);
                             draftItem.animate({ opacity: 'toggle' }, 500, () => draftItem.remove());
                             window.localStorage.removeItem('opcpage.' + draftKey);
@@ -41,19 +41,30 @@
             }
         }
 
+        function deleteSelectedOpcDrafts()
+        {
+            // TODO
+            if (confirm("Wollen Sie die gewählten Entwürfe wirklich löschen?")) {
+
+            }
+        }
+
         function filterOpcDrafts()
         {
             let searchTerm = $('#opc-filter-search').val();
 
             $('#opc-draft-list').children().each((i, item) => {
                 item = $(item);
+                item.find('.draft-checkbox').prop('checked', false);
 
                 let draftName = item.find('.opc-draft-name')[0].innerText;
 
-                if(draftName.indexOf(searchTerm) === -1) {
+                if (draftName.indexOf(searchTerm) === -1) {
                     item.hide();
+                    item.find('.draft-checkbox').removeClass('filtered-draft');
                 } else {
                     item.show();
+                    item.find('.draft-checkbox').addClass('filtered-draft');
                 }
             });
         }
@@ -81,11 +92,19 @@
             draftsArray.forEach(draft => draftsList.append(draft));
 
         }
+
+        function checkAllOpcDrafts()
+        {
+            $('.draft-checkbox.filtered-draft').prop(
+                'checked',
+                $('#check-all-drafts').prop('checked')
+            );
+        }
     </script>
     <div id="opc">
         {if $pageDrafts|count === 0}
             <nav id="opc-startmenu">
-                <form method="post" action="admin/onpage-composer.php">
+                <form method="post" action="{$ShopURL}/admin/onpage-composer.php">
                     <input type="hidden" name="jtl_token" value="{$adminSessionToken}">
                     <input type="hidden" name="pageId" value="{$curPage->getId()}">
                     <input type="hidden" name="pageUrl" value="{$curPage->getUrl()}">
@@ -129,14 +148,18 @@
                             </div>
                         </div>
                     </div>
-                    <div class="opc-dropdown">
+                    <input type="checkbox" id="check-all-drafts" onchange="checkAllOpcDrafts()">
+                    <label for="check-all-drafts" class="opc-check-all">
+                        Alle an-/abwählen
+                    </label>
+                    <div class="opc-dropdown" style="float: right">
                         <button type="button" id="opc-bulk-actions" data-toggle="dropdown">
                             <span id="opc-bulk-actions-label">Bulk Actions</span>
                             <i class="fa fas fa-fw fa-chevron-down"></i>
                         </button>
                         <div class="dropdown-menu opc-dropdown-menu" id="opc-bulk-dropdown">
-                            <a href="#" onclick="">Duplizieren</a>
-                            <a href="#" onclick="">Löschen</a>
+                            {*<a href="#" onclick="">Duplizieren</a>*}
+                            <a href="#" onclick="deleteSelectedOpcDrafts()">Löschen</a>
                         </div>
                     </div>
                 </div>
@@ -149,7 +172,8 @@
                                 <form method="post" action="{$ShopURL}/admin/onpage-composer.php">
                                     <input type="hidden" name="jtl_token" value="{$adminSessionToken}">
                                     <input type="hidden" name="pageKey" value="{$draft->getKey()}">
-                                    <input type="checkbox" id="check-{$draft->getKey()}">
+                                    <input type="checkbox" id="check-{$draft->getKey()}"
+                                           class="draft-checkbox filtered-draft">
                                     <label for="check-{$draft->getKey()}" class="opc-draft-name">
                                         {$draft->getName()}
                                     </label>

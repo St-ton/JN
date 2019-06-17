@@ -114,15 +114,15 @@ if (isset($_REQUEST['action']) && Form::validateToken()) {
                 ReturnType::ARRAY_OF_OBJECTS
             );
 
-            foreach ($oWertDB_arr as $oWertDB) {
-                $variable->cWertAlt_arr[$oWertDB->cISO] = $oWertDB->cWert;
+            foreach ($data as $item) {
+                $variable->cWertAlt_arr[$item->cISO] = $item->cWert;
             }
 
             if (!preg_match('/([\w\d]+)/', $variable->cName)) {
                 $errors[] = __('errorVarFormat');
             }
 
-            if (count($variable->bOverwrite_arr) !== count($oWertDB_arr)) {
+            if (count($variable->bOverwrite_arr) !== count($data)) {
                 $errors[] = sprintf(
                     __('errorVarExistsForLang'),
                     implode(

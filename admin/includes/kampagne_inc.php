@@ -121,7 +121,7 @@ function holeKampagneGesamtStats($campaigns, $definitions)
             uasort($sort, 'kampagneSortDESC');
         }
         $tmpStats = [];
-        foreach ($sort as $i => $oSort_arrTmp) {
+        foreach ($sort as $i => $tmp) {
             $tmpStats[$i] = $stats[$i];
         }
         $stats = $tmpStats;
@@ -215,11 +215,11 @@ function holeKampagneDetailStats($campaignID, $definitions)
             }
             break;
         case 3:    // Woche
-            $cDatumWocheAnfang_arr = ermittleDatumWoche($_SESSION['Kampagne']->cFromDate);
-            $cDatumWocheEnde_arr   = ermittleDatumWoche($_SESSION['Kampagne']->cToDate);
-            $whereSQL              = " WHERE dErstellt BETWEEN '" .
-                date('Y-m-d H:i:s', $cDatumWocheAnfang_arr[0]) . "' AND '" .
-                date('Y-m-d H:i:s', $cDatumWocheEnde_arr[1]) . "'";
+            $weekStart = ermittleDatumWoche($_SESSION['Kampagne']->cFromDate);
+            $weekEnd   = ermittleDatumWoche($_SESSION['Kampagne']->cToDate);
+            $whereSQL  = " WHERE dErstellt BETWEEN '" .
+                date('Y-m-d H:i:s', $weekStart[0]) . "' AND '" .
+                date('Y-m-d H:i:s', $weekEnd[1]) . "'";
             break;
         case 4:    // Tag
             $whereSQL = " WHERE dErstellt BETWEEN '" . $_SESSION['Kampagne']->cFromDate .
@@ -411,12 +411,12 @@ function holeKampagneDefDetailStats($campaignID, $definition, $cStamp, &$text, &
 
                 if (is_array($data) && count($data) > 0) {
                     foreach ($data as $i => $oDaten) {
-                        $cCustomDataParts_arr = explode(';', $oDaten->cCustomData);
-                        $cEinstiegsseite      = $cCustomDataParts_arr [0] ?? '';
-                        $cReferer             = $cCustomDataParts_arr [1] ?? '';
+                        $customDataParts = explode(';', $oDaten->cCustomData);
+                        $cEinstiegsseite = $customDataParts [0] ?? '';
+                        $referer         = $customDataParts [1] ?? '';
 
                         $data[$i]->cEinstiegsseite = $cEinstiegsseite;
-                        $data[$i]->cReferer        = $cReferer;
+                        $data[$i]->cReferer        = $referer;
                     }
 
                     $members = [
@@ -938,12 +938,12 @@ function baueDefDetailSELECTWHERE(&$cSQLSELECT, &$cSQLWHERE, $cStamp)
  */
 function gibDetailDatumZeitraum()
 {
-    $cZeitraum_arr               = [];
-    $cZeitraum_arr['cDatum']     = [];
-    $cZeitraum_arr['cDatumFull'] = [];
+    $timeSpan               = [];
+    $timeSpan['cDatum']     = [];
+    $timeSpan['cDatumFull'] = [];
     switch ((int)$_SESSION['Kampagne']->nDetailAnsicht) {
         case 1:    // Jahr
-            $nFromStamp          = mktime(
+            $nFromStamp  = mktime(
                 0,
                 0,
                 0,
@@ -951,7 +951,7 @@ function gibDetailDatumZeitraum()
                 1,
                 $_SESSION['Kampagne']->cFromDate_arr['nJahr']
             );
-            $nAnzahlTageProMonat = date('t', mktime(
+            $daysPerWeek = date('t', mktime(
                 0,
                 0,
                 0,
@@ -959,19 +959,19 @@ function gibDetailDatumZeitraum()
                 1,
                 $_SESSION['Kampagne']->cToDate_arr['nJahr']
             ));
-            $nToStamp            = mktime(
+            $nToStamp    = mktime(
                 0,
                 0,
                 0,
                 $_SESSION['Kampagne']->cToDate_arr['nMonat'],
-                (int)$nAnzahlTageProMonat,
+                (int)$daysPerWeek,
                 $_SESSION['Kampagne']->cToDate_arr['nJahr']
             );
-            $nTMPStamp           = $nFromStamp;
+            $nTMPStamp   = $nFromStamp;
             while ($nTMPStamp <= $nToStamp) {
-                $cZeitraum_arr['cDatum'][]     = date('Y', $nTMPStamp);
-                $cZeitraum_arr['cDatumFull'][] = date('Y', $nTMPStamp);
-                $nDiff                         = mktime(
+                $timeSpan['cDatum'][]     = date('Y', $nTMPStamp);
+                $timeSpan['cDatumFull'][] = date('Y', $nTMPStamp);
+                $nDiff                    = mktime(
                     0,
                     0,
                     0,
@@ -979,11 +979,11 @@ function gibDetailDatumZeitraum()
                     (int)date('d', $nTMPStamp),
                     (int)date('Y', $nTMPStamp) + 1
                 ) - $nTMPStamp;
-                $nTMPStamp                    += $nDiff;
+                $nTMPStamp               += $nDiff;
             }
             break;
         case 2:    // Monat
-            $nFromStamp          = mktime(
+            $nFromStamp  = mktime(
                 0,
                 0,
                 0,
@@ -991,7 +991,7 @@ function gibDetailDatumZeitraum()
                 1,
                 $_SESSION['Kampagne']->cFromDate_arr['nJahr']
             );
-            $nAnzahlTageProMonat = date(
+            $daysPerWeek = date(
                 't',
                 mktime(
                     0,
@@ -1002,36 +1002,36 @@ function gibDetailDatumZeitraum()
                     $_SESSION['Kampagne']->cToDate_arr['nJahr']
                 )
             );
-            $nToStamp            = mktime(
+            $nToStamp    = mktime(
                 0,
                 0,
                 0,
                 $_SESSION['Kampagne']->cToDate_arr['nMonat'],
-                (int)$nAnzahlTageProMonat,
+                (int)$daysPerWeek,
                 $_SESSION['Kampagne']->cToDate_arr['nJahr']
             );
-            $nTMPStamp           = $nFromStamp;
+            $nTMPStamp   = $nFromStamp;
             while ($nTMPStamp <= $nToStamp) {
-                $cZeitraum_arr['cDatum'][]     = date('Y-m', $nTMPStamp);
-                $cZeitraum_arr['cDatumFull'][] = mappeENGMonat(date('m', $nTMPStamp)) . ' ' . date('Y', $nTMPStamp);
-                $nMonat                        = (int)date('m', $nTMPStamp) + 1;
-                $nJahr                         = (int)date('Y', $nTMPStamp);
-                if ($nMonat > 12) {
-                    $nMonat = 1;
-                    $nJahr++;
+                $timeSpan['cDatum'][]     = date('Y-m', $nTMPStamp);
+                $timeSpan['cDatumFull'][] = mappeENGMonat(date('m', $nTMPStamp)) . ' ' . date('Y', $nTMPStamp);
+                $month                    = (int)date('m', $nTMPStamp) + 1;
+                $year                     = (int)date('Y', $nTMPStamp);
+                if ($month > 12) {
+                    $month = 1;
+                    $year++;
                 }
 
-                $nDiff = mktime(0, 0, 0, $nMonat, (int)date('d', $nTMPStamp), $nJahr) - $nTMPStamp;
+                $nDiff = mktime(0, 0, 0, $month, (int)date('d', $nTMPStamp), $year) - $nTMPStamp;
 
                 $nTMPStamp += $nDiff;
             }
             break;
         case 3:    // Woche
-            $nDatumWoche_arr = ermittleDatumWoche($_SESSION['Kampagne']->cFromDate_arr['nJahr'] . '-' .
+            $weekStamp  = ermittleDatumWoche($_SESSION['Kampagne']->cFromDate_arr['nJahr'] . '-' .
                 $_SESSION['Kampagne']->cFromDate_arr['nMonat'] . '-' .
                 $_SESSION['Kampagne']->cFromDate_arr['nTag']);
-            $nFromStamp      = $nDatumWoche_arr[0];
-            $nToStamp        = mktime(
+            $nFromStamp = $weekStamp[0];
+            $nToStamp   = mktime(
                 0,
                 0,
                 0,
@@ -1039,29 +1039,29 @@ function gibDetailDatumZeitraum()
                 $_SESSION['Kampagne']->cToDate_arr['nTag'],
                 $_SESSION['Kampagne']->cToDate_arr['nJahr']
             );
-            $nTMPStamp       = $nFromStamp;
+            $nTMPStamp  = $nFromStamp;
             while ($nTMPStamp <= $nToStamp) {
-                $nDatumWoche_arr               = ermittleDatumWoche(date('Y-m-d', $nTMPStamp));
-                $cZeitraum_arr['cDatum'][]     = date('Y-W', $nTMPStamp);
-                $cZeitraum_arr['cDatumFull'][] = date('d.m.Y', $nDatumWoche_arr[0]) .
-                    ' - ' . date('d.m.Y', $nDatumWoche_arr[1]);
-                $nAnzahlTageProMonat           = date('t', $nTMPStamp);
+                $weekStamp                = ermittleDatumWoche(date('Y-m-d', $nTMPStamp));
+                $timeSpan['cDatum'][]     = date('Y-W', $nTMPStamp);
+                $timeSpan['cDatumFull'][] = date('d.m.Y', $weekStamp[0]) .
+                    ' - ' . date('d.m.Y', $weekStamp[1]);
+                $daysPerWeek              = date('t', $nTMPStamp);
 
-                $nTag   = (int)date('d', $nDatumWoche_arr[1]) + 1;
-                $nMonat = (int)date('m', $nDatumWoche_arr[1]);
-                $nJahr  = (int)date('Y', $nDatumWoche_arr[1]);
+                $day   = (int)date('d', $weekStamp[1]) + 1;
+                $month = (int)date('m', $weekStamp[1]);
+                $year  = (int)date('Y', $weekStamp[1]);
 
-                if ($nTag > $nAnzahlTageProMonat) {
-                    $nTag = 1;
-                    $nMonat++;
+                if ($day > $daysPerWeek) {
+                    $day = 1;
+                    $month++;
 
-                    if ($nMonat > 12) {
-                        $nMonat = 1;
-                        $nJahr++;
+                    if ($month > 12) {
+                        $month = 1;
+                        $year++;
                     }
                 }
 
-                $nDiff = mktime(0, 0, 0, $nMonat, $nTag, $nJahr) - $nTMPStamp;
+                $nDiff = mktime(0, 0, 0, $month, $day, $year) - $nTMPStamp;
 
                 $nTMPStamp += $nDiff;
             }
@@ -1085,31 +1085,31 @@ function gibDetailDatumZeitraum()
             );
             $nTMPStamp  = $nFromStamp;
             while ($nTMPStamp <= $nToStamp) {
-                $cZeitraum_arr['cDatum'][]     = date('Y-m-d', $nTMPStamp);
-                $cZeitraum_arr['cDatumFull'][] = date('d.m.Y', $nTMPStamp);
-                $nAnzahlTageProMonat           = date('t', $nTMPStamp);
-                $nTag                          = date('d', $nTMPStamp) + 1;
-                $nMonat                        = date('m', $nTMPStamp);
-                $nJahr                         = date('Y', $nTMPStamp);
+                $timeSpan['cDatum'][]     = date('Y-m-d', $nTMPStamp);
+                $timeSpan['cDatumFull'][] = date('d.m.Y', $nTMPStamp);
+                $daysPerWeek              = date('t', $nTMPStamp);
+                $day                      = date('d', $nTMPStamp) + 1;
+                $month                    = date('m', $nTMPStamp);
+                $year                     = date('Y', $nTMPStamp);
 
-                if ($nTag > $nAnzahlTageProMonat) {
-                    $nTag = 1;
-                    $nMonat++;
+                if ($day > $daysPerWeek) {
+                    $day = 1;
+                    $month++;
 
-                    if ($nMonat > 12) {
-                        $nMonat = 1;
-                        $nJahr++;
+                    if ($month > 12) {
+                        $month = 1;
+                        $year++;
                     }
                 }
 
-                $nDiff = mktime(0, 0, 0, $nMonat, $nTag, $nJahr) - $nTMPStamp;
+                $nDiff = mktime(0, 0, 0, $month, $day, $year) - $nTMPStamp;
 
                 $nTMPStamp += $nDiff;
             }
             break;
     }
 
-    return $cZeitraum_arr;
+    return $timeSpan;
 }
 
 /**
@@ -1179,7 +1179,7 @@ function gibStamp($cStampOld, $nSprung, $nAnsicht)
 }
 
 /**
- * @param Kampagne $oKampagne
+ * @param Kampagne $campaign
  * @return int
  *
  * Returncodes:
@@ -1191,71 +1191,71 @@ function gibStamp($cStampOld, $nSprung, $nAnsicht)
  * 6 = Kampagnennamen schon vergeben
  * 7 = Kampagnenparameter schon vergeben
  */
-function speicherKampagne($oKampagne)
+function speicherKampagne($campaign)
 {
     // Standardkampagnen (Interne) Werte herstellen
-    if (isset($oKampagne->kKampagne) && ($oKampagne->kKampagne < 1000 && $oKampagne->kKampagne > 0)) {
-        $oKampagneTMP = Shop::Container()->getDB()->query(
+    if (isset($campaign->kKampagne) && ($campaign->kKampagne < 1000 && $campaign->kKampagne > 0)) {
+        $data = Shop::Container()->getDB()->query(
             'SELECT *
                 FROM tkampagne
-                WHERE kKampagne = ' . (int)$oKampagne->kKampagne,
+                WHERE kKampagne = ' . (int)$campaign->kKampagne,
             ReturnType::SINGLE_OBJECT
         );
 
-        if (isset($oKampagneTMP->kKampagne)) {
-            $oKampagne->cName      = $oKampagneTMP->cName;
-            $oKampagne->cWert      = $oKampagneTMP->cWert;
-            $oKampagne->nDynamisch = $oKampagneTMP->nDynamisch;
+        if (isset($data->kKampagne)) {
+            $campaign->cName      = $data->cName;
+            $campaign->cWert      = $data->cWert;
+            $campaign->nDynamisch = $data->nDynamisch;
         }
     }
 
     // Plausi
-    if (mb_strlen($oKampagne->cName) === 0) {
+    if (mb_strlen($campaign->cName) === 0) {
         return 3;// Kampagnenname ist leer
     }
-    if (mb_strlen($oKampagne->cParameter) === 0) {
+    if (mb_strlen($campaign->cParameter) === 0) {
         return 4;// Kampagnenparamter ist leer
     }
-    if (mb_strlen($oKampagne->cWert) === 0 && $oKampagne->nDynamisch != 1) {
+    if (mb_strlen($campaign->cWert) === 0 && $campaign->nDynamisch != 1) {
         return 5;//  Kampagnenwert ist leer
     }
     // Name schon vorhanden?
-    $oKampagneTMP = Shop::Container()->getDB()->queryPrepared(
+    $data = Shop::Container()->getDB()->queryPrepared(
         'SELECT kKampagne
             FROM tkampagne
             WHERE cName = :cName',
-        ['cName' => $oKampagne->cName],
+        ['cName' => $campaign->cName],
         ReturnType::SINGLE_OBJECT
     );
 
-    if (isset($oKampagneTMP->kKampagne)
-        && $oKampagneTMP->kKampagne > 0
-        && (!isset($oKampagne->kKampagne) || $oKampagne->kKampagne == 0)
+    if (isset($data->kKampagne)
+        && $data->kKampagne > 0
+        && (!isset($campaign->kKampagne) || $campaign->kKampagne == 0)
     ) {
         return 6;// Kampagnennamen schon vergeben
     }
     // Parameter schon vorhanden?
-    if (isset($oKampagne->nDynamisch) && $oKampagne->nDynamisch == 1) {
-        $oKampagneTMP = Shop::Container()->getDB()->queryPrepared(
+    if (isset($campaign->nDynamisch) && $campaign->nDynamisch == 1) {
+        $data = Shop::Container()->getDB()->queryPrepared(
             'SELECT kKampagne
                 FROM tkampagne
                 WHERE cParameter = :param',
-            ['param' => $oKampagne->cParameter],
+            ['param' => $campaign->cParameter],
             ReturnType::SINGLE_OBJECT
         );
 
-        if (isset($oKampagneTMP->kKampagne)
-            && $oKampagneTMP->kKampagne > 0
-            && (!isset($oKampagne->kKampagne) || $oKampagne->kKampagne == 0)
+        if (isset($data->kKampagne)
+            && $data->kKampagne > 0
+            && (!isset($campaign->kKampagne) || $campaign->kKampagne == 0)
         ) {
             return 7;// Kampagnenparameter schon vergeben
         }
     }
     // Editieren?
-    if (isset($oKampagne->kKampagne) && $oKampagne->kKampagne > 0) {
-        $oKampagne->updateInDB();
+    if (isset($campaign->kKampagne) && $campaign->kKampagne > 0) {
+        $campaign->updateInDB();
     } else {
-        $oKampagne->insertInDB();
+        $campaign->insertInDB();
     }
     Shop::Container()->getCache()->flush('campaigns');
 

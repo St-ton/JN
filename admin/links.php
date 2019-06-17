@@ -197,12 +197,12 @@ if ($action !== '' && Form::validateToken()) {
             $step = 'edit-link';
             break;
         case 'create-or-update-link':
-            $hasHTML_arr = [];
+            $hasHTML = [];
             foreach (LanguageHelper::getAllLanguages() as $lang) {
-                $hasHTML_arr[] = 'cContent_' . $lang->getIso();
+                $hasHTML[] = 'cContent_' . $lang->getIso();
             }
             $checks = new PlausiCMS();
-            $checks->setPostVar($_POST, $hasHTML_arr, true);
+            $checks->setPostVar($_POST, $hasHTML, true);
             $checks->doPlausi('lnk');
 
             if (count($checks->getPlausiVar()) === 0) {
@@ -255,13 +255,13 @@ if ($action !== '' && Form::validateToken()) {
                 $link = new Link($db);
                 $link->setLinkGroupID((int)$_POST['kLinkgruppe']);
                 $link->setLinkGroups([(int)$_POST['kLinkgruppe']]);
-                $oPlausiVar_arr = $checks->getPlausiVar();
-                if (isset($oPlausiVar_arr['nSpezialseite'])) {
+                $checkVars = $checks->getPlausiVar();
+                if (isset($checkVars['nSpezialseite'])) {
                     $alertHelper->addAlert(Alert::TYPE_ERROR, __('isDuplicateSpecialLink'), 'isDuplicateSpecialLink');
                 } else {
                     $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorFillRequired'), 'errorFillRequired');
                 }
-                $smarty->assign('xPlausiVar_arr', $oPlausiVar_arr)
+                $smarty->assign('xPlausiVar_arr', $checkVars)
                        ->assign('xPostVar_arr', $checks->getPostVar());
             }
             break;

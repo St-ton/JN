@@ -288,9 +288,9 @@ class Plugins
      */
     public function getLocalizedPrice($params, $smarty)
     {
-        $oAufpreis                     = new \stdClass();
-        $oAufpreis->cAufpreisLocalized = '';
-        $oAufpreis->cPreisInklAufpreis = '';
+        $surcharge                     = new \stdClass();
+        $surcharge->cAufpreisLocalized = '';
+        $surcharge->cPreisInklAufpreis = '';
 
         if ((float)$params['fAufpreisNetto'] != 0) {
             $fAufpreisNetto         = (float)$params['fAufpreisNetto'];
@@ -298,77 +298,77 @@ class Plugins
             $kSteuerklasse          = (int)$params['kSteuerklasse'];
             $fVPEWert               = (float)$params['fVPEWert'];
             $cVPEEinheit            = $params['cVPEEinheit'];
-            $FunktionsAttribute_arr = $params['FunktionsAttribute'];
-            $nGenauigkeit           = (isset($FunktionsAttribute_arr[\FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT])
-                && (int)$FunktionsAttribute_arr[\FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT] > 0)
-                ? (int)$FunktionsAttribute_arr[\FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT]
+            $funcAttributes = $params['FunktionsAttribute'];
+            $precision           = (isset($funcAttributes[\FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT])
+                && (int)$funcAttributes[\FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT] > 0)
+                ? (int)$funcAttributes[\FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT]
                 : 2;
 
             if ((int)$params['nNettoPreise'] === 1) {
-                $oAufpreis->cAufpreisLocalized = Preise::getLocalizedPriceString($fAufpreisNetto);
-                $oAufpreis->cPreisInklAufpreis = Preise::getLocalizedPriceString($fAufpreisNetto + $fVKNetto);
-                $oAufpreis->cAufpreisLocalized = ($fAufpreisNetto > 0)
-                    ? ('+ ' . $oAufpreis->cAufpreisLocalized)
-                    : \str_replace('-', '- ', $oAufpreis->cAufpreisLocalized);
+                $surcharge->cAufpreisLocalized = Preise::getLocalizedPriceString($fAufpreisNetto);
+                $surcharge->cPreisInklAufpreis = Preise::getLocalizedPriceString($fAufpreisNetto + $fVKNetto);
+                $surcharge->cAufpreisLocalized = ($fAufpreisNetto > 0)
+                    ? ('+ ' . $surcharge->cAufpreisLocalized)
+                    : \str_replace('-', '- ', $surcharge->cAufpreisLocalized);
 
                 if ($fVPEWert > 0) {
-                    $oAufpreis->cPreisVPEWertAufpreis     = Preise::getLocalizedPriceString(
+                    $surcharge->cPreisVPEWertAufpreis     = Preise::getLocalizedPriceString(
                         $fAufpreisNetto / $fVPEWert,
                         Frontend::getCurrency()->getCode(),
                         true,
-                        $nGenauigkeit
+                        $precision
                     ) . ' ' . Shop::Lang()->get('vpePer') . ' ' . $cVPEEinheit;
-                    $oAufpreis->cPreisVPEWertInklAufpreis = Preise::getLocalizedPriceString(
+                    $surcharge->cPreisVPEWertInklAufpreis = Preise::getLocalizedPriceString(
                         ($fAufpreisNetto + $fVKNetto) / $fVPEWert,
                         Frontend::getCurrency()->getCode(),
                         true,
-                        $nGenauigkeit
+                        $precision
                     ) . ' ' . Shop::Lang()->get('vpePer') . ' ' . $cVPEEinheit;
 
-                    $oAufpreis->cAufpreisLocalized = $oAufpreis->cAufpreisLocalized . ', ' .
-                        $oAufpreis->cPreisVPEWertAufpreis;
-                    $oAufpreis->cPreisInklAufpreis = $oAufpreis->cPreisInklAufpreis . ', ' .
-                        $oAufpreis->cPreisVPEWertInklAufpreis;
+                    $surcharge->cAufpreisLocalized = $surcharge->cAufpreisLocalized . ', ' .
+                        $surcharge->cPreisVPEWertAufpreis;
+                    $surcharge->cPreisInklAufpreis = $surcharge->cPreisInklAufpreis . ', ' .
+                        $surcharge->cPreisVPEWertInklAufpreis;
                 }
             } else {
-                $oAufpreis->cAufpreisLocalized = Preise::getLocalizedPriceString(
+                $surcharge->cAufpreisLocalized = Preise::getLocalizedPriceString(
                     Tax::getGross($fAufpreisNetto, $_SESSION['Steuersatz'][$kSteuerklasse], 4)
                 );
-                $oAufpreis->cPreisInklAufpreis = Preise::getLocalizedPriceString(
+                $surcharge->cPreisInklAufpreis = Preise::getLocalizedPriceString(
                     Tax::getGross($fAufpreisNetto + $fVKNetto, $_SESSION['Steuersatz'][$kSteuerklasse], 4)
                 );
-                $oAufpreis->cAufpreisLocalized = ($fAufpreisNetto > 0)
-                    ? ('+ ' . $oAufpreis->cAufpreisLocalized)
-                    : \str_replace('-', '- ', $oAufpreis->cAufpreisLocalized);
+                $surcharge->cAufpreisLocalized = ($fAufpreisNetto > 0)
+                    ? ('+ ' . $surcharge->cAufpreisLocalized)
+                    : \str_replace('-', '- ', $surcharge->cAufpreisLocalized);
 
                 if ($fVPEWert > 0) {
-                    $oAufpreis->cPreisVPEWertAufpreis     = Preise::getLocalizedPriceString(
+                    $surcharge->cPreisVPEWertAufpreis     = Preise::getLocalizedPriceString(
                         Tax::getGross($fAufpreisNetto / $fVPEWert, $_SESSION['Steuersatz'][$kSteuerklasse]),
                         Frontend::getCurrency()->getCode(),
                         true,
-                        $nGenauigkeit
+                        $precision
                     ) . ' ' . Shop::Lang()->get('vpePer') . ' ' . $cVPEEinheit;
-                    $oAufpreis->cPreisVPEWertInklAufpreis = Preise::getLocalizedPriceString(
+                    $surcharge->cPreisVPEWertInklAufpreis = Preise::getLocalizedPriceString(
                         Tax::getGross(
                             ($fAufpreisNetto + $fVKNetto) / $fVPEWert,
                             $_SESSION['Steuersatz'][$kSteuerklasse]
                         ),
                         Frontend::getCurrency()->getCode(),
                         true,
-                        $nGenauigkeit
+                        $precision
                     ) . ' ' . Shop::Lang()->get('vpePer') . ' ' . $cVPEEinheit;
 
-                    $oAufpreis->cAufpreisLocalized = $oAufpreis->cAufpreisLocalized .
-                        ', ' . $oAufpreis->cPreisVPEWertAufpreis;
-                    $oAufpreis->cPreisInklAufpreis = $oAufpreis->cPreisInklAufpreis .
-                        ', ' . $oAufpreis->cPreisVPEWertInklAufpreis;
+                    $surcharge->cAufpreisLocalized = $surcharge->cAufpreisLocalized .
+                        ', ' . $surcharge->cPreisVPEWertAufpreis;
+                    $surcharge->cPreisInklAufpreis = $surcharge->cPreisInklAufpreis .
+                        ', ' . $surcharge->cPreisVPEWertInklAufpreis;
                 }
             }
         }
 
         return (isset($params['bAufpreise']) && (int)$params['bAufpreise'] > 0)
-            ? $oAufpreis->cAufpreisLocalized
-            : $oAufpreis->cPreisInklAufpreis;
+            ? $surcharge->cAufpreisLocalized
+            : $surcharge->cPreisInklAufpreis;
     }
 
     /**

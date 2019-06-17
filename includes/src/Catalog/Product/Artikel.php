@@ -2105,7 +2105,7 @@ class Artikel
                 ReturnType::ARRAY_OF_OBJECTS
             );
 
-            $oVariationVaterTMP_arr = Shop::Container()->getDB()->query(
+            $oVariationVaterTMP = Shop::Container()->getDB()->query(
                 'SELECT teigenschaft.kEigenschaft, teigenschaft.kArtikel, teigenschaft.cName, teigenschaft.cWaehlbar,
                     teigenschaft.cTyp, teigenschaft.nSort, ' .
                     $sqlEigenschaft->cSELECT . '
@@ -2128,7 +2128,7 @@ class Artikel
                 ReturnType::ARRAY_OF_OBJECTS
             );
 
-            $variations = \array_merge($variations, $oVariationVaterTMP_arr);
+            $variations = \array_merge($variations, $oVariationVaterTMP);
         } elseif ($this->kVaterArtikel > 0) { //child?
             $scoreJoin   = '';
             $scoreSelect = '';
@@ -2241,7 +2241,7 @@ class Artikel
                 );
             }
 
-            $oVariationVaterTMP_arr = Shop::Container()->getDB()->query(
+            $oVariationVaterTMP = Shop::Container()->getDB()->query(
                 'SELECT teigenschaft.kEigenschaft, teigenschaft.kArtikel, teigenschaft.cName, teigenschaft.cWaehlbar,
                     teigenschaft.cTyp, teigenschaft.nSort, ' .
                     $sqlEigenschaft->cSELECT . '
@@ -2265,7 +2265,7 @@ class Artikel
                 ReturnType::ARRAY_OF_OBJECTS
             );
 
-            $variations = \array_merge($variations, $oVariationVaterTMP_arr);
+            $variations = \array_merge($variations, $oVariationVaterTMP);
             // VariationKombi gesetzte Eigenschaften und EigenschaftWerte vom Kind
             $this->oVariationKombi_arr = Shop::Container()->getDB()->query(
                 'SELECT teigenschaftkombiwert.*
@@ -4642,10 +4642,10 @@ class Artikel
     /**
      * check if current article is a bestseller
      *
-     * @param array $oGlobalEinstellung_arr
+     * @param array $globalConfig
      * @return bool
      */
-    public function istBestseller(array $oGlobalEinstellung_arr = null): bool
+    public function istBestseller(array $globalConfig = null): bool
     {
         if ($this->bIsBestseller !== null) {
             return (bool)$this->bIsBestseller;
@@ -4653,7 +4653,7 @@ class Artikel
         if ($this->kArtikel <= 0) {
             return false;
         }
-        $minSales   = isset($oGlobalEinstellung_arr['global']['global_bestseller_minanzahl'])
+        $minSales   = isset($globalConfig['global']['global_bestseller_minanzahl'])
             ? (float)$this->conf['global']['global_bestseller_minanzahl']
             : 10;
         $bestseller = Shop::Container()->getDB()->queryPrepared(
@@ -6119,15 +6119,15 @@ class Artikel
             $countries = $this->gibMwStVersandLaenderString();
             if ($countries && $this->conf['global']['global_versandfrei_anzeigen'] === 'Y') {
                 if ($this->conf['global']['global_versandkostenfrei_darstellung'] === 'D') {
-                    $cLaenderAssoc_arr = $this->gibMwStVersandLaenderString(false);
-                    $cLaender          = '';
-                    foreach ($cLaenderAssoc_arr as $cISO => $cLaenderAssoc) {
-                        $cLaender .= '<abbr title="' . $cLaenderAssoc . '">' . $cISO . '</abbr> ';
+                    $countriesAssoc = $this->gibMwStVersandLaenderString(false);
+                    $countryString  = '';
+                    foreach ($countriesAssoc as $cISO => $countryName) {
+                        $countryString .= '<abbr title="' . $countryName . '">' . $cISO . '</abbr> ';
                     }
 
                     $versand .= Shop::Lang()->get('noShippingcostsTo') . ' ' .
                         Shop::Lang()->get('noShippingCostsAtExtended', 'basket', '') .
-                         \trim($cLaender) . ', ' . Shop::Lang()->get('else') . ' ' .
+                         \trim($countryString) . ', ' . Shop::Lang()->get('else') . ' ' .
                         Shop::Lang()->get('plus', 'basket') .
                         ' <a href="' . $_SESSION['Link_Versandseite'][Shop::getLanguageCode()] .
                         '" rel="nofollow" class="shipment">' .

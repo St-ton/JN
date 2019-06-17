@@ -45,8 +45,7 @@ $filter->assemble();
 $nDateStampVon = strtotime($dateRange->getStart());
 $nDateStampBis = strtotime($dateRange->getEnd());
 
-$stats = gibBackendStatistik($statsType, $nDateStampVon, $nDateStampBis, $nAnzeigeIntervall);
-
+$stats         = gibBackendStatistik($statsType, $nDateStampVon, $nDateStampBis, $nAnzeigeIntervall);
 $statsTypeName = GetTypeNameStats($statsType);
 $axisNames     = getAxisNames($statsType);
 
@@ -57,8 +56,8 @@ if ($statsType === STATS_ADMIN_TYPE_KUNDENHERKUNFT
     $smarty->assign('Piechart', preparePieChartStats($stats, $statsTypeName, $axisNames));
 } else {
     $smarty->assign('Linechart', prepareLineChartStats($stats, $statsTypeName, $axisNames));
-    $member_arr = gibMappingDaten($statsType);
-    $smarty->assign('ylabel', $member_arr['nCount']);
+    $members = gibMappingDaten($statsType);
+    $smarty->assign('ylabel', $members['nCount']);
 }
 $members = [];
 foreach ($stats as $stat) {
@@ -70,17 +69,17 @@ $pagination = (new Pagination())
     ->assemble();
 
 $smarty->assign('headline', $statsTypeName)
-       ->assign('nTyp', $statsType)
-       ->assign('oStat_arr', $stats)
-       ->assign('oStatJSON', getJSON($stats, $nAnzeigeIntervall, $statsType))
-       ->assign('cMember_arr', mappeDatenMember($members, gibMappingDaten($statsType)))
-       ->assign('STATS_ADMIN_TYPE_BESUCHER', STATS_ADMIN_TYPE_BESUCHER)
-       ->assign('STATS_ADMIN_TYPE_KUNDENHERKUNFT', STATS_ADMIN_TYPE_KUNDENHERKUNFT)
-       ->assign('STATS_ADMIN_TYPE_SUCHMASCHINE', STATS_ADMIN_TYPE_SUCHMASCHINE)
-       ->assign('STATS_ADMIN_TYPE_UMSATZ', STATS_ADMIN_TYPE_UMSATZ)
-       ->assign('STATS_ADMIN_TYPE_EINSTIEGSSEITEN', STATS_ADMIN_TYPE_EINSTIEGSSEITEN)
-       ->assign('nPosAb', $pagination->getFirstPageItem())
-       ->assign('nPosBis', $pagination->getFirstPageItem() + $pagination->getPageItemCount())
-       ->assign('$pagination', $pagination)
-       ->assign('oFilter', $filter)
-       ->display('statistik.tpl');
+    ->assign('nTyp', $statsType)
+    ->assign('oStat_arr', $stats)
+    ->assign('oStatJSON', getJSON($stats, $nAnzeigeIntervall, $statsType))
+    ->assign('cMember_arr', mappeDatenMember($members, gibMappingDaten($statsType)))
+    ->assign('STATS_ADMIN_TYPE_BESUCHER', STATS_ADMIN_TYPE_BESUCHER)
+    ->assign('STATS_ADMIN_TYPE_KUNDENHERKUNFT', STATS_ADMIN_TYPE_KUNDENHERKUNFT)
+    ->assign('STATS_ADMIN_TYPE_SUCHMASCHINE', STATS_ADMIN_TYPE_SUCHMASCHINE)
+    ->assign('STATS_ADMIN_TYPE_UMSATZ', STATS_ADMIN_TYPE_UMSATZ)
+    ->assign('STATS_ADMIN_TYPE_EINSTIEGSSEITEN', STATS_ADMIN_TYPE_EINSTIEGSSEITEN)
+    ->assign('nPosAb', $pagination->getFirstPageItem())
+    ->assign('nPosBis', $pagination->getFirstPageItem() + $pagination->getPageItemCount())
+    ->assign('$pagination', $pagination)
+    ->assign('oFilter', $filter)
+    ->display('statistik.tpl');

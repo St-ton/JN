@@ -736,14 +736,10 @@ function baueSeitenNaviURL($NaviFilter, $seo, $pages, $maxPages = 7, $filterURL 
 }
 
 /**
- * @param stdClass $oSuchCache
- * @param array    $cSuchspalten_arr
- * @param array    $cSuch_arr
- * @param int      $nLimit
  * @throws Exception
  * @deprecated since 5.0.0
  */
-function bearbeiteSuchCacheFulltext($oSuchCache, $cSuchspalten_arr, $cSuch_arr, $nLimit = 0)
+function bearbeiteSuchCacheFulltext()
 {
     trigger_error(__FUNCTION__ . ' is deprecated and will do nothing.', E_USER_DEPRECATED);
 }
@@ -946,27 +942,26 @@ function gibNextSortPrio($search, $conf = null)
 function bauFilterSQL($NaviFilter)
 {
     trigger_error(__FUNCTION__ . ' is deprecated and will do nothing.', E_USER_DEPRECATED);
-    $FilterSQL                            = new stdClass();
-    $FilterSQL->oHerstellerFilterSQL      = new stdClass();
-    $FilterSQL->oKategorieFilterSQL       = new stdClass();
-    $FilterSQL->oMerkmalFilterSQL         = new stdClass();
-    $FilterSQL->oTagFilterSQL             = new stdClass();
-    $FilterSQL->oBewertungSterneFilterSQL = new stdClass();
-    $FilterSQL->oPreisspannenFilterSQL    = new stdClass();
-    $FilterSQL->oSuchFilterSQL            = new stdClass();
-    $FilterSQL->oSuchspecialFilterSQL     = new stdClass();
-    $FilterSQL->oArtikelAttributFilterSQL = new stdClass();
+    $filterSQL                            = new stdClass();
+    $filterSQL->oHerstellerFilterSQL      = new stdClass();
+    $filterSQL->oKategorieFilterSQL       = new stdClass();
+    $filterSQL->oMerkmalFilterSQL         = new stdClass();
+    $filterSQL->oTagFilterSQL             = new stdClass();
+    $filterSQL->oBewertungSterneFilterSQL = new stdClass();
+    $filterSQL->oPreisspannenFilterSQL    = new stdClass();
+    $filterSQL->oSuchFilterSQL            = new stdClass();
+    $filterSQL->oSuchspecialFilterSQL     = new stdClass();
+    $filterSQL->oArtikelAttributFilterSQL = new stdClass();
 
-    return $FilterSQL;
+    return $filterSQL;
 }
 
 /**
  * @deprecated since 5.0.0
- * @param object $oExtendedJTLSearchResponse
  * @return array
  * @throws Exception
  */
-function gibArtikelKeysExtendedJTLSearch($oExtendedJTLSearchResponse)
+function gibArtikelKeysExtendedJTLSearch()
 {
     trigger_error(__FUNCTION__ . ' is deprecated and will do nothing.', E_USER_DEPRECATED);
     return [];

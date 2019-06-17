@@ -74,7 +74,7 @@ switch ($action) {
                 $cKeyValue = 'article_key';
                 $cValue    = $_POST[$cKeyValue];
             } elseif ($pageType === PAGE_ARTIKELLISTE) {
-                $aFilter_arr = [
+                $filter = [
                     'kTag'         => 'tag_key',
                     'kMerkmalWert' => 'attribute_key',
                     'kKategorie'   => 'categories_key',
@@ -82,7 +82,7 @@ switch ($action) {
                     'cSuche'       => 'keycSuche'
                 ];
 
-                $cKeyValue = $aFilter_arr[$cKey];
+                $cKeyValue = $filter[$cKey];
                 $cValue    = $_POST[$cKeyValue];
             } elseif ($pageType === PAGE_EIGENE) {
                 $cKey      = 'kLink';
@@ -151,12 +151,12 @@ switch ($action) {
                ->assign('oExtension', holeExtension($kSlider));
 
         if ($slider->getEffects() !== 'random') {
-            $cEffects_arr = explode(';', $slider->getEffects());
-            $cEffects     = '';
-            foreach ($cEffects_arr as $cKey => $cValue) {
-                $cEffects .= '<option value="' . $cValue . '">' . $cValue . '</option>';
+            $effects = explode(';', $slider->getEffects());
+            $options = '';
+            foreach ($effects as $cKey => $cValue) {
+                $options .= '<option value="' . $cValue . '">' . $cValue . '</option>';
             }
-            $smarty->assign('cEffects', $cEffects);
+            $smarty->assign('cEffects', $options);
         } else {
             $smarty->assign('checked', 'checked="checked"')
                    ->assign('disabled', 'disabled="true"');

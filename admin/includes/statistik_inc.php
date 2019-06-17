@@ -333,7 +333,7 @@ function setDot($data, $xLabels, $yLabels, $fMin, $fMax, $fStep, $cToolTip = '')
  */
 function setPie($inputData, $xLabels)
 {
-    $merge_arr = [];
+    $merge = [];
     // Nur max. 10 Werte anzeigen, danach als Sonstiges
     foreach ($inputData as $i => $data) {
         if ($i > 5) {
@@ -360,8 +360,8 @@ function setPie($inputData, $xLabels)
     }
     $xLabels[$nPosSonstiges] = __('miscellaneous');
     foreach ($inputData as $i => $data) {
-        $cLabel      = $xLabels[$i] . '(' . number_format((float)$data, 0, ',', '.') . ')';
-        $merge_arr[] = new pie_value($data, $cLabel);
+        $cLabel  = $xLabels[$i] . '(' . number_format((float)$data, 0, ',', '.') . ')';
+        $merge[] = new pie_value($data, $cLabel);
     }
 
     $pie = new pie();
@@ -369,7 +369,7 @@ function setPie($inputData, $xLabels)
     $pie->set_animate(true);
     $pie->set_tooltip('#val# of #total#<br>#percent# of 100%');
     $pie->set_colours(['#1C9E05', '#D4FA00', '#9E1176', '#FF368D', '#454545']);
-    $pie->set_values($merge_arr);
+    $pie->set_values($merge);
 
     $chart = new open_flash_chart();
     $chart->add_element($pie);

@@ -500,11 +500,10 @@ function validateCoupon($coupon)
     $coupon->cArtikel = Text::createSSK($productNos);
 
     if ($coupon->cKuponTyp === Kupon::TYPE_SHIPPING) {
-        $cLandISO_arr  = Text::parseSSK($coupon->cLieferlaender);
         $countryHelper = Shop::Container()->getCountryService();
-        foreach ($cLandISO_arr as $cLandISO) {
-            if ($countryHelper->getCountry($cLandISO) === null) {
-                $errors[] = sprintf(__('errorISOInvalid'), $cLandISO);
+        foreach (Text::parseSSK($coupon->cLieferlaender) as $isoCode) {
+            if ($countryHelper->getCountry($isoCode) === null) {
+                $errors[] = sprintf(__('errorISOInvalid'), $isoCode);
             }
         }
     }
@@ -518,9 +517,9 @@ function validateCoupon($coupon)
         $errors[] = __('errorPeriodEndFormat');
     }
 
-    $bOpenEnd = $coupon->dGueltigBis === null;
+    $openEnd = $coupon->dGueltigBis === null;
 
-    if ($validFrom !== false && $validUntil !== false && $validFrom > $validUntil && $bOpenEnd === false) {
+    if ($validFrom !== false && $validUntil !== false && $validFrom > $validUntil && $openEnd === false) {
         $errors[] = __('errorPeriodEndAfterBegin');
     }
 

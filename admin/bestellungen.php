@@ -15,11 +15,9 @@ require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'bestellungen_inc.php';
 /** @global \JTL\Smarty\JTLSmarty $smarty */
 $oAccount->permission('ORDER_VIEW', true, true);
 
-$step            = 'bestellungen_uebersicht';
-$cSuchFilter     = '';
-$nAnzahlProSeite = 15;
-$alertHelper     = Shop::Container()->getAlertService();
-
+$step         = 'bestellungen_uebersicht';
+$searchFilter = '';
+$alertHelper  = Shop::Container()->getAlertService();
 // Bestellung Wawi Abholung zuruecksetzen
 if (Request::verifyGPCDataInt('zuruecksetzen') === 1 && Form::validateToken()) {
     if (isset($_POST['kBestellung'])) {
@@ -35,23 +33,23 @@ if (Request::verifyGPCDataInt('zuruecksetzen') === 1 && Form::validateToken()) {
         $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorAtLeastOneOrder'), 'errorAtLeastOneOrder');
     }
 } elseif (Request::verifyGPCDataInt('Suche') === 1) { // Bestellnummer gesucht
-    $cSuche = Text::filterXSS(Request::verifyGPDataString('cSuche'));
-    if (mb_strlen($cSuche) > 0) {
-        $cSuchFilter = $cSuche;
+    $query = Text::filterXSS(Request::verifyGPDataString('cSuche'));
+    if (mb_strlen($query) > 0) {
+        $searchFilter = $query;
     } else {
         $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorMissingOrderNumber'), 'errorMissingOrderNumber');
     }
 }
 
 if ($step === 'bestellungen_uebersicht') {
-    $pagination      = (new Pagination('bestellungen'))
-        ->setItemCount(gibAnzahlBestellungen($cSuchFilter))
+    $pagination = (new Pagination('bestellungen'))
+        ->setItemCount(gibAnzahlBestellungen($searchFilter))
         ->assemble();
-    $oBestellung_arr = gibBestellungsUebersicht(' LIMIT ' . $pagination->getLimitSQL(), $cSuchFilter);
-    $smarty->assign('oBestellung_arr', $oBestellung_arr)
+    $orders     = gibBestellungsUebersicht(' LIMIT ' . $pagination->getLimitSQL(), $searchFilter);
+    $smarty->assign('oBestellung_arr', $orders)
            ->assign('$pagination', $pagination);
 }
 
-$smarty->assign('cSuche', $cSuchFilter)
+$smarty->assign('cSuche', $searchFilter)
        ->assign('step', $step)
        ->display('bestellungen.tpl');

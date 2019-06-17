@@ -267,49 +267,49 @@ function saveAdminSectionSettings(int $configSectionID, array &$post, $tags = [C
  * Wenn $bInterneKampagne false ist, werden keine Interne Shop Kampagnen geholt
  * Wenn $bAktivAbfragen true ist, werden nur Aktive Kampagnen geholt
  *
- * @param bool $bInterneKampagne
- * @param bool $bAktivAbfragen
+ * @param bool $internalOnly
+ * @param bool $activeOnly
  * @return array
  */
-function holeAlleKampagnen(bool $bInterneKampagne = false, bool $bAktivAbfragen = true)
+function holeAlleKampagnen(bool $internalOnly = false, bool $activeOnly = true)
 {
-    $cAktivSQL  = $bAktivAbfragen ? ' WHERE nAktiv = 1' : '';
-    $cInternSQL = '';
-    if (!$bInterneKampagne && $bAktivAbfragen) {
-        $cInternSQL = ' AND kKampagne >= 1000';
-    } elseif (!$bInterneKampagne) {
-        $cInternSQL = ' WHERE kKampagne >= 1000';
+    $activeSQL  = $activeOnly ? ' WHERE nAktiv = 1' : '';
+    $interalSQL = '';
+    if (!$internalOnly && $activeOnly) {
+        $interalSQL = ' AND kKampagne >= 1000';
+    } elseif (!$internalOnly) {
+        $interalSQL = ' WHERE kKampagne >= 1000';
     }
-    $oKampagne_arr    = [];
-    $oKampagneTMP_arr = Shop::Container()->getDB()->query(
+    $campaigns = [];
+    $items     = Shop::Container()->getDB()->query(
         'SELECT kKampagne
             FROM tkampagne
-            ' . $cAktivSQL . '
-            ' . $cInternSQL . '
+            ' . $activeSQL . '
+            ' . $interalSQL . '
             ORDER BY kKampagne',
         ReturnType::ARRAY_OF_OBJECTS
     );
-    foreach ($oKampagneTMP_arr as $oKampagneTMP) {
-        $oKampagne = new Kampagne($oKampagneTMP->kKampagne);
-        if (isset($oKampagne->kKampagne) && $oKampagne->kKampagne > 0) {
-            $oKampagne_arr[$oKampagne->kKampagne] = $oKampagne;
+    foreach ($items as $item) {
+        $campaign = new Kampagne($item->kKampagne);
+        if (isset($campaign->kKampagne) && $campaign->kKampagne > 0) {
+            $campaigns[$campaign->kKampagne] = $campaign;
         }
     }
 
-    return $oKampagne_arr;
+    return $campaigns;
 }
 
 /**
- * @param array $oXML_arr
- * @param int   $nLevel
+ * @param array $xml
+ * @param int   $level
  * @return array
  * @deprecated since 5.0.0
  */
-function getArrangedArray($oXML_arr, int $nLevel = 1)
+function getArrangedArray($xml, int $level = 1)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $parser = new XMLParser();
-    return $parser->getArrangedArray($oXML_arr, $nLevel);
+    return $parser->getArrangedArray($xml, $level);
 }
 
 /**
@@ -386,54 +386,54 @@ function lastDayOfMonth(int $month = -1, int $year = -1)
  * und gibt ein Array mit Start als Timestamp zurück
  * Array[0] = Start
  * Array[1] = Ende
- * @param string $cDatum
+ * @param string $dateString
  * @return array
  */
-function ermittleDatumWoche(string $cDatum)
+function ermittleDatumWoche(string $dateString)
 {
-    if (mb_strlen($cDatum) < 0) {
+    if (mb_strlen($dateString) < 0) {
         return [];
     }
-    [$cJahr, $cMonat, $cTag] = explode('-', $cDatum);
+    [$year, $month, $day] = explode('-', $dateString);
     // So = 0, SA = 6
-    $nWochentag = (int)date('w', mktime(0, 0, 0, (int)$cMonat, (int)$cTag, (int)$cJahr));
+    $weekDay = (int)date('w', mktime(0, 0, 0, (int)$month, (int)$day, (int)$year));
     // Woche soll Montag starten - also So = 6, Mo = 0
-    if ($nWochentag === 0) {
-        $nWochentag = 6;
+    if ($weekDay === 0) {
+        $weekDay = 6;
     } else {
-        $nWochentag--;
+        $weekDay--;
     }
     // Wochenstart ermitteln
-    $nTagOld = (int)$cTag;
-    $nTag    = (int)$cTag - $nWochentag;
-    $nMonat  = (int)$cMonat;
-    $nJahr   = (int)$cJahr;
-    if ($nTag <= 0) {
-        --$nMonat;
-        if ($nMonat === 0) {
-            $nMonat = 12;
-            ++$nJahr;
+    $dayOld = (int)$day;
+    $day    = $dayOld - $weekDay;
+    $month  = (int)$month;
+    $year   = (int)$year;
+    if ($day <= 0) {
+        --$month;
+        if ($month === 0) {
+            $month = 12;
+            ++$year;
         }
 
-        $daysPerMonth = date('t', mktime(0, 0, 0, $nMonat, 1, $nJahr));
-        $nTag         = $daysPerMonth - $nWochentag + $nTagOld;
+        $daysPerMonth = date('t', mktime(0, 0, 0, $month, 1, $year));
+        $day          = $daysPerMonth - $weekDay + $dayOld;
     }
-    $nStampStart  = mktime(0, 0, 0, $nMonat, $nTag, $nJahr);
-    $nTage        = 6;
-    $daysPerMonth = date('t', mktime(0, 0, 0, $nMonat, 1, $nJahr));
-    $nTag        += $nTage;
-    if ($nTag > $daysPerMonth) {
-        $nTag -= $daysPerMonth;
-        ++$nMonat;
-        if ($nMonat > 12) {
-            $nMonat = 1;
-            ++$nJahr;
+    $stampStart   = mktime(0, 0, 0, $month, $day, $year);
+    $days         = 6;
+    $daysPerMonth = date('t', mktime(0, 0, 0, $month, 1, $year));
+    $day         += $days;
+    if ($day > $daysPerMonth) {
+        $day -= $daysPerMonth;
+        ++$month;
+        if ($month > 12) {
+            $month = 1;
+            ++$year;
         }
     }
 
-    $nStampEnde = mktime(23, 59, 59, $nMonat, $nTag, $nJahr);
+    $stampEnd = mktime(23, 59, 59, $month, $day, $year);
 
-    return [$nStampStart, $nStampEnde];
+    return [$stampStart, $stampEnd];
 }
 
 /**
@@ -460,23 +460,23 @@ function getJTLVersionDB(bool $bDate = false)
 }
 
 /**
- * @param string $size_str
+ * @param string $size
  * @return mixed
  */
-function getMaxFileSize($size_str)
+function getMaxFileSize($size)
 {
-    switch (mb_substr($size_str, -1)) {
+    switch (mb_substr($size, -1)) {
         case 'M':
         case 'm':
-            return (int)$size_str * 1048576;
+            return (int)$size * 1048576;
         case 'K':
         case 'k':
-            return (int)$size_str * 1024;
+            return (int)$size * 1024;
         case 'G':
         case 'g':
-            return (int)$size_str * 1073741824;
+            return (int)$size * 1073741824;
         default:
-            return $size_str;
+            return $size;
     }
 }
 

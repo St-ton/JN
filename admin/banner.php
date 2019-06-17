@@ -81,15 +81,15 @@ if (!empty($_POST) && (isset($_POST['cName']) || isset($_POST['kImageMap'])) && 
             $cKeyValue = 'article_key';
             $cValue    = $_POST[$cKeyValue] ?? null;
         } elseif ($pageType === PAGE_ARTIKELLISTE) {
-            $aFilter_arr = [
+            $filters   = [
                 'kTag'         => 'tag_key',
                 'kMerkmalWert' => 'attribute_key',
                 'kKategorie'   => 'categories_key',
                 'kHersteller'  => 'manufacturer_key',
                 'cSuche'       => 'keycSuche'
             ];
-            $cKeyValue   = $aFilter_arr[$cKey];
-            $cValue      = $_POST[$cKeyValue] ?? null;
+            $cKeyValue = $filters[$cKey];
+            $cValue    = $_POST[$cKeyValue] ?? null;
         } elseif ($pageType === PAGE_EIGENE) {
             $cKey      = 'kLink';
             $cKeyValue = 'link_key';

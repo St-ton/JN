@@ -107,14 +107,14 @@ if ($action === 'save') {
 
     if (isset($packaging->kVerpackung) && $packaging->kVerpackung > 0) {
         $packaging->oSprach_arr = [];
-        $oVerpackungSprach_arr  = $db->selectAll(
+        $localizations          = $db->selectAll(
             'tverpackungsprache',
             'kVerpackung',
             $packagingID,
             'cISOSprache, cName, cBeschreibung'
         );
-        foreach ($oVerpackungSprach_arr as $oVerpackungSprach) {
-            $packaging->oSprach_arr[$oVerpackungSprach->cISOSprache] = $oVerpackungSprach;
+        foreach ($localizations as $localization) {
+            $packaging->oSprach_arr[$localization->cISOSprache] = $localization;
         }
         $customerGroup                = gibKundengruppeObj($packaging->cKundengruppe);
         $packaging->kKundengruppe_arr = $customerGroup->kKundengruppe_arr;

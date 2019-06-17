@@ -110,21 +110,15 @@ function holeUmfrageUebersicht()
 }
 
 /**
- * @param object $oUmfrage
  * @deprecated since 5.0.0
  */
-function bearbeiteUmfrageAuswertung($oUmfrage)
+function bearbeiteUmfrageAuswertung()
 {
 }
 
 /**
- * @param int                $kUmfrage
- * @param \JTL\Survey\Survey $oUmfrage
- * @param array              $oUmfrageFrageTMP_arr
- * @param array              $oNavi_arr
- * @param int                $nAktuelleSeite
  * @deprecated since 5.0.0
  */
-function bearbeiteUmfrageDurchfuehrung(int $kUmfrage, $oUmfrage, &$oUmfrageFrageTMP_arr, &$oNavi_arr, &$nAktuelleSeite)
+function bearbeiteUmfrageDurchfuehrung()
 {
 }

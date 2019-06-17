@@ -287,13 +287,13 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                     // tumfrage loeschen
                     $db->delete('tumfrage', 'kUmfrage', $surveyID);
 
-                    $oUmfrageFrage_arr = $db->query(
+                    $surveyQuestions = $db->query(
                         'SELECT kUmfrageFrage
                             FROM tumfragefrage
                             WHERE kUmfrage = ' . $surveyID,
                         ReturnType::ARRAY_OF_OBJECTS
                     );
-                    foreach ($oUmfrageFrage_arr as $question) {
+                    foreach ($surveyQuestions as $question) {
                         loescheFrage($question->kUmfrageFrage);
                     }
                     // tseo loeschen
@@ -374,14 +374,14 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
             $step = 'umfrage_frage_erstellen';
             $smarty->assign('kUmfrageTMP', $kUmfrageTMP);
         } elseif (Request::verifyGPCDataInt('umfrage_statistik') === 1) {
-            $oUmfrageDurchfuehrung_arr = $db->query(
+            $conducts = $db->query(
                 'SELECT kUmfrageDurchfuehrung
                     FROM tumfragedurchfuehrung
                     WHERE kUmfrage = ' . $kUmfrageTMP,
                 ReturnType::ARRAY_OF_OBJECTS
             );
 
-            if (count($oUmfrageDurchfuehrung_arr) > 0) {
+            if (count($conducts) > 0) {
                 $step = 'umfrage_statistik';
                 $smarty->assign('oUmfrageStats', holeUmfrageStatistik($kUmfrageTMP));
             } else {

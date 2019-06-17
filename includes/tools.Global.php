@@ -1487,16 +1487,16 @@ function fuegeEinInWarenkorb(
 }
 
 /**
- * @param array $oVariation_arr
+ * @param array $variations
  * @param int   $kEigenschaft
  * @param int   $kEigenschaftWert
  * @return bool|object
  * @deprecated since 5.0.0
  */
-function findeVariation($oVariation_arr, $kEigenschaft, $kEigenschaftWert)
+function findeVariation($variations, $kEigenschaft, $kEigenschaftWert)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use ArtikelHelper::findVariation() instead.', E_USER_DEPRECATED);
-    return Product::findVariation($oVariation_arr, (int)$kEigenschaft, (int)$kEigenschaftWert);
+    return Product::findVariation($variations, (int)$kEigenschaft, (int)$kEigenschaftWert);
 }
 
 /**

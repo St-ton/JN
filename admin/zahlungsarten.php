@@ -325,14 +325,14 @@ if ($step === 'einstellen') {
         && $_POST['action'] === 'paymentwawireset'
         && Form::validateToken()
     ) {
-        $kEingang_arr = $_POST['kEingang_arr'];
-        array_walk($kEingang_arr, function (&$i) {
+        $incomingIDs = $_POST['kEingang_arr'];
+        array_walk($incomingIDs, function (&$i) {
             $i = (int)$i;
         });
         $db->query(
             "UPDATE tzahlungseingang
                 SET cAbgeholt = 'N'
-                WHERE kZahlungseingang IN (" . implode(',', $kEingang_arr) . ')',
+                WHERE kZahlungseingang IN (" . implode(',', $incomingIDs) . ')',
             ReturnType::QUERYSINGLE
         );
     }

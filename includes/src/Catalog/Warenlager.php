@@ -132,12 +132,12 @@ class Warenlager extends MainModel
     }
 
     /**
-     * @param array $cSpracheAssoc_arr
+     * @param array $languages
      * @return $this
      */
-    public function setLanguages($cSpracheAssoc_arr): self
+    public function setLanguages($languages): self
     {
-        $this->cSpracheAssoc_arr = $cSpracheAssoc_arr;
+        $this->cSpracheAssoc_arr = $languages;
 
         return $this;
     }

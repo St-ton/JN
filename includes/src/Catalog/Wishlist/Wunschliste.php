@@ -940,7 +940,6 @@ class Wunschliste
     public static function getAttributesByID(int $wishListID, int $itemID)
     {
         if ($wishListID > 0 && $itemID > 0) {
-            // $oEigenschaftwerte_arr anlegen
             $data       = [];
             $attributes = Shop::Container()->getDB()->selectAll(
                 'twunschlisteposeigenschaft',

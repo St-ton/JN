@@ -243,10 +243,10 @@ function getShippingByName(string $query)
 {
     $byName = [];
     $db     = Shop::Container()->getDB();
-    foreach (explode(',', $query) as $cSearchPos) {
-        $cSearchPos = trim($cSearchPos);
-        if (mb_strlen($cSearchPos) > 2) {
-            $shippingByName_arr = $db->queryPrepared(
+    foreach (explode(',', $query) as $search) {
+        $search = trim($search);
+        if (mb_strlen($search) > 2) {
+            $hits = $db->queryPrepared(
                 'SELECT va.kVersandart, va.cName
                     FROM tversandart AS va
                     LEFT JOIN tversandartsprache AS vs 
@@ -254,17 +254,15 @@ function getShippingByName(string $query)
                         AND vs.cName LIKE :search
                     WHERE va.cName LIKE :search
                     OR vs.cName LIKE :search',
-                ['search' => '%' . $cSearchPos . '%'],
+                ['search' => '%' . $search . '%'],
                 ReturnType::ARRAY_OF_OBJECTS
             );
-            if (!empty($shippingByName_arr)) {
-                if (count($shippingByName_arr) > 1) {
-                    foreach ($shippingByName_arr as $shippingByName) {
-                        $byName[$shippingByName->kVersandart] = $shippingByName;
-                    }
-                } else {
-                    $byName[$shippingByName_arr[0]->kVersandart] = $shippingByName_arr[0];
+            if (count($hits) > 1) {
+                foreach ($hits as $shippingByName) {
+                    $byName[$shippingByName->kVersandart] = $shippingByName;
                 }
+            } else {
+                $byName[$hits[0]->kVersandart] = $hits[0];
             }
         }
     }
@@ -335,11 +333,10 @@ function getMissingShippingClassCombi()
     }
 
     foreach ($combinationsInShippings as $com) {
-        $vk     = trim($com->cVersandklassen);
-        $vk_arr = explode(' ', $vk);
-        if (is_array($vk_arr)) {
-            foreach ($vk_arr as $_vk) {
-                $combinationInUse[] = trim($_vk);
+        $classes = explode(' ', trim($com->cVersandklassen));
+        if (is_array($classes)) {
+            foreach ($classes as $class) {
+                $combinationInUse[] = trim($class);
             }
         } else {
             $combinationInUse[] = trim($com->cVersandklassen);

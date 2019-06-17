@@ -32,17 +32,17 @@ $alertHelper = Shop::Container()->getAlertService();
 if (Form::validateToken()) {
     switch (Request::verifyGPDataString('action')) {
         case 'save':
-            foreach ($redirects as $kRedirect => $redirect) {
-                $oRedirect = new Redirect($kRedirect);
-                if ($oRedirect->kRedirect > 0 && $oRedirect->cToUrl !== $redirect['cToUrl']) {
-                    if (Redirect::checkAvailability($redirect['cToUrl'])) {
-                        $oRedirect->cToUrl     = $redirect['cToUrl'];
-                        $oRedirect->cAvailable = 'y';
-                        Shop::Container()->getDB()->update('tredirect', 'kRedirect', $oRedirect->kRedirect, $oRedirect);
+            foreach ($redirects as $id => $item) {
+                $redirect = new Redirect($id);
+                if ($redirect->kRedirect > 0 && $redirect->cToUrl !== $item['cToUrl']) {
+                    if (Redirect::checkAvailability($item['cToUrl'])) {
+                        $redirect->cToUrl     = $item['cToUrl'];
+                        $redirect->cAvailable = 'y';
+                        Shop::Container()->getDB()->update('tredirect', 'kRedirect', $redirect->kRedirect, $redirect);
                     } else {
                         $alertHelper->addAlert(
                             Alert::TYPE_ERROR,
-                            sprintf(__('errorURLNotReachable'), $redirect['cToUrl']),
+                            sprintf(__('errorURLNotReachable'), $item['cToUrl']),
                             'errorURLNotReachable'
                         );
                     }
@@ -50,9 +50,9 @@ if (Form::validateToken()) {
             }
             break;
         case 'delete':
-            foreach ($redirects as $kRedirect => $redirect) {
-                if (isset($redirect['enabled']) && (int)$redirect['enabled'] === 1) {
-                    Redirect::deleteRedirect($kRedirect);
+            foreach ($redirects as $id => $item) {
+                if (isset($item['enabled']) && (int)$item['enabled'] === 1) {
+                    Redirect::deleteRedirect($id);
                 }
             }
             break;
@@ -60,8 +60,8 @@ if (Form::validateToken()) {
             Redirect::deleteUnassigned();
             break;
         case 'new':
-            $oRedirect = new Redirect();
-            if ($oRedirect->saveExt(
+            $redirect = new Redirect();
+            if ($redirect->saveExt(
                 Request::verifyGPDataString('cFromUrl'),
                 Request::verifyGPDataString('cToUrl')
             )) {
@@ -75,18 +75,18 @@ if (Form::validateToken()) {
             }
             break;
         case 'csvimport':
-            $oRedirect = new Redirect();
+            $redirect = new Redirect();
             if (is_uploaded_file($_FILES['cFile']['tmp_name'])) {
-                $cFile = PFAD_ROOT . PFAD_EXPORT . md5($_FILES['cFile']['name'] . time());
-                if (move_uploaded_file($_FILES['cFile']['tmp_name'], $cFile)) {
-                    $cError_arr = $oRedirect->doImport($cFile);
-                    if (count($cError_arr) === 0) {
+                $file = PFAD_ROOT . PFAD_EXPORT . md5($_FILES['cFile']['name'] . time());
+                if (move_uploaded_file($_FILES['cFile']['tmp_name'], $file)) {
+                    $errors = $redirect->doImport($file);
+                    if (count($errors) === 0) {
                         $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successImport'), 'successImport');
                     } else {
-                        @unlink($cFile);
+                        @unlink($file);
                         $alertHelper->addAlert(
                             Alert::TYPE_ERROR,
-                            __('errorImport') . '<br><br>' . implode('<br>', $cError_arr),
+                            __('errorImport') . '<br><br>' . implode('<br>', $errors),
                             'errorImport'
                         );
                     }

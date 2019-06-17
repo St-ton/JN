@@ -114,23 +114,23 @@ function generiereRSSXML()
     }
     // bewertungen beachten?
     if ($conf['rss']['rss_bewertungen_beachten'] === 'Y') {
-        $oBewertung_arr = $db->query(
+        $reviews = $db->query(
             "SELECT *, dDatum, DATE_FORMAT(dDatum, '%a, %d %b %y %h:%i:%s +0100') AS dErstellt_RSS
                 FROM tbewertung
                 WHERE DATE_SUB(NOW(), INTERVAL " . $days . ' DAY) < dDatum
                     AND nAktiv = 1',
             ReturnType::ARRAY_OF_OBJECTS
         );
-        foreach ($oBewertung_arr as $oBewertung) {
-            $url  = URL::buildURL($oBewertung, URLART_ARTIKEL, true);
+        foreach ($reviews as $review) {
+            $url  = URL::buildURL($review, URLART_ARTIKEL, true);
             $xml .= '
         <item>
-            <title>Bewertung ' . wandelXMLEntitiesUm($oBewertung->cTitel) . ' von ' .
-                wandelXMLEntitiesUm($oBewertung->cName) . '</title>
-            <description>' . wandelXMLEntitiesUm($oBewertung->cText) . '</description>
+            <title>Bewertung ' . wandelXMLEntitiesUm($review->cTitel) . ' von ' .
+                wandelXMLEntitiesUm($review->cName) . '</title>
+            <description>' . wandelXMLEntitiesUm($review->cText) . '</description>
             <link>' . $url . '</link>
             <guid>' . $url . '</guid>
-            <pubDate>' . bauerfc2822datum($oBewertung->dDatum) . '</pubDate>
+            <pubDate>' . bauerfc2822datum($review->dDatum) . '</pubDate>
         </item>';
         }
     }

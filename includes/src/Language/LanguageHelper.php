@@ -540,7 +540,7 @@ class LanguageHelper
      */
     public function gibAlleWerte(): array
     {
-        $oWerte_arr = [];
+        $values = [];
         foreach ($this->gibSektionen() as $section) {
             $section->kSprachsektion = (int)$section->kSprachsektion;
             $section->oWerte_arr     = map($this->db->selectAll(
@@ -554,10 +554,10 @@ class LanguageHelper
 
                 return $e;
             });
-            $oWerte_arr[]            = $section;
+            $values[]                = $section;
         }
 
-        return $oWerte_arr;
+        return $values;
     }
 
     /**

@@ -336,7 +336,7 @@ function holeUmfrageStatistik(int $surveyID)
                 $answer->kUmfrageFrageAntwort = $oUmfrageFrageAntwortTMP->kUmfrageFrageAntwort;
                 $answers[]                    = $answer;
             }
-            $matrixOptTMP_arr = $db->query(
+            $matrixTmpOptions = $db->query(
                 'SELECT tumfragematrixoption.kUmfrageMatrixOption, tumfragematrixoption.cName, 
                     COUNT(tumfragedurchfuehrungantwort.kUmfrageMatrixOption) AS nAnzahlOption
                     FROM tumfragematrixoption
@@ -347,7 +347,7 @@ function holeUmfrageStatistik(int $surveyID)
                     ORDER BY tumfragematrixoption.nSort',
                 ReturnType::ARRAY_OF_OBJECTS
             );
-            foreach ($matrixOptTMP_arr as $matrixOptTMP) {
+            foreach ($matrixTmpOptions as $matrixOptTMP) {
                 unset($opt);
                 $opt                       = new stdClass();
                 $opt->nAnzahlOption        = $matrixOptTMP->nAnzahlOption;
@@ -372,7 +372,7 @@ function holeUmfrageStatistik(int $surveyID)
             $stats->oUmfrageFrage_arr[$i]->oUmfrageMatrixOption_arr = $matrixOptions;
             //hole pro Option die Anzahl raus
             foreach ($matrixOptions as $opt) {
-                $matrixOptAnzahlSpalte_arr = $db->query(
+                $matrixOptRows = $db->query(
                     'SELECT COUNT(*) AS nAnzahlOptionProAntwort, kUmfrageFrageAntwort
                         FROM  tumfragedurchfuehrungantwort
                         WHERE kUmfrageMatrixOption = ' . (int)$opt->kUmfrageMatrixOption . '
@@ -381,7 +381,7 @@ function holeUmfrageStatistik(int $surveyID)
                     ReturnType::ARRAY_OF_OBJECTS
                 );
                 //setze jeder Antwort den entsprechenden Matrixeintrag
-                foreach ($matrixOptAnzahlSpalte_arr as $col) {
+                foreach ($matrixOptRows as $col) {
                     $resMatrix[$col->kUmfrageFrageAntwort][$opt->kUmfrageMatrixOption]->nAnzahl  =
                         $col->nAnzahlOptionProAntwort;
                     $resMatrix[$col->kUmfrageFrageAntwort][$opt->kUmfrageMatrixOption]->fProzent =

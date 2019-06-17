@@ -247,15 +247,15 @@ if (Form::validateToken()) {
                 if (Request::verifyGPCDataInt('kNewsletterVorlage') > 0) {
                     $kNewslettervorlage = Request::verifyGPCDataInt('kNewsletterVorlage');
                 }
-                $tpl              = holeNewslettervorlageStd($kNewslettervorlageStd, $kNewslettervorlage);
-                $cPlausiValue_arr = speicherVorlageStd(
+                $tpl         = holeNewslettervorlageStd($kNewslettervorlageStd, $kNewslettervorlage);
+                $checkValues = speicherVorlageStd(
                     $tpl,
                     $kNewslettervorlageStd,
                     $_POST,
                     $kNewslettervorlage
                 );
-                if (is_array($cPlausiValue_arr) && count($cPlausiValue_arr) > 0) {
-                    $smarty->assign('cPlausiValue_arr', $cPlausiValue_arr)
+                if (is_array($checkValues) && count($checkValues) > 0) {
+                    $smarty->assign('cPlausiValue_arr', $checkValues)
                            ->assign('cPostVar_arr', Text::filterXSS($_POST))
                            ->assign('oNewslettervorlageStd', $tpl);
                 } else {
@@ -379,10 +379,10 @@ if (Form::validateToken()) {
                 $option = 'editieren';
             }
         } elseif (isset($_POST['speichern'])) { // Vorlage speichern
-            $cPlausiValue_arr = speicherVorlage($_POST);
-            if (is_array($cPlausiValue_arr) && count($cPlausiValue_arr) > 0) {
+            $checkValues = speicherVorlage($_POST);
+            if (is_array($checkValues) && count($checkValues) > 0) {
                 $step = 'vorlage_erstellen';
-                $smarty->assign('cPlausiValue_arr', $cPlausiValue_arr)
+                $smarty->assign('cPlausiValue_arr', $checkValues)
                        ->assign('cPostVar_arr', Text::filterXSS($_POST))
                        ->assign('oNewsletterVorlage', $newsletterTPL);
             }

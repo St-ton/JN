@@ -19,11 +19,16 @@ function getSeo($cSeo)
  */
 function checkSeo($cSeo)
 {
-    if (!$cSeo) {
+    if (!$cSeo || !is_string($cSeo)) {
         return '';
     }
 
-    Shop::DB()->query("SET @IKEY := 0", 10);
+    $exists = Shop::DB()->select('tseo', 'cSeo', $cSeo);
+    if ($exists === null) {
+        return $cSeo;
+    }
+
+    Shop::DB()->query('SET @IKEY := 0', 10);
     $obj = Shop::DB()->query(
         "SELECT oseo.newSeo
             FROM (

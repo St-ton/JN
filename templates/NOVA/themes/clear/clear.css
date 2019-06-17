@@ -1,12 +1,12 @@
 @charset "UTF-8";
+@import "../base/wow/animate.css";
+@import "../base/slider/slider.css";
 /*!
  * Bootstrap v4.3.1 (https://getbootstrap.com/)
  * Copyright 2011-2019 The Bootstrap Authors
  * Copyright 2011-2019 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  */
-@import "../base/wow/animate.css";
-@import "../base/slider/slider.css";
 :root {
   --blue: #007bff;
   --indigo: #6610f2;
@@ -13047,7 +13047,7 @@ ul.partlist-items {
   position: relative;
   text-overflow: ellipsis;
   white-space: nowrap;
-  transition: all 1s ease-in-out;
+  transition: all 0.5s ease-in-out;
 }
 .swatches.imgswatches .variation img {
   max-width: 45px;
@@ -14827,7 +14827,6 @@ table caption {
   top: 50px;
   opacity: 0;
   transition: all 0.3s;
-  max-width: 700px;
 }
 .img-gallery-modal.in .modal-dialog, .img-gallery-modal.show .modal-dialog {
   transform: scale(1);

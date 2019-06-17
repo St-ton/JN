@@ -349,7 +349,7 @@
                         {foreach $oNewsMonatsPraefix_arr as $oNewsMonatsPraefix}
                             <div class="input-group">
                                 <span class="input-group-addon">
-                                    <label for="praefix_{$oNewsMonatsPraefix->cISOSprache}">{__('newsPraefix')} ({$oNewsMonatsPraefix->cNameDeutsch})</label>
+                                    <label for="praefix_{$oNewsMonatsPraefix->cISOSprache}">{__('newsPraefix')} ({$oNewsMonatsPraefix->name})</label>
                                 </span>
                                 <input type="text" class="form-control" id="praefix_{$oNewsMonatsPraefix->cISOSprache}" name="praefix_{$oNewsMonatsPraefix->cISOSprache}" value="{$oNewsMonatsPraefix->cPraefix}" tabindex="1" />
                             </div>

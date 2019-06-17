@@ -8,9 +8,11 @@
 
 use JTL\DB\ReturnType;
 use JTL\Helpers\Seo;
-use JTL\Sprache;
+use JTL\Language\LanguageHelper;
 use JTL\Update\IMigration;
 use JTL\Update\Migration;
+use function Functional\first;
+use function Functional\group;
 
 /**
  * Class Migration_20180522105000
@@ -32,32 +34,32 @@ class Migration_20180522105000 extends Migration implements IMigration
                 WHERE kLink NOT IN (SELECT kLink FROM tlinksprache)",
             ReturnType::ARRAY_OF_OBJECTS
         );
-        $missingLanguageEntries = \Functional\group($missingLanguageEntries, function ($e) {
+        $missingLanguageEntries = group($missingLanguageEntries, function ($e) {
             return $e->kLink;
         });
-        $sprachen               = Sprache::getAllLanguages();
+        $languages              = LanguageHelper::getAllLanguages();
         foreach ($missingLanguageEntries as $linkID => $links) {
-            $linkData           = \Functional\first($links);
-            $linkSprache        = new stdClass();
-            $linkSprache->kLink = $linkID;
-            foreach ($sprachen as $sprache) {
-                $match = \Functional\first($links, function ($e) use ($sprache) {
-                    return (int)$e->kSprache === $sprache->kSprache;
+            $linkData         = first($links);
+            $localized        = new stdClass();
+            $localized->kLink = $linkID;
+            foreach ($languages as $language) {
+                $match = first($links, function ($e) use ($language) {
+                    return (int)$e->kSprache === $language->kSprache;
                 });
                 if ($match === null) {
                     // no seo entry exists for this language ID
-                    $linkSprache->cName = $linkData->cName;
-                    $linkSprache->cSeo  = $linkData->cName;
+                    $localized->cName = $linkData->cName;
+                    $localized->cSeo  = $linkData->cName;
                 } else {
-                    $linkSprache->cSeo  = $match->cSeo;
-                    $linkSprache->cName = $match->cName;
+                    $localized->cSeo  = $match->cSeo;
+                    $localized->cName = $match->cName;
                 }
-                $linkSprache->cISOSprache = $sprache->cISO;
-                $linkSprache->cTitle      = '';
-                $linkSprache->cContent    = '';
-                $linkSprache->cMetaTitle  = '';
-                $linkSprache->cSeo        = Seo::getSeo($linkSprache->cSeo);
-                $this->getDB()->insert('tlinksprache', $linkSprache);
+                $localized->cISOSprache = $language->cISO;
+                $localized->cTitle      = '';
+                $localized->cContent    = '';
+                $localized->cMetaTitle  = '';
+                $localized->cSeo        = Seo::getSeo($localized->cSeo);
+                $this->getDB()->insert('tlinksprache', $localized);
             }
         }
         $missingSeo = $this->getDB()->query(
@@ -90,11 +92,11 @@ class Migration_20180522105000 extends Migration implements IMigration
             ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($missingLinkGroupLanguages as $missingLinkGroupLanguage) {
-            foreach ($sprachen as $sprache) {
+            foreach ($languages as $language) {
                 $lang              = new stdClass();
                 $lang->kLinkgruppe = $missingLinkGroupLanguage->kLinkgruppe;
                 $lang->cName       = $missingLinkGroupLanguage->cName;
-                $lang->cISOSprache = $sprache->cISO;
+                $lang->cISOSprache = $language->cISO;
                 $this->getDB()->insert('tlinkgruppesprache', $lang);
             }
         }

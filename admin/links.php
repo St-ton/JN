@@ -5,18 +5,18 @@
  */
 
 use Illuminate\Support\Collection;
+use JTL\Alert\Alert;
+use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
+use JTL\Language\LanguageHelper;
+use JTL\Link\Admin\LinkAdmin;
+use JTL\Link\Link;
 use JTL\Link\LinkGroup;
 use JTL\Link\LinkGroupList;
+use JTL\Link\LinkInterface;
 use JTL\PlausiCMS;
 use JTL\Shop;
-use JTL\Sprache;
-use JTL\DB\ReturnType;
-use JTL\Link\Link;
-use JTL\Link\LinkInterface;
-use JTL\Link\Admin\LinkAdmin;
-use JTL\Alert\Alert;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
@@ -198,8 +198,8 @@ if ($action !== '' && Form::validateToken()) {
             break;
         case 'create-or-update-link':
             $hasHTML_arr = [];
-            foreach (Sprache::getAllLanguages() as $lang) {
-                $hasHTML_arr[] = 'cContent_' . $lang->cISO;
+            foreach (LanguageHelper::getAllLanguages() as $lang) {
+                $hasHTML_arr[] = 'cContent_' . $lang->getIso();
             }
             $checks = new PlausiCMS();
             $checks->setPostVar($_POST, $hasHTML_arr, true);
@@ -345,6 +345,5 @@ if ($step === 'neuer Link') {
 $smarty->assign('step', $step)
        ->assign('Link', $link)
        ->assign('kPlugin', Request::verifyGPCDataInt('kPlugin'))
-       ->assign('sprachen', Sprache::getAllLanguages())
        ->assign('linkAdmin', $linkAdmin)
        ->display('links.tpl');

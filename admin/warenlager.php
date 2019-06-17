@@ -4,12 +4,11 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use JTL\Helpers\Form;
-use JTL\Shop;
-use JTL\Sprache;
+use JTL\Alert\Alert;
 use JTL\Catalog\Warenlager;
 use JTL\DB\ReturnType;
-use JTL\Alert\Alert;
+use JTL\Helpers\Form;
+use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
@@ -55,8 +54,7 @@ if ($cAction === 'update') {
 }
 
 if ($cStep === 'uebersicht') {
-    $smarty->assign('oWarenlager_arr', Warenlager::getAll(false, true))
-           ->assign('oSprache_arr', Sprache::getAllLanguages());
+    $smarty->assign('oWarenlager_arr', Warenlager::getAll(false, true));
 }
 
 $smarty->assign('cStep', $cStep)

@@ -8,8 +8,8 @@ namespace JTL\Plugin\Admin\Installation\Items;
 
 use JTL\DB\ReturnType;
 use JTL\Helpers\Seo;
+use JTL\Language\LanguageHelper;
 use JTL\Plugin\InstallCode;
-use JTL\Sprache;
 use stdClass;
 
 /**
@@ -58,7 +58,7 @@ class FrontendLinks extends AbstractItem
                 'tlinkgroupassociations',
                 (object)['linkGroupID' => $linkGroupID, 'linkID' => $linkID]
             );
-            $allLanguages    = Sprache::getAllLanguages(2);
+            $allLanguages    = LanguageHelper::getAllLanguages(2);
             $linkLang        = new stdClass();
             $linkLang->kLink = $linkID;
             $bLinkStandard   = false;

@@ -11,9 +11,9 @@ use JTL\Filter\AbstractFilter;
 use JTL\Filter\FilterInterface;
 use JTL\Filter\Join;
 use JTL\Filter\ProductFilter;
+use JTL\Language\LanguageHelper;
 use JTL\MagicCompatibilityTrait;
 use JTL\Shop;
-use JTL\Sprache;
 
 /**
  * Class BaseAttribute
@@ -79,7 +79,7 @@ class BaseAttribute extends AbstractFilter
         }
         $select = 'tmerkmal.cName';
         $join   = '';
-        if (Shop::getLanguage() > 0 && !Sprache::isDefaultLanguageActive()) {
+        if (Shop::getLanguage() > 0 && !LanguageHelper::isDefaultLanguageActive()) {
             $select = 'tmerkmalsprache.cName, tmerkmal.cName AS cMMName';
             $join   = ' JOIN tmerkmalsprache 
                              ON tmerkmalsprache.kMerkmal = tmerkmal.kMerkmal

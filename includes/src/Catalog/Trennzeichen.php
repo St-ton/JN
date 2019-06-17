@@ -7,8 +7,8 @@
 namespace JTL\Catalog;
 
 use JTL\DB\ReturnType;
+use JTL\Language\LanguageHelper;
 use JTL\Shop;
-use JTL\Sprache;
 use stdClass;
 
 /**
@@ -137,7 +137,7 @@ class Trennzeichen
     public static function getUnit(int $nEinheit, int $kSprache, $fAmount = -1)
     {
         if (!$kSprache) {
-            $oSprache = Sprache::getDefaultLanguage();
+            $oSprache = LanguageHelper::getDefaultLanguage();
             $kSprache = (int)$oSprache->kSprache;
         }
 
@@ -172,7 +172,7 @@ class Trennzeichen
     {
         // Standardwert [kSprache][nEinheit]
         $rows = [];
-        foreach (Sprache::getAllLanguages() as $language) {
+        foreach (LanguageHelper::getAllLanguages() as $language) {
             $rows[$language->kSprache][\JTL_SEPARATOR_WEIGHT] = [
                 'nDezimalstellen'   => 2,
                 'cDezimalZeichen'   => ',',
@@ -406,7 +406,7 @@ class Trennzeichen
     public static function migrateUpdate()
     {
         $conf      = Shop::getSettings([\CONF_ARTIKELDETAILS, \CONF_ARTIKELUEBERSICHT]);
-        $languages = Sprache::getAllLanguages();
+        $languages = LanguageHelper::getAllLanguages();
         if (\is_array($languages) && \count($languages) > 0) {
             Shop::Container()->getDB()->query('TRUNCATE ttrennzeichen', ReturnType::AFFECTED_ROWS);
             $units = [\JTL_SEPARATOR_WEIGHT, \JTL_SEPARATOR_AMOUNT, \JTL_SEPARATOR_LENGTH];

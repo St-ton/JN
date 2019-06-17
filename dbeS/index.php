@@ -4,13 +4,12 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use JTL\dbeS\Synclogin;
-use JTL\Shop;
-use JTL\dbeS\Starter;
 use JTL\dbeS\FileHandler;
-use JTL\Sprache;
+use JTL\dbeS\Starter;
+use JTL\dbeS\Synclogin;
+use JTL\Language\LanguageHelper;
 use JTL\Plugin\Helper;
-use JTL\DB\NiceDB;
+use JTL\Shop;
 
 define('DEFINES_PFAD', '../includes/');
 define('FREIDEFINIERBARER_FEHLER', 8);
@@ -110,7 +109,7 @@ $cache       = Shop::Container()->getCache()->setJtlCacheConfig(
 );
 $logger      = Shop::Container()->getLogService()->withName('dbeS');
 $pluginHooks = Helper::getHookList();
-$oSprache    = Sprache::getInstance($db, $cache);
+$oSprache    = LanguageHelper::getInstance($db, $cache);
 $fileID      = $_REQUEST['id'] ?? null;
 Shop::bootstrap();
 ob_start('handleError');

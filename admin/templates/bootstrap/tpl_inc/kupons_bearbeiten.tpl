@@ -56,16 +56,17 @@
                         <input type="text" class="form-control" name="cName" id="cName" value="{$oKupon->cName}">
                     </span>
                 </div>
-                {foreach $oSprache_arr as $oSprache}
+                {foreach $sprachen as $language}
+                    {assign var=langCode value=$language->getIso()}
                     <div class="input-group">
                         <span class="input-group-addon">
-                            <label for="cName_{$oSprache->cISO}">{__('showedName')} ({$oSprache->cNameDeutsch})</label>
+                            <label for="cName_{$langCode}">{__('showedName')} ({$language->getLocalizedName()})</label>
                         </span>
                         <span class="input-group-wrap">
                             <input
-                                type="text" class="form-control" name="cName_{$oSprache->cISO}"
-                                id="cName_{$oSprache->cISO}"
-                                value="{if isset($oKuponName_arr[$oSprache->cISO])}{$oKuponName_arr[$oSprache->cISO]}{/if}">
+                                type="text" class="form-control" name="cName_{$langCode}"
+                                id="cName_{$langCode}"
+                                value="{if isset($oKuponName_arr[$langCode])}{$oKuponName_arr[$langCode]}{/if}">
                         </span>
                     </div>
                 {/foreach}

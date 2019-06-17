@@ -47,14 +47,18 @@
                             </tr>
                             <tr class="collapse" id="collapse-{$oWarenlager->kWarenlager}">
                                 <td colspan="4">
-                                {foreach $oSprache_arr as $oSprache}
-                                    {assign var=kSprache value=$oSprache->kSprache}
-                                        <div class="input-group">
-                                            <span class="input-group-addon">
-                                                <label for="cNameSprache[{$oWarenlager->kWarenlager}][{$oSprache->kSprache}]">{$oSprache->cNameDeutsch}</label>
-                                            </span>
-                                            <input id="cNameSprache[{$oWarenlager->kWarenlager}][{$oSprache->kSprache}]" name="cNameSprache[{$oWarenlager->kWarenlager}][{$oSprache->kSprache}]" type="text" value="{if isset($oWarenlager->cSpracheAssoc_arr[$kSprache])}{$oWarenlager->cSpracheAssoc_arr[$kSprache]}{/if}" class="form-control large" />
-                                        </div>
+                                {foreach $sprachen as $language}
+                                    {assign var=kSprache value=$language->getId()}
+                                    <div class="input-group">
+                                        <span class="input-group-addon">
+                                            <label for="cNameSprache[{$oWarenlager->kWarenlager}][{$kSprache}]">{$language->getLocalizedName()}</label>
+                                        </span>
+                                        <input id="cNameSprache[{$oWarenlager->kWarenlager}][{$kSprache}]"
+                                               name="cNameSprache[{$oWarenlager->kWarenlager}][{$kSprache}]"
+                                               type="text"
+                                               value="{if isset($oWarenlager->cSpracheAssoc_arr[$kSprache])}{$oWarenlager->cSpracheAssoc_arr[$kSprache]}{/if}"
+                                               class="form-control large" />
+                                    </div>
                                 {/foreach}
                                 </td>
                             </tr>

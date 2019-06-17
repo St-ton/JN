@@ -1347,18 +1347,18 @@ class Exportformat
                     ? 'https://'
                     : 'http://';
                 if ($isAsync) {
-                    $oCallback                 = new stdClass();
-                    $oCallback->kExportformat  = $this->getExportformat();
-                    $oCallback->kExportqueue   = $this->queue->jobQueueID;
-                    $oCallback->nMax           = $max;
-                    $oCallback->nCurrent       = $this->queue->tasksExecuted;
-                    $oCallback->nLastArticleID = $this->queue->lastProductID;
-                    $oCallback->bFinished      = false;
-                    $oCallback->bFirst         = ((int)$this->queue->tasksExecuted === 0);
-                    $oCallback->cURL           = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'];
-                    $oCallback->cacheMisses    = $cacheMisses;
-                    $oCallback->cacheHits      = $cacheHits;
-                    echo \json_encode($oCallback);
+                    $callback                 = new stdClass();
+                    $callback->kExportformat  = $this->getExportformat();
+                    $callback->kExportqueue   = $this->queue->jobQueueID;
+                    $callback->nMax           = $max;
+                    $callback->nCurrent       = $this->queue->tasksExecuted;
+                    $callback->nLastArticleID = $this->queue->lastProductID;
+                    $callback->bFinished      = false;
+                    $callback->bFirst         = ((int)$this->queue->tasksExecuted === 0);
+                    $callback->cURL           = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'];
+                    $callback->cacheMisses    = $cacheMisses;
+                    $callback->cacheHits      = $cacheHits;
+                    echo \json_encode($callback);
                 } else {
                     $cURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'] .
                         '?e=' . (int)$this->queue->jobQueueID .
@@ -1392,17 +1392,17 @@ class Exportformat
                 $this->splitFile();
                 if ($back === true) {
                     if ($isAsync) {
-                        $oCallback                 = new stdClass();
-                        $oCallback->kExportformat  = $this->getExportformat();
-                        $oCallback->nMax           = $max;
-                        $oCallback->nCurrent       = $this->queue->tasksExecuted;
-                        $oCallback->nLastArticleID = $this->queue->lastProductID;
-                        $oCallback->bFinished      = true;
-                        $oCallback->cacheMisses    = $cacheMisses;
-                        $oCallback->cacheHits      = $cacheHits;
-                        $oCallback->errorMessage   = $errorMessage;
+                        $callback                 = new stdClass();
+                        $callback->kExportformat  = $this->getExportformat();
+                        $callback->nMax           = $max;
+                        $callback->nCurrent       = $this->queue->tasksExecuted;
+                        $callback->nLastArticleID = $this->queue->lastProductID;
+                        $callback->bFinished      = true;
+                        $callback->cacheMisses    = $cacheMisses;
+                        $callback->cacheHits      = $cacheHits;
+                        $callback->errorMessage   = $errorMessage;
 
-                        echo \json_encode($oCallback);
+                        echo \json_encode($callback);
                     } else {
                         \header(
                             'Location: exportformate.php?action=exported&token=' .

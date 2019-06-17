@@ -100,60 +100,60 @@ function cryptPasswort($cPasswort, $cHashPasswort = null)
 }
 
 /**
- * @param int    $nAnzahlStellen
- * @param string $cString
+ * @param int    $length
+ * @param string $seed
  * @return bool|string
  * @deprecated since 5.0.0
  */
-function gibUID(int $nAnzahlStellen = 40, string $cString = '')
+function gibUID(int $length = 40, string $seed = '')
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    $cUID            = '';
-    $cSalt           = '';
-    $cSaltBuchstaben = 'aAbBcCdDeEfFgGhHiIjJkKlLmMnNoOpPqQrRsStTuUvVwWxXyYzZ0123456789';
+    $uid      = '';
+    $salt     = '';
+    $saltBase = 'aAbBcCdDeEfFgGhHiIjJkKlLmMnNoOpPqQrRsStTuUvVwWxXyYzZ0123456789';
     // Gen SALT
     for ($j = 0; $j < 30; $j++) {
-        $cSalt .= mb_substr($cSaltBuchstaben, mt_rand(0, mb_strlen($cSaltBuchstaben) - 1), 1);
+        $salt .= mb_substr($saltBase, mt_rand(0, mb_strlen($saltBase) - 1), 1);
     }
-    $cSalt = md5($cSalt);
+    $salt = md5($salt);
     mt_srand();
     // Wurde ein String übergeben?
-    if (mb_strlen($cString) > 0) {
+    if (mb_strlen($seed) > 0) {
         // Hat der String Elemente?
-        [$strings] = explode(';', $cString);
+        [$strings] = explode(';', $seed);
         if (is_array($strings) && count($strings) > 0) {
             foreach ($strings as $string) {
-                $cUID .= md5($string . md5(PFAD_ROOT . (time() - mt_rand())));
+                $uid .= md5($string . md5(PFAD_ROOT . (time() - mt_rand())));
             }
 
-            $cUID = md5($cUID . $cSalt);
+            $uid = md5($uid . $salt);
         } else {
-            $sl = mb_strlen($cString);
+            $sl = mb_strlen($seed);
             for ($i = 0; $i < $sl; $i++) {
-                $nPos = mt_rand(0, mb_strlen($cString) - 1);
-                if (((int)date('w') % 2) <= mb_strlen($cString)) {
-                    $nPos = (int)date('w') % 2;
+                $pos = mt_rand(0, mb_strlen($seed) - 1);
+                if (((int)date('w') % 2) <= mb_strlen($seed)) {
+                    $pos = (int)date('w') % 2;
                 }
-                $cUID .= md5(mb_substr($cString, $nPos, 1) . $cSalt . md5(PFAD_ROOT . (microtime(true) - mt_rand())));
+                $uid .= md5(mb_substr($seed, $pos, 1) . $salt . md5(PFAD_ROOT . (microtime(true) - mt_rand())));
             }
         }
-        $cUID = cryptPasswort($cUID . $cSalt);
+        $uid = cryptPasswort($uid . $salt);
     } else {
-        $cUID = cryptPasswort(md5(M_PI . $cSalt . md5(time() - mt_rand())));
+        $uid = cryptPasswort(md5(M_PI . $salt . md5(time() - mt_rand())));
     }
     // Anzahl Stellen beachten
-    return $nAnzahlStellen > 0 ? mb_substr($cUID, 0, $nAnzahlStellen) : $cUID;
+    return $length > 0 ? mb_substr($uid, 0, $length) : $uid;
 }
 
 /**
- * @param float $gesamtsumme
+ * @param float $sum
  * @return float
  * @deprecated since 5.0.0 - use WarenkorbHelper::roundOptional instead
  */
-function optionaleRundung($gesamtsumme)
+function optionaleRundung($sum)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use WarenkorbHelper::roundOptional() instead', E_USER_DEPRECATED);
-    return Cart::roundOptional($gesamtsumme);
+    return Cart::roundOptional($sum);
 }
 
 /**
@@ -168,25 +168,25 @@ function gibSeitenTyp()
 
 /**
  * @deprecated since 4.0
- * @param string $cString
- * @param int    $nSuche
+ * @param string $string
+ * @param int    $search
  * @return mixed|string
  */
-function filterXSS($cString, $nSuche = 0)
+function filterXSS($string, $search = 0)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return Text::filterXSS($cString, $nSuche);
+    return Text::filterXSS($string, $search);
 }
 
 /**
  * @deprecated since 4.0
- * @param bool $bForceSSL
+ * @param bool $forceSSL
  * @return string
  */
-function gibShopURL($bForceSSL = false)
+function gibShopURL($forceSSL = false)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return Shop::getURL($bForceSSL);
+    return Shop::getURL($forceSSL);
 }
 
 /**
@@ -978,26 +978,26 @@ function truncateMetaDescription($description)
 
 /**
  * @param int  $kStueckliste
- * @param bool $bAssoc
+ * @param bool $assoc
  * @return array
  * @deprecated since 5.0.0
  */
-function gibStuecklistenKomponente(int $kStueckliste, $bAssoc = false)
+function gibStuecklistenKomponente(int $kStueckliste, $assoc = false)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use WarenkorbHelper::getPartComponent() instead.', E_USER_DEPRECATED);
-    return Cart::getPartComponent($kStueckliste, $bAssoc);
+    return Cart::getPartComponent($kStueckliste, $assoc);
 }
 
 /**
  * @param object $NaviFilter
- * @param int    $nAnzahl
- * @param bool   $bSeo
+ * @param int    $count
+ * @param bool   $seo
  * @deprecated since 5.0.0
  */
-function doMainwordRedirect($NaviFilter, $nAnzahl, $bSeo = false)
+function doMainwordRedirect($NaviFilter, $count, $seo = false)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use Redirect::doMainwordRedirect() instead.', E_USER_DEPRECATED);
-    Redirect::doMainwordRedirect($NaviFilter, $nAnzahl, $bSeo);
+    Redirect::doMainwordRedirect($NaviFilter, $count, $seo);
 }
 
 /**
@@ -1867,25 +1867,25 @@ function gibAGBWRB(int $languageID, int $customergGroupID)
 }
 
 /**
- * @param string $cText
+ * @param string $text
  * @return string
  * @deprecated since 5.0.0
  */
-function verschluesselXTEA($cText)
+function verschluesselXTEA($text)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use CryptoService::encryptXTEA() instead.', E_USER_DEPRECATED);
-    return Shop::Container()->getCryptoService()->encryptXTEA($cText);
+    return Shop::Container()->getCryptoService()->encryptXTEA($text);
 }
 
 /**
- * @param string $cText
+ * @param string $text
  * @return string
  * @deprecated since 5.0.0
  */
-function entschluesselXTEA($cText)
+function entschluesselXTEA($text)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use CryptoService::decryptXTEA() instead.', E_USER_DEPRECATED);
-    return Shop::Container()->getCryptoService()->decryptXTEA($cText);
+    return Shop::Container()->getCryptoService()->decryptXTEA($text);
 }
 
 /**
@@ -1940,14 +1940,14 @@ function baueGewicht(array $products, int $weightAcc = 2, int $shippingWeightAcc
  * Prüft ob eine die angegebende Email in temailblacklist vorhanden ist
  * Gibt true zurück, falls Email geblockt, ansonsten false
  *
- * @param string $cEmail
+ * @param string $mail
  * @return bool
  * @deprecated since 5.0.0
  */
-function pruefeEmailblacklist(string $cEmail)
+function pruefeEmailblacklist(string $mail)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use SimpleMail::checkBlacklist() instead.', E_USER_DEPRECATED);
-    return SimpleMail::checkBlacklist($cEmail);
+    return SimpleMail::checkBlacklist($mail);
 }
 
 /**
@@ -1963,14 +1963,14 @@ function gibLetztenTokenDaten()
 }
 
 /**
- * @param bool $bAlten
+ * @param bool $old
  * @return string
  * @deprecated since 5.0.0
  */
-function gibToken(bool $bAlten = false)
+function gibToken(bool $old = false)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    if ($bAlten) {
+    if ($old) {
         $tokens = gibLetztenTokenDaten();
         if (!empty($tokens) && array_key_exists('token', $tokens)) {
             return $tokens['token'];
@@ -1981,14 +1981,14 @@ function gibToken(bool $bAlten = false)
 }
 
 /**
- * @param bool $bAlten
+ * @param bool $old
  * @return string
  * @deprecated since 5.0.0
  */
-function gibTokenName(bool $bAlten = false)
+function gibTokenName(bool $old = false)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    if ($bAlten) {
+    if ($old) {
         $tokens = gibLetztenTokenDaten();
         if (!empty($tokens) && array_key_exists('name', $tokens)) {
             return $tokens['name'];

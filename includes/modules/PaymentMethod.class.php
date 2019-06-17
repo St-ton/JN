@@ -267,23 +267,23 @@ class PaymentMethod
                 (int)$order->kBestellung
             );
             $hash                      = $oBestellID->cId;
-            $oZahlungsID               = new stdClass();
-            $oZahlungsID->kBestellung  = $order->kBestellung;
-            $oZahlungsID->kZahlungsart = $order->kZahlungsart;
-            $oZahlungsID->cId          = $hash;
-            $oZahlungsID->txn_id       = '';
-            $oZahlungsID->dDatum       = 'NOW()';
-            Shop::Container()->getDB()->insert('tzahlungsid', $oZahlungsID);
+            $paymentID               = new stdClass();
+            $paymentID->kBestellung  = $order->kBestellung;
+            $paymentID->kZahlungsart = $order->kZahlungsart;
+            $paymentID->cId          = $hash;
+            $paymentID->txn_id       = '';
+            $paymentID->dDatum       = 'NOW()';
+            Shop::Container()->getDB()->insert('tzahlungsid', $paymentID);
         } else {
             Shop::Container()->getDB()->delete('tzahlungsession', ['cSID', 'kBestellung'], [session_id(), 0]);
-            $oZahlungSession               = new stdClass();
-            $oZahlungSession->cSID         = session_id();
-            $oZahlungSession->cNotifyID    = '';
-            $oZahlungSession->dZeitBezahlt = '_DBNULL_';
-            $oZahlungSession->cZahlungsID  = uniqid('', true);
-            $oZahlungSession->dZeit        = 'NOW()';
-            Shop::Container()->getDB()->insert('tzahlungsession', $oZahlungSession);
-            $hash = '_' . $oZahlungSession->cZahlungsID;
+            $paymentSession               = new stdClass();
+            $paymentSession->cSID         = session_id();
+            $paymentSession->cNotifyID    = '';
+            $paymentSession->dZeitBezahlt = '_DBNULL_';
+            $paymentSession->cZahlungsID  = uniqid('', true);
+            $paymentSession->dZeit        = 'NOW()';
+            Shop::Container()->getDB()->insert('tzahlungsession', $paymentSession);
+            $hash = '_' . $paymentSession->cZahlungsID;
         }
 
         return $hash;
@@ -607,11 +607,11 @@ class PaymentMethod
      */
     public function createInvoice($orderID, $languageID)
     {
-        $oInvoice        = new stdClass();
-        $oInvoice->nType = 0;
-        $oInvoice->cInfo = '';
+        $invoide        = new stdClass();
+        $invoide->nType = 0;
+        $invoide->cInfo = '';
 
-        return $oInvoice;
+        return $invoide;
     }
 
     /**
@@ -622,10 +622,10 @@ class PaymentMethod
     {
         $orderID = (int)$orderID;
         $this->sendMail($orderID, MAILTEMPLATE_BESTELLUNG_RESTORNO);
-        $_upd                = new stdClass();
-        $_upd->cStatus       = BESTELLUNG_STATUS_IN_BEARBEITUNG;
-        $_upd->dBezahltDatum = 'NOW()';
-        Shop::Container()->getDB()->update('tbestellung', 'kBestellung', $orderID, $_upd);
+        $upd                = new stdClass();
+        $upd->cStatus       = BESTELLUNG_STATUS_IN_BEARBEITUNG;
+        $upd->dBezahltDatum = 'NOW()';
+        Shop::Container()->getDB()->update('tbestellung', 'kBestellung', $orderID, $upd);
 
         return $this;
     }
@@ -744,7 +744,7 @@ class PaymentMethod
     public static function create($moduleId)
     {
         global $plugin;
-        $oTmpPlugin    = $plugin;
+        $tmpPlugin    = $plugin;
         $paymentMethod = null;
         $pluginID      = PluginHelper::getIDByModuleID($moduleId);
         if ($pluginID > 0) {
@@ -770,7 +770,7 @@ class PaymentMethod
             require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'fallback/FallBackPayment.php';
             $paymentMethod = new FallBackPayment('za_null_jtl');
         }
-        $plugin = $oTmpPlugin;
+        $plugin = $tmpPlugin;
 
         return $paymentMethod;
     }

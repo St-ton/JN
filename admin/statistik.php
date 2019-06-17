@@ -34,9 +34,9 @@ switch ($statsType) {
         break;
 }
 /** @global \JTL\Smarty\JTLSmarty $smarty */
-$nAnzeigeIntervall = 0;
-$filter            = new Filter('statistics');
-$dateRange         = $filter->addDaterangefield(
+$interval  = 0;
+$filter    = new Filter('statistics');
+$dateRange = $filter->addDaterangefield(
     'Zeitraum',
     '',
     date_create()->modify('-1 year')->modify('+1 day')->format('d.m.Y') . ' - ' . date('d.m.Y')
@@ -45,7 +45,7 @@ $filter->assemble();
 $nDateStampVon = strtotime($dateRange->getStart());
 $nDateStampBis = strtotime($dateRange->getEnd());
 
-$stats         = gibBackendStatistik($statsType, $nDateStampVon, $nDateStampBis, $nAnzeigeIntervall);
+$stats         = gibBackendStatistik($statsType, $nDateStampVon, $nDateStampBis, $interval);
 $statsTypeName = GetTypeNameStats($statsType);
 $axisNames     = getAxisNames($statsType);
 
@@ -71,7 +71,7 @@ $pagination = (new Pagination())
 $smarty->assign('headline', $statsTypeName)
     ->assign('nTyp', $statsType)
     ->assign('oStat_arr', $stats)
-    ->assign('oStatJSON', getJSON($stats, $nAnzeigeIntervall, $statsType))
+    ->assign('oStatJSON', getJSON($stats, $interval, $statsType))
     ->assign('cMember_arr', mappeDatenMember($members, gibMappingDaten($statsType)))
     ->assign('STATS_ADMIN_TYPE_BESUCHER', STATS_ADMIN_TYPE_BESUCHER)
     ->assign('STATS_ADMIN_TYPE_KUNDENHERKUNFT', STATS_ADMIN_TYPE_KUNDENHERKUNFT)

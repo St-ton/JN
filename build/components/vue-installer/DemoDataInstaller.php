@@ -930,14 +930,14 @@ class DemoDataInstaller
     }
 
     /**
-     * @param int $articleID
+     * @param int $productID
      * @return bool
      */
-    private function createRating(int $articleID): bool
+    private function createRating(int $productID): bool
     {
-        if ($articleID > 0) {
+        if ($productID > 0) {
             $_rating                  = new \stdClass();
-            $_rating->kArtikel        = $articleID;
+            $_rating->kArtikel        = $productID;
             $_rating->kKunde          = 0;
             $_rating->kSprache        = 1; //@todo: rand(0, 1)?
             $_rating->cName           = $this->faker->name;

@@ -128,15 +128,15 @@ class DownloadHistory
     {
         $history = [];
         if ($orderID > 0 || $customerID > 0) {
-            $cSQLWhere = 'kBestellung = ' . $orderID;
+            $where = 'kBestellung = ' . $orderID;
             if ($orderID > 0) {
-                $cSQLWhere .= ' AND kKunde = ' . $customerID;
+                $where .= ' AND kKunde = ' . $customerID;
             }
 
             $data = Shop::Container()->getDB()->query(
                 'SELECT kDownload, kDownloadHistory
                      FROM tdownloadhistory
-                     WHERE ' . $cSQLWhere . '
+                     WHERE ' . $where . '
                      ORDER BY dErstellt DESC',
                 ReturnType::ARRAY_OF_OBJECTS
             );

@@ -101,15 +101,15 @@ function versendeNewsletter(
             ($recipients->kNewsletterEmpfaenger ?? 0) . '" alt="Newsletter" />';
     }
 
-    $cTyp = 'VL';
+    $type = 'VL';
     $nKey = $newsletter->kNewsletterVorlage ?? 0;
     if (isset($newsletter->kNewsletter) && $newsletter->kNewsletter > 0) {
-        $cTyp = 'NL';
+        $type = 'NL';
         $nKey = $newsletter->kNewsletter;
     }
     if ($newsletter->cArt === 'text/html' || $newsletter->cArt === 'html') {
         try {
-            $bodyHtml = $mailSmarty->fetch('db:' . $cTyp . '_' . $nKey . '_html') . $cPixel;
+            $bodyHtml = $mailSmarty->fetch('db:' . $type . '_' . $nKey . '_html') . $cPixel;
         } catch (Exception $e) {
             Shop::Smarty()->assign('oSmartyError', $e->getMessage());
 
@@ -117,7 +117,7 @@ function versendeNewsletter(
         }
     }
     try {
-        $bodyText = $mailSmarty->fetch('db:' . $cTyp . '_' . $nKey . '_text');
+        $bodyText = $mailSmarty->fetch('db:' . $type . '_' . $nKey . '_text');
     } catch (Exception $e) {
         Shop::Smarty()->assign('oSmartyError', $e->getMessage());
 
@@ -179,14 +179,14 @@ function gibStaticHtml(
                ->assign('Kategorieliste', $categories)
                ->assign('Kampagne', $campaign);
 
-    $cTyp = 'VL';
+    $type = 'VL';
     $nKey = $newsletter->kNewsletterVorlage ?? null;
     if ($newsletter->kNewsletter > 0) {
-        $cTyp = 'NL';
+        $type = 'NL';
         $nKey = $newsletter->kNewsletter;
     }
 
-    return $mailSmarty->fetch('db:' . $cTyp . '_' . $nKey . '_html');
+    return $mailSmarty->fetch('db:' . $type . '_' . $nKey . '_html');
 }
 
 /**
@@ -707,16 +707,16 @@ function holeNewslettervorlageStd(int $defaultTemplateID, int $templateID = 0)
         foreach ($defaultTpl->oNewslettervorlageStdVar_arr as $j => $nlTplStdVar) {
             $nlTplContent = new stdClass();
             if (isset($nlTplStdVar->kNewslettervorlageStdVar) && $nlTplStdVar->kNewslettervorlageStdVar > 0) {
-                $cSQL = ' AND kNewslettervorlage IS NULL';
+                $sql = ' AND kNewslettervorlage IS NULL';
                 if ($templateID > 0) {
-                    $cSQL = ' AND kNewslettervorlage = ' . $templateID;
+                    $sql = ' AND kNewslettervorlage = ' . $templateID;
                 }
 
                 $nlTplContent = $db->query(
                     'SELECT *
                         FROM tnewslettervorlagestdvarinhalt
                         WHERE kNewslettervorlageStdVar = ' . (int)$nlTplStdVar->kNewslettervorlageStdVar .
-                        $cSQL,
+                        $sql,
                     ReturnType::SINGLE_OBJECT
                 );
             }

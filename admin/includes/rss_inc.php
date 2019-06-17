@@ -28,10 +28,10 @@ function generiereRSSXML()
     if ($conf['rss']['rss_nutzen'] !== 'Y') {
         return false;
     }
-    $Sprache                 = $db->select('tsprache', 'cShopStandard', 'Y');
+    $language                = $db->select('tsprache', 'cShopStandard', 'Y');
     $stdKundengruppe         = $db->select('tkundengruppe', 'cStandard', 'Y');
-    $_SESSION['kSprache']    = (int)$Sprache->kSprache;
-    $_SESSION['cISOSprache'] = $Sprache->cISO;
+    $_SESSION['kSprache']    = (int)$language->kSprache;
+    $_SESSION['cISOSprache'] = $language->cISO;
     // ISO-8859-1
     $xml = '<?xml version="1.0" encoding="' . JTL_CHARSET . '"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
@@ -39,7 +39,7 @@ function generiereRSSXML()
 		<title>' . $conf['rss']['rss_titel'] . '</title>
 		<link>' . $shopURL . '</link>
 		<description>' . $conf['rss']['rss_description'] . '</description>
-		<language>' . Text::convertISO2ISO639($Sprache->cISO) . '</language>
+		<language>' . Text::convertISO2ISO639($language->cISO) . '</language>
 		<copyright>' . $conf['rss']['rss_copyright'] . '</copyright>
 		<pubDate>' . date('r') . '</pubDate>
 		<atom:link href="' . $shopURL . '/rss.xml" rel="self" type="application/rss+xml" />
@@ -148,23 +148,23 @@ function generiereRSSXML()
 }
 
 /**
- * @param string $dErstellt
+ * @param string $dateString
  * @return bool|string
  */
-function bauerfc2822datum($dErstellt)
+function bauerfc2822datum($dateString)
 {
-    return mb_strlen($dErstellt) > 0
-        ? (new DateTime($dErstellt))->format(DATE_RSS)
+    return mb_strlen($dateString) > 0
+        ? (new DateTime($dateString))->format(DATE_RSS)
         : false;
 }
 
 /**
- * @param string $cText
+ * @param string $text
  * @return string
  */
-function wandelXMLEntitiesUm($cText)
+function wandelXMLEntitiesUm($text)
 {
-    return mb_strlen($cText) > 0
-        ? '<![CDATA[ ' . Text::htmlentitydecode($cText) . ' ]]>'
+    return mb_strlen($text) > 0
+        ? '<![CDATA[ ' . Text::htmlentitydecode($text) . ' ]]>'
         : '';
 }

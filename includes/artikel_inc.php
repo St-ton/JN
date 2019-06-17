@@ -161,43 +161,43 @@ function bearbeiteProdukttags($product)
 /**
  * Baue Blätter Navi - Dient für die Blätternavigation unter Bewertungen in der Artikelübersicht
  *
- * @param int $bewertung_seite
- * @param int $bewertung_sterne
- * @param int $nAnzahlBewertungen
- * @param int $nAnzahlSeiten
+ * @param int $ratingPage
+ * @param int $ratingStars
+ * @param int $ratingCount
+ * @param int $pageCount
  * @return stdClass
  * @deprecated since 5.0.0
  */
-function baueBewertungNavi($bewertung_seite, $bewertung_sterne, $nAnzahlBewertungen, $nAnzahlSeiten = 0)
+function baueBewertungNavi($ratingPage, $ratingStars, $ratingCount, $pageCount = 0)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return Product::getRatingNavigation($bewertung_seite, $bewertung_sterne, $nAnzahlBewertungen, $nAnzahlSeiten);
+    return Product::getRatingNavigation($ratingPage, $ratingStars, $ratingCount, $pageCount);
 }
 
 /**
  * Mappt den Fehlercode für Bewertungen
  *
- * @param string $cCode
+ * @param string $code
  * @param float  $fGuthaben
  * @return string
  * @deprecated since 5.0.0
  */
-function mappingFehlerCode($cCode, $fGuthaben = 0.0)
+function mappingFehlerCode($code, $fGuthaben = 0.0)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return Product::mapErrorCode($cCode, $fGuthaben);
+    return Product::mapErrorCode($code, $fGuthaben);
 }
 
 /**
- * @param Artikel $oVaterArtikel
- * @param Artikel $oKindArtikel
+ * @param Artikel $parent
+ * @param Artikel $child
  * @return mixed
  * @deprecated since 5.0.0
  */
-function fasseVariVaterUndKindZusammen($oVaterArtikel, $oKindArtikel)
+function fasseVariVaterUndKindZusammen($parent, $child)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return Product::combineParentAndChild($oVaterArtikel, $oKindArtikel);
+    return Product::combineParentAndChild($parent, $child);
 }
 
 /**

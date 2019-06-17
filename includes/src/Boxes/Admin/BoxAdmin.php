@@ -336,13 +336,13 @@ final class BoxAdmin
     /**
      * @param int      $boxID
      * @param int      $pageID
-     * @param int      $nSort
+     * @param int      $sort
      * @param bool|int $active
      * @param bool     $ignore
      * @return bool
      * @former sortBox()
      */
-    public function sort(int $boxID, int $pageID, int $nSort, $active = true, $ignore = false): bool
+    public function sort(int $boxID, int $pageID, int $sort, $active = true, $ignore = false): bool
     {
         $active         = (int)$active;
         $validPageTypes = $this->getValidPageTypes();
@@ -361,7 +361,7 @@ final class BoxAdmin
                         [
                             'boxID'         => $boxID,
                             'validPageType' => $validPageType,
-                            'sort'          => $nSort,
+                            'sort'          => $sort,
                             'active'        => $active
                         ],
                         ReturnType::DEFAULT
@@ -375,7 +375,7 @@ final class BoxAdmin
                         [
                             'boxID'         => $boxID,
                             'validPageType' => $validPageType,
-                            'sort'          => $nSort,
+                            'sort'          => $sort,
                             'active'        => $active
                         ],
                         ReturnType::DEFAULT
@@ -394,7 +394,7 @@ final class BoxAdmin
             [
                     'boxID'         => $boxID,
                     'validPageType' => $pageID,
-                    'sort'          => $nSort,
+                    'sort'          => $sort,
                     'active'        => $active
                 ],
             ReturnType::DEFAULT

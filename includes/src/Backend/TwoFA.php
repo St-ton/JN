@@ -31,7 +31,7 @@ class TwoFA
      *
      * @var stdClass
      */
-    private $oUserTuple;
+    private $userTuple;
 
     /**
      * the name of the current shop
@@ -51,13 +51,13 @@ class TwoFA
      */
     public function __construct(DbInterface $db)
     {
-        $this->db                         = $db;
-        $this->oUserTuple                 = new stdClass();
-        $this->oUserTuple->kAdminlogin    = 0;
-        $this->oUserTuple->cLogin         = '';
-        $this->oUserTuple->b2FAauth       = false;
-        $this->oUserTuple->c2FAauthSecret = '';
-        $this->shopName                   = '';
+        $this->db                        = $db;
+        $this->userTuple                 = new stdClass();
+        $this->userTuple->kAdminlogin    = 0;
+        $this->userTuple->cLogin         = '';
+        $this->userTuple->b2FAauth       = false;
+        $this->userTuple->c2FAauthSecret = '';
+        $this->shopName                  = '';
     }
 
     /**
@@ -67,7 +67,7 @@ class TwoFA
      */
     public function is2FAauth(): bool
     {
-        return (bool)$this->oUserTuple->b2FAauth;
+        return (bool)$this->userTuple->b2FAauth;
     }
 
     /**
@@ -77,7 +77,7 @@ class TwoFA
      */
     public function is2FAauthSecretExist(): bool
     {
-        return $this->oUserTuple->c2FAauthSecret !== '';
+        return $this->userTuple->c2FAauthSecret !== '';
     }
 
     /**
@@ -91,10 +91,10 @@ class TwoFA
         // (only if we want a new secret! (something like lazy loading))
         $this->oGA = new PHPGangsta_GoogleAuthenticator();
 
-        if ($this->oUserTuple === null) {
-            $this->oUserTuple = new stdClass();
+        if ($this->userTuple === null) {
+            $this->userTuple = new stdClass();
         }
-        $this->oUserTuple->c2FAauthSecret = $this->oGA->createSecret();
+        $this->userTuple->c2FAauthSecret = $this->oGA->createSecret();
 
         return $this;
     }
@@ -106,7 +106,7 @@ class TwoFA
      */
     public function getSecret()
     {
-        return $this->oUserTuple->c2FAauthSecret;
+        return $this->userTuple->c2FAauthSecret;
     }
 
     /**
@@ -126,9 +126,9 @@ class TwoFA
             // try to find this code in the emergency-code-pool
             $o2FAemergency = new TwoFAEmergency($this->db);
 
-            return $o2FAemergency->isValidEmergencyCode($this->oUserTuple->kAdminlogin, $code);
+            return $o2FAemergency->isValidEmergencyCode($this->userTuple->kAdminlogin, $code);
         }
-        return $this->oGA->verifyCode($this->oUserTuple->c2FAauthSecret, $code);
+        return $this->oGA->verifyCode($this->userTuple->c2FAauthSecret, $code);
     }
 
     /**
@@ -139,8 +139,8 @@ class TwoFA
      */
     public function getQRcode(): string
     {
-        if ($this->oUserTuple->c2FAauthSecret !== '') {
-            $totpUrl = \rawurlencode('JTL-Shop ' . $this->oUserTuple->cLogin . '@' . $this->getShopName());
+        if ($this->userTuple->c2FAauthSecret !== '') {
+            $totpUrl = \rawurlencode('JTL-Shop ' . $this->userTuple->cLogin . '@' . $this->getShopName());
             // by the QR-Code there are 63 bytes allowed for this URL-appendix
             // so we shorten that string (and we take care about the hex-character-replacements!)
             $overflow = \mb_strlen($totpUrl) - 63;
@@ -157,7 +157,7 @@ class TwoFA
             // create the QR-code
             $qrCode = new QRCode(
                 'otpauth://totp/' . $totpUrl .
-                '?secret=' . $this->oUserTuple->c2FAauthSecret .
+                '?secret=' . $this->userTuple->c2FAauthSecret .
                 '&issuer=JTL-Software',
                 new QRString()
             );
@@ -176,7 +176,7 @@ class TwoFA
      */
     public function setUserByID(int $iID): void
     {
-        $this->oUserTuple = $this->db->select('tadminlogin', 'kAdminlogin', $iID);
+        $this->userTuple = $this->db->select('tadminlogin', 'kAdminlogin', $iID);
     }
 
     /**
@@ -189,10 +189,10 @@ class TwoFA
     public function setUserByName(string $userName): void
     {
         // write at least the user's name we get via e.g. ajax
-        $this->oUserTuple->cLogin = $userName;
+        $this->userTuple->cLogin = $userName;
         // check if we know that user yet
         if (($oTuple = $this->db->select('tadminlogin', 'cLogin', $userName)) !== null) {
-            $this->oUserTuple = $oTuple;
+            $this->userTuple = $oTuple;
         }
     }
 
@@ -203,7 +203,7 @@ class TwoFA
      */
     public function getUserTuple()
     {
-        return $this->oUserTuple ?: null;
+        return $this->userTuple ?: null;
     }
 
     /**
@@ -230,7 +230,7 @@ class TwoFA
      */
     public function __toString()
     {
-        return \print_r($this->oUserTuple, true);
+        return \print_r($this->userTuple, true);
     }
 
     /**

@@ -88,13 +88,13 @@ class ImageMap implements IExtensionPoint
      */
     public function fetch(int $id, bool $fetchAll = false, bool $fill = true)
     {
-        $cSQL = 'SELECT *
+        $sql = 'SELECT *
                     FROM timagemap
                     WHERE kImageMap = ' . $id;
         if (!$fetchAll) {
-            $cSQL .= ' AND (CURDATE() >= DATE(vDatum)) AND (bDatum IS NULL OR CURDATE() <= DATE(bDatum) OR bDatum = 0)';
+            $sql .= ' AND (CURDATE() >= DATE(vDatum)) AND (bDatum IS NULL OR CURDATE() <= DATE(bDatum) OR bDatum = 0)';
         }
-        $imageMap = $this->db->query($cSQL, ReturnType::SINGLE_OBJECT);
+        $imageMap = $this->db->query($sql, ReturnType::SINGLE_OBJECT);
         if (!\is_object($imageMap)) {
             return false;
         }

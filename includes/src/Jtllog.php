@@ -214,30 +214,30 @@ class Jtllog
     }
 
     /**
-     * @param string $cFilter
-     * @param int    $nLevel
+     * @param string $filter
+     * @param int    $level
      * @return int
      */
-    public static function getLogCount(string $cFilter = '', int $nLevel = 0): int
+    public static function getLogCount(string $filter = '', int $level = 0): int
     {
-        $cSQLWhere = $nLevel > 0
-            ? ' WHERE nLevel = ' . $nLevel
+        $where = $level > 0
+            ? ' WHERE nLevel = ' . $level
             : '';
-        if (\mb_strlen($cFilter) > 0) {
-            if (\mb_strlen($cSQLWhere) === 0) {
-                $cSQLWhere .= " WHERE cLog LIKE '%" . $cFilter . "%'";
+        if (\mb_strlen($filter) > 0) {
+            if (\mb_strlen($where) === 0) {
+                $where .= " WHERE cLog LIKE '%" . $filter . "%'";
             } else {
-                $cSQLWhere .= " AND cLog LIKE '%" . $cFilter . "%'";
+                $where .= " AND cLog LIKE '%" . $filter . "%'";
             }
         }
-        $oLog = Shop::Container()->getDB()->query(
+        $data = Shop::Container()->getDB()->query(
             'SELECT COUNT(*) AS nAnzahl 
                 FROM tjtllog' .
-            $cSQLWhere,
+            $where,
             ReturnType::SINGLE_OBJECT
         );
 
-        return (int)($oLog->nAnzahl ?? 0);
+        return (int)$data->nAnzahl;
     }
 
     /**

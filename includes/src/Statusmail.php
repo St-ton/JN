@@ -101,7 +101,7 @@ class Statusmail
         $d = new DateTime();
         $d->modify('+1 days');
         $d->setTime(0, 0);
-        $oCron = new LegacyCron(
+        $cron = new LegacyCron(
             0,
             $id,
             $nAlleXStunden,
@@ -113,7 +113,7 @@ class Statusmail
             $d->format('H:i:s')
         );
 
-        return $oCron->speicherInDB() !== false;
+        return $cron->speicherInDB() !== false;
     }
 
     /**

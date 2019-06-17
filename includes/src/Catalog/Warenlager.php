@@ -454,21 +454,21 @@ class Warenlager extends MainModel
         if ($id !== null) {
             $id = (int)$id;
             if ($id > 0) {
-                $cSqlSelect = '';
-                $cSqlJoin   = '';
+                $select = '';
+                $join   = '';
                 if ($config !== null && (int)$config > 0) {
-                    $config     = (int)$config;
-                    $cSqlSelect = ', IF (twarenlagersprache.cName IS NOT NULL, 
+                    $config = (int)$config;
+                    $select = ', IF (twarenlagersprache.cName IS NOT NULL, 
                     twarenlagersprache.cName, twarenlager.cName) AS cName';
-                    $cSqlJoin   = 'LEFT JOIN twarenlagersprache 
+                    $join   = 'LEFT JOIN twarenlagersprache 
                                         ON twarenlagersprache.kWarenlager = twarenlager.kWarenlager
                                         AND twarenlagersprache.kSprache = ' . $config;
                 }
 
                 $data = Shop::Container()->getDB()->query(
-                    "SELECT twarenlager.* {$cSqlSelect}
+                    "SELECT twarenlager.* {$select}
                          FROM twarenlager
-                         {$cSqlJoin}
+                         {$join}
                          WHERE twarenlager.kWarenlager = {$id}",
                     ReturnType::SINGLE_OBJECT
                 );

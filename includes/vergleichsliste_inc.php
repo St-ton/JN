@@ -7,14 +7,14 @@
 use JTL\Catalog\Vergleichsliste;
 
 /**
- * @param Vergleichsliste $oVergleichsliste
+ * @param Vergleichsliste $compareList
  * @return array
  * @deprecated since 5.0.0
  */
-function baueMerkmalundVariation($oVergleichsliste)
+function baueMerkmalundVariation($compareList)
 {
     trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
-    return Vergleichsliste::buildAttributeAndVariation($oVergleichsliste);
+    return Vergleichsliste::buildAttributeAndVariation($compareList);
 }
 
 /**

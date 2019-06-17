@@ -169,9 +169,7 @@ class Category extends BaseCategory
 
             $sql->addCondition('tkategoriesichtbarkeit.kKategorie IS NULL');
         }
-        $cSQLKategorieSprache        = new stdClass();
-        $cSQLKategorieSprache->cJOIN = '';
-        $select                      = ['tkategorie.kKategorie', 'tkategorie.nSort'];
+        $select = ['tkategorie.kKategorie', 'tkategorie.nSort'];
         if (!LanguageHelper::isDefaultLanguageActive()) {
             $select[] = "IF(tkategoriesprache.cName = '', tkategorie.cName, tkategoriesprache.cName) AS cName";
             $sql->addJoin((new Join())

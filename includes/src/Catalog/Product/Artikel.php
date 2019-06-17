@@ -1751,14 +1751,14 @@ class Artikel
                                     LEFT JOIN tmediendateisprache AS lang 
                                         ON deflang.kMedienDatei = lang.kMedienDatei AND lang.kSprache = ' . $languageID;
         }
-        $cSQL = 'SELECT tmediendatei.kMedienDatei, tmediendatei.cPfad, tmediendatei.cURL, tmediendatei.cTyp, 
+        $sql = 'SELECT tmediendatei.kMedienDatei, tmediendatei.cPfad, tmediendatei.cURL, tmediendatei.cTyp, 
                         tmediendatei.nSort, ' . $conditionalFields . '
                     FROM tmediendatei
                     ' . $conditionalLeftJoin . '
                     WHERE tmediendatei.kArtikel = ' . (int)$this->kArtikel . '
                     ORDER BY tmediendatei.nSort ASC';
 
-        $this->oMedienDatei_arr = $db->query($cSQL, ReturnType::ARRAY_OF_OBJECTS);
+        $this->oMedienDatei_arr = $db->query($sql, ReturnType::ARRAY_OF_OBJECTS);
         foreach ($this->oMedienDatei_arr as $mediaFile) {
             $mediaFile->kSprache                 = (int)$mediaFile->kSprache;
             $mediaFile->nSort                    = (int)$mediaFile->nSort;
@@ -5381,10 +5381,10 @@ class Artikel
     }
 
     /**
-     * @param int $anzeigen
+     * @param int $show
      * @return $this
      */
-    public function berechneSieSparenX($anzeigen = 1): self
+    public function berechneSieSparenX($show = 1): self
     {
         if ($this->fUVP <= 0) {
             return $this;
@@ -5397,7 +5397,7 @@ class Artikel
         }
         if (Frontend::getCustomerGroup()->isMerchant()) {
             $this->fUVP                            /= (1 + Tax::getSalesTax($this->kSteuerklasse) / 100);
-            $this->SieSparenX->anzeigen             = $anzeigen;
+            $this->SieSparenX->anzeigen             = $show;
             $this->SieSparenX->nProzent             = \round(
                 (($this->fUVP - $this->Preise->fVKNetto) * 100) / $this->fUVP,
                 2
@@ -5405,7 +5405,7 @@ class Artikel
             $this->SieSparenX->fSparbetrag          = $this->fUVP - $this->Preise->fVKNetto;
             $this->SieSparenX->cLocalizedSparbetrag = Preise::getLocalizedPriceString($this->SieSparenX->fSparbetrag);
         } else {
-            $this->SieSparenX->anzeigen             = $anzeigen;
+            $this->SieSparenX->anzeigen             = $show;
             $this->SieSparenX->nProzent             = \round(
                 (($this->fUVP - Tax::getGross(
                     $this->Preise->fVKNetto,
@@ -6650,7 +6650,7 @@ class Artikel
         $possibleVariations = [];
         foreach ($attributes as $kEigenschaft => $nEigenschaftWert_arr) {
             $i            = 2;
-            $cSQL         = [];
+            $queries      = [];
             $kEigenschaft = (int)$kEigenschaft;
             $prepvalues   = [
                 'customerGroupID' => Frontend::getCustomerGroup()->getID(),
@@ -6660,7 +6660,7 @@ class Artikel
                 $kGesetzteEigenschaft = (int)$kGesetzteEigenschaft;
                 $kEigenschaftWert     = (int)$kEigenschaftWert;
                 if ($kEigenschaft !== $kGesetzteEigenschaft) {
-                    $cSQL[] = 'INNER JOIN teigenschaftkombiwert e' . $i . '
+                    $queries[] = 'INNER JOIN teigenschaftkombiwert e' . $i . '
                                     ON e1.kEigenschaftKombi = e' . $i . '.kEigenschaftKombi
                                     AND e' . $i . '.kEigenschaftWert = :kev' . $i;
 
@@ -6668,13 +6668,13 @@ class Artikel
                     ++$i;
                 }
             }
-            $cSQLStr          = \implode(' ', $cSQL);
+            $sql              = \implode(' ', $queries);
             $oEigenschaft_arr = Shop::Container()->getDB()->executeQueryPrepared(
                 'SELECT e1.*, k.cName, k.cLagerBeachten, k.cLagerKleinerNull, k.fLagerbestand
                     FROM teigenschaftkombiwert e1
                     INNER JOIN tartikel k
                         ON e1.kEigenschaftKombi = k.kEigenschaftKombi
-                    ' . $cSQLStr . '
+                    ' . $sql . '
                     LEFT JOIN tartikelsichtbarkeit
                         ON tartikelsichtbarkeit.kArtikel = k.kArtikel
                             AND tartikelsichtbarkeit.kKundengruppe = :customerGroupID

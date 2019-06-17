@@ -198,7 +198,7 @@ class Visitor
      */
     public static function refreshCustomerOrderId(int $customerID): int
     {
-        $oOrder = Shop::Container()->getDB()->queryPrepared(
+        $data = Shop::Container()->getDB()->queryPrepared(
             'SELECT `kBestellung`
                 FROM `tbestellung`
                 WHERE `kKunde` = :cid
@@ -207,7 +207,7 @@ class Visitor
             ReturnType::SINGLE_OBJECT
         );
 
-        return (int)($oOrder->kBestellung ?? 0);
+        return (int)($data->kBestellung ?? 0);
     }
 
     /**

@@ -390,17 +390,17 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
             }
         } elseif (isset($_GET['a']) && $_GET['a'] === 'zeige_sonstige') {
             // Umfragestatistik Sonstige Texte anzeigen
-            $step          = 'umfrage_statistik';
-            $questionID    = (int)$_GET['uf'];
-            $nAnzahlAnwort = (int)$_GET['aa'];
-            $nMaxAntworten = (int)$_GET['ma'];
+            $step       = 'umfrage_statistik';
+            $questionID = (int)$_GET['uf'];
+            $maxAnswers = (int)$_GET['aa'];
+            $limit      = (int)$_GET['ma'];
 
-            if ($questionID > 0 && $nMaxAntworten > 0) {
+            if ($questionID > 0 && $limit > 0) {
                 $step = 'umfrage_statistik_sonstige_texte';
                 $smarty->assign('oUmfrageFrage', holeSonstigeTextAntworten(
                     $questionID,
-                    $nAnzahlAnwort,
-                    $nMaxAntworten
+                    $maxAnswers,
+                    $limit
                 ));
             }
         } elseif ((isset($_GET['fe']) && (int)$_GET['fe'] === 1) ||

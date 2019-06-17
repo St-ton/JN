@@ -259,30 +259,30 @@ class Download
         $customerID = isset($keys['kKunde']) ? (int)$keys['kKunde'] : 0;
         $downloads  = [];
         if (($productID > 0 || $orderID > 0 || $customerID > 0) && $languageID > 0 && self::checkLicense()) {
-            $cSQLSelect = 'tartikeldownload.kDownload';
-            $cSQLWhere  = 'kArtikel = ' . $productID;
-            $cSQLJoin   = 'LEFT JOIN tdownload ON tartikeldownload.kDownload = tdownload.kDownload';
+            $select = 'tartikeldownload.kDownload';
+            $where  = 'kArtikel = ' . $productID;
+            $join   = 'LEFT JOIN tdownload ON tartikeldownload.kDownload = tdownload.kDownload';
             if ($orderID > 0) {
-                $cSQLSelect = 'tbestellung.kBestellung, tbestellung.kKunde, tartikeldownload.kDownload';
-                $cSQLWhere  = 'tartikeldownload.kArtikel = twarenkorbpos.kArtikel';
-                $cSQLJoin   = 'JOIN tbestellung ON tbestellung.kBestellung = ' . $orderID . '
+                $select = 'tbestellung.kBestellung, tbestellung.kKunde, tartikeldownload.kDownload';
+                $where  = 'tartikeldownload.kArtikel = twarenkorbpos.kArtikel';
+                $join   = 'JOIN tbestellung ON tbestellung.kBestellung = ' . $orderID . '
                                JOIN tdownload ON tdownload.kDownload = tartikeldownload.kDownload
                                JOIN twarenkorbpos ON twarenkorbpos.kWarenkorb = tbestellung.kWarenkorb
                                     AND twarenkorbpos.nPosTyp = ' . \C_WARENKORBPOS_TYP_ARTIKEL;
             } elseif ($customerID > 0) {
-                $cSQLSelect = 'MAX(tbestellung.kBestellung) AS kBestellung, tbestellung.kKunde, 
+                $select = 'MAX(tbestellung.kBestellung) AS kBestellung, tbestellung.kKunde, 
                     tartikeldownload.kDownload';
-                $cSQLWhere  = 'tartikeldownload.kArtikel = twarenkorbpos.kArtikel';
-                $cSQLJoin   = 'JOIN tbestellung ON tbestellung.kKunde = ' . $customerID . '
+                $where  = 'tartikeldownload.kArtikel = twarenkorbpos.kArtikel';
+                $join   = 'JOIN tbestellung ON tbestellung.kKunde = ' . $customerID . '
                                JOIN tdownload ON tdownload.kDownload = tartikeldownload.kDownload
                                JOIN twarenkorbpos ON twarenkorbpos.kWarenkorb = tbestellung.kWarenkorb
                                     AND twarenkorbpos.nPosTyp = ' . \C_WARENKORBPOS_TYP_ARTIKEL;
             }
             $items = Shop::Container()->getDB()->query(
-                'SELECT ' . $cSQLSelect . '
+                'SELECT ' . $select . '
                     FROM tartikeldownload
-                    ' . $cSQLJoin . '
-                    WHERE ' . $cSQLWhere . '
+                    ' . $join . '
+                    WHERE ' . $where . '
                     GROUP BY tartikeldownload.kDownload
                     ORDER BY tdownload.nSort, tdownload.dErstellt DESC',
                 ReturnType::ARRAY_OF_OBJECTS
@@ -533,12 +533,12 @@ class Download
     }
 
     /**
-     * @param int $nSort
+     * @param int $sort
      * @return $this
      */
-    public function setSort(int $nSort): self
+    public function setSort(int $sort): self
     {
-        $this->nSort = $nSort;
+        $this->nSort = $sort;
 
         return $this;
     }

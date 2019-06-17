@@ -19,17 +19,17 @@ function dbLookupVisitor($userAgent, $ip)
 }
 
 /**
- * @param object $oVisitor
+ * @param object $visitor
  * @param int    $visitorID
  * @param string $userAgent
  * @param int    $botID
  * @return object
  * @deprecated since 5.0.0
  */
-function updateVisitorObject($oVisitor, int $visitorID, $userAgent, $botID)
+function updateVisitorObject($visitor, int $visitorID, $userAgent, $botID)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return Visitor::updateVisitorObject($oVisitor, $visitorID, $userAgent, $botID);
+    return Visitor::updateVisitorObject($visitor, $visitorID, $userAgent, $botID);
 }
 
 /**

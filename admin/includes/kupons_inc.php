@@ -170,8 +170,8 @@ function getCoupons($type = Kupon::TYPE_STANDARD, $whereSQL = '', $orderSQL = ''
 {
     $raw = getRawCoupons($type, $whereSQL, $orderSQL, $limitSQL);
     $res = [];
-    foreach ($raw as $oKuponDB) {
-        $res[] = getCoupon((int)$oKuponDB->kKupon);
+    foreach ($raw as $item) {
+        $res[] = getCoupon((int)$item->kKupon);
     }
 
     return $res;

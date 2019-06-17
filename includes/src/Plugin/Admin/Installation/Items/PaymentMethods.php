@@ -167,14 +167,13 @@ class PaymentMethods extends AbstractItem
             if (isset($data['Setting']) && \is_array($data['Setting']) && \count($data['Setting']) > 0) {
                 $type         = '';
                 $initialValue = '';
-                $nSort        = 0;
-                $cConf        = 'Y';
+                $sort         = 0;
+                $configurable = 'Y';
                 $multiple     = false;
                 foreach ($data['Setting'] as $j => $config) {
                     $j = (string)$j;
                     \preg_match('/[0-9]+\sattr/', $j, $hits3);
                     \preg_match('/[0-9]+/', $j, $hits4);
-
                     if (isset($hits3[0]) && \mb_strlen($hits3[0]) === \mb_strlen($j)) {
                         $type         = $config['type'];
                         $multiple     = (isset($config['multiple'])
@@ -183,8 +182,8 @@ class PaymentMethods extends AbstractItem
                         $initialValue = $multiple === true
                             ? \serialize([$config['initialValue']])
                             : $config['initialValue'];
-                        $nSort        = $config['sort'];
-                        $cConf        = $config['conf'];
+                        $sort         = $config['sort'];
+                        $configurable = $config['conf'];
                     } elseif (\mb_strlen($hits4[0]) === \mb_strlen($j)) {
                         $conf          = new stdClass();
                         $conf->kPlugin = $pluginID;
@@ -210,10 +209,10 @@ class PaymentMethods extends AbstractItem
                             : $config['Description'];
                         $plgnConf->cWertName        = $moduleID . '_' . $config['ValueName'];
                         $plgnConf->cInputTyp        = $type;
-                        $plgnConf->nSort            = $nSort;
+                        $plgnConf->nSort            = $sort;
                         $plgnConf->cConf            = ($type === InputType::SELECT && $multiple === true)
                             ? Config::TYPE_DYNAMIC
-                            : $cConf;
+                            : $configurable;
                         $plgnConfTmpID              = $this->db->select(
                             'tplugineinstellungenconf',
                             'cWertName',
@@ -250,7 +249,7 @@ class PaymentMethods extends AbstractItem
                                     \preg_match('/[0-9]+\sattr/', $y, $hits6);
                                     if (isset($hits6[0]) && \mb_strlen($hits6[0]) === \mb_strlen($y)) {
                                         $cWert = $option['value'];
-                                        $nSort = $option['sort'];
+                                        $sort  = $option['sort'];
                                         $yx    = \mb_substr($y, 0, \mb_strpos($y, ' '));
                                         $name  = $config['SelectboxOptions'][0]['Option'][$yx];
 
@@ -258,7 +257,7 @@ class PaymentMethods extends AbstractItem
                                         $plgnConfValues->kPluginEinstellungenConf = $kPluginEinstellungenConf;
                                         $plgnConfValues->cName                    = $name;
                                         $plgnConfValues->cWert                    = $cWert;
-                                        $plgnConfValues->nSort                    = $nSort;
+                                        $plgnConfValues->nSort                    = $sort;
 
                                         $this->db->insert(
                                             'tplugineinstellungenconfwerte',
@@ -287,7 +286,7 @@ class PaymentMethods extends AbstractItem
                                     \preg_match('/[0-9]+\sattr/', $y, $hits6);
                                     if (\mb_strlen($hits6[0]) === \mb_strlen($y)) {
                                         $cWert = $option['value'];
-                                        $nSort = $option['sort'];
+                                        $sort  = $option['sort'];
                                         $yx    = \mb_substr($y, 0, \mb_strpos($y, ' '));
                                         $name  = $config['RadioOptions'][0]['Option'][$yx];
 
@@ -295,7 +294,7 @@ class PaymentMethods extends AbstractItem
                                         $plgnConfValues->kPluginEinstellungenConf = $kPluginEinstellungenConf;
                                         $plgnConfValues->cName                    = $name;
                                         $plgnConfValues->cWert                    = $cWert;
-                                        $plgnConfValues->nSort                    = $nSort;
+                                        $plgnConfValues->nSort                    = $sort;
 
                                         $this->db->insert('tplugineinstellungenconfwerte', $plgnConfValues);
                                     }

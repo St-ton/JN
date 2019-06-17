@@ -757,24 +757,24 @@ class Product
         int $esWert1 = 0
     ): int {
         if ($es0 > 0 && $esWert0 > 0) {
-            $cSQLJoin   = ' JOIN teigenschaftkombiwert
+            $join   = ' JOIN teigenschaftkombiwert
                           ON teigenschaftkombiwert.kEigenschaftKombi = tartikel.kEigenschaftKombi
                           AND teigenschaftkombiwert.kEigenschaft = ' . $es0 . '
                           AND teigenschaftkombiwert.kEigenschaftWert = ' . $esWert0;
-            $cSQLHaving = '';
+            $having = '';
             if ($es1 > 0 && $esWert1 > 0) {
-                $cSQLJoin = ' JOIN teigenschaftkombiwert
+                $join = ' JOIN teigenschaftkombiwert
                               ON teigenschaftkombiwert.kEigenschaftKombi = tartikel.kEigenschaftKombi
                               AND teigenschaftkombiwert.kEigenschaft IN(' . $es0 . ', ' . $es1 . ')
                               AND teigenschaftkombiwert.kEigenschaftWert IN(' . $esWert0 . ', ' . $esWert1 . ')';
 
-                $cSQLHaving = ' HAVING COUNT(*) = 2';
+                $having = ' HAVING COUNT(*) = 2';
             }
             $product = Shop::Container()->getDB()->query(
                 'SELECT kArtikel
-                    FROM tartikel' . $cSQLJoin . '
+                    FROM tartikel' . $join . '
                     WHERE tartikel.kVaterArtikel = ' . $productID . '
-                    GROUP BY teigenschaftkombiwert.kEigenschaftKombi' . $cSQLHaving,
+                    GROUP BY teigenschaftkombiwert.kEigenschaftKombi' . $having,
                 ReturnType::SINGLE_OBJECT
             );
             if (isset($product->kArtikel) && \count($product->kArtikel) > 0) {
@@ -924,10 +924,10 @@ class Product
                     return $e->kXSellGruppe;
                 });
                 $defaultOptions = Artikel::getDefaultOptions();
-                foreach ($xsellgruppen as $groupID => $articles) {
+                foreach ($xsellgruppen as $groupID => $products) {
                     $group          = new stdClass();
                     $group->Artikel = [];
-                    foreach ($articles as $xs) {
+                    foreach ($products as $xs) {
                         $group->Name         = $xs->cName;
                         $group->Beschreibung = $xs->cBeschreibung;
                         $product             = (new Artikel())->fuelleArtikel((int)$xs->kXSellArtikel, $defaultOptions);
@@ -941,7 +941,7 @@ class Product
         }
 
         if ($config['artikeldetails_xselling_kauf_anzeigen'] === 'Y') {
-            $anzahl = (int)$config['artikeldetails_xselling_kauf_anzahl'];
+            $limit = (int)$config['artikeldetails_xselling_kauf_anzahl'];
             if ($isParent === null) {
                 $isParent = self::isParent($productID);
             }
@@ -965,7 +965,7 @@ class Product
                             AND ' . $filterSQL . ' != ' . $productID . '
                         GROUP BY 1, 2
                         ORDER BY SUM(txsellkauf.nAnzahl) DESC
-                        LIMIT ' . $anzahl,
+                        LIMIT ' . $limit,
                     ReturnType::ARRAY_OF_OBJECTS
                 );
             } elseif ($config['artikeldetails_xselling_kauf_parent'] === 'Y') {
@@ -985,7 +985,7 @@ class Product
                         GROUP BY 1, 2
                         ORDER BY SUM(txsellkauf.nAnzahl) DESC
                         LIMIT :lmt',
-                    ['pid' => $productID, 'lmt' => $anzahl],
+                    ['pid' => $productID, 'lmt' => $limit],
                     ReturnType::ARRAY_OF_OBJECTS
                 );
             } else {
@@ -995,7 +995,7 @@ class Product
                     $productID,
                     '*',
                     'nAnzahl DESC',
-                    $anzahl
+                    $limit
                 );
             }
             $xsellCount2 = \is_array($xsell) ? \count($xsell) : 0;
@@ -1037,7 +1037,7 @@ class Product
                 if (!self::checkProductQuestionFloodProtection(
                     (int)$conf['artikeldetails']['produktfrage_sperre_minuten']
                 )) {
-                    $checkBox        = new CheckBox();
+                    $checkbox        = new CheckBox();
                     $customerGroupID = Frontend::getCustomerGroup()->getID();
                     $inquiry         = self::getProductQuestionFormDefaults();
 
@@ -1048,7 +1048,7 @@ class Product
                     if (empty($inquiry->cVorname)) {
                         $inquiry->cVorname = '';
                     }
-                    $checkBox->triggerSpecialFunction(
+                    $checkbox->triggerSpecialFunction(
                         \CHECKBOX_ORT_FRAGE_ZUM_PRODUKT,
                         $customerGroupID,
                         true,
@@ -1331,11 +1331,11 @@ class Product
             $ret['captcha'] = 2;
         }
         // CheckBox Plausi
-        $checkBox        = new CheckBox();
+        $checkbox        = new CheckBox();
         $customerGroupID = Frontend::getCustomerGroup()->getID();
         $ret             = \array_merge(
             $ret,
-            $checkBox->validateCheckBox(\CHECKBOX_ORT_FRAGE_VERFUEGBARKEIT, $customerGroupID, $_POST, true)
+            $checkbox->validateCheckBox(\CHECKBOX_ORT_FRAGE_VERFUEGBARKEIT, $customerGroupID, $_POST, true)
         );
 
         return $ret;
@@ -1827,15 +1827,15 @@ class Product
     /**
      * Mappt den Fehlercode für Bewertungen
      *
-     * @param string $cCode
+     * @param string $code
      * @param float  $fGuthaben
      * @return string
      * @former mappingFehlerCode()
      * @since 5.0.0
      */
-    public static function mapErrorCode($cCode, $fGuthaben = 0.0): string
+    public static function mapErrorCode($code, $fGuthaben = 0.0): string
     {
-        switch ($cCode) {
+        switch ($code) {
             case 'f01':
                 $error = Shop::Lang()->get('mandatoryFieldNotification', 'errorMessages');
                 break;
@@ -1915,18 +1915,18 @@ class Product
     public static function getSimilarProductsByID(int $productID): array
     {
         $products        = [];
-        $cLimit          = ' LIMIT 3';
+        $limit           = ' LIMIT 3';
         $conf            = Shop::getSettings([\CONF_ARTIKELDETAILS]);
-        $oXSeller        = self::getXSelling($productID);
+        $xSeller         = self::getXSelling($productID);
         $xsellProductIDs = [];
-        if ($oXSeller !== null
-            && isset($oXSeller->Standard->XSellGruppen)
-            && \is_array($oXSeller->Standard->XSellGruppen)
-            && \count($oXSeller->Standard->XSellGruppen) > 0
+        if ($xSeller !== null
+            && isset($xSeller->Standard->XSellGruppen)
+            && \is_array($xSeller->Standard->XSellGruppen)
+            && \count($xSeller->Standard->XSellGruppen) > 0
         ) {
-            foreach ($oXSeller->Standard->XSellGruppen as $oXSeller) {
-                if (\is_array($oXSeller->Artikel) && \count($oXSeller->Artikel) > 0) {
-                    foreach ($oXSeller->Artikel as $product) {
+            foreach ($xSeller->Standard->XSellGruppen as $xSeller) {
+                if (\is_array($xSeller->Artikel) && \count($xSeller->Artikel) > 0) {
+                    foreach ($xSeller->Artikel as $product) {
                         $product->kArtikel = (int)$product->kArtikel;
                         if (!\in_array($product->kArtikel, $xsellProductIDs, true)) {
                             $xsellProductIDs[] = $product->kArtikel;
@@ -1935,13 +1935,13 @@ class Product
                 }
             }
         }
-        if (isset($oXSeller->Kauf->XSellGruppen)
-            && \is_array($oXSeller->Kauf->XSellGruppen)
-            && \count($oXSeller->Kauf->XSellGruppen) > 0
+        if (isset($xSeller->Kauf->XSellGruppen)
+            && \is_array($xSeller->Kauf->XSellGruppen)
+            && \count($xSeller->Kauf->XSellGruppen) > 0
         ) {
-            foreach ($oXSeller->Kauf->XSellGruppen as $oXSeller) {
-                if (\is_array($oXSeller->Artikel) && \count($oXSeller->Artikel) > 0) {
-                    foreach ($oXSeller->Artikel as $product) {
+            foreach ($xSeller->Kauf->XSellGruppen as $xSeller) {
+                if (\is_array($xSeller->Artikel) && \count($xSeller->Artikel) > 0) {
+                    foreach ($xSeller->Artikel as $product) {
                         $product->kArtikel = (int)$product->kArtikel;
                         if (!\in_array($product->kArtikel, $xsellProductIDs, true)) {
                             $xsellProductIDs[] = $product->kArtikel;
@@ -1957,7 +1957,7 @@ class Product
 
         if ($productID > 0) {
             if ((int)$conf['artikeldetails']['artikeldetails_aehnlicheartikel_anzahl'] > 0) {
-                $cLimit = ' LIMIT ' . (int)$conf['artikeldetails']['artikeldetails_aehnlicheartikel_anzahl'];
+                $limit = ' LIMIT ' . (int)$conf['artikeldetails']['artikeldetails_aehnlicheartikel_anzahl'];
             }
             $stockFilterSQL    = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
             $customerGroupID   = Frontend::getCustomerGroup()->getID();
@@ -1976,7 +1976,7 @@ class Product
                         AND tartikelmerkmal.kArtikel != :kArtikel ' . $stockFilterSQL . ' ' . $xsellSQL . '
                     GROUP BY tartikelmerkmal.kArtikel
                     ORDER BY COUNT(tartikelmerkmal.kMerkmal) DESC
-                    ' . $cLimit,
+                    ' . $limit,
                 [
                     'kArtikel'        => $productID,
                     'customerGroupID' => $customerGroupID
@@ -2016,7 +2016,7 @@ class Product
                             AND tartikel.kVaterArtikel != ' . $productID . '
                         WHERE tartikelsichtbarkeit.kArtikel IS NULL ' . $stockFilterSQL . ' ' . $xsellSQL . '
                         GROUP BY tsuchcachetreffer.kArtikel
-                        ORDER BY COUNT(*) DESC' . $cLimit,
+                        ORDER BY COUNT(*) DESC' . $limit,
                     ReturnType::ARRAY_OF_OBJECTS
                 );
                 if (\count($searchCacheHits) > 0) {
@@ -2051,7 +2051,7 @@ class Product
                                 AND tartikel.kVaterArtikel != ' . $productID . '
                             WHERE tartikelsichtbarkeit.kArtikel IS NULL ' . $stockFilterSQL . ' ' . $xsellSQL . '
                             GROUP BY ttagartikel.kArtikel
-                            ORDER BY COUNT(*) DESC' . $cLimit,
+                            ORDER BY COUNT(*) DESC' . $limit,
                         ReturnType::ARRAY_OF_OBJECTS
                     );
                     $defaultOptions = Artikel::getDefaultOptions();
@@ -2244,38 +2244,38 @@ class Product
         if (!isset($cart->PositionenArr[$configID]) || !Konfigitem::checkLicense()) {
             return;
         }
+        /** @var WarenkorbPos $baseItem */
+        $baseItem = $cart->PositionenArr[$configID];
         /** @var WarenkorbPos $basePosition */
-        $basePosition = $cart->PositionenArr[$configID];
-        /** @var WarenkorbPos $basePosition */
-        if ($basePosition->istKonfigVater()) {
+        if ($baseItem->istKonfigVater()) {
             $configItems        = [];
             $configItemAmounts  = [];
             $configGroupAmounts = [];
             /** @var WarenkorbPos $item */
             foreach ($cart->PositionenArr as &$item) {
-                if ($item->cUnique !== $basePosition->cUnique || !$item->istKonfigKind()) {
+                if ($item->cUnique !== $baseItem->cUnique || !$item->istKonfigKind()) {
                     continue;
                 }
                 $configItem                                      = new Konfigitem($item->kKonfigitem);
                 $configItems[]                                   = $configItem->getKonfigitem();
-                $configItemAmounts[$configItem->getKonfigitem()] = $item->nAnzahl / $basePosition->nAnzahl;
+                $configItemAmounts[$configItem->getKonfigitem()] = $item->nAnzahl / $baseItem->nAnzahl;
                 if ($configItem->ignoreMultiplier()) {
                     $configGroupAmounts[$configItem->getKonfiggruppe()] = $item->nAnzahl;
                 } else {
-                    $configGroupAmounts[$configItem->getKonfiggruppe()] = $item->nAnzahl / $basePosition->nAnzahl;
+                    $configGroupAmounts[$configItem->getKonfiggruppe()] = $item->nAnzahl / $baseItem->nAnzahl;
                 }
             }
             unset($item);
 
-            $smarty->assign('fAnzahl', $basePosition->nAnzahl)
+            $smarty->assign('fAnzahl', $baseItem->nAnzahl)
                    ->assign('kEditKonfig', $configID)
                    ->assign('nKonfigitem_arr', $configItems)
                    ->assign('nKonfigitemAnzahl_arr', $configItemAmounts)
                    ->assign('nKonfiggruppeAnzahl_arr', $configGroupAmounts);
         }
-        if (isset($basePosition->WarenkorbPosEigenschaftArr)) {
+        if (isset($baseItem->WarenkorbPosEigenschaftArr)) {
             $attrValues = [];
-            foreach ($basePosition->WarenkorbPosEigenschaftArr as $attr) {
+            foreach ($baseItem->WarenkorbPosEigenschaftArr as $attr) {
                 $attrValues[$attr->kEigenschaft] = (object)[
                     'kEigenschaft'                  => $attr->kEigenschaft,
                     'kEigenschaftWert'              => $attr->kEigenschaftWert,

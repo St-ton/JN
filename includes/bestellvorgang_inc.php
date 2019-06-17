@@ -198,16 +198,16 @@ function pruefeLieferdaten($post, &$fehlendeAngaben = null): void
         }
     } elseif ((int)$post['kLieferadresse'] > 0) {
         // vorhandene lieferadresse
-        $LA = Shop::Container()->getDB()->query(
+        $addressData = Shop::Container()->getDB()->query(
             'SELECT kLieferadresse
                 FROM tlieferadresse
                 WHERE kKunde = ' . Frontend::getCustomer()->getID() . '
                     AND kLieferadresse = ' . (int)$post['kLieferadresse'],
             ReturnType::SINGLE_OBJECT
         );
-        if ($LA->kLieferadresse > 0) {
-            $oLieferadresse            = new Lieferadresse($LA->kLieferadresse);
-            $_SESSION['Lieferadresse'] = $oLieferadresse;
+        if ($addressData->kLieferadresse > 0) {
+            $deliveryAddress           = new Lieferadresse((int)$addressData->kLieferadresse);
+            $_SESSION['Lieferadresse'] = $deliveryAddress;
 
             executeHook(HOOK_BESTELLVORGANG_PAGE_STEPLIEFERADRESSE_VORHANDENELIEFERADRESSE);
         }
@@ -284,11 +284,11 @@ function pruefeVersandkostenStep(): void
             $_SESSION['Lieferadresse']->cLand,
             $cart->PositionenArr
         );
-        foreach ($arrArtikelabhaengigeVersandkosten as $oVersandPos) {
+        foreach ($arrArtikelabhaengigeVersandkosten as $item) {
             $cart->erstelleSpezialPos(
-                $oVersandPos->cName,
+                $item->cName,
                 1,
-                $oVersandPos->fKosten,
+                $item->fKosten,
                 $cart->gibVersandkostenSteuerklasse($_SESSION['Lieferadresse']->cLand),
                 C_WARENKORBPOS_TYP_VERSAND_ARTIKELABHAENGIG,
                 false
@@ -1657,16 +1657,17 @@ function zahlungsartGueltig($paymentMethod): bool
             if ($oPlugin->getState() !== State::ACTIVATED) {
                 return false;
             }
-            require_once $oPlugin->getPaths()->getVersionedPath() . PFAD_PLUGIN_PAYMENTMETHOD .
-                $oPlugin->oPluginZahlungsKlasseAssoc_arr[$paymentMethod->cModulId]->cClassPfad;
-            $className              = $oPlugin->oPluginZahlungsKlasseAssoc_arr[$paymentMethod->cModulId]->cClassName;
-            $oZahlungsart           = new $className($paymentMethod->cModulId);
-            $oZahlungsart->cModulId = $paymentMethod->cModulId;
-            /** @var PaymentMethod $oZahlungsart */
-            if ($oZahlungsart && $oZahlungsart->isSelectable() === false) {
+            $methods = $oPlugin->getPaymentMethods()->getMethodsAssoc();
+            require_once $oPlugin->getPaths()->getVersionedPath() . PFAD_PLUGIN_PAYMENTMETHOD
+                . $methods[$paymentMethod->cModulId]->cClassPfad;
+            $className        = $methods[$paymentMethod->cModulId]->cClassName;
+            $method           = new $className($paymentMethod->cModulId);
+            $method->cModulId = $paymentMethod->cModulId;
+            /** @var PaymentMethod $method */
+            if ($method && $method->isSelectable() === false) {
                 return false;
             }
-            if ($oZahlungsart && !$oZahlungsart->isValidIntern()) {
+            if ($method && !$method->isValidIntern()) {
                 Shop::Container()->getLogService()->withName('cModulId')->debug(
                     'Die Zahlungsartprüfung (' . $paymentMethod->cModulId .
                     ') wurde nicht erfolgreich validiert (isValidIntern).',
@@ -1679,16 +1680,16 @@ function zahlungsartGueltig($paymentMethod): bool
                 return false;
             }
 
-            return $oZahlungsart->isValid(Frontend::getCustomer(), Frontend::getCart());
+            return $method->isValid(Frontend::getCustomer(), Frontend::getCart());
         }
     } else {
         $oPaymentMethod = new PaymentMethod($paymentMethod->cModulId);
-        $oZahlungsart   = $oPaymentMethod::create($paymentMethod->cModulId);
+        $method         = $oPaymentMethod::create($paymentMethod->cModulId);
 
-        if ($oZahlungsart && $oZahlungsart->isSelectable() === false) {
+        if ($method && $method->isSelectable() === false) {
             return false;
         }
-        if ($oZahlungsart && !$oZahlungsart->isValidIntern()) {
+        if ($method && !$method->isValidIntern()) {
             Shop::Container()->getLogService()->withName('cModulId')->debug(
                 'Die Zahlungsartprüfung (' .
                     $paymentMethod->cModulId . ') wurde nicht erfolgreich validiert (isValidIntern).',
@@ -2547,9 +2548,9 @@ function getLieferdaten(array $post)
     $shippingAddress->angezeigtesLand = LanguageHelper::getCountryCodeByCountryName($shippingAddress->cLand);
 
     if (!empty($shippingAddress->cBundesland)) {
-        $oISO = Staat::getRegionByIso($shippingAddress->cBundesland, $shippingAddress->cLand);
-        if (is_object($oISO)) {
-            $shippingAddress->cBundesland = $oISO->cName;
+        $region = Staat::getRegionByIso($shippingAddress->cBundesland, $shippingAddress->cLand);
+        if (is_object($region)) {
+            $shippingAddress->cBundesland = $region->cName;
         }
     }
 
@@ -2805,22 +2806,21 @@ function pruefeAjaxEinKlick(): int
     }
     // Hat der Kunde eine Lieferadresse angegeben?
     if ($lastOrder->kLieferadresse > 0) {
-        $oLieferdaten = Shop::Container()->getDB()->query(
+        $addressData = Shop::Container()->getDB()->query(
             'SELECT kLieferadresse
                 FROM tlieferadresse
                 WHERE kKunde = ' . $customerID . '
                     AND kLieferadresse = ' . (int)$lastOrder->kLieferadresse,
             ReturnType::SINGLE_OBJECT
         );
-
-        if ($oLieferdaten->kLieferadresse > 0) {
-            $oLieferdaten              = new Lieferadresse($oLieferdaten->kLieferadresse);
-            $_SESSION['Lieferadresse'] = $oLieferdaten;
+        if ($addressData->kLieferadresse > 0) {
+            $addressData               = new Lieferadresse((int)$addressData->kLieferadresse);
+            $_SESSION['Lieferadresse'] = $addressData;
             if (!isset($_SESSION['Bestellung'])) {
                 $_SESSION['Bestellung'] = new stdClass();
             }
             $_SESSION['Bestellung']->kLieferadresse = $lastOrder->kLieferadresse;
-            Shop::Smarty()->assign('Lieferadresse', $oLieferdaten);
+            Shop::Smarty()->assign('Lieferadresse', $addressData);
         }
     } else {
         Shop::Smarty()->assign('Lieferadresse', setzeLieferadresseAusRechnungsadresse());

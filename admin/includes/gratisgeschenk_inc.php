@@ -10,19 +10,19 @@ use JTL\Shop;
 use JTL\DB\ReturnType;
 
 /**
- * @param string $cSQL
+ * @param string $sql
  * @return array
  */
-function holeAktiveGeschenke($cSQL): array
+function holeAktiveGeschenke(string $sql): array
 {
     $data = [];
     $res  = [];
-    if (mb_strlen($cSQL) > 0) {
+    if (mb_strlen($sql) > 0) {
         $data = Shop::Container()->getDB()->query(
             "SELECT kArtikel
                 FROM tartikelattribut
                 WHERE cName = '" . ART_ATTRIBUT_GRATISGESCHENKAB . "'
-                ORDER BY CAST(cWert AS SIGNED) DESC " . $cSQL,
+                ORDER BY CAST(cWert AS SIGNED) DESC " . $sql,
             ReturnType::ARRAY_OF_OBJECTS
         );
     }
@@ -42,14 +42,14 @@ function holeAktiveGeschenke($cSQL): array
 }
 
 /**
- * @param string $cSQL
+ * @param string $sql
  * @return array
  */
-function holeHaeufigeGeschenke($cSQL): array
+function holeHaeufigeGeschenke(string $sql): array
 {
     $res  = [];
     $data = [];
-    if (mb_strlen($cSQL) > 0) {
+    if (mb_strlen($sql) > 0) {
         $data = Shop::Container()->getDB()->query(
             'SELECT tgratisgeschenk.kArtikel, COUNT(*) AS nAnzahl, 
                 MAX(tbestellung.dErstellt) AS lastOrdered, AVG(tbestellung.fGesamtsumme) AS avgOrderValue
@@ -57,7 +57,7 @@ function holeHaeufigeGeschenke($cSQL): array
                 LEFT JOIN tbestellung
                     ON tbestellung.kWarenkorb = tgratisgeschenk.kWarenkorb
                 GROUP BY tgratisgeschenk.kArtikel
-                ORDER BY nAnzahl DESC, lastOrdered DESC ' . $cSQL,
+                ORDER BY nAnzahl DESC, lastOrdered DESC ' . $sql,
             ReturnType::ARRAY_OF_OBJECTS
         );
     }
@@ -87,20 +87,20 @@ function holeHaeufigeGeschenke($cSQL): array
 }
 
 /**
- * @param string $cSQL
+ * @param string $sql
  * @return array
  */
-function holeLetzten100Geschenke($cSQL): array
+function holeLetzten100Geschenke(string $sql): array
 {
     $res  = [];
     $data = [];
-    if (mb_strlen($cSQL) > 0) {
+    if (mb_strlen($sql) > 0) {
         $data = Shop::Container()->getDB()->query(
             'SELECT tgratisgeschenk.*, tbestellung.dErstellt AS orderCreated, tbestellung.fGesamtsumme
                 FROM tgratisgeschenk
                   LEFT JOIN tbestellung 
                       ON tbestellung.kWarenkorb = tgratisgeschenk.kWarenkorb
-                ORDER BY tbestellung.dErstellt DESC ' . $cSQL,
+                ORDER BY tbestellung.dErstellt DESC ' . $sql,
             ReturnType::ARRAY_OF_OBJECTS
         );
     }

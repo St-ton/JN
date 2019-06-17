@@ -264,12 +264,12 @@ class Zahlungsart extends MainModel
     }
 
     /**
-     * @param int $nSort
+     * @param int $sort
      * @return $this
      */
-    public function setSort(int $nSort): self
+    public function setSort(int $sort): self
     {
-        $this->nSort = $nSort;
+        $this->nSort = $sort;
 
         return $this;
     }

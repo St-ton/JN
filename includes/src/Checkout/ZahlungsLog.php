@@ -52,12 +52,12 @@ class ZahlungsLog
      */
     public function holeLog(string $limit, int $level = -1, string $whereSQL = ''): array
     {
-        $cSQLLevel = $level >= 0 ? ('AND nLevel = ' . $level) : '';
+        $condition = $level >= 0 ? ('AND nLevel = ' . $level) : '';
 
         return Shop::Container()->getDB()->query(
             "SELECT * FROM tzahlungslog
                 WHERE cModulId = '" . $this->cModulId . "' " .
-            $cSQLLevel . ($whereSQL !== '' ? ' AND ' . $whereSQL : '') . '
+            $condition . ($whereSQL !== '' ? ' AND ' . $whereSQL : '') . '
                 ORDER BY dDatum DESC, kZahlunglog DESC 
                 LIMIT ' . $limit,
             ReturnType::ARRAY_OF_OBJECTS
@@ -135,12 +135,12 @@ class ZahlungsLog
         \array_walk($moduleIDs, function (&$value) {
             $value = \sprintf("'%s'", $value);
         });
-        $cSQLModulId = \implode(',', $moduleIDs);
-        $cSQLLevel   = ($level >= 0) ? ('AND nLevel = ' . $level) : '';
+        $moduleIDlist = \implode(',', $moduleIDs);
+        $where        = ($level >= 0) ? ('AND nLevel = ' . $level) : '';
 
         return Shop::Container()->getDB()->query(
             'SELECT * FROM tzahlungslog
-                WHERE cModulId IN(' . $cSQLModulId . ') ' . $cSQLLevel . '
+                WHERE cModulId IN(' . $moduleIDlist . ') ' . $where . '
                 ORDER BY dDatum DESC, kZahlunglog DESC 
                 LIMIT ' . $offset . ', ' . $limit,
             ReturnType::ARRAY_OF_OBJECTS

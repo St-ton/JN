@@ -938,10 +938,10 @@ class Warenkorb
                         }
                     }
                 }
-                $anz                     = $this->gibAnzahlEinesArtikels($product->kArtikel);
+                $qty                     = $this->gibAnzahlEinesArtikels($product->kArtikel);
                 $item->Artikel           = $product;
-                $item->fPreisEinzelNetto = $product->gibPreis($anz, []);
-                $item->fPreis            = $product->gibPreis($anz, $item->WarenkorbPosEigenschaftArr);
+                $item->fPreisEinzelNetto = $product->gibPreis($qty, []);
+                $item->fPreis            = $product->gibPreis($qty, $item->WarenkorbPosEigenschaftArr);
                 $item->fGesamtgewicht    = $item->gibGesamtgewicht();
                 \executeHook(\HOOK_SETZTE_POSITIONSPREISE, [
                     'position'    => $item,

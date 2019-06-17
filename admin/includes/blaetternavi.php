@@ -99,20 +99,20 @@ function baueBlaetterNaviGetterSetter(int $count, int $perPage)
         return false;
     }
     for ($i = 1; $i <= $count; $i++) {
-        $cOffset        = 'nOffset' . $i;
-        $cSQL           = 'cSQL' . $i;
+        $offset         = 'nOffset' . $i;
+        $sql            = 'cSQL' . $i;
         $nAktuelleSeite = 'nAktuelleSeite' . $i;
         $cLimit         = 'cLimit' . $i;
 
-        $conf->$cOffset        = 0;
-        $conf->$cSQL           = ' LIMIT ' . $perPage;
+        $conf->$offset         = 0;
+        $conf->$sql            = ' LIMIT ' . $perPage;
         $conf->$nAktuelleSeite = 1;
         $conf->$cLimit         = 0;
         // GET || POST
         if (Request::verifyGPCDataInt('s' . $i) > 0) {
             $page                  = Request::verifyGPCDataInt('s' . $i);
-            $conf->$cOffset        = (($page - 1) * $perPage);
-            $conf->$cSQL           = ' LIMIT ' . (($page - 1) * $perPage) . ', ' . $perPage;
+            $conf->$offset         = (($page - 1) * $perPage);
+            $conf->$sql            = ' LIMIT ' . (($page - 1) * $perPage) . ', ' . $perPage;
             $conf->$nAktuelleSeite = $page;
             $conf->$cLimit         = (($page - 1) * $perPage);
         }

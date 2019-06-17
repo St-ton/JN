@@ -396,22 +396,22 @@ class Status
             return false; // there are no plugins installed
         }
         $pluginsDB = [];
-        foreach ($data as $oElement) {
-            $pluginsDB[$oElement->cVerzeichnis] = $oElement->nVersion;
+        foreach ($data as $item) {
+            $pluginsDB[$item->cVerzeichnis] = $item->nVersion;
         }
         // check against plugins, found in file-system
-        foreach ($pluginsDB as $szFolder => $nVersion) {
-            $info = \PFAD_ROOT . \PFAD_PLUGIN . $szFolder . '/' . \PLUGIN_INFO_FILE;
+        foreach ($pluginsDB as $dir => $version) {
+            $info = \PFAD_ROOT . \PFAD_PLUGIN . $dir . '/' . \PLUGIN_INFO_FILE;
             $xml  = null;
             if (\file_exists($info)) {
                 $xml = \simplexml_load_file($info);
                 // read all pluginversions from 'info.xml'
                 $pluginXmlVersions = [0];
-                foreach ($xml->Install->Version as $oElement) {
-                    $pluginXmlVersions[] = (int)$oElement['nr'];
+                foreach ($xml->Install->Version as $item) {
+                    $pluginXmlVersions[] = (int)$item['nr'];
                 }
                 // check for the highest and set marker, if it's different from installed db-version
-                if (\max($pluginXmlVersions) !== (int)$nVersion) {
+                if (\max($pluginXmlVersions) !== (int)$version) {
                     $newVersions = true;
                 }
             }

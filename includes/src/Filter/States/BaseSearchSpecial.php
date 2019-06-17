@@ -67,10 +67,10 @@ class BaseSearchSpecial extends AbstractFilter
         );
         foreach ($languages as $language) {
             $this->cSeo[$language->kSprache] = '';
-            foreach ($seoData as $oSeo) {
-                $oSeo->kSprache = (int)$oSeo->kSprache;
-                if ($language->kSprache === $oSeo->kSprache) {
-                    $this->cSeo[$language->kSprache] = $oSeo->cSeo;
+            foreach ($seoData as $seo) {
+                $seo->kSprache = (int)$seo->kSprache;
+                if ($language->kSprache === $seo->kSprache) {
+                    $this->cSeo[$language->kSprache] = $seo->cSeo;
                 }
             }
         }

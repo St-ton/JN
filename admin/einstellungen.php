@@ -88,18 +88,18 @@ if (isset($_POST['einstellungen_bearbeiten'])
     && Form::validateToken()
 ) {
     // Einstellungssuche
-    $oSQL = new stdClass();
+    $sql = new stdClass();
     if ($bSuche) {
-        $oSQL = bearbeiteEinstellungsSuche($_REQUEST['cSuche'], true);
+        $sql = bearbeiteEinstellungsSuche($_REQUEST['cSuche'], true);
     }
-    if (!isset($oSQL->cWHERE)) {
-        $oSQL->cWHERE = '';
+    if (!isset($sql->cWHERE)) {
+        $sql->cWHERE = '';
     }
     $step     = 'einstellungen bearbeiten';
     $confData = [];
-    if (mb_strlen($oSQL->cWHERE) > 0) {
-        $confData = $oSQL->oEinstellung_arr;
-        $smarty->assign('cSearch', $oSQL->cSearch);
+    if (mb_strlen($sql->cWHERE) > 0) {
+        $confData = $sql->oEinstellung_arr;
+        $smarty->assign('cSearch', $sql->cSearch);
     } else {
         $section  = $db->select('teinstellungensektion', 'kEinstellungenSektion', $sectionID);
         $confData = $db->query(
@@ -108,7 +108,7 @@ if (isset($_POST['einstellungen_bearbeiten'])
                 WHERE kEinstellungenSektion = ' . (int)$section->kEinstellungenSektion . "
                     AND cConf = 'Y'
                     AND nModul = 0
-                    AND nStandardanzeigen = 1 " . $oSQL->cWHERE . '
+                    AND nStandardanzeigen = 1 " . $sql->cWHERE . '
                 ORDER BY nSort',
             ReturnType::ARRAY_OF_OBJECTS
         );
@@ -194,18 +194,18 @@ if ($step === 'uebersicht') {
 }
 if ($step === 'einstellungen bearbeiten') {
     $confData = [];
-    $oSQL     = new stdClass();
+    $sql      = new stdClass();
     if ($bSuche) {
-        $oSQL = bearbeiteEinstellungsSuche($_REQUEST['cSuche']);
+        $sql = bearbeiteEinstellungsSuche($_REQUEST['cSuche']);
     }
-    if (!isset($oSQL->cWHERE)) {
-        $oSQL->cWHERE = '';
+    if (!isset($sql->cWHERE)) {
+        $sql->cWHERE = '';
     }
     $confData = [];
-    if (mb_strlen($oSQL->cWHERE) > 0) {
-        $confData = $oSQL->oEinstellung_arr;
-        $smarty->assign('cSearch', $oSQL->cSearch)
-               ->assign('cSuche', $oSQL->cSuche);
+    if (mb_strlen($sql->cWHERE) > 0) {
+        $confData = $sql->oEinstellung_arr;
+        $smarty->assign('cSearch', $sql->cSearch)
+               ->assign('cSuche', $sql->cSuche);
     } else {
         $confData = $db->query(
             'SELECT *
@@ -213,7 +213,7 @@ if ($step === 'einstellungen bearbeiten') {
                 WHERE nModul = 0 
                     AND nStandardAnzeigen = 1
                     AND kEinstellungenSektion = ' . (int)$section->kEinstellungenSektion . ' ' .
-                $oSQL->cWHERE . '
+                $sql->cWHERE . '
                 ORDER BY nSort',
             ReturnType::ARRAY_OF_OBJECTS
         );

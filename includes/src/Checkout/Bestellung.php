@@ -435,23 +435,21 @@ class Bestellung
         }
         // Rechnungsadresse holen
         if ($this->kRechnungsadresse !== null && $this->kRechnungsadresse > 0) {
-            $oRechnungsadresse = new Rechnungsadresse($this->kRechnungsadresse);
-            if ($oRechnungsadresse->kRechnungsadresse > 0) {
-                $this->oRechnungsadresse = $oRechnungsadresse;
+            $billingAddress = new Rechnungsadresse($this->kRechnungsadresse);
+            if ($billingAddress->kRechnungsadresse > 0) {
+                $this->oRechnungsadresse = $billingAddress;
             }
         }
         // Versandart holen
         if ($this->kVersandart !== null && $this->kVersandart > 0) {
-            $oVersandart = new Versandart($this->kVersandart);
-
-            if ($oVersandart->kVersandart !== null && $oVersandart->kVersandart > 0) {
-                $this->oVersandart = $oVersandart;
+            $shippingMethod = new Versandart($this->kVersandart);
+            if ($shippingMethod->kVersandart !== null && $shippingMethod->kVersandart > 0) {
+                $this->oVersandart = $shippingMethod;
             }
         }
         // Kunde holen
         if ($this->kKunde !== null && $this->kKunde > 0) {
             $customer = new Kunde($this->kKunde);
-
             if ($customer->kKunde !== null && $customer->kKunde > 0) {
                 unset($customer->cPasswort, $customer->fRabatt, $customer->fGuthaben, $customer->cUSTID);
                 $this->oKunde = $customer;
@@ -784,10 +782,10 @@ class Bestellung
                 foreach ($deliverySlip->oPosition_arr as &$deliveryPosition) {
                     if ($deliveryPosition->kKonfigitem == 0 && !empty($deliveryPosition->cUnique)) {
                         $bAlleAusgeliefert = true;
-                        foreach ($this->Positionen as $oKind) {
-                            if ($oKind->cUnique === $deliveryPosition->cUnique
-                                && $oKind->kKonfigitem > 0
-                                && !$oKind->bAusgeliefert
+                        foreach ($this->Positionen as $child) {
+                            if ($child->cUnique === $deliveryPosition->cUnique
+                                && $child->kKonfigitem > 0
+                                && !$child->bAusgeliefert
                             ) {
                                 $bAlleAusgeliefert = false;
                             }

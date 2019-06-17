@@ -145,17 +145,17 @@ if ($nice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
         $smarty->assign('oLink_arr', AuswahlAssistent::getLinks());
     } elseif ($step === 'edit-question') {
         $defaultLanguage = Shop::Container()->getDB()->select('tsprache', 'cShopStandard', 'Y');
-        $cSQLSelect      = 'tmerkmal.*';
-        $cSQLJoin        = '';
+        $select          = 'tmerkmal.*';
+        $join            = '';
         if ((int)$defaultLanguage->kSprache !== (int)$_SESSION['kSprache']) {
-            $cSQLSelect = 'tmerkmalsprache.*';
-            $cSQLJoin   = ' JOIN tmerkmalsprache ON tmerkmalsprache.kMerkmal = tmerkmal.kMerkmal
+            $select = 'tmerkmalsprache.*';
+            $join   = ' JOIN tmerkmalsprache ON tmerkmalsprache.kMerkmal = tmerkmal.kMerkmal
                             AND tmerkmalsprache.kSprache = ' . (int)$_SESSION['kSprache'];
         }
         $attributes = Shop::Container()->getDB()->query(
-            'SELECT ' . $cSQLSelect . '
+            'SELECT ' . $select . '
                 FROM tmerkmal
-                ' . $cSQLJoin . '
+                ' . $join . '
                 ORDER BY tmerkmal.nSort',
             ReturnType::ARRAY_OF_OBJECTS
         );

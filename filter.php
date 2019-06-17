@@ -94,8 +94,8 @@ if ($pages->getCurrentPage() > 0
 }
 //Redirect::doMainwordRedirect($NaviFilter, $oSuchergebnisse->getVisibleProductCount(), true);
 if ($conf['artikeluebersicht']['artikelubersicht_bestseller_gruppieren'] === 'Y') {
-    $productsIDs = $oSuchergebnisse->getProducts()->map(function ($article) {
-        return (int)$article->kArtikel;
+    $productsIDs = $oSuchergebnisse->getProducts()->map(function ($product) {
+        return (int)$product->kArtikel;
     });
     $bestsellers = Bestseller::buildBestsellers(
         $productsIDs,

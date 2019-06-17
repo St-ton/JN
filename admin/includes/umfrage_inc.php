@@ -254,15 +254,15 @@ function loescheFrage(int $questionID)
 }
 
 /**
- * @param string $cTyp
+ * @param string $type
  * @param int    $questionID
  * @return bool
  */
-function pruefeTyp($cTyp, int $questionID)
+function pruefeTyp($type, int $questionID)
 {
-    $oUmfrageFrage = Shop::Container()->getDB()->select('tumfragefrage', 'kUmfrageFrage', $questionID);
-    // Wenn sich der Typ geändert hat, dann return false
-    return $cTyp === $oUmfrageFrage->cTyp;
+    $question = Shop::Container()->getDB()->select('tumfragefrage', 'kUmfrageFrage', $questionID);
+
+    return $type === $question->cTyp;
 }
 
 /**
@@ -588,12 +588,12 @@ function holeSonstigeTextAntworten(int $surveyID, int $maxAnswers, int $limit)
 }
 
 /**
- * @param string $cTyp
+ * @param string $type
  * @return string
  */
-function mappeFragenTyp(string $cTyp): string
+function mappeFragenTyp(string $type): string
 {
-    switch ($cTyp) {
+    switch ($type) {
         case QuestionType::MULTI_SINGLE:
             return __('questionTypeMultipleChoiceOne');
 

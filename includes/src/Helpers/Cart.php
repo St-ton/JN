@@ -1914,11 +1914,11 @@ class Cart
     {
         $gifts = [];
         if ($conf['sonstiges']['sonstiges_gratisgeschenk_nutzen'] === 'Y') {
-            $cSQLSort = ' ORDER BY CAST(tartikelattribut.cWert AS DECIMAL) DESC';
+            $sqlSort = ' ORDER BY CAST(tartikelattribut.cWert AS DECIMAL) DESC';
             if ($conf['sonstiges']['sonstiges_gratisgeschenk_sortierung'] === 'N') {
-                $cSQLSort = ' ORDER BY tartikel.cName';
+                $sqlSort = ' ORDER BY tartikel.cName';
             } elseif ($conf['sonstiges']['sonstiges_gratisgeschenk_sortierung'] === 'L') {
-                $cSQLSort = ' ORDER BY tartikel.fLagerbestand DESC';
+                $sqlSort = ' ORDER BY tartikel.fLagerbestand DESC';
             }
             $limit    = $conf['sonstiges']['sonstiges_gratisgeschenk_anzahl'] > 0 ?
                     ' LIMIT ' . $conf['sonstiges']['sonstiges_gratisgeschenk_anzahl'] : '';
@@ -1933,7 +1933,7 @@ class Cart
                         AND tartikelattribut.cName = '" . \FKT_ATTRIBUT_GRATISGESCHENK . "'
                         AND CAST(tartikelattribut.cWert AS DECIMAL) <= " .
                 Frontend::getCart()->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL], true) .
-                $cSQLSort . $limit,
+                $sqlSort . $limit,
                 ReturnType::ARRAY_OF_OBJECTS
             );
 

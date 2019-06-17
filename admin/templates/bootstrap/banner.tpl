@@ -132,8 +132,8 @@
                         <span class="input-group-wrap">
                             <select class="form-control" id="kSprache" name="kSprache">
                                 <option value="0">{__('all')}</option>
-                                {foreach $oSprachen_arr as $oSprache}
-                                    <option value="{$oSprache->kSprache}" {if isset($kSprache) && $kSprache == $oSprache->kSprache}selected="selected" {elseif isset($oExtension->kSprache) && $oExtension->kSprache == $oSprache->kSprache}selected="selected"{/if}>{$oSprache->cNameDeutsch}</option>
+                                {foreach $oSprachen_arr as $language}
+                                    <option value="{$language->getId()}" {if isset($kSprache) && $kSprache === $language->getId()}selected="selected" {elseif isset($oExtension->kSprache) && (int)$oExtension->kSprache === $language->getId()}selected="selected"{/if}>{$language->getLocalizedName()}</option>
                                 {/foreach}
                             </select>
                         </span>

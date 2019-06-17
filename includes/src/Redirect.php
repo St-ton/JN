@@ -11,6 +11,7 @@ use JTL\Filter\FilterInterface;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Helpers\URL;
+use JTL\Language\LanguageHelper;
 use stdClass;
 
 /**
@@ -194,7 +195,7 @@ class Redirect
         if (\file_exists($file)) {
             $handle = \fopen($file, 'r');
             if ($handle) {
-                $language = Sprache::getDefaultLanguage();
+                $language = LanguageHelper::getDefaultLanguage();
                 $mapping  = [];
                 $i        = 0;
                 while (($csv = \fgetcsv($handle, 30000, ';')) !== false) {

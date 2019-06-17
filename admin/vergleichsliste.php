@@ -4,13 +4,12 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Alert\Alert;
+use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
-use JTL\Shop;
-use JTL\Sprache;
 use JTL\Pagination\Pagination;
-use JTL\DB\ReturnType;
-use JTL\Alert\Alert;
+use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
@@ -160,7 +159,6 @@ if (is_array($topComparisons) && count($topComparisons) > 0) {
 $smarty->assign('Letzten20Vergleiche', $last20)
        ->assign('TopVergleiche', $topComparisons)
        ->assign('oPagination', $oPagination)
-       ->assign('sprachen', Sprache::getAllLanguages())
        ->assign('oConfig_arr', $oConfig_arr)
        ->display('vergleichsliste.tpl');
 

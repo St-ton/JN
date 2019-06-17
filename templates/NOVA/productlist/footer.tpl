@@ -4,7 +4,7 @@
  *}
 {block name='productlist-footer'}
     {assign var=Suchergebnisse value=$NaviFilter->getSearchResults(false)}
-    {if $Suchergebnisse->getProducts()|@count > 0}
+    {*{if $Suchergebnisse->getProducts()|@count > 0}
         {if $Einstellungen.navigationsfilter.suchtrefferfilter_nutzen === 'Y'
             && $Suchergebnisse->getSearchFilterOptions()|@count > 0
             && $Suchergebnisse->getSearchFilterJSON()
@@ -18,7 +18,7 @@
                 {/card}
             {/block}
         {/if}
-    {/if}
+    {/if}*}
     {block name='productlist-footer-include-productlist-page-nav'}
         {include file='snippets/productlist_page_nav.tpl' navid='footer'}
     {/block}

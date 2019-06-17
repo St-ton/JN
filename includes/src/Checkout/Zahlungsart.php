@@ -7,9 +7,9 @@
 namespace JTL\Checkout;
 
 use JTL\DB\ReturnType;
+use JTL\Language\LanguageHelper;
 use JTL\MainModel;
 use JTL\Shop;
-use JTL\Sprache;
 
 /**
  * Class Zahlungsart
@@ -517,7 +517,7 @@ class Zahlungsart extends MainModel
             } elseif (isset($_SESSION['cISOSprache'])) {
                 $iso = $_SESSION['cISOSprache'];
             } else {
-                $language = Sprache::getDefaultLanguage();
+                $language = LanguageHelper::getDefaultLanguage();
                 $iso      = $language->cISO;
             }
 
@@ -556,7 +556,7 @@ class Zahlungsart extends MainModel
             if (isset($_SESSION['cISOSprache'])) {
                 $iso = $_SESSION['cISOSprache'];
             } else {
-                $language = Sprache::getDefaultLanguage();
+                $language = LanguageHelper::getDefaultLanguage();
                 $iso      = $language->cISO;
             }
         }

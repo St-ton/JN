@@ -14,8 +14,8 @@
                     </span>
                     <span class="input-group-wrap">
                         <select class="form-control" id="formSprachwechselSelect" name="kSprache" >
-                            {foreach $Sprachen as $sprache}
-                                <option value="{$sprache->kSprache}" {if $sprache->kSprache == $smarty.session.kSprache}selected{/if}>{$sprache->cNameDeutsch}</option>
+                            {foreach $sprachen as $language}
+                                <option value="{$language->getId()}" {if $language->getId() === $smarty.session.kSprache}selected{/if}>{$language->getLocalizedName()}</option>
                             {/foreach}
                         </select>
                     </span>

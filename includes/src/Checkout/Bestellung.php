@@ -6,20 +6,20 @@
 
 namespace JTL\Checkout;
 
-use JTL\Catalog\Product\Artikel;
 use JTL\Cart\WarenkorbPos;
+use JTL\Catalog\Category\Kategorie;
+use JTL\Catalog\Category\KategorieListe;
+use JTL\Catalog\Product\Artikel;
+use JTL\Catalog\Product\Preise;
+use JTL\Customer\Kunde;
 use JTL\DB\ReturnType;
 use JTL\Extensions\Download;
 use JTL\Extensions\Upload;
 use JTL\Helpers\Cart;
 use JTL\Helpers\ShippingMethod;
 use JTL\Helpers\Tax;
-use JTL\Catalog\Category\Kategorie;
-use JTL\Catalog\Category\KategorieListe;
-use JTL\Customer\Kunde;
-use JTL\Catalog\Product\Preise;
+use JTL\Language\LanguageHelper;
 use JTL\Shop;
-use JTL\Sprache;
 use PaymentMethod;
 use stdClass;
 
@@ -552,7 +552,7 @@ class Bestellung
         $defaultOptions           = Artikel::getDefaultOptions();
         $kSprache                 = Shop::getLanguage();
         if (!$kSprache) {
-            $oSprache             = Sprache::getDefaultLanguage();
+            $oSprache             = LanguageHelper::getDefaultLanguage();
             $kSprache             = (int)$oSprache->kSprache;
             $_SESSION['kSprache'] = $kSprache;
         }
@@ -1050,7 +1050,7 @@ class Bestellung
         if (\is_array($this->Positionen) && \count($this->Positionen) > 0) {
             $longestMinDeliveryDays = 0;
             $longestMaxDeliveryDays = 0;
-            $lang                   = Sprache::getIsoFromLangID((int)$this->kSprache);
+            $lang                   = LanguageHelper::getIsoFromLangID((int)$this->kSprache);
             foreach ($this->Positionen as $oPosition) {
                 $oPosition->nPosTyp = (int)$oPosition->nPosTyp;
                 if ($oPosition->nPosTyp === \C_WARENKORBPOS_TYP_ARTIKEL

@@ -4,6 +4,17 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Cart\WarenkorbPers;
+use JTL\Catalog\Category\Kategorie;
+use JTL\Catalog\Category\KategorieListe;
+use JTL\Catalog\Currency;
+use JTL\Catalog\Product\Artikel;
+use JTL\Catalog\Product\Preise;
+use JTL\Catalog\Wishlist\Wunschliste;
+use JTL\Checkout\Kupon;
+use JTL\Checkout\Versandart;
+use JTL\Checkout\Zahlungsart;
+use JTL\Customer\Kunde;
 use JTL\Helpers\Cart;
 use JTL\Helpers\Category;
 use JTL\Helpers\Date;
@@ -17,27 +28,16 @@ use JTL\Helpers\Request;
 use JTL\Helpers\SearchSpecial;
 use JTL\Helpers\ShippingMethod;
 use JTL\Helpers\Tax;
+use JTL\Helpers\Text;
 use JTL\Helpers\URL;
-use JTL\Catalog\Product\Artikel;
-use JTL\Catalog\Currency;
 use JTL\Jtllog;
 use JTL\Kampagne;
-use JTL\Catalog\Category\Kategorie;
-use JTL\Catalog\Category\KategorieListe;
-use JTL\Customer\Kunde;
-use JTL\Checkout\Kupon;
-use JTL\Catalog\Product\Preise;
+use JTL\Language\LanguageHelper;
 use JTL\Redirect;
+use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\SimpleMail;
-use JTL\Sprache;
-use JTL\Helpers\Text;
-use JTL\Checkout\Versandart;
 use JTL\Visitor;
-use JTL\Cart\WarenkorbPers;
-use JTL\Catalog\Wishlist\Wunschliste;
-use JTL\Checkout\Zahlungsart;
-use JTL\Session\Frontend;
 
 /**
  * @param float  $fPreisNetto
@@ -1040,8 +1040,11 @@ function gibPreisString($price)
  */
 function gibSprachKeyISO($cISO = '', int $kSprache = 0)
 {
-    trigger_error(__FUNCTION__ . ' is deprecated. Use Sprache::getLanguageDataByType() instead.', E_USER_DEPRECATED);
-    return Sprache::getLanguageDataByType($cISO, $kSprache);
+    trigger_error(
+        __FUNCTION__ . ' is deprecated. Use JTL\Language\LanguageHelper::getLanguageDataByType() instead.',
+        E_USER_DEPRECATED
+    );
+    return LanguageHelper::getLanguageDataByType($cISO, $kSprache);
 }
 
 /**
@@ -1159,8 +1162,11 @@ function baueVersandkostenfreiLaenderString($oVersandart)
  */
 function gibAlleSprachen(int $nOption = 0)
 {
-    trigger_error(__FUNCTION__ . ' is deprecated. Use Sprache::getAllLanguages() instead.', E_USER_DEPRECATED);
-    return Sprache::getAllLanguages($nOption);
+    trigger_error(
+        __FUNCTION__ . ' is deprecated. Use JTL\Language\LanguageHelper::getAllLanguages() instead.',
+        E_USER_DEPRECATED
+    );
+    return LanguageHelper::getAllLanguages($nOption);
 }
 
 /**
@@ -1171,8 +1177,11 @@ function gibAlleSprachen(int $nOption = 0)
  */
 function standardspracheAktiv($bShop = false, $kSprache = null)
 {
-    trigger_error(__FUNCTION__ . ' is deprecated. Use Sprache::isDefaultLanguageActive() instead.', E_USER_DEPRECATED);
-    return Sprache::isDefaultLanguageActive($bShop, $kSprache);
+    trigger_error(
+        __FUNCTION__ . ' is deprecated. Use JTL\Language\LanguageHelper::isDefaultLanguageActive() instead.',
+        E_USER_DEPRECATED
+    );
+    return LanguageHelper::isDefaultLanguageActive($bShop, $kSprache);
 }
 
 /**
@@ -1195,8 +1204,11 @@ function gibStandardWaehrung($bISO = false)
  */
 function gibStandardsprache($bShop = true)
 {
-    trigger_error(__FUNCTION__ . ' is deprecated. Use Sprache::getDefaultLanguage() instead.', E_USER_DEPRECATED);
-    return Sprache::getDefaultLanguage($bShop);
+    trigger_error(
+        __FUNCTION__ . ' is deprecated. Use JTL\Language\LanguageHelper::getDefaultLanguage() instead.',
+        E_USER_DEPRECATED
+    );
+    return LanguageHelper::getDefaultLanguage($bShop);
 }
 
 /**
@@ -1498,8 +1510,11 @@ function findeVariation($oVariation_arr, $kEigenschaft, $kEigenschaftWert)
  */
 function getDefaultLanguageID()
 {
-    trigger_error(__FUNCTION__ . ' is deprecated. Use Sprache::getDefaultLanguage() instead.', E_USER_DEPRECATED);
-    return Sprache::getDefaultLanguage(true)->kSprache;
+    trigger_error(
+        __FUNCTION__ . ' is deprecated. Use JTL\Language\LanguageHelper::getDefaultLanguage() instead.',
+        E_USER_DEPRECATED
+    );
+    return LanguageHelper::getDefaultLanguage()->kSprache;
 }
 
 /**
@@ -2015,10 +2030,10 @@ function validToken()
 function setzeSpracheUndWaehrungLink()
 {
     trigger_error(
-        __FUNCTION__ . ' is deprecated. Use Sprache::generateLanguageAndCurrencyLinks() instead.',
+        __FUNCTION__ . ' is deprecated. Use JTL\Language\LanguageHelper::generateLanguageAndCurrencyLinks() instead.',
         E_USER_DEPRECATED
     );
-    Shop::Lang()->generateLanguageAndCurrencyLinks();
+    LanguageHelper::generateLanguageAndCurrencyLinks();
 }
 
 /**
@@ -2068,10 +2083,10 @@ function checkeSpracheWaehrung($langISO = '')
 function ISO2land($cISO)
 {
     trigger_error(
-        __FUNCTION__ . ' is deprecated. Use Sprache::getCountryCodeByCountryName() instead.',
+        __FUNCTION__ . ' is deprecated. Use JTL\Language\LanguageHelper::getCountryCodeByCountryName() instead.',
         E_USER_DEPRECATED
     );
-    return Sprache::getCountryCodeByCountryName($cISO);
+    return LanguageHelper::getCountryCodeByCountryName($cISO);
 }
 
 /**
@@ -2081,8 +2096,11 @@ function ISO2land($cISO)
  */
 function landISO($cLand)
 {
-    trigger_error(__FUNCTION__ . ' is deprecated. Use Sprache::getIsoCodeByCountryName() instead.', E_USER_DEPRECATED);
-    return Sprache::getIsoCodeByCountryName($cLand);
+    trigger_error(
+        __FUNCTION__ . ' is deprecated. Use JTL\Language\LanguageHelper::getIsoCodeByCountryName() instead.',
+        E_USER_DEPRECATED
+    );
+    return LanguageHelper::getIsoCodeByCountryName($cLand);
 }
 
 /**

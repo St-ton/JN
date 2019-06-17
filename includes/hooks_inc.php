@@ -592,7 +592,7 @@ define('HOOK_BESTELLVORGANG_INC_UNREGISTRIERTBESTELLEN', 77);
  * before saving a rating to the database
  *
  * @file bewertung_inc.php
- * @param rating
+ * @param JTL\Review\ReviewModel rating
  */
 define('HOOK_BEWERTUNG_INC_SPEICHERBEWERTUNG', 78);
 

@@ -20,9 +20,10 @@ use JTL\Helpers\Request;
 use JTL\Helpers\Tax;
 use JTL\Helpers\Text;
 use JTL\Kampagne;
+use JTL\Language\LanguageHelper;
+use JTL\Language\LanguageModel;
 use JTL\Link\LinkGroupCollection;
 use JTL\Shop;
-use JTL\Sprache;
 use function Functional\first;
 
 /**
@@ -76,7 +77,7 @@ class Frontend extends AbstractSession
      */
     public function setStandardSessionVars(): self
     {
-        Sprache::getInstance()->autoload();
+        LanguageHelper::getInstance()->autoload();
         $_SESSION['FremdParameter'] = [];
         $_SESSION['Warenkorb']      = $_SESSION['Warenkorb'] ?? new Warenkorb();
 
@@ -156,7 +157,8 @@ class Frontend extends AbstractSession
     private function checkSessionUpdate(): bool
     {
         return ((isset($_SESSION['Kundengruppe']) && \get_class($_SESSION['Kundengruppe']) === 'stdClass')
-            || (isset($_SESSION['Waehrung']) && \get_class($_SESSION['Waehrung']) === 'stdClass'));
+            || (isset($_SESSION['Waehrung']) && \get_class($_SESSION['Waehrung']) === 'stdClass')
+            || (isset($_SESSION['Sprachen']) && \get_class($_SESSION['Sprachen'][0]) === 'stdClass'));
     }
 
     /**
@@ -197,7 +199,7 @@ class Frontend extends AbstractSession
         $_SESSION['oKategorie_arr']                   = [];
         $_SESSION['kKategorieVonUnterkategorien_arr'] = [];
         $_SESSION['ks']                               = [];
-        $_SESSION['Sprachen']                         = Sprache::getInstance()->gibInstallierteSprachen();
+        $_SESSION['Sprachen']                         = LanguageHelper::getInstance()->gibInstallierteSprachen();
         Currency::setCurrencies(true);
 
         if (!isset($_SESSION['jtl_token'])) {
@@ -210,12 +212,13 @@ class Frontend extends AbstractSession
         }, $_SESSION['Sprachen']);
         $defaultLang = '';
         $allowed     = [];
-        foreach ($_SESSION['Sprachen'] as $oSprache) {
-            $cISO              = Text::convertISO2ISO639($oSprache->cISO);
-            $oSprache->cISO639 = $cISO;
-            $allowed[]         = $cISO;
-            if ($oSprache->cShopStandard === 'Y') {
-                $defaultLang = $cISO;
+        foreach ($_SESSION['Sprachen'] as $language) {
+            /** @var LanguageModel $language */
+            $iso = Text::convertISO2ISO639($language->cISO);
+            $language->setIso639($iso);
+            $allowed[] = $iso;
+            if ($language->cShopStandard === 'Y') {
+                $defaultLang = $iso;
             }
         }
         if (!isset($_SESSION['kSprache'])) {
@@ -426,7 +429,7 @@ class Frontend extends AbstractSession
      */
     public function setCustomer(Kunde $customer): self
     {
-        $customer->angezeigtesLand = Sprache::getCountryCodeByCountryName($customer->cLand);
+        $customer->angezeigtesLand = LanguageHelper::getCountryCodeByCountryName($customer->cLand);
         $_SESSION['Kunde']         = $customer;
         $_SESSION['Kundengruppe']  = new Kundengruppe((int)$customer->kKundengruppe);
         $_SESSION['Kundengruppe']->setMayViewCategories(1)
@@ -476,11 +479,11 @@ class Frontend extends AbstractSession
     }
 
     /**
-     * @return Sprache
+     * @return LanguageHelper
      */
-    public function getLanguage(): Sprache
+    public function getLanguage(): LanguageHelper
     {
-        $lang                    = Sprache::getInstance();
+        $lang                    = LanguageHelper::getInstance();
         $lang->kSprache          = (int)$_SESSION['kSprache'];
         $lang->currentLanguageID = (int)$_SESSION['kSprache'];
         $lang->cISOSprache       = $_SESSION['cISOSprache'];
@@ -489,17 +492,17 @@ class Frontend extends AbstractSession
     }
 
     /**
-     * @return Sprache
+     * @return LanguageHelper
      * @deprecated since 5.0.0
      */
-    public function language(): Sprache
+    public function language(): LanguageHelper
     {
         \trigger_error(__METHOD__. ' is deprecated.', \E_USER_DEPRECATED);
         return $this->getLanguage();
     }
 
     /**
-     * @return array
+     * @return LanguageModel[]
      */
     public static function getLanguages(): array
     {
@@ -656,7 +659,7 @@ class Frontend extends AbstractSession
                 $_SESSION['oKategorie_arr']     = [];
                 $_SESSION['oKategorie_arr_new'] = [];
             }
-            $lang = first(Sprache::getAllLanguages(), function ($l) use ($langISO) {
+            $lang = first(LanguageHelper::getAllLanguages(), function ($l) use ($langISO) {
                 return $l->cISO === $langISO;
             });
             if ($lang === null) {
@@ -697,7 +700,7 @@ class Frontend extends AbstractSession
                 }
             }
         }
-        Sprache::getInstance()->autoload();
+        LanguageHelper::getInstance()->autoload();
     }
 
     private static function urlFallback(): void

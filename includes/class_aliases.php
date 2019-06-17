@@ -125,7 +125,7 @@ class_alias(\JTL\Exportformat::class, 'Exportformat', true);
 class_alias(\JTL\XML::class, 'XML', true);
 class_alias(\JTL\Shop::class, 'Shop', true);
 class_alias(\JTL\Path::class, 'Path', true);
-class_alias(\JTL\Sprache::class, 'Sprache', true);
+class_alias(\JTL\Language\LanguageHelper::class, 'Sprache', true);
 class_alias(\JTL\Backend\TwoFA::class, 'TwoFA', true);
 class_alias(\JTL\Backend\DirManager::class, 'DirManager', true);
 class_alias(\JTL\Backend\AdminFavorite::class, 'AdminFavorite', true);

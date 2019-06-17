@@ -8,8 +8,8 @@ namespace JTL\Catalog\Product;
 
 use JTL\DB\ReturnType;
 use JTL\Helpers\URL;
+use JTL\Language\LanguageHelper;
 use JTL\Shop;
-use JTL\Sprache;
 
 /**
  * Class MerkmalWert
@@ -140,7 +140,7 @@ class MerkmalWert
 
             return $this;
         }
-        $kStandardSprache = Sprache::getDefaultLanguage()->kSprache;
+        $kStandardSprache = LanguageHelper::getDefaultLanguage()->kSprache;
         if ($kSprache !== $kStandardSprache) {
             $cSelect = 'COALESCE(fremdSprache.kSprache, standardSprache.kSprache) AS kSprache, 
                         COALESCE(fremdSprache.cWert, standardSprache.cWert) AS cWert,
@@ -215,12 +215,12 @@ class MerkmalWert
         }
         $kSprache = Shop::getLanguage();
         if (!$kSprache) {
-            $oSprache = Sprache::getDefaultLanguage();
+            $oSprache = LanguageHelper::getDefaultLanguage();
             if (isset($oSprache->kSprache) && $oSprache->kSprache > 0) {
                 $kSprache = (int)$oSprache->kSprache;
             }
         }
-        $kStandardSprache = (int)Sprache::getDefaultLanguage()->kSprache;
+        $kStandardSprache = (int)LanguageHelper::getDefaultLanguage()->kSprache;
         if ($kSprache !== $kStandardSprache) {
             $cSelect = 'COALESCE(fremdSprache.kSprache, standardSprache.kSprache) AS kSprache, 
                         COALESCE(fremdSprache.cWert, standardSprache.cWert) AS cWert,

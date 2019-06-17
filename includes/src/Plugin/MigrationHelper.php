@@ -9,7 +9,6 @@ namespace JTL\Plugin;
 use DirectoryIterator;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
-use DirectoryIterator;
 use JTL\Filesystem\Filesystem;
 use JTL\Filesystem\LocalFilesystem;
 use JTL\Shop;

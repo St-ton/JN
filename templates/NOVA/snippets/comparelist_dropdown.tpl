@@ -19,7 +19,7 @@
                                     "value"=>"{ldelim}{'"a"'|escape:'html'}:{$product->kArtikel}{rdelim}"
                                 ]
                             }
-                                &times;
+                                <i class="fas fa-times"></i>
                             {/link}
                         {/col}
                     {/row}

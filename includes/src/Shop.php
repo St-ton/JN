@@ -30,6 +30,7 @@ use JTL\Events\Event;
 use JTL\Filter\Config;
 use JTL\Filter\FilterInterface;
 use JTL\Filter\ProductFilter;
+use JTL\Language\LanguageHelper;
 use JTL\Optin\Optin;
 use JTL\Helpers\PHPSettings;
 use JTL\Helpers\Product;
@@ -96,7 +97,7 @@ use function Functional\tail;
  * Class Shop
  * @package JTL
  * @method static JTLCacheInterface Cache()
- * @method static Sprache Lang()
+ * @method static LanguageHelper Lang()
  * @method static Smarty\JTLSmarty Smarty(bool $fast_init = false, string $context = ContextType::FRONTEND)
  * @method static Media Media()
  * @method static Events\Dispatcher Event()
@@ -592,11 +593,11 @@ final class Shop
     /**
      * get language instance
      *
-     * @return Sprache
+     * @return LanguageHelper
      */
-    public function _Language(): Sprache
+    public function _Language(): LanguageHelper
     {
-        return Sprache::getInstance();
+        return LanguageHelper::getInstance();
     }
 
     /**

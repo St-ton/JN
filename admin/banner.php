@@ -7,8 +7,8 @@
 use JTL\Helpers\Form;
 use JTL\ImageMap;
 use JTL\Customer\Kundengruppe;
+use JTL\Language\LanguageHelper;
 use JTL\Shop;
-use JTL\Sprache;
 use JTL\Boxes\Admin\BoxAdmin;
 use JTL\Alert\Alert;
 use JTL\Pagination\Pagination;
@@ -169,7 +169,7 @@ switch ($cAction) {
 
         $smarty->assign('oExtension', holeExtension($id))
                ->assign('cBannerFile_arr', holeBannerDateien())
-               ->assign('oSprachen_arr', Sprache::getInstance()->gibInstallierteSprachen())
+               ->assign('oSprachen_arr', LanguageHelper::getInstance()->gibInstallierteSprachen())
                ->assign('oKundengruppe_arr', Kundengruppe::getGroups())
                ->assign('nMaxFileSize', getMaxFileSize(ini_get('upload_max_filesize')))
                ->assign('oBanner', $oBanner);
@@ -182,7 +182,7 @@ switch ($cAction) {
 
     case 'new':
         $smarty->assign('oBanner', $oBanner ?? null)
-               ->assign('oSprachen_arr', Sprache::getInstance()->gibInstallierteSprachen())
+               ->assign('oSprachen_arr', LanguageHelper::getInstance()->gibInstallierteSprachen())
                ->assign('oKundengruppe_arr', Kundengruppe::getGroups())
                ->assign('cBannerLocation', PFAD_BILDER_BANNER)
                ->assign('nMaxFileSize', getMaxFileSize(ini_get('upload_max_filesize')))

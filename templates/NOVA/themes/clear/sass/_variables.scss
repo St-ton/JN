@@ -30,13 +30,13 @@ $grid-gutter-width:                 32px;
 // font
 
 $font-family-sans-serif:            "Open Sans", Helvetica, Arial, sans-serif;
-$headings-font-family:              $font-family-sans-serif;
+$headings-font-family:              "Montserrat", Helvetica, Arial, sans-serif;
 $font-size-base:                    0.875rem;
 $line-height-base:                  1.5;
 
 $font-weight-normal:                400;
 $font-weight-semibold:              600;
-$font-weight-bold:                  700;
+$font-weight-bold:                  600;
 
 // heading
 
@@ -72,6 +72,7 @@ $link-decoration:                   underline;
 $link-hover-color:                  $link-color;
 $link-hover-decoration:             none;
 
+//$breadcrumb-divider:                "/";
 $breadcrumb-divider:                "\f054";
 $breadcrumb-divider-back:           "\f053";
 $breadcrumb-active-color:           $gray-dark;
@@ -88,6 +89,8 @@ $list-group-bg:                     #fff;
 $list-group-disabled-bg:            #fff;
 
 $progress-bar-color:                $gray;
+
+$table-accent-bg:                   $gray-lighter;
 
 // spacer
 

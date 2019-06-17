@@ -28,16 +28,6 @@
                         {/block}
                     {/if}
                 {/if}
-                {if $Einstellungen.template.productlist.quickview_productlist === 'Y' && !$Artikel->bHasKonfig}
-                    {block name='productlist-productlist-actions-quickview'}
-                        {button name="quickview" class="circle-small quickview badge badge-circle"
-                            title="{lang key='downloadPreview' section='productDownloads'} {$Artikel->cName}"
-                            data=["toggle"=>"tooltip", "placement"=>"top", "src"=>"{$Artikel->cURLFull}", "target"=>"buy_form_{$Artikel->kArtikel}"]
-                        }
-                            <span class="far fa-eye"></span>
-                        {/button}
-                    {/block}
-                {/if}
             {/block}
         {/buttongroup}
         {block name='productlist-productlist-actions-input-hidden'}

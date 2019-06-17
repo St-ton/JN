@@ -44,8 +44,23 @@
         function deleteSelectedOpcDrafts()
         {
             // TODO
-            if (confirm("Wollen Sie die gewählten Entwürfe wirklich löschen?")) {
-
+            if (false && confirm("Wollen Sie die ausgewählten Entwürfe wirklich löschen?")) {
+                $.ajax({
+                    method: 'post',
+                    url: '{$ShopURL}/admin/onpage-composer.php',
+                    data: {
+                        action: 'discard',
+                        pageKey: draftKey,
+                        jtl_token: '{$adminSessionToken}'
+                    },
+                    success: function(jqxhr) {
+                        if (jqxhr === 'ok') {
+                            let draftItem = $('#opc-draft-' + draftKey);
+                            draftItem.animate({ opacity: 'toggle' }, 500, () => draftItem.remove());
+                            window.localStorage.removeItem('opcpage.' + draftKey);
+                        }
+                    }
+                });
             }
         }
 
@@ -121,7 +136,7 @@
                     <span id="opc-start-label">OnPage Composer</span>
                 </button>
             </nav>
-            <div id="opc-sidebar" class="opc-open">
+            <div id="opc-sidebar">
                 <header id="opc-header">
                     {*<button>*}
                         {*<i class="fa fas fa-ellipsis-v"></i>*}

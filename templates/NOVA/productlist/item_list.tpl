@@ -109,7 +109,7 @@
                                 {$Artikel->cKurzBeschreibung}
                             </div>
                         {/if}
-                        <div class="attr-group list-unstyled small text-muted mt-2 d-none d-sm-block">
+                        <div class="attr-group list-unstyled small mt-2 d-none d-sm-block">
                             {row class="item attr-sku"}
                                 {col sm=5 class="attr-label"}{lang key='productNo'}: {/col}
                                 {col sm=7 class="value" itemprop="sku"}{$Artikel->cArtNr}{/col}

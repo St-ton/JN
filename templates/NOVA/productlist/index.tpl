@@ -53,7 +53,7 @@
                 {include file='snippets/opc_mount_point.tpl' id='opc_before_products'}
                 {row class=$style id="product-list" itemprop="mainEntity" itemscope=true itemtype="http://schema.org/ItemList"}
                     {foreach $Suchergebnisse->getProducts() as $Artikel}
-                        {col cols={$grid} md="{if isset($gridmd)}{$gridmd}{/if}" xl="{if isset($gridxl)}{$gridxl}{/if}" class="product-wrapper {if !($style === 'list' && $Artikel@last)}mb-8{/if}" itemprop="itemListElement" itemscope=true itemtype="http://schema.org/Product"}
+                        {col cols={$grid} md="{if isset($gridmd)}{$gridmd}{/if}" xl="{if isset($gridxl)}{$gridxl}{/if}" class="product-wrapper {if !($style === 'list' && $Artikel@last)}mb-4{/if}" itemprop="itemListElement" itemscope=true itemtype="http://schema.org/Product"}
                             {if $style === 'list'}
                                 {block name='productlist-index-include-item-list'}
                                     {include file='productlist/item_list.tpl' tplscope=$style}

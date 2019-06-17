@@ -40,7 +40,7 @@
             {/block}
         {else}
             {block name='snippets-product-slider-other'}
-                <div class="mb-5{if isset($class) && $class|strlen > 0}{$class}{/if}"{if isset($id) && $id|strlen > 0} id="{$id}"{/if}>
+                <div class="mb-5{if isset($class) && $class|strlen > 0} {$class}{/if}"{if isset($id) && $id|strlen > 0} id="{$id}"{/if}>
                     {if $title|strlen > 0}
                         {block name='snippets-product-slider-other-title'}
                             <div class="hr-sect my-4">

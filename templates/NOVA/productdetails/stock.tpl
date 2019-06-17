@@ -4,7 +4,7 @@
  *}
 {block name='productdetails-stock'}
     {assign var=anzeige value=$Einstellungen.artikeldetails.artikel_lagerbestandsanzeige}
-    <div class="delivery-status {if !isset($availability) && !isset($shippingTime)}p-3 mt-3 mb-4{/if}">
+    <div class="delivery-status">
     {block name='productdetails-stock-delivery-status'}
         {row class='align-items-center'}
             {if !isset($shippingTime)}

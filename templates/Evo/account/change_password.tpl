@@ -4,8 +4,6 @@
  *}
 <h1>{lang key='changePassword' section='login'}</h1>
 
-{include file='snippets/extension.tpl'}
-
 {block name='change-password-form'}
 <div class="panel-wrap">
     <p class="alert alert-info">{lang key='changePasswordDesc' section='login'}</p>

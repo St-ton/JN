@@ -8,14 +8,14 @@
     {/block}
 
     {block name='account-password-content'}
-        {block name='account-password-heading'}
-            {container}
-                <h1>{lang key='forgotPassword' section='global'}</h1>
-            {/container}
-        {/block}
         {block name='account-password-include-extension'}
             {container}
                 {include file='snippets/extension.tpl'}
+            {/container}
+        {/block}
+        {block name='account-password-heading'}
+            {container}
+                <h1>{lang key='forgotPassword' section='global'}</h1>
             {/container}
         {/block}
         {if $step === 'formular'}

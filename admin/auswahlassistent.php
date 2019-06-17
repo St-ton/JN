@@ -11,7 +11,6 @@ use JTL\Extensions\AuswahlAssistentFrage;
 use JTL\Extensions\AuswahlAssistentGruppe;
 use JTL\Nice;
 use JTL\Shop;
-use JTL\Sprache;
 use JTL\Helpers\Text;
 use JTL\DB\ReturnType;
 use JTL\Alert\Alert;
@@ -169,8 +168,7 @@ if ($nice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
 } else {
     $smarty->assign('noModule', true);
 }
-$smarty->assign('Sprachen', Sprache::getAllLanguages())
-       ->assign('step', $step)
+$smarty->assign('step', $step)
        ->assign('cTab', $tab)
        ->assign('AUSWAHLASSISTENT_ORT_STARTSEITE', AUSWAHLASSISTENT_ORT_STARTSEITE)
        ->assign('AUSWAHLASSISTENT_ORT_KATEGORIE', AUSWAHLASSISTENT_ORT_KATEGORIE)

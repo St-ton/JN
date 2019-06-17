@@ -4,13 +4,12 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Alert\Alert;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
-use JTL\Shop;
-use JTL\Sprache;
 use JTL\Helpers\Text;
 use JTL\Pagination\Pagination;
-use JTL\Alert\Alert;
+use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
@@ -121,7 +120,7 @@ if (Request::verifyGPCDataInt('freischalten') === 1 && Form::validateToken()) {
     // Bewertungen
     if (Request::verifyGPCDataInt('bewertungen') === 1) {
         if (isset($_POST['freischaltensubmit'])) {
-            if (schalteBewertungFrei($_POST['kBewertung'], $_POST['kArtikel'], $_POST['kBewertungAll'])) {
+            if (schalteBewertungFrei($_POST['kBewertung'])) {
                 $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successRatingUnlock'), 'successRatingUnlock');
             } else {
                 $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorAtLeastOneRating'), 'errorAtLeastOneRating');
@@ -277,12 +276,12 @@ if ($step === 'freischalten_uebersicht') {
         ->setItemCount(gibMaxNewsletterEmpfaenger())
         ->assemble();
 
-    $ratings      = gibBewertungFreischalten(' LIMIT ' . $pagiRatings->getLimitSQL(), $ratingsSQL);
+    $reviews      = gibBewertungFreischalten(' LIMIT ' . $pagiRatings->getLimitSQL(), $ratingsSQL);
     $queries      = gibSuchanfrageFreischalten(' LIMIT ' . $pagiQueries->getLimitSQL(), $liveSearchSQL);
     $tags         = gibTagFreischalten(' LIMIT ' . $pagiTags->getLimitSQL(), $tagsSQL);
     $newsComments = gibNewskommentarFreischalten(' LIMIT ' . $pagiComments->getLimitSQL(), $commentsSQL);
     $recipients   = gibNewsletterEmpfaengerFreischalten(' LIMIT ' . $pagiRecipients->getLimitSQL(), $recipientsSQL);
-    $smarty->assign('oBewertung_arr', $ratings)
+    $smarty->assign('oBewertung_arr', $reviews)
            ->assign('oSuchanfrage_arr', $queries)
            ->assign('oTag_arr', $tags)
            ->assign('oNewsKommentar_arr', $newsComments)
@@ -295,6 +294,5 @@ if ($step === 'freischalten_uebersicht') {
 }
 
 $smarty->assign('step', $step)
-       ->assign('Sprachen', Sprache::getAllLanguages())
        ->assign('cTab', $tab)
        ->display('freischalten.tpl');

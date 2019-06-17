@@ -11,7 +11,6 @@
             id="sidebox{$oBox->getID()}"
             title="<i class='fa fa-tasks'></i> {lang key='compare'}"
         }
-            <hr class="mt-0 mb-4">
             {block name='boxes-box-comparelist-content'}
                 {block name='boxes-box-comparelist-products'}
                     {listgroup}

@@ -6,8 +6,8 @@
 
 namespace JTL\Plugin\Admin\Installation\Items;
 
+use JTL\Language\LanguageHelper;
 use JTL\Plugin\InstallCode;
-use JTL\Sprache;
 use stdClass;
 
 /**
@@ -59,7 +59,7 @@ class MailTemplates extends AbstractItem
                 return InstallCode::SQL_CANNOT_SAVE_EMAIL_TEMPLATE;
             }
             $iso                    = '';
-            $allLanguages           = Sprache::getAllLanguages(2);
+            $allLanguages           = LanguageHelper::getAllLanguages(2);
             $fallbackLocalization   = null;
             $availableLocalizations = [];
             $addedLanguages         = [];

@@ -6,9 +6,9 @@
 
 namespace JTL\Session;
 
+use JTL\Language\LanguageHelper;
 use JTL\Session\Handler\JTLHandlerInterface;
 use JTL\Shop;
-use JTL\Sprache;
 
 /**
  * Class AbstractSession
@@ -105,15 +105,16 @@ abstract class AbstractSession
         if (!\defined('EXPERIMENTAL_MULTILANG_SHOP')) {
             return $domain;
         }
-        foreach (Sprache::getAllLanguages() as $Sprache) {
-            if (!\defined('URL_SHOP_' . \mb_convert_case($Sprache->cISO, \MB_CASE_UPPER))) {
+        foreach (LanguageHelper::getAllLanguages() as $language) {
+            $code = $language->cISO;
+            if (!\defined('URL_SHOP_' . \mb_convert_case($code, \MB_CASE_UPPER))) {
                 continue;
             }
-            $shopLangURL = \constant('URL_SHOP_' . \mb_convert_case($Sprache->cISO, \MB_CASE_UPPER));
+            $shopLangURL = \constant('URL_SHOP_' . \mb_convert_case($code, \MB_CASE_UPPER));
             if (\mb_strpos($shopLangURL, $_SERVER['HTTP_HOST']) !== false
-                && \defined('COOKIE_DOMAIN_' . \mb_convert_case($Sprache->cISO, \MB_CASE_UPPER))
+                && \defined('COOKIE_DOMAIN_' . \mb_convert_case($code, \MB_CASE_UPPER))
             ) {
-                return \constant('COOKIE_DOMAIN_' . \mb_convert_case($Sprache->cISO, \MB_CASE_UPPER));
+                return \constant('COOKIE_DOMAIN_' . \mb_convert_case($code, \MB_CASE_UPPER));
             }
         }
 

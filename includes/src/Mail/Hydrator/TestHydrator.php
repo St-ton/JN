@@ -15,6 +15,7 @@ use JTL\Customer\Kundengruppe;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Date;
 use JTL\Helpers\ShippingMethod;
+use JTL\Language\LanguageHelper;
 use JTL\Shop;
 use stdClass;
 
@@ -31,7 +32,7 @@ class TestHydrator extends DefaultsHydrator
     {
         parent::hydrate($data, $language);
         $lang = Shop::Lang();
-        $all  = \Sprache::getAllLanguages(1);
+        $all  = LanguageHelper::getAllLanguages(1);
         $lang->setzeSprache($all[$language->kSprache]->cISO);
 
         $langID        = (int)$language->kSprache;
@@ -251,9 +252,12 @@ class TestHydrator extends DefaultsHydrator
         $coupon->cName                 = 'Kuponname';
         $coupon->fWert                 = 5;
         $coupon->cWertTyp              = 'festpreis';
-        $coupon->dGueltigAb            = '2007-11-07 17:05:00';
-        $coupon->dGueltigBis           = '2008-11-07 17:05:00';
+        $coupon->dGueltigAb            = '2019-01-01 17:05:00';
+        $coupon->GueltigAb             = '2019-01-01 17:05:00';
+        $coupon->dGueltigBis           = '2019-12-31 17:05:00';
+        $coupon->GueltigBis            = '2019-12-31 17:05:00';
         $coupon->cCode                 = 'geheimcode';
+        $coupon->nVerwendungen         = 100;
         $coupon->nVerwendungenProKunde = 2;
         $coupon->AngezeigterName       = 'lokalisierter Name des Kupons';
         $coupon->cKuponTyp             = Kupon::TYPE_STANDARD;

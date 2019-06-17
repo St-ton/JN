@@ -8,7 +8,6 @@
         id="sidebox{$oBox->getID()}"
         title="{if empty($smarty.session.Kunde)}{lang key='login'}{else}{lang key='hello'}, {$smarty.session.Kunde->cVorname} {$smarty.session.Kunde->cNachname}{/if}"
     }
-        <hr class="mt-0 mb-4">
         {block name='boxes-box-login-content'}
             {if empty($smarty.session.Kunde->kKunde)}
                 {block name='boxes-box-login-form'}

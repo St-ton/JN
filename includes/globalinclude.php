@@ -5,15 +5,15 @@
  */
 
 use JTL\Debug\DataCollector\Smarty;
+use JTL\Filter\Metadata;
 use JTL\Helpers\PHPSettings;
+use JTL\Language\LanguageHelper;
+use JTL\Plugin\Helper;
 use JTL\Profiler;
+use JTL\Session\Frontend;
 use JTL\Shop;
-use JTL\Sprache;
 use JTL\Template;
 use JTLShop\SemVer\Version;
-use JTL\Session\Frontend;
-use JTL\Plugin\Helper;
-use JTL\Filter\Metadata;
 
 $nStartzeit = microtime(true);
 
@@ -76,7 +76,7 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'plugin_inc.php';
 $cache = Shop::Container()->getCache();
 $cache->setJtlCacheConfig($db->selectAll('teinstellungen', 'kEinstellungenSektion', CONF_CACHING));
 $config = Shop::getSettings([CONF_GLOBAL])['global'];
-$lang   = Sprache::getInstance($db, $cache);
+$lang   = LanguageHelper::getInstance($db, $cache);
 if (PHP_SAPI !== 'cli'
     && $config['kaufabwicklung_ssl_nutzen'] === 'P'
     && (!isset($_SERVER['HTTPS'])
@@ -89,7 +89,7 @@ if (PHP_SAPI !== 'cli'
     );
     if (!$https) {
         $lang = '';
-        if (!Sprache::isDefaultLanguageActive(true)) {
+        if (!LanguageHelper::isDefaultLanguageActive(true)) {
             $lang = mb_strpos($_SERVER['REQUEST_URI'], '?')
                 ? '&lang=' . $_SESSION['cISOSprache']
                 : '?lang=' . $_SESSION['cISOSprache'];

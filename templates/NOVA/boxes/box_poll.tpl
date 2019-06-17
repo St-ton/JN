@@ -4,7 +4,6 @@
  *}
 {block name='boxes-box-poll'}
     {card class="box box-poll mb-7" id="sidebox{$oBox->getID()}" title="{lang key='BoxPoll'}"}
-        <hr class="mt-0 mb-4">
         {block name='boxes-box-poll-content'}
             {nav class="tree" vertical=true}
                 {foreach $oBox->getItems() as $oUmfrageItem}

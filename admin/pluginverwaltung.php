@@ -291,21 +291,17 @@ if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::vali
                 $errorMsg = __('errorLangVarNotFound');
             }
         } else { // Editieren
-            $languages = $db->query(
-                'SELECT * FROM tsprache',
-                ReturnType::ARRAY_OF_OBJECTS
-            );
-            $original  = $db->query(
+            $original = $db->query(
                 'SELECT * FROM tpluginsprachvariable
                     JOIN tpluginsprachvariablesprache
                     ON tpluginsprachvariable.kPluginSprachvariable = tpluginsprachvariablesprache.kPluginSprachvariable
                     WHERE tpluginsprachvariable.kPlugin = ' . $kPlugin,
                 ReturnType::ARRAY_OF_OBJECTS
             );
-            $original  = group($original, function ($e) {
+            $original = group($original, function ($e) {
                 return (int)$e->kPluginSprachvariable;
             });
-            foreach ($languages as $lang) {
+            foreach (Shop::Lang()->gibInstallierteSprachen() as $lang) {
                 foreach (Helper::getLanguageVariables($kPlugin) as $langVar) {
                     $kPluginSprachvariable = $langVar->kPluginSprachvariable;
                     $cSprachvariable       = $langVar->cName;
@@ -368,13 +364,10 @@ if ($step === 'pluginverwaltung_uebersicht') {
         $smarty->assign('szLicenses', json_encode($vLicenseFiles));
     }
 } elseif ($step === 'pluginverwaltung_sprachvariablen') {
-    $kPlugin   = Request::verifyGPCDataInt('kPlugin');
-    $loader    = Helper::getLoaderByPluginID($kPlugin, $db);
-    $languages = $db->query(
-        'SELECT * FROM tsprache',
-        ReturnType::ARRAY_OF_OBJECTS
-    );
-    $smarty->assign('pluginLanguages', $languages)
+    $kPlugin = Request::verifyGPCDataInt('kPlugin');
+    $loader  = Helper::getLoaderByPluginID($kPlugin, $db);
+
+    $smarty->assign('pluginLanguages', Shop::Lang()->gibInstallierteSprachen())
            ->assign('plugin', $loader->init($kPlugin))
            ->assign('kPlugin', $kPlugin);
 }

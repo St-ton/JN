@@ -6,10 +6,10 @@
 
 namespace JTL\Filter;
 
+use JTL\Language\LanguageHelper;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Shopsetting;
-use JTL\Sprache;
 
 /**
  * Class Config
@@ -49,7 +49,7 @@ class Config implements ConfigInterface
     {
         $config = new self();
         $config->setLanguageID(Shop::getLanguageID());
-        $config->setLanguages(Sprache::getInstance()->getLangArray());
+        $config->setLanguages(LanguageHelper::getInstance()->getLangArray());
         $config->setConfig(Shopsetting::getInstance()->getAll());
         $config->setCustomerGroupID(Frontend::getCustomerGroup()->getID());
         $config->setBaseURL(Shop::getURL() . '/');

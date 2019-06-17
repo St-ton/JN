@@ -128,8 +128,8 @@
                             </span>
                             <span class="input-group-wrap">
                                 <select class="form-control" name="cISO" id="lang">
-                                    {foreach $sprachen as $sprache}
-                                        <option value="{$sprache->cISO}" {if $sprache->cShopStandard === 'Y'}selected="selected"{/if}>{$sprache->cNameDeutsch} {if $sprache->cShopStandard === 'Y'}({__('standard')}){/if}</option>
+                                    {foreach $sprachen as $language}
+                                        <option value="{$language->getIso()}" {if $language->getShopDefault() === 'Y'}selected="selected"{/if}>{$language->getLocalizedName()} {if $language->getShopDefault() === 'Y'}({__('standard')}){/if}</option>
                                     {/foreach}
                                 </select>
                             </span>
@@ -137,14 +137,14 @@
                     </div>
                 </div>
             </div>
-            {foreach $sprachen as $sprache}
-                {assign var=cISO value=$sprache->cISO}
-                {assign var=langID value=$sprache->kSprache}
-                <input type="hidden" name="lang_{$cISO}" value="{$sprache->kSprache}">
-                <div id="iso_{$cISO}" class="iso_wrapper{if $sprache->cShopStandard !== 'Y'} hidden-soft{/if}">
+            {foreach $sprachen as $language}
+                {assign var=cISO value=$language->getIso()}
+                {assign var=langID value=$language->getId()}
+                <input type="hidden" name="lang_{$cISO}" value="{$langID}">
+                <div id="iso_{$cISO}" class="iso_wrapper{if !$language->isShopDefault()} hidden-soft{/if}">
                     <div class="panel panel-default">
                         <div class="panel-heading">
-                            <h3 class="panel-title">{__('metaSeo')} ({$sprache->cNameDeutsch})</h3>
+                            <h3 class="panel-title">{__('metaSeo')} ({$language->getLocalizedName()})</h3>
                         </div>
                         <div class="table-responsive">
                             <div class="panel-body" id="formtable">

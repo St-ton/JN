@@ -6,8 +6,8 @@
 
 namespace JTL\Link;
 
+use JTL\Language\LanguageHelper;
 use JTL\MagicCompatibilityTrait;
-use JTL\Sprache;
 
 /**
  * Class AbstractLink
@@ -150,7 +150,7 @@ abstract class AbstractLink implements LinkInterface
     public function getNamesCompat(): array
     {
         $byCode    = [];
-        $languages = Sprache::getAllLanguages(1);
+        $languages = LanguageHelper::getAllLanguages(1);
         foreach ($this->getNames() as $langID => $name) {
             $byCode[$languages[$langID]->cISO] = $name;
         }

@@ -3,9 +3,6 @@
  * @license https://jtl-url.de/jtlshoplicense
  *}
 {block name='account-address-form'}
-    {block name='account-address-form-include-extension'}
-        {include file='snippets/extension.tpl'}
-    {/block}
     {block name='account-address-form-form-rechnungsdaten'}
         {form method="post" id='rechnungsdaten' action="{get_static_route params=['editRechnungsadresse' => 1]}" class="evo-validate"}
             <div id="panel-address-form">

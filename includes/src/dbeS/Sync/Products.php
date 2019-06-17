@@ -11,8 +11,8 @@ use JTL\DB\ReturnType;
 use JTL\dbeS\Starter;
 use JTL\Helpers\Product;
 use JTL\Helpers\Seo;
+use JTL\Language\LanguageHelper;
 use JTL\Shop;
-use JTL\Sprache;
 use stdClass;
 use function Functional\flatten;
 use function Functional\map;
@@ -307,9 +307,9 @@ final class Products extends AbstractSync
             'tartikelsprache',
             'mArtikelSprache'
         );
-        $allLanguages = Sprache::getAllLanguages(1);
+        $allLanguages = LanguageHelper::getAllLanguages(1);
         foreach ($localized as $item) {
-            if (!Sprache::isShopLanguage($item->kSprache, $allLanguages)) {
+            if (!LanguageHelper::isShopLanguage($item->kSprache, $allLanguages)) {
                 continue;
             }
             if (!$item->cSeo) {

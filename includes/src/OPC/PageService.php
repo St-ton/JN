@@ -234,11 +234,20 @@ class PageService
     /**
      * @param string $id
      * @return Page[]
+     * @throws \Exception
      */
     public function getDrafts(string $id): array
     {
         if ($this->opc->isOPCInstalled()) {
-            return $this->pageDB->getDrafts($id);
+            $drafts = $this->pageDB->getDrafts($id);
+            usort($drafts, function ($a, $b) {
+                /**
+                 * @var Page $a
+                 * @var Page $b
+                 */
+                return $a->getStatus() - $b->getStatus();
+            });
+            return $drafts;
         }
 
         return [];

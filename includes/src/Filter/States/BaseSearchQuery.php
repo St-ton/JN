@@ -13,10 +13,10 @@ use JTL\Filter\Join;
 use JTL\Filter\Option;
 use JTL\Filter\ProductFilter;
 use JTL\Filter\StateSQL;
+use JTL\Language\LanguageHelper;
 use JTL\MagicCompatibilityTrait;
 use JTL\Session\Frontend;
 use JTL\Shop;
-use JTL\Sprache;
 use function Functional\filter;
 
 /**
@@ -504,7 +504,7 @@ class BaseSearchQuery extends AbstractFilter
             return 0;
         }
 
-        if ($this->getLanguageID() > 0 && !Sprache::isDefaultLanguageActive()) {
+        if ($this->getLanguageID() > 0 && !LanguageHelper::isDefaultLanguageActive()) {
             $sql = 'SELECT ' . $kSuchCache . ', IF(tartikel.kVaterArtikel > 0, 
                         tartikel.kVaterArtikel, tartikel.kArtikel) AS kArtikelTMP, ';
         } else {
@@ -514,7 +514,7 @@ class BaseSearchQuery extends AbstractFilter
         // Shop2 Suche - mehr als 3 Suchwörter *
         if (\count($search) > 3) {
             $sql .= ' 1 ';
-            if ($this->getLanguageID() > 0 && !Sprache::isDefaultLanguageActive()) {
+            if ($this->getLanguageID() > 0 && !LanguageHelper::isDefaultLanguageActive()) {
                 $sql .= ' FROM tartikel
                                 LEFT JOIN tartikelsprache
                                     ON tartikelsprache.kArtikel = tartikel.kArtikel
@@ -812,7 +812,7 @@ class BaseSearchQuery extends AbstractFilter
                 $sql .= ')';
             }
 
-            if ($this->getLanguageID() > 0 && !Sprache::isDefaultLanguageActive()) {
+            if ($this->getLanguageID() > 0 && !LanguageHelper::isDefaultLanguageActive()) {
                 $sql .= ' FROM tartikel
                             LEFT JOIN tartikelsprache
                                 ON tartikelsprache.kArtikel = tartikel.kArtikel
@@ -924,7 +924,7 @@ class BaseSearchQuery extends AbstractFilter
                     FROM tartikel
                     WHERE $match " . $this->productFilter->getFilterSQL()->getStockFilterSQL() . ' ';
 
-            if (Shop::getLanguage() > 0 && !Sprache::isDefaultLanguageActive()) {
+            if (Shop::getLanguage() > 0 && !LanguageHelper::isDefaultLanguageActive()) {
                 $score = 'MATCH (' . \implode(', ', $langCols) . ")
                             AGAINST ('" . \implode(' ', $searchQueries) . "' IN NATURAL LANGUAGE MODE)";
                 if ($fullText === 'B') {
@@ -1077,7 +1077,7 @@ class BaseSearchQuery extends AbstractFilter
         $current = '';
         $prefix  = 'tartikel.';
         $conf    = $conf['artikeluebersicht'] ?? Shop::getSettings([\CONF_ARTIKELUEBERSICHT])['artikeluebersicht'];
-        if (!Sprache::isDefaultLanguageActive()) {
+        if (!LanguageHelper::isDefaultLanguageActive()) {
             $prefix = 'tartikelsprache.';
         }
         if ($conf['suche_prio_name'] > $max && !\in_array($prefix . 'cName', $exclude, true)) {

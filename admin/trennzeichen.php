@@ -4,13 +4,12 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Alert\Alert;
+use JTL\Catalog\Trennzeichen;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\PlausiTrennzeichen;
 use JTL\Shop;
-use JTL\Sprache;
-use JTL\Catalog\Trennzeichen;
-use JTL\Alert\Alert;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
@@ -52,6 +51,5 @@ if (Request::verifyGPCDataInt('save') === 1 && Form::validateToken()) {
 }
 
 $smarty->assign('step', $step)
-       ->assign('Sprachen', Sprache::getAllLanguages())
        ->assign('oTrennzeichenAssoc_arr', Trennzeichen::getAll($_SESSION['kSprache']))
        ->display('trennzeichen.tpl');

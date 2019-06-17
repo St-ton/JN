@@ -9,10 +9,10 @@ use JTL\Customer\Kunde;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\Text;
+use JTL\Language\LanguageHelper;
 use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
 use JTL\Shop;
-use JTL\Sprache;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
@@ -80,11 +80,10 @@ if (isset($_POST['kundenimport'], $_FILES['csv']['tmp_name'])
     }
 }
 
-$smarty->assign('sprachen', Sprache::getAllLanguages())
-       ->assign('kundengruppen', Shop::Container()->getDB()->query(
-           'SELECT * FROM tkundengruppe ORDER BY cName',
-           ReturnType::ARRAY_OF_OBJECTS
-       ))
+$smarty->assign('kundengruppen', Shop::Container()->getDB()->query(
+    'SELECT * FROM tkundengruppe ORDER BY cName',
+    ReturnType::ARRAY_OF_OBJECTS
+))
        ->assign('step', $step ?? null)
        ->display('kundenimport.tpl');
 

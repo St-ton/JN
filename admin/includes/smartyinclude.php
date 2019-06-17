@@ -6,13 +6,14 @@
 
 use JTL\Backend\AdminTemplate;
 use JTL\Backend\Notification;
+use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
-use JTL\Shop;
-use JTL\DB\ReturnType;
-use JTL\Smarty\JTLSmarty;
-use JTL\Smarty\ContextType;
+use JTL\Language\LanguageHelper;
 use JTL\Plugin\State;
+use JTL\Shop;
+use JTL\Smarty\ContextType;
+use JTL\Smarty\JTLSmarty;
 
 require_once __DIR__ . '/admin_menu.php';
 
@@ -157,7 +158,6 @@ if (empty($template->version)) {
 }
 
 $langTag = $_SESSION['AdminAccount']->language ?? Shop::Container()->getGetText()->getDefaultLanguage();
-
 $smarty->assign('URL_SHOP', $shopURL)
        ->assign('jtl_token', Form::getTokenInput())
        ->assign('shopURL', $shopURL)
@@ -180,6 +180,7 @@ $smarty->assign('URL_SHOP', $shopURL)
        ->assign('alertList', Shop::Container()->getAlertService())
        ->assign('favorites', $oAccount->favorites())
        ->assign('language', $langTag)
+       ->assign('sprachen', LanguageHelper::getAllLanguages())
        ->assign('languageName', Locale::getDisplayLanguage($langTag, $langTag))
        ->assign('languages', Shop::Container()->getGetText()->getAdminLanguages($langTag))
        ->assign('faviconAdminURL', Shop::getFaviconURL(true));

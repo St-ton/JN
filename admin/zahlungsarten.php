@@ -4,18 +4,18 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use JTL\Helpers\Form;
-use JTL\Helpers\Request;
-use JTL\Helpers\PaymentMethod;
-use JTL\Shop;
-use JTL\Sprache;
-use JTL\Helpers\Text;
+use JTL\Alert\Alert;
 use JTL\Checkout\ZahlungsLog;
+use JTL\DB\ReturnType;
+use JTL\Helpers\Form;
+use JTL\Helpers\PaymentMethod;
+use JTL\Helpers\Request;
+use JTL\Helpers\Text;
+use JTL\Language\LanguageHelper;
 use JTL\Pagination\Filter;
 use JTL\Pagination\Pagination;
-use JTL\DB\ReturnType;
 use JTL\Plugin\Helper;
-use JTL\Alert\Alert;
+use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
@@ -175,25 +175,25 @@ if (isset($_POST['einstellungen_bearbeiten'], $_POST['kZahlungsart'])
         }
     }
 
-    $sprachen = Sprache::getAllLanguages();
     if (!isset($zahlungsartSprache)) {
         $zahlungsartSprache = new stdClass();
     }
     $zahlungsartSprache->kZahlungsart = (int)$_POST['kZahlungsart'];
-    foreach ($sprachen as $sprache) {
-        $zahlungsartSprache->cISOSprache = $sprache->cISO;
+    foreach (LanguageHelper::getAllLanguages() as $lang) {
+        $langCode                        = $lang->getCode();
+        $zahlungsartSprache->cISOSprache = $langCode;
         $zahlungsartSprache->cName       = $zahlungsart->cName;
-        if ($_POST['cName_' . $sprache->cISO]) {
-            $zahlungsartSprache->cName = $_POST['cName_' . $sprache->cISO];
+        if ($_POST['cName_' . $langCode]) {
+            $zahlungsartSprache->cName = $_POST['cName_' . $langCode];
         }
-        $zahlungsartSprache->cGebuehrname     = $_POST['cGebuehrname_' . $sprache->cISO];
-        $zahlungsartSprache->cHinweisText     = $_POST['cHinweisText_' . $sprache->cISO];
-        $zahlungsartSprache->cHinweisTextShop = $_POST['cHinweisTextShop_' . $sprache->cISO];
+        $zahlungsartSprache->cGebuehrname     = $_POST['cGebuehrname_' . $langCode];
+        $zahlungsartSprache->cHinweisText     = $_POST['cHinweisText_' . $langCode];
+        $zahlungsartSprache->cHinweisTextShop = $_POST['cHinweisTextShop_' . $langCode];
 
         $db->delete(
             'tzahlungsartsprache',
             ['kZahlungsart', 'cISOSprache'],
-            [(int)$_POST['kZahlungsart'], $sprache->cISO]
+            [(int)$_POST['kZahlungsart'], $langCode]
         );
         $db->insert('tzahlungsartsprache', $zahlungsartSprache);
     }
@@ -290,7 +290,6 @@ if ($step === 'einstellen') {
                ->assign('zahlungsart', $zahlungsart)
                ->assign('kundengruppen', $kundengruppen)
                ->assign('gesetzteKundengruppen', getGesetzteKundengruppen($zahlungsart))
-               ->assign('sprachen', Sprache::getAllLanguages())
                ->assign('Zahlungsartname', getNames($zahlungsart->kZahlungsart))
                ->assign('Gebuehrname', getshippingTimeNames($zahlungsart->kZahlungsart))
                ->assign('cHinweisTexte_arr', getHinweisTexte($zahlungsart->kZahlungsart))

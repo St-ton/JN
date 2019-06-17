@@ -127,7 +127,7 @@
                                         <table class="table table-sm table-hover">
                                             <thead>
                                                 <tr>
-                                                    <th class="text-right">{lang key='fromDifferential' section='productOverview'}{if $Artikel->cEinheit} {$Artikel->cEinheit}{/if}</th>
+                                                    <th class="text-left">{lang key='fromDifferential' section='productOverview'}{if $Artikel->cEinheit} {$Artikel->cEinheit}{/if}</th>
                                                     <th class="text-right">{lang key='pricePerUnit' section='productDetails'}</th>
                                                     {if !empty($Artikel->cLocalizedVPE)}<th></th>{/if}
                                                 </tr>
@@ -136,9 +136,9 @@
                                                 {foreach $Artikel->staffelPreis_arr as $bulkPrice}
                                                     {if $bulkPrice.nAnzahl > 0}
                                                         <tr class="bulk-price-{$bulkPrice.nAnzahl}">
-                                                            <td class="text-right">{$bulkPrice.nAnzahl}</td>
+                                                            <td class="text-left">{$bulkPrice.nAnzahl}</td>
                                                             <td class="text-right bulk-price">{$bulkPrice.cPreisLocalized[$NettoPreise]} <span class="footnote-reference">*</span></td>
-                                                            {if !empty($bulkPrice.cBasePriceLocalized)}<td class="text-muted bulk-base-price">{$bulkPrice.cBasePriceLocalized[$NettoPreise]}</td>{/if}
+                                                            {if !empty($bulkPrice.cBasePriceLocalized)}<td class="bulk-base-price">, {$bulkPrice.cBasePriceLocalized[$NettoPreise]}</td>{/if}
                                                         </tr>
                                                     {/if}
                                                 {/foreach}

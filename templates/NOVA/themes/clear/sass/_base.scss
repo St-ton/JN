@@ -486,6 +486,7 @@ ul.partlist-items {
       position: relative;
       text-overflow: ellipsis;
       white-space: nowrap;
+      transition: all 0.5s ease-in-out;
 
       img {
         max-width: 45px;
@@ -984,9 +985,6 @@ ul.partlist-items {
   .product-body {
     padding: 15px 0 20px;
     border-bottom: 1px solid $sand;
-  }
-  .price_wrapper {
-    color: $primary;
   }
   .product-actions {
     position: absolute;
@@ -1494,7 +1492,7 @@ $jqcloud-classes: 7;
 //productdetails
 #product-offer .product-info {
   border: 0;
-  .delivery-status {
+  .bordered-top-bottom {
     padding: ($grid-gutter-width / 2);
     border-top: 1px solid $gray-lighter;
     border-bottom: 1px solid $gray-lighter;

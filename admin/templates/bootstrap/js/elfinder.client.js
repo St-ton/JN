@@ -32,7 +32,7 @@
     require.config({
         baseUrl: '..',
         paths: {
-            'jquery':    'admin/templates/bootstrap/js/jquery-2.2.4.min',
+            'jquery':    'admin/templates/bootstrap/js/jquery-3.3.1.min',
             'jquery-ui': 'admin/templates/bootstrap/js/jquery-ui.min',
             'elfinder':  'includes/vendor/studio-42/elfinder/js/elfinder.full',
         },

@@ -44,6 +44,7 @@
 
             {include file='snippets/opc_mount_point.tpl' id='opc_before_news'}
 
+            {container}
             {block name='page-index-subheading-news'}
                 <div class="h2">{lang key='news' section='news'}</div>
             {/block}
@@ -58,6 +59,7 @@
                     {/foreach}
                 {/row}
             {/block}
+            {/container}
         {/if}
     {/block}
 {/block}

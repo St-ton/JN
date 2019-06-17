@@ -16,6 +16,7 @@ use JTL\Shop;
 use JTL\Shopsetting;
 use JTL\Session\Frontend;
 use JTL\Extensions\AuswahlAssistent;
+use JTL\Alert\Alert;
 
 if (!defined('PFAD_ROOT')) {
     http_response_code(400);
@@ -53,6 +54,14 @@ if ($NaviFilter->hasCategory()) {
 $NaviFilter->setUserSort($AktuelleKategorie);
 $oSuchergebnisse = $NaviFilter->generateSearchResults($AktuelleKategorie);
 $pages           = $oSuchergebnisse->getPages();
+if ($oSuchergebnisse->getProductCount() === 0) {
+    Shop::Container()->getAlertService()->addAlert(
+        Alert::TYPE_NOTE,
+        Shop::Lang()->get('noFilterResults'),
+        'noFilterResults',
+        ['showInAlertListTemplate' => false]
+    );
+}
 if ($conf['navigationsfilter']['allgemein_weiterleitung'] === 'Y' && $oSuchergebnisse->getVisibleProductCount() === 1) {
     $hasSubCategories = ($categoryID = $NaviFilter->getCategory()->getValue()) > 0
         ? (new Kategorie(
@@ -82,7 +91,7 @@ if ($pages->getCurrentPage() > 0
     header('Location: ' . $NaviFilter->getFilterURL()->getURL());
     exit;
 }
-Redirect::doMainwordRedirect($NaviFilter, $oSuchergebnisse->getVisibleProductCount(), true);
+//Redirect::doMainwordRedirect($NaviFilter, $oSuchergebnisse->getVisibleProductCount(), true);
 if ($conf['artikeluebersicht']['artikelubersicht_bestseller_gruppieren'] === 'Y') {
     $productsIDs = $oSuchergebnisse->getProducts()->map(function ($article) {
         return (int)$article->kArtikel;
@@ -157,7 +166,14 @@ AuswahlAssistent::startIfRequired(
 );
 $pagination = new JTL\Filter\Pagination\Pagination($NaviFilter, new JTL\Filter\Pagination\ItemFactory());
 $pagination->create($pages);
+
+$priceRanges = $NaviFilter->getPriceRangeFilter()->getOptions();
+if (($priceRangesCount = count($priceRanges)) > 0) {
+    $priceRangeMax = end($priceRanges)->getData('nBis');
+}
+
 $smarty->assign('NaviFilter', $NaviFilter)
+       ->assign('priceRangeMax', $priceRangeMax ?? 0)
        ->assign('KategorieInhalt', $categoryContent)
        ->assign('oErweiterteDarstellung', $NaviFilter->getMetaData()->getExtendedView($params['nDarstellung']))
        ->assign('oBestseller_arr', $bestsellers)

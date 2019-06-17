@@ -12,7 +12,7 @@
                 {/block}
             {elseif $Artikel->Preise->fVKNetto == 0 && $Artikel->bHasKonfig}
                 {block name='productdetails-price-as-configured'}
-                    <span class="price_label price_as_configured">{lang key='priceAsConfigured' section='productDetails'}</span> <strong class="price"></strong>
+                    <span class="price_label price_as_configured">{lang key='priceAsConfigured' section='productDetails'}</span> <span class="price"></span>
                 {/block}
             {elseif $Artikel->Preise->fVKNetto == 0 && $Einstellungen.global.global_preis0 === 'N'}
                 {block name='productdetails-price-on-application'}
@@ -27,7 +27,7 @@
                         <span class="price_label nowonly">{lang key='nowOnly'} </span>
                     {/if}
                 {/block}
-                <strong class="price text-nowrap{if isset($Artikel->Preise->Sonderpreis_aktiv) && $Artikel->Preise->Sonderpreis_aktiv} special-price{/if}">
+                <span class="price text-nowrap{if isset($Artikel->Preise->Sonderpreis_aktiv) && $Artikel->Preise->Sonderpreis_aktiv} special-price{/if}">
                     {block name='productdetails-range'}
                         <span{if $Artikel->Preise->oPriceRange->isRange()} itemprop="priceSpecification" itemscope itemtype="http://schema.org/UnitPriceSpecification"{/if}>
                         {if $tplscope !== 'detail' && $Artikel->Preise->oPriceRange->isRange()}
@@ -54,7 +54,7 @@
                             <meta itemprop="validThrough" content="{$Artikel->dSonderpreisEnde_en}">
                         {/if}
                     {/block}
-                </strong>
+                </span>
                 {if $tplscope === 'detail'}
                     {block name='productdetails-price-detail'}
                         <div class="price-note mb-3">

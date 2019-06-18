@@ -101,6 +101,7 @@ if ($step === 'plugin_uebersicht' && $pluginID > 0) {
         $plugin = $loader->init($pluginID, $invalidateCache);
     }
     if ($plugin !== null) {
+        $oPlugin = $plugin;
         if (ADMIN_MIGRATION && $plugin instanceof Plugin) {
             Shop::Container()->getGetText()->loadAdminLocale('pages/dbupdater');
             $manager    = new MigrationManager(

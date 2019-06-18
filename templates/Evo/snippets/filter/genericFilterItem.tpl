@@ -32,7 +32,18 @@
                     {if $filter->getNiceName() === 'Rating'}
                         {include file='productdetails/rating.tpl' stars=$filterOption->getValue()}
                     {/if}
-                    <span class="word-break">{$filterOption->getName()}</span>
+                    <span class="word-break">
+                        {if $filter->getNiceName() === 'Manufacturer'}
+                            {if $Einstellungen.navigationsfilter.hersteller_anzeigen_als !== 'T'}
+                                <img src="{$filterOption->getData('cBildpfadKlein')}" alt="" class="vmiddle filter-img" />
+                            {/if}
+                            {if $Einstellungen.navigationsfilter.hersteller_anzeigen_als !== 'B'}
+                                &nbsp;{$filterOption->getName()}
+                            {/if}
+                        {else}
+                            {$filterOption->getName()}
+                        {/if}
+                    </span>
                 </span>
             </a>
         </li>

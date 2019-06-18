@@ -1,12 +1,12 @@
 @charset "UTF-8";
+@import "../base/wow/animate.css";
+@import "../base/slider/slider.css";
 /*!
  * Bootstrap v4.3.1 (https://getbootstrap.com/)
  * Copyright 2011-2019 The Bootstrap Authors
  * Copyright 2011-2019 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  */
-@import "../base/wow/animate.css";
-@import "../base/slider/slider.css";
 :root {
   --blue: #007bff;
   --indigo: #6610f2;
@@ -13870,13 +13870,13 @@ aside .badge-light {
   border: 1px solid #9b9b9b;
 }
 
-.box-filter-characteristics .filter-img {
+.box-filter-characteristics .filter-img, .box-filter-manufacturer .filter-img {
   width: auto;
   height: 28px;
-  margin: 0 1rem 1rem 0;
+  margin: 0.2rem;
   border: 3px solid transparent;
 }
-.box-filter-characteristics .active .filter-img {
+.box-filter-characteristics .active .filter-img, .box-filter-manufacturer .active .filter-img {
   border: 3px solid #F8BF00;
   border-radius: 0.125rem;
 }

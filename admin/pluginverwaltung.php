@@ -112,19 +112,18 @@ if ($pluginUploaded === true) {
 
 if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::validateToken()) {
     // Eine Aktion wurde von der Uebersicht aus gestartet
-    $kPlugin_arr = $_POST['kPlugin'] ?? [];
+    $pluginIDs = array_map('\intval', $_POST['kPlugin'] ?? []);
     // Lizenzkey eingeben
     if (isset($_POST['lizenzkey']) && (int)$_POST['lizenzkey'] > 0) {
         $kPlugin = (int)$_POST['lizenzkey'];
         $step    = 'pluginverwaltung_lizenzkey';
-        $oPlugin = $db->select('tplugin', 'kPlugin', $kPlugin);
+        $loader  = Helper::getLoaderByPluginID($kPlugin, $db, $cache);
+        $oPlugin = $loader->init($kPlugin, true);
         $smarty->assign('oPlugin', $oPlugin)
                ->assign('kPlugin', $kPlugin);
         $cache->flushTags([CACHING_GROUP_CORE, CACHING_GROUP_LANGUAGE, CACHING_GROUP_PLUGIN]);
-    } elseif (isset($_POST['lizenzkeyadd'])
-        && (int)$_POST['lizenzkeyadd'] === 1
-        && (int)$_POST['kPlugin'] > 0
-    ) { // Lizenzkey eingeben
+    } elseif (isset($_POST['lizenzkeyadd']) && (int)$_POST['lizenzkeyadd'] === 1 && (int)$_POST['kPlugin'] > 0) {
+        // Lizenzkey eingeben
         $step    = 'pluginverwaltung_lizenzkey';
         $kPlugin = (int)$_POST['kPlugin'];
         $data    = $db->select('tplugin', 'kPlugin', $kPlugin);
@@ -136,9 +135,9 @@ if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::vali
             $oPluginLicence = new $class();
             $cLicenceMethod = PLUGIN_LICENCE_METHODE;
             if ($oPluginLicence->$cLicenceMethod(Text::filterXSS($_POST['cKey']))) {
-                $oPlugin->setState(State::ACTIVATED);
+                Helper::updateStatusByID(State::ACTIVATED, $oPlugin->getID());
                 $oPlugin->getLicense()->setKey(Text::filterXSS($_POST['cKey']));
-                $oPlugin->updateInDB();
+                $db->update('tplugin', 'kPlugin', $oPlugin->getID(), (object)['cLizenz' => $_POST['cKey']]);
                 $notice = __('successPluginKeySave');
                 $step   = 'pluginverwaltung_uebersicht';
                 $reload = true;
@@ -153,9 +152,8 @@ if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::vali
         $cache->flushTags([CACHING_GROUP_CORE, CACHING_GROUP_LANGUAGE, CACHING_GROUP_PLUGIN]);
         $smarty->assign('kPlugin', $kPlugin)
                ->assign('oPlugin', $oPlugin);
-    } elseif (is_array($kPlugin_arr) && count($kPlugin_arr) > 0) {
-        foreach ($kPlugin_arr as $kPlugin) {
-            $kPlugin = (int)$kPlugin;
+    } elseif (is_array($pluginIDs) && count($pluginIDs) > 0) {
+        foreach ($pluginIDs as $kPlugin) {
             if (isset($_POST['aktivieren'])) {
                 $res = $stateChanger->activate($kPlugin);
                 switch ($res) {
@@ -220,13 +218,9 @@ if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::vali
                 }
             } elseif (isset($_POST['reload'])) { // Reload
                 $oPlugin = $db->select('tplugin', 'kPlugin', $kPlugin);
-
                 if (isset($oPlugin->kPlugin) && $oPlugin->kPlugin > 0) {
                     $res = $stateChanger->reload($oPlugin, true);
-
-                    if ($res === InstallCode::OK
-                        || $res === InstallCode::OK_BUT_NOT_SHOP4_COMPATIBLE
-                    ) {
+                    if ($res === InstallCode::OK || $res === InstallCode::OK_LEGACY) {
                         $notice = __('successPluginRefresh');
                         $reload = true;
                     } else {
@@ -238,11 +232,12 @@ if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::vali
             }
         }
         $cache->flushTags([CACHING_GROUP_CORE, CACHING_GROUP_LANGUAGE, CACHING_GROUP_PLUGIN, CACHING_GROUP_BOX]);
-    } elseif (Request::verifyGPCDataInt('updaten') === 1) { // Updaten
+    } elseif (Request::verifyGPCDataInt('updaten') === 1) {
+        // Updaten
         $kPlugin = Request::verifyGPCDataInt('kPlugin');
         $res     = $updater->update($kPlugin);
         if ($res === InstallCode::OK) {
-            $notice .= __('successPlguinUpdate');
+            $notice .= __('successPluginUpdate');
             $reload  = true;
             $cache->flushTags([CACHING_GROUP_CORE, CACHING_GROUP_LANGUAGE, CACHING_GROUP_PLUGIN]);
         } else {
@@ -256,11 +251,10 @@ if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::vali
             foreach ($dirs as $dir) {
                 $installer->setDir(basename($dir));
                 $res = $installer->prepare();
-                if ($res === InstallCode::OK || $res === InstallCode::OK_BUT_NOT_SHOP4_COMPATIBLE) {
+                if ($res === InstallCode::OK || $res === InstallCode::OK_LEGACY) {
                     $notice = __('successPluginInstall');
                     $reload = true;
-                } elseif ($res > InstallCode::OK
-                    && $res !== InstallCode::OK_BUT_NOT_SHOP4_COMPATIBLE) {
+                } elseif ($res > InstallCode::OK && $res !== InstallCode::OK_LEGACY) {
                     $errorMsg = __('errorPluginInstall') . $res;
                 }
             }
@@ -297,21 +291,17 @@ if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::vali
                 $errorMsg = __('errorLangVarNotFound');
             }
         } else { // Editieren
-            $languages = $db->query(
-                'SELECT * FROM tsprache',
-                ReturnType::ARRAY_OF_OBJECTS
-            );
-            $original  = $db->query(
+            $original = $db->query(
                 'SELECT * FROM tpluginsprachvariable
                     JOIN tpluginsprachvariablesprache
                     ON tpluginsprachvariable.kPluginSprachvariable = tpluginsprachvariablesprache.kPluginSprachvariable
                     WHERE tpluginsprachvariable.kPlugin = ' . $kPlugin,
                 ReturnType::ARRAY_OF_OBJECTS
             );
-            $original  = group($original, function ($e) {
+            $original = group($original, function ($e) {
                 return (int)$e->kPluginSprachvariable;
             });
-            foreach ($languages as $lang) {
+            foreach (Shop::Lang()->gibInstallierteSprachen() as $lang) {
                 foreach (Helper::getLanguageVariables($kPlugin) as $langVar) {
                     $kPluginSprachvariable = $langVar->kPluginSprachvariable;
                     $cSprachvariable       = $langVar->cName;
@@ -374,13 +364,10 @@ if ($step === 'pluginverwaltung_uebersicht') {
         $smarty->assign('szLicenses', json_encode($vLicenseFiles));
     }
 } elseif ($step === 'pluginverwaltung_sprachvariablen') {
-    $kPlugin   = Request::verifyGPCDataInt('kPlugin');
-    $loader    = Helper::getLoaderByPluginID($kPlugin, $db);
-    $languages = $db->query(
-        'SELECT * FROM tsprache',
-        ReturnType::ARRAY_OF_OBJECTS
-    );
-    $smarty->assign('pluginLanguages', $languages)
+    $kPlugin = Request::verifyGPCDataInt('kPlugin');
+    $loader  = Helper::getLoaderByPluginID($kPlugin, $db);
+
+    $smarty->assign('pluginLanguages', Shop::Lang()->gibInstallierteSprachen())
            ->assign('plugin', $loader->init($kPlugin))
            ->assign('kPlugin', $kPlugin);
 }

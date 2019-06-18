@@ -127,7 +127,7 @@ class_alias(\JTL\Exportformat::class, 'Exportformat', true);
 class_alias(\JTL\XML::class, 'XML', true);
 class_alias(\JTL\Shop::class, 'Shop', true);
 class_alias(\JTL\Path::class, 'Path', true);
-class_alias(\JTL\Sprache::class, 'Sprache', true);
+class_alias(\JTL\Language\LanguageHelper::class, 'Sprache', true);
 class_alias(\JTL\Backend\TwoFA::class, 'TwoFA', true);
 class_alias(\JTL\Backend\DirManager::class, 'DirManager', true);
 class_alias(\JTL\Backend\AdminFavorite::class, 'AdminFavorite', true);
@@ -172,7 +172,7 @@ class_alias(\JTL\Cart\WarenkorbPersPosEigenschaft::class, 'WarenkorbPersPosEigen
 class_alias(\JTL\Cart\WarenkorbPers::class, 'WarenkorbPers', true);
 class_alias(\JTL\DB\NiceDB::class, 'NiceDB', true);
 class_alias(\JTL\DB\DbInterface::class, 'DbInterface', true);
-class_alias(\JTL\CustomerFields::class, 'CustomerFields', true);
+class_alias(\JTL\Backend\CustomerFields::class, 'CustomerFields', true);
 class_alias(\JTL\Boxes\LegacyBoxes::class, 'Boxen', true);
 class_alias(\JTL\Linechart::class, 'Linechart', true);
 class_alias(\JTL\Cron\JobQueue::class, 'JobQueue', true);

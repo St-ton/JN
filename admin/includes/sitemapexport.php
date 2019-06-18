@@ -4,22 +4,22 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Catalog\Category\KategorieListe;
+use JTL\Catalog\Product\Artikel;
+use JTL\Customer\Kundengruppe;
+use JTL\DB\ReturnType;
+use JTL\Filter\Config;
+use JTL\Filter\ProductFilter;
 use JTL\Helpers\Request;
 use JTL\Helpers\Tax;
+use JTL\Helpers\Text;
 use JTL\Helpers\URL;
-use JTL\Catalog\Product\Artikel;
+use JTL\Language\LanguageHelper;
 use JTL\Media\Image;
-use JTL\Catalog\Category\KategorieListe;
-use JTL\Customer\Kundengruppe;
+use JTL\Media\MediaImage;
+use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Shopsetting;
-use JTL\Sprache;
-use JTL\Helpers\Text;
-use JTL\Media\MediaImage;
-use JTL\DB\ReturnType;
-use JTL\Session\Frontend;
-use JTL\Filter\ProductFilter;
-use JTL\Filter\Config;
 
 /**
  * @param string $nDatei
@@ -218,9 +218,9 @@ function generateSitemapXML()
     //  YYYY-MM-DD (eg 1997-07-16)
     //  YYYY-MM-DDThh:mmTZD (eg 1997-07-16T19:20+01:00)
     $defaultCustomerGroupID  = Kundengruppe::getDefaultGroupID();
-    $Sprachen                = Sprache::getAllLanguages();
+    $Sprachen                = LanguageHelper::getAllLanguages();
     $oSpracheAssoc_arr       = gibAlleSprachenAssoc($Sprachen);
-    $defaultLang             = Sprache::getDefaultLanguage(true);
+    $defaultLang             = LanguageHelper::getDefaultLanguage(true);
     $defaultLangID           = (int)$defaultLang->kSprache;
     $_SESSION['kSprache']    = $defaultLangID;
     $_SESSION['cISOSprache'] = $defaultLang->cISO;
@@ -809,109 +809,6 @@ function generateSitemapXML()
                         ++$nSitemap;
                         ++$nAnzahlURL_arr[$nDatei];
                         ++$nStat_arr['livesuchesprache'];
-                    }
-                }
-            }
-        }
-    }
-    if ($conf['sitemap']['sitemap_globalemerkmale_anzeigen'] === 'Y') {
-        // Merkmale STD Sprache
-        $res = $db->query(
-            "SELECT tmerkmal.cName, tmerkmal.kMerkmal, tmerkmalwertsprache.cWert, 
-                tseo.cSeo, tmerkmalwert.kMerkmalWert
-                FROM tmerkmal
-                JOIN tmerkmalwert 
-                    ON tmerkmalwert.kMerkmal = tmerkmal.kMerkmal
-                JOIN tmerkmalwertsprache 
-                    ON tmerkmalwertsprache.kMerkmalWert = tmerkmalwert.kMerkmalWert
-                JOIN tartikelmerkmal 
-                    ON tartikelmerkmal.kMerkmalWert = tmerkmalwert.kMerkmalWert
-                JOIN tseo 
-                    ON tseo.cKey = 'kMerkmalWert'
-                    AND tseo.kKey = tmerkmalwert.kMerkmalWert
-                WHERE tmerkmal.nGlobal = 1
-                GROUP BY tmerkmalwert.kMerkmalWert
-                ORDER BY tmerkmal.kMerkmal, tmerkmal.cName",
-            ReturnType::QUERYSINGLE
-        );
-        while (($oMerkmalWert = $res->fetch(PDO::FETCH_OBJ)) !== false) {
-            $cURL_arr = baueExportURL(
-                $oMerkmalWert->kMerkmalWert,
-                'kMerkmalWert',
-                null,
-                $Sprachen,
-                $defaultLangID,
-                $nArtikelProSeite,
-                $conf
-            );
-            foreach ($cURL_arr as $cURL) {
-                if ($nSitemap > $nSitemapLimit) {
-                    $nSitemap = 1;
-                    baueSitemap($nDatei, $sitemap_data);
-                    ++$nDatei;
-                    $nAnzahlURL_arr[$nDatei] = 0;
-                    $sitemap_data            = '';
-                }
-                if (!isSitemapBlocked($cURL)) {
-                    $sitemap_data .= $cURL;
-                    ++$nSitemap;
-                    ++$nAnzahlURL_arr[$nDatei];
-                    ++$nStat_arr['merkmal'];
-                }
-            }
-        }
-        // Merkmale sonstige Sprachen
-        foreach ($Sprachen as $SpracheTMP) {
-            if ($SpracheTMP->kSprache === $defaultLangID) {
-                continue;
-            }
-            $res = $db->queryPrepared(
-                "SELECT tmerkmalsprache.cName, tmerkmalsprache.kMerkmal, tmerkmalwertsprache.cWert, 
-                    tseo.cSeo, tmerkmalwert.kMerkmalWert
-                    FROM tmerkmalsprache
-                    JOIN tmerkmal 
-                        ON tmerkmal.kMerkmal = tmerkmalsprache.kMerkmal
-                    JOIN tmerkmalwert 
-                        ON tmerkmalwert.kMerkmal = tmerkmalsprache.kMerkmal
-                    JOIN tmerkmalwertsprache 
-                        ON tmerkmalwertsprache.kMerkmalWert = tmerkmalwert.kMerkmalWert
-                        AND tmerkmalwertsprache.kSprache = tmerkmalsprache.kSprache
-                    JOIN tartikelmerkmal 
-                        ON tartikelmerkmal.kMerkmalWert = tmerkmalwert.kMerkmalWert
-                    JOIN tseo 
-                        ON tseo.cKey = 'kMerkmalWert'
-                        AND tseo.kKey = tmerkmalwert.kMerkmalWert
-                        AND tseo.kSprache = tmerkmalsprache.kSprache
-                    WHERE tmerkmal.nGlobal = 1
-                        AND tmerkmalsprache.kSprache = :langID
-                    GROUP BY tmerkmalwert.kMerkmalWert
-                    ORDER BY tmerkmal.kMerkmal, tmerkmal.cName",
-                ['langID' => $SpracheTMP->kSprache],
-                ReturnType::QUERYSINGLE
-            );
-            while (($oMerkmalWert = $res->fetch(PDO::FETCH_OBJ)) !== false) {
-                $cURL_arr = baueExportURL(
-                    $oMerkmalWert->kMerkmalWert,
-                    'kMerkmalWert',
-                    null,
-                    $Sprachen,
-                    $SpracheTMP->kSprache,
-                    $nArtikelProSeite,
-                    $conf
-                );
-                foreach ($cURL_arr as $cURL) {
-                    if ($nSitemap > $nSitemapLimit) {
-                        $nSitemap = 1;
-                        baueSitemap($nDatei, $sitemap_data);
-                        ++$nDatei;
-                        $nAnzahlURL_arr[$nDatei] = 0;
-                        $sitemap_data            = '';
-                    }
-                    if (!isSitemapBlocked($cURL)) {
-                        $sitemap_data .= $cURL;
-                        ++$nSitemap;
-                        ++$nAnzahlURL_arr[$nDatei];
-                        ++$nStat_arr['merkmalsprache'];
                     }
                 }
             }

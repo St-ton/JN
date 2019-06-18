@@ -1,5 +1,0 @@
-msgid "duplicateSpecialLinkTitle"
-msgstr "Special page created several times"
-
-msgid "duplicateSpecialLinkDesc"
-msgstr "At least one special page was created more than once for the same customer group(s)."

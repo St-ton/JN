@@ -2,15 +2,16 @@
  * @copyright (c) JTL-Software-GmbH
  * @license https://jtl-url.de/jtlshoplicense
  *}
+{include file='snippets/opc_mount_point.tpl' id='opc_before_heading'}
+
 {if !empty($oUmfrage->getName())}
     <h1>{$oUmfrage->getName()}</h1>
 {else}
     <h1>{lang key='umfrage' section='umfrage'}</h1>
 {/if}
 
-{include file='snippets/opc_mount_point.tpl' id='opc_poll_content_prepend'}
-
 {if $oUmfrage->getQuestionCount() > 0}
+    {include file='snippets/opc_mount_point.tpl' id='opc_before_questions'}
     <form method="post" action="{if empty($oUmfrage->getURL())}{get_static_route id='umfrage.php'}{else}{$ShopURL}/{$oUmfrage->getURL()}{/if}" class="evo-validate">
         {$jtl_token}
         <input name="u" type="hidden" value="{$oUmfrage->getID()}" />
@@ -174,7 +175,7 @@
                         </div>{* /panel-body *}
                     </div>{* /panel *}
                 </div>{* /well *}
-            {/foreach}
+        {/foreach}
         <div class="row">
             <div class="col-xs-4">
                 {if $nAktuelleSeite <= $nAnzahlSeiten && $nAktuelleSeite != 1}
@@ -196,6 +197,7 @@
         </div>
         <input name="s" type="hidden" value="{$nAktuelleSeite}" />
         {if $nAktuelleSeite == $nAnzahlSeiten}
+            {include file='snippets/opc_mount_point.tpl' id='opc_before_submit'}
             <input name="end" type="submit" value="{lang key='umfrageSubmit' section='umfrage'}" class="btn btn-primary submit top17" />
         {/if}
     </form>

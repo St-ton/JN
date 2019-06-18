@@ -28,11 +28,8 @@
         {/block}
     {/if}
 
-    {block name='account-login-include-extension'}
-        {include file='snippets/extension.tpl'}
-    {/block}
-
     {block name='account-login-form'}
+        {include file='snippets/opc_mount_point.tpl' id='opc_before_login'}
         {row}
             {col sm=8 offset-sm=2}
                 {card}

@@ -25,16 +25,16 @@ final class Product extends AbstractItem
             return;
         }
         if (($number = MediaImage::getPrimaryNumber(Image::TYPE_PRODUCT, $this->data->kArtikel)) !== null) {
-            $cGoogleImage = MediaImage::getThumb(
+            $googleImage = MediaImage::getThumb(
                 Image::TYPE_PRODUCT,
                 $this->data->kArtikel,
                 $this->data,
                 Image::SIZE_LG,
                 $number
             );
-            if (\mb_strlen($cGoogleImage) > 0) {
-                $cGoogleImage = $this->baseImageURL . $cGoogleImage;
-                $this->setImage($cGoogleImage);
+            if (\mb_strlen($googleImage) > 0) {
+                $googleImage = $this->baseImageURL . $googleImage;
+                $this->setImage($googleImage);
             }
         }
     }

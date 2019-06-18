@@ -46,14 +46,14 @@ if (isset($_POST['formFilter']) && $_POST['formFilter'] > 0 && Form::validateTok
 
     $dateRanges = explode(' - ', $_POST['daterange']);
     $endDate    = (DateTime::createFromFormat('Y-m-j', $dateRanges[1])
-        && (DateTime::createFromFormat('Y-m-j', $dateRanges[1]) > $startDate)
+        && (DateTime::createFromFormat('Y-m-j', $dateRanges[1]) >= DateTime::createFromFormat('Y-m-j', $dateRanges[0]))
         && (DateTime::createFromFormat('Y-m-j', $dateRanges[1]) < DateTime::createFromFormat('Y-m-j', date('Y-m-j'))))
         ? DateTime::createFromFormat('Y-m-j', $dateRanges[1])
         : DateTime::createFromFormat('Y-m-j', date('Y-m-j'));
 
     if (DateTime::createFromFormat('Y-m-j', $dateRanges[0])
-        && (DateTime::createFromFormat('Y-m-j', $dateRanges[0]) < $endDate)
-        && (DateTime::createFromFormat('Y-m-j', $dateRanges[0]) >= $startDate)) {
+        && (DateTime::createFromFormat('Y-m-j', $dateRanges[0]) <= $endDate)
+    ) {
         $startDate = DateTime::createFromFormat('Y-m-j', $dateRanges[0]);
     } else {
         $oneMonth  = clone $endDate;

@@ -4,16 +4,15 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Alert\Alert;
+use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Seo;
-use JTL\Nice;
-use JTL\Shop;
-use JTL\Sprache;
 use JTL\Helpers\Text;
+use JTL\Nice;
 use JTL\Pagination\Pagination;
-use JTL\DB\ReturnType;
-use JTL\Alert\Alert;
+use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'umfrage_inc.php';
@@ -31,7 +30,6 @@ setzeSprache();
 if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
     $smarty->assign('cTab', Request::verifyGPDataString('tab'));
 }
-$Sprachen    = Sprache::getAllLanguages();
 $oSpracheTMP = $db->select('tsprache', 'kSprache', (int)$_SESSION['kSprache']);
 $oNice       = Nice::getInstance();
 if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
@@ -585,7 +583,6 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
     $smarty->assign('noModule', true);
 }
 
-$smarty->assign('Sprachen', $Sprachen)
-       ->assign('kSprache', $_SESSION['kSprache'])
+$smarty->assign('kSprache', $_SESSION['kSprache'])
        ->assign('step', $step)
        ->display('umfrage.tpl');

@@ -98,12 +98,12 @@
                             </span>
                             <input class="form-control" type="text" id="cName" name="cName" value="{if isset($Versandart->cName)}{$Versandart->cName}{/if}" />
                         </li>
-                        {foreach $sprachen as $sprache}
-                            {assign var=cISO value=$sprache->cISO}
+                        {foreach $sprachen as $language}
+                            {assign var=cISO value=$language->getIso()}
                             {if isset($oVersandartSpracheAssoc_arr[$cISO])}
                                 <li class="input-group">
                                     <span class="input-group-addon">
-                                        <label for="cName_{$cISO}">{__('showedName')} ({$sprache->cNameDeutsch})</label>
+                                        <label for="cName_{$cISO}">{__('showedName')} ({$language->getLocalizedName()})</label>
                                     </span>
                                     <input class="form-control" type="text" id="cName_{$cISO}" name="cName_{$cISO}" value="{if isset($oVersandartSpracheAssoc_arr[$cISO]->cName)}{$oVersandartSpracheAssoc_arr[$cISO]->cName}{/if}" />
                                 </li>
@@ -116,12 +116,12 @@
                             <input class="form-control" type="text" id="cBild" name="cBild" value="{if isset($Versandart->cBild)}{$Versandart->cBild}{/if}" />
                             <span class="input-group-addon">{getHelpDesc cDesc=__('pictureDesc')}</span>
                         </li>
-                        {foreach $sprachen as $sprache}
-                            {assign var=cISO value=$sprache->cISO}
+                        {foreach $sprachen as $language}
+                            {assign var=cISO value=$language->getIso()}
                             {if isset($oVersandartSpracheAssoc_arr[$cISO])}
                                 <li class="input-group">
                                     <span class="input-group-addon">
-                                        <label for="cLieferdauer_{$cISO}">{__('shippingTime')} ({$sprache->cNameDeutsch})</label>
+                                        <label for="cLieferdauer_{$cISO}">{__('shippingTime')} ({$language->getLocalizedName()})</label>
                                     </span>
                                     <input class="form-control" type="text" id="cLieferdauer_{$cISO}" name="cLieferdauer_{$cISO}" value="{if isset($oVersandartSpracheAssoc_arr[$cISO]->cLieferdauer)}{$oVersandartSpracheAssoc_arr[$cISO]->cLieferdauer}{/if}" />
                                 </li>
@@ -220,7 +220,7 @@
                             </span>
                             <span class="input-group-wrap">
                                 <select name="kKundengruppe[]" id="kKundengruppe" multiple="multiple" class="combo form-control">
-                                    <option value="-1" {if $gesetzteKundengruppen.alle}selected{/if}>{__('all')}</option>
+                                    <option value="-1" {if $gesetzteKundengruppen.alle}selected{/if}>{__('allCustomerGroups')}</option>
                                     {foreach $kundengruppen as $oKundengruppe}
                                         {assign var=klasse value=$oKundengruppe->kKundengruppe}
                                         <option value="{$oKundengruppe->kKundengruppe}" {if isset($gesetzteKundengruppen.$klasse) && $gesetzteKundengruppen.$klasse}selected{/if}>{$oKundengruppe->cName}</option>
@@ -230,24 +230,24 @@
                             <span class="input-group-addon">{getHelpDesc cDesc=__('customerclassDesc')}</span>
                         </li>
 
-                        {foreach $sprachen as $sprache}
-                            {assign var=cISO value=$sprache->cISO}
+                        {foreach $sprachen as $language}
+                            {assign var=cISO value=$language->getIso()}
                             {if isset($oVersandartSpracheAssoc_arr[$cISO])}
                                 <li class="input-group">
                                     <span class="input-group-addon">
-                                        <label for="cHinweistextShop_{$cISO}">{__('shippingNoteShop')} ({$sprache->cNameDeutsch})</label>
+                                        <label for="cHinweistextShop_{$cISO}">{__('shippingNoteShop')} ({$language->getLocalizedName()})</label>
                                     </span>
                                     <textarea id="cHinweistextShop_{$cISO}" class="form-control combo" name="cHinweistextShop_{$cISO}">{if isset($oVersandartSpracheAssoc_arr[$cISO]->cHinweistextShop)}{$oVersandartSpracheAssoc_arr[$cISO]->cHinweistextShop}{/if}</textarea>
                                 </li>
                             {/if}
                         {/foreach}
 
-                        {foreach $sprachen as $sprache}
-                            {assign var=cISO value=$sprache->cISO}
+                        {foreach $sprachen as $language}
+                            {assign var=cISO value=$language->getIso()}
                             {if isset($oVersandartSpracheAssoc_arr[$cISO])}
                                 <li class="input-group">
                                     <span class="input-group-addon">
-                                        <label for="cHinweistext_{$cISO}">{__('shippingNoteEmail')} ({$sprache->cNameDeutsch})</label>
+                                        <label for="cHinweistext_{$cISO}">{__('shippingNoteEmail')} ({$language->getLocalizedName()})</label>
                                     </span>
                                     <textarea id="cHinweistext_{$cISO}" class="form-control combo" name="cHinweistext_{$cISO}">{if isset($oVersandartSpracheAssoc_arr[$cISO]->cHinweistext)}{$oVersandartSpracheAssoc_arr[$cISO]->cHinweistext}{/if}</textarea>
                                 </li>

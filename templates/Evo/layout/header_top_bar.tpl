@@ -36,7 +36,7 @@
                 <i class="fa fa-language"></i>
                 {foreach $smarty.session.Sprachen as $Sprache}
                     {if $Sprache->kSprache == $smarty.session.kSprache}
-                        <span class="lang-{$lang}" itemprop="name"> {if $lang === 'ger'}{$Sprache->cNameDeutsch}{else}{$Sprache->cNameEnglisch}{/if}</span>
+                        <span class="lang-{$lang}" itemprop="name"> {$Sprache->displayLanguage}</span>
                     {/if}
                 {/foreach}
                 <span class="caret"></span>
@@ -45,7 +45,7 @@
             {foreach $smarty.session.Sprachen as $oSprache}
                 {if $oSprache->kSprache != $smarty.session.kSprache}
                     <li>
-                        <a href="{if isset($oSprache->cURLFull)}{$oSprache->cURLFull}{else}{$oSprache->cURL}{/if}" class="link_lang {$oSprache->cISO}" rel="nofollow">{if $lang === 'ger'}{$oSprache->cNameDeutsch}{else}{$oSprache->cNameEnglisch}{/if}</a>
+                        <a href="{$oSprache->url}" class="link_lang {$oSprache->iso}" rel="nofollow">{$oSprache->displayLanguage}</a>
                     </li>
                 {/if}
                 {/foreach}

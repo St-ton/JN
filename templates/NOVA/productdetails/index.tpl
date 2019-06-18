@@ -6,8 +6,6 @@
     {block name='productdetails-index-include-header'}
         {if !isset($bAjaxRequest) || !$bAjaxRequest}
             {include file='layout/header.tpl'}
-        {elseif isset($smarty.get.quickView) && $smarty.get.quickView == 1}
-            {include file='layout/modal_header.tpl'}
         {/if}
     {/block}
     {block name='productdetails-index-content'}
@@ -27,16 +25,12 @@
         {else}
             <div id="result-wrapper" itemprop="mainEntity" itemscope itemtype="http://schema.org/Product" itemid="{$ShopURL}/{$Artikel->cSeo}">
                 <meta itemprop="url" content="{$ShopURL}/{$Artikel->cSeo}">
-                {if $opcPageService->getCurPage()->isReplace()}
-                    {include file='snippets/opc_mount_point.tpl' id='opc_replace_all'}
-                {else}
-                    {block name='productdetails-index-include-extension'}
-                        {include file='snippets/extension.tpl'}
-                    {/block}
-                    {block name='productdetails-index-include-details'}
-                        {include file='productdetails/details.tpl'}
-                    {/block}
-                {/if}
+                {block name='productdetails-index-include-extension'}
+                    {include file='snippets/extension.tpl'}
+                {/block}
+                {block name='productdetails-index-include-details'}
+                    {include file='productdetails/details.tpl'}
+                {/block}
             </div>
         {/if}
     {/block}
@@ -44,8 +38,6 @@
     {block name='productdetails-include-footer'}
         {if !isset($bAjaxRequest) || !$bAjaxRequest}
             {include file='layout/footer.tpl'}
-        {elseif isset($smarty.get.quickView) && $smarty.get.quickView == 1}
-            {include file='layout/modal_footer.tpl'}
         {/if}
     {/block}
 {/block}

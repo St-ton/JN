@@ -7,6 +7,7 @@
 namespace JTL\OPC;
 
 use JTL\Backend\AdminIO;
+use JTL\Helpers\Request;
 use JTL\Shop;
 
 /**
@@ -70,7 +71,6 @@ class PageService
             'publicateDraft',
             'saveDraft',
             'createPagePreview',
-            'createPageLivePreview',
             'deleteDraft',
         ];
     }
@@ -135,7 +135,8 @@ class PageService
 
     /**
      * @param string $id
-     * @return null|Page
+     * @return Page|null
+     * @throws \Exception
      */
     public function getPublicPage(string $id): ?Page
     {
@@ -149,6 +150,7 @@ class PageService
     public function getCurPage(): Page
     {
         $isEditMode    = $this->opc->isEditMode();
+        $isPreviewMode = $this->opc->isPreviewMode();
         $editedPageKey = $this->opc->getEditedPageKey();
 
         if ($this->curPage === null) {
@@ -156,6 +158,9 @@ class PageService
                 $this->curPage = new Page();
             } elseif ($isEditMode && $editedPageKey > 0) {
                 $this->curPage = $this->getDraft($editedPageKey);
+            } elseif ($isPreviewMode) {
+                $pageData      = $this->getPreviewPageData();
+                $this->curPage = $this->createPageFromData($pageData);
             } else {
                 $curPageUrl    = '/' . \ltrim(Shop::getRequestUri(), '/');
                 $curPageId     = $this->createCurrentPageId();
@@ -229,11 +234,20 @@ class PageService
     /**
      * @param string $id
      * @return Page[]
+     * @throws \Exception
      */
     public function getDrafts(string $id): array
     {
         if ($this->opc->isOPCInstalled()) {
-            return $this->pageDB->getDrafts($id);
+            $drafts = $this->pageDB->getDrafts($id);
+            usort($drafts, function ($a, $b) {
+                /**
+                 * @var Page $a
+                 * @var Page $b
+                 */
+                return $a->getStatus() - $b->getStatus();
+            });
+            return $drafts;
         }
 
         return [];
@@ -335,23 +349,29 @@ class PageService
 
     /**
      * @param array $data
-     * @return string[]
+     * @return Page
+     * @throws \Exception
      */
-    public function createPagePreview(array $data): array
+    public function createPageFromData(array $data): Page
     {
-        $page = (new Page())->deserialize($data);
-
-        return $page->getAreaList()->getPreviewHtml();
+        return (new Page())->deserialize($data);
     }
 
     /**
      * @param array $data
      * @return string[]
+     * @throws \Exception
      */
-    public function createPageLivePreview(array $data): array
+    public function createPagePreview(array $data): array
     {
-        $page = (new Page())->deserialize($data);
+        return $this->createPageFromData($data)->getAreaList()->getPreviewHtml();
+    }
 
-        return $page->getAreaList()->getFinalHtml();
+    /**
+     * @return array
+     */
+    public function getPreviewPageData()
+    {
+        return \json_decode(Request::verifyGPDataString('pageData'), true);
     }
 }

@@ -25,7 +25,7 @@
     && !empty($Artikel->Attribute))}
 {$useDescriptionWithMediaGroup = ((($Einstellungen.artikeldetails.mediendatei_anzeigen === 'YA'
     && $Artikel->cMedienDateiAnzeige !== 'tab') || $Artikel->cMedienDateiAnzeige === 'beschreibung')
-    && !empty($Artikel->cMedienTyp_arr))}
+    && !empty($Artikel->getMediaTypes()))}
 {$useDescription = (($Artikel->cBeschreibung|strlen > 0) || $useDescriptionWithMediaGroup || $showAttributesTable)}
 {$useDownloads = (isset($Artikel->oDownload_arr) && $Artikel->oDownload_arr|@count > 0)}
 {$useVotes = $Einstellungen.bewertung.bewertung_anzeigen === 'Y'}
@@ -34,7 +34,7 @@
 {$useAvailabilityNotification = ($verfuegbarkeitsBenachrichtigung === 1)}
 {$useMediaGroup = ((($Einstellungen.artikeldetails.mediendatei_anzeigen === 'YM'
     && $Artikel->cMedienDateiAnzeige !== 'beschreibung') || $Artikel->cMedienDateiAnzeige === 'tab')
-    && !empty($Artikel->cMedienTyp_arr))}
+    && !empty($Artikel->getMediaTypes()))}
 {$useTags = ($Einstellungen.artikeldetails.tagging_anzeigen === 'Y' && (count($ProduktTagging) > 0
     || $Einstellungen.artikeldetails.tagging_freischaltung !== 'N'))}
 {$hasVotesHash = isset($smarty.get.ratings_nPage)
@@ -74,6 +74,7 @@
 {if useDescription || $useDownloads || $useDescriptionWithMediaGroup || $useVotes || $useQuestionOnItem || $usePriceFlow
     || $useAvailabilityNotification || $useMediaGroup || $useTags || !empty($separatedTabs)}
     {if $tabanzeige}
+        {include file='snippets/opc_mount_point.tpl' id='opc_before_tabs'}
         <ul class="nav nav-tabs bottom15" role="tablist">
             {if $useDescription}
                 <li role="presentation" {if $setActiveClass.description} class="active"{/if}>
@@ -131,12 +132,12 @@
                 </li>
             {/if}
             {if $useMediaGroup}
-                {foreach $Artikel->cMedienTyp_arr as $cMedienTyp}
-                    {$cMedienTypId = $cMedienTyp|@seofy}
+                {foreach $Artikel->getMediaTypes() as $mediaType}
+                    {$cMedienTypId = $mediaType->name|@seofy}
                     <li role="presentation"
-                        {if $setActiveClass.mediaGroup && $cMedienTyp@first} class="active"{/if}>
+                        {if $setActiveClass.mediaGroup && $mediaType@first} class="active"{/if}>
                         <a href="#tab-{$cMedienTypId}" aria-controls="tab-{$cMedienTypId}" role="tab" data-toggle="tab">
-                            {$cMedienTyp}
+                            {$mediaType->name} ({$mediaType->count})
                         </a>
                     </li>
                 {/foreach}
@@ -166,19 +167,21 @@
             <div class="tab-content-wrapper">
                 {block name='tab-description'}
                     {block name='tab-description-content'}
+                        {include file='snippets/opc_mount_point.tpl' id='opc_before_desc'}
                         <div class="desc">
                             {$Artikel->cBeschreibung}
                             {if $useDescriptionWithMediaGroup}
                                 {if $Artikel->cBeschreibung|strlen > 0}
                                     <hr>
                                 {/if}
-                                {foreach $Artikel->cMedienTyp_arr as $cMedienTyp}
+                                {foreach $Artikel->getMediaTypes() as $mediaType}
                                     <div class="media">
                                         {include file='productdetails/mediafile.tpl'}
                                     </div>
                                 {/foreach}
                             {/if}
                         </div>
+                        {include file='snippets/opc_mount_point.tpl' id='opc_after_desc'}
                     {/block}
                     {block name='tab-description-attributes'}
                         {if (!empty($Artikel->cBeschreibung) || $useDescriptionWithMediaGroup) && $showAttributesTable}
@@ -314,16 +317,16 @@
             {/if}
         {/if}
         {if $useMediaGroup}
-            {foreach $Artikel->cMedienTyp_arr as $cMedienTyp}
-                {$cMedienTypId = $cMedienTyp|@seofy}
+            {foreach $Artikel->getMediaTypes() as $mediaType}
+                {$cMedienTypId = $mediaType->name|@seofy}
                 {if $tabanzeige}
                     <div role="tabpanel"
-                        class="tab-pane fade{if $setActiveClass.mediaGroup && $cMedienTyp@first} in active{/if}"
+                        class="tab-pane fade{if $setActiveClass.mediaGroup && $mediaType@first} in active{/if}"
                         id="tab-{$cMedienTypId}">
                 {else}
                     <div class="panel panel-default">
                         <div class="panel-heading">
-                            <h3 class="panel-title">{$cMedienTyp}</h3>
+                            <h3 class="panel-title">{$mediaType->name}</h3>
                         </div>
                         <div class="panel-body" id="tab-{$cMedienTypId}">
                 {/if}

@@ -4,16 +4,16 @@
     <input type="hidden" name="kVerpackung" value="{if isset($kVerpackung)}{$kVerpackung}{/if}" />
     <div class="panel panel-default">
         <div class="panel-heading">
-            <h3 class="panel-title">{if isset($kVerpackung) && $kVerpackung > 0}{__('zusatzverpackungEdit')}{else}{__('zusatzverpackungAdd')}{/if}</h3>
+            <h3 class="panel-title">{if isset($kVerpackung) && $kVerpackung > 0}{__('zusatzverpackungEdit')}{else}{__('zusatzverpackungCreate')}{/if}</h3>
         </div>
         <div class="table-responsive">
             <table class="kundenfeld table">
-                {foreach $oSprache_arr as $key => $oSprache}
-                    {assign var=cISO value=$oSprache->cISO}
+                {foreach $sprachen as $key => $language}
+                    {assign var=cISO value=$language->getIso()}
                     <tr>
-                        <td><label for="cName_{$oSprache->cISO}">{__('name')} ({$oSprache->cNameDeutsch})</label></td>
+                        <td><label for="cName_{$cISO}">{__('name')} ({$language->getLocalizedName()})</label></td>
                         <td>
-                            <input class="form-control" id="cName_{$oSprache->cISO}" name="cName_{$oSprache->cISO}" type="text" value="{if isset($oVerpackungEdit->oSprach_arr[$cISO]->cName)}{$oVerpackungEdit->oSprach_arr[$cISO]->cName}{/if}" {if $key === 0}required{/if}>
+                            <input class="form-control" id="cName_{$cISO}" name="cName_{$cISO}" type="text" value="{if isset($oVerpackungEdit->oSprach_arr[$cISO]->cName)}{$oVerpackungEdit->oSprach_arr[$cISO]->cName}{/if}" {if $key === 0}required{/if}>
                         </td>
                     </tr>
                 {/foreach}
@@ -38,10 +38,10 @@
                         <span id="KostenfreiAjax">{if isset($oVerpackungEdit->fKostenfrei)}{getCurrencyConversionSmarty fPreisBrutto=$oVerpackungEdit->fKostenfrei}{/if}</span>
                     </td>
                 </tr>
-                {foreach $oSprache_arr as $oSprache}
-                    {assign var=cISO value=$oSprache->cISO}
+                {foreach $sprachen as $language}
+                    {assign var=cISO value=$language->getIso()}
                     <tr>
-                        <td><label for="cBeschreibung_{$cISO}">{__('description')} ({$oSprache->cNameDeutsch})</label></td>
+                        <td><label for="cBeschreibung_{$cISO}">{__('description')} ({$language->getLocalizedName()})</label></td>
                         <td>
                             <textarea id="cBeschreibung_{$cISO}" name="cBeschreibung_{$cISO}" rows="5" cols="35" class="form-control combo">{if isset($oVerpackungEdit->oSprach_arr[$cISO]->cBeschreibung)}{$oVerpackungEdit->oSprach_arr[$cISO]->cBeschreibung}{/if}</textarea>
                         </td>

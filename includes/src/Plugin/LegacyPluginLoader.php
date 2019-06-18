@@ -9,13 +9,14 @@ namespace JTL\Plugin;
 use InvalidArgumentException;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
+use JTL\Language\LanguageHelper;
 use JTL\Plugin\Data\Config;
 use JTL\Plugin\Data\Hook;
+use JTL\Plugin\Data\License;
 use JTL\Plugin\Data\Links;
 use JTL\Plugin\Data\Paths;
 use JTL\Plugin\Data\Widget;
 use JTL\Shop;
-use JTL\Sprache;
 use stdClass;
 
 /**
@@ -87,6 +88,19 @@ class LegacyPluginLoader extends AbstractLoader
     }
 
     /**
+     * @inheritDoc
+     */
+    protected function loadLicense($data): License
+    {
+        $license = new License();
+        $license->setClass($data->cLizenzKlasse);
+        $license->setClassName($data->cLizenzKlasseName);
+        $license->setKey($data->cLizenz);
+
+        return $license;
+    }
+
+    /**
      * @inheritdoc
      */
     public function saveToCache(PluginInterface $extension): bool
@@ -111,7 +125,7 @@ class LegacyPluginLoader extends AbstractLoader
     {
         $currentLanguageCode = $currentLanguageCode
             ?? Shop::getLanguageCode()
-            ?? Sprache::getDefaultLanguage()->cISO;
+            ?? LanguageHelper::getDefaultLanguage()->cISO;
 
         Shop::Container()->getGetText();
 

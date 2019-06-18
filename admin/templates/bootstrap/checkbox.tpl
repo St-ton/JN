@@ -153,29 +153,29 @@
                                 <input id="cName" name="cName" type="text" placeholder="Name" class="form-control{if isset($cPlausi_arr.cName)} fieldfillout{/if}" value="{if isset($cPost_arr.cName)}{$cPost_arr.cName}{elseif isset($oCheckBox->cName)}{$oCheckBox->cName}{/if}">
                                 <span class="input-group-addon">{getHelpDesc cDesc=__('hintCheckboxName')}</span>
                             </div>
-                            {if isset($oSprache_arr) && $oSprache_arr|@count > 0}
-                                {foreach $oSprache_arr as $oSprache}
-                                    {assign var=cISO value=$oSprache->cISO}
-                                    {assign var=kSprache value=$oSprache->kSprache}
+                            {if $sprachen|@count > 0}
+                                {foreach $sprachen as $language}
+                                    {assign var=cISO value=$language->getCode()}
+                                    {assign var=kSprache value=$language->getId()}
                                     {assign var=cISOText value="cText_$cISO"}
                                     <div class="input-group{if isset($cPlausi_arr.cText)} error{/if}">
                                         <span class="input-group-addon">
-                                            <label for="cText_{$oSprache->cISO}">{__('text')} ({$oSprache->cNameDeutsch}){if isset($cPlausi_arr.cText)} <span class="fillout">{__('FillOut')}</span>{/if}</label>
+                                            <label for="cText_{$cISO}">{__('text')} ({$language->getLocalizedName()}){if isset($cPlausi_arr.cText)} <span class="fillout">{__('FillOut')}</span>{/if}</label>
                                         </span>
-                                        <textarea id="cText_{$oSprache->cISO}" placeholder="Text ({$oSprache->cNameDeutsch})" class="form-control {if isset($cPlausi_arr.cText)}fieldfillout{else}field{/if}" name="cText_{$oSprache->cISO}">{if isset($cPost_arr.$cISOText)}{$cPost_arr.$cISOText}{elseif isset($oCheckBox->oCheckBoxSprache_arr[$kSprache]->cText)}{$oCheckBox->oCheckBoxSprache_arr[$kSprache]->cText}{/if}</textarea>
+                                        <textarea id="cText_{$cISO}" placeholder="Text ({$language->getLocalizedName()})" class="form-control {if isset($cPlausi_arr.cText)}fieldfillout{else}field{/if}" name="cText_{$cISO}">{if isset($cPost_arr.$cISOText)}{$cPost_arr.$cISOText}{elseif isset($oCheckBox->oCheckBoxSprache_arr[$kSprache]->cText)}{$oCheckBox->oCheckBoxSprache_arr[$kSprache]->cText}{/if}</textarea>
                                         <span class="input-group-addon">{getHelpDesc cDesc=__('hintCheckboxText')}</span>
                                     </div>
                                 {/foreach}
 
-                                {foreach $oSprache_arr as $oSprache}
-                                    {assign var=cISO value=$oSprache->cISO}
-                                    {assign var=kSprache value=$oSprache->kSprache}
+                                {foreach $sprachen as $language}
+                                    {assign var=cISO value=$language->getCode()}
+                                    {assign var=kSprache value=$language->getId()}
                                     {assign var=cISOBeschreibung value="cBeschreibung_$cISO"}
                                     <div class="input-group{if isset($cPlausi_arr.cBeschreibung)} error{/if}">
                                         <span class="input-group-addon">
-                                            <label for="cBeschreibung_{$oSprache->cISO}">{__('description')} ({$oSprache->cNameDeutsch}){if isset($cPlausi_arr.cBeschreibung)} <span class="fillout">{__('FillOut')}</span>{/if}</label>
+                                            <label for="cBeschreibung_{$cISO}">{__('description')} ({$language->getLocalizedName()}){if isset($cPlausi_arr.cBeschreibung)} <span class="fillout">{__('FillOut')}</span>{/if}</label>
                                         </span>
-                                        <textarea id="cBeschreibung_{$oSprache->cISO}" class="form-control {if isset($cPlausi_arr.cBeschreibung)}fieldfillout{else}field{/if}" name="cBeschreibung_{$oSprache->cISO}">{if isset($cPost_arr.$cISOBeschreibung)}{$cPost_arr.$cISOBeschreibung}{elseif isset($oCheckBox->oCheckBoxSprache_arr[$kSprache]->cBeschreibung)}{$oCheckBox->oCheckBoxSprache_arr[$kSprache]->cBeschreibung}{/if}</textarea>
+                                        <textarea id="cBeschreibung_{$cISO}" class="form-control {if isset($cPlausi_arr.cBeschreibung)}fieldfillout{else}field{/if}" name="cBeschreibung_{$cISO}">{if isset($cPost_arr.$cISOBeschreibung)}{$cPost_arr.$cISOBeschreibung}{elseif isset($oCheckBox->oCheckBoxSprache_arr[$kSprache]->cBeschreibung)}{$oCheckBox->oCheckBoxSprache_arr[$kSprache]->cBeschreibung}{/if}</textarea>
                                         <span class="input-group-addon">{getHelpDesc cDesc=__('hintCheckboxDescription')}</span>
                                     </div>
                                 {/foreach}
@@ -215,7 +215,7 @@
 
                             <div class="input-group{if isset($cPlausi_arr.cAnzeigeOrt)} error{/if}">
                                 <span class="input-group-addon">
-                                    <label for="cAnzeigeOrt">Anzeigeort{if isset($cPlausi_arr.cAnzeigeOrt)} <span class="fillout">{__('FillOut')}</span>{/if}</label>
+                                    <label for="cAnzeigeOrt">{__('checkboxLocation')}{if isset($cPlausi_arr.cAnzeigeOrt)} <span class="fillout">{__('FillOut')}</span>{/if}</label>
                                 </span>
                                 <select id="cAnzeigeOrt" name="cAnzeigeOrt[]" class="form-control{if isset($cPlausi_arr.cAnzeigeOrt)} fieldfillout{/if}" multiple onClick="checkFunctionDependency();">
                                     {foreach name=anzeigeortarr from=$cAnzeigeOrt_arr key=key item=cAnzeigeOrt}
@@ -320,7 +320,7 @@
                             {if isset($oKundengruppe_arr) && $oKundengruppe_arr|@count > 0}
                                 <div class="input-group{if isset($cPlausi_arr.kKundengruppe)} error{/if}">
                                     <span class="input-group-addon">
-                                        <label for="kKundengruppe">Kundengruppe{if isset($cPlausi_arr.kKundengruppe)} <span class="fillout">{__('FillOut')}</span>{/if}</label>
+                                        <label for="kKundengruppe">{__('customerGroup')}{if isset($cPlausi_arr.kKundengruppe)} <span class="fillout">{__('FillOut')}</span>{/if}</label>
                                     </span>
                                     <select id="kKundengruppe" name="kKundengruppe[]" class="form-control{if isset($cPlausi_arr.kKundengruppe)} fieldfillout{/if}" multiple>
                                         {foreach name=kundengruppen from=$oKundengruppe_arr key=key item=oKundengruppe}

@@ -7,8 +7,8 @@
 namespace JTL\Catalog\Product;
 
 use JTL\DB\ReturnType;
+use JTL\Language\LanguageHelper;
 use JTL\Shop;
-use JTL\Sprache;
 
 /**
  * Class Merkmal
@@ -35,11 +35,6 @@ class Merkmal
      * @var int
      */
     public $nSort;
-
-    /**
-     * @var int
-     */
-    public $nGlobal;
 
     /**
      * @var string
@@ -127,7 +122,7 @@ class Merkmal
 
             return $this;
         }
-        $kStandardSprache = Sprache::getDefaultLanguage()->kSprache;
+        $kStandardSprache = LanguageHelper::getDefaultLanguage()->kSprache;
         if ($kSprache !== $kStandardSprache) {
             $cSelect = 'COALESCE(fremdSprache.cName, standardSprache.cName) AS cName';
             $cJoin   = 'INNER JOIN tmerkmalsprache AS standardSprache 
@@ -142,7 +137,7 @@ class Merkmal
                             AND tmerkmalsprache.kSprache = ' . $kSprache;
         }
         $oMerkmal = Shop::Container()->getDB()->query(
-            'SELECT tmerkmal.kMerkmal, tmerkmal.nSort, tmerkmal.nGlobal, tmerkmal.cBildpfad, tmerkmal.cTyp, ' .
+            'SELECT tmerkmal.kMerkmal, tmerkmal.nSort, tmerkmal.cBildpfad, tmerkmal.cTyp, ' .
                 $cSelect . '
                 FROM tmerkmal ' .
                 $cJoin . '
@@ -208,7 +203,6 @@ class Merkmal
         $this->nBildKleinVorhanden = (int)$this->nBildKleinVorhanden;
         $this->nBildGrossVorhanden = (int)$this->nBildGrossVorhanden;
         $this->kSprache            = (int)$this->kSprache;
-        $this->nGlobal             = (int)$this->nGlobal;
 
         \executeHook(\HOOK_MERKMAL_CLASS_LOADFROMDB, ['instance' => $this]);
         Shop::set($id, $this);
@@ -229,13 +223,13 @@ class Merkmal
         }
         $kSprache = Shop::getLanguage();
         if (!$kSprache) {
-            $oSprache = Sprache::getDefaultLanguage();
+            $oSprache = LanguageHelper::getDefaultLanguage();
             if ($oSprache->kSprache > 0) {
                 $kSprache = $oSprache->kSprache;
             }
         }
         $kSprache         = (int)$kSprache;
-        $kStandardSprache = (int)Sprache::getDefaultLanguage()->kSprache;
+        $kStandardSprache = (int)LanguageHelper::getDefaultLanguage()->kSprache;
         if ($kSprache !== $kStandardSprache) {
             $select = 'COALESCE(fremdSprache.cName, standardSprache.cName) AS cName';
             $join   = 'INNER JOIN tmerkmalsprache AS standardSprache 
@@ -252,7 +246,7 @@ class Merkmal
         }
 
         $attributes = Shop::Container()->getDB()->query(
-            'SELECT tmerkmal.kMerkmal, tmerkmal.nSort, tmerkmal.nGlobal, tmerkmal.cBildpfad, tmerkmal.cTyp, ' .
+            'SELECT tmerkmal.kMerkmal, tmerkmal.nSort, tmerkmal.cBildpfad, tmerkmal.cTyp, ' .
                 $select . ' 
                 FROM tmerkmal ' .
                 $join . ' WHERE tmerkmal.kMerkmal IN(' . \implode(', ', \array_filter($attributeIDs, '\intval')) .

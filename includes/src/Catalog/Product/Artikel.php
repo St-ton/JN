@@ -7,38 +7,38 @@
 namespace JTL\Catalog\Product;
 
 use DateTime;
-use function Functional\map;
+use JTL\Catalog\Category\Kategorie;
+use JTL\Catalog\Category\KategorieListe;
+use JTL\Catalog\Hersteller;
+use JTL\Catalog\Trennzeichen;
+use JTL\Catalog\UnitsOfMeasure;
+use JTL\Catalog\Warenlager;
+use JTL\Checkout\Versandart;
+use JTL\Country\Country;
+use JTL\Customer\Kundengruppe;
 use JTL\DB\ReturnType;
-use JTL\Extensions\Download;
-use JTL\Extensions\Konfigurator;
-use JTL\Extensions\Konfigitem;
 use JTL\Exceptions\CircularReferenceException;
 use JTL\Exceptions\ServiceNotFoundException;
+use JTL\Extensions\Download;
+use JTL\Extensions\Konfigitem;
+use JTL\Extensions\Konfigurator;
 use JTL\Filter\Metadata;
 use JTL\Helpers\Product;
 use JTL\Helpers\Request;
 use JTL\Helpers\SearchSpecial;
 use JTL\Helpers\ShippingMethod;
-use JTL\Helpers\Text;
 use JTL\Helpers\Tax;
+use JTL\Helpers\Text;
 use JTL\Helpers\URL;
-use JTL\Catalog\Hersteller;
-use JTL\Catalog\Category\Kategorie;
-use JTL\Catalog\Category\KategorieListe;
-use JTL\Customer\Kundengruppe;
+use JTL\Language\LanguageHelper;
 use JTL\Media\Image;
 use JTL\Media\MediaImage;
 use JTL\Media\MediaImageRequest;
 use JTL\Session\Frontend;
 use JTL\Shop;
-use JTL\Sprache;
-use JTL\Catalog\Trennzeichen;
-use JTL\Catalog\UnitsOfMeasure;
-use JTL\Checkout\Versandart;
-use JTL\Catalog\Warenlager;
 use stdClass;
+use function Functional\map;
 use function Functional\select;
-use JTL\Country\Country;
 
 /**
  * Class Artikel
@@ -1509,7 +1509,7 @@ class Artikel
             '*',
             'nSort'
         );
-        $isDefaultLanguage    = Sprache::isDefaultLanguageActive();
+        $isDefaultLanguage    = LanguageHelper::isDefaultLanguageActive();
         foreach ($attributes as $att) {
             $attribute            = new stdClass();
             $attribute->nSort     = (int)$att->nSort;
@@ -1723,8 +1723,9 @@ class Artikel
             $languageID = Shop::getLanguageID();
         }
         $db                     = Shop::Container()->getDB();
-        $kDefaultLanguage       = Sprache::getDefaultLanguage()->kSprache;
+        $kDefaultLanguage       = LanguageHelper::getDefaultLanguage()->kSprache;
         $this->oMedienDatei_arr = [];
+        $mediaTypes             = [];
         // Funktionsattribut gesetzt? Tab oder Beschreibung
         if (isset($this->FunktionsAttribute[\FKT_ATTRIBUT_MEDIENDATEIEN])) {
             if ($this->FunktionsAttribute[\FKT_ATTRIBUT_MEDIENDATEIEN] === 'tab') {
@@ -1758,7 +1759,6 @@ class Artikel
                     ORDER BY tmediendatei.nSort ASC';
 
         $this->oMedienDatei_arr = $db->query($cSQL, ReturnType::ARRAY_OF_OBJECTS);
-        $cMedienTyp_arr         = []; // Wird im Template gebraucht um Tabs aufzubauen
         foreach ($this->oMedienDatei_arr as $mediaFile) {
             $mediaFile->kSprache                 = (int)$mediaFile->kSprache;
             $mediaFile->nSort                    = (int)$mediaFile->nSort;
@@ -1791,30 +1791,43 @@ class Artikel
                     }
                 }
             }
-            // Pruefen, ob Reiter bereits vorhanden
-            $tabExists = false;
-            foreach ($cMedienTyp_arr as $cMedienTyp) {
-                if (\mb_strlen($mediaFile->cAttributTab) > 0) {
-                    if ($this->getSeoString($cMedienTyp) === $this->getSeoString($mediaFile->cAttributTab)) {
-                        $tabExists = true;
-                        break;
-                    }
-                } elseif ($cMedienTyp === $mediaFile->cMedienTyp) {
-                    $tabExists = true;
-                    break;
-                }
-            }
-            // Falls nicht enthalten => eintragen
-            if (!$tabExists) {
-                $cMedienTyp_arr[] = \mb_strlen($mediaFile->cAttributTab) > 0
-                    ? $mediaFile->cAttributTab
-                    : $mediaFile->cMedienTyp;
-            }
             if ($mediaFile->nMedienTyp === 4) {
                 $this->buildYoutubeEmbed($mediaFile);
             }
+            $mediaTypeName = \mb_strlen($mediaFile->cAttributTab) > 0
+                ? $mediaFile->cAttributTab
+                : $mediaFile->cMedienTyp;
+            // group all tab names by corresponding seo tab name, use first found tab name
+            $mediaTypeNameSeo = $this->getSeoString($mediaTypeName);
+            if (isset($mediaTypes[$mediaTypeNameSeo])) {
+                ++$mediaTypes[$mediaTypeNameSeo]->count;
+            } else {
+                $mediaTypes[$mediaTypeNameSeo] = (object)[
+                    'count' => 1,
+                    'name'  => $mediaTypeName
+                ];
+            }
         }
-        $this->cMedienTyp_arr = $cMedienTyp_arr;
+        $this->setMediaTypes($mediaTypes);
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getMediaTypes(): array
+    {
+        return $this->cMedienTyp_arr;
+    }
+
+    /**
+     * @param array $mediaTypes
+     * @return Artikel
+     */
+    private function setMediaTypes(array $mediaTypes): self
+    {
+        $this->cMedienTyp_arr = $mediaTypes;
 
         return $this;
     }
@@ -2024,7 +2037,7 @@ class Artikel
      */
     protected function execVariationSQL(int $kSprache, int $kKundengruppe, bool $exportWorkaround = false)
     {
-        $isDefaultLang = Sprache::isDefaultLanguageActive();
+        $isDefaultLang = LanguageHelper::isDefaultLanguageActive();
         // Nicht Standardsprache?
         $oSQLEigenschaft              = new stdClass();
         $oSQLEigenschaftWert          = new stdClass();
@@ -2346,7 +2359,7 @@ class Artikel
         $currency       = Frontend::getCurrency();
         $currencyFactor = $currency->getConversionFactor();
         $imageBaseURL   = Shop::getImageBaseURL();
-        $isDefaultLang  = Sprache::isDefaultLanguageActive();
+        $isDefaultLang  = LanguageHelper::isDefaultLanguageActive();
         $mayViewPrices  = Frontend::getCustomerGroup()->mayViewPrices();
 
         $variations = $this->execVariationSQL($kSprache, $kKundengruppe, $exportWorkaround);
@@ -3257,7 +3270,7 @@ class Artikel
         $cVorschauSQL = ' IN (' . \implode(',', $checked) . ') ';
         if ($this->conf['artikeldetails']['artikeldetails_varikombi_vorschautext'] === 'S') {
             $oEigenschaft = null;
-            if ($kSprache > 0 && !Sprache::isDefaultLanguageActive()) {
+            if ($kSprache > 0 && !LanguageHelper::isDefaultLanguageActive()) {
                 $oEigenschaft = Shop::Container()->getDB()->query(
                     'SELECT teigenschaftsprache.cName
                         FROM teigenschaftsprache
@@ -3543,7 +3556,7 @@ class Artikel
         $lang->cSELECT = '';
         $lang->cJOIN   = '';
 
-        if ($kSprache > 0 && !Sprache::isDefaultLanguageActive()) {
+        if ($kSprache > 0 && !LanguageHelper::isDefaultLanguageActive()) {
             $lang->cSELECT = 'tartikelsprache.cName AS cName_spr, tartikelsprache.cBeschreibung AS cBeschreibung_spr,
                               tartikelsprache.cKurzBeschreibung AS cKurzBeschreibung_spr, ';
             $lang->cJOIN   = ' LEFT JOIN tartikelsprache
@@ -3770,7 +3783,7 @@ class Artikel
             $kSprache = Shop::getLanguageID();
         }
         if (!$kSprache) {
-            $oSprache = Sprache::getDefaultLanguage();
+            $oSprache = LanguageHelper::getDefaultLanguage();
             $kSprache = $oSprache->kSprache;
         }
         $this->kSprache = $kSprache;
@@ -3846,7 +3859,7 @@ class Artikel
         $oSQLArtikelSprache          = new stdClass();
         $oSQLArtikelSprache->cSELECT = '';
         $oSQLArtikelSprache->cJOIN   = '';
-        if ($kSprache > 0 && !Sprache::isDefaultLanguageActive()) {
+        if ($kSprache > 0 && !LanguageHelper::isDefaultLanguageActive()) {
             $oSQLArtikelSprache = $this->baueArtikelSprache($kArtikel, $kSprache);
         }
         $db = Shop::Container()->getDB();
@@ -4165,7 +4178,7 @@ class Artikel
                 \PFAD_HERSTELLERBILDER_KLEIN . $oArtikelTMP->cBildpfad_thersteller;
         }
         // Lokalisieren
-        if ($kSprache > 0 && !Sprache::isDefaultLanguageActive()) {
+        if ($kSprache > 0 && !LanguageHelper::isDefaultLanguageActive()) {
             //VPE-Einheit
             $oVPEEinheitRes = $db->query(
                 'SELECT cName
@@ -4205,7 +4218,6 @@ class Artikel
         if ($this->getOption('nWarenlager', 0) === 1) {
             $this->holWarenlager($kSprache);
         }
-        $this->baueLageranzeige();
         if ($this->getOption('nMerkmale', 0) === 1) {
             $this->holeMerkmale();
         }
@@ -4350,6 +4362,10 @@ class Artikel
         if (!empty($this->FunktionsAttribute[\FKT_ATTRIBUT_UNVERKAEUFLICH])) {
             $this->inWarenkorbLegbar = \INWKNICHTLEGBAR_UNVERKAEUFLICH;
         }
+        if ($this->bHasKonfig && Konfigurator::hasUnavailableGroup($this->oKonfig_arr)) {
+            $this->inWarenkorbLegbar = \INWKNICHTLEGBAR_LAGER;
+        }
+        $this->baueLageranzeige();
         $this->cUVPLocalized = Preise::getLocalizedPriceString($this->fUVP);
         // Lieferzeit abhaengig vom Session-Lieferland aktualisieren
         if ($this->inWarenkorbLegbar >= 1 && $this->nIstVater !== 1) {
@@ -4730,6 +4746,15 @@ class Artikel
                     break;
             }
         }
+        if ($this->bHasKonfig && Konfigurator::hasUnavailableGroup($this->oKonfig_arr)) {
+            $this->Lageranzeige->cLagerhinweis['genau']          = Shop::Lang()->get('productNotAvailable');
+            $this->Lageranzeige->cLagerhinweis['verfuegbarkeit'] = Shop::Lang()->get('productNotAvailable');
+
+            $this->Lageranzeige->nStatus   = 0;
+            $this->Lageranzeige->AmpelText = !empty($this->AttributeAssoc[\ART_ATTRIBUT_AMPELTEXT_ROT])
+                ? $this->AttributeAssoc[\ART_ATTRIBUT_AMPELTEXT_ROT]
+                : Shop::Lang()->get('ampelRot');
+        }
 
         return $this;
     }
@@ -5056,7 +5081,7 @@ class Artikel
      */
     public function setzeSprache(int $languageID): self
     {
-        $defaultLanguage = Sprache::getDefaultLanguage(false);
+        $defaultLanguage = LanguageHelper::getDefaultLanguage(false);
         if ($this->kArtikel <= 0 || $languageID === $defaultLanguage->kSprache) {
             return $this;
         }
@@ -5176,14 +5201,14 @@ class Artikel
      */
     public function gibAttributWertNachName($name, $kSprache = 0)
     {
-        if ($this->kArtikel === null || $this->kArtikel <= 0 || Sprache::isDefaultLanguageActive()) {
+        if ($this->kArtikel === null || $this->kArtikel <= 0 || LanguageHelper::isDefaultLanguageActive()) {
             return false;
         }
         if (!$kSprache) {
             if (isset($_SESSION['kSprache'])) {
                 $kSprache = $_SESSION['kSprache'];
             } else {
-                $oSprache = Sprache::getDefaultLanguage();
+                $oSprache = LanguageHelper::getDefaultLanguage();
                 $kSprache = $oSprache->kSprache;
             }
         }
@@ -5498,7 +5523,7 @@ class Artikel
         $shippingID = null
     ) {
         if (!isset($_SESSION['cISOSprache'])) {
-            $oSprache = Sprache::getDefaultLanguage();
+            $oSprache = LanguageHelper::getDefaultLanguage();
             Shop::setLanguage($oSprache->kSprache, $oSprache->cISO);
         }
         if ($purchaseQuantity !== null) {
@@ -5534,9 +5559,9 @@ class Artikel
         if ((!empty($this->kStueckliste) && empty($this->oStueckliste_arr)) ||
             (!empty($this->oStueckliste_arr) && \count($this->oStueckliste_arr) !== $nAllPieces)
         ) {
-            $resetArray = true;
-            $partList   = $this->oStueckliste_arr;
-            unset($this->oStueckliste_arr);
+            $resetArray             = true;
+            $partList               = $this->oStueckliste_arr;
+            $this->oStueckliste_arr = [];
             $this->holeStueckliste(Frontend::getCustomerGroup()->getID(), true);
         }
         $isPartsList = !empty($this->oStueckliste_arr) && !empty($this->kStueckliste);
@@ -5577,7 +5602,6 @@ class Artikel
                 }
             }
             if (!empty($resetArray)) {
-                unset($this->oStueckliste_arr);
                 $this->oStueckliste_arr = $partList;
             }
         }
@@ -6478,7 +6502,7 @@ class Artikel
                 $kSprache = $_SESSION['kSprache'];
             }
             if (!$kSprache) {
-                $oSprache = Sprache::getDefaultLanguage();
+                $oSprache = LanguageHelper::getDefaultLanguage();
                 $kSprache = $oSprache->kSprache;
             }
         }
@@ -6795,6 +6819,27 @@ class Artikel
     public function getOption($option, $default = null)
     {
         return $this->options->$option ?? $default;
+    }
+
+    /**
+     * @param string $cISO
+     * @return bool
+     */
+    public function isUsedForShippingCostCalculation(string $cISO): bool
+    {
+        $excludedAttributes = [\FKT_ATTRIBUT_VERSANDKOSTEN, \FKT_ATTRIBUT_VERSANDKOSTEN_GESTAFFELT];
+
+        foreach ($excludedAttributes as $excludedAttribute) {
+            if (isset($this->FunktionsAttribute[$excludedAttribute])
+                && ($cISO === ''
+                    || (strpos($this->FunktionsAttribute[$excludedAttribute], $cISO) !== false)
+                )
+            ) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**

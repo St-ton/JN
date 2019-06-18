@@ -4,8 +4,9 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use JTL\Alert\Alert;
 use JTL\CheckBox;
+use JTL\Customer\CustomerAttributes;
+use JTL\Customer\CustomerFields;
 use JTL\Customer\Kunde;
 use JTL\Customer\Kundendatenhistory;
 use JTL\DB\ReturnType;
@@ -13,11 +14,11 @@ use JTL\Helpers\ShippingMethod;
 use JTL\Helpers\Tax;
 use JTL\Helpers\Text;
 use JTL\Kampagne;
+use JTL\Language\LanguageHelper;
 use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
 use JTL\Session\Frontend;
 use JTL\Shop;
-use JTL\Sprache;
 
 /**
  * @param array $post
@@ -28,8 +29,7 @@ function kundeSpeichern(array $post)
     global $Kunde,
            $step,
            $edit,
-           $knd,
-           $cKundenattribut_arr;
+           $knd;
 
     unset($_SESSION['Lieferadresse'], $_SESSION['Versandart'], $_SESSION['Zahlungsart']);
     $db   = Shop::Container()->getDB();
@@ -41,14 +41,14 @@ function kundeSpeichern(array $post)
     $edit = (int)$post['editRechnungsadresse'];
     $step = 'formular';
     Shop::Smarty()->assign('cPost_arr', Text::filterXSS($post));
-    $fehlendeAngaben     = (!$edit)
+    $fehlendeAngaben    = (!$edit)
         ? checkKundenFormular(1)
         : checkKundenFormular(1, 0);
-    $knd                 = getKundendaten($post, 1, 0);
-    $cKundenattribut_arr = getKundenattribute($post);
-    $kKundengruppe       = Frontend::getCustomerGroup()->getID();
-    $oCheckBox           = new CheckBox();
-    $fehlendeAngaben     = array_merge(
+    $knd                = getKundendaten($post, 1, 0);
+    $customerAttributes = getKundenattribute($post);
+    $kKundengruppe      = Frontend::getCustomerGroup()->getID();
+    $oCheckBox          = new CheckBox();
+    $fehlendeAngaben    = array_merge(
         $fehlendeAngaben,
         $oCheckBox->validateCheckBox(CHECKBOX_ORT_REGISTRIERUNG, $kKundengruppe, $post, true)
     );
@@ -93,38 +93,10 @@ function kundeSpeichern(array $post)
 
             $_SESSION['Kunde'] = $knd;
             // Update Kundenattribute
-            if (is_array($cKundenattribut_arr) && count($cKundenattribut_arr) > 0) {
-                $oKundenfeldNichtEditierbar_arr = getKundenattributeNichtEditierbar();
-                $cSQL                           = '';
-                if (is_array($oKundenfeldNichtEditierbar_arr) && count($oKundenfeldNichtEditierbar_arr) > 0) {
-                    $cSQL .= ' AND (';
-                    foreach ($oKundenfeldNichtEditierbar_arr as $i => $oKundenfeldNichtEditierbar) {
-                        if ($i === 0) {
-                            $cSQL .= 'kKundenfeld != ' . (int)$oKundenfeldNichtEditierbar->kKundenfeld;
-                        } else {
-                            $cSQL .= ' AND kKundenfeld != ' . (int)$oKundenfeldNichtEditierbar->kKundenfeld;
-                        }
-                    }
-                    $cSQL .= ')';
-                }
+            $customerAttributes->save();
 
-                $db->query(
-                    'DELETE FROM tkundenattribut WHERE kKunde = ' . (int)$_SESSION['Kunde']->kKunde . $cSQL,
-                    ReturnType::AFFECTED_ROWS
-                );
-                foreach (array_keys($cKundenattribut_arr) as $kKundenfeld) {
-                    $oKundenattribut              = new stdClass();
-                    $oKundenattribut->kKunde      = (int)$_SESSION['Kunde']->kKunde;
-                    $oKundenattribut->kKundenfeld = $cKundenattribut_arr[$kKundenfeld]->kKundenfeld;
-                    $oKundenattribut->cName       = $cKundenattribut_arr[$kKundenfeld]->cWawi;
-                    $oKundenattribut->cWert       = $cKundenattribut_arr[$kKundenfeld]->cWert;
-
-                    $db->insert('tkundenattribut', $oKundenattribut);
-                }
-            }
-
-            $_SESSION['Kunde']                      = new Kunde($_SESSION['Kunde']->kKunde);
-            $_SESSION['Kunde']->cKundenattribut_arr = $cKundenattribut_arr;
+            $_SESSION['Kunde'] = new Kunde($_SESSION['Kunde']->kKunde);
+            $_SESSION['Kunde']->getCustomerAttributes()->load($_SESSION['Kunde']->kKunde);
         } else {
             // Guthaben des Neukunden aufstocken insofern er geworben wurde
             $oNeukunde     = $db->select(
@@ -153,7 +125,7 @@ function kundeSpeichern(array $post)
             $knd->cPasswort         = Shop::Container()->getPasswordService()->hash($cPasswortKlartext);
             $knd->dErstellt         = 'NOW()';
             $knd->nRegistriert      = 1;
-            $knd->angezeigtesLand   = Sprache::getCountryCodeByCountryName($knd->cLand);
+            $knd->angezeigtesLand   = LanguageHelper::getCountryCodeByCountryName($knd->cLand);
             $cLand                  = $knd->cLand;
             $knd->cPasswortKlartext = $cPasswortKlartext;
             $obj                    = new stdClass();
@@ -172,18 +144,10 @@ function kundeSpeichern(array $post)
                 Kampagne::setCampaignAction(KAMPAGNE_DEF_ANMELDUNG, $knd->kKunde, 1.0); // Anmeldung
             }
             // Insert Kundenattribute
-            foreach (array_keys($cKundenattribut_arr) as $kKundenfeld) {
-                $oKundenattribut              = new stdClass();
-                $oKundenattribut->kKunde      = $knd->kKunde;
-                $oKundenattribut->kKundenfeld = $cKundenattribut_arr[$kKundenfeld]->kKundenfeld;
-                $oKundenattribut->cName       = $cKundenattribut_arr[$kKundenfeld]->cWawi;
-                $oKundenattribut->cWert       = $cKundenattribut_arr[$kKundenfeld]->cWert;
-
-                $db->insert('tkundenattribut', $oKundenattribut);
-            }
+            $customerAttributes->save();
             if ($conf['global']['global_kundenkonto_aktiv'] !== 'A') {
-                $_SESSION['Kunde']                      = new Kunde($knd->kKunde);
-                $_SESSION['Kunde']->cKundenattribut_arr = $cKundenattribut_arr;
+                $_SESSION['Kunde'] = new Kunde($knd->kKunde);
+                $_SESSION['Kunde']->getCustomerAttributes()->load($knd->kKunde);
             } else {
                 $step = 'formular eingegangen';
             }
@@ -222,8 +186,9 @@ function kundeSpeichern(array $post)
             exit;
         }
     } else {
+        $knd->getCustomerAttributes()->assign($customerAttributes);
         if ((int)$post['checkout'] === 1) {
-            //weiterleitung zum chekout
+            //weiterleitung zum checkout
             $_SESSION['checkout.register']        = 1;
             $_SESSION['checkout.fehlendeAngaben'] = $fehlendeAngaben;
             $_SESSION['checkout.cPost_arr']       = $post;
@@ -251,11 +216,8 @@ function kundeSpeichern(array $post)
  */
 function gibFormularDaten(int $nCheckout = 0)
 {
-    global $cKundenattribut_arr, $Kunde;
-
-    if ($cKundenattribut_arr === null || count($cKundenattribut_arr) === 0) {
-        $cKundenattribut_arr = $_SESSION['Kunde']->cKundenattribut_arr ?? [];
-    }
+    /** @var Kunde $Kunde */
+    global $Kunde;
 
     $herkunfte = Shop::Container()->getDB()->query(
         'SELECT * 
@@ -266,7 +228,9 @@ function gibFormularDaten(int $nCheckout = 0)
 
     Shop::Smarty()->assign('herkunfte', $herkunfte)
         ->assign('Kunde', $Kunde)
-        ->assign('cKundenattribut_arr', $cKundenattribut_arr)
+        ->assign('customerAttributes', is_a($Kunde, Kunde::class)
+            ? $Kunde->getCustomerAttributes()
+            : new CustomerAttributes())
         ->assign(
             'laender',
             ShippingMethod::getPossibleShippingCountries(Frontend::getCustomerGroup()->getID(), false, true)
@@ -275,7 +239,7 @@ function gibFormularDaten(int $nCheckout = 0)
             'warning_passwortlaenge',
             lang_passwortlaenge(Shop::getSettingValue(CONF_KUNDEN, 'kundenregistrierung_passwortlaenge'))
         )
-        ->assign('oKundenfeld_arr', gibSelbstdefKundenfelder());
+        ->assign('oKundenfeld_arr', new CustomerFields(Shop::getLanguageID()));
 
     if ($nCheckout === 1) {
         Shop::Smarty()->assign('checkout', 1)

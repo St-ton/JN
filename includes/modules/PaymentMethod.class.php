@@ -73,6 +73,11 @@ class PaymentMethod
     public $paymentConfig;
 
     /**
+     * @var int|null
+     */
+    public $kZahlungsart;
+
+    /**
      * @param string $moduleID
      * @param int    $nAgainCheckout
      */
@@ -107,14 +112,14 @@ class PaymentMethod
             $this->duringCheckout = 0;
         }
         if ($this->cModulId === 'za_null_jtl' || $this->moduleID === 'za_null_jtl') {
-            $this->kZahlungsart = $result->kZahlungsart;
+            $this->kZahlungsart = (int)$result->kZahlungsart;
         }
         return $this;
     }
 
     /**
      * @param Bestellung $order
-     * @return string
+     * @return string|null
      */
     public function getOrderHash($order)
     {
@@ -136,7 +141,7 @@ class PaymentMethod
      */
     public function getReturnURL($order)
     {
-        if (!isset($_SESSION['Zahlungsart']->nWaehrendBestellung)
+        if (isset($_SESSION['Zahlungsart']->nWaehrendBestellung)
             && (int)$_SESSION['Zahlungsart']->nWaehrendBestellung > 0
         ) {
             return Shop::getURL() . '/bestellvorgang.php';

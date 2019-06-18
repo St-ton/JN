@@ -1,4 +1,4 @@
-<h1>Nach Hersteller suchen</h1>
+<h1>{__('labelSearchManufacturer')}</h1>
 <fieldset>
     <input class="form-control" type="text" id="manufacturer_list_input" value="{if isset($cSearch)}{$cSearch}{/if}" autocomplete="off" />
     <div class="select_wrapper">

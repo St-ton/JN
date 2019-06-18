@@ -15,8 +15,8 @@ use JTL\Filter\Config;
 use JTL\Filter\ProductFilter;
 use JTL\Helpers\Category;
 use JTL\Helpers\Manufacturer;
+use JTL\Helpers\Seo;
 use JTL\Helpers\Tax;
-use JTL\Helpers\Text;
 use JTL\Media\Image;
 use JTL\Media\MediaImage;
 use JTL\Session\Frontend;
@@ -765,11 +765,5 @@ function getStates($params, $smarty)
  */
 function seofy ($optStr = '')
 {
-    $optStr = preg_replace('/[^\\pL\d_]+/u', '-', $optStr);
-    $optStr = trim($optStr, '-');
-    $optStr = transliterator_transliterate('Latin-ASCII;', $optStr);
-    $optStr = strtolower($optStr);
-    $optStr = preg_replace('/[^-a-z0-9_]+/', '', $optStr);
-
-    return $optStr;
+    return Seo::sanitizeSeoSlug($optStr);
 }

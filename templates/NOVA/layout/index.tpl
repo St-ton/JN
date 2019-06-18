@@ -17,34 +17,39 @@
         {/block}
 
         {block name='layout-index-content'}
-            {if $opcPageService->getCurPage()->isReplace()}
-                {include file='snippets/opc_mount_point.tpl' id='opc_replace_all'}
-            {else}
-                {block name='layout-index-heading'}
-                    {if !empty($Link->getTitle())}
+            {block name='layout-index-heading'}
+                {if !empty($Link->getTitle())}
+                    {include file='snippets/opc_mount_point.tpl' id='opc_before_heading'}
+                    {container}
                         <h1>{$Link->getTitle()}</h1>
-                    {elseif isset($bAjaxRequest) && $bAjaxRequest}
+                    {/container}
+                {elseif isset($bAjaxRequest) && $bAjaxRequest}
+                    {include file='snippets/opc_mount_point.tpl' id='opc_before_heading'}
+                    {container}
                         <h1>{if !empty($Link->getMetaTitle())}{$Link->getMetaTitle()}{else}{$Link->getName()}{/if}</h1>
-                    {/if}
-                {/block}
-                {block name='layout-index-include-extension'}
+                    {/container}
+                {/if}
+            {/block}
+            {block name='layout-index-include-extension'}
+                {container}
                     {include file='snippets/extension.tpl'}
-                {/block}
+                {/container}
+            {/block}
 
-                {*{include file='snippets/opc_mount_point.tpl' id='opc_link_content_prepend'}*}
-
-                {block name='layout-index-link-content'}
-                    {if !empty($Link->getContent())}
+            {block name='layout-index-link-content'}
+                {if !empty($Link->getContent())}
+                    {include file='snippets/opc_mount_point.tpl' id='opc_before_content'}
+                    {container}
                         {$Link->getContent()}
-                    {/if}
-                {/block}
+                    {/container}
+                {/if}
+            {/block}
 
-                {*{include file='snippets/opc_mount_point.tpl' id='opc_link_content_append'}*}
-
-                {block name='layout-index-link-types'}
+            {block name='layout-index-link-types'}
+                {container}
                     {if $Link->getLinkType() === $smarty.const.LINKTYP_AGB}
                         <div id="tos" class="well well-sm">
-                            {*{include file='snippets/opc_mount_point.tpl' id='opc_tos_prepend'}*}
+                            {include file='snippets/opc_mount_point.tpl' id='opc_before_tos'}
                             {if $AGB !== false}
                                 {if $AGB->cAGBContentHtml}
                                     {$AGB->cAGBContentHtml}
@@ -52,11 +57,11 @@
                                     {$AGB->cAGBContentText|nl2br}
                                 {/if}
                             {/if}
-                            {include file='snippets/opc_mount_point.tpl' id='opc_tos_append'}
+                            {include file='snippets/opc_mount_point.tpl' id='opc_after_tos'}
                         </div>
                     {elseif $Link->getLinkType() === $smarty.const.LINKTYP_WRB}
                         <div id="revocation-instruction" class="well well-sm">
-                            {include file='snippets/opc_mount_point.tpl' id='opc_revocation_prepend'}
+                            {include file='snippets/opc_mount_point.tpl' id='opc_before_revocation'}
                             {if $WRB !== false}
                                 {if $WRB->cWRBContentHtml}
                                     {$WRB->cWRBContentHtml}
@@ -64,7 +69,7 @@
                                     {$WRB->cWRBContentText|nl2br}
                                 {/if}
                             {/if}
-                            {include file='snippets/opc_mount_point.tpl' id='opc_revocation_append'}
+                            {include file='snippets/opc_mount_point.tpl' id='opc_after_revocation'}
                         </div>
                     {elseif $Link->getLinkType() === $smarty.const.LINKTYP_STARTSEITE}
                         {include file='page/index.tpl'}
@@ -89,8 +94,8 @@
                     {elseif $Link->getLinkType() === $smarty.const.LINKTYP_404}
                         {include file='page/404.tpl'}
                     {/if}
-                {/block}
-            {/if}
+                {/container}
+            {/block}
         {/block}
 
         {block name='layout-index-include-footer'}

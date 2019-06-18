@@ -41,16 +41,17 @@
                 <div class="input-group-addon">
                     <label for="kSprache">{__('language')}:</label>
                 </div>
-                <select id="kSprache" name="kSprache" class="form-control" onchange="this.form.submit();">
-                    {foreach $oSprache_arr as $oSprache}
-                        <option value="{$oSprache->kSprache}"
-                                {if (int)$smarty.session.kSprache === (int)$oSprache->kSprache}selected{/if}
-                                {if !$oSprache->bImported}class="alert-success"{/if}>
-                            {$oSprache->cNameDeutsch}
-                            {if $oSprache->cShopStandard === 'Y'}({__('standard')}){/if}
-                        </option>
-                    {/foreach}
-                </select>
+                <span class="input-group-wrap last">
+                    <select id="kSprache" name="kSprache" class="form-control" onchange="this.form.submit();">
+                        {foreach $oSprache_arr as $language}
+                            <option value="{$language->getId()}"
+                                    {if (int)$smarty.session.kSprache === $language->getId()}selected{/if}>
+                                {$language->getLocalizedName()}
+                                {if $language->isShopDefault()}({__('standard')}){/if}
+                            </option>
+                        {/foreach}
+                    </select>
+                </span>
             </div>
         </form>
     </div>

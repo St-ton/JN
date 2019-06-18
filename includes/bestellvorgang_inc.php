@@ -4,28 +4,32 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Alert\Alert;
+use JTL\Catalog\Product\Preise;
+use JTL\CheckBox;
+use JTL\Checkout\Kupon;
+use JTL\Checkout\Lieferadresse;
+use JTL\Checkout\Zahlungsart;
+use JTL\Customer\CustomerAttribute;
+use JTL\Customer\CustomerAttributes;
+use JTL\Customer\CustomerField;
+use JTL\Customer\CustomerFields;
+use JTL\Customer\Kunde;
+use JTL\DB\ReturnType;
 use JTL\Helpers\Date;
 use JTL\Helpers\Form;
 use JTL\Helpers\PaymentMethod as Helper;
 use JTL\Helpers\ShippingMethod;
 use JTL\Helpers\Tax;
-use JTL\Alert\Alert;
-use JTL\CheckBox;
-use JTL\Customer\Kunde;
-use JTL\Checkout\Kupon;
-use JTL\Checkout\Lieferadresse;
-use JTL\Catalog\Product\Preise;
+use JTL\Helpers\Text;
+use JTL\Language\LanguageHelper;
+use JTL\Plugin\Helper as PluginHelper;
+use JTL\Plugin\State;
+use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Shopsetting;
 use JTL\SimpleMail;
-use JTL\Sprache;
 use JTL\Staat;
-use JTL\Helpers\Text;
-use JTL\Checkout\Zahlungsart;
-use JTL\DB\ReturnType;
-use JTL\Session\Frontend;
-use JTL\Plugin\Helper as PluginHelper;
-use JTL\Plugin\State;
 use JTL\VerificationVAT\VATCheck;
 
 /**
@@ -91,6 +95,7 @@ function pruefeUnregistriertBestellen($post): int
         true
     ));
 
+    $Kunde->getCustomerAttributes()->assign($customerAttributes);
     if (isset($post['shipping_address'])) {
         if ((int)$post['shipping_address'] === 0) {
             $post['kLieferadresse'] = 0;
@@ -123,10 +128,8 @@ function pruefeUnregistriertBestellen($post): int
             $post,
             ['oKunde' => $Kunde]
         )->checkLogging(CHECKBOX_ORT_REGISTRIERUNG, $kKundengruppe, $post, true);
-        //selbstdef. Kundenattr in session setzen
-        $Kunde->cKundenattribut_arr = $customerAttributes;
-        $Kunde->nRegistriert        = 0;
-        $_SESSION['Kunde']          = $Kunde;
+        $Kunde->nRegistriert = 0;
+        $_SESSION['Kunde']   = $Kunde;
         if (isset($_SESSION['Warenkorb']->kWarenkorb)
             && $cart->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL]) > 0
         ) {
@@ -151,7 +154,7 @@ function pruefeUnregistriertBestellen($post): int
     }
 
     setzeFehlendeAngaben($missingInput);
-    Shop::Smarty()->assign('cKundenattribut_arr', $customerAttributes)
+    Shop::Smarty()->assign('customerAttributes', $customerAttributes)
         ->assign('cPost_var', Text::filterXSS($post));
 
     return 0;
@@ -370,8 +373,8 @@ function pruefeRechnungsadresseStep($get): void
             unset($_SESSION['checkout.fehlendeAngaben']);
         }
         if (isset($_SESSION['checkout.cPost_arr'])) {
-            $Kunde                      = getKundendaten($_SESSION['checkout.cPost_arr'], 0, 0);
-            $Kunde->cKundenattribut_arr = getKundenattribute($_SESSION['checkout.cPost_arr']);
+            $Kunde = getKundendaten($_SESSION['checkout.cPost_arr'], 0, 0);
+            $Kunde->getCustomerAttributes()->assign(getKundenattribute($_SESSION['checkout.cPost_arr']));
             Shop::Smarty()->assign('Kunde', $Kunde)
                 ->assign('cPost_var', $_SESSION['checkout.cPost_arr']);
 
@@ -585,6 +588,7 @@ function gibStepAccountwahl(): void
  */
 function gibStepUnregistriertBestellen(): void
 {
+    /** @var Kunde $Kunde */
     global $Kunde;
     $herkunfte       = Shop::Container()->getDB()->query(
         'SELECT *
@@ -598,12 +602,10 @@ function gibStepUnregistriertBestellen(): void
         ->assign('Kunde', $Kunde ?? null)
         ->assign('laender', ShippingMethod::getPossibleShippingCountries($customerGroupID, false, true))
         ->assign('LieferLaender', ShippingMethod::getPossibleShippingCountries($customerGroupID))
-        ->assign('oKundenfeld_arr', gibSelbstdefKundenfelder())
+        ->assign('oKundenfeld_arr', new CustomerFields(Shop::getLanguageID()))
         ->assign('nAnzeigeOrt', CHECKBOX_ORT_REGISTRIERUNG)
-        ->assign('code_registrieren', false);
-    if (isset($Kunde->cKundenattribut_arr) && is_array($Kunde->cKundenattribut_arr)) {
-        Shop::Smarty()->assign('cKundenattribut_arr', $Kunde->cKundenattribut_arr);
-    }
+        ->assign('code_registrieren', false)
+        ->assign('customerAttributes', $Kunde !== null ? $Kunde->getCustomerAttributes() : getKundenattribute($_POST));
 
     executeHook(HOOK_BESTELLVORGANG_PAGE_STEPUNREGISTRIERTBESTELLEN);
 }
@@ -794,12 +796,9 @@ function gibStepBestaetigung($get)
     if (empty($get['fillOut'])) {
         unset($_SESSION['cPlausi_arr'], $_SESSION['cPost_arr']);
     }
-    if (!empty(Frontend::getCustomer()->cKundenattribut_arr)) {
-        krsort(Frontend::getCustomer()->cKundenattribut_arr);
-    }
     //falls zahlungsart extern und Einstellung, dass Bestellung für Kaufabwicklung notwendig, füllte tzahlungsession
     Shop::Smarty()->assign('Kunde', Frontend::getCustomer())
-        ->assign('customerAttribute_arr', Frontend::getCustomer()->cKundenattribut_arr)
+        ->assign('customerAttributes', Frontend::getCustomer()->getCustomerAttributes())
         ->assign('Lieferadresse', $_SESSION['Lieferadresse'])
         ->assign('KuponMoeglich', Kupon::couponsAvailable())
         ->assign('currentCoupon', Shop::Lang()->get('currentCoupon', 'checkout'))
@@ -2165,67 +2164,15 @@ function checkKundenFormularArray($data, int $kundenaccount, $checkpass = 1)
     }
     // Selbstdef. Kundenfelder
     if (isset($conf['kundenfeld']['kundenfeld_anzeigen']) && $conf['kundenfeld']['kundenfeld_anzeigen'] === 'Y') {
-        $customerFields = Shop::Container()->getDB()->selectAll(
-            'tkundenfeld',
-            'kSprache',
-            Shop::getLanguage(),
-            'kKundenfeld, cName, cTyp, nPflicht, nEditierbar'
-        );
+        $customerFields = new CustomerFields(Shop::getLanguage());
+        /** @var CustomerField $customerField */
         foreach ($customerFields as $customerField) {
             // Kundendaten ändern?
-            if ((int)$data['editRechnungsadresse'] === 1) {
-                if (!isset($data['custom_' . $customerField->kKundenfeld])
-                    && $customerField->nPflicht == 1
-                    && $customerField->nEditierbar == 1
-                ) {
-                    $ret['custom'][$customerField->kKundenfeld] = 1;
-                } elseif (!empty($data['custom_' . $customerField->kKundenfeld])) {
-                    // Datum
-                    // 1 = leer
-                    // 2 = falsches Format
-                    // 3 = falsches Datum
-                    // 0 = o.k.
-                    if ($customerField->cTyp === 'datum') {
-                        $_dat   = $data['custom_' . $customerField->kKundenfeld];
-                        $_datTs = strtotime($_dat);
-                        $_dat   = ($_datTs !== false) ? date('d.m.Y', $_datTs) : false;
-                        $check  = Text::checkDate($_dat);
-                        if ($check !== 0) {
-                            $ret['custom'][$customerField->kKundenfeld] = $check;
-                        }
-                    } elseif ($customerField->cTyp === 'zahl') {
-                        // Zahl, 4 = keine Zahl
-                        if ($data['custom_' . $customerField->kKundenfeld] !=
-                            (float)$data['custom_' . $customerField->kKundenfeld]
-                        ) {
-                            $ret['custom'][$customerField->kKundenfeld] = 4;
-                        }
-                    }
-                }
-            } elseif (empty($data['custom_' . $customerField->kKundenfeld]) && $customerField->nPflicht == 1) {
-                $ret['custom'][$customerField->kKundenfeld] = 1;
-            } elseif (!empty($data['custom_' . $customerField->kKundenfeld])) {
-                // Datum
-                // 1 = leer
-                // 2 = falsches Format
-                // 3 = falsches Datum
-                // 0 = o.k.
-                if ($customerField->cTyp === 'datum') {
-                    $_dat   = $data['custom_' . $customerField->kKundenfeld];
-                    $_datTs = strtotime($_dat);
-                    $_dat   = ($_datTs !== false) ? date('d.m.Y', $_datTs) : false;
-                    $check  = Text::checkDate($_dat);
-                    if ($check !== 0) {
-                        $ret['custom'][$customerField->kKundenfeld] = $check;
-                    }
-                } elseif ($customerField->cTyp === 'zahl') {
-                    // Zahl, 4 = keine Zahl
-                    if ($data['custom_' . $customerField->kKundenfeld] !=
-                        (float)$data['custom_' . $customerField->kKundenfeld]
-                    ) {
-                        $ret['custom'][$customerField->kKundenfeld] = 4;
-                    }
-                }
+            $customerFieldIdx = 'custom_' . $customerField->getID();
+            if (isset($data[$customerFieldIdx])
+                && ($check = $customerField->validate($data[$customerFieldIdx])) !== CustomerField::VALIDATE_OK
+            ) {
+                $ret['custom'][$customerField->getID()] = $check;
             }
         }
     }
@@ -2523,7 +2470,7 @@ function getKundendaten($post, $kundenaccount, $htmlentities = 1)
     $customer->dGeburtstag_formatted = $customer->dGeburtstag === '_DBNULL_'
         ? ''
         : DateTime::createFromFormat('Y-m-d', $customer->dGeburtstag)->format('d.m.Y');
-    $customer->angezeigtesLand       = Sprache::getCountryCodeByCountryName($customer->cLand);
+    $customer->angezeigtesLand       = LanguageHelper::getCountryCodeByCountryName($customer->cLand);
     if (!empty($customer->cBundesland)) {
         $oISO = Staat::getRegionByIso($customer->cBundesland, $customer->cLand);
         if (is_object($oISO)) {
@@ -2536,27 +2483,17 @@ function getKundendaten($post, $kundenaccount, $htmlentities = 1)
 
 /**
  * @param array $post
- * @return array
+ * @return CustomerAttributes
  */
-function getKundenattribute($post): array
+function getKundenattribute($post): CustomerAttributes
 {
-    $customerAttributes = [];
-    $fieldData          = Shop::Container()->getDB()->selectAll(
-        'tkundenfeld',
-        'kSprache',
-        Shop::getLanguage(),
-        'kKundenfeld, cName, cWawi'
-    );
-    foreach ($fieldData as $field) {
-        $oKundenfeld              = new stdClass();
-        $oKundenfeld->kKundenfeld = $field->kKundenfeld;
-        $oKundenfeld->cName       = $field->cName;
-        $oKundenfeld->cWawi       = $field->cWawi;
-        $oKundenfeld->cWert       = isset($post['custom_' . $field->kKundenfeld])
-            ? Text::filterXSS($post['custom_' . $field->kKundenfeld])
-            : null;
-
-        $customerAttributes[$field->kKundenfeld] = $oKundenfeld;
+    $customerAttributes = new CustomerAttributes(Session::getCustomer()->getID());
+    /** @var CustomerAttribute $customerAttribute */
+    foreach ($customerAttributes as $customerAttribute) {
+        if ($customerAttribute->isEditable()) {
+            $idx = 'custom_' . $customerAttribute->getCustomerFieldID();
+            $customerAttribute->setValue(isset($post[$idx]) ? Text::filterXSS($post[$idx]) : null);
+        }
     }
 
     return $customerAttributes;
@@ -2564,39 +2501,24 @@ function getKundenattribute($post): array
 
 /**
  * @return array
+ * @deprecated since 5.0.0 - use @see CustomerFields::getNonEditableFields instead
  */
 function getKundenattributeNichtEditierbar(): array
 {
-    return Shop::Container()->getDB()->selectAll(
-        'tkundenfeld',
-        ['kSprache', 'nEditierbar'],
-        [Shop::getLanguage(), 0],
-        'kKundenfeld'
-    );
+    \trigger_error(__FUNCTION__ . ' is deprecated.', \E_USER_DEPRECATED);
+
+    return (new CustomerFields())->getNonEditableFields();
 }
 
 /**
  * @return array - non editable customer fields
+ * @deprecated since 5.0.0 - use @see CustomerFields::getNonEditableFields instead
  */
 function getNonEditableCustomerFields(): array
 {
-    $res                = [];
-    $customerAttributes = Shop::Container()->getDB()->query(
-        'SELECT ka.kKundenfeld
-             FROM tkundenattribut AS ka
-             LEFT JOIN tkundenfeld AS kf
-                ON ka.kKundenfeld = kf.kKundenfeld
-             WHERE kKunde = ' . Frontend::getCustomer()->getID() . '
-             AND kf.nEditierbar = 0',
-        ReturnType::ARRAY_OF_OBJECTS
-    );
-    foreach ($customerAttributes as $attribute) {
-        $oKundenfeldAttribut              = new stdClass();
-        $oKundenfeldAttribut->kKundenfeld = $attribute->kKundenfeld;
-        $res[$attribute->kKundenfeld]     = $oKundenfeldAttribut;
-    }
+    \trigger_error(__FUNCTION__ . ' is deprecated.', \E_USER_DEPRECATED);
 
-    return $res;
+    return (new CustomerFields())->getNonEditableFields();
 }
 
 /**
@@ -2625,7 +2547,7 @@ function getLieferdaten($post)
     $shippingAddress->cAdressZusatz   = $post['adresszusatz'] ?? null;
     $shippingAddress->cMobil          = $post['mobil'] ?? null;
     $shippingAddress->cBundesland     = $post['bundesland'] ?? null;
-    $shippingAddress->angezeigtesLand = Sprache::getCountryCodeByCountryName($shippingAddress->cLand);
+    $shippingAddress->angezeigtesLand = LanguageHelper::getCountryCodeByCountryName($shippingAddress->cLand);
 
     if (!empty($shippingAddress->cBundesland)) {
         $oISO = Staat::getRegionByIso($shippingAddress->cBundesland, $shippingAddress->cLand);
@@ -2834,38 +2756,19 @@ function setzeLieferadresseAusRechnungsadresse(): Lieferadresse
     $shippingAddress->cAdressZusatz   = $customer->cAdressZusatz;
     $shippingAddress->cMobil          = $customer->cMobil;
     $shippingAddress->cBundesland     = $customer->cBundesland;
-    $shippingAddress->angezeigtesLand = Sprache::getCountryCodeByCountryName($shippingAddress->cLand);
+    $shippingAddress->angezeigtesLand = LanguageHelper::getCountryCodeByCountryName($shippingAddress->cLand);
     $_SESSION['Lieferadresse']        = $shippingAddress;
 
     return $shippingAddress;
 }
 
 /**
- * @return array
+ * @return CustomerFields
+ * @deprecated since 5.0.0 - use @see CustomerFields class instead
  */
-function gibSelbstdefKundenfelder(): array
+function gibSelbstdefKundenfelder(): CustomerFields
 {
-    $customerFields = Shop::Container()->getDB()->query(
-        'SELECT *
-            FROM tkundenfeld
-            WHERE kSprache = ' . Shop::getLanguageID(). '
-            ORDER BY nSort ASC',
-        ReturnType::ARRAY_OF_OBJECTS
-    );
-    foreach ($customerFields as $customerField) {
-        if ($customerField->cTyp !== 'auswahl') {
-            continue;
-        }
-        $customerField->oKundenfeldWert_arr = Shop::Container()->getDB()->selectAll(
-            'tkundenfeldwert',
-            'kKundenfeld',
-            (int)$customerField->kKundenfeld,
-            '*',
-            '`kKundenfeld`, `nSort`, `kKundenfeldWert` ASC'
-        );
-    }
-
-    return $customerFields;
+    return new CustomerFields(Shop::getLanguageID());
 }
 
 /**
@@ -3028,7 +2931,7 @@ function setzeSesssionAccountwahlLogin($customer): bool
         $_SESSION['NeukundenKupon'],
         $_SESSION['Kupon']
     );
-    $customer->angezeigtesLand = Sprache::getCountryCodeByCountryName($customer->cLand);
+    $customer->angezeigtesLand = LanguageHelper::getCountryCodeByCountryName($customer->cLand);
     $session                   = Frontend::getInstance();
     $session->setCustomer($customer);
 
@@ -3067,13 +2970,13 @@ function setzeSessionRechnungsadresse(array $post, $missingData)
     if (count($missingData) > 0) {
         return false;
     }
-    $customer->cKundenattribut_arr = $customerAttributes;
-    $customer->nRegistriert        = 0;
-    $_SESSION['Kunde']             = $customer;
+    $customer->getCustomerAttributes()->assign($customerAttributes);
+    $customer->nRegistriert = 0;
+    $_SESSION['Kunde']      = $customer;
     if (isset($_SESSION['Warenkorb']->kWarenkorb)
         && Frontend::getCart()->gibAnzahlArtikelExt([C_WARENKORBPOS_TYP_ARTIKEL]) > 0
     ) {
-        if ($_SESSION['Bestellung']->kLieferadresse == 0 && $_SESSION['Lieferadresse']) {
+        if ((int)$_SESSION['Bestellung']->kLieferadresse === 0 && $_SESSION['Lieferadresse']) {
             setzeLieferadresseAusRechnungsadresse();
         }
         Tax::setTaxRates();
@@ -3106,6 +3009,9 @@ function setzeSmartyRechnungsadresse($nUnreg, $nCheckout = 0): void
                ->assign('step', 'rechnungsdaten');
         $step = 'rechnungsdaten';
     }
+    if (count(Frontend::getCustomer()->getCustomerAttributes()) === 0) {
+        Frontend::getCustomer()->getCustomerAttributes()->assign(getKundenattribute($_POST));
+    }
     $smarty->assign('untertitel', Shop::Lang()->get('fillUnregForm', 'checkout'))
            ->assign('herkunfte', $herkunfte)
            ->assign('Kunde', Frontend::getCustomer())
@@ -3117,17 +3023,12 @@ function setzeSmartyRechnungsadresse($nUnreg, $nCheckout = 0): void
                    true
                )
            )
-            ->assign('oKundenfeld_arr', gibSelbstdefKundenfelder());
-    if (is_array(Frontend::getCustomer()->cKundenattribut_arr)) {
-        $smarty->assign('cKundenattribut_arr', Frontend::getCustomer()->cKundenattribut_arr);
-    } else {
-        Frontend::getCustomer()->cKundenattribut_arr = getKundenattribute($_POST);
-        $smarty->assign('cKundenattribut_arr', Frontend::getCustomer()->cKundenattribut_arr);
-    }
-    $smarty->assign(
-        'warning_passwortlaenge',
-        lang_passwortlaenge($conf['kunden']['kundenregistrierung_passwortlaenge'])
-    );
+           ->assign('oKundenfeld_arr', new CustomerFields(Shop::getLanguageID()))
+           ->assign('customerAttributes', Frontend::getCustomer()->getCustomerAttributes())
+           ->assign(
+               'warning_passwortlaenge',
+               lang_passwortlaenge($conf['kunden']['kundenregistrierung_passwortlaenge'])
+           );
     if ((int)$nCheckout === 1) {
         $smarty->assign('checkout', 1);
     }
@@ -3150,24 +3051,22 @@ function setzeFehlerSmartyRechnungsadresse($missingData, $nUnreg = 0, $post = nu
         ReturnType::ARRAY_OF_OBJECTS
     );
     $smarty->assign('untertitel', Shop::Lang()->get('fillUnregForm', 'checkout'))
-          ->assign('herkunfte', $origins)
-          ->assign('Kunde', getKundendaten($post, 0))
-          ->assign(
-              'laender',
-              ShippingMethod::getPossibleShippingCountries(Frontend::getCustomerGroup()->getID(), false, true)
-          )
-          ->assign(
-              'LieferLaender',
-              ShippingMethod::getPossibleShippingCountries(Frontend::getCustomerGroup()->getID())
-          )
-          ->assign('oKundenfeld_arr', gibSelbstdefKundenfelder())
-          ->assign(
-              'warning_passwortlaenge',
-              lang_passwortlaenge($conf['kunden']['kundenregistrierung_passwortlaenge'])
-          );
-    if (is_array(Frontend::getCustomer()->cKundenattribut_arr)) {
-        $smarty->assign('cKundenattribut_arr', Frontend::getCustomer()->cKundenattribut_arr);
-    }
+            ->assign('herkunfte', $origins)
+            ->assign('Kunde', getKundendaten($post, 0))
+            ->assign(
+                'laender',
+                ShippingMethod::getPossibleShippingCountries(Frontend::getCustomerGroup()->getID(), false, true)
+            )
+            ->assign(
+                'LieferLaender',
+                ShippingMethod::getPossibleShippingCountries(Frontend::getCustomerGroup()->getID())
+            )
+            ->assign('oKundenfeld_arr', new CustomerFields(Shop::getLanguageID()))
+            ->assign(
+                'warning_passwortlaenge',
+                lang_passwortlaenge($conf['kunden']['kundenregistrierung_passwortlaenge'])
+            )
+            ->assign('customerAttributes', Frontend::getCustomer()->getCustomerAttributes());
     if ($nUnreg) {
         $smarty->assign('step', 'formular');
     } else {

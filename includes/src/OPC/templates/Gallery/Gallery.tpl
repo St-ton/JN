@@ -45,7 +45,7 @@
 {/row}
 
 {if $isPreview === false}
-    {modal id='gllry_popup_'|cat:$instance->getUid() class='fade img-gallery-modal'}
+    {modal size='lg' id='gllry_popup_'|cat:$instance->getUid() class='fade img-gallery-modal'}
         <div class="img-gallery-slider">
             {foreach $instance->getProperty('images') as $image}
                 {$imgAttribs = $instance->getImageAttributes($image.url, '', '')}

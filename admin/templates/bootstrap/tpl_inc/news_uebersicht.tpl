@@ -297,7 +297,7 @@
                     <input type="hidden" name="tab" value="kategorien" />
                     <div class="panel-footer">
                         <div class="btn-group">
-                            <button name="news_kategorie_erstellen" type="submit" value="{__('newsCatAdd')}" class="btn btn-primary"><i class="fa fa-share"></i> {__('newsCatAdd')}</button>
+                            <button name="news_kategorie_erstellen" type="submit" value="{__('newsCatCreate')}" class="btn btn-primary"><i class="fa fa-share"></i> {__('newsCatCreate')}</button>
                             <input name="loeschen" type="submit" data-id="loeschen" value="{__('delete')}" class="hidden-soft">
                             <button name="loeschen" type="button" data-toggle="modal" data-target=".delete-modal" value="{__('delete')}" class="btn btn-danger"><i class="fa fa-trash"></i> {__('delete')}</button>
                         </div>
@@ -349,7 +349,7 @@
                         {foreach $oNewsMonatsPraefix_arr as $oNewsMonatsPraefix}
                             <div class="input-group">
                                 <span class="input-group-addon">
-                                    <label for="praefix_{$oNewsMonatsPraefix->cISOSprache}">{__('newsPraefix')} ({$oNewsMonatsPraefix->cNameDeutsch})</label>
+                                    <label for="praefix_{$oNewsMonatsPraefix->cISOSprache}">{__('newsPraefix')} ({$oNewsMonatsPraefix->name})</label>
                                 </span>
                                 <input type="text" class="form-control" id="praefix_{$oNewsMonatsPraefix->cISOSprache}" name="praefix_{$oNewsMonatsPraefix->cISOSprache}" value="{$oNewsMonatsPraefix->cPraefix}" tabindex="1" />
                             </div>

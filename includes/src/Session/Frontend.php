@@ -9,20 +9,21 @@ namespace JTL\Session;
 use JTL\Cart\Warenkorb;
 use JTL\Cart\WarenkorbPers;
 use JTL\Catalog\Currency;
+use JTL\Catalog\Vergleichsliste;
+use JTL\Catalog\Wishlist\Wunschliste;
+use JTL\Checkout\Lieferadresse;
+use JTL\Customer\Kunde;
+use JTL\Customer\Kundengruppe;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Manufacturer;
 use JTL\Helpers\Request;
-use JTL\Helpers\Text;
 use JTL\Helpers\Tax;
+use JTL\Helpers\Text;
 use JTL\Kampagne;
-use JTL\Customer\Kunde;
-use JTL\Customer\Kundengruppe;
-use JTL\Checkout\Lieferadresse;
+use JTL\Language\LanguageHelper;
+use JTL\Language\LanguageModel;
 use JTL\Link\LinkGroupCollection;
 use JTL\Shop;
-use JTL\Sprache;
-use JTL\Catalog\Vergleichsliste;
-use JTL\Catalog\Wishlist\Wunschliste;
 use function Functional\first;
 
 /**
@@ -76,52 +77,20 @@ class Frontend extends AbstractSession
      */
     public function setStandardSessionVars(): self
     {
-        $updateGlobals  = true;
-        $updateLanguage = false;
-        Sprache::getInstance()->autoload();
+        LanguageHelper::getInstance()->autoload();
         $_SESSION['FremdParameter'] = [];
+        $_SESSION['Warenkorb']      = $_SESSION['Warenkorb'] ?? new Warenkorb();
 
-        if (!isset($_SESSION['Warenkorb'])) {
-            $_SESSION['Warenkorb'] = new Warenkorb();
-        }
-        if (isset($_SESSION['Globals_TS'])) {
-            $updateGlobals = false;
-            $ts            = Shop::Container()->getDB()->queryPrepared(
-                'SELECT dLetzteAenderung 
-                    FROM tglobals 
-                    WHERE dLetzteAenderung > :ts',
-                ['ts' => $_SESSION['Globals_TS']],
-                ReturnType::SINGLE_OBJECT
-            );
-            if (isset($ts->dLetzteAenderung)) {
-                $_SESSION['Globals_TS'] = $ts->dLetzteAenderung;
-                $updateGlobals          = true;
-            }
-        } else {
-            $_SESSION['Globals_TS'] = Shop::Container()->getDB()->query(
-                'SELECT dLetzteAenderung 
-                    FROM tglobals',
-                ReturnType::SINGLE_OBJECT
-            )->dLetzteAenderung;
-        }
-        if (isset($_GET['lang']) && (!isset($_SESSION['cISOSprache']) || $_GET['lang'] !== $_SESSION['cISOSprache'])) {
-            $updateGlobals  = true;
-            $updateLanguage = true;
-        }
-        if (!$updateGlobals
-            && ((isset($_SESSION['Kundengruppe']) && \get_class($_SESSION['Kundengruppe']) === 'stdClass')
-                || (isset($_SESSION['Waehrung']) && \get_class($_SESSION['Waehrung']) === 'stdClass'))
-        ) {
-            // session upgrade from 4.05 -> 4.06 - update with class instance
-            $updateGlobals = true;
-        }
-        $lang    = $_GET['lang'] ?? '';
-        $checked = false;
+        $updateGlobals  = $this->checkGlobals();
+        $updateLanguage = $this->checkLanguageUpdate();
+        $updateGlobals  = $updateLanguage || $updateGlobals || $this->checkSessionUpdate();
+        $lang           = $_GET['lang'] ?? '';
+        $checked        = false;
         if (isset($_SESSION['kSprache'])) {
             self::checkReset($lang);
             $checked = true;
         }
-        if ($updateGlobals || !isset($_SESSION['cISOSprache'], $_SESSION['kSprache'], $_SESSION['Kundengruppe'])) {
+        if ($updateGlobals) {
             $this->updateGlobals();
             if ($updateLanguage && isset($_SESSION['Kunde'])) {
                 // Kundensprache ändern, wenn im eingeloggten Zustand die Sprache geändert wird
@@ -143,28 +112,82 @@ class Frontend extends AbstractSession
                 'mehr zu ersten Schritten mit JTL-Shop, der Grundkonfiguration ' .
                 'und dem erstem Abgleich mit JTL-Wawi</a>.</h1>');
         }
-
-        //wurde kunde über wawi aktualisiert?
-        if (isset($_SESSION['Kunde']->kKunde)
-            && $_SESSION['Kunde']->kKunde > 0
-            && !isset($_SESSION['kundendaten_aktualisiert'])
-        ) {
-            $Kunde = Shop::Container()->getDB()->queryPrepared(
-                'SELECT kKunde
-                    FROM tkunde
-                    WHERE kKunde = :cid
-                        AND DATE_SUB(NOW(), INTERVAL 3 HOUR) < dVeraendert',
-                ['cid' => (int)$_SESSION['Kunde']->kKunde],
-                ReturnType::SINGLE_OBJECT
-            );
-            if (isset($Kunde->kKunde) && $Kunde->kKunde > 0) {
-                $oKunde = new Kunde($_SESSION['Kunde']->kKunde);
-                $this->setCustomer($oKunde);
-                $_SESSION['kundendaten_aktualisiert'] = 1;
-            }
-        }
+        $this->checkCustomerUpdate();
 
         return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    private function checkLanguageUpdate(): bool
+    {
+        return isset($_GET['lang']) && (!isset($_SESSION['cISOSprache']) || $_GET['lang'] !== $_SESSION['cISOSprache']);
+    }
+
+    /**
+     * wurde kunde über wawi aktualisiert?
+     *
+     * @return bool
+     */
+    private function checkCustomerUpdate(): bool
+    {
+        if (empty($_SESSION['Kunde']->kKunde) || isset($_SESSION['kundendaten_aktualisiert'])) {
+            return false;
+        }
+        $data = Shop::Container()->getDB()->queryPrepared(
+            'SELECT kKunde
+                FROM tkunde
+                WHERE kKunde = :cid
+                    AND DATE_SUB(NOW(), INTERVAL 3 HOUR) < dVeraendert',
+            ['cid' => (int)$_SESSION['Kunde']->kKunde],
+            ReturnType::SINGLE_OBJECT
+        );
+        if (isset($data->kKunde) && $data->kKunde > 0) {
+            $this->setCustomer(new Kunde($_SESSION['Kunde']->kKunde));
+            $_SESSION['kundendaten_aktualisiert'] = 1;
+        }
+
+        return true;
+    }
+
+    /**
+     * @return bool
+     */
+    private function checkSessionUpdate(): bool
+    {
+        return ((isset($_SESSION['Kundengruppe']) && \get_class($_SESSION['Kundengruppe']) === 'stdClass')
+            || (isset($_SESSION['Waehrung']) && \get_class($_SESSION['Waehrung']) === 'stdClass')
+            || (isset($_SESSION['Sprachen']) && \get_class($_SESSION['Sprachen'][0]) === 'stdClass'));
+    }
+
+    /**
+     * @return bool
+     */
+    private function checkGlobals(): bool
+    {
+        $doUpdate = true;
+        if (isset($_SESSION['Globals_TS'])) {
+            $doUpdate = false;
+            $last     = Shop::Container()->getDB()->queryPrepared(
+                'SELECT dLetzteAenderung 
+                    FROM tglobals 
+                    WHERE dLetzteAenderung > :ts',
+                ['ts' => $_SESSION['Globals_TS']],
+                ReturnType::SINGLE_OBJECT
+            );
+            if (isset($last->dLetzteAenderung)) {
+                $_SESSION['Globals_TS'] = $last->dLetzteAenderung;
+                $doUpdate               = true;
+            }
+        } else {
+            $_SESSION['Globals_TS'] = Shop::Container()->getDB()->query(
+                'SELECT dLetzteAenderung  FROM tglobals',
+                ReturnType::SINGLE_OBJECT
+            )->dLetzteAenderung;
+        }
+
+        return $doUpdate || !isset($_SESSION['cISOSprache'], $_SESSION['kSprache'], $_SESSION['Kundengruppe']);
     }
 
     /**
@@ -176,7 +199,7 @@ class Frontend extends AbstractSession
         $_SESSION['oKategorie_arr']                   = [];
         $_SESSION['kKategorieVonUnterkategorien_arr'] = [];
         $_SESSION['ks']                               = [];
-        $_SESSION['Sprachen']                         = Sprache::getInstance()->gibInstallierteSprachen();
+        $_SESSION['Sprachen']                         = LanguageHelper::getInstance()->gibInstallierteSprachen();
         Currency::setCurrencies(true);
 
         if (!isset($_SESSION['jtl_token'])) {
@@ -189,12 +212,13 @@ class Frontend extends AbstractSession
         }, $_SESSION['Sprachen']);
         $defaultLang = '';
         $allowed     = [];
-        foreach ($_SESSION['Sprachen'] as $oSprache) {
-            $cISO              = Text::convertISO2ISO639($oSprache->cISO);
-            $oSprache->cISO639 = $cISO;
-            $allowed[]         = $cISO;
-            if ($oSprache->cShopStandard === 'Y') {
-                $defaultLang = $cISO;
+        foreach ($_SESSION['Sprachen'] as $language) {
+            /** @var LanguageModel $language */
+            $iso = Text::convertISO2ISO639($language->cISO);
+            $language->setIso639($iso);
+            $allowed[] = $iso;
+            if ($language->cShopStandard === 'Y') {
+                $defaultLang = $iso;
             }
         }
         if (!isset($_SESSION['kSprache'])) {
@@ -209,21 +233,21 @@ class Frontend extends AbstractSession
                 }
             }
         }
-        if (!isset($_SESSION['Waehrung'])) {
-            foreach ($_SESSION['Waehrungen'] as $currency) {
-                /** @var $currency Currency */
-                if ($currency->isDefault()) {
-                    $_SESSION['Waehrung']      = $currency;
-                    $_SESSION['cWaehrungName'] = $currency->getName();
-                }
-            }
-        } else {
+        if (isset($_SESSION['Waehrung'])) {
             if (\get_class($_SESSION['Waehrung']) === 'stdClass') {
                 $_SESSION['Waehrung'] = new Currency($_SESSION['Waehrung']->kWaehrung);
             }
             foreach ($_SESSION['Waehrungen'] as $currency) {
                 /** @var Currency $currency */
                 if ($currency->getCode() === $_SESSION['Waehrung']->getCode()) {
+                    $_SESSION['Waehrung']      = $currency;
+                    $_SESSION['cWaehrungName'] = $currency->getName();
+                }
+            }
+        } else {
+            foreach ($_SESSION['Waehrungen'] as $currency) {
+                /** @var $currency Currency */
+                if ($currency->isDefault()) {
                     $_SESSION['Waehrung']      = $currency;
                     $_SESSION['cWaehrungName'] = $currency->getName();
                 }
@@ -252,10 +276,11 @@ class Frontend extends AbstractSession
         if (!$_SESSION['Kundengruppe']->hasAttributes()) {
             $_SESSION['Kundengruppe']->initAttributes();
         }
-        if (Shop::Container()->getCache()->isCacheGroupActive(\CACHING_GROUP_CORE) === false) {
+        if (\PHP_SAPI !== 'cli' && Shop::Container()->getCache()->isCacheGroupActive(\CACHING_GROUP_CORE) === false) {
             $_SESSION['Linkgruppen'] = Shop::Container()->getLinkService()->getLinkGroups();
             $_SESSION['Hersteller']  = Manufacturer::getInstance()->getManufacturers();
         }
+        Shop::setLanguage($_SESSION['kSprache'], $_SESSION['cISOSprache']);
         self::getCart()->loescheDeaktiviertePositionen();
         Tax::setTaxRates();
         Shop::Lang()->reset();
@@ -280,14 +305,14 @@ class Frontend extends AbstractSession
      */
     private function checkComparelistDeletes(): self
     {
-        $kVergleichlistePos = Request::verifyGPCDataInt('vlplo');
-        if ($kVergleichlistePos !== 0
+        $listID = Request::verifyGPCDataInt('vlplo');
+        if ($listID !== 0
             && isset($_SESSION['Vergleichsliste']->oArtikel_arr)
             && \is_array($_SESSION['Vergleichsliste']->oArtikel_arr)
         ) {
             // Wunschliste Position aus der Session löschen
             foreach ($_SESSION['Vergleichsliste']->oArtikel_arr as $i => $product) {
-                if ((int)$product->kArtikel === $kVergleichlistePos) {
+                if ((int)$product->kArtikel === $listID) {
                     unset($_SESSION['Vergleichsliste']->oArtikel_arr[$i]);
                 }
             }
@@ -404,7 +429,7 @@ class Frontend extends AbstractSession
      */
     public function setCustomer(Kunde $customer): self
     {
-        $customer->angezeigtesLand = Sprache::getCountryCodeByCountryName($customer->cLand);
+        $customer->angezeigtesLand = LanguageHelper::getCountryCodeByCountryName($customer->cLand);
         $_SESSION['Kunde']         = $customer;
         $_SESSION['Kundengruppe']  = new Kundengruppe((int)$customer->kKundengruppe);
         $_SESSION['Kundengruppe']->setMayViewCategories(1)
@@ -454,11 +479,11 @@ class Frontend extends AbstractSession
     }
 
     /**
-     * @return Sprache
+     * @return LanguageHelper
      */
-    public function getLanguage(): Sprache
+    public function getLanguage(): LanguageHelper
     {
-        $lang                    = Sprache::getInstance();
+        $lang                    = LanguageHelper::getInstance();
         $lang->kSprache          = (int)$_SESSION['kSprache'];
         $lang->currentLanguageID = (int)$_SESSION['kSprache'];
         $lang->cISOSprache       = $_SESSION['cISOSprache'];
@@ -467,17 +492,17 @@ class Frontend extends AbstractSession
     }
 
     /**
-     * @return Sprache
+     * @return LanguageHelper
      * @deprecated since 5.0.0
      */
-    public function language(): Sprache
+    public function language(): LanguageHelper
     {
         \trigger_error(__METHOD__. ' is deprecated.', \E_USER_DEPRECATED);
         return $this->getLanguage();
     }
 
     /**
-     * @return array
+     * @return LanguageModel[]
      */
     public static function getLanguages(): array
     {
@@ -634,7 +659,7 @@ class Frontend extends AbstractSession
                 $_SESSION['oKategorie_arr']     = [];
                 $_SESSION['oKategorie_arr_new'] = [];
             }
-            $lang = first(Sprache::getAllLanguages(), function ($l) use ($langISO) {
+            $lang = first(LanguageHelper::getAllLanguages(), function ($l) use ($langISO) {
                 return $l->cISO === $langISO;
             });
             if ($lang === null) {
@@ -675,7 +700,7 @@ class Frontend extends AbstractSession
                 }
             }
         }
-        Sprache::getInstance()->autoload();
+        LanguageHelper::getInstance()->autoload();
     }
 
     private static function urlFallback(): void

@@ -4,6 +4,7 @@
  *}
 {block name='content-all-closingtags'}
     {block name='content-closingtag'}
+        {include file='snippets/opc_mount_point.tpl' id='opc_content'}
     </div>{* /content *}
     {/block}
 
@@ -17,19 +18,19 @@
         {/block}
     {/if}
     {/block}
-    
+
     {block name='content-row-closingtag'}
     </div>{* /row *}
     {/block}
-    
+
     {block name='content-container-block-closingtag'}
     </div>{* /container-block *}
     {/block}
-    
+
     {block name='content-container-closingtag'}
     </div>{* /container *}
     {/block}
-    
+
     {block name='content-wrapper-closingtag'}
     </div>{* /content-wrapper*}
     {/block}
@@ -144,13 +145,13 @@
                         <ul id="language-dropdown-small" class="dropdown-menu dropdown-menu-right">
                             {foreach $smarty.session.Sprachen as $Sprache}
                                 {if $Sprache->kSprache == $smarty.session.kSprache}
-                                    <li class="active lang-{$lang} visible-xs"><a>{if $lang === 'ger'}{$Sprache->cNameDeutsch}{else}{$Sprache->cNameEnglisch}{/if}</a></li>
+                                    <li class="active lang-{$lang} visible-xs"><a>{$Sprache->displayLanguage}</a></li>
                                 {/if}
                             {/foreach}
                             {foreach $smarty.session.Sprachen as $oSprache}
                                 {if $oSprache->kSprache != $smarty.session.kSprache}
                                     <li>
-                                        <a href="{$oSprache->cURL}" class="link_lang {$oSprache->cISO}" rel="nofollow">{if $lang === 'ger'}{$oSprache->cNameDeutsch}{else}{$oSprache->cNameEnglisch}{/if}</a>
+                                        <a href="{$oSprache->cURL}" class="link_lang {$oSprache->cISO}" rel="nofollow">{$oSprache->displayLanguage}</a>
                                     </li>
                                 {/if}
                             {/foreach}
@@ -246,9 +247,9 @@
 
     {if !$bExclusive && !$isFluidContent && isset($Einstellungen.template.theme.background_image) && $Einstellungen.template.theme.background_image !== ''}
         {if $Einstellungen.template.theme.background_image === 'custom'}
-            {assign var='backstretchImgPath' value=$currentTemplateDir|cat:'themes/'|cat:$Einstellungen.template.theme.theme_default|cat:'/background.jpg'}
+            {assign var='backstretchImgPath' value=$ShopURL|cat:'/'|cat:$currentTemplateDir|cat:'themes/'|cat:$Einstellungen.template.theme.theme_default|cat:'/background.jpg'}
         {else}
-            {assign var='backstretchImgPath' value=$currentTemplateDir|cat:'themes/base/images/backgrounds/background_'|cat:$Einstellungen.template.theme.background_image|cat:'.jpg'}
+            {assign var='backstretchImgPath' value=$ShopURL|cat:'/'|cat:$currentTemplateDir|cat:'themes/base/images/backgrounds/background_'|cat:$Einstellungen.template.theme.background_image|cat:'.jpg'}
         {/if}
         <script>
             $(window).on("load", function (e) {

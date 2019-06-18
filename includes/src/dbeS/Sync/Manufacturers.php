@@ -9,7 +9,7 @@ namespace JTL\dbeS\Sync;
 use JTL\DB\ReturnType;
 use JTL\dbeS\Starter;
 use JTL\Helpers\Seo;
-use JTL\Sprache;
+use JTL\Language\LanguageHelper;
 use stdClass;
 use function Functional\flatten;
 
@@ -51,22 +51,23 @@ final class Manufacturers extends AbstractSync
         }
         foreach ($xml['del_hersteller']['kHersteller'] as $manufacturerID) {
             $manufacturerID = (int)$manufacturerID;
-            if ($manufacturerID > 0) {
-                $affectedProducts = $this->db->selectAll(
-                    'tartikel',
-                    'kHersteller',
-                    $manufacturerID,
-                    'kArtikel'
-                );
-                $this->db->delete('tseo', ['kKey', 'cKey'], [$manufacturerID, 'kHersteller']);
-                $this->db->delete('thersteller', 'kHersteller', $manufacturerID);
-                $this->db->delete('therstellersprache', 'kHersteller', $manufacturerID);
+            if ($manufacturerID <= 0) {
+                continue;
+            }
+            $affectedProducts = $this->db->selectAll(
+                'tartikel',
+                'kHersteller',
+                $manufacturerID,
+                'kArtikel'
+            );
+            $this->db->delete('tseo', ['kKey', 'cKey'], [$manufacturerID, 'kHersteller']);
+            $this->db->delete('thersteller', 'kHersteller', $manufacturerID);
+            $this->db->delete('therstellersprache', 'kHersteller', $manufacturerID);
 
-                \executeHook(\HOOK_HERSTELLER_XML_BEARBEITEDELETES, ['kHersteller' => $manufacturerID]);
-                $cacheTags[] = \CACHING_GROUP_MANUFACTURER . '_' . $manufacturerID;
-                foreach ($affectedProducts as $product) {
-                    $cacheTags[] = \CACHING_GROUP_ARTICLE . '_' . $product->kArtikel;
-                }
+            \executeHook(\HOOK_HERSTELLER_XML_BEARBEITEDELETES, ['kHersteller' => $manufacturerID]);
+            $cacheTags[] = \CACHING_GROUP_MANUFACTURER . '_' . $manufacturerID;
+            foreach ($affectedProducts as $product) {
+                $cacheTags[] = \CACHING_GROUP_ARTICLE . '_' . $product->kArtikel;
             }
         }
         $this->cache->flushTags(flatten($cacheTags));
@@ -81,7 +82,7 @@ final class Manufacturers extends AbstractSync
             return;
         }
         $manufacturers = $this->mapper->mapArray($xml['hersteller'], 'thersteller', 'mHersteller');
-        $languages     = Sprache::getAllLanguages();
+        $languages     = LanguageHelper::getAllLanguages();
         $mfCount       = \count($manufacturers);
         $cacheTags     = [];
         for ($i = 0; $i < $mfCount; $i++) {
@@ -113,7 +114,7 @@ final class Manufacturers extends AbstractSync
             foreach ($languages as $language) {
                 $baseSeo = $manufacturers[$i]->cSeo;
                 foreach ($mfSeo as $mf) {
-                    if (isset($mf->kSprache) && (int)$mf->kSprache === (int)$language->kSprache && !empty($mf->cSeo)) {
+                    if (isset($mf->kSprache) && (int)$mf->kSprache === $language->getId() && !empty($mf->cSeo)) {
                         $baseSeo = Seo::getSeo($mf->cSeo);
                         break;
                     }
@@ -122,7 +123,7 @@ final class Manufacturers extends AbstractSync
                 $oSeo->cSeo     = Seo::checkSeo($baseSeo);
                 $oSeo->cKey     = 'kHersteller';
                 $oSeo->kKey     = $id;
-                $oSeo->kSprache = (int)$language->kSprache;
+                $oSeo->kSprache = $language->getId();
                 $this->db->insert('tseo', $oSeo);
             }
             $this->db->delete('therstellersprache', 'kHersteller', $id);

@@ -4,11 +4,10 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Alert\Alert;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Shop;
-use JTL\Sprache;
-use JTL\Alert\Alert;
 
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'agbwrb_inc.php';
@@ -71,6 +70,5 @@ if ($step === 'agbwrb_uebersicht') {
 }
 
 $smarty->assign('step', $step)
-       ->assign('Sprachen', Sprache::getAllLanguages())
        ->assign('kSprache', $_SESSION['kSprache'])
        ->display('agbwrb.tpl');

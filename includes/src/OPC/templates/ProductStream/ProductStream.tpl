@@ -39,6 +39,18 @@
                 </div>
             {/cardbody}
         {/card}
+        <script>
+            function startSlider() {
+                $('.evo-box-vertical:not(.slick-initialized)').slick({
+                    //dots: true,
+                    arrows: true,
+                    lazyLoad: 'ondemand',
+                    slidesToShow: {$instance->getProperty('productCount')},
+                });
+            }
+            $(window).on('load', startSlider);
+            $(startSlider);
+        </script>
     {else}
         {if $style === 'gallery'}
             {$gridLG = 4}

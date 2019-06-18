@@ -3,24 +3,13 @@
 {include file='tpl_inc/seite_header.tpl' cTitel=__('Trennzeichen') cBeschreibung=__('trennzeichenDesc') cDokuURL=__('trennzeichenURL')}
 <div id="content" class="container-fluid">
     <div class="block">
-        {if isset($Sprachen) && $Sprachen|@count > 1}
-            <form name="sprache" method="post" action="trennzeichen.php" class="inline_block">
-                {$jtl_token}
-                <input type="hidden" name="sprachwechsel" value="1" />
-                <div class="input-group p25 left">
-                    <span class="input-group-addon">
-                        <label for="{__('changeLanguage')}">{__('changeLanguage')}</label>
-                    </span>
-                    <span class="input-group-wrap last">
-                        <select id="{__('changeLanguage')}" name="kSprache" class="form-control selectBox" onchange="document.sprache.submit();">
-                            {foreach $Sprachen as $sprache}
-                                <option value="{$sprache->kSprache}" {if $sprache->kSprache == $smarty.session.kSprache}selected{/if}>{$sprache->cNameDeutsch}</option>
-                            {/foreach}
-                        </select>
-                    </span>
-                </div>
-            </form>
-        {/if}
+        <form name="sprache" method="post" action="trennzeichen.php" class="inline_block">
+            {$jtl_token}
+            <input type="hidden" name="sprachwechsel" value="1" />
+            <div class="input-group p25 left">
+                {include file='tpl_inc/language_switcher.tpl'}
+            </div>
+        </form>
     </div>
     <form method="post" action="trennzeichen.php">
         {$jtl_token}

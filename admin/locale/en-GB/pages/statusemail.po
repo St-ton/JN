@@ -1,0 +1,129 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "statusemail"
+msgstr "Email reports"
+
+msgid "statusemailURL"
+msgstr "https://jtl-url.de/4oqs8"
+
+msgid "statusemailDesc"
+msgstr "You can have reports containing information on all online shop activities emailed to you on a regular basis. The reports can be sent to you daily, weekly, and/or monthly."
+
+msgid "statusemailUse"
+msgstr "Use email reports"
+
+msgid "statusemailUseDesc"
+msgstr "Here you can activate the \"Email reports\" function."
+
+msgid "statusemailEmail"
+msgstr "Send email to"
+
+msgid "statusemailEmailDesc"
+msgstr "Enter the email address to which the report is to be sent."
+
+msgid "statusemailIntervall"
+msgstr "Period covered by report"
+
+msgid "statusemailIntervallDesc"
+msgstr "Specify the intervals in which reports are to be sent. Multiple selection is possible."
+
+msgid "statusemailContent"
+msgstr "Content of report"
+
+msgid "statusemailContentDesc"
+msgstr "Specify which information is included in the email reports. Multiple selection is possible. "
+
+msgid "sendEmail"
+msgstr "Send email report now"
+
+msgid "contentTypeCountItemCustomerGroup"
+msgstr "Count items per customer group"
+
+msgid "contentTypeCountNewCustomer"
+msgstr "Count new customers"
+
+msgid "contentTypeCountNewCustomerOrdered"
+msgstr "Count new customers who also ordered"
+
+msgid "contentTypeCountOrders"
+msgstr "Count orders"
+
+msgid "contentTypeCountOrdersNewCustomers"
+msgstr "Count orders new customers"
+
+msgid "contentTypeCountPayments"
+msgstr "Count payments received for orders"
+
+msgid "contentTypeCountOrdersSent"
+msgstr "Count orders sent"
+
+msgid "contentTypeCountVisitors"
+msgstr "Count visitors"
+
+msgid "contentTypeCountVisitorsSearchEngine"
+msgstr "Count visitors from search machine"
+
+msgid "contentTypeCountRatings"
+msgstr "Count ratings"
+
+msgid "contentTypeCountRatingsLocked"
+msgstr "Count ratings locked"
+
+msgid "contentTypeCountRatingDepositPayed"
+msgstr "Count rating deposit payed"
+
+msgid "contentTypeCountTags"
+msgstr "Count tags"
+
+msgid "contentTypeCountTagsLocked"
+msgstr "Count tags locked"
+
+msgid "contentTypeCountCustomerRecruited"
+msgstr "Count recruited customers"
+
+msgid "contentTypeCountCustomerRecruitedOrdered"
+msgstr "Count recruited customers who also ordered"
+
+msgid "contentTypeCountSentWishlists"
+msgstr "Count wishlists sent"
+
+msgid "contentTypeCountPolls"
+msgstr "Count polls"
+
+msgid "contentTypeCountNewsComments"
+msgstr "Count news comments"
+
+msgid "contentTypeCountNewsCommentsLocked"
+msgstr "Count news comments locked"
+
+msgid "contentTypeCountProductQuestion"
+msgstr "Count question for item"
+
+msgid "contentTypeCountAvailabilityNotifications"
+msgstr "Count availability notification requests"
+
+msgid "contentTypeCountProductCompare"
+msgstr "Count item comparisons"
+
+msgid "contentTypeCountCouponsUsed"
+msgstr "Count coupons used"
+
+msgid "contentTypeLastErrorLog"
+msgstr "Last error in system log"
+
+msgid "contentTypeLastNoteLog"
+msgstr "Last notice in system log"
+
+msgid "contentTypeLastDebugLog"
+msgstr "Last debug notice in system log"
+
+msgid "intervalDay"
+msgstr "Daily report"
+
+msgid "intervalWeek"
+msgstr "Weekly report"
+
+msgid "intervalMonth"
+msgstr "Monthly report"

@@ -6,17 +6,19 @@
 
 namespace JTL\dbeS\Sync;
 
+use JTL\Customer\CustomerAttribute;
+use JTL\Customer\CustomerField;
 use JTL\Customer\Kunde;
 use JTL\Customer\Kundendatenhistory;
 use JTL\DB\ReturnType;
 use JTL\dbeS\Starter;
 use JTL\GeneralDataProtection\Journal;
 use JTL\Helpers\Text;
+use JTL\Language\LanguageHelper;
 use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
 use JTL\Shop;
 use JTL\SimpleMail;
-use JTL\Sprache;
 use JTL\XML;
 use stdClass;
 
@@ -64,8 +66,10 @@ final class Customer extends AbstractSync
             if (!($customerData->kKunde > 0 && $customerData->kKundenGruppe > 0)) {
                 continue;
             }
+            $customerData->kKunde = (int)$customerData->kKunde;
+
             $customer = new Kunde($customerData->kKunde);
-            if ($customer->kKunde > 0 && $customer->kKundengruppe != $customerData->kKundenGruppe) {
+            if ($customer->kKunde > 0 && $customer->kKundengruppe !== $customerData->kKundenGruppe) {
                 $this->db->update(
                     'tkunde',
                     'kKunde',
@@ -296,7 +300,7 @@ final class Customer extends AbstractSync
             $customer->updateInDB();
             Kundendatenhistory::saveHistory($oldCustomer, $customer, Kundendatenhistory::QUELLE_DBES);
             if (\count($customerAttributes) > 0) {
-                $this->saveAttribute($customer->kKunde, $customer->kSprache, $customerAttributes, false);
+                $this->saveAttribute($customer->kKunde, $customer->kSprache, $customerAttributes);
             }
             $res['keys']['tkunde attr']['kKunde'] = $kInetKunde;
             $res['keys']['tkunde']                = '';
@@ -347,7 +351,7 @@ final class Customer extends AbstractSync
                 $cstmr[0]['cStrasse'] .= ' ' . $cstmr[0]['cHausnummer'];
                 unset($cstmr[0]['cHausnummer']);
                 // Land ausgeschrieben der Wawi geben
-                $cstmr[0]['cLand'] = Sprache::getCountryCodeByCountryName($cstmr[0]['cLand']);
+                $cstmr[0]['cLand'] = LanguageHelper::getCountryCodeByCountryName($cstmr[0]['cLand']);
                 unset($cstmr[0]['cPasswort']);
                 $cstmr['0 attr']             = $this->buildAttributes($cstmr[0]);
                 $cstmr[0]['tkundenattribut'] = $this->db->query(
@@ -386,7 +390,7 @@ final class Customer extends AbstractSync
             unset($customer->cPasswortKlartext, $customer->Anrede);
             $kInetKunde = $customer->insertInDB();
             if (\count($customerAttributes) > 0) {
-                $this->saveAttribute($customer->kKunde, $customer->kSprache, $customerAttributes, true);
+                $this->saveAttribute($customer->kKunde, $customer->kSprache, $customerAttributes);
             }
 
             $res['keys']['tkunde attr']['kKunde'] = $kInetKunde;
@@ -501,42 +505,21 @@ final class Customer extends AbstractSync
      * @param int   $customerID
      * @param int   $languageID
      * @param array $attributes
-     * @param bool  $isNew
      */
-    private function saveAttribute(int $customerID, int $languageID, $attributes, $isNew): void
+    private function saveAttribute(int $customerID, int $languageID, $attributes): void
     {
         if ($customerID <= 0 || $languageID <= 0 || !\is_array($attributes) || \count($attributes) === 0) {
             return;
         }
         foreach ($attributes as $attribute) {
-            $field = $this->db->queryPrepared(
-                'SELECT tkundenfeld.kKundenfeld, tkundenfeldwert.cWert
-                 FROM tkundenfeld
-                 LEFT JOIN tkundenfeldwert
-                    ON tkundenfeldwert.kKundenfeld = tkundenfeld.kKundenfeld
-                 WHERE tkundenfeld.cWawi = :nm
-                    AND tkundenfeld.kSprache = :lid',
-                ['nm' => $attribute->cName, 'lid' => $languageID],
-                ReturnType::SINGLE_OBJECT
-            );
-            if (isset($field->kKundenfeld) && $field->kKundenfeld > 0) {
-                if (\strlen($field->cWert) > 0 && $field->cWert != $attribute->cWert) {
-                    continue;
-                }
-                if (!$isNew) {
-                    $this->db->delete(
-                        'tkundenattribut',
-                        ['kKunde', 'kKundenfeld'],
-                        [$customerID, (int)$field->kKundenfeld]
-                    );
-                }
-                $ins              = new stdClass();
-                $ins->kKunde      = $customerID;
-                $ins->kKundenfeld = (int)$field->kKundenfeld;
-                $ins->cName       = $attribute->cName;
-                $ins->cWert       = $attribute->cWert;
-
-                $this->db->insert('tkundenattribut', $ins);
+            $field = CustomerField::loadByName($attribute->cName, $languageID);
+            if ($field->getID() > 0 && $field->validate($attribute->cWert) !== CustomerField::VALIDATE_OK) {
+                $customerAttr = new CustomerAttribute();
+                $customerAttr->setCustomerID($customerID);
+                $customerAttr->setCustomerFieldID($field->getID());
+                $customerAttr->setName($attribute->cName);
+                $customerAttr->setValue($attribute->cWert);
+                $customerAttr->save();
             }
         }
     }

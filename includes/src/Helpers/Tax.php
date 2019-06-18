@@ -6,17 +6,17 @@
 
 namespace JTL\Helpers;
 
-use function Functional\map;
 use JTL\Alert\Alert;
 use JTL\Cart\Warenkorb;
 use JTL\Catalog\Currency;
-use JTL\DB\ReturnType;
-use JTL\Link\Link;
 use JTL\Catalog\Product\Preise;
+use JTL\DB\ReturnType;
+use JTL\Language\LanguageHelper;
+use JTL\Link\Link;
 use JTL\Session\Frontend;
 use JTL\Shop;
-use JTL\Sprache;
 use stdClass;
+use function Functional\map;
 
 /**
  * Class Tax
@@ -64,7 +64,7 @@ class Tax
             ReturnType::SINGLE_OBJECT
         );
         if (!empty($Firma->cLand)) {
-            $merchantCountryCode = Sprache::getIsoCodeByCountryName($Firma->cLand);
+            $merchantCountryCode = LanguageHelper::getIsoCodeByCountryName($Firma->cLand);
         }
         if (\defined('STEUERSATZ_STANDARD_LAND')) {
             $merchantCountryCode = STEUERSATZ_STANDARD_LAND;
@@ -109,7 +109,7 @@ class Tax
                 $UstBefreiungIGL = true;
             }
         }
-        $steuerzonen = $db->queryPrepared(
+        $taxZones = $db->queryPrepared(
             'SELECT tsteuerzone.kSteuerzone
                 FROM tsteuerzone, tsteuerzoneland
                 WHERE tsteuerzoneland.cISO = :ciso
@@ -117,12 +117,12 @@ class Tax
             ['ciso' => $deliveryCountryCode],
             ReturnType::ARRAY_OF_OBJECTS
         );
-        if (\count($steuerzonen) === 0) {
+        if (\count($taxZones) === 0) {
             // Keine Steuerzone für $deliveryCountryCode hinterlegt - das ist fatal!
             $redirURL  = Shop::Container()->getLinkService()->getStaticRoute('bestellvorgang.php') .
                 '?editRechnungsadresse=1';
             $urlHelper = new URL(Shop::getURL() . $_SERVER['REQUEST_URI']);
-            $country   = Sprache::getCountryCodeByCountryName($deliveryCountryCode);
+            $country   = LanguageHelper::getCountryCodeByCountryName($deliveryCountryCode);
 
             Shop::Container()->getLogService()->error('Keine Steuerzone für "' . $country . '" hinterlegt!');
 
@@ -156,7 +156,7 @@ class Tax
             \header('Location: ' . $redirURL);
             exit;
         }
-        $zones = map($steuerzonen, function ($e) {
+        $zones = map($taxZones, function ($e) {
             return (int)$e->kSteuerzone;
         });
         $qry   = \count($zones) > 0
@@ -169,14 +169,14 @@ class Tax
                 ReturnType::ARRAY_OF_OBJECTS
             );
             foreach ($taxClasses as $taxClass) {
-                $steuersatz                                       = $db->query(
+                $rate                                             = $db->query(
                     'SELECT fSteuersatz
                         FROM tsteuersatz
                         WHERE kSteuerklasse = ' . (int)$taxClass->kSteuerklasse . '
                         AND (' . $qry . ') ORDER BY nPrio DESC',
                     ReturnType::SINGLE_OBJECT
                 );
-                $_SESSION['Steuersatz'][$taxClass->kSteuerklasse] = $steuersatz->fSteuersatz ?? 0;
+                $_SESSION['Steuersatz'][$taxClass->kSteuerklasse] = $rate->fSteuersatz ?? 0;
                 if ($UstBefreiungIGL) {
                     $_SESSION['Steuersatz'][$taxClass->kSteuerklasse] = 0;
                 }

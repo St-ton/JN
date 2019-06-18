@@ -4,14 +4,13 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use JTL\Shop;
-use JTL\Sprache;
+use JTL\Alert\Alert;
+use JTL\DB\ReturnType;
 use JTL\Helpers\Request;
 use JTL\Helpers\Seo;
 use JTL\Helpers\Text;
 use JTL\Pagination\Pagination;
-use JTL\DB\ReturnType;
-use JTL\Alert\Alert;
+use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
@@ -267,7 +266,7 @@ if (isset($_POST['livesuche']) && (int)$_POST['livesuche'] === 1) { //Formular w
 
                                     $alertHelper->addAlert(
                                         Alert::TYPE_SUCCESS,
-                                        __('successSearchMapMultiple'),
+                                        sprintf(__('successSearchMapMultiple'), $queryMapping->cSucheNeu),
                                         'successSearchMapMultiple'
                                     );
                                 }
@@ -496,7 +495,11 @@ if (isset($_POST['livesuche']) && (int)$_POST['livesuche'] === 1) { //Formular w
                         'successSearchMapDelete'
                     );
                 } else {
-                    $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorSearchMapNotFound'), 'errorSearchMapNotFound');
+                    $alertHelper->addAlert(
+                        Alert::TYPE_ERROR,
+                        sprintf(__('errorSearchMapNotFound'), $mappingID),
+                        'errorSearchMapNotFound'
+                    );
                 }
             }
         } else {
@@ -506,7 +509,6 @@ if (isset($_POST['livesuche']) && (int)$_POST['livesuche'] === 1) { //Formular w
     $smarty->assign('tab', 'mapping');
 }
 
-$languages         = Sprache::getAllLanguages();
 $queryCount        = $db->query(
     'SELECT COUNT(*) AS nAnzahl
         FROM tsuchanfrage
@@ -577,7 +579,6 @@ $queryMapping   = $db->query(
     ReturnType::ARRAY_OF_OBJECTS
 );
 $smarty->assign('oConfig_arr', getAdminSectionSettings($settingsIDs))
-       ->assign('Sprachen', $languages)
        ->assign('Suchanfragen', $searchQueries)
        ->assign('Suchanfragenerfolglos', $failedQueries)
        ->assign('Suchanfragenblacklist', $queryBlacklist)

@@ -4,21 +4,20 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use JTL\Backend\Revision;
-use JTL\Catalog\Product\Artikel;
-use JTL\Catalog\Hersteller;
-use JTL\Kampagne;
-use JTL\Catalog\Category\Kategorie;
-use JTL\Customer\Kunde;
-use JTL\Shop;
-use JTL\Smarty\MailSmarty;
-use JTL\Sprache;
-use JTL\DB\ReturnType;
-use JTL\Smarty\JTLSmarty;
-use JTL\Smarty\ContextType;
-use JTL\Smarty\SmartyResourceNiceDB;
-use JTL\Session\Frontend;
 use JTL\Alert\Alert;
+use JTL\Backend\Revision;
+use JTL\Catalog\Category\Kategorie;
+use JTL\Catalog\Hersteller;
+use JTL\Catalog\Product\Artikel;
+use JTL\Customer\Kunde;
+use JTL\DB\ReturnType;
+use JTL\Kampagne;
+use JTL\Language\LanguageHelper;
+use JTL\Session\Frontend;
+use JTL\Shop;
+use JTL\Smarty\ContextType;
+use JTL\Smarty\JTLSmarty;
+use JTL\Smarty\MailSmarty;
 
 require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
 
@@ -138,7 +137,7 @@ function versendeNewsletter(
     $mail->subject       = $newsletter->cBetreff;
     $mail->bodyText      = $bodyText;
     $mail->bodyHtml      = $bodyHtml;
-    $mail->lang          = Sprache::getIsoFromLangID((int)$newsletter->kSprache)->cISO;
+    $mail->lang          = LanguageHelper::getIsoFromLangID((int)$newsletter->kSprache)->cISO;
     $mail->methode       = $conf['newsletter']['newsletter_emailmethode'];
     $mail->sendmail_pfad = $conf['newsletter']['newsletter_sendmailpfad'];
     $mail->smtp_hostname = $conf['newsletter']['newsletter_smtp_host'];

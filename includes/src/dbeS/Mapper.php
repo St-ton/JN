@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 /**
  * @copyright (c) JTL-Software-GmbH
  * @license http://jtl-url.de/jtlshoplicense
@@ -470,7 +470,6 @@ final class Mapper
         'mMerkmal' => [
             'nSort',
             'cName',
-            'nGlobal',
             'cTyp',
             'nMehrfachauswahl'
         ],
@@ -721,7 +720,7 @@ final class Mapper
      * @param string $toMap
      * @return array
      */
-    public function mapArray($xml, $name, $toMap): array
+    public function mapArray(array $xml, string $name, string $toMap): array
     {
         $objects = [];
         $idx     = $name . ' attr';

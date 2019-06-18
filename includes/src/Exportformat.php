@@ -19,6 +19,7 @@ use JTL\Helpers\Request;
 use JTL\Helpers\ShippingMethod;
 use JTL\Helpers\Tax;
 use JTL\Helpers\Text;
+use JTL\Language\LanguageModel;
 use JTL\Session\Frontend;
 use JTL\Smarty\ContextType;
 use JTL\Smarty\ExportSmarty;
@@ -769,16 +770,9 @@ class Exportformat
             : (new Currency())->getDefault();
         Tax::setTaxRates();
         $net       = $this->db->select('tkundengruppe', 'kKundengruppe', $this->getKundengruppe());
-        $languages = map($this->db->query(
-            'SELECT *  FROM tsprache',
-            ReturnType::ARRAY_OF_OBJECTS
-        ), function ($lang) {
-            $lang->kSprache = (int)$lang->kSprache;
-
-            return $lang;
-        });
-        $langISO   = first($languages, function ($l) {
-            return $l->kSprache === $this->getSprache();
+        $languages = Shop::Lang()->gibInstallierteSprachen();
+        $langISO   = first($languages, function (LanguageModel $l) {
+            return $l->getId() === $this->getSprache();
         });
 
         $_SESSION['Kundengruppe']  = (new Kundengruppe($this->getKundengruppe()))
@@ -838,9 +832,11 @@ class Exportformat
         }
 
         if ($this->config['exportformate_preis_ueber_null'] === 'Y') {
-            $join .= ' JOIN tpreise ON tpreise.kArtikel = tartikel.kArtikel
-                            AND tpreise.kKundengruppe = ' . $this->getKundengruppe() . '
-                            AND tpreise.fVKNetto > 0';
+            $join .= ' JOIN tpreis ON tpreis.kArtikel = tartikel.kArtikel
+                                AND tpreis.kKundengruppe = ' . $this->getKundengruppe() . '
+                          JOIN tpreisdetail ON tpreisdetail.kPreis = tpreis.kPreis
+                                AND tpreisdetail.nAnzahlAb = 0
+                                AND tpreisdetail.fVKNetto > 0';
         }
 
         if ($this->config['exportformate_beschreibung'] === 'Y') {

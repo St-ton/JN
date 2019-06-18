@@ -219,7 +219,7 @@ msgid "global_wunschliste_max_email_desc"
 msgstr "Hier legen Sie fest, an wie viele Empfänger Wunschzettel per E-Mail versendet werden können."
 
 msgid "global_wunschliste_artikel_loeschen_nach_kauf_name"
-msgstr "Gekaufte Artikel nach Bestellung von Wunschliste löschen"
+msgstr "Gekaufte Artikel nach Bestellung von Wunschzettel löschen"
 
 msgid "global_wunschliste_artikel_loeschen_nach_kauf_desc"
 msgstr "Hier legen Sie fest, ob Artikel, nachdem sie gekauft wurden, vom Wunschzettel gelöscht werden sollen."
@@ -2737,12 +2737,6 @@ msgstr "Alle Kategorien anzeigen"
 
 msgid "sitemap_kategorien_anzeigen_desc"
 msgstr "Hier legen Sie fest, ob alle Kategorie-Seiten in der Sitemap erscheinen sollen"
-
-msgid "sitemap_globalemerkmale_anzeigen_name"
-msgstr "Globale Merkmale anzeigen"
-
-msgid "sitemap_globalemerkmale_anzeigen_desc"
-msgstr "Hier legen Sie fest, ob Seiten für globale Merkmale in der Sitemap erscheinen sollen."
 
 msgid "sitemap_hersteller_anzeigen_name"
 msgstr "Hersteller anzeigen"

@@ -6,18 +6,18 @@
 
 namespace JTL\Helpers;
 
-use function Functional\some;
-use JTL\Catalog\Product\Artikel;
 use JTL\Cart\Warenkorb;
-use JTL\DB\ReturnType;
-use JTL\Customer\Kundengruppe;
+use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\Preise;
+use JTL\Checkout\Versandart;
+use JTL\Country\Country;
+use JTL\Customer\Kundengruppe;
+use JTL\DB\ReturnType;
+use JTL\Language\LanguageHelper;
 use JTL\Session\Frontend;
 use JTL\Shop;
-use JTL\Sprache;
-use JTL\Checkout\Versandart;
 use stdClass;
-use JTL\Country\Country;
+use function Functional\some;
 
 /**
  * Class ShippingMethod
@@ -188,7 +188,10 @@ class ShippingMethod
             ],
             ReturnType::ARRAY_OF_OBJECTS
         );
-        $netPricesActive          = Frontend::getCustomerGroup()->isMerchant();
+        if (empty($methods)) {
+            return [];
+        }
+        $netPricesActive = Frontend::getCustomerGroup()->isMerchant();
 
         foreach ($methods as $i => $shippingMethod) {
             $bSteuerPos = $shippingMethod->eSteuer !== 'netto';
@@ -199,7 +202,11 @@ class ShippingMethod
             $shippingMethod->nMinLiefertage     = (int)$shippingMethod->nMinLiefertage;
             $shippingMethod->nMaxLiefertage     = (int)$shippingMethod->nMaxLiefertage;
             $shippingMethod->Zuschlag           = self::getAdditionalFees($shippingMethod, $countryCode, $zip);
-            $shippingMethod->fEndpreis          = self::calculateShippingFees($shippingMethod, $countryCode, null);
+            $shippingMethod->fEndpreis          = self::calculateShippingFees(
+                $shippingMethod,
+                $countryCode,
+                null
+            );
             if ($shippingMethod->fEndpreis === -1) {
                 unset($methods[$i]);
                 continue;
@@ -220,18 +227,18 @@ class ShippingMethod
             $shippingMethod->angezeigterHinweistext    = [];
             $shippingMethod->cLieferdauer              = [];
             $shippingMethod->specificShippingcosts_arr = null;
-            foreach ($_SESSION['Sprachen'] as $Sprache) {
+            foreach ($_SESSION['Sprachen'] as $language) {
                 $localized = $db->select(
                     'tversandartsprache',
                     'kVersandart',
                     (int)$shippingMethod->kVersandart,
                     'cISOSprache',
-                    $Sprache->cISO
+                    $language->cISO
                 );
                 if (isset($localized->cName)) {
-                    $shippingMethod->angezeigterName[$Sprache->cISO]        = $localized->cName;
-                    $shippingMethod->angezeigterHinweistext[$Sprache->cISO] = $localized->cHinweistextShop;
-                    $shippingMethod->cLieferdauer[$Sprache->cISO]           = $localized->cLieferdauer;
+                    $shippingMethod->angezeigterName[$language->cISO]        = $localized->cName;
+                    $shippingMethod->angezeigterHinweistext[$language->cISO] = $localized->cHinweistextShop;
+                    $shippingMethod->cLieferdauer[$language->cISO]           = $localized->cLieferdauer;
                 }
             }
             if ($shippingMethod->fEndpreis < $minVersand) {
@@ -328,7 +335,7 @@ class ShippingMethod
                         Frontend::getCart()->PositionenArr
                     ))
                     ->assign('Versandarten', $shippingMethods)
-                    ->assign('Versandland', Sprache::getCountryCodeByCountryName($country))
+                    ->assign('Versandland', LanguageHelper::getCountryCodeByCountryName($country))
                     ->assign('VersandPLZ', Text::filterXSS($zip));
             } else {
                 $errorMsg = Shop::Lang()->get('noDispatchAvailable');
@@ -833,8 +840,8 @@ class ShippingMethod
                             $position = new stdClass();
                             //posname lokalisiert ablegen
                             $position->cName = [];
-                            foreach ($_SESSION['Sprachen'] as $Sprache) {
-                                $position->cName[$Sprache->cISO] = Shop::Lang()->get('shippingFor', 'checkout') .
+                            foreach ($_SESSION['Sprachen'] as $language) {
+                                $position->cName[$language->cISO] = Shop::Lang()->get('shippingFor', 'checkout') .
                                     ' ' . $product->cName . ' (' . $cLandAttr . ')';
                             }
                             $position->fKosten = $fPreis;
@@ -862,8 +869,8 @@ class ShippingMethod
                     $position = new stdClass();
                     //posname lokalisiert ablegen
                     $position->cName = [];
-                    foreach ($_SESSION['Sprachen'] as $Sprache) {
-                        $position->cName[$Sprache->cISO] = Shop::Lang()->get('shippingFor', 'checkout') . ' ' .
+                    foreach ($_SESSION['Sprachen'] as $language) {
+                        $position->cName[$language->cISO] = Shop::Lang()->get('shippingFor', 'checkout') . ' ' .
                             $product->cName . ' (' . $cLandAttr . ')';
                     }
                     $position->fKosten = (float)\str_replace(',', '.', $fKosten) * $amount;
@@ -994,9 +1001,14 @@ class ShippingMethod
      * @return int|string
      * @former berechneVersandpreis()
      */
-    public static function calculateShippingFees($shippingMethod, $iso, $additionalProduct, $product = null)
-    {
-        $db = Shop::Container()->getDB();
+    public static function calculateShippingFees(
+        $shippingMethod,
+        $iso,
+        $additionalProduct,
+        $product = null
+    ) {
+        $db                            = Shop::Container()->getDB();
+        $excludeShippingCostAttributes = self::normalerArtikelversand($iso) === true;
         if (!isset($additionalProduct->fAnzahl)) {
             if ($additionalProduct === null) {
                 $additionalProduct = new stdClass();
@@ -1019,7 +1031,7 @@ class ShippingMethod
             case 'vm_versandberechnung_gewicht_jtl':
                 $totalWeight  = $product
                     ? $product->fGewicht
-                    : Frontend::getCart()->getWeight();
+                    : Frontend::getCart()->getWeight($excludeShippingCostAttributes, $iso);
                 $totalWeight += $additionalProduct->fGewicht;
                 $shipping     = $db->queryPrepared(
                     'SELECT *
@@ -1040,7 +1052,12 @@ class ShippingMethod
             case 'vm_versandberechnung_warenwert_jtl':
                 $total    = $product
                     ? $product->Preise->fVKNetto
-                    : Frontend::getCart()->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL], true);
+                    : Frontend::getCart()->gibGesamtsummeWarenExt(
+                        [\C_WARENKORBPOS_TYP_ARTIKEL],
+                        true,
+                        $excludeShippingCostAttributes,
+                        $iso
+                    );
                 $total   += $additionalProduct->fWarenwertNetto;
                 $shipping = $db->queryPrepared(
                     'SELECT *
@@ -1062,7 +1079,11 @@ class ShippingMethod
                 $productCount = 1;
                 if (!$product) {
                     $productCount = isset($_SESSION['Warenkorb'])
-                        ? Frontend::getCart()->gibAnzahlArtikelExt([\C_WARENKORBPOS_TYP_ARTIKEL])
+                        ? Frontend::getCart()->gibAnzahlArtikelExt(
+                            [\C_WARENKORBPOS_TYP_ARTIKEL],
+                            $excludeShippingCostAttributes,
+                            $iso
+                        )
                         : 0;
                 }
                 $productCount += $additionalProduct->fAnzahl;
@@ -1087,8 +1108,8 @@ class ShippingMethod
                 break;
         }
         if ($shippingMethod->cNurAbhaengigeVersandart === 'Y'
-            && (!empty($product->FunktionsAttribute['versandkosten'])
-                || !empty($product->FunktionsAttribute['versandkosten gestaffelt']))
+            && (!empty($product->FunktionsAttribute[\FKT_ATTRIBUT_VERSANDKOSTEN])
+                || !empty($product->FunktionsAttribute[\FKT_ATTRIBUT_VERSANDKOSTEN_GESTAFFELT]))
         ) {
             $fArticleSpecific = self::gibArtikelabhaengigeVersandkosten($iso, $product, 1);
             $price           += $fArticleSpecific->fKosten ?? 0;
@@ -1099,15 +1120,15 @@ class ShippingMethod
         if (isset($shippingMethod->Zuschlag->fZuschlag) && $shippingMethod->Zuschlag->fZuschlag != 0) {
             $price += $shippingMethod->Zuschlag->fZuschlag;
         }
-        $productPrice = 0;
-        $grandTotal   = 0;
+        $productPrice         = 0;
+        $totalForShippingFree = 0;
         if ($shippingMethod->eSteuer === 'netto') {
             if ($product) {
                 $productPrice = $product->Preise->fVKNetto;
             }
             if (isset($_SESSION['Warenkorb'])) {
-                $grandTotal = Tax::getNet(
-                    Frontend::getCart()->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL], true),
+                $totalForShippingFree = Tax::getNet(
+                    Frontend::getCart()->gibGesamtsummeWarenExt([\C_WARENKORBPOS_TYP_ARTIKEL], true, true, $iso),
                     Tax::getSalesTax(Frontend::getCart()->gibVersandkostenSteuerklasse())
                 );
             }
@@ -1119,16 +1140,18 @@ class ShippingMethod
                 );
             }
             if (isset($_SESSION['Warenkorb'])) {
-                $grandTotal = Frontend::getCart()->gibGesamtsummeWarenExt(
+                $totalForShippingFree = Frontend::getCart()->gibGesamtsummeWarenExt(
                     [\C_WARENKORBPOS_TYP_ARTIKEL],
-                    true
+                    true,
+                    true,
+                    $iso
                 );
             }
         }
 
         if ($shippingMethod->fVersandkostenfreiAbX > 0
             && (($product && $productPrice >= $shippingMethod->fVersandkostenfreiAbX)
-                || ($grandTotal >= $shippingMethod->fVersandkostenfreiAbX))
+                || ($totalForShippingFree >= $shippingMethod->fVersandkostenfreiAbX))
         ) {
             $price = 0;
         }
@@ -1158,8 +1181,8 @@ class ShippingMethod
         $dep = '';
         $fee = 99999;
         $db  = Shop::Container()->getDB();
-        if (empty($product->FunktionsAttribute['versandkosten'])
-            && empty($product->FunktionsAttribute['versandkosten gestaffelt'])
+        if (empty($product->FunktionsAttribute[\FKT_ATTRIBUT_VERSANDKOSTEN])
+            && empty($product->FunktionsAttribute[\FKT_ATTRIBUT_VERSANDKOSTEN_GESTAFFELT])
         ) {
             $dep = " AND cNurAbhaengigeVersandart = 'N'";
         }

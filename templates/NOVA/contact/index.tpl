@@ -8,23 +8,26 @@
     {/block}
 
     {block name='contact-index-content'}
-        {if $opcPageService->getCurPage()->isReplace()}
-            {include file='snippets/opc_mount_point.tpl' id='opc_replace_all'}
-        {else}
-            {if !empty($Spezialcontent->titel)}
-                {block name='contact-index-heading'}
+        {if !empty($Spezialcontent->titel)}
+            {block name='contact-index-heading'}
+                {include file='snippets/opc_mount_point.tpl' id='opc_before_heading'}
+                {container}
                     <div class="title h2">
                         {$Spezialcontent->titel}
                     </div>
-                {/block}
-            {/if}
-
-            {block name='contact-index-include-extension'}
-                {include file='snippets/extension.tpl'}
+                {/container}
             {/block}
-            {include file='snippets/opc_mount_point.tpl' id='opc_contact_prepend'}
-            {if isset($step)}
+        {/if}
+
+        {block name='contact-index-include-extension'}
+            {container}
+                {include file='snippets/extension.tpl'}
+            {/container}
+        {/block}
+        {if isset($step)}
+            {container}
                 {if $step === 'formular'}
+                    {include file='snippets/opc_mount_point.tpl' id='opc_before_form'}
                     {if !empty($Spezialcontent->oben)}
                         {block name='contact-index-custom-content-top'}
                             <div class="custom_content">
@@ -68,7 +71,6 @@
                                                 {/if}
                                             {/row}
                                         {/block}
-
                                         {if $Einstellungen.kontakt.kontakt_abfragen_vorname !== 'N' || $Einstellungen.kontakt.kontakt_abfragen_nachname !== 'N'}
                                             {block name='contact-index-name'}
                                                 {row}
@@ -227,7 +229,7 @@
                                 {/if}
                                 {block name='contact-index-form-submit'}
                                     {input type="hidden" name="kontakt" value="1"}
-                                    {include file='snippets/opc_mount_point.tpl' id='opc_contact_form_submit_prepend'}
+                                    {include file='snippets/opc_mount_point.tpl' id='opc_before_submit'}
                                     {button type="submit" variant="primary"}{lang key='sendMessage' section='contact'}{/button}
                                 {/block}
                             {/block}
@@ -242,8 +244,7 @@
                         {/block}
                     {/if}
                 {/if}
-            {/if}
-            {include file='snippets/opc_mount_point.tpl' id='opc_contact_append'}
+            {/container}
         {/if}
     {/block}
 

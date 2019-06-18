@@ -12,7 +12,7 @@ use JTL\Plugin\InstallCode;
  * Class FrontendLinks
  * @package JTL\Plugin\Admin\Validation\Items
  */
-class FrontendLinks extends AbstractItem
+final class FrontendLinks extends AbstractItem
 {
     /**
      * @inheritdoc
@@ -29,7 +29,11 @@ class FrontendLinks extends AbstractItem
             return InstallCode::MISSING_FRONTEND_LINKS;
         }
         foreach ($node['Link'] as $i => $link) {
-            $i = (string)$i;
+            if (!\is_array($link)) {
+                return InstallCode::MISSING_FRONTEND_LINKS;
+            }
+            $i    = (string)$i;
+            $link = $this->sanitizeLinkData($link);
             \preg_match('/[0-9]+\sattr/', $i, $hits1);
             \preg_match('/[0-9]+/', $i, $hits2);
 
@@ -44,7 +48,8 @@ class FrontendLinks extends AbstractItem
                 $link['Name'],
                 $hits1
             );
-            if (\mb_strlen($hits1[0]) !== \mb_strlen($link['Name'])) {
+            $len = \mb_strlen($link['Name']);
+            if ($len === 0 || \mb_strlen($hits1[0]) !== $len) {
                 return InstallCode::INVALID_FRONTEND_LINK_NAME;
             }
             // Templatename UND Fullscreen Templatename vorhanden?
@@ -101,14 +106,12 @@ class FrontendLinks extends AbstractItem
             if (isset($hits3[0]) && \mb_strlen($hits3[0]) !== \mb_strlen($link['NoFollow'])) {
                 return InstallCode::INVALID_FRONTEND_LINK_NO_FOLLOW;
             }
-            if (!isset($link['LinkLanguage'])
-                || !\is_array($link['LinkLanguage'])
-                || \count($link['LinkLanguage']) === 0
-            ) {
+            if (empty($link['LinkLanguage']) || !\is_array($link['LinkLanguage'])) {
                 return InstallCode::INVALID_FRONEND_LINK_ISO;
             }
             foreach ($link['LinkLanguage'] as $l => $localized) {
-                $l = (string)$l;
+                $l         = (string)$l;
+                $localized = $this->sanitizeLocalizationData($localized);
                 \preg_match('/[0-9]+\sattr/', $l, $hits1);
                 \preg_match('/[0-9]+/', $l, $hits2);
                 if (isset($hits1[0]) && \mb_strlen($hits1[0]) === \mb_strlen($l)) {
@@ -147,7 +150,7 @@ class FrontendLinks extends AbstractItem
                         $hits1
                     );
                     $len = \mb_strlen($localized['MetaTitle']);
-                    if ($len === 0 && \mb_strlen($hits1[0]) !== $len) {
+                    if ($len === 0 || \mb_strlen($hits1[0]) !== $len) {
                         return InstallCode::INVALID_FRONEND_LINK_META_TITLE;
                     }
                     \preg_match(
@@ -173,5 +176,34 @@ class FrontendLinks extends AbstractItem
         }
 
         return InstallCode::OK;
+    }
+
+    /**
+     * @param array $link
+     * @return array
+     */
+    private function sanitizeLinkData(array $link): array
+    {
+        $link['Filename'] = $link['Filename'] ?? '';
+        $link['Name']     = $link['Name'] ?? '';
+
+        return $link;
+    }
+
+    /**
+     * @param array $localized
+     * @return array
+     */
+    private function sanitizeLocalizationData(array $localized): array
+    {
+        $localized['iso']             = $localized['iso'] ?? '';
+        $localized['MetaDescription'] = $localized['MetaDescription'] ?? '';
+        $localized['MetaKeywords']    = $localized['MetaKeywords'] ?? '';
+        $localized['MetaTitle']       = $localized['MetaTitle'] ?? '';
+        $localized['Name']            = $localized['Name'] ?? '';
+        $localized['Seo']             = $localized['Seo'] ?? '';
+        $localized['Title']           = $localized['Title'] ?? '';
+
+        return $localized;
     }
 }

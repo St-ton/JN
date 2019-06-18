@@ -14,7 +14,7 @@
         <meta name="keywords" itemprop="keywords" content="{block name='head-meta-keywords'}{$meta_keywords|truncate:255:'':true}{/block}">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="robots" content="{if $bNoIndex === true  || (isset($Link) && $Link->getNoFollow() === true)}noindex{else}index, follow{/if}">
+        <meta name="robots" content="{if $robotsContent}{$robotsContent}{elseif $bNoIndex === true  || (isset($Link) && $Link->getNoFollow() === true)}noindex{else}index, follow{/if}">
 
         <meta itemprop="url" content="{$cCanonicalURL}"/>
         <meta property="og:type" content="website" />
@@ -68,6 +68,9 @@
         {else}
             <link type="text/css" href="{$ShopURL}/asset/{$Einstellungen.template.theme.theme_default}.css{if isset($cPluginCss_arr) && $cPluginCss_arr|@count > 0},plugin_css{/if}?v={$nTemplateVersion}" rel="stylesheet">
         {/if}
+        {if \JTL\Shop::isAdmin() && $opc->isEditMode() === false}
+            <link type="text/css" href="{$ShopURL}/admin/opc/style.css" rel="stylesheet">
+        {/if}
         {* RSS *}
         {if isset($Einstellungen.rss.rss_nutzen) && $Einstellungen.rss.rss_nutzen === 'Y'}
             <link rel="alternate" type="application/rss+xml" title="Newsfeed {$Einstellungen.global.global_shopname}" href="{$ShopURL}/rss.xml">
@@ -108,6 +111,7 @@
 {block name='body-tag'}
 <body data-page="{$nSeitenTyp}" class="body-offcanvas"{if isset($Link) && !empty($Link->getIdentifier())} id="{$Link->getIdentifier()}"{/if}>
 {/block}
+    {include file=$opcDir|cat:'startmenu.tpl'}
 {block name='main-wrapper-starttag'}
 <div id="main-wrapper" class="main-wrapper{if $bExclusive} exclusive{/if}{if isset($Einstellungen.template.theme.pagelayout) && $Einstellungen.template.theme.pagelayout === 'boxed'} boxed{else} fluid{/if}{if $hasLeftPanel} aside-active{/if}">
 {/block}
@@ -123,9 +127,9 @@
     {/if}
 
     {block name='header'}
-        {if \JTL\Shop::isAdmin() && $opc->isEditMode() === false}
-            {include file='layout/header_composer_menu.tpl'}
-        {/if}
+        {*{if \JTL\Shop::isAdmin() && $opc->isEditMode() === false}*}
+            {*{include file='layout/header_composer_menu.tpl'}*}
+        {*{/if}*}
         <header class="hidden-print {if isset($Einstellungen.template.theme.pagelayout) && $Einstellungen.template.theme.pagelayout === 'fluid'}container-block{/if}{if $Einstellungen.template.theme.static_header === 'Y'} fixed-navbar{/if}" id="evo-nav-wrapper">
             <div class="container">
                 {block name='header-container-inner'}
@@ -203,7 +207,7 @@
     {/block}
 
     {block name='content-container-starttag'}
-    <div{if !$bExclusive} class="container{if $isFluidContent}-fluid{/if}{/if}">
+    <div{if !$bExclusive} class="container{if $isFluidContent}-fluid{/if}"{/if}>
     {/block}
 
     {block name='content-container-block-starttag'}

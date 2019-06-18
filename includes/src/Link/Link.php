@@ -199,7 +199,7 @@ final class Link extends AbstractLink
     /**
      * @var int
      */
-    private $currentLanguageID = 1;
+    private $currentLanguageID;
 
     /**
      * Link constructor.
@@ -207,8 +207,17 @@ final class Link extends AbstractLink
      */
     public function __construct(DbInterface $db)
     {
-        $this->db         = $db;
-        $this->childLinks = new Collection();
+        $this->db                = $db;
+        $this->childLinks        = new Collection();
+        $this->currentLanguageID = Shop::getLanguageID();
+    }
+
+    /**
+     *
+     */
+    public function __wakeup()
+    {
+        $this->currentLanguageID = Shop::getLanguageID();
     }
 
     /**
@@ -216,11 +225,10 @@ final class Link extends AbstractLink
      */
     public function load(int $id): LinkInterface
     {
-        $this->currentLanguageID = Shop::getLanguageID();
-        $this->id                = $id;
-        $link                    = $this->db->queryPrepared(
+        $this->id = $id;
+        $link     = $this->db->queryPrepared(
             "SELECT tlink.*, tlinksprache.cISOSprache, tlink.cName AS displayName,
-                tlinksprache.cName AS localizedName,  tlinksprache.cTitle AS localizedTitle, 
+                tlinksprache.cName AS localizedName,  tlinksprache.cTitle AS localizedTitle,
                 tlinksprache.cContent AS content, tlinksprache.cMetaDescription AS metaDescription,
                 tlinksprache.cMetaKeywords AS metaKeywords, tlinksprache.cMetaTitle AS metaTitle,
                 tseo.kSprache AS languageID, tseo.cSeo AS localizedUrl,

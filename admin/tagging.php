@@ -4,14 +4,13 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Alert\Alert;
+use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Seo;
-use JTL\Shop;
-use JTL\Sprache;
 use JTL\Pagination\Pagination;
-use JTL\DB\ReturnType;
-use JTL\Alert\Alert;
+use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
@@ -273,9 +272,7 @@ if (Request::verifyGPCDataInt('kTag') > 0 && Request::verifyGPCDataInt('tagdetai
     $oPagiTagMappings = (new Pagination('mappings'))
         ->setItemCount($tagMappingCount)
         ->assemble();
-
-    $languages = Sprache::getAllLanguages();
-    $tags      = $db->query(
+    $tags             = $db->query(
         'SELECT ttag.kTag, ttag.cName, ttag.nAktiv, sum(ttagartikel.nAnzahlTagging) AS Anzahl 
             FROM ttag
             JOIN ttagartikel 
@@ -286,7 +283,7 @@ if (Request::verifyGPCDataInt('kTag') > 0 && Request::verifyGPCDataInt('tagdetai
             LIMIT ' . $oPagiTags->getLimitSQL(),
         ReturnType::ARRAY_OF_OBJECTS
     );
-    $mapping   = $db->query(
+    $mapping          = $db->query(
         'SELECT *
             FROM ttagmapping
             WHERE kSprache = ' . (int)$_SESSION['kSprache'] . '
@@ -297,7 +294,6 @@ if (Request::verifyGPCDataInt('kTag') > 0 && Request::verifyGPCDataInt('tagdetai
     $smarty->assign('oConfig_arr', getAdminSectionSettings($settingsIDs))
            ->assign('oPagiTags', $oPagiTags)
            ->assign('oPagiTagMappings', $oPagiTagMappings)
-           ->assign('Sprachen', $languages)
            ->assign('Tags', $tags)
            ->assign('Tagmapping', $mapping);
 }

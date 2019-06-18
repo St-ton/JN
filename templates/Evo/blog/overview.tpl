@@ -2,11 +2,14 @@
  * @copyright (c) JTL-Software-GmbH
  * @license https://jtl-url.de/jtlshoplicense
  *}
+
+{include file='snippets/opc_mount_point.tpl' id='opc_before_heading'}
+
 <h1>{lang key='news' section='news'}</h1>
 
 {include file='snippets/extension.tpl'}
+{include file='snippets/opc_mount_point.tpl' id='opc_before_filter'}
 
-{include file='snippets/opc_mount_point.tpl' id='opc_news_overview_filter_prepend'}
 <div class="well well-sm">
     {get_static_route id='news.php' assign=routeURL}
     <form id="frm_filter" name="frm_filter" action="{$cCanonicalURL|default:$routeURL}" method="post" class="form-inline text-center">
@@ -57,12 +60,12 @@
         <button name="submitGo" type="submit" value="{lang key='filterGo'}" class="btn btn-default">{lang key='filterGo'}</button>
     </form>
 </div>
-{include file='snippets/opc_mount_point.tpl' id='opc_news_overview_filter_append'}
 {if $noarchiv === 1}
     <div class="alert alert-info">{lang key='noNewsArchiv' section='news'}.</div>
 {elseif !empty($oNewsUebersicht_arr)}
     <div id="newsContent" itemprop="mainEntity" itemscope itemtype="https://schema.org/Blog">
         {if $oNewsCat->getID() > 0}
+            {include file='snippets/opc_mount_point.tpl' id='opc_before_news_category_heading'}
             <h2>{$oNewsCat->getName()}</h2>
             <div class="row">
                 {if !empty($oNewsCat->getPreviewImage())}
@@ -75,11 +78,11 @@
             <hr>
             {include file='snippets/pagination.tpl' oPagination=$oPagination cThisUrl='news.php' parts=['label']}
         {/if}
+        {include file='snippets/opc_mount_point.tpl' id='opc_before_news_list'}
         {foreach $oNewsUebersicht_arr as $oNewsUebersicht}
             {include file='blog/preview.tpl'}
-            {include file='snippets/opc_mount_point.tpl' id='opc_news_overview_preview_append'|cat:$oNewsUebersicht@iteration}
         {/foreach}
     </div>
+    {include file='snippets/opc_mount_point.tpl' id='opc_after_news_list'}
     {include file='snippets/pagination.tpl' oPagination=$oPagination cThisUrl='news.php' parts=['pagi']}
 {/if}
-{include file='snippets/opc_mount_point.tpl' id='opc_news_overview_preview_append'}

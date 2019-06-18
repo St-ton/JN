@@ -30,7 +30,7 @@
                                     <input type="checkbox" name="kPlugin[]" id="plugin-check-{$plugin->getID()}" value="{$plugin->getID()}" />
                                 </td>
                                 <td>
-                                    <label for="plugin-check-{$plugin->getID()}">{$plugin->getMeta()->getName()}</label
+                                    <label for="plugin-check-{$plugin->getID()}">{$plugin->getMeta()->getName()}</label>
                                     {if $plugin->getMeta()->isUpdateAvailable() || (isset($plugin->cInfo) && $plugin->cInfo|strlen > 0)}
                                         <p>{__('pluginUpdateExists')}</p>
                                     {/if}

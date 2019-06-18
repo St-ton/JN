@@ -6,6 +6,7 @@
 
 namespace JTL\Filter\Items;
 
+use Illuminate\Support\Collection;
 use JTL\Filter\AbstractFilter;
 use JTL\Filter\FilterInterface;
 use JTL\Filter\Option;
@@ -15,7 +16,6 @@ use JTL\Filter\SortingOptions\SortDefault;
 use JTL\Filter\SortingOptions\SortingOptionInterface;
 use JTL\Mapper\SortingType;
 use JTL\Shop;
-use Illuminate\Support\Collection;
 
 /**
  * Class Sort

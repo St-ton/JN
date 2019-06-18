@@ -1,7 +1,7 @@
 {includeMailTemplate template=header type=plain}
 === {$oMailObjekt->cIntervall} ===
 
---- Zeitraum: {$oMailObjekt->dVon|date_format:"d.m.Y - H:i"} bis {$oMailObjekt->dBis|date_format:"d.m.Y - H:i"} ---
+--- Zeitraum: {$oMailObjekt->dVon|date_format:"d.m.Y"} bis {$oMailObjekt->dBis|date_format:"d.m.Y"} ---
 
 {if is_array($oMailObjekt->oAnzahlArtikelProKundengruppe)}Produkte pro Kundengruppe:
 

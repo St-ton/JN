@@ -969,8 +969,8 @@ class Statusmail
 
         $data = $this->generate(
             $statusMail,
-            \date_create()->modify('-1 ' . $interval)->format('Y-m-d H:i:s'),
-            \date_create()->format('Y-m-d H:i:s')
+            \date_create()->modify('-1 ' . $interval)->format('Y-m-d'),
+            \date_create()->format('Y-m-d')
         );
         if ($data) {
             $data->cIntervall = $intervalLoc . ' Status-Email';

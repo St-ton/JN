@@ -1094,7 +1094,7 @@ class LanguageHelper
                     if (\mb_strpos($url, '/?s=') !== false) {
                         $lang->setUrl(\rtrim($shopURL, '/') . $url);
                     } else {
-                        $lang->setURL($url);
+                        $lang->setUrl($url);
                     }
                 } else {
                     $originalLanguage = $productFilter->getFilterConfig()->getLanguageID();

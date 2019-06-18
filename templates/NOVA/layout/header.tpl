@@ -69,6 +69,9 @@
             {else}
                 <link type="text/css" href="{$ShopURL}/asset/{$Einstellungen.template.theme.theme_default}.css{if isset($cPluginCss_arr) && $cPluginCss_arr|@count > 0},plugin_css{/if}?v={$nTemplateVersion}" rel="stylesheet">
             {/if}
+            {if \JTL\Shop::isAdmin() && $opc->isEditMode() === false}
+                <link type="text/css" href="{$ShopURL}/admin/opc/style.css" rel="stylesheet">
+            {/if}
             {* RSS *}
             {if isset($Einstellungen.rss.rss_nutzen) && $Einstellungen.rss.rss_nutzen === 'Y'}
                 <link rel="alternate" type="application/rss+xml" title="Newsfeed {$Einstellungen.global.global_shopname}" href="{$ShopURL}/rss.xml">
@@ -111,16 +114,13 @@
     {/block}
 
     {if !$bExclusive}
+        {include file=$opcDir|cat:'startmenu.tpl'}
+
         {if isset($bAdminWartungsmodus) && $bAdminWartungsmodus}
             {alert show=true variant="warning" id="maintenance-mode" dismissible=true}{lang key='adminMaintenanceMode'}{/alert}
         {/if}
 
         {block name='layout-header-header'}
-            {if \JTL\Shop::isAdmin() && $opc->isEditMode() === false}
-                {block name='layout-header-include-header-composer-menu'}
-                    {include file='layout/header_composer_menu.tpl'}
-                {/block}
-            {/if}
             {assign var=isSticky value=$Einstellungen.template.theme.static_header === 'Y'}
             <header class="d-print-none{if $isSticky} sticky-top{/if}{if $Einstellungen.template.theme.static_header === 'Y'} fixed-navbar{/if}" id="evo-nav-wrapper">
 

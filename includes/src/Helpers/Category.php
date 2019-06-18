@@ -510,18 +510,25 @@ class Category
      * has a wrong value and the whole category has to be removed from the result
      *
      * @param array $catList
+     * @param \stdClass|null $parentCat
      * @return $this
      */
-    private function removeRelicts(&$catList): self
+    private function removeRelicts(&$catList, &$parentCat = null): self
     {
         foreach ($catList as $i => $cat) {
             if ($cat->bUnterKategorien === 1) {
                 if ($cat->cnt === 0 && \count($cat->Unterkategorien) === 0) {
                     unset($catList[$i]);
+                    if ($parentCat !== null && empty($parentCat->Unterkategorien)) {
+                        $parentCat->bUnterKategorien = 0;
+                    }
                 } else {
-                    $this->removeRelicts($cat->Unterkategorien);
+                    $this->removeRelicts($cat->Unterkategorien, $cat);
                     if (empty($cat->Unterkategorien) && $cat->cnt === 0) {
                         unset($catList[$i]);
+                        if ($parentCat !== null && empty($parentCat->Unterkategorien)) {
+                            $parentCat->bUnterKategorien = 0;
+                        }
                     }
                 }
             }

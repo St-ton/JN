@@ -29,6 +29,9 @@
             config.autoParagraph = false;
         };
         CKEDITOR.editorConfig(CKEDITOR.config);
+        $.each(CKEDITOR.dtd.$removeEmpty, function (i, value) {
+            CKEDITOR.dtd.$removeEmpty[i] = false;
+        });
     }
     $('.select2').select2();
 </script>

@@ -36,7 +36,7 @@
             return $.ajax({
                 type: "POST",
                 dataType: "json",
-                url: this.getBaseURL() + this.options.ioUrl,
+                url: this.options.ioUrl,
                 data: {'io': JSON.stringify(req)},
                 success: function (data, textStatus, jqXHR) {
                     that.handleResponse(data, context);
@@ -89,14 +89,6 @@
         getFormValues: function (parent) {
             return $('#' + parent).serializeObject();
         },
-
-        getBaseURL: function () {
-            var pathArray = location.href.split( '/' );
-            var protocol = pathArray[0];
-            var host = pathArray[2];
-
-            return protocol + '//' + host + '/';
-        }
     };
 
     // PLUGIN DEFINITION

@@ -43,21 +43,28 @@
 
         function deleteSelectedOpcDrafts()
         {
-            // TODO
-            if (false && confirm("Wollen Sie die ausgewählten Entwürfe wirklich löschen?")) {
+            if (confirm("Wollen Sie die ausgewählten Entwürfe wirklich löschen?")) {
+                let draftKeys = $('.draft-checkbox')
+                    .filter(':checked')
+                    .closest('.opc-draft')
+                    .map((i,elm) => $(elm).data('draft-key'))
+                    .get();
+
                 $.ajax({
                     method: 'post',
                     url: '{$ShopURL}/admin/onpage-composer.php',
                     data: {
-                        action: 'discard',
-                        pageKey: draftKey,
+                        action: 'discard-bulk',
+                        draftKeys: draftKeys,
                         jtl_token: '{$adminSessionToken}'
                     },
                     success: function(jqxhr) {
                         if (jqxhr === 'ok') {
-                            let draftItem = $('#opc-draft-' + draftKey);
-                            draftItem.animate({ opacity: 'toggle' }, 500, () => draftItem.remove());
-                            window.localStorage.removeItem('opcpage.' + draftKey);
+                            draftKeys.forEach(draftKey => {
+                                let draftItem = $('#opc-draft-' + draftKey);
+                                draftItem.animate({ opacity: 'toggle' }, 500, () => draftItem.remove());
+                                window.localStorage.removeItem('opcpage.' + draftKey);
+                            });
                         }
                     }
                 });
@@ -131,7 +138,7 @@
             </nav>
         {else}
             <nav id="opc-startmenu">
-                <button class="opc-btn-primary" onclick="openOpcStartMenu()">
+                <button type="button" class="opc-btn-primary" onclick="openOpcStartMenu()">
                     <img src="{$ShopURL}/admin/opc/icon-OPC.svg" alt="OPC Start Icon" id="opc-start-icon">
                     <span id="opc-start-label">OnPage Composer</span>
                 </button>
@@ -169,7 +176,7 @@
                     </label>
                     <div class="opc-dropdown" style="float: right">
                         <button type="button" id="opc-bulk-actions" data-toggle="dropdown">
-                            <span id="opc-bulk-actions-label">Bulk Actions</span>
+                            <span id="opc-bulk-actions-label">Aktionen</span>
                             <i class="fa fas fa-fw fa-chevron-down"></i>
                         </button>
                         <div class="dropdown-menu opc-dropdown-menu" id="opc-bulk-dropdown">
@@ -183,7 +190,7 @@
                         {foreach $pageDrafts as $i => $draft}
                             {$draftStatus = $draft->getStatus()}
                             <li class="opc-draft" id="opc-draft-{$draft->getKey()}" data-draft-status="{$draftStatus}"
-                                data-draft-name="{$draft->getName()}">
+                                data-draft-name="{$draft->getName()}" data-draft-key="{$draft->getKey()}">
                                 <form method="post" action="{$ShopURL}/admin/onpage-composer.php">
                                     <input type="hidden" name="jtl_token" value="{$adminSessionToken}">
                                     <input type="hidden" name="pageKey" value="{$draft->getKey()}">
@@ -221,10 +228,12 @@
                                                     title="Bearbeiten" data-placement="bottom" data-container="#opc">
                                                 <i class="fa fa-lg fa-fw fas fa-pencil-alt"></i>
                                             </button>
+                                            {*
                                             <button data-toggle="tooltip" title="Duplizieren" data-placement="bottom"
                                                     data-container="#opc">
                                                 <i class="fa fa-lg fa-fw far fa-clone"></i>
                                             </button>
+                                            *}
                                             <button data-toggle="tooltip" title="Für andere Sprache übernehmen"
                                                     data-placement="bottom" data-container="#opc">
                                                 <i class="fa fa-lg fa-fw fas fa-language"></i>
@@ -242,7 +251,7 @@
                     </ul>
                 </div>
                 <div id="opc-sidebar-footer">
-                    <form method="post" action="admin/onpage-composer.php">
+                    <form method="post" action="{$ShopURL}/admin/onpage-composer.php">
                         <input type="hidden" name="jtl_token" value="{$adminSessionToken}">
                         <input type="hidden" name="pageId" value="{$curPage->getId()}">
                         <input type="hidden" name="pageUrl" value="{$curPage->getUrl()}">

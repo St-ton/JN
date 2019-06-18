@@ -23,6 +23,7 @@ $pageId       = Request::verifyGPDataString('pageId');
 $pageUrl      = Request::verifyGPDataString('pageUrl');
 $adoptFromKey = Request::verifyGPCDataInt('adoptFromKey');
 $action       = Request::verifyGPDataString('action');
+$draftKeys    = array_map('intval', $_POST['draftKeys'] ?? []);
 $shopUrl      = Shop::getURL();
 $error        = null;
 
@@ -92,6 +93,12 @@ if ($opc->isOPCInstalled() === false) {
 } elseif ($action === 'discard') {
     // Discard a OPC page draft
     $opcPage->deleteDraft($pageKey);
+    exit('ok');
+} elseif ($action === 'discard-bulk') {
+    // Discard multiple OPC page drafts
+    foreach ($draftKeys as $draftKey) {
+        $opcPage->deleteDraft($draftKey);
+    }
     exit('ok');
 } elseif ($action === 'restore') {
     // Discard all OPC page drafts for one page

@@ -98,7 +98,7 @@
 
     ],
     "autoload": {
-        "files": [ "vendor/jtlshop/shop4-systemcheck/lib/bootstrap.php" ],
+        "files": [ "vendor/jtlshop/systemcheck/lib/bootstrap.php" ],
         "psr-4": {
             "JTL\\": ["src/"],
             "Plugin\\": ["../plugins/"]

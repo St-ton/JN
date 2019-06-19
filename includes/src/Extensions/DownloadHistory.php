@@ -120,30 +120,28 @@ class DownloadHistory
     }
 
     /**
-     * @param int $kKunde
-     * @param int $kBestellung
+     * @param int $customerID
+     * @param int $orderID
      * @return array
      */
-    public static function getOrderHistory(int $kKunde, int $kBestellung = 0): array
+    public static function getOrderHistory(int $customerID, int $orderID = 0): array
     {
         $history = [];
-        if ($kBestellung > 0 || $kKunde > 0) {
-            $cSQLWhere = 'kBestellung = ' . $kBestellung;
-            if ($kBestellung > 0) {
-                $cSQLWhere .= ' AND kKunde = ' . $kKunde;
+        if ($orderID > 0 || $customerID > 0) {
+            $where = 'kBestellung = ' . $orderID;
+            if ($orderID > 0) {
+                $where .= ' AND kKunde = ' . $customerID;
             }
 
             $data = Shop::Container()->getDB()->query(
                 'SELECT kDownload, kDownloadHistory
                      FROM tdownloadhistory
-                     WHERE ' . $cSQLWhere . '
+                     WHERE ' . $where . '
                      ORDER BY dErstellt DESC',
                 ReturnType::ARRAY_OF_OBJECTS
             );
             foreach ($data as $item) {
-                if (!isset($history[$item->kDownload])
-                    || !\is_array($history[$item->kDownload])
-                ) {
+                if (!isset($history[$item->kDownload]) || !\is_array($history[$item->kDownload])) {
                     $history[$item->kDownload] = [];
                 }
                 $history[$item->kDownload][] = new self((int)$item->kDownloadHistory);
@@ -162,9 +160,9 @@ class DownloadHistory
         $ins = $this->kopiereMembers();
         unset($ins->kDownloadHistory);
 
-        $kDownloadHistory = Shop::Container()->getDB()->insert('tdownloadhistory', $ins);
-        if ($kDownloadHistory > 0) {
-            return $bPrimary ? $kDownloadHistory : true;
+        $historyID = Shop::Container()->getDB()->insert('tdownloadhistory', $ins);
+        if ($historyID > 0) {
+            return $bPrimary ? $historyID : true;
         }
 
         return false;
@@ -212,23 +210,23 @@ class DownloadHistory
     }
 
     /**
-     * @param int $kKunde
+     * @param int $customerID
      * @return $this
      */
-    public function setKunde(int $kKunde): self
+    public function setKunde(int $customerID): self
     {
-        $this->kKunde = $kKunde;
+        $this->kKunde = $customerID;
 
         return $this;
     }
 
     /**
-     * @param int $kBestellung
+     * @param int $orderID
      * @return $this
      */
-    public function setBestellung(int $kBestellung): self
+    public function setBestellung(int $orderID): self
     {
-        $this->kBestellung = $kBestellung;
+        $this->kBestellung = $orderID;
 
         return $this;
     }

@@ -263,7 +263,7 @@ class Controller
         if (Frontend::getCustomer()->getID() > 0) {
             // Bekommt der Kunde einen Kupon und ist dieser gültig?
             if ($this->survey->getCouponID() > 0) {
-                $oKupon = $this->db->queryPrepared(
+                $coupon = $this->db->queryPrepared(
                     "SELECT tkuponsprache.cName, tkupon.kKupon, tkupon.cCode
                         FROM tkupon
                         JOIN tkuponsprache 
@@ -285,8 +285,8 @@ class Controller
                     ],
                     ReturnType::SINGLE_OBJECT
                 );
-                if ($oKupon->kKupon > 0) {
-                    $msg = \sprintf(Shop::Lang()->get('pollCoupon', 'messages'), $oKupon->cCode);
+                if ($coupon->kKupon > 0) {
+                    $msg = \sprintf(Shop::Lang()->get('pollCoupon', 'messages'), $coupon->cCode);
                 } else {
                     Shop::Container()->getLogService()->error(\sprintf(
                         'Fehlerhafter Kupon in Umfragebelohnung. Kunde: %s  Kupon: %s',

@@ -54,17 +54,17 @@ class Method
 
     /**
      * Method constructor.
-     * @param \DateTime $oObjNow
+     * @param \DateTime $now
      * @param int       $interval
      */
-    public function __construct(\DateTime $oObjNow, int $interval)
+    public function __construct(\DateTime $now, int $interval)
     {
         try {
             $this->logger = Shop::Container()->getLogService();
         } catch (\Exception $e) {
             $this->logger = null;
         }
-        $this->now      = clone $oObjNow;
+        $this->now      = clone $now;
         $this->interval = $interval;
         try {
             $this->dateLimit = $this->now->sub(

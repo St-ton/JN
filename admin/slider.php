@@ -63,18 +63,18 @@ switch ($action) {
             $slider->load($kSlider, false);
             $slider->set((object)$_REQUEST);
             // extensionpoint
-            $kSprache      = (int)$_POST['kSprache'];
-            $kKundengruppe = $_POST['kKundengruppe'];
-            $nSeite        = (int)$_POST['nSeitenTyp'];
-            $cKey          = $_POST['cKey'];
-            $cKeyValue     = '';
-            $cValue        = '';
-            if ($nSeite === PAGE_ARTIKEL) {
+            $languageID      = (int)$_POST['kSprache'];
+            $customerGroupID = $_POST['kKundengruppe'];
+            $pageType        = (int)$_POST['nSeitenTyp'];
+            $cKey            = $_POST['cKey'];
+            $cKeyValue       = '';
+            $cValue          = '';
+            if ($pageType === PAGE_ARTIKEL) {
                 $cKey      = 'kArtikel';
                 $cKeyValue = 'article_key';
                 $cValue    = $_POST[$cKeyValue];
-            } elseif ($nSeite === PAGE_ARTIKELLISTE) {
-                $aFilter_arr = [
+            } elseif ($pageType === PAGE_ARTIKELLISTE) {
+                $filter = [
                     'kTag'         => 'tag_key',
                     'kMerkmalWert' => 'attribute_key',
                     'kKategorie'   => 'categories_key',
@@ -82,9 +82,9 @@ switch ($action) {
                     'cSuche'       => 'keycSuche'
                 ];
 
-                $cKeyValue = $aFilter_arr[$cKey];
+                $cKeyValue = $filter[$cKey];
                 $cValue    = $_POST[$cKeyValue];
-            } elseif ($nSeite === PAGE_EIGENE) {
+            } elseif ($pageType === PAGE_EIGENE) {
                 $cKey      = 'kLink';
                 $cKeyValue = 'link_key';
                 $cValue    = $_POST[$cKeyValue];
@@ -106,9 +106,9 @@ switch ($action) {
                         ['slider', $slider->getID()]
                     );
                     $extension                = new stdClass();
-                    $extension->kSprache      = $kSprache;
-                    $extension->kKundengruppe = $kKundengruppe;
-                    $extension->nSeite        = $nSeite;
+                    $extension->kSprache      = $languageID;
+                    $extension->kKundengruppe = $customerGroupID;
+                    $extension->nSeite        = $pageType;
                     $extension->cKey          = $cKey;
                     $extension->cValue        = $cValue;
                     $extension->cClass        = 'slider';
@@ -151,12 +151,12 @@ switch ($action) {
                ->assign('oExtension', holeExtension($kSlider));
 
         if ($slider->getEffects() !== 'random') {
-            $cEffects_arr = explode(';', $slider->getEffects());
-            $cEffects     = '';
-            foreach ($cEffects_arr as $cKey => $cValue) {
-                $cEffects .= '<option value="' . $cValue . '">' . $cValue . '</option>';
+            $effects = explode(';', $slider->getEffects());
+            $options = '';
+            foreach ($effects as $cKey => $cValue) {
+                $options .= '<option value="' . $cValue . '">' . $cValue . '</option>';
             }
-            $smarty->assign('cEffects', $cEffects);
+            $smarty->assign('cEffects', $options);
         } else {
             $smarty->assign('checked', 'checked="checked"')
                    ->assign('disabled', 'disabled="true"');
@@ -197,7 +197,7 @@ $pagination = (new Pagination('sliders'))
     ->setItemArray($sliders)
     ->assemble();
 
-$smarty->assign('cAction', $action)
+$smarty->assign('action', $action)
        ->assign('kSlider', $kSlider)
        ->assign('validPageTypes', (new BoxAdmin($db))->getMappedValidPageTypes())
        ->assign('pagination', $pagination)

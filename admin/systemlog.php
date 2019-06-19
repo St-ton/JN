@@ -87,7 +87,7 @@ foreach ($logData as $log) {
     }
 }
 $smarty->assign('oFilter', $filter)
-       ->assign('oPagination', $pagination)
+       ->assign('pagination', $pagination)
        ->assign('oLog_arr', $logData)
        ->assign('minLogLevel', $minLogLevel)
        ->assign('nTotalLogCount', $totalLogCount)

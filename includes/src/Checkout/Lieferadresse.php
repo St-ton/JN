@@ -38,12 +38,12 @@ class Lieferadresse extends Adresse
 
     /**
      * Lieferadresse constructor.
-     * @param int $kLieferadresse
+     * @param int $id
      */
-    public function __construct(int $kLieferadresse = 0)
+    public function __construct(int $id = 0)
     {
-        if ($kLieferadresse > 0) {
-            $this->loadFromDB($kLieferadresse);
+        if ($id > 0) {
+            $this->loadFromDB($id);
         }
     }
 
@@ -101,16 +101,12 @@ class Lieferadresse extends Adresse
         $obj = $this->toObject();
 
         $obj->cLand = $this->pruefeLandISO($obj->cLand);
-
         unset($obj->angezeigtesLand, $obj->cAnredeLocalized);
-
-        $cReturn = Shop::Container()->getDB()->update('tlieferadresse', 'kLieferadresse', $obj->kLieferadresse, $obj);
+        $res = Shop::Container()->getDB()->update('tlieferadresse', 'kLieferadresse', $obj->kLieferadresse, $obj);
         $this->decrypt();
-
-        // Anrede mappen
         $this->cAnredeLocalized = $this->mappeAnrede($this->cAnrede);
 
-        return $cReturn;
+        return $res;
     }
 
     /**

@@ -23,7 +23,7 @@
     <div class="tab-content">
         <div id="freischalten" class="tab-pane fade{if !isset($cTab) || $cTab === 'freischalten' || $cTab === 'tags'} active in{/if}">
             {if $Tags && $Tags|@count > 0}
-                {include file='tpl_inc/pagination.tpl' oPagination=$oPagiTags cAnchor='freischalten'}
+                {include file='tpl_inc/pagination.tpl' pagination=$oPagiTags cAnchor='freischalten'}
                 <form name="login" method="post" action="tagging.php">
                     {$jtl_token}
                     <input type="hidden" name="tagging" value="1" />
@@ -75,7 +75,7 @@
         </div>
         <div id="mapping" class="tab-pane fade{if isset($cTab) && $cTab === 'mapping'} active in{/if}">
             {if $Tagmapping && $Tagmapping|@count > 0}
-                {include file='tpl_inc/pagination.tpl' oPagination=$oPagiTagMappings cAnchor='mapping'}
+                {include file='tpl_inc/pagination.tpl' pagination=$oPagiTagMappings cAnchor='mapping'}
                 <form name="login" method="post" action="tagging.php">
                     {$jtl_token}
                     <input type="hidden" name="tagging" value="2" />

@@ -204,8 +204,8 @@ final class Globals extends AbstractSync
     private function xml2db($xml, $table, $toMap, $del = 1): void
     {
         if (isset($xml[$table]) && \is_array($xml[$table])) {
-            $obj_arr = $this->mapper->mapArray($xml, $table, $toMap);
-            $this->dbDelInsert($table, $obj_arr, $del);
+            $objects = $this->mapper->mapArray($xml, $table, $toMap);
+            $this->dbDelInsert($table, $objects, $del);
         }
     }
 

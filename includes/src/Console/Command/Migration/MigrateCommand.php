@@ -56,7 +56,7 @@ class MigrateCommand extends Command
                 if (!\in_array($migration->getId(), $executedMigrations)) {
                     $executedMigrations[] = $migration;
                     $manager->executeMigration($migration);
-                    $io->writeln("<info>Migrated:</info> ".$migration->getName()." ".$migration->getDescription());
+                    $io->writeln('<info>Migrated:</info> '.$migration->getName().' '.$migration->getDescription());
                 }
             }
         } catch (PDOException $e) {

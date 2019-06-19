@@ -71,9 +71,9 @@ class BaseAttribute extends AbstractFilter
         );
         foreach ($languages as $language) {
             $this->cSeo[$language->kSprache] = '';
-            foreach ($seoData as $oSeo) {
-                if ($language->kSprache === (int)$oSeo->kSprache) {
-                    $this->cSeo[$language->kSprache] = $oSeo->cSeo;
+            foreach ($seoData as $seo) {
+                if ($language->kSprache === (int)$seo->kSprache) {
+                    $this->cSeo[$language->kSprache] = $seo->cSeo;
                 }
             }
         }

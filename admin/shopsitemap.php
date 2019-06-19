@@ -41,4 +41,4 @@ if (isset($_POST['speichern']) && Form::validateToken()) {
 }
 
 $smarty->assign('oConfig_arr', getAdminSectionSettings(CONF_SITEMAP))
-       ->display('shopsitemap.tpl');
+    ->display('shopsitemap.tpl');

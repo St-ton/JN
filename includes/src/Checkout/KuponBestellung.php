@@ -59,29 +59,29 @@ class KuponBestellung
     /**
      * KuponBestellung constructor.
      *
-     * @param int $kKupon
-     * @param int $kBestellung
+     * @param int $couponID
+     * @param int $orderID
      */
-    public function __construct(int $kKupon = 0, int $kBestellung = 0)
+    public function __construct(int $couponID = 0, int $orderID = 0)
     {
-        if ($kKupon > 0 && $kBestellung > 0) {
-            $this->loadFromDB($kKupon, $kBestellung);
+        if ($couponID > 0 && $orderID > 0) {
+            $this->loadFromDB($couponID, $orderID);
         }
     }
 
     /**
-     * @param int $kKupon
-     * @param int $kBestellung
+     * @param int $couponID
+     * @param int $orderID
      * @return $this
      */
-    private function loadFromDB(int $kKupon = 0, int $kBestellung = 0): self
+    private function loadFromDB(int $couponID = 0, int $orderID = 0): self
     {
         $item = Shop::Container()->getDB()->select(
             'tkuponbestelllung',
             'kKupon',
-            $kKupon,
+            $couponID,
             'kBestellung',
-            $kBestellung
+            $orderID
         );
         if (isset($item->kKupon) && $item->kKupon > 0) {
             foreach (\array_keys(\get_object_vars($item)) as $member) {
@@ -159,23 +159,23 @@ class KuponBestellung
     }
 
     /**
-     * @param int $kBestellung
+     * @param int $orderID
      * @return $this
      */
-    public function setBestellung(int $kBestellung): self
+    public function setBestellung(int $orderID): self
     {
-        $this->kBestellung = $kBestellung;
+        $this->kBestellung = $orderID;
 
         return $this;
     }
 
     /**
-     * @param int $kKunde
+     * @param int $customerID
      * @return $this
      */
-    public function setKunden(int $kKunde): self
+    public function setKunden(int $customerID): self
     {
-        $this->kKunde = $kKunde;
+        $this->kKunde = $customerID;
 
         return $this;
     }
@@ -302,12 +302,12 @@ class KuponBestellung
     /**
      * Gets used coupons from orders
      *
-     * @param string $dStart
-     * @param string $dEnd
-     * @param int    $kKupon
+     * @param string $start
+     * @param string $end
+     * @param int    $couponID
      * @return array
      */
-    public static function getOrdersWithUsedCoupons($dStart, $dEnd, int $kKupon = 0): array
+    public static function getOrdersWithUsedCoupons($start, $end, int $couponID = 0): array
     {
         return Shop::Container()->getDB()->query(
             "SELECT kbs.*, wkp.cName, kp.kKupon
@@ -318,11 +318,11 @@ class KuponBestellung
                     ON bs.kWarenkorb = wkp.kWarenkorb
                 LEFT JOIN tkupon AS kp 
                     ON kbs.kKupon = kp.kKupon
-                WHERE kbs.dErstellt BETWEEN '" . $dStart . "'
-                    AND '" . $dEnd . "'
+                WHERE kbs.dErstellt BETWEEN '" . $start . "'
+                    AND '" . $end . "'
                     AND bs.cStatus != " . \BESTELLUNG_STATUS_STORNO . '
                     AND (wkp.nPosTyp = 3 OR wkp.nPosTyp = 7) ' .
-            ($kKupon > 0 ? ' AND kp.kKupon = ' . $kKupon : '') . '
+            ($couponID > 0 ? ' AND kp.kKupon = ' . $couponID : '') . '
                 ORDER BY kbs.dErstellt DESC',
             ReturnType::ARRAY_OF_ASSOC_ARRAYS
         );

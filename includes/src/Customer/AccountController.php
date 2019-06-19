@@ -429,21 +429,21 @@ class AccountController
             if ($this->config['kaufabwicklung']['warenkorb_warenkorb2pers_merge'] === 'Y') {
                 $this->setzeWarenkorbPersInWarenkorb($_SESSION['Kunde']->kKunde);
             } elseif ($this->config['kaufabwicklung']['warenkorb_warenkorb2pers_merge'] === 'P') {
-                $oWarenkorbPers = new WarenkorbPers($customer->kKunde);
-                if (\count($oWarenkorbPers->oWarenkorbPersPos_arr) > 0) {
+                $persCart = new WarenkorbPers($customer->kKunde);
+                if (\count($persCart->oWarenkorbPersPos_arr) > 0) {
                     $this->smarty->assign('nWarenkorb2PersMerge', 1);
                 }
             }
         }
         $this->checkCoupons($coupons);
         // setzte Sprache auf Sprache des Kunden
-        $oISOSprache = Shop::Lang()->getIsoFromLangID($customer->kSprache);
-        if ((int)$_SESSION['kSprache'] !== (int)$customer->kSprache && !empty($oISOSprache->cISO)) {
+        $isoLang = Shop::Lang()->getIsoFromLangID($customer->kSprache);
+        if ((int)$_SESSION['kSprache'] !== (int)$customer->kSprache && !empty($isoLang->cISO)) {
             $_SESSION['kSprache']        = (int)$customer->kSprache;
-            $_SESSION['cISOSprache']     = $oISOSprache->cISO;
+            $_SESSION['cISOSprache']     = $isoLang->cISO;
             $_SESSION['currentLanguage'] = LanguageHelper::getAllLanguages(1)[$customer->kSprache];
-            Shop::setLanguage($customer->kSprache, $oISOSprache->cISO);
-            Shop::Lang()->setzeSprache($oISOSprache->cISO);
+            Shop::setLanguage($customer->kSprache, $isoLang->cISO);
+            Shop::Lang()->setzeSprache($isoLang->cISO);
         }
     }
 
@@ -496,13 +496,13 @@ class AccountController
         if (\count($persCart->oWarenkorbPersPos_arr) === 0) {
             return false;
         }
-        foreach ($persCart->oWarenkorbPersPos_arr as $position) {
-            if (!empty($position->Artikel->bHasKonfig)) {
+        foreach ($persCart->oWarenkorbPersPos_arr as $item) {
+            if (!empty($item->Artikel->bHasKonfig)) {
                 continue;
             }
             // Gratisgeschenk in Warenkorb legen
-            if ((int)$position->nPosTyp === \C_WARENKORBPOS_TYP_GRATISGESCHENK) {
-                $productID = (int)$position->kArtikel;
+            if ((int)$item->nPosTyp === \C_WARENKORBPOS_TYP_GRATISGESCHENK) {
+                $productID = (int)$item->kArtikel;
                 $present   = $this->db->queryPrepared(
                     'SELECT tartikelattribut.kArtikel, tartikel.fLagerbestand, 
                         tartikel.cLagerKleinerNull, tartikel.cLagerBeachten
@@ -529,32 +529,32 @@ class AccountController
                         ->fuegeEin($productID, 1, [], \C_WARENKORBPOS_TYP_GRATISGESCHENK);
                 }
                 // Konfigitems ohne Artikelbezug
-            } elseif ($position->kArtikel === 0 && !empty($position->kKonfigitem)) {
-                $configItem = new Konfigitem($position->kKonfigitem);
+            } elseif ($item->kArtikel === 0 && !empty($item->kKonfigitem)) {
+                $configItem = new Konfigitem($item->kKonfigitem);
                 $cart->erstelleSpezialPos(
                     $configItem->getName(),
-                    $position->fAnzahl,
+                    $item->fAnzahl,
                     $configItem->getPreis(),
                     $configItem->getSteuerklasse(),
                     \C_WARENKORBPOS_TYP_ARTIKEL,
                     false,
                     !Frontend::getCustomerGroup()->isMerchant(),
                     '',
-                    $position->cUnique,
-                    $position->kKonfigitem,
-                    $position->kArtikel
+                    $item->cUnique,
+                    $item->kKonfigitem,
+                    $item->kArtikel
                 );
             } else {
                 Cart::addProductIDToCart(
-                    $position->kArtikel,
-                    $position->fAnzahl,
-                    $position->oWarenkorbPersPosEigenschaft_arr,
+                    $item->kArtikel,
+                    $item->fAnzahl,
+                    $item->oWarenkorbPersPosEigenschaft_arr,
                     1,
-                    $position->cUnique,
-                    $position->kKonfigitem,
+                    $item->cUnique,
+                    $item->kKonfigitem,
                     null,
                     false,
-                    $position->cResponsibility
+                    $item->cResponsibility
                 );
             }
         }
@@ -574,18 +574,18 @@ class AccountController
         if ($customerGroupID <= 0 || empty($cart->PositionenArr)) {
             return;
         }
-        foreach ($cart->PositionenArr as $i => $position) {
-            if ($position->nPosTyp !== \C_WARENKORBPOS_TYP_ARTIKEL || !empty($position->cUnique)) {
+        foreach ($cart->PositionenArr as $i => $item) {
+            if ($item->nPosTyp !== \C_WARENKORBPOS_TYP_ARTIKEL || !empty($item->cUnique)) {
                 continue;
             }
             $visibility = $this->db->query(
                 'SELECT kArtikel
                 FROM tartikelsichtbarkeit
-                WHERE kArtikel = ' . (int)$position->kArtikel . '
+                WHERE kArtikel = ' . (int)$item->kArtikel . '
                     AND kKundengruppe = ' . $customerGroupID,
                 ReturnType::SINGLE_OBJECT
             );
-            if (isset($visibility->kArtikel) && $visibility->kArtikel > 0 && (int)$position->kKonfigitem === 0) {
+            if (isset($visibility->kArtikel) && $visibility->kArtikel > 0 && (int)$item->kKonfigitem === 0) {
                 unset($cart->PositionenArr[$i]);
             }
             $price = $this->db->queryPrepared(
@@ -595,7 +595,7 @@ class AccountController
                     AND tpreisdetail.nAnzahlAb = 0
                 WHERE tpreis.kArtikel = :productID
                     AND tpreis.kKundengruppe = :customerGroup',
-                ['productID' => (int)$position->kArtikel, 'customerGroup' => $customerGroupID],
+                ['productID' => (int)$item->kArtikel, 'customerGroup' => $customerGroupID],
                 ReturnType::SINGLE_OBJECT
             );
             if (!isset($price->fVKNetto)) {
@@ -614,9 +614,9 @@ class AccountController
             return false;
         }
         $cart = Frontend::getCart();
-        foreach ($cart->PositionenArr as $position) {
-            if ($position->nPosTyp === \C_WARENKORBPOS_TYP_GRATISGESCHENK) {
-                $productID = (int)$position->kArtikel;
+        foreach ($cart->PositionenArr as $item) {
+            if ($item->nPosTyp === \C_WARENKORBPOS_TYP_GRATISGESCHENK) {
+                $productID = (int)$item->kArtikel;
                 $present   = $this->db->queryPrepared(
                     'SELECT tartikelattribut.kArtikel, tartikel.fLagerbestand,
                        tartikel.cLagerKleinerNull, tartikel.cLagerBeachten
@@ -638,23 +638,23 @@ class AccountController
                 }
             } else {
                 WarenkorbPers::addToCheck(
-                    $position->kArtikel,
-                    $position->nAnzahl,
-                    $position->WarenkorbPosEigenschaftArr,
-                    $position->cUnique,
-                    $position->kKonfigitem,
-                    $position->nPosTyp,
-                    $position->cResponsibility
+                    $item->kArtikel,
+                    $item->nAnzahl,
+                    $item->WarenkorbPosEigenschaftArr,
+                    $item->cUnique,
+                    $item->kKonfigitem,
+                    $item->nPosTyp,
+                    $item->cResponsibility
                 );
             }
         }
         $cart->PositionenArr = [];
 
-        $oWarenkorbPers = new WarenkorbPers($customerID);
-        /** @var WarenkorbPersPos $position */
-        foreach ($oWarenkorbPers->oWarenkorbPersPos_arr as $position) {
-            if ($position->nPosTyp === \C_WARENKORBPOS_TYP_GRATISGESCHENK) {
-                $productID = (int)$position->kArtikel;
+        $persCart = new WarenkorbPers($customerID);
+        /** @var WarenkorbPersPos $item */
+        foreach ($persCart->oWarenkorbPersPos_arr as $item) {
+            if ($item->nPosTyp === \C_WARENKORBPOS_TYP_GRATISGESCHENK) {
+                $productID = (int)$item->kArtikel;
                 $present   = $this->db->queryPrepared(
                     'SELECT tartikelattribut.kArtikel, tartikel.fLagerbestand,
                        tartikel.cLagerKleinerNull, tartikel.cLagerBeachten
@@ -684,29 +684,29 @@ class AccountController
                 }
             } else {
                 $tmpProduct = new Artikel();
-                $tmpProduct->fuelleArtikel($position->kArtikel, Artikel::getDefaultOptions());
+                $tmpProduct->fuelleArtikel($item->kArtikel, Artikel::getDefaultOptions());
 
                 if ((int)$tmpProduct->kArtikel > 0 && \count(Cart::addToCartCheck(
                     $tmpProduct,
-                    $position->fAnzahl,
-                    $position->oWarenkorbPersPosEigenschaft_arr
+                    $item->fAnzahl,
+                    $item->oWarenkorbPersPosEigenschaft_arr
                 )) === 0) {
                     Cart::addProductIDToCart(
-                        $position->kArtikel,
-                        $position->fAnzahl,
-                        $position->oWarenkorbPersPosEigenschaft_arr,
+                        $item->kArtikel,
+                        $item->fAnzahl,
+                        $item->oWarenkorbPersPosEigenschaft_arr,
                         1,
-                        $position->cUnique,
-                        $position->kKonfigitem,
+                        $item->cUnique,
+                        $item->kKonfigitem,
                         null,
                         true,
-                        $position->cResponsibility
+                        $item->cResponsibility
                     );
                 } else {
                     Shop::Container()->getAlertService()->addAlert(
                         Alert::TYPE_WARNING,
-                        \sprintf(Shop::Lang()->get('cartPersRemoved', 'errorMessages'), $position->cArtikelName),
-                        'cartPersRemoved' . $position->kArtikel,
+                        \sprintf(Shop::Lang()->get('cartPersRemoved', 'errorMessages'), $item->cArtikelName),
+                        'cartPersRemoved' . $item->kArtikel,
                         ['saveInSession' => true]
                     );
                 }

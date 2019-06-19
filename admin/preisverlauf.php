@@ -20,16 +20,16 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1) {
     );
 }
 $smarty->assign('oConfig_arr', getAdminSectionSettings(CONF_PREISVERLAUF))
-       ->display('preisverlauf.tpl');
+    ->display('preisverlauf.tpl');
 
 /**
- * @param string $cFarbCode
+ * @param string $colorCode
  * @return string
  */
-function checkeFarbCode($cFarbCode)
+function checkeFarbCode($colorCode)
 {
-    if (preg_match('/#[A-Fa-f0-9]{6}/', $cFarbCode) == 1) {
-        return $cFarbCode;
+    if (preg_match('/#[A-Fa-f0-9]{6}/', $colorCode) == 1) {
+        return $colorCode;
     }
     Shop::Container()->getAlertService()->addAlert(Alert::TYPE_ERROR, __('errorColorCode'), 'errorColorCode');
 

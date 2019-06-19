@@ -101,15 +101,15 @@ function versendeNewsletter(
             ($recipients->kNewsletterEmpfaenger ?? 0) . '" alt="Newsletter" />';
     }
 
-    $cTyp = 'VL';
+    $type = 'VL';
     $nKey = $newsletter->kNewsletterVorlage ?? 0;
     if (isset($newsletter->kNewsletter) && $newsletter->kNewsletter > 0) {
-        $cTyp = 'NL';
+        $type = 'NL';
         $nKey = $newsletter->kNewsletter;
     }
     if ($newsletter->cArt === 'text/html' || $newsletter->cArt === 'html') {
         try {
-            $bodyHtml = $mailSmarty->fetch('db:' . $cTyp . '_' . $nKey . '_html') . $cPixel;
+            $bodyHtml = $mailSmarty->fetch('db:' . $type . '_' . $nKey . '_html') . $cPixel;
         } catch (Exception $e) {
             Shop::Smarty()->assign('oSmartyError', $e->getMessage());
 
@@ -117,7 +117,7 @@ function versendeNewsletter(
         }
     }
     try {
-        $bodyText = $mailSmarty->fetch('db:' . $cTyp . '_' . $nKey . '_text');
+        $bodyText = $mailSmarty->fetch('db:' . $type . '_' . $nKey . '_text');
     } catch (Exception $e) {
         Shop::Smarty()->assign('oSmartyError', $e->getMessage());
 
@@ -179,14 +179,14 @@ function gibStaticHtml(
                ->assign('Kategorieliste', $categories)
                ->assign('Kampagne', $campaign);
 
-    $cTyp = 'VL';
+    $type = 'VL';
     $nKey = $newsletter->kNewsletterVorlage ?? null;
     if ($newsletter->kNewsletter > 0) {
-        $cTyp = 'NL';
+        $type = 'NL';
         $nKey = $newsletter->kNewsletter;
     }
 
-    return $mailSmarty->fetch('db:' . $cTyp . '_' . $nKey . '_html');
+    return $mailSmarty->fetch('db:' . $type . '_' . $nKey . '_html');
 }
 
 /**
@@ -707,16 +707,16 @@ function holeNewslettervorlageStd(int $defaultTemplateID, int $templateID = 0)
         foreach ($defaultTpl->oNewslettervorlageStdVar_arr as $j => $nlTplStdVar) {
             $nlTplContent = new stdClass();
             if (isset($nlTplStdVar->kNewslettervorlageStdVar) && $nlTplStdVar->kNewslettervorlageStdVar > 0) {
-                $cSQL = ' AND kNewslettervorlage IS NULL';
+                $sql = ' AND kNewslettervorlage IS NULL';
                 if ($templateID > 0) {
-                    $cSQL = ' AND kNewslettervorlage = ' . $templateID;
+                    $sql = ' AND kNewslettervorlage = ' . $templateID;
                 }
 
                 $nlTplContent = $db->query(
                     'SELECT *
                         FROM tnewslettervorlagestdvarinhalt
                         WHERE kNewslettervorlageStdVar = ' . (int)$nlTplStdVar->kNewslettervorlageStdVar .
-                        $cSQL,
+                        $sql,
                     ReturnType::SINGLE_OBJECT
                 );
             }
@@ -759,10 +759,10 @@ function explodecArtikel($productString): stdClass
             }
         }
         // hole zu den kArtikeln die passende cArtNr
-        foreach ($productData->kArtikel_arr as $kArtikel) {
-            $cArtNr = holeArtikelnummer($kArtikel);
-            if (mb_strlen($cArtNr) > 0) {
-                $productData->cArtNr_arr[] = $cArtNr;
+        foreach ($productData->kArtikel_arr as $productID) {
+            $artNo = holeArtikelnummer($productID);
+            if (mb_strlen($artNo) > 0) {
+                $productData->cArtNr_arr[] = $artNo;
             }
         }
     }
@@ -771,13 +771,13 @@ function explodecArtikel($productString): stdClass
 }
 
 /**
- * @param string $cKundengruppe
+ * @param string $customerGroup
  * @return array
  */
-function explodecKundengruppe($cKundengruppe): array
+function explodecKundengruppe($customerGroup): array
 {
     $groupIDs = [];
-    foreach (explode(';', $cKundengruppe) as $item) {
+    foreach (explode(';', $customerGroup) as $item) {
         if (mb_strlen($item) > 0) {
             $groupIDs[] = $item;
         }
@@ -787,66 +787,66 @@ function explodecKundengruppe($cKundengruppe): array
 }
 
 /**
- * @param int $kArtikel
+ * @param int $productID
  * @return string
  */
-function holeArtikelnummer(int $kArtikel)
+function holeArtikelnummer(int $productID)
 {
-    $cArtNr   = '';
-    $oArtikel = null;
+    $artNo = '';
+    $item  = null;
 
-    if ($kArtikel > 0) {
-        $oArtikel = Shop::Container()->getDB()->select('tartikel', 'kArtikel', $kArtikel);
+    if ($productID > 0) {
+        $item = Shop::Container()->getDB()->select('tartikel', 'kArtikel', $productID);
     }
 
-    return $oArtikel->cArtNr ?? $cArtNr;
+    return $item->cArtNr ?? $artNo;
 }
 
 /**
- * @param int $kNewsletter
+ * @param int $newsletterID
  * @return stdClass
  */
-function getNewsletterEmpfaenger(int $kNewsletter)
+function getNewsletterEmpfaenger(int $newsletterID)
 {
-    if ($kNewsletter <= 0) {
+    if ($newsletterID <= 0) {
         return new stdClass();
     }
     // Kundengruppen holen um spaeter die maximal Anzahl Empfaenger gefiltert werden kann
-    $oNewsletter = Shop::Container()->getDB()->select('tnewsletter', 'kNewsletter', $kNewsletter);
+    $newsletter = Shop::Container()->getDB()->select('tnewsletter', 'kNewsletter', $newsletterID);
     // Kundengruppe pruefen und spaeter in den Empfaenger SELECT einbauen
-    $tmpGroups         = explode(';', $oNewsletter->cKundengruppe);
-    $groupIDs          = [];
-    $cKundengruppe_arr = [];
-    $cSQL              = '';
+    $tmpGroups      = explode(';', $newsletter->cKundengruppe);
+    $groupIDs       = [];
+    $customerGroups = [];
+    $sql            = '';
     if (is_array($tmpGroups) && count($tmpGroups) > 0) {
-        foreach ($tmpGroups as $cKundengruppe) {
-            $kKundengruppe = (int)$cKundengruppe;
-            if ($kKundengruppe > 0) {
-                $groupIDs[] = $kKundengruppe;
+        foreach ($tmpGroups as $group) {
+            $customerGroupID = (int)$group;
+            if ($customerGroupID > 0) {
+                $groupIDs[] = $customerGroupID;
             }
-            if (mb_strlen($cKundengruppe) > 0) {
-                $cKundengruppe_arr[] = $cKundengruppe;
+            if (mb_strlen($group) > 0) {
+                $customerGroups[] = $group;
             }
         }
 
-        $cSQL = 'AND (';
-        foreach ($groupIDs as $i => $kKundengruppe) {
+        $sql = 'AND (';
+        foreach ($groupIDs as $i => $customerGroupID) {
             if ($i > 0) {
-                $cSQL .= ' OR tkunde.kKundengruppe = ' . (int)$kKundengruppe;
+                $sql .= ' OR tkunde.kKundengruppe = ' . (int)$customerGroupID;
             } else {
-                $cSQL .= 'tkunde.kKundengruppe = ' . (int)$kKundengruppe;
+                $sql .= 'tkunde.kKundengruppe = ' . (int)$customerGroupID;
             }
         }
 
         if (in_array('0', $tmpGroups)) {
             if (is_array($groupIDs) && count($groupIDs) > 0) {
-                $cSQL .= ' OR tkunde.kKundengruppe IS NULL';
+                $sql .= ' OR tkunde.kKundengruppe IS NULL';
             } else {
-                $cSQL .= 'tkunde.kKundengruppe IS NULL';
+                $sql .= 'tkunde.kKundengruppe IS NULL';
             }
         }
 
-        $cSQL .= ')';
+        $sql .= ')';
     }
 
     $recipients = Shop::Container()->getDB()->query(
@@ -856,26 +856,26 @@ function getNewsletterEmpfaenger(int $kNewsletter)
                 ON tsprache.kSprache = tnewsletterempfaenger.kSprache
             LEFT JOIN tkunde 
                 ON tkunde.kKunde = tnewsletterempfaenger.kKunde
-            WHERE tnewsletterempfaenger.kSprache = ' . (int)$oNewsletter->kSprache . '
-                AND tnewsletterempfaenger.nAktiv = 1 ' . $cSQL,
+            WHERE tnewsletterempfaenger.kSprache = ' . (int)$newsletter->kSprache . '
+                AND tnewsletterempfaenger.nAktiv = 1 ' . $sql,
         ReturnType::SINGLE_OBJECT
     );
 
-    $recipients->cKundengruppe_arr = $cKundengruppe_arr;
+    $recipients->cKundengruppe_arr = $customerGroups;
 
     return $recipients;
 }
 
 /**
- * @param string $dZeitDB
+ * @param string $time
  * @return stdClass
  */
-function baueZeitAusDB($dZeitDB)
+function baueZeitAusDB($time)
 {
     $oZeit = new stdClass();
 
-    if (mb_strlen($dZeitDB) > 0) {
-        [$dDatum, $dUhrzeit]            = explode(' ', $dZeitDB);
+    if (mb_strlen($time) > 0) {
+        [$dDatum, $dUhrzeit]            = explode(' ', $time);
         [$dJahr, $dMonat, $dTag]        = explode('-', $dDatum);
         [$dStunde, $dMinute, $dSekunde] = explode(':', $dUhrzeit);
 
@@ -887,25 +887,25 @@ function baueZeitAusDB($dZeitDB)
 }
 
 /**
- * @param stdClass $cAktiveSucheSQL
+ * @param stdClass $activeSearchSQL
  * @return int
  */
-function holeAbonnentenAnzahl($cAktiveSucheSQL): int
+function holeAbonnentenAnzahl($activeSearchSQL): int
 {
     return (int)Shop::Container()->getDB()->query(
         'SELECT COUNT(*) AS nAnzahl
             FROM tnewsletterempfaenger
-            WHERE kSprache = ' . (int)$_SESSION['kSprache'] . $cAktiveSucheSQL->cWHERE,
+            WHERE kSprache = ' . (int)$_SESSION['kSprache'] . $activeSearchSQL->cWHERE,
         ReturnType::SINGLE_OBJECT
     )->nAnzahl;
 }
 
 /**
- * @param string   $cSQL
- * @param stdClass $cAktiveSucheSQL
+ * @param string   $sql
+ * @param stdClass $activeSearchSQL
  * @return array
  */
-function holeAbonnenten($cSQL, $cAktiveSucheSQL): array
+function holeAbonnenten($sql, $activeSearchSQL): array
 {
     return Shop::Container()->getDB()->query(
         "SELECT tnewsletterempfaenger.*, 
@@ -922,14 +922,14 @@ function holeAbonnenten($cSQL, $cAktiveSucheSQL): array
                 ON tnewsletterempfaengerhistory.cEmail = tnewsletterempfaenger.cEmail
                   AND tnewsletterempfaengerhistory.cAktion = 'Eingetragen'
             WHERE tnewsletterempfaenger.kSprache = " . (int)$_SESSION['kSprache'] .
-        $cAktiveSucheSQL->cWHERE . '
-            ORDER BY tnewsletterempfaenger.dEingetragen DESC' . $cSQL,
+        $activeSearchSQL->cWHERE . '
+            ORDER BY tnewsletterempfaenger.dEingetragen DESC' . $sql,
         ReturnType::ARRAY_OF_OBJECTS
     );
 }
 
 /**
- * @param array $recipientIDs
+ * @param int[] $recipientIDs
  * @return bool
  */
 function loescheAbonnenten($recipientIDs): bool
@@ -977,7 +977,7 @@ function loescheAbonnenten($recipientIDs): bool
 }
 
 /**
- * @param array $recipientIDs
+ * @param int[] $recipientIDs
  * @return bool
  */
 function aktiviereAbonnenten($recipientIDs): bool
@@ -1029,32 +1029,31 @@ function aktiviereAbonnenten($recipientIDs): bool
  * @param array $post
  * @return int|stdClass
  */
-function gibAbonnent($post)
+function gibAbonnent(array $post)
 {
     $db        = Shop::Container()->getDB();
-    $cVorname  = strip_tags($db->escape($post['cVorname']));
-    $cNachname = strip_tags($db->escape($post['cNachname']));
-    $cEmail    = strip_tags($db->escape($post['cEmail']));
+    $firstName = strip_tags($db->escape($post['cVorname']));
+    $lastName  = strip_tags($db->escape($post['cNachname']));
+    $mail      = strip_tags($db->escape($post['cEmail']));
     // Etwas muss gesetzt sein um zu suchen
-    if (!$cVorname && !$cNachname && !$cEmail) {
+    if (!$firstName && !$lastName && !$mail) {
         return 1;
     }
-    // SQL bauen
-    $cSQL = '';
-    if (mb_strlen($cVorname) > 0) {
-        $cSQL .= "tnewsletterempfaenger.cVorname LIKE '%" . strip_tags($db->realEscape($cVorname)) . "%'";
+    $sql = '';
+    if (mb_strlen($firstName) > 0) {
+        $sql .= "tnewsletterempfaenger.cVorname LIKE '%" . strip_tags($db->realEscape($firstName)) . "%'";
     }
-    if (mb_strlen($cNachname) > 0 && mb_strlen($cVorname) > 0) {
-        $cSQL .= " AND tnewsletterempfaenger.cNachname LIKE '%" . strip_tags($db->realEscape($cNachname)) . "%'";
-    } elseif (mb_strlen($cNachname) > 0) {
-        $cSQL .= "tnewsletterempfaenger.cNachname LIKE '%" . strip_tags($db->realEscape($cNachname)) . "%'";
+    if (mb_strlen($lastName) > 0 && mb_strlen($firstName) > 0) {
+        $sql .= " AND tnewsletterempfaenger.cNachname LIKE '%" . strip_tags($db->realEscape($lastName)) . "%'";
+    } elseif (mb_strlen($lastName) > 0) {
+        $sql .= "tnewsletterempfaenger.cNachname LIKE '%" . strip_tags($db->realEscape($lastName)) . "%'";
     }
-    if (mb_strlen($cEmail) > 0 && (mb_strlen($cVorname) > 0 || mb_strlen($cNachname) > 0)) {
-        $cSQL .= " AND tnewsletterempfaenger.cEmail LIKE '%" . strip_tags($db->realEscape($cEmail)) . "%'";
-    } elseif (mb_strlen($cEmail) > 0) {
-        $cSQL .= "tnewsletterempfaenger.cEmail LIKE '%" . strip_tags($db->realEscape($cEmail)) . "%'";
+    if (mb_strlen($mail) > 0 && (mb_strlen($firstName) > 0 || mb_strlen($lastName) > 0)) {
+        $sql .= " AND tnewsletterempfaenger.cEmail LIKE '%" . strip_tags($db->realEscape($mail)) . "%'";
+    } elseif (mb_strlen($mail) > 0) {
+        $sql .= "tnewsletterempfaenger.cEmail LIKE '%" . strip_tags($db->realEscape($mail)) . "%'";
     }
-    $oAbonnent = $db->query(
+    $data = $db->query(
         "SELECT tnewsletterempfaenger.kNewsletterEmpfaenger, tnewsletterempfaenger.cVorname AS newsVorname, 
             tnewsletterempfaenger.cNachname AS newsNachname, tkunde.cVorname, tkunde.cNachname, 
             tnewsletterempfaenger.cEmail, tnewsletterempfaenger.nAktiv, tkunde.kKundengruppe, tkundengruppe.cName, 
@@ -1064,15 +1063,15 @@ function gibAbonnent($post)
                 ON tkunde.kKunde = tnewsletterempfaenger.kKunde
             JOIN tkundengruppe 
                 ON tkundengruppe.kKundengruppe = tkunde.kKundengruppe
-            WHERE " . $cSQL . '
+            WHERE " . $sql . '
             ORDER BY tnewsletterempfaenger.dEingetragen DESC',
         ReturnType::SINGLE_OBJECT
     );
-    if (isset($oAbonnent->kNewsletterEmpfaenger) && $oAbonnent->kNewsletterEmpfaenger > 0) {
-        $oKunde               = new Kunde($oAbonnent->kKunde ?? 0);
-        $oAbonnent->cNachname = $oKunde->cNachname;
+    if (isset($data->kNewsletterEmpfaenger) && $data->kNewsletterEmpfaenger > 0) {
+        $customer        = new Kunde($data->kKunde ?? 0);
+        $data->cNachname = $customer->cNachname;
 
-        return $oAbonnent;
+        return $data;
     }
 
     return 0;
@@ -1141,18 +1140,18 @@ function baueNewsletterVorschau($template)
  * Braucht ein String von Keys oder Nummern und gibt ein Array mit kKeys zurueck
  * Der String muss ';' separiert sein z.b. '1;2;3'
  *
- * @param string $cKey
- * @param bool   $bArtikelnummer
+ * @param string $keyName
+ * @param bool   $productNo
  * @return array
  */
-function gibAHKKeys($cKey, $bArtikelnummer = false)
+function gibAHKKeys($keyName, $productNo = false)
 {
     $res  = [];
-    $keys = explode(';', $cKey);
+    $keys = explode(';', $keyName);
     if (is_array($keys) && count($keys) > 0) {
         foreach ($keys as $key) {
             if (mb_strlen($key) > 0) {
-                if ($bArtikelnummer) {
+                if ($productNo) {
                     $res[] = "'" . $key . "'";
                 } else {
                     $res[] = (int)$key;
@@ -1161,7 +1160,7 @@ function gibAHKKeys($cKey, $bArtikelnummer = false)
         }
         // Ausnahme: Wurden Artikelnummern uebergebenn?
         // Wenn ja, dann hole fuer die Artikelnummern die entsprechenden kArtikel
-        if ($bArtikelnummer && count($res) > 0) {
+        if ($productNo && count($res) > 0) {
             $productIDs = [];
             $artNoData  = Shop::Container()->getDB()->query(
                 'SELECT kArtikel

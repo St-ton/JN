@@ -103,124 +103,122 @@ function bearbeiteEinstellungsSuche(string $query, bool $save = false)
 }
 
 /**
- * @param object $oSQL
- * @param bool   $bSpeichern
+ * @param object $sql
+ * @param bool   $save
  * @return object
  */
-function holeEinstellungen($oSQL, bool $bSpeichern)
+function holeEinstellungen($sql, bool $save)
 {
-    if (mb_strlen($oSQL->cWHERE) <= 0) {
-        return $oSQL;
+    if (mb_strlen($sql->cWHERE) <= 0) {
+        return $sql;
     }
 
-    $oSQL->oEinstellung_arr = Shop::Container()->getDB()->query(
+    $sql->oEinstellung_arr = Shop::Container()->getDB()->query(
         'SELECT *
             FROM teinstellungenconf
-            WHERE ' . $oSQL->cWHERE . '
+            WHERE ' . $sql->cWHERE . '
             ORDER BY kEinstellungenSektion, nSort',
         ReturnType::ARRAY_OF_OBJECTS
     );
     Shop::Container()->getGetText()->loadConfigLocales();
-    foreach ($oSQL->oEinstellung_arr as $j => $oEinstellung) {
-        Shop::Container()->getGetText()->localizeConfig($oEinstellung);
+    foreach ($sql->oEinstellung_arr as $j => $config) {
+        Shop::Container()->getGetText()->localizeConfig($config);
 
-        if ((int)$oSQL->nSuchModus === 3 && $oEinstellung->cConf === 'Y') {
-            $oSQL->oEinstellung_arr = [];
-            $configHead             = holeEinstellungHeadline(
-                $oEinstellung->nSort,
-                $oEinstellung->kEinstellungenSektion
+        if ((int)$sql->nSuchModus === 3 && $config->cConf === 'Y') {
+            $sql->oEinstellung_arr = [];
+            $configHead            = holeEinstellungHeadline(
+                $config->nSort,
+                $config->kEinstellungenSektion
             );
-            if (isset($configHead->kEinstellungenConf)
-                && $configHead->kEinstellungenConf > 0
-            ) {
-                $oSQL->oEinstellung_arr[] = $configHead;
-                $oSQL                     = holeEinstellungAbteil(
-                    $oSQL,
+            if (isset($configHead->kEinstellungenConf) && $configHead->kEinstellungenConf > 0) {
+                $sql->oEinstellung_arr[] = $configHead;
+                $sql                     = holeEinstellungAbteil(
+                    $sql,
                     $configHead->nSort,
                     $configHead->kEinstellungenSektion
                 );
             }
-        } elseif ($oEinstellung->cConf === 'N') {
-            $oSQL = holeEinstellungAbteil(
-                $oSQL,
-                $oEinstellung->nSort,
-                $oEinstellung->kEinstellungenSektio
+        } elseif ($config->cConf === 'N') {
+            $sql = holeEinstellungAbteil(
+                $sql,
+                $config->nSort,
+                $config->kEinstellungenSektio
             );
         }
     }
     // Aufräumen
-    if (count($oSQL->oEinstellung_arr) > 0) {
-        $kEinstellungenConf_arr = [];
-        foreach ($oSQL->oEinstellung_arr as $i => $oEinstellung) {
-            $oEinstellung->kEinstellungenConf = (int)$oEinstellung->kEinstellungenConf;
-            if (isset($oEinstellung->kEinstellungenConf)
-                && $oEinstellung->kEinstellungenConf > 0
-                && !in_array($oEinstellung->kEinstellungenConf, $kEinstellungenConf_arr, true)
+    if (count($sql->oEinstellung_arr) > 0) {
+        $configIDs = [];
+        foreach ($sql->oEinstellung_arr as $i => $config) {
+            $config->kEinstellungenConf = (int)$config->kEinstellungenConf;
+            if (isset($config->kEinstellungenConf)
+                && $config->kEinstellungenConf > 0
+                && !in_array($config->kEinstellungenConf, $configIDs, true)
             ) {
-                $kEinstellungenConf_arr[$i] = $oEinstellung->kEinstellungenConf;
+                $configIDs[$i] = $config->kEinstellungenConf;
             } else {
-                unset($oSQL->oEinstellung_arr[$i]);
+                unset($sql->oEinstellung_arr[$i]);
             }
 
-            if ($bSpeichern && $oEinstellung->cConf === 'N') {
-                unset($oSQL->oEinstellung_arr[$i]);
+            if ($save && $config->cConf === 'N') {
+                unset($sql->oEinstellung_arr[$i]);
             }
         }
-        $oSQL->oEinstellung_arr = sortiereEinstellungen($oSQL->oEinstellung_arr);
+        $sql->oEinstellung_arr = sortiereEinstellungen($sql->oEinstellung_arr);
     }
 
-    return $oSQL;
+    return $sql;
 }
 
 /**
- * @param object $oSQL
- * @param int    $nSort
- * @param int    $kEinstellungenSektion
+ * @param object $sql
+ * @param int    $sort
+ * @param int    $sectionID
  * @return mixed
  */
-function holeEinstellungAbteil($oSQL, $nSort, $kEinstellungenSektion)
+function holeEinstellungAbteil($sql, $sort, $sectionID)
 {
-    if ((int)$nSort > 0 && (int)$kEinstellungenSektion > 0) {
-        $oEinstellungTMP_arr = Shop::Container()->getDB()->query(
+    if ((int)$sort > 0 && (int)$sectionID > 0) {
+        $items = Shop::Container()->getDB()->query(
             'SELECT *
                 FROM teinstellungenconf
-                WHERE nSort > ' . (int)$nSort . '
-                    AND kEinstellungenSektion = ' . (int)$kEinstellungenSektion . '
+                WHERE nSort > ' . (int)$sort . '
+                    AND kEinstellungenSektion = ' . (int)$sectionID . '
                 ORDER BY nSort',
             ReturnType::ARRAY_OF_OBJECTS
         );
-        foreach ($oEinstellungTMP_arr as $oEinstellungTMP) {
-            if ($oEinstellungTMP->cConf !== 'N') {
-                $oSQL->oEinstellung_arr[] = $oEinstellungTMP;
+        foreach ($items as $item) {
+            if ($item->cConf !== 'N') {
+                $sql->oEinstellung_arr[] = $item;
             } else {
                 break;
             }
         }
     }
 
-    return $oSQL;
+    return $sql;
 }
 
 /**
- * @param int $nSort
+ * @param int $sort
  * @param int $sectionID
  * @return stdClass
  */
-function holeEinstellungHeadline(int $nSort, int $sectionID)
+function holeEinstellungHeadline(int $sort, int $sectionID)
 {
     $configHead = new stdClass();
-    if ($nSort > 0 && $sectionID > 0) {
-        $oEinstellungTMP_arr = Shop::Container()->getDB()->query(
+    if ($sort > 0 && $sectionID > 0) {
+        $items = Shop::Container()->getDB()->query(
             'SELECT *
                 FROM teinstellungenconf
-                WHERE nSort < ' . $nSort . '
+                WHERE nSort < ' . $sort . '
                     AND kEinstellungenSektion = ' . $sectionID . '
                 ORDER BY nSort DESC',
             ReturnType::ARRAY_OF_OBJECTS
         );
-        foreach ($oEinstellungTMP_arr as $oEinstellungTMP) {
-            if ($oEinstellungTMP->cConf === 'N') {
-                $configHead                = $oEinstellungTMP;
+        foreach ($items as $item) {
+            if ($item->cConf === 'N') {
+                $configHead                = $item;
                 $configHead->cSektionsPfad = gibEinstellungsSektionsPfad($sectionID);
                 $configHead->cURL          = getSectionMenuPath($sectionID);
                 break;
@@ -268,28 +266,28 @@ function getSectionMenuPath(int $sectionID)
 function sortiereEinstellungen($config)
 {
     if (is_array($config) && count($config) > 0) {
-        $nSort                   = [];
-        $oEinstellungTMP_arr     = [];
-        $oEinstellungSektion_arr = [];
-        foreach ($config as $i => $oEinstellung) {
-            if (isset($oEinstellung->kEinstellungenSektion) && $oEinstellung->cConf !== 'N') {
-                if (!isset($oEinstellungSektion_arr[$oEinstellung->kEinstellungenSektion])) {
-                    $headline = holeEinstellungHeadline($oEinstellung->nSort, $oEinstellung->kEinstellungenSektion);
+        $sprt     = [];
+        $tmpConf  = [];
+        $sections = [];
+        foreach ($config as $i => $conf) {
+            if (isset($conf->kEinstellungenSektion) && $conf->cConf !== 'N') {
+                if (!isset($sections[$conf->kEinstellungenSektion])) {
+                    $headline = holeEinstellungHeadline($conf->nSort, $conf->kEinstellungenSektion);
                     if (isset($headline->kEinstellungenSektion)) {
-                        $oEinstellungSektion_arr[$oEinstellung->kEinstellungenSektion] = true;
-                        $oEinstellungTMP_arr[]                                         = $headline;
+                        $sections[$conf->kEinstellungenSektion] = true;
+                        $tmpConf[]                              = $headline;
                     }
                 }
-                $oEinstellungTMP_arr[] = $oEinstellung;
+                $tmpConf[] = $conf;
             }
         }
-        foreach ($oEinstellungTMP_arr as $key => $value) {
-            $kEinstellungenSektion[$key] = $value->kEinstellungenSektion;
-            $nSort[$key]                 = $value->nSort;
+        foreach ($tmpConf as $key => $value) {
+            $sectionIDs[$key] = $value->kEinstellungenSektion;
+            $sprt[$key]       = $value->nSort;
         }
-        array_multisort($kEinstellungenSektion, SORT_ASC, $nSort, SORT_ASC, $oEinstellungTMP_arr);
+        array_multisort($sectionIDs, SORT_ASC, $sprt, SORT_ASC, $tmpConf);
 
-        return $oEinstellungTMP_arr;
+        return $tmpConf;
     }
 
     return [];

@@ -8,7 +8,7 @@
                 {include file='tpl_inc/filtertools.tpl' oFilter=$oFilter cParam_arr=['tab'=>$cKuponTyp]}
             {/if}
             {if $oKupon_arr|@count > 0}
-                {include file='tpl_inc/pagination.tpl' $pagination=$pagination cParam_arr=['tab'=>$cKuponTyp]}
+                {include file='tpl_inc/pagination.tpl' pagination=$pagination cParam_arr=['tab'=>$cKuponTyp]}
             {/if}
             <form method="post" action="kupons.php">
                 {$jtl_token}
@@ -20,13 +20,13 @@
                                 <tr>
                                     <th title="{__('active')}"></th>
                                     <th></th>
-                                    <th>{__('name')} {call sortControls $pagination=$pagination nSortBy=0}</th>
+                                    <th>{__('name')} {call sortControls pagination=$pagination nSortBy=0}</th>
                                     {if $cKuponTyp === $couponTypes.standard || $cKuponTyp === $couponTypes.newCustomer}<th>{__('value')}</th>{/if}
                                     {if $cKuponTyp === $couponTypes.standard || $cKuponTyp === $couponTypes.shipping}
-                                        <th>{__('code')} {call sortControls $pagination=$pagination nSortBy=1}</th>
+                                        <th>{__('code')} {call sortControls pagination=$pagination nSortBy=1}</th>
                                     {/if}
                                     <th>{__('mbw')}</th>
-                                    <th>{__('curmaxusage')} {call sortControls $pagination=$pagination nSortBy=2}</th>
+                                    <th>{__('curmaxusage')} {call sortControls pagination=$pagination nSortBy=2}</th>
                                     <th>{__('restrictions')}</th>
                                     <th>{__('validityPeriod')}</th>
                                     <th></th>
@@ -150,7 +150,7 @@
             cKuponTypName=__('standardCoupon')
             oKupon_arr=$oKuponStandard_arr
             nKuponCount=$nKuponStandardCount
-            $pagination=$oPaginationStandard
+            pagination=$oPaginationStandard
             oFilter=$oFilterStandard
         }
         {kupons_uebersicht_tab
@@ -158,7 +158,7 @@
             cKuponTypName=__('shippingCoupon')
             oKupon_arr=$oKuponVersandkupon_arr
             nKuponCount=$nKuponVersandCount
-            $pagination=$oPaginationVersandkupon
+            pagination=$oPaginationVersandkupon
             oFilter=$oFilterVersand
         }
         {kupons_uebersicht_tab
@@ -166,7 +166,7 @@
             cKuponTypName=__('newCustomerCoupon')
             oKupon_arr=$oKuponNeukundenkupon_arr
             nKuponCount=$nKuponNeukundenCount
-            $pagination=$oPaginationNeukundenkupon
+            pagination=$oPaginationNeukundenkupon
             oFilter=$oFilterNeukunden
         }
     </div>

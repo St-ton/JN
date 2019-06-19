@@ -418,7 +418,7 @@
         <a class="btn btn-danger" href="banner.php" id="cancel"><i class="fa fa-angle-double-left"></i> {__('back')}</a>
     </div>
     {else}
-        {include file='tpl_inc/pagination.tpl' $pagination=$pagination}
+        {include file='tpl_inc/pagination.tpl' pagination=$pagination}
 
         <div id="settings">
             <div class="panel panel-default">

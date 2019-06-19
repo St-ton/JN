@@ -19,7 +19,7 @@
     <div class="tab-content">
         <div id="wunschlistepos" class="tab-pane fade {if !isset($cTab) || $cTab === 'wunschlistepos'} active in{/if}">
             {if isset($CWunschliste_arr) && $CWunschliste_arr|@count > 0}
-                {include file='tpl_inc/pagination.tpl' $pagination=$oPagiPos cAnchor='wunschlistepos'}
+                {include file='tpl_inc/pagination.tpl' pagination=$oPagiPos cAnchor='wunschlistepos'}
                 <div class="panel panel-default table-responsive">
                     <table class="table table-striped">
                         <tr>
@@ -50,7 +50,7 @@
         </div>
         <div id="wunschlisteartikel" class="tab-pane fade {if isset($cTab) && $cTab === 'wunschlisteartikel'} active in{/if}">
             {if isset($CWunschlistePos_arr) && $CWunschlistePos_arr|@count > 0}
-                {include file='tpl_inc/pagination.tpl' $pagination=$oPagiArtikel cAnchor='wunschlisteartikel'}
+                {include file='tpl_inc/pagination.tpl' pagination=$oPagiArtikel cAnchor='wunschlisteartikel'}
                 <div class="panel panel-default table-responsive">
                     <table class="table table-striped">
                         <tr>
@@ -75,7 +75,7 @@
         </div>
         <div id="wunschlistefreunde" class="tab-pane fade {if isset($cTab) && $cTab === 'wunschlistefreunde'} active in{/if}">
             {if $CWunschlisteVersand_arr && $CWunschlisteVersand_arr|@count > 0}
-                {include file='tpl_inc/pagination.tpl' $pagination=$oPagiFreunde cAnchor='wunschlistefreunde'}
+                {include file='tpl_inc/pagination.tpl' pagination=$oPagiFreunde cAnchor='wunschlistefreunde'}
                 <div class="panel panel-default table-responsive">
                     <table class="table table-striped">
                         <tr>

@@ -16,7 +16,7 @@
                         <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                     </div>
                 {else}
-                    {include file='tpl_inc/pagination.tpl' $pagination=$pagination}
+                    {include file='tpl_inc/pagination.tpl' pagination=$pagination}
                     <div class="panel-heading">
                         <h3 class="panel-title">{__('slider')}</h3>
                     </div>

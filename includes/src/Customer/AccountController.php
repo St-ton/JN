@@ -225,15 +225,6 @@ class AccountController
             $step = 'kunden_werben_kunden';
             $this->checkPromotion($_POST);
         }
-        if (isset($_GET['wlph']) && (int)$_GET['wlph'] > 0 && (int)$_GET['wl'] > 0) {
-            $step = 'mein Konto';
-            $this->addWishlistProductToCart();
-        }
-        // WunschlistePos alle in den Warenkorb adden
-        if (isset($_GET['wlpah']) && (int)$_GET['wlpah'] === 1 && (int)$_GET['wl'] > 0) {
-            $step = 'mein Konto';
-            $this->addAllWishlistProductsToCart();
-        }
         if (isset($_POST['wlh']) && (int)$_POST['wlh'] > 0) {
             $step = 'mein Konto';
             $name = Text::htmlentities(Text::filterXSS($_POST['cWunschlisteName']));
@@ -241,29 +232,7 @@ class AccountController
         }
         $wishlistID = Request::verifyGPCDataInt('wl');
         if ($wishlistID > 0) {
-            if (Request::verifyGPCDataInt('wla') > 0) {
-                $step = 'mein Konto';
-                // Prüfe ob die Wunschliste dem eingeloggten Kunden gehört
-                $wishlist = $this->db->select('twunschliste', 'kWunschliste', $wishlistID);
-                if (!empty($wishlist->kKunde) && (int)$wishlist->kKunde === $customerID) {
-                    $this->alertService->addAlert(Alert::TYPE_NOTE, Wunschliste::update($wishlistID), 'updateWL');
-                    $step                    = 'wunschliste anzeigen';
-                    $_SESSION['Wunschliste'] = new Wunschliste($_SESSION['Wunschliste']->kWunschliste ?? $wishlistID);
-                }
-            }
-            if (Request::verifyGPCDataInt('wlvm') > 0) {
-                $step = $this->viewWishlist($customerID, $wishlistID);
-            }
-            if (Request::verifyGPCDataInt('wldl') === 1) {
-                $step = 'wunschliste anzeigen';
-                $this->deleteWishlistItems($customerID, $wishlistID);
-            }
-            if (Request::verifyGPCDataInt('wlsearch') === 1) {
-                $step = 'wunschliste anzeigen';
-                $this->searchInWishlist($customerID, $wishlistID);
-            } elseif (Request::verifyGPCDataInt('wl') > 0 && Request::verifyGPCDataInt('wlvm') === 0) {
-                $step = $this->modifyWishlist($customerID, $wishlistID);
-            }
+            $step = $this->modifyWishlist($customerID, $wishlistID);
         }
         if ((isset($_GET['editRechnungsadresse']) && (int)$_GET['editRechnungsadresse'] > 0)
             || (isset($_POST['editRechnungsadresse']) && (int)$_POST['editRechnungsadresse'] > 0)) {
@@ -460,21 +429,21 @@ class AccountController
             if ($this->config['kaufabwicklung']['warenkorb_warenkorb2pers_merge'] === 'Y') {
                 $this->setzeWarenkorbPersInWarenkorb($_SESSION['Kunde']->kKunde);
             } elseif ($this->config['kaufabwicklung']['warenkorb_warenkorb2pers_merge'] === 'P') {
-                $oWarenkorbPers = new WarenkorbPers($customer->kKunde);
-                if (\count($oWarenkorbPers->oWarenkorbPersPos_arr) > 0) {
+                $persCart = new WarenkorbPers($customer->kKunde);
+                if (\count($persCart->oWarenkorbPersPos_arr) > 0) {
                     $this->smarty->assign('nWarenkorb2PersMerge', 1);
                 }
             }
         }
         $this->checkCoupons($coupons);
         // setzte Sprache auf Sprache des Kunden
-        $oISOSprache = Shop::Lang()->getIsoFromLangID($customer->kSprache);
-        if ((int)$_SESSION['kSprache'] !== (int)$customer->kSprache && !empty($oISOSprache->cISO)) {
+        $isoLang = Shop::Lang()->getIsoFromLangID($customer->kSprache);
+        if ((int)$_SESSION['kSprache'] !== (int)$customer->kSprache && !empty($isoLang->cISO)) {
             $_SESSION['kSprache']        = (int)$customer->kSprache;
-            $_SESSION['cISOSprache']     = $oISOSprache->cISO;
+            $_SESSION['cISOSprache']     = $isoLang->cISO;
             $_SESSION['currentLanguage'] = LanguageHelper::getAllLanguages(1)[$customer->kSprache];
-            Shop::setLanguage($customer->kSprache, $oISOSprache->cISO);
-            Shop::Lang()->setzeSprache($oISOSprache->cISO);
+            Shop::setLanguage($customer->kSprache, $isoLang->cISO);
+            Shop::Lang()->setzeSprache($isoLang->cISO);
         }
     }
 
@@ -681,9 +650,9 @@ class AccountController
         }
         $cart->PositionenArr = [];
 
-        $oWarenkorbPers = new WarenkorbPers($customerID);
+        $persCart = new WarenkorbPers($customerID);
         /** @var WarenkorbPersPos $item */
-        foreach ($oWarenkorbPers->oWarenkorbPersPos_arr as $item) {
+        foreach ($persCart->oWarenkorbPersPos_arr as $item) {
             if ($item->nPosTyp === \C_WARENKORBPOS_TYP_GRATISGESCHENK) {
                 $productID = (int)$item->kArtikel;
                 $present   = $this->db->queryPrepared(
@@ -915,76 +884,6 @@ class AccountController
                 'kwkWrongdata'
             );
         }
-    }
-
-    /**
-     *
-     */
-    private function addWishlistProductToCart(): void
-    {
-        $urlID      = Text::filterXSS(Request::verifyGPDataString('wlid'));
-        $wishListID = Request::verifyGPCDataInt('wl');
-        $item       = Wunschliste::getWishListPositionDataByID(Request::verifyGPCDataInt('wlph'));
-        if (!isset($item->kArtikel) || $item->kArtikel <= 0) {
-            return;
-        }
-        $attributeValues = Product::isVariChild($item->kArtikel)
-            ? Product::getVarCombiAttributeValues($item->kArtikel)
-            : Wunschliste::getAttributesByID($wishListID, $item->kWunschlistePos);
-        if (!$item->bKonfig) {
-            Cart::addProductIDToCart(
-                $item->kArtikel,
-                $item->fAnzahl,
-                $attributeValues
-            );
-        }
-        \header(
-            'Location: ' . $this->linkService->getStaticRoute('jtl.php') .
-            '?wl=' . $wishListID .
-            '&wlidmsg=1' . mb_strlen($urlID) > 0 ? ('&wlid=' . $urlID) : '',
-            true,
-            303
-        );
-        exit();
-    }
-
-    /**
-     *
-     */
-    private function addAllWishlistProductsToCart(): void
-    {
-        $cURLID     = Text::filterXSS(Request::verifyGPDataString('wlid'));
-        $wishListID = Request::verifyGPCDataInt('wl');
-        $wishlist   = Wunschliste::getWishListDataByID($wishListID);
-        $wishlist   = new Wunschliste($wishlist->kWunschliste);
-        if (\count($wishlist->CWunschlistePos_arr) === 0) {
-            return;
-        }
-        foreach ($wishlist->CWunschlistePos_arr as $wishlistPosition) {
-            $attributeValues = Product::isVariChild($wishlistPosition->kArtikel)
-                ? Product::getVarCombiAttributeValues($wishlistPosition->kArtikel)
-                : Wunschliste::getAttributesByID($wishListID, $wishlistPosition->kWunschlistePos);
-            if (!$wishlistPosition->Artikel->bHasKonfig
-                && !$wishlistPosition->bKonfig
-                && isset($wishlistPosition->Artikel->inWarenkorbLegbar)
-                && $wishlistPosition->Artikel->inWarenkorbLegbar > 0
-            ) {
-                Cart::addProductIDToCart(
-                    $wishlistPosition->kArtikel,
-                    $wishlistPosition->fAnzahl,
-                    $attributeValues
-                );
-            }
-        }
-        \header(
-            'Location: ' . $this->linkService->getStaticRoute('jtl.php') .
-            '?wl=' . $wishListID .
-            '&wlid=' . $cURLID .
-            '&wlidmsg=2',
-            true,
-            303
-        );
-        exit();
     }
 
     /**
@@ -1236,107 +1135,30 @@ class AccountController
      * @param int $wishlistID
      * @return string
      */
-    private function viewWishlist(int $customerID, int $wishlistID): string
-    {
-        $step     = 'mein Konto';
-        $wishlist = $this->db->select(
-            'twunschliste',
-            'kWunschliste',
-            $wishlistID,
-            'kKunde',
-            $customerID
-        );
-        if (isset($wishlist->kWunschliste) && $wishlist->kWunschliste > 0 && mb_strlen($wishlist->cURLID) > 0) {
-            $step = 'wunschliste anzeigen';
-            if (isset($_POST['send']) && (int)$_POST['send'] === 1) {
-                if ($this->config['global']['global_wunschliste_anzeigen'] === 'Y') {
-                    $this->alertService->addAlert(
-                        Alert::TYPE_NOTE,
-                        Wunschliste::send(
-                            \explode(' ', Text::htmlentities(Text::filterXSS($_POST['email']))),
-                            $wishlistID
-                        ),
-                        'sendWL'
-                    );
-                    $this->smarty->assign('CWunschliste', Wunschliste::buildPrice(new Wunschliste($wishlistID)));
-                }
-            } else {
-                $step = 'wunschliste versenden';
-                $this->smarty->assign('CWunschliste', Wunschliste::buildPrice(new Wunschliste($wishlistID)));
-            }
-        }
-
-        return $step;
-    }
-
-    /**
-     * @param int $customerID
-     * @param int $wishlistID
-     */
-    private function deleteWishlistItems(int $customerID, int $wishlistID): void
-    {
-        $wishlist = new Wunschliste($wishlistID);
-        if ($wishlist->kKunde > 0 && $wishlist->kKunde === $customerID) {
-            $wishlist->entferneAllePos();
-            if ((int)$_SESSION['Wunschliste']->kWunschliste === $wishlist->kWunschliste) {
-                $_SESSION['Wunschliste']->CWunschlistePos_arr = [];
-            }
-            $this->alertService->addAlert(
-                Alert::TYPE_NOTE,
-                Shop::Lang()->get('wishlistDelAll', 'messages'),
-                'wishlistDelAll'
-            );
-        }
-    }
-
-    /**
-     * @param int $customerID
-     * @param int $wishlistID
-     */
-    private function searchInWishlist(int $customerID, int $wishlistID): void
-    {
-        $searchQuery = Text::filterXSS(Request::verifyGPDataString('cSuche'));
-        $wishlist    = new Wunschliste($wishlistID);
-        if ($wishlist->kKunde && $wishlist->kKunde === $customerID) {
-            $wishlist->CWunschlistePos_arr = $wishlist->sucheInWunschliste($searchQuery);
-            $this->smarty->assign('wlsearch', $searchQuery)
-                ->assign('CWunschliste', $wishlist);
-        }
-    }
-
-    /**
-     * @param int $customerID
-     * @param int $wishlistID
-     * @return string
-     */
     private function modifyWishlist(int $customerID, int $wishlistID): string
     {
         $step     = 'mein Konto';
-        $wishlist = $this->db->select('twunschliste', 'kWunschliste', $wishlistID);
-        if (!isset($wishlist->kKunde) || (int)$wishlist->kKunde !== $customerID) {
+        $wishlist = new Wunschliste($wishlistID);
+        if ($wishlist->kKunde !== $customerID) {
             return $step;
         }
         if (isset($_REQUEST['wlAction']) && Form::validateToken()) {
             $action = Request::verifyGPDataString('wlAction');
             if ($action === 'setPrivate') {
-                Wunschliste::setPrivate($wishlistID);
+                Wunschliste::setPrivate($wishlist->kWunschliste);
                 $this->alertService->addAlert(
                     Alert::TYPE_NOTE,
                     Shop::Lang()->get('wishlistSetPrivate', 'messages'),
                     'wishlistSetPrivate'
                 );
             } elseif ($action === 'setPublic') {
-                Wunschliste::setPublic($wishlistID);
+                Wunschliste::setPublic($wishlist->kWunschliste);
                 $this->alertService->addAlert(
                     Alert::TYPE_NOTE,
                     Shop::Lang()->get('wishlistSetPublic', 'messages'),
                     'wishlistSetPublic'
                 );
             }
-        }
-        $this->smarty->assign('CWunschliste', Wunschliste::buildPrice(new Wunschliste((int)$wishlist->kWunschliste)));
-        if (Request::verifyGPCDataInt('accountPage') !== 1) {
-            $step = 'wunschliste anzeigen';
         }
 
         return $step;

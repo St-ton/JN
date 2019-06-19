@@ -182,6 +182,7 @@ class Controller
                      ->assign('oNewsArchiv', $newsItem)
                      ->assign('meta_title', $newsItem->getMetaTitle())
                      ->assign('meta_description', $newsItem->getMetaDescription())
+                     ->assign('userCanComment', Frontend::getCustomer()->getID() > 0)
                      ->assign('meta_keywords', $newsItem->getMetaKeyword());
     }
 
@@ -300,7 +301,7 @@ class Controller
 
         \executeHook(\HOOK_NEWS_PAGE_NEWSKOMMENTAR_PLAUSI);
 
-        if ($this->config['news']['news_kommentare_eingeloggt'] === 'Y' && Frontend::getCustomer()->getID() > 0) {
+        if (Frontend::getCustomer()->getID() > 0) {
             if ($checkedOK) {
                 $comment             = new stdClass();
                 $comment->kNews      = (int)$data['kNews'];
@@ -321,41 +322,6 @@ class Controller
                     $this->noticeMsg .= Shop::Lang()->get('newscommentAddactivate', 'messages') . '<br>';
                 } else {
                     $this->noticeMsg .= Shop::Lang()->get('newscommentAdd', 'messages') . '<br>';
-                }
-            } else {
-                $this->errorMsg .= self::getCommentErrors($checks);
-                $this->smarty->assign('nPlausiValue_arr', $checks)
-                             ->assign('cPostVar_arr', Text::filterXSS($data));
-            }
-        } elseif ($this->config['news']['news_kommentare_eingeloggt'] === 'N') {
-            if ($checkedOK) {
-                if (Frontend::getCustomer()->getID() > 0) {
-                    $name  = Frontend::getCustomer()->cVorname . ' ' . Frontend::getCustomer()->cNachname[0] . '.';
-                    $email = Frontend::getCustomer()->cMail;
-                } else {
-                    $name  = Text::filterXSS($data['cName'] ?? '');
-                    $email = Text::filterXSS($data['cEmail'] ?? '');
-                }
-                $comment         = new stdClass();
-                $comment->kNews  = (int)$data['kNews'];
-                $comment->kKunde = Frontend::getCustomer()->getID();
-                $comment->nAktiv = $this->config['news']['news_kommentare_freischalten'] === 'Y'
-                    ? 0
-                    : 1;
-
-                $comment->cName      = $name;
-                $comment->cEmail     = $email;
-                $comment->cKommentar = Text::htmlentities(Text::filterXSS($data['cKommentar']));
-                $comment->dErstellt  = 'now()';
-
-                \executeHook(\HOOK_NEWS_PAGE_NEWSKOMMENTAR_EINTRAGEN, ['comment' => $comment]);
-
-                $this->db->insert('tnewskommentar', $comment);
-
-                if ($this->config['news']['news_kommentare_freischalten'] === 'Y') {
-                    $this->noticeMsg .= Shop::Lang()->get('newscommentAddactivate', 'messages') . '<br />';
-                } else {
-                    $this->noticeMsg .= Shop::Lang()->get('newscommentAdd', 'messages') . '<br />';
                 }
             } else {
                 $this->errorMsg .= self::getCommentErrors($checks);

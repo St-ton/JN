@@ -745,6 +745,7 @@ define('HOOK_LETZTERINCLUDE_INC', 99);
  *
  * @file mailTools.php
  * @param \JTL\Smarty\JTLSmarty mailsmarty
+ * @param \JTL\Mail\Renderer\RendererInterface renderer - since 5.0.0
  * @param object mail - null since 5.0.0
  * @param int kEmailvorlage
  * @param int kSprache
@@ -1886,3 +1887,12 @@ define('HOOK_SITEMAP_EXPORT_GENERATE', 285);
  * @param \JTL\Sitemap\Export instance
  */
 define('HOOK_SITEMAP_EXPORT_INIT', 286);
+
+
+/**
+ * @since 5.0.0
+ * @file includes/src/Mail/Mailer.php
+ * @param \JTL\Mail\Mailer mailer
+ * @param \JTL\Mail\Mail mail
+ */
+define('HOOK_MAIL_PRERENDER', 290);

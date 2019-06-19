@@ -142,10 +142,10 @@ class Category
             \executeHook(\HOOK_GET_ALL_CATEGORIES, ['categories' => &$fullCats]);
 
             if (Shop::Container()->getCache()->set(
-                    self::$cacheID,
-                    $fullCats,
-                    [\CACHING_GROUP_CATEGORY, 'jtl_category_tree']
-                ) === false) {
+                self::$cacheID,
+                $fullCats,
+                [\CACHING_GROUP_CATEGORY, 'jtl_category_tree']
+            ) === false) {
                 $_SESSION['oKategorie_arr_new'] = $fullCats;
             }
         }
@@ -563,7 +563,7 @@ class Category
         }
         if (isset($next->kKategorie)) {
             if ($noChildren === true) {
-                $cat                  = clone $next;
+                $cat = clone $next;
                 $cat->setChildren([]);
             } else {
                 $cat = $next;

@@ -206,7 +206,7 @@ class MenuItem
      */
     public function setImageURL(string $imageURL): void
     {
-        $this->imageURL = Shop::getImageBaseURL();
+        $this->imageURL  = Shop::getImageBaseURL();
         $this->imageURL .= empty($imageURL)
             ? \BILD_KEIN_KATEGORIEBILD_VORHANDEN
             : \PFAD_KATEGORIEBILDER . $imageURL;

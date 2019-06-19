@@ -209,8 +209,7 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
         $cURLID       = StringHandler::filterXSS(verifyGPDataString('wlid'));
         $kWunschliste = verifyGPCDataInteger('wl');
         $step         = 'mein Konto';
-        $oWunschliste = giboWunschliste($kWunschliste);
-        $oWunschliste = new Wunschliste($oWunschliste->kWunschliste);
+        $oWunschliste = new Wunschliste($kWunschliste);
 
         if (count($oWunschliste->CWunschlistePos_arr) > 0) {
             foreach ($oWunschliste->CWunschlistePos_arr as $oWunschlistePos) {

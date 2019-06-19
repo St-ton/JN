@@ -66,16 +66,39 @@ class Wunschliste
     {
         $kWunschliste = (int)$kWunschliste;
         if ($kWunschliste > 0) {
-            $this->kWunschliste = $kWunschliste;
-            $this->ladeWunschliste();
+            $this->ladeWunschliste((int)$kWunschliste);
         } else {
-            $this->kKunde       = isset($_SESSION['Kunde']->kKunde) ? (int)$_SESSION['Kunde']->kKunde : 0;
-            $this->nStandard    = 1;
-            $this->nOeffentlich = 0;
-            $this->cName        = Shop::Lang()->get('wishlist', 'global');
-            $this->dErstellt    = 'now()';
-            $this->cURLID       = '';
+            $this->resetWunschliste();
         }
+    }
+
+    /**
+     * @return self
+     */
+    private function resetWunschliste()
+    {
+        $this->kWunschliste = 0;
+        $this->kKunde       = isset($_SESSION['Kunde']->kKunde) ? (int)$_SESSION['Kunde']->kKunde : 0;
+        $this->nStandard    = 1;
+        $this->nOeffentlich = 0;
+        $this->cName        = Shop::Lang()->get('wishlist', 'global');
+        $this->dErstellt    = 'now()';
+        $this->cURLID       = '';
+
+        return $this;
+    }
+
+    /**
+     * @param stdClass $oWunschliste
+     * @return bool
+     */
+    private function validateWunschliste($oWunschliste)
+    {
+        $kWunschliste = checkeWunschlisteParameter();
+        $kKunde       = isset($_SESSION['Kunde']->kKunde) ? (int)$_SESSION['Kunde']->kKunde : 0;
+
+        return ($kKunde > 0 && $kKunde === (int)$oWunschliste->kKunde)
+            || ($kWunschliste > 0 && $kWunschliste === (int)$oWunschliste->kWunschliste);
     }
 
     /**
@@ -360,16 +383,31 @@ class Wunschliste
     }
 
     /**
+     * @param int $kWunschliste
      * @return $this
      */
-    public function ladeWunschliste()
+    public function ladeWunschliste($kWunschliste = 0)
     {
         // Prüfe ob die Wunschliste dem eingeloggten Kunden gehört
-        $oWunschliste = Shop::DB()->query(
+        if ((int)$kWunschliste <= 0) {
+            $kWunschliste = (int)$this->kWunschliste;
+        }
+        if ($kWunschliste <= 0) {
+            return $this->resetWunschliste();
+        }
+
+        $oWunschliste = Shop::DB()->queryPrepared(
             "SELECT *, DATE_FORMAT(dErstellt, '%d.%m.%Y %H:%i') AS dErstellt_DE
                 FROM twunschliste
-                WHERE kWunschliste = " . (int)$this->kWunschliste, 1
+                WHERE kWunschliste = :wishlistID",
+            [
+                'wishlistID' => (int)$kWunschliste,
+            ],
+            1
         );
+        if (!$oWunschliste || !$this->validateWunschliste($oWunschliste)) {
+            return $this->resetWunschliste();
+        }
         $this->kWunschliste = (int)$oWunschliste->kWunschliste;
         $this->kKunde       = (int)$oWunschliste->kKunde;
         $this->nStandard    = (int)$oWunschliste->nStandard;

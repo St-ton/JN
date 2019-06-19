@@ -8,9 +8,11 @@
         <div class="table-responsive">
             <table class="table table-striped">
                 <thead>
-                    <th>{__('note')}</th>
-                    <th>{__('date')}</th>
-                    <th>{__('level')}</th>
+                    <tr>
+                        <th>{__('note')}</th>
+                        <th>{__('date')}</th>
+                        <th>{__('level')}</th>
+                    </tr>
                 </thead>
                 {foreach $paymentLogs as $log}
                     <tr>

@@ -105,18 +105,16 @@ class Category
         if (self::$fullCategories !== null) {
             return self::$fullCategories;
         }
-        if (true || ($fullCats = Shop::Container()->getCache()->get(self::$cacheID)) === false) {
+        if (($fullCats = Shop::Container()->getCache()->get(self::$cacheID)) === false) {
             if (!empty($_SESSION['oKategorie_arr_new'])) {
                 self::$fullCategories = $_SESSION['oKategorie_arr_new'];
 
                 return $_SESSION['oKategorie_arr_new'];
             }
-            $filterEmpty = (int)self::$config['global']['kategorien_anzeigefilter'] ===
+            $filterEmpty         = (int)self::$config['global']['kategorien_anzeigefilter'] ===
                 \EINSTELLUNGEN_KATEGORIEANZEIGEFILTER_NICHTLEERE;
-
             $functionAttributes  = [];
             $localizedAttributes = [];
-
             foreach ($this->getAttributes() as $catAttribute) {
                 $catID = $catAttribute->kKategorie;
                 $idx   = \mb_convert_case($catAttribute->cName, \MB_CASE_LOWER);
@@ -135,8 +133,8 @@ class Category
             }
             $fullCats = $this->buildTree($nodes);
             if ($filterEmpty) {
-                $this->filterEmpty($fullCats);
-                $this->removeRelicts($fullCats);
+                $fullCats = $this->filterEmpty($fullCats);
+                $fullCats = $this->removeRelicts($fullCats);
             }
 
             \executeHook(\HOOK_GET_ALL_CATEGORIES, ['categories' => &$fullCats]);
@@ -297,7 +295,7 @@ class Category
 
     /**
      * @param MenuItem[] $elements
-     * @param int   $parentID
+     * @param int        $parentID
      * @return array
      */
     private function buildTree(array $elements, $parentID = 0): array
@@ -324,7 +322,7 @@ class Category
      * it's a lot of code duplication but the queries differ
      *
      * @param int $categoryID
-     * @return array
+     * @return MenuItem[]
      */
     public function getFallBackFlatTree(int $categoryID): array
     {
@@ -336,8 +334,6 @@ class Category
         $functionAttributes  = [];
         $localizedAttributes = [];
         $descriptionSelect   = ", '' AS cBeschreibung";
-        $shopURL             = Shop::getURL(true);
-        $imageBaseURL        = Shop::getImageBaseURL();
         $isDefaultLang       = LanguageHelper::isDefaultLanguageActive();
         $visibilityWhere     = ' AND tartikelsichtbarkeit.kArtikel IS NULL';
         $getDescription      = (!(isset(self::$config['template']['megamenu']['show_maincategory_info'])
@@ -418,34 +414,20 @@ class Category
                 $localizedAttributes[$catID][$idx] = $catAttribute;
             }
         }
-        foreach ($nodes as $cat) {
+        foreach ($nodes as &$cat) {
             $cat->kKategorie     = (int)$cat->kKategorie;
             $cat->kOberKategorie = (int)$cat->kOberKategorie;
             $cat->cnt            = (int)$cat->cnt;
-            $cat->cBildURL       = empty($cat->cPfad)
-                ? \BILD_KEIN_KATEGORIEBILD_VORHANDEN
-                : \PFAD_KATEGORIEBILDER . $cat->cPfad;
-            $cat->cBildURLFull   = $imageBaseURL . $cat->cBildURL;
-            $cat->cURL           = URL::buildURL($cat, \URLART_KATEGORIE);
-            $cat->cURLFull       = $shopURL . '/' . $cat->cURL;
-            if (self::$languageID > 0 && !$isDefaultLang) {
-                if (!empty($cat->cName_spr)) {
-                    $cat->cName = $cat->cName_spr;
-                }
-                if (!empty($cat->cBeschreibung_spr)) {
-                    $cat->cBeschreibung = $cat->cBeschreibung_spr;
-                }
-            }
-            unset($cat->cBeschreibung_spr, $cat->cName_spr);
-            $cat->categoryFunctionAttributes = $functionAttributes[$cat->kKategorie] ?? [];
-            $cat->categoryAttributes         = $localizedAttributes[$cat->kKategorie] ?? [];
-            $cat->cBeschreibung              = Text::parseNewsText($cat->cBeschreibung);
-            $cat->bUnterKategorien           = 0;
-            $cat->Unterkategorien            = [];
+            $cat                 = new MenuItem($cat);
+            $cat->setURL(URL::buildURL($cat, \URLART_KATEGORIE, true));
+            $cat->setFunctionalAttributes($functionAttributes[$cat->getID()] ?? []);
+            $cat->setAttributes($localizedAttributes[$cat->getID()] ?? []);
+            $cat->setShortName($cat->getAttribute(\ART_ATTRIBUT_SHORTNAME)->cWert ?? $cat->getName());
         }
+        unset($cat);
         if ($filterEmpty) {
-            $this->filterEmpty($nodes);
-            $this->removeRelicts($nodes);
+            $nodes = $this->filterEmpty($nodes);
+            $nodes = $this->removeRelicts($nodes);
         }
 
         return $nodes;
@@ -475,7 +457,7 @@ class Category
      * no articles and no sub categories with articles in them. in this case, bUnterKategorien
      * has a wrong value and the whole category has to be removed from the result
      *
-     * @param MenuItem[]          $catList
+     * @param MenuItem[]    $catList
      * @param MenuItem|null $parentCat
      * @return MenuItem[]
      */
@@ -587,7 +569,7 @@ class Category
     }
 
     /**
-     * @param int          $id
+     * @param int                 $id
      * @param MenuItem[]|MenuItem $haystack
      * @return object|bool
      */

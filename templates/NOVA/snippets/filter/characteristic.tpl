@@ -32,7 +32,7 @@
             {/block}
         {else}
             {if $limit != -1 && $attributeValue@iteration > $limit && !$collapseInit}
-                <div class="collapse" id="box-collps-filter-attribute-{$Merkmal->getValue()}" aria-expanded="false">
+                <div class="collapse {if $Merkmal->isActive()} show{/if}" id="box-collps-filter-attribute-{$Merkmal->getValue()}" aria-expanded="false">
                     <ul class="nav flex-column">
                 {$collapseInit = true}
             {/if}

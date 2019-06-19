@@ -9,7 +9,7 @@
         {foreach $filter->getOptions() as $filterOption}
             {assign var=filterIsActive value=$filterOption->isActive() || $NaviFilter->getFilterValue($filter->getClassName()) === $filterOption->getValue()}
             {if $limit != -1 && $filterOption@iteration > $limit && !$collapseInit}
-                <div class="collapse" id="box-collps-filter{$filter->getNiceName()}" aria-expanded="false">
+                <div class="collapse {if $filter->isActive()} show{/if}" id="box-collps-filter{$filter->getNiceName()}" aria-expanded="false">
                     <ul class="nav flex-column">
                 {$collapseInit = true}
             {/if}

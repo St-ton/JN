@@ -9,6 +9,7 @@ namespace JTL\Mail\Renderer;
 use JTL\Mail\Mail\MailInterface;
 use JTL\Mail\Template\TemplateInterface;
 use JTL\Smarty\JTLSmarty;
+use JTL\Smarty\MailSmarty;
 
 /**
  * Interface RendererInterface
@@ -17,12 +18,12 @@ use JTL\Smarty\JTLSmarty;
 interface RendererInterface
 {
     /**
-     * @return JTLSmarty
+     * @return JTLSmarty|MailSmarty
      */
-    public function getSmarty(): JTLSmarty;
+    public function getSmarty();
 
     /**
-     * @param JTLSmarty $smarty
+     * @param JTLSmarty|MailSmarty $smarty
      */
     public function setSmarty($smarty): void;
 

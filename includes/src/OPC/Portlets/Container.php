@@ -137,6 +137,7 @@ class Container extends Portlet
                     'image' => 'mitlaufendes Bild (parallax)',
                     'video' => 'Hintergrundvideo',
                     'false' => 'einfacher Container',
+                    'boxed' => 'boxed'
                 ],
                 'default' => 'false',
                 'inline'  => true,

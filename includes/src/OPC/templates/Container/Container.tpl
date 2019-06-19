@@ -1,7 +1,8 @@
 <div
     style="{$instance->getStyleString()}"
-    class="{$instance->getAnimationClass()}"
+    class="{$instance->getAnimationClass()}{if $instance->getProperty('background-flag') === 'boxed'} container{/if}"
     {$instance->getAnimationDataAttributeString()}
+    {$instance->getAttributeString()}
     {if $isPreview}{$instance->getDataAttributeString()}{/if}
 >
     {if $instance->getProperty('background-flag') === 'video' && !empty($instance->getProperty('video-src'))}

@@ -34,5 +34,17 @@ CKEDITOR.editorConfig = function( config ) {
 	config.format_tags = 'p;h1;h2;h3;pre';
 
 	// Simplify the dialog windows.
-	config.removeDialogTabs = 'image:advanced;link:advanced';
+	config.removeDialogTabs = 'image:advanced';
+
+    config.allowedContent = true;
+
+    config.htmlEncodeOutput = false;
+    config.basicEntities = false;
+    config.enterMode = CKEDITOR.ENTER_P;
+    config.entities = false;
+    config.entities_latin = false;
+    config.entities_greek = false;
+    config.ignoreEmptyParagraph = false;
+    config.fillEmptyBlocks = false;
+    config.autoParagraph = false;
 };

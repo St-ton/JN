@@ -181,7 +181,7 @@ $smarty->assign('oKundengruppe_arr', $customerGroups)
     ->assign('oSteuerklasse_arr', $taxClasses)
     ->assign('oVerpackung_arr', $packagings)
     ->assign('step', $step)
-    ->assign('$pagination', $pagination)
+    ->assign('pagination', $pagination)
     ->assign('action', $action)
     ->display('zusatzverpackung.tpl');
 

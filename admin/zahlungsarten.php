@@ -370,7 +370,7 @@ if ($step === 'einstellen') {
     }
     $smarty->assign('oZahlungsart', $method)
            ->assign('oZahlunseingang_arr', $pagination->getPageItems())
-           ->assign('$pagination', $pagination)
+           ->assign('pagination', $pagination)
            ->assign('oFilter', $filter);
 }
 

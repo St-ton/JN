@@ -70,7 +70,7 @@ $pagination = (new Pagination())
     ->setItemCount($checkbox->getAllCheckBoxCount())
     ->assemble();
 $smarty->assign('oCheckBox_arr', $checkbox->getAllCheckBox('LIMIT ' . $pagination->getLimitSQL()))
-       ->assign('$pagination', $pagination)
+       ->assign('pagination', $pagination)
        ->assign('cAnzeigeOrt_arr', CheckBox::gibCheckBoxAnzeigeOrte())
        ->assign('CHECKBOX_ORT_REGISTRIERUNG', CHECKBOX_ORT_REGISTRIERUNG)
        ->assign('CHECKBOX_ORT_BESTELLABSCHLUSS', CHECKBOX_ORT_BESTELLABSCHLUSS)

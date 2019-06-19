@@ -38,7 +38,7 @@ if ($step === 'uebersicht') {
     $pagination = (new Pagination('emailhist'))
         ->setItemCount($history->getCount())
         ->assemble();
-    $smarty->assign('$pagination', $pagination)
+    $smarty->assign('pagination', $pagination)
         ->assign('oEmailhistory_arr', $history->getAll(' LIMIT ' . $pagination->getLimitSQL()));
 }
 

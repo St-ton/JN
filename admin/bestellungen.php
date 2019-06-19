@@ -47,7 +47,7 @@ if ($step === 'bestellungen_uebersicht') {
         ->assemble();
     $orders     = gibBestellungsUebersicht(' LIMIT ' . $pagination->getLimitSQL(), $searchFilter);
     $smarty->assign('oBestellung_arr', $orders)
-           ->assign('$pagination', $pagination);
+           ->assign('pagination', $pagination);
 }
 
 $smarty->assign('cSuche', $searchFilter)

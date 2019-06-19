@@ -152,7 +152,7 @@ handleCsvExportAction(
 );
 
 $smarty->assign('oFilter', $filter)
-       ->assign('$pagination', $pagination)
+       ->assign('pagination', $pagination)
        ->assign('oRedirect_arr', $list)
        ->assign('nTotalRedirectCount', Redirect::getRedirectCount())
        ->display('redirect.tpl');

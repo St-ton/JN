@@ -554,7 +554,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
 
         $smarty->assign('oConfig_arr', getAdminSectionSettings(CONF_UMFRAGE))
             ->assign('oUmfrage_arr', $surveys)
-            ->assign('$pagination', $pagination);
+            ->assign('pagination', $pagination);
     }
     $customerGroups = $db->query(
         'SELECT kKundengruppe, cName

@@ -159,7 +159,7 @@ if (is_array($topComparisons) && count($topComparisons) > 0) {
 
 $smarty->assign('Letzten20Vergleiche', $last20)
        ->assign('TopVergleiche', $topComparisons)
-       ->assign('$pagination', $pagination)
+       ->assign('pagination', $pagination)
        ->assign('oConfig_arr', $configData)
        ->display('vergleichsliste.tpl');
 

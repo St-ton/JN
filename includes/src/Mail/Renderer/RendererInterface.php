@@ -22,6 +22,11 @@ interface RendererInterface
     public function getSmarty(): JTLSmarty;
 
     /**
+     * @param JTLSmarty $smarty
+     */
+    public function setSmarty($smarty): void;
+
+    /**
      * @param TemplateInterface $template
      * @param int               $languageID
      * @throws \SmartyException

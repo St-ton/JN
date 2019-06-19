@@ -57,7 +57,7 @@
                         </span>
                     </div>
                 </form>
-                {include file='tpl_inc/pagination.tpl' $pagination=$oPagiInaktiveAbos cAnchor='inaktiveabonnenten'}
+                {include file='tpl_inc/pagination.tpl' pagination=$oPagiInaktiveAbos cAnchor='inaktiveabonnenten'}
                 <div id="newsletter-inactive-content">
                     <form name="inaktiveabonnentenForm" method="post" action="newsletter.php">
                         {$jtl_token}
@@ -133,7 +133,7 @@
                         </div>
                     </div>
                 </form>
-                {include file='tpl_inc/pagination.tpl' $pagination=$oPagiAlleAbos cAnchor='alleabonnenten'}
+                {include file='tpl_inc/pagination.tpl' pagination=$oPagiAlleAbos cAnchor='alleabonnenten'}
                 <!-- Uebersicht Newsletterhistory -->
                 <form method="post" action="newsletter.php">
                     {$jtl_token}
@@ -247,7 +247,7 @@
         </div>
         <div id="newsletterqueue" class="tab-pane fade{if isset($cTab) && $cTab === 'newsletterqueue'} active in{/if}">
             {if isset($oNewsletterQueue_arr) && $oNewsletterQueue_arr|@count > 0}
-                {include file='tpl_inc/pagination.tpl' $pagination=$oPagiWarteschlange cAnchor='newsletterqueue'}
+                {include file='tpl_inc/pagination.tpl' pagination=$oPagiWarteschlange cAnchor='newsletterqueue'}
                 <form method="post" action="newsletter.php">
                     {$jtl_token}
                     <input name="newsletterqueue" type="hidden" value="1">
@@ -308,7 +308,7 @@
         </div>
         <div id="newslettervorlagen" class="tab-pane fade{if isset($cTab) && $cTab === 'newslettervorlagen'} active in{/if}">
             {if isset($oNewsletterVorlage_arr) && $oNewsletterVorlage_arr|@count > 0}
-                {include file='tpl_inc/pagination.tpl' $pagination=$oPagiVorlagen cAnchor='newslettervorlagen'}
+                {include file='tpl_inc/pagination.tpl' pagination=$oPagiVorlagen cAnchor='newslettervorlagen'}
                 <form method="post" action="newsletter.php">
                     {$jtl_token}
                     <input name="newslettervorlagen" type="hidden" value="1">
@@ -437,7 +437,7 @@
         </div>
         <div id="newsletterhistory" class="tab-pane fade{if isset($cTab) && $cTab === 'newsletterhistory'} active in{/if}">
             {if isset($oNewsletterHistory_arr) && $oNewsletterHistory_arr|@count > 0}
-                {include file='tpl_inc/pagination.tpl' $pagination=$oPagiHistory cAnchor='newsletterhistory'}
+                {include file='tpl_inc/pagination.tpl' pagination=$oPagiHistory cAnchor='newsletterhistory'}
                 <form method="post" action="newsletter.php">
                     {$jtl_token}
                     <input name="newsletterhistory" type="hidden" value="1">

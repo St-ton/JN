@@ -24,7 +24,7 @@
                     $pagesPagi->getFirstPageItem(),
                     $pagesPagi->getPageItemCount()
                 )}
-                {include file='tpl_inc/pagination.tpl' $pagination=$pagesPagi cParam_arr=['tab'=>'pages']}
+                {include file='tpl_inc/pagination.tpl' pagination=$pagesPagi cParam_arr=['tab'=>'pages']}
                 <div class="table-responsive">
                     <table class="list table">
                         <thead>

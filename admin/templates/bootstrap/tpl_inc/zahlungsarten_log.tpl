@@ -3,7 +3,7 @@
     {include file='tpl_inc/filtertools.tpl' oFilter=$filterStandard cParam_arr=['a'=>'log',
     'token'=>$smarty.session.jtl_token, 'kZahlungsart'=>$paymentData->kZahlungsart]}
     {if !empty($paymentLogs)}
-        {include file='tpl_inc/pagination.tpl' $pagination=$paginationPaymentLog cParam_arr=['a'=>'log',
+        {include file='tpl_inc/pagination.tpl' pagination=$paginationPaymentLog cParam_arr=['a'=>'log',
         'token'=>$smarty.session.jtl_token, 'kZahlungsart'=>$paymentData->kZahlungsart]}
         <div class="table-responsive">
             <table class="table table-striped">

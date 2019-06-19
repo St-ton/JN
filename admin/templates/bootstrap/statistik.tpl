@@ -11,7 +11,7 @@
     {include file='tpl_inc/piechart_inc.tpl' piechart=$piechart headline=$headline id='piechart' width='100%'
         height='400px'}
 {/if}
-{include file='tpl_inc/pagination.tpl' $pagination=$pagination cParam_arr=['s' => $nTyp]}
+{include file='tpl_inc/pagination.tpl' pagination=$pagination cParam_arr=['s' => $nTyp]}
 {if isset($oStat_arr) && $oStat_arr|@count > 0}
     <table class="list table">
         <thead>

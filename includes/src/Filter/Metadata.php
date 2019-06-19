@@ -9,6 +9,7 @@ namespace JTL\Filter;
 use Illuminate\Support\Collection;
 use JTL\Catalog\Category\Kategorie;
 use JTL\Catalog\Category\KategorieListe;
+use JTL\Catalog\Category\MenuItem;
 use JTL\Catalog\Hersteller;
 use JTL\Catalog\Product\MerkmalWert;
 use JTL\DB\ReturnType;
@@ -445,9 +446,9 @@ class Metadata implements MetadataInterface
                 // Hat die aktuelle Kategorie Unterkategorien?
                 $helper = Category::getInstance();
                 $sub    = $helper->getCategoryById($category->kKategorie);
-                if ($sub !== false && !empty($sub->Unterkategorien) && \count($sub->Unterkategorien) > 0) {
-                    $catNames       = map($sub->Unterkategorien, function ($e) {
-                        return \strip_tags($e->cName);
+                if ($sub !== false && $sub->hasChildren()) {
+                    $catNames       = map($sub->getChildren(), function (MenuItem $e) {
+                        return \strip_tags($e->getName());
                     });
                     $catDescription = \implode(', ', \array_filter($catNames));
                 }
@@ -544,9 +545,9 @@ class Metadata implements MetadataInterface
             if ($category->bUnterKategorien) {
                 $helper = Category::getInstance();
                 $sub    = $helper->getCategoryById($category->kKategorie);
-                if ($sub !== false && !empty($sub->Unterkategorien) && \count($sub->Unterkategorien) > 0) {
-                    $catNames     = map($sub->Unterkategorien, function ($e) {
-                        return \strip_tags($e->cName);
+                if ($sub !== false && $sub->hasChildren()) {
+                    $catNames     = map($sub->getChildren(), function (MenuItem $e) {
+                        return \strip_tags($e->getName());
                     });
                     $keywordsMeta = \implode(' ', \array_filter($catNames));
                 }

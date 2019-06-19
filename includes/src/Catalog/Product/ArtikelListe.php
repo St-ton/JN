@@ -7,6 +7,7 @@
 namespace JTL\Catalog\Product;
 
 use JTL\Catalog\Category\KategorieListe;
+use JTL\Catalog\Category\MenuItem;
 use JTL\DB\ReturnType;
 use JTL\Session\Frontend;
 use JTL\Shop;
@@ -196,10 +197,11 @@ class ArtikelListe
         $categoryIDs = [];
         if (!empty($categoryList->elemente)) {
             foreach ($categoryList->elemente as $i => $category) {
-                $categoryIDs[] = (int)$category->kKategorie;
-                if (isset($category->Unterkategorien) && \is_array($category->Unterkategorien)) {
-                    foreach ($category->Unterkategorien as $level2) {
-                        $categoryIDs[] = (int)$level2->kKategorie;
+                /** @var MenuItem $category */
+                $categoryIDs[] = $category->getID();
+                if ($category->hasChildren()) {
+                    foreach ($category->getChildren() as $level2) {
+                        $categoryIDs[] = $level2->getID();
                     }
                 }
             }
@@ -256,10 +258,11 @@ class ArtikelListe
         $categoryIDs = [];
         if (isset($categoryList->elemente) && \is_array($categoryList->elemente)) {
             foreach ($categoryList->elemente as $i => $category) {
-                $categoryIDs[] = (int)$category->kKategorie;
-                if (isset($category->Unterkategorien) && \is_array($category->Unterkategorien)) {
-                    foreach ($category->Unterkategorien as $level2) {
-                        $categoryIDs[] = (int)$level2->kKategorie;
+                /** @var MenuItem $category */
+                $categoryIDs[] = $category->getID();
+                if ($category->hasChildren()) {
+                    foreach ($category->getChildren() as $level2) {
+                        $categoryIDs[] = $level2->getID();
                     }
                 }
             }

@@ -131,8 +131,8 @@ if ($oSuchergebnisse->getProducts()->count() === 0) {
         $categoryContent->Unterkategorien = new KategorieListe();
         $h                                = Category::getInstance();
         $children                         = $h->getCategoryById($NaviFilter->getCategory()->getValue());
-        if ($children !== false && isset($children->Unterkategorien)) {
-            $categoryContent->Unterkategorien->elemente = $children->Unterkategorien;
+        if ($children !== false && $children->hasChildren()) {
+            $categoryContent->Unterkategorien->elemente = $children->getChildren();
         }
 
         $tb = $conf['artikeluebersicht']['topbest_anzeigen'];

@@ -429,21 +429,21 @@ class AccountController
             if ($this->config['kaufabwicklung']['warenkorb_warenkorb2pers_merge'] === 'Y') {
                 $this->setzeWarenkorbPersInWarenkorb($_SESSION['Kunde']->kKunde);
             } elseif ($this->config['kaufabwicklung']['warenkorb_warenkorb2pers_merge'] === 'P') {
-                $oWarenkorbPers = new WarenkorbPers($customer->kKunde);
-                if (\count($oWarenkorbPers->oWarenkorbPersPos_arr) > 0) {
+                $persCart = new WarenkorbPers($customer->kKunde);
+                if (\count($persCart->oWarenkorbPersPos_arr) > 0) {
                     $this->smarty->assign('nWarenkorb2PersMerge', 1);
                 }
             }
         }
         $this->checkCoupons($coupons);
         // setzte Sprache auf Sprache des Kunden
-        $oISOSprache = Shop::Lang()->getIsoFromLangID($customer->kSprache);
-        if ((int)$_SESSION['kSprache'] !== (int)$customer->kSprache && !empty($oISOSprache->cISO)) {
+        $isoLang = Shop::Lang()->getIsoFromLangID($customer->kSprache);
+        if ((int)$_SESSION['kSprache'] !== (int)$customer->kSprache && !empty($isoLang->cISO)) {
             $_SESSION['kSprache']        = (int)$customer->kSprache;
-            $_SESSION['cISOSprache']     = $oISOSprache->cISO;
+            $_SESSION['cISOSprache']     = $isoLang->cISO;
             $_SESSION['currentLanguage'] = LanguageHelper::getAllLanguages(1)[$customer->kSprache];
-            Shop::setLanguage($customer->kSprache, $oISOSprache->cISO);
-            Shop::Lang()->setzeSprache($oISOSprache->cISO);
+            Shop::setLanguage($customer->kSprache, $isoLang->cISO);
+            Shop::Lang()->setzeSprache($isoLang->cISO);
         }
     }
 
@@ -650,9 +650,9 @@ class AccountController
         }
         $cart->PositionenArr = [];
 
-        $oWarenkorbPers = new WarenkorbPers($customerID);
+        $persCart = new WarenkorbPers($customerID);
         /** @var WarenkorbPersPos $item */
-        foreach ($oWarenkorbPers->oWarenkorbPersPos_arr as $item) {
+        foreach ($persCart->oWarenkorbPersPos_arr as $item) {
             if ($item->nPosTyp === \C_WARENKORBPOS_TYP_GRATISGESCHENK) {
                 $productID = (int)$item->kArtikel;
                 $present   = $this->db->queryPrepared(

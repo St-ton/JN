@@ -229,7 +229,7 @@ class Wunschliste
             $product = new Artikel();
             try {
                 $product->fuelleArtikel($productID, Artikel::getDefaultOptions());
-                $item->Artikel           = $product;
+                $item->Artikel               = $product;
                 $this->CWunschlistePos_arr[] = $item;
             } catch (Exception $e) {
             }

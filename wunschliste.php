@@ -27,7 +27,7 @@ $kWunschliste     = (Request::verifyGPCDataInt('wl') > 0 && Request::verifyGPCDa
     : ($params['kWunschliste'] //default wishlist from Shop class
         ?? $cURLID); //public link
 $wishlistTargetID = Request::verifyGPCDataInt('kWunschlisteTarget');
-$searchQuery      = null;
+$searchQuery      = Text::filterXSS(Request::verifyGPDataString('cSuche'));
 $step             = null;
 $wishlist         = null;
 $action           = null;
@@ -56,13 +56,13 @@ if (!empty($_POST['addToCart'])) {
 if ($action !== null && Form::validateToken()) {
     if (isset($_POST['kWunschliste'])) {
         $kWunschliste = (int)$_POST['kWunschliste'];
-        $wl           = Shop::Container()->getDB()->select('twunschliste', 'kWunschliste', $kWunschliste);
-        $userOK       = $customerID === (int)$wl->kKunde;
+        $wl           = Wunschliste::instanceByID($kWunschliste)->filterPositions($searchQuery);
         switch ($action) {
             case 'addToCart':
-                Wunschliste::update($kWunschliste);
                 $wishlistPosition = Wunschliste::getWishListPositionDataByID($kWunschlistePos);
-                if (isset($wishlistPosition->kArtikel) && $wishlistPosition->kArtikel > 0) {
+                if (isset($wishlistPosition->kArtikel) && $wishlistPosition->kArtikel > 0
+                    && (int)$wishlistPosition->kWunschliste === $wl->kWunschliste
+                ) {
                     $attributeValues = Product::isVariChild($wishlistPosition->kArtikel)
                         ? Product::getVarCombiAttributeValues($wishlistPosition->kArtikel)
                         : Wunschliste::getAttributesByID($kWunschliste, $wishlistPosition->kWunschlistePos);
@@ -82,12 +82,7 @@ if ($action !== null && Form::validateToken()) {
                 break;
 
             case 'sendViaMail':
-                $wlData = Shop::Container()->getDB()->select(
-                    'twunschliste',
-                    ['kWunschliste', 'kKunde'],
-                    [$kWunschliste, $customerID]
-                );
-                if (!empty($wlData->kWunschliste) && mb_strlen($wlData->cURLID) > 0) {
+                if ($wl->cURLID !== '' && $wl->nOeffentlich && $wl->isSelfControlled()) {
                     $step = 'wunschliste anzeigen';
                     if (isset($_POST['send']) && (int)$_POST['send'] === 1) {
                         if ($conf['global']['global_wunschliste_anzeigen'] === 'Y') {
@@ -97,18 +92,17 @@ if ($action !== null && Form::validateToken()) {
                                 Wunschliste::send($mails, $kWunschliste),
                                 'sendWL'
                             );
-                            $wishlist = Wunschliste::buildPrice(new Wunschliste($kWunschliste));
+                            $wishlist = Wunschliste::buildPrice(Wunschliste::instanceByID($kWunschliste));
                         }
                     } else {
                         $step = 'wunschliste versenden';
                         // Wunschliste aufbauen und cPreis setzen (Artikelanzahl mit eingerechnet)
-                        $wishlist = Wunschliste::buildPrice(new Wunschliste($kWunschliste));
+                        $wishlist = Wunschliste::buildPrice(Wunschliste::instanceByID($kWunschliste));
                     }
                 }
                 break;
 
             case 'addAllToCart':
-                $wl = new Wunschliste($kWunschliste);
                 if (count($wl->CWunschlistePos_arr) > 0) {
                     foreach ($wl->CWunschlistePos_arr as $wishlistPosition) {
                         $attributeValues = Product::isVariChild($wishlistPosition->kArtikel)
@@ -134,8 +128,7 @@ if ($action !== null && Form::validateToken()) {
                 break;
 
             case 'remove':
-                if ($userOK === true && $kWunschlistePos > 0) {
-                    $wl = new Wunschliste($kWunschliste);
+                if ($kWunschlistePos > 0 && $wl->isSelfControlled()) {
                     $wl->entfernePos($kWunschlistePos);
                     $alertHelper->addAlert(
                         Alert::TYPE_NOTE,
@@ -146,11 +139,7 @@ if ($action !== null && Form::validateToken()) {
                 break;
 
             case 'removeAll':
-                if ($userOK !== true) {
-                    break;
-                }
-                $wl = new Wunschliste($kWunschliste);
-                if ($wl->kKunde > 0 && $wl->kKunde === $customerID) {
+                if ($wl->isSelfControlled()) {
                     $wl->entferneAllePos();
                     if ((int)$_SESSION['Wunschliste']->kWunschliste === $wl->kWunschliste) {
                         $_SESSION['Wunschliste']->CWunschlistePos_arr = [];
@@ -164,32 +153,19 @@ if ($action !== null && Form::validateToken()) {
                 break;
 
             case 'update':
-                if ($userOK !== true) {
-                    break;
-                }
-                $wl = Shop::Container()->getDB()->select('twunschliste', 'kWunschliste', $kWunschliste);
-                if (!empty($_POST['wishlistName']) && $_POST['wishlistName'] !== $wl->cName) {
-                    $wl->cName = Text::htmlentities(Text::filterXSS($_POST['wishlistName']));
-                    Shop::Container()->getDB()->update(
-                        'twunschliste',
-                        'kWunschliste',
-                        $kWunschliste,
-                        $wl
-                    );
-                }
-                if (!empty($wl->kKunde) && $customerID > 0 && (int)$wl->kKunde === $customerID) {
+                if ($wl->isSelfControlled()) {
                     $alertHelper->addAlert(
                         Alert::TYPE_NOTE,
                         Wunschliste::update($kWunschliste),
                         'updateWL'
                     );
-                    $wishlist                = new Wunschliste($_SESSION['Wunschliste']->kWunschliste ?? $kWunschliste);
+                    $wishlist                = Wunschliste::buildPrice(Wunschliste::instanceByID($kWunschliste));
                     $_SESSION['Wunschliste'] = $wishlist;
                 }
                 break;
 
             case 'setPublic':
-                if ($userOK === true && $wishlistTargetID !== 0) {
+                if ($wishlistTargetID !== 0 && Wunschliste::instanceByID($wishlistTargetID)->isSelfControlled()) {
                     Wunschliste::setPublic($wishlistTargetID);
                     $alertHelper->addAlert(
                         Alert::TYPE_NOTE,
@@ -200,7 +176,7 @@ if ($action !== null && Form::validateToken()) {
                 break;
 
             case 'setPrivate':
-                if ($userOK === true && $wishlistTargetID !== 0) {
+                if ($wishlistTargetID !== 0 && Wunschliste::instanceByID($wishlistTargetID)->isSelfControlled()) {
                     Wunschliste::setPrivate($wishlistTargetID);
                     $alertHelper->addAlert(
                         Alert::TYPE_NOTE,
@@ -220,7 +196,7 @@ if ($action !== null && Form::validateToken()) {
                 break;
 
             case 'delete':
-                if ($userOK === true && $wishlistTargetID !== 0) {
+                if ($wishlistTargetID !== 0 && Wunschliste::instanceByID($wishlistTargetID)->isSelfControlled()) {
                     $alertHelper->addAlert(
                         Alert::TYPE_NOTE,
                         Wunschliste::delete($wishlistTargetID),
@@ -228,32 +204,29 @@ if ($action !== null && Form::validateToken()) {
                     );
                     if ($wishlistTargetID === $kWunschliste) {
                         // the currently active one was deleted, search for a new one
-                        $newWishlist = Shop::Container()->getDB()->select(
-                            'twunschliste',
-                            'kKunde',
-                            $customerID
-                        );
+                        $newWishlist = Wunschliste::getWishlists()->first();
                         if (isset($newWishlist->kWunschliste)) {
-                            $kWunschliste           = (int)$newWishlist->kWunschliste;
-                            $newWishlist->nStandard = 1;
-                            Shop::Container()->getDB()->update(
-                                'twunschliste',
-                                'kWunschliste',
-                                $kWunschliste,
-                                $newWishlist
+                            $kWunschliste = (int)$newWishlist->kWunschliste;
+                            $alertHelper->addAlert(
+                                Alert::TYPE_NOTE,
+                                Wunschliste::setDefault($kWunschliste),
+                                'setDefaultWL'
                             );
+                            $wishlist = new Wunschliste($kWunschliste);
                         } elseif (empty($_SESSION['Wunschliste']->kWunschliste)) {
                             // the only existing wishlist was deleted, create a new one
-                            $_SESSION['Wunschliste'] = new Wunschliste();
-                            $_SESSION['Wunschliste']->schreibeDB();
-                            $kWunschliste = $_SESSION['Wunschliste']->kWunschliste;
+                            $wishlist = new Wunschliste();
+                            $wishlist->schreibeDB();
+                            $kWunschliste = $wishlist->kWunschliste;
                         }
+
+                        $_SESSION['Wunschliste'] = $wishlist;
                     }
                 }
                 break;
 
             case 'setAsDefault':
-                if ($userOK === true && $wishlistTargetID !== 0) {
+                if ($wishlistTargetID !== 0 && Wunschliste::instanceByID($wishlistTargetID)->isSelfControlled()) {
                     $alertHelper->addAlert(
                         Alert::TYPE_NOTE,
                         Wunschliste::setDefault($wishlistTargetID),
@@ -264,22 +237,12 @@ if ($action !== null && Form::validateToken()) {
                 break;
 
             case 'search':
-                $searchQuery = Text::filterXSS(Request::verifyGPDataString('cSuche'));
-                if ($userOK === true && mb_strlen($searchQuery) > 0) {
-                    $wishlist                      = new Wunschliste($kWunschliste);
-                    $wishlist->CWunschlistePos_arr = $wishlist->sucheInWunschliste($searchQuery);
-                }
-                break;
-
             default:
+                $wishlist = $wl;
                 break;
         }
     } elseif ($action === 'search' && $kWunschliste > 0) {
-        $searchQuery = Text::filterXSS(Request::verifyGPDataString('cSuche'));
-        if (mb_strlen($searchQuery) > 0) {
-            $wishlist                      = new Wunschliste($kWunschliste);
-            $wishlist->CWunschlistePos_arr = $wishlist->sucheInWunschliste($searchQuery);
-        }
+        $wishlist = Wunschliste::instanceByID($kWunschliste)->filterPositions($searchQuery);
     }
 }
 
@@ -292,40 +255,27 @@ if (Request::verifyGPCDataInt('wlidmsg') > 0) {
 }
 if (Request::verifyGPCDataInt('error') === 1) {
     if (mb_strlen($cURLID) > 0) {
-        $wl = Shop::Container()->getDB()->select('twunschliste', 'cURLID', $cURLID);
-        if (!isset($wl->kWunschliste, $wl->nOeffentlich) || $wl->kWunschliste >= 0 || $wl->nOeffentlich <= 0) {
+        $wl = Wunschliste::instanceByURLID($cURLID);
+        if ($wl->nOeffentlich !== 1) {
             $alertHelper->addAlert(
                 Alert::TYPE_ERROR,
                 sprintf(Shop::Lang()->get('nowlidWishlist', 'messages'), $cURLID),
-                'nowlidWishlist'
+                'nowlidWishlist',
+                ['saveInSession' => true]
             );
         }
     } else {
         $alertHelper->addAlert(
             Alert::TYPE_ERROR,
             sprintf(Shop::Lang()->get('nowlidWishlist', 'messages'), $cURLID),
-            'nowlidWishlist'
+            'nowlidWishlist',
+            ['saveInSession' => true]
         );
     }
 } elseif (!$kWunschliste) {
     if ($customerID > 0) {
-        $wlData = Shop::Container()->getDB()->selectAll(
-            'twunschliste',
-            'kKunde',
-            $customerID
-        );
-        foreach ($wlData as $item) {
-            if ((int)$item->nStandard === 1) {
-                $kWunschliste = (int)($item->kWunschliste ?? 0);
-                break;
-            }
-        }
-        if (!$kWunschliste && count($wlData) > 0) {
-            $newWishlist            = $wlData[0];
-            $kWunschliste           = (int)$newWishlist->kWunschliste;
-            $newWishlist->nStandard = 1;
-            Shop::Container()->getDB()->update('twunschliste', 'kWunschliste', $kWunschliste, $newWishlist);
-        }
+        $wishlist     = Wunschliste::buildPrice(Wunschliste::instanceByCustomerID($customerID));
+        $kWunschliste = $wishlist->kWunschliste;
     }
     if (!$kWunschliste) {
         header(
@@ -337,17 +287,18 @@ if (Request::verifyGPCDataInt('error') === 1) {
     }
 }
 $link = ($params['kLink'] > 0) ? $linkHelper->getPageLink($params['kLink']) : null;
-if (empty($wishlist)) {
-    $wishlist = Wunschliste::buildPrice(new Wunschliste($kWunschliste));
+if ($wishlist === null) {
+    $wishlist = Wunschliste::buildPrice(Wunschliste::instanceByID($kWunschliste)->filterPositions($searchQuery));
 }
 if ($customerID > 0) {
-    $wishlists = Shop::Container()->getDB()->selectAll(
-        'twunschliste',
-        'kKunde',
-        $customerID,
-        '*',
-        'dErstellt DESC'
+    $wishlists = Wunschliste::getWishlists()->toArray();
+} elseif ($wishlist->kWunschliste === 0) {
+    header(
+        'Location: ' .
+        $linkHelper->getStaticRoute('jtl.php') .
+        '?u=' . $params['kUmfrage'] . '&r=' . R_LOGIN_WUNSCHLISTE
     );
+    exit;
 }
 Shop::Smarty()->assign('CWunschliste', $wishlist)
     ->assign('oWunschliste_arr', $wishlists)

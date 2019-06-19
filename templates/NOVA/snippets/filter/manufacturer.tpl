@@ -10,6 +10,7 @@
             {assign var=filterIsActive value=$filterOption->isActive() || $NaviFilter->getFilterValue($filter->getClassName()) === $filterOption->getValue()}
             {if $limit != -1 && $filterOption@iteration > $limit && !$collapseInit}
                 <div class="collapse" id="box-collps-filter{$filter->getNiceName()}" aria-expanded="false">
+                    <ul class="nav flex-column">
                 {$collapseInit = true}
             {/if}
             {block name='snippets-filter-manufacturer-item'}
@@ -33,6 +34,7 @@
             {/block}
         {/foreach}
         {if $limit != -1 && $filter->getOptions()|count > $limit}
+                </ul>
             </div>
             {button
             variant="link"

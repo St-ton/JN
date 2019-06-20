@@ -2559,8 +2559,7 @@ input.form-control[name="wishlist-url"] {
 }
 
 @keyframes size {
-  0% {padding:$btn-padding-y-sm, $btn-padding-x-sm;}
-  50% {padding:0.35rem, 0.6rem;
-    margin-top:$btn-padding-x / 2;}
-  100% {padding:$btn-padding-y-sm, $btn-padding-x-sm;}
+  0% {width: 36px; height: 36px; margin: 0 8px;}
+  50% {width: 40px; height: 40px; margin: -4px 4px 0 8px;}
+  100% {width: 36px; height: 36px; margin: 0 8px;}
 }

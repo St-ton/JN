@@ -116,7 +116,7 @@
   font-size: 18px !important;
   line-height: 15px !important;
   border-radius: 50% !important;
-  transition: .2s;
+  transition: all .2s;
   &::before { display: none; }
   &.circle-small {
     width: 36px;

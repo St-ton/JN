@@ -81,7 +81,7 @@
             {/block}
         {/if}
     {/foreach}
-    {if $limit != -1 && $Merkmal->getOptions()|count > $limit}
+    {if !$is_dropdown && $limit != -1 && $Merkmal->getOptions()|count > $limit}
             </ul>
         </div>
         {button

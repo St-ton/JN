@@ -18,7 +18,7 @@
                                     <legend>{lang key='shippingOptions'}</legend>
                                 {/block}
                                 <div class="mb-3 form-group">
-                                    {radiogroup}
+                                    {radiogroup stacked=true}
                                         {foreach $Versandarten as $versandart}
                                             {block name='checkout-step3-shipping-options-shipment'}
                                                 <div id="shipment_{$versandart->kVersandart}">
@@ -30,50 +30,58 @@
                                                         required=($versandart@first)
                                                         class="w-100"
                                                     }
-                                                        <span class="content">
-                                                            <span class="title">{$versandart->angezeigterName|trans}</span>
-                                                            <small class="desc text-info">{$versandart->cLieferdauer|trans}</small>
-                                                        </span>
-                                                        {if $versandart->cBild}
-                                                            {image fluid=true class="img-sm" src=$versandart->cBild alt=$versandart->angezeigterName|trans}
-                                                        {/if}
-                                                        <span class="content text-muted">
-                                                            {$versandart->angezeigterHinweistext|trans}
-                                                        </span>
-                                                        <span class="badge badge-pill badge-primary float-right">{$versandart->cPreisLocalized}</span>
-                                                        {if isset($versandart->specificShippingcosts_arr)}
-                                                            {foreach $versandart->specificShippingcosts_arr as $specificShippingcosts}
-                                                                {block name='checkout-step3-shipping-options-shipping-cost'}
-                                                                    {row}
-                                                                        {col cols=8 md=9 lg=9}
-                                                                            <ul>
-                                                                                <li>
-                                                                                    <small>{$specificShippingcosts->cName|trans}</small>
-                                                                                </li>
-                                                                            </ul>
-                                                                        {/col}
-                                                                        {col cols=4 md=3 lg=3 cclass="text-right"}
-                                                                            <small>
-                                                                                {$specificShippingcosts->cPreisLocalized}
-                                                                            </small>
-                                                                        {/col}
-                                                                    {/row}
-                                                                {/block}
-                                                            {/foreach}
-                                                        {/if}
-                                                        {if !empty($versandart->Zuschlag->fZuschlag)}
-                                                        <span class="btn-block">
-                                                            <small>{$versandart->Zuschlag->angezeigterName|trans}
-                                                                (+{$versandart->Zuschlag->cPreisLocalized})
-                                                            </small>
-                                                        </span>
-                                                        {/if}
-                                                        {if !empty($versandart->cLieferdauer|trans) && $Einstellungen.global.global_versandermittlung_lieferdauer_anzeigen === 'Y'}
-                                                        <span class="btn-block">
-                                                            <small>{lang key='shippingTimeLP'}
-                                                                : {$versandart->cLieferdauer|trans}</small>
-                                                        </span>
-                                                        {/if}
+                                                        {row}
+                                                            {col md=3}
+                                                            <span class="content">
+                                                                <span class="title">{$versandart->angezeigterName|trans}</span>
+                                                                <small class="desc text-info">{$versandart->cLieferdauer|trans}</small>
+                                                            </span>
+                                                            {/col}
+                                                            {if $versandart->cBild}
+                                                            {col md=3}
+                                                                {image fluid=true class="img-sm" src=$versandart->cBild alt=$versandart->angezeigterName|trans}
+                                                            {/col}
+                                                            {/if}
+                                                            {col md=6}
+                                                                <span class="content text-muted">
+                                                                    {$versandart->angezeigterHinweistext|trans}
+                                                                </span>
+                                                                <span class="badge badge-pill badge-primary float-right">{$versandart->cPreisLocalized}</span>
+                                                                {if isset($versandart->specificShippingcosts_arr)}
+                                                                    {foreach $versandart->specificShippingcosts_arr as $specificShippingcosts}
+                                                                        {block name='checkout-step3-shipping-options-shipping-cost'}
+                                                                            {row}
+                                                                                {col cols=8 md=9 lg=9}
+                                                                                    <ul>
+                                                                                        <li>
+                                                                                            <small>{$specificShippingcosts->cName|trans}</small>
+                                                                                        </li>
+                                                                                    </ul>
+                                                                                {/col}
+                                                                                {col cols=4 md=3 lg=3 cclass="text-right"}
+                                                                                    <small>
+                                                                                        {$specificShippingcosts->cPreisLocalized}
+                                                                                    </small>
+                                                                                {/col}
+                                                                            {/row}
+                                                                        {/block}
+                                                                    {/foreach}
+                                                                {/if}
+                                                                {if !empty($versandart->Zuschlag->fZuschlag)}
+                                                                <span class="btn-block">
+                                                                    <small>{$versandart->Zuschlag->angezeigterName|trans}
+                                                                        (+{$versandart->Zuschlag->cPreisLocalized})
+                                                                    </small>
+                                                                </span>
+                                                                {/if}
+                                                                {if !empty($versandart->cLieferdauer|trans) && $Einstellungen.global.global_versandermittlung_lieferdauer_anzeigen === 'Y'}
+                                                                <span class="btn-block">
+                                                                    <small>{lang key='shippingTimeLP'}
+                                                                        : {$versandart->cLieferdauer|trans}</small>
+                                                                </span>
+                                                                {/if}
+                                                            {/col}
+                                                        {/row}
                                                     {/radio}
                                                 </div>
                                             {/block}

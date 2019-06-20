@@ -6,18 +6,25 @@
     {input type="submit" name="fake" class="d-none"}
         {if $Einstellungen.kaufabwicklung.warenkorb_produktbilder_anzeigen === 'Y'
             && $tplscope === 'cart'}
-            {$headcols=8}{$headsm=6}
+            {$headcols=6}{$headsm=4}
         {elseif $Einstellungen.kaufabwicklung.warenkorb_produktbilder_anzeigen === 'Y'
             && $tplscope !== 'cart'}
             {$headcols=10}{$headsm=8}
         {elseif ($Einstellungen.kaufabwicklung.warenkorb_produktbilder_anzeigen === 'N')
             && $tplscope === 'cart'}
-            {$headcols=8}{$headsm=7}
+            {$headcols=6}{$headsm=5}
         {elseif ($Einstellungen.kaufabwicklung.warenkorb_produktbilder_anzeigen === 'N')
             && $tplscope !== 'cart'}
             {$headcols=10}{$headsm=9}
         {/if}
     {block name='checkout-inc-order-items-order-items'}
+        {row class="border-bottom mb-3 font-weight-bold"}
+            {col cols=2}{/col}
+            {col ols=$headcols sm=$headsm}{lang key='product'}{/col}
+            {col cols=2}Einzelpreis{/col}
+            {col cols=2 class="text-center"}Anzahl{/col}
+            {col cols=2 class="text-right"}Preis{/col}
+        {/row}
         {foreach $smarty.session.Warenkorb->PositionenArr as $oPosition}
             {if !$oPosition->istKonfigKind()}
                 {row class="type-{$oPosition->nPosTyp}"}
@@ -35,16 +42,7 @@
                     {block name='checkout-inc-order-items-items-main-content'}
                         {col cols=$headcols sm=$headsm}
                             {if $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_ARTIKEL}
-                                {block name='checkout-inc-order-items-price-single'}
-                                    <p>{link href=$oPosition->Artikel->cURLFull title=$oPosition->cName|trans}{$oPosition->cName|trans}{/link}</p>
-                                    {if $Einstellungen.kaufabwicklung.bestellvorgang_einzelpreise_anzeigen === 'Y'}
-                                        {if $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_ARTIKEL}
-                                            {if !$oPosition->istKonfigVater()}
-                                                <p>{$oPosition->cEinzelpreisLocalized[$NettoPreise][$smarty.session.cWaehrungName]}</p>
-                                            {/if}
-                                        {/if}
-                                    {/if}
-                                {/block}
+                                <p>{link href=$oPosition->Artikel->cURLFull title=$oPosition->cName|trans}{$oPosition->cName|trans}{/link}</p>
                                 {block name='checkout-inc-order-items-product-data'}
                                     <ul class="list-unstyled text-muted small">
                                         <li class="sku"><strong>{lang key='productNo'}:</strong> {$oPosition->Artikel->cArtNr}</li>
@@ -188,7 +186,30 @@
                                     </ul>
                                 {/block}
                             {/if}
-
+                            {if $tplscope === 'cart'}
+                                {block name='checkout-inc-order-items-cart-submit'}
+                                    {col cols=2 class="delitem-col text-right"}
+                                    {if $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_ARTIKEL}
+                                        {button type="submit" variant="light" size="sm" class="droppos border-0" name="dropPos" value=$oPosition@index title="{lang key='delete'}"}
+                                            <span class="fa fa-trash">&nbsp;{lang key='delete'}</span>
+                                        {/button}
+                                    {/if}
+                                    {/col}
+                                {/block}
+                            {/if}
+                        {/col}
+                        {col cols=2}
+                            {block name='checkout-inc-order-items-price-single'}
+                                {if $Einstellungen.kaufabwicklung.bestellvorgang_einzelpreise_anzeigen === 'Y'}
+                                    {if $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_ARTIKEL}
+                                        {if !$oPosition->istKonfigVater()}
+                                            <p>{$oPosition->cEinzelpreisLocalized[$NettoPreise][$smarty.session.cWaehrungName]}</p>
+                                        {/if}
+                                    {/if}
+                                {/if}
+                            {/block}
+                        {/col}
+                        {col cols=2}
                             {block name='checkout-inc-order-items-quantity'}
                                 {if $tplscope === 'cart'}
                                     {if $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_ARTIKEL}
@@ -270,16 +291,6 @@
                             </strong>
                         {/col}
                     {/block}
-
-                    {if $tplscope === 'cart'}
-                        {block name='checkout-inc-order-items-cart-submit'}
-                            {col cols=2 class="delitem-col text-right"}
-                            {if $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_ARTIKEL}
-                                {button type="submit" variant="light" size="sm" class="droppos" name="dropPos" value=$oPosition@index title="{lang key='delete'}"}<span class="fa fa-trash"></span>{/button}
-                            {/if}
-                            {/col}
-                        {/block}
-                    {/if}
                 {/row}
                 {block name='checkout-inc-order-items-items-bottom-hr'}
                     <hr class="my-3">

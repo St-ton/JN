@@ -1,0 +1,93 @@
+{foreach $pageDrafts as $i => $draft}
+    {$draftStatus = $draft->getStatus()}
+    <li class="opc-draft" id="opc-draft-{$draft->getKey()}" data-draft-status="{$draftStatus}"
+        data-draft-name="{$draft->getName()}" data-draft-key="{$draft->getKey()}">
+        <input type="checkbox" id="check-{$draft->getKey()}"
+               class="draft-checkbox filtered-draft">
+        <label for="check-{$draft->getKey()}" class="opc-draft-name">
+            {$draft->getName()}
+        </label>
+        {if $draftStatus === 0}
+            <span class="opc-draft-status opc-public">
+                <i class="fa fas fa-circle fa-xs"></i> ÖFFENTLICH
+            </span>
+        {elseif $draftStatus === 1}
+            <span class="opc-draft-status opc-planned">
+                <i class="fa fas fa-circle fa-xs"></i> GEPLANT
+            </span>
+        {elseif $draftStatus === 2}
+            <span class="opc-draft-status opc-status-draft">
+                <i class="fa fas fa-circle fa-xs"></i> ENTWURF
+            </span>
+        {elseif $draftStatus === 3}
+            <span class="opc-draft-status opc-backdate">
+                <i class="fa fas fa-circle fa-xs"></i> VERGANGEN
+            </span>
+        {/if}
+        <div class="opc-draft-info">
+            <div class="opc-draft-info-line">
+                updated
+            </div>
+            <div class="opc-draft-info-line">
+                published
+            </div>
+            <div class="opc-draft-actions">
+                <form method="post" action="{$ShopURL}/admin/onpage-composer.php">
+                    <input type="hidden" name="jtl_token" value="{$adminSessionToken}">
+                    <input type="hidden" name="pageKey" value="{$draft->getKey()}">
+                    <button type="submit" name="action" value="edit" data-toggle="tooltip"
+                            title="Bearbeiten" data-placement="bottom" data-container="#opc">
+                        <i class="fa fa-lg fa-fw fas fa-pencil-alt"></i>
+                    </button>
+                </form>
+                <button type="button" onclick="duplicateOpcDraft({$draft->getKey()})"
+                        data-toggle="tooltip" title="Duplizieren" data-placement="bottom"
+                        data-container="#opc">
+                    <i class="fa fa-lg fa-fw far fa-clone"></i>
+                </button>
+                <div class="opc-dropdown">
+                    <button type="button"
+                            data-toggle="dropdown" title="Für andere Sprache übernehmen"
+                            data-placement="bottom" data-container="#opc">
+                        <i class="fa fa-lg fa-fw fas fa-language"></i>
+                    </button>
+                    <div class="dropdown-menu opc-dropdown-menu">
+                        {foreach $languages as $lang}
+                            {if $lang->id !== $currentLanguage->id}
+                                {if isset($lang->pageId)}
+                                    {$langPageId = $lang->pageId}
+                                {else}
+                                    {$langPageId = $opcPageService->createCurrentPageId($lang->id)}
+                                {/if}
+                                {if isset($lang->pageUri)}
+                                    {$langPageUri = $lang->pageUri}
+                                {else}
+                                    {$langPageUri = $opcPageService->getCurPageUri($lang->id)}
+                                {/if}
+                                <form method="post"
+                                      action="{$ShopURL}/admin/onpage-composer.php">
+                                    <input type="hidden" name="jtl_token"
+                                           value="{$adminSessionToken}">
+                                    <input type="hidden" name="action" value="adopt">
+                                    <input type="hidden" name="pageKey"
+                                           value="{$draft->getKey()}">
+                                    <input type="hidden" name="pageId"
+                                           value="{$langPageId}">
+                                    <button type="submit" name="pageUrl"
+                                            value="{$langPageUri}">
+                                        {$lang->nameDE}
+                                    </button>
+                                </form>
+                            {/if}
+                        {/foreach}
+                    </div>
+                </div>
+                <button type="button" onclick="deleteOpcDraft({$draft->getKey()})"
+                        data-toggle="tooltip" title="Löschen"
+                        data-placement="bottom" data-container="#opc">
+                    <i class="fa fa-lg fa-fw fas fa-trash"></i>
+                </button>
+            </div>
+        </div>
+    </li>
+{/foreach}

@@ -86,7 +86,8 @@ class IOMethods
                         ->register('getRegionsByCountry', [$this, 'getRegionsByCountry'])
                         ->register('checkDeliveryCountry', [$this, 'checkDeliveryCountry'])
                         ->register('setSelectionWizardAnswers', [$this, 'setSelectionWizardAnswers'])
-                        ->register('getCitiesByZip', [$this, 'getCitiesByZip']);
+                        ->register('getCitiesByZip', [$this, 'getCitiesByZip'])
+                        ->register('getOpcDraftsHtml', [$this, 'getOpcDraftsHtml']);
     }
 
     /**
@@ -1257,6 +1258,33 @@ class IOMethods
                 $response->assign('selectionwizard', 'innerHTML', $AWA->fetchForm($smarty));
             }
         }
+
+        return $response;
+    }
+
+    public function getOpcDraftsHtml(
+        string $curPageId,
+        string $adminSessionToken,
+        array $languages,
+        $currentLanguage
+    ): IOResponse {
+        foreach ($languages as $i => $lang) {
+            $languages[$i] = (object)$lang;
+        }
+
+        $opcPageService   = Shop::Container()->getOPCPageService();
+        $smarty           = Shop::Smarty();
+        $response         = new IOResponse();
+        $newDraftListHtml = $smarty
+            ->assign('pageDrafts', $opcPageService->getDrafts($curPageId))
+            ->assign('ShopURL', Shop::getURL())
+            ->assign('adminSessionToken', $adminSessionToken)
+            ->assign('languages', $languages)
+            ->assign('currentLanguage', (object)$currentLanguage)
+            ->assign('opcPageService', $opcPageService)
+            ->fetch(PFAD_ROOT . PFAD_ADMIN . '/opc/draftlist.tpl');
+
+        $response->assign('opc-draft-list', 'innerHTML', $newDraftListHtml);
 
         return $response;
     }

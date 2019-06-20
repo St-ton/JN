@@ -51,6 +51,64 @@ $transition: 0.5s;
     }
   }
 
+  .opc-filter-control {
+    border: 1px solid $text-color;
+    border-radius: 5px;
+    display: block;
+    height: 38px;
+    color: inherit;
+    padding: 8px;
+    float: left;
+    margin-bottom: 24px;
+    text-align: left;
+  }
+
+  ::placeholder {
+    color: $muted-text;
+    font-family: "Font Awesome 5 Free", sans-serif;
+    font-weight: 900;
+  }
+
+  .opc-dropdown {
+    padding: 0;
+    position: relative;
+
+    .opc-dropdown-btn {
+      padding: 8px;
+      text-align: left;
+      width: 100%;
+
+      &:after {
+        display: block;
+        float: right;
+        content: "\f078";
+        font-family: "Font Awesome 5 Free", sans-serif;
+        font-weight: 900;
+      }
+    }
+
+    .opc-dropdown-menu {
+      border: none;
+      margin: 0;
+      padding: 0;
+      box-shadow: 0 0 8px 4px rgba(0, 0, 0, 0.125);
+      min-width: 0;
+      width: 100%;
+      color: $text-color;
+
+      & > * {
+        display: block;
+        width: 100%;
+        padding: 8px 12px;
+
+        &:hover {
+          text-decoration: none;
+          background-color: $light-bg;
+        }
+      }
+    }
+  }
+
   #opc-startmenu {
     position: fixed;
     left: 0;
@@ -180,64 +238,6 @@ $transition: 0.5s;
         }
       }
 
-      .opc-filter-control {
-        border: 1px solid $text-color;
-        border-radius: 5px;
-        display: block;
-        height: 38px;
-        color: inherit;
-        padding: 8px;
-        float: left;
-        margin-bottom: 24px;
-        text-align: left;
-      }
-
-      .opc-dropdown {
-        padding: 0;
-        position: relative;
-
-        .opc-dropdown-btn {
-          padding: 8px;
-          text-align: left;
-          width: 100%;
-
-          &:after {
-            display: block;
-            float: right;
-            content: "\f078";
-            font-family: "Font Awesome 5 Free", sans-serif;
-            font-weight: 900;
-          }
-        }
-
-        .opc-dropdown-menu {
-          border: none;
-          margin: 0;
-          padding: 0;
-          box-shadow: 0 0 8px 4px rgba(0, 0, 0, 0.125);
-          min-width: 0;
-          width: 100%;
-          color: $text-color;
-
-          & > * {
-            display: block;
-            width: 100%;
-            padding: 8px 12px;
-
-            &:hover {
-              text-decoration: none;
-              background-color: $light-bg;
-            }
-          }
-        }
-      }
-
-      ::placeholder {
-        color: $muted-text;
-        font-family: "Font Awesome 5 Free", sans-serif;
-        font-weight: 900;
-      }
-
       #opc-filter-search {
         width: 191px;
         margin-right: 16px;
@@ -334,14 +334,33 @@ $transition: 0.5s;
               left: -16px;
               visibility: hidden;
 
-              button {
+              > * {
                 width: 34px;
                 height: 34px;
                 margin-right: 6px;
+                display: inline-block;
 
                 &:hover {
                   background-color: #dfe1e2;
                   border-radius: 100%;
+                }
+              }
+
+              > form {
+                > button {
+                  width: 34px;
+                  height: 34px;
+                }
+              }
+
+              .opc-dropdown {
+                > button {
+                  width: 34px;
+                  height: 34px;
+                }
+
+                .opc-dropdown-menu {
+                  width: auto;
                 }
               }
             }

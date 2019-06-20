@@ -35,6 +35,56 @@
   font-size: 14px;
   border-radius: 5px;
 }
+#opc .opc-filter-control {
+  border: 1px solid #435A6B;
+  border-radius: 5px;
+  display: block;
+  height: 38px;
+  color: inherit;
+  padding: 8px;
+  float: left;
+  margin-bottom: 24px;
+  text-align: left;
+}
+#opc ::placeholder {
+  color: #BDBDBD;
+  font-family: "Font Awesome 5 Free", sans-serif;
+  font-weight: 900;
+}
+#opc .opc-dropdown {
+  padding: 0;
+  position: relative;
+}
+#opc .opc-dropdown .opc-dropdown-btn {
+  padding: 8px;
+  text-align: left;
+  width: 100%;
+}
+#opc .opc-dropdown .opc-dropdown-btn:after {
+  display: block;
+  float: right;
+  content: "";
+  font-family: "Font Awesome 5 Free", sans-serif;
+  font-weight: 900;
+}
+#opc .opc-dropdown .opc-dropdown-menu {
+  border: none;
+  margin: 0;
+  padding: 0;
+  box-shadow: 0 0 8px 4px rgba(0, 0, 0, 0.125);
+  min-width: 0;
+  width: 100%;
+  color: #435A6B;
+}
+#opc .opc-dropdown .opc-dropdown-menu > * {
+  display: block;
+  width: 100%;
+  padding: 8px 12px;
+}
+#opc .opc-dropdown .opc-dropdown-menu > *:hover {
+  text-decoration: none;
+  background-color: #F5F7FA;
+}
 #opc #opc-startmenu {
   position: fixed;
   left: 0;
@@ -142,56 +192,6 @@
   content: " ";
   clear: both;
 }
-#opc #opc-sidebar #opc-sidebar-tools .opc-filter-control {
-  border: 1px solid #435A6B;
-  border-radius: 5px;
-  display: block;
-  height: 38px;
-  color: inherit;
-  padding: 8px;
-  float: left;
-  margin-bottom: 24px;
-  text-align: left;
-}
-#opc #opc-sidebar #opc-sidebar-tools .opc-dropdown {
-  padding: 0;
-  position: relative;
-}
-#opc #opc-sidebar #opc-sidebar-tools .opc-dropdown .opc-dropdown-btn {
-  padding: 8px;
-  text-align: left;
-  width: 100%;
-}
-#opc #opc-sidebar #opc-sidebar-tools .opc-dropdown .opc-dropdown-btn:after {
-  display: block;
-  float: right;
-  content: "";
-  font-family: "Font Awesome 5 Free", sans-serif;
-  font-weight: 900;
-}
-#opc #opc-sidebar #opc-sidebar-tools .opc-dropdown .opc-dropdown-menu {
-  border: none;
-  margin: 0;
-  padding: 0;
-  box-shadow: 0 0 8px 4px rgba(0, 0, 0, 0.125);
-  min-width: 0;
-  width: 100%;
-  color: #435A6B;
-}
-#opc #opc-sidebar #opc-sidebar-tools .opc-dropdown .opc-dropdown-menu > * {
-  display: block;
-  width: 100%;
-  padding: 8px 12px;
-}
-#opc #opc-sidebar #opc-sidebar-tools .opc-dropdown .opc-dropdown-menu > *:hover {
-  text-decoration: none;
-  background-color: #F5F7FA;
-}
-#opc #opc-sidebar #opc-sidebar-tools ::placeholder {
-  color: #BDBDBD;
-  font-family: "Font Awesome 5 Free", sans-serif;
-  font-weight: 900;
-}
 #opc #opc-sidebar #opc-sidebar-tools #opc-filter-search {
   width: 191px;
   margin-right: 16px;
@@ -273,14 +273,26 @@
   left: -16px;
   visibility: hidden;
 }
-#opc #opc-sidebar #opc-sidebar-content #opc-draft-list .opc-draft .opc-draft-info .opc-draft-actions button {
+#opc #opc-sidebar #opc-sidebar-content #opc-draft-list .opc-draft .opc-draft-info .opc-draft-actions > * {
   width: 34px;
   height: 34px;
   margin-right: 6px;
+  display: inline-block;
 }
-#opc #opc-sidebar #opc-sidebar-content #opc-draft-list .opc-draft .opc-draft-info .opc-draft-actions button:hover {
+#opc #opc-sidebar #opc-sidebar-content #opc-draft-list .opc-draft .opc-draft-info .opc-draft-actions > *:hover {
   background-color: #dfe1e2;
   border-radius: 100%;
+}
+#opc #opc-sidebar #opc-sidebar-content #opc-draft-list .opc-draft .opc-draft-info .opc-draft-actions > form > button {
+  width: 34px;
+  height: 34px;
+}
+#opc #opc-sidebar #opc-sidebar-content #opc-draft-list .opc-draft .opc-draft-info .opc-draft-actions .opc-dropdown > button {
+  width: 34px;
+  height: 34px;
+}
+#opc #opc-sidebar #opc-sidebar-content #opc-draft-list .opc-draft .opc-draft-info .opc-draft-actions .opc-dropdown .opc-dropdown-menu {
+  width: auto;
 }
 #opc #opc-sidebar #opc-sidebar-footer {
   position: absolute;

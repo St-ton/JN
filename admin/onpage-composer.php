@@ -75,8 +75,8 @@ if ($opc->isOPCInstalled() === false) {
 } elseif ($action === 'adopt') {
     // Adopt new draft from another draft
     try {
-        $adoptFromDraft = $opcPage->getDraft($adoptFromKey);
-        $newName        = __('Draft') . ' ' . ($opcPageDB->getDraftCount($pageId) + 1);
+        $adoptFromDraft = $opcPage->getDraft($pageKey);
+        $newName        = $adoptFromDraft->getName() . ' (Copy)';
         $page           = $opcPage
             ->createDraft($pageId)
             ->setUrl($pageUrl)
@@ -90,6 +90,26 @@ if ($opc->isOPCInstalled() === false) {
 
     header('Location: ' . $shopUrl . '/' . PFAD_ADMIN . 'onpage-composer.php?pageKey=' . $pageKey . '&action=edit');
     exit();
+} elseif ($action === 'duplicate-bulk') {
+    // duplicate multiple drafts from existing drafts
+    try {
+        foreach ($draftKeys as $draftKey) {
+            $adoptFromDraft = $opcPage->getDraft($draftKey);
+            $newName        = $adoptFromDraft->getName() . ' (Copy)';
+            $curPageId      = $adoptFromDraft->getId();
+            $page           = $opcPage
+                ->createDraft($adoptFromDraft->getId())
+                ->setUrl($adoptFromDraft->getUrl())
+                ->setName($newName)
+                ->setAreaList($adoptFromDraft->getAreaList());
+            $opcPageDB->saveDraft($page);
+            $pageKey = $page->getKey();
+        }
+    } catch (Exception $e) {
+        $error = $e->getMessage();
+    }
+
+    exit('ok');
 } elseif ($action === 'discard') {
     // Discard a OPC page draft
     $opcPage->deleteDraft($pageKey);
@@ -99,9 +119,5 @@ if ($opc->isOPCInstalled() === false) {
     foreach ($draftKeys as $draftKey) {
         $opcPage->deleteDraft($draftKey);
     }
-    exit('ok');
-} elseif ($action === 'restore') {
-    // Discard all OPC page drafts for one page
-    $opcPage->deletePage($pageId);
     exit('ok');
 }

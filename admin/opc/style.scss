@@ -247,8 +247,15 @@ $transition: 0.5s;
         width: 125px;
       }
 
+      #opc-bulk-actions-dropdown {
+        float: right;
+        width: 50%;
+      }
+
       #opc-bulk-actions {
         color: $muted-text;
+        width: 100%;
+        text-align: right;
 
         #opc-bulk-actions-label {
           margin-right: 8px;

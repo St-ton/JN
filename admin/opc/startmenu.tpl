@@ -248,9 +248,11 @@
                     <label for="check-all-drafts" class="opc-check-all">
                         Alle an-/abwählen
                     </label>
-                    <div class="opc-dropdown" style="float: right">
+                    <div class="opc-dropdown" id="opc-bulk-actions-dropdown">
                         <button type="button" id="opc-bulk-actions" data-toggle="dropdown">
-                            <span id="opc-bulk-actions-label">Aktionen</span>
+                            <span id="opc-bulk-actions-label">
+                                Aktionen
+                            </span>
                             <i class="fa fas fa-fw fa-chevron-down"></i>
                         </button>
                         <div class="dropdown-menu opc-dropdown-menu" id="opc-bulk-dropdown">

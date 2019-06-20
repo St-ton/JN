@@ -199,8 +199,14 @@
 #opc #opc-sidebar #opc-sidebar-tools #opc-filter-status {
   width: 125px;
 }
+#opc #opc-sidebar #opc-sidebar-tools #opc-bulk-actions-dropdown {
+  float: right;
+  width: 50%;
+}
 #opc #opc-sidebar #opc-sidebar-tools #opc-bulk-actions {
   color: #BDBDBD;
+  width: 100%;
+  text-align: right;
 }
 #opc #opc-sidebar #opc-sidebar-tools #opc-bulk-actions #opc-bulk-actions-label {
   margin-right: 8px;

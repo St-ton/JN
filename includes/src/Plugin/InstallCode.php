@@ -264,7 +264,7 @@ class InstallCode extends Enum
 
     public const MISSING_UNINSTALL_FILE = 125;
 
-    public const OK_BUT_NOT_SHOP4_COMPATIBLE = 126;
+    public const OK_LEGACY = 126;
 
     public const IONCUBE_REQUIRED = 127;
 

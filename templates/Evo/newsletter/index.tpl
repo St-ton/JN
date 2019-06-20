@@ -14,6 +14,7 @@
     {if $cOption === 'eintragen'}
         {if empty($bBereitsAbonnent)}
             {block name='newsletter-subscribe'}
+            {include file='snippets/opc_mount_point.tpl' id='opc_before_newsletter_subscribe'}
             <div id="newsletter-subscribe" class="panel-wrap">
                 <div class="panel panel-default">
                     <div class="panel-heading">
@@ -100,6 +101,7 @@
         {/if}
         
         {block name='newsletter-unsubscribe'}
+        {include file='snippets/opc_mount_point.tpl' id='opc_before_newsletter_unsubscribe'}
         <div id="newsletter-unsubscribe" class="panel-wrap top15">
             <div class="panel panel-default">
                 <div class="panel-heading">

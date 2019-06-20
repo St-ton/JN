@@ -30,11 +30,11 @@ if (Form::checkSubject()) {
     $fehlendeAngaben = [];
     if (isset($_POST['kontakt']) && (int)$_POST['kontakt'] === 1) {
         $fehlendeAngaben = Form::getMissingContactFormData();
-        $kKundengruppe   = Frontend::getCustomerGroup()->getID();
+        $customerGroupID = Frontend::getCustomerGroup()->getID();
         $checkBox        = new CheckBox();
         $fehlendeAngaben = array_merge(
             $fehlendeAngaben,
-            $checkBox->validateCheckBox(CHECKBOX_ORT_KONTAKT, $kKundengruppe, $_POST, true)
+            $checkBox->validateCheckBox(CHECKBOX_ORT_KONTAKT, $customerGroupID, $_POST, true)
         );
         $nReturnValue    = Form::eingabenKorrekt($fehlendeAngaben);
         $smarty->assign('cPost_arr', Text::filterXSS($_POST));
@@ -46,11 +46,11 @@ if (Form::checkSubject()) {
                 $msg = Form::baueKontaktFormularVorgaben();
                 $checkBox->triggerSpecialFunction(
                     CHECKBOX_ORT_KONTAKT,
-                    $kKundengruppe,
+                    $customerGroupID,
                     true,
                     $_POST,
                     ['oKunde' => $msg, 'oNachricht' => $msg]
-                )->checkLogging(CHECKBOX_ORT_KONTAKT, $kKundengruppe, $_POST, true);
+                )->checkLogging(CHECKBOX_ORT_KONTAKT, $customerGroupID, $_POST, true);
                 Form::editMessage();
                 $step = 'nachricht versendet';
             }

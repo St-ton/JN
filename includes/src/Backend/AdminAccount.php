@@ -225,7 +225,7 @@ class AdminAccount
      */
     public function login(string $cLogin, string $cPass): int
     {
-        $oAdmin = $this->db->select(
+        $admin = $this->db->select(
             'tadminlogin',
             'cLogin',
             $cLogin,
@@ -236,18 +236,18 @@ class AdminAccount
             false,
             '*, UNIX_TIMESTAMP(dGueltigBis) AS dGueltigTS'
         );
-        if ($oAdmin === null || !\is_object($oAdmin)) {
+        if ($admin === null || !\is_object($admin)) {
             return $this->handleLoginResult(AdminLoginStatus::ERROR_USER_NOT_FOUND, $cLogin);
         }
-        $oAdmin->kAdminlogingruppe = (int)$oAdmin->kAdminlogingruppe;
-        if (!$oAdmin->bAktiv && $oAdmin->kAdminlogingruppe !== \ADMINGROUP) {
+        $admin->kAdminlogingruppe = (int)$admin->kAdminlogingruppe;
+        if (!$admin->bAktiv && $admin->kAdminlogingruppe !== \ADMINGROUP) {
             return $this->handleLoginResult(AdminLoginStatus::ERROR_USER_DISABLED, $cLogin);
         }
-        if ($oAdmin->dGueltigTS && $oAdmin->kAdminlogingruppe !== \ADMINGROUP && $oAdmin->dGueltigTS < \time()) {
+        if ($admin->dGueltigTS && $admin->kAdminlogingruppe !== \ADMINGROUP && $admin->dGueltigTS < \time()) {
             return $this->handleLoginResult(AdminLoginStatus::ERROR_LOGIN_EXPIRED, $cLogin);
         }
-        if ($oAdmin->nLoginVersuch >= \MAX_LOGIN_ATTEMPTS && !empty($oAdmin->locked_at)) {
-            $time        = new DateTime($oAdmin->locked_at);
+        if ($admin->nLoginVersuch >= \MAX_LOGIN_ATTEMPTS && !empty($admin->locked_at)) {
+            $time        = new DateTime($admin->locked_at);
             $diffMinutes = ((new DateTime('NOW'))->getTimestamp() - $time->getTimestamp()) / 60;
             if ($diffMinutes < \LOCK_TIME) {
                 $this->setLockedMinutes((int)\ceil(\LOCK_TIME - $diffMinutes));
@@ -255,11 +255,11 @@ class AdminAccount
                 return AdminLoginStatus::ERROR_LOCKED;
             }
         }
-        $verified     = false;
-        $cPassCrypted = null;
-        if (\mb_strlen($oAdmin->cPass) === 32) {
-            if (\md5($cPass) !== $oAdmin->cPass) {
-                $this->setRetryCount($oAdmin->cLogin);
+        $verified = false;
+        $crypted  = null;
+        if (\mb_strlen($admin->cPass) === 32) {
+            if (\md5($cPass) !== $admin->cPass) {
+                $this->setRetryCount($admin->cLogin);
 
                 return $this->handleLoginResult(AdminLoginStatus::ERROR_INVALID_PASSWORD, $cLogin);
             }
@@ -270,7 +270,7 @@ class AdminAccount
             $_SESSION['AdminAccount']->cLogin = $cLogin;
             $verified                         = true;
             if ($this->checkAndUpdateHash($cPass) === true) {
-                $oAdmin = $this->db->select(
+                $admin = $this->db->select(
                     'tadminlogin',
                     'cLogin',
                     $cLogin,
@@ -282,14 +282,14 @@ class AdminAccount
                     '*, UNIX_TIMESTAMP(dGueltigBis) AS dGueltigTS'
                 );
             }
-        } elseif (\mb_strlen($oAdmin->cPass) === 40) {
+        } elseif (\mb_strlen($admin->cPass) === 40) {
             // default login until Shop4
-            $cPassCrypted = \cryptPasswort($cPass, $oAdmin->cPass);
+            $crypted = \cryptPasswort($cPass, $admin->cPass);
         } else {
             // new default login from 4.0 on
-            $verified = \password_verify($cPass, $oAdmin->cPass);
+            $verified = \password_verify($cPass, $admin->cPass);
         }
-        if ($verified === true || ($cPassCrypted !== null && $oAdmin->cPass === $cPassCrypted)) {
+        if ($verified === true || ($crypted !== null && $admin->cPass === $crypted)) {
             $settings = Shop::getSettings(\CONF_GLOBAL);
             if (\is_array($_SESSION)
                 && $settings['global']['wartungsmodus_aktiviert'] === 'N'
@@ -299,11 +299,11 @@ class AdminAccount
                     unset($_SESSION[$i]);
                 }
             }
-            if (!isset($oAdmin->kSprache)) {
-                $oAdmin->kSprache = Shop::getLanguage();
+            if (!isset($admin->kSprache)) {
+                $admin->kSprache = Shop::getLanguage();
             }
-            $oAdmin->cISO = Shop::Lang()->getIsoFromLangID($oAdmin->kSprache)->cISO;
-            $this->toSession($oAdmin);
+            $admin->cISO = Shop::Lang()->getIsoFromLangID($admin->kSprache)->cISO;
+            $this->toSession($admin);
             $this->checkAndUpdateHash($cPass);
             if (!$this->getIsTwoFaAuthenticated()) {
                 return $this->handleLoginResult(AdminLoginStatus::ERROR_TWO_FACTOR_AUTH_EXPIRED, $cLogin);
@@ -313,7 +313,7 @@ class AdminAccount
                 : AdminLoginStatus::ERROR_NOT_AUTHORIZED, $cLogin);
         }
 
-        $this->setRetryCount($oAdmin->cLogin);
+        $this->setRetryCount($admin->cLogin);
 
         return $this->handleLoginResult(AdminLoginStatus::ERROR_INVALID_PASSWORD, $cLogin);
     }

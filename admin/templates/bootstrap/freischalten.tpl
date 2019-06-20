@@ -14,8 +14,8 @@
                     </span>
                     <span class="input-group-wrap">
                         <select class="form-control" id="formSprachwechselSelect" name="kSprache" >
-                            {foreach $Sprachen as $sprache}
-                                <option value="{$sprache->kSprache}" {if $sprache->kSprache == $smarty.session.kSprache}selected{/if}>{$sprache->cNameDeutsch}</option>
+                            {foreach $sprachen as $language}
+                                <option value="{$language->getId()}" {if $language->getId() === $smarty.session.kSprache}selected{/if}>{$language->getLocalizedName()}</option>
                             {/foreach}
                         </select>
                     </span>
@@ -81,7 +81,7 @@
     <div class="tab-content">
         <div id="bewertungen" class="tab-pane fade {if !isset($cTab) || empty($cTab) || $cTab === 'bewertungen'} active in{/if}">
             {if $oBewertung_arr|@count > 0 && $oBewertung_arr}
-                {include file='tpl_inc/pagination.tpl' oPagination=$oPagiBewertungen cAnchor='bewertungen'}
+                {include file='tpl_inc/pagination.tpl' pagination=$oPagiBewertungen cAnchor='bewertungen'}
                 <form method="post" action="freischalten.php">
                     {$jtl_token}
                     <input type="hidden" name="freischalten" value="1" />
@@ -153,7 +153,7 @@
         </div>
         <div id="livesearch" class="tab-pane fade {if isset($cTab) && $cTab === 'livesearch'} active in{/if}">
             {if $oSuchanfrage_arr|@count > 0 && $oSuchanfrage_arr}
-                {include file='tpl_inc/pagination.tpl' oPagination=$oPagiSuchanfragen cAnchor='livesearch'}
+                {include file='tpl_inc/pagination.tpl' pagination=$oPagiSuchanfragen cAnchor='livesearch'}
                 <div class="panel panel-default">
                     <form method="post" action="freischalten.php">
                         {$jtl_token}
@@ -224,7 +224,7 @@
         </div>
         <div id="tags" class="tab-pane fade {if isset($cTab) && $cTab === 'tags'} active in{/if}">
             {if $oTag_arr|@count > 0}
-                {include file='tpl_inc/pagination.tpl' oPagination=$oPagiTags cAnchor='tags'}
+                {include file='tpl_inc/pagination.tpl' pagination=$oPagiTags cAnchor='tags'}
                 <div class="panel panel-default">
                     <form method="post" action="freischalten.php">
                         {$jtl_token}
@@ -275,7 +275,7 @@
         </div>
         <div id="newscomments" class="tab-pane fade {if isset($cTab) && $cTab === 'newscomments'} active in{/if}">
             {if $oNewsKommentar_arr|@count > 0 && $oNewsKommentar_arr}
-                {include file='tpl_inc/pagination.tpl' oPagination=$oPagiNewskommentare cAnchor='newscomments'}
+                {include file='tpl_inc/pagination.tpl' pagination=$oPagiNewskommentare cAnchor='newscomments'}
                 <div class="panel panel-default">
                     <form method="post" action="freischalten.php">
                         {$jtl_token}
@@ -341,7 +341,7 @@
         </div>
         <div id="newsletter" class="tab-pane fade {if isset($cTab) && $cTab === 'newsletter'} active in{/if}">
             {if $oNewsletterEmpfaenger_arr|@count > 0 && $oNewsletterEmpfaenger_arr}
-                {include file='tpl_inc/pagination.tpl' oPagination=$oPagiNewsletterEmpfaenger cAnchor='newsletter'}
+                {include file='tpl_inc/pagination.tpl' pagination=$oPagiNewsletterEmpfaenger cAnchor='newsletter'}
                 <div class="panel panel-default">
                     <form method="post" action="freischalten.php">
                         {$jtl_token}

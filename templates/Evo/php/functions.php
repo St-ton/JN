@@ -6,6 +6,7 @@
  * @global \JTL\Smarty\JTLSmarty $smarty
  */
 
+use Illuminate\Support\Collection;
 use JTL\Catalog\Category\Kategorie;
 use JTL\Catalog\Category\KategorieListe;
 use JTL\Catalog\Product\Artikel;
@@ -15,9 +16,8 @@ use JTL\Filter\Config;
 use JTL\Filter\ProductFilter;
 use JTL\Helpers\Category;
 use JTL\Helpers\Manufacturer;
-use JTL\Helpers\Tax;
-use JTL\Helpers\Text;
 use JTL\Helpers\Seo;
+use JTL\Helpers\Tax;
 use JTL\Media\Image;
 use JTL\Media\MediaImage;
 use JTL\Session\Frontend;
@@ -30,27 +30,27 @@ $scc = new DefaultComponentRegistrator(new Bs3sccRenderer($smarty));
 $scc->registerComponents();
 
 $smarty->registerPlugin(Smarty::PLUGIN_FUNCTION, 'gibPreisStringLocalizedSmarty', 'gibPreisStringLocalizedSmarty')
-       ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'getBoxesByPosition', 'getBoxesByPosition')
-       ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'has_boxes', 'has_boxes')
-       ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'imageTag', 'get_img_tag')
-       ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'getCheckBoxForLocation', 'getCheckBoxForLocation')
-       ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'hasCheckBoxForLocation', 'hasCheckBoxForLocation')
-       ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'aaURLEncode', 'aaURLEncode')
-       ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'get_navigation', 'get_navigation')
-       ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'ts_data', 'get_trustedshops_data')
-       ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'get_category_array', 'get_category_array')
-       ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'get_category_parents', 'get_category_parents')
-       ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'prepare_image_details', 'prepare_image_details')
-       ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'get_manufacturers', 'get_manufacturers')
-       ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'get_cms_content', 'get_cms_content')
-       ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'get_static_route', 'get_static_route')
-       ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'hasOnlyListableVariations', 'hasOnlyListableVariations')
-       ->registerPlugin(Smarty::PLUGIN_MODIFIER, 'has_trans', 'has_translation')
-       ->registerPlugin(Smarty::PLUGIN_MODIFIER, 'trans', 'get_translation')
-       ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'get_product_list', 'get_product_list')
-       ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'captchaMarkup', 'captchaMarkup')
-       ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'getStates', 'getStates')
-       ->registerPlugin(Smarty::PLUGIN_MODIFIER, 'seofy', 'seofy');
+    ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'getBoxesByPosition', 'getBoxesByPosition')
+    ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'has_boxes', 'has_boxes')
+    ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'imageTag', 'get_img_tag')
+    ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'getCheckBoxForLocation', 'getCheckBoxForLocation')
+    ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'hasCheckBoxForLocation', 'hasCheckBoxForLocation')
+    ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'aaURLEncode', 'aaURLEncode')
+    ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'get_navigation', 'get_navigation')
+    ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'ts_data', 'get_trustedshops_data')
+    ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'get_category_array', 'get_category_array')
+    ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'get_category_parents', 'get_category_parents')
+    ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'prepare_image_details', 'prepare_image_details')
+    ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'get_manufacturers', 'get_manufacturers')
+    ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'get_cms_content', 'get_cms_content')
+    ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'get_static_route', 'get_static_route')
+    ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'hasOnlyListableVariations', 'hasOnlyListableVariations')
+    ->registerPlugin(Smarty::PLUGIN_MODIFIER, 'has_trans', 'has_translation')
+    ->registerPlugin(Smarty::PLUGIN_MODIFIER, 'trans', 'get_translation')
+    ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'get_product_list', 'get_product_list')
+    ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'captchaMarkup', 'captchaMarkup')
+    ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'getStates', 'getStates')
+    ->registerPlugin(Smarty::PLUGIN_MODIFIER, 'seofy', 'seofy');
 
 /**
  * @param array                        $params
@@ -101,9 +101,9 @@ function get_product_list($params, $smarty)
         if (!is_array($params['kArtikel'])) {
             $params['kArtikel'] = [$params['kArtikel']];
         }
-        foreach ($params['kArtikel'] as $kArtikel) {
+        foreach ($params['kArtikel'] as $productID) {
             $product    = new Artikel();
-            $products[] = $product->fuelleArtikel($kArtikel, Artikel::getDefaultOptions());
+            $products[] = $product->fuelleArtikel($productID, Artikel::getDefaultOptions());
         }
     } else {
         $products = (new ProductFilter(
@@ -205,11 +205,11 @@ function get_category_array($params, $smarty)
 
     if (isset($params['categoryBoxNumber']) && (int)$params['categoryBoxNumber'] > 0) {
         $list2 = [];
-        foreach ($list as $key => $oList) {
-            if (isset($oList->categoryFunctionAttributes[KAT_ATTRIBUT_KATEGORIEBOX])
-                && $oList->categoryFunctionAttributes[KAT_ATTRIBUT_KATEGORIEBOX] == $params['categoryBoxNumber']
+        foreach ($list as $key => $item) {
+            if (isset($item->categoryFunctionAttributes[KAT_ATTRIBUT_KATEGORIEBOX])
+                && $item->categoryFunctionAttributes[KAT_ATTRIBUT_KATEGORIEBOX] == $params['categoryBoxNumber']
             ) {
-                $list2[$key] = $oList;
+                $list2[$key] = $item;
             }
         }
         $list = $list2;
@@ -308,9 +308,9 @@ function truncate($text, $numb)
  */
 function gibPreisStringLocalizedSmarty($params, $smarty)
 {
-    $oAufpreis                     = new stdClass();
-    $oAufpreis->cAufpreisLocalized = '';
-    $oAufpreis->cPreisInklAufpreis = '';
+    $surcharge                     = new stdClass();
+    $surcharge->cAufpreisLocalized = '';
+    $surcharge->cPreisInklAufpreis = '';
 
     if ((float)$params['fAufpreisNetto'] != 0) {
         $fAufpreisNetto         = (float)$params['fAufpreisNetto'];
@@ -318,77 +318,77 @@ function gibPreisStringLocalizedSmarty($params, $smarty)
         $kSteuerklasse          = (int)$params['kSteuerklasse'];
         $fVPEWert               = (float)$params['fVPEWert'];
         $cVPEEinheit            = $params['cVPEEinheit'];
-        $FunktionsAttribute_arr = $params['FunktionsAttribute'];
-        $nGenauigkeit           = (isset($FunktionsAttribute_arr[FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT])
-            && (int)$FunktionsAttribute_arr[FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT] > 0)
-            ? (int)$FunktionsAttribute_arr[FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT]
+        $funcAttributes = $params['FunktionsAttribute'];
+        $precision           = (isset($funcAttributes[FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT])
+            && (int)$funcAttributes[FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT] > 0)
+            ? (int)$funcAttributes[FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT]
             : 2;
 
         if ((int)$params['nNettoPreise'] === 1) {
-            $oAufpreis->cAufpreisLocalized = Preise::getLocalizedPriceString($fAufpreisNetto);
-            $oAufpreis->cPreisInklAufpreis = Preise::getLocalizedPriceString($fAufpreisNetto + $fVKNetto);
-            $oAufpreis->cAufpreisLocalized = ($fAufpreisNetto > 0)
-                ? ('+ ' . $oAufpreis->cAufpreisLocalized)
-                : str_replace('-', '- ', $oAufpreis->cAufpreisLocalized);
+            $surcharge->cAufpreisLocalized = Preise::getLocalizedPriceString($fAufpreisNetto);
+            $surcharge->cPreisInklAufpreis = Preise::getLocalizedPriceString($fAufpreisNetto + $fVKNetto);
+            $surcharge->cAufpreisLocalized = ($fAufpreisNetto > 0)
+                ? ('+ ' . $surcharge->cAufpreisLocalized)
+                : str_replace('-', '- ', $surcharge->cAufpreisLocalized);
 
             if ($fVPEWert > 0) {
-                $oAufpreis->cPreisVPEWertAufpreis     = Preise::getLocalizedPriceString(
+                $surcharge->cPreisVPEWertAufpreis     = Preise::getLocalizedPriceString(
                         $fAufpreisNetto / $fVPEWert,
                         Frontend::getCurrency()->getCode(),
                         true,
-                        $nGenauigkeit
+                        $precision
                     ) . ' ' . Shop::Lang()->get('vpePer') . ' ' . $cVPEEinheit;
-                $oAufpreis->cPreisVPEWertInklAufpreis = Preise::getLocalizedPriceString(
+                $surcharge->cPreisVPEWertInklAufpreis = Preise::getLocalizedPriceString(
                         ($fAufpreisNetto + $fVKNetto) / $fVPEWert,
                         Frontend::getCurrency()->getCode(),
                         true,
-                        $nGenauigkeit
+                        $precision
                     ) . ' ' . Shop::Lang()->get('vpePer') . ' ' . $cVPEEinheit;
 
-                $oAufpreis->cAufpreisLocalized = $oAufpreis->cAufpreisLocalized . ', ' .
-                    $oAufpreis->cPreisVPEWertAufpreis;
-                $oAufpreis->cPreisInklAufpreis = $oAufpreis->cPreisInklAufpreis . ', ' .
-                    $oAufpreis->cPreisVPEWertInklAufpreis;
+                $surcharge->cAufpreisLocalized = $surcharge->cAufpreisLocalized . ', ' .
+                    $surcharge->cPreisVPEWertAufpreis;
+                $surcharge->cPreisInklAufpreis = $surcharge->cPreisInklAufpreis . ', ' .
+                    $surcharge->cPreisVPEWertInklAufpreis;
             }
         } else {
-            $oAufpreis->cAufpreisLocalized = Preise::getLocalizedPriceString(
+            $surcharge->cAufpreisLocalized = Preise::getLocalizedPriceString(
                 Tax::getGross($fAufpreisNetto, $_SESSION['Steuersatz'][$kSteuerklasse], 4)
             );
-            $oAufpreis->cPreisInklAufpreis = Preise::getLocalizedPriceString(
+            $surcharge->cPreisInklAufpreis = Preise::getLocalizedPriceString(
                 Tax::getGross($fAufpreisNetto + $fVKNetto, $_SESSION['Steuersatz'][$kSteuerklasse], 4)
             );
-            $oAufpreis->cAufpreisLocalized = ($fAufpreisNetto > 0)
-                ? ('+ ' . $oAufpreis->cAufpreisLocalized)
-                : str_replace('-', '- ', $oAufpreis->cAufpreisLocalized);
+            $surcharge->cAufpreisLocalized = ($fAufpreisNetto > 0)
+                ? ('+ ' . $surcharge->cAufpreisLocalized)
+                : str_replace('-', '- ', $surcharge->cAufpreisLocalized);
 
             if ($fVPEWert > 0) {
-                $oAufpreis->cPreisVPEWertAufpreis     = Preise::getLocalizedPriceString(
+                $surcharge->cPreisVPEWertAufpreis     = Preise::getLocalizedPriceString(
                         Tax::getGross($fAufpreisNetto / $fVPEWert, $_SESSION['Steuersatz'][$kSteuerklasse]),
                         Frontend::getCurrency()->getCode(),
                         true,
-                        $nGenauigkeit
+                        $precision
                     ) . ' ' . Shop::Lang()->get('vpePer') . ' ' . $cVPEEinheit;
-                $oAufpreis->cPreisVPEWertInklAufpreis = Preise::getLocalizedPriceString(
+                $surcharge->cPreisVPEWertInklAufpreis = Preise::getLocalizedPriceString(
                         Tax::getGross(
                             ($fAufpreisNetto + $fVKNetto) / $fVPEWert,
                             $_SESSION['Steuersatz'][$kSteuerklasse]
                         ),
                         Frontend::getCurrency()->getCode(),
                         true,
-                        $nGenauigkeit
+                        $precision
                     ) . ' ' . Shop::Lang()->get('vpePer') . ' ' . $cVPEEinheit;
 
-                $oAufpreis->cAufpreisLocalized = $oAufpreis->cAufpreisLocalized .
-                    ', ' . $oAufpreis->cPreisVPEWertAufpreis;
-                $oAufpreis->cPreisInklAufpreis = $oAufpreis->cPreisInklAufpreis .
-                    ', ' . $oAufpreis->cPreisVPEWertInklAufpreis;
+                $surcharge->cAufpreisLocalized = $surcharge->cAufpreisLocalized .
+                    ', ' . $surcharge->cPreisVPEWertAufpreis;
+                $surcharge->cPreisInklAufpreis = $surcharge->cPreisInklAufpreis .
+                    ', ' . $surcharge->cPreisVPEWertInklAufpreis;
             }
         }
     }
 
     return (isset($params['bAufpreise']) && (int)$params['bAufpreise'] > 0)
-        ? $oAufpreis->cAufpreisLocalized
-        : $oAufpreis->cPreisInklAufpreis;
+        ? $surcharge->cAufpreisLocalized
+        : $surcharge->cPreisInklAufpreis;
 }
 
 /**
@@ -410,32 +410,32 @@ function hasCheckBoxForLocation($params, $smarty)
  */
 function getCheckBoxForLocation($params, $smarty)
 {
-    $langID        = Shop::getLanguageID();
-    $cid           = 'cb_' . (int)$params['nAnzeigeOrt'] . '_' . $langID;
-    $oCheckBox_arr = Shop::has($cid)
+    $langID     = Shop::getLanguageID();
+    $cid        = 'cb_' . (int)$params['nAnzeigeOrt'] . '_' . $langID;
+    $checkBoxes = Shop::has($cid)
         ? Shop::get($cid)
         : (new CheckBox())->getCheckBoxFrontend((int)$params['nAnzeigeOrt'], 0, true, true);
-    if (count($oCheckBox_arr) > 0) {
-        foreach ($oCheckBox_arr as $oCheckBox) {
-            $cLinkURL                 = $oCheckBox->kLink > 0
-                ? $oCheckBox->getLink()->getURL()
+    if (count($checkBoxes) > 0) {
+        foreach ($checkBoxes as $checkBox) {
+            $linkURL                 = $checkBox->kLink > 0
+                ? $checkBox->getLink()->getURL()
                 : '';
-            $bError                   = isset($params['cPlausi_arr'][$oCheckBox->cID]);
-            $cPost_arr                = $params['cPost_arr'];
-            $oCheckBox->isActive      = isset($cPost_arr[$oCheckBox->cID]);
-            $oCheckBox->cName         = $oCheckBox->oCheckBoxSprache_arr[$langID]->cText;
-            $oCheckBox->cLinkURL      = $cLinkURL;
-            $oCheckBox->cLinkURLFull  = $cLinkURL;
-            $oCheckBox->cBeschreibung = !empty($oCheckBox->oCheckBoxSprache_arr[$langID]->cBeschreibung)
-                ? $oCheckBox->oCheckBoxSprache_arr[$langID]->cBeschreibung
+            $error                   = isset($params['cPlausi_arr'][$checkBox->cID]);
+            $post                    = $params['cPost_arr'];
+            $checkBox->isActive      = isset($post[$checkBox->cID]);
+            $checkBox->cName         = $checkBox->oCheckBoxSprache_arr[$langID]->cText;
+            $checkBox->cLinkURL      = $linkURL;
+            $checkBox->cLinkURLFull  = $linkURL;
+            $checkBox->cBeschreibung = !empty($checkBox->oCheckBoxSprache_arr[$langID]->cBeschreibung)
+                ? $checkBox->oCheckBoxSprache_arr[$langID]->cBeschreibung
                 : '';
-            $oCheckBox->cErrormsg     = $bError
+            $checkBox->cErrormsg     = $error
                 ? Shop::Lang()->get('pleasyAccept', 'account data')
                 : '';
         }
-        Shop::set($cid, $oCheckBox_arr);
+        Shop::set($cid, $checkBoxes);
         if (isset($params['assign'])) {
-            $smarty->assign($params['assign'], $oCheckBox_arr);
+            $smarty->assign($params['assign'], $checkBoxes);
         }
     }
 }
@@ -447,23 +447,23 @@ function getCheckBoxForLocation($params, $smarty)
  */
 function aaURLEncode($params, $smarty)
 {
-    $bReset      = (isset($params['nReset']) && (int)$params['nReset'] === 1);
-    $cURL        = $_SERVER['REQUEST_URI'];
-    $params      = ['&aaParams', '?aaParams', '&aaReset', '?aaReset'];
-    $aaEnthalten = false;
-    foreach ($params as $cParameter) {
-        $aaEnthalten = mb_strpos($cURL, $cParameter);
-        if ($aaEnthalten !== false) {
-            $cURL = mb_substr($cURL, 0, $aaEnthalten);
+    $reset     = (isset($params['nReset']) && (int)$params['nReset'] === 1);
+    $url       = $_SERVER['REQUEST_URI'];
+    $params    = ['&aaParams', '?aaParams', '&aaReset', '?aaReset'];
+    $containes = false;
+    foreach ($params as $param) {
+        $containes = mb_strpos($url, $param);
+        if ($containes !== false) {
+            $url = mb_substr($url, 0, $containes);
             break;
         }
-        $aaEnthalten = false;
+        $containes = false;
     }
-    if ($aaEnthalten !== false) {
-        $cURL = mb_substr($cURL, 0, $aaEnthalten);
+    if ($containes !== false) {
+        $url = mb_substr($url, 0, $containes);
     }
     if (isset($params['bUrlOnly']) && (int)$params['bUrlOnly'] === 1) {
-        return $cURL;
+        return $url;
     }
     $cParams = '';
     unset($params['nReset']);
@@ -473,9 +473,9 @@ function aaURLEncode($params, $smarty)
         }
     }
 
-    $sep = (mb_strpos($cURL, '?') === false) ? '?' : '&';
+    $sep = (mb_strpos($url, '?') === false) ? '?' : '&';
 
-    return $cURL . $sep . ($bReset ? 'aaReset=' : 'aaParams=') . base64_encode($cParams);
+    return $url . $sep . ($reset ? 'aaReset=' : 'aaParams=') . base64_encode($cParams);
 }
 
 /**
@@ -485,42 +485,41 @@ function aaURLEncode($params, $smarty)
 function get_navigation($params, $smarty)
 {
     $linkgroupIdentifier = $params['linkgroupIdentifier'];
-    $oLinkGruppe         = null;
+    $linkGroup           = null;
     if (mb_strlen($linkgroupIdentifier) > 0) {
-        $linkGroups  = Shop::Container()->getLinkService()->getVisibleLinkGroups();
-        $oLinkGruppe = $linkGroups->getLinkgroupByTemplate($linkgroupIdentifier);
+        $linkGroups = Shop::Container()->getLinkService()->getVisibleLinkGroups();
+        $linkGroup  = $linkGroups->getLinkgroupByTemplate($linkgroupIdentifier);
     }
-    if (is_object($oLinkGruppe)
+    if (is_object($linkGroup)
         && isset($params['assign'])
-        && $oLinkGruppe->isAvailableInLanguage(Shop::getLanguageID())
+        && $linkGroup->isAvailableInLanguage(Shop::getLanguageID())
     ) {
-        $smarty->assign($params['assign'], build_navigation_subs($oLinkGruppe));
+        $smarty->assign($params['assign'], build_navigation_subs($linkGroup));
     }
 }
 
 /**
  * @param \JTL\Link\LinkGroupInterface $linkGroup
- * @param int                          $kVaterLink
- * @return \Illuminate\Support\Collection
+ * @param int                          $parentLinkID
+ * @return Collection
  */
-function build_navigation_subs($linkGroup, $kVaterLink = 0)
+function build_navigation_subs($linkGroup, int $parentLinkID = 0)
 {
-    $kVaterLink = (int)$kVaterLink;
-    $oNew_arr   = new \Illuminate\Support\Collection();
+    $news = new Collection();
     if ($linkGroup->getTemplate() === 'hidden' || $linkGroup->getName() === 'hidden') {
-        return $oNew_arr;
+        return $news;
     }
     foreach ($linkGroup->getLinks() as $link) {
         /** @var \JTL\Link\Link $link */
-        if ($link->getParent() !== $kVaterLink) {
+        if ($link->getParent() !== $parentLinkID) {
             continue;
         }
         $link->setChildLinks(build_navigation_subs($linkGroup, $link->getID()));
         $link->setIsActive($link->getIsActive() || (Shop::$kLink > 0 && Shop::$kLink === $link->getID()));
-        $oNew_arr->push($link);
+        $news->push($link);
     }
 
-    return $oNew_arr;
+    return $news;
 }
 
 /**
@@ -626,8 +625,8 @@ function get_cms_content($params, $smarty)
 {
     if (isset($params['kLink']) && (int)$params['kLink'] > 0) {
         $kLink   = (int)$params['kLink'];
-        $oLink   = Shop::Container()->getLinkService()->getLinkByID($kLink);
-        $content = $oLink !== null ? $oLink->getContent() : null;
+        $link    = Shop::Container()->getLinkService()->getLinkByID($kLink);
+        $content = $link !== null ? $link->getContent() : null;
         if (isset($params['assign'])) {
             $smarty->assign($params['assign'], $content);
         } else {
@@ -764,7 +763,7 @@ function getStates($params, $smarty)
  * @param String $optStr
  * @return String SEO optimized String
  */
-function seofy ($optStr = '')
+function seofy($optStr = '')
 {
     return Seo::sanitizeSeoSlug($optStr);
 }

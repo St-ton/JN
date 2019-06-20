@@ -4,7 +4,6 @@
  *}
 {block name='page-tagging'}
     {container}
-        {include file='snippets/opc_mount_point.tpl' id='opc_tagging_prepend'}
         {block name='page-tagging-tags'}
             {listgroup}
                 {foreach $Tagging as $tag}
@@ -14,6 +13,5 @@
                 {/foreach}
             {/listgroup}
         {/block}
-        {include file='snippets/opc_mount_point.tpl' id='opc_tagging_append'}
     {/container}
 {/block}

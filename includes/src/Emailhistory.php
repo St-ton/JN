@@ -57,33 +57,33 @@ class Emailhistory
     public $dSent;
 
     /**
-     * @param null|int    $kEmailhistory
-     * @param null|object $oObj
+     * @param null|int    $id
+     * @param null|object $data
      */
-    public function __construct($kEmailhistory = null, $oObj = null)
+    public function __construct($id = null, $data = null)
     {
-        if ((int)$kEmailhistory > 0) {
-            $this->loadFromDB($kEmailhistory);
-        } elseif ($oObj !== null && \is_object($oObj)) {
-            foreach (\array_keys(\get_object_vars($oObj)) as $member) {
-                $cMethod = 'set' . \mb_substr($member, 1);
-                if (\method_exists($this, $cMethod)) {
-                    $this->$cMethod($oObj->$member);
+        if ((int)$id > 0) {
+            $this->loadFromDB($id);
+        } elseif ($data !== null && \is_object($data)) {
+            foreach (\array_keys(\get_object_vars($data)) as $member) {
+                $methodName = 'set' . \mb_substr($member, 1);
+                if (\method_exists($this, $methodName)) {
+                    $this->$methodName($data->$member);
                 }
             }
         }
     }
 
     /**
-     * @param int $kEmailhistory
+     * @param int $id
      * @return $this
      */
-    protected function loadFromDB(int $kEmailhistory): self
+    protected function loadFromDB(int $id): self
     {
-        $oObj = Shop::Container()->getDB()->select('temailhistory', 'kEmailhistory', $kEmailhistory);
-        if (isset($oObj->kEmailhistory) && $oObj->kEmailhistory > 0) {
-            foreach (\array_keys(\get_object_vars($oObj)) as $member) {
-                $this->$member = $oObj->$member;
+        $data = Shop::Container()->getDB()->select('temailhistory', 'kEmailhistory', $id);
+        if (isset($data->kEmailhistory) && $data->kEmailhistory > 0) {
+            foreach (\array_keys(\get_object_vars($data)) as $member) {
+                $this->$member = $data->$member;
             }
         }
 
@@ -91,11 +91,11 @@ class Emailhistory
     }
 
     /**
-     * @param bool $bPrim
+     * @param bool $primary
      * @return bool|int
      * @throws Exception
      */
-    public function save(bool $bPrim = true)
+    public function save(bool $primary = true)
     {
         $ins = new stdClass();
         foreach (\array_keys(\get_object_vars($this)) as $member) {
@@ -107,7 +107,7 @@ class Emailhistory
         unset($ins->kEmailhistory);
         $kPrim = Shop::Container()->getDB()->insert('temailhistory', $ins);
         if ($kPrim > 0) {
-            return $bPrim ? $kPrim : true;
+            return $primary ? $kPrim : true;
         }
 
         return false;
@@ -125,9 +125,9 @@ class Emailhistory
         if (\is_array($members) && \count($members) > 0) {
             $db = Shop::Container()->getDB();
             foreach ($members as $member) {
-                $cMethod = 'get' . \mb_substr($member, 1);
-                if (\method_exists($this, $cMethod)) {
-                    $val    = $this->$cMethod();
+                $methodName = 'get' . \mb_substr($member, 1);
+                if (\method_exists($this, $methodName)) {
+                    $val    = $this->$methodName();
                     $mValue = $val === null
                         ? 'NULL'
                         : ("'" . $db->escape($val) . "'");

@@ -130,7 +130,7 @@ final class LegacyPluginValidator extends AbstractValidator
             }
         }
 
-        return $isShop4Compatible ? InstallCode::OK : InstallCode::OK_BUT_NOT_SHOP4_COMPATIBLE;
+        return $isShop4Compatible ? InstallCode::OK : InstallCode::OK_LEGACY;
     }
 
     /**

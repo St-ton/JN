@@ -22,8 +22,8 @@ class Migration_20180919103846 extends Migration implements IMigration
         $this->removeConfig('bestellabschluss_ip_speichern');
 
         // setting up the cron-job in the cron-table
-        $oCronDataProtection = $this->fetchArray("SELECT * FROM tcron WHERE cJobArt = 'dataprotection'");
-        if (0 <= \count($oCronDataProtection)) {
+        $cronDataProtection = $this->fetchArray("SELECT * FROM tcron WHERE cJobArt = 'dataprotection'");
+        if (0 <= count($cronDataProtection)) {
             $this->execute("
                 INSERT INTO tcron(kKey, cKey, cJobArt, nAlleXStd,cTabelle, cName, dStart, dStartZeit, dLetzterStart)
                     VALUES(50, '', 'dataprotection', 24, '', '', NOW(), '00:00:00', NOW())

@@ -11,9 +11,9 @@ use JTL\Filter\AbstractFilter;
 use JTL\Filter\FilterInterface;
 use JTL\Filter\Join;
 use JTL\Filter\ProductFilter;
+use JTL\Language\LanguageHelper;
 use JTL\MagicCompatibilityTrait;
 use JTL\Shop;
-use JTL\Sprache;
 
 /**
  * Class BaseAttribute
@@ -71,15 +71,15 @@ class BaseAttribute extends AbstractFilter
         );
         foreach ($languages as $language) {
             $this->cSeo[$language->kSprache] = '';
-            foreach ($seoData as $oSeo) {
-                if ($language->kSprache === (int)$oSeo->kSprache) {
-                    $this->cSeo[$language->kSprache] = $oSeo->cSeo;
+            foreach ($seoData as $seo) {
+                if ($language->kSprache === (int)$seo->kSprache) {
+                    $this->cSeo[$language->kSprache] = $seo->cSeo;
                 }
             }
         }
         $select = 'tmerkmal.cName';
         $join   = '';
-        if (Shop::getLanguage() > 0 && !Sprache::isDefaultLanguageActive()) {
+        if (Shop::getLanguage() > 0 && !LanguageHelper::isDefaultLanguageActive()) {
             $select = 'tmerkmalsprache.cName, tmerkmal.cName AS cMMName';
             $join   = ' JOIN tmerkmalsprache 
                              ON tmerkmalsprache.kMerkmal = tmerkmal.kMerkmal

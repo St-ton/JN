@@ -132,12 +132,12 @@ class Warenlager extends MainModel
     }
 
     /**
-     * @param array $cSpracheAssoc_arr
+     * @param array $languages
      * @return $this
      */
-    public function setLanguages($cSpracheAssoc_arr): self
+    public function setLanguages($languages): self
     {
-        $this->cSpracheAssoc_arr = $cSpracheAssoc_arr;
+        $this->cSpracheAssoc_arr = $languages;
 
         return $this;
     }
@@ -263,12 +263,12 @@ class Warenlager extends MainModel
     }
 
     /**
-     * @param string $cName
+     * @param string $name
      * @return $this
      */
-    public function setName($cName): self
+    public function setName($name): self
     {
-        $this->cName = $cName;
+        $this->cName = $name;
 
         return $this;
     }
@@ -445,60 +445,60 @@ class Warenlager extends MainModel
     }
 
     /**
-     * @param int         $kKey
-     * @param null|object $oObj
+     * @param int         $id
+     * @param null|object $data
      * @param int|null    $config
      */
-    public function load($kKey, $oObj = null, $config = null): void
+    public function load($id, $data = null, $config = null): void
     {
-        if ($kKey !== null) {
-            $kKey = (int)$kKey;
-            if ($kKey > 0) {
-                $cSqlSelect = '';
-                $cSqlJoin   = '';
+        if ($id !== null) {
+            $id = (int)$id;
+            if ($id > 0) {
+                $select = '';
+                $join   = '';
                 if ($config !== null && (int)$config > 0) {
-                    $config     = (int)$config;
-                    $cSqlSelect = ', IF (twarenlagersprache.cName IS NOT NULL, 
+                    $config = (int)$config;
+                    $select = ', IF (twarenlagersprache.cName IS NOT NULL, 
                     twarenlagersprache.cName, twarenlager.cName) AS cName';
-                    $cSqlJoin   = 'LEFT JOIN twarenlagersprache 
+                    $join   = 'LEFT JOIN twarenlagersprache 
                                         ON twarenlagersprache.kWarenlager = twarenlager.kWarenlager
                                         AND twarenlagersprache.kSprache = ' . $config;
                 }
 
-                $oObj = Shop::Container()->getDB()->query(
-                    "SELECT twarenlager.* {$cSqlSelect}
+                $data = Shop::Container()->getDB()->query(
+                    "SELECT twarenlager.* {$select}
                          FROM twarenlager
-                         {$cSqlJoin}
-                         WHERE twarenlager.kWarenlager = {$kKey}",
+                         {$join}
+                         WHERE twarenlager.kWarenlager = {$id}",
                     ReturnType::SINGLE_OBJECT
                 );
             }
         }
-        if (isset($oObj->kWarenlager) && $oObj->kWarenlager > 0) {
-            $this->loadObject($oObj);
+        if (isset($data->kWarenlager) && $data->kWarenlager > 0) {
+            $this->loadObject($data);
         }
     }
 
     /**
-     * @param bool $bPrim
+     * @param bool $primary
      * @return bool|int
      * @throws Exception
      */
-    public function save(bool $bPrim = true)
+    public function save(bool $primary = true)
     {
-        $oObj = new stdClass();
+        $data = new stdClass();
         foreach (\array_keys(\get_object_vars($this)) as $cMember) {
-            $oObj->$cMember = $this->$cMember;
+            $data->$cMember = $this->$cMember;
         }
         if ($this->getWarenlager() === null) {
-            $kPrim = Shop::Container()->getDB()->insert('twarenlager', $oObj);
+            $kPrim = Shop::Container()->getDB()->insert('twarenlager', $data);
             if ($kPrim > 0) {
-                return $bPrim ? $kPrim : true;
+                return $primary ? $kPrim : true;
             }
         } else {
             $xResult = $this->update();
             if ($xResult) {
-                return $bPrim ? -1 : true;
+                return $primary ? -1 : true;
             }
         }
 
@@ -597,21 +597,21 @@ class Warenlager extends MainModel
     }
 
     /**
-     * @param int        $kArtikel
-     * @param int|null   $kSprache
+     * @param int        $productID
+     * @param int|null   $langID
      * @param null|array $config
-     * @param bool       $bActive
+     * @param bool       $active
      * @return array
      */
     public static function getByProduct(
-        int $kArtikel,
-        int $kSprache = null,
+        int $productID,
+        int $langID = null,
         $config = null,
-        bool $bActive = true
+        bool $active = true
     ): array {
         $warehouses = [];
-        if ($kArtikel > 0) {
-            $sql  = $bActive ? ' AND twarenlager.nAktiv = 1' : '';
+        if ($productID > 0) {
+            $sql  = $active ? ' AND twarenlager.nAktiv = 1' : '';
             $data = Shop::Container()->getDB()->queryPrepared(
                 "SELECT tartikelwarenlager.*
                     FROM tartikelwarenlager
@@ -619,11 +619,11 @@ class Warenlager extends MainModel
                         ON twarenlager.kWarenlager = tartikelwarenlager.kWarenlager
                        {$sql}
                     WHERE tartikelwarenlager.kArtikel = :articleID",
-                ['articleID' => $kArtikel],
+                ['articleID' => $productID],
                 ReturnType::ARRAY_OF_OBJECTS
             );
             foreach ($data as $item) {
-                $warehouse               = new self($item->kWarenlager, null, $kSprache);
+                $warehouse               = new self($item->kWarenlager, null, $langID);
                 $warehouse->fBestand     = $item->fBestand;
                 $warehouse->fZulauf      = $item->fZulauf;
                 $warehouse->dZulaufDatum = $item->dZulaufDatum;

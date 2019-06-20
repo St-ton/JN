@@ -9,6 +9,7 @@ namespace JTL\Catalog\Wishlist;
 use JTL\Catalog\Product\Artikel;
 use JTL\Shop;
 use stdClass;
+use function Functional\some;
 
 /**
  * Class WunschlistePos
@@ -67,17 +68,17 @@ class WunschlistePos
     public $Artikel;
 
     /**
-     * @param int    $kArtikel
-     * @param string $cArtikelName
-     * @param float  $fAnzahl
-     * @param int    $kWunschliste
+     * @param int    $productID
+     * @param string $productName
+     * @param float  $qty
+     * @param int    $wihlistID
      */
-    public function __construct(int $kArtikel, $cArtikelName, $fAnzahl, int $kWunschliste)
+    public function __construct(int $productID, $productName, $qty, int $wihlistID)
     {
-        $this->kArtikel     = $kArtikel;
-        $this->cArtikelName = $cArtikelName;
-        $this->fAnzahl      = $fAnzahl;
-        $this->kWunschliste = $kWunschliste;
+        $this->kArtikel     = $productID;
+        $this->cArtikelName = $productName;
+        $this->fAnzahl      = $qty;
+        $this->kWunschliste = $wihlistID;
     }
 
     /**
@@ -107,15 +108,15 @@ class WunschlistePos
      */
     public function schreibeDB(): self
     {
-        $oTemp                = new stdClass();
-        $oTemp->kWunschliste  = $this->kWunschliste;
-        $oTemp->kArtikel      = $this->kArtikel;
-        $oTemp->fAnzahl       = $this->fAnzahl;
-        $oTemp->cArtikelName  = $this->cArtikelName;
-        $oTemp->cKommentar    = $this->cKommentar;
-        $oTemp->dHinzugefuegt = $this->dHinzugefuegt;
+        $ins                = new stdClass();
+        $ins->kWunschliste  = $this->kWunschliste;
+        $ins->kArtikel      = $this->kArtikel;
+        $ins->fAnzahl       = $this->fAnzahl;
+        $ins->cArtikelName  = $this->cArtikelName;
+        $ins->cKommentar    = $this->cKommentar;
+        $ins->dHinzugefuegt = $this->dHinzugefuegt;
 
-        $this->kWunschlistePos = Shop::Container()->getDB()->insert('twunschlistepos', $oTemp);
+        $this->kWunschlistePos = Shop::Container()->getDB()->insert('twunschlistepos', $ins);
 
         return $this;
     }
@@ -125,16 +126,16 @@ class WunschlistePos
      */
     public function updateDB(): self
     {
-        $oTemp                  = new stdClass();
-        $oTemp->kWunschlistePos = $this->kWunschlistePos;
-        $oTemp->kWunschliste    = $this->kWunschliste;
-        $oTemp->kArtikel        = $this->kArtikel;
-        $oTemp->fAnzahl         = $this->fAnzahl;
-        $oTemp->cArtikelName    = $this->cArtikelName;
-        $oTemp->cKommentar      = $this->cKommentar;
-        $oTemp->dHinzugefuegt   = $this->dHinzugefuegt;
+        $upd                  = new stdClass();
+        $upd->kWunschlistePos = $this->kWunschlistePos;
+        $upd->kWunschliste    = $this->kWunschliste;
+        $upd->kArtikel        = $this->kArtikel;
+        $upd->fAnzahl         = $this->fAnzahl;
+        $upd->cArtikelName    = $this->cArtikelName;
+        $upd->cKommentar      = $this->cKommentar;
+        $upd->dHinzugefuegt   = $this->dHinzugefuegt;
 
-        Shop::Container()->getDB()->update('twunschlistepos', 'kWunschlistePos', $this->kWunschlistePos, $oTemp);
+        Shop::Container()->getDB()->update('twunschlistepos', 'kWunschlistePos', $this->kWunschlistePos, $upd);
 
         return $this;
     }
@@ -146,7 +147,7 @@ class WunschlistePos
      */
     public function istEigenschaftEnthalten(int $kEigenschaft, int $kEigenschaftWert): bool
     {
-        return \Functional\some(
+        return some(
             $this->CWunschlistePosEigenschaft_arr,
             function ($e) use ($kEigenschaft, $kEigenschaftWert) {
                 return (int)$e->kEigenschaft === $kEigenschaft && (int)$e->kEigenschaftWert === $kEigenschaftWert;

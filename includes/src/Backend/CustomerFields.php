@@ -46,12 +46,12 @@ class CustomerFields
     }
 
     /**
-     * @param null $langID
+     * @param int|null $langID
      * @return CustomerFields
      */
-    public static function getInstance($langID = null): self
+    public static function getInstance(int $langID = null): self
     {
-        if ($langID === null || (int)$langID === 0) {
+        if ($langID === null || $langID === 0) {
             $langID = (int)$_SESSION['kSprache'];
         } else {
             $langID = (int)$langID;
@@ -69,26 +69,20 @@ class CustomerFields
      */
     protected function loadFields(int $langID): void
     {
-        $this->customerFields = [];
-        $customerFields       = Shop::Container()->getDB()->selectAll(
-            'tkundenfeld',
-            'kSprache',
-            $langID,
-            '*',
-            'nSort ASC'
-        );
-
-        foreach ($customerFields as $item) {
-            $this->prepare($item);
-            $this->customerFields[$item->kKundenfeld] = $item;
-        }
+        $this->customerFields = Shop::Container()->getDB()->queryPrepared(
+            'SELECT * FROM tkundenfeld
+                WHERE kSprache = :lid
+                ORDER BY nSort ASC',
+            ['lid' => $langID],
+            ReturnType::COLLECTION
+        )->map([$this, 'prepare'])->keyBy('kKundenfeld')->toArray();
     }
 
     /**
      * @param object $customerField
      * @return object
      */
-    protected function prepare($customerField)
+    public function prepare($customerField)
     {
         $customerField->kKundenfeld = (int)$customerField->kKundenfeld;
         $customerField->kSprache    = (int)$customerField->kSprache;
@@ -161,17 +155,17 @@ class CustomerFields
     }
 
     /**
-     * @param int   $kCustomerField
+     * @param int   $customerFieldID
      * @param array $customerFieldValues
      */
-    protected function updateCustomerFieldValues(int $kCustomerField, array $customerFieldValues): void
+    protected function updateCustomerFieldValues(int $customerFieldID, array $customerFieldValues): void
     {
         $db = Shop::Container()->getDB();
-        $db->delete('tkundenfeldwert', 'kKundenfeld', $kCustomerField);
+        $db->delete('tkundenfeldwert', 'kKundenfeld', $customerFieldID);
 
         foreach ($customerFieldValues as $customerFieldValue) {
             $entitie              = new stdClass();
-            $entitie->kKundenfeld = $kCustomerField;
+            $entitie->kKundenfeld = $customerFieldID;
             $entitie->cWert       = $customerFieldValue['cWert'];
             $entitie->nSort       = (int)$customerFieldValue['nSort'];
 
@@ -191,7 +185,7 @@ class CustomerFields
                             WHERE tkundenfeldwert.kKundenfeld = tkundenattribut.kKundenfeld
                                 AND tkundenfeldwert.cWert = tkundenattribut.cWert
                         )",
-            ['kKundenfeld' => $kCustomerField],
+            ['kKundenfeld' => $customerFieldID],
             ReturnType::DEFAULT
         );
     }

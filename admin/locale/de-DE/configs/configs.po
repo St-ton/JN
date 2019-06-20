@@ -2690,12 +2690,6 @@ msgstr "Kommentare freischalten"
 msgid "news_kommentare_freischalten_desc"
 msgstr "Hier legen Sie fest, ob Kommentare immer erst von Ihnen freigeschaltet werden müssen, bevor sie unter News-Beiträgen angezeigt werden."
 
-msgid "news_kommentare_eingeloggt_name"
-msgstr "Kommentare nur nach Anmeldung"
-
-msgid "news_kommentare_eingeloggt_desc"
-msgstr "Hier legen Sie fest, ob nur angemeldete Kunden Kommentare schreiben können."
-
 msgid "news_kommentare_anzahlproseite_name"
 msgstr "Anzahl Kommentare pro Seite"
 
@@ -2737,12 +2731,6 @@ msgstr "Alle Kategorien anzeigen"
 
 msgid "sitemap_kategorien_anzeigen_desc"
 msgstr "Hier legen Sie fest, ob alle Kategorie-Seiten in der Sitemap erscheinen sollen"
-
-msgid "sitemap_globalemerkmale_anzeigen_name"
-msgstr "Globale Merkmale anzeigen"
-
-msgid "sitemap_globalemerkmale_anzeigen_desc"
-msgstr "Hier legen Sie fest, ob Seiten für globale Merkmale in der Sitemap erscheinen sollen."
 
 msgid "sitemap_hersteller_anzeigen_name"
 msgstr "Hersteller anzeigen"

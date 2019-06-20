@@ -3,7 +3,6 @@
  * @license https://jtl-url.de/jtlshoplicense
  *}
 {block name='productdetails-variation'}
-    {assign var=modal value=isset($smarty.get.quickView) && $smarty.get.quickView == 1}
     {if isset($Artikel->Variationen) && $Artikel->Variationen|@count > 0 && !$showMatrix}
         {assign var=VariationsSource value="Variationen"}
         {if isset($ohneFreifeld) && $ohneFreifeld}
@@ -84,12 +83,12 @@
                                                     <input type="radio"
                                                         class="custom-control-input"
                                                         name="eigenschaftwert[{$Variation->kEigenschaft}]"
-                                                        id="{if $modal}modal-{elseif isset($smallView) && $smallView}a-{$Artikel->kArtikel}{/if}vt{$Variationswert->kEigenschaftWert}"
+                                                        id="{if isset($smallView) && $smallView}a-{$Artikel->kArtikel}{/if}vt{$Variationswert->kEigenschaftWert}"
                                                         value="{$Variationswert->kEigenschaftWert}"
                                                         {if $bSelected}checked="checked"{/if}
                                                         {if $smarty.foreach.Variationswerte.index === 0 && !$showMatrix} required{/if}
                                                     >
-                                                    <label class="variation custom-control-label" for="{if $modal}modal-{elseif isset($smallView) && $smallView}a-{$Artikel->kArtikel}{/if}vt{$Variationswert->kEigenschaftWert}"
+                                                    <label class="variation custom-control-label" for="{if isset($smallView) && $smallView}a-{$Artikel->kArtikel}{/if}vt{$Variationswert->kEigenschaftWert}"
                                                            data-type="radio"
                                                            data-original="{$Variationswert->cName}"
                                                            data-key="{$Variationswert->kEigenschaft}"
@@ -135,7 +134,7 @@
                                                         data-original="{$Variationswert->cName}"
                                                         data-key="{$Variationswert->kEigenschaft}"
                                                         data-value="{$Variationswert->kEigenschaftWert}"
-                                                        for="{if $modal}modal-{elseif isset($smallView) && $smallView}a-{$Artikel->kArtikel}{/if}vt{$Variationswert->kEigenschaftWert}"
+                                                        for="{if isset($smallView) && $smallView}a-{$Artikel->kArtikel}{/if}vt{$Variationswert->kEigenschaftWert}"
                                                         {if !empty($Variationswert->cBildPfadMini)}
                                                             data-list='{prepare_image_details item=$Variationswert json=true}'
                                                         {/if}
@@ -157,7 +156,7 @@
                                                     <input type="radio"
                                                            class="control-hidden"
                                                            name="eigenschaftwert[{$Variation->kEigenschaft}]"
-                                                           id="{if $modal}modal-{elseif isset($smallView) && $smallView}a-{$Artikel->kArtikel}{/if}vt{$Variationswert->kEigenschaftWert}"
+                                                           id="{if isset($smallView) && $smallView}a-{$Artikel->kArtikel}{/if}vt{$Variationswert->kEigenschaftWert}"
                                                            value="{$Variationswert->kEigenschaftWert}"
                                                            {if $bSelected}checked="checked"{/if}
                                                            {if $smarty.foreach.Variationswerte.index === 0 && !$showMatrix} required{/if}

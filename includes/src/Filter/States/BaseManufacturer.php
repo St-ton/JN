@@ -77,10 +77,10 @@ class BaseManufacturer extends AbstractFilter
             );
             foreach ($languages as $language) {
                 $this->cSeo[$language->kSprache] = '';
-                foreach ($seoData as $oSeo) {
-                    if ($language->kSprache === (int)$oSeo->kSprache) {
+                foreach ($seoData as $seo) {
+                    if ($language->kSprache === (int)$seo->kSprache) {
                         $sep                              = $this->cSeo[$language->kSprache] === '' ? '' : \SEP_HST;
-                        $this->cSeo[$language->kSprache] .= $sep . $oSeo->cSeo;
+                        $this->cSeo[$language->kSprache] .= $sep . $seo->cSeo;
                     }
                 }
             }

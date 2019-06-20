@@ -12,7 +12,6 @@
                     {/if}
                     {$oMerkmal->cName}"
         }
-            <hr class="mt-0 mb-4">
             {block name='boxes-box-characteristics-global-content'}
                 {if ($oMerkmal->cTyp === 'SELECTBOX') && $oMerkmal->oMerkmalWert_arr|@count > 1}
                     {block name='boxes-box-characteristics-global-characteristics-select'}

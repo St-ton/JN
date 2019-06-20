@@ -6,9 +6,6 @@
     {block name='account-change-password-heading'}
         <h1>{lang key='changePassword' section='login'}</h1>
     {/block}
-    {block name='account-change-password-include-extension'}
-        {include file='snippets/extension.tpl'}
-    {/block}
     {block name='account-change-password-change-password-form'}
         {block name='account-change-password-alert'}
             {alert variant="info"}{lang key='changePasswordDesc' section='login'}{/alert}

@@ -1961,12 +1961,6 @@ msgstr "Ja"
 msgid "news_kommentare_freischalten_value(N)"
 msgstr "Nein"
 
-msgid "news_kommentare_eingeloggt_value(Y)"
-msgstr "Ja"
-
-msgid "news_kommentare_eingeloggt_value(N)"
-msgstr "Nein"
-
 msgid "news_kategorie_unternewsanzeigen_value(Y)"
 msgstr "Ja"
 
@@ -1995,12 +1989,6 @@ msgid "sitemap_kategorien_anzeigen_value(Y)"
 msgstr "Ja"
 
 msgid "sitemap_kategorien_anzeigen_value(N)"
-msgstr "Nein"
-
-msgid "sitemap_globalemerkmale_anzeigen_value(Y)"
-msgstr "Ja"
-
-msgid "sitemap_globalemerkmale_anzeigen_value(N)"
 msgstr "Nein"
 
 msgid "sitemap_hersteller_anzeigen_value(Y)"

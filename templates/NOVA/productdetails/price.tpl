@@ -12,7 +12,7 @@
                 {/block}
             {elseif $Artikel->Preise->fVKNetto == 0 && $Artikel->bHasKonfig}
                 {block name='productdetails-price-as-configured'}
-                    <span class="price_label price_as_configured">{lang key='priceAsConfigured' section='productDetails'}</span> <strong class="price"></strong>
+                    <span class="price_label price_as_configured">{lang key='priceAsConfigured' section='productDetails'}</span> <span class="price"></span>
                 {/block}
             {elseif $Artikel->Preise->fVKNetto == 0 && $Einstellungen.global.global_preis0 === 'N'}
                 {block name='productdetails-price-on-application'}
@@ -27,7 +27,7 @@
                         <span class="price_label nowonly">{lang key='nowOnly'} </span>
                     {/if}
                 {/block}
-                <strong class="price text-nowrap{if isset($Artikel->Preise->Sonderpreis_aktiv) && $Artikel->Preise->Sonderpreis_aktiv} special-price{/if}">
+                <span class="price text-nowrap{if isset($Artikel->Preise->Sonderpreis_aktiv) && $Artikel->Preise->Sonderpreis_aktiv} special-price{/if}">
                     {block name='productdetails-range'}
                         <span{if $Artikel->Preise->oPriceRange->isRange()} itemprop="priceSpecification" itemscope itemtype="http://schema.org/UnitPriceSpecification"{/if}>
                         {if $tplscope !== 'detail' && $Artikel->Preise->oPriceRange->isRange()}
@@ -54,7 +54,7 @@
                             <meta itemprop="validThrough" content="{$Artikel->dSonderpreisEnde_en}">
                         {/if}
                     {/block}
-                </strong>
+                </span>
                 {if $tplscope === 'detail'}
                     {block name='productdetails-price-detail'}
                         <div class="price-note mb-3">
@@ -127,7 +127,7 @@
                                         <table class="table table-sm table-hover">
                                             <thead>
                                                 <tr>
-                                                    <th class="text-right">{lang key='fromDifferential' section='productOverview'}{if $Artikel->cEinheit} {$Artikel->cEinheit}{/if}</th>
+                                                    <th class="text-left">{lang key='fromDifferential' section='productOverview'}{if $Artikel->cEinheit} {$Artikel->cEinheit}{/if}</th>
                                                     <th class="text-right">{lang key='pricePerUnit' section='productDetails'}</th>
                                                     {if !empty($Artikel->cLocalizedVPE)}<th></th>{/if}
                                                 </tr>
@@ -136,9 +136,9 @@
                                                 {foreach $Artikel->staffelPreis_arr as $bulkPrice}
                                                     {if $bulkPrice.nAnzahl > 0}
                                                         <tr class="bulk-price-{$bulkPrice.nAnzahl}">
-                                                            <td class="text-right">{$bulkPrice.nAnzahl}</td>
+                                                            <td class="text-left">{$bulkPrice.nAnzahl}</td>
                                                             <td class="text-right bulk-price">{$bulkPrice.cPreisLocalized[$NettoPreise]} <span class="footnote-reference">*</span></td>
-                                                            {if !empty($bulkPrice.cBasePriceLocalized)}<td class="text-muted bulk-base-price">{$bulkPrice.cBasePriceLocalized[$NettoPreise]}</td>{/if}
+                                                            {if !empty($bulkPrice.cBasePriceLocalized)}<td class="bulk-base-price">, {$bulkPrice.cBasePriceLocalized[$NettoPreise]}</td>{/if}
                                                         </tr>
                                                     {/if}
                                                 {/foreach}

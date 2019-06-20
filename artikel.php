@@ -73,13 +73,12 @@ if (empty($AktuellerArtikel->kArtikel)) {
 
     return;
 }
-$similarArticles = (int)$conf['artikeldetails']['artikeldetails_aehnlicheartikel_anzahl'] > 0
+$similarProducts = (int)$conf['artikeldetails']['artikeldetails_aehnlicheartikel_anzahl'] > 0
     ? $AktuellerArtikel->holeAehnlicheArtikel()
     : [];
 if (Shop::$kVariKindArtikel > 0) {
-    $options               = Artikel::getDefaultOptions();
-    $options->nVariationen = 1;
-    $oVariKindArtikel      = (new Artikel())->fuelleArtikel(Shop::$kVariKindArtikel, $options);
+    $options          = Artikel::getDetailOptions();
+    $oVariKindArtikel = (new Artikel())->fuelleArtikel(Shop::$kVariKindArtikel, $options);
     if ($oVariKindArtikel !== null && $oVariKindArtikel->kArtikel > 0) {
         $oVariKindArtikel->verfuegbarkeitsBenachrichtigung = Product::showAvailabilityForm(
             $oVariKindArtikel,
@@ -120,8 +119,7 @@ if (isset($_POST['fragezumprodukt']) && (int)$_POST['fragezumprodukt'] === 1) {
 } elseif (isset($_POST['benachrichtigung_verfuegbarkeit']) && (int)$_POST['benachrichtigung_verfuegbarkeit'] === 1) {
     $productNotices = Product::checkAvailabilityMessage($productNotices);
 }
-$kKategorie         = $AktuellerArtikel->gibKategorie();
-$AktuelleKategorie  = new Kategorie($kKategorie);
+$AktuelleKategorie  = new Kategorie($AktuellerArtikel->gibKategorie());
 $expandedCategories = new KategorieListe();
 $expandedCategories->getOpenCategories($AktuelleKategorie);
 $ratingPage   = Request::verifyGPCDataInt('btgseite');
@@ -212,7 +210,7 @@ $smarty->assign('nMaxUploadSize', $maxSize)
        ->assign('oUploadSchema_arr', Upload::gibArtikelUploads($AktuellerArtikel->kArtikel))
        ->assign('showMatrix', $AktuellerArtikel->showMatrix())
        ->assign('arNichtErlaubteEigenschaftswerte', $nonAllowed)
-       ->assign('oAehnlicheArtikel_arr', $similarArticles)
+       ->assign('oAehnlicheArtikel_arr', $similarProducts)
        ->assign('UVPlocalized', $AktuellerArtikel->cUVPLocalized)
        ->assign('UVPBruttolocalized', Preise::getLocalizedPriceString($AktuellerArtikel->fUVPBrutto))
        ->assign('Artikel', $AktuellerArtikel)

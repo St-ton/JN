@@ -128,22 +128,22 @@ class Versandart
 
     /**
      * Versandart constructor.
-     * @param int $kVersandart
+     * @param int $id
      */
-    public function __construct(int $kVersandart = 0)
+    public function __construct(int $id = 0)
     {
-        if ($kVersandart > 0) {
-            $this->loadFromDB($kVersandart);
+        if ($id > 0) {
+            $this->loadFromDB($id);
         }
     }
 
     /**
-     * @param int $kVersandart
+     * @param int $id
      * @return int
      */
-    public function loadFromDB(int $kVersandart): int
+    public function loadFromDB(int $id): int
     {
-        $obj = Shop::Container()->getDB()->select('tversandart', 'kVersandart', $kVersandart);
+        $obj = Shop::Container()->getDB()->select('tversandart', 'kVersandart', $id);
         if ($obj === null || !$obj->kVersandart) {
             return 0;
         }
@@ -204,18 +204,18 @@ class Versandart
     }
 
     /**
-     * @param int $kVersandart
+     * @param int $id
      * @return bool
      */
-    public static function deleteInDB(int $kVersandart): bool
+    public static function deleteInDB(int $id): bool
     {
-        if ($kVersandart <= 0) {
+        if ($id <= 0) {
             return false;
         }
-        Shop::Container()->getDB()->delete('tversandart', 'kVersandart', $kVersandart);
-        Shop::Container()->getDB()->delete('tversandartsprache', 'kVersandart', $kVersandart);
-        Shop::Container()->getDB()->delete('tversandartzahlungsart', 'kVersandart', $kVersandart);
-        Shop::Container()->getDB()->delete('tversandartstaffel', 'kVersandart', $kVersandart);
+        Shop::Container()->getDB()->delete('tversandart', 'kVersandart', $id);
+        Shop::Container()->getDB()->delete('tversandartsprache', 'kVersandart', $id);
+        Shop::Container()->getDB()->delete('tversandartzahlungsart', 'kVersandart', $id);
+        Shop::Container()->getDB()->delete('tversandartstaffel', 'kVersandart', $id);
         Shop::Container()->getDB()->query(
             'DELETE tversandzuschlag, tversandzuschlagplz, tversandzuschlagsprache
                 FROM tversandzuschlag
@@ -223,7 +223,7 @@ class Versandart
                     ON tversandzuschlagplz.kVersandzuschlag = tversandzuschlag.kVersandzuschlag
                 LEFT JOIN tversandzuschlagsprache 
                     ON tversandzuschlagsprache.kVersandzuschlag = tversandzuschlag.kVersandzuschlag
-                WHERE tversandzuschlag.kVersandart = ' . $kVersandart,
+                WHERE tversandzuschlag.kVersandart = ' . $id,
             ReturnType::DEFAULT
         );
 
@@ -231,10 +231,10 @@ class Versandart
     }
 
     /**
-     * @param int $kVersandart
+     * @param int $id
      * @return bool
      */
-    public static function cloneShipping(int $kVersandart): bool
+    public static function cloneShipping(int $id): bool
     {
         $sections = [
             'tversandartsprache'     => 'kVersandart',
@@ -243,7 +243,7 @@ class Versandart
             'tversandzuschlag'       => 'kVersandzuschlag'
         ];
 
-        $method = Shop::Container()->getDB()->select('tversandart', 'kVersandart', $kVersandart);
+        $method = Shop::Container()->getDB()->select('tversandart', 'kVersandart', $id);
 
         if (isset($method->kVersandart) && $method->kVersandart > 0) {
             unset($method->kVersandart);
@@ -251,7 +251,7 @@ class Versandart
 
             if ($kVersandartNew > 0) {
                 foreach ($sections as $name => $key) {
-                    $items = self::getShippingSection($name, 'kVersandart', $kVersandart);
+                    $items = self::getShippingSection($name, 'kVersandart', $id);
                     self::cloneShippingSection($items, $name, 'kVersandart', $kVersandartNew, $key);
                 }
 
@@ -282,28 +282,28 @@ class Versandart
     }
 
     /**
-     * @param array       $objectArr
+     * @param array       $objects
      * @param string      $table
      * @param string      $key
      * @param mixed       $value
      * @param null|string $unsetKey
      */
-    private static function cloneShippingSection(array $objectArr, $table, $key, int $value, $unsetKey = null): void
+    private static function cloneShippingSection(array $objects, $table, $key, int $value, $unsetKey = null): void
     {
-        if ($value > 0 && \is_array($objectArr) && \count($objectArr) > 0 && \mb_strlen($key) > 0) {
-            foreach ($objectArr as $Obj) {
-                $kKeyPrim = $Obj->$unsetKey;
+        if ($value > 0 && \is_array($objects) && \count($objects) > 0 && \mb_strlen($key) > 0) {
+            foreach ($objects as $item) {
+                $primary = $item->$unsetKey;
                 if ($unsetKey !== null) {
-                    unset($Obj->$unsetKey);
+                    unset($item->$unsetKey);
                 }
-                $Obj->$key = $value;
-                if ($table === 'tversandartzahlungsart' && empty($Obj->fAufpreis)) {
-                    $Obj->fAufpreis = 0;
+                $item->$key = $value;
+                if ($table === 'tversandartzahlungsart' && empty($item->fAufpreis)) {
+                    $item->fAufpreis = 0;
                 }
-                $kKey = Shop::Container()->getDB()->insert($table, $Obj);
+                $id = Shop::Container()->getDB()->insert($table, $item);
 
-                if ($kKey > 0 && $table === 'tversandzuschlag') {
-                    self::cloneShippingSectionSpecial($kKeyPrim, $kKey);
+                if ($id > 0 && $table === 'tversandzuschlag') {
+                    self::cloneShippingSectionSpecial($primary, $id);
                 }
             }
         }

@@ -103,7 +103,7 @@ class Alert
     {
         $propertiesToSave = ['type', 'message', 'key'];
         if ($this->getOptions() !== null) {
-            $propertiesToSave = \array_merge($propertiesToSave, \array_keys($this->options));
+            $propertiesToSave[] = 'options';
         }
 
         return $propertiesToSave;
@@ -114,7 +114,7 @@ class Alert
      */
     public function __wakeup()
     {
-        $this->initAlert(true);
+        $this->initAlert();
     }
 
     /**
@@ -135,9 +135,9 @@ class Alert
     }
 
     /**
-     * @param bool $initFromUnserialize
+     * @return void
      */
-    private function initAlert(bool $initFromUnserialize = false): void
+    private function initAlert(): void
     {
         switch ($this->getType()) {
             case self::TYPE_DANGER:
@@ -161,18 +161,16 @@ class Alert
                 break;
         }
 
-        if (!$initFromUnserialize) {
-            if ($this->getOptions() !== null) {
-                foreach ($this->getOptions() as $optionKey => $optionValue) {
-                    $methodName = 'set' . \ucfirst($optionKey);
-                    if (\is_callable([$this, $methodName])) {
-                        $this->$methodName($optionValue);
-                    }
+        if ($this->getOptions() !== null) {
+            foreach ($this->getOptions() as $optionKey => $optionValue) {
+                $methodName = 'set' . \ucfirst($optionKey);
+                if (\is_callable([$this, $methodName])) {
+                    $this->$methodName($optionValue);
                 }
             }
-            if ($this->getSaveInSession()) {
-                $this->addToSession();
-            }
+        }
+        if ($this->getSaveInSession()) {
+            $this->addToSession();
         }
     }
 
@@ -181,8 +179,8 @@ class Alert
      */
     public function display(): void
     {
-        Shop::Smarty()->assign('alert', $this)
-            ->display('snippets/alert.tpl');
+        echo Shop::Smarty()->assign('alert', $this)
+            ->fetch('snippets/alert.tpl');
 
         if ($this->getSaveInSession()) {
             $this->removeFromSession();

@@ -21,7 +21,7 @@
     <div class="tab-content">
         <div id="einladungen" class="tab-pane fade {if !isset($cTab) || $cTab === 'einladungen'} active in{/if}">
             {if $oKwKNichtReg_arr|@count > 0 && $oKwKNichtReg_arr}
-                {include file='tpl_inc/pagination.tpl' oPagination=$oPagiNichtReg cAnchor='einladungen'}
+                {include file='tpl_inc/pagination.tpl' pagination=$oPagiNichtReg cAnchor='einladungen'}
                 <form name="umfrage" method="post" action="kundenwerbenkunden.php">
                     {$jtl_token}
                     <input type="hidden" name="KwK" value="1" />
@@ -65,7 +65,7 @@
         </div>
         <div id="registrierung" class="tab-pane fade {if isset($cTab) && $cTab === 'registrierung'} active in{/if}">
             {if $oKwKReg_arr && $oKwKReg_arr|@count > 0}
-                {include file='tpl_inc/pagination.tpl' oPagination=$oPagiReg cAnchor='registrierung'}
+                {include file='tpl_inc/pagination.tpl' pagination=$oPagiReg cAnchor='registrierung'}
                 <div id="payment">
                     <div id="tabellenLivesuche" class="table-responsive">
                         <table class="table table-striped">
@@ -96,7 +96,7 @@
         </div>
         <div id="praemie" class="tab-pane fade {if isset($cTab) && $cTab === 'praemie'} active in{/if}">
             {if $oKwKBestandBonus_arr|@count > 0 && $oKwKBestandBonus_arr}
-                {include file='tpl_inc/pagination.tpl' oPagination=$oPagiPraemie cAnchor='praemie'}
+                {include file='tpl_inc/pagination.tpl' pagination=$oPagiPraemie cAnchor='praemie'}
                 <div id="payment">
                     <div id="tabellenLivesuche" class="table-responsive">
                         <table class="table table-striped">

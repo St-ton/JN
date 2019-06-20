@@ -6,8 +6,8 @@
 
 namespace JTL\Checkout;
 
+use JTL\Language\LanguageHelper;
 use JTL\Shop;
-use JTL\Sprache;
 
 /**
  * Class Adresse
@@ -213,7 +213,7 @@ class Adresse
     {
         \preg_match('/[a-zA-Z]{2}/', $iso, $matches);
         if (\mb_strlen($matches[0]) !== \mb_strlen($iso)) {
-            $o = Sprache::getIsoCodeByCountryName($iso);
+            $o = LanguageHelper::getIsoCodeByCountryName($iso);
             if ($o !== 'noISO' && \mb_strlen($o) > 0) {
                 $iso = $o;
             }

@@ -161,15 +161,15 @@ class SettingsLinks extends AbstractItem
                                     $y = (string)$y;
                                     \preg_match('/[0-9]+\sattr/', $y, $hits6);
                                     if (isset($hits6[0]) && \mb_strlen($hits6[0]) === \mb_strlen($y)) {
-                                        $cWert = $option['value'];
+                                        $value = $option['value'];
                                         $sort  = $option['sort'];
                                         $yx    = \mb_substr($y, 0, \mb_strpos($y, ' '));
-                                        $cName = $optNode['Option'][$yx];
+                                        $name  = $optNode['Option'][$yx];
 
                                         $plgnConfValues                           = new stdClass();
                                         $plgnConfValues->kPluginEinstellungenConf = $confID;
-                                        $plgnConfValues->cName                    = $cName;
-                                        $plgnConfValues->cWert                    = $cWert;
+                                        $plgnConfValues->cName                    = $name;
+                                        $plgnConfValues->cWert                    = $value;
                                         $plgnConfValues->nSort                    = $sort;
 
                                         $this->db->insert('tplugineinstellungenconfwerte', $plgnConfValues);
@@ -193,15 +193,15 @@ class SettingsLinks extends AbstractItem
                                 foreach ($optNode['Option'] as $y => $option) {
                                     \preg_match('/[0-9]+\sattr/', $y, $hits6);
                                     if (isset($hits6[0]) && \mb_strlen($hits6[0]) === \mb_strlen($y)) {
-                                        $cWert = $option['value'];
+                                        $value = $option['value'];
                                         $sort  = $option['sort'];
                                         $yx    = \mb_substr($y, 0, \mb_strpos($y, ' '));
-                                        $cName = $optNode['Option'][$yx];
+                                        $name  = $optNode['Option'][$yx];
 
                                         $plgnConfValues                           = new stdClass();
                                         $plgnConfValues->kPluginEinstellungenConf = $confID;
-                                        $plgnConfValues->cName                    = $cName;
-                                        $plgnConfValues->cWert                    = $cWert;
+                                        $plgnConfValues->cName                    = $name;
+                                        $plgnConfValues->cWert                    = $value;
                                         $plgnConfValues->nSort                    = $sort;
 
                                         $this->db->insert(

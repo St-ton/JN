@@ -34,14 +34,14 @@ if (isset($_SESSION['nDiagrammTyp'])) {
 }
 
 /**
- * @param array $oY1_arr
- * @param array $oY2_arr
- * @param int   $nYmax
- * @param int   $nDiagrammTyp
+ * @param array $y1
+ * @param array $y2
+ * @param int   $yMax
+ * @param int   $type
  */
-function erstelleUmsatzGraph($oY1_arr, $oY2_arr, $nYmax, $nDiagrammTyp)
+function erstelleUmsatzGraph($y1, $y2, $yMax, $type)
 {
-    if (count($oY1_arr) > 0 && count($oY2_arr) > 0) {
+    if (count($y1) > 0 && count($y2) > 0) {
         $graph = new graph(785, 400);
 
         $graph->parameter['path_to_fonts']     = PFAD_GRAPHCLASS . 'fonts/';
@@ -49,7 +49,7 @@ function erstelleUmsatzGraph($oY1_arr, $oY2_arr, $nYmax, $nDiagrammTyp)
         $graph->parameter['x_grid']            = 'none';
         $graph->parameter['y_decimal_right']   = 2;
         $graph->parameter['y_min_right']       = 0;
-        $graph->parameter['y_max_right']       = $nYmax;
+        $graph->parameter['y_max_right']       = $yMax;
         $graph->parameter['y_axis_gridlines']  = 11;
         $graph->parameter['y_axis_text_right'] = 2;  //print a tick every 2nd grid line
         $graph->parameter['shadow']            = 'none';
@@ -72,7 +72,7 @@ function erstelleUmsatzGraph($oY1_arr, $oY2_arr, $nYmax, $nDiagrammTyp)
         $graph->y_data['alpha']                = [];
         $graph->y_data['beta']                 = [];
         // Monatsumsatz?
-        if ($nDiagrammTyp == 2) {
+        if ($type == 2) {
             $graph->parameter['x_label'] = 'Tage';
             $graph->x_data               = [];
 
@@ -85,7 +85,7 @@ function erstelleUmsatzGraph($oY1_arr, $oY2_arr, $nYmax, $nDiagrammTyp)
         foreach ($graph->x_data as $i => $x_data) {
             $tmpUmsatz = 0;
 
-            foreach ($oY1_arr as $oY1) {
+            foreach ($y1 as $oY1) {
                 if ((int)$oY1->ZeitWert === ($i + 1)) {
                     $tmpUmsatz = $oY1->Umsatz;
                 }
@@ -97,7 +97,7 @@ function erstelleUmsatzGraph($oY1_arr, $oY2_arr, $nYmax, $nDiagrammTyp)
         foreach ($graph->x_data as $i => $x_data) {
             $tmpUmsatz = 0;
 
-            foreach ($oY2_arr as $oY2) {
+            foreach ($y2 as $oY2) {
                 if ((int)$oY2->ZeitWert === $i + 1) {
                     $tmpUmsatz = $oY2->Umsatz;
                 }
@@ -118,95 +118,97 @@ function erstelleUmsatzGraph($oY1_arr, $oY2_arr, $nYmax, $nDiagrammTyp)
 }
 
 /**
- * @param array  $oGraphData_arr
- * @param int    $nYmax
- * @param string $cGraphFilter
+ * @param array  $graphData
+ * @param int    $yMax
+ * @param string $graphFilter
  */
-function erstelleTop10Graph($oGraphData_arr, $nYmax, $cGraphFilter)
+function erstelleTop10Graph($graphData, $yMax, $graphFilter)
 {
-    if (count($oGraphData_arr) > 0) {
-        $CGraph = new graph(785, 400);
+    if (count($graphData) === 0) {
+        return;
+    }
+    $graph = new graph(785, 400);
 
-        $CGraph->parameter['path_to_fonts']     = PFAD_ROOT . PFAD_GRAPHCLASS . 'fonts/';
-        $CGraph->parameter['y_label_right']     = 'Anzahl Besuche';
-        $CGraph->parameter['x_grid']            = 'none';
-        $CGraph->parameter['y_decimal_right']   = 2;
-        $CGraph->parameter['y_min_right']       = 0;
-        $CGraph->parameter['y_max_right']       = $nYmax;
-        $CGraph->parameter['y_axis_gridlines']  = 11;
-        $CGraph->parameter['y_axis_text_right'] = 2;  //print a tick every 2nd grid line
-        $CGraph->parameter['shadow']            = 'none';
-        $CGraph->parameter['title']             = 'Top10 ' . $cGraphFilter;
-        $CGraph->parameter['x_label']           = $cGraphFilter;
-        $CGraph->x_data                         = [];
-        $CGraph->y_data['alpha']                = [];
+    $graph->parameter['path_to_fonts']     = PFAD_ROOT . PFAD_GRAPHCLASS . 'fonts/';
+    $graph->parameter['y_label_right']     = 'Anzahl Besuche';
+    $graph->parameter['x_grid']            = 'none';
+    $graph->parameter['y_decimal_right']   = 2;
+    $graph->parameter['y_min_right']       = 0;
+    $graph->parameter['y_max_right']       = $yMax;
+    $graph->parameter['y_axis_gridlines']  = 11;
+    $graph->parameter['y_axis_text_right'] = 2;  //print a tick every 2nd grid line
+    $graph->parameter['shadow']            = 'none';
+    $graph->parameter['title']             = 'Top10 ' . $graphFilter;
+    $graph->parameter['x_label']           = $graphFilter;
+    $graph->x_data                         = [];
+    $graph->y_data['alpha']                = [];
 
-        if (count($oGraphData_arr) > 0) {
-            // Array sortieren
-            usort($oGraphData_arr, 'Sortierung');
+    if (count($graphData) > 0) {
+        // Array sortieren
+        usort($graphData, 'Sortierung');
 
-            foreach ($oGraphData_arr as $i => $oGraphData) {
-                if ($i > 10) {
-                    // Nach 10 Elemente stoppen (Top10)
-                    break;
-                }
-                $CGraph->x_data[]          = $oGraphData->cName;
-                $CGraph->y_data['alpha'][] = $oGraphData->nWert;
+        foreach ($graphData as $i => $oGraphData) {
+            if ($i > 10) {
+                // Nach 10 Elemente stoppen (Top10)
+                break;
             }
+            $graph->x_data[]          = $oGraphData->cName;
+            $graph->y_data['alpha'][] = $oGraphData->nWert;
         }
+    }
 
-        if (count($CGraph->x_data) > 1 && count($CGraph->y_data['alpha']) > 1) {
-            $CGraph->y_format['alpha'] = ['colour' => 'blue', 'bar' => 'fill', 'bar_size' => 0.8, 'y_axis' => 'right'];
-            $CGraph->y_order           = ['alpha'];
+    if (count($graph->x_data) > 1 && count($graph->y_data['alpha']) > 1) {
+        $graph->y_format['alpha'] = ['colour' => 'blue', 'bar' => 'fill', 'bar_size' => 0.8, 'y_axis' => 'right'];
+        $graph->y_order           = ['alpha'];
 
-            $CGraph->draw_stack();
-        }
+        $graph->draw_stack();
     }
 }
 
 /**
- * @param array $oGraphData_arr
- * @param int   $nYmax
- * @param int   $nAnzahl
+ * @param array $graphData
+ * @param int   $yMax
+ * @param int   $count
  */
-function erstelleTopVergleichslisteGraph($oGraphData_arr, $nYmax, $nAnzahl)
+function erstelleTopVergleichslisteGraph($graphData, $yMax, $count)
 {
-    if (is_array($oGraphData_arr) && count($oGraphData_arr) > 0) {
-        $CGraph = new graph(785, 400);
+    if (!is_array($graphData) || count($graphData) === 0) {
+        return;
+    }
+    $graph = new graph(785, 400);
 
-        $CGraph->parameter['path_to_fonts']     = PFAD_ROOT . PFAD_GRAPHCLASS . 'fonts/';
-        $CGraph->parameter['y_label_right']     = 'Anzahl Vergleiche';
-        $CGraph->parameter['x_grid']            = 'none';
-        $CGraph->parameter['y_decimal_right']   = 2;
-        $CGraph->parameter['y_min_right']       = 0;
-        $CGraph->parameter['y_max_right']       = $nYmax;
-        $CGraph->parameter['y_axis_gridlines']  = 11;
-        $CGraph->parameter['y_axis_text_right'] = 2;  //print a tick every 2nd grid line
-        $CGraph->parameter['shadow']            = 'none';
-        $CGraph->parameter['title']             = 'Top' . $nAnzahl . ' Artikel die verglichen wurden';
-        $CGraph->parameter['x_label']           = 'Artikel';
-        $CGraph->x_data                         = [];
-        $CGraph->y_data['alpha']                = [];
+    $graph->parameter['path_to_fonts']     = PFAD_ROOT . PFAD_GRAPHCLASS . 'fonts/';
+    $graph->parameter['y_label_right']     = 'Anzahl Vergleiche';
+    $graph->parameter['x_grid']            = 'none';
+    $graph->parameter['y_decimal_right']   = 2;
+    $graph->parameter['y_min_right']       = 0;
+    $graph->parameter['y_max_right']       = $yMax;
+    $graph->parameter['y_axis_gridlines']  = 11;
+    $graph->parameter['y_axis_text_right'] = 2;  //print a tick every 2nd grid line
+    $graph->parameter['shadow']            = 'none';
+    $graph->parameter['title']             = 'Top' . $count . ' Artikel die verglichen wurden';
+    $graph->parameter['x_label']           = 'Artikel';
+    $graph->x_data                         = [];
+    $graph->y_data['alpha']                = [];
 
-        foreach ($oGraphData_arr as $oGraphData) {
-            $CGraph->x_data[]          = $oGraphData->cArtikelName;
-            $CGraph->y_data['alpha'][] = $oGraphData->nAnzahl;
-        }
+    foreach ($graphData as $oGraphData) {
+        $graph->x_data[]          = $oGraphData->cArtikelName;
+        $graph->y_data['alpha'][] = $oGraphData->nAnzahl;
+    }
 
-        if (count($CGraph->x_data) > 1 && count($CGraph->y_data['alpha']) > 1) {
-            $CGraph->y_format['alpha'] = ['colour' => 'blue', 'bar' => 'fill', 'bar_size' => 0.8, 'y_axis' => 'right'];
-            $CGraph->y_order           = ['alpha'];
+    if (count($graph->x_data) > 1 && count($graph->y_data['alpha']) > 1) {
+        $graph->y_format['alpha'] = ['colour' => 'blue', 'bar' => 'fill', 'bar_size' => 0.8, 'y_axis' => 'right'];
+        $graph->y_order           = ['alpha'];
 
-            $CGraph->draw_stack();
-        }
+        $graph->draw_stack();
     }
 }
 
 /**
- * @param object $oKampagneDetailGraph
- * @param int    $kKampagneDef
+ * @param object $campaignDetailGraph
+ * @param int    $definitionID
  */
-function erstelleKampagneDetailGraph($oKampagneDetailGraph, $kKampagneDef)
+function erstelleKampagneDetailGraph($campaignDetailGraph, $definitionID)
 {
     $graph = new graph(950, 400);
 
@@ -215,20 +217,20 @@ function erstelleKampagneDetailGraph($oKampagneDetailGraph, $kKampagneDef)
     $graph->parameter['x_grid']            = 'none';
     $graph->parameter['y_decimal_right']   = 2;
     $graph->parameter['y_min_right']       = 0;
-    $graph->parameter['y_max_right']       = ceil((int)$oKampagneDetailGraph->nGraphMaxAssoc_arr[$kKampagneDef] * 1.1);
+    $graph->parameter['y_max_right']       = ceil((int)$campaignDetailGraph->nGraphMaxAssoc_arr[$definitionID] * 1.1);
     $graph->parameter['y_axis_gridlines']  = 11;
     $graph->parameter['y_axis_text_right'] = 2;  //print a tick every 2nd grid line
     $graph->parameter['shadow']            = 'none';
-    $graph->parameter['title']             = $oKampagneDetailGraph->oKampagneDef_arr[$kKampagneDef]->cName;
+    $graph->parameter['title']             = $campaignDetailGraph->oKampagneDef_arr[$definitionID]->cName;
     $graph->x_data                         = [];
     $graph->y_data['alpha']                = [];
 
-    if (is_array($oKampagneDetailGraph->oKampagneDetailGraph_arr)
-        && count($oKampagneDetailGraph->oKampagneDetailGraph_arr) > 0
+    if (is_array($campaignDetailGraph->oKampagneDetailGraph_arr)
+        && count($campaignDetailGraph->oKampagneDetailGraph_arr) > 0
     ) {
-        foreach ($oKampagneDetailGraph->oKampagneDetailGraph_arr as $def) {
-            $graph->x_data[]          = '(' . $def[$kKampagneDef] . ') ' . $def['cDatum'];
-            $graph->y_data['alpha'][] = $def[$kKampagneDef];
+        foreach ($campaignDetailGraph->oKampagneDetailGraph_arr as $def) {
+            $graph->x_data[]          = '(' . $def[$definitionID] . ') ' . $def['cDatum'];
+            $graph->y_data['alpha'][] = $def[$definitionID];
         }
     }
     // Balken 1 (Umsatz pro Monat) Werte Array aufbauen

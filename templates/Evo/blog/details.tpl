@@ -7,9 +7,9 @@
 {if !empty($cNewsErr)}
     <div class="alert alert-danger">{lang key='newsRestricted' section='news'}</div>
 {else}
-    {include file='snippets/opc_mount_point.tpl' id='opc_news_article_prepend'}
     <article itemprop="mainEntity" itemscope itemtype="https://schema.org/BlogPosting">
         <meta itemprop="mainEntityOfPage" content="{$oNewsArchiv->getURL()}">
+        {include file='snippets/opc_mount_point.tpl' id='opc_before_heading'}
         <h1 itemprop="headline">
             {$oNewsArchiv->getTitle()}
         </h1>
@@ -36,13 +36,13 @@
             {if isset($oNewsArchiv->dErstellt)}<time itemprop="dateModified" class="hidden">{$oNewsArchiv->dErstellt}</time>{/if}
         </div>
 
-        {include file='snippets/opc_mount_point.tpl' id='opc_news_content_prepend'}
+        {include file='snippets/opc_mount_point.tpl' id='opc_before_content'}
         <div itemprop="articleBody" class="row">
             <div class="col-xs-12">
                 {$oNewsArchiv->getContent()}
             </div>
         </div>
-        {include file='snippets/opc_mount_point.tpl' id='opc_news_content_append'}
+        {include file='snippets/opc_mount_point.tpl' id='opc_after_content'}
 
         {if isset($Einstellungen.news.news_kategorie_unternewsanzeigen) && $Einstellungen.news.news_kategorie_unternewsanzeigen === 'Y' && !empty($oNewsKategorie_arr)}
             <div class="top10 news-categorylist">
@@ -76,7 +76,7 @@
                 {include file='snippets/pagination.tpl' oPagination=$oPagiComments cThisUrl=$articleURL cParam_arr=$cParam_arr}
             {/if}
 
-            {if ($Einstellungen.news.news_kommentare_eingeloggt === 'Y' && !empty($smarty.session.Kunde->kKunde)) || $Einstellungen.news.news_kommentare_eingeloggt !== 'Y'}
+            {if $userCanComment === true}
                 <hr>
                 <div class="row">
                     <div class="col-xs-12">
@@ -91,60 +91,16 @@
                                         <input type="hidden" name="n" value="{$oNewsArchiv->getID()}" />
 
                                         <fieldset>
-                                            {if $Einstellungen.news.news_kommentare_eingeloggt === 'N'}
-                                                {if empty($smarty.session.Kunde->kKunde)}
-                                                    <div class="row">
-                                                        <div class="col-xs-12 col-md-6">
-                                                            {include file='snippets/form_group_simple.tpl'
-                                                                options=[
-                                                                    'text', 'comment-name', 'cName',
-                                                                    {$cPostVar_arr.cName|default:null}, {lang key='newsName' section='news'},
-                                                                    true
-                                                                ]
-                                                            }
-                                                        </div>
-                                                        <div class="col-xs-12 col-md-6">
-                                                            {include file='snippets/form_group_simple.tpl'
-                                                                options=[
-                                                                    'email', 'comment-email', 'cEmail',
-                                                                    {$cPostVar_arr.cEmail|default:null}, {lang key='newsEmail' section='news'},
-                                                                    true
-                                                                ]
-                                                            }
-                                                        </div>
+                                            <div class="form-group float-label-control{if $nPlausiValue_arr.cKommentar > 0} has-error{/if}">
+                                                <label class="control-label" for="comment-text"><strong>{lang key='newsComment' section='news'}</strong></label>
+                                                <textarea id="comment-text" class="form-control" name="cKommentar" required></textarea>
+                                                {if $nPlausiValue_arr.cKommentar > 0}
+                                                    <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
+                                                        {lang key='fillOut' section='global'}
                                                     </div>
                                                 {/if}
-
-                                                <div id="commentText" class="form-group float-label-control{if $nPlausiValue_arr.cKommentar > 0} has-error{/if}">
-                                                    <label class="control-label commentForm" for="comment-text">{lang key='newsComment' section='news'}</label>
-                                                    <textarea id="comment-text" required class="form-control" name="cKommentar">{if !empty($cPostVar_arr.cKommentar)}{$cPostVar_arr.cKommentar}{/if}</textarea>
-                                                    {if $nPlausiValue_arr.cKommentar > 0}
-                                                        <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
-                                                            {lang key='fillOut' section='global'}
-                                                        </div>
-                                                    {/if}
-                                                </div>
-
-                                                {if (!isset($smarty.session.bAnti_spam_already_checked) || $smarty.session.bAnti_spam_already_checked !== true) &&
-                                                    isset($Einstellungen.news.news_sicherheitscode) && $Einstellungen.news.news_sicherheitscode !== 'N' && empty($smarty.session.Kunde->kKunde)}
-                                                    <div class="form-group float-label-control{if !empty($nPlausiValue_arr.captcha)} has-error{/if}">
-                                                        {captchaMarkup getBody=true}
-                                                    </div>
-                                                {/if}
-
-                                                <input class="btn btn-primary" name="speichern" type="submit" value="{lang key='newsCommentSave' section='news'}" />
-                                            {elseif $Einstellungen.news.news_kommentare_eingeloggt === 'Y' && !empty($smarty.session.Kunde->kKunde)}
-                                                <div class="form-group float-label-control{if $nPlausiValue_arr.cKommentar > 0} has-error{/if}">
-                                                    <label class="control-label" for="comment-text"><strong>{lang key='newsComment' section='news'}</strong></label>
-                                                    <textarea id="comment-text" class="form-control" name="cKommentar" required></textarea>
-                                                    {if $nPlausiValue_arr.cKommentar > 0}
-                                                        <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
-                                                            {lang key='fillOut' section='global'}
-                                                        </div>
-                                                    {/if}
-                                                </div>
-                                                <input class="btn btn-primary" name="speichern" type="submit" value="{lang key='newsCommentSave' section='news'}" />
-                                            {/if}
+                                            </div>
+                                            <input class="btn btn-primary" name="speichern" type="submit" value="{lang key='newsCommentSave' section='news'}" />
                                         </fieldset>
                                     </form>
                                 </div>
@@ -157,6 +113,5 @@
                 <div class="alert alert-danger">{lang key='newsLogin' section='news'}</div>
             {/if}
         {/if}
-        {include file='snippets/opc_mount_point.tpl' id='opc_news_comments_append'}
     </article>
 {/if}

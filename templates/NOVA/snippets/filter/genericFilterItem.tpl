@@ -15,7 +15,7 @@
                     active=$filterIsActive
                     href="{if $filterOption->isActive()}{$filter->getUnsetFilterURL($filterOption->getValue())}{else}{$filterOption->getURL()}{/if}"
                     rel='nofollow'}
-                    <span class="badge badge-light float-right">{$filterOption->getCount()}</span>
+                    ({$filterOption->getCount()})
                     <span class="value mr-5">
                         {if $filter->getIcon() !== null}
                             <i class="fa {$filter->getIcon()}"></i>
@@ -61,7 +61,7 @@
                             {/if}
                             <span class="word-break">{$filterOption->getName()}</span>
                         </span>
-                        <span class="badge badge-light float-right">{$filterOption->getCount()}</span>
+                        ({$filterOption->getCount()})
                     {/navitem}
                 {/foreach}
                 {if $limit != -1 && $filter->getOptions()|count > $limit}

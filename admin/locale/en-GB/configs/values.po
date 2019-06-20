@@ -1997,12 +1997,6 @@ msgstr "Yes"
 msgid "sitemap_kategorien_anzeigen_value(N)"
 msgstr "No"
 
-msgid "sitemap_globalemerkmale_anzeigen_value(Y)"
-msgstr "Yes"
-
-msgid "sitemap_globalemerkmale_anzeigen_value(N)"
-msgstr "No"
-
 msgid "sitemap_hersteller_anzeigen_value(Y)"
 msgstr "Yes"
 

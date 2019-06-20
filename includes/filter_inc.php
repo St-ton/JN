@@ -4,12 +4,13 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use JTL\Shop;
-use JTL\Helpers\Text;
-use JTL\DB\ReturnType;
 use JTL\Boxes\Items\AbstractBox;
-use JTL\Session\Frontend;
+use JTL\DB\ReturnType;
 use JTL\Filter\SearchResults;
+use JTL\Helpers\Text;
+use JTL\Mapper\SortingType;
+use JTL\Session\Frontend;
+use JTL\Shop;
 
 require_once PFAD_ROOT . PFAD_INCLUDES . 'suche_inc.php';
 
@@ -406,7 +407,7 @@ function gibArtikelsortierung($NaviFilter)
 function mappeUsersortierung($nUsersortierung)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    $mapper = new \JTL\Mapper\SortingType();
+    $mapper = new SortingType();
     return $mapper->mapUserSorting($nUsersortierung);
 }
 
@@ -414,11 +415,11 @@ function mappeUsersortierung($nUsersortierung)
  * @param object $NaviFilter
  * @param bool   $bSeo
  * @param object $oZusatzFilter
- * @param int    $kSprache
+ * @param int    $languageID
  * @param bool   $bCanonical
  * @return string
  */
-function gibNaviURL($NaviFilter, $bSeo, $oZusatzFilter, $kSprache = 0, $bCanonical = false)
+function gibNaviURL($NaviFilter, $bSeo, $oZusatzFilter, $languageID = 0, $bCanonical = false)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return updateNaviFilter($NaviFilter)->getFilterURL()->getURL($oZusatzFilter, $bCanonical);
@@ -520,36 +521,36 @@ function gibNaviMetaTitle($NaviFilter, $oSuchergebnisse, $globalMeta)
 }
 
 /**
- * @param array  $articles
+ * @param array  $products
  * @param object $NaviFilter
  * @param object $oSuchergebnisse
  * @param array  $globalMeta
  * @return string
  * @deprecated since 5.0.0
  */
-function gibNaviMetaDescription($articles, $NaviFilter, $oSuchergebnisse, $globalMeta)
+function gibNaviMetaDescription($products, $NaviFilter, $oSuchergebnisse, $globalMeta)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $sr = new SearchResults();
     $sr->convert($oSuchergebnisse);
 
     return (new JTL\Filter\Metadata(updateNaviFilter($NaviFilter)))->generateMetaDescription(
-        $articles,
+        $products,
         $sr,
         $globalMeta
     );
 }
 
 /**
- * @param array  $articles
+ * @param array  $products
  * @param object $NaviFilter
  * @return mixed|string
  * @deprecated since 5.0.0
  */
-function gibNaviMetaKeywords($articles, $NaviFilter)
+function gibNaviMetaKeywords($products, $NaviFilter)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return (new JTL\Filter\Metadata(updateNaviFilter($NaviFilter)))->generateMetaKeywords($articles);
+    return (new JTL\Filter\Metadata(updateNaviFilter($NaviFilter)))->generateMetaKeywords($products);
 }
 
 /**
@@ -735,14 +736,10 @@ function baueSeitenNaviURL($NaviFilter, $seo, $pages, $maxPages = 7, $filterURL 
 }
 
 /**
- * @param stdClass $oSuchCache
- * @param array    $cSuchspalten_arr
- * @param array    $cSuch_arr
- * @param int      $nLimit
  * @throws Exception
  * @deprecated since 5.0.0
  */
-function bearbeiteSuchCacheFulltext($oSuchCache, $cSuchspalten_arr, $cSuch_arr, $nLimit = 0)
+function bearbeiteSuchCacheFulltext()
 {
     trigger_error(__FUNCTION__ . ' is deprecated and will do nothing.', E_USER_DEPRECATED);
 }
@@ -945,93 +942,92 @@ function gibNextSortPrio($search, $conf = null)
 function bauFilterSQL($NaviFilter)
 {
     trigger_error(__FUNCTION__ . ' is deprecated and will do nothing.', E_USER_DEPRECATED);
-    $FilterSQL                            = new stdClass();
-    $FilterSQL->oHerstellerFilterSQL      = new stdClass();
-    $FilterSQL->oKategorieFilterSQL       = new stdClass();
-    $FilterSQL->oMerkmalFilterSQL         = new stdClass();
-    $FilterSQL->oTagFilterSQL             = new stdClass();
-    $FilterSQL->oBewertungSterneFilterSQL = new stdClass();
-    $FilterSQL->oPreisspannenFilterSQL    = new stdClass();
-    $FilterSQL->oSuchFilterSQL            = new stdClass();
-    $FilterSQL->oSuchspecialFilterSQL     = new stdClass();
-    $FilterSQL->oArtikelAttributFilterSQL = new stdClass();
+    $filterSQL                            = new stdClass();
+    $filterSQL->oHerstellerFilterSQL      = new stdClass();
+    $filterSQL->oKategorieFilterSQL       = new stdClass();
+    $filterSQL->oMerkmalFilterSQL         = new stdClass();
+    $filterSQL->oTagFilterSQL             = new stdClass();
+    $filterSQL->oBewertungSterneFilterSQL = new stdClass();
+    $filterSQL->oPreisspannenFilterSQL    = new stdClass();
+    $filterSQL->oSuchFilterSQL            = new stdClass();
+    $filterSQL->oSuchspecialFilterSQL     = new stdClass();
+    $filterSQL->oArtikelAttributFilterSQL = new stdClass();
 
-    return $FilterSQL;
+    return $filterSQL;
 }
 
 /**
  * @deprecated since 5.0.0
- * @param object $oExtendedJTLSearchResponse
  * @return array
  * @throws Exception
  */
-function gibArtikelKeysExtendedJTLSearch($oExtendedJTLSearchResponse)
+function gibArtikelKeysExtendedJTLSearch()
 {
     trigger_error(__FUNCTION__ . ' is deprecated and will do nothing.', E_USER_DEPRECATED);
     return [];
 }
 
 /**
- * @param object $FilterSQL
+ * @param object $filterSQL
  * @param object $oSuchergebnisse
- * @param int    $nArtikelProSeite
- * @param int    $nLimitN
+ * @param int    $productsPerPage
+ * @param int    $limit
  * @deprecated since 5.0.0
  */
-function baueArtikelAnzahl($FilterSQL, &$oSuchergebnisse, $nArtikelProSeite = 20, $nLimitN = 20)
+function baueArtikelAnzahl($filterSQL, &$oSuchergebnisse, $productsPerPage = 20, $limit = 20)
 {
     trigger_error(__FUNCTION__ . ' is deprecated and will do nothing.', E_USER_DEPRECATED);
-    $oAnzahl = Shop::Container()->getDB()->query(
+    $qty = Shop::Container()->getDB()->query(
         'SELECT COUNT(*) AS nGesamtAnzahl
             FROM(
                 SELECT tartikel.kArtikel
                 FROM tartikel ' .
-                ($FilterSQL->oSuchspecialFilterSQL->cJoin ?? '') . ' ' .
-                ($FilterSQL->oKategorieFilterSQL->cJoin ?? '') . ' ' .
-                ($FilterSQL->oSuchFilterSQL->cJoin ?? '') . ' ' .
-                ($FilterSQL->oMerkmalFilterSQL->cJoin ?? '') . ' ' .
-                ($FilterSQL->oTagFilterSQL->cJoin ?? '') . ' ' .
-                ($FilterSQL->oBewertungSterneFilterSQL->cJoin ?? '') . ' ' .
-                ($FilterSQL->oPreisspannenFilterSQL->cJoin ?? '') .
+                ($filterSQL->oSuchspecialFilterSQL->cJoin ?? '') . ' ' .
+                ($filterSQL->oKategorieFilterSQL->cJoin ?? '') . ' ' .
+                ($filterSQL->oSuchFilterSQL->cJoin ?? '') . ' ' .
+                ($filterSQL->oMerkmalFilterSQL->cJoin ?? '') . ' ' .
+                ($filterSQL->oTagFilterSQL->cJoin ?? '') . ' ' .
+                ($filterSQL->oBewertungSterneFilterSQL->cJoin ?? '') . ' ' .
+                ($filterSQL->oPreisspannenFilterSQL->cJoin ?? '') .
             ' LEFT JOIN tartikelsichtbarkeit 
                 ON tartikel.kArtikel=tartikelsichtbarkeit.kArtikel
                 AND tartikelsichtbarkeit.kKundengruppe = ' . Frontend::getCustomerGroup()->getID() . '
             WHERE tartikelsichtbarkeit.kArtikel IS NULL
                 AND tartikel.kVaterArtikel = 0 ' .
                 gibLagerfilter() . ' ' .
-                ($FilterSQL->oSuchspecialFilterSQL->cWhere ?? '') . ' ' .
-                ($FilterSQL->oSuchFilterSQL->cWhere ?? '') . ' ' .
-                ($FilterSQL->oHerstellerFilterSQL->cWhere ?? '') . ' ' .
-                ($FilterSQL->oKategorieFilterSQL->cWhere ?? '') . ' ' .
-                ($FilterSQL->oMerkmalFilterSQL->cWhere ?? '') . ' ' .
-                ($FilterSQL->oTagFilterSQL->cWhere ?? '') . ' ' .
-                ($FilterSQL->oBewertungSterneFilterSQL->cWhere ?? '') . ' ' .
-                ($FilterSQL->oPreisspannenFilterSQL->cWhere ?? '') .
+                ($filterSQL->oSuchspecialFilterSQL->cWhere ?? '') . ' ' .
+                ($filterSQL->oSuchFilterSQL->cWhere ?? '') . ' ' .
+                ($filterSQL->oHerstellerFilterSQL->cWhere ?? '') . ' ' .
+                ($filterSQL->oKategorieFilterSQL->cWhere ?? '') . ' ' .
+                ($filterSQL->oMerkmalFilterSQL->cWhere ?? '') . ' ' .
+                ($filterSQL->oTagFilterSQL->cWhere ?? '') . ' ' .
+                ($filterSQL->oBewertungSterneFilterSQL->cWhere ?? '') . ' ' .
+                ($filterSQL->oPreisspannenFilterSQL->cWhere ?? '') .
                 ' GROUP BY tartikel.kArtikel ' .
-                ($FilterSQL->oMerkmalFilterSQL->cHaving ?? '') .
+                ($filterSQL->oMerkmalFilterSQL->cHaving ?? '') .
                 ') AS tAnzahl',
         ReturnType::SINGLE_OBJECT
     );
     executeHook(HOOK_FILTER_INC_BAUEARTIKELANZAHL, [
-        'oAnzahl'          => &$oAnzahl,
-        'FilterSQL'        => &$FilterSQL,
+        'oAnzahl'          => &$qty,
+        'FilterSQL'        => &$filterSQL,
         'oSuchergebnisse'  => &$oSuchergebnisse,
-        'nArtikelProSeite' => &$nArtikelProSeite,
-        'nLimitN'          => &$nLimitN
+        'nArtikelProSeite' => &$productsPerPage,
+        'nLimitN'          => &$limit
     ]);
     $conf                 = Shop::getSettings([CONF_ARTIKELUEBERSICHT]);
-    $nPage                = $GLOBALS['NaviFilter']->nSeite ?? 1;
+    $page                 = $GLOBALS['NaviFilter']->nSeite ?? 1;
     $nSettingMaxPageCount = (int)$conf['artikeluebersicht']['artikeluebersicht_max_seitenzahl'];
 
-    $oSuchergebnisse->GesamtanzahlArtikel = $oAnzahl->nGesamtAnzahl;
-    $oSuchergebnisse->ArtikelVon          = $nLimitN + 1;
-    $oSuchergebnisse->ArtikelBis          = min($nLimitN + $nArtikelProSeite, $oSuchergebnisse->GesamtanzahlArtikel);
+    $oSuchergebnisse->GesamtanzahlArtikel = $qty->nGesamtAnzahl;
+    $oSuchergebnisse->ArtikelVon          = $limit + 1;
+    $oSuchergebnisse->ArtikelBis          = min($limit + $productsPerPage, $oSuchergebnisse->GesamtanzahlArtikel);
 
     if (!isset($oSuchergebnisse->Seitenzahlen)) {
         $oSuchergebnisse->Seitenzahlen = new stdClass();
     }
-    $oSuchergebnisse->Seitenzahlen->AktuelleSeite = $nPage;
-    $oSuchergebnisse->Seitenzahlen->MaxSeiten     = ceil($oSuchergebnisse->GesamtanzahlArtikel / $nArtikelProSeite);
+    $oSuchergebnisse->Seitenzahlen->AktuelleSeite = $page;
+    $oSuchergebnisse->Seitenzahlen->MaxSeiten     = ceil($oSuchergebnisse->GesamtanzahlArtikel / $productsPerPage);
     $oSuchergebnisse->Seitenzahlen->minSeite      = min(
         $oSuchergebnisse->Seitenzahlen->AktuelleSeite - $nSettingMaxPageCount / 2,
         0

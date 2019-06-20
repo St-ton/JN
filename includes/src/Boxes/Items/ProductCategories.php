@@ -42,11 +42,11 @@ final class ProductCategories extends AbstractBox
         $boxID      = $this->getCustomID();
         if ($boxID > 0) {
             $list2 = [];
-            foreach ($list as $key => $oList) {
-                if (isset($oList->categoryFunctionAttributes[\KAT_ATTRIBUT_KATEGORIEBOX])
-                    && (int)$oList->categoryFunctionAttributes[\KAT_ATTRIBUT_KATEGORIEBOX] === $boxID
+            foreach ($list as $key => $item) {
+                if (isset($item->categoryFunctionAttributes[\KAT_ATTRIBUT_KATEGORIEBOX])
+                    && (int)$item->categoryFunctionAttributes[\KAT_ATTRIBUT_KATEGORIEBOX] === $boxID
                 ) {
-                    $list2[$key] = $oList;
+                    $list2[$key] = $item;
                 }
             }
             $list = $list2;

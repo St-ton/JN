@@ -1,6 +1,6 @@
 {include file='tpl_inc/seite_header.tpl' cTitel=__('order') cBeschreibung=__('orderDesc') cDokuURL=__('orderURL')}
 <div id="content" class="container-fluid">
-    {include file='tpl_inc/pagination.tpl' oPagination=$oPagination cParam_arr=['cSuche'=>$cSuche]}
+    {include file='tpl_inc/pagination.tpl' pagination=$pagination cParam_arr=['cSuche'=>$cSuche]}
     <div class=" block clearall">
         <div class="right">
             <form name="bestellungen" method="post" action="bestellungen.php">

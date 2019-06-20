@@ -16,12 +16,12 @@ use JTL\Helpers\Date;
 use JTL\Helpers\Form;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Text;
+use JTL\Language\LanguageHelper;
 use JTL\MagicCompatibilityTrait;
 use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
 use JTL\Shop;
 use JTL\Shopsetting;
-use JTL\Sprache;
 use stdClass;
 
 /**
@@ -260,28 +260,28 @@ class Kunde
     ];
 
     /**
-     * @param int $kKunde
+     * @param int $id
      */
-    public function __construct(int $kKunde = null)
+    public function __construct(int $id = null)
     {
-        if ($kKunde > 0) {
-            $this->loadFromDB($kKunde);
+        if ($id > 0) {
+            $this->loadFromDB($id);
         }
     }
 
     /**
      * get customer by email address
      *
-     * @param string $cEmail
+     * @param string $mail
      * @return Kunde|null
      */
-    public function holRegKundeViaEmail($cEmail): ?Kunde
+    public function holRegKundeViaEmail($mail): ?Kunde
     {
-        if ($cEmail !== '') {
-            $oKundeTMP = Shop::Container()->getDB()->select(
+        if ($mail !== '') {
+            $data = Shop::Container()->getDB()->select(
                 'tkunde',
                 'cMail',
-                Text::filterXSS($cEmail),
+                Text::filterXSS($mail),
                 null,
                 null,
                 null,
@@ -290,8 +290,8 @@ class Kunde
                 'kKunde'
             );
 
-            if ($oKundeTMP !== null && isset($oKundeTMP->kKunde) && $oKundeTMP->kKunde > 0) {
-                return new self($oKundeTMP->kKunde);
+            if ($data !== null && isset($data->kKunde) && $data->kKunde > 0) {
+                return new self($data->kKunde);
             }
         }
 
@@ -345,31 +345,15 @@ class Kunde
      */
     public function holLoginKunde($username, $password): int
     {
-        $passwordService = Shop::Container()->getPasswordService();
         if ($username === '' || $password === '') {
             return self::ERROR_INVALID_DATA;
         }
         $user = $this->checkCredentials($username, $password);
-        if ($user === false) {
-            return self::ERROR_INVALID_DATA;
+        if (($state = $this->validateCustomerData($user)) !== self::OK) {
+            return $state;
         }
-        if (isset($user->cSperre) && $user->cSperre === 'Y') {
-            return self::ERROR_LOCKED;
-        }
-        if (isset($user->cAktiv) && $user->cAktiv === 'N') {
-            return self::ERROR_INACTIVE;
-        }
-        if (isset($user->kKunde) && $user->kKunde > 0) {
-            foreach (\get_object_vars($user) as $k => $v) {
-                $this->$k = $v;
-            }
-            $this->angezeigtesLand = Sprache::getCountryCodeByCountryName($this->cLand);
-            // check if password has to be updated because of PASSWORD_DEFAULT method changes or using old md5 hash
-            if (isset($user->cPasswort) && $passwordService->needsRehash($user->cPasswort)) {
-                $_upd            = new stdClass();
-                $_upd->cPasswort = $passwordService->hash($password);
-                Shop::Container()->getDB()->update('tkunde', 'kKunde', (int)$user->kKunde, $_upd);
-            }
+        if ($user->kKunde > 0) {
+            $this->initCustomer($user);
         }
         \executeHook(\HOOK_KUNDE_CLASS_HOLLOGINKUNDE, [
             'oKunde'        => &$this,
@@ -379,7 +363,6 @@ class Kunde
         ]);
         if ($this->kKunde > 0) {
             $this->entschluesselKundendaten();
-            // Anrede mappen
             $this->cAnredeLocalized   = self::mapSalutation($this->cAnrede, $this->kSprache);
             $this->cGuthabenLocalized = $this->gibGuthabenLocalized();
 
@@ -387,6 +370,44 @@ class Kunde
         }
 
         return self::ERROR_INVALID_DATA;
+    }
+
+    /**
+     * @param mixed $user
+     * @return int
+     */
+    private function validateCustomerData($user): int
+    {
+        if ($user === false) {
+            return self::ERROR_INVALID_DATA;
+        }
+        if ($user->cSperre === 'Y') {
+            return self::ERROR_LOCKED;
+        }
+        if ($user->cAktiv === 'N') {
+            return self::ERROR_INACTIVE;
+        }
+
+        return self::OK;
+    }
+
+    /**
+     * @param stdClass $user
+     * @throws Exception
+     */
+    private function initCustomer(stdClass $user): void
+    {
+        $passwordService = Shop::Container()->getPasswordService();
+        foreach (\get_object_vars($user) as $k => $v) {
+            $this->$k = $v;
+        }
+        $this->angezeigtesLand = LanguageHelper::getCountryCodeByCountryName($this->cLand);
+        // check if password has to be updated because of PASSWORD_DEFAULT method changes or using old md5 hash
+        if (isset($user->cPasswort) && $passwordService->needsRehash($user->cPasswort)) {
+            $upd            = new stdClass();
+            $upd->cPasswort = $passwordService->hash($password);
+            Shop::Container()->getDB()->update('tkunde', 'kKunde', (int)$user->kKunde, $upd);
+        }
     }
 
     /**
@@ -456,23 +477,23 @@ class Kunde
     }
 
     /**
-     * @param int $kKunde
+     * @param int $id
      * @return $this
      */
-    public function loadFromDB(int $kKunde): self
+    public function loadFromDB(int $id): self
     {
-        if ($kKunde <= 0) {
+        if ($id <= 0) {
             return $this;
         }
-        $obj = Shop::Container()->getDB()->select('tkunde', 'kKunde', $kKunde);
-        if ($obj !== null && isset($obj->kKunde) && $obj->kKunde > 0) {
-            $members = \array_keys(\get_object_vars($obj));
+        $data = Shop::Container()->getDB()->select('tkunde', 'kKunde', $id);
+        if ($data !== null && isset($data->kKunde) && $data->kKunde > 0) {
+            $members = \array_keys(\get_object_vars($data));
             foreach ($members as $member) {
-                $this->$member = $obj->$member;
+                $this->$member = $data->$member;
             }
             $this->kSprache         = (int)$this->kSprache;
             $this->cAnredeLocalized = self::mapSalutation($this->cAnrede, $this->kSprache);
-            $this->angezeigtesLand  = Sprache::getCountryCodeByCountryName($this->cLand);
+            $this->angezeigtesLand  = LanguageHelper::getCountryCodeByCountryName($this->cLand);
             $this->entschluesselKundendaten();
             $this->kKunde         = (int)$this->kKunde;
             $this->kKundengruppe  = (int)$this->kKundengruppe;
@@ -655,7 +676,7 @@ class Kunde
     {
         \preg_match('/[a-zA-Z]{2}/', $iso, $hits);
         if (\mb_strlen($hits[0]) !== \mb_strlen($iso)) {
-            $cISO = Sprache::getIsoCodeByCountryName($iso);
+            $cISO = LanguageHelper::getIsoCodeByCountryName($iso);
             if ($cISO !== 'noISO' && $cISO !== '') {
                 $iso = $cISO;
             }
@@ -813,7 +834,7 @@ class Kunde
             [
                 'kKunde'   => $this->kKunde,
                 'cKey'     => $key,
-                'dExpires' => $expires->format(DateTime::ATOM),
+                'dExpires' => $expires->format('Y-m-d H:i:s'),
             ],
             ReturnType::AFFECTED_ROWS
         );
@@ -846,60 +867,57 @@ class Kunde
      */
     public function isLoggedIn(): bool
     {
-        return $this->kKunde > 0;
+        return $this->kKunde > 0 && isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde === $this->kKunde;
     }
 
     /**
-     * @param string $cAnrede
-     * @param int    $kSprache
-     * @param int    $kKunde
+     * @param string $salutation
+     * @param int    $languageID
+     * @param int    $customerID
      * @return mixed
      * @former mappeKundenanrede()
      */
-    public static function mapSalutation($cAnrede, int $kSprache, int $kKunde = 0)
+    public static function mapSalutation($salutation, int $languageID, int $customerID = 0)
     {
-        if (($kSprache > 0 || $kKunde > 0) && $cAnrede !== '') {
-            if ($kSprache === 0 && $kKunde > 0) {
-                $oKunde = Shop::Container()->getDB()->queryPrepared(
+        if (($languageID > 0 || $customerID > 0) && $salutation !== '') {
+            if ($languageID === 0 && $customerID > 0) {
+                $customer = Shop::Container()->getDB()->queryPrepared(
                     'SELECT kSprache
                         FROM tkunde
                         WHERE kKunde = :cid',
-                    ['cid' => $kKunde],
+                    ['cid' => $customerID],
                     ReturnType::SINGLE_OBJECT
                 );
-                if (isset($oKunde->kSprache) && $oKunde->kSprache > 0) {
-                    $kSprache = (int)$oKunde->kSprache;
+                if (isset($customer->kSprache) && $customer->kSprache > 0) {
+                    $languageID = (int)$customer->kSprache;
                 }
             }
-            $cISOSprache = '';
-            if ($kSprache > 0) { // Kundensprache, falls gesetzt
-                $oSprache = Shop::Container()->getDB()->select('tsprache', 'kSprache', $kSprache);
-                if (isset($oSprache->kSprache) && $oSprache->kSprache > 0) {
-                    $cISOSprache = $oSprache->cISO;
+            $langCode = '';
+            if ($languageID > 0) { // Kundensprache, falls gesetzt
+                $lang = Shop::Lang()->getLanguageByID($languageID);
+                if ($lang !== null && $lang->kSprache > 0) {
+                    $langCode = $lang->cISO;
                 }
             } else { // Ansonsten Standardsprache
-                $oSprache = Shop::Container()->getDB()->select('tsprache', 'cShopStandard', 'Y');
-                if (isset($oSprache->kSprache) && $oSprache->kSprache > 0) {
-                    $cISOSprache = $oSprache->cISO;
-                }
+                $lang     = Shop::Lang()->getDefaultLanguage();
+                $langCode = $lang->cISO ?? '';
             }
-            $cName       = $cAnrede === 'm' ? 'salutationM' : 'salutationW';
-            $oSprachWert = Shop::Container()->getDB()->queryPrepared(
+            $value = Shop::Container()->getDB()->queryPrepared(
                 'SELECT tsprachwerte.cWert
                     FROM tsprachwerte
                     JOIN tsprachiso
                         ON tsprachiso.cISO = :ciso
                     WHERE tsprachwerte.kSprachISO = tsprachiso.kSprachISO
                         AND tsprachwerte.cName = :cname',
-                ['ciso' => $cISOSprache, 'cname' => $cName],
+                ['ciso' => $langCode, 'cname' => $salutation === 'm' ? 'salutationM' : 'salutationW'],
                 ReturnType::SINGLE_OBJECT
             );
-            if (isset($oSprachWert->cWert) && $oSprachWert->cWert !== '') {
-                $cAnrede = $oSprachWert->cWert;
+            if (isset($value->cWert) && $value->cWert !== '') {
+                $salutation = $value->cWert;
             }
         }
 
-        return $cAnrede;
+        return $salutation;
     }
 
     /**

@@ -174,57 +174,61 @@ class Preise
     public $SonderpreisBis_de;
 
     /**
-     * Preise constructor.
-     * @param int $kKundengruppe
-     * @param int $kArtikel
-     * @param int $kKunde
-     * @param int $kSteuerklasse
+     * @var int
      */
-    public function __construct(int $kKundengruppe, int $kArtikel, int $kKunde = 0, int $kSteuerklasse = 0)
+    public $discountPercentage = 0;
+
+    /**
+     * Preise constructor.
+     * @param int $customerGroupID
+     * @param int $productID
+     * @param int $customerID
+     * @param int $taxClassID
+     */
+    public function __construct(int $customerGroupID, int $productID, int $customerID = 0, int $taxClassID = 0)
     {
-        $db          = Shop::Container()->getDB();
-        $filterKunde = 'AND p.kKundengruppe = ' . $kKundengruppe;
-        if ($kKunde > 0 && $this->hasCustomPrice($kKunde)) {
-            $filterKunde = 'AND (p.kKundengruppe, COALESCE(p.kKunde, 0)) = (
-                            SELECT min(IFNULL(p1.kKundengruppe, ' . $kKundengruppe . ')), max(IFNULL(p1.kKunde, 0))
+        $db             = Shop::Container()->getDB();
+        $customerFilter = 'AND p.kKundengruppe = ' . $customerGroupID;
+        if ($customerID > 0 && $this->hasCustomPrice($customerID)) {
+            $customerFilter = 'AND (p.kKundengruppe, COALESCE(p.kKunde, 0)) = (
+                            SELECT min(IFNULL(p1.kKundengruppe, ' . $customerGroupID . ')), max(IFNULL(p1.kKunde, 0))
                             FROM tpreis AS p1
-                            WHERE p1.kArtikel = ' . $kArtikel . '
-                                AND (p1.kKundengruppe = 0 OR p1.kKundengruppe = ' . $kKundengruppe . ')
-                                AND (p1.kKunde = 0 OR p1.kKunde = ' . $kKunde . '))';
+                            WHERE p1.kArtikel = ' . $productID . '
+                                AND (p1.kKundengruppe = 0 OR p1.kKundengruppe = ' . $customerGroupID . ')
+                                AND (p1.kKunde = 0 OR p1.kKunde = ' . $customerID . '))';
         }
-        $this->kArtikel      = $kArtikel;
-        $this->kKundengruppe = $kKundengruppe;
-        $this->kKunde        = $kKunde;
+        $this->kArtikel      = $productID;
+        $this->kKundengruppe = $customerGroupID;
+        $this->kKunde        = $customerID;
 
         $prices = $db->query(
             'SELECT *
                 FROM tpreis AS p
                 JOIN tpreisdetail AS d ON d.kPreis = p.kPreis
-                WHERE p.kArtikel = ' . $kArtikel . ' ' . $filterKunde . '
+                WHERE p.kArtikel = ' . $productID . ' ' . $customerFilter . '
                 ORDER BY d.nAnzahlAb',
             ReturnType::ARRAY_OF_OBJECTS
         );
         if (\count($prices) > 0) {
-            if ($kSteuerklasse === 0) {
-                $tax           =
-                    $db->select(
-                        'tartikel',
-                        'kArtikel',
-                        $kArtikel,
-                        null,
-                        null,
-                        null,
-                        null,
-                        false,
-                        'kSteuerklasse'
-                    );
-                $kSteuerklasse = (int)$tax->kSteuerklasse;
+            if ($taxClassID === 0) {
+                $tax        = $db->select(
+                    'tartikel',
+                    'kArtikel',
+                    $productID,
+                    null,
+                    null,
+                    null,
+                    null,
+                    false,
+                    'kSteuerklasse'
+                );
+                $taxClassID = (int)$tax->kSteuerklasse;
             }
-            $this->fUst        = Tax::getSalesTax($kSteuerklasse);
+            $this->fUst        = Tax::getSalesTax($taxClassID);
             $tmp               = $db->select(
                 'tartikel',
                 'kArtikel',
-                $kArtikel,
+                $productID,
                 null,
                 null,
                 null,
@@ -259,8 +263,8 @@ class Preise
                                     OR tartikelsonderpreis.nIstAnzahl = 0)
                             WHERE tsonderpreise.kKundengruppe = :customerGroup",
                         [
-                            'productID'     => $kArtikel,
-                            'customerGroup' => $kKundengruppe,
+                            'productID'     => $productID,
+                            'customerGroup' => $customerGroupID,
                         ],
                         ReturnType::SINGLE_OBJECT
                     );
@@ -301,12 +305,12 @@ class Preise
         }
 
         $this->berechneVKs();
-        $this->oPriceRange = new PriceRange($kArtikel, $kKundengruppe, $kKunde);
+        $this->oPriceRange = new PriceRange($productID, $customerGroupID, $customerID);
         \executeHook(\HOOK_PRICES_CONSTRUCT, [
-            'customerGroupID' => $kKundengruppe,
-            'customerID'      => $kKunde,
-            'productID'       => $kArtikel,
-            'taxClassID'      => $kSteuerklasse,
+            'customerGroupID' => $customerGroupID,
+            'customerID'      => $customerID,
+            'productID'       => $productID,
+            'taxClassID'      => $taxClassID,
             'prices'          => $this
         ]);
     }
@@ -319,7 +323,7 @@ class Preise
      * @param double $netPrice      the product net price
      * @param double $defaultTax    the default tax factor of the product e.g. 19 for 19% vat
      * @param double $conversionTax the taxFactor of the delivery country / delivery threshold
-     * @return double calculated net price based on a rounded(!!!) DEFAULT gross price.
+     * @return double - calculated net price based on a rounded(!!!) DEFAULT gross price.
      */
     private function getRecalculatedNetPrice($netPrice, $defaultTax, $conversionTax)
     {
@@ -336,30 +340,29 @@ class Preise
     }
 
     /**
-     * @param int $kKunde
+     * @param int $customerID
      * @return bool
      */
-    protected function hasCustomPrice(int $kKunde): bool
+    protected function hasCustomPrice(int $customerID): bool
     {
-        if ($kKunde > 0) {
-            $cacheID = 'custprice_' . $kKunde;
-            if (($oCustomPrice = Shop::Container()->getCache()->get($cacheID)) === false) {
-                $oCustomPrice = Shop::Container()->getDB()->query(
-                    'SELECT COUNT(kPreis) AS nAnzahl 
-                        FROM tpreis
-                        WHERE kKunde = ' . $kKunde,
-                    ReturnType::SINGLE_OBJECT
-                );
-                if (\is_object($oCustomPrice)) {
-                    $cacheTags = [\CACHING_GROUP_ARTICLE];
-                    Shop::Container()->getCache()->set($cacheID, $oCustomPrice, $cacheTags);
-                }
+        if ($customerID <= 0) {
+            return false;
+        }
+        $cacheID = 'custprice_' . $customerID;
+        if (($data = Shop::Container()->getCache()->get($cacheID)) === false) {
+            $data = Shop::Container()->getDB()->query(
+                'SELECT COUNT(kPreis) AS nAnzahl 
+                    FROM tpreis
+                    WHERE kKunde = ' . $customerID,
+                ReturnType::SINGLE_OBJECT
+            );
+            if (\is_object($data)) {
+                $cacheTags = [\CACHING_GROUP_ARTICLE];
+                Shop::Container()->getCache()->set($cacheID, $data, $cacheTags);
             }
-
-            return \is_object($oCustomPrice) && $oCustomPrice->nAnzahl > 0;
         }
 
-        return false;
+        return \is_object($data) && $data->nAnzahl > 0;
     }
 
     /**
@@ -382,28 +385,28 @@ class Preise
     }
 
     /**
-     * @param float $Rabatt
+     * @param float $discount
      * @param float $offset
      * @return $this
      */
-    public function rabbatierePreise($Rabatt, $offset = 0.0): self
+    public function rabbatierePreise($discount, $offset = 0.0): self
     {
-        if ($Rabatt != 0 && $this->isDiscountable()) {
-            $this->rabatt       = $Rabatt;
+        if ($discount != 0 && $this->isDiscountable()) {
+            $this->rabatt       = $discount;
             $this->alterVKNetto = $this->fVKNetto;
 
-            $this->fVKNetto = ($this->fVKNetto - $this->fVKNetto * $Rabatt / 100.0) + $offset;
-            $this->fPreis1  = ($this->fPreis1 - $this->fPreis1 * $Rabatt / 100.0) + $offset;
-            $this->fPreis2  = ($this->fPreis2 - $this->fPreis2 * $Rabatt / 100.0) + $offset;
-            $this->fPreis3  = ($this->fPreis3 - $this->fPreis3 * $Rabatt / 100.0) + $offset;
-            $this->fPreis4  = ($this->fPreis4 - $this->fPreis4 * $Rabatt / 100.0) + $offset;
-            $this->fPreis5  = ($this->fPreis5 - $this->fPreis5 * $Rabatt / 100.0) + $offset;
+            $this->fVKNetto = ($this->fVKNetto - $this->fVKNetto * $discount / 100.0) + $offset;
+            $this->fPreis1  = ($this->fPreis1 - $this->fPreis1 * $discount / 100.0) + $offset;
+            $this->fPreis2  = ($this->fPreis2 - $this->fPreis2 * $discount / 100.0) + $offset;
+            $this->fPreis3  = ($this->fPreis3 - $this->fPreis3 * $discount / 100.0) + $offset;
+            $this->fPreis4  = ($this->fPreis4 - $this->fPreis4 * $discount / 100.0) + $offset;
+            $this->fPreis5  = ($this->fPreis5 - $this->fPreis5 * $discount / 100.0) + $offset;
 
             foreach ($this->fPreis_arr as $i => $fPreis) {
-                $this->fPreis_arr[$i] = ($fPreis - $fPreis * $Rabatt / 100.0) + $offset;
+                $this->fPreis_arr[$i] = ($fPreis - $fPreis * $discount / 100.0) + $offset;
             }
             $this->berechneVKs();
-            $this->oPriceRange->setDiscount($Rabatt);
+            $this->oPriceRange->setDiscount($discount);
         }
 
         return $this;
@@ -465,6 +468,9 @@ class Preise
                 $fPreis * $factor
             ];
         }
+        if (!empty($this->alterVKNetto)) {
+            $this->discountPercentage = (int)((($this->alterVKNetto - $this->fVKNetto) * 100) / $this->alterVKNetto);
+        }
 
         return $this;
     }
@@ -492,20 +498,20 @@ class Preise
     }
 
     /**
-     * @param int    $kKundengruppe
+     * @param int    $customerGroupID
      * @param string $priceAlias
      * @param string $detailAlias
      * @param string $productAlias
      * @return string
      */
     public static function getPriceJoinSql(
-        int $kKundengruppe,
+        int $customerGroupID,
         $priceAlias = 'tpreis',
         $detailAlias = 'tpreisdetail',
         $productAlias = 'tartikel'
     ): string {
         return 'JOIN tpreis AS ' . $priceAlias . ' ON ' . $priceAlias . '.kArtikel = ' . $productAlias . '.kArtikel
-                    AND ' . $priceAlias . '.kKundengruppe = ' . $kKundengruppe . '
+                    AND ' . $priceAlias . '.kKundengruppe = ' . $customerGroupID . '
                 JOIN tpreisdetail AS ' . $detailAlias . ' ON ' . $detailAlias . '.kPreis = ' . $priceAlias . '.kPreis
                     AND ' . $detailAlias . '.nAnzahlAb = 0';
     }

@@ -11,8 +11,8 @@ use JTL\DB\ReturnType;
 use JTL\dbeS\Starter;
 use JTL\Helpers\Product;
 use JTL\Helpers\Seo;
+use JTL\Language\LanguageHelper;
 use JTL\Shop;
-use JTL\Sprache;
 use stdClass;
 use function Functional\flatten;
 use function Functional\map;
@@ -307,9 +307,9 @@ final class Products extends AbstractSync
             'tartikelsprache',
             'mArtikelSprache'
         );
-        $allLanguages = Sprache::getAllLanguages(1);
+        $allLanguages = LanguageHelper::getAllLanguages(1);
         foreach ($localized as $item) {
-            if (!Sprache::isShopLanguage($item->kSprache, $allLanguages)) {
+            if (!LanguageHelper::isShopLanguage($item->kSprache, $allLanguages)) {
                 continue;
             }
             if (!$item->cSeo) {
@@ -330,12 +330,12 @@ final class Products extends AbstractSync
                 ['kArtikel', (int)$item->kArtikel, (int)$item->kSprache]
             );
 
-            $oSeo           = new stdClass();
-            $oSeo->cSeo     = $item->cSeo;
-            $oSeo->cKey     = 'kArtikel';
-            $oSeo->kKey     = $item->kArtikel;
-            $oSeo->kSprache = $item->kSprache;
-            $this->db->insert('tseo', $oSeo);
+            $seo           = new stdClass();
+            $seo->cSeo     = $item->cSeo;
+            $seo->cKey     = 'kArtikel';
+            $seo->kKey     = $item->kArtikel;
+            $seo->kSprache = $item->kSprache;
+            $this->db->insert('tseo', $seo);
             // Insert into tredirect weil sich das SEO vom Artikel geändert hat
             if (isset($seoData[$item->kSprache])) {
                 $this->checkDbeSXmlRedirect(
@@ -826,26 +826,26 @@ final class Products extends AbstractSync
     {
         if (isset($xml['tartikel']['SQLDEL']) && \strlen($xml['tartikel']['SQLDEL']) > 10) {
             $this->logger->debug('SQLDEL: ' . $xml['tartikel']['SQLDEL']);
-            foreach (\explode("\n", $xml['tartikel']['SQLDEL']) as $cSQL) {
-                if (\strlen($cSQL) <= 10) {
+            foreach (\explode("\n", $xml['tartikel']['SQLDEL']) as $sql) {
+                if (\strlen($sql) <= 10) {
                     continue;
                 }
-                $this->db->query($cSQL, ReturnType::AFFECTED_ROWS);
+                $this->db->query($sql, ReturnType::AFFECTED_ROWS);
             }
         }
         if (isset($xml['tartikel']['SQL']) && \strlen($xml['tartikel']['SQL']) > 10) {
             $this->logger->debug('SQL: ' . $xml['tartikel']['SQL']);
-            foreach (\explode("\n", $xml['tartikel']['SQL']) as $cSQL) {
-                if (\strlen($cSQL) <= 10) {
+            foreach (\explode("\n", $xml['tartikel']['SQL']) as $sql) {
+                if (\strlen($sql) <= 10) {
                     continue;
                 }
                 // Pre Wawi 0.99862 fix
                 if (isset($products[0]->kVaterArtikel)
                     && $products[0]->kVaterArtikel > 0
                     && !isset($xml['tartikel']['SQLDEL'])
-                    && \strpos($cSQL, 'teigenschaftkombiwert') !== false
+                    && \strpos($sql, 'teigenschaftkombiwert') !== false
                 ) {
-                    $del     = \substr($cSQL, \strpos($cSQL, 'values ') + \strlen('values '));
+                    $del     = \substr($sql, \strpos($sql, 'values ') + \strlen('values '));
                     $itemIDs = [];
                     foreach (\str_replace(['(', ')'], '', \explode('),(', $del)) as $del) {
                         $itemIDs[] = (int)\substr($del, 0, \strpos($del, ','));
@@ -857,7 +857,7 @@ final class Products extends AbstractSync
                         ReturnType::AFFECTED_ROWS
                     );
                 }
-                $this->db->query($cSQL, ReturnType::AFFECTED_ROWS);
+                $this->db->query($sql, ReturnType::AFFECTED_ROWS);
             }
         }
     }

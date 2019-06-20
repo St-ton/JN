@@ -314,7 +314,7 @@ class Search extends AbstractFilter
                 $queryMiss->cSuche          = $query;
                 $queryMiss->nAnzahlGesuche  = 1;
                 $queryMiss->dZuletztGesucht = 'NOW()';
-                $oldMiss              = $this->productFilter->getDB()->select(
+                $oldMiss                    = $this->productFilter->getDB()->select(
                     'tsuchanfrageerfolglos',
                     'kSprache',
                     (int)$queryMiss->kSprache,
@@ -498,7 +498,7 @@ class Search extends AbstractFilter
             $searchFilters = \array_merge($searchFilters);
         }
         $additionalFilter = new self($this->productFilter);
-        $count           = \count($searchFilters);
+        $count            = \count($searchFilters);
         $stepPrio         = $count > 0
             ? ($searchFilters[0]->nAnzahl - $searchFilters[$count - 1]->nAnzahl) / 9
             : 0;

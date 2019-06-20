@@ -203,7 +203,7 @@ class Search extends AbstractFilter
      * @param int    $hits
      * @param string $query
      * @param bool   $real
-     * @param int    $languageIDExt
+     * @param int    $languageID
      * @param bool   $filterSpam
      * @return bool
      * @former suchanfragenSpeichern
@@ -212,19 +212,19 @@ class Search extends AbstractFilter
         int $hits,
         string $query = '',
         bool $real = false,
-        int $languageIDExt = 0,
+        int $languageID = 0,
         bool $filterSpam = true
     ): bool {
         if ($query === '') {
             $query = $this->getName();
         }
-        if (empty($query)) {
+        if (empty($query) || $this->productFilter->getFilterCount() > 0) {
+            // only save non-filtered queries
             return false;
         }
-        $Suchausdruck = \str_replace(["'", '\\', '*', '%'], '', $query);
-        $languageID   = $languageIDExt > 0 ? $languageIDExt : $this->getLanguageID();
-        // db füllen für auswertugnen / suggest, dabei Blacklist beachten
-        $tempQueries = \explode(';', $Suchausdruck);
+        $query       = \str_replace(["'", '\\', '*', '%'], '', $query);
+        $languageID  = $languageID > 0 ? $languageID : $this->getLanguageID();
+        $tempQueries = \explode(';', $query);
         $blacklist   = $this->productFilter->getDB()->select(
             'tsuchanfrageblacklist',
             'kSprache',
@@ -236,59 +236,55 @@ class Search extends AbstractFilter
             return false;
         }
         // Ist md5(IP) bereits X mal im Cache
-        $max_ip_count = (int)$this->getConfig('artikeluebersicht')['livesuche_max_ip_count'];
-        $ip_cache_erg = $this->productFilter->getDB()->executeQueryPrepared(
-            'SELECT COUNT(*) AS anzahl
+        $maxHits       = (int)$this->getConfig('artikeluebersicht')['livesuche_max_ip_count'];
+        $userCacheHits = (int)$this->productFilter->getDB()->executeQueryPrepared(
+            'SELECT COUNT(*) AS cnt
                 FROM tsuchanfragencache
                 WHERE kSprache = :lang
                 AND cIP = :ip',
             ['lang' => $languageID, 'ip' => Request::getRealIP()],
             ReturnType::SINGLE_OBJECT
-        );
-        $ipUsed       = $this->productFilter->getDB()->select(
+        )->cnt;
+        $ipUsed        = $this->productFilter->getDB()->select(
             'tsuchanfragencache',
             'kSprache',
             $languageID,
             'cSuche',
-            $Suchausdruck,
+            $query,
             'cIP',
             Request::getRealIP(),
             false,
             'kSuchanfrageCache'
         );
-        if (!$filterSpam
-            || (isset($ip_cache_erg->anzahl) && $ip_cache_erg->anzahl < $max_ip_count
-                && ($ipUsed === null || empty($ipUsed->kSuchanfrageCache)))
-        ) {
-            // Fülle Suchanfragencache
+        if (!$filterSpam || ($userCacheHits < $maxHits && ($ipUsed === null || empty($ipUsed->kSuchanfrageCache)))) {
             $searchQueryCache           = new stdClass();
             $searchQueryCache->kSprache = $languageID;
             $searchQueryCache->cIP      = Request::getRealIP();
-            $searchQueryCache->cSuche   = $Suchausdruck;
+            $searchQueryCache->cSuche   = $query;
             $searchQueryCache->dZeit    = 'NOW()';
             $this->productFilter->getDB()->insert('tsuchanfragencache', $searchQueryCache);
             // Cacheeinträge die > 1 Stunde sind, löschen
             $this->productFilter->getDB()->query(
                 'DELETE
                     FROM tsuchanfragencache
-                    WHERE dZeit < DATE_SUB(NOW(),INTERVAL 1 HOUR)',
+                    WHERE dZeit < DATE_SUB(NOW(), INTERVAL 1 HOUR)',
                 ReturnType::AFFECTED_ROWS
             );
             if ($hits > 0) {
                 $searchQuery                  = new stdClass();
                 $searchQuery->kSprache        = $languageID;
-                $searchQuery->cSuche          = $Suchausdruck;
+                $searchQuery->cSuche          = $query;
                 $searchQuery->nAnzahlTreffer  = $hits;
                 $searchQuery->nAnzahlGesuche  = 1;
                 $searchQuery->dZuletztGesucht = 'NOW()';
-                $searchQuery->cSeo            = Seo::getSeo($Suchausdruck);
+                $searchQuery->cSeo            = Seo::getSeo($query);
                 $searchQuery->cSeo            = Seo::checkSeo($searchQuery->cSeo);
                 $previuousQuery               = $this->productFilter->getDB()->select(
                     'tsuchanfrage',
                     'kSprache',
                     (int)$searchQuery->kSprache,
                     'cSuche',
-                    $Suchausdruck,
+                    $query,
                     null,
                     null,
                     false,
@@ -307,7 +303,7 @@ class Search extends AbstractFilter
                     $this->productFilter->getDB()->delete(
                         'tsuchanfrageerfolglos',
                         ['kSprache', 'cSuche'],
-                        [(int)$searchQuery->kSprache, $this->productFilter->getDB()->realEscape($Suchausdruck)]
+                        [(int)$searchQuery->kSprache, $query]
                     );
 
                     return $this->productFilter->getDB()->insert('tsuchanfrage', $searchQuery) > 0;
@@ -315,37 +311,34 @@ class Search extends AbstractFilter
             } else {
                 $queryMiss                  = new stdClass();
                 $queryMiss->kSprache        = $languageID;
-                $queryMiss->cSuche          = $Suchausdruck;
+                $queryMiss->cSuche          = $query;
                 $queryMiss->nAnzahlGesuche  = 1;
                 $queryMiss->dZuletztGesucht = 'NOW()';
-                $queryMiss_old              = $this->productFilter->getDB()->select(
+                $oldMiss              = $this->productFilter->getDB()->select(
                     'tsuchanfrageerfolglos',
                     'kSprache',
                     (int)$queryMiss->kSprache,
                     'cSuche',
-                    $Suchausdruck,
+                    $query,
                     null,
                     null,
                     false,
                     'kSuchanfrageErfolglos'
                 );
-                if ($queryMiss_old !== null
-                    && $queryMiss_old->kSuchanfrageErfolglos > 0
-                    && $real
-                ) {
+                if ($real && $oldMiss !== null && $oldMiss->kSuchanfrageErfolglos > 0) {
                     $this->productFilter->getDB()->query(
                         'UPDATE tsuchanfrageerfolglos
                             SET nAnzahlGesuche = nAnzahlGesuche + 1,
                                 dZuletztGesucht = NOW()
                             WHERE kSuchanfrageErfolglos = ' .
-                        (int)$queryMiss_old->kSuchanfrageErfolglos,
+                        (int)$oldMiss->kSuchanfrageErfolglos,
                         ReturnType::AFFECTED_ROWS
                     );
                 } else {
                     $this->productFilter->getDB()->delete(
                         'tsuchanfrage',
                         ['kSprache', 'cSuche'],
-                        [(int)$queryMiss->kSprache, $Suchausdruck]
+                        [(int)$queryMiss->kSprache, $query]
                     );
                     $this->productFilter->getDB()->insert('tsuchanfrageerfolglos', $queryMiss);
                 }
@@ -505,9 +498,9 @@ class Search extends AbstractFilter
             $searchFilters = \array_merge($searchFilters);
         }
         $additionalFilter = new self($this->productFilter);
-        $nCount           = \count($searchFilters);
-        $nPrioStep        = $nCount > 0
-            ? ($searchFilters[0]->nAnzahl - $searchFilters[$nCount - 1]->nAnzahl) / 9
+        $count           = \count($searchFilters);
+        $stepPrio         = $count > 0
+            ? ($searchFilters[0]->nAnzahl - $searchFilters[$count - 1]->nAnzahl) / 9
             : 0;
         $activeValues     = \array_map(
             function ($f) {
@@ -518,9 +511,9 @@ class Search extends AbstractFilter
             $this->productFilter->getSearchFilter()
         );
         foreach ($searchFilters as $searchFilter) {
-            $class = \rand(1, 10);
-            if (isset($searchFilter->kSuchCache) && $searchFilter->kSuchCache > 0 && $nPrioStep > 0) {
-                $class = \round(($searchFilter->nAnzahl - $searchFilters[$nCount - 1]->nAnzahl) / $nPrioStep) + 1;
+            $class = \random_int(1, 10);
+            if (isset($searchFilter->kSuchCache) && $searchFilter->kSuchCache > 0 && $stepPrio > 0) {
+                $class = \round(($searchFilter->nAnzahl - $searchFilters[$count - 1]->nAnzahl) / $stepPrio) + 1;
             }
             $options[] = (new Option())
                 ->setURL($this->productFilter->getFilterURL()->getURL(

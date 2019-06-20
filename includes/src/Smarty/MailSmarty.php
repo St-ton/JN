@@ -13,12 +13,12 @@ use JTL\DB\ReturnType;
  * Class MailSmarty
  * @package JTL\Smarty
  */
-final class MailSmarty extends JTLSmarty
+class MailSmarty extends JTLSmarty
 {
     /**
      * @var DbInterface
      */
-    private $db;
+    protected $db;
 
     /**
      * MailSmarty constructor.

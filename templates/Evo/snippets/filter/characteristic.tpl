@@ -19,7 +19,7 @@
         {/if}
 
         {if $limit != -1 && $attributeValue@iteration > $limit && !$collapseInit && !$is_dropdown}
-            <div class="collapse" id="box-collps-{$Merkmal->kMerkmal}" aria-expanded="false">
+            <div class="collapse {if $Merkmal->isActive()} in{/if}" id="box-collps-{$Merkmal->kMerkmal}" aria-expanded="false">
                 <ul class="nav nav-list">
                 {$collapseInit = true}
         {/if}

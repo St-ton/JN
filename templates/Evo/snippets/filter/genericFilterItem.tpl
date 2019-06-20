@@ -15,7 +15,7 @@
     {foreach $filter->getOptions() as $filterOption}
         {assign var=filterIsActive value=$filterOption->isActive() || $NaviFilter->getFilterValue($filter->getClassName()) === $filterOption->getValue()}
         {if $limit != -1 && $filterOption@iteration > $limit && !$collapseInit && $class!='dropdown-menu'}
-            <div class="collapse" id="box-collps-filter{$filter->getNiceName()}" aria-expanded="false"><ul class="nav nav-list">
+            <div class="collapse {if $filter->isActive()} in{/if}" id="box-collps-filter{$filter->getNiceName()}" aria-expanded="false"><ul class="nav nav-list">
             {$collapseInit = true}
         {/if}
         <li class="filter-item{if $filterIsActive === true} active{/if}">

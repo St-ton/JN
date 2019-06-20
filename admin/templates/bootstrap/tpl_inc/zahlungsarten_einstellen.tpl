@@ -33,12 +33,10 @@
                             <span class="input-group-addon">
                                 <label for="cGebuehrname_{$cISO}">{__('feeName')} ({$language->getLocalizedName()})</label>
                             </span>
-                            <td>
-                                <div class="input-group">
-                                    <input class="form-control" type="text" name="cGebuehrname_{$cISO}" id="cGebuehrname_{$cISO}" value="{if isset($Gebuehrname[$cISO])}{$Gebuehrname[$cISO]}{/if}" tabindex="2" />
-                                    <span class="input-group-addon">{getHelpDesc cDesc=__('feeNameHint')}</span>
-                                </div>
-                            </td>
+                            <div class="input-group">
+                                <input class="form-control" type="text" name="cGebuehrname_{$cISO}" id="cGebuehrname_{$cISO}" value="{if isset($Gebuehrname[$cISO])}{$Gebuehrname[$cISO]}{/if}" tabindex="2" />
+                                <span class="input-group-addon">{getHelpDesc cDesc=__('feeNameHint')}</span>
+                            </div>
                         </li>
                     {/foreach}
                     <li class="input-group">
@@ -183,7 +181,7 @@
             </div>
         <p class="submit btn-group">
             <button type="submit" value="{__('save')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
-            <a href="zahlungsarten.php" value="{__('cancel')}" class="btn btn-danger"><i class="fa fa-exclamation"></i> {__('cancel')}</a>
+            <a href="zahlungsarten.php" title="{__('cancel')}" class="btn btn-danger"><i class="fa fa-exclamation"></i> {__('cancel')}</a>
         </p>
     </form>
 </div>

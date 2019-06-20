@@ -15,25 +15,25 @@ use stdClass;
 abstract class MainModel
 {
     /**
-     * @param null|int    $kKey
-     * @param null|object $oObj
-     * @param null|mixed  $xOption
+     * @param null|int    $id
+     * @param null|object $data
+     * @param null|mixed  $option
      */
-    public function __construct($kKey = null, $oObj = null, $xOption = null)
+    public function __construct($id = null, $data = null, $option = null)
     {
-        if (\is_object($oObj)) {
-            $this->loadObject($oObj);
-        } elseif ($kKey !== null) {
-            $this->load($kKey, $oObj, $xOption);
+        if (\is_object($data)) {
+            $this->loadObject($data);
+        } elseif ($id !== null) {
+            $this->load($id, $data, $option);
         }
     }
 
     /**
-     * @param int         $kKey
-     * @param null|object $oObj
-     * @param null|array  $xOption
+     * @param int         $id
+     * @param null|object $data
+     * @param null|array  $option
      */
-    abstract public function load($kKey, $oObj = null, $xOption = null);
+    abstract public function load($id, $data = null, $option = null);
 
     /**
      * @return array

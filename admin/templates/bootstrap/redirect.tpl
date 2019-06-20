@@ -108,7 +108,7 @@
     <div role="tabpanel" class="tab-pane fade{if $cTab === 'redirects'} active in{/if}" id="redirects">
         <div class="panel panel-default">
             {include file='tpl_inc/filtertools.tpl' oFilter=$oFilter}
-            {include file='tpl_inc/pagination.tpl' oPagination=$oPagination cAnchor='redirects'}
+            {include file='tpl_inc/pagination.tpl' pagination=$pagination cAnchor='redirects'}
             <form method="post">
                 {$jtl_token}
                 {if $oRedirect_arr|@count > 0}
@@ -116,9 +116,9 @@
                         <thead>
                             <tr>
                                 <th style="width:24px"></th>
-                                <th style="width:35%">{__('redirectFrom')} {call sortControls oPagination=$oPagination nSortBy=0}</th>
-                                <th>{__('redirectTo')} {call sortControls oPagination=$oPagination nSortBy=1}</th>
-                                <th style="width:85px">{__('redirectRefererCount')} {call sortControls oPagination=$oPagination nSortBy=2}</th>
+                                <th style="width:35%">{__('redirectFrom')} {call sortControls pagination=$pagination nSortBy=0}</th>
+                                <th>{__('redirectTo')} {call sortControls pagination=$pagination nSortBy=1}</th>
+                                <th style="width:85px">{__('redirectRefererCount')} {call sortControls pagination=$pagination nSortBy=2}</th>
                                 <th></th>
                             </tr>
                         </thead>

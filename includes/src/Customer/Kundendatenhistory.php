@@ -172,14 +172,14 @@ class Kundendatenhistory extends MainModel
     }
 
     /**
-     * @param int         $kKey
-     * @param null|object $oObj
-     * @param null        $xOption
+     * @param int         $id
+     * @param null|object $data
+     * @param null        $option
      * @return $this
      */
-    public function load($kKey, $oObj = null, $xOption = null)
+    public function load($id, $data = null, $option = null)
     {
-        $data = Shop::Container()->getDB()->select('tkundendatenhistory', 'kKundendatenHistory', $kKey);
+        $data = Shop::Container()->getDB()->select('tkundendatenhistory', 'kKundendatenHistory', $id);
         if (isset($data->kKundendatenHistory) && $data->kKundendatenHistory > 0) {
             $this->loadObject($data);
         }

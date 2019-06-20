@@ -4,31 +4,30 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Alert\Alert;
 use JTL\Emailhistory;
 use JTL\Helpers\Form;
 use JTL\Pagination\Pagination;
-use JTL\Alert\Alert;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('EMAILHISTORY_VIEW', true, true);
 /** @global \JTL\Smarty\JTLSmarty $smarty */
-$step            = 'uebersicht';
-$nAnzahlProSeite = 30;
-$oEmailhistory   = new Emailhistory();
-$cAction         = (isset($_POST['a']) && Form::validateToken()) ? $_POST['a'] : '';
-$alertHelper     = Shop::Container()->getAlertService();
+$step        = 'uebersicht';
+$history     = new Emailhistory();
+$action      = (isset($_POST['a']) && Form::validateToken()) ? $_POST['a'] : '';
+$alertHelper = Shop::Container()->getAlertService();
 
-if ($cAction === 'delete') {
+if ($action === 'delete') {
     if (isset($_POST['remove_all'])) {
-        if ($oEmailhistory->deleteAll() !== true) {
+        if ($history->deleteAll() !== true) {
             $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorHistoryDelete'), 'errorHistoryDelete');
         }
     } elseif (isset($_POST['kEmailhistory'])
         && is_array($_POST['kEmailhistory'])
         && count($_POST['kEmailhistory']) > 0
     ) {
-        $oEmailhistory->deletePack($_POST['kEmailhistory']);
+        $history->deletePack($_POST['kEmailhistory']);
         $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successHistoryDelete'), 'successHistoryDelete');
     } else {
         $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorSelectEntry'), 'errorSelectEntry');
@@ -36,12 +35,12 @@ if ($cAction === 'delete') {
 }
 
 if ($step === 'uebersicht') {
-    $oPagination = (new Pagination('emailhist'))
-        ->setItemCount($oEmailhistory->getCount())
+    $pagination = (new Pagination('emailhist'))
+        ->setItemCount($history->getCount())
         ->assemble();
-    $smarty->assign('oPagination', $oPagination)
-           ->assign('oEmailhistory_arr', $oEmailhistory->getAll(' LIMIT ' . $oPagination->getLimitSQL()));
+    $smarty->assign('pagination', $pagination)
+        ->assign('oEmailhistory_arr', $history->getAll(' LIMIT ' . $pagination->getLimitSQL()));
 }
 
 $smarty->assign('step', $step)
-       ->display('emailhistory.tpl');
+    ->display('emailhistory.tpl');

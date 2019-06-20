@@ -70,7 +70,7 @@ if (isset($_GET['i'])) {
             && $wkChecksum !== $cart->cChecksumme
         ) {
             if (!$cart->posTypEnthalten(C_WARENKORBPOS_TYP_ARTIKEL)) {
-                Cart::deleteAllSpecialPositions();
+                Cart::deleteAllSpecialItems();
             }
             $_SESSION['Warenkorbhinweise'][] = Shop::Lang()->get('yourbasketismutating', 'checkout');
             header('Location: ' . $linkHelper->getStaticRoute('warenkorb.php'), true, 303);

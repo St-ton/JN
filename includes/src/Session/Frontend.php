@@ -705,39 +705,39 @@ class Frontend extends AbstractSession
 
     private static function urlFallback(): void
     {
-        $kArtikel              = Request::verifyGPCDataInt('a');
-        $kKategorie            = Request::verifyGPCDataInt('k');
-        $kSeite                = Request::verifyGPCDataInt('s');
-        $kVariKindArtikel      = Request::verifyGPCDataInt('a2');
-        $kHersteller           = Request::verifyGPCDataInt('h');
-        $kSuchanfrage          = Request::verifyGPCDataInt('l');
+        $productID             = Request::verifyGPCDataInt('a');
+        $categoryID            = Request::verifyGPCDataInt('k');
+        $pageID                = Request::verifyGPCDataInt('s');
+        $childProductID        = Request::verifyGPCDataInt('a2');
+        $manufacturerID        = Request::verifyGPCDataInt('h');
+        $searchQueryID         = Request::verifyGPCDataInt('l');
         $kMerkmalWert          = Request::verifyGPCDataInt('m');
         $kSuchspecial          = Request::verifyGPCDataInt('q');
         $kNews                 = Request::verifyGPCDataInt('n');
         $kNewsMonatsUebersicht = Request::verifyGPCDataInt('nm');
         $kNewsKategorie        = Request::verifyGPCDataInt('nk');
-        $kUmfrage              = Request::verifyGPCDataInt('u');
+        $surveyID              = Request::verifyGPCDataInt('u');
         $key                   = 'kArtikel';
         $val                   = 0;
         \http_response_code(301);
-        if ($kArtikel > 0) {
+        if ($productID > 0) {
             $key = 'kArtikel';
-            $val = $kArtikel;
-        } elseif ($kKategorie > 0) {
+            $val = $productID;
+        } elseif ($categoryID > 0) {
             $key = 'kKategorie';
-            $val = $kKategorie;
-        } elseif ($kSeite > 0) {
+            $val = $categoryID;
+        } elseif ($pageID > 0) {
             $key = 'kLink';
-            $val = $kSeite;
-        } elseif ($kVariKindArtikel > 0) {
+            $val = $pageID;
+        } elseif ($childProductID > 0) {
             $key = 'kArtikel';
-            $val = $kVariKindArtikel;
-        } elseif ($kHersteller > 0) {
+            $val = $childProductID;
+        } elseif ($manufacturerID > 0) {
             $key = 'kHersteller';
-            $val = $kHersteller;
-        } elseif ($kSuchanfrage > 0) {
+            $val = $manufacturerID;
+        } elseif ($searchQueryID > 0) {
             $key = 'kSuchanfrage';
-            $val = $kSuchanfrage;
+            $val = $searchQueryID;
         } elseif ($kMerkmalWert > 0) {
             $key = 'kMerkmalWert';
             $val = $kMerkmalWert;
@@ -753,9 +753,9 @@ class Frontend extends AbstractSession
         } elseif ($kNewsKategorie > 0) {
             $key = 'kNewsKategorie';
             $val = $kNewsKategorie;
-        } elseif ($kUmfrage > 0) {
+        } elseif ($surveyID > 0) {
             $key = 'kUmfrage';
-            $val = $kUmfrage;
+            $val = $surveyID;
         }
         $dbRes = Shop::Container()->getDB()->select(
             'tseo',

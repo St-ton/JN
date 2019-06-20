@@ -82,7 +82,7 @@ class CMS
      */
     public static function getHomeNews(array $conf): Collection
     {
-        $cSQL  = '';
+        $sql   = '';
         $items = new Collection();
         if (!isset($conf['news']['news_anzahl_content']) || (int)$conf['news']['news_anzahl_content'] === 0) {
             return $items;
@@ -91,7 +91,7 @@ class CMS
         $cacheID = 'news_' . \md5(\json_encode($conf['news']) . '_' . $langID);
         if (($items = Shop::Container()->getCache()->get($cacheID)) === false) {
             if ((int)$conf['news']['news_anzahl_content'] > 0) {
-                $cSQL = ' LIMIT ' . (int)$conf['news']['news_anzahl_content'];
+                $sql = ' LIMIT ' . (int)$conf['news']['news_anzahl_content'];
             }
             $newsIDs = Shop::Container()->getDB()->query(
                 "SELECT tnews.kNews
@@ -114,7 +114,7 @@ class CMS
                             OR FIND_IN_SET('" . Frontend::getCustomerGroup()->getID() . "', 
                             REPLACE(tnews.cKundengruppe, ';', ',')) > 0)
                     GROUP BY tnews.kNews
-                    ORDER BY tnews.dGueltigVon DESC" . $cSQL,
+                    ORDER BY tnews.dGueltigVon DESC" . $sql,
                 ReturnType::ARRAY_OF_OBJECTS
             );
             $items   = new News\ItemList(Shop::Container()->getDB());

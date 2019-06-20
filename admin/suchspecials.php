@@ -64,11 +64,11 @@ if (Request::verifyGPCDataInt('einstellungen') === 1) {
                 'errorBestsellerExistRename'
             );
         }
-        $oBestSeller       = new stdClass();
-        $oBestSeller->kKey = SEARCHSPECIALS_BESTSELLER;
-        $oBestSeller->cSeo = $bestSellerSeo;
+        $bestSeller       = new stdClass();
+        $bestSeller->kKey = SEARCHSPECIALS_BESTSELLER;
+        $bestSeller->cSeo = $bestSellerSeo;
 
-        $ssTmp[] = $oBestSeller;
+        $ssTmp[] = $bestSeller;
     } elseif (mb_strlen($bestSellerSeo) === 0) {
         $ssToDelete[] = SEARCHSPECIALS_BESTSELLER;
     }
@@ -225,13 +225,13 @@ if (Request::verifyGPCDataInt('einstellungen') === 1) {
             ReturnType::AFFECTED_ROWS
         );
         foreach ($ssTmp as $item) {
-            $oSeo           = new stdClass();
-            $oSeo->cSeo     = $item->cSeo;
-            $oSeo->cKey     = 'suchspecial';
-            $oSeo->kKey     = $item->kKey;
-            $oSeo->kSprache = $_SESSION['kSprache'];
+            $seo           = new stdClass();
+            $seo->cSeo     = $item->cSeo;
+            $seo->cKey     = 'suchspecial';
+            $seo->kKey     = $item->kKey;
+            $seo->kSprache = $_SESSION['kSprache'];
 
-            $db->insert('tseo', $oSeo);
+            $db->insert('tseo', $seo);
         }
     }
     if (count($ssToDelete) > 0) {
@@ -254,8 +254,8 @@ $ssSeoData      = $db->selectAll(
     'kKey'
 );
 $searchSpecials = [];
-foreach ($ssSeoData as $oSuchSpecials) {
-    $searchSpecials[$oSuchSpecials->kKey] = $oSuchSpecials->cSeo;
+foreach ($ssSeoData as $searchSpecial) {
+    $searchSpecials[$searchSpecial->kKey] = $searchSpecial->cSeo;
 }
 
 $smarty->assign('oConfig_arr', getAdminSectionSettings(CONF_SUCHSPECIAL))
@@ -266,16 +266,16 @@ $smarty->assign('oConfig_arr', getAdminSectionSettings(CONF_SUCHSPECIAL))
 /**
  * Prueft ob ein bestimmtes Suchspecial Seo schon vorhanden ist
  *
- * @param array  $oSuchSpecials_arr
- * @param string $cSeo
- * @param int    $kKey
+ * @param array  $searchSpecials
+ * @param string $seo
+ * @param int    $key
  * @return bool
  */
-function pruefeSuchspecialSeo($oSuchSpecials_arr, $cSeo, $kKey)
+function pruefeSuchspecialSeo($searchSpecials, $seo, $key)
 {
-    if ($kKey > 0 && is_array($oSuchSpecials_arr) && count($oSuchSpecials_arr) > 0 && mb_strlen($cSeo)) {
-        foreach ($oSuchSpecials_arr as $oSuchSpecials) {
-            if ($oSuchSpecials->kKey == $kKey && $oSuchSpecials->cSeo === $cSeo) {
+    if ($key > 0 && is_array($searchSpecials) && count($searchSpecials) > 0 && mb_strlen($seo)) {
+        foreach ($searchSpecials as $oSuchSpecials) {
+            if ($oSuchSpecials->kKey == $key && $oSuchSpecials->cSeo === $seo) {
                 return true;
             }
         }

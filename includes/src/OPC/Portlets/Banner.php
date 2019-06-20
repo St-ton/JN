@@ -19,16 +19,16 @@ use JTL\Shop;
 class Banner extends Portlet
 {
     /**
-     * @param int $kArtikel
+     * @param int $productID
      * @return Artikel
      */
-    public function getProduct(int $kArtikel)
+    public function getProduct(int $productID)
     {
         $defaultOptions = Artikel::getDefaultOptions();
-        $oArtikel       = new Artikel();
-        $oArtikel->fuelleArtikel($kArtikel, $defaultOptions);
+        $product        = new Artikel();
+        $product->fuelleArtikel($productID, $defaultOptions);
 
-        return $oArtikel;
+        return $product;
     }
 
     /**

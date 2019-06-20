@@ -109,12 +109,12 @@ class ReviewReminder
             $obj              = new stdClass();
             $obj->tkunde      = $customer;
             $obj->tbestellung = $order;
-            foreach ($order->Positionen as $position) {
-                if ($position->kArtikel <= 0) {
+            foreach ($order->Positionen as $item) {
+                if ($item->kArtikel <= 0) {
                     continue;
                 }
                 $productVisible = (new Artikel())->fuelleArtikel(
-                    (int)$position->kArtikel,
+                    (int)$item->kArtikel,
                     null,
                     (int)$customer->kKundengruppe
                 );
@@ -122,12 +122,12 @@ class ReviewReminder
                     $res = Shop::Container()->getDB()->query(
                         'SELECT kBewertung
                             FROM tbewertung
-                            WHERE kArtikel = ' . (int)$position->kArtikel . '
+                            WHERE kArtikel = ' . (int)$item->kArtikel . '
                                 AND kKunde = ' . (int)$order->kKunde,
                         ReturnType::SINGLE_OBJECT
                     );
                     if ($res === false) {
-                        $openReviews[] = $position;
+                        $openReviews[] = $item;
                     }
                 }
             }

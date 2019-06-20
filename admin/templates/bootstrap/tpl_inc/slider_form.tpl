@@ -1,7 +1,7 @@
 <div id="settings">
-    <form action="slider.php?action={$cAction}" method="post" accept-charset="iso-8859-1" id="slider" enctype="multipart/form-data">
+    <form action="slider.php?action={$action}" method="post" accept-charset="iso-8859-1" id="slider" enctype="multipart/form-data">
         {$jtl_token}
-        <input type="hidden" name="action" value="{$cAction}" />
+        <input type="hidden" name="action" value="{$action}" />
         <input type="hidden" name="kSlider" value="{$oSlider->getID()}" />
         <div class="panel panel-default">
             <div class="panel-heading">

@@ -8,28 +8,28 @@ use JTL\Shop;
 use JTL\Catalog\Trennzeichen;
 
 /**
- * @param array $cPostAssoc_arr
+ * @param array $post
  * @return bool
  */
-function speicherTrennzeichen(array $cPostAssoc_arr): bool
+function speicherTrennzeichen(array $post): bool
 {
     foreach ([JTL_SEPARATOR_WEIGHT, JTL_SEPARATOR_AMOUNT, JTL_SEPARATOR_LENGTH] as $nEinheit) {
         if (isset(
-            $cPostAssoc_arr['nDezimal_' . $nEinheit],
-            $cPostAssoc_arr['cDezZeichen_' . $nEinheit],
-            $cPostAssoc_arr['cTausenderZeichen_' . $nEinheit]
+            $post['nDezimal_' . $nEinheit],
+            $post['cDezZeichen_' . $nEinheit],
+            $post['cTausenderZeichen_' . $nEinheit]
         )) {
-            $oTrennzeichen = new Trennzeichen();
-            $oTrennzeichen->setSprache($_SESSION['kSprache'])
+            $trennzeichen = new Trennzeichen();
+            $trennzeichen->setSprache($_SESSION['kSprache'])
                           ->setEinheit($nEinheit)
-                          ->setDezimalstellen($cPostAssoc_arr['nDezimal_' . $nEinheit])
-                          ->setDezimalZeichen($cPostAssoc_arr['cDezZeichen_' . $nEinheit])
-                          ->setTausenderZeichen($cPostAssoc_arr['cTausenderZeichen_' . $nEinheit]);
+                          ->setDezimalstellen($post['nDezimal_' . $nEinheit])
+                          ->setDezimalZeichen($post['cDezZeichen_' . $nEinheit])
+                          ->setTausenderZeichen($post['cTausenderZeichen_' . $nEinheit]);
             $idx = 'kTrennzeichen_' . $nEinheit;
-            if (isset($cPostAssoc_arr[$idx])) {
-                $oTrennzeichen->setTrennzeichen($cPostAssoc_arr[$idx])
+            if (isset($post[$idx])) {
+                $trennzeichen->setTrennzeichen($post[$idx])
                               ->update();
-            } elseif (!$oTrennzeichen->save()) {
+            } elseif (!$trennzeichen->save()) {
                 return false;
             }
         }

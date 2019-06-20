@@ -76,12 +76,12 @@ class Migration_20180522105000 extends Migration implements IMigration
             ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($missingSeo as $item) {
-            $oSeo           = new stdClass();
-            $oSeo->cSeo     = Seo::checkSeo($item->cSeo);
-            $oSeo->kKey     = $item->kLink;
-            $oSeo->cKey     = 'kLink';
-            $oSeo->kSprache = $item->kSprache;
-            $this->getDB()->insert('tseo', $oSeo);
+            $seo           = new stdClass();
+            $seo->cSeo     = Seo::checkSeo($item->cSeo);
+            $seo->kKey     = $item->kLink;
+            $seo->cKey     = 'kLink';
+            $seo->kSprache = $item->kSprache;
+            $this->getDB()->insert('tseo', $seo);
         }
         $missingLinkGroupLanguages = $this->getDB()->query(
             'SELECT tlinkgruppe.* 

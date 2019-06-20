@@ -48,9 +48,9 @@ if (!empty($_POST) && Form::validateToken()) {
     }
 }
 
-$oConfig_arr = getAdminSectionSettings(CONF_FTP);
-Shop::Container()->getGetText()->localizeConfigs($oConfig_arr);
+$config = getAdminSectionSettings(CONF_FTP);
+Shop::Container()->getGetText()->localizeConfigs($config);
 
-$smarty->assign('oConfig_arr', $oConfig_arr)
+$smarty->assign('oConfig_arr', $config)
        ->assign('oConfig', Shop::getSettings([CONF_FTP])['ftp'])
        ->display('ftp.tpl');

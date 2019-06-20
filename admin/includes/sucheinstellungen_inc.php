@@ -44,9 +44,9 @@ function createSearchIndex($index, $create)
 
     if ($create === 'Y') {
         $searchRows = array_map(function ($item) {
-            $item_arr = explode('.', $item, 2);
+            $items = explode('.', $item, 2);
 
-            return $item_arr[1];
+            return $items[1];
         }, JTL\Filter\States\BaseSearchQuery::getSearchRows());
 
         switch ($index) {

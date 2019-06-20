@@ -46,22 +46,22 @@ class Redirect
     public $nCount = 0;
 
     /**
-     * @param int $kRedirect
+     * @param int $id
      */
-    public function __construct(int $kRedirect = 0)
+    public function __construct(int $id = 0)
     {
-        if ($kRedirect > 0) {
-            $this->loadFromDB($kRedirect);
+        if ($id > 0) {
+            $this->loadFromDB($id);
         }
     }
 
     /**
-     * @param int $kRedirect
+     * @param int $id
      * @return $this
      */
-    public function loadFromDB(int $kRedirect): self
+    public function loadFromDB(int $id): self
     {
-        $obj = Shop::Container()->getDB()->select('tredirect', 'kRedirect', $kRedirect);
+        $obj = Shop::Container()->getDB()->select('tredirect', 'kRedirect', $id);
         if ($obj !== null && $obj->kRedirect > 0) {
             $members = \array_keys(\get_object_vars($obj));
             foreach ($members as $member) {
@@ -73,13 +73,13 @@ class Redirect
     }
 
     /**
-     * @param int $kRedirect
+     * @param int $id
      * @return $this
      * @deprecated since 4.06 - use Redirect::deleteRedirect() instead
      */
-    public function delete(int $kRedirect): self
+    public function delete(int $id): self
     {
-        self::deleteRedirect($kRedirect);
+        self::deleteRedirect($id);
 
         return $this;
     }
@@ -94,23 +94,23 @@ class Redirect
     }
 
     /**
-     * @param string $cUrl
+     * @param string $url
      * @return null|stdClass
      */
-    public function find(string $cUrl): ?stdClass
+    public function find(string $url): ?stdClass
     {
-        return Shop::Container()->getDB()->select('tredirect', 'cFromUrl', $this->normalize($cUrl));
+        return Shop::Container()->getDB()->select('tredirect', 'cFromUrl', $this->normalize($url));
     }
 
     /**
      * Get a redirect by target
      *
-     * @param string $cToUrl target to search for
+     * @param string $targetURL target to search for
      * @return null|stdClass
      */
-    public function getRedirectByTarget(string $cToUrl): ?stdClass
+    public function getRedirectByTarget(string $targetURL): ?stdClass
     {
-        return Shop::Container()->getDB()->select('tredirect', 'cToUrl', $this->normalize($cToUrl));
+        return Shop::Container()->getDB()->select('tredirect', 'cToUrl', $this->normalize($targetURL));
     }
 
     /**

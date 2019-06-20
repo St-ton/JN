@@ -100,20 +100,16 @@ class LegacyBoxes
         return $this->boxService->getBoxes();
     }
 
-    /**
-     * @param array $boxList
-     */
-    public function setBoxList(array $boxList): void
+    public function setBoxList(): void
     {
         \trigger_error(__CLASS__ . ': setting boxes here is not possible anymore.', \E_USER_DEPRECATED);
     }
 
     /**
-     * @param int $page
      * @return array
      * @deprecated since 5.0.0
      */
-    public function holeVorlagen(int $page = -1): array
+    public function holeVorlagen(): array
     {
         \trigger_error(__METHOD__ . ' is deprecated and does not work anymore.', \E_USER_DEPRECATED);
 
@@ -121,12 +117,10 @@ class LegacyBoxes
     }
 
     /**
-     * @param int    $kBox
-     * @param string $cISO
      * @return mixed
      * @deprecated since 5.0.0
      */
-    public function gibBoxInhalt(int $kBox, string $cISO = '')
+    public function gibBoxInhalt()
     {
         \trigger_error(__METHOD__ . ' is deprecated and does not work anymore.', \E_USER_DEPRECATED);
 
@@ -137,11 +131,10 @@ class LegacyBoxes
      * @param int  $page
      * @param bool $active
      * @param bool $visible
-     * @param bool $force
      * @return array
      * @deprecated since 5.0.0
      */
-    public function holeBoxen(int $page = 0, bool $active = true, bool $visible = false, bool $force = false): array
+    public function holeBoxen(int $page = 0, bool $active = true, bool $visible = false): array
     {
         \trigger_error(
             __METHOD__ . ' is deprecated. Use ' . \get_class($this->boxService) . ' instead',
@@ -179,12 +172,10 @@ class LegacyBoxes
     /**
      * supply data for specific box types
      *
-     * @param int    $kBoxVorlage
-     * @param object $oBox
      * @return mixed
      * @deprecated since 5.0.0
      */
-    public function prepareBox(int $kBoxVorlage, $oBox)
+    public function prepareBox()
     {
         \trigger_error(__METHOD__ . ' is deprecated and does not work anymore.', \E_USER_DEPRECATED);
 
@@ -208,21 +199,18 @@ class LegacyBoxes
     }
 
     /**
-     * @param int $kArtikel
-     * @param int $nMaxAnzahl
      * @deprecated since 5.0.0
      */
-    public function addRecentlyViewed(int $kArtikel, $nMaxAnzahl = null): void
+    public function addRecentlyViewed(): void
     {
         \trigger_error(__METHOD__ . ' is deprecated and does not work anymore.', \E_USER_DEPRECATED);
     }
 
     /**
      * @deprecated since 5.0.0
-     * @param int $kSeite
      * @return string
      */
-    public function mappekSeite(int $kSeite): string
+    public function mappekSeite(): string
     {
         \trigger_error(__METHOD__ . ' is deprecated and does not work anymore.', \E_USER_DEPRECATED);
 
@@ -230,12 +218,10 @@ class LegacyBoxes
     }
 
     /**
-     * @param int  $page
-     * @param bool $bGlobal
      * @return array|bool
      * @deprecated since 5.0.0
      */
-    public function holeBoxAnzeige(int $page, bool $bGlobal = true)
+    public function holeBoxAnzeige()
     {
         \trigger_error(__METHOD__ . ' is deprecated and does not work anymore.', \E_USER_DEPRECATED);
 
@@ -243,13 +229,10 @@ class LegacyBoxes
     }
 
     /**
-     * @param int      $page
-     * @param string   $ePosition
-     * @param bool|int $bAnzeigen
      * @return bool
      * @deprecated since 5.0.0
      */
-    public function setzeBoxAnzeige(int $page, string $ePosition, $bAnzeigen): bool
+    public function setzeBoxAnzeige(): bool
     {
         \trigger_error(__METHOD__ . ' is deprecated and does not work anymore.', \E_USER_DEPRECATED);
 
@@ -261,7 +244,7 @@ class LegacyBoxes
      * @return stdClass|null
      * @deprecated since 5.0.0
      */
-    public function holeVorlage(int $kBoxvorlage): ?\stdClass
+    public function holeVorlage(int $kBoxvorlage): ?stdClass
     {
         \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
 
@@ -269,23 +252,18 @@ class LegacyBoxes
     }
 
     /**
-     * @param string $ePosition
      * @deprecated since 5.0.0
      */
-    public function holeContainer(string $ePosition): void
+    public function holeContainer(): void
     {
         \trigger_error(__METHOD__ . ' is deprecated and does not work anymore.', \E_USER_DEPRECATED);
     }
 
     /**
-     * @param int    $kBoxvorlage
-     * @param int    $page
-     * @param string $ePosition
-     * @param int    $kContainer
      * @return bool
      * @deprecated since 5.0.0
      */
-    public function setzeBox(int $kBoxvorlage, int $page, string $ePosition = 'left', int $kContainer = 0): bool
+    public function setzeBox(): bool
     {
         \trigger_error(__METHOD__ . ' is deprecated and does not work anymore.', \E_USER_DEPRECATED);
 
@@ -293,87 +271,70 @@ class LegacyBoxes
     }
 
     /**
-     * @param int $kBox
+     * @param int $id
      * @return stdClass
      * @deprecated since 5.0.0
      */
-    public function holeBox(int $kBox): stdClass
+    public function holeBox(int $id): stdClass
     {
         \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-        $oBox = Shop::Container()->getDB()->query(
+        $box = Shop::Container()->getDB()->query(
             'SELECT tboxen.kBox, tboxen.kBoxvorlage, tboxen.kCustomID, tboxen.cTitel, tboxen.ePosition,
                 tboxvorlage.eTyp, tboxvorlage.cName, tboxvorlage.cVerfuegbar, tboxvorlage.cTemplate
                 FROM tboxen
                 LEFT JOIN tboxvorlage 
                     ON tboxen.kBoxvorlage = tboxvorlage.kBoxvorlage
-                WHERE kBox = ' . $kBox,
+                WHERE kBox = ' . $id,
             ReturnType::SINGLE_OBJECT
         );
 
-        $oBox->oSprache_arr      = ($oBox && ($oBox->eTyp === 'text' || $oBox->eTyp === 'catbox'))
-            ? $this->gibBoxInhalt($kBox)
+        $box->oSprache_arr      = ($box && ($box->eTyp === 'text' || $box->eTyp === 'catbox'))
+            ? $this->gibBoxInhalt($id)
             : [];
-        $oBox->kBox              = (int)$oBox->kBox;
-        $oBox->kBoxvorlage       = (int)$oBox->kBoxvorlage;
-        $oBox->supportsRevisions = $oBox->kBoxvorlage === 30 || $oBox->kBoxvorlage === 31; // only "Eigene Box"
+        $box->kBox              = (int)$box->kBox;
+        $box->kBoxvorlage       = (int)$box->kBoxvorlage;
+        $box->supportsRevisions = $box->kBoxvorlage === 30 || $box->kBoxvorlage === 31; // only "Eigene Box"
 
-        return $oBox;
+        return $box;
     }
 
     /**
-     * @param int    $kBox
-     * @param string $cTitel
-     * @param int    $kCustomID
      * @deprecated since 5.0.0
      */
-    public function bearbeiteBox(int $kBox, $cTitel, int $kCustomID = 0): void
+    public function bearbeiteBox(): void
     {
         \trigger_error(__METHOD__ . ' is deprecated and does not work anymore.', \E_USER_DEPRECATED);
     }
 
     /**
-     * @param int    $kBox
-     * @param string $cISO
-     * @param string $cTitel
-     * @param string $cInhalt
      * @deprecated since 5.0.0
      */
-    public function bearbeiteBoxSprache(int $kBox, string $cISO, string $cTitel, string $cInhalt): void
+    public function bearbeiteBoxSprache(): void
     {
         \trigger_error(__METHOD__ . ' is deprecated and does not work anymore.', \E_USER_DEPRECATED);
     }
 
     /**
-     * @param int    $page
-     * @param string $ePosition
-     * @param int    $kContainer
      * @deprecated since 5.0.0
      */
-    public function letzteSortierID(int $page, string $ePosition = 'left', int $kContainer = 0): void
+    public function letzteSortierID(): void
     {
         \trigger_error(__METHOD__ . ' is deprecated and does not work anymore..', \E_USER_DEPRECATED);
     }
 
     /**
-     * @param int          $kBox
-     * @param int          $kSeite
-     * @param string|array $cFilter
      * @deprecated since 5.0.0
      */
-    public function filterBoxVisibility(int $kBox, int $kSeite, $cFilter = ''): void
+    public function filterBoxVisibility(): void
     {
         \trigger_error(__METHOD__ . ' is deprecated and does not work anymore..', \E_USER_DEPRECATED);
     }
 
     /**
-     * @param int      $kBox
-     * @param int      $page
-     * @param int      $nSort
-     * @param bool|int $active
      * @return bool
      * @deprecated since 5.0.0
      */
-    public function sortBox(int $kBox, int $page, int $nSort, $active = true): bool
+    public function sortBox(): bool
     {
         \trigger_error(__METHOD__ . ' is deprecated and does not work anymore.', \E_USER_DEPRECATED);
 
@@ -381,13 +342,10 @@ class LegacyBoxes
     }
 
     /**
-     * @param int      $kBox
-     * @param int      $page
-     * @param bool|int $active
      * @return bool
      * @deprecated since 5.0.0
      */
-    public function aktiviereBox(int $kBox, int $page, $active = true): bool
+    public function aktiviereBox(): bool
     {
         \trigger_error(__METHOD__ . ' is deprecated and does not work anymore.', \E_USER_DEPRECATED);
 
@@ -395,11 +353,10 @@ class LegacyBoxes
     }
 
     /**
-     * @param int $kBox
      * @return bool
      * @deprecated since 5.0.0
      */
-    public function loescheBox(int $kBox): bool
+    public function loescheBox(): bool
     {
         \trigger_error(__METHOD__ . ' is deprecated and does not work anymore.', \E_USER_DEPRECATED);
 

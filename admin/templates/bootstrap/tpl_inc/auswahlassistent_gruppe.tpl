@@ -98,7 +98,7 @@
                                         {assign var=bAOSelect value=false}
                                         {if isset($oGruppe->oAuswahlAssistentOrt_arr) && $oGruppe->oAuswahlAssistentOrt_arr|@count > 0}
                                             {foreach $oGruppe->oAuswahlAssistentOrt_arr as $oAuswahlAssistentOrt}
-                                                {if $oLink->kLink == $oAuswahlAssistentOrt->kKey && $oAuswahlAssistentOrt->cKey == $AUSWAHLASSISTENT_ORT_LINK}
+                                                {if $oLink->kLink == $oAuswahlAssistentOrt->kKey && $oAuswahlAssistentOrt->cKey == $smarty.const.AUSWAHLASSISTENT_ORT_LINK}
                                                     {assign var=bAOSelect value=true}
                                                 {/if}
                                             {/foreach}

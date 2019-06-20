@@ -33,22 +33,22 @@ class Nummern
     /**
      * Nummern constructor.
      *
-     * @param int $nArt
+     * @param int $id
      */
-    public function __construct(int $nArt = 0)
+    public function __construct(int $id = 0)
     {
-        if ($nArt > 0) {
-            $this->loadFromDB($nArt);
+        if ($id > 0) {
+            $this->loadFromDB($id);
         }
     }
 
     /**
-     * @param int $nArt
+     * @param int $id
      * @return $this
      */
-    private function loadFromDB(int $nArt = 0): self
+    private function loadFromDB(int $id = 0): self
     {
-        $item = Shop::Container()->getDB()->select('tnummern', 'nArt', $nArt);
+        $item = Shop::Container()->getDB()->select('tnummern', 'nArt', $id);
         if ($item !== null && $item->nArt > 0) {
             foreach (\array_keys(\get_object_vars($item)) as $member) {
                 $this->$member = $item->$member;
@@ -59,10 +59,10 @@ class Nummern
     }
 
     /**
-     * @param bool $bPrim
+     * @param bool $primary
      * @return bool|int
      */
-    public function save(bool $bPrim = true)
+    public function save(bool $primary = true)
     {
         $ins = new stdClass();
         foreach (\array_keys(\get_object_vars($this)) as $member) {
@@ -70,7 +70,7 @@ class Nummern
         }
         $kPrim = Shop::Container()->getDB()->insert('tnummern', $ins);
         if ($kPrim > 0) {
-            return $bPrim ? $kPrim : true;
+            return $primary ? $kPrim : true;
         }
 
         return false;

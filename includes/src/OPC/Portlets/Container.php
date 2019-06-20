@@ -75,7 +75,6 @@ class Container extends Portlet
             $name = \explode('/', $instance->getProperty('src'));
             $name = \end($name);
 
-            $instance->addClass('parallax-window');
             $instance->setAttribute('data-parallax', 'scroll');
             $instance->setAttribute('data-z-index', '1');
             $instance->setAttribute('data-image-src', Shop::getURL() . '/' . \PFAD_MEDIAFILES . 'Bilder/.lg/' . $name);

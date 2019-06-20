@@ -821,9 +821,8 @@ final class Products extends AbstractSync
 
     /**
      * @param array $xml
-     * @param array $products
      */
-    private function handleSQL(array $xml, array $products): void
+    private function handleSQL(array $xml): void
     {
         if (isset($xml['tartikel']['SQLDEL']) && \strlen($xml['tartikel']['SQLDEL']) > 10) {
             $this->logger->debug('SQLDEL: ' . $xml['tartikel']['SQLDEL']);
@@ -831,7 +830,7 @@ final class Products extends AbstractSync
                 if (\strlen($sql) <= 10) {
                     continue;
                 }
-                $this->db->query($sql, ReturnType::AFFECTED_ROWS);
+                $this->db->query($sql, ReturnType::DEFAULT);
             }
         }
         if (!isset($xml['tartikel']['SQL']) || \strlen($xml['tartikel']['SQL']) <= 10) {
@@ -842,25 +841,7 @@ final class Products extends AbstractSync
             if (\strlen($sql) <= 10) {
                 continue;
             }
-            // Pre Wawi 0.99862 fix
-            if (isset($products[0]->kVaterArtikel)
-                && $products[0]->kVaterArtikel > 0
-                && !isset($xml['tartikel']['SQLDEL'])
-                && \strpos($sql, 'teigenschaftkombiwert') !== false
-            ) {
-                $del     = \substr($sql, \strpos($sql, 'values ') + \strlen('values '));
-                $itemIDs = [];
-                foreach (\str_replace(['(', ')'], '', \explode('),(', $del)) as $del) {
-                    $itemIDs[] = (int)\substr($del, 0, \strpos($del, ','));
-                }
-                $this->db->query(
-                    'DELETE
-                    FROM teigenschaftkombiwert 
-                    WHERE kEigenschaftKombi IN (' . \implode(',', $itemIDs) . ')',
-                    ReturnType::AFFECTED_ROWS
-                );
-            }
-            $this->db->query($sql, ReturnType::AFFECTED_ROWS);
+            $this->db->query($sql, ReturnType::DEFAULT);
         }
     }
 
@@ -987,7 +968,7 @@ final class Products extends AbstractSync
         $this->updateXMLinDB($xml['tartikel'], 'txsell', 'mXSell', 'kXSell');
         $this->updateXMLinDB($xml['tartikel'], 'tartikelmerkmal', 'mArtikelSichtbarkeit', 'kMermalWert');
         $this->addStockData($products[0], $conf);
-        $this->handleSQL($xml, $products);
+        $this->handleSQL($xml);
         $this->addWarehouseData($xml, $productID);
         $this->addCharacteristics($xml);
         $this->addCategoryDiscounts($productID);

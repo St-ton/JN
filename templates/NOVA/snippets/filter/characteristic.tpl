@@ -33,7 +33,7 @@
         {else}
             {if $limit != -1 && $attributeValue@iteration > $limit && !$collapseInit}
                 <div class="collapse {if $Merkmal->isActive()} show{/if}" id="box-collps-filter-attribute-{$Merkmal->getValue()}" aria-expanded="false">
-                    <ul class="nav {if $Einstellungen.navigationsfilter.hersteller_anzeigen_als !== 'B'}flex-column{/if}">
+                    <ul class="nav {if $Merkmal->getData('cTyp') !== 'BILD'}flex-column{/if}">
                 {$collapseInit = true}
             {/if}
             {block name='snippets-filter-characteristics-nav'}

@@ -132,7 +132,7 @@ class Search extends AbstractFilter
      */
     public function setSeo(array $languages): FilterInterface
     {
-        $oSeo_obj = $this->productFilter->getDB()->executeQueryPrepared(
+        $seo = $this->productFilter->getDB()->executeQueryPrepared(
             "SELECT tseo.cSeo, tseo.kSprache, tsuchanfrage.cSuche
                 FROM tseo
                 LEFT JOIN tsuchanfrage
@@ -145,14 +145,14 @@ class Search extends AbstractFilter
         );
         foreach ($languages as $language) {
             $this->cSeo[$language->kSprache] = '';
-            if (isset($oSeo_obj->kSprache) && $language->kSprache === $oSeo_obj->kSprache) {
-                $this->cSeo[$language->kSprache] = $oSeo_obj->cSeo;
+            if (isset($seo->kSprache) && $language->kSprache === $seo->kSprache) {
+                $this->cSeo[$language->kSprache] = $seo->cSeo;
             }
         }
-        if (!empty($oSeo_obj->cSuche)) {
-            $this->setName($oSeo_obj->cSuche);
-        } elseif (!empty($oSeo_obj->cSeo)) {
-            $this->setName($oSeo_obj->cSeo);
+        if (!empty($seo->cSuche)) {
+            $this->setName($seo->cSuche);
+        } elseif (!empty($seo->cSeo)) {
+            $this->setName($seo->cSeo);
         }
 
 
@@ -236,7 +236,7 @@ class Search extends AbstractFilter
             return false;
         }
         // Ist md5(IP) bereits X mal im Cache
-        $max_ip_count = (int)$this->getConfig('artikeluebersicht')['livesuche_max_ip_count'] * 100;
+        $max_ip_count = (int)$this->getConfig('artikeluebersicht')['livesuche_max_ip_count'];
         $ip_cache_erg = $this->productFilter->getDB()->executeQueryPrepared(
             'SELECT COUNT(*) AS anzahl
                 FROM tsuchanfragencache
@@ -486,9 +486,9 @@ class Search extends AbstractFilter
             $searchQueries[] = $this->productFilter->getSearch()->getValue();
         }
         if ($this->productFilter->hasSearchFilter()) {
-            foreach ($this->productFilter->getSearchFilter() as $oSuchFilter) {
-                if ($oSuchFilter->getValue() > 0) {
-                    $searchQueries[] = (int)$oSuchFilter->getValue();
+            foreach ($this->productFilter->getSearchFilter() as $item) {
+                if ($item->getValue() > 0) {
+                    $searchQueries[] = (int)$item->getValue();
                 }
             }
         }

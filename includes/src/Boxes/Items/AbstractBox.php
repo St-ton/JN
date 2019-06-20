@@ -806,7 +806,7 @@ abstract class AbstractBox implements BoxInterface
      * @param array  $cloud
      * @param string $nSpeed
      * @param string $nOpacity
-     * @param bool   $cColor
+     * @param bool   $color
      * @param bool   $cColorHover
      * @return string
      */
@@ -814,7 +814,7 @@ abstract class AbstractBox implements BoxInterface
         $cloud,
         $nSpeed = '1',
         $nOpacity = '0.2',
-        $cColor = false,
+        $color = false,
         $cColorHover = false
     ): string {
         $iCur = 0;
@@ -835,20 +835,20 @@ abstract class AbstractBox implements BoxInterface
             return '0x' . $cColor;
         };
 
-        foreach ($cloud as $oCloud) {
+        foreach ($cloud as $item) {
             if ($iCur++ >= $iMax) {
                 break;
             }
-            $cName          = $oCloud->cName ?? $oCloud->cSuche;
-            $cRandomColor   = (!$cColor || !$cColorHover) ? $gibTagFarbe() : '';
-            $cName          = \urlencode($cName);
-            $cName          = \str_replace('+', ' ', $cName); /* fix :) */
+            $name           = $item->cName ?? $item->cSuche;
+            $randomColor    = (!$color || !$cColorHover) ? $gibTagFarbe() : '';
+            $name           = \urlencode($name);
+            $name           = \str_replace('+', ' ', $name); /* fix :) */
             $tags['tags'][] = [
-                'name'  => $cName,
-                'url'   => $oCloud->cURL,
-                'size'  => (\count($cloud) <= 5) ? '100' : (string)($oCloud->Klasse * 10), /* 10 bis 100 */
-                'color' => $cColor ?: $cRandomColor,
-                'hover' => $cColorHover ?: $cRandomColor
+                'name'  => $name,
+                'url'   => $item->cURL,
+                'size'  => (\count($cloud) <= 5) ? '100' : (string)($item->Klasse * 10), /* 10 bis 100 */
+                'color' => $color ?: $randomColor,
+                'hover' => $cColorHover ?: $randomColor
             ];
         }
 

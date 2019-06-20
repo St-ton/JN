@@ -20,9 +20,9 @@ class Migration_20170201161322 extends Migration implements IMigration
     public function up()
     {
         // The up-function will only be executed if Migration_20161216110237 is installed.
-        $oMigration = $this->fetchOne('SELECT kMigration FROM tmigration WHERE kMigration = 20161216110237');
+        $migration = $this->fetchOne('SELECT kMigration FROM tmigration WHERE kMigration = 20161216110237');
 
-        if (isset($oMigration) && (int)$oMigration->kMigration === 20161216110237) {
+        if (isset($migration) && (int)$migration->kMigration === 20161216110237) {
             $this->removeConfig('addDeliveryDayOnSaturday');
 
             $this->setLocalization('ger', 'global', 'deliverytimeEstimation', '#MINDELIVERYDAYS# - #MAXDELIVERYDAYS# Werktage');

@@ -67,39 +67,39 @@ class LegacyCron
     public $dLetzterStart;
 
     /**
-     * @param int    $kCron
-     * @param int    $kKey
-     * @param int    $nAlleXStd
-     * @param string $cName
-     * @param string $cJobArt
-     * @param string $cTabelle
-     * @param string $cKey
-     * @param string $dStart
-     * @param string $dStartZeit
-     * @param string $dLetzterStart
+     * @param int    $cronID
+     * @param int    $key
+     * @param int    $frequency
+     * @param string $name
+     * @param string $jobType
+     * @param string $table
+     * @param string $keyName
+     * @param string $start
+     * @param string $startTime
+     * @param string $lastStart
      */
     public function __construct(
-        int $kCron = 0,
-        int $kKey = 0,
-        int $nAlleXStd = 0,
-        string $cName = '',
-        string $cJobArt = '',
-        string $cTabelle = '',
-        string $cKey = '',
-        string $dStart = null,
-        string $dStartZeit = null,
-        string $dLetzterStart = null
+        int $cronID = 0,
+        int $key = 0,
+        int $frequency = 0,
+        string $name = '',
+        string $jobType = '',
+        string $table = '',
+        string $keyName = '',
+        string $start = null,
+        string $startTime = null,
+        string $lastStart = null
     ) {
-        $this->kCron         = $kCron;
-        $this->kKey          = $kKey;
-        $this->cKey          = $cKey;
-        $this->cTabelle      = $cTabelle;
-        $this->cName         = $cName;
-        $this->cJobArt       = $cJobArt;
-        $this->nAlleXStd     = $nAlleXStd;
-        $this->dStart        = $dStart;
-        $this->dStartZeit    = $dStartZeit;
-        $this->dLetzterStart = $dLetzterStart;
+        $this->kCron         = $cronID;
+        $this->kKey          = $key;
+        $this->cKey          = $keyName;
+        $this->cTabelle      = $table;
+        $this->cName         = $name;
+        $this->cJobArt       = $jobType;
+        $this->nAlleXStd     = $frequency;
+        $this->dStart        = $start;
+        $this->dStartZeit    = $startTime;
+        $this->dLetzterStart = $lastStart;
     }
 
     /**

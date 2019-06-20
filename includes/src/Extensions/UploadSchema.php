@@ -141,7 +141,7 @@ final class UploadSchema
         if (!$this->licenseOK) {
             return [];
         }
-        $cSql = $type === \UPLOAD_TYP_WARENKORBPOS
+        $sql = $type === \UPLOAD_TYP_WARENKORBPOS
             ? ' AND kCustomID = ' . $kCustomID
             : '';
 
@@ -154,7 +154,7 @@ final class UploadSchema
                 LEFT JOIN tuploadschemasprache
                     ON tuploadschemasprache.kArtikelUpload = tuploadschema.kUploadSchema
                     AND tuploadschemasprache.kSprache = :lid
-                WHERE nTyp = :tpe' . $cSql,
+                WHERE nTyp = :tpe' . $sql,
             ['tpe' => $type, 'lid' => Shop::getLanguage()],
             ReturnType::ARRAY_OF_OBJECTS
         );

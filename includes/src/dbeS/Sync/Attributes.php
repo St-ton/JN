@@ -476,10 +476,10 @@ final class Attributes extends AbstractSync
                     $language->kSprache = (int)$language->kSprache;
 
                     $exists = false;
-                    foreach ($attributeValue->kSprache_arr as $kSprache) {
-                        $kSprache = (int)$kSprache;
+                    foreach ($attributeValue->kSprache_arr as $languageID) {
+                        $languageID = (int)$languageID;
                         // Laufe alle gefüllten Sprachen durch
-                        if ($kSprache === $language->kSprache) {
+                        if ($languageID === $language->kSprache) {
                             $exists = true;
                             break;
                         }

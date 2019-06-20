@@ -260,28 +260,28 @@ class Kunde
     ];
 
     /**
-     * @param int $kKunde
+     * @param int $id
      */
-    public function __construct(int $kKunde = null)
+    public function __construct(int $id = null)
     {
-        if ($kKunde > 0) {
-            $this->loadFromDB($kKunde);
+        if ($id > 0) {
+            $this->loadFromDB($id);
         }
     }
 
     /**
      * get customer by email address
      *
-     * @param string $cEmail
+     * @param string $mail
      * @return Kunde|null
      */
-    public function holRegKundeViaEmail($cEmail): ?Kunde
+    public function holRegKundeViaEmail($mail): ?Kunde
     {
-        if ($cEmail !== '') {
-            $oKundeTMP = Shop::Container()->getDB()->select(
+        if ($mail !== '') {
+            $data = Shop::Container()->getDB()->select(
                 'tkunde',
                 'cMail',
-                Text::filterXSS($cEmail),
+                Text::filterXSS($mail),
                 null,
                 null,
                 null,
@@ -290,8 +290,8 @@ class Kunde
                 'kKunde'
             );
 
-            if ($oKundeTMP !== null && isset($oKundeTMP->kKunde) && $oKundeTMP->kKunde > 0) {
-                return new self($oKundeTMP->kKunde);
+            if ($data !== null && isset($data->kKunde) && $data->kKunde > 0) {
+                return new self($data->kKunde);
             }
         }
 
@@ -477,19 +477,19 @@ class Kunde
     }
 
     /**
-     * @param int $kKunde
+     * @param int $id
      * @return $this
      */
-    public function loadFromDB(int $kKunde): self
+    public function loadFromDB(int $id): self
     {
-        if ($kKunde <= 0) {
+        if ($id <= 0) {
             return $this;
         }
-        $obj = Shop::Container()->getDB()->select('tkunde', 'kKunde', $kKunde);
-        if ($obj !== null && isset($obj->kKunde) && $obj->kKunde > 0) {
-            $members = \array_keys(\get_object_vars($obj));
+        $data = Shop::Container()->getDB()->select('tkunde', 'kKunde', $id);
+        if ($data !== null && isset($data->kKunde) && $data->kKunde > 0) {
+            $members = \array_keys(\get_object_vars($data));
             foreach ($members as $member) {
-                $this->$member = $obj->$member;
+                $this->$member = $data->$member;
             }
             $this->kSprache         = (int)$this->kSprache;
             $this->cAnredeLocalized = self::mapSalutation($this->cAnrede, $this->kSprache);

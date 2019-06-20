@@ -93,14 +93,14 @@ class Hersteller
     /**
      * Hersteller constructor.
      *
-     * @param int  $kHersteller
-     * @param int  $kSprache
+     * @param int  $id
+     * @param int  $languageID
      * @param bool $noCache     - set to true to avoid caching
      */
-    public function __construct(int $kHersteller = 0, int $kSprache = 0, bool $noCache = false)
+    public function __construct(int $id = 0, int $languageID = 0, bool $noCache = false)
     {
-        if ($kHersteller > 0) {
-            $this->loadFromDB($kHersteller, $kSprache, $noCache);
+        if ($id > 0) {
+            $this->loadFromDB($id, $languageID, $noCache);
         }
     }
 
@@ -127,24 +127,24 @@ class Hersteller
     }
 
     /**
-     * @param int  $kHersteller
-     * @param int  $kSprache
+     * @param int  $id
+     * @param int  $languageID
      * @param bool $noCache
      * @return $this
      */
-    public function loadFromDB(int $kHersteller, int $kSprache = 0, bool $noCache = false): self
+    public function loadFromDB(int $id, int $languageID = 0, bool $noCache = false): self
     {
         //noCache param to avoid problem with de-serialization of class properties with jtl search
-        $kSprache = $kSprache > 0 ? $kSprache : Shop::getLanguageID();
-        if ($kSprache === 0) {
-            $oSprache = LanguageHelper::getDefaultLanguage();
-            $kSprache = (int)$oSprache->kSprache;
+        $languageID = $languageID > 0 ? $languageID : Shop::getLanguageID();
+        if ($languageID === 0) {
+            $language   = LanguageHelper::getDefaultLanguage();
+            $languageID = (int)$language->kSprache;
         }
-        $cacheID   = 'manuf_' . $kHersteller . '_' . $kSprache . Shop::Container()->getCache()->getBaseID();
+        $cacheID   = 'manuf_' . $id . '_' . $languageID . Shop::Container()->getCache()->getBaseID();
         $cacheTags = [\CACHING_GROUP_MANUFACTURER];
         $cached    = true;
-        if ($noCache === true || ($oHersteller = Shop::Container()->getCache()->get($cacheID)) === false) {
-            $oHersteller = Shop::Container()->getDB()->queryPrepared(
+        if ($noCache === true || ($manufacturer = Shop::Container()->getCache()->get($cacheID)) === false) {
+            $manufacturer = Shop::Container()->getDB()->queryPrepared(
                 "SELECT thersteller.kHersteller, thersteller.cName, thersteller.cHomepage, thersteller.nSortNr, 
                     thersteller.cBildpfad, therstellersprache.cMetaTitle, therstellersprache.cMetaKeywords, 
                     therstellersprache.cMetaDescription, therstellersprache.cBeschreibung, tseo.cSeo
@@ -158,28 +158,28 @@ class Hersteller
                         AND tseo.kSprache = :langID
                     WHERE thersteller.kHersteller = :manfID",
                 [
-                    'langID' => $kSprache,
-                    'manfID' => $kHersteller
+                    'langID' => $languageID,
+                    'manfID' => $id
                 ],
                 ReturnType::SINGLE_OBJECT
             );
-            $cached      = false;
+            $cached       = false;
             \executeHook(\HOOK_HERSTELLER_CLASS_LOADFROMDB, [
-                'oHersteller' => &$oHersteller,
+                'oHersteller' => &$manufacturer,
                 'cached'      => false,
                 'cacheTags'   => &$cacheTags
             ]);
-            Shop::Container()->getCache()->set($cacheID, $oHersteller, $cacheTags);
+            Shop::Container()->getCache()->set($cacheID, $manufacturer, $cacheTags);
         }
         if ($cached === true) {
             \executeHook(\HOOK_HERSTELLER_CLASS_LOADFROMDB, [
-                'oHersteller' => &$oHersteller,
+                'oHersteller' => &$manufacturer,
                 'cached'      => true,
                 'cacheTags'   => &$cacheTags
             ]);
         }
-        if ($oHersteller !== false) {
-            $this->loadFromObject($oHersteller);
+        if ($manufacturer !== false) {
+            $this->loadFromObject($manufacturer);
         }
 
         return $this;
@@ -219,8 +219,8 @@ class Hersteller
      */
     public static function getAll(bool $productLookup = true): array
     {
-        $sqlWhere = '';
-        $kSprache = Shop::getLanguageID();
+        $sqlWhere   = '';
+        $languageID = Shop::getLanguageID();
         if ($productLookup) {
             $sqlWhere = ' WHERE EXISTS (
                             SELECT 1
@@ -235,26 +235,26 @@ class Hersteller
                 ')
                         )';
         }
-        $objs    = Shop::Container()->getDB()->query(
+        $items   = Shop::Container()->getDB()->query(
             'SELECT thersteller.kHersteller, thersteller.cName, thersteller.cHomepage, thersteller.nSortNr, 
                 thersteller.cBildpfad, therstellersprache.cMetaTitle, therstellersprache.cMetaKeywords, 
                 therstellersprache.cMetaDescription, therstellersprache.cBeschreibung, tseo.cSeo
                 FROM thersteller
                 LEFT JOIN therstellersprache 
                     ON therstellersprache.kHersteller = thersteller.kHersteller
-                    AND therstellersprache.kSprache = ' . $kSprache . "
+                    AND therstellersprache.kSprache = ' . $languageID . "
                 LEFT JOIN tseo 
                     ON tseo.kKey = thersteller.kHersteller
                     AND tseo.cKey = 'kHersteller'
-                    AND tseo.kSprache = " . $kSprache . $sqlWhere . '
+                    AND tseo.kSprache = " . $languageID . $sqlWhere . '
                 ORDER BY thersteller.nSortNr, thersteller.cName',
             ReturnType::ARRAY_OF_OBJECTS
         );
         $results = [];
-        foreach ($objs as $obj) {
-            $hersteller = new self(0, 0, true);
-            $hersteller->loadFromObject($obj);
-            $results[] = $hersteller;
+        foreach ($items as $item) {
+            $manufacturer = new self(0, 0, true);
+            $manufacturer->loadFromObject($item);
+            $results[] = $manufacturer;
         }
 
         return $results;

@@ -24,7 +24,6 @@
                 </div>
                 {collapse
                     class="box box-filter-characteristics {if $Merkmal->getData('cTyp') !== 'SELECTBOX'}overflow-auto{/if}"
-                    style="max-height: 200px"
                     id="sidebox{$oBox->getID()}-{$Merkmal->kMerkmal}"
                     visible=$Merkmal->isActive()
                 }

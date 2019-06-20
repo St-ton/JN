@@ -4,10 +4,15 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use AdminTemplate\Plugins;
+use JTL\Helpers\Text;
+use scc\DefaultComponentRegistrator;
+use sccbs3\Bs3sccRenderer;
+
 require_once __DIR__ . '/Plugins.php';
 
-$plugins = new \AdminTemplate\Plugins();
-$scc     = new \scc\DefaultComponentRegistrator(new \sccbs3\Bs3sccRenderer($smarty));
+$plugins = new Plugins();
+$scc     = new DefaultComponentRegistrator(new Bs3sccRenderer($smarty));
 $scc->registerComponents();
 
 /** @global \JTL\Smarty\JTLSmarty $smarty */
@@ -26,7 +31,7 @@ $smarty->registerPlugin(
        ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'getHelpDesc', [$plugins, 'getHelpDesc'])
        ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'getExtensionCategory', [$plugins, 'getExtensionCategory'])
        ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'formatVersion', [$plugins, 'formatVersion'])
-       ->registerPlugin(Smarty::PLUGIN_MODIFIER, 'formatByteSize', [\JTL\Helpers\Text::class, 'formatSize'])
+       ->registerPlugin(Smarty::PLUGIN_MODIFIER, 'formatByteSize', [Text::class, 'formatSize'])
        ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'gravatarImage', [$plugins, 'gravatarImage'])
        ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'getRevisions', [$plugins, 'getRevisions'])
        ->registerPlugin(Smarty::PLUGIN_FUNCTION, 'captchaMarkup', [$plugins, 'captchaMarkup'])

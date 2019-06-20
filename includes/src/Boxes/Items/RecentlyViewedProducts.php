@@ -30,9 +30,9 @@ final class RecentlyViewedProducts extends AbstractBox
         ) {
             $products       = [];
             $defaultOptions = Artikel::getDefaultOptions();
-            foreach ($_SESSION['ZuletztBesuchteArtikel'] as $i => $oArtikel) {
+            foreach ($_SESSION['ZuletztBesuchteArtikel'] as $i => $item) {
                 $product = new Artikel();
-                $product->fuelleArtikel($oArtikel->kArtikel, $defaultOptions);
+                $product->fuelleArtikel($item->kArtikel, $defaultOptions);
                 if ($product->kArtikel > 0) {
                     $products[$i] = $product;
                 }

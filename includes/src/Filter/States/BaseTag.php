@@ -61,7 +61,7 @@ class BaseTag extends AbstractFilter
      */
     public function setSeo(array $languages): FilterInterface
     {
-        $oSeo_obj = $this->productFilter->getDB()->queryPrepared(
+        $seo = $this->productFilter->getDB()->queryPrepared(
             "SELECT tseo.cSeo, tseo.kSprache, ttag.cName
                 FROM tseo
                 LEFT JOIN ttag
@@ -73,12 +73,12 @@ class BaseTag extends AbstractFilter
         );
         foreach ($languages as $language) {
             $this->cSeo[$language->kSprache] = '';
-            if (isset($oSeo_obj->kSprache) && $language->kSprache === (int)$oSeo_obj->kSprache) {
-                $this->cSeo[$language->kSprache] = $oSeo_obj->cSeo;
+            if (isset($seo->kSprache) && $language->kSprache === (int)$seo->kSprache) {
+                $this->cSeo[$language->kSprache] = $seo->cSeo;
             }
         }
-        if (!empty($oSeo_obj->cName)) {
-            $this->setName($oSeo_obj->cName);
+        if (!empty($seo->cName)) {
+            $this->setName($seo->cName);
         }
 
         return $this;

@@ -648,10 +648,10 @@ class Text
             return $text;
         }
         if (!isset($_SESSION['kSprache'])) {
-            $_lang    = LanguageHelper::getDefaultLanguage();
-            $kSprache = (int)$_lang->kSprache;
+            $language   = LanguageHelper::getDefaultLanguage();
+            $languageID = (int)$language->kSprache;
         } else {
-            $kSprache = Shop::getLanguageID();
+            $languageID = Shop::getLanguageID();
         }
         $params = [
             'a' => \URLART_ARTIKEL,
@@ -663,124 +663,124 @@ class Text
             'l' => \URLART_LIVESUCHE
         ];
         foreach ($hits[0] as $hit) {
-            $cParameter = \mb_substr($hit, \mb_strpos($hit, '#') + 1, 1);
-            $nBis       = \mb_strpos($hit, ':', 4);
+            $param = \mb_substr($hit, \mb_strpos($hit, '#') + 1, 1);
+            $until = \mb_strpos($hit, ':', 4);
             // Es wurde kein Name angegeben
-            if ($nBis === false) {
-                $nBis  = \mb_strpos($hit, ':', 3);
-                $nVon  = \mb_strpos($hit, '#', $nBis);
-                $cKey  = \mb_substr($hit, $nBis + 1, ($nVon - 1) - $nBis);
-                $cName = '';
+            if ($until === false) {
+                $until   = \mb_strpos($hit, ':', 3);
+                $from    = \mb_strpos($hit, '#', $until);
+                $keyName = \mb_substr($hit, $until + 1, ($from - 1) - $until);
+                $name    = '';
             } else {
-                $cKey  = \mb_substr($hit, 4, $nBis - 4);
-                $cName = \mb_substr($hit, $nBis + 1, \mb_strpos($hit, '#', $nBis) - ($nBis + 1));
+                $keyName = \mb_substr($hit, 4, $until - 4);
+                $name    = \mb_substr($hit, $until + 1, \mb_strpos($hit, '#', $until) - ($until + 1));
             }
 
-            $oObjekt = new stdClass();
-            $exists  = false;
-            switch ($params[$cParameter]) {
+            $item   = new stdClass();
+            $exists = false;
+            switch ($params[$param]) {
                 case \URLART_ARTIKEL:
-                    $oObjekt->kArtikel = (int)$cKey;
-                    $oObjekt->cKey     = 'kArtikel';
-                    $cTabellenname     = 'tartikel';
-                    $cSpracheSQL       = '';
+                    $item->kArtikel = (int)$keyName;
+                    $item->cKey     = 'kArtikel';
+                    $table          = 'tartikel';
+                    $locSQL         = '';
                     if (Shop::getLanguageID() > 0 && !LanguageHelper::isDefaultLanguageActive()) {
-                        $cTabellenname = 'tartikelsprache';
-                        $cSpracheSQL   = ' AND tartikelsprache.kSprache = ' . Shop::getLanguageID();
+                        $table  = 'tartikelsprache';
+                        $locSQL = ' AND tartikelsprache.kSprache = ' . Shop::getLanguageID();
                     }
-                    $oArtikel = Shop::Container()->getDB()->query(
-                        "SELECT {$cTabellenname}.kArtikel, {$cTabellenname}.cName, tseo.cSeo
-                            FROM {$cTabellenname}
+                    $data = Shop::Container()->getDB()->query(
+                        "SELECT {$table}.kArtikel, {$table}.cName, tseo.cSeo
+                            FROM {$table}
                             LEFT JOIN tseo
                                 ON tseo.cKey = 'kArtikel'
-                                AND tseo.kKey = {$cTabellenname}.kArtikel
-                                AND tseo.kSprache = {$kSprache}
-                            WHERE {$cTabellenname}.kArtikel = " . (int)$cKey . $cSpracheSQL,
+                                AND tseo.kKey = {$table}.kArtikel
+                                AND tseo.kSprache = {$languageID}
+                            WHERE {$table}.kArtikel = " . (int)$keyName . $locSQL,
                         ReturnType::SINGLE_OBJECT
                     );
 
-                    if (isset($oArtikel->kArtikel) && $oArtikel->kArtikel > 0) {
-                        $exists         = true;
-                        $oObjekt->cSeo  = $oArtikel->cSeo;
-                        $oObjekt->cName = !empty($oArtikel->cName) ? $oArtikel->cName : 'Link';
+                    if (isset($data->kArtikel) && $data->kArtikel > 0) {
+                        $exists      = true;
+                        $item->cSeo  = $data->cSeo;
+                        $item->cName = !empty($data->cName) ? $data->cName : 'Link';
                     }
                     break;
 
                 case \URLART_KATEGORIE:
-                    $oObjekt->kKategorie = (int)$cKey;
-                    $oObjekt->cKey       = 'kKategorie';
-                    $cTabellenname       = 'tkategorie';
-                    $cSpracheSQL         = '';
-                    if ($kSprache > 0 && !LanguageHelper::isDefaultLanguageActive()) {
-                        $cTabellenname = 'tkategoriesprache';
-                        $cSpracheSQL   = ' AND tkategoriesprache.kSprache = ' . $kSprache;
+                    $item->kKategorie = (int)$keyName;
+                    $item->cKey       = 'kKategorie';
+                    $table            = 'tkategorie';
+                    $locSQL           = '';
+                    if ($languageID > 0 && !LanguageHelper::isDefaultLanguageActive()) {
+                        $table  = 'tkategoriesprache';
+                        $locSQL = ' AND tkategoriesprache.kSprache = ' . $languageID;
                     }
-                    $oKategorie = Shop::Container()->getDB()->query(
-                        "SELECT {$cTabellenname}.kKategorie, {$cTabellenname}.cName, tseo.cSeo
-                            FROM {$cTabellenname}
+                    $data = Shop::Container()->getDB()->query(
+                        "SELECT {$table}.kKategorie, {$table}.cName, tseo.cSeo
+                            FROM {$table}
                             LEFT JOIN tseo
                                 ON tseo.cKey = 'kKategorie'
-                                AND tseo.kKey = {$cTabellenname}.kKategorie
-                                AND tseo.kSprache = {$kSprache}
-                            WHERE {$cTabellenname}.kKategorie = " . (int)$cKey . $cSpracheSQL,
+                                AND tseo.kKey = {$table}.kKategorie
+                                AND tseo.kSprache = {$languageID}
+                            WHERE {$table}.kKategorie = " . (int)$keyName . $locSQL,
                         ReturnType::SINGLE_OBJECT
                     );
 
-                    if (isset($oKategorie->kKategorie) && $oKategorie->kKategorie > 0) {
-                        $exists         = true;
-                        $oObjekt->cSeo  = $oKategorie->cSeo;
-                        $oObjekt->cName = !empty($oKategorie->cName) ? $oKategorie->cName : 'Link';
+                    if (isset($data->kKategorie) && $data->kKategorie > 0) {
+                        $exists      = true;
+                        $item->cSeo  = $data->cSeo;
+                        $item->cName = !empty($data->cName) ? $data->cName : 'Link';
                     }
                     break;
 
                 case \URLART_HERSTELLER:
-                    $oObjekt->kHersteller = (int)$cKey;
-                    $oObjekt->cKey        = 'kHersteller';
-                    $cTabellenname        = 'thersteller';
-                    $oHersteller          = Shop::Container()->getDB()->query(
+                    $item->kHersteller = (int)$keyName;
+                    $item->cKey        = 'kHersteller';
+                    $table             = 'thersteller';
+                    $data              = Shop::Container()->getDB()->query(
                         "SELECT thersteller.kHersteller, thersteller.cName, tseo.cSeo
                             FROM thersteller
                             LEFT JOIN tseo
                                 ON tseo.cKey = 'kHersteller'
-                                AND tseo.kKey = " . $cTabellenname . '.kHersteller
-                                AND tseo.kSprache = ' . $kSprache . '
-                            WHERE ' . $cTabellenname . '.kHersteller = ' . (int)$cKey,
+                                AND tseo.kKey = " . $table . '.kHersteller
+                                AND tseo.kSprache = ' . $languageID . '
+                            WHERE ' . $table . '.kHersteller = ' . (int)$keyName,
                         ReturnType::SINGLE_OBJECT
                     );
 
-                    if (isset($oHersteller->kHersteller) && $oHersteller->kHersteller > 0) {
-                        $exists         = true;
-                        $oObjekt->cSeo  = $oHersteller->cSeo;
-                        $oObjekt->cName = !empty($oHersteller->cName) ? $oHersteller->cName : 'Link';
+                    if (isset($data->kHersteller) && $data->kHersteller > 0) {
+                        $exists      = true;
+                        $item->cSeo  = $data->cSeo;
+                        $item->cName = !empty($data->cName) ? $data->cName : 'Link';
                     }
                     break;
 
                 case \URLART_MERKMAL:
-                    $oObjekt->kMerkmalWert = (int)$cKey;
-                    $oObjekt->cKey         = 'kMerkmalWert';
-                    $oMerkmalWert          = Shop::Container()->getDB()->query(
+                    $item->kMerkmalWert = (int)$keyName;
+                    $item->cKey         = 'kMerkmalWert';
+                    $data               = Shop::Container()->getDB()->query(
                         "SELECT tmerkmalwertsprache.kMerkmalWert, tmerkmalwertsprache.cWert, tseo.cSeo
                             FROM tmerkmalwertsprache
                             LEFT JOIN tseo
                                 ON tseo.cKey = 'kMerkmalWert'
                                 AND tseo.kKey = tmerkmalwertsprache.kMerkmalWert
-                                AND tseo.kSprache = " . $kSprache . '
-                            WHERE tmerkmalwertsprache.kMerkmalWert = ' . (int)$cKey . '
-                                AND tmerkmalwertsprache.kSprache = ' . $kSprache,
+                                AND tseo.kSprache = " . $languageID . '
+                            WHERE tmerkmalwertsprache.kMerkmalWert = ' . (int)$keyName . '
+                                AND tmerkmalwertsprache.kSprache = ' . $languageID,
                         ReturnType::SINGLE_OBJECT
                     );
 
-                    if (isset($oMerkmalWert->kMerkmalWert) && $oMerkmalWert->kMerkmalWert > 0) {
-                        $exists         = true;
-                        $oObjekt->cSeo  = $oMerkmalWert->cSeo;
-                        $oObjekt->cName = !empty($oMerkmalWert->cWert) ? $oMerkmalWert->cWert : 'Link';
+                    if (isset($data->kMerkmalWert) && $data->kMerkmalWert > 0) {
+                        $exists      = true;
+                        $item->cSeo  = $data->cSeo;
+                        $item->cName = !empty($data->cWert) ? $data->cWert : 'Link';
                     }
                     break;
 
                 case \URLART_NEWS:
-                    $oObjekt->kNews = (int)$cKey;
-                    $oObjekt->cKey  = 'kNews';
-                    $oNews          = Shop::Container()->getDB()->query(
+                    $item->kNews = (int)$keyName;
+                    $item->cKey  = 'kNews';
+                    $data        = Shop::Container()->getDB()->query(
                         "SELECT tnews.kNews, tseo.cSeo, tnewssprache.title
                             FROM tnews
                             JOIN tnewssprache
@@ -788,97 +788,97 @@ class Text
                             LEFT JOIN tseo
                                 ON tseo.cKey = 'kNews'
                                 AND tseo.kKey = tnews.kNews
-                                AND tseo.kSprache = " . $kSprache . '
-                            WHERE tnews.kNews = ' . (int)$cKey,
+                                AND tseo.kSprache = " . $languageID . '
+                            WHERE tnews.kNews = ' . (int)$keyName,
                         ReturnType::SINGLE_OBJECT
                     );
 
-                    if (isset($oNews->kNews) && $oNews->kNews > 0) {
-                        $exists         = true;
-                        $oObjekt->cSeo  = $oNews->cSeo;
-                        $oObjekt->cName = empty($oNews->title) ? 'Link' : $oNews->title;
+                    if (isset($data->kNews) && $data->kNews > 0) {
+                        $exists      = true;
+                        $item->cSeo  = $data->cSeo;
+                        $item->cName = empty($data->title) ? 'Link' : $data->title;
                     }
                     break;
 
                 case \URLART_UMFRAGE:
-                    $oObjekt->kNews = (int)$cKey;
-                    $oObjekt->cKey  = 'kUmfrage';
-                    $oUmfrage       = Shop::Container()->getDB()->query(
+                    $item->kNews = (int)$keyName;
+                    $item->cKey  = 'kUmfrage';
+                    $data        = Shop::Container()->getDB()->query(
                         "SELECT tumfrage.kUmfrage, tumfrage.cName, tseo.cSeo
                             FROM tumfrage
                             LEFT JOIN tseo
                                 ON tseo.cKey = 'kUmfrage'
                                 AND tseo.kKey = tumfrage.kUmfrage
-                                AND tseo.kSprache = " . $kSprache . '
-                            WHERE tumfrage.kUmfrage = ' . (int)$cKey,
+                                AND tseo.kSprache = " . $languageID . '
+                            WHERE tumfrage.kUmfrage = ' . (int)$keyName,
                         ReturnType::SINGLE_OBJECT
                     );
 
-                    if (isset($oUmfrage->kUmfrage) && $oUmfrage->kUmfrage > 0) {
-                        $exists         = true;
-                        $oObjekt->cSeo  = $oUmfrage->cSeo;
-                        $oObjekt->cName = !empty($oUmfrage->cName) ? $oUmfrage->cName : 'Link';
+                    if (isset($data->kUmfrage) && $data->kUmfrage > 0) {
+                        $exists      = true;
+                        $item->cSeo  = $data->cSeo;
+                        $item->cName = !empty($data->cName) ? $data->cName : 'Link';
                     }
                     break;
 
                 case \URLART_TAG:
-                    $oObjekt->kNews = (int)$cKey;
-                    $oObjekt->cKey  = 'kTag';
-                    $oTag           = Shop::Container()->getDB()->query(
+                    $item->kNews = (int)$keyName;
+                    $item->cKey  = 'kTag';
+                    $data        = Shop::Container()->getDB()->query(
                         "SELECT ttag.kTag, ttag.cName, tseo.cSeo
                             FROM ttag
                             LEFT JOIN tseo
                                 ON tseo.cKey = 'kTag'
                                 AND tseo.kKey = ttag.kTag
-                                AND tseo.kSprache = " . $kSprache . '
-                            WHERE ttag.kTag = ' . (int)$cKey,
+                                AND tseo.kSprache = " . $languageID . '
+                            WHERE ttag.kTag = ' . (int)$keyName,
                         ReturnType::SINGLE_OBJECT
                     );
 
-                    if (isset($oTag->kTag) && $oTag->kTag > 0) {
-                        $exists         = true;
-                        $oObjekt->cSeo  = $oTag->cSeo;
-                        $oObjekt->cName = !empty($oTag->cName) ? $oTag->cName : 'Link';
+                    if (isset($data->kTag) && $data->kTag > 0) {
+                        $exists      = true;
+                        $item->cSeo  = $data->cSeo;
+                        $item->cName = !empty($data->cName) ? $data->cName : 'Link';
                     }
                     break;
 
                 case \URLART_LIVESUCHE:
-                    $oObjekt->kNews = (int)$cKey;
-                    $oObjekt->cKey  = 'kSuchanfrage';
-                    $oSuchanfrage   = Shop::Container()->getDB()->query(
+                    $item->kNews = (int)$keyName;
+                    $item->cKey  = 'kSuchanfrage';
+                    $data        = Shop::Container()->getDB()->query(
                         "SELECT tsuchanfrage.kSuchanfrage, tsuchanfrage.cSuche, tseo.cSeo
                             FROM tsuchanfrage
                             LEFT JOIN tseo
                                 ON tseo.cKey = 'kSuchanfrage'
                                 AND tseo.kKey = tsuchanfrage.kSuchanfrage
-                                AND tseo.kSprache = " . $kSprache . '
-                            WHERE tsuchanfrage.kSuchanfrage = ' . (int)$cKey,
+                                AND tseo.kSprache = " . $languageID . '
+                            WHERE tsuchanfrage.kSuchanfrage = ' . (int)$keyName,
                         ReturnType::SINGLE_OBJECT
                     );
 
-                    if (isset($oSuchanfrage->kSuchanfrage) && $oSuchanfrage->kSuchanfrage > 0) {
-                        $exists         = true;
-                        $oObjekt->cSeo  = $oSuchanfrage->cSeo;
-                        $oObjekt->cName = !empty($oSuchanfrage->cSuche) ? $oSuchanfrage->cSuche : 'Link';
+                    if (isset($data->kSuchanfrage) && $data->kSuchanfrage > 0) {
+                        $exists      = true;
+                        $item->cSeo  = $data->cSeo;
+                        $item->cName = !empty($data->cSuche) ? $data->cSuche : 'Link';
                     }
                     break;
             }
             \executeHook(\HOOK_TOOLSGLOBAL_INC_SWITCH_PARSENEWSTEXT);
 
-            if (\mb_strlen($cName) > 0) {
-                $oObjekt->cName = $cName;
-                $cName          = ':' . $cName;
+            if (\mb_strlen($name) > 0) {
+                $item->cName = $name;
+                $name        = ':' . $name;
             }
             if ($exists) {
-                $cURL = URL::buildURL($oObjekt, $params[$cParameter]);
+                $url  = URL::buildURL($item, $params[$param]);
                 $text = \str_replace(
-                    '$#' . $cParameter . ':' . $cKey . $cName . '#$',
-                    '<a href="' . Shop::getURL() . '/' . $cURL . '">' . $oObjekt->cName . '</a>',
+                    '$#' . $param . ':' . $keyName . $name . '#$',
+                    '<a href="' . Shop::getURL() . '/' . $url . '">' . $item->cName . '</a>',
                     $text
                 );
             } else {
                 $text = \str_replace(
-                    '$#' . $cParameter . ':' . $cKey . $cName . '#$',
+                    '$#' . $param . ':' . $keyName . $name . '#$',
                     '<a href="' . Shop::getURL() . '/" >' . Shop::Lang()->get('parseTextNoLinkID') . '</a>',
                     $text
                 );

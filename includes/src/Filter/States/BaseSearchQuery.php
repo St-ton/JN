@@ -184,7 +184,7 @@ class BaseSearchQuery extends AbstractFilter
      */
     public function setSeo(array $languages): FilterInterface
     {
-        $oSeo_obj = $this->productFilter->getDB()->executeQueryPrepared(
+        $seo = $this->productFilter->getDB()->executeQueryPrepared(
             "SELECT tseo.cSeo, tseo.kSprache, tsuchanfrage.cSuche
                 FROM tseo
                 LEFT JOIN tsuchanfrage
@@ -197,12 +197,12 @@ class BaseSearchQuery extends AbstractFilter
         );
         foreach ($languages as $language) {
             $this->cSeo[$language->kSprache] = '';
-            if (isset($oSeo_obj->kSprache) && $language->kSprache === (int)$oSeo_obj->kSprache) {
-                $this->cSeo[$language->kSprache] = $oSeo_obj->cSeo;
+            if (isset($seo->kSprache) && $language->kSprache === (int)$seo->kSprache) {
+                $this->cSeo[$language->kSprache] = $seo->cSeo;
             }
         }
-        if (!empty($oSeo_obj->cSuche)) {
-            $this->setName($oSeo_obj->cSuche);
+        if (!empty($seo->cSuche)) {
+            $this->setName($seo->cSuche);
         }
 
         return $this;
@@ -233,9 +233,9 @@ class BaseSearchQuery extends AbstractFilter
         $searchFilter   = $this->productFilter->getBaseState();
         if (\is_array($searchFilter)) {
             $count = \count($searchFilter);
-            foreach ($searchFilter as $oSuchFilter) {
-                if ($oSuchFilter->getSearchCacheID() > 0) {
-                    $searchCacheIDs[] = $oSuchFilter->getSearchCacheID();
+            foreach ($searchFilter as $item) {
+                if ($item->getSearchCacheID() > 0) {
+                    $searchCacheIDs[] = $item->getSearchCacheID();
                 }
             }
         } elseif ($searchFilter->getSearchCacheID() > 0) {
@@ -328,9 +328,9 @@ class BaseSearchQuery extends AbstractFilter
             $searchQueryIDs[] = (int)$this->productFilter->getSearch()->getValue();
         }
         if ($this->productFilter->hasSearchFilter()) {
-            foreach ($this->productFilter->getSearchFilter() as $oSuchFilter) {
-                if ($oSuchFilter->getValue() > 0) {
-                    $searchQueryIDs[] = (int)$oSuchFilter->getValue();
+            foreach ($this->productFilter->getSearchFilter() as $searchFilter) {
+                if ($searchFilter->getValue() > 0) {
+                    $searchQueryIDs[] = (int)$searchFilter->getValue();
                 }
             }
         }

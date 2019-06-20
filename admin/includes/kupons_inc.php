@@ -53,8 +53,7 @@ function getCouponNames(int $id)
     if (!$id) {
         return $names;
     }
-    $coupons = Shop::Container()->getDB()->selectAll('tkuponsprache', 'kKupon', $id);
-    foreach ($coupons as $coupon) {
+    foreach (Shop::Container()->getDB()->selectAll('tkuponsprache', 'kKupon', $id) as $coupon) {
         $names[$coupon->cISOSprache] = $coupon->cName;
     }
 
@@ -62,54 +61,54 @@ function getCouponNames(int $id)
 }
 
 /**
- * @param string $selHerst
+ * @param string $selectedManufacturers
  * @return array
  */
-function getManufacturers($selHerst = '')
+function getManufacturers($selectedManufacturers = '')
 {
-    $selected       = Text::parseSSK($selHerst);
-    $hersteller_arr = Shop::Container()->getDB()->query(
+    $selected = Text::parseSSK($selectedManufacturers);
+    $items    = Shop::Container()->getDB()->query(
         'SELECT kHersteller, cName FROM thersteller',
         ReturnType::ARRAY_OF_OBJECTS
     );
 
-    foreach ($hersteller_arr as $i => $hersteller) {
-        $oHersteller                  = new Hersteller($hersteller->kHersteller);
-        $hersteller_arr[$i]->cName    = $oHersteller->cName;
-        $hersteller_arr[$i]->selected = in_array($hersteller_arr[$i]->kHersteller, $selected) ? 1 : 0;
-        unset($oHersteller);
+    foreach ($items as $item) {
+        $manufacturer   = new Hersteller($item->kHersteller);
+        $item->cName    = $manufacturer->cName;
+        $item->selected = in_array($item->kHersteller, $selected) ? 1 : 0;
+        unset($manufacturer);
     }
 
-    return $hersteller_arr;
+    return $items;
 }
 
 /**
- * @param string $selKats
- * @param int    $kKategorie
- * @param int    $tiefe
+ * @param string $selectedCategories
+ * @param int    $categoryID
+ * @param int    $depth
  * @return array
  */
-function getCategories($selKats = '', $kKategorie = 0, $tiefe = 0)
+function getCategories($selectedCategories = '', $categoryID = 0, $depth = 0)
 {
-    $selected = Text::parseSSK($selKats);
+    $selected = Text::parseSSK($selectedCategories);
     $arr      = [];
-    $kats     = Shop::Container()->getDB()->selectAll(
+    $items    = Shop::Container()->getDB()->selectAll(
         'tkategorie',
         'kOberKategorie',
-        (int)$kKategorie,
+        (int)$categoryID,
         'kKategorie, cName'
     );
-    $kCount   = count($kats);
-    for ($o = 0; $o < $kCount; $o++) {
-        for ($i = 0; $i < $tiefe; $i++) {
-            $kats[$o]->cName = '--' . $kats[$o]->cName;
+    $count    = count($items);
+    for ($o = 0; $o < $count; $o++) {
+        for ($i = 0; $i < $depth; $i++) {
+            $items[$o]->cName = '--' . $items[$o]->cName;
         }
-        $kats[$o]->selected = 0;
-        if (in_array($kats[$o]->kKategorie, $selected)) {
-            $kats[$o]->selected = 1;
+        $items[$o]->selected = 0;
+        if (in_array($items[$o]->kKategorie, $selected)) {
+            $items[$o]->selected = 1;
         }
-        $arr[] = $kats[$o];
-        $arr   = array_merge($arr, getCategories($selKats, $kats[$o]->kKategorie, $tiefe + 1));
+        $arr[] = $items[$o];
+        $arr   = array_merge($arr, getCategories($selectedCategories, $items[$o]->kKategorie, $depth + 1));
     }
 
     return $arr;
@@ -138,22 +137,22 @@ function normalizeDate($string)
 
 /**
  * @param string $type
- * @param string $cWhereSQL
- * @param string $cOrderSQL
- * @param string $cLimitSQL
+ * @param string $whereSQL
+ * @param string $orderSQL
+ * @param string $limitSQL
  * @return array|int|object
  */
-function getRawCoupons($type = Kupon::TYPE_STANDARD, $cWhereSQL = '', $cOrderSQL = '', $cLimitSQL = '')
+function getRawCoupons($type = Kupon::TYPE_STANDARD, $whereSQL = '', $orderSQL = '', $limitSQL = '')
 {
     return Shop::Container()->getDB()->query(
         "SELECT k.*, max(kk.dErstellt) AS dLastUse
             FROM tkupon AS k
             LEFT JOIN tkuponkunde AS kk ON kk.kKupon = k.kKupon
             WHERE cKuponTyp = '" . Shop::Container()->getDB()->escape($type) . "' " .
-            ($cWhereSQL !== '' ? ' AND ' . $cWhereSQL : '') .
+            ($whereSQL !== '' ? ' AND ' . $whereSQL : '') .
             'GROUP BY k.kKupon' .
-            ($cOrderSQL !== '' ? ' ORDER BY ' . $cOrderSQL : '') .
-            ($cLimitSQL !== '' ? ' LIMIT ' . $cLimitSQL : ''),
+            ($orderSQL !== '' ? ' ORDER BY ' . $orderSQL : '') .
+            ($limitSQL !== '' ? ' LIMIT ' . $limitSQL : ''),
         ReturnType::ARRAY_OF_OBJECTS
     );
 }
@@ -162,17 +161,17 @@ function getRawCoupons($type = Kupon::TYPE_STANDARD, $cWhereSQL = '', $cOrderSQL
  * Get instances of existing coupons, each with some enhanced information that can be displayed
  *
  * @param string $type
- * @param string $cWhereSQL - an SQL WHERE clause (col1 = val1 AND vol2 LIKE ...)
- * @param string $cOrderSQL - an SQL ORDER BY clause (cName DESC)
- * @param string $cLimitSQL - an SQL LIMIT clause  (10,20)
+ * @param string $whereSQL - an SQL WHERE clause (col1 = val1 AND vol2 LIKE ...)
+ * @param string $orderSQL - an SQL ORDER BY clause (cName DESC)
+ * @param string $limitSQL - an SQL LIMIT clause  (10,20)
  * @return array
  */
-function getCoupons($type = Kupon::TYPE_STANDARD, $cWhereSQL = '', $cOrderSQL = '', $cLimitSQL = '')
+function getCoupons($type = Kupon::TYPE_STANDARD, $whereSQL = '', $orderSQL = '', $limitSQL = '')
 {
-    $raw = getRawCoupons($type, $cWhereSQL, $cOrderSQL, $cLimitSQL);
+    $raw = getRawCoupons($type, $whereSQL, $orderSQL, $limitSQL);
     $res = [];
-    foreach ($raw as $oKuponDB) {
-        $res[] = getCoupon((int)$oKuponDB->kKupon);
+    foreach ($raw as $item) {
+        $res[] = getCoupon((int)$item->kKupon);
     }
 
     return $res;
@@ -180,12 +179,12 @@ function getCoupons($type = Kupon::TYPE_STANDARD, $cWhereSQL = '', $cOrderSQL = 
 
 /**
  * @param string $type
- * @param string $cWhereSQL
+ * @param string $whereSQL
  * @return array
  */
-function getExportableCoupons($type = Kupon::TYPE_STANDARD, $cWhereSQL = '')
+function getExportableCoupons($type = Kupon::TYPE_STANDARD, $whereSQL = '')
 {
-    $coupons = getRawCoupons($type, $cWhereSQL);
+    $coupons = getRawCoupons($type, $whereSQL);
     foreach ($coupons as $rawCoupon) {
         foreach (getCouponNames($rawCoupon->kKupon) as $iso => $name) {
             $rawCoupon->{'cName_' . $iso} = $name;
@@ -198,12 +197,12 @@ function getExportableCoupons($type = Kupon::TYPE_STANDARD, $cWhereSQL = '')
 /**
  * Get an instance of an existing coupon with some enhanced information that can be displayed
  *
- * @param int $kKupon
+ * @param int $id
  * @return Kupon $oKupon
  */
-function getCoupon($kKupon)
+function getCoupon(int $id)
 {
-    $coupon = new Kupon($kKupon);
+    $coupon = new Kupon($id);
     augmentCoupon($coupon);
 
     return $coupon;
@@ -249,42 +248,42 @@ function augmentCoupon($coupon)
     if ((int)$coupon->kKundengruppe === -1) {
         $coupon->cKundengruppe = '';
     } else {
-        $oKundengruppe         = Shop::Container()->getDB()->query(
+        $customerGroup         = Shop::Container()->getDB()->query(
             'SELECT cName 
                 FROM tkundengruppe 
                 WHERE kKundengruppe = ' . $coupon->kKundengruppe,
             ReturnType::SINGLE_OBJECT
         );
-        $coupon->cKundengruppe = $oKundengruppe->cName;
+        $coupon->cKundengruppe = $customerGroup->cName;
     }
 
-    $cArtNr_arr      = Text::parseSSK($coupon->cArtikel);
-    $cHersteller_arr = Text::parseSSK($coupon->cHersteller);
-    $cKategorie_arr  = Text::parseSSK($coupon->cKategorien);
-    $cKunde_arr      = Text::parseSSK($coupon->cKunden);
+    $artNos       = Text::parseSSK($coupon->cArtikel);
+    $manufactuers = Text::parseSSK($coupon->cHersteller);
+    $categories   = Text::parseSSK($coupon->cKategorien);
+    $customers    = Text::parseSSK($coupon->cKunden);
 
     $coupon->cArtikelInfo    = ($coupon->cArtikel === '')
         ? ''
-        : (string)count($cArtNr_arr);
+        : (string)count($artNos);
     $coupon->cHerstellerInfo = (empty($coupon->cHersteller) || $coupon->cHersteller === '-1')
         ? ''
-        : (string)count($cHersteller_arr);
+        : (string)count($manufactuers);
     $coupon->cKategorieInfo  = (empty($coupon->cKategorien) || $coupon->cKategorien === '-1')
         ? ''
-        : (string)count($cKategorie_arr);
+        : (string)count($categories);
     $coupon->cKundenInfo     = (empty($coupon->cKunden) || $coupon->cKunden === '-1')
         ? ''
-        : (string)count($cKunde_arr);
+        : (string)count($customers);
 
-    $oMaxErstelltDB   = Shop::Container()->getDB()->query(
+    $maxCreated       = Shop::Container()->getDB()->query(
         'SELECT max(dErstellt) as dLastUse
             FROM tkuponkunde
             WHERE kKupon = ' . (int)$coupon->kKupon,
         ReturnType::SINGLE_OBJECT
     );
     $coupon->dLastUse = date_create(
-        is_string($oMaxErstelltDB->dLastUse)
-        ? $oMaxErstelltDB->dLastUse
+        is_string($maxCreated->dLastUse)
+        ? $maxCreated->dLastUse
         : null
     );
 }
@@ -501,11 +500,10 @@ function validateCoupon($coupon)
     $coupon->cArtikel = Text::createSSK($productNos);
 
     if ($coupon->cKuponTyp === Kupon::TYPE_SHIPPING) {
-        $cLandISO_arr  = Text::parseSSK($coupon->cLieferlaender);
         $countryHelper = Shop::Container()->getCountryService();
-        foreach ($cLandISO_arr as $cLandISO) {
-            if ($countryHelper->getCountry($cLandISO) === null) {
-                $errors[] = sprintf(__('errorISOInvalid'), $cLandISO);
+        foreach (Text::parseSSK($coupon->cLieferlaender) as $isoCode) {
+            if ($countryHelper->getCountry($isoCode) === null) {
+                $errors[] = sprintf(__('errorISOInvalid'), $isoCode);
             }
         }
     }
@@ -519,9 +517,9 @@ function validateCoupon($coupon)
         $errors[] = __('errorPeriodEndFormat');
     }
 
-    $bOpenEnd = $coupon->dGueltigBis === null;
+    $openEnd = $coupon->dGueltigBis === null;
 
-    if ($validFrom !== false && $validUntil !== false && $validFrom > $validUntil && $bOpenEnd === false) {
+    if ($validFrom !== false && $validUntil !== false && $validFrom > $validUntil && $openEnd === false) {
         $errors[] = __('errorPeriodEndAfterBegin');
     }
 
@@ -576,35 +574,35 @@ function saveCoupon($coupon, $languages)
         $db = Shop::Container()->getDB();
         // Kupon-Sprachen aktualisieren
         if (is_array($coupon->kKupon)) {
-            foreach ($coupon->kKupon as $kKupon) {
-                $db->delete('tkuponsprache', 'kKupon', $kKupon);
+            foreach ($coupon->kKupon as $couponID) {
+                $db->delete('tkuponsprache', 'kKupon', $couponID);
                 foreach ($languages as $language) {
-                    $code              = $language->getIso();
-                    $postVarName       = 'cName_' . $code;
-                    $cKuponSpracheName = isset($_POST[$postVarName]) && $_POST[$postVarName] !== ''
+                    $code          = $language->getIso();
+                    $postVarName   = 'cName_' . $code;
+                    $localizedName = isset($_POST[$postVarName]) && $_POST[$postVarName] !== ''
                         ? htmlspecialchars($_POST[$postVarName], ENT_COMPAT | ENT_HTML401, JTL_CHARSET)
                         : $coupon->cName;
 
                     $localized              = new stdClass();
-                    $localized->kKupon      = $kKupon;
+                    $localized->kKupon      = $couponID;
                     $localized->cISOSprache = $code;
-                    $localized->cName       = $cKuponSpracheName;
+                    $localized->cName       = $localizedName;
                     $db->insert('tkuponsprache', $localized);
                 }
             }
         } else {
             $db->delete('tkuponsprache', 'kKupon', $coupon->kKupon);
             foreach ($languages as $language) {
-                $code              = $language->getIso();
-                $postVarName       = 'cName_' . $code;
-                $cKuponSpracheName = isset($_POST[$postVarName]) && $_POST[$postVarName] !== ''
+                $code          = $language->getIso();
+                $postVarName   = 'cName_' . $code;
+                $localizedName = isset($_POST[$postVarName]) && $_POST[$postVarName] !== ''
                     ? htmlspecialchars($_POST[$postVarName], ENT_COMPAT | ENT_HTML401, JTL_CHARSET)
                     : $coupon->cName;
 
                 $localized              = new stdClass();
                 $localized->kKupon      = $coupon->kKupon;
                 $localized->cISOSprache = $code;
-                $localized->cName       = $cKuponSpracheName;
+                $localized->cName       = $localizedName;
                 $db->insert('tkuponsprache', $localized);
             }
         }

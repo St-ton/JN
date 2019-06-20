@@ -84,12 +84,12 @@ class GeneralObject
     }
 
     /**
-     * @param object $oObj
+     * @param object $object
      * @return mixed
      * @since 5.0.0
      */
-    public static function deepCopy($oObj)
+    public static function deepCopy($object)
     {
-        return \unserialize(\serialize($oObj));
+        return \unserialize(\serialize($object));
     }
 }

@@ -113,10 +113,10 @@ function gibAuswahlAssistentFragen()
 function gibSitemapKategorien()
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    $oKategorieliste           = new KategorieListe();
-    $oKategorieliste->elemente = Category::getInstance()->combinedGetAll();
+    $categoryList           = new KategorieListe();
+    $categoryList->elemente = Category::getInstance()->combinedGetAll();
 
-    return $oKategorieliste;
+    return $categoryList;
 }
 
 /**

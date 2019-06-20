@@ -256,14 +256,14 @@ abstract class AbstractSync
             );
             if (\count($childProducts) === 0) {
                 // Gibt ein neue Artikel die noch auf den physikalischen Pfad zeigen?
-                $oObj = $this->db->queryPrepared(
+                $data = $this->db->queryPrepared(
                     'SELECT COUNT(*) AS nCount
                     FROM tartikelpict
                     WHERE cPfad = :pth',
                     ['pth' => $image->cPfad],
                     ReturnType::SINGLE_OBJECT
                 );
-                if (isset($oObj->nCount) && $oObj->nCount < 2) {
+                if (isset($data->nCount) && $data->nCount < 2) {
                     // Bild von der Platte löschen
                     @\unlink(\PFAD_ROOT . \PFAD_PRODUKTBILDER_MINI . $image->cPfad);
                     @\unlink(\PFAD_ROOT . \PFAD_PRODUKTBILDER_KLEIN . $image->cPfad);
@@ -667,12 +667,12 @@ abstract class AbstractSync
     }
 
     /**
-     * @param int $kKunde
+     * @param int $customerID
      * @return bool|int
      */
-    protected function flushCustomerPriceCache(int $kKunde)
+    protected function flushCustomerPriceCache(int $customerID)
     {
-        return $this->cache->flush('custprice_' . $kKunde);
+        return $this->cache->flush('custprice_' . $customerID);
     }
 
     /**

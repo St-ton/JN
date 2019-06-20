@@ -11862,8 +11862,6 @@ input[type=file].file-loading, .file-loading input[type=file] {
   font-size: 18px !important;
   line-height: 15px !important;
   border-radius: 50% !important;
-  padding: 10px 12px 8px;
-  margin: 0 4px 4px;
   transition: 0.2s;
 }
 .badge-circle-1::before {
@@ -11877,8 +11875,10 @@ input[type=file].file-loading, .file-loading input[type=file] {
   line-height: 12px !important;
 }
 .badge-circle-1:hover {
-  color: #696969;
-  opacity: 1;
+  color: #525252;
+  border-color: #525252;
+  opacity: 1 !important;
+  background: #fff;
 }
 .badge-circle-1.on-list {
   animation: size 0.4s;
@@ -15117,9 +15117,9 @@ input.form-control[name=wishlist-url] {
 /* Action buttons */
 .action-tip-animation {
   position: absolute;
-  bottom: 60px;
-  left: -50px;
-  right: 0;
+  bottom: 50px;
+  width: 200px;
+  right: -50px;
   visibility: hidden;
   transition: 0.6s;
   z-index: -2;
@@ -15128,34 +15128,33 @@ input.form-control[name=wishlist-url] {
   font-weight: 400;
 }
 .action-tip-animation.press {
-  bottom: 110px;
-  font-size: 12px;
-  font-weight: 700;
+  font-size: 16px;
+  font-weight: 600;
   visibility: visible;
   animation: fade 1.5s;
 }
 
 @keyframes fade {
   0% {
-    color: #transparent;
+    color: transparent;
   }
-  50% {
+  35% {
     color: #525252;
   }
   100% {
-    color: #transparent;
+    color: transparent;
   }
 }
 @keyframes size {
   0% {
-    padding: 10px 12px 8px;
+    padding: 0.25rem, 0.5rem;
   }
   50% {
-    padding: 14px 16px 12px;
-    margin-top: -4px;
+    padding: 0.35rem, 0.6rem;
+    margin-top: 0.375rem;
   }
   100% {
-    padding: 10px 12px 8px;
+    padding: 0.25rem, 0.5rem;
   }
 }
 

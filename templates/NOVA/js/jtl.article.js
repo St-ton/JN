@@ -883,14 +883,14 @@
                 case this.options.action.compareList:
                     if ($action.hasClass('action-tip-animation-b')) {
                         if ($action.hasClass('on-list')) {
-                            $action.removeClass("on-list", 1000);
-                            $action.next().removeClass("press", 1000);
-                            $action.next().next().addClass("press", 1000);
+                            $action.removeClass("on-list");
+                            $action.next().removeClass("press");
+                            $action.next().next().addClass("press");
                             return this.removeFromCompareList(data);
                         } else {
-                            $action.addClass("on-list", 1000);
-                            $action.next().addClass("press", 1000);
-                            $action.next().next().removeClass("press", 1000);
+                            $action.addClass("on-list");
+                            $action.next().addClass("press");
+                            $action.next().next().removeClass("press");
                             return this.addToComparelist(data);
                         }
                     } else {
@@ -902,22 +902,21 @@
                     data[this.options.input.quantity] = $('#buy_form_'+data.a+' '+this.options.selector.quantity).val();
                     if ($action.hasClass('action-tip-animation-b')) {
                         if ($action.hasClass('on-list')) {
-                            $action.removeClass("on-list", 1000);
-                            $action.next().removeClass("press", 1000);
-                            $action.next().next().addClass("press", 1000);
+                            $action.removeClass("on-list");
+                            $action.next().removeClass("press");
+                            $action.next().next().addClass("press");
                             data.a = data.wlPos;
                             return this.removeFromWishList(data);
                         } else {
-                            $action.addClass("on-list", 1000);
-                            $action.next().addClass("press", 1000);
-                            $action.next().next().removeClass("press", 1000);
+                            $action.addClass("on-list");
+                            $action.next().addClass("press");
+                            $action.next().next().removeClass("press");
                             return this.addToWishlist(data);
                         }
                     } else {
                         return this.addToWishlist(data);
                     }
                 case this.options.action.wishListRemove:
-                    console.log(data);
                     return this.removeFromWishList(data);
             }
 

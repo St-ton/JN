@@ -116,8 +116,6 @@
   font-size: 18px !important;
   line-height: 15px !important;
   border-radius: 50% !important;
-  padding: 10px 12px 8px;
-  margin: 0 4px 4px;
   transition: .2s;
   &::before { display: none; }
   &.circle-small {
@@ -128,8 +126,10 @@
     line-height: 12px !important;
   }
   &:hover {
-    color:#696969;
-    opacity: 1.0;
+    color: $gray-dark;
+    border-color: $gray-dark;
+    opacity: 1 !important;
+    background: #fff;
   }
   &.on-list {
     animation: size .4s;

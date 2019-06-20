@@ -2535,33 +2535,32 @@ input.form-control[name="wishlist-url"] {
 /* Action buttons */
 .action-tip-animation {
   position: absolute;
-  bottom: 60px;
-  left: -50px;
-  right: 0;
+  bottom: 50px;
+  width: 200px;
+  right: -50px;
   visibility: hidden;
   transition: .6s;
   z-index: -2;
   font-size: 2px;
   color: transparent;
-  font-weight: 400;
+  font-weight: $font-weight-normal;
   &.press {
-    bottom: 110px;
-    font-size: 12px;
-    font-weight: 700;
+    font-size: 16px;
+    font-weight: $font-weight-bold;
     visibility: visible;
     animation: fade 1.5s;
   }
 }
 
 @keyframes fade {
-  0% {color:#transparent;}
-  50% {color:#525252;}
-  100% {color:#transparent;}
+  0% {color: transparent;}
+  35% {color:$gray-dark;}
+  100% {color: transparent;}
 }
 
 @keyframes size {
-  0% {padding:10px 12px 8px;}
-  50% {padding:14px 16px 12px;
-    margin-top:-4px;}
-  100% {padding:10px 12px 8px;}
+  0% {padding:$btn-padding-y-sm, $btn-padding-x-sm;}
+  50% {padding:0.35rem, 0.6rem;
+    margin-top:$btn-padding-x / 2;}
+  100% {padding:$btn-padding-y-sm, $btn-padding-x-sm;}
 }

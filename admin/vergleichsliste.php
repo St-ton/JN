@@ -17,7 +17,8 @@ Shop::Container()->getGetText()->loadConfigLocales(true, true);
 
 $oAccount->permission('MODULE_COMPARELIST_VIEW', true, true);
 /** @global \JTL\Smarty\JTLSmarty $smarty */
-$cSetting    = '(469, 470)';
+$db          = Shop::Container()->getDB();
+$settingIDs  = '(469, 470)';
 $alertHelper = Shop::Container()->getAlertService();
 if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
     $smarty->assign('cTab', Request::verifyGPDataString('tab'));
@@ -37,109 +38,109 @@ if (isset($_POST['zeitfilter']) && (int)$_POST['zeitfilter'] === 1) {
 }
 
 if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1 && Form::validateToken()) {
-    $oConfig_arr = Shop::Container()->getDB()->query(
+    $configData  = $db->query(
         'SELECT *
             FROM teinstellungenconf
             WHERE (
-                kEinstellungenConf IN ' . $cSetting . ' 
+                kEinstellungenConf IN ' . $settingIDs . ' 
                 OR kEinstellungenSektion = ' . CONF_VERGLEICHSLISTE . "
                 )
                 AND cConf = 'Y'
             ORDER BY nSort",
         ReturnType::ARRAY_OF_OBJECTS
     );
-    $configCount = count($oConfig_arr);
+    $configCount = count($configData);
     for ($i = 0; $i < $configCount; $i++) {
-        $aktWert                        = new stdClass();
-        $aktWert->cWert                 = $_POST[$oConfig_arr[$i]->cWertName];
-        $aktWert->cName                 = $oConfig_arr[$i]->cWertName;
-        $aktWert->kEinstellungenSektion = $oConfig_arr[$i]->kEinstellungenSektion;
-        switch ($oConfig_arr[$i]->cInputTyp) {
+        $currentValue                        = new stdClass();
+        $currentValue->cWert                 = $_POST[$configData[$i]->cWertName];
+        $currentValue->cName                 = $configData[$i]->cWertName;
+        $currentValue->kEinstellungenSektion = $configData[$i]->kEinstellungenSektion;
+        switch ($configData[$i]->cInputTyp) {
             case 'kommazahl':
-                $aktWert->cWert = (float)$aktWert->cWert;
+                $currentValue->cWert = (float)$currentValue->cWert;
                 break;
             case 'zahl':
             case 'number':
-                $aktWert->cWert = (int)$aktWert->cWert;
+                $currentValue->cWert = (int)$currentValue->cWert;
                 break;
             case 'text':
-                $aktWert->cWert = mb_substr($aktWert->cWert, 0, 255);
+                $currentValue->cWert = mb_substr($currentValue->cWert, 0, 255);
                 break;
         }
-        Shop::Container()->getDB()->delete(
+        $db->delete(
             'teinstellungen',
             ['kEinstellungenSektion', 'cName'],
-            [(int)$oConfig_arr[$i]->kEinstellungenSektion, $oConfig_arr[$i]->cWertName]
+            [(int)$configData[$i]->kEinstellungenSektion, $configData[$i]->cWertName]
         );
-        Shop::Container()->getDB()->insert('teinstellungen', $aktWert);
+        $db->insert('teinstellungen', $currentValue);
     }
 
     $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successConfigSave'), 'successConfigSave');
     Shop::Container()->getCache()->flushTags([CACHING_GROUP_OPTION]);
 }
 
-$oConfig_arr = Shop::Container()->getDB()->query(
+$configData  = $db->query(
     'SELECT *
         FROM teinstellungenconf
         WHERE (
-                kEinstellungenConf IN ' . $cSetting . ' 
+                kEinstellungenConf IN ' . $settingIDs . ' 
                 OR kEinstellungenSektion = ' . CONF_VERGLEICHSLISTE . '
                )
         ORDER BY nSort',
     ReturnType::ARRAY_OF_OBJECTS
 );
-$configCount = count($oConfig_arr);
+$configCount = count($configData);
 for ($i = 0; $i < $configCount; $i++) {
-    if ($oConfig_arr[$i]->cInputTyp === 'selectbox') {
-        $oConfig_arr[$i]->ConfWerte = Shop::Container()->getDB()->selectAll(
+    if ($configData[$i]->cInputTyp === 'selectbox') {
+        $configData[$i]->ConfWerte = $db->selectAll(
             'teinstellungenconfwerte',
             'kEinstellungenConf',
-            (int)$oConfig_arr[$i]->kEinstellungenConf,
+            (int)$configData[$i]->kEinstellungenConf,
             '*',
             'nSort'
         );
-        Shop::Container()->getGetText()->localizeConfigValues($oConfig_arr[$i], $oConfig_arr[$i]->ConfWerte);
+        Shop::Container()->getGetText()->localizeConfigValues($configData[$i], $configData[$i]->ConfWerte);
     }
-    $oSetValue                      = Shop::Container()->getDB()->select(
+    $setValue                      = $db->select(
         'teinstellungen',
         'kEinstellungenSektion',
-        (int)$oConfig_arr[$i]->kEinstellungenSektion,
+        (int)$configData[$i]->kEinstellungenSektion,
         'cName',
-        $oConfig_arr[$i]->cWertName
+        $configData[$i]->cWertName
     );
-    $oConfig_arr[$i]->gesetzterWert = $oSetValue->cWert ?? null;
-    Shop::Container()->getGetText()->localizeConfig($oConfig_arr[$i]);
+    $configData[$i]->gesetzterWert = $setValue->cWert ?? null;
+    Shop::Container()->getGetText()->localizeConfig($configData[$i]);
 }
 
-$oVergleichAnzahl = Shop::Container()->getDB()->query(
+$listCount  = (int)$db->query(
     'SELECT COUNT(*) AS nAnzahl
         FROM tvergleichsliste',
     ReturnType::SINGLE_OBJECT
-);
-$oPagination      = (new Pagination())
-    ->setItemCount($oVergleichAnzahl->nAnzahl)
+)->nAnzahl;
+$pagination = (new Pagination())
+    ->setItemCount($listCount)
     ->assemble();
-$last20           = Shop::Container()->getDB()->query(
+$last20     = $db->query(
     "SELECT kVergleichsliste, DATE_FORMAT(dDate, '%d.%m.%Y  %H:%i') AS Datum
         FROM tvergleichsliste
         ORDER BY dDate DESC
-        LIMIT " . $oPagination->getLimitSQL(),
+        LIMIT " . $pagination->getLimitSQL(),
     ReturnType::ARRAY_OF_OBJECTS
 );
 
 if (is_array($last20) && count($last20) > 0) {
     $positions = [];
-    foreach ($last20 as $oLetzten20Vergleichsliste) {
-        $positions                                                   = Shop::Container()->getDB()->selectAll(
+    foreach ($last20 as $list) {
+        $positions                              = $db->selectAll(
             'tvergleichslistepos',
             'kVergleichsliste',
-            (int)$oLetzten20Vergleichsliste->kVergleichsliste,
+            (int)$list->kVergleichsliste,
             'kArtikel, cArtikelName'
         );
-        $oLetzten20Vergleichsliste->oLetzten20VergleichslistePos_arr = $positions;
+        $list->oLetzten20VergleichslistePos_arr = $positions;
     }
 }
-$topComparisons = Shop::Container()->getDB()->query(
+$topComparisons = $db->query(
     'SELECT tvergleichsliste.dDate, tvergleichslistepos.kArtikel, 
         tvergleichslistepos.cArtikelName, COUNT(tvergleichslistepos.kArtikel) AS nAnzahl
         FROM tvergleichsliste
@@ -158,37 +159,37 @@ if (is_array($topComparisons) && count($topComparisons) > 0) {
 
 $smarty->assign('Letzten20Vergleiche', $last20)
        ->assign('TopVergleiche', $topComparisons)
-       ->assign('oPagination', $oPagination)
-       ->assign('oConfig_arr', $oConfig_arr)
+       ->assign('pagination', $pagination)
+       ->assign('oConfig_arr', $configData)
        ->display('vergleichsliste.tpl');
 
 /**
- * @param array $oTopVergleichsliste_arr
+ * @param array $topCompareLists
  */
-function erstelleDiagrammTopVergleiche($oTopVergleichsliste_arr)
+function erstelleDiagrammTopVergleiche($topCompareLists)
 {
     unset($_SESSION['oGraphData_arr'], $_SESSION['nYmax'], $_SESSION['nDiagrammTyp']);
 
-    $oGraphData_arr = [];
-    if (is_array($oTopVergleichsliste_arr) && count($oTopVergleichsliste_arr) > 0) {
-        $nYmax_arr                = []; // Y-Achsen Werte um spaeter den Max Wert zu erlangen
+    $graphData = [];
+    if (is_array($topCompareLists) && count($topCompareLists) > 0) {
+        $yMax                     = []; // Y-Achsen Werte um spaeter den Max Wert zu erlangen
         $_SESSION['nDiagrammTyp'] = 4;
 
-        foreach ($oTopVergleichsliste_arr as $i => $oTopVergleichsliste) {
-            $oTop               = new stdClass();
-            $oTop->nAnzahl      = $oTopVergleichsliste->nAnzahl;
-            $oTop->cArtikelName = checkName($oTopVergleichsliste->cArtikelName);
-            $oGraphData_arr[]   = $oTop;
-            $nYmax_arr[]        = $oTopVergleichsliste->nAnzahl;
-            unset($oTop);
+        foreach ($topCompareLists as $i => $list) {
+            $top               = new stdClass();
+            $top->nAnzahl      = $list->nAnzahl;
+            $top->cArtikelName = checkName($list->cArtikelName);
+            $graphData[]       = $top;
+            $yMax[]            = $list->nAnzahl;
+            unset($top);
 
             if ($i >= (int)$_SESSION['Vergleichsliste']->nAnzahl) {
                 break;
             }
         }
         // Naechst hoehere Zahl berechnen fuer die Y-Balkenbeschriftung
-        if (count($nYmax_arr) > 0) {
-            $fMax = (float)max($nYmax_arr);
+        if (count($yMax) > 0) {
+            $fMax = (float)max($yMax);
             if ($fMax > 10) {
                 $temp  = 10 ** floor(log10($fMax));
                 $nYmax = ceil($fMax / $temp) * $temp;
@@ -199,24 +200,24 @@ function erstelleDiagrammTopVergleiche($oTopVergleichsliste_arr)
             $_SESSION['nYmax'] = $nYmax;
         }
 
-        $_SESSION['oGraphData_arr'] = $oGraphData_arr;
+        $_SESSION['oGraphData_arr'] = $graphData;
     }
 }
 
 /**
  * Hilfsfunktion zur Regulierung der X-Achsen Werte
  *
- * @param string $cName
+ * @param string $name
  * @return string
  */
-function checkName($cName)
+function checkName($name)
 {
-    $cName = stripslashes(trim(str_replace([';', '_', '#', '%', '$', ':', '"'], '', $cName)));
+    $name = stripslashes(trim(str_replace([';', '_', '#', '%', '$', ':', '"'], '', $name)));
 
-    if (mb_strlen($cName) > 20) {
+    if (mb_strlen($name) > 20) {
         // Wenn der String laenger als 20 Zeichen ist
-        $cName = mb_substr($cName, 0, 20) . '...';
+        $name = mb_substr($name, 0, 20) . '...';
     }
 
-    return $cName;
+    return $name;
 }

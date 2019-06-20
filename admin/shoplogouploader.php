@@ -4,10 +4,10 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Alert\Alert;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Shop;
-use JTL\Alert\Alert;
 
 require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('DISPLAY_OWN_LOGO_VIEW', true, true);
@@ -55,13 +55,13 @@ if (Request::verifyGPCDataInt('upload') === 1 && Form::validateToken()) {
             );
         }
     }
-    $nReturnValue = saveShopLogo($_FILES);
-    if ($nReturnValue === 1) {
+    $saved = saveShopLogo($_FILES);
+    if ($saved === 1) {
         $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successLogoUpload'), 'successLogoUpload');
     } else {
         // 2 = Dateiname entspricht nicht der Konvention oder fehlt
         // 3 = Dateityp entspricht nicht der (Nur jpg/gif/png/bmp/ Bilder) Konvention oder fehlt
-        switch ($nReturnValue) {
+        switch ($saved) {
             case 2:
                 $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorFileName'), 'errorFileName');
                 break;
@@ -82,7 +82,7 @@ if (Request::verifyGPCDataInt('upload') === 1 && Form::validateToken()) {
 }
 
 $smarty->assign('cRnd', time())
-       ->assign('ShopLogo', Shop::getLogo(false))
-       ->assign('ShopLogoURL', Shop::getLogo(true))
-       ->assign('step', $step)
-       ->display('shoplogouploader.tpl');
+    ->assign('ShopLogo', Shop::getLogo(false))
+    ->assign('ShopLogoURL', Shop::getLogo(true))
+    ->assign('step', $step)
+    ->display('shoplogouploader.tpl');

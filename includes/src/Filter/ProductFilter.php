@@ -318,12 +318,12 @@ class ProductFilter
     }
 
     /**
-     * @param int $nSortierung
+     * @param int $sort
      * @return ProductFilter
      */
-    public function setSort(int $nSortierung): self
+    public function setSort(int $sort): self
     {
-        $this->nSortierung = $nSortierung;
+        $this->nSortierung = $sort;
 
         return $this;
     }

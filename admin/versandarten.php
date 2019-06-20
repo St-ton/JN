@@ -125,12 +125,12 @@ if (Request::verifyGPCDataInt('editzus') > 0 && Form::validateToken()) {
         $fee  = $db->select('tversandzuschlag', 'kVersandzuschlag', $kVersandzuschlag);
         if (isset($fee->kVersandzuschlag) && $fee->kVersandzuschlag > 0) {
             $fee->oVersandzuschlagSprache_arr = [];
-            $oVersandzuschlagSprache_arr      = $db->selectAll(
+            $localizations                    = $db->selectAll(
                 'tversandzuschlagsprache',
                 'kVersandzuschlag',
                 (int)$fee->kVersandzuschlag
             );
-            foreach ($oVersandzuschlagSprache_arr as $localized) {
+            foreach ($localizations as $localized) {
                 $fee->oVersandzuschlagSprache_arr[$localized->cISOSprache] = $localized;
             }
         }
@@ -361,11 +361,11 @@ if (isset($_POST['neueVersandart']) && (int)$_POST['neueVersandart'] > 0 && Form
         }
     }
 
-    $VersandartStaffeln        = [];
-    $fVersandartStaffelBis_arr = []; // Haelt alle fBis der Staffel
-    $staffelDa                 = true;
-    $bVersandkostenfreiGueltig = true;
-    $fMaxVersandartStaffelBis  = 0;
+    $VersandartStaffeln       = [];
+    $upperLimits              = []; // Haelt alle fBis der Staffel
+    $staffelDa                = true;
+    $shippingFreeValid        = true;
+    $fMaxVersandartStaffelBis = 0;
     if ($shippingType->cModulId === 'vm_versandberechnung_gewicht_jtl'
         || $shippingType->cModulId === 'vm_versandberechnung_warenwert_jtl'
         || $shippingType->cModulId === 'vm_versandberechnung_artikelanzahl_jtl'
@@ -390,8 +390,8 @@ if (isset($_POST['neueVersandart']) && (int)$_POST['neueVersandart'] > 0 && Form
                     $oVersandstaffel->fBis   = (float)str_replace(',', '.', $fBis);
                     $oVersandstaffel->fPreis = (float)str_replace(',', '.', $_POST['preis'][$i]);
 
-                    $VersandartStaffeln[]        = $oVersandstaffel;
-                    $fVersandartStaffelBis_arr[] = $oVersandstaffel->fBis;
+                    $VersandartStaffeln[] = $oVersandstaffel;
+                    $upperLimits[]        = $oVersandstaffel->fBis;
                 }
             }
         }
@@ -426,7 +426,7 @@ if (isset($_POST['neueVersandart']) && (int)$_POST['neueVersandart'] > 0 && Form
         && count($_POST['kZahlungsart']) >= 1
         && $shippingMethod->cName
         && $staffelDa
-        && $bVersandkostenfreiGueltig
+        && $shippingFreeValid
     ) {
         $kVersandart = 0;
         if ((int)$_POST['kVersandart'] === 0) {
@@ -523,7 +523,7 @@ if (isset($_POST['neueVersandart']) && (int)$_POST['neueVersandart'] > 0 && Form
                 'errorShippingMethodPriceMissing'
             );
         }
-        if (!$bVersandkostenfreiGueltig) {
+        if (!$shippingFreeValid) {
             $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorShippingFreeMax'), 'errorShippingFreeMax');
         }
         if ((int)$_POST['kVersandart'] > 0) {
@@ -666,13 +666,13 @@ if ($step === 'uebersicht') {
             'cName',
             'cISOSprache'
         );
-        foreach (Text::parseSSK($method->cKundengruppen) as $kKundengruppe) {
-            if ((int)$kKundengruppe === -1) {
+        foreach (Text::parseSSK($method->cKundengruppen) as $customerGroupID) {
+            if ((int)$customerGroupID === -1) {
                 $method->cKundengruppenName_arr[] = __('allCustomerGroups');
             } else {
-                foreach ($customerGroups as $oKundengruppen) {
-                    if ((int)$oKundengruppen->kKundengruppe === (int)$kKundengruppe) {
-                        $method->cKundengruppenName_arr[] = $oKundengruppen->cName;
+                foreach ($customerGroups as $customerGroup) {
+                    if ((int)$customerGroup->kKundengruppe === (int)$customerGroupID) {
+                        $method->cKundengruppenName_arr[] = $customerGroup->cName;
                     }
                 }
             }

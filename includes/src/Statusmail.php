@@ -101,7 +101,7 @@ class Statusmail
         $d = new DateTime();
         $d->modify('+1 days');
         $d->setTime(0, 0);
-        $oCron = new LegacyCron(
+        $cron = new LegacyCron(
             0,
             $id,
             $nAlleXStunden,
@@ -113,7 +113,7 @@ class Statusmail
             $d->format('H:i:s')
         );
 
-        return $oCron->speicherInDB() !== false;
+        return $cron->speicherInDB() !== false;
     }
 
     /**
@@ -199,7 +199,7 @@ class Statusmail
             'SELECT kKundengruppe, cName FROM tkundengruppe',
             ReturnType::ARRAY_OF_OBJECTS
         );
-        foreach ($customerGroups as $oKundengruppe) {
+        foreach ($customerGroups as $customerGroup) {
             $productData            = $this->db->queryPrepared(
                 'SELECT COUNT(*) AS cnt
                     FROM tartikel
@@ -207,13 +207,13 @@ class Statusmail
                         ON tartikelsichtbarkeit.kArtikel = tartikel.kArtikel
                         AND tartikelsichtbarkeit.kKundengruppe = :cgid
                     WHERE tartikelsichtbarkeit.kArtikel IS NULL',
-                ['cgid' => (int)$oKundengruppe->kKundengruppe],
+                ['cgid' => (int)$customerGroup->kKundengruppe],
                 ReturnType::SINGLE_OBJECT
             );
             $product                = new stdClass();
             $product->nAnzahl       = (int)$productData->cnt;
-            $product->kKundengruppe = (int)$oKundengruppe->kKundengruppe;
-            $product->cName         = $oKundengruppe->cName;
+            $product->kKundengruppe = (int)$customerGroup->kKundengruppe;
+            $product->cName         = $customerGroup->cName;
 
             $products[] = $product;
         }

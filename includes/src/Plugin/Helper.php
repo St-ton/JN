@@ -75,8 +75,8 @@ class Helper
         // Falls ja, darf die Liste den Seiten Link Plugin Handler nur einmal ausführen bzw. nur einmal beinhalten
         if (isset($hooks[\HOOK_SEITE_PAGE_IF_LINKART])) {
             $exists = false;
-            foreach ($hooks[\HOOK_SEITE_PAGE_IF_LINKART] as $i => $oPluginHookListe) {
-                if ($oPluginHookListe->cDateiname === \PLUGIN_SEITENHANDLER) {
+            foreach ($hooks[\HOOK_SEITE_PAGE_IF_LINKART] as $i => $hookList) {
+                if ($hookList->cDateiname === \PLUGIN_SEITENHANDLER) {
                     unset($hooks[\HOOK_SEITE_PAGE_IF_LINKART][$i]);
                     $exists = true;
                 }
@@ -311,9 +311,9 @@ class Helper
     public static function getLanguageVariablesByID(int $id, $iso = ''): array
     {
         $return = [];
-        $cSQL   = '';
+        $sql    = '';
         if (\mb_strlen($iso) > 0) {
-            $cSQL = " AND tpluginsprachvariablesprache.cISO = '" . \mb_convert_case($iso, \MB_CASE_UPPER) . "'";
+            $sql = " AND tpluginsprachvariablesprache.cISO = '" . \mb_convert_case($iso, \MB_CASE_UPPER) . "'";
         }
         $langVars = Shop::Container()->getDB()->query(
             'SELECT t.kPluginSprachvariable,
@@ -329,7 +329,7 @@ class Helper
                     ON c.kPlugin = t.kPlugin
                     AND c.kPluginSprachvariable = t.kPluginSprachvariable
                     AND tpluginsprachvariablesprache.cISO = c.cISO
-                WHERE t.kPlugin = ' . $id . $cSQL,
+                WHERE t.kPlugin = ' . $id . $sql,
             ReturnType::ARRAY_OF_ASSOC_ARRAYS
         );
         if (!\is_array($langVars) || \count($langVars) < 1) {

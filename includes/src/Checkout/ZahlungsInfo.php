@@ -91,28 +91,28 @@ class ZahlungsInfo
     public $cAbgeholt;
 
     /**
-     * @param int $kZahlungsInfo
-     * @param int $kBestellung
+     * @param int $id
+     * @param int $orderID
      */
-    public function __construct(int $kZahlungsInfo = 0, int $kBestellung = 0)
+    public function __construct(int $id = 0, int $orderID = 0)
     {
-        if ($kZahlungsInfo > 0 || $kBestellung > 0) {
-            $this->loadFromDB($kZahlungsInfo, $kBestellung);
+        if ($id > 0 || $orderID > 0) {
+            $this->loadFromDB($id, $orderID);
         }
     }
 
     /**
-     * @param int $kZahlungsInfo
-     * @param int $kBestellung
+     * @param int $id
+     * @param int $orderID
      * @return $this
      */
-    public function loadFromDB(int $kZahlungsInfo, int $kBestellung): self
+    public function loadFromDB(int $id, int $orderID): self
     {
         $obj = null;
-        if ($kZahlungsInfo > 0) {
-            $obj = Shop::Container()->getDB()->select('tzahlungsinfo', 'kZahlungsInfo', $kZahlungsInfo);
-        } elseif ($kBestellung > 0) {
-            $obj = Shop::Container()->getDB()->select('tzahlungsinfo', 'kBestellung', $kBestellung);
+        if ($id > 0) {
+            $obj = Shop::Container()->getDB()->select('tzahlungsinfo', 'kZahlungsInfo', $id);
+        } elseif ($orderID > 0) {
+            $obj = Shop::Container()->getDB()->select('tzahlungsinfo', 'kBestellung', $orderID);
         }
 
         if (\is_object($obj)) {
@@ -190,10 +190,10 @@ class ZahlungsInfo
     public function updateInDB(): int
     {
         $this->verschluesselZahlungsinfo();
-        $obj     = GeneralObject::copyMembers($this);
-        $cReturn = Shop::Container()->getDB()->update('tzahlungsinfo', 'kZahlungsInfo', $obj->kZahlungsInfo, $obj);
+        $obj = GeneralObject::copyMembers($this);
+        $res = Shop::Container()->getDB()->update('tzahlungsinfo', 'kZahlungsInfo', $obj->kZahlungsInfo, $obj);
         $this->entschluesselZahlungsinfo();
 
-        return $cReturn;
+        return $res;
     }
 }

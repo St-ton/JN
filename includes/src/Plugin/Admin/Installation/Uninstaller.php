@@ -243,16 +243,16 @@ final class Uninstaller
                     [$links[1]->kLink, $item->cISOSprache],
                     (object)['cSeo' => $item->cSeo]
                 );
-                $kSprache = $languages[$item->cISOSprache]->kSprache;
+                $languageID = $languages[$item->cISOSprache]->kSprache;
                 $this->db->delete(
                     'tseo',
                     ['cKey', 'kKey', 'kSprache'],
-                    ['kLink', $links[0]->kLink, $kSprache]
+                    ['kLink', $links[0]->kLink, $languageID]
                 );
                 $this->db->update(
                     'tseo',
                     ['cKey', 'kKey', 'kSprache'],
-                    ['kLink', $links[1]->kLink, $kSprache],
+                    ['kLink', $links[1]->kLink, $languageID],
                     (object)['cSeo' => $item->cSeo]
                 );
             }

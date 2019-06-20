@@ -7,10 +7,10 @@
 namespace JTL\Cart;
 
 use JTL\Catalog\Product\Artikel;
+use JTL\Catalog\Product\Preise;
 use JTL\DB\ReturnType;
 use JTL\Extensions\Konfigitemsprache;
 use JTL\Helpers\Tax;
-use JTL\Catalog\Product\Preise;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use stdClass;
@@ -47,58 +47,58 @@ class WarenkorbPers
     public $cWarenwertLocalized;
 
     /**
-     * @param int  $kKunde
-     * @param bool $bArtikel
+     * @param int  $customerID
+     * @param bool $addProducts
      */
-    public function __construct(int $kKunde = 0, bool $bArtikel = false)
+    public function __construct(int $customerID = 0, bool $addProducts = false)
     {
-        if ($kKunde > 0) {
-            $this->kKunde = $kKunde;
-            $this->ladeWarenkorbPers($bArtikel);
+        if ($customerID > 0) {
+            $this->kKunde = $customerID;
+            $this->ladeWarenkorbPers($addProducts);
         }
     }
 
     /**
      * fügt eine Position zur WarenkorbPers hinzu
      *
-     * @param int    $kArtikel
-     * @param string $cArtikelName
-     * @param array  $oEigenschaftwerte_arr
-     * @param float  $fAnzahl
-     * @param string $cUnique
+     * @param int    $productID
+     * @param string $productName
+     * @param array  $attrValues
+     * @param float  $qty
+     * @param string $unique
      * @param int    $kKonfigitem
-     * @param int    $nPosTyp
-     * @param string $cResponsibility
+     * @param int    $type
+     * @param string $responsibility
      * @return $this
      */
     public function fuegeEin(
-        int $kArtikel,
-        $cArtikelName,
-        $oEigenschaftwerte_arr,
-        $fAnzahl,
-        $cUnique = '',
+        int $productID,
+        $productName,
+        $attrValues,
+        $qty,
+        $unique = '',
         int $kKonfigitem = 0,
-        int $nPosTyp = \C_WARENKORBPOS_TYP_ARTIKEL,
-        $cResponsibility = 'core'
+        int $type = \C_WARENKORBPOS_TYP_ARTIKEL,
+        $responsibility = 'core'
     ): self {
-        $exists    = false;
-        $nPosition = 0;
-        foreach ($this->oWarenkorbPersPos_arr as $i => $position) {
-            /** @var WarenkorbPersPos $position */
-            $position->kArtikel = (int)$position->kArtikel;
+        $exists = false;
+        $idx    = 0;
+        foreach ($this->oWarenkorbPersPos_arr as $i => $item) {
+            /** @var WarenkorbPersPos $item */
+            $item->kArtikel = (int)$item->kArtikel;
             if ($exists) {
                 break;
             }
-            if ($position->kArtikel === $kArtikel
-                && $position->cUnique === $cUnique
-                && (int)$position->kKonfigitem === $kKonfigitem
-                && \count($position->oWarenkorbPersPosEigenschaft_arr) > 0
+            if ($item->kArtikel === $productID
+                && $item->cUnique === $unique
+                && (int)$item->kKonfigitem === $kKonfigitem
+                && \count($item->oWarenkorbPersPosEigenschaft_arr) > 0
             ) {
-                $nPosition = $i;
-                $exists    = true;
-                foreach ($oEigenschaftwerte_arr as $oEigenschaftwerte) {
+                $idx    = $i;
+                $exists = true;
+                foreach ($attrValues as $oEigenschaftwerte) {
                     // kEigenschaftsWert is not set when using free text variations
-                    if (!$position->istEigenschaftEnthalten(
+                    if (!$item->istEigenschaftEnthalten(
                         $oEigenschaftwerte->kEigenschaft,
                         $oEigenschaftwerte->kEigenschaftWert ?? null,
                         $oEigenschaftwerte->cFreifeldWert ?? ''
@@ -107,33 +107,33 @@ class WarenkorbPers
                         break;
                     }
                 }
-            } elseif ($position->kArtikel === $kArtikel
-                && $cUnique !== ''
-                && $position->cUnique === $cUnique
-                && (int)$position->kKonfigitem === $kKonfigitem
+            } elseif ($item->kArtikel === $productID
+                && $unique !== ''
+                && $item->cUnique === $unique
+                && (int)$item->kKonfigitem === $kKonfigitem
             ) {
-                $nPosition = $i;
-                $exists    = true;
+                $idx    = $i;
+                $exists = true;
                 break;
             }
         }
         if ($exists) {
-            $this->oWarenkorbPersPos_arr[$nPosition]->fAnzahl += $fAnzahl;
-            $this->oWarenkorbPersPos_arr[$nPosition]->updateDB();
+            $this->oWarenkorbPersPos_arr[$idx]->fAnzahl += $qty;
+            $this->oWarenkorbPersPos_arr[$idx]->updateDB();
         } else {
-            $position = new WarenkorbPersPos(
-                $kArtikel,
-                $cArtikelName,
-                $fAnzahl,
+            $item = new WarenkorbPersPos(
+                $productID,
+                $productName,
+                $qty,
                 $this->kWarenkorbPers,
-                $cUnique,
+                $unique,
                 $kKonfigitem,
-                $nPosTyp,
-                $cResponsibility
+                $type,
+                $responsibility
             );
-            $position->schreibeDB();
-            $position->erstellePosEigenschaften($oEigenschaftwerte_arr);
-            $this->oWarenkorbPersPos_arr[] = $position;
+            $item->schreibeDB();
+            $item->erstellePosEigenschaften($attrValues);
+            $this->oWarenkorbPersPos_arr[] = $item;
         }
 
         return $this;
@@ -145,18 +145,16 @@ class WarenkorbPers
     public function entferneAlles(): self
     {
         $db = Shop::Container()->getDB();
-        foreach ($this->oWarenkorbPersPos_arr as $position) {
-            // Eigenschaften löschen
+        foreach ($this->oWarenkorbPersPos_arr as $item) {
             $db->delete(
                 'twarenkorbpersposeigenschaft',
                 'kWarenkorbPersPos',
-                (int)$position->kWarenkorbPersPos
+                (int)$item->kWarenkorbPersPos
             );
-            // Postitionen löschen
             $db->delete(
                 'twarenkorbperspos',
                 'kWarenkorbPers',
-                (int)$position->kWarenkorbPers
+                (int)$item->kWarenkorbPers
             );
         }
 
@@ -185,7 +183,7 @@ class WarenkorbPers
      */
     public function entfernePos(int $id): self
     {
-        $oKunde = Shop::Container()->getDB()->queryPrepared(
+        $customer = Shop::Container()->getDB()->queryPrepared(
             'SELECT twarenkorbpers.kKunde
                 FROM twarenkorbpers
                 JOIN twarenkorbperspos 
@@ -195,7 +193,7 @@ class WarenkorbPers
             ReturnType::SINGLE_OBJECT
         );
         // Prüfen ob der eingeloggte Kunde auch der Besitzer der zu löschenden WarenkorbPersPos ist
-        if (isset($oKunde->kKunde) && (int)$oKunde->kKunde === Frontend::getCustomer()->getID()) {
+        if (isset($customer->kKunde) && (int)$customer->kKunde === Frontend::getCustomer()->getID()) {
             // Alle Eigenschaften löschen
             Shop::Container()->getDB()->delete('twarenkorbpersposeigenschaft', 'kWarenkorbPersPos', $id);
             // Die Position mit ID $id löschen
@@ -226,9 +224,9 @@ class WarenkorbPers
      */
     public function loescheGratisGeschenkAusWarenkorbPers(): self
     {
-        foreach ($this->oWarenkorbPersPos_arr as $position) {
-            if ((int)$position->nPosTyp === \C_WARENKORBPOS_TYP_GRATISGESCHENK) {
-                $this->entfernePos($position->kWarenkorbPersPos);
+        foreach ($this->oWarenkorbPersPos_arr as $item) {
+            if ((int)$item->nPosTyp === \C_WARENKORBPOS_TYP_GRATISGESCHENK) {
+                $this->entfernePos($item->kWarenkorbPersPos);
             }
         }
 
@@ -250,30 +248,30 @@ class WarenkorbPers
     }
 
     /**
-     * @param bool $bArtikel
+     * @param bool $addProducts
      * @return $this
      */
-    public function ladeWarenkorbPers(bool $bArtikel): self
+    public function ladeWarenkorbPers(bool $addProducts): self
     {
         // Prüfe ob die WarenkorbPers dem eingeloggten Kunden gehört
-        $oWarenkorbPers = Shop::Container()->getDB()->select('twarenkorbpers', 'kKunde', (int)$this->kKunde);
-        if (!isset($oWarenkorbPers->kWarenkorbPers) || $oWarenkorbPers->kWarenkorbPers < 1) {
+        $persCart = Shop::Container()->getDB()->select('twarenkorbpers', 'kKunde', (int)$this->kKunde);
+        if (!isset($persCart->kWarenkorbPers) || $persCart->kWarenkorbPers < 1) {
             $this->dErstellt = 'NOW()';
             $this->schreibeDB();
         }
 
-        if ($oWarenkorbPers === false || $oWarenkorbPers === null) {
+        if ($persCart === false || $persCart === null) {
             return $this;
         }
-        $this->kWarenkorbPers = (int)$oWarenkorbPers->kWarenkorbPers;
-        $this->kKunde         = (int)$oWarenkorbPers->kKunde;
-        $this->dErstellt      = $oWarenkorbPers->dErstellt ?? null;
+        $this->kWarenkorbPers = (int)$persCart->kWarenkorbPers;
+        $this->kKunde         = (int)$persCart->kKunde;
+        $this->dErstellt      = $persCart->dErstellt ?? null;
 
         if ($this->kWarenkorbPers <= 0) {
             return $this;
         }
         // Hole alle Positionen für eine WarenkorbPers
-        $cartPositions = Shop::Container()->getDB()->selectAll(
+        $cartItems = Shop::Container()->getDB()->selectAll(
             'twarenkorbperspos',
             'kWarenkorbPers',
             (int)$this->kWarenkorbPers,
@@ -281,44 +279,44 @@ class WarenkorbPers
             'kKonfigitem, kWarenkorbPersPos'
         );
         // Wenn Positionen vorhanden sind
-        if (!\is_array($cartPositions) || \count($cartPositions) === 0) {
+        if (!\is_array($cartItems) || \count($cartItems) === 0) {
             return $this;
         }
-        $fWarenwert     = 0.0;
+        $itemsValue     = 0.0;
         $defaultOptions = Artikel::getDefaultOptions();
         if (!isset($_SESSION['Steuersatz'])) {
             Tax::setTaxRates();
         }
         // Hole alle Eigenschaften für eine Position
-        foreach ($cartPositions as $posData) {
-            $posData->kWarenkorbPersPos = (int)$posData->kWarenkorbPersPos;
-            $posData->kWarenkorbPers    = (int)$posData->kWarenkorbPers;
-            $posData->kArtikel          = (int)$posData->kArtikel;
-            $posData->kKonfigitem       = (int)$posData->kKonfigitem;
-            $posData->nPosTyp           = (int)$posData->nPosTyp;
-            $cartPos                    = new WarenkorbPersPos(
-                $posData->kArtikel,
-                $posData->cArtikelName,
-                $posData->fAnzahl,
-                $posData->kWarenkorbPers,
-                $posData->cUnique,
-                $posData->kKonfigitem,
-                $posData->nPosTyp,
-                $posData->cResponsibility
-            );
+        foreach ($cartItems as $item) {
+            $item->kWarenkorbPersPos = (int)$item->kWarenkorbPersPos;
+            $item->kWarenkorbPers    = (int)$item->kWarenkorbPers;
+            $item->kArtikel          = (int)$item->kArtikel;
+            $item->kKonfigitem       = (int)$item->kKonfigitem;
+            $item->nPosTyp           = (int)$item->nPosTyp;
 
-            $cartPos->kWarenkorbPersPos = $posData->kWarenkorbPersPos;
-            $cartPos->cKommentar        = $posData->cKommentar ?? null;
-            $cartPos->dHinzugefuegt     = $posData->dHinzugefuegt;
-            $cartPos->dHinzugefuegt_de  = $posData->dHinzugefuegt_de;
+            $persItem                    = new WarenkorbPersPos(
+                $item->kArtikel,
+                $item->cArtikelName,
+                $item->fAnzahl,
+                $item->kWarenkorbPers,
+                $item->cUnique,
+                $item->kKonfigitem,
+                $item->nPosTyp,
+                $item->cResponsibility
+            );
+            $persItem->kWarenkorbPersPos = $item->kWarenkorbPersPos;
+            $persItem->cKommentar        = $item->cKommentar ?? null;
+            $persItem->dHinzugefuegt     = $item->dHinzugefuegt;
+            $persItem->dHinzugefuegt_de  = $item->dHinzugefuegt_de;
 
             $attributes = Shop::Container()->getDB()->selectAll(
                 'twarenkorbpersposeigenschaft',
                 'kWarenkorbPersPos',
-                (int)$posData->kWarenkorbPersPos
+                (int)$item->kWarenkorbPersPos
             );
             foreach ($attributes as $attribute) {
-                $oWarenkorbPersPosEigenschaft                = new WarenkorbPersPosEigenschaft(
+                $persItem->oWarenkorbPersPosEigenschaft_arr[] = new WarenkorbPersPosEigenschaft(
                     (int)$attribute->kEigenschaft,
                     (int)$attribute->kEigenschaftWert,
                     $attribute->cFreifeldWert ?? null,
@@ -326,49 +324,48 @@ class WarenkorbPers
                     $attribute->cEigenschaftWertName,
                     (int)$attribute->kWarenkorbPersPos
                 );
-                $cartPos->oWarenkorbPersPosEigenschaft_arr[] = $oWarenkorbPersPosEigenschaft;
             }
-            if ($bArtikel) {
-                $cartPos->Artikel = new Artikel();
-                $cartPos->Artikel->fuelleArtikel($cartPos->kArtikel, $defaultOptions);
-                $cartPos->cArtikelName = $cartPos->Artikel->cName;
+            if ($addProducts) {
+                $persItem->Artikel = new Artikel();
+                $persItem->Artikel->fuelleArtikel($persItem->kArtikel, $defaultOptions);
+                $persItem->cArtikelName = $persItem->Artikel->cName;
 
-                $fWarenwert += $cartPos->Artikel->Preise->fVK[$cartPos->Artikel->kSteuerklasse];
+                $itemsValue += $persItem->Artikel->Preise->fVK[$persItem->Artikel->kSteuerklasse];
             }
-            $cartPos->fAnzahl              = (float)$cartPos->fAnzahl;
-            $this->oWarenkorbPersPos_arr[] = $cartPos;
+            $persItem->fAnzahl             = (float)$persItem->fAnzahl;
+            $this->oWarenkorbPersPos_arr[] = $persItem;
         }
-        $this->cWarenwertLocalized = Preise::getLocalizedPriceString($fWarenwert);
+        $this->cWarenwertLocalized = Preise::getLocalizedPriceString($itemsValue);
 
         return $this;
     }
 
     /**
-     * @param bool $bForceDelete
+     * @param bool $forceDelete
      * @return string
      */
-    public function ueberpruefePositionen(bool $bForceDelete = false): string
+    public function ueberpruefePositionen(bool $forceDelete = false): string
     {
         $productNames = [];
         $productIDs   = [];
         $msg          = '';
         $db           = Shop::Container()->getDB();
-        foreach ($this->oWarenkorbPersPos_arr as $cartPos) {
+        foreach ($this->oWarenkorbPersPos_arr as $item) {
             // Hat die Position einen Artikel
-            if ($cartPos->kArtikel > 0) {
+            if ($item->kArtikel > 0) {
                 // Prüfe auf kArtikel
-                $oArtikelVorhanden = $db->select(
+                $productExists = $db->select(
                     'tartikel',
                     'kArtikel',
-                    (int)$cartPos->kArtikel
+                    (int)$item->kArtikel
                 );
                 // Falls Artikel vorhanden
-                if (isset($oArtikelVorhanden->kArtikel) && $oArtikelVorhanden->kArtikel > 0) {
+                if (isset($productExists->kArtikel) && $productExists->kArtikel > 0) {
                     // Sichtbarkeit Prüfen
                     $visibility = $db->select(
                         'tartikelsichtbarkeit',
                         'kArtikel',
-                        (int)$cartPos->kArtikel,
+                        (int)$item->kArtikel,
                         'kKundengruppe',
                         Frontend::getCustomerGroup()->getID()
                     );
@@ -377,17 +374,17 @@ class WarenkorbPers
                         $attributes = $db->selectAll(
                             'teigenschaft',
                             'kArtikel',
-                            (int)$cartPos->kArtikel,
+                            (int)$item->kArtikel,
                             'kEigenschaft, cName, cTyp'
                         );
                         foreach ($attributes as $attribute) {
                             if ($attribute->cTyp === 'FREIFELD'
                                 || $attribute->cTyp === 'PFLICHT-FREIFELD'
-                                || \count($cartPos->oWarenkorbPersPosEigenschaft_arr) === 0
+                                || \count($item->oWarenkorbPersPosEigenschaft_arr) === 0
                             ) {
                                 continue;
                             }
-                            foreach ($cartPos->oWarenkorbPersPosEigenschaft_arr as $oWarenkorbPersPosEigenschaft) {
+                            foreach ($item->oWarenkorbPersPosEigenschaft_arr as $oWarenkorbPersPosEigenschaft) {
                                 if ($oWarenkorbPersPosEigenschaft->kEigenschaft !== $attribute->kEigenschaft) {
                                     continue;
                                 }
@@ -403,30 +400,30 @@ class WarenkorbPers
                                     $db->delete(
                                         'twarenkorbperspos',
                                         'kWarenkorbPersPos',
-                                        $cartPos->kWarenkorbPersPos
+                                        $item->kWarenkorbPersPos
                                     );
                                     $db->delete(
                                         'twarenkorbpersposeigenschaft',
                                         'kWarenkorbPersPos',
-                                        $cartPos->kWarenkorbPersPos
+                                        $item->kWarenkorbPersPos
                                     );
-                                    $productNames[] = $cartPos->cArtikelName;
+                                    $productNames[] = $item->cArtikelName;
                                     $msg           .= '<br />' . Shop::Lang()->get('noProductWishlist', 'messages');
                                 }
                             }
                         }
-                        $productIDs[] = (int)$oArtikelVorhanden->kArtikel;
+                        $productIDs[] = (int)$productExists->kArtikel;
                     }
                 }
                 // Konfigitem ohne Artikelbezug?
-            } elseif ($cartPos->kArtikel === 0 && !empty($cartPos->kKonfigitem)) {
-                $productIDs[] = (int)$cartPos->kArtikel;
+            } elseif ($item->kArtikel === 0 && !empty($item->kKonfigitem)) {
+                $productIDs[] = (int)$item->kArtikel;
             }
         }
-        if ($bForceDelete) {
-            foreach ($this->oWarenkorbPersPos_arr as $i => $cartPos) {
-                if (!\in_array((int)$cartPos->kArtikel, $productIDs, true)) {
-                    $this->entfernePos($cartPos->kWarenkorbPersPos);
+        if ($forceDelete) {
+            foreach ($this->oWarenkorbPersPos_arr as $i => $item) {
+                if (!\in_array((int)$item->kArtikel, $productIDs, true)) {
+                    $this->entfernePos($item->kWarenkorbPersPos);
                     unset($this->oWarenkorbPersPos_arr[$i]);
                 }
             }
@@ -444,33 +441,33 @@ class WarenkorbPers
         if (!\is_array($_SESSION['Warenkorb']->PositionenArr) || \count($_SESSION['Warenkorb']->PositionenArr) === 0) {
             return $this;
         }
-        foreach (Frontend::getCart()->PositionenArr as $oPosition) {
-            if ($oPosition->nPosTyp !== \C_WARENKORBPOS_TYP_ARTIKEL) {
+        foreach (Frontend::getCart()->PositionenArr as $item) {
+            if ($item->nPosTyp !== \C_WARENKORBPOS_TYP_ARTIKEL) {
                 continue;
             }
             $values = [];
-            foreach ($oPosition->WarenkorbPosEigenschaftArr as $wkpe) {
-                $oEigenschaftwerte                       = new stdClass();
-                $oEigenschaftwerte->kEigenschaftWert     = $wkpe->kEigenschaftWert;
-                $oEigenschaftwerte->kEigenschaft         = $wkpe->kEigenschaft;
-                $oEigenschaftwerte->cEigenschaftName     = $wkpe->cEigenschaftName[$_SESSION['cISOSprache']];
-                $oEigenschaftwerte->cEigenschaftWertName = $wkpe->cEigenschaftWertName[$_SESSION['cISOSprache']];
+            foreach ($item->WarenkorbPosEigenschaftArr as $wkpe) {
+                $value                       = new stdClass();
+                $value->kEigenschaftWert     = $wkpe->kEigenschaftWert;
+                $value->kEigenschaft         = $wkpe->kEigenschaft;
+                $value->cEigenschaftName     = $wkpe->cEigenschaftName[$_SESSION['cISOSprache']];
+                $value->cEigenschaftWertName = $wkpe->cEigenschaftWertName[$_SESSION['cISOSprache']];
                 if ($wkpe->cTyp === 'FREIFELD' || $wkpe->cTyp === 'PFLICHT-FREIFELD') {
-                    $oEigenschaftwerte->cFreifeldWert = $wkpe->cEigenschaftWertName[$_SESSION['cISOSprache']];
+                    $value->cFreifeldWert = $wkpe->cEigenschaftWertName[$_SESSION['cISOSprache']];
                 }
 
-                $values[] = $oEigenschaftwerte;
+                $values[] = $value;
             }
 
             $this->fuegeEin(
-                $oPosition->kArtikel,
-                $oPosition->Artikel->cName ?? null,
+                $item->kArtikel,
+                $item->Artikel->cName ?? null,
                 $values,
-                $oPosition->nAnzahl,
-                $oPosition->cUnique,
-                $oPosition->kKonfigitem,
-                $oPosition->nPosTyp,
-                $oPosition->cResponsibility
+                $item->nAnzahl,
+                $item->cUnique,
+                $item->kKonfigitem,
+                $item->nPosTyp,
+                $item->cResponsibility
             );
         }
 
@@ -478,22 +475,22 @@ class WarenkorbPers
     }
 
     /**
-     * @param int    $kArtikel
-     * @param float  $fAnzahl
+     * @param int    $productID
+     * @param float  $amount
      * @param array  $attributeValues
-     * @param bool   $cUnique
-     * @param int    $kKonfigitem
-     * @param int    $nPosTyp
-     * @param string $cResponsibility
+     * @param bool   $unique
+     * @param int    $configItemID
+     * @param int    $type
+     * @param string $responsibility
      */
     public static function addToCheck(
-        int $kArtikel,
-        $fAnzahl,
+        int $productID,
+        $amount,
         $attributeValues,
-        $cUnique = false,
-        int $kKonfigitem = 0,
-        int $nPosTyp = \C_WARENKORBPOS_TYP_ARTIKEL,
-        string $cResponsibility = 'core'
+        $unique = false,
+        int $configItemID = 0,
+        int $type = \C_WARENKORBPOS_TYP_ARTIKEL,
+        string $responsibility = 'core'
     ): void {
         if (!Frontend::getCustomer()->isLoggedIn()) {
             return;
@@ -503,12 +500,12 @@ class WarenkorbPers
             return;
         }
         // Persistenter Warenkorb
-        if ($kArtikel > 0) {
+        if ($productID > 0) {
             // Pruefe auf kArtikel
-            $oArtikelVorhanden = Shop::Container()->getDB()->select(
+            $existing = Shop::Container()->getDB()->select(
                 'tartikel',
                 'kArtikel',
-                $kArtikel,
+                $productID,
                 null,
                 null,
                 null,
@@ -517,12 +514,12 @@ class WarenkorbPers
                 'kArtikel, cName'
             );
             // Falls Artikel vorhanden
-            if ($oArtikelVorhanden !== null) {
+            if ($existing !== null) {
                 // Sichtbarkeit pruefen
                 $visibility = Shop::Container()->getDB()->select(
                     'tartikelsichtbarkeit',
                     'kArtikel',
-                    $kArtikel,
+                    $productID,
                     'kKundengruppe',
                     Frontend::getCustomerGroup()->getID(),
                     null,
@@ -531,33 +528,33 @@ class WarenkorbPers
                     'kArtikel'
                 );
                 if ($visibility === null || !isset($visibility->kArtikel) || !$visibility->kArtikel) {
-                    $oWarenkorbPers = new WarenkorbPers(Frontend::getCustomer()->getID());
-                    if ($nPosTyp === \C_WARENKORBPOS_TYP_GRATISGESCHENK) {
-                        $oWarenkorbPers->loescheGratisGeschenkAusWarenkorbPers();
+                    $persCart = new WarenkorbPers(Frontend::getCustomer()->getID());
+                    if ($type === \C_WARENKORBPOS_TYP_GRATISGESCHENK) {
+                        $persCart->loescheGratisGeschenkAusWarenkorbPers();
                     }
-                    $oWarenkorbPers->fuegeEin(
-                        $kArtikel,
-                        $oArtikelVorhanden->cName,
+                    $persCart->fuegeEin(
+                        $productID,
+                        $existing->cName,
                         $attributeValues,
-                        $fAnzahl,
-                        $cUnique,
-                        $kKonfigitem,
-                        $nPosTyp,
-                        $cResponsibility
+                        $amount,
+                        $unique,
+                        $configItemID,
+                        $type,
+                        $responsibility
                     );
                 }
             }
-        } elseif ($kArtikel === 0 && !empty($kKonfigitem)) {
+        } elseif ($productID === 0 && !empty($configItemID)) {
             // Konfigitems ohne Artikelbezug
             (new WarenkorbPers(Frontend::getCustomer()->getID()))->fuegeEin(
-                $kArtikel,
-                (new Konfigitemsprache($kKonfigitem, Shop::getLanguageID()))->getName(),
+                $productID,
+                (new Konfigitemsprache($configItemID, Shop::getLanguageID()))->getName(),
                 $attributeValues,
-                $fAnzahl,
-                $cUnique,
-                $kKonfigitem,
-                $nPosTyp,
-                $cResponsibility
+                $amount,
+                $unique,
+                $configItemID,
+                $type,
+                $responsibility
             );
         }
     }

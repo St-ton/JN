@@ -48,13 +48,13 @@ final class DeliverySlips extends AbstractSync
             $this->upsert('tlieferschein', [$deliverySlip], 'kLieferschein');
 
             foreach ($item->tlieferscheinpos as $xmlPosition) {
-                $position                = $this->mapper->map($xmlPosition, 'mLieferscheinpos');
-                $position->kLieferschein = $deliverySlip->kLieferschein;
-                $this->upsert('tlieferscheinpos', [$position], 'kLieferscheinPos');
+                $sItem                = $this->mapper->map($xmlPosition, 'mLieferscheinpos');
+                $sItem->kLieferschein = $deliverySlip->kLieferschein;
+                $this->upsert('tlieferscheinpos', [$sItem], 'kLieferscheinPos');
 
                 foreach ($xmlPosition->tlieferscheinposInfo as $info) {
                     $posInfo                   = $this->mapper->map($info, 'mLieferscheinposinfo');
-                    $posInfo->kLieferscheinPos = $position->kLieferscheinPos;
+                    $posInfo->kLieferscheinPos = $sItem->kLieferscheinPos;
                     $this->upsert('tlieferscheinposinfo', [$posInfo], 'kLieferscheinPosInfo');
                 }
             }
@@ -81,23 +81,21 @@ final class DeliverySlips extends AbstractSync
             $id = (int)$id;
             $this->db->delete('tversand', 'kLieferschein', $id);
             $this->db->delete('tlieferschein', 'kLieferschein', $id);
-
-            $positions = $this->db->selectAll(
+            foreach ($this->db->selectAll(
                 'tlieferscheinpos',
                 'kLieferschein',
                 $id,
                 'kLieferscheinPos'
-            );
-            foreach ($positions as $position) {
+            ) as $item) {
                 $this->db->delete(
                     'tlieferscheinpos',
                     'kLieferscheinPos',
-                    (int)$position->kLieferscheinPos
+                    (int)$item->kLieferscheinPos
                 );
                 $this->db->delete(
                     'tlieferscheinposinfo',
                     'kLieferscheinPos',
-                    (int)$position->kLieferscheinPos
+                    (int)$item->kLieferscheinPos
                 );
             }
         }

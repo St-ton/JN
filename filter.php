@@ -4,19 +4,20 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use JTL\Helpers\Product;
-use JTL\Helpers\Category;
-use JTL\Helpers\Request;
-use JTL\Catalog\Product\ArtikelListe;
-use JTL\Catalog\Product\Bestseller;
+use JTL\Alert\Alert;
 use JTL\Catalog\Category\Kategorie;
 use JTL\Catalog\Category\KategorieListe;
-use JTL\Redirect;
+use JTL\Catalog\Product\ArtikelListe;
+use JTL\Catalog\Product\Bestseller;
+use JTL\Extensions\AuswahlAssistent;
+use JTL\Filter\ProductFilter;
+use JTL\Helpers\Category;
+use JTL\Helpers\Product;
+use JTL\Helpers\Request;
+use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Shopsetting;
-use JTL\Session\Frontend;
-use JTL\Extensions\AuswahlAssistent;
-use JTL\Alert\Alert;
+use JTL\Smarty\JTLSmarty;
 
 if (!defined('PFAD_ROOT')) {
     http_response_code(400);
@@ -24,8 +25,8 @@ if (!defined('PFAD_ROOT')) {
 }
 require_once PFAD_ROOT . PFAD_INCLUDES . 'filter_inc.php';
 Shop::setPageType(PAGE_ARTIKELLISTE);
-/** @global \JTL\Smarty\JTLSmarty $smarty */
-/** @global \JTL\Filter\ProductFilter $NaviFilter*/
+/** @global JTLSmarty $smarty */
+/** @global ProductFilter $NaviFilter*/
 $conf               = Shopsetting::getInstance()->getAll();
 $bestsellers        = [];
 $doSearch           = true;
@@ -34,14 +35,14 @@ $AktuelleKategorie  = new Kategorie();
 $expandedCategories = new KategorieListe();
 $hasError           = false;
 $params             = Shop::getParameters();
-/** @var \JTL\Filter\ProductFilter $NaviFilter */
+/** @var ProductFilter $NaviFilter */
 if ($NaviFilter->hasCategory()) {
-    $kKategorie                  = $NaviFilter->getCategory()->getValue();
-    $_SESSION['LetzteKategorie'] = $kKategorie;
+    $categoryID                  = $NaviFilter->getCategory()->getValue();
+    $_SESSION['LetzteKategorie'] = $categoryID;
     if ($AktuelleKategorie->kKategorie === null) {
         // temp. workaround: do not return 404 when non-localized existing category is loaded
-        if (Category::categoryExists($kKategorie)) {
-            $AktuelleKategorie->loadFromDB($kKategorie);
+        if (Category::categoryExists($categoryID)) {
+            $AktuelleKategorie->loadFromDB($categoryID);
         } else {
             Shop::$is404     = true;
             $params['is404'] = true;
@@ -92,8 +93,8 @@ if ($pages->getCurrentPage() > 0
     exit;
 }
 if ($conf['artikeluebersicht']['artikelubersicht_bestseller_gruppieren'] === 'Y') {
-    $productsIDs = $oSuchergebnisse->getProducts()->map(function ($article) {
-        return (int)$article->kArtikel;
+    $productsIDs = $oSuchergebnisse->getProducts()->map(function ($product) {
+        return (int)$product->kArtikel;
     });
     $bestsellers = Bestseller::buildBestsellers(
         $productsIDs,

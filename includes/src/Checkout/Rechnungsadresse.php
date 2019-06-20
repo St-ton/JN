@@ -49,22 +49,22 @@ class Rechnungsadresse extends Adresse
     /**
      * Rechnungsadresse constructor.
      *
-     * @param int $kRechnungsadresse
+     * @param int $id
      */
-    public function __construct(int $kRechnungsadresse = 0)
+    public function __construct(int $id = 0)
     {
-        if ($kRechnungsadresse > 0) {
-            $this->loadFromDB($kRechnungsadresse);
+        if ($id > 0) {
+            $this->loadFromDB($id);
         }
     }
 
     /**
-     * @param int $kRechnungsadresse
+     * @param int $id
      * @return int|Rechnungsadresse
      */
-    public function loadFromDB(int $kRechnungsadresse)
+    public function loadFromDB(int $id)
     {
-        $obj = Shop::Container()->getDB()->select('trechnungsadresse', 'kRechnungsadresse', $kRechnungsadresse);
+        $obj = Shop::Container()->getDB()->select('trechnungsadresse', 'kRechnungsadresse', $id);
 
         if ($obj === null || $obj->kRechnungsadresse < 1) {
             return 0;

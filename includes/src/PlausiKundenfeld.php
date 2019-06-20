@@ -53,14 +53,14 @@ class PlausiKundenfeld extends Plausi
                 $this->xPlausiVar_arr['cWert'] = 1;
             }
         } elseif (!$update) {
-            $oKundenfeld = Shop::Container()->getDB()->select(
+            $field = Shop::Container()->getDB()->select(
                 'tkundenfeld',
                 'kSprache',
                 (int)$_SESSION['kSprache'],
                 'cName',
                 $this->xPostVar_arr['cName']
             );
-            if (isset($oKundenfeld->kKundenfeld) && $oKundenfeld->kKundenfeld > 0) {
+            if (isset($field->kKundenfeld) && $field->kKundenfeld > 0) {
                 $this->xPlausiVar_arr['cName'] = 2;
             }
         }

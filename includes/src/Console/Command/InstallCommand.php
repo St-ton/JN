@@ -274,12 +274,12 @@ class InstallCommand extends Command
         }
 
         $io->writeln('  <info>Admin-Login</info>');
-        $io->writeln("    Username <comment>".$adminUser."</comment>");
-        $io->writeln("    Password <comment>".$adminPass."</comment>");
+        $io->writeln('    Username <comment>'.$adminUser.'</comment>');
+        $io->writeln('    Password <comment>'.$adminPass.'</comment>');
         $io->writeln('');
         $io->writeln('  <info>Sync-Login</info>');
-        $io->writeln("    Username <comment>".$syncUser."</comment>");
-        $io->writeln("    Password <comment>".$syncPass."</comment>");
+        $io->writeln('    Username <comment>'.$syncUser.'</comment>');
+        $io->writeln('    Password <comment>'.$syncPass.'</comment>');
 
         $io->setStep($this->currentStep++, $this->steps, 'Remove install dir and set new permissions for config file');
 

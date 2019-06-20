@@ -32,22 +32,22 @@ class KategorieArtikel
 
     /**
      * KategorieArtikel constructor.
-     * @param int $kKategorieArtikel
+     * @param int $id
      */
-    public function __construct(int $kKategorieArtikel = 0)
+    public function __construct(int $id = 0)
     {
-        if ($kKategorieArtikel > 0) {
-            $this->loadFromDB($kKategorieArtikel);
+        if ($id > 0) {
+            $this->loadFromDB($id);
         }
     }
 
     /**
-     * @param int $kKategorieArtikel
+     * @param int $id
      * @return $this
      */
-    public function loadFromDB(int $kKategorieArtikel): self
+    public function loadFromDB(int $id): self
     {
-        $obj = Shop::Container()->getDB()->select('tkategorieartikel', 'kKategorieArtikel', $kKategorieArtikel);
+        $obj = Shop::Container()->getDB()->select('tkategorieartikel', 'kKategorieArtikel', $id);
         foreach (\get_object_vars($obj) as $k => $v) {
             $this->$k = $v;
         }

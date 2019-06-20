@@ -20,11 +20,10 @@ $oAccount->permission('CHECKBOXES_VIEW', true, true);
 
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'checkbox_inc.php';
 /** @global \JTL\Smarty\JTLSmarty $smarty */
-$alertHelper  = Shop::Container()->getAlertService();
-$step         = 'uebersicht';
-$itemsPerPage = 15;
-$checkbox     = new CheckBox();
-$tab          = $step;
+$alertHelper = Shop::Container()->getAlertService();
+$step        = 'uebersicht';
+$checkbox    = new CheckBox();
+$tab         = $step;
 if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
     $tab = Request::verifyGPDataString('tab');
 }
@@ -71,7 +70,7 @@ $pagination = (new Pagination())
     ->setItemCount($checkbox->getAllCheckBoxCount())
     ->assemble();
 $smarty->assign('oCheckBox_arr', $checkbox->getAllCheckBox('LIMIT ' . $pagination->getLimitSQL()))
-       ->assign('oPagination', $pagination)
+       ->assign('pagination', $pagination)
        ->assign('cAnzeigeOrt_arr', CheckBox::gibCheckBoxAnzeigeOrte())
        ->assign('CHECKBOX_ORT_REGISTRIERUNG', CHECKBOX_ORT_REGISTRIERUNG)
        ->assign('CHECKBOX_ORT_BESTELLABSCHLUSS', CHECKBOX_ORT_BESTELLABSCHLUSS)

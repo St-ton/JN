@@ -24,9 +24,9 @@ require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'template_inc.php';
 $oAccount->permission('DISPLAY_TEMPLATE_VIEW', true, true);
 
 $alertHelper    = Shop::Container()->getAlertService();
-$lessVars_arr   = [];
+$lessVars       = [];
 $lessVarsSkin   = [];
-$lessColors_arr = [];
+$lessColors     = [];
 $lessColorsSkin = [];
 $template       = Template::getInstance();
 $db             = Shop::Container()->getDB();
@@ -250,11 +250,11 @@ if (isset($_GET['settings']) && mb_strlen($_GET['settings']) > 0 && Form::valida
                         $lessColorsSkin = $less->getColors();
                     }
                     $less->read($frontendTemplate . '/' . $filePaths->cPath);
-                    $lessVars   = $less->getStack();
-                    $lessColors = $less->getColors();
+                    $lessVarsTPL   = $less->getStack();
+                    $lessColorsTPL = $less->getColors();
                 }
-                $lessVars_arr[$themesLess->cName]   = $lessVars;
-                $lessColors_arr[$themesLess->cName] = $lessColors;
+                $lessVars[$themesLess->cName]   = $lessVarsTPL;
+                $lessColors[$themesLess->cName] = $lessColorsTPL;
             }
         }
     }
@@ -262,12 +262,12 @@ if (isset($_GET['settings']) && mb_strlen($_GET['settings']) > 0 && Form::valida
     $smarty->assign('oTemplate', $oTpl)
            ->assign('themePreviews', (count($preview) > 0) ? $preview : null)
            ->assign('themePreviewsJSON', json_encode($preview))
-           ->assign('themesLessVars', $lessVars_arr)
-           ->assign('themesLessVarsJSON', json_encode($lessVars_arr))
+           ->assign('themesLessVars', $lessVars)
+           ->assign('themesLessVarsJSON', json_encode($lessVars))
            ->assign('themesLessVarsSkin', $lessVarsSkin)
            ->assign('themesLessVarsSkinJSON', json_encode($lessVarsSkin))
            ->assign('themesLessColorsSkin', $lessColorsSkin)
-           ->assign('themesLessColorsJSON', json_encode($lessColors_arr))
+           ->assign('themesLessColorsJSON', json_encode($lessColors))
            ->assign('oEinstellungenXML', $tplConfXML);
 } elseif (isset($_GET['switch']) && mb_strlen($_GET['switch']) > 0) {
     if (__switchTemplate($_GET['switch'], ($admin === true ? 'admin' : 'standard'))) {

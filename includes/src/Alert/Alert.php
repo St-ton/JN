@@ -179,8 +179,8 @@ class Alert
      */
     public function display(): void
     {
-        Shop::Smarty()->assign('alert', $this)
-            ->display('snippets/alert.tpl');
+        echo Shop::Smarty()->assign('alert', $this)
+            ->fetch('snippets/alert.tpl');
 
         if ($this->getSaveInSession()) {
             $this->removeFromSession();

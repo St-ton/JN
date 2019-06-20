@@ -76,95 +76,95 @@ function executeHook(int $hookID, $args_arr = [])
 }
 
 /**
- * @param LegacyPlugin $oPlugin
+ * @param LegacyPlugin $plugin
  * @param array        $params
  * @return bool
  * @deprecated since 5.0.0
  */
-function pluginLizenzpruefung($oPlugin, array $params = []): bool
+function pluginLizenzpruefung($plugin, array $params = []): bool
 {
     trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
-    return Helper::licenseCheck($oPlugin, $params);
+    return Helper::licenseCheck($plugin, $params);
 }
 
 /**
- * @param LegacyPlugin $oPlugin
- * @param int          $nStatus
+ * @param LegacyPlugin $plugin
+ * @param int          $state
  * @deprecated since 5.0.0
  */
-function aenderPluginZahlungsartStatus($oPlugin, int $nStatus)
+function aenderPluginZahlungsartStatus($plugin, int $state)
 {
     trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
-    Helper::updatePaymentMethodState($oPlugin, $nStatus);
+    Helper::updatePaymentMethodState($plugin, $state);
 }
 
 /**
- * @param int $kPlugin
+ * @param int $pluginID
  * @return array
  * @deprecated since 5.0.0
  */
-function gibPluginEinstellungen(int $kPlugin)
+function gibPluginEinstellungen(int $pluginID)
 {
     trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
-    return Helper::getConfigByID($kPlugin);
+    return Helper::getConfigByID($pluginID);
 }
 
 /**
- * @param int    $kPlugin
- * @param string $cISO
+ * @param int    $id
+ * @param string $iso
  * @return array
  * @deprecated since 5.0.0
  */
-function gibPluginSprachvariablen(int $kPlugin, $cISO = ''): array
+function gibPluginSprachvariablen(int $id, $iso = ''): array
 {
     trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
-    return Helper::getLanguageVariablesByID($kPlugin, $cISO);
+    return Helper::getLanguageVariablesByID($id, $iso);
 }
 
 /**
- * @param int $nStatus
- * @param int $kPlugin
+ * @param int $state
+ * @param int $pluginID
  * @return bool
  * @deprecated since 5.0.0
  */
-function aenderPluginStatus(int $nStatus, int $kPlugin): bool
+function aenderPluginStatus(int $state, int $pluginID): bool
 {
     trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
-    return Helper::updateStatusByID($nStatus, $kPlugin);
+    return Helper::updateStatusByID($state, $pluginID);
 }
 
 /**
- * @param int    $kPlugin
- * @param string $cNameZahlungsmethode
+ * @param int    $pluginID
+ * @param string $paymentMethodName
  * @return string
  * @deprecated since 5.0.0
  */
-function gibPlugincModulId(int $kPlugin, string $cNameZahlungsmethode): string
+function gibPlugincModulId(int $pluginID, string $paymentMethodName): string
 {
     trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
-    return Helper::getModuleIDByPluginID($kPlugin, $cNameZahlungsmethode);
+    return Helper::getModuleIDByPluginID($pluginID, $paymentMethodName);
 }
 
 /**
- * @param string $cModulId
+ * @param string $moduleID
  * @return int
  * @deprecated since 5.0.0
  */
-function gibkPluginAuscModulId(string $cModulId): int
+function gibkPluginAuscModulId(string $moduleID): int
 {
     trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
-    return Helper::getIDByModuleID($cModulId);
+    return Helper::getIDByModuleID($moduleID);
 }
 
 /**
- * @param string $cPluginID
+ * @param string $pluginID
  * @return int
  * @deprecated since 5.0.0
  */
-function gibkPluginAuscPluginID(string $cPluginID): int
+function gibkPluginAuscPluginID(string $pluginID): int
 {
     trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
-    return Helper::getIDByPluginID($cPluginID);
+    return Helper::getIDByPluginID($pluginID);
 }
 
 /**

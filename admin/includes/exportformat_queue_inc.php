@@ -253,11 +253,11 @@ function loescheExportformatCron(array $cronIDs): bool
  */
 function holeExportformatQueueBearbeitet(int $hours = 24)
 {
-    $langID = (int)($_SESSION['kSprache'] ?? 0);
-    if (!$langID) {
+    $languageID = (int)($_SESSION['kSprache'] ?? 0);
+    if (!$languageID) {
         $tmp = Shop::Container()->getDB()->select('tsprache', 'cShopStandard', 'Y');
         if (isset($tmp->kSprache) && $tmp->kSprache > 0) {
-            $langID = (int)$tmp->kSprache;
+            $languageID = (int)$tmp->kSprache;
         } else {
             return false;
         }
@@ -280,11 +280,11 @@ function holeExportformatQueueBearbeitet(int $hours = 24)
                 ON twaehrung.kWaehrung = texportformat.kWaehrung
             WHERE DATE_SUB(NOW(), INTERVAL :hrs HOUR) < texportformatqueuebearbeitet.dZuletztGelaufen
             ORDER BY texportformatqueuebearbeitet.dZuletztGelaufen DESC",
-        ['lid' => $langID, 'hrs' => $hours],
+        ['lid' => $languageID, 'hrs' => $hours],
         ReturnType::ARRAY_OF_OBJECTS
     );
     foreach ($queues as $exportFormat) {
-        $exportFormat->name = $languages[$langID]->getLocalizedName();
+        $exportFormat->name = $languages[$languageID]->getLocalizedName();
     }
 
     return $queues;

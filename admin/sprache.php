@@ -6,15 +6,14 @@
  * @global smarty
  */
 
-use function Functional\some;
+use JTL\Alert\Alert;
+use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
-use JTL\Shop;
 use JTL\Pagination\Filter;
-use JTL\Pagination\Pagination;
-use JTL\DB\ReturnType;
 use JTL\Pagination\Operation;
-use JTL\Alert\Alert;
+use JTL\Pagination\Pagination;
+use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
@@ -28,7 +27,7 @@ $tab         = $_REQUEST['tab'] ?? 'variables';
 $step        = 'overview';
 $lang        = Shop::Lang();
 setzeSprache();
-$cISOSprache = $_SESSION['cISOSprache'];
+$langCode = $_SESSION['cISOSprache'];
 
 if (isset($_FILES['csvfile']['tmp_name'])
     && Form::validateToken()
@@ -36,7 +35,7 @@ if (isset($_FILES['csvfile']['tmp_name'])
 ) {
     $csvFilename = $_FILES['csvfile']['tmp_name'];
     $importType  = Request::verifyGPCDataInt('importType');
-    $res         = $lang->import($csvFilename, $cISOSprache, $importType);
+    $res         = $lang->import($csvFilename, $langCode, $importType);
 
     if ($res !== false) {
         $alertHelper->addAlert(Alert::TYPE_SUCCESS, sprintf(__('successImport'), $res), 'successImport');
@@ -45,7 +44,7 @@ if (isset($_FILES['csvfile']['tmp_name'])
     }
 }
 
-$kSprachISO         = $lang->getLangIDFromIso($cISOSprache)->kSprachISO ?? 0;
+$langIsoID          = $lang->getLangIDFromIso($langCode)->kSprachISO ?? 0;
 $installedLanguages = $lang->getInstalled();
 $availableLanguages = $lang->gibInstallierteSprachen();
 $sections           = $lang->getSections();
@@ -56,7 +55,7 @@ if (count($installedLanguages) !== count($availableLanguages)) {
 }
 
 foreach ($installedLanguages as $language) {
-    if ($language->getIso() === $cISOSprache) {
+    if ($language->getIso() === $langCode) {
         $langActive = true;
         break;
     }
@@ -95,14 +94,14 @@ if (isset($_REQUEST['action']) && Form::validateToken()) {
             $variable->bOverwrite_arr = $_REQUEST['bOverwrite_arr'] ?? [];
             $errors                   = [];
             $variable->cSprachsektion = Shop::Container()->getDB()
-                                             ->select(
-                                                 'tsprachsektion',
-                                                 'kSprachsektion',
-                                                 (int)$variable->kSprachsektion
-                                             )
+                ->select(
+                    'tsprachsektion',
+                    'kSprachsektion',
+                    (int)$variable->kSprachsektion
+                )
                 ->cName;
 
-            $oWertDB_arr = Shop::Container()->getDB()->queryPrepared(
+            $data = Shop::Container()->getDB()->queryPrepared(
                 'SELECT s.cNameDeutsch AS cSpracheName, sw.cWert, si.cISO
                     FROM tsprachwerte AS sw
                         JOIN tsprachiso AS si
@@ -115,22 +114,22 @@ if (isset($_REQUEST['action']) && Form::validateToken()) {
                 ReturnType::ARRAY_OF_OBJECTS
             );
 
-            foreach ($oWertDB_arr as $oWertDB) {
-                $variable->cWertAlt_arr[$oWertDB->cISO] = $oWertDB->cWert;
+            foreach ($data as $item) {
+                $variable->cWertAlt_arr[$item->cISO] = $item->cWert;
             }
 
             if (!preg_match('/([\w\d]+)/', $variable->cName)) {
                 $errors[] = __('errorVarFormat');
             }
 
-            if (count($variable->bOverwrite_arr) !== count($oWertDB_arr)) {
+            if (count($variable->bOverwrite_arr) !== count($data)) {
                 $errors[] = sprintf(
                     __('errorVarExistsForLang'),
                     implode(
                         ', ',
                         array_map(function ($oWertDB) {
                             return $oWertDB->cSpracheName;
-                        }, $oWertDB_arr)
+                        }, $data)
                     )
                 );
             }
@@ -175,7 +174,7 @@ if (isset($_REQUEST['action']) && Form::validateToken()) {
                     if ((int)$_REQUEST['bChanged_arr'][$kSektion][$name] === 1) {
                         // wurde geaendert => speichern
                         $lang
-                            ->setzeSprache($cISOSprache)
+                            ->setzeSprache($langCode)
                             ->set((int)$kSektion, $name, $cWert);
                         $modified[] = $name;
                     }
@@ -197,7 +196,7 @@ if (isset($_REQUEST['action']) && Form::validateToken()) {
         case 'clearlog':
             // Liste nicht gefundener Variablen leeren
             $lang
-                ->setzeSprache($cISOSprache)
+                ->setzeSprache($langCode)
                 ->clearLog();
             Shop::Container()->getCache()->flushTags([CACHING_GROUP_LANGUAGE]);
             Shop::Container()->getDB()->query('UPDATE tglobals SET dLetzteAenderung = NOW()', ReturnType::DEFAULT);
@@ -240,14 +239,14 @@ if ($step === 'newvar') {
             FROM tsprachwerte AS sw
                 JOIN tsprachsektion AS ss
                     ON ss.kSprachsektion = sw.kSprachsektion
-            WHERE sw.kSprachISO = ' . (int)$kSprachISO . '
+            WHERE sw.kSprachISO = ' . (int)$langIsoID . '
                 ' . ($filterSQL !== '' ? 'AND ' . $filterSQL : ''),
         ReturnType::ARRAY_OF_OBJECTS
     );
 
     handleCsvExportAction(
         'langvars',
-        $cISOSprache . '_' . date('YmdHis') . '.slf',
+        $langCode . '_' . date('YmdHis') . '.slf',
         $values,
         ['cSektionName', 'cName', 'cWert', 'bSystem'],
         [],
@@ -271,7 +270,7 @@ if ($step === 'newvar') {
 
     $smarty
         ->assign('oFilter', $filter)
-        ->assign('oPagination', $pagination)
+        ->assign('pagination', $pagination)
         ->assign('oWert_arr', $pagination->getPageItems())
         ->assign('bSpracheAktiv', $langActive)
         ->assign('oSprache_arr', $availableLanguages)

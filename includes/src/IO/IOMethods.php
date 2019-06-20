@@ -386,7 +386,7 @@ class IOMethods
 
         Frontend::getInstance()->setStandardSessionVars();
         $response->nType     = 2;
-        $response->productID = $kArtikel;
+        $response->productID = $productID;
         $response->nCount    = isset($_SESSION['Vergleichsliste']->oArtikel_arr) ?
             \count($_SESSION['Vergleichsliste']->oArtikel_arr) : 0;
         $response->cTitle    = Shop::Lang()->get('compare');
@@ -466,13 +466,13 @@ class IOMethods
         Cart::checkAdditions();
 
         foreach ($_SESSION['Wunschliste']->CWunschlistePos_arr as $wlPos) {
-            if ($wlPos->kArtikel === $kArtikel) {
+            if ($wlPos->kArtikel === $productID) {
                 $response->wlPosAdd = $wlPos->kWunschlistePos;
             }
         }
         $response->nType     = 2;
         $response->nCount    = \count($_SESSION['Wunschliste']->CWunschlistePos_arr);
-        $response->productID = $kArtikel;
+        $response->productID = $productID;
         $response->cTitle    = Shop::Lang()->get('goToWishlist');
         $buttons             = [
             (object)[
@@ -550,7 +550,7 @@ class IOMethods
 
         Frontend::getInstance()->setStandardSessionVars();
         $response->nType       = 2;
-        $response->wlPosRemove = $kArtikel;
+        $response->wlPosRemove = $productID;
         $response->nCount      = \count($_SESSION['Wunschliste']->CWunschlistePos_arr);
         $response->cTitle      = Shop::Lang()->get('goToWishlist');
 

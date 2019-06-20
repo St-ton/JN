@@ -305,6 +305,10 @@ class Mailer
     public function send(MailInterface $mail): bool
     {
         $this->hydrate($mail);
+        \executeHook(\HOOK_MAIL_PRERENDER, [
+            'mailer' => $this,
+            'mail'   => $mail,
+        ]);
         $mail = $this->renderTemplate($mail);
         if (!$this->validator->validate($mail)) {
             $mail->setError('Mail failed validation');

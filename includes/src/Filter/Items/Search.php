@@ -236,7 +236,7 @@ class Search extends AbstractFilter
             return false;
         }
         // Ist md5(IP) bereits X mal im Cache
-        $max_ip_count = (int)$this->getConfig('artikeluebersicht')['livesuche_max_ip_count'] * 100;
+        $max_ip_count = (int)$this->getConfig('artikeluebersicht')['livesuche_max_ip_count'];
         $ip_cache_erg = $this->productFilter->getDB()->executeQueryPrepared(
             'SELECT COUNT(*) AS anzahl
                 FROM tsuchanfragencache

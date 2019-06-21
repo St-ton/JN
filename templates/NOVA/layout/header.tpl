@@ -240,7 +240,7 @@
         {/block}
 
         {block name='layout-header-content-row-starttag'}
-            <div class="row">
+            <div class="row px-xl-8">
         {/block}
 
         {block name='layout-header-content-starttag'}

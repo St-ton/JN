@@ -204,9 +204,11 @@
   width: 50%;
 }
 #opc #opc-sidebar #opc-sidebar-tools #opc-bulk-actions {
-  color: #BDBDBD;
   width: 100%;
   text-align: right;
+}
+#opc #opc-sidebar #opc-sidebar-tools #opc-bulk-actions:disabled {
+  color: #BDBDBD;
 }
 #opc #opc-sidebar #opc-sidebar-tools #opc-bulk-actions #opc-bulk-actions-label {
   margin-right: 8px;
@@ -275,7 +277,7 @@
 }
 #opc #opc-sidebar #opc-sidebar-content #opc-draft-list .opc-draft .opc-draft-info .opc-draft-actions {
   position: absolute;
-  top: 4px;
+  top: -4px;
   left: -16px;
   visibility: hidden;
 }

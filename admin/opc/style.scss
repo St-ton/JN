@@ -253,9 +253,12 @@ $transition: 0.5s;
       }
 
       #opc-bulk-actions {
-        color: $muted-text;
         width: 100%;
         text-align: right;
+
+        &:disabled {
+          color: $muted-text;
+        }
 
         #opc-bulk-actions-label {
           margin-right: 8px;
@@ -337,7 +340,7 @@ $transition: 0.5s;
 
             .opc-draft-actions {
               position: absolute;
-              top: 4px;
+              top: -4px;
               left: -16px;
               visibility: hidden;
 

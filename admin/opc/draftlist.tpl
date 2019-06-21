@@ -2,7 +2,7 @@
     {$draftStatus = $draft->getStatus()}
     <li class="opc-draft" id="opc-draft-{$draft->getKey()}" data-draft-status="{$draftStatus}"
         data-draft-name="{$draft->getName()}" data-draft-key="{$draft->getKey()}">
-        <input type="checkbox" id="check-{$draft->getKey()}"
+        <input type="checkbox" id="check-{$draft->getKey()}" onchange="opcDraftCheckboxChanged()"
                class="draft-checkbox filtered-draft">
         <label for="check-{$draft->getKey()}" class="opc-draft-name">
             {$draft->getName()}
@@ -26,10 +26,19 @@
         {/if}
         <div class="opc-draft-info">
             <div class="opc-draft-info-line">
-                updated
-            </div>
-            <div class="opc-draft-info-line">
-                published
+                {if $draftStatus === 0}
+                    {if $draft->getPublishTo() === null}
+                        öffentlich seit {$draft->getPublishFrom()|date_format:'%d.%m.%Y - %H:%M'}
+                    {else}
+                        öffentlich bis {$draft->getPublishTo()|date_format:'%d.%m.%Y - %H:%M'}
+                    {/if}
+                {elseif $draftStatus === 1}
+                    öffentlich ab {$draft->getPublishFrom()|date_format:'%d.%m.%Y - %H:%M'}
+                {elseif $draftStatus === 2}
+                    keine Veröffentlichung geplant
+                {elseif $draftStatus === 3}
+                    abgelaufen am {$draft->getPublishTo()|date_format:'%d.%m.%Y - %H:%M'}
+                {/if}
             </div>
             <div class="opc-draft-actions">
                 <form method="post" action="{$ShopURL}/admin/onpage-composer.php">

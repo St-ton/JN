@@ -111,6 +111,7 @@
                     item.find('.draft-checkbox').addClass('filtered-draft');
                 }
             });
+            opcDraftCheckboxChanged();
         }
 
         function orderOpcDraftsBy(criteria)
@@ -143,6 +144,7 @@
                 'checked',
                 $('#check-all-drafts').prop('checked')
             );
+            opcDraftCheckboxChanged();
         }
 
         function duplicateOpcDraft(draftKey)
@@ -188,13 +190,17 @@
                             'getOpcDraftsHtml',
                             ['{$curPage->getId()}', '{$adminSessionToken}', languages, currentLanguage],
                             { },
-                            data => {
-                                console.log(data);
-                            }
+                            () => {}
                         );
                     }
                 }
             });
+        }
+
+        function opcDraftCheckboxChanged()
+        {
+            let draftKeys = getSelectedOpcDraftkeys();
+            $('#opc-bulk-actions').attr('disabled', draftKeys.length === 0);
         }
     </script>
     <div id="opc">
@@ -232,7 +238,7 @@
                 <div id="opc-sidebar-tools">
                     <h2 id="opc-sidebar-second-title">Alle Entwürfe</h2>
                     <div class="opc-group">
-                        <input type="text" class="opc-filter-control" placeholder="&#xF002; Suche"
+                        <input type="search" class="opc-filter-control" placeholder="&#xF002; Suche"
                                oninput="filterOpcDrafts()" id="opc-filter-search">
                         <div class="opc-filter-control opc-dropdown" id="opc-filter-status">
                             <button class="opc-dropdown-btn" data-toggle="dropdown">
@@ -249,7 +255,7 @@
                         Alle an-/abwählen
                     </label>
                     <div class="opc-dropdown" id="opc-bulk-actions-dropdown">
-                        <button type="button" id="opc-bulk-actions" data-toggle="dropdown">
+                        <button type="button" id="opc-bulk-actions" data-toggle="dropdown" disabled>
                             <span id="opc-bulk-actions-label">
                                 Aktionen
                             </span>

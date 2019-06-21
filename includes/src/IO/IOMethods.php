@@ -1261,6 +1261,14 @@ class IOMethods
         return $response;
     }
 
+    /**
+     * @param string $curPageId
+     * @param string $adminSessionToken
+     * @param array  $languages
+     * @param $currentLanguage
+     * @return IOResponse
+     * @throws SmartyException|Exception
+     */
     public function getOpcDraftsHtml(
         string $curPageId,
         string $adminSessionToken,
@@ -1281,6 +1289,7 @@ class IOMethods
             ->assign('languages', $languages)
             ->assign('currentLanguage', (object)$currentLanguage)
             ->assign('opcPageService', $opcPageService)
+            ->assign('publicDraftKey', $opcPageService->getPublicPage($curPageId)->getKey())
             ->fetch(PFAD_ROOT . PFAD_ADMIN . '/opc/draftlist.tpl');
 
         $response->assign('opc-draft-list', 'innerHTML', $newDraftListHtml);

@@ -284,14 +284,21 @@ class Page implements \JsonSerializable
         return $this;
     }
 
-    public function getStatus()
+    /**
+     * @param int $publicDraftKey
+     * @return int
+     */
+    public function getStatus(int $publicDraftKey)
     {
         $now   = date('Y-m-d H:i:s');
         $start = $this->getPublishFrom();
         $end   = $this->getPublishTo();
 
         if (!empty($start) && $now >= $start && (empty($end) || $now < $end)) {
-            return 0; // public
+            if ($this->getKey() === $publicDraftKey) {
+                return 0; // public
+            }
+            return 1; // planned
         }
         if (!empty($start) && $now < $start) {
             return 1; // planned

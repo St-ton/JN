@@ -279,13 +279,15 @@ class PageService
     public function getDrafts(string $id): array
     {
         if ($this->opc->isOPCInstalled()) {
-            $drafts = $this->pageDB->getDrafts($id);
-            usort($drafts, function ($a, $b) {
+            $drafts         = $this->pageDB->getDrafts($id);
+            $publicDraft    = $this->getPublicPage($id);
+            $publicDraftKey = $publicDraft->getKey();
+            usort($drafts, function ($a, $b) use ($publicDraftKey) {
                 /**
                  * @var Page $a
                  * @var Page $b
                  */
-                return $a->getStatus() - $b->getStatus();
+                return $a->getStatus($publicDraftKey) - $b->getStatus($publicDraftKey);
             });
             return $drafts;
         }

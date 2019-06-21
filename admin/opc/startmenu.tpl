@@ -1,6 +1,8 @@
 {if \JTL\Shop::isAdmin() && $opc->isEditMode() === false}
-    {$curPage           = $opcPageService->getCurPage()}
-    {$curPageId         = $curPage->getId()}
+    {$curPageUrl        = $opcPageService->getCurPageUri()}
+    {$curPageId         = $opcPageService->createCurrentPageId()}
+    {$publicDraft       = $opcPageService->getPublicPage($curPageId)}
+    {$publicDraftKey    = $publicDraft->getKey()}
     {$pageDrafts        = $opcPageService->getDrafts($curPageId)}
     {$adminSessionToken = $opc->getAdminSessionToken()}
     {$languages         = $smarty.session.Sprachen}
@@ -161,10 +163,10 @@
                     if (jqxhr === 'ok') {
                         $.evo.io().call(
                             'getOpcDraftsHtml',
-                            ['{$curPage->getId()}', '{$adminSessionToken}', languages, currentLanguage],
+                            ['{$curPageId}', '{$adminSessionToken}', languages, currentLanguage],
                             { },
-                            data => {
-                                console.log(data);
+                            () => {
+                                opcDraftCheckboxChanged();
                             }
                         );
                     }
@@ -188,9 +190,11 @@
                     if (jqxhr === 'ok') {
                         $.evo.io().call(
                             'getOpcDraftsHtml',
-                            ['{$curPage->getId()}', '{$adminSessionToken}', languages, currentLanguage],
+                            ['{$curPageId}', '{$adminSessionToken}', languages, currentLanguage],
                             { },
-                            () => {}
+                            () => {
+                                opcDraftCheckboxChanged();
+                            }
                         );
                     }
                 }
@@ -208,8 +212,8 @@
             <nav id="opc-startmenu">
                 <form method="post" action="{$ShopURL}/admin/onpage-composer.php">
                     <input type="hidden" name="jtl_token" value="{$adminSessionToken}">
-                    <input type="hidden" name="pageId" value="{$curPage->getId()}">
-                    <input type="hidden" name="pageUrl" value="{$curPage->getUrl()}">
+                    <input type="hidden" name="pageId" value="{$curPageId}">
+                    <input type="hidden" name="pageUrl" value="{$curPageUrl}">
                     <button type="submit" name="action" value="extend" class="opc-btn-primary">
                         <img src="{$ShopURL}/admin/opc/icon-OPC.svg" alt="OPC Start Icon" id="opc-start-icon">
                         <span id="opc-start-label">OnPage Composer</span>
@@ -279,8 +283,8 @@
                 <div id="opc-sidebar-footer">
                     <form method="post" action="{$ShopURL}/admin/onpage-composer.php">
                         <input type="hidden" name="jtl_token" value="{$adminSessionToken}">
-                        <input type="hidden" name="pageId" value="{$opcPageService->createCurrentPageId()}">
-                        <input type="hidden" name="pageUrl" value="{$curPage->getUrl()}">
+                        <input type="hidden" name="pageId" value="{$curPageId}">
+                        <input type="hidden" name="pageUrl" value="{$curPageUrl}">
                         <button type="submit" name="action" value="extend" class="opc-btn-primary opc-full-width">
                             Neuer Entwurf
                         </button>

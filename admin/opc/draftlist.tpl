@@ -1,5 +1,5 @@
 {foreach $pageDrafts as $i => $draft}
-    {$draftStatus = $draft->getStatus()}
+    {$draftStatus = $draft->getStatus($publicDraftKey)}
     <li class="opc-draft" id="opc-draft-{$draft->getKey()}" data-draft-status="{$draftStatus}"
         data-draft-name="{$draft->getName()}" data-draft-key="{$draft->getKey()}">
         <input type="checkbox" id="check-{$draft->getKey()}" onchange="opcDraftCheckboxChanged()"
@@ -33,7 +33,7 @@
                         öffentlich bis {$draft->getPublishTo()|date_format:'%d.%m.%Y - %H:%M'}
                     {/if}
                 {elseif $draftStatus === 1}
-                    öffentlich ab {$draft->getPublishFrom()|date_format:'%d.%m.%Y - %H:%M'}
+                    geplant ab {$draft->getPublishFrom()|date_format:'%d.%m.%Y - %H:%M'}
                 {elseif $draftStatus === 2}
                     keine Veröffentlichung geplant
                 {elseif $draftStatus === 3}

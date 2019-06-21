@@ -58,7 +58,7 @@
                     <button type="button"
                             data-toggle="dropdown" title="Für andere Sprache übernehmen"
                             data-placement="bottom" data-container="#opc">
-                        <i class="fa fa-lg fa-fw fas fa-language"></i>
+                        <img src="{$ShopURL}/admin/opc/icon-copysprache.svg">
                     </button>
                     <div class="dropdown-menu opc-dropdown-menu">
                         {foreach $languages as $lang}

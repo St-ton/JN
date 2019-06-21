@@ -224,8 +224,8 @@ final class Categories extends AbstractSync
                 FROM tkategorieattribut
                 LEFT JOIN tkategorieattributsprache
                     ON tkategorieattributsprache.kAttribut = tkategorieattribut.kKategorieAttribut
-                WHERE tkategorieattribut.kKategorie = :categoryID' .(count($attribPKs) > 0 ? '
-                    AND tkategorieattribut.kKategorieAttribut NOT IN (' . implode(', ', $attribPKs) . ')' : ''),
+                WHERE tkategorieattribut.kKategorie = :categoryID' .(\count($attribPKs) > 0 ? '
+                    AND tkategorieattribut.kKategorieAttribut NOT IN (' . \implode(', ', $attribPKs) . ')' : ''),
             [
                 'categoryID' => $category->kKategorie,
             ],

@@ -9,13 +9,13 @@
             {$headcols=6}{$headsm=4}
         {elseif $Einstellungen.kaufabwicklung.warenkorb_produktbilder_anzeigen === 'Y'
             && $tplscope !== 'cart'}
-            {$headcols=10}{$headsm=8}
+            {$headcols=6}{$headsm=4}
         {elseif ($Einstellungen.kaufabwicklung.warenkorb_produktbilder_anzeigen === 'N')
             && $tplscope === 'cart'}
             {$headcols=6}{$headsm=5}
         {elseif ($Einstellungen.kaufabwicklung.warenkorb_produktbilder_anzeigen === 'N')
             && $tplscope !== 'cart'}
-            {$headcols=10}{$headsm=9}
+            {$headcols=6}{$headsm=5}
         {/if}
     {block name='checkout-inc-order-items-order-items'}
         {row class="border-bottom mb-3 font-weight-bold"}
@@ -209,7 +209,7 @@
                                 {/if}
                             {/block}
                         {/col}
-                        {col cols=2}
+                        {col cols=2 class="text-center"}
                             {block name='checkout-inc-order-items-quantity'}
                                 {if $tplscope === 'cart'}
                                     {if $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_ARTIKEL}

@@ -14666,7 +14666,7 @@ table caption {
   position: relative;
   overflow: hidden;
   border: 1px solid rgba(0, 0, 0, 0.125);
-  border-bottom: 2px solid #F8BF00;
+  border-bottom: 4px solid #F8BF00;
 }
 .nav-wizard .nav-item {
   padding: 0 0 0 15px;
@@ -14676,6 +14676,7 @@ table caption {
   position: relative;
   float: left;
   display: inline-block;
+  text-decoration: none;
 }
 @media (min-width: 768px) {
   .nav-wizard .nav-item {
@@ -14683,8 +14684,9 @@ table caption {
   }
 }
 .nav-wizard .nav-item.active {
-  color: #F8BF00;
+  color: #525252;
   background: transparent;
+  font-weight: bold;
 }
 .nav-wizard .nav-item::before {
   position: absolute;
@@ -14707,6 +14709,16 @@ table caption {
   z-index: 10;
   content: "";
   right: -15px;
+}
+.nav-wizard .nav-item i {
+  margin-left: 1rem;
+  color: #F8BF00;
+}
+.nav-wizard .nav-item.nav-todo {
+  background-color: #f5f7fa;
+}
+.nav-wizard .nav-item.nav-todo::after {
+  border-left-color: #f5f7fa;
 }
 
 .hr-sect {
@@ -15170,6 +15182,24 @@ input.form-control[name=wishlist-url] {
     height: 36px;
     margin: 0 8px;
   }
+}
+.nav-number {
+  border-radius: 50%;
+  background-color: #525252;
+  width: 20px;
+  height: 20px;
+  color: #f5f7fa;
+  display: inline-block;
+  margin-right: 1rem;
+  line-height: initial;
+}
+.nav-number.active {
+  background-color: #F8BF00;
+  color: #525252;
+}
+
+.card-header {
+  background-color: #f5f7fa;
 }
 
 /*# sourceMappingURL=clear.css.map */

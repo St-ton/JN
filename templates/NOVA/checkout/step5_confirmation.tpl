@@ -15,117 +15,96 @@
 
         {row class="row-eq-height"}
             {col cols=6 id="billing-address"}
-                {block name='checkout-step5-confirmation-billing-address'}
-                    {card no-body=true class="mb-3 border-0"}
+                {block name='checkout-step5-confirmation-delivery-billing-address'}
+                    {card no-body=true class="mb-3"}
                         {cardheader}
-                            {lang key='billingAdress' section='account data'}
+                            {lang section="account data" key='billingAndDeliveryAddress'}
+                            <span class="float-right">
+                                {link class="small edit mr-1" href="{get_static_route id='bestellvorgang.php'}?editRechnungsadresse=1"}
+                                    {lang key='change'}
+                                {/link}
+                                <span class="fa fa-pencil-alt"></span>
+                            </span>
                         {/cardheader}
                         {cardbody}
-                            {block name='checkout-step5-confirmation-include-inc-billing-address'}
-                                <p>
-                                    {include file='checkout/inc_billing_address.tpl'}
-                                </p>
-                            {/block}
-                            {link class="small edit" href="{get_static_route id='bestellvorgang.php'}?editRechnungsadresse=1"}
-                                <span class="fa fa-pencil-alt"></span> {lang key='modifyBillingAdress'}
-                            {/link}
-                        {/cardbody}
-                    {/card}
-                {/block}
-            {/col}
-            {col cols=6 id="shipping-address"}
-                {block name='checkout-step5-confirmation-shipping-address'}
-                    {card no-body=true class="mb-3 border-0"}
-                        {cardheader}
-                            {lang key='shippingAdress' section='account data'}
-                        {/cardheader}
-                        {cardbody}
-                            {block name='checkout-step5-confirmation-include-inc-delivery-address'}
-                                <p>
-                                    {include file='checkout/inc_delivery_address.tpl'}
-                                </p>
-                            {/block}
-                            {link class="small edit" href="{get_static_route id='bestellvorgang.php'}?editLieferadresse=1"}
-                                <span class="fa fa-pencil-alt"></span> {lang key='modifyShippingAdress' section='checkout'}
-                            {/link}
+                            {row}
+                                {col cols=6}
+                                    {block name='checkout-step5-confirmation-include-inc-billing-address'}
+                                        <p><strong class="title">{lang key='billingAdress' section='account data'}</strong></p>
+                                        <p>{include file='checkout/inc_billing_address.tpl'}</p>
+                                    {/block}
+                                {/col}
+                                {col cols=6}
+                                    {block name='checkout-step5-confirmation-include-inc-delivery-address'}
+                                        <p><strong class="title">{lang key='shippingAdress' section='account data'}</strong></p>
+                                        <p>{include file='checkout/inc_delivery_address.tpl'}</p>
+                                    {/block}
+                                {/col}
+                            {/row}
                         {/cardbody}
                     {/card}
                 {/block}
             {/col}
             {col cols=6 id="shipping-method" class="mb-3 border-0"}
-                {block name='checkout-step5-confirmation-shipping-method'}
-                    {card no-body=true class="mb-3 border-0"}
+                {block name='checkout-step5-confirmation-shipping-billing-method'}
+                    {card no-body=true class="mb-3"}
                         {cardheader}
                                 {* ToDo: New Localization! *}
-                            {lang key='shippingOptions'}
+                            {lang section="account data" key='shippingAndPaymentOptions'}
+                            <span class="float-right">
+                                {link class="small edit mr-1" href="{get_static_route id='bestellvorgang.php'}?editVersandart=1"}
+                                    {lang key='change'}
+                                {/link}
+                                <span class="fa fa-pencil-alt"></span>
+                            </span>
                         {/cardheader}
                         {cardbody}
-                            <p>
-                                <strong class="title">{$smarty.session.Versandart->angezeigterName|trans}</strong>
-                            </p>
+                            {row}
+                            {col cols=6}
+                                    {block name='checkout-step5-confirmation-shipping-method'}
+                                        <p><strong class="title">{lang key='shippingOptions'}</strong></p>
+                                        <p>{$smarty.session.Versandart->angezeigterName|trans}</p>
 
-                            {$cEstimatedDelivery = $smarty.session.Warenkorb->getEstimatedDeliveryTime()}
-                            {if $cEstimatedDelivery|@count_characters > 0}
-                                <p class="small text-muted">
-                                    <strong>{lang key='shippingTime'}</strong>: {$cEstimatedDelivery}
-                                </p>
-                            {/if}
-                            {link class="small edit" href="{get_static_route id='bestellvorgang.php'}?editVersandart=1"}
-                                <span class="fa fa-pencil-alt"></span> {lang key='modifyShippingOption' section='checkout'}
-                            {/link}
+                                        {$cEstimatedDelivery = $smarty.session.Warenkorb->getEstimatedDeliveryTime()}
+                                        {if $cEstimatedDelivery|@count_characters > 0}
+                                            <p class="small text-muted">
+                                                <strong>{lang key='shippingTime'}</strong>: {$cEstimatedDelivery}
+                                            </p>
+                                        {/if}
+                                    {/block}
+                                {/col}
+                                {col cols=6}
+                                    {block name='checkout-step5-confirmation-payment-method'}
+                                        <p><strong class="title">{lang key='paymentOptions'}</strong></p>
+                                        <p>{$smarty.session.Zahlungsart->angezeigterName|trans}</p>
+                                        {if isset($smarty.session.Zahlungsart->cHinweisText) && !empty($smarty.session.Zahlungsart->cHinweisText)}{* this should be localized *}
+                                            <p class="small text-muted">{$smarty.session.Zahlungsart->cHinweisText}</p>
+                                        {/if}
+                                    {/block}
+                                {/col}
+                            {/row}
                         {/cardbody}
                     {/card}
                 {/block}
             {/col}
-            {col cols=6 id="payment-method"}
-                {block name='checkout-step5-confirmation-payment-method'}
-                    {card no-body=true class="mb-3 border-0"}
-                        {cardheader}
-                            {* ToDo: New Localization! *}
-                            {lang key='paymentOptions'}
-                        {/cardheader}
-                        {cardbody}
-                            <p>
-                                <strong class="title">{$smarty.session.Zahlungsart->angezeigterName|trans}</strong>
-                            </p>
-                            {if isset($smarty.session.Zahlungsart->cHinweisText) && !empty($smarty.session.Zahlungsart->cHinweisText)}{* this should be localized *}
-                                <p class="small text-muted">{$smarty.session.Zahlungsart->cHinweisText}</p>
-                            {/if}
-                            {link class="small edit" href="{get_static_route id='bestellvorgang.php'}?editZahlungsart=1"}
-                                <span class="fa fa-pencil-alt"></span> {lang key='modifyPaymentOption' section='checkout'}
-                            {/link}
-                        {/cardbody}
-                    {/card}
-                {/block}
-            {/col}
-
-            {if $GuthabenMoeglich}
-                {block name='checkout-step5-confirmation-credit'}
-                    {col cols=12}
-                        {card id="panel-edit-credit" no-body=true class="mb-3 border-0"}
-                            {cardheader}
-                                {lang key='credit' section='account data'}
-                            {/cardheader}
-                            {cardbody}
-                                {block name='checkout-step5-confirmation-include-credit-form'}
-                                    {include file='checkout/credit_form.tpl'}
-                                {/block}
-                            {/cardbody}
-                        {/card}
-                    {/col}
-                {/block}
-            {/if}
 
             {col cols=12 md=6}
                 {block name='checkout-step5-confirmation-comment'}
-                    {card no-body=true id="panel-edit-comment" class="mb-3 border-0"}
+                    {card no-body=true id="panel-edit-comment" class="mb-3"}
                         {cardheader}
                             {lang key='comment' section='product rating'}
                         {/cardheader}
-                        {cardbody}
+                        {cardbody class="p-0 border-1"}
                             {block name='checkout-step5-confirmation-comment-body'}
                                 {lang assign='orderCommentsTitle' key='orderComments' section='shipping payment'}
-                                {textarea title=$orderCommentsTitle|escape:'html' name="kommentar" cols="50" rows="3" id="comment" placeholder="{lang key='comment' section='product rating'}"}
+                                {textarea title=$orderCommentsTitle|escape:'html'
+                                    name="kommentar"
+                                    cols="50"
+                                    rows="3"
+                                    id="comment"
+                                    placeholder="{lang key='comment' section='product rating'}"
+                                    class="border-0"
+                                }
                                     {if isset($smarty.session.kommentar)}{$smarty.session.kommentar}{/if}
                                 {/textarea}
                             {/block}
@@ -136,7 +115,7 @@
             {if $KuponMoeglich}
                 {col cols=12 md=6}
                     {block name='checkout-step5-confirmation-coupon'}
-                        {card no-body=true id="panel-edit-coupon" class="mb-3 border-0"}
+                        {card no-body=true id="panel-edit-coupon" class="mb-3"}
                             {cardheader}
                                 {lang key='coupon' section='account data'}
                             {/cardheader}
@@ -149,7 +128,29 @@
                     {/block}
                 {/col}
             {/if}
+
+            {if $GuthabenMoeglich}
+                {block name='checkout-step5-confirmation-credit'}
+                    {col cols=12}
+                        {card id="panel-edit-credit" no-body=true class="mb-3"}
+                            {cardheader}
+                                {lang key='credit' section='account data'}
+                            {/cardheader}
+                            {cardbody}
+                            {block name='checkout-step5-confirmation-include-credit-form'}
+                                {include file='checkout/credit_form.tpl'}
+                            {/block}
+                            {/cardbody}
+                        {/card}
+                    {/col}
+                {/block}
+            {/if}
         {/row}
+
+        {block name="checkout-step5-confirmation-pre-form-hr"}
+            <hr class="my-0">
+        {/block}
+
         {block name='checkout-step5-confirmation-form'}
             {form method="post" name="agbform" id="complete_order" action="{get_static_route id='bestellabschluss.php'}" class="evo-validate"}
                 {block name='checkout-step5-confirmation-form-content'}
@@ -195,7 +196,7 @@
 
                     {if isset($wrbNotice) || isset($agbNotice)}
                         {block name='checkout-step5-confirmation-alert-agb'}
-                            {alert variant="info" class="mb-5"}
+                            {alert variant="info" class="my-5"}
                                 {if isset($agbNotice)}<p>{$agbNotice}</p>{/if}
                                 {if isset($wrbNotice)}<p>{$wrbNotice}</p>{/if}
                             {/alert}
@@ -224,14 +225,23 @@
                                     {input type="hidden" name="abschluss" value="1"}
                                     {input type="hidden" id="comment-hidden" name="kommentar" value=""}
                                     {block name='checkout-step5-confirmation-include-inc-order-items'}
-                                        <div class="mb-7">
+                                        {row class="mx-0"}
+                                            {col cols=9 md=10 lg=11}{/col}
+                                            {col cols=3 md=2 lg=1 class="bg-info py-2 text-right"}
+                                                {link class="small edit mr-1" href="{get_static_route id='warenkorb.php'}"}
+                                                    {lang key='change'}
+                                                {/link}
+                                                <span class="fa fa-pencil-alt"></span>
+                                            {/col}
+                                        {/row}
+                                        <div class="mb-7 bg-info pt-3 px-3">
                                             {include file='checkout/inc_order_items.tpl' tplscope='confirmation'}
                                         </div>
                                     {/block}
                                     {button type="submit" variant="primary" id="complete-order-button" class="submit_once float-right ml-3"}
                                         {lang key='orderLiableToPay' section='checkout'}
                                     {/button}
-                                    {link href="{get_static_route id='warenkorb.php'}" class="btn btn-light float-right"}
+                                    {link href="{get_static_route id='warenkorb.php'}" class="btn btn-light float-left"}
                                         {lang key='modifyBasket' section='checkout'}
                                     {/link}
                                 </div>

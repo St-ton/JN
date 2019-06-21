@@ -2067,7 +2067,7 @@ table caption {
   position: relative;
   overflow: hidden;
   border: 1px solid $card-border-color;
-  border-bottom: 2px solid $primary;
+  border-bottom: 4px solid $primary;
   .nav-item {
     padding: 0 0 0 15px;
     @include media-breakpoint-up(md) {
@@ -2079,9 +2079,11 @@ table caption {
     position: relative;
     float: left;
     display: inline-block;
+    text-decoration: none;
     &.active {
-      color: $primary;
+      color: $gray-dark;
       background: transparent;
+      font-weight: bold;
     }
     &::before {
       position: absolute;
@@ -2104,6 +2106,16 @@ table caption {
       z-index: 10;
       content: '';
       right: -15px;
+    }
+    & i {
+      margin-left: 1rem;
+      color: $primary;
+    }
+    &.nav-todo {
+      background-color: $gray-lighter;
+      &::after {
+        border-left-color: $gray-lighter;
+      }
     }
   }
 }
@@ -2562,4 +2574,23 @@ input.form-control[name="wishlist-url"] {
   0% {width: 36px; height: 36px; margin: 0 8px;}
   50% {width: 40px; height: 40px; margin: -4px 4px 0 8px;}
   100% {width: 36px; height: 36px; margin: 0 8px;}
+}
+
+.nav-number {
+  border-radius: 50%;
+  background-color: $gray-dark;
+  width: 20px;
+  height: 20px;
+  color: $gray-lighter;
+  display: inline-block;
+  margin-right: 1rem;
+  line-height: initial;
+  &.active {
+    background-color: $primary;
+    color: $gray-dark;
+  }
+}
+
+.card-header {
+  background-color: $gray-lighter;
 }

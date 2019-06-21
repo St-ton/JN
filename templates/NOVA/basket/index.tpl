@@ -10,7 +10,7 @@
     {block name='basket-index-content'}
         {container}
             {row}
-                {col cols=8}
+                {col cols=12 md=8}
                     {block name='basket-index-heading'}
                         {include file='snippets/opc_mount_point.tpl' id='opc_before_heading'}
                         <h1>{lang key='basket'} ({count($smarty.session.Warenkorb->PositionenArr)} {lang key='products'})</h1>
@@ -170,7 +170,7 @@
                         {/block}
                     {/if}
                 {/col}
-                {col cols=4}
+                {col cols=12 md=4}
                     Bestellübersicht
                 {/col}
             {/row}

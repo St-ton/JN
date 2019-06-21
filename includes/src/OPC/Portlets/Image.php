@@ -17,6 +17,7 @@ use JTL\OPC\PortletInstance;
 class Image extends Portlet
 {
     /**
+     * @param PortletInstance $instance
      * @return bool|string
      */
     public function getRoundedProp(PortletInstance $instance)

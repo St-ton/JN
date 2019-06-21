@@ -359,6 +359,7 @@ class ConsoleIO extends OutputStyle
                 $line = \sprintf('<%s>%s</>', $style, $line);
             }
         }
+        unset($line);
 
         $this->writeln($lines);
         $this->newLine();

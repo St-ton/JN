@@ -234,7 +234,7 @@ class Kategorie
         );
         if ($item === null || $item === false) {
             if (!$recall && !LanguageHelper::isDefaultLanguageActive(false, $languageID)) {
-                if (\defined('EXPERIMENTAL_MULTILANG_SHOP') && EXPERIMENTAL_MULTILANG_SHOP === true) {
+                if (\defined('EXPERIMENTAL_MULTILANG_SHOP') && \EXPERIMENTAL_MULTILANG_SHOP === true) {
                     if ($tmpLang === null) {
                         $tmpLang = LanguageHelper::getDefaultLanguage();
                     }
@@ -252,7 +252,7 @@ class Kategorie
 
         //EXPERIMENTAL_MULTILANG_SHOP
         if ((!isset($item->cSeo) || $item->cSeo === null || $item->cSeo === '')
-            && \defined('EXPERIMENTAL_MULTILANG_SHOP') && EXPERIMENTAL_MULTILANG_SHOP === true
+            && \defined('EXPERIMENTAL_MULTILANG_SHOP') && \EXPERIMENTAL_MULTILANG_SHOP === true
         ) {
             $defaultLangID = (int)($tmpLang->kSprache ?? LanguageHelper::getDefaultLanguage()->kSprache);
             if ($languageID !== $defaultLangID) {

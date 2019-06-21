@@ -595,7 +595,7 @@ class IOMethods
         $smarty->assign('wishlists', Wunschliste::getWishlists());
 
         $response->content         = $smarty->fetch('snippets/wishlist_dropdown.tpl');
-        $response->currentPosCount = count(Frontend::getWishList()->CWunschlistePos_arr);
+        $response->currentPosCount = \count(Frontend::getWishList()->CWunschlistePos_arr);
 
         $objResponse->script('this.response = ' . \json_encode($response) . ';');
 

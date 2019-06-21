@@ -1260,8 +1260,8 @@ class Cart
                 $properties                      = Product::getPropertiesForVarCombiArticle($productID, $parentID);
                 $variKombi                       = new stdClass();
                 $variKombi->fAnzahl              = (float)$variBoxCounts[$key];
-                $variKombi->kEigenschaft_arr     = array_keys($properties);
-                $variKombi->kEigenschaftWert_arr = array_values($properties);
+                $variKombi->kEigenschaft_arr     = \array_keys($properties);
+                $variKombi->kEigenschaftWert_arr = \array_values($properties);
 
                 $_POST['eigenschaftwert']            = $properties;
                 $_SESSION['variBoxAnzahl_arr'][$key] = $variKombi;
@@ -1273,7 +1273,7 @@ class Cart
                         'kEigenschaftWert' => $properties[$a],
                     ];
                 }, $variKombi->kEigenschaft_arr);
-            } elseif (preg_match('/([0-9:]+)?_([0-9:]+)/', $key, $hits) && count($hits) === 3) {
+            } elseif (\preg_match('/([0-9:]+)?_([0-9:]+)/', $key, $hits) && \count($hits) === 3) {
                 if (empty($hits[1])) {
                     // 1-dimensional matrix - key is combination of property id and property value
                     unset($hits[1]);
@@ -1282,7 +1282,7 @@ class Cart
                     // 2-dimensional matrix - key is set of combinations of property id and property value
                     $n = 2;
                 }
-                array_shift($hits);
+                \array_shift($hits);
 
                 $variKombi          = new stdClass();
                 $variKombi->fAnzahl = (float)$variBoxCounts[$key];

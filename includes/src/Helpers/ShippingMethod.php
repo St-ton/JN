@@ -17,6 +17,7 @@ use JTL\Language\LanguageHelper;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use stdClass;
+use function Functional\map;
 use function Functional\some;
 
 /**
@@ -1432,7 +1433,7 @@ class ShippingMethod
                 ReturnType::ARRAY_OF_OBJECTS
             );
             $countries        = $countryHelper->getFilteredCountryList(
-                \Functional\map($countryISOFilter, function ($country) {
+                map($countryISOFilter, function ($country) {
                     return $country->cISO;
                 })
             )->toArray();

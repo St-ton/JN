@@ -11,7 +11,6 @@ use JTL\Filesystem\Filesystem;
 use JTL\Filesystem\LocalFilesystem;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
-use Smarty;
 
 /**
  * Class MigrationHelper
@@ -35,8 +34,6 @@ class MigrationHelper
     public const MIGRATION_FILE_NAME_PATTERN = '/^(\d+)_([\w_]+).php$/i';
 
     /**
-     * Gets the migration path.
-     *
      * @return string
      */
     public static function getMigrationPath(): string
@@ -45,8 +42,6 @@ class MigrationHelper
     }
 
     /**
-     * Gets an array of all the existing migration class names.
-     *
      * @return array
      */
     public static function getExistingMigrationClassNames(): array
@@ -239,15 +234,15 @@ class MigrationHelper
         $timestamp = $datetime->format('YmdHis');
 
         $asFilePath = function ($text) {
-            $text = preg_replace('/\W/', '_', $text);
-            $text = preg_replace('/_+/', '_', $text);
+            $text = \\preg_replace('/\W/', '_', $text);
+            $text = \\preg_replace('/_+/', '_', $text);
 
-            return strtolower($text);
+            return \\strtolower($text);
         };
 
-        $filePath = implode(
+        $filePath = \\implode(
             '_',
-            array_filter([$timestamp, $asFilePath($description)])
+            \\array_filter([$timestamp, $asFilePath($description)])
         );
 
         $relPath       = 'update/migrations';
@@ -259,7 +254,7 @@ class MigrationHelper
         }
 
         $smartyCli  = Shop::Smarty(true, 'cli');
-        $smartyCli->setCaching(Smarty::CACHING_OFF);
+        $smartyCli->setCaching(JTLSmarty::CACHING_OFF);
         $content = $smartyCli->assign('description', $description)
             ->assign('author', $author)
             ->assign('created', $datetime->format(\DateTime::RSS))

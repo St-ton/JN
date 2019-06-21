@@ -39,7 +39,7 @@ class AdminAccount
     private $twoFaAuthenticated = false;
 
     /**
-     * @var \Monolog\Logger
+     * @var Loggerinterface
      */
     private $authLogger;
 
@@ -75,7 +75,7 @@ class AdminAccount
      * @param AdminLoginStatusMessageMapper $statusMessageMapper
      * @param AdminLoginStatusToLogLevel    $levelMapper
      * @param GetText                       $getText
-     * @throws \Exception
+     * @throws Exception
      */
     public function __construct(
         DbInterface $db,

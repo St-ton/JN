@@ -286,9 +286,12 @@ class Page implements \JsonSerializable
         return $this;
     }
 
+    /**
+     * @return int
+     */
     public function getStatus()
     {
-        $now   = date('Y-m-d H:i:s');
+        $now   = \date('Y-m-d H:i:s');
         $start = $this->getPublishFrom();
         $end   = $this->getPublishTo();
 

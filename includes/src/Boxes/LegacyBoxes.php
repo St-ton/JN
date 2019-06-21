@@ -288,9 +288,7 @@ class LegacyBoxes
             ReturnType::SINGLE_OBJECT
         );
 
-        $box->oSprache_arr      = ($box && ($box->eTyp === 'text' || $box->eTyp === 'catbox'))
-            ? $this->gibBoxInhalt($id)
-            : [];
+        $box->oSprache_arr      = [];
         $box->kBox              = (int)$box->kBox;
         $box->kBoxvorlage       = (int)$box->kBoxvorlage;
         $box->supportsRevisions = $box->kBoxvorlage === 30 || $box->kBoxvorlage === 31; // only "Eigene Box"

@@ -4020,7 +4020,7 @@ class Artikel
         //EXPERIMENTAL_MULTILANG_SHOP
         if ($tmpProduct->cSeo === null
             && \defined('EXPERIMENTAL_MULTILANG_SHOP')
-            && EXPERIMENTAL_MULTILANG_SHOP === true
+            && \EXPERIMENTAL_MULTILANG_SHOP === true
         ) {
             //redo the query with modified seo join - without language ID
             $productSQL = \str_replace(
@@ -6569,8 +6569,8 @@ class Artikel
             && !$this->kArtikelVariKombi
             && !$this->kVariKindArtikel
             && !$this->nErscheinendesProdukt
-            && $this->nVariationOhneFreifeldAnzahl === count($this->Variationen)
-            && (count($this->Variationen) <= 2
+            && $this->nVariationOhneFreifeldAnzahl === \count($this->Variationen)
+            && (\count($this->Variationen) <= 2
                 || ($this->conf['artikeldetails']['artikeldetails_warenkorbmatrix_anzeigeformat'] === 'L'
                     && $this->nIstVater === 1)
             )
@@ -6793,7 +6793,7 @@ class Artikel
         foreach ($excludedAttributes as $excludedAttribute) {
             if (isset($this->FunktionsAttribute[$excludedAttribute])
                 && ($cISO === ''
-                    || (strpos($this->FunktionsAttribute[$excludedAttribute], $cISO) !== false)
+                    || (\strpos($this->FunktionsAttribute[$excludedAttribute], $cISO) !== false)
                 )
             ) {
                 return false;

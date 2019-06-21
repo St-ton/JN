@@ -2594,3 +2594,46 @@ input.form-control[name="wishlist-url"] {
 .card-header {
   background-color: $gray-lighter;
 }
+
+.label-slide .form-group{
+  position:relative;
+  input[type="text"], input[type="number"]{
+    width:100%;
+    height:40px;
+    border:1px solid #ccc;
+    border-radius:4px;
+    outline:none;
+    padding:0 15px;
+    &:focus{
+      & + label{
+        top: -10px;
+        background: #fff;
+        padding: 3px 6px;
+        left: 10px;
+        color: $gray-dark;
+        font-size: 12px;
+      }
+    }
+    &:not([value=""]):not(:focus){
+      & + label{
+        top: -10px;
+        background: #fff;
+        padding: 3px 6px;
+        left: 10px;
+        color: $gray-dark;
+        font-size: 12px;
+      }
+    }
+    & + label {
+      position: absolute;
+      top: 12px;
+      z-index: 5;
+      left: 10px;
+      font-size: 14px;
+      color: #b7b7b7;
+      pointer-events: none;
+      transition: 0.4s all;
+    }
+  }
+
+}

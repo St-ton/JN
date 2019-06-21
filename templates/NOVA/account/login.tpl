@@ -33,7 +33,7 @@
         {row}
             {col sm=8 offset-sm=2}
                 {card}
-                    {form id="login_form" action="{get_static_route id='jtl.php'}" method="post" role="form" class="evo-validate"}
+                    {form id="login_form" action="{get_static_route id='jtl.php'}" method="post" role="form" class="evo-validate label-slide"}
                         <fieldset>
                             <legend>{lang key='loginForRegisteredCustomers' section='checkout'}</legend>
                             {include file='snippets/form_group_simple.tpl'

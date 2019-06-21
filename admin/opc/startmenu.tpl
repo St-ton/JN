@@ -71,9 +71,9 @@
 
         function deleteSelectedOpcDrafts()
         {
-            if (confirm("Wollen Sie die ausgewählten Entwürfe wirklich löschen?")) {
-                let draftKeys = getSelectedOpcDraftkeys();
+            let draftKeys = getSelectedOpcDraftkeys();
 
+            if (confirm(draftKeys.length + " Entwürfe werden gelöscht! Fortfahren?")) {
                 $.ajax({
                     method: 'post',
                     url: '{$ShopURL}/admin/onpage-composer.php',
@@ -114,6 +114,7 @@
                 }
             });
             opcDraftCheckboxChanged();
+            $('#check-all-drafts').prop('checked', false);
         }
 
         function orderOpcDraftsBy(criteria)
@@ -137,7 +138,6 @@
                 });
             }
             draftsArray.forEach(draft => draftsList.append(draft));
-
         }
 
         function checkAllOpcDrafts()

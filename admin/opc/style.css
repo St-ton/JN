@@ -48,7 +48,7 @@
 }
 #opc ::placeholder {
   color: #BDBDBD;
-  font-family: "Font Awesome 5 Free", sans-serif;
+  font-family: "Font Awesome 5 Free", FontAwesome, sans-serif;
   font-weight: 900;
 }
 #opc .opc-dropdown {
@@ -64,7 +64,7 @@
   display: block;
   float: right;
   content: "";
-  font-family: "Font Awesome 5 Free", sans-serif;
+  font-family: "Font Awesome 5 Free", FontAwesome, sans-serif;
   font-weight: 900;
 }
 #opc .opc-dropdown .opc-dropdown-menu {
@@ -151,10 +151,11 @@
 #opc #opc-sidebar input[type=checkbox] + label {
   cursor: pointer;
   margin: 0;
+  font-weight: 500;
 }
 #opc #opc-sidebar input[type=checkbox] + label:before {
   content: "";
-  font-family: "Font Awesome 5 Free", sans-serif;
+  font-family: "Font Awesome 5 Free", FontAwesome, sans-serif;
   margin-right: 10px;
 }
 #opc #opc-sidebar input[type=checkbox]:checked + label:before {

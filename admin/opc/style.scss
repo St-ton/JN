@@ -65,7 +65,7 @@ $transition: 0.5s;
 
   ::placeholder {
     color: $muted-text;
-    font-family: "Font Awesome 5 Free", sans-serif;
+    font-family: "Font Awesome 5 Free", FontAwesome, sans-serif;
     font-weight: 900;
   }
 
@@ -82,7 +82,7 @@ $transition: 0.5s;
         display: block;
         float: right;
         content: "\f078";
-        font-family: "Font Awesome 5 Free", sans-serif;
+        font-family: "Font Awesome 5 Free", FontAwesome, sans-serif;
         font-weight: 900;
       }
     }
@@ -186,10 +186,11 @@ $transition: 0.5s;
       + label {
         cursor: pointer;
         margin: 0;
-
+        font-weight: 500;
+        
         &:before {
           content: "\f0c8";
-          font-family: "Font Awesome 5 Free", sans-serif;
+          font-family: "Font Awesome 5 Free", FontAwesome, sans-serif;
           margin-right: 10px;
         }
       }

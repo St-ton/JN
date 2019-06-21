@@ -1,4 +1,7 @@
 @charset "UTF-8";
+#opc h1, #opc h2, #opc h3, #opc h4, #opc h5, #opc h6 {
+  font-family: inherit;
+}
 #opc button {
   background: none;
   border: none;
@@ -34,6 +37,9 @@
   color: #F5F7FA;
   font-size: 14px;
   border-radius: 5px;
+}
+#opc .opc-float-right {
+  float: right;
 }
 #opc .opc-filter-control {
   border: 1px solid #435A6B;

@@ -4,8 +4,13 @@ $bg-color: #fff;
 $light-bg: #F5F7FA;
 $muted-text: #BDBDBD;
 $transition: 0.5s;
+$fontawesome-mixed: "Font Awesome 5 Free", FontAwesome, sans-serif;
 
 #opc {
+  h1, h2, h3, h4, h5, h6 {
+    font-family: inherit;
+  }
+
   button {
     background: none;
     border: none;
@@ -51,6 +56,10 @@ $transition: 0.5s;
     }
   }
 
+  .opc-float-right {
+    float: right;
+  }
+
   .opc-filter-control {
     border: 1px solid $text-color;
     border-radius: 5px;
@@ -65,7 +74,7 @@ $transition: 0.5s;
 
   ::placeholder {
     color: $muted-text;
-    font-family: "Font Awesome 5 Free", FontAwesome, sans-serif;
+    font-family: $fontawesome-mixed;
     font-weight: 900;
   }
 
@@ -82,7 +91,7 @@ $transition: 0.5s;
         display: block;
         float: right;
         content: "\f078";
-        font-family: "Font Awesome 5 Free", FontAwesome, sans-serif;
+        font-family: $fontawesome-mixed;
         font-weight: 900;
       }
     }
@@ -187,10 +196,10 @@ $transition: 0.5s;
         cursor: pointer;
         margin: 0;
         font-weight: 500;
-        
+
         &:before {
           content: "\f0c8";
-          font-family: "Font Awesome 5 Free", FontAwesome, sans-serif;
+          font-family: $fontawesome-mixed;
           margin-right: 10px;
         }
       }

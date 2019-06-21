@@ -46,7 +46,7 @@
                     <input type="hidden" name="pageKey" value="{$draft->getKey()}">
                     <button type="submit" name="action" value="edit" data-toggle="tooltip"
                             title="Bearbeiten" data-placement="bottom" data-container="#opc">
-                        <i class="fa fa-lg fa-fw fas fa-pencil-alt"></i>
+                        <i class="fa fa-lg fa-fw fas fa-pencil-alt fa-pencil"></i>
                     </button>
                 </form>
                 <button type="button" onclick="duplicateOpcDraft({$draft->getKey()})"

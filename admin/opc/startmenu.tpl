@@ -235,7 +235,7 @@
                     <h1 id="opc-sidebar-title">
                         Seite bearbeiten
                     </h1>
-                    <button onclick="closeOpcStartMenu()" class="float-right">
+                    <button onclick="closeOpcStartMenu()" class="opc-float-right">
                         <i class="fa fas fa-times"></i>
                     </button>
                 </header>

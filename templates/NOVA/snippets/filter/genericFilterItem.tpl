@@ -39,7 +39,7 @@
             {nav vertical=true}
                 {foreach $filter->getOptions() as $filterOption}
                     {if $limit != -1 && $filterOption@iteration > $limit && !$collapseInit}
-                        <div class="collapse" id="box-collps-filter{$filter->getNiceName()}" aria-expanded="false">
+                        <div class="collapse {if $filter->isActive()} show{/if}" id="box-collps-filter{$filter->getNiceName()}" aria-expanded="false">
                             {$collapseInit = true}
                     {/if}
                     {assign var=filterIsActive value=$filterOption->isActive() || $NaviFilter->getFilterValue($filter->getClassName()) === $filterOption->getValue()}

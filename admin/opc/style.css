@@ -250,9 +250,17 @@
 #opc #opc-sidebar #opc-sidebar-content #opc-draft-list .opc-draft:hover .opc-draft-info .opc-draft-info-line {
   visibility: hidden;
 }
+#opc #opc-sidebar #opc-sidebar-content #opc-draft-list .opc-draft .opc-draft-name {
+  max-width: 204px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
 #opc #opc-sidebar #opc-sidebar-content #opc-draft-list .opc-draft .opc-draft-status {
   font-size: 12px;
   float: right;
+  width: 84px;
+  white-space: nowrap;
 }
 #opc #opc-sidebar #opc-sidebar-content #opc-draft-list .opc-draft .opc-draft-status.opc-public {
   color: #0F9D48;

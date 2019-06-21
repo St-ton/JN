@@ -311,9 +311,18 @@ $fontawesome-mixed: "Font Awesome 5 Free", FontAwesome, sans-serif;
             }
           }
 
+          .opc-draft-name {
+            max-width: 204px;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
+          }
+
           .opc-draft-status {
             font-size: 12px;
             float: right;
+            width: 84px;
+            white-space: nowrap;
 
             &.opc-public {
               color: #0F9D48;

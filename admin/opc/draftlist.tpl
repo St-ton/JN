@@ -4,7 +4,7 @@
         data-draft-name="{$draft->getName()}" data-draft-key="{$draft->getKey()}">
         <input type="checkbox" id="check-{$draft->getKey()}" onchange="opcDraftCheckboxChanged()"
                class="draft-checkbox filtered-draft">
-        <label for="check-{$draft->getKey()}" class="opc-draft-name">
+        <label for="check-{$draft->getKey()}" class="opc-draft-name" title="{$draft->getName()}">
             {$draft->getName()}
         </label>
         {if $draftStatus === 0}

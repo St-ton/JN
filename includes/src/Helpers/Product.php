@@ -810,10 +810,7 @@ class Product
 
         $product->fuelleArtikel($productID, $productOptions);
 
-        if ($product->oVariationenNurKind_arr !== null
-            && \is_array($product->oVariationenNurKind_arr)
-            && \count($product->oVariationenNurKind_arr) > 0
-        ) {
+        if (GeneralObject::hasCount('oVariationenNurKind_arr', $product)) {
             foreach ($product->oVariationenNurKind_arr as $child) {
                 $attributeValue                       = new stdClass();
                 $attributeValue->kEigenschaftWert     = $child->Werte[0]->kEigenschaftWert;
@@ -1919,13 +1916,9 @@ class Product
         $conf            = Shop::getSettings([\CONF_ARTIKELDETAILS]);
         $xSeller         = self::getXSelling($productID);
         $xsellProductIDs = [];
-        if ($xSeller !== null
-            && isset($xSeller->Standard->XSellGruppen)
-            && \is_array($xSeller->Standard->XSellGruppen)
-            && \count($xSeller->Standard->XSellGruppen) > 0
-        ) {
+        if ($xSeller !== null && GeneralObject::hasCount('XSellGruppen', $xSeller->Standard)) {
             foreach ($xSeller->Standard->XSellGruppen as $xSeller) {
-                if (\is_array($xSeller->Artikel) && \count($xSeller->Artikel) > 0) {
+                if (GeneralObject::hasCount('Artikel', $xSeller)) {
                     foreach ($xSeller->Artikel as $product) {
                         $product->kArtikel = (int)$product->kArtikel;
                         if (!\in_array($product->kArtikel, $xsellProductIDs, true)) {
@@ -1935,12 +1928,9 @@ class Product
                 }
             }
         }
-        if (isset($xSeller->Kauf->XSellGruppen)
-            && \is_array($xSeller->Kauf->XSellGruppen)
-            && \count($xSeller->Kauf->XSellGruppen) > 0
-        ) {
+        if (isset($xSeller->Kauf) && GeneralObject::hasCount('XSellGruppen', $xSeller->Kauf)) {
             foreach ($xSeller->Kauf->XSellGruppen as $xSeller) {
-                if (\is_array($xSeller->Artikel) && \count($xSeller->Artikel) > 0) {
+                if (GeneralObject::hasCount('Artikel', $xSeller)) {
                     foreach ($xSeller->Artikel as $product) {
                         $product->kArtikel = (int)$product->kArtikel;
                         if (!\in_array($product->kArtikel, $xsellProductIDs, true)) {

@@ -668,7 +668,8 @@ final class Shop
      */
     public function _Cache(): JTLCacheInterface
     {
-//        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
+        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
+
         return self::Container()->getCache();
     }
 

@@ -9,6 +9,7 @@ namespace JTL\Catalog\Category;
 use JTL\Customer\Kundengruppe;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Category;
+use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Helpers\URL;
@@ -304,7 +305,7 @@ class Kategorie
                 ReturnType::ARRAY_OF_OBJECTS
             );
         }
-        if ($catAttributes !== null && \is_array($catAttributes) && \count($catAttributes) > 0) {
+        if (GeneralObject::isCountable($catAttributes)) {
             foreach ($catAttributes as $attribute) {
                 // Aus Kompatibilitätsgründen findet hier KEINE Trennung
                 // zwischen Funktions- und lokalisierten Attributen statt

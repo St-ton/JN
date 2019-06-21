@@ -21,7 +21,6 @@ use JTL\Session\Backend;
 use JTL\Shop;
 use Psr\Log\LoggerInterface;
 use stdClass;
-use function Functional\map;
 
 /**
  * Class AdminAccount
@@ -403,15 +402,16 @@ class AdminAccount
         if ($this->account() !== false && (int)$this->account()->oGroup->kAdminlogingruppe === \ADMINGROUP) {
             return true;
         }
-        $bAccess = (isset($_SESSION['AdminAccount']->oGroup) && \is_object($_SESSION['AdminAccount']->oGroup)
+        $hasAccess = (isset($_SESSION['AdminAccount']->oGroup)
+            && \is_object($_SESSION['AdminAccount']->oGroup)
             && \is_array($_SESSION['AdminAccount']->oGroup->oPermission_arr)
             && \in_array($permission, $_SESSION['AdminAccount']->oGroup->oPermission_arr, true));
-        if ($showNoAccessPage && !$bAccess) {
+        if ($showNoAccessPage && !$hasAccess) {
             Shop::Smarty()->display('tpl_inc/berechtigung.tpl');
             exit;
         }
 
-        return $bAccess;
+        return $hasAccess;
     }
 
     /**

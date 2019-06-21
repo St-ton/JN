@@ -6,6 +6,8 @@
 
 namespace JTL\OPC;
 
+use JTL\Helpers\GeneralObject;
+
 /**
  * Class Page
  * @package JTL\OPC
@@ -331,7 +333,7 @@ class Page implements \JsonSerializable
         $this->setUrl($data['url'] ?? $this->getUrl());
         $this->setRevId($data['revId'] ?? $this->getRevId());
 
-        if (isset($data['areas']) && \is_array($data['areas'])) {
+        if (GeneralObject::isCountable('areas', $data)) {
             $this->getAreaList()->deserialize($data['areas']);
         }
 

@@ -77,15 +77,14 @@ class Konfigurator
         if (!self::checkLicense()) {
             return false;
         }
-        $groups = Shop::Container()->getDB()->query(
-            'SELECT kArtikel, kKonfigGruppe
-                 FROM tartikelkonfiggruppe
-                 WHERE tartikelkonfiggruppe.kArtikel = ' . $productID . '
-                 ORDER BY tartikelkonfiggruppe.nSort ASC',
-            ReturnType::ARRAY_OF_OBJECTS
-        );
 
-        return \is_array($groups) && \count($groups) > 0;
+        return (int)Shop::Container()->getDB()->queryPrepared(
+            'SELECT COUNT(*) AS cnt
+                 FROM tartikelkonfiggruppe
+                 WHERE tartikelkonfiggruppe.kArtikel = :pid',
+            ['pid' => $productID],
+            ReturnType::SINGLE_OBJECT
+        )->cnt > 0;
     }
 
     /**

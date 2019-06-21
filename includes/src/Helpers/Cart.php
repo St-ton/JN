@@ -60,8 +60,7 @@ class Cart
 
         foreach (Frontend::getCart()->PositionenArr as $item) {
             $amountItem = $item->fPreisEinzelNetto;
-            if (isset($item->WarenkorbPosEigenschaftArr)
-                && \is_array($item->WarenkorbPosEigenschaftArr)
+            if (GeneralObject::isCountable('WarenkorbPosEigenschaftArr', $item)
                 && (!isset($item->Artikel->kVaterArtikel) || (int)$item->Artikel->kVaterArtikel === 0)
             ) {
                 foreach ($item->WarenkorbPosEigenschaftArr as $attr) {
@@ -392,7 +391,7 @@ class Cart
                 $isConfigProduct = false;
             } else {
                 $groups          = Konfigurator::getKonfig($productID);
-                $isConfigProduct = \is_array($groups) && \count($groups) > 0;
+                $isConfigProduct = GeneralObject::hasCount($groups);
             }
         }
 
@@ -403,13 +402,13 @@ class Cart
         $errors            = [];
         $itemErrors        = [];
         $configItems       = [];
-        $configGroups      = (isset($_POST['item']) && \is_array($_POST['item']))
+        $configGroups      = GeneralObject::isCountable('item', $_POST)
             ? $_POST['item']
             : [];
-        $configGroupCounts = (isset($_POST['quantity']) && \is_array($_POST['quantity']))
+        $configGroupCounts = GeneralObject::isCountable('quantity', $_POST)
             ? $_POST['quantity']
             : [];
-        $configItemCounts  = (isset($_POST['item_quantity']) && \is_array($_POST['item_quantity']))
+        $configItemCounts  = GeneralObject::isCountable('item_quantity', $_POST)
             ? $_POST['item_quantity']
             : false;
         $ignoreLimits      = isset($_POST['konfig_ignore_limits']);

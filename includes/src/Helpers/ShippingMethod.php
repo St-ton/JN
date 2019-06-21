@@ -583,7 +583,7 @@ class ShippingMethod
             }
         }
 
-        if (isset($cart->PositionenArr) && \is_array($cart->PositionenArr) && \count($cart->PositionenArr) > 0) {
+        if (GeneralObject::hasCount('PositionenArr', $cart)) {
             // Wenn etwas im Warenkorb ist, dann Vesandart vom Warenkorb rausfinden
             $currentShippingMethod = self::getFavourableShippingMethod(
                 $iso,

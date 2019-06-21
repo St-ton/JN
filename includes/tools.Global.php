@@ -1621,7 +1621,7 @@ function curl_exec_follow($ch, int $maxredirect = 5)
  */
 function http_get_contents($url, $timeout = 15, $post = null)
 {
-    return Request::make_http_request($url, $timeout, $post, false);
+    return Request::make_http_request($url, $timeout, $post);
 }
 
 /**

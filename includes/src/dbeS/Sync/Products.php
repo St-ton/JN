@@ -165,7 +165,7 @@ final class Products extends AbstractSync
                     $check = true;
                 }
                 if ($check === true) {
-                    if (\is_array($newCategoryIDs) && !empty($newCategoryIDs)) {
+                    if (\count($newCategoryIDs) > 0) {
                         // get count of visible products in the product's futre categories
                         $productCount = $this->db->query(
                             'SELECT tkategorieartikel.kKategorie, COUNT(tkategorieartikel.kArtikel) AS cnt

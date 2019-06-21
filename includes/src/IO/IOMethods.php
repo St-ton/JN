@@ -20,6 +20,7 @@ use JTL\DB\ReturnType;
 use JTL\Catalog\Product\EigenschaftWert;
 use JTL\Extensions\AuswahlAssistent;
 use JTL\Helpers\Cart;
+use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Product;
 use JTL\Helpers\ShippingMethod;
 use JTL\Helpers\Text;
@@ -185,7 +186,7 @@ class IOMethods
             // Variationskombi-Artikel
             $_POST['eigenschaftwert'] = $properties['eigenschaftwert'];
             $properties               = Product::getSelectedPropertiesForVarCombiArticle($productID);
-        } elseif (isset($properties['eigenschaftwert']) && \is_array($properties['eigenschaftwert'])) {
+        } elseif (GeneralObject::isCountable('eigenschaftwert', $properties)) {
             // einfache Variation - keine Varkombi
             $_POST['eigenschaftwert'] = $properties['eigenschaftwert'];
             $properties               = Product::getSelectedPropertiesForArticle($productID);

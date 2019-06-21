@@ -38,6 +38,7 @@ use JTL\Session\Frontend;
 use JTL\Shop;
 use stdClass;
 use function Functional\map;
+use function Functional\reduce_left;
 use function Functional\select;
 
 /**
@@ -5693,19 +5694,11 @@ class Artikel
      */
     public function getPurchaseQuantityFromCart()
     {
-        $purchaseQuantity = 0;
-        $cart             = Frontend::getCart();
-        if ($cart !== null && \is_array($cart->PositionenArr) && \count($cart->PositionenArr) > 0) {
-            foreach ($cart->PositionenArr as $i => $item) {
-                if ((int)$item->nPosTyp === \C_WARENKORBPOS_TYP_ARTIKEL
-                    && (int)$item->Artikel->kArtikel === $this->kArtikel
-                ) {
-                    $purchaseQuantity += $item->nAnzahl;
-                }
-            }
-        }
-
-        return $purchaseQuantity;
+        return reduce_left(select(Frontend::getCart()->PositionenArr ?? [], function ($item) {
+            return $item->nPosTyp === \C_WARENKORBPOS_TYP_ARTIKEL && (int)$item->Artikel->kArtikel === $this->kArtikel;
+        }), function ($value, $index, $collection, $reduction) {
+            return $reduction + $value->nAnzahl;
+        }, 0.0);
     }
 
     /**

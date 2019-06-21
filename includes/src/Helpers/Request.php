@@ -21,7 +21,7 @@ class Request
      * @return bool
      * @since 5.0.0
      */
-    public static function hasGPCData($var): bool
+    public static function hasGPCData(string $var): bool
     {
         return isset($_POST[$var]) || isset($_GET[$var]) || isset($_COOKIE[$var]);
     }
@@ -31,7 +31,7 @@ class Request
      * @return array
      * @since 5.0.0
      */
-    public static function verifyGPDataIntegerArray($var): array
+    public static function verifyGPDataIntegerArray(string $var): array
     {
         if (isset($_REQUEST[$var])) {
             $val = $_REQUEST[$var];
@@ -52,7 +52,7 @@ class Request
      * @former verifyGPCDataInteger()
      * @since 5.0.0
      */
-    public static function verifyGPCDataInt($var): int
+    public static function verifyGPCDataInt(string $var): int
     {
         return (int)($_GET[$var] ?? $_POST[$var] ?? $_COOKIE[$var] ?? 0);
     }
@@ -62,7 +62,7 @@ class Request
      * @return string|array
      * @since 5.0.0
      */
-    public static function verifyGPDataString($var)
+    public static function verifyGPDataString(string $var)
     {
         return $_POST[$var] ?? $_GET[$var] ?? '';
     }
@@ -95,11 +95,11 @@ class Request
     /**
      * Gibt einen String für einen Header mit dem angegebenen Status-Code aus
      *
-     * @param int $nStatusCode
+     * @param int $status
      * @return string
      * @since 5.0.0
      */
-    public static function makeHTTPHeader(int $nStatusCode): string
+    public static function makeHTTPHeader(int $status): string
     {
         $proto = !empty($_SERVER['SERVER_PROTOCOL']) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.1';
         $codes = [
@@ -144,7 +144,7 @@ class Request
             504 => $proto . ' 504 Gateway Time-out'
         ];
 
-        return $codes[$nStatusCode] ?? '';
+        return $codes[$status] ?? '';
     }
 
 
@@ -237,9 +237,9 @@ class Request
     }
 
     /**
-     * @param string $url
-     * @param int    $timeout
-     * @param null   $post
+     * @param string            $url
+     * @param int               $timeout
+     * @param array|string|null $post
      * @return mixed
      */
     public static function http_get_contents($url, int $timeout = 5, $post = null)
@@ -248,33 +248,34 @@ class Request
     }
 
     /**
-     * @param string $url
-     * @param int    $timeout
-     * @param null   $post
+     * @param string            $url
+     * @param int               $timeout
+     * @param array|string|null $post
      * @return mixed
      */
-    public static function http_get_status($url, int $timeout = 5, $post = null)
+    public static function http_get_status(string $url, int $timeout = 5, $post = null)
     {
         return self::make_http_request($url, $timeout, $post, true);
     }
 
     /**
-     * @param string $url
-     * @param int    $timeout
-     * @param null   $post
-     * @param bool   $state - false = return content on success / true = return status code instead of content
-     * @param bool   $skipStatusCheck
+     * @param string            $url
+     * @param int               $timeout
+     * @param array|string|null $post
+     * @param bool              $state - false = return content on success / true = return status code instead of
+     *     content
+     * @param bool              $skipStatusCheck
      * @return mixed
      */
     public static function make_http_request(
-        $url,
+        string $url,
         int $timeout = 5,
         $post = null,
-        $state = false,
-        $skipStatusCheck = false
+        bool $state = false,
+        bool $skipStatusCheck = false
     ) {
-        $nCode = 0;
-        $cData = '';
+        $status = 0;
+        $data   = '';
 
         if (\function_exists('curl_init')) {
             $curl = \curl_init();
@@ -292,9 +293,9 @@ class Request
                 \curl_setopt($curl, \CURLOPT_POSTFIELDS, $post);
             }
 
-            $cData = self::curl_exec_follow($curl);
-            $info  = \curl_getinfo($curl);
-            $nCode = (int)$info['http_code'];
+            $data   = self::curl_exec_follow($curl);
+            $info   = \curl_getinfo($curl);
+            $status = (int)$info['http_code'];
 
             \curl_close($curl);
         } elseif (\ini_get('allow_url_fopen')) {
@@ -303,21 +304,21 @@ class Request
             if ($fileHandle) {
                 @\stream_set_timeout($fileHandle, $timeout);
 
-                $cData = '';
+                $data = '';
                 while (($buffer = \fgets($fileHandle)) !== false) {
-                    $cData .= $buffer;
+                    $data .= $buffer;
                 }
                 if (\preg_match('|HTTP/\d\.\d\s+(\d+)\s+.*|', $http_response_header[0], $match)) {
-                    $nCode = (int)$match[1];
+                    $status = (int)$match[1];
                 }
                 \fclose($fileHandle);
             }
         }
-        if ($skipStatusCheck === false && !($nCode >= 200 && $nCode < 300)) {
-            $cData = '';
+        if ($skipStatusCheck === false && !($status >= 200 && $status < 300)) {
+            $data = '';
         }
 
-        return $state ? $nCode : $cData;
+        return $state ? $status : $data;
     }
 
     /**

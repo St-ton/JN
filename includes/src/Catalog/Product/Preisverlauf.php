@@ -47,33 +47,33 @@ class Preisverlauf
     /**
      * Preisverlauf constructor.
      *
-     * @param int $kPreisverlauf
+     * @param int $id
      */
-    public function __construct(int $kPreisverlauf = 0)
+    public function __construct(int $id = 0)
     {
-        if ($kPreisverlauf > 0) {
-            $this->loadFromDB($kPreisverlauf);
+        if ($id > 0) {
+            $this->loadFromDB($id);
         }
     }
 
     /**
-     * @param int $kArtikel
-     * @param int $kKundengruppe
-     * @param int $nMonat
+     * @param int $productID
+     * @param int $customerGroupID
+     * @param int $month
      * @return mixed
      */
-    public function gibPreisverlauf(int $kArtikel, int $kKundengruppe, int $nMonat)
+    public function gibPreisverlauf(int $productID, int $customerGroupID, int $month)
     {
-        $cacheID = 'gpv_' . $kArtikel . '_' . $kKundengruppe . '_' . $nMonat;
+        $cacheID = 'gpv_' . $productID . '_' . $customerGroupID . '_' . $month;
         if (($data = Shop::Container()->getCache()->get($cacheID)) === false) {
             $data     = Shop::Container()->getDB()->query(
                 'SELECT tpreisverlauf.fVKNetto, tartikel.fMwst, UNIX_TIMESTAMP(tpreisverlauf.dDate) AS timestamp
                     FROM tpreisverlauf 
                     LEFT JOIN tartikel
                         ON tartikel.kArtikel = tpreisverlauf.kArtikel
-                    WHERE tpreisverlauf.kArtikel = ' . $kArtikel . '
-                        AND tpreisverlauf.kKundengruppe = ' . $kKundengruppe . '
-                        AND DATE_SUB(NOW(), INTERVAL ' . $nMonat . ' MONTH) < tpreisverlauf.dDate
+                    WHERE tpreisverlauf.kArtikel = ' . $productID . '
+                        AND tpreisverlauf.kKundengruppe = ' . $customerGroupID . '
+                        AND DATE_SUB(NOW(), INTERVAL ' . $month . ' MONTH) < tpreisverlauf.dDate
                     ORDER BY tpreisverlauf.dDate DESC',
                 ReturnType::ARRAY_OF_OBJECTS
             );
@@ -93,7 +93,7 @@ class Preisverlauf
             Shop::Container()->getCache()->set(
                 $cacheID,
                 $data,
-                [\CACHING_GROUP_ARTICLE, \CACHING_GROUP_ARTICLE . '_' . $kArtikel]
+                [\CACHING_GROUP_ARTICLE, \CACHING_GROUP_ARTICLE . '_' . $productID]
             );
         }
 
@@ -101,12 +101,12 @@ class Preisverlauf
     }
 
     /**
-     * @param int $kPreisverlauf
+     * @param int $id
      * @return $this
      */
-    public function loadFromDB(int $kPreisverlauf): self
+    public function loadFromDB(int $id): self
     {
-        $item = Shop::Container()->getDB()->select('tpreisverlauf', 'kPreisverlauf', $kPreisverlauf);
+        $item = Shop::Container()->getDB()->select('tpreisverlauf', 'kPreisverlauf', $id);
         if ($item !== null) {
             foreach (\array_keys(\get_object_vars($item)) as $member) {
                 $this->$member = $item->$member;

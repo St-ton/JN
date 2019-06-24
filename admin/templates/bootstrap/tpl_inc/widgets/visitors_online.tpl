@@ -13,7 +13,12 @@
     {if is_array($oVisitors_arr) && $oVisitors_arr|@count > 0}
         <table class="table table-condensed table-hover table-blank">
             <thead>
-                <th>{__('customer')}</th><th>{__('info')}</th><th class="text-center">{__('lastActivity')}</th><th class="text-right">{__('lastPurchase')}</th>
+                <tr>
+                    <th>{__('customer')}</th>
+                    <th>{__('info')}</th>
+                    <th class="text-center">{__('lastActivity')}</th>
+                    <th class="text-right">{__('lastPurchase')}</th>
+                </tr>
             </thead>
             <tbody>
             {foreach $oVisitors_arr as $oVisitor}

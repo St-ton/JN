@@ -115,23 +115,23 @@ if (isset($_POST['neu_export']) && (int)$_POST['neu_export'] === 1 && Form::vali
         $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorCheckInput'), 'errorCheckInput');
     }
 }
-$cAction       = null;
+$action        = null;
 $kExportformat = null;
 if (isset($_POST['action']) && mb_strlen($_POST['action']) > 0 && (int)$_POST['kExportformat'] > 0) {
-    $cAction       = $_POST['action'];
+    $action        = $_POST['action'];
     $kExportformat = (int)$_POST['kExportformat'];
 } elseif (isset($_GET['action']) && mb_strlen($_GET['action']) > 0 && (int)$_GET['kExportformat'] > 0) {
-    $cAction       = $_GET['action'];
+    $action        = $_GET['action'];
     $kExportformat = (int)$_GET['kExportformat'];
 }
-if ($cAction !== null && $kExportformat !== null && Form::validateToken()) {
-    switch ($cAction) {
+if ($action !== null && $kExportformat !== null && Form::validateToken()) {
+    switch ($action) {
         case 'export':
-            $bAsync                = isset($_GET['ajax']);
+            $async                 = isset($_GET['ajax']);
             $queue                 = new stdClass();
             $queue->kExportformat  = $kExportformat;
             $queue->nLimit_n       = 0;
-            $queue->nLimit_m       = $bAsync ? EXPORTFORMAT_ASYNC_LIMIT_M : EXPORTFORMAT_LIMIT_M;
+            $queue->nLimit_m       = $async ? EXPORTFORMAT_ASYNC_LIMIT_M : EXPORTFORMAT_LIMIT_M;
             $queue->nLastArticleID = 0;
             $queue->dErstellt      = 'NOW()';
             $queue->dZuBearbeiten  = 'NOW()';
@@ -139,7 +139,7 @@ if ($cAction !== null && $kExportformat !== null && Form::validateToken()) {
             $kExportqueue = $db->insert('texportqueue', $queue);
 
             $cURL = 'do_export.php?&back=admin&token=' . $_SESSION['jtl_token'] . '&e=' . $kExportqueue;
-            if ($bAsync) {
+            if ($async) {
                 $cURL .= '&ajax';
             }
             header('Location: ' . $cURL);

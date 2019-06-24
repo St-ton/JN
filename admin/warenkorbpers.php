@@ -49,14 +49,13 @@ if (isset($_POST['einstellungen'])
 }
 
 if (isset($_GET['l']) && (int)$_GET['l'] > 0 && Form::validateToken()) {
-    $kKunde         = (int)$_GET['l'];
-    $oWarenkorbPers = new WarenkorbPers($kKunde);
-
-    if ($oWarenkorbPers->entferneSelf()) {
+    $customerID = (int)$_GET['l'];
+    $persCart   = new WarenkorbPers($customerID);
+    if ($persCart->entferneSelf()) {
         $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successCartPersPosDelete'), 'successCartPersPosDelete');
     }
 
-    unset($oWarenkorbPers);
+    unset($persCart);
 }
 $customerCount = (int)Shop::Container()->getDB()->query(
     'SELECT COUNT(*) AS count
@@ -105,20 +104,20 @@ $smarty->assign('oKunde_arr', $customers)
        ->assign('oPagiKunden', $oPagiKunden);
 
 if (isset($_GET['a']) && (int)$_GET['a'] > 0) {
-    $step   = 'anzeigen';
-    $kKunde = (int)$_GET['a'];
+    $step       = 'anzeigen';
+    $customerID = (int)$_GET['a'];
 
-    $oWarenkorbPers = Shop::Container()->getDB()->query(
+    $persCart = Shop::Container()->getDB()->query(
         'SELECT COUNT(*) AS nAnzahl
             FROM twarenkorbperspos
             JOIN twarenkorbpers 
                 ON twarenkorbpers.kWarenkorbPers = twarenkorbperspos.kWarenkorbPers
-            WHERE twarenkorbpers.kKunde = ' . $kKunde,
+            WHERE twarenkorbpers.kKunde = ' . $customerID,
         ReturnType::SINGLE_OBJECT
     );
 
     $oPagiWarenkorb = (new Pagination('warenkorb'))
-        ->setItemCount($oWarenkorbPers->nAnzahl)
+        ->setItemCount($persCart->nAnzahl)
         ->assemble();
 
     $carts = Shop::Container()->getDB()->query(
@@ -130,7 +129,7 @@ if (isset($_GET['a']) && (int)$_GET['a'] > 0) {
                 ON tkunde.kKunde = twarenkorbpers.kKunde
             JOIN twarenkorbperspos 
                 ON twarenkorbpers.kWarenkorbPers = twarenkorbperspos.kWarenkorbPers
-            WHERE twarenkorbpers.kKunde = " . $kKunde . '
+            WHERE twarenkorbpers.kKunde = " . $customerID . '
             LIMIT ' . $oPagiWarenkorb->getLimitSQL(),
         ReturnType::ARRAY_OF_OBJECTS
     );
@@ -142,7 +141,7 @@ if (isset($_GET['a']) && (int)$_GET['a'] > 0) {
     }
 
     $smarty->assign('oWarenkorbPersPos_arr', $carts)
-           ->assign('kKunde', $kKunde)
+           ->assign('kKunde', $customerID)
            ->assign('oPagiWarenkorb', $oPagiWarenkorb);
 }
 

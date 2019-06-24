@@ -27,12 +27,12 @@ class Category
     /**
      * @var int
      */
-    private static $kSprache;
+    private static $languageID;
 
     /**
      * @var int
      */
-    private static $kKundengruppe;
+    private static $customerGroupID;
 
     /**
      * @var int
@@ -68,30 +68,30 @@ class Category
     }
 
     /**
-     * @param int $kSprache
-     * @param int $kKundengruppe
+     * @param int $languageID
+     * @param int $customerGroupID
      * @return Category
      */
-    public static function getInstance(int $kSprache = 0, int $kKundengruppe = 0): self
+    public static function getInstance(int $languageID = 0, int $customerGroupID = 0): self
     {
-        $kSprache      = $kSprache === 0
+        $languageID      = $languageID === 0
             ? Shop::getLanguageID()
-            : $kSprache;
-        $kKundengruppe = $kKundengruppe === 0
+            : $languageID;
+        $customerGroupID = $customerGroupID === 0
             ? Frontend::getCustomerGroup()->getID()
-            : $kKundengruppe;
-        $config        = Shop::getSettings([\CONF_GLOBAL, \CONF_TEMPLATE]);
-        if (self::$instance !== null && self::$kSprache !== $kSprache) {
+            : $customerGroupID;
+        $config          = Shop::getSettings([\CONF_GLOBAL, \CONF_TEMPLATE]);
+        if (self::$instance !== null && self::$languageID !== $languageID) {
             //reset cached categories when language or depth was changed
             self::$fullCategories = null;
             unset($_SESSION['oKategorie_arr_new']);
         }
-        self::$cacheID       = 'allcategories_' . $kKundengruppe .
-            '_' . $kSprache .
+        self::$cacheID         = 'allcategories_' . $customerGroupID .
+            '_' . $languageID .
             '_' . $config['global']['kategorien_anzeigefilter'];
-        self::$kSprache      = $kSprache;
-        self::$kKundengruppe = $kKundengruppe;
-        self::$config        = $config;
+        self::$languageID      = $languageID;
+        self::$customerGroupID = $customerGroupID;
+        self::$config          = $config;
 
         return self::$instance ?? new self();
     }
@@ -170,14 +170,14 @@ class Category
                 ? ''
                 : ' LEFT JOIN tkategoriesprache
                         ON tkategoriesprache.kKategorie = node.kKategorie
-                            AND tkategoriesprache.kSprache = ' . self::$kSprache . ' ';
+                            AND tkategoriesprache.kSprache = ' . self::$languageID . ' ';
             $seoJoin              = $isDefaultLang === true
                 ? ''
                 : " LEFT JOIN tseo
                         ON tseo.cKey = 'kKategorie'
                         AND tseo.kKey = node.kKategorie
-                        AND tseo.kSprache = " . self::$kSprache . ' ';
-            $hasArticlesCheckJoin = ' LEFT JOIN tkategorieartikel
+                        AND tseo.kSprache = " . self::$languageID . ' ';
+            $hasProductsCheckJoin = ' LEFT JOIN tkategorieartikel
                     ON tkategorieartikel.kKategorie = node.kKategorie ';
             if ($extended) {
                 $countSelect    = ', COUNT(tartikel.kArtikel) AS cnt';
@@ -185,18 +185,18 @@ class Category
                         ON tkategorieartikel.kArtikel = tartikel.kArtikel ' . $stockFilter;
                 $visibilityJoin = ' LEFT JOIN tartikelsichtbarkeit
                     ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                    AND tartikelsichtbarkeit.kKundengruppe = ' . self::$kKundengruppe;
+                    AND tartikelsichtbarkeit.kKundengruppe = ' . self::$customerGroupID;
             } elseif ($filterEmpty === true) {
                 $countSelect    = ', COUNT(tkategorieartikel.kArtikel) AS cnt';
                 $visibilityJoin = ' LEFT JOIN tartikelsichtbarkeit
                     ON tkategorieartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                    AND tartikelsichtbarkeit.kKundengruppe = ' . self::$kKundengruppe;
+                    AND tartikelsichtbarkeit.kKundengruppe = ' . self::$customerGroupID;
             } else {
                 // if we want to display all categories without filtering out empty ones,
                 // we don't have to check the product count
                 // this saves a very expensive join - cnt will be always -1
                 $countSelect          = ', -1 AS cnt';
-                $hasArticlesCheckJoin = '';
+                $hasProductsCheckJoin = '';
                 $visibilityJoin       = '';
                 $visibilityWhere      = '';
             }
@@ -206,8 +206,8 @@ class Category
                     FROM tkategorie AS node INNER JOIN tkategorie AS parent ' . $langJoin . '                    
                     LEFT JOIN tkategoriesichtbarkeit
                         ON node.kKategorie = tkategoriesichtbarkeit.kKategorie
-                        AND tkategoriesichtbarkeit.kKundengruppe = ' . self::$kKundengruppe . $seoJoin . $imageJoin .
-                $hasArticlesCheckJoin . $stockJoin . $visibilityJoin . '                     
+                        AND tkategoriesichtbarkeit.kKundengruppe = ' . self::$customerGroupID . $seoJoin . $imageJoin .
+                $hasProductsCheckJoin . $stockJoin . $visibilityJoin . '                     
                 WHERE node.nLevel > 0 AND parent.nLevel > 0
                     AND tkategoriesichtbarkeit.kKategorie IS NULL AND node.lft BETWEEN parent.lft AND parent.rght
                     AND parent.kOberKategorie = 0 ' . $visibilityWhere . $depthWhere . '
@@ -224,7 +224,7 @@ class Category
                     FROM tkategorieattribut 
                     LEFT JOIN tkategorieattributsprache 
                         ON tkategorieattributsprache.kAttribut = tkategorieattribut.kKategorieAttribut
-                        AND tkategorieattributsprache.kSprache = ' . self::$kSprache . '
+                        AND tkategorieattributsprache.kSprache = ' . self::$languageID . '
                     ORDER BY tkategorieattribut.kKategorie, tkategorieattribut.bIstFunktionsAttribut DESC, 
                     tkategorieattribut.nSort',
                 ReturnType::ARRAY_OF_OBJECTS
@@ -249,7 +249,7 @@ class Category
                 $cat->cBildURLFull   = $imageBaseURL . $cat->cBildURL;
                 $cat->cURL           = URL::buildURL($cat, \URLART_KATEGORIE);
                 $cat->cURLFull       = $shopURL . '/' . $cat->cURL;
-                if (self::$kSprache > 0 && !$isDefaultLang) {
+                if (self::$languageID > 0 && !$isDefaultLang) {
                     if (!empty($cat->cName_spr)) {
                         $cat->cName = $cat->cName_spr;
                     }
@@ -363,31 +363,31 @@ class Category
                 ? ', parent.cBeschreibung' //no category description needed if we don't show category info in mega menu
                 : ', parent.cBeschreibung, tkategoriesprache.cBeschreibung AS cBeschreibung_spr';
         }
-        $imageSelect          = (isset(self::$config['template']['megamenu']['show_category_images'])
+        $imageSelect           = (isset(self::$config['template']['megamenu']['show_category_images'])
             && self::$config['template']['megamenu']['show_category_images'] === 'N')
             ? ", '' AS cPfad" //select empty path if we don't need category images for the mega menu
             : ', tkategoriepict.cPfad';
-        $imageJoin            = (isset(self::$config['template']['megamenu']['show_category_images'])
+        $imageJoin             = (isset(self::$config['template']['megamenu']['show_category_images'])
             && self::$config['template']['megamenu']['show_category_images'] === 'N')
             ? '' //the join is not needed if we don't select the category image path
             : ' LEFT JOIN tkategoriepict
                     ON tkategoriepict.kKategorie = node.kKategorie';
-        $nameSelect           = $isDefaultLang === true
+        $nameSelect            = $isDefaultLang === true
             ? ', parent.cName'
             : ', parent.cName, tkategoriesprache.cName AS cName_spr';
-        $seoSelect            = ', parent.cSeo';
-        $langJoin             = $isDefaultLang === true
+        $seoSelect             = ', parent.cSeo';
+        $langJoin              = $isDefaultLang === true
             ? ''
             : ' LEFT JOIN tkategoriesprache
                     ON tkategoriesprache.kKategorie = node.kKategorie
-                        AND tkategoriesprache.kSprache = ' . self::$kSprache . ' ';
-        $seoJoin              = $isDefaultLang === true
+                        AND tkategoriesprache.kSprache = ' . self::$languageID . ' ';
+        $seoJoin               = $isDefaultLang === true
             ? ''
             : " LEFT JOIN tseo
                     ON tseo.cKey = 'kKategorie'
                     AND tseo.kKey = node.kKategorie
-                    AND tseo.kSprache = " . self::$kSprache . ' ';
-        $hasArticlesCheckJoin = ' LEFT JOIN tkategorieartikel
+                    AND tseo.kSprache = " . self::$languageID . ' ';
+        $hasProductssCheckJoin = ' LEFT JOIN tkategorieartikel
                 ON tkategorieartikel.kKategorie = node.kKategorie ';
         if ($extended) {
             $countSelect    = ', COUNT(tartikel.kArtikel) AS cnt';
@@ -395,17 +395,17 @@ class Category
                     ON tkategorieartikel.kArtikel = tartikel.kArtikel ' . $stockFilter;
             $visibilityJoin = ' LEFT JOIN tartikelsichtbarkeit
                 ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                AND tartikelsichtbarkeit.kKundengruppe = ' . self::$kKundengruppe;
+                AND tartikelsichtbarkeit.kKundengruppe = ' . self::$customerGroupID;
         } elseif ($filterEmpty === true) {
             $countSelect    = ', COUNT(tkategorieartikel.kArtikel) AS cnt';
             $visibilityJoin = ' LEFT JOIN tartikelsichtbarkeit
                 ON tkategorieartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                AND tartikelsichtbarkeit.kKundengruppe = ' . self::$kKundengruppe;
+                AND tartikelsichtbarkeit.kKundengruppe = ' . self::$customerGroupID;
         } else {
-            $countSelect          = ', -1 AS cnt';
-            $hasArticlesCheckJoin = '';
-            $visibilityJoin       = '';
-            $visibilityWhere      = '';
+            $countSelect           = ', -1 AS cnt';
+            $hasProductssCheckJoin = '';
+            $visibilityJoin        = '';
+            $visibilityWhere       = '';
         }
         $nodes         = Shop::Container()->getDB()->query(
             'SELECT parent.kKategorie, parent.kOberKategorie' . $nameSelect .
@@ -413,8 +413,8 @@ class Category
                 FROM tkategorie AS node INNER JOIN tkategorie AS parent ' . $langJoin . '                    
                 LEFT JOIN tkategoriesichtbarkeit
                     ON node.kKategorie = tkategoriesichtbarkeit.kKategorie
-                    AND tkategoriesichtbarkeit.kKundengruppe = ' . self::$kKundengruppe . $seoJoin . $imageJoin .
-            $hasArticlesCheckJoin . $stockJoin . $visibilityJoin . '                     
+                    AND tkategoriesichtbarkeit.kKundengruppe = ' . self::$customerGroupID . $seoJoin . $imageJoin .
+            $hasProductssCheckJoin . $stockJoin . $visibilityJoin . '                     
                 WHERE node.nLevel > 0 AND parent.nLevel > 0
                     AND tkategoriesichtbarkeit.kKategorie IS NULL AND node.lft BETWEEN parent.lft AND parent.rght
                     AND node.kKategorie = ' . $categoryID . $visibilityWhere . '
@@ -431,7 +431,7 @@ class Category
                 FROM tkategorieattribut 
                 LEFT JOIN tkategorieattributsprache 
                     ON tkategorieattributsprache.kAttribut = tkategorieattribut.kKategorieAttribut
-                    AND tkategorieattributsprache.kSprache = ' . self::$kSprache . '
+                    AND tkategorieattributsprache.kSprache = ' . self::$languageID . '
                 WHERE tkategorieattribut.kKategorie = ' . $categoryID . '
                 ORDER BY tkategorieattribut.kKategorie, tkategorieattribut.bIstFunktionsAttribut DESC, 
                 tkategorieattribut.nSort',
@@ -458,7 +458,7 @@ class Category
             $cat->cURL           = URL::buildURL($cat, \URLART_KATEGORIE);
             $cat->cURLFull       = $shopURL . '/' . $cat->cURL;
             // lokalisieren
-            if (self::$kSprache > 0 && !$isDefaultLang) {
+            if (self::$languageID > 0 && !$isDefaultLang) {
                 if (!empty($cat->cName_spr)) {
                     $cat->cName = $cat->cName_spr;
                 }
@@ -517,7 +517,11 @@ class Category
     {
         foreach ($catList as $i => $cat) {
             if ($cat->bUnterKategorien === 1) {
-                if ($cat->cnt === 0 && \count($cat->Unterkategorien) === 0) {
+                $count = \count($cat->Unterkategorien);
+                if ($count === 0) {
+                    $cat->bUnterKategorien = 0;
+                }
+                if ($cat->cnt === 0 && $count === 0) {
                     unset($catList[$i]);
                     if ($parentCat !== null && empty($parentCat->Unterkategorien)) {
                         $parentCat->bUnterKategorien = 0;
@@ -677,30 +681,30 @@ class Category
     }
 
     /**
-     * @param Kategorie $Kategorie
-     * @param bool      $bString
+     * @param Kategorie $category
+     * @param bool      $asString
      * @return array|string
      * @former gibKategoriepfad()
      */
-    public function getPath($Kategorie, $bString = true)
+    public function getPath($category, $asString = true)
     {
-        if (empty($Kategorie->cKategoriePfad_arr)
-            || empty($Kategorie->kSprache)
-            || (int)$Kategorie->kSprache !== self::$kSprache
+        if (empty($category->cKategoriePfad_arr)
+            || empty($category->kSprache)
+            || (int)$category->kSprache !== self::$languageID
         ) {
-            if (empty($Kategorie->kKategorie)) {
-                return $bString ? '' : [];
+            if (empty($category->kKategorie)) {
+                return $asString ? '' : [];
             }
-            $tree  = $this->getFlatTree($Kategorie->kKategorie);
+            $tree  = $this->getFlatTree($category->kKategorie);
             $names = [];
             foreach ($tree as $item) {
                 $names[] = $item->cName;
             }
         } else {
-            $names = $Kategorie->cKategoriePfad_arr;
+            $names = $category->cKategoriePfad_arr;
         }
 
-        return $bString ? \implode(' > ', $names) : $names;
+        return $asString ? \implode(' > ', $names) : $names;
     }
 
     /**
@@ -761,14 +765,14 @@ class Category
                     )
                     : '';
 
-                $dist_kategorieboxen = Shop::Container()->getDB()->query(
+                $boxes = Shop::Container()->getDB()->query(
                     "SELECT DISTINCT(cWert) 
                         FROM tkategorieattribut 
                         WHERE cName = '" . \KAT_ATTRIBUT_KATEGORIEBOX . "'",
                     ReturnType::ARRAY_OF_OBJECTS
                 );
-                foreach ($dist_kategorieboxen as $katboxNr) {
-                    $nr = (int)$katboxNr->cWert;
+                foreach ($boxes as $box) {
+                    $nr = (int)$box->cWert;
                     if ($nr > 0) {
                         $categories[$nr] = \function_exists('gibKategorienHTML')
                             ? \gibKategorienHTML(

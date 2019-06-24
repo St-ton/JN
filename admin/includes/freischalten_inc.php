@@ -11,12 +11,12 @@ use JTL\Review\ReviewAdminController;
 use JTL\Shop;
 
 /**
- * @param string $cSQL
- * @param object $cSuchSQL
+ * @param string $sql
+ * @param object $searchSQL
  * @param bool   $checkLanguage
  * @return array
  */
-function gibBewertungFreischalten($cSQL, $cSuchSQL, bool $checkLanguage = true): array
+function gibBewertungFreischalten(string $sql, $searchSQL, bool $checkLanguage = true): array
 {
     $cond = $checkLanguage === true
         ? 'tbewertung.kSprache = ' . (int)$_SESSION['kSprache'] . ' AND '
@@ -28,19 +28,19 @@ function gibBewertungFreischalten($cSQL, $cSuchSQL, bool $checkLanguage = true):
             LEFT JOIN tartikel 
                 ON tbewertung.kArtikel = tartikel.kArtikel
             WHERE " . $cond . 'tbewertung.nAktiv = 0
-                ' . $cSuchSQL->cWhere . '
-            ORDER BY tbewertung.kArtikel, tbewertung.dDatum DESC' . $cSQL,
+                ' . $searchSQL->cWhere . '
+            ORDER BY tbewertung.kArtikel, tbewertung.dDatum DESC' . $sql,
         ReturnType::ARRAY_OF_OBJECTS
     );
 }
 
 /**
- * @param string $cSQL
- * @param object $cSuchSQL
+ * @param string $sql
+ * @param object $searchSQL
  * @param bool   $checkLanguage
  * @return array
  */
-function gibSuchanfrageFreischalten($cSQL, $cSuchSQL, bool $checkLanguage = true): array
+function gibSuchanfrageFreischalten(string $sql, $searchSQL, bool $checkLanguage = true): array
 {
     $cond = $checkLanguage === true
         ? 'AND kSprache = ' . (int)$_SESSION['kSprache'] . ' '
@@ -49,19 +49,19 @@ function gibSuchanfrageFreischalten($cSQL, $cSuchSQL, bool $checkLanguage = true
     return Shop::Container()->getDB()->query(
         "SELECT *, DATE_FORMAT(dZuletztGesucht, '%d.%m.%Y %H:%i') AS dZuletztGesucht_de
             FROM tsuchanfrage
-            WHERE nAktiv = 0 " . $cond . $cSuchSQL->cWhere . '
-            ORDER BY ' . $cSuchSQL->cOrder . $cSQL,
+            WHERE nAktiv = 0 " . $cond . $searchSQL->cWhere . '
+            ORDER BY ' . $searchSQL->cOrder . $sql,
         ReturnType::ARRAY_OF_OBJECTS
     );
 }
 
 /**
- * @param string $cSQL
- * @param object $cSuchSQL
+ * @param string $sql
+ * @param object $searchSQL
  * @param bool   $checkLanguage
  * @return array
  */
-function gibTagFreischalten($cSQL, $cSuchSQL, bool $checkLanguage = true): array
+function gibTagFreischalten(string $sql, $searchSQL, bool $checkLanguage = true): array
 {
     $cond = $checkLanguage === true
         ? 'AND ttag.kSprache = ' . (int)$_SESSION['kSprache'] . ' '
@@ -75,20 +75,20 @@ function gibTagFreischalten($cSQL, $cSuchSQL, bool $checkLanguage = true): array
                 ON ttagartikel.kTag = ttag.kTag
             LEFT JOIN tartikel 
                 ON tartikel.kArtikel = ttagartikel.kArtikel
-            WHERE ttag.nAktiv = 0 ' . $cond . $cSuchSQL->cWhere . '
+            WHERE ttag.nAktiv = 0 ' . $cond . $searchSQL->cWhere . '
             GROUP BY ttag.kTag
-            ORDER BY Anzahl DESC' . $cSQL,
+            ORDER BY Anzahl DESC' . $sql,
         ReturnType::ARRAY_OF_OBJECTS
     );
 }
 
 /**
- * @param string $cSQL
- * @param object $cSuchSQL
+ * @param string $sql
+ * @param object $searchSQL
  * @param bool   $checkLanguage
  * @return array
  */
-function gibNewskommentarFreischalten($cSQL, $cSuchSQL, bool $checkLanguage = true): array
+function gibNewskommentarFreischalten(string $sql, $searchSQL, bool $checkLanguage = true): array
 {
     $cond         = $checkLanguage === true
         ? ' AND t.languageID = ' . (int)$_SESSION['kSprache'] . ' '
@@ -104,25 +104,25 @@ function gibNewskommentarFreischalten($cSQL, $cSuchSQL, bool $checkLanguage = tr
             LEFT JOIN tkunde 
                 ON tkunde.kKunde = tnewskommentar.kKunde
             WHERE tnewskommentar.nAktiv = 0" .
-            $cSuchSQL->cWhere . $cond . $cSQL,
+            $searchSQL->cWhere . $cond . $sql,
         ReturnType::ARRAY_OF_OBJECTS
     );
     foreach ($newsComments as $comment) {
-        $oKunde = new Kunde($comment->kKunde ?? 0);
+        $customer = new Kunde($comment->kKunde ?? 0);
 
-        $comment->cNachname = $oKunde->cNachname;
+        $comment->cNachname = $customer->cNachname;
     }
 
     return $newsComments;
 }
 
 /**
- * @param string $cSQL
- * @param object $cSuchSQL
+ * @param string $sql
+ * @param object $searchSQL
  * @param bool   $checkLanguage
  * @return array
  */
-function gibNewsletterEmpfaengerFreischalten($cSQL, $cSuchSQL, bool $checkLanguage = true): array
+function gibNewsletterEmpfaengerFreischalten($sql, $searchSQL, bool $checkLanguage = true): array
 {
     $cond = $checkLanguage === true
         ? ' AND kSprache = ' . (int)$_SESSION['kSprache']
@@ -133,23 +133,23 @@ function gibNewsletterEmpfaengerFreischalten($cSQL, $cSuchSQL, bool $checkLangua
             DATE_FORMAT(dLetzterNewsletter, '%d.%m.%Y  %H:%i') AS dLetzterNewsletter_de
             FROM tnewsletterempfaenger
             WHERE nAktiv = 0
-                " . $cSuchSQL->cWhere . $cond .
-        ' ORDER BY ' . $cSuchSQL->cOrder . $cSQL,
+                " . $searchSQL->cWhere . $cond .
+        ' ORDER BY ' . $searchSQL->cOrder . $sql,
         ReturnType::ARRAY_OF_OBJECTS
     );
 }
 
 /**
- * @param array $ratingIDs
+ * @param array $reviewIDs
  * @return bool
  */
-function schalteBewertungFrei($ratingIDs): bool
+function schalteBewertungFrei($reviewIDs): bool
 {
-    if (!is_array($ratingIDs) || count($ratingIDs) === 0) {
+    if (!is_array($reviewIDs) || count($reviewIDs) === 0) {
         return false;
     }
     $controller = new ReviewAdminController(Shop::Container()->getDB(), Shop::Container()->getCache());
-    $controller->activate($ratingIDs);
+    $controller->activate($reviewIDs);
 
     return true;
 }
@@ -215,8 +215,8 @@ function schalteTagsFrei($tags): bool
             WHERE kTag IN (' . implode(',', $tags) . ')',
         ReturnType::ARRAY_OF_OBJECTS
     );
-    foreach ($products as $_article) {
-        $cacheTags[] = CACHING_GROUP_ARTICLE . '_' . $_article->kArtikel;
+    foreach ($products as $product) {
+        $cacheTags[] = CACHING_GROUP_ARTICLE . '_' . $product->kArtikel;
     }
     foreach ($tags as $kTag) {
         $kTag = (int)$kTag;

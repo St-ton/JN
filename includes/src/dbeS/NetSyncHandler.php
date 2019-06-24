@@ -65,32 +65,32 @@ class NetSyncHandler
             return $_SESSION['bAuthed'];
         }
         // by syncdata
-        $cName   = \urldecode($_REQUEST['uid']);
-        $cPass   = \urldecode($_REQUEST['upwd']);
-        $bAuthed = (\strlen($cName) > 0 && \strlen($cPass) > 0)
-            ? (new Synclogin($this->db, $this->logger))->checkLogin($cName, $cPass)
+        $name          = \urldecode($_REQUEST['uid']);
+        $pass          = \urldecode($_REQUEST['upwd']);
+        $authenticated = (\strlen($name) > 0 && \strlen($pass) > 0)
+            ? (new Synclogin($this->db, $this->logger))->checkLogin($name, $pass)
             : false;
-        if ($bAuthed) {
+        if ($authenticated) {
             \session_start();
-            $_SESSION['bAuthed'] = $bAuthed;
+            $_SESSION['bAuthed'] = $authenticated;
         }
 
-        return $bAuthed;
+        return $authenticated;
     }
 
     /**
-     * @param int        $nCode
-     * @param null|mixed $oData
+     * @param int        $code
+     * @param null|mixed $data
      */
-    protected static function throwResponse($nCode, $oData = null): void
+    protected static function throwResponse($code, $data = null): void
     {
         $response         = new stdClass();
-        $response->nCode  = $nCode;
+        $response->nCode  = $code;
         $response->cToken = '';
         $response->oData  = null;
-        if ($nCode === 0) {
+        if ($code === 0) {
             $response->cToken = \session_id();
-            $response->oData  = $oData;
+            $response->oData  = $data;
         }
         echo \json_encode($response);
         exit;

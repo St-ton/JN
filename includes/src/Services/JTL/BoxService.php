@@ -290,7 +290,6 @@ class BoxService implements BoxServiceInterface
      * @param int   $pageType
      * @return array
      * @throws \Exception
-     * @throws \SmartyException
      */
     public function render(array $positionedBoxes, int $pageType): array
     {

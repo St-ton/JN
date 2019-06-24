@@ -37,22 +37,22 @@ class KategoriePict
 
     /**
      * KategoriePict constructor.
-     * @param int $kKategoriePict
+     * @param int $id
      */
-    public function __construct(int $kKategoriePict = 0)
+    public function __construct(int $id = 0)
     {
-        if ($kKategoriePict > 0) {
-            $this->loadFromDB($kKategoriePict);
+        if ($id > 0) {
+            $this->loadFromDB($id);
         }
     }
 
     /**
-     * @param int $kKategoriePict
+     * @param int $id
      * @return $this
      */
-    public function loadFromDB(int $kKategoriePict): self
+    public function loadFromDB(int $id): self
     {
-        $obj = Shop::Container()->getDB()->select('tkategoriepict', 'kKategoriePict', $kKategoriePict);
+        $obj = Shop::Container()->getDB()->select('tkategoriepict', 'kKategoriePict', $id);
         foreach (\get_object_vars($obj) as $k => $v) {
             $this->$k = $v;
         }

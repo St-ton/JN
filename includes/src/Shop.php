@@ -1072,7 +1072,7 @@ final class Shop
         \executeHook(\HOOK_SEOCHECK_ANFANG, ['uri' => &$uri]);
         $seite       = 0;
         $manufSeo    = [];
-        $katseo      = '';
+        $categorySeo = '';
         $customSeo   = [];
         $shopURLdata = \parse_url(self::getURL());
         $baseURLdata = \parse_url($uri);
@@ -1204,26 +1204,26 @@ final class Shop
             }
             $categories = \explode(\SEP_KAT, $seo);
             if (\is_array($categories) && \count($categories) > 1) {
-                [$seo, $katseo] = $categories;
-                if (\mb_strpos($katseo, \SEP_HST) !== false) {
-                    $arr    = \explode(\SEP_HST, $katseo);
-                    $katseo = $arr[0];
-                    $seo   .= \SEP_HST . $arr[1];
+                [$seo, $categorySeo] = $categories;
+                if (\mb_strpos($categorySeo, \SEP_HST) !== false) {
+                    $arr         = \explode(\SEP_HST, $categorySeo);
+                    $categorySeo = $arr[0];
+                    $seo        .= \SEP_HST . $arr[1];
                 }
-                if (\mb_strpos($katseo, \SEP_MERKMAL) !== false) {
-                    $arr    = \explode(\SEP_MERKMAL, $katseo);
-                    $katseo = $arr[0];
-                    $seo   .= \SEP_MERKMAL . $arr[1];
+                if (\mb_strpos($categorySeo, \SEP_MERKMAL) !== false) {
+                    $arr         = \explode(\SEP_MERKMAL, $categorySeo);
+                    $categorySeo = $arr[0];
+                    $seo        .= \SEP_MERKMAL . $arr[1];
                 }
-                if (\mb_strpos($katseo, \SEP_MM_MMW) !== false) {
-                    $arr    = \explode(\SEP_MM_MMW, $katseo);
-                    $katseo = $arr[0];
-                    $seo   .= \SEP_MM_MMW . $arr[1];
+                if (\mb_strpos($categorySeo, \SEP_MM_MMW) !== false) {
+                    $arr         = \explode(\SEP_MM_MMW, $categorySeo);
+                    $categorySeo = $arr[0];
+                    $seo        .= \SEP_MM_MMW . $arr[1];
                 }
-                if (\mb_strpos($katseo, \SEP_SEITE) !== false) {
-                    $arr    = \explode(\SEP_SEITE, $katseo);
-                    $katseo = $arr[0];
-                    $seo   .= \SEP_SEITE . $arr[1];
+                if (\mb_strpos($categorySeo, \SEP_SEITE) !== false) {
+                    $arr         = \explode(\SEP_SEITE, $categorySeo);
+                    $categorySeo = $arr[0];
+                    $seo        .= \SEP_SEITE . $arr[1];
                 }
             } else {
                 $seo = $categories[0];
@@ -1251,9 +1251,9 @@ final class Shop
                 }
             }
             // category filter
-            if (\mb_strlen($katseo) > 0) {
-                $oSeo = self::Container()->getDB()->select('tseo', 'cKey', 'kKategorie', 'cSeo', $katseo);
-                if (isset($oSeo->kKey) && \strcasecmp($oSeo->cSeo, $katseo) === 0) {
+            if (\mb_strlen($categorySeo) > 0) {
+                $oSeo = self::Container()->getDB()->select('tseo', 'cKey', 'kKategorie', 'cSeo', $categorySeo);
+                if (isset($oSeo->kKey) && \strcasecmp($oSeo->cSeo, $categorySeo) === 0) {
                     self::$kKategorieFilter = (int)$oSeo->kKey;
                 } else {
                     self::$bKatFilterNotFound = true;
@@ -1430,9 +1430,9 @@ final class Shop
         if ((self::$kArtikel > 0 && !self::$kKategorie)
             || (self::$kArtikel > 0 && self::$kKategorie > 0 && self::$show === 1)
         ) {
-            $kVaterArtikel = Product::getParent(self::$kArtikel);
-            if ($kVaterArtikel > 0) {
-                $kArtikel = $kVaterArtikel;
+            $parentID = Product::getParent(self::$kArtikel);
+            if ($parentID > 0) {
+                $productID = $parentID;
                 //save data from child article POST and add to redirect
                 $cRP = '';
                 if (\is_array($_POST) && \count($_POST) > 0) {
@@ -1443,7 +1443,7 @@ final class Shop
                     $cRP = '&cRP=' . \base64_encode($cRP);
                 }
                 \http_response_code(301);
-                \header('Location: ' . self::getURL() . '/?a=' . $kArtikel . $cRP);
+                \header('Location: ' . self::getURL() . '/?a=' . $productID . $cRP);
                 exit();
             }
 

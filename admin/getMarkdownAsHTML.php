@@ -26,12 +26,12 @@ if (isset($_POST['path']) && Form::validateToken()) {
     ) {
         $info = pathinfo($path);
         if (mb_convert_case($info['extension'], MB_CASE_LOWER) === 'md') {
-            $oParseDown       = new Parsedown();
-            $szLicenseContent = mb_convert_encoding(
-                $oParseDown->text(Text::convertUTF8(file_get_contents($path))),
+            $parseDown      = new Parsedown();
+            $licenseContent = mb_convert_encoding(
+                $parseDown->text(Text::convertUTF8(file_get_contents($path))),
                 'HTML-ENTITIES'
             );
-            echo '<div class="markdown">' . $szLicenseContent . '</div>';
+            echo '<div class="markdown">' . $licenseContent . '</div>';
         }
     }
 }

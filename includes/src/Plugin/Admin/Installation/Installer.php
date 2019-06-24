@@ -530,10 +530,10 @@ final class Installer
         // tboxen
         // Ausnahme: Gibt es noch eine Boxenvorlage in der Pluginversion?
         // Falls nein -> lösche tboxen mit dem entsprechenden kPlugin
-        $oObj = $this->db->select('tboxvorlage', 'kCustomID', $oldPluginID, 'eTyp', 'plugin');
-        if (isset($oObj->kBoxvorlage) && (int)$oObj->kBoxvorlage > 0) {
+        $data = $this->db->select('tboxvorlage', 'kCustomID', $oldPluginID, 'eTyp', 'plugin');
+        if (isset($data->kBoxvorlage) && (int)$data->kBoxvorlage > 0) {
             $upd              = new stdClass();
-            $upd->kBoxvorlage = $oObj->kBoxvorlage;
+            $upd->kBoxvorlage = $data->kBoxvorlage;
             $this->db->update('tboxen', 'kCustomID', $oldPluginID, $upd);
         } else {
             $this->db->delete('tboxen', 'kCustomID', $oldPluginID);

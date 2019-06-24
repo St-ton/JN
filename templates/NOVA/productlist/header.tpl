@@ -109,14 +109,14 @@
         {include file='selectionwizard/index.tpl'}
     {/block}
 
-    {if count($Suchergebnisse->getProducts()) > 0}
-        {block name='productlist-header-include-result-options'}
+    {block name='productlist-header-include-result-options'}
+        {if count($Suchergebnisse->getProducts()) > 0}
             {include file='snippets/opc_mount_point.tpl' id='opc_before_result_options'}
-            <div id="improve_search" class="mb-3">
-                {include file='productlist/result_options.tpl'}
-            </div>
-        {/block}
-    {/if}
+        {/if}
+        <div id="improve_search" class="mb-3">
+            {include file='productlist/result_options.tpl'}
+        </div>
+    {/block}
 
     {if $Suchergebnisse->getProducts()|@count <= 0 && isset($KategorieInhalt)}
         {if isset($KategorieInhalt->TopArtikel->elemente) && $KategorieInhalt->TopArtikel->elemente|@count > 0}

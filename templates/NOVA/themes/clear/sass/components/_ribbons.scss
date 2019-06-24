@@ -352,54 +352,63 @@
   }
   &.ribbon--1{
     background: $ribbon-bg-1;
+    color: $ribbon-color-1;
     &::after {
       border-color: darken($ribbon-bg-1,10%) darken($ribbon-bg-1,10%) transparent;
     }
   }
   &.ribbon--2{
     background: $ribbon-bg-2;
+    color: $ribbon-color-2;
     &::after {
       border-color: darken($ribbon-bg-2,10%) darken($ribbon-bg-2,10%) transparent;
     }
   }
   &.ribbon--3{
     background: $ribbon-bg-3;
+    color: $ribbon-color-3;
     &::after {
       border-color: darken($ribbon-bg-3,10%) darken($ribbon-bg-3,10%) transparent;
     }
   }
   &.ribbon--4{
     background: $ribbon-bg-4;
+    color: $ribbon-color-4;
     &::after {
       border-color: darken($ribbon-bg-4,10%) darken($ribbon-bg-4,10%) transparent;
     }
   }
   &.ribbon--5{
     background: $ribbon-bg-5;
+    color: $ribbon-color-5;
     &::after {
       border-color: darken($ribbon-bg-5,10%) darken($ribbon-bg-5,10%) transparent;
     }
   }
   &.ribbon--6{
     background: $ribbon-bg-6;
+    color: $ribbon-color-6;
     &::after {
       border-color: darken($ribbon-bg-6,10%) darken($ribbon-bg-6,10%) transparent;
     }
   }
   &.ribbon--7{
     background: $ribbon-bg-7;
+    color: $ribbon-color-7;
     &::after {
       border-color: darken($ribbon-bg-7,10%) darken($ribbon-bg-7,10%) transparent;
     }
   }
   &.ribbon--8{
     background: $ribbon-bg-8;
+    color: $ribbon-color-8;
     &::after {
       border-color: darken($ribbon-bg-8,10%) darken($ribbon-bg-8,10%) transparent;
     }
   }
   &.ribbon--9{
     background: $ribbon-bg-9;
+    color: $ribbon-color-9;
     &::after {
       border-color: darken($ribbon-bg-9,10%) darken($ribbon-bg-9,10%) transparent;
     }

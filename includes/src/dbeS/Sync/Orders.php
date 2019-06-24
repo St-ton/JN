@@ -396,61 +396,61 @@ final class Orders extends AbstractSync
             );
         }
         $billingAddress->updateInDB();
-        $oldPositions = $this->db->selectAll(
+        $oldItems = $this->db->selectAll(
             'twarenkorbpos',
             'kWarenkorb',
             $oldOrder->kWarenkorb
         );
-        $map          = [];
-        foreach ($oldPositions as $key => $oldPosition) {
+        $map      = [];
+        foreach ($oldItems as $key => $oldItem) {
             $this->db->delete(
                 'twarenkorbposeigenschaft',
                 'kWarenkorbPos',
-                (int)$oldPosition->kWarenkorbPos
+                (int)$oldItem->kWarenkorbPos
             );
-            if ($oldPosition->kArtikel > 0) {
-                $map[$oldPosition->kArtikel] = $key;
+            if ($oldItem->kArtikel > 0) {
+                $map[$oldItem->kArtikel] = $key;
             }
         }
         $this->db->delete('twarenkorbpos', 'kWarenkorb', $oldOrder->kWarenkorb);
-        $cartPositions = $this->mapper->mapArray($xml['tbestellung'], 'twarenkorbpos', 'mWarenkorbpos');
-        $positionCount = \count($cartPositions);
-        for ($i = 0; $i < $positionCount; $i++) {
-            $oldPosition = \array_key_exists($cartPositions[$i]->kArtikel, $map)
-                ? $oldPositions[$map[$cartPositions[$i]->kArtikel]]
+        $cartItems = $this->mapper->mapArray($xml['tbestellung'], 'twarenkorbpos', 'mWarenkorbpos');
+        $itemCount = \count($cartItems);
+        for ($i = 0; $i < $itemCount; $i++) {
+            $oldItem = \array_key_exists($cartItems[$i]->kArtikel, $map)
+                ? $oldItems[$map[$cartItems[$i]->kArtikel]]
                 : null;
-            unset($cartPositions[$i]->kWarenkorbPos);
-            $cartPositions[$i]->kWarenkorb         = $oldOrder->kWarenkorb;
-            $cartPositions[$i]->fPreis            /= $correctionFactor;
-            $cartPositions[$i]->fPreisEinzelNetto /= $correctionFactor;
+            unset($cartItems[$i]->kWarenkorbPos);
+            $cartItems[$i]->kWarenkorb         = $oldOrder->kWarenkorb;
+            $cartItems[$i]->fPreis            /= $correctionFactor;
+            $cartItems[$i]->fPreisEinzelNetto /= $correctionFactor;
             // persistiere nLongestMin/MaxDelivery wenn nicht von Wawi übetragen
-            if (!isset($cartPositions[$i]->nLongestMinDelivery)) {
-                $cartPositions[$i]->nLongestMinDelivery = $oldPosition->nLongestMinDelivery ?? 0;
+            if (!isset($cartItems[$i]->nLongestMinDelivery)) {
+                $cartItems[$i]->nLongestMinDelivery = $oldItem->nLongestMinDelivery ?? 0;
             }
-            if (!isset($cartPositions[$i]->nLongestMaxDelivery)) {
-                $cartPositions[$i]->nLongestMaxDelivery = $oldPosition->nLongestMaxDelivery ?? 0;
+            if (!isset($cartItems[$i]->nLongestMaxDelivery)) {
+                $cartItems[$i]->nLongestMaxDelivery = $oldItem->nLongestMaxDelivery ?? 0;
             }
-            $cartPositions[$i]->kWarenkorbPos = $this->db->insert(
+            $cartItems[$i]->kWarenkorbPos = $this->db->insert(
                 'twarenkorbpos',
-                $cartPositions[$i]
+                $cartItems[$i]
             );
 
-            if (\count($cartPositions) < 2) {
-                $cartPosAttributes = $this->mapper->mapArray(
+            if (\count($cartItems) < 2) {
+                $cartItemAttributes = $this->mapper->mapArray(
                     $xml['tbestellung']['twarenkorbpos'],
                     'twarenkorbposeigenschaft',
                     'mWarenkorbposeigenschaft'
                 );
             } else {
-                $cartPosAttributes = $this->mapper->mapArray(
+                $cartItemAttributes = $this->mapper->mapArray(
                     $xml['tbestellung']['twarenkorbpos'][$i],
                     'twarenkorbposeigenschaft',
                     'mWarenkorbposeigenschaft'
                 );
             }
-            foreach ($cartPosAttributes as $posAttribute) {
+            foreach ($cartItemAttributes as $posAttribute) {
                 unset($posAttribute->kWarenkorbPosEigenschaft);
-                $posAttribute->kWarenkorbPos = $cartPositions[$i]->kWarenkorbPos;
+                $posAttribute->kWarenkorbPos = $cartItems[$i]->kWarenkorbPos;
                 $this->db->insert('twarenkorbposeigenschaft', $posAttribute);
             }
         }
@@ -756,18 +756,17 @@ final class Orders extends AbstractSync
         $this->db->delete('tuploadqueue', 'kBestellung', $orderID);
         if ((int)$cartID->kWarenkorb > 0) {
             $this->db->delete('twarenkorb', 'kWarenkorb', (int)$cartID->kWarenkorb);
-            $positions = $this->db->selectAll(
+            $this->db->delete('twarenkorbpos', 'kWarenkorb', (int)$cartID->kWarenkorb);
+            foreach ($this->db->selectAll(
                 'twarenkorbpos',
                 'kWarenkorb',
                 (int)$cartID->kWarenkorb,
                 'kWarenkorbPos'
-            );
-            $this->db->delete('twarenkorbpos', 'kWarenkorb', (int)$cartID->kWarenkorb);
-            foreach ($positions as $position) {
+            ) as $item) {
                 $this->db->delete(
                     'twarenkorbposeigenschaft',
                     'kWarenkorbPos',
-                    (int)$position->kWarenkorbPos
+                    (int)$item->kWarenkorbPos
                 );
             }
         }

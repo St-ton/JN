@@ -33,22 +33,22 @@ function setzeKwKinDB(array $post, array $conf)
 }
 
 /**
- * @param int   $kKunde
+ * @param int   $customerID
  * @param float $fGuthaben
  * @return bool
  * @deprecated since 5.0.0 - not use in core anymore
  */
-function gibBestandskundeGutbaben(int $kKunde, $fGuthaben)
+function gibBestandskundeGutbaben(int $customerID, $fGuthaben)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    if ($kKunde > 0) {
+    if ($customerID > 0) {
         Shop::Container()->getDB()->queryPrepared(
             'UPDATE tkunde 
                 SET fGuthaben = fGuthaben + :bal 
                 WHERE kKunde = :cid',
             [
                 'bal' => (float)$fGuthaben,
-                'cid' => $kKunde
+                'cid' => $customerID
             ],
             ReturnType::AFFECTED_ROWS
         );

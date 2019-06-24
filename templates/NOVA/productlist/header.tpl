@@ -109,15 +109,6 @@
         {include file='selectionwizard/index.tpl'}
     {/block}
 
-    {block name='productlist-header-include-result-options'}
-        {if count($Suchergebnisse->getProducts()) > 0}
-            {include file='snippets/opc_mount_point.tpl' id='opc_before_result_options'}
-        {/if}
-        <div id="improve_search" class="mb-3">
-            {include file='productlist/result_options.tpl'}
-        </div>
-    {/block}
-
     {if $Suchergebnisse->getProducts()|@count <= 0 && isset($KategorieInhalt)}
         {if isset($KategorieInhalt->TopArtikel->elemente) && $KategorieInhalt->TopArtikel->elemente|@count > 0}
             {block name='productlist-header-include-product-slider-top'}

@@ -9,21 +9,36 @@
             {if count($NaviFilter->getSearchResults()->getProducts()) > 0}
                 {block name='snippets-productlist-page-nav-result-options-sort'}
                     {col cols=12 md="auto" class="displayoptions form-inline d-flex justify-content-between mb-3 mb-md-0"}
-                        {dropdown class="filter-type-FilterItemSort btn-group" variant="light" text="{lang key='sorting' section='productOverview'}"}
-                            {foreach $Suchergebnisse->getSortingOptions() as $option}
-                                {dropdownitem rel="nofollow" href=$option->getURL() class="filter-item" active=$option->isActive()}
-                                    {$option->getName()}
-                                {/dropdownitem}
-                            {/foreach}
-                        {/dropdown}
-                        {dropdown class="filter-type-FilterItemLimits btn-group ml-2" variant="light" text="{lang key='productsPerPage' section='productOverview'}"}
-                            {foreach $Suchergebnisse->getLimitOptions() as $option}
-                                {dropdownitem rel="nofollow" href=$option->getURL() class="filter-item" active=$option->isActive()}
-                                    {$option->getName()}
-                                {/dropdownitem}
-                            {/foreach}
-                        {/dropdown}
-                        {if isset($oErweiterteDarstellung->nDarstellung) && $Einstellungen.artikeluebersicht.artikeluebersicht_erw_darstellung === 'Y' && empty($AktuelleKategorie->categoryFunctionAttributes['darstellung'])}
+                        {block name='snippets-productlist-page-nav-include-result-options'}
+                            {if count($Suchergebnisse->getProducts()) > 0}
+                                {include file='snippets/opc_mount_point.tpl' id='opc_before_result_options'}
+                            {/if}
+                            {if $navid==="header"}
+                                <div id="improve_search">
+                                    {include file='productlist/result_options.tpl'}
+                                </div>
+                            {/if}
+                        {/block}
+                        {if !$device->isMobile() || $device->isTablet()}
+                            {dropdown class="filter-type-FilterItemSort btn-group" variant="light" text="{lang key='sorting' section='productOverview'}"}
+                                {foreach $Suchergebnisse->getSortingOptions() as $option}
+                                    {dropdownitem rel="nofollow" href=$option->getURL() class="filter-item" active=$option->isActive()}
+                                        {$option->getName()}
+                                    {/dropdownitem}
+                                {/foreach}
+                            {/dropdown}
+                            {dropdown class="filter-type-FilterItemLimits btn-group ml-2" variant="light" text="{lang key='productsPerPage' section='productOverview'}"}
+                                {foreach $Suchergebnisse->getLimitOptions() as $option}
+                                    {dropdownitem rel="nofollow" href=$option->getURL() class="filter-item" active=$option->isActive()}
+                                        {$option->getName()}
+                                    {/dropdownitem}
+                                {/foreach}
+                            {/dropdown}
+                        {/if}
+                        {if isset($oErweiterteDarstellung->nDarstellung)
+                            && $Einstellungen.artikeluebersicht.artikeluebersicht_erw_darstellung === 'Y'
+                            && empty($AktuelleKategorie->categoryFunctionAttributes['darstellung'])
+                            && $navid==="header"}
                             {buttongroup class="ml-2"}
                                 {link href=$oErweiterteDarstellung->cURL_arr[$smarty.const.ERWDARSTELLUNG_ANSICHT_LISTE]
                                     id="ed_list"
@@ -51,7 +66,7 @@
                     {lang key="products"} {$Suchergebnisse->getOffsetStart()} - {$Suchergebnisse->getOffsetEnd()} {lang key='of' section='productOverview'} {$Suchergebnisse->getProductCount()}
                 {/col}
             {/block}
-            {if $Suchergebnisse->getPages()->getMaxPage() > 1}
+            {if $Suchergebnisse->getPages()->getMaxPage() > 1 && $navid==="footer"}
                 {block name='snippets-productlist-page-nav-page-nav'}
                     {col cols=12 md="auto" class="productlist-pagination"}
                         <nav class="navbar-pagination" aria-label="Productlist Navigation">

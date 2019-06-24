@@ -11,8 +11,9 @@
 
         {block name='layout-footer-aside'}
             {has_boxes position='left' assign='hasLeftBox'}
+
             {if ($Einstellungen.template.sidebar_settings.show_sidebar_product_list === 'Y' && $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp
-                || $Einstellungen.template.sidebar_settings.show_sidebar_product_list === 'N')
+                    || $Einstellungen.template.sidebar_settings.show_sidebar_product_list === 'N')
                 && !$bExclusive
                 && $hasLeftBox
                 && !empty($boxes.left|strip_tags|trim)

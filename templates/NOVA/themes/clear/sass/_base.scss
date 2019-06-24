@@ -1433,6 +1433,11 @@ $jqcloud-classes: 7;
 #result-options {
   .dropdown-item {
     text-decoration: none;
+    &.active, &:active {
+      color: $gray-dark;
+      font-weight: $font-weight-semibold;
+      background-color: transparent;
+    }
   }
   .filter-collapsible-control a {
     text-decoration: none;
@@ -1471,6 +1476,18 @@ $jqcloud-classes: 7;
         }
       }
     }
+  }
+  #filter-collapsible button {
+    padding: map_get($spacers, 3) 0;
+    margin: 0 $btn-padding-x;
+    border-bottom: 1px solid $sand;
+    &[data-toggle="collapse"][aria-expanded="true"] i.fa-plus:before {
+      content: "\f068";
+    }
+  }
+  .max-h-150-scroll {
+    max-height: 150px;
+    overflow-y: scroll;
   }
 }
 

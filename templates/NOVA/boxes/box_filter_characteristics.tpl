@@ -3,7 +3,7 @@
  * @license https://jtl-url.de/jtlshoplicense
  *}
 {block name='boxes-box-filter-characteristics'}
-    {if $nSeitenTyp === $smarty.const.PAGE_ARTIKELLISTE}
+    {if $nSeitenTyp === $smarty.const.PAGE_ARTIKELLISTE && (!$device->isMobile() || $device->isTablet())}
         {foreach $oBox->getItems() as $Merkmal}
             <div class="{if $Merkmal@last} mb-7{/if}">
                 <div class="h4">

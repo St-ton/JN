@@ -23,56 +23,55 @@ function baueBlaetterNavi(int $currentPage, int $count, int $perPage)
     $nav->nAktiv = 0;
 
     if ($count > $perPage) {
-        $nBlaetterAnzahl_arr = [];
-
-        $nSeiten     = ceil($count / $perPage);
-        $nMaxAnzeige = 5;
-        $nAnfang     = 0;
-        $nEnde       = 0;
-        $prev        = $currentPage - 1; // Zum zurück blättern in der Navigation
+        $counts   = [];
+        $pages    = ceil($count / $perPage);
+        $maxItems = 5;
+        $start    = 0;
+        $end      = 0;
+        $prev     = $currentPage - 1; // Zum zurück blättern in der Navigation
         if ($prev <= 0) {
             $prev = 1;
         }
         $next = $currentPage + 1; // Zum vorwärts blättern in der Navigation
-        if ($next >= $nSeiten) {
-            $next = $nSeiten;
+        if ($next >= $pages) {
+            $next = $pages;
         }
 
-        if ($nSeiten > $nMaxAnzeige) {
+        if ($pages > $maxItems) {
             // Ist die aktuelle Seite nach dem abzug der Begrenzung größer oder gleich 1?
-            if (($currentPage - $nMaxAnzeige) >= 1) {
-                $nAnfang = 1;
-                $nVon    = ($currentPage - $nMaxAnzeige) + 1;
+            if (($currentPage - $maxItems) >= 1) {
+                $start = 1;
+                $nVon  = ($currentPage - $maxItems) + 1;
             } else {
-                $nAnfang = 0;
-                $nVon    = 1;
+                $start = 0;
+                $nVon  = 1;
             }
             // Ist die aktuelle Seite nach dem addieren der Begrenzung kleiner als die maximale Anzahl der Seiten
-            if (($currentPage + $nMaxAnzeige) < $nSeiten) {
-                $nEnde = $nSeiten;
-                $nBis  = ($currentPage + $nMaxAnzeige) - 1;
+            if (($currentPage + $maxItems) < $pages) {
+                $end  = $pages;
+                $nBis = ($currentPage + $maxItems) - 1;
             } else {
-                $nEnde = 0;
-                $nBis  = $nSeiten;
+                $end  = 0;
+                $nBis = $pages;
             }
             // Baue die Seiten für die Navigation
             for ($i = $nVon; $i <= $nBis; $i++) {
-                $nBlaetterAnzahl_arr[] = $i;
+                $counts[] = $i;
             }
         } else {
             // Baue die Seiten für die Navigation
-            for ($i = 1; $i <= $nSeiten; $i++) {
-                $nBlaetterAnzahl_arr[] = $i;
+            for ($i = 1; $i <= $pages; $i++) {
+                $counts[] = $i;
             }
         }
 
         // Blaetter Objekt um später in Smarty damit zu arbeiten
-        $nav->nSeiten             = $nSeiten;
+        $nav->nSeiten             = $pages;
         $nav->nVoherige           = $prev;
         $nav->nNaechste           = $next;
-        $nav->nAnfang             = $nAnfang;
-        $nav->nEnde               = $nEnde;
-        $nav->nBlaetterAnzahl_arr = $nBlaetterAnzahl_arr;
+        $nav->nAnfang             = $start;
+        $nav->nEnde               = $end;
+        $nav->nBlaetterAnzahl_arr = $counts;
         $nav->nAktiv              = 1;
         $nav->nAnzahl             = $count;
     }
@@ -100,20 +99,20 @@ function baueBlaetterNaviGetterSetter(int $count, int $perPage)
         return false;
     }
     for ($i = 1; $i <= $count; $i++) {
-        $cOffset        = 'nOffset' . $i;
-        $cSQL           = 'cSQL' . $i;
+        $offset         = 'nOffset' . $i;
+        $sql            = 'cSQL' . $i;
         $nAktuelleSeite = 'nAktuelleSeite' . $i;
         $cLimit         = 'cLimit' . $i;
 
-        $conf->$cOffset        = 0;
-        $conf->$cSQL           = ' LIMIT ' . $perPage;
+        $conf->$offset         = 0;
+        $conf->$sql            = ' LIMIT ' . $perPage;
         $conf->$nAktuelleSeite = 1;
         $conf->$cLimit         = 0;
         // GET || POST
         if (Request::verifyGPCDataInt('s' . $i) > 0) {
             $page                  = Request::verifyGPCDataInt('s' . $i);
-            $conf->$cOffset        = (($page - 1) * $perPage);
-            $conf->$cSQL           = ' LIMIT ' . (($page - 1) * $perPage) . ', ' . $perPage;
+            $conf->$offset         = (($page - 1) * $perPage);
+            $conf->$sql            = ' LIMIT ' . (($page - 1) * $perPage) . ', ' . $perPage;
             $conf->$nAktuelleSeite = $page;
             $conf->$cLimit         = (($page - 1) * $perPage);
         }

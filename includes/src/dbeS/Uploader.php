@@ -25,27 +25,27 @@ class Uploader extends NetSyncHandler
         }
         switch ($request) {
             case NetSyncRequest::UPLOADFILES:
-                $kBestellung = (int)$_POST['kBestellung'];
-                if ($kBestellung > 0) {
+                $orderID = (int)$_POST['kBestellung'];
+                if ($orderID > 0) {
                     $systemFiles = [];
-                    $uploads     = Upload::gibBestellungUploads($kBestellung);
+                    $uploads     = Upload::gibBestellungUploads($orderID);
                     if (\is_array($uploads) && \count($uploads)) {
-                        foreach ($uploads as $oUpload) {
-                            $paths = \pathinfo($oUpload->cName);
+                        foreach ($uploads as $upload) {
+                            $paths = \pathinfo($upload->cName);
                             $ext   = $paths['extension'];
                             if (\strlen($ext) === 0) {
                                 $ext = 'unknown';
                             }
 
                             $systemFiles[] = new SystemFile(
-                                $oUpload->kUpload,
-                                $oUpload->cName,
-                                $oUpload->cName,
+                                $upload->kUpload,
+                                $upload->cName,
+                                $upload->cName,
                                 $paths['filename'],
                                 '/',
                                 $ext,
-                                \date_format(\date_create($oUpload->dErstellt), 'U'),
-                                $oUpload->nBytes
+                                \date_format(\date_create($upload->dErstellt), 'U'),
+                                $upload->nBytes
                             );
                         }
                         self::throwResponse(NetSyncResponse::OK, $systemFiles);
@@ -55,13 +55,13 @@ class Uploader extends NetSyncHandler
                 break;
 
             case NetSyncRequest::UPLOADFILEDATA:
-                $kUpload = (int)$_GET['kFileID'];
-                if ($kUpload > 0) {
-                    $oUploadDatei = new UploadDatei();
-                    if ($oUploadDatei->loadFromDB($kUpload)) {
-                        $cFilePath = \PFAD_UPLOADS . $oUploadDatei->cPfad;
-                        if (\file_exists($cFilePath)) {
-                            $this->streamFile($cFilePath, 'application/octet-stream', $oUploadDatei->cName);
+                $uploadID = (int)$_GET['kFileID'];
+                if ($uploadID > 0) {
+                    $uploadFile = new UploadDatei();
+                    if ($uploadFile->loadFromDB($uploadID)) {
+                        $path = \PFAD_UPLOADS . $uploadFile->cPfad;
+                        if (\file_exists($path)) {
+                            $this->streamFile($path, 'application/octet-stream', $uploadFile->cName);
                             exit;
                         }
                     }

@@ -104,7 +104,7 @@
             this.registerSwitchVariations($wrapper);
             this.registerBulkPrices($wrapper);
             this.registerImageSwitch($wrapper);
-            this.registerArticleOverlay($wrapper);
+            //this.registerArticleOverlay($wrapper);
             this.registerFinish($wrapper);
         },
 
@@ -356,26 +356,6 @@
                         }
                     });
             }
-        },
-
-        registerArticleOverlay: function($wrapper) {
-            var that         = this;
-
-            $('.quickview', $wrapper)
-                .each(function(i, item) {
-                    var $item      = $(item),
-                        formID     = $item.data('target'),
-                        wrapper    = that.options.modal.wrapper_modal + '_' + formID,
-                        srcWrapper = that.options.modal.wrapper + '_' + formID;
-
-                    $item.on('click', function (event) {
-                        event.preventDefault();
-                        that.modalArticleDetail(this, wrapper, srcWrapper);
-                    });
-                });
-            $wrapper.on('mouseenter mouseleave', null, function() {
-                $(this).removeClass('active');
-            })
         },
 
         registerImageSwitch: function($wrapper) {
@@ -683,13 +663,6 @@
                                 break;
                             case 2: // added to comparelist
                                 that.updateComparelist(response);
-                                eModal.alert({
-                                    title: response.cTitle,
-                                    message: response.cNotification,
-                                    keyboard: true,
-                                    tabindex: -1,
-                                    buttons: false
-                                });
                                 break;
                         }
                     }
@@ -760,6 +733,12 @@
             }
             this.registerProductActions($('#shop-nav'));
 
+            if (data.productID) {
+                let $action = $('button[data-product-id-cl="' + data.productID + '"]')
+                $action.removeClass("on-list");
+                $action.next().removeClass("press");
+            }
+
             for (var ind in data.cBoxContainer) {
                 var $list = $(this.options.selector.boxContainer+ind);
 
@@ -808,13 +787,6 @@
                                 break;
                             case 2: // added to comparelist
                                 that.updateWishlist(response);
-                                eModal.alert({
-                                    title: response.cTitle,
-                                    message: response.cNotification,
-                                    keyboard: true,
-                                    tabindex: -1,
-                                    buttons: false
-                                });
                                 break;
                         }
                     }
@@ -869,6 +841,15 @@
             var $navContainerWish = $(this.options.selector.navContainerWish);
             var $navBadgeWish = $(this.options.selector.navBadgeWish);
 
+            if (data.wlPosRemove) {
+                let $action = $('button[data-wl-pos="' + data.wlPosRemove + '"]')
+                $action.removeClass("on-list");
+                $action.next().removeClass("press");
+            }
+            if (data.wlPosAdd) {
+                $('button[data-product-id-wl="' + data.productID + '"]').attr('data-wl-pos', data.wlPosAdd);
+                $('button[data-product-id-wl="' + data.productID + '"]').closest('form').find('input[name="wlPos"]').val(data.wlPosAdd)
+            }
             $.evo.io().call('updateWishlistDropdown', [$navContainerWish, $navBadgeWish], this, function(error, data) {
                 if (error) {
                     return;
@@ -897,14 +878,44 @@
         },
 
         handleProductAction: function(action, data) {
+            let $action = $(action);
             switch (action.name) {
                 case this.options.action.compareList:
-                    return this.addToComparelist(data);
+                    if ($action.hasClass('action-tip-animation-b')) {
+                        if ($action.hasClass('on-list')) {
+                            $action.removeClass("on-list");
+                            $action.next().removeClass("press");
+                            $action.next().next().addClass("press");
+                            return this.removeFromCompareList(data);
+                        } else {
+                            $action.addClass("on-list");
+                            $action.next().addClass("press");
+                            $action.next().next().removeClass("press");
+                            return this.addToComparelist(data);
+                        }
+                    } else {
+                        return this.addToComparelist(data);
+                    }
                 case this.options.action.compareListRemove:
                     return this.removeFromCompareList(data);
                 case this.options.action.wishList:
                     data[this.options.input.quantity] = $('#buy_form_'+data.a+' '+this.options.selector.quantity).val();
-                    return this.addToWishlist(data);
+                    if ($action.hasClass('action-tip-animation-b')) {
+                        if ($action.hasClass('on-list')) {
+                            $action.removeClass("on-list");
+                            $action.next().removeClass("press");
+                            $action.next().next().addClass("press");
+                            data.a = data.wlPos;
+                            return this.removeFromWishList(data);
+                        } else {
+                            $action.addClass("on-list");
+                            $action.next().addClass("press");
+                            $action.next().next().removeClass("press");
+                            return this.addToWishlist(data);
+                        }
+                    } else {
+                        return this.addToWishlist(data);
+                    }
                 case this.options.action.wishListRemove:
                     return this.removeFromWishList(data);
             }
@@ -1354,58 +1365,6 @@
                     $.evo.error('checkDependencies');
                 }
             });
-        },
-
-        modalArticleDetail: function(item, wrapper, srcWrapper) {
-            var that     = this,
-                title    = $(srcWrapper).find('h4.title').text(),
-                image    = $(srcWrapper).find('.image-content').html(),
-                url      = $(item).data('src');
-
-            if (typeof this.modalView === 'undefined' || this.modalView === null) {
-                this.modalView = $(
-                    '<div id="' + this.options.modal.id + '" class="modal fade" role="dialog" tabindex="-1" >' +
-                    '   <div class="modal-dialog modal-lg">' +
-                    '       <div class="modal-content">' +
-                    '           <div class="modal-header">' +
-                    '               <h4 class="modal-title">' + title + '</h4>' +
-                    '               <button type="button" class="x close" data-dismiss="modal">&times;</button>' +
-                    '           </div>' +
-                    '           <div class="modal-body"><div id="' + wrapper.substring(1) + '" style="min-height:100px">' + image + '</div></div>' +
-                    '       </div>' +
-                    '   </div>' +
-                    '</div>');
-                this.modalView
-                    .on('hidden.bs.modal', function() {
-                        $('.modal-body', that.modalView).html('<div id="' + wrapper.substring(1) + '" style="min-height:100px" />');
-                        $('.modal-title', that.modalView).html('');
-                        that.modalView
-                            .off('shown.bs.modal');
-                        that.modalShown = false;
-                    });
-            } else {
-                $('.modal-title', that.modalView).html(title);
-                $('.modal-body', that.modalView).html('<div id="' + wrapper.substring(1) + '" style="min-height:100px">' + image + '</div>');
-            }
-
-            this.modalView
-                .on('shown.bs.modal', function() {
-                    var $spinner = $.evo.extended().spinner($(wrapper).get(0));
-
-                    that.modalShown = true;
-                    that.loadModalArticle(url, wrapper,
-                        function() {
-                            var article = new ArticleClass();
-                            article.register(wrapper);
-                            $spinner.stop();
-                        },
-                        function() {
-                            $spinner.stop();
-                            $.evo.error('Error loading ' + params.url);
-                        }
-                    );
-                })
-                .modal('show');
         },
 
         variationDispose: function(wrapper) {

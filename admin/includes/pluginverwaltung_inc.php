@@ -4,29 +4,29 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use JTL\Shop;
+use JTL\Plugin\Admin\Installation\Installer;
+use JTL\Plugin\Admin\Installation\Uninstaller;
 use JTL\Plugin\Admin\StateChanger;
+use JTL\Plugin\Admin\Updater;
 use JTL\Plugin\Admin\Validation\LegacyPluginValidator;
 use JTL\Plugin\Admin\Validation\PluginValidator;
-use JTL\Plugin\Admin\Installation\Installer;
-use JTL\Plugin\Admin\Updater;
-use JTL\Plugin\Admin\Installation\Uninstaller;
 use JTL\Plugin\Helper;
+use JTL\Shop;
 use JTL\XMLParser;
 
 /**
- * @param int    $kPlugin
+ * @param int    $pluginID
  * @param string $dir
  * @return int
  * @deprecated since 5.0.0
  */
-function pluginPlausi(int $kPlugin, $dir = '')
+function pluginPlausi(int $pluginID, $dir = '')
 {
     trigger_error(__FILE__ . ': calling ' . __FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $validator = new LegacyPluginValidator(Shop::Container()->getDB(), new XMLParser());
     $validator->setDir($dir);
 
-    return $validator->validateByPluginID($kPlugin);
+    return $validator->validateByPluginID($pluginID);
 }
 
 /**
@@ -47,11 +47,11 @@ function pluginPlausiIntern($xml, $dir)
 /**
  * Versucht ein ausgewähltes Plugin zu updaten
  *
- * @param int $kPlugin
+ * @param int $pluginID
  * @return int
  * @deprecated since 5.0.0
  */
-function updatePlugin(int $kPlugin)
+function updatePlugin(int $pluginID)
 {
     trigger_error(__FILE__ . ': calling ' . __FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $db              = Shop::Container()->getDB();
@@ -63,7 +63,7 @@ function updatePlugin(int $kPlugin)
     $installer       = new Installer($db, $uninstaller, $validator, $modernValidator);
     $updater         = new Updater($db, $installer);
 
-    return $updater->update($kPlugin);
+    return $updater->update($pluginID);
 }
 
 /**
@@ -122,11 +122,11 @@ function reloadPlugin($oPlugin, $forceReload = false)
 /**
  * Versucht ein ausgewähltes Plugin zu aktivieren
  *
- * @param int $kPlugin
+ * @param int $pluginID
  * @return int
  * @deprecated since 5.0.0
  */
-function aktivierePlugin(int $kPlugin): int
+function aktivierePlugin(int $pluginID): int
 {
     trigger_error(__FILE__ . ': calling ' . __FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $db           = Shop::Container()->getDB();
@@ -138,33 +138,33 @@ function aktivierePlugin(int $kPlugin): int
         new PluginValidator($db, $parser)
     );
 
-    return $stateChanger->activate($kPlugin);
+    return $stateChanger->activate($pluginID);
 }
 
 /**
  * Versucht ein ausgewähltes Plugin zu deaktivieren
  *
- * @param int $kPlugin
+ * @param int $pluginID
  * @return int
  * @deprecated since 5.0.0
  */
-function deaktivierePlugin(int $kPlugin): int
+function deaktivierePlugin(int $pluginID): int
 {
     trigger_error(__FILE__ . ': calling ' . __FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $stateChanger = new StateChanger(Shop::Container()->getDB(), Shop::Container()->getCache());
 
-    return $stateChanger->deactivate($kPlugin);
+    return $stateChanger->deactivate($pluginID);
 }
 
 /**
  * Holt alle PluginSprachvariablen (falls vorhanden)
  *
- * @param int $kPlugin
+ * @param int $pluginID
  * @return array
  * @deprecated since 5.0.0
  */
-function gibSprachVariablen(int $kPlugin): array
+function gibSprachVariablen(int $pluginID): array
 {
     trigger_error(__FILE__ . ': calling ' . __FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return Helper::getLanguageVariables($kPlugin);
+    return Helper::getLanguageVariables($pluginID);
 }

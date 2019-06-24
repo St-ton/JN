@@ -4,11 +4,10 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Alert\Alert;
+use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Shop;
-use JTL\Sprache;
-use JTL\DB\ReturnType;
-use JTL\Alert\Alert;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
@@ -47,8 +46,7 @@ $blocked   = Shop::Container()->getDB()->query(
     ReturnType::ARRAY_OF_OBJECTS
 );
 
-$smarty->assign('Sprachen', Sprache::getAllLanguages())
-       ->assign('oEmailBlacklist_arr', $blacklist)
+$smarty->assign('oEmailBlacklist_arr', $blacklist)
        ->assign('oEmailBlacklistBlock_arr', $blocked)
        ->assign('oConfig_arr', getAdminSectionSettings(CONF_EMAILBLACKLIST))
        ->assign('step', $step)

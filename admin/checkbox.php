@@ -4,15 +4,15 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Alert\Alert;
+use JTL\CheckBox;
+use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
-use JTL\CheckBox;
-use JTL\Shop;
-use JTL\Sprache;
 use JTL\Helpers\Text;
+use JTL\Language\LanguageHelper;
 use JTL\Pagination\Pagination;
-use JTL\DB\ReturnType;
-use JTL\Alert\Alert;
+use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
@@ -20,19 +20,17 @@ $oAccount->permission('CHECKBOXES_VIEW', true, true);
 
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'checkbox_inc.php';
 /** @global \JTL\Smarty\JTLSmarty $smarty */
-$alertHelper  = Shop::Container()->getAlertService();
-$step         = 'uebersicht';
-$itemsPerPage = 15;
-$languages    = Sprache::getAllLanguages();
-$checkbox     = new CheckBox();
-$tab          = $step;
+$alertHelper = Shop::Container()->getAlertService();
+$step        = 'uebersicht';
+$checkbox    = new CheckBox();
+$tab         = $step;
 if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
     $tab = Request::verifyGPDataString('tab');
 }
 if (isset($_POST['erstellenShowButton'])) {
     $tab = 'erstellen';
 } elseif (Request::verifyGPCDataInt('uebersicht') === 1 && Form::validateToken()) {
-    $checkboxIDs = $_POST['kCheckBox'];
+    $checkboxIDs = array_map('\intval', $_POST['kCheckBox']);
     if (isset($_POST['checkboxAktivierenSubmit'])) {
         $checkbox->aktivateCheckBox($checkboxIDs);
         $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successCheckboxActivate'), 'successCheckboxActivate');
@@ -51,6 +49,7 @@ if (isset($_POST['erstellenShowButton'])) {
 } elseif (Request::verifyGPCDataInt('erstellen') === 1 && Form::validateToken()) {
     $step       = 'erstellen';
     $checkboxID = Request::verifyGPCDataInt('kCheckBox');
+    $languages  = LanguageHelper::getAllLanguages();
     $checks     = plausiCheckBox($_POST, $languages);
     if (count($checks) === 0) {
         $checkbox = speicherCheckBox($_POST, $languages);
@@ -71,14 +70,13 @@ $pagination = (new Pagination())
     ->setItemCount($checkbox->getAllCheckBoxCount())
     ->assemble();
 $smarty->assign('oCheckBox_arr', $checkbox->getAllCheckBox('LIMIT ' . $pagination->getLimitSQL()))
-       ->assign('oPagination', $pagination)
+       ->assign('pagination', $pagination)
        ->assign('cAnzeigeOrt_arr', CheckBox::gibCheckBoxAnzeigeOrte())
        ->assign('CHECKBOX_ORT_REGISTRIERUNG', CHECKBOX_ORT_REGISTRIERUNG)
        ->assign('CHECKBOX_ORT_BESTELLABSCHLUSS', CHECKBOX_ORT_BESTELLABSCHLUSS)
        ->assign('CHECKBOX_ORT_NEWSLETTERANMELDUNG', CHECKBOX_ORT_NEWSLETTERANMELDUNG)
        ->assign('CHECKBOX_ORT_KUNDENDATENEDITIEREN', CHECKBOX_ORT_KUNDENDATENEDITIEREN)
        ->assign('CHECKBOX_ORT_KONTAKT', CHECKBOX_ORT_KONTAKT)
-       ->assign('oSprache_arr', $languages)
        ->assign('oKundengruppe_arr', Shop::Container()->getDB()->query(
            'SELECT * 
                 FROM tkundengruppe 

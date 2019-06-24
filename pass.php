@@ -30,11 +30,11 @@ if (isset($_POST['passwort_vergessen'], $_POST['email']) && (int)$_POST['passwor
         'kKunde, cSperre'
     );
     if (isset($kunde->kKunde) && $kunde->kKunde > 0 && $kunde->cSperre !== 'Y') {
-        $step   = 'passwort versenden';
-        $oKunde = new Kunde($kunde->kKunde);
-        $oKunde->prepareResetPassword();
+        $step     = 'passwort versenden';
+        $customer = new Kunde($kunde->kKunde);
+        $customer->prepareResetPassword();
 
-        $smarty->assign('Kunde', $oKunde);
+        $smarty->assign('Kunde', $customer);
     } elseif (isset($kunde->kKunde) && $kunde->kKunde > 0 && $kunde->cSperre === 'Y') {
         $alertHelper->addAlert(Alert::TYPE_ERROR, Shop::Lang()->get('accountLocked'), 'accountLocked');
     } else {

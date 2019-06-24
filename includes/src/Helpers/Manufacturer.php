@@ -9,8 +9,8 @@ namespace JTL\Helpers;
 use JTL\DB\ReturnType;
 use JTL\Catalog\Hersteller;
 use JTL\Customer\Kundengruppe;
+use JTL\Language\LanguageHelper;
 use JTL\Shop;
-use JTL\Sprache;
 
 /**
  * Class Manufacturer
@@ -51,7 +51,7 @@ class Manufacturer
             if (Shop::getLanguage() > 0) {
                 self::$langID = Shop::getLanguage();
             } else {
-                $_lang        = Sprache::getDefaultLanguage();
+                $_lang        = LanguageHelper::getDefaultLanguage();
                 self::$langID = (int)$_lang->kSprache;
             }
         }

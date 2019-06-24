@@ -41,9 +41,10 @@ final class ImageLink extends AbstractSync
      */
     private function handleInserts(SimpleXMLElement $xml): void
     {
-        $productIDs = [];
-        $caceIDs    = [];
-        foreach ($this->getArray($xml) as $item) {
+        $items           = $this->getArray($xml);
+        $productIDs      = [];
+        $cacheProductIDs = [];
+        foreach ($items as $item) {
             // delete link first. Important because jtl-wawi does not send del_bildartikellink when image is updated.
             $this->db->delete(
                 'tartikelpict',
@@ -53,11 +54,11 @@ final class ImageLink extends AbstractSync
             $productIDs[] = (int)$item->kArtikel;
             $this->upsert('tartikelpict', [$item], 'kArtikelPict');
         }
-        foreach (\array_unique($productIDs) as $id) {
-            $caceIDs[] = \CACHING_GROUP_ARTICLE . '_' . $id;
-            MediaImage::clearCache(Image::TYPE_PRODUCT, $id);
+        foreach (\array_unique($productIDs) as $_aid) {
+            $cacheProductIDs[] = \CACHING_GROUP_ARTICLE . '_' . $_aid;
+            MediaImage::clearCache(Image::TYPE_PRODUCT, $_aid);
         }
-        $this->cache->flushTags($caceIDs);
+        $this->cache->flushTags($cacheProductIDs);
     }
 
     /**
@@ -65,17 +66,18 @@ final class ImageLink extends AbstractSync
      */
     private function handleDeletes(SimpleXMLElement $xml): void
     {
-        $productIDs = [];
-        $cacheIDs   = [];
-        foreach ($this->getItemsToDelete($xml) as $item) {
+        $items           = $this->getItemsToDelete($xml);
+        $productIDs      = [];
+        $cacheProductIDs = [];
+        foreach ($items as $item) {
             $this->deleteImageItem($item);
             $productIDs[] = $item->kArtikel;
         }
-        foreach (\array_unique($productIDs) as $id) {
-            $cacheIDs[] = \CACHING_GROUP_ARTICLE . '_' . $id;
-            MediaImage::clearCache(Image::TYPE_PRODUCT, $id);
+        foreach (\array_unique($productIDs) as $_aid) {
+            $cacheProductIDs[] = \CACHING_GROUP_ARTICLE . '_' . $_aid;
+            MediaImage::clearCache(Image::TYPE_PRODUCT, $_aid);
         }
-        $this->cache->flushTags($cacheIDs);
+        $this->cache->flushTags($cacheProductIDs);
     }
 
     /**
@@ -139,13 +141,13 @@ final class ImageLink extends AbstractSync
                 'kArtikel'     => (int)$child->attributes()->kArtikel,
                 'kArtikelPict' => (int)$child->attributes()->kArtikelPict
             ];
-            $imageId = (int)$child->attributes()->kBild;
-            $image   = $this->db->select('tbild', 'kBild', $imageId);
+            $imageID = (int)$child->attributes()->kBild;
+            $image   = $this->db->select('tbild', 'kBild', $imageID);
             if (\is_object($image)) {
                 $item->cPfad = $image->cPfad;
                 $items[]     = $item;
             } else {
-                $this->logger->debug('Missing reference in tbild (Key: ' . $imageId . ')');
+                $this->logger->debug('Missing reference in tbild (Key: ' . $imageID . ')');
             }
         }
 

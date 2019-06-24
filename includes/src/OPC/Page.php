@@ -284,6 +284,26 @@ class Page implements \JsonSerializable
         return $this;
     }
 
+    public function getStatus()
+    {
+        $now   = date('Y-m-d H:i:s');
+        $start = $this->getPublishFrom();
+        $end   = $this->getPublishTo();
+
+        if (!empty($start) && $now >= $start && (empty($end) || $now < $end)) {
+            return 0; // public
+        }
+        if (!empty($start) && $now < $start) {
+            return 1; // planned
+        }
+        if (empty($start)) {
+            return 2; // draft
+        }
+        if (!empty($start) && !empty($end) && $now > $end) {
+            return 3; // backdate
+        }
+    }
+
     /**
      * @param string $json
      * @return Page

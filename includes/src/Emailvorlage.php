@@ -6,15 +6,10 @@
 
 namespace JTL;
 
-use JTL\DB\ReturnType;
-use JTL\Mail\Renderer\SmartyRenderer;
-use JTL\Mail\Hydrator\TestHydrator;
-use Exception;
-use JTL\Smarty\MailSmarty;
-
 /**
  * Class Emailvorlage
  * @package JTL
+ * @deprecated since 5.0.0
  */
 class Emailvorlage
 {
@@ -96,35 +91,36 @@ class Emailvorlage
     /**
      * Constructor
      *
-     * @param int  $kEmailvorlage
-     * @param bool $bPlugin
+     * @param int  $id
+     * @param bool $plugin
      */
-    public function __construct(int $kEmailvorlage = 0, bool $bPlugin = false)
+    public function __construct(int $id = 0, bool $plugin = false)
     {
-        if ($kEmailvorlage > 0) {
-            $this->loadFromDB($kEmailvorlage, $bPlugin);
+        \trigger_error(__CLASS__. ' is deprecated.', \E_USER_DEPRECATED);
+        if ($id > 0) {
+            $this->loadFromDB($id, $plugin);
         }
     }
 
     /**
      * Loads database member into class member
      *
-     * @param int  $kEmailvorlage
-     * @param bool $bPlugin
+     * @param int  $id
+     * @param bool $plugin
      * @return $this
      */
-    private function loadFromDB(int $kEmailvorlage, bool $bPlugin): self
+    private function loadFromDB(int $id, bool $plugin): self
     {
-        $cTableSetting = $bPlugin ? 'tpluginemailvorlageeinstellungen' : 'temailvorlageeinstellungen';
-        $oObj          = Shop::Container()->getDB()->select('temailvorlage', 'kEmailvorlage', $kEmailvorlage);
+        $table = $plugin ? 'tpluginemailvorlageeinstellungen' : 'temailvorlageeinstellungen';
+        $data  = Shop::Container()->getDB()->select('temailvorlage', 'kEmailvorlage', $id);
 
-        if (isset($oObj->kEmailvorlage) && $oObj->kEmailvorlage > 0) {
-            foreach (\array_keys(\get_object_vars($oObj)) as $member) {
-                $this->$member = $oObj->$member;
+        if (isset($data->kEmailvorlage) && $data->kEmailvorlage > 0) {
+            foreach (\array_keys(\get_object_vars($data)) as $member) {
+                $this->$member = $data->$member;
             }
             // Settings
             $this->oEinstellung_arr = Shop::Container()->getDB()->selectAll(
-                $cTableSetting,
+                $table,
                 'kEmailvorlage',
                 $this->kEmailvorlage
             );
@@ -155,9 +151,9 @@ class Emailvorlage
      * @param string
      * @return $this
      */
-    public function setName($cName): self
+    public function setName($name): self
     {
-        $this->cName = $cName;
+        $this->cName = $name;
 
         return $this;
     }
@@ -394,6 +390,7 @@ class Emailvorlage
      */
     public static function load(string $modulId, $isPlugin = false): ?self
     {
+        \trigger_error(__CLASS__. ' is deprecated.', \E_USER_DEPRECATED);
         $obj = Shop::Container()->getDB()->select(
             'temailvorlage',
             'cModulId',

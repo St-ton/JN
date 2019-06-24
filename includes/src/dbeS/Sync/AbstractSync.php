@@ -676,12 +676,12 @@ abstract class AbstractSync
     }
 
     /**
-     * @param int $kKunde
+     * @param int $customerID
      * @return bool|int
      */
-    protected function flushCustomerPriceCache(int $kKunde)
+    protected function flushCustomerPriceCache(int $customerID)
     {
-        return $this->cache->flush('custprice_' . $kKunde);
+        return $this->cache->flush('custprice_' . $customerID);
     }
 
     /**

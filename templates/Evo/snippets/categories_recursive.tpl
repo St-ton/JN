@@ -37,10 +37,7 @@
         {/if}
         {if !empty($categories)}
             {foreach $categories as $category}
-                {assign var='hasItems' value=false}
-                {if isset($category->bUnterKategorien) && $category->bUnterKategorien && (($i+1) < $limit)}
-                    {assign var='hasItems' value=true}
-                {/if}
+                {assign var='hasItems' value=$category->bUnterKategorien && (($i+1) < $limit)}
                 {if isset($activeParents) && is_array($activeParents) && isset($activeParents[$i])}
                     {assign var='activeParent' value=$activeParents[$i]}
                 {/if}

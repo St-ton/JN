@@ -9,7 +9,7 @@ namespace JTL\dbeS\Sync;
 use JTL\DB\ReturnType;
 use JTL\dbeS\Starter;
 use JTL\Helpers\Seo;
-use JTL\Sprache;
+use JTL\Language\LanguageHelper;
 use stdClass;
 use function Functional\flatten;
 
@@ -82,7 +82,7 @@ final class Manufacturers extends AbstractSync
             return;
         }
         $manufacturers = $this->mapper->mapArray($xml['hersteller'], 'thersteller', 'mHersteller');
-        $languages     = Sprache::getAllLanguages();
+        $languages     = LanguageHelper::getAllLanguages();
         $mfCount       = \count($manufacturers);
         $cacheTags     = [];
         for ($i = 0; $i < $mfCount; $i++) {
@@ -104,32 +104,32 @@ final class Manufacturers extends AbstractSync
             $manufacturers[$i]->cSeo      = Seo::checkSeo($manufacturers[$i]->cSeo);
             $this->upsert('thersteller', [$manufacturers[$i]], 'kHersteller');
 
-            $cXMLSprache = [];
+            $xmlLanguage = [];
             if (isset($xml['hersteller']['thersteller'][$i])) {
-                $cXMLSprache = $xml['hersteller']['thersteller'][$i];
+                $xmlLanguage = $xml['hersteller']['thersteller'][$i];
             } elseif (isset($xml['hersteller']['thersteller']['therstellersprache'])) {
-                $cXMLSprache = $xml['hersteller']['thersteller'];
+                $xmlLanguage = $xml['hersteller']['thersteller'];
             }
-            $mfSeo = $this->mapper->mapArray($cXMLSprache, 'therstellersprache', 'mHerstellerSpracheSeo');
+            $mfSeo = $this->mapper->mapArray($xmlLanguage, 'therstellersprache', 'mHerstellerSpracheSeo');
             foreach ($languages as $language) {
                 $baseSeo = $manufacturers[$i]->cSeo;
                 foreach ($mfSeo as $mf) {
-                    if (isset($mf->kSprache) && (int)$mf->kSprache === (int)$language->kSprache && !empty($mf->cSeo)) {
+                    if (isset($mf->kSprache) && (int)$mf->kSprache === $language->getId() && !empty($mf->cSeo)) {
                         $baseSeo = Seo::getSeo($mf->cSeo);
                         break;
                     }
                 }
-                $oSeo           = new stdClass();
-                $oSeo->cSeo     = Seo::checkSeo($baseSeo);
-                $oSeo->cKey     = 'kHersteller';
-                $oSeo->kKey     = $id;
-                $oSeo->kSprache = (int)$language->kSprache;
-                $this->db->insert('tseo', $oSeo);
+                $seo           = new stdClass();
+                $seo->cSeo     = Seo::checkSeo($baseSeo);
+                $seo->cKey     = 'kHersteller';
+                $seo->kKey     = $id;
+                $seo->kSprache = $language->getId();
+                $this->db->insert('tseo', $seo);
             }
             $this->db->delete('therstellersprache', 'kHersteller', $id);
 
             $this->updateXMLinDB(
-                $cXMLSprache,
+                $xmlLanguage,
                 'therstellersprache',
                 'mHerstellerSprache',
                 'kHersteller',
@@ -139,11 +139,11 @@ final class Manufacturers extends AbstractSync
             \executeHook(\HOOK_HERSTELLER_XML_BEARBEITEINSERT, ['oHersteller' => $manufacturers[$i]]);
             $cacheTags[] = \CACHING_GROUP_MANUFACTURER . '_' . $id;
             if (\is_array($affectedProducts)) {
-                $articleCacheTags = [];
-                foreach ($affectedProducts as $article) {
-                    $articleCacheTags[] = \CACHING_GROUP_ARTICLE . '_' . $article->kArtikel;
+                $productCacheTags = [];
+                foreach ($affectedProducts as $product) {
+                    $productCacheTags[] = \CACHING_GROUP_ARTICLE . '_' . $product->kArtikel;
                 }
-                $this->cache->flushTags($articleCacheTags);
+                $this->cache->flushTags($productCacheTags);
             }
         }
         $this->cache->flushTags($cacheTags);

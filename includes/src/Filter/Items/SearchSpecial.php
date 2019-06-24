@@ -157,11 +157,11 @@ class SearchSpecial extends AbstractFilter
         foreach ($this->getValue() as $value) {
             switch ($value) {
                 case \SEARCHSPECIALS_BESTSELLER:
-                    $nAnzahl = ($min = (int)$conf['global']['global_bestseller_minanzahl']) > 0
+                    $minSales = ($min = (int)$conf['global']['global_bestseller_minanzahl']) > 0
                         ? $min
                         : 100;
 
-                    $conditions[] = 'ROUND(tbestseller.fAnzahl) >= ' . $nAnzahl;
+                    $conditions[] = 'ROUND(tbestseller.fAnzahl) >= ' . $minSales;
                     break;
 
                 case \SEARCHSPECIALS_SPECIALOFFERS:
@@ -326,8 +326,8 @@ class SearchSpecial extends AbstractFilter
             $state->setGroupBy(['tartikel.kArtikel']);
             switch ($i) {
                 case \SEARCHSPECIALS_BESTSELLER:
-                    $name    = Shop::Lang()->get('bestsellers');
-                    $nAnzahl = (($min = $this->getConfig('global')['global_bestseller_minanzahl']) > 0)
+                    $name     = Shop::Lang()->get('bestsellers');
+                    $minSales = (($min = $this->getConfig('global')['global_bestseller_minanzahl']) > 0)
                         ? (int)$min
                         : 100;
 
@@ -337,7 +337,7 @@ class SearchSpecial extends AbstractFilter
                         ->setTable('tbestseller')
                         ->setOn('tbestseller.kArtikel = tartikel.kArtikel')
                         ->setOrigin(__CLASS__));
-                    $state->addCondition('ROUND(tbestseller.fAnzahl) >= ' . $nAnzahl);
+                    $state->addCondition('ROUND(tbestseller.fAnzahl) >= ' . $minSales);
                     break;
                 case \SEARCHSPECIALS_SPECIALOFFERS:
                     $name = Shop::Lang()->get('specialOffer');

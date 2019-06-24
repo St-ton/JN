@@ -25,7 +25,7 @@ defined('PLZIMPORT_REGEX') || define(
  */
 function plzimportGetPLZOrt(): array
 {
-    $plzOrt_arr = Shop::Container()->getDB()->query(
+    $items = Shop::Container()->getDB()->query(
         'SELECT tplz.cLandISO, tland.cDeutsch, tland.cKontinent, COUNT(tplz.kPLZ) AS nPLZOrte, backup.nBackup
             FROM tplz
             INNER JOIN tland ON tland.cISO = tplz.cLandISO
@@ -38,19 +38,18 @@ function plzimportGetPLZOrt(): array
             ORDER BY tplz.cLandISO',
         ReturnType::ARRAY_OF_OBJECTS
     );
-
-    foreach ($plzOrt_arr as $key => $oPLZOrt) {
-        $fName = PFAD_UPLOADS . $oPLZOrt->cLandISO . '.tab';
-        if (($country = Shop::Container()->getCountryService()->getCountry($oPLZOrt->cLandISO)) !== null) {
-            $oPLZOrt->cDeutsch   = $country->getName();
-            $oPLZOrt->cKontinent = $country->getContinent();
+    foreach ($items as $key => $item) {
+        $fName = PFAD_UPLOADS . $item->cLandISO . '.tab';
+        if (($country = Shop::Container()->getCountryService()->getCountry($item->cLandISO)) !== null) {
+            $item->cDeutsch   = $country->getName();
+            $item->cKontinent = $country->getContinent();
         }
         if (is_file($fName)) {
-            $plzOrt_arr[$key]->cImportFile = $oPLZOrt->cLandISO . '.tab';
+            $items[$key]->cImportFile = $item->cLandISO . '.tab';
         }
     }
 
-    return $plzOrt_arr;
+    return $items;
 }
 
 /**
@@ -101,10 +100,10 @@ function plzimportDoImport($target, array $sessData, $result): void
             $data  = fgetcsv($fHandle, 0, "\t");
 
             if (isset($data[13]) && in_array($data[13], [6, 8])) {
-                $plz_arr       = explode(',', $data[7]);
+                $plzs          = explode(',', $data[7]);
                 $oPLZOrt->cOrt = $data[3];
 
-                foreach ($plz_arr as $plz) {
+                foreach ($plzs as $plz) {
                     $oPLZOrt->cPLZ = $plz;
 
                     if (!empty($oPLZOrt->cPLZ) && !empty($oPLZOrt->cOrt)) {
@@ -461,8 +460,8 @@ function plzimportActionDelTempImport(): array
 function plzimportActionLoadAvailableDownloads(): array
 {
     Shop::Container()->getGetText()->loadAdminLocale('pages/plz_ort_import');
-    $oLand_arr = $_SESSION['plzimport.oLand_arr'] ?? Shop::Container()->getCache()->get('plzimport.oLand_arr');
-    if ($oLand_arr === false) {
+    $countries = $_SESSION['plzimport.oLand_arr'] ?? Shop::Container()->getCache()->get('plzimport.oLand_arr');
+    if ($countries === false) {
         $ch = curl_init();
         @curl_setopt($ch, CURLOPT_URL, PLZIMPORT_URL);
         @curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
@@ -481,26 +480,26 @@ function plzimportActionLoadAvailableDownloads(): array
                 },
                 $hits[2]
             );
-            $oLand_arr  = Shop::Container()->getCountryService()->getFilteredCountryList($quotedHits)->toArray();
+            $countries  = Shop::Container()->getCountryService()->getFilteredCountryList($quotedHits)->toArray();
 
-            foreach ($oLand_arr as $oLand) {
-                $idx = array_search($oLand->getISO(), $hits[2], true);
+            foreach ($countries as $country) {
+                $idx = array_search($country->getISO(), $hits[2], true);
                 if ($idx !== false) {
-                    $date         = date_create_from_format('d-M-Y H:i', $hits[3][$idx]);
-                    $oLand->cURL  = urlencode($hits[1][$idx]);
-                    $oLand->cDate = $date !== false ? $date->format('d.m.Y') : $hits[3][$idx];
-                    $oLand->cSize = $hits[4][$idx];
+                    $date           = date_create_from_format('d-M-Y H:i', $hits[3][$idx]);
+                    $country->cURL  = urlencode($hits[1][$idx]);
+                    $country->cDate = $date !== false ? $date->format('d.m.Y') : $hits[3][$idx];
+                    $country->cSize = $hits[4][$idx];
                 }
             }
 
-            Shop::Container()->getCache()->set('plzimport.oLand_arr', $oLand_arr);
-            $_SESSION['plzimport.oLand_arr'] = $oLand_arr;
+            Shop::Container()->getCache()->set('plzimport.oLand_arr', $countries);
+            $_SESSION['plzimport.oLand_arr'] = $countries;
         } else {
-            $oLand_arr = [];
+            $countries = [];
         }
     }
 
-    Shop::Smarty()->assign('oLand_arr', countriesPreventXss($oLand_arr));
+    Shop::Smarty()->assign('oLand_arr', countriesPreventXss($countries));
 
     return ['dialogHTML' => Shop::Smarty()->fetch('tpl_inc/plz_ort_import_auswahl.tpl')];
 }

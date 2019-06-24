@@ -8,14 +8,14 @@ namespace JTL\Extensions;
 
 use JsonSerializable;
 use JTL\Catalog\Product\Artikel;
-use JTL\DB\ReturnType;
-use JTL\Helpers\Text;
-use JTL\Helpers\Tax;
-use JTL\Nice;
 use JTL\Catalog\Product\Preise;
+use JTL\DB\ReturnType;
+use JTL\Helpers\Tax;
+use JTL\Helpers\Text;
+use JTL\Language\LanguageHelper;
+use JTL\Nice;
 use JTL\Session\Frontend;
 use JTL\Shop;
-use JTL\Sprache;
 use stdClass;
 
 /**
@@ -142,14 +142,14 @@ class Konfigitem implements JsonSerializable
     /**
      * Constructor
      *
-     * @param int $kKonfigitem
-     * @param int $kSprache
-     * @param int $kKundengruppe
+     * @param int $id
+     * @param int $languageID
+     * @param int $customerGroupID
      */
-    public function __construct(int $kKonfigitem = 0, int $kSprache = 0, int $kKundengruppe = 0)
+    public function __construct(int $id = 0, int $languageID = 0, int $customerGroupID = 0)
     {
-        if ($kKonfigitem > 0) {
-            $this->loadFromDB($kKonfigitem, $kSprache, $kKundengruppe);
+        if ($id > 0) {
+            $this->loadFromDB($id, $languageID, $customerGroupID);
         }
     }
 
@@ -219,7 +219,7 @@ class Konfigitem implements JsonSerializable
             }
 
             if (!$languageID) {
-                $languageID = Shop::getLanguageID() ?? Sprache::getDefaultLanguage()->kSprache;
+                $languageID = Shop::getLanguageID() ?? LanguageHelper::getDefaultLanguage()->kSprache;
             }
             if (!$customerGroupID) {
                 $customerGroupID = Frontend::getCustomerGroup()->getID();
@@ -329,10 +329,10 @@ class Konfigitem implements JsonSerializable
     }
 
     /**
-     * @param int $kKonfiggruppe
+     * @param int $groupID
      * @return Konfigitem[]
      */
-    public static function fetchAll(int $kKonfiggruppe): array
+    public static function fetchAll(int $groupID): array
     {
         $items = [];
         $data  = Shop::Container()->getDB()->queryPrepared(
@@ -340,12 +340,12 @@ class Konfigitem implements JsonSerializable
                 FROM tkonfigitem 
                 WHERE kKonfiggruppe = :groupID 
                 ORDER BY nSort ASC',
-            ['groupID' => $kKonfiggruppe],
+            ['groupID' => $groupID],
             ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($data as &$item) {
-            $kKonfigitem = (int)$item->kKonfigitem;
-            $item        = new self($kKonfigitem);
+            $id   = (int)$item->kKonfigitem;
+            $item = new self($id);
             if ($item->isValid()) {
                 $items[] = $item;
             }
@@ -355,34 +355,34 @@ class Konfigitem implements JsonSerializable
     }
 
     /**
-     * @param int $kKonfigitem
+     * @param int $id
      * @return $this
      */
-    public function setKonfigitem(int $kKonfigitem): self
+    public function setKonfigitem(int $id): self
     {
-        $this->kKonfigitem = $kKonfigitem;
+        $this->kKonfigitem = $id;
 
         return $this;
     }
 
     /**
-     * @param int $kArtikel
+     * @param int $productID
      * @return $this
      */
-    public function setArtikelKey(int $kArtikel): self
+    public function setArtikelKey(int $productID): self
     {
-        $this->kArtikel = $kArtikel;
+        $this->kArtikel = $productID;
 
         return $this;
     }
 
     /**
-     * @param Artikel $oArtikel
+     * @param Artikel $product
      * @return $this
      */
-    public function setArtikel(Artikel $oArtikel): self
+    public function setArtikel(Artikel $product): self
     {
-        $this->oArtikel = $oArtikel;
+        $this->oArtikel = $product;
 
         return $this;
     }

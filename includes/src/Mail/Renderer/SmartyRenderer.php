@@ -20,25 +20,33 @@ use JTL\Smarty\MailSmarty;
 class SmartyRenderer implements RendererInterface
 {
     /**
-     * @var JTLSmarty
+     * @var MailSmarty|JTLSmarty
      */
     private $smarty;
 
     /**
      * SmartyRenderer constructor.
-     * @param MailSmarty $smarty
+     * @param MailSmarty|JTLSmarty $smarty
      */
-    public function __construct(MailSmarty $smarty)
+    public function __construct($smarty)
     {
         $this->smarty = $smarty;
     }
 
     /**
-     * @return JTLSmarty
+     * @return MailSmarty|JTLSmarty
      */
-    public function getSmarty(): JTLSmarty
+    public function getSmarty()
     {
         return $this->smarty;
+    }
+
+    /**
+     * @param MailSmarty|JTLSmarty $smarty
+     */
+    public function setSmarty($smarty): void
+    {
+        $this->smarty = $smarty;
     }
 
     /**
@@ -57,6 +65,7 @@ class SmartyRenderer implements RendererInterface
         $type  = $model->getType();
         \executeHook(\HOOK_MAILTOOLS_INC_SWITCH, [
             'mailsmarty'    => $this->getSmarty(),
+            'renderer'      => $this,
             'mail'          => null,
             'kEmailvorlage' => $model->getID(),
             'kSprache'      => $languageID,
@@ -194,7 +203,7 @@ class SmartyRenderer implements RendererInterface
             $mail->setBodyHTML($this->smarty->fetch('string:' . $mail->getBodyHTML()));
             $mail->setSubject($this->smarty->fetch('string:' . $mail->getSubject()));
         } else {
-            $this->renderTemplate($template, $mail->getLanguageID());
+            $this->renderTemplate($template, $mail->getLanguage()->getId());
         }
     }
 

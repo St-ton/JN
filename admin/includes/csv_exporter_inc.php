@@ -20,7 +20,7 @@ use JTL\Helpers\Request;
  *      first item of $source)
  * @param array $excluded - array of property/column names to be excluded
  * @param string $delim
- * @param bool   $bHead
+ * @param bool   $head
  * @return bool - false = failure or exporter-id-mismatch
  */
 function handleCsvExportAction(
@@ -30,7 +30,7 @@ function handleCsvExportAction(
     $fields = [],
     $excluded = [],
     $delim = ',',
-    $bHead = true
+    $head = true
 ) {
     if (Form::validateToken() && Request::verifyGPDataString('exportcsv') === $exporterId) {
         if (is_callable($source)) {
@@ -58,7 +58,7 @@ function handleCsvExportAction(
         header('Content-Type: text/csv');
         $fs = fopen('php://output', 'wb');
 
-        if ($bHead) {
+        if ($head) {
             fputcsv($fs, $fields);
         }
 

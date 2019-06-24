@@ -47,14 +47,14 @@ function checkNewsletterSend() {ldelim}
                             <label for="cName">{__('newsletterdraftname')}</label>
                         </span>
                         <input id="cName" name="cName" type="text" class="form-control {if isset($cPlausiValue_arr.cName)}fieldfillout{else}field{/if}" value="{if isset($cPostVar_arr.cName)}{$cPostVar_arr.cName}{elseif isset($oNewsletterVorlage->cName)}{$oNewsletterVorlage->cName}{/if}">
-                        {if isset($cPlausiValue_arr.cName)}<font class="fillout">{__('newsletterdraftFillOut')}</font>{/if}
+                        {if isset($cPlausiValue_arr.cName)}<span class="fillout">{__('newsletterdraftFillOut')}</span>{/if}
                     </div>
                     <div class="input-group">
                         <span class="input-group-addon">
                             <label for="cBetreff">{__('subject')}</label>
                         </span>
                         <input id="cBetreff" name="cBetreff" type="text" class="form-control {if isset($cPlausiValue_arr.cBetreff)}fieldfillout{else}field{/if}" value="{if isset($cPostVar_arr.cBetreff)}{$cPostVar_arr.cBetreff}{elseif isset($oNewsletterVorlage->cBetreff)}{$oNewsletterVorlage->cBetreff}{/if}">
-                        {if isset($cPlausiValue_arr.cBetreff)}<font class="fillout">{__('newsletterdraftFillOut')}</font>{/if}
+                        {if isset($cPlausiValue_arr.cBetreff)}<span class="fillout">{__('newsletterdraftFillOut')}</span>{/if}
                     </div>
                     <div class="input-group">
                         <span class="input-group-addon">
@@ -88,7 +88,7 @@ function checkNewsletterSend() {ldelim}
                                 {/foreach}
                             </select>
                         </span>
-                        {if isset($cPlausiValue_arr.kKundengruppe_arr)}<font class="fillout">{__('newsletterdraftFillOut')}</font>{/if}
+                        {if isset($cPlausiValue_arr.kKundengruppe_arr)}<span class="fillout">{__('newsletterdraftFillOut')}</span>{/if}
                     </div>
                     <div class="input-group">
                         <span class="input-group-addon">

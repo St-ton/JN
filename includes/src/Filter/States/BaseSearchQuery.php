@@ -13,10 +13,10 @@ use JTL\Filter\Join;
 use JTL\Filter\Option;
 use JTL\Filter\ProductFilter;
 use JTL\Filter\StateSQL;
+use JTL\Language\LanguageHelper;
 use JTL\MagicCompatibilityTrait;
 use JTL\Session\Frontend;
 use JTL\Shop;
-use JTL\Sprache;
 use function Functional\filter;
 
 /**
@@ -184,7 +184,7 @@ class BaseSearchQuery extends AbstractFilter
      */
     public function setSeo(array $languages): FilterInterface
     {
-        $oSeo_obj = $this->productFilter->getDB()->executeQueryPrepared(
+        $seo = $this->productFilter->getDB()->executeQueryPrepared(
             "SELECT tseo.cSeo, tseo.kSprache, tsuchanfrage.cSuche
                 FROM tseo
                 LEFT JOIN tsuchanfrage
@@ -197,12 +197,12 @@ class BaseSearchQuery extends AbstractFilter
         );
         foreach ($languages as $language) {
             $this->cSeo[$language->kSprache] = '';
-            if (isset($oSeo_obj->kSprache) && $language->kSprache === (int)$oSeo_obj->kSprache) {
-                $this->cSeo[$language->kSprache] = $oSeo_obj->cSeo;
+            if (isset($seo->kSprache) && $language->kSprache === (int)$seo->kSprache) {
+                $this->cSeo[$language->kSprache] = $seo->cSeo;
             }
         }
-        if (!empty($oSeo_obj->cSuche)) {
-            $this->setName($oSeo_obj->cSuche);
+        if (!empty($seo->cSuche)) {
+            $this->setName($seo->cSuche);
         }
 
         return $this;
@@ -233,9 +233,9 @@ class BaseSearchQuery extends AbstractFilter
         $searchFilter   = $this->productFilter->getBaseState();
         if (\is_array($searchFilter)) {
             $count = \count($searchFilter);
-            foreach ($searchFilter as $oSuchFilter) {
-                if ($oSuchFilter->getSearchCacheID() > 0) {
-                    $searchCacheIDs[] = $oSuchFilter->getSearchCacheID();
+            foreach ($searchFilter as $item) {
+                if ($item->getSearchCacheID() > 0) {
+                    $searchCacheIDs[] = $item->getSearchCacheID();
                 }
             }
         } elseif ($searchFilter->getSearchCacheID() > 0) {
@@ -328,9 +328,9 @@ class BaseSearchQuery extends AbstractFilter
             $searchQueryIDs[] = (int)$this->productFilter->getSearch()->getValue();
         }
         if ($this->productFilter->hasSearchFilter()) {
-            foreach ($this->productFilter->getSearchFilter() as $oSuchFilter) {
-                if ($oSuchFilter->getValue() > 0) {
-                    $searchQueryIDs[] = (int)$oSuchFilter->getValue();
+            foreach ($this->productFilter->getSearchFilter() as $searchFilter) {
+                if ($searchFilter->getValue() > 0) {
+                    $searchQueryIDs[] = (int)$searchFilter->getValue();
                 }
             }
         }
@@ -504,7 +504,7 @@ class BaseSearchQuery extends AbstractFilter
             return 0;
         }
 
-        if ($this->getLanguageID() > 0 && !Sprache::isDefaultLanguageActive()) {
+        if ($this->getLanguageID() > 0 && !LanguageHelper::isDefaultLanguageActive()) {
             $sql = 'SELECT ' . $kSuchCache . ', IF(tartikel.kVaterArtikel > 0, 
                         tartikel.kVaterArtikel, tartikel.kArtikel) AS kArtikelTMP, ';
         } else {
@@ -514,7 +514,7 @@ class BaseSearchQuery extends AbstractFilter
         // Shop2 Suche - mehr als 3 Suchwörter *
         if (\count($search) > 3) {
             $sql .= ' 1 ';
-            if ($this->getLanguageID() > 0 && !Sprache::isDefaultLanguageActive()) {
+            if ($this->getLanguageID() > 0 && !LanguageHelper::isDefaultLanguageActive()) {
                 $sql .= ' FROM tartikel
                                 LEFT JOIN tartikelsprache
                                     ON tartikelsprache.kArtikel = tartikel.kArtikel
@@ -812,7 +812,7 @@ class BaseSearchQuery extends AbstractFilter
                 $sql .= ')';
             }
 
-            if ($this->getLanguageID() > 0 && !Sprache::isDefaultLanguageActive()) {
+            if ($this->getLanguageID() > 0 && !LanguageHelper::isDefaultLanguageActive()) {
                 $sql .= ' FROM tartikel
                             LEFT JOIN tartikelsprache
                                 ON tartikelsprache.kArtikel = tartikel.kArtikel
@@ -924,7 +924,7 @@ class BaseSearchQuery extends AbstractFilter
                     FROM tartikel
                     WHERE $match " . $this->productFilter->getFilterSQL()->getStockFilterSQL() . ' ';
 
-            if (Shop::getLanguage() > 0 && !Sprache::isDefaultLanguageActive()) {
+            if (Shop::getLanguage() > 0 && !LanguageHelper::isDefaultLanguageActive()) {
                 $score = 'MATCH (' . \implode(', ', $langCols) . ")
                             AGAINST ('" . \implode(' ', $searchQueries) . "' IN NATURAL LANGUAGE MODE)";
                 if ($fullText === 'B') {
@@ -1077,7 +1077,7 @@ class BaseSearchQuery extends AbstractFilter
         $current = '';
         $prefix  = 'tartikel.';
         $conf    = $conf['artikeluebersicht'] ?? Shop::getSettings([\CONF_ARTIKELUEBERSICHT])['artikeluebersicht'];
-        if (!Sprache::isDefaultLanguageActive()) {
+        if (!LanguageHelper::isDefaultLanguageActive()) {
             $prefix = 'tartikelsprache.';
         }
         if ($conf['suche_prio_name'] > $max && !\in_array($prefix . 'cName', $exclude, true)) {

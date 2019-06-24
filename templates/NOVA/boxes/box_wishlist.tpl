@@ -5,7 +5,6 @@
 {block name='boxes-box-wishlist'}
     {if $oBox->getItems()|count > 0}
         {card class="box box-wishlist mb-7" id="sidebox{$oBox->getID()}" title="<i class='fa fa-heart'></i> {lang key='wishlist'}"}
-            <hr class="mt-0 mb-4">
             {block name='boxes-box-wishlist-content'}
                 {listgroup}
                     {assign var=maxItems value=$oBox->getItemCount()}

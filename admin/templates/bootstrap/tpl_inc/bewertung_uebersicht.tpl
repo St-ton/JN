@@ -4,17 +4,8 @@
         <form name="sprache" method="post" action="bewertung.php">
             {$jtl_token}
             <input type="hidden" name="sprachwechsel" value="1" />
-            <div class="input-group col-xs-6">
-                <span class="input-group-addon">
-                    <label for="{__('changeLanguage')}">{__('changeLanguage')}</label>
-                </span>
-                <span class="input-group-wrap last">
-                    <select id="{__('changeLanguage')}" name="kSprache" class="form-control selectBox" onchange="document.sprache.submit();">
-                        {foreach $Sprachen as $sprache}
-                            <option value="{$sprache->kSprache}" {if $sprache->kSprache == $smarty.session.kSprache}selected{/if}>{$sprache->cNameDeutsch}</option>
-                        {/foreach}
-                    </select>
-                </span>
+            <div class="input-group p25 left">
+                {include file='tpl_inc/language_switcher.tpl'}
             </div>
         </form>
     </div>
@@ -34,8 +25,8 @@
     </ul>
     <div class="tab-content">
         <div id="freischalten" class="tab-pane fade {if !isset($cTab) || $cTab === 'freischalten'} active in{/if}">
-            {if $oBewertung_arr && $oBewertung_arr|@count > 0}
-                {include file='tpl_inc/pagination.tpl' oPagination=$oPagiInaktiv cAnchor='freischalten'}
+            {if $inactiveReviews|count > 0}
+                {include file='tpl_inc/pagination.tpl' pagination=$oPagiInaktiv cAnchor='freischalten'}
                 <form method="post" action="bewertung.php">
                     {$jtl_token}
                     <input type="hidden" name="bewertung_nicht_aktiv" value="1" />
@@ -58,19 +49,22 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                    {foreach name=bewertung from=$oBewertung_arr item=oBewertung key=kKey}
+                                    {foreach $inactiveReviews as $review}
                                         <tr>
                                             <td class="check">
-                                                <input type="hidden" name="kArtikel[{$kKey}]" value="{$oBewertung->kArtikel}" />
-                                                <input name="kBewertung[{$kKey}]" type="checkbox" value="{$oBewertung->kBewertung}" />
+                                                <input type="hidden" name="kArtikel[{$review@index}]" value="{$review->kArtikel}"/>
+                                                <input name="kBewertung[{$review@index}]" type="checkbox" value="{$review->kBewertung}" id="inactive-{$review->kBewertung}" />
                                             </td>
-                                            <td><a href="../index.php?a={$oBewertung->kArtikel}" target="_blank">{$oBewertung->ArtikelName}</a></td>
-                                            <td>{$oBewertung->cName}.</td>
-                                            <td><b>{$oBewertung->cTitel}</b><br />{$oBewertung->cText}</td>
-                                            <td class="tcenter">{$oBewertung->nSterne}</td>
-                                            <td class="tcenter">{$oBewertung->Datum}</td>
+                                            <td>
+                                                <label for="inactive-{$review->kBewertung}">{$review->ArtikelName}</label>
+                                                &nbsp;<a href="{$shopURL}/index.php?a={$review->kArtikel}" target="_blank"><i class="fas fa fa-external-link"></i></a>
+                                            </td>
+                                            <td>{$review->cName}.</td>
+                                            <td><b>{$review->cTitel}</b><br />{$review->cText}</td>
+                                            <td class="tcenter">{$review->nSterne}</td>
+                                            <td class="tcenter">{$review->Datum}</td>
                                             <td class="tcenter">
-                                                <a href="bewertung.php?a=editieren&kBewertung={$oBewertung->kBewertung}&tab=freischalten&token={$smarty.session.jtl_token}"
+                                                <a href="bewertung.php?a=editieren&kBewertung={$review->kBewertung}&tab=freischalten&token={$smarty.session.jtl_token}"
                                                    class="btn btn-default" title="{__('modify')}">
                                                     <i class="fa fa-edit"></i>
                                                 </a>
@@ -99,8 +93,8 @@
             {/if}
         </div>
         <div id="letzten50" class="tab-pane fade {if isset($cTab) && $cTab === 'letzten50'} active in{/if}">
-            {if $oBewertungLetzten50_arr && $oBewertungLetzten50_arr|@count > 0}
-                {include file='tpl_inc/pagination.tpl' oPagination=$oPagiAktiv cAnchor='letzten50'}
+            {if $activeReviews|count > 0}
+                {include file='tpl_inc/pagination.tpl' pagination=$oPagiAktiv cAnchor='letzten50'}
                 <form name="letzten50" method="post" action="bewertung.php">
                     {$jtl_token}
                     <input type="hidden" name="bewertung_aktiv" value="1" />
@@ -123,32 +117,38 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                {foreach $oBewertungLetzten50_arr as $oBewertungLetzten50}
+                                {foreach $activeReviews as $review}
                                     <tr>
-                                        <td class="check"><input name="kBewertung[]" type="checkbox" value="{$oBewertungLetzten50->kBewertung}"><input type="hidden" name="kArtikel[]" value="{$oBewertungLetzten50->kArtikel}"></td>
-                                        <td><a href="../index.php?a={$oBewertungLetzten50->kArtikel}" target="_blank">{$oBewertungLetzten50->ArtikelName}</a></td>
-                                        <td>{$oBewertungLetzten50->cName}.</td>
+                                        <td class="check">
+                                            <input name="kBewertung[]" type="checkbox" value="{$review->kBewertung}" id="l50-{$review->kBewertung}">
+                                            <input type="hidden" name="kArtikel[]" value="{$review->kArtikel}">
+                                        </td>
                                         <td>
-                                            <strong>{$oBewertungLetzten50->cTitel}</strong><br>
-                                            {$oBewertungLetzten50->cText}
-                                            {if !empty($oBewertungLetzten50->cAntwort)}
+                                            <label for="l50-{$review->kBewertung}">{$review->ArtikelName}</label>
+                                            &nbsp;<a href="{$shopURL}/index.php?a={$review->kArtikel}" target="_blank"><i class="fas fa fa-external-link"></i></a>
+                                        </td>
+                                        <td>{$review->cName}.</td>
+                                        <td>
+                                            <strong>{$review->cTitel}</strong><br>
+                                            {$review->cText}
+                                            {if !empty($review->cAntwort)}
                                                 <blockquote class="review-reply">
-                                                    <strong>{__('ratingReply')}:</strong><br>
-                                                    {$oBewertungLetzten50->cAntwort}
+                                                    <strong>{__('ratingReply')}</strong><br>
+                                                    {$review->cAntwort}
                                                 </blockquote>
                                             {/if}
                                         </td>
-                                        <td class="tcenter">{$oBewertungLetzten50->nSterne}</td>
-                                        <td class="tcenter">{$oBewertungLetzten50->Datum}</td>
+                                        <td class="tcenter">{$review->nSterne}</td>
+                                        <td class="tcenter">{$review->Datum}</td>
                                         <td class="tcenter7 tright" style="min-width: 100px;">
                                             <div class="btn-group">
-                                                {if !empty($oBewertungLetzten50->cAntwort)}
-                                                    <a href="bewertung.php?a=delreply&kBewertung={$oBewertungLetzten50->kBewertung}&tab=letzten50&token={$smarty.session.jtl_token}"
+                                                {if !empty($review->cAntwort)}
+                                                    <a href="bewertung.php?a=delreply&kBewertung={$review->kBewertung}&tab=letzten50&token={$smarty.session.jtl_token}"
                                                        class="btn btn-danger" title="{__('removeReply')}">
                                                         <i class="fa fa-times-circle-o"></i>
                                                     </a>
                                                 {/if}
-                                                <a href="bewertung.php?a=editieren&kBewertung={$oBewertungLetzten50->kBewertung}&tab=letzten50&token={$smarty.session.jtl_token}"
+                                                <a href="bewertung.php?a=editieren&kBewertung={$review->kBewertung}&tab=letzten50&token={$smarty.session.jtl_token}"
                                                    class="btn btn-default" title="{__('modify')}">
                                                     <i class="fa fa-edit"></i>
                                                 </a>
@@ -184,7 +184,7 @@
                     </span>
                     <input type="hidden" name="bewertung_aktiv" value="1" />
                     <input type="hidden" name="tab" value="artikelbewertung" />
-                    <input class="form-control" name="cArtNr" type="text" />
+                    <input class="form-control" name="cArtNr" type="text" value="{$cArtNr|default:''}" />
                     <span class="input-group-btn">
                         <button name="submitSearch" type="submit" value="{__('search')}" class="btn btn-info"><i class="fa fa-search"></i> {__('search')}</button>
                     </span>
@@ -192,10 +192,10 @@
                 {if isset($cArtNr) && $cArtNr|strlen > 0}
                     <div class="alert alert-info">{__('ratingSearchedFor')}: {$cArtNr}</div>
                 {/if}
-                {if $oBewertungAktiv_arr && $oBewertungAktiv_arr|@count > 0}
+                {if isset($filteredReviews) && $filteredReviews|@count > 0}
                     <div class="panel panel-default">
                         <div class="panel-heading">
-                            <h3 class="panel-title">{__('ratingsInaktive')}</h3>
+                            <h3 class="panel-title">{$cArtNr}</h3>
                         </div>
                         <div class="table-responsive">
                             <table class="table table-striped">
@@ -211,16 +211,22 @@
                                 </tr>
                                 </thead>
                                 <tbody>
-                                {foreach $oBewertungAktiv_arr as $oBewertungAktiv}
+                                {foreach $filteredReviews as $review}
                                     <tr>
-                                        <td><input name="kBewertung[]" type="checkbox" value="{$oBewertungAktiv->kBewertung}"><input type="hidden" name="kArtikel[]" value="{$oBewertungAktiv->kArtikel}"></td>
-                                        <td><a href="../index.php?a={$oBewertungAktiv->kArtikel}" target="_blank">{$oBewertungAktiv->ArtikelName}</a></td>
-                                        <td>{$oBewertungAktiv->cName}.</td>
-                                        <td><b>{$oBewertungAktiv->cTitel}</b><br />{$oBewertungAktiv->cText}</td>
-                                        <td class="tcenter">{$oBewertungAktiv->nSterne}</td>
-                                        <td class="tcenter">{$oBewertungAktiv->Datum}</td>
+                                        <td>
+                                            <input name="kBewertung[]" type="checkbox" value="{$review->kBewertung}" id="filtered-{$review->kBewertung}">
+                                            <input type="hidden" name="kArtikel[]" value="{$review->kArtikel}">
+                                        </td>
+                                        <td>
+                                            <label for="filtered-{$review->kBewertung}">{$review->ArtikelName}</label>
+                                            &nbsp;<a href="{$shopURL}/index.php?a={$review->kArtikel}" target="_blank"><i class="fas fa fa-external-link"></i></a>
+                                        </td>
+                                        <td>{$review->cName}.</td>
+                                        <td><b>{$review->cTitel}</b><br />{$review->cText}</td>
+                                        <td class="tcenter">{$review->nSterne}</td>
+                                        <td class="tcenter">{$review->Datum}</td>
                                         <td class="tcenter">
-                                            <a href="bewertung.php?a=editieren&kBewertung={$oBewertungAktiv->kBewertung}&tab=artikelbewertung"
+                                            <a href="bewertung.php?a=editieren&kBewertung={$review->kBewertung}&tab=artikelbewertung"
                                                class="btn btn-default" title="{__('modify')}">
                                                 <i class="fa fa-edit"></i>
                                             </a>

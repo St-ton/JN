@@ -83,39 +83,39 @@ final class Orders extends AbstractPush
                 ReturnType::SINGLE_ASSOC_ARRAY
             );
 
-            $cartPositions      = $this->db->queryPrepared(
+            $items          = $this->db->queryPrepared(
                 'SELECT *
                 FROM twarenkorbpos
                 WHERE kWarenkorb = :cid',
                 ['cid' => (int)$orderAttribute['kWarenkorb']],
                 ReturnType::ARRAY_OF_ASSOC_ARRAYS
             );
-            $positionAttributes = [];
-            foreach ($cartPositions as &$position) {
-                $posAttribute = $this->buildAttributes($position, ['cUnique', 'kKonfigitem', 'kBestellpos']);
+            $itemAttributes = [];
+            foreach ($items as &$item) {
+                $itemAttribute = $this->buildAttributes($item, ['cUnique', 'kKonfigitem', 'kBestellpos']);
 
-                $posAttribute['kBestellung']          = $orderAttribute['kBestellung'];
-                $position['twarenkorbposeigenschaft'] = $this->db->queryPrepared(
+                $itemAttribute['kBestellung']     = $orderAttribute['kBestellung'];
+                $item['twarenkorbposeigenschaft'] = $this->db->queryPrepared(
                     'SELECT *
                     FROM twarenkorbposeigenschaft
                     WHERE kWarenkorbPos = :cid',
-                    ['cid' => (int)$posAttribute['kWarenkorbPos']],
+                    ['cid' => (int)$itemAttribute['kWarenkorbPos']],
                     ReturnType::ARRAY_OF_ASSOC_ARRAYS
                 );
-                unset($posAttribute['kWarenkorb']);
-                $positionAttributes[] = $posAttribute;
+                unset($itemAttribute['kWarenkorb']);
+                $itemAttributes[] = $itemAttribute;
 
-                $confCount = \count($position['twarenkorbposeigenschaft']);
+                $confCount = \count($item['twarenkorbposeigenschaft']);
                 for ($j = 0; $j < $confCount; $j++) {
-                    $idx                                        = $j . ' attr';
-                    $position['twarenkorbposeigenschaft'][$idx] = $this->buildAttributes(
-                        $position['twarenkorbposeigenschaft'][$j]
+                    $idx                                    = $j . ' attr';
+                    $item['twarenkorbposeigenschaft'][$idx] = $this->buildAttributes(
+                        $item['twarenkorbposeigenschaft'][$j]
                     );
                 }
             }
-            unset($position);
-            $order['twarenkorbpos'] = $cartPositions;
-            foreach ($positionAttributes as $i => $attribute) {
+            unset($item);
+            $order['twarenkorbpos'] = $items;
+            foreach ($itemAttributes as $i => $attribute) {
                 $order['twarenkorbpos'][$i . ' attr'] = $attribute;
             }
 
@@ -182,7 +182,7 @@ final class Orders extends AbstractPush
             $order['trechnungsadresse']      = $address;
             $order['trechnungsadresse attr'] = $attr;
 
-            $item              = $this->db->queryPrepared(
+            $payment              = $this->db->queryPrepared(
                 "SELECT *
                 FROM tzahlungsinfo
                 WHERE kBestellung = :oid AND cAbgeholt = 'N'
@@ -190,19 +190,19 @@ final class Orders extends AbstractPush
                 ['oid' => $orderID],
                 ReturnType::SINGLE_ASSOC_ARRAY
             );
-            $item['cBankName'] = isset($item['cBankName']) ? $crypto->decryptXTEA($item['cBankName']) : null;
-            $item['cBLZ']      = isset($item['cBLZ']) ? $crypto->decryptXTEA($item['cBLZ']) : null;
-            $item['cInhaber']  = isset($item['cInhaber']) ? $crypto->decryptXTEA($item['cInhaber']) : null;
-            $item['cKontoNr']  = isset($item['cKontoNr']) ? $crypto->decryptXTEA($item['cKontoNr']) : null;
-            $item['cIBAN']     = isset($item['cIBAN']) ? $crypto->decryptXTEA($item['cIBAN']) : null;
-            $item['cBIC']      = isset($item['cBIC']) ? $crypto->decryptXTEA($item['cBIC']) : null;
-            $item['cKartenNr'] = isset($item['cKartenNr']) ? $crypto->decryptXTEA($item['cKartenNr']) : null;
-            $item['cCVV']      = isset($item['cCVV']) ? \trim($crypto->decryptXTEA($item['cCVV'])) : null;
-            if ($item['cCVV'] !== null && \strlen($item['cCVV']) > 4) {
-                $item['cCVV'] = \substr($item['cCVV'], 0, 4);
+            $payment['cBankName'] = isset($payment['cBankName']) ? $crypto->decryptXTEA($payment['cBankName']) : null;
+            $payment['cBLZ']      = isset($payment['cBLZ']) ? $crypto->decryptXTEA($payment['cBLZ']) : null;
+            $payment['cInhaber']  = isset($payment['cInhaber']) ? $crypto->decryptXTEA($payment['cInhaber']) : null;
+            $payment['cKontoNr']  = isset($payment['cKontoNr']) ? $crypto->decryptXTEA($payment['cKontoNr']) : null;
+            $payment['cIBAN']     = isset($payment['cIBAN']) ? $crypto->decryptXTEA($payment['cIBAN']) : null;
+            $payment['cBIC']      = isset($payment['cBIC']) ? $crypto->decryptXTEA($payment['cBIC']) : null;
+            $payment['cKartenNr'] = isset($payment['cKartenNr']) ? $crypto->decryptXTEA($payment['cKartenNr']) : null;
+            $payment['cCVV']      = isset($payment['cCVV']) ? \trim($crypto->decryptXTEA($payment['cCVV'])) : null;
+            if ($payment['cCVV'] !== null && \strlen($payment['cCVV']) > 4) {
+                $payment['cCVV'] = \substr($payment['cCVV'], 0, 4);
             }
-            $attr                        = $this->buildAttributes($item);
-            $order['tzahlungsinfo']      = $item;
+            $attr                        = $this->buildAttributes($payment);
+            $order['tzahlungsinfo']      = $payment;
             $order['tzahlungsinfo attr'] = $attr;
             unset($orderAttribute['kVersandArt'], $orderAttribute['kWarenkorb']);
 

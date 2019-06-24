@@ -55,16 +55,16 @@ class MediaImageCompatibility implements IMedia
                 $req['number'] = (int)$matches[2];
             }
 
-            $articleNumber = $barcode = $seo = $name;
+            $productNumber = $barcode = $seo = $name;
             // remove concat
             $exploded = \explode('_', $name, 2);
             if (\count($exploded) === 2) {
-                $articleNumber = $exploded[0];
+                $productNumber = $exploded[0];
                 $barcode       = $seo = $name = $exploded[1];
             }
             // replace vowel mutation
             $name          = \str_replace('-', ' ', $this->replaceVowelMutation($name));
-            $articleNumber = $this->replaceVowelMutation($articleNumber);
+            $productNumber = $this->replaceVowelMutation($productNumber);
             $barcode       = $this->replaceVowelMutation($barcode);
 
             $fallback = Shop::Container()->getDB()->queryPrepared(
@@ -78,7 +78,7 @@ class MediaImageCompatibility implements IMedia
                     'nm'    => \mb_convert_case(Shop::Container()->getDB()->escape($name), \MB_CASE_LOWER),
                     'seo'   => \mb_convert_case(Shop::Container()->getDB()->escape($seo), \MB_CASE_LOWER),
                     'bar'   => \mb_convert_case(Shop::Container()->getDB()->escape($barcode), \MB_CASE_LOWER),
-                    'artno' => \mb_convert_case(Shop::Container()->getDB()->escape($articleNumber), \MB_CASE_LOWER)
+                    'artno' => \mb_convert_case(Shop::Container()->getDB()->escape($productNumber), \MB_CASE_LOWER)
                 ],
                 ReturnType::SINGLE_OBJECT
             );

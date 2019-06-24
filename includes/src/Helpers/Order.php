@@ -50,14 +50,14 @@ class Order extends Cart
         $info->total     = [0, 0];
         $info->items     = [];
         $info->currency  = $order->Waehrung;
-        foreach ($order->Positionen as $oPosition) {
-            $amountItem  = $oPosition->fPreisEinzelNetto;
+        foreach ($order->Positionen as $orderItem) {
+            $amountItem  = $orderItem->fPreisEinzelNetto;
             $amount      = $amountItem; /* $order->fWaehrungsFaktor;*/
-            $amountGross = $amount + ($amount * $oPosition->fMwSt / 100);
+            $amountGross = $amount + ($amount * $orderItem->fMwSt / 100);
             // floating-point precission bug
             $amountGross = (float)(string)$amountGross;
 
-            switch ((int)$oPosition->nPosTyp) {
+            switch ((int)$orderItem->nPosTyp) {
                 case \C_WARENKORBPOS_TYP_ARTIKEL:
                     $item = (object)[
                         'name'     => '',
@@ -65,25 +65,25 @@ class Order extends Cart
                         'amount'   => []
                     ];
 
-                    $item->name = \html_entity_decode($oPosition->cName);
+                    $item->name = \html_entity_decode($orderItem->cName);
 
                     $item->amount = [
                         self::NET   => $amount,
                         self::GROSS => $amountGross
                     ];
 
-                    if ((int)$oPosition->nAnzahl != $oPosition->nAnzahl) {
-                        $item->amount[self::NET]   *= $oPosition->nAnzahl;
-                        $item->amount[self::GROSS] *= $oPosition->nAnzahl;
+                    if ((int)$orderItem->nAnzahl != $orderItem->nAnzahl) {
+                        $item->amount[self::NET]   *= $orderItem->nAnzahl;
+                        $item->amount[self::GROSS] *= $orderItem->nAnzahl;
 
                         $item->name = \sprintf(
                             '%g %s %s',
-                            (float)$oPosition->nAnzahl,
-                            $oPosition->Artikel->cEinheit ?: 'x',
+                            (float)$orderItem->nAnzahl,
+                            $orderItem->Artikel->cEinheit ?: 'x',
                             $item->name
                         );
                     } else {
-                        $item->quantity = (int)$oPosition->nAnzahl;
+                        $item->quantity = (int)$orderItem->nAnzahl;
                     }
 
                     $info->article[self::NET]   += $item->amount[self::NET] * $item->quantity;
@@ -96,21 +96,21 @@ class Order extends Cart
                 case \C_WARENKORBPOS_TYP_VERSANDZUSCHLAG:
                 case \C_WARENKORBPOS_TYP_VERPACKUNG:
                 case \C_WARENKORBPOS_TYP_VERSAND_ARTIKELABHAENGIG:
-                    $info->shipping[self::NET]   += $amount * $oPosition->nAnzahl;
-                    $info->shipping[self::GROSS] += $amountGross * $oPosition->nAnzahl;
+                    $info->shipping[self::NET]   += $amount * $orderItem->nAnzahl;
+                    $info->shipping[self::GROSS] += $amountGross * $orderItem->nAnzahl;
                     break;
 
                 case \C_WARENKORBPOS_TYP_KUPON:
                 case \C_WARENKORBPOS_TYP_GUTSCHEIN:
                 case \C_WARENKORBPOS_TYP_NEUKUNDENKUPON:
-                    $info->discount[self::NET]   += $amount * $oPosition->nAnzahl;
-                    $info->discount[self::GROSS] += $amountGross * $oPosition->nAnzahl;
+                    $info->discount[self::NET]   += $amount * $orderItem->nAnzahl;
+                    $info->discount[self::GROSS] += $amountGross * $orderItem->nAnzahl;
                     break;
 
                 case \C_WARENKORBPOS_TYP_ZAHLUNGSART:
                 case \C_WARENKORBPOS_TYP_NACHNAHMEGEBUEHR:
-                    $info->surcharge[self::NET]   += $amount * $oPosition->nAnzahl;
-                    $info->surcharge[self::GROSS] += $amountGross * $oPosition->nAnzahl;
+                    $info->surcharge[self::NET]   += $amount * $orderItem->nAnzahl;
+                    $info->surcharge[self::GROSS] += $amountGross * $orderItem->nAnzahl;
                     break;
             }
         }

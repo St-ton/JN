@@ -5,14 +5,7 @@
             {$jtl_token}
             <input type="hidden" name="sprachwechsel" value="1" />
             <div class="input-group p25 left">
-                <span class="input-group-addon"><label for="kSprache">{__('changeLanguage')}</label></span>
-                <span class="input-group-wrap last">
-                    <select id="kSprache" name="kSprache" class="selectBox form-control" onchange="document.sprache.submit();">
-                        {foreach $Sprachen as $sprache}
-                            <option value="{$sprache->kSprache}" {if $sprache->kSprache == $smarty.session.kSprache}selected{/if}>{$sprache->cNameDeutsch}</option>
-                        {/foreach}
-                    </select>
-                </span>
+                {include file='tpl_inc/language_switcher.tpl'}
             </div>
         </form>
     </div>
@@ -30,7 +23,7 @@
     <div class="tab-content">
         <div id="freischalten" class="tab-pane fade{if !isset($cTab) || $cTab === 'freischalten' || $cTab === 'tags'} active in{/if}">
             {if $Tags && $Tags|@count > 0}
-                {include file='tpl_inc/pagination.tpl' oPagination=$oPagiTags cAnchor='freischalten'}
+                {include file='tpl_inc/pagination.tpl' pagination=$oPagiTags cAnchor='freischalten'}
                 <form name="login" method="post" action="tagging.php">
                     {$jtl_token}
                     <input type="hidden" name="tagging" value="1" />
@@ -82,7 +75,7 @@
         </div>
         <div id="mapping" class="tab-pane fade{if isset($cTab) && $cTab === 'mapping'} active in{/if}">
             {if $Tagmapping && $Tagmapping|@count > 0}
-                {include file='tpl_inc/pagination.tpl' oPagination=$oPagiTagMappings cAnchor='mapping'}
+                {include file='tpl_inc/pagination.tpl' pagination=$oPagiTagMappings cAnchor='mapping'}
                 <form name="login" method="post" action="tagging.php">
                     {$jtl_token}
                     <input type="hidden" name="tagging" value="2" />

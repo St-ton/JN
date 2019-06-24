@@ -2690,12 +2690,6 @@ msgstr "Kommentare freischalten"
 msgid "news_kommentare_freischalten_desc"
 msgstr "Hier legen Sie fest, ob Kommentare immer erst von Ihnen freigeschaltet werden müssen, bevor sie unter News-Beiträgen angezeigt werden."
 
-msgid "news_kommentare_eingeloggt_name"
-msgstr "Kommentare nur nach Anmeldung"
-
-msgid "news_kommentare_eingeloggt_desc"
-msgstr "Hier legen Sie fest, ob nur angemeldete Kunden Kommentare schreiben können."
-
 msgid "news_kommentare_anzahlproseite_name"
 msgstr "Anzahl Kommentare pro Seite"
 
@@ -3133,3 +3127,9 @@ msgstr "Welche Methode soll verwendet werden?"
 
 msgid "cron_freq_desc"
 msgstr "Starte bei jedem x-ten Seitenaufruf den Pseudo-Cron"
+
+msgid "hersteller_anzeigen_als_name"
+msgstr "Hersteller anzeigen als"
+
+msgid "hersteller_anzeigen_als_desc"
+msgstr "Hier legen Sie fest, wie die Hersteller angezeigt werden sollen."

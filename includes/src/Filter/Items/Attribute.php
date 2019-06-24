@@ -16,9 +16,9 @@ use JTL\Filter\States\BaseAttribute;
 use JTL\Filter\StateSQL;
 use JTL\Filter\StateSQLInterface;
 use JTL\Filter\Type;
+use JTL\Language\LanguageHelper;
 use JTL\MagicCompatibilityTrait;
 use JTL\Shop;
-use JTL\Sprache;
 use stdClass;
 use function Functional\every;
 use function Functional\first;
@@ -289,7 +289,7 @@ class Attribute extends BaseAttribute
             ->setOrigin(__CLASS__));
 
         $langID           = $this->getLanguageID();
-        $kStandardSprache = Sprache::getDefaultLanguage()->kSprache;
+        $kStandardSprache = LanguageHelper::getDefaultLanguage()->kSprache;
         if ($langID !== $kStandardSprache) {
             $state->setSelect([
                 'COALESCE(tmerkmalsprache.cName, tmerkmal.cName) AS cName',

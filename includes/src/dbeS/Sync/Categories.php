@@ -10,7 +10,7 @@ use JTL\DB\ReturnType;
 use JTL\dbeS\LastJob;
 use JTL\dbeS\Starter;
 use JTL\Helpers\Seo;
-use JTL\Sprache;
+use JTL\Language\LanguageHelper;
 use stdClass;
 
 /**
@@ -136,11 +136,11 @@ final class Categories extends AbstractSync
         }
         $catLanguages = $this->mapper->mapArray($xml['tkategorie'], 'tkategoriesprache', 'mKategorieSprache');
         $langIDs      = [];
-        $allLanguages = Sprache::getAllLanguages(1);
+        $allLanguages = LanguageHelper::getAllLanguages(1);
         $lCount       = \count($catLanguages);
         for ($i = 0; $i < $lCount; ++$i) {
             // Sprachen die nicht im Shop vorhanden sind überspringen
-            if (!Sprache::isShopLanguage($catLanguages[$i]->kSprache, $allLanguages)) {
+            if (!LanguageHelper::isShopLanguage($catLanguages[$i]->kSprache, $allLanguages)) {
                 continue;
             }
             if (!$catLanguages[$i]->cSeo) {
@@ -224,8 +224,8 @@ final class Categories extends AbstractSync
                 FROM tkategorieattribut
                 LEFT JOIN tkategorieattributsprache
                     ON tkategorieattributsprache.kAttribut = tkategorieattribut.kKategorieAttribut
-                WHERE tkategorieattribut.kKategorie = :categoryID' .(count($attribPKs) > 0 ? '
-                    AND tkategorieattribut.kKategorieAttribut NOT IN (' . implode(', ', $attribPKs) . ')' : ''),
+                WHERE tkategorieattribut.kKategorie = :categoryID' .(\count($attribPKs) > 0 ? '
+                    AND tkategorieattribut.kKategorieAttribut NOT IN (' . \implode(', ', $attribPKs) . ')' : ''),
             [
                 'categoryID' => $category->kKategorie,
             ],

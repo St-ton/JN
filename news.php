@@ -64,13 +64,13 @@ switch ($controller->getPageType($params)) {
         break;
     case ViewType::NEWS_CATEGORY:
         Shop::setPageType(PAGE_NEWSKATEGORIE);
-        $kNewsKategorie = (int)$params['kNewsKategorie'];
-        $overview       = $controller->displayOverview($pagination, $kNewsKategorie, 0, $customerGroupID);
+        $newsCategoryID = (int)$params['kNewsKategorie'];
+        $overview       = $controller->displayOverview($pagination, $newsCategoryID, 0, $customerGroupID);
         $cCanonicalURL  = $overview->getURL();
         $breadCrumbURL  = $cCanonicalURL;
         $breadCrumbName = $overview->getName();
         $newsCategory   = new Category($db);
-        $newsCategory->load($kNewsKategorie);
+        $newsCategory->load($newsCategoryID);
 
         $cMetaTitle       = $newsCategory->getMetaTitle();
         $cMetaDescription = $newsCategory->getMetaDescription();
@@ -79,8 +79,8 @@ switch ($controller->getPageType($params)) {
         break;
     case ViewType::NEWS_OVERVIEW:
         Shop::setPageType(PAGE_NEWS);
-        $kNewsKategorie = 0;
-        $overview       = $controller->displayOverview($pagination, $kNewsKategorie, 0, $customerGroupID);
+        $newsCategoryID = 0;
+        $overview       = $controller->displayOverview($pagination, $newsCategoryID, 0, $customerGroupID);
         break;
     case ViewType::NEWS_MONTH_OVERVIEW:
         Shop::setPageType(PAGE_NEWSMONAT);

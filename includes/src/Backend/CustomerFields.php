@@ -155,17 +155,17 @@ class CustomerFields
     }
 
     /**
-     * @param int   $kCustomerField
+     * @param int   $customerFieldID
      * @param array $customerFieldValues
      */
-    protected function updateCustomerFieldValues(int $kCustomerField, array $customerFieldValues): void
+    protected function updateCustomerFieldValues(int $customerFieldID, array $customerFieldValues): void
     {
         $db = Shop::Container()->getDB();
-        $db->delete('tkundenfeldwert', 'kKundenfeld', $kCustomerField);
+        $db->delete('tkundenfeldwert', 'kKundenfeld', $customerFieldID);
 
         foreach ($customerFieldValues as $customerFieldValue) {
             $entitie              = new stdClass();
-            $entitie->kKundenfeld = $kCustomerField;
+            $entitie->kKundenfeld = $customerFieldID;
             $entitie->cWert       = $customerFieldValue['cWert'];
             $entitie->nSort       = (int)$customerFieldValue['nSort'];
 
@@ -185,7 +185,7 @@ class CustomerFields
                             WHERE tkundenfeldwert.kKundenfeld = tkundenattribut.kKundenfeld
                                 AND tkundenfeldwert.cWert = tkundenattribut.cWert
                         )",
-            ['kKundenfeld' => $kCustomerField],
+            ['kKundenfeld' => $customerFieldID],
             ReturnType::DEFAULT
         );
     }

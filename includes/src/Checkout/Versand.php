@@ -58,23 +58,23 @@ class Versand
     /**
      * Constructor
      *
-     * @param int         $kVersand
+     * @param int         $id
      * @param null|object $oData
      */
-    public function __construct(int $kVersand = 0, $oData = null)
+    public function __construct(int $id = 0, $oData = null)
     {
-        if ($kVersand > 0) {
-            $this->loadFromDB($kVersand, $oData);
+        if ($id > 0) {
+            $this->loadFromDB($id, $oData);
         }
     }
 
     /**
-     * @param int         $kVersand
+     * @param int         $id
      * @param null|object $oData
      */
-    private function loadFromDB(int $kVersand = 0, $oData = null): void
+    private function loadFromDB(int $id = 0, $oData = null): void
     {
-        $item = Shop::Container()->getDB()->select('tversand', 'kVersand', $kVersand);
+        $item = Shop::Container()->getDB()->select('tversand', 'kVersand', $id);
 
         $this->oData = $oData;
 
@@ -86,10 +86,10 @@ class Versand
     }
 
     /**
-     * @param bool $bPrim
+     * @param bool $primary
      * @return bool|int
      */
-    public function save(bool $bPrim = true)
+    public function save(bool $primary = true)
     {
         $ins = new stdClass();
         foreach (\array_keys(\get_object_vars($this)) as $member) {
@@ -100,7 +100,7 @@ class Versand
         $kPrim = Shop::Container()->getDB()->insert('tversand', $ins);
 
         if ($kPrim > 0) {
-            return $bPrim ? $kPrim : true;
+            return $primary ? $kPrim : true;
         }
 
         return false;

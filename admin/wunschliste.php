@@ -4,12 +4,12 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use JTL\Helpers\Request;
-use JTL\Customer\Kunde;
-use JTL\Shop;
-use JTL\Pagination\Pagination;
-use JTL\DB\ReturnType;
 use JTL\Alert\Alert;
+use JTL\Customer\Kunde;
+use JTL\DB\ReturnType;
+use JTL\Helpers\Request;
+use JTL\Pagination\Pagination;
+use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
@@ -23,7 +23,7 @@ if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
 if (Request::verifyGPCDataInt('einstellungen') === 1) {
     $alertHelper->addAlert(Alert::TYPE_SUCCESS, saveAdminSettings($settingsIDs, $_POST), 'saveSettings');
 }
-$oWunschlistePos     = Shop::Container()->getDB()->query(
+$itemCount     = (int)Shop::Container()->getDB()->query(
     'SELECT COUNT(tWunsch.kWunschliste) AS nAnzahl
         FROM
         (
@@ -34,29 +34,29 @@ $oWunschlistePos     = Shop::Container()->getDB()->query(
             GROUP BY twunschliste.kWunschliste
         ) AS tWunsch',
     ReturnType::SINGLE_OBJECT
-);
-$oWunschlisteArtikel = Shop::Container()->getDB()->query(
+)->nAnzahl;
+$productCount  = (int)Shop::Container()->getDB()->query(
     'SELECT COUNT(*) AS nAnzahl
         FROM twunschlistepos',
     ReturnType::SINGLE_OBJECT
-);
-$oWunschlisteFreunde = Shop::Container()->getDB()->query(
+)->nAnzahl;
+$friends       = (int)Shop::Container()->getDB()->query(
     'SELECT COUNT(*) AS nAnzahl
         FROM twunschliste
         JOIN twunschlisteversand 
             ON twunschliste.kWunschliste = twunschlisteversand.kWunschliste',
     ReturnType::SINGLE_OBJECT
-);
-$oPagiPos            = (new Pagination('pos'))
-    ->setItemCount($oWunschlistePos->nAnzahl)
+)->nAnzahl;
+$oPagiPos      = (new Pagination('pos'))
+    ->setItemCount($itemCount)
     ->assemble();
-$oPagiArtikel        = (new Pagination('artikel'))
-    ->setItemCount($oWunschlisteArtikel->nAnzahl)
+$oPagiArtikel  = (new Pagination('artikel'))
+    ->setItemCount($productCount)
     ->assemble();
-$oPagiFreunde        = (new Pagination('freunde'))
-    ->setItemCount($oWunschlisteFreunde->nAnzahl)
+$oPagiFreunde  = (new Pagination('freunde'))
+    ->setItemCount($friends)
     ->assemble();
-$sentWishLists       = Shop::Container()->getDB()->query(
+$sentWishLists = Shop::Container()->getDB()->query(
     "SELECT tkunde.kKunde, tkunde.cNachname, tkunde.cVorname, twunschlisteversand.nAnzahlArtikel, 
         twunschliste.kWunschliste, twunschliste.cName, twunschliste.cURLID, 
         twunschlisteversand.nAnzahlEmpfaenger, DATE_FORMAT(twunschlisteversand.dZeit, '%d.%m.%Y  %H:%i') AS Datum
@@ -106,10 +106,10 @@ $wishListPositions = Shop::Container()->getDB()->query(
 );
 
 $smarty->assign('oConfig_arr', getAdminSectionSettings($settingsIDs))
-       ->assign('oPagiPos', $oPagiPos)
-       ->assign('oPagiArtikel', $oPagiArtikel)
-       ->assign('oPagiFreunde', $oPagiFreunde)
-       ->assign('CWunschlisteVersand_arr', $sentWishLists)
-       ->assign('CWunschliste_arr', $wishLists)
-       ->assign('CWunschlistePos_arr', $wishListPositions)
-       ->display('wunschliste.tpl');
+    ->assign('oPagiPos', $oPagiPos)
+    ->assign('oPagiArtikel', $oPagiArtikel)
+    ->assign('oPagiFreunde', $oPagiFreunde)
+    ->assign('CWunschlisteVersand_arr', $sentWishLists)
+    ->assign('CWunschliste_arr', $wishLists)
+    ->assign('CWunschlistePos_arr', $wishListPositions)
+    ->display('wunschliste.tpl');

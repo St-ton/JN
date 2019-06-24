@@ -1112,9 +1112,9 @@ final class Images extends AbstractSync
         // Artikelbilder löschen Wawi <= .99923
         if (isset($xml['del_bilder']['kArtikelPict'])) {
             if (\is_array($xml['del_bilder']['kArtikelPict'])) {
-                foreach ($xml['del_bilder']['kArtikelPict'] as $kArtikelPict) {
-                    if ((int)$kArtikelPict > 0) {
-                        $this->deleteArtikelPict((int)$kArtikelPict);
+                foreach ($xml['del_bilder']['kArtikelPict'] as $pictID) {
+                    if ((int)$pictID > 0) {
+                        $this->deleteArtikelPict((int)$pictID);
                     }
                 }
             } elseif ((int)$xml['del_bilder']['kArtikelPict'] > 0) {
@@ -1137,9 +1137,9 @@ final class Images extends AbstractSync
         // Kategoriebilder löschen Wawi <= .99923
         if (isset($xml['del_bilder']['kKategoriePict'])) {
             if (\is_array($xml['del_bilder']['kKategoriePict'])) {
-                foreach ($xml['del_bilder']['kKategoriePict'] as $kKategoriePict) {
-                    if ((int)$kKategoriePict > 0) {
-                        $this->deleteCategoryImage($kKategoriePict);
+                foreach ($xml['del_bilder']['kKategoriePict'] as $categoryImageID) {
+                    if ((int)$categoryImageID > 0) {
+                        $this->deleteCategoryImage($categoryImageID);
                     }
                 }
             } elseif ((int)$xml['del_bilder']['kKategoriePict'] > 0) {
@@ -1148,9 +1148,9 @@ final class Images extends AbstractSync
         }
         // Kategoriebilder löschen Wawi > .99923
         if (isset($xml['del_bilder']['kKategorie'])) {
-            foreach ((array)$xml['del_bilder']['kKategorie'] as $kKategorie) {
-                if ((int)$kKategorie > 0) {
-                    $this->deleteCategoryImage(null, $kKategorie);
+            foreach ((array)$xml['del_bilder']['kKategorie'] as $categoryID) {
+                if ((int)$categoryID > 0) {
+                    $this->deleteCategoryImage(null, $categoryID);
                 }
             }
         }
@@ -1182,18 +1182,18 @@ final class Images extends AbstractSync
         if (isset($xml['del_bilder']['kHersteller'])) {
             $cacheTags = [];
             if (\is_array($xml['del_bilder']['kHersteller'])) {
-                foreach ($xml['del_bilder']['kHersteller'] as $kHersteller) {
-                    if ((int)$kHersteller > 0) {
+                foreach ($xml['del_bilder']['kHersteller'] as $manufacturerID) {
+                    if ((int)$manufacturerID > 0) {
                         $this->db->update(
                             'thersteller',
                             'kHersteller',
-                            (int)$kHersteller,
+                            (int)$manufacturerID,
                             (object)['cBildpfad' => '']
                         );
                         foreach ($this->db->selectAll(
                             'tartikel',
                             'kHersteller',
-                            (int)$kHersteller,
+                            (int)$manufacturerID,
                             'kArtikel'
                         ) as $product) {
                             $cacheTags[] = $product->kArtikel;

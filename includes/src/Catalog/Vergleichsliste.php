@@ -31,21 +31,21 @@ class Vergleichsliste
 
     /**
      * Vergleichsliste constructor.
-     * @param int   $kArtikel
+     * @param int   $productID
      * @param array $variations
      */
-    public function __construct(int $kArtikel = 0, array $variations = [])
+    public function __construct(int $productID = 0, array $variations = [])
     {
-        if ($kArtikel > 0) {
-            $oArtikel           = new stdClass();
-            $tmpProduct         = (new Artikel())->fuelleArtikel($kArtikel);
-            $oArtikel->kArtikel = $kArtikel;
-            $oArtikel->cName    = $tmpProduct !== null ? $tmpProduct->cName : '';
-            $oArtikel->cURLFull = $tmpProduct !== null ? $tmpProduct->cURLFull : '';
+        if ($productID > 0) {
+            $product           = new stdClass();
+            $tmpProduct        = (new Artikel())->fuelleArtikel($productID);
+            $product->kArtikel = $productID;
+            $product->cName    = $tmpProduct !== null ? $tmpProduct->cName : '';
+            $product->cURLFull = $tmpProduct !== null ? $tmpProduct->cURLFull : '';
             if (\is_array($variations) && \count($variations) > 0) {
-                $oArtikel->Variationen = $variations;
+                $product->Variationen = $variations;
             }
-            $this->oArtikel_arr[] = $oArtikel;
+            $this->oArtikel_arr[] = $product;
 
             \executeHook(\HOOK_VERGLEICHSLISTE_CLASS_EINFUEGEN);
         } elseif (isset($_SESSION['Vergleichsliste'])) {
@@ -63,12 +63,12 @@ class Vergleichsliste
             $defaultOptions = Artikel::getDefaultOptions();
             $linkHelper     = Shop::Container()->getLinkService();
             $baseURL        = $linkHelper->getStaticRoute('vergleichsliste.php');
-            foreach ($compareList->oArtikel_arr as $oArtikel) {
+            foreach ($compareList->oArtikel_arr as $item) {
                 $product = new Artikel();
-                $product->fuelleArtikel($oArtikel->kArtikel, $defaultOptions);
-                $product->cURLDEL = $baseURL . '?vlplo=' . $oArtikel->kArtikel;
-                if (isset($oArtikel->oVariationen_arr) && \count($oArtikel->oVariationen_arr) > 0) {
-                    $product->Variationen = $oArtikel->oVariationen_arr;
+                $product->fuelleArtikel($item->kArtikel, $defaultOptions);
+                $product->cURLDEL = $baseURL . '?vlplo=' . $item->kArtikel;
+                if (isset($item->oVariationen_arr) && \count($item->oVariationen_arr) > 0) {
+                    $product->Variationen = $item->oVariationen_arr;
                 }
                 $this->oArtikel_arr[] = $product;
             }
@@ -80,9 +80,9 @@ class Vergleichsliste
      */
     public function umgebungsWechsel(): self
     {
-        foreach ($_SESSION['Vergleichsliste']->oArtikel_arr as $i => $oArtikel) {
+        foreach ($_SESSION['Vergleichsliste']->oArtikel_arr as $i => $item) {
             $tmpProduct                                    = new stdClass();
-            $tmpProduct->kArtikel                          = $oArtikel->kArtikel;
+            $tmpProduct->kArtikel                          = $item->kArtikel;
             $_SESSION['Vergleichsliste']->oArtikel_arr[$i] = $tmpProduct;
         }
 
@@ -90,38 +90,38 @@ class Vergleichsliste
     }
 
     /**
-     * @param int  $kArtikel
-     * @param bool $bAufSession
-     * @param int  $kKonfigitem
+     * @param int  $productID
+     * @param bool $saveToSession
+     * @param int  $configItemID
      * @return $this
      */
-    public function fuegeEin(int $kArtikel, bool $bAufSession = true, int $kKonfigitem = 0): self
+    public function fuegeEin(int $productID, bool $saveToSession = true, int $configItemID = 0): self
     {
         // Existiert der Key und ist er noch nicht vorhanden?
-        if ($kArtikel > 0 && !$this->artikelVorhanden($kArtikel)) {
+        if ($productID > 0 && !$this->artikelVorhanden($productID)) {
             //new slim variant for compare list
             $product           = new Artikel();
-            $product->kArtikel = $kArtikel;
-            if ($kKonfigitem > 0) {
+            $product->kArtikel = $productID;
+            if ($configItemID > 0) {
                 // Falls Konfigitem gesetzt Preise + Name überschreiben
-                $oKonfigitem = new Konfigitem($kKonfigitem);
-                if ($oKonfigitem->getKonfigitem() > 0) {
-                    $product->Preise->cVKLocalized[0] = $oKonfigitem->getPreisLocalized(true, false);
-                    $product->Preise->cVKLocalized[1] = $oKonfigitem->getPreisLocalized(true, false, true);
-                    $product->kSteuerklasse           = $oKonfigitem->getSteuerklasse();
+                $configItem = new Konfigitem($configItemID);
+                if ($configItem->getKonfigitem() > 0) {
+                    $product->Preise->cVKLocalized[0] = $configItem->getPreisLocalized(true, false);
+                    $product->Preise->cVKLocalized[1] = $configItem->getPreisLocalized(true, false, true);
+                    $product->kSteuerklasse           = $configItem->getSteuerklasse();
                     unset($product->cLocalizedVPE);
 
-                    if ($oKonfigitem->getUseOwnName()) {
-                        $product->cName             = $oKonfigitem->getName();
-                        $product->cBeschreibung     = $oKonfigitem->getBeschreibung();
-                        $product->cKurzBeschreibung = $oKonfigitem->getBeschreibung();
+                    if ($configItem->getUseOwnName()) {
+                        $product->cName             = $configItem->getName();
+                        $product->cBeschreibung     = $configItem->getBeschreibung();
+                        $product->cKurzBeschreibung = $configItem->getBeschreibung();
                     }
                 }
             }
             if ($product->kArtikel > 0) {
                 $this->oArtikel_arr[] = $product;
             }
-            if ($bAufSession) {
+            if ($saveToSession) {
                 $_SESSION['Vergleichsliste']->oArtikel_arr = $this->oArtikel_arr;
             }
         }
@@ -130,13 +130,13 @@ class Vergleichsliste
     }
 
     /**
-     * @param int $kArtikel
+     * @param int $productID
      * @return bool
      */
-    public function artikelVorhanden(int $kArtikel): bool
+    public function artikelVorhanden(int $productID): bool
     {
-        return some($this->oArtikel_arr, function ($e) use ($kArtikel) {
-            return (int)$e->kArtikel === $kArtikel;
+        return some($this->oArtikel_arr, function ($e) use ($productID) {
+            return (int)$e->kArtikel === $productID;
         });
     }
 
@@ -150,30 +150,30 @@ class Vergleichsliste
     {
         $attributes = [];
         $variations = [];
-        foreach ($compareList->oArtikel_arr as $oArtikel) {
-            /** @var Artikel $oArtikel */
-            if (\count($oArtikel->oMerkmale_arr) > 0) {
+        foreach ($compareList->oArtikel_arr as $product) {
+            /** @var Artikel $product */
+            if (\count($product->oMerkmale_arr) > 0) {
                 // Falls das Merkmal Array nicht leer ist
                 if (\count($attributes) > 0) {
-                    foreach ($oArtikel->oMerkmale_arr as $oMerkmale) {
+                    foreach ($product->oMerkmale_arr as $oMerkmale) {
                         if (!self::containsAttribute($attributes, $oMerkmale->kMerkmal)) {
                             $attributes[] = $oMerkmale;
                         }
                     }
                 } else {
-                    $attributes = $oArtikel->oMerkmale_arr;
+                    $attributes = $product->oMerkmale_arr;
                 }
             }
             // Falls ein Artikel min. eine Variation enthält
-            if (\count($oArtikel->Variationen) > 0) {
+            if (\count($product->Variationen) > 0) {
                 if (\count($variations) > 0) {
-                    foreach ($oArtikel->Variationen as $oVariationen) {
+                    foreach ($product->Variationen as $oVariationen) {
                         if (!self::containsVariation($variations, $oVariationen->cName)) {
                             $variations[] = $oVariationen;
                         }
                     }
                 } else {
-                    $variations = $oArtikel->Variationen;
+                    $variations = $product->Variationen;
                 }
             }
         }
@@ -183,37 +183,34 @@ class Vergleichsliste
             });
         }
 
-        return [
-            $attributes,
-            $variations
-        ];
+        return [$attributes, $variations];
     }
 
     /**
      * @param array $attributes
-     * @param int   $kMerkmal
+     * @param int   $id
      * @return bool
      * @former istMerkmalEnthalten()
      * @since 5.0.0
      */
-    public static function containsAttribute(array $attributes, int $kMerkmal): bool
+    public static function containsAttribute(array $attributes, int $id): bool
     {
-        return some($attributes, function ($e) use ($kMerkmal) {
-            return (int)$e->kMerkmal === $kMerkmal;
+        return some($attributes, function ($e) use ($id) {
+            return (int)$e->kMerkmal === $id;
         });
     }
 
     /**
      * @param array  $variations
-     * @param string $cName
+     * @param string $name
      * @return bool
      * @former istVariationEnthalten()
      * @since 5.0.0
      */
-    public static function containsVariation(array $variations, string $cName): bool
+    public static function containsVariation(array $variations, string $name): bool
     {
-        return some($variations, function ($e) use ($cName) {
-            return $e->cName === $cName;
+        return some($variations, function ($e) use ($name) {
+            return $e->cName === $name;
         });
     }
 
@@ -270,7 +267,7 @@ class Vergleichsliste
      */
     public static function getPrioRows(bool $keysOnly = false, bool $newStandard = true): array
     {
-        $conf               = Shop::getSettings([CONF_VERGLEICHSLISTE]);
+        $conf               = Shop::getSettings([\CONF_VERGLEICHSLISTE]);
         $possibleRowsToView = [
             'vergleichsliste_artikelnummer',
             'vergleichsliste_hersteller',
@@ -307,7 +304,7 @@ class Vergleichsliste
      */
     public static function getMappedRowNames(string $confName): array
     {
-        $conf = Shop::getSettings([CONF_VERGLEICHSLISTE])['vergleichsliste'];
+        $conf = Shop::getSettings([\CONF_VERGLEICHSLISTE])['vergleichsliste'];
         switch ($confName) {
             case 'vergleichsliste_artikelnummer':
                 return [
@@ -400,7 +397,7 @@ class Vergleichsliste
         if (\count($compareList->oArtikel_arr) === 0) {
             return;
         }
-        $oVergleiche = Shop::Container()->getDB()->queryPrepared(
+        $data = Shop::Container()->getDB()->queryPrepared(
             'SELECT COUNT(kVergleichsliste) AS nVergleiche
                 FROM tvergleichsliste
                 WHERE cIP = :ip
@@ -408,19 +405,18 @@ class Vergleichsliste
             ['ip' => Request::getRealIP()],
             ReturnType::SINGLE_OBJECT
         );
+        if ($data->nVergleiche < 3) {
+            $ins        = new stdClass();
+            $ins->cIP   = Request::getRealIP();
+            $ins->dDate = \date('Y-m-d H:i:s');
+            $id         = Shop::Container()->getDB()->insert('tvergleichsliste', $ins);
+            foreach ($compareList->oArtikel_arr as $product) {
+                $item                   = new stdClass();
+                $item->kVergleichsliste = $id;
+                $item->kArtikel         = $product->kArtikel;
+                $item->cArtikelName     = $product->cName;
 
-        if ($oVergleiche->nVergleiche < 3) {
-            $compareListTable        = new stdClass();
-            $compareListTable->cIP   = Request::getRealIP();
-            $compareListTable->dDate = \date('Y-m-d H:i:s');
-            $kVergleichsliste        = Shop::Container()->getDB()->insert('tvergleichsliste', $compareListTable);
-            foreach ($compareList->oArtikel_arr as $oArtikel) {
-                $compareListPosTable                   = new stdClass();
-                $compareListPosTable->kVergleichsliste = $kVergleichsliste;
-                $compareListPosTable->kArtikel         = $oArtikel->kArtikel;
-                $compareListPosTable->cArtikelName     = $oArtikel->cName;
-
-                Shop::Container()->getDB()->insert('tvergleichslistepos', $compareListPosTable);
+                Shop::Container()->getDB()->insert('tvergleichslistepos', $item);
             }
         }
     }

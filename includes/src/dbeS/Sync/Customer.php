@@ -14,11 +14,11 @@ use JTL\DB\ReturnType;
 use JTL\dbeS\Starter;
 use JTL\GeneralDataProtection\Journal;
 use JTL\Helpers\Text;
+use JTL\Language\LanguageHelper;
 use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
 use JTL\Shop;
 use JTL\SimpleMail;
-use JTL\Sprache;
 use JTL\XML;
 use stdClass;
 
@@ -122,8 +122,8 @@ final class Customer extends AbstractSync
         if (!\is_array($xml['del_kunden']['kKunde'])) {
             $xml['del_kunden']['kKunde'] = [$xml['del_kunden']['kKunde']];
         }
-        foreach ($xml['del_kunden']['kKunde'] as $kKunde) {
-            (new Kunde((int)$kKunde))->deleteAccount(Journal::ISSUER_TYPE_DBES, 0, true);
+        foreach ($xml['del_kunden']['kKunde'] as $customerID) {
+            (new Kunde((int)$customerID))->deleteAccount(Journal::ISSUER_TYPE_DBES, 0, true);
         }
     }
 
@@ -139,10 +139,9 @@ final class Customer extends AbstractSync
             $xml['ack_kunden']['kKunde'] = [$xml['ack_kunden']['kKunde']];
         }
         if (\is_array($xml['ack_kunden']['kKunde'])) {
-            foreach ($xml['ack_kunden']['kKunde'] as $kKunde) {
-                $kKunde = (int)$kKunde;
-                if ($kKunde > 0) {
-                    $this->db->update('tkunde', 'kKunde', $kKunde, (object)['cAbgeholt' => 'Y']);
+            foreach ($xml['ack_kunden']['kKunde'] as $customerID) {
+                if ($customerID > 0) {
+                    $this->db->update('tkunde', 'kKunde', (int)$customerID, (object)['cAbgeholt' => 'Y']);
                 }
             }
         }
@@ -156,8 +155,7 @@ final class Customer extends AbstractSync
         if (!isset($xml['gutscheine']['gutschein']) || !\is_array($xml['gutscheine']['gutschein'])) {
             return;
         }
-        $vouchers = $this->mapper->mapArray($xml['gutscheine'], 'gutschein', 'mGutschein');
-        foreach ($vouchers as $voucher) {
+        foreach ($this->mapper->mapArray($xml['gutscheine'], 'gutschein', 'mGutschein') as $voucher) {
             if (!($voucher->kGutschein > 0 && $voucher->kKunde > 0)) {
                 continue;
             }
@@ -351,7 +349,7 @@ final class Customer extends AbstractSync
                 $cstmr[0]['cStrasse'] .= ' ' . $cstmr[0]['cHausnummer'];
                 unset($cstmr[0]['cHausnummer']);
                 // Land ausgeschrieben der Wawi geben
-                $cstmr[0]['cLand'] = Sprache::getCountryCodeByCountryName($cstmr[0]['cLand']);
+                $cstmr[0]['cLand'] = LanguageHelper::getCountryCodeByCountryName($cstmr[0]['cLand']);
                 unset($cstmr[0]['cPasswort']);
                 $cstmr['0 attr']             = $this->buildAttributes($cstmr[0]);
                 $cstmr[0]['tkundenattribut'] = $this->db->query(

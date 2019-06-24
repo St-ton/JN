@@ -68,10 +68,7 @@ class GetText
         );
 
         foreach ($localeDirs as $dir) {
-            $languages[$dir] = \Locale::getDisplayLanguage(
-                $dir,
-                $_SESSION['AdminAccount']->language ?? $inLanguage ?? $this->getDefaultLanguage()
-            );
+            $languages[$dir] = \Locale::getDisplayLanguage($dir, $dir);
         }
 
         return $languages;

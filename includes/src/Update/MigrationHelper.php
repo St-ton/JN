@@ -6,6 +6,7 @@
 
 namespace JTL\Update;
 
+use DateTime;
 use JTL\DB\ReturnType;
 use JTL\Filesystem\Filesystem;
 use JTL\Filesystem\LocalFilesystem;
@@ -230,23 +231,20 @@ class MigrationHelper
      */
     public static function create(string $description, string $author)
     {
-        $datetime  = new \DateTime('NOW');
-        $timestamp = $datetime->format('YmdHis');
+        $datetime      = new DateTime('NOW');
+        $timestamp     = $datetime->format('YmdHis');
+        $asFilePath    = function ($text) {
+            $text = \preg_replace('/\W/', '_', $text);
+            $text = \preg_replace('/_+/', '_', $text);
 
-        $asFilePath = function ($text) {
-            $text = \\preg_replace('/\W/', '_', $text);
-            $text = \\preg_replace('/_+/', '_', $text);
-
-            return \\strtolower($text);
+            return \strtolower($text);
         };
-
-        $filePath = \\implode(
+        $filePath      = \implode(
             '_',
-            \\array_filter([$timestamp, $asFilePath($description)])
+            \array_filter([$timestamp, $asFilePath($description)])
         );
-
         $relPath       = 'update/migrations';
-        $migrationPath = $relPath.'/'.$filePath.'.php';
+        $migrationPath = $relPath . '/' . $filePath . '.php';
         $fileSystem    = new Filesystem(new LocalFilesystem(['root' => PFAD_ROOT]));
 
         if (!$fileSystem->exists($relPath)) {
@@ -257,7 +255,7 @@ class MigrationHelper
         $smartyCli->setCaching(JTLSmarty::CACHING_OFF);
         $content = $smartyCli->assign('description', $description)
             ->assign('author', $author)
-            ->assign('created', $datetime->format(\DateTime::RSS))
+            ->assign('created', $datetime->format(DateTime::RSS))
             ->assign('timestamp', $timestamp)
             ->fetch(PFAD_ROOT.'includes/src/Console/Command/Migration/Template/migration.class.tpl');
 

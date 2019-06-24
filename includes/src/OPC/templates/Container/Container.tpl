@@ -1,28 +1,42 @@
-{$data = $instance->getAnimationData()}
+{$style = "min-height:{$instance->getProperty('min-height')}px; position:relative;"}
+{$class = $instance->getAnimationClass()}
+{$data  = $instance->getAnimationData()}
+{$fluid = $instance->getProperty('boxed') === false}
 
 {if $isPreview}
     {$data = $data|array_merge:['portlet' => $instance->getDataAttribute()]}
 {/if}
-{$classStr = $instance->getAnimationClass()}
-{if $instance->getProperty('background-flag') === 'image'}
-    {$classStr = $classStr|cat:" parallax-window"}
-    {$data = $data|array_merge:['parallax'=> $instance->getAttribute('data-parallax')]}
-    {$data = $data|array_merge:['z-index'=> $instance->getAttribute('data-z-index')]}
-    {$data = $data|array_merge:['image-src'=> $instance->getAttribute('data-image-src')]}
+
+{if $instance->getProperty('background-flag') === 'image' && !empty($instance->getProperty('src'))}
+    {$name = basename($instance->getProperty('src'))}
+    {$class = "{$class} parallax-window"}
+    {$v = $instance->getImageAttributes("{Shop::getURL()}/{\PFAD_MEDIAFILES}Bilder/.xs/{$name}")}
+    {if $isPreview}
+        {$style = "{$style} background-image:url('{Shop::getURL()}/{\PFAD_MEDIAFILES}Bilder/.xs/{$name}');"}
+        {$style = "{$style} background-size:cover;"}
+    {else}
+        {$data = $data|array_merge:[
+            'parallax'  => 'scroll',
+            'z-index'   => '1',
+            'image-src' => "{Shop::getURL()}/{\PFAD_MEDIAFILES}Bilder/.lg/{$name}"
+        ]}
+    {/if}
 {/if}
 
-{container
-    style=$instance->getStyleString()
-    class=$classStr
-    data=$data|default:[]
-    fluid=($instance->getProperty('background-flag') !== 'boxed')
-}
+{if $instance->getProperty('background-flag') === 'video'}
+    {$style          = "{$style} overflow:hidden;"}
+    {$name           = basename($instance->getProperty('video-poster'))}
+    {$videoPosterUrl = "{Shop::getURL()}/{\PFAD_MEDIAFILES}Bilder/.xs/{$name}"}
+    {$name           = basename($instance->getProperty('video-src'))}
+    {$videoSrcUrl    = "{Shop::getURL()}/{\PFAD_MEDIAFILES}Videos/{$name}"}
+{/if}
+
+{container style=$style class=$class data=$data fluid=$fluid}
     {if $instance->getProperty('background-flag') === 'video' && !empty($instance->getProperty('video-src'))}
-        <video autoplay="autoplay"
-               poster="{$instance->getProperty('video-poster-url')}" loop="loop" muted="muted"
+        <video autoplay loop muted poster="{$videoPosterUrl}"
                style="display: inherit; width: 100%; position: absolute; opacity: 0.7;">
             {if !$isPreview}
-                <source src="{$instance->getProperty('video-src-url')}" type="video/mp4">
+                <source src="{$videoSrcUrl}" type="video/mp4">
             {/if}
         </video>
     {/if}

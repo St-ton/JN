@@ -13,13 +13,13 @@
                             {if count($Suchergebnisse->getProducts()) > 0}
                                 {include file='snippets/opc_mount_point.tpl' id='opc_before_result_options'}
                             {/if}
-                            {if $navid==="header"}
+                            {if $navid === 'header'}
                                 <div id="improve_search">
                                     {include file='productlist/result_options.tpl'}
                                 </div>
                             {/if}
                         {/block}
-                        {if !$device->isMobile() || $device->isTablet()}
+                        {if (!$device->isMobile() || $device->isTablet()) && $navid === 'header'}
                             {dropdown class="filter-type-FilterItemSort btn-group" variant="light" text="{lang key='sorting' section='productOverview'}"}
                                 {foreach $Suchergebnisse->getSortingOptions() as $option}
                                     {dropdownitem rel="nofollow" href=$option->getURL() class="filter-item" active=$option->isActive()}
@@ -38,7 +38,7 @@
                         {if isset($oErweiterteDarstellung->nDarstellung)
                             && $Einstellungen.artikeluebersicht.artikeluebersicht_erw_darstellung === 'Y'
                             && empty($AktuelleKategorie->categoryFunctionAttributes['darstellung'])
-                            && $navid==="header"}
+                            && $navid === 'header'}
                             {buttongroup class="ml-2"}
                                 {link href=$oErweiterteDarstellung->cURL_arr[$smarty.const.ERWDARSTELLUNG_ANSICHT_LISTE]
                                     id="ed_list"
@@ -66,7 +66,7 @@
                     {lang key="products"} {$Suchergebnisse->getOffsetStart()} - {$Suchergebnisse->getOffsetEnd()} {lang key='of' section='productOverview'} {$Suchergebnisse->getProductCount()}
                 {/col}
             {/block}
-            {if $Suchergebnisse->getPages()->getMaxPage() > 1 && $navid==="footer"}
+            {if $Suchergebnisse->getPages()->getMaxPage() > 1}
                 {block name='snippets-productlist-page-nav-page-nav'}
                     {col cols=12 md="auto" class="productlist-pagination"}
                         <nav class="navbar-pagination" aria-label="Productlist Navigation">

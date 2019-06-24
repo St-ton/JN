@@ -133,7 +133,7 @@ function bearbeiteInsert($xml)
                 checkDbeSXmlRedirect($oDataOld->cSeo, $kategorie_arr[0]->cSeo);
             }
             //insert in tseo
-            $this->db->queryPrepared(
+            $db->queryPrepared(
                 "INSERT IGNORE INTO tseo
                     SELECT tkategorie.cSeo, 'kKategorie', tkategorie.kKategorie, tsprache.kSprache
                         FROM tkategorie, tsprache

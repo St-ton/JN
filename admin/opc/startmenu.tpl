@@ -1,4 +1,4 @@
-{if \JTL\Shop::isAdmin() && $opc->isEditMode() === false}
+{if \JTL\Shop::isAdmin() && $opc->isEditMode() === false && $opc->isPreviewMode() === false}
     {$curPageUrl        = $opcPageService->getCurPageUri()}
     {$curPageId         = $opcPageService->createCurrentPageId()}
     {$publicDraft       = $opcPageService->getPublicPage($curPageId)}

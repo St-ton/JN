@@ -46,7 +46,7 @@
                                                 }
                                                     {$subFilter->getFrontendName()}
                                                     <i class="float-right ml-3 fas fa-plus"></i>
-                                                    <span class="float-right mx-3 font-italic text-right text-truncate w-40">
+                                                    <span class="float-right mx-3 font-italic text-right text-truncate w-40 pr-1">
                                                         {foreach $subFilter->getOptions() as $filterOption}
                                                             {assign var=filterIsActive value=$filterOption->isActive() || $NaviFilter->getFilterValue($subFilter->getClassName()) === $filterOption->getValue()}
                                                             {if $filterIsActive === true}{$filterOption->getName()}{if !$filterOption@last},{/if} {/if}
@@ -74,7 +74,7 @@
                                             }
                                                 {$filter->getFrontendName()}
                                                 <i class="float-right ml-3 fas fa-plus"></i>
-                                                <span class="float-right mx-3 font-italic text-right text-truncate w-40">
+                                                <span class="float-right mx-3 font-italic text-right text-truncate w-40 pr-1">
                                                     {foreach $filter->getOptions() as $filterOption}
                                                         {*TODO: Preisfilter nicht als aktiv markiert*}
                                                         {assign var=filterIsActive value=$filterOption->isActive() || $NaviFilter->getFilterValue($filter->getClassName()) === $filterOption->getValue()}
@@ -110,14 +110,19 @@
                         }
                             {lang key='sorting' section='productOverview'}
                             <i class="float-right ml-3 fas fa-plus"></i>
+                            <span class="float-right mx-3 font-italic text-right text-truncate w-40 pr-1">
+                                {foreach $Suchergebnisse->getSortingOptions() as $option}
+                                    {if $option->isActive()} {$option->getName()}{/if}
+                                {/foreach}
+                            </span>
                             {collapse id="sorting-collapse" class="mb-2 col-12 col-md-4"}
                                 {foreach $Suchergebnisse->getSortingOptions() as $option}
                                     {dropdownitem class="filter-item py-1"
-                                    active=$option->isActive()
-                                    href=$option->getURL()
-                                    rel='nofollow'
+                                        active=$option->isActive()
+                                        href=$option->getURL()
+                                        rel='nofollow'
                                     }
-                                    {$option->getName()}
+                                        {$option->getName()}
                                     {/dropdownitem}
                                 {/foreach}
                             {/collapse}
@@ -134,27 +139,32 @@
                                     {if $activeFilterValue !== null}
                                         {if $activeValues|is_array}
                                             {foreach $activeValues as $filterOption}
-                                                {strip}
-                                                    {link href=$activeFilter->getUnsetFilterURL($filterOption->getValue()) rel="nofollow" title="Filter {lang key='delete'}" class="badge badge-info filter-type-{$activeFilter->getNiceName()} mb-2 mr-2"}
-                                                    {$filterOption->getFrontendName()}&nbsp;<span class="fa fa-trash"></span>
-                                                    {/link}
-                                                {/strip}
+                                                {link
+                                                    href=$activeFilter->getUnsetFilterURL($filterOption->getValue())
+                                                    rel="nofollow"
+                                                    title="Filter {lang key='delete'}"
+                                                    class="btn btn-light btn-sm filter-type-{$activeFilter->getNiceName()} mb-2 mr-2"
+                                                }
+                                                    {$filterOption->getFrontendName()}<span class="fa fa-times ml-2"></span>
+                                                {/link}
                                             {/foreach}
                                         {else}
-                                            {strip}
-                                                {link href=$activeFilter->getUnsetFilterURL($activeFilter->getValue()) rel="nofollow" title="Filter {lang key='delete'}" class="badge badge-info filter-type-{$activeFilter->getNiceName()} mb-2 mr-2" }
-                                                {$activeValues->getFrontendName()}&nbsp;<span class="fa fa-trash"></span>
-                                                {/link}
-                                            {/strip}
+                                            {link
+                                                href=$activeFilter->getUnsetFilterURL($activeFilter->getValue())
+                                                rel="nofollow"
+                                                title="Filter {lang key='delete'}"
+                                                class="btn btn-light btn-sm filter-type-{$activeFilter->getNiceName()} mb-2 mr-2"
+                                            }
+                                                {$activeValues->getFrontendName()}<span class="fa fa-times ml-2"></span>
+                                            {/link}
                                         {/if}
                                     {/if}
                                 {/foreach}
                                 {if $NaviFilter->getURL()->getUnsetAll() !== null}
-                                    {strip}
-                                        {link href=$NaviFilter->getURL()->getUnsetAll() title="{lang key='removeFilters'}"}
+                                    <br/>
+                                    {link href=$NaviFilter->getURL()->getUnsetAll() title="{lang key='removeFilters'}"}
                                         {lang key='removeFilters'}
-                                        {/link}
-                                    {/strip}
+                                    {/link}
                                 {/if}
                             </div>
                         {/block}

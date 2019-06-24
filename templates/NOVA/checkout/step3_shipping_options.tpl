@@ -14,8 +14,18 @@
                     {form method="post" action="{get_static_route id='bestellvorgang.php'}" class="form evo-validate"}
                         {block name='checkout-step3-shipping-options-fieldset-shipping-payment'}
                             <fieldset id="checkout-shipping-payment">
-                                {block name='checkout-step3-shipping-options-legend-shipping-payment'}
+                                {block name='checkout-step3-shipping-options-legend-shipping-options'}
                                     <legend>{lang key='shippingOptions'}</legend>
+                                {/block}
+                                {block name='checkout-step3-shipping-options-shipping-address-link'}
+                                    <span>
+                                        {lang key='shippingTo' section='checkout'}:
+                                        {link href="{get_static_route id='bestellvorgang.php'}?editLieferadresse=1"}
+                                            {$Lieferadresse->cStrasse}, {$Lieferadresse->cPLZ} {$Lieferadresse->cOrt}, {$Lieferadresse->cLand}
+                                        {/link}
+                                        <span class="ml-1 fa fa-pencil-alt"></span>
+                                    </span>
+                                    <hr class="mb-3 mt-1">
                                 {/block}
                                 <div class="mb-3 form-group">
                                     {radiogroup stacked=true}

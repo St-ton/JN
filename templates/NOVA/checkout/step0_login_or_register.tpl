@@ -39,7 +39,7 @@
         {/col}
         {col cols=12 id="customer" md="{if $withSidebar === 0}8{else}12{/if}" class="mt-3"}
             {block name='checkout-step0-login-or-register-form'}
-                {form method="post" action="{get_static_route id='bestellvorgang.php'}" class="form evo-validate" id="form-register"}
+                {form method="post" action="{get_static_route id='bestellvorgang.php'}" class="form evo-validate " id="form-register"}
                     {block name='checkout-step0-login-or-register-include-customer-account'}
                         {include file='register/form/customer_account.tpl' checkout=1 step="formular"}
                         <hr/>

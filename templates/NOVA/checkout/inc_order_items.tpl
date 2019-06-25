@@ -301,11 +301,11 @@
     {block name='checkout-inc-order-items-price-tax'}
         {if $NettoPreise}
             {block name='checkout-inc-order-items-price-net'}
-                {row class="total-net border-bottom"}
-                    {col class="text-right" cols=6}
+                {row class="total-net"}
+                    {col class="text-left" offset-sm=0 offset-md=6  offset-lg=8 cols=6 md=4 lg=3}
                         <span class="price_label"><strong>{lang key='totalSum'} ({lang key='net'}):</strong></span>
                     {/col}
-                    {col class="text-right price-col" cols=6}
+                    {col class="text-right price-col" cols=6 md=2 lg=1}
                         <strong class="price total-sum">{$WarensummeLocalized[$NettoPreise]}</strong>
                     {/col}
                 {/row}
@@ -315,11 +315,11 @@
         {if $Einstellungen.global.global_steuerpos_anzeigen !== 'N' && $Steuerpositionen|@count > 0}
             {block name='checkout-inc-order-items-tax'}
                 {foreach $Steuerpositionen as $Steuerposition}
-                    {row class="tax border-bottom"}
-                        {col class="text-right" cols=6}
+                    {row class="tax"}
+                        {col class="text-left" offset-sm=0 offset-md=6  offset-lg=8 cols=6 md=4 lg=3}
                             <span class="tax_label">{$Steuerposition->cName}:</span>
                         {/col}
-                        {col class="text-right price-col" cols=6}
+                        {col class="text-right price-col" cols=6 md=2 lg=1}
                             <span class="tax_label">{$Steuerposition->cPreisLocalized}</span>
                         {/col}
                     {/row}
@@ -329,22 +329,22 @@
 
         {if isset($smarty.session.Bestellung->GuthabenNutzen) && $smarty.session.Bestellung->GuthabenNutzen == 1}
             {block name='checkout-inc-order-items-credit'}
-                 {row class="customer-credit border-bottom"}
-                     {col class="text-right" cols=6}
+                 {row class="customer-credit"}
+                     {col class="text-left" offset-sm=0 offset-md=6  offset-lg=8 cols=6 md=4 lg=3}
                         {lang key='useCredit' section='account data'}
                      {/col}
-                     {col class="text-right" cols=6}
+                     {col class="text-right" cols=6 md=2 lg=1}
                          {$smarty.session.Bestellung->GutscheinLocalized}
                      {/col}
                  {/row}
             {/block}
         {/if}
         {block name='checkout-inc-order-items-price-sticky'}
-            {row class="total bg-info border-top border-bottom position-sticky"}
-                {col class="text-right" cols=6}
+            {row class="total bg-info border-top position-sticky"}
+                {col class="text-left" offset-sm=0 offset-md=6  offset-lg=8 cols=6 md=4 lg=3}
                     <span class="price_label"><strong>{lang key='totalSum'}:</strong></span>
                 {/col}
-                {col class="text-right price-col" cols=6}
+                {col class="text-right price-col" cols=6 md=2 lg=1}
                     <strong class="price total-sum">{$WarensummeLocalized[0]}</strong>
                 {/col}
             {/row}

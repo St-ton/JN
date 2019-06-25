@@ -59,13 +59,13 @@ class Panel extends Portlet
     {
         return [
             'panel-class' => [
-                'label'      => 'CSS Klasse',
-                'dspl_width' => 50,
+                'label' => 'CSS Klasse',
+                'width' => 50,
             ],
             'panel-state' => [
-                'label'      => 'Typ',
-                'type'       => InputType::SELECT,
-                'dspl_width' => 50,
+                'label' => 'Typ',
+                'type'  => InputType::SELECT,
+                'width' => 50,
                 'options'    => [
                     'default' => 'Standard',
                     'primary' => 'Primär',
@@ -76,14 +76,14 @@ class Panel extends Portlet
                 ],
             ],
             'title-flag'  => [
-                'label'      => 'Kopf anzeigen?',
-                'type'       => InputType::CHECKBOX,
-                'dspl_width' => 50,
+                'label' => 'Kopf anzeigen?',
+                'type'  => InputType::CHECKBOX,
+                'width' => 50,
             ],
             'footer-flag' => [
-                'label'      => 'Fuß anzeigen?',
-                'type'       => InputType::CHECKBOX,
-                'dspl_width' => 50,
+                'label' => 'Fuß anzeigen?',
+                'type'  => InputType::CHECKBOX,
+                'width' => 50,
             ],
         ];
     }

@@ -241,8 +241,8 @@ function getZuschlagNames(int $feeID)
  */
 function getShippingByName(string $query)
 {
-    $byName = [];
-    $db     = Shop::Container()->getDB();
+    $results = [];
+    $db      = Shop::Container()->getDB();
     foreach (explode(',', $query) as $search) {
         $search = trim($search);
         if (mb_strlen($search) > 2) {
@@ -257,17 +257,14 @@ function getShippingByName(string $query)
                 ['search' => '%' . $search . '%'],
                 ReturnType::ARRAY_OF_OBJECTS
             );
-            if (count($hits) > 1) {
-                foreach ($hits as $shippingByName) {
-                    $byName[$shippingByName->kVersandart] = $shippingByName;
-                }
-            } else {
-                $byName[$hits[0]->kVersandart] = $hits[0];
+            foreach ($hits as $item) {
+                $item->kVersandart           = (int)$item->kVersandart;
+                $results[$item->kVersandart] = $item;
             }
         }
     }
 
-    return $byName;
+    return $results;
 }
 
 /**

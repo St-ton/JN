@@ -57,10 +57,6 @@ $adminMenu = [
                 'rights' => 'MODULE_PRICECHART_VIEW',
                 'section' => CONF_PREISVERLAUF,
             ],
-            __('Tags')             => (object)[
-                'link'   => 'tagging.php',
-                'rights' => 'MODULE_PRODUCTTAGS_VIEW',
-            ],
             __('Warehouse')        => (object)[
                 'link'   => 'warenlager.php',
                 'rights' => 'WAREHOUSE_VIEW',

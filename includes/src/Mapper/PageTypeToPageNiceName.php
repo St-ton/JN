@@ -27,8 +27,6 @@ class PageTypeToPageNiceName
                 return __('WRB');
             case \PAGE_AGB:
                 return __('AGB');
-            case \PAGE_TAGGING:
-                return __('Tagging Übersicht');
             case \PAGE_LIVESUCHE:
                 return __('Livesuche');
             case \PAGE_DATENSCHUTZ:

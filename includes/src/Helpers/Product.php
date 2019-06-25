@@ -11,8 +11,6 @@ use JTL\Alert\Alert;
 use JTL\Cart\WarenkorbPos;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\Preise;
-use JTL\Catalog\Tag;
-use JTL\Catalog\TagArticle;
 use JTL\Catalog\UnitsOfMeasure;
 use JTL\CheckBox;
 use JTL\Customer\Kundengruppe;
@@ -1584,153 +1582,6 @@ class Product
     }
 
     /**
-     * @param Artikel $product
-     * @param array   $conf
-     * @return mixed
-     * @former bearbeiteProdukttags()
-     * @since 5.0.0
-     */
-    public static function editProductTags($product, array $conf)
-    {
-        if (Request::verifyGPCDataInt('produktTag') !== 1) {
-            return null;
-        }
-        $tagString       = Text::filterXSS(Request::verifyGPDataString('tag'));
-        $variKindArtikel = Request::verifyGPDataString('variKindArtikel');
-        if (\mb_strlen($tagString) > 0) {
-            if (empty($_SESSION['Kunde']->kKunde) && $conf['artikeldetails']['tagging_freischaltung'] === 'Y') {
-                $linkHelper = Shop::Container()->getLinkService();
-                \header('Location: ' . $linkHelper->getStaticRoute('jtl.php') .
-                    '?a=' . (int)$_POST['a'] . '&tag=' .
-                    Text::htmlentities(Text::filterXSS($_POST['tag'])) .
-                    '&r=' . \R_LOGIN_TAG . '&produktTag=1', true, 303);
-                exit();
-            }
-            Shop::Container()->getDB()->query(
-                'DELETE FROM ttagkunde
-                    WHERE dZeit < DATE_SUB(NOW(),INTERVAL 1 MONTH)',
-                ReturnType::DEFAULT
-            );
-            if ($conf['artikeldetails']['tagging_freischaltung'] === 'O'
-                || ($conf['artikeldetails']['tagging_freischaltung'] === 'Y' && Frontend::getCustomer()->getID() > 0)
-            ) {
-                $ip = Request::getRealIP();
-                if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
-                    $tagPostings = Shop::Container()->getDB()->queryPrepared(
-                        'SELECT COUNT(kTagKunde) AS Anzahl
-                            FROM ttagkunde
-                            WHERE dZeit > DATE_SUB(NOW(),INTERVAL 1 DAY)
-                                AND kKunde = :kKunde',
-                        ['kKunde' => (int)$_SESSION['Kunde']->kKunde],
-                        ReturnType::SINGLE_OBJECT
-                    );
-                    $customerID  = (int)$_SESSION['Kunde']->kKunde;
-                } else {
-                    $tagPostings = Shop::Container()->getDB()->queryPrepared(
-                        'SELECT count(kTagKunde) AS Anzahl FROM ttagkunde
-                            WHERE dZeit > DATE_SUB(NOW(), INTERVAL 1 DAY)
-                                AND cIP = :ip
-                                AND kKunde = 0',
-                        ['ip' => $ip],
-                        ReturnType::SINGLE_OBJECT
-                    );
-                    $customerID  = 0;
-                }
-                if ($tagPostings->Anzahl < (int)$conf['artikeldetails']['tagging_max_ip_count']) {
-                    if ($customerID === 0 && $conf['artikeldetails']['tagging_freischaltung'] === 'Y') {
-                        return Shop::Lang()->get('pleaseLoginToAddTags', 'messages');
-                    }
-                    $mapping = Shop::Container()->getDB()->select(
-                        'ttagmapping',
-                        'kSprache',
-                        Shop::getLanguage(),
-                        'cName',
-                        Shop::Container()->getDB()->escape($tagString)
-                    );
-                    if (isset($mapping->cNameNeu) && \mb_strlen($mapping->cNameNeu) > 0) {
-                        $tagString = $mapping->cNameNeu;
-                    }
-                    $tag = new Tag();
-                    $tag->getByName($tagString);
-                    $tagID = isset($tag->kTag) ? (int)$tag->kTag : 0;
-                    if ($tagID !== 0) {
-                        // Tag existiert bereits, TagArtikel updaten/anlegen
-                        $tagArticle = new TagArticle($tagID, (int)$product->kArtikel);
-                        if (empty($tagArticle->kTag)) {
-                            $tagArticle->kTag           = $tagID;
-                            $tagArticle->kArtikel       = (int)$product->kArtikel;
-                            $tagArticle->nAnzahlTagging = 1;
-                            $tagArticle->insertInDB();
-                        } else {
-                            $tagArticle->nAnzahlTagging = (int)$tagArticle->nAnzahlTagging + 1;
-                            $tagArticle->updateInDB();
-                        }
-                        if (!empty($variKindArtikel)) {
-                            $childTag = new TagArticle($tagID, (int)$variKindArtikel);
-                            if (empty($childTag->kTag)) {
-                                $childTag->kTag           = $tagID;
-                                $childTag->kArtikel       = (int)$variKindArtikel;
-                                $childTag->nAnzahlTagging = 1;
-                                $childTag->insertInDB();
-                            } else {
-                                $childTag->nAnzahlTagging = (int)$childTag->nAnzahlTagging + 1;
-                                $childTag->updateInDB();
-                            }
-                        }
-                    } else {
-                        $newTag           = new Tag();
-                        $newTag->kSprache = Shop::getLanguage();
-                        $newTag->cName    = $tagString;
-                        $newTag->cSeo     = Seo::getSeo($tagString);
-                        $newTag->cSeo     = Seo::checkSeo($newTag->cSeo);
-                        $newTag->nAktiv   = 0;
-                        $tagID            = $newTag->insertInDB();
-                        if ($tagID > 0) {
-                            $tagArticle                 = new TagArticle();
-                            $tagArticle->kTag           = $tagID;
-                            $tagArticle->kArtikel       = (int)$product->kArtikel;
-                            $tagArticle->nAnzahlTagging = 1;
-                            $tagArticle->insertInDB();
-                            if (!empty($variKindArtikel)) {
-                                $childTag = new TagArticle();
-                                // TagArticle neu anlegen
-                                $childTag->kTag           = $tagID;
-                                $childTag->kArtikel       = (int)$variKindArtikel;
-                                $childTag->nAnzahlTagging = 1;
-                                $childTag->insertInDB();
-                            }
-                        }
-                    }
-                    $ins         = new stdClass();
-                    $ins->kTag   = $tagID;
-                    $ins->kKunde = $customerID;
-                    $ins->cIP    = $ip;
-                    $ins->dZeit  = 'NOW()';
-                    Shop::Container()->getDB()->insert('ttagkunde', $ins);
-
-                    return $tag->nAktiv !== null && (int)$tag->nAktiv === 0
-                        ? Shop::Lang()->get('tagAcceptedWaitCheck', 'messages')
-                        : Shop::Lang()->get('tagAccepted', 'messages');
-                }
-
-                return Shop::Lang()->get('maxTagsExceeded', 'messages');
-            }
-        } elseif (isset($_POST['einloggen'])) {
-            \header('Location: ' . Shop::Container()->getLinkService()->getStaticRoute('jtl.php') .
-                '?a=' . (int)$_POST['a'] . '&r=' . \R_LOGIN_TAG, true, 303);
-            exit();
-        } else {
-            $url = empty($product->cURLFull)
-                ? (Shop::getURL() . '/?a=' . (int)$_POST['a'] . '&')
-                : ($product->cURLFull . '?');
-            \header('Location: ' . $url . 'r=' . \R_EMPTY_TAG, true, 303);
-            exit();
-        }
-
-        return null;
-    }
-
-    /**
      * Baue Blätter Navi - Dient für die Blätternavigation unter Bewertungen in der Artikelübersicht
      *
      * @param int $ratingPage
@@ -1985,7 +1836,7 @@ class Product
                         $products[] = $product;
                     }
                 }
-            } else { // Falls es keine Merkmale gibt, in tsuchcachetreffer und ttagartikel suchen
+            } else { // Falls es keine Merkmale gibt, in tsuchcachetreffer suchen
                 $searchCacheHits = Shop::Container()->getDB()->query(
                     'SELECT tsuchcachetreffer.kArtikel, tartikel.kVaterArtikel
                         FROM
@@ -2017,40 +1868,6 @@ class Product
                             ? $hit->kVaterArtikel
                             : $hit->kArtikel;
                         $product->fuelleArtikel($id, $defaultOptions);
-                        if ($product->kArtikel > 0) {
-                            $products[] = $product;
-                        }
-                    }
-                } else {
-                    $taggedProducts = Shop::Container()->getDB()->query(
-                        'SELECT ttagartikel.kArtikel, tartikel.kVaterArtikel
-                            FROM
-                            (
-                                SELECT kTag
-                                    FROM ttagartikel
-                                    WHERE kArtikel = ' . $productID . '
-                            ) AS ssTag
-                            JOIN ttagartikel
-                                ON ttagartikel.kTag = ssTag.kTag
-                                AND ttagartikel.kArtikel != ' . $productID . '
-                            LEFT JOIN tartikelsichtbarkeit
-                                ON ttagartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                                AND tartikelsichtbarkeit.kKundengruppe = ' . $customerGroupID . '
-                            JOIN tartikel
-                                ON tartikel.kArtikel = ttagartikel.kArtikel
-                                AND tartikel.kVaterArtikel != ' . $productID . '
-                            WHERE tartikelsichtbarkeit.kArtikel IS NULL ' . $stockFilterSQL . ' ' . $xsellSQL . '
-                            GROUP BY ttagartikel.kArtikel
-                            ORDER BY COUNT(*) DESC' . $limit,
-                        ReturnType::ARRAY_OF_OBJECTS
-                    );
-                    $defaultOptions = Artikel::getDefaultOptions();
-                    foreach ($taggedProducts as $taggedProduct) {
-                        $product = new Artikel();
-                        $id      = $taggedProduct->kVaterArtikel > 0
-                            ? $taggedProduct->kVaterArtikel
-                            : $taggedProduct->kArtikel;
-                        $product->fuelleArtikel((int)$id, $defaultOptions);
                         if ($product->kArtikel > 0) {
                             $products[] = $product;
                         }

@@ -121,24 +121,6 @@ class NavigationURLs implements NavigationURLsInterface
     /**
      * @inheritdoc
      */
-    public function getTags(): string
-    {
-        return $this->tags;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function setTags(string $tags): NavigationURLsInterface
-    {
-        $this->tags = $tags;
-
-        return $this;
-    }
-
-    /**
-     * @inheritdoc
-     */
     public function getSearchSpecials(): string
     {
         return $this->searchSpecials;

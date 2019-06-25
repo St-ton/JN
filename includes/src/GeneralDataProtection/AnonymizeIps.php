@@ -24,7 +24,6 @@ use JTL\Shop;
  * `tredirectreferer`
  * `tsitemaptracker`
  * `tsuchanfragencache`
- * `ttagkunde`
  * `tumfragedurchfuehrung`
  * `tverfuegbarkeitsbenachrichtigung`
  * `tvergleichsliste`
@@ -73,12 +72,6 @@ class AnonymizeIps extends Method implements MethodInterface
         ],
         'tsuchanfragencache'               => [
             'ColKey'     => 'kSuchanfrageCache',
-            'ColIp'      => 'cIP',
-            'ColCreated' => 'dZeit',
-            'ColType'    => 'DATETIME'
-        ],
-        'ttagkunde'                        => [
-            'ColKey'     => 'kTagKunde',
             'ColIp'      => 'cIP',
             'ColCreated' => 'dZeit',
             'ColType'    => 'DATETIME'

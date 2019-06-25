@@ -17,17 +17,16 @@ class {$commandName} extends Command
 {
     protected function configure()
     {
-        $this
-            ->setName('plugin:test')
-->setDescription('Test description')
-->addArgument('arg1', InputArgument::REQUIRED, 'Argument one');
-}
-
-/**
-* @param InputInterface $input
-* @param OutputInterface $output
-*/
-protected function execute(InputInterface $input, OutputInterface $output)
-{
-}
+        $this->setName('plugin:test')
+            ->setDescription('Test description')
+            ->addArgument('arg1', InputArgument::REQUIRED, 'Argument one');
+    }
+    
+    /**
+    * @param InputInterface $input
+    * @param OutputInterface $output
+    */
+    protected function execute(InputInterface $input, OutputInterface $output)
+    {
+    }
 }

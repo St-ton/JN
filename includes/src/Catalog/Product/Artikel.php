@@ -980,11 +980,6 @@ class Artikel
     /**
      * @var array
      */
-    public $tags = [];
-
-    /**
-     * @var array
-     */
     public $staffelPreis_arr = [];
 
     /**
@@ -4372,7 +4367,6 @@ class Artikel
         $this->metaKeywords    = $this->getMetaKeywords();
         $this->metaTitle       = $this->getMetaTitle();
         $this->metaDescription = $this->setMetaDescription();
-        $this->tags            = $this->getTags($langID);
         $this->taxData         = $this->getShippingAndTaxData();
         if ($this->conf['bewertung']['bewertung_anzeigen'] === 'Y' && $this->getOption('nRatings', 0) === 1) {
             $this->holehilfreichsteBewertung($langID)
@@ -5917,33 +5911,6 @@ class Artikel
                 ReturnType::ARRAY_OF_OBJECTS
             );
         }
-        if (!\is_array($return['oArtikelArr']) || \count($return['oArtikelArr']) < 1) {
-            $return['oArtikelArr'] = Shop::Container()->getDB()->query(
-                'SELECT ttagartikel.kArtikel, tartikel.kVaterArtikel
-                    FROM
-                    (
-                        SELECT kTag
-                        FROM ttagartikel
-                        WHERE kArtikel = ' . $productID . '
-                    ) AS ssTag
-                    JOIN ttagartikel
-                        ON ttagartikel.kTag = ssTag.kTag
-                        AND ttagartikel.kArtikel != ' . $productID . '
-                    LEFT JOIN tartikelsichtbarkeit
-                        ON ttagartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                        AND tartikelsichtbarkeit.kKundengruppe = ' . $customerGroupID . '
-                    JOIN tartikel
-                        ON tartikel.kArtikel = ttagartikel.kArtikel
-                        AND tartikel.kVaterArtikel != ' . $productID . '
-                    WHERE tartikelsichtbarkeit.kArtikel IS NULL
-                        ' . Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL() . '
-                        ' . $xSellSQL . '
-                    GROUP BY ttagartikel.kArtikel
-                    ORDER BY COUNT(*) DESC ' .
-                    $limitSQL,
-                ReturnType::ARRAY_OF_OBJECTS
-            );
-        }
 
         return $return;
     }
@@ -6451,55 +6418,15 @@ class Artikel
      *
      * @param int $languageID
      * @return array
+     * @deprecated since 5.0.0
      */
     public function getTags(int $languageID = 0): array
     {
-        $nLimit   = (int)$this->conf['artikeldetails']['tagging_max_count'];
-        $tagLimit = ($nLimit > 0) ? ' LIMIT ' . $nLimit : '';
-        if ($languageID === 0) {
-            if (Shop::getLanguageID() > 0) {
-                $languageID = Shop::getLanguageID();
-            } elseif (isset($_SESSION['kSprache'])) {
-                $languageID = $_SESSION['kSprache'];
-            }
-            if (!$languageID) {
-                $defaultLanguage = LanguageHelper::getDefaultLanguage();
-                $languageID      = $defaultLanguage->kSprache;
-            }
-        }
-        $tags = Shop::Container()->getDB()->query(
-            'SELECT ttag.kTag, ttag.cName, tseo.cSeo, (SELECT COUNT(*)
-                                                        FROM ttagartikel
-                                                          WHERE kTag = ttag.kTag) AS Anzahl
-                FROM ttag
-                JOIN ttagartikel
-                    ON ttagartikel.kTag = ttag.kTag
-                LEFT JOIN tseo
-                    ON tseo.cKey = \'kTag\'
-                    AND tseo.kKey = ttag.kTag
-                    AND tseo.kSprache = ' . $languageID . '
-                WHERE ttag.nAktiv = 1
-                    AND ttag.kSprache = ' . $languageID . '
-                    AND ttagartikel.kArtikel = ' . (int)$this->kArtikel . '
-                GROUP BY ttag.kTag
-                ORDER BY ttagartikel.nAnzahlTagging DESC ' . $tagLimit,
-            ReturnType::ARRAY_OF_OBJECTS
+        trigger_error(
+            __FUNCTION__ . ' is deprecated. Functionalitiy of product tags was removed in 5.0.0',
+            E_USER_DEPRECATED
         );
-        foreach ($tags as $tag) {
-            $tag->kTag     = (int)$tag->kTag;
-            $tag->Anzahl   = (int)$tag->Anzahl;
-            $tag->cURL     = URL::buildURL($tag, \URLART_TAG);
-            $tag->cURLFull = URL::buildURL($tag, \URLART_TAG, true);
-        }
-        \executeHook(
-            \HOOK_ARTIKEL_INC_PRODUKTTAGGING,
-            [
-                'kArtikel' => $this->kArtikel,
-                'tags'     => &$tags
-            ]
-        );
-
-        return $tags;
+        return [];
     }
 
     /**

@@ -80,8 +80,7 @@ if (!empty($_POST) && (isset($_POST['cName']) || isset($_POST['kImageMap'])) && 
             $keyValue = 'article_key';
             $value    = $_POST[$keyValue] ?? null;
         } elseif ($pageType === PAGE_ARTIKELLISTE) {
-            $filters  = [
-                'kTag'         => 'tag_key',
+            $filters   = [
                 'kMerkmalWert' => 'attribute_key',
                 'kKategorie'   => 'categories_key',
                 'kHersteller'  => 'manufacturer_key',

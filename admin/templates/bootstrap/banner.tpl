@@ -174,9 +174,6 @@
                                     <option value="" {if isset($oExtension->cKey) && $oExtension->cKey === ''}selected="selected"{/if}>
                                         {__('noFilter')}
                                     </option>
-                                    <option value="kTag" {if isset($cKey) && $cKey === 'kTag'}selected="selected" {elseif isset($oExtension->cKey) && $oExtension->cKey === 'kTag'}selected="selected"{/if}>
-                                        {__('tag')}
-                                    </option>
                                     <option value="kMerkmalWert" {if isset($cKey) && $cKey === 'kMerkmalWert'}selected="selected" {elseif isset($oExtension->cKey) && $oExtension->cKey === 'kMerkmalWert'}selected="selected"{/if}>
                                         {__('attribute')}
                                     </option>
@@ -226,24 +223,6 @@
                                 {if (isset($cKey) && $cKey === 'kLink') || (isset($oExtension->cKey) && $oExtension->cKey === 'kLink')}
                                     ioCall('getPages', [[$('#link_key').val()]], function (data) {
                                         $('#link_name').val(data[0].cName);
-                                    });
-                                {/if}
-                            </script>
-                        </div>
-                        <div id="keykTag" class="input-group key">
-                            <span class="input-group-addon"><label for="tag_name">{__('tag')}</label></span>
-                            <input type="hidden" name="tag_key" id="tag_key"
-                                   value="{if (isset($cKey) && $cKey === 'kTag') || (isset($oExtension->cKey) && $oExtension->cKey === 'kTag')}{$oExtension->cValue}{/if}">
-                            <input class="form-control" type="text" name="tag_name" id="tag_name">
-                            <span class="input-group-addon">{getHelpDesc cDesc=__('typeAheadTag')}</span>
-                            <script>
-                                enableTypeahead('#tag_name', 'getTags', 'cName', null, function(e, item) {
-                                    $('#tag_name').val(item.cName);
-                                    $('#tag_key').val(item.kTag);
-                                });
-                                {if (isset($cKey) && $cKey === 'kTag') || (isset($oExtension->cKey) && $oExtension->cKey === 'kTag')}
-                                    ioCall('getTags', [[$('#tag_key').val()]], function (data) {
-                                        $('#tag_name').val(data[0].cName);
                                     });
                                 {/if}
                             </script>

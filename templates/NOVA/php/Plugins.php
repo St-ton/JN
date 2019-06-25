@@ -50,9 +50,6 @@ class Plugins
         $searchFilters    = isset($params['cSuchFilter'])
             ? ProductFilter::initSearchFilter(\explode(';', $params['cSuchFilter']))
             : [];
-        $tagFilters       = isset($params['cTagFilter'])
-            ? ProductFilter::initTagFilter(\explode(';', $params['cTagFilter']))
-            : [];
         $params           = [
             'kKategorie'             => $params['kKategorie'] ?? null,
             'kHersteller'            => $params['kHersteller'] ?? null,
@@ -61,7 +58,6 @@ class Plugins
             'kSeite'                 => $params['kSeite'] ?? null,
             'kSuchanfrage'           => $params['kSuchanfrage'] ?? null,
             'kMerkmalWert'           => $params['kMerkmalWert'] ?? null,
-            'kTag'                   => $params['kTag'] ?? null,
             'kSuchspecial'           => $params['kSuchspecial'] ?? null,
             'kKategorieFilter'       => $params['kKategorieFilter'] ?? null,
             'kHerstellerFilter'      => $params['kHerstellerFilter'] ?? null,
@@ -70,7 +66,6 @@ class Plugins
             'kSuchspecialFilter'     => $params['kSuchspecialFilter'] ?? null,
             'nSortierung'            => $sort,
             'MerkmalFilter_arr'      => $attributeFilters,
-            'TagFilter_arr'          => $tagFilters,
             'SuchFilter_arr'         => $searchFilters,
             'nArtikelProSeite'       => $params['nArtikelProSeite'] ?? null,
             'cSuche'                 => $params['cSuche'] ?? null,

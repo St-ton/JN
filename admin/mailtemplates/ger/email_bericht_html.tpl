@@ -39,8 +39,6 @@
         {quantityStatisticRow cAnzahlTitle='Bewertungsguthaben Summe' nAnzahlVar=$oMailObjekt->oAnzahlGezahltesGuthaben->fSummeGuthaben}
     {/if}
 
-    {quantityStatisticRow cAnzahlTitle='Tags' nAnzahlVar=$oMailObjekt->nAnzahlTags}
-    {quantityStatisticRow cAnzahlTitle='Tags, nicht freigeschaltet' nAnzahlVar=$oMailObjekt->nAnzahlTagsNichtFreigeschaltet}
     {quantityStatisticRow cAnzahlTitle='Geworbene Kunden' nAnzahlVar=$oMailObjekt->nAnzahlGeworbenerKunden}
     {quantityStatisticRow cAnzahlTitle='Geworbene Kunden, die etwas kauften' nAnzahlVar=$oMailObjekt->nAnzahlErfolgreichGeworbenerKunden}
     {quantityStatisticRow cAnzahlTitle='Versendete Wunschlisten' nAnzahlVar=$oMailObjekt->nAnzahlVersendeterWunschlisten}

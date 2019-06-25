@@ -544,9 +544,6 @@ function mappeSeitentyp(int $pageType)
         case PAGE_DATENSCHUTZ:
             return 'Datenschutz';
 
-        case PAGE_TAGGING:
-            return 'Tagging';
-
         case PAGE_LIVESUCHE:
             return 'Livesuche';
 
@@ -813,7 +810,6 @@ function gibTrustedShopsBewertenButton()
  * $#h:ID:NAME#$ => ID = kHersteller NAME => Wunschname ... wird in eine URL (evt. SEO) zum Hersteller umgewandelt.
  * $#m:ID:NAME#$ => ID = kMerkmalWert NAME => Wunschname ... wird in eine URL (evt. SEO) zum MerkmalWert umgewandelt.
  * $#n:ID:NAME#$ => ID = kNews NAME => Wunschname ... wird in eine URL (evt. SEO) zur News umgewandelt.
- * $#t:ID:NAME#$ => ID = kTag NAME => Wunschname ... wird in eine URL (evt. SEO) zum Tag umgewandelt.
  * $#l:ID:NAME#$ => ID = kSuchanfrage NAME => Wunschname ... wird in eine URL (evt. SEO) zur Livesuche umgewandelt.
  *
  * @param string $text
@@ -1850,8 +1846,11 @@ function setzeSuchFilter($filter = [])
  */
 function setzeTagFilter($filter = [])
 {
-    trigger_error(__FUNCTION__ . ' is deprecated. Use ProductFilter::initTagFilter() instead.', E_USER_DEPRECATED);
-    return JTL\Filter\ProductFilter::initTagFilter($filter);
+    trigger_error(
+        __FUNCTION__ . ' is deprecated. Functionalitiy of product tags was removed in 5.0.0',
+        E_USER_DEPRECATED
+    );
+    return [];
 }
 
 /**

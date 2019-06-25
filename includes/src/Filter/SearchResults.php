@@ -91,12 +91,6 @@ class SearchResults implements SearchResultsInterface
 
     /**
      * @var Option[]
-     * @former Tags
-     */
-    private $tagFilterOptions = [];
-
-    /**
-     * @var Option[]
      * @former MerkmalFilter
      */
     private $attributeFilterOptions = [];
@@ -145,10 +139,6 @@ class SearchResults implements SearchResultsInterface
      * @var string
      */
     public $searchFilterJSON;
-    /**
-     * @var string
-     */
-    public $tagFilterJSON;
 
     /**
      * @var array
@@ -175,14 +165,12 @@ class SearchResults implements SearchResultsInterface
         'SucheErfolglos'      => 'SearchUnsuccessful',
         'Herstellerauswahl'   => 'ManufacturerFilterOptions',
         'Bewertung'           => 'RatingFilterOptions',
-        'Tags'                => 'TagFilterOptions',
         'MerkmalFilter'       => 'AttributeFilterOptions',
         'Preisspanne'         => 'PriceRangeFilterOptions',
         'Kategorieauswahl'    => 'CategoryFilterOptions',
         'SuchFilter'          => 'SearchFilterOptions',
         'Suchspecialauswahl'  => 'SearchSpecialFilterOptions',
         'SuchFilterJSON'      => 'SearchFilterJSON',
-        'TagJSON'             => 'TagFilterJSON'
     ];
 
     public function __construct()
@@ -447,24 +435,6 @@ class SearchResults implements SearchResultsInterface
     /**
      * @inheritdoc
      */
-    public function getTagFilterOptions(): array
-    {
-        return $this->tagFilterOptions;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function setTagFilterOptions($options): SearchResultsInterface
-    {
-        $this->tagFilterOptions = $options;
-
-        return $this;
-    }
-
-    /**
-     * @inheritdoc
-     */
     public function getAttributeFilterOptions(): array
     {
         return $this->attributeFilterOptions;
@@ -573,24 +543,6 @@ class SearchResults implements SearchResultsInterface
     /**
      * @inheritdoc
      */
-    public function getTagFilterJSON(): ?string
-    {
-        return $this->tagFilterJSON;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function setTagFilterJSON($json): SearchResultsInterface
-    {
-        $this->tagFilterJSON = $json;
-
-        return $this;
-    }
-
-    /**
-     * @inheritdoc
-     */
     public function getSearchFilterJSON(): ?string
     {
         return $this->searchFilterJSON;
@@ -668,7 +620,6 @@ class SearchResults implements SearchResultsInterface
         return [
             'manufacturerFilterOptions'  => $this->getManufacturerFilterOptions(),
             'ratingFilterOptions'        => $this->getRatingFilterOptions(),
-            'tagFilterOptions'           => $this->getTagFilterOptions(),
             'attributeFilterOptions'     => $this->getAttributeFilterOptions(),
             'priceRangeFilterOptions'    => $this->getPriceRangeFilterOptions(),
             'categoryFilterOptions'      => $this->getCategoryFilterOptions(),
@@ -736,7 +687,6 @@ class SearchResults implements SearchResultsInterface
         $hideActiveOnly          = true;
         $manufacturerOptions     = $productFilter->getManufacturerFilter()->getOptions();
         $ratingOptions           = $productFilter->getRatingFilter()->getOptions();
-        $tagOptions              = $productFilter->getTag()->getOptions();
         $categoryOptions         = $productFilter->getCategoryFilter()->getOptions();
         $priceRangeOptions       = $productFilter->getPriceRangeFilter()->getOptions($this->getProductCount());
         $searchSpecialFilters    = $productFilter->getSearchSpecialFilter()->getOptions();
@@ -780,7 +730,6 @@ class SearchResults implements SearchResultsInterface
              ->setSortingOptions($productFilter->getSorting()->getOptions())
              ->setLimitOptions($productFilter->getLimits()->getOptions())
              ->setRatingFilterOptions($ratingOptions)
-             ->setTagFilterOptions($tagOptions)
              ->setPriceRangeFilterOptions($priceRangeOptions)
              ->setCategoryFilterOptions($categoryOptions)
              ->setSearchFilterOptions($searchFilterOptions)
@@ -788,16 +737,6 @@ class SearchResults implements SearchResultsInterface
              ->setAttributeFilterOptions($attribtuteFilterOptions)
              ->setCustomFilterOptions($customFilterOptions)
              ->setSearchFilterJSON($json);
-
-        if ($productFilter->getFilterConfig()->getConfig('navigationsfilter')['allgemein_tagfilter_benutzen'] !== 'N') {
-            $this->setTagFilterJSON(AbstractBox::getJSONString(\array_map(
-                function ($e) {
-                    /** @var Option $e */
-                    return $e->setURL(Text::htmlentitydecode($e->getURL()));
-                },
-                $tagOptions
-            )));
-        }
 
         if (empty($searchSpecialFilters)) {
             // hide category filter when a category is being browsed

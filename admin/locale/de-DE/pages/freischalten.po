@@ -9,7 +9,7 @@ msgid "freischaltenURL"
 msgstr "https://jtl-url.de/ihwlq"
 
 msgid "freischaltenDesc"
-msgstr "Hier können Sie Bewertungen, Live-Suchen, Tags, News-Kommentare und Newsletter-Empfänger in der aktuell ausgewählten Sprache freischalten."
+msgstr "Hier können Sie Bewertungen, Live-Suchen, News-Kommentare und Newsletter-Empfänger in der aktuell ausgewählten Sprache freischalten."
 
 msgid "freischaltenActivate"
 msgstr "Freischalten"
@@ -37,9 +37,6 @@ msgstr "Suchtreffer"
 
 msgid "freischaltenLiveseachDate"
 msgstr "Zuletzt gesucht am"
-
-msgid "freischaltenTagsCount"
-msgstr "Tag-Anzahl"
 
 msgid "freischaltenNewsComments"
 msgstr "News-Kommentare"
@@ -115,15 +112,6 @@ msgstr "Bitte markieren Sie mindestens eine Suchanfrage."
 
 msgid "successSearchDelete"
 msgstr "Ihre markierten Suchanfragen wurden erfolgreich gelöscht."
-
-msgid "successTagUnlock"
-msgstr "Ihre markierten Tags wurden erfolgreich freigeschaltet."
-
-msgid "errorAtLeastOneTag"
-msgstr "Bitte markieren Sie mindestens einen Tag."
-
-msgid "successTagDelete"
-msgstr "Ihre markierten Tags wurden erfolgreich gelöscht."
 
 msgid "successNewsCommentUnlock"
 msgstr "Ihre markierten News-Kommentare wurden erfolgreich freigeschaltet."

@@ -9,7 +9,7 @@ msgid "freischaltenURL"
 msgstr "https://jtl-url.de/z3qa0"
 
 msgid "freischaltenDesc"
-msgstr "Here you approve customer reviews, live searches, tags, news comments and the recipients of newsletters in the currently selected language."
+msgstr "Here you approve customer reviews, live searches, news comments and the recipients of newsletters in the currently selected language."
 
 msgid "freischaltenActivate"
 msgstr "Approve"
@@ -37,9 +37,6 @@ msgstr "Search results"
 
 msgid "freischaltenLiveseachDate"
 msgstr "Last searched on"
-
-msgid "freischaltenTagsCount"
-msgstr "Number of tags"
 
 msgid "freischaltenNewsComments"
 msgstr "News comments"
@@ -115,15 +112,6 @@ msgstr "Please select at least one search query."
 
 msgid "successSearchDelete"
 msgstr "Selected search queries deleted successfully."
-
-msgid "successTagUnlock"
-msgstr "Selected tags approved successfully."
-
-msgid "errorAtLeastOneTag"
-msgstr "Please select at least one tag."
-
-msgid "successTagDelete"
-msgstr "Selected tags deleted successfully."
 
 msgid "successNewsCommentUnlock"
 msgstr "Selected news comments approved successfully."

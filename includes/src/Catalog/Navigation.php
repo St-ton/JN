@@ -229,9 +229,6 @@ class Navigation
         if ($this->productFilter->hasAttributeValue()) {
             return Shop::Lang()->get('productsWith') . ' ' . $this->productFilter->getAttributeValue()->getName();
         }
-        if ($this->productFilter->hasTag()) {
-            return Shop::Lang()->get('showAllProductsTaggedWith') . ' ' . $this->productFilter->getTag()->getName();
-        }
         if ($this->productFilter->hasSearchSpecial()) {
             return $this->productFilter->getSearchSpecial()->getName() ?? '';
         }

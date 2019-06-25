@@ -13,7 +13,6 @@ namespace JTL\Filter;
  *
  * @property $kHersteller
  * @property $nAnzahlTagging
- * @property $kTag
  * @property $kKategorie
  * @property $nVon
  * @property $cVonLocalized

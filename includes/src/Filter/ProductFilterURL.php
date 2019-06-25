@@ -13,7 +13,6 @@ use JTL\Filter\Items\PriceRange;
 use JTL\Filter\Items\Rating;
 use JTL\Filter\Items\Search;
 use JTL\Filter\Items\SearchSpecial;
-use JTL\Filter\Items\Tag;
 use JTL\Filter\States\BaseSearchQuery;
 use JTL\Session\Frontend;
 use JTL\Shop;
@@ -324,18 +323,6 @@ class ProductFilterURL
         $url->setRatings($_ratingURL);
         $this->productFilter->getRatingFilter()->setUnsetFilterURL($_ratingURL);
 
-        $extraFilter = (new Tag($this->productFilter))->init(null)->setDoUnset(true);
-        $_tagsURL    = $this->getURL($extraFilter);
-        $url->setTags($_tagsURL);
-        $this->productFilter->getTag()->setUnsetFilterURL($_tagsURL);
-        $this->productFilter->tagFilterCompat->setUnsetFilterURL($_tagsURL);
-
-        $additionalFilter = (new Tag($this->productFilter))->setDoUnset(true);
-        foreach ($this->productFilter->getTagFilter() as $tagFilter) {
-            $additionalFilter->init($tagFilter->getValue());
-            $tagFilter->setUnsetFilterURL($this->getURL($additionalFilter));
-        }
-
         $extraFilter        = (new SearchSpecial($this->productFilter))->init(null)->setDoUnset(true);
         $_searchSpecialsURL = $this->getURL($extraFilter);
         $url->setSearchSpecials($_searchSpecialsURL);
@@ -439,10 +426,6 @@ class ProductFilterURL
         ) {
             $filter = (new Rating($this->productFilter))
                 ->init($extraFilter->BewertungFilter->nSterne ?? null);
-        } elseif (isset($extraFilter->TagFilter->kTag)
-            || (isset($extraFilter->FilterLoesen->Tags) && $extraFilter->FilterLoesen->Tags === true)
-        ) {
-            $filter = (new Tag($this->productFilter))->init($extraFilter->TagFilter->kTag ?? null);
         } elseif (isset($extraFilter->SuchspecialFilter->kKey)
             || (isset($extraFilter->FilterLoesen->Suchspecials) && $extraFilter->FilterLoesen->Suchspecials === true)
         ) {

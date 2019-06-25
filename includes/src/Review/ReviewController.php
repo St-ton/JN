@@ -15,6 +15,7 @@ use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
+use JTL\Model\DataModel;
 use JTL\Services\JTL\AlertServiceInterface;
 use JTL\Session\Frontend;
 use JTL\Shop;
@@ -287,7 +288,7 @@ class ReviewController extends BaseController
             return;
         }
         try {
-            $review = new ReviewModel(['id' => $reviewID], $this->db);
+            $review = ReviewModel::load(['id' => $reviewID], $this->db, ReviewModel::ON_NOTEXISTS_FAIL);
         } catch (Exception $e) {
             return;
         }

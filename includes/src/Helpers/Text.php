@@ -250,7 +250,7 @@ class Text
     {
         $mappings = self::getISOMappings();
 
-        return $mappings[$iso];
+        return $mappings[$iso] ?? '';
     }
 
     /**

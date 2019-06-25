@@ -517,7 +517,11 @@ class Category
     {
         foreach ($catList as $i => $cat) {
             if ($cat->bUnterKategorien === 1) {
-                if ($cat->cnt === 0 && \count($cat->Unterkategorien) === 0) {
+                $count = \count($cat->Unterkategorien);
+                if ($count === 0) {
+                    $cat->bUnterKategorien = 0;
+                }
+                if ($cat->cnt === 0 && $count === 0) {
                     unset($catList[$i]);
                     if ($parentCat !== null && empty($parentCat->Unterkategorien)) {
                         $parentCat->bUnterKategorien = 0;

@@ -3049,3 +3049,9 @@ msgstr "Encryption (SSL)"
 
 msgid "ftp_path_name"
 msgstr "Path to shop"
+
+msgid "hersteller_anzeigen_als_name"
+msgstr "Show manufacturers as"
+
+msgid "hersteller_anzeigen_als_desc"
+msgstr "Specify how to display the manufacturers."

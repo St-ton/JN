@@ -1,12 +1,12 @@
 @charset "UTF-8";
+@import "../base/wow/animate.css";
+@import "../base/slider/slider.css";
 /*!
  * Bootstrap v4.3.1 (https://getbootstrap.com/)
  * Copyright 2011-2019 The Bootstrap Authors
  * Copyright 2011-2019 Twitter, Inc.
  * Licensed under MIT (https://github.com/twbs/bootstrap/blob/master/LICENSE)
  */
-@import "../base/wow/animate.css";
-@import "../base/slider/slider.css";
 :root {
   --blue: #007bff;
   --indigo: #6610f2;
@@ -11819,7 +11819,6 @@ input[type=file].file-loading, .file-loading input[type=file] {
 
 .badge-circle {
   background-color: #fff;
-  border-color: #707070;
   -webkit-box-shadow: none;
   box-shadow: none;
   min-width: 44px;
@@ -11848,6 +11847,45 @@ input[type=file].file-loading, .file-loading input[type=file] {
   border-color: #F8BF00;
   color: #fff;
   opacity: 1;
+}
+
+.badge-circle-1 {
+  background-color: #fff;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+  min-width: 44px;
+  width: 44px;
+  height: 44px;
+  border: 1.5px solid #707070;
+  opacity: 0.8;
+  color: #707070;
+  font-size: 18px !important;
+  line-height: 15px !important;
+  border-radius: 50% !important;
+  transition: all 0.2s;
+}
+.badge-circle-1::before {
+  display: none;
+}
+.badge-circle-1.circle-small {
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  font-size: 14px !important;
+  line-height: 12px !important;
+}
+.badge-circle-1:hover {
+  color: #525252;
+  border-color: #525252;
+  opacity: 1 !important;
+  background: #fff;
+}
+.badge-circle-1.on-list {
+  animation: size 0.4s;
+  color: #fff;
+  opacity: 1;
+  border: 1.5px solid #F8BF00;
+  background-color: #F8BF00;
 }
 
 #add-to-cart .btn .btn-basket-check {
@@ -12293,54 +12331,63 @@ input[type=file].file-loading, .file-loading input[type=file] {
 }
 .ribbon-c.ribbon--1 {
   background: #eeb728;
+  color: #fff;
 }
 .ribbon-c.ribbon--1::after {
   border-color: #d29d11 #d29d11 transparent;
 }
 .ribbon-c.ribbon--2 {
   background: #4bc223;
+  color: #fff;
 }
 .ribbon-c.ribbon--2::after {
   border-color: #3a971b #3a971b transparent;
 }
 .ribbon-c.ribbon--3 {
   background: #525252;
+  color: #fff;
 }
 .ribbon-c.ribbon--3::after {
   border-color: #393939 #393939 transparent;
 }
 .ribbon-c.ribbon--4 {
   background: #c3ebe6;
+  color: #525252;
 }
 .ribbon-c.ribbon--4::after {
   border-color: #9dded6 #9dded6 transparent;
 }
 .ribbon-c.ribbon--5 {
   background: #b9056f;
+  color: #fff;
 }
 .ribbon-c.ribbon--5::after {
   border-color: #870451 #870451 transparent;
 }
 .ribbon-c.ribbon--6 {
   background: #ebebeb;
+  color: #525252;
 }
 .ribbon-c.ribbon--6::after {
   border-color: #d2d2d2 #d2d2d2 transparent;
 }
 .ribbon-c.ribbon--7 {
   background: #b9080e;
+  color: #fff;
 }
 .ribbon-c.ribbon--7::after {
   border-color: #88060a #88060a transparent;
 }
 .ribbon-c.ribbon--8 {
   background: #11926b;
+  color: #fff;
 }
 .ribbon-c.ribbon--8::after {
   border-color: #0c644a #0c644a transparent;
 }
 .ribbon-c.ribbon--9 {
   background: #f78e26;
+  color: #fff;
 }
 .ribbon-c.ribbon--9::after {
   border-color: #e27408 #e27408 transparent;
@@ -13870,13 +13917,13 @@ aside .badge-light {
   border: 1px solid #9b9b9b;
 }
 
-.box-filter-characteristics .filter-img {
+.box-filter-characteristics .filter-img, .box-filter-manufacturer .filter-img {
   width: auto;
   height: 28px;
-  margin: 0 1rem 1rem 0;
+  margin: 0.2rem;
   border: 3px solid transparent;
 }
-.box-filter-characteristics .active .filter-img {
+.box-filter-characteristics .active .filter-img, .box-filter-manufacturer .active .filter-img {
   border: 3px solid #F8BF00;
   border-radius: 0.125rem;
 }
@@ -15074,6 +15121,55 @@ input.form-control[name=wishlist-url] {
 .slick-down:hover,
 .slick-up:hover {
   opacity: 1;
+}
+
+/* Action buttons */
+.action-tip-animation {
+  position: absolute;
+  bottom: 50px;
+  width: 200px;
+  right: -50px;
+  visibility: hidden;
+  transition: 0.6s;
+  z-index: -2;
+  font-size: 2px;
+  color: transparent;
+  font-weight: 400;
+}
+.action-tip-animation.press {
+  font-size: 16px;
+  font-weight: 600;
+  visibility: visible;
+  animation: fade 1.5s;
+}
+
+@keyframes fade {
+  0% {
+    color: transparent;
+  }
+  35% {
+    color: #525252;
+  }
+  100% {
+    color: transparent;
+  }
+}
+@keyframes size {
+  0% {
+    width: 36px;
+    height: 36px;
+    margin: 0 8px;
+  }
+  50% {
+    width: 40px;
+    height: 40px;
+    margin: -4px 4px 0 8px;
+  }
+  100% {
+    width: 36px;
+    height: 36px;
+    margin: 0 8px;
+  }
 }
 
 /*# sourceMappingURL=clear.css.map */

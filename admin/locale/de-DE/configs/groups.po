@@ -235,3 +235,6 @@ msgstr "Empfängeranschrift für die Warenrücksendung"
 
 msgid "ftp_header"
 msgstr "FTP Verbindung"
+
+msgid "configgroup_110_manufacturer_filter"
+msgstr "Herstellerfilter"

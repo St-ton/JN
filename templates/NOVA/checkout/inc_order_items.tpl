@@ -306,76 +306,78 @@
             {/if}
         {/foreach}
     {/block}
-    {block name='checkout-inc-order-items-price-tax'}
-        {if $NettoPreise}
-            {block name='checkout-inc-order-items-price-net'}
-                {row class="total-net"}
+    {if $tplscope !== 'cart'}
+        {block name='checkout-inc-order-items-price-tax'}
+            {if $NettoPreise}
+                {block name='checkout-inc-order-items-price-net'}
+                    {row class="total-net"}
+                        {col class="text-left" offset-sm=0 offset-md=6  offset-lg=8 cols=6 md=4 lg=3}
+                            <span class="price_label"><strong>{lang key='totalSum'} ({lang key='net'}):</strong></span>
+                        {/col}
+                        {col class="text-right price-col" cols=6 md=2 lg=1}
+                            <strong class="price total-sum">{$WarensummeLocalized[$NettoPreise]}</strong>
+                        {/col}
+                    {/row}
+                {/block}
+            {/if}
+
+            {if $Einstellungen.global.global_steuerpos_anzeigen !== 'N' && $Steuerpositionen|@count > 0}
+                {block name='checkout-inc-order-items-tax'}
+                    {foreach $Steuerpositionen as $Steuerposition}
+                        {row class="tax"}
+                            {col class="text-left" offset-sm=0 offset-md=6  offset-lg=8 cols=6 md=4 lg=3}
+                                <span class="tax_label">{$Steuerposition->cName}:</span>
+                            {/col}
+                            {col class="text-right price-col" cols=6 md=2 lg=1}
+                                <span class="tax_label">{$Steuerposition->cPreisLocalized}</span>
+                            {/col}
+                        {/row}
+                    {/foreach}
+                {/block}
+            {/if}
+
+            {if isset($smarty.session.Bestellung->GuthabenNutzen) && $smarty.session.Bestellung->GuthabenNutzen == 1}
+                {block name='checkout-inc-order-items-credit'}
+                     {row class="customer-credit"}
+                         {col class="text-left" offset-sm=0 offset-md=6  offset-lg=8 cols=6 md=4 lg=3}
+                            {lang key='useCredit' section='account data'}
+                         {/col}
+                         {col class="text-right" cols=6 md=2 lg=1}
+                             {$smarty.session.Bestellung->GutscheinLocalized}
+                         {/col}
+                     {/row}
+                {/block}
+            {/if}
+            {block name='checkout-inc-order-items-price-sticky'}
+                {row class="total bg-info border-top position-sticky"}
                     {col class="text-left" offset-sm=0 offset-md=6  offset-lg=8 cols=6 md=4 lg=3}
-                        <span class="price_label"><strong>{lang key='totalSum'} ({lang key='net'}):</strong></span>
+                        <span class="price_label"><strong>{lang key='totalSum'}:</strong></span>
                     {/col}
                     {col class="text-right price-col" cols=6 md=2 lg=1}
-                        <strong class="price total-sum">{$WarensummeLocalized[$NettoPreise]}</strong>
+                        <strong class="price total-sum">{$WarensummeLocalized[0]}</strong>
                     {/col}
                 {/row}
             {/block}
-        {/if}
-
-        {if $Einstellungen.global.global_steuerpos_anzeigen !== 'N' && $Steuerpositionen|@count > 0}
-            {block name='checkout-inc-order-items-tax'}
-                {foreach $Steuerpositionen as $Steuerposition}
-                    {row class="tax"}
-                        {col class="text-left" offset-sm=0 offset-md=6  offset-lg=8 cols=6 md=4 lg=3}
-                            <span class="tax_label">{$Steuerposition->cName}:</span>
-                        {/col}
-                        {col class="text-right price-col" cols=6 md=2 lg=1}
-                            <span class="tax_label">{$Steuerposition->cPreisLocalized}</span>
-                        {/col}
-                    {/row}
-                {/foreach}
-            {/block}
-        {/if}
-
-        {if isset($smarty.session.Bestellung->GuthabenNutzen) && $smarty.session.Bestellung->GuthabenNutzen == 1}
-            {block name='checkout-inc-order-items-credit'}
-                 {row class="customer-credit"}
-                     {col class="text-left" offset-sm=0 offset-md=6  offset-lg=8 cols=6 md=4 lg=3}
-                        {lang key='useCredit' section='account data'}
-                     {/col}
-                     {col class="text-right" cols=6 md=2 lg=1}
-                         {$smarty.session.Bestellung->GutscheinLocalized}
-                     {/col}
-                 {/row}
-            {/block}
-        {/if}
-        {block name='checkout-inc-order-items-price-sticky'}
-            {row class="total bg-info border-top position-sticky"}
-                {col class="text-left" offset-sm=0 offset-md=6  offset-lg=8 cols=6 md=4 lg=3}
-                    <span class="price_label"><strong>{lang key='totalSum'}:</strong></span>
-                {/col}
-                {col class="text-right price-col" cols=6 md=2 lg=1}
-                    <strong class="price total-sum">{$WarensummeLocalized[0]}</strong>
-                {/col}
-            {/row}
         {/block}
-    {/block}
-    {block name='checkout-inc-order-items-shipping'}
-        {if isset($FavourableShipping)}
-            {if $NettoPreise}
-                {$shippingCosts = "`$FavourableShipping->cPriceLocalized[$NettoPreise]` {lang key='plus' section='basket'} {lang key='vat' section='productDetails'}"}
-            {else}
-                {$shippingCosts = $FavourableShipping->cPriceLocalized[$NettoPreise]}
+        {block name='checkout-inc-order-items-shipping'}
+            {if isset($FavourableShipping)}
+                {if $NettoPreise}
+                    {$shippingCosts = "`$FavourableShipping->cPriceLocalized[$NettoPreise]` {lang key='plus' section='basket'} {lang key='vat' section='productDetails'}"}
+                {else}
+                    {$shippingCosts = $FavourableShipping->cPriceLocalized[$NettoPreise]}
+                {/if}
+                {row class="shipping-costs text-right"}
+                   {col cols=12}
+                        <small>{lang|sprintf:$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL():$shippingCosts:$FavourableShipping->cCountryCode key='shippingInformationSpecific' section='basket'}</small>
+                    {/col}
+                {/row}
+            {elseif empty($FavourableShipping) && empty($smarty.session.Versandart)}
+                {row class="shipping-costs text-right"}
+                    {col cols=12}
+                        <small>{lang|sprintf:$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL() key='shippingInformation' section='basket'}</small>
+                    {/col}
+                {/row}
             {/if}
-            {row class="shipping-costs text-right"}
-               {col cols=12}
-                    <small>{lang|sprintf:$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL():$shippingCosts:$FavourableShipping->cCountryCode key='shippingInformationSpecific' section='basket'}</small>
-                {/col}
-            {/row}
-        {elseif empty($FavourableShipping) && empty($smarty.session.Versandart)}
-            {row class="shipping-costs text-right"}
-                {col cols=12}
-                    <small>{lang|sprintf:$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL() key='shippingInformation' section='basket'}</small>
-                {/col}
-            {/row}
-        {/if}
-    {/block}
+        {/block}
+    {/if}
 {/block}

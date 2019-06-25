@@ -34,7 +34,7 @@ class Tutorial
     fixIframePos(element)
     {
         var off   = element.offset();
-        var pLeft = this.gui.sidebarPanel.outerWidth();
+        var pLeft = this.gui.opcSidebar.outerWidth();
 
         element.offset({left: off.left + pLeft});
     }
@@ -47,8 +47,8 @@ class Tutorial
         var backdropBottom = $('.tour-backdrop.bottom');
 
         var off       = backdropTop.offset();
-        var pTop      = this.gui.topNav.height();
-        var pLeft     = this.gui.sidebarPanel.outerWidth();
+        var pTop      = this.gui.opcHeader.height();
+        var pLeft     = this.gui.opcSidebar.outerWidth();
         var leftWidth = backdropLeft.width();
 
         // backdropTop.offset({top: off.top + pTop});
@@ -86,7 +86,7 @@ class Tutorial
                 },
                 {
                     backdrop: true,
-                    element: this.gui.sidebarPanel,
+                    element: this.gui.opcSidebar,
                     title: "Aufteilung",
                     content: "Grundsätzlich ist der Editor in die zwei Bereich aufgeteilt.<br>Hier siehst du die Sidebar."
                 },

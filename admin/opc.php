@@ -42,7 +42,7 @@ $smarty->assign('shopUrl', $shopUrl)
 if ($opc->isOPCInstalled() === false) {
     // OPC not installed correctly
     $smarty->assign('error', __('The OPC update is not installed properly. Please update your migrations.'))
-           ->display('onpage-composer.tpl');
+           ->display(PFAD_ROOT . PFAD_ADMIN . '/opc/tpl/editor.tpl');
 } elseif ($action === 'edit') {
     // Enter OPC to edit a page
     try {
@@ -52,7 +52,7 @@ if ($opc->isOPCInstalled() === false) {
     }
 
     $smarty->assign('error', $error)
-           ->display('onpage-composer.tpl');
+           ->display(PFAD_ROOT . PFAD_ADMIN . '/opc/tpl/editor.tpl');
 } elseif ($action !== '' && Form::validateToken() === false) {
     // OPC action while XSRF validation failed
     $error = __('Wrong XSRF token.');
@@ -70,7 +70,7 @@ if ($opc->isOPCInstalled() === false) {
         $error = $e->getMessage();
     }
 
-    header('Location: ' . $shopUrl . '/' . PFAD_ADMIN . 'onpage-composer.php?pageKey=' . $pageKey . '&action=edit');
+    header('Location: ' . $shopUrl . '/' . PFAD_ADMIN . 'opc.php?pageKey=' . $pageKey . '&action=edit');
     exit();
 } elseif ($action === 'adopt') {
     // Adopt new draft from another draft
@@ -88,7 +88,7 @@ if ($opc->isOPCInstalled() === false) {
         $error = $e->getMessage();
     }
 
-    header('Location: ' . $shopUrl . '/' . PFAD_ADMIN . 'onpage-composer.php?pageKey=' . $pageKey . '&action=edit');
+    header('Location: ' . $shopUrl . '/' . PFAD_ADMIN . 'opc.php?pageKey=' . $pageKey . '&action=edit');
     exit();
 } elseif ($action === 'duplicate-bulk') {
     // duplicate multiple drafts from existing drafts

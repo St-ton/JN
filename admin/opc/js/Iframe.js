@@ -49,7 +49,7 @@ class Iframe
             this.head = this.jq('head');
             this.body = this.jq('body');
 
-            this.loadStylesheet(this.templateUrl + 'css/onpage-composer/iframe.css');
+            this.loadStylesheet(this.shopUrl + '/admin/opc/css/iframe.css');
 
             this.loadScript(
                 'https://unpkg.com/popper.js/dist/umd/popper.min.js',

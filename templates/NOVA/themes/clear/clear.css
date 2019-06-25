@@ -14741,47 +14741,6 @@ table caption {
   z-index: 1019;
 }
 
-#opc-switcher .switcher {
-  z-index: 1060;
-  position: fixed;
-  top: 1rem;
-  left: -360px;
-  width: 360px;
-  -webkit-transition: left 0.2s ease;
-  transition: left 0.2s ease;
-  color: #525252;
-  -webkit-box-shadow: 0 0 1px rgba(0, 0, 0, 0.15);
-  box-shadow: 0 0 1px rgba(0, 0, 0, 0.15);
-  background-clip: padding-box;
-}
-#opc-switcher .switcher.open {
-  left: -2px;
-  z-index: 1060;
-  -moz-box-shadow: 1px 5px 15px 1px rgba(0, 0, 0, 0.3);
-  box-shadow: 1px 5px 15px 1px rgba(0, 0, 0, 0.3);
-}
-#opc-switcher .switcher.open .btn-toggle {
-  color: #f8f8f8;
-  background-color: #707070;
-}
-#opc-switcher .switcher .btn-toggle {
-  position: absolute;
-  right: -40px;
-  top: 0;
-  z-index: 1060;
-  -webkit-box-shadow: 0 0 1px rgba(0, 0, 0, 0.15);
-  box-shadow: 0 0 1px rgba(0, 0, 0, 0.15);
-}
-#opc-switcher .switcher .switcher-header {
-  background-color: #f8f8f8;
-  border-bottom: 1px solid rgba(120, 130, 140, 0.13);
-}
-#opc-switcher .switcher .switcher-content {
-  padding: 1rem;
-  min-height: 4rem;
-  background-color: #f8f8f8;
-}
-
 .selection-wizard-question a {
   white-space: nowrap;
 }

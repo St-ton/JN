@@ -2142,53 +2142,6 @@ table caption {
   z-index: $zindex-sticky - 1;
 }
 
-#opc-switcher {
-  .switcher {
-    z-index: $zindex-popover;
-    position: fixed;
-    top: $spacer;
-    left: -360px;
-    width: 360px;
-    -webkit-transition: left .2s ease;
-    transition: left .2s ease;
-    color: $gray-dark;
-    -webkit-box-shadow: 0 0 1px rgba(0,0,0,.15);
-    box-shadow: 0 0 1px rgba(0,0,0,.15);
-    background-clip: padding-box;
-
-    &.open {
-      left: -2px;
-      z-index: $zindex-popover;
-      -moz-box-shadow: 1px 5px 15px 1px rgba(0, 0, 0, 0.3);
-      box-shadow: 1px 5px 15px 1px rgba(0, 0, 0, 0.3);
-
-      .btn-toggle {
-        color: $cool-white;
-        background-color: $gray;
-      }
-    }
-
-    .btn-toggle {
-      position: absolute;
-      right: -40px;
-      top: 0;
-      z-index: $zindex-popover;
-      -webkit-box-shadow: 0 0 1px rgba(0,0,0,.15);
-      box-shadow: 0 0 1px rgba(0,0,0,.15);
-    }
-
-    .switcher-header {
-      background-color: $cool-white;
-      border-bottom: 1px solid rgba(120,130,140,.13);
-    }
-
-    .switcher-content {
-      padding:  $spacer;
-      min-height: 4rem;
-      background-color: $cool-white;
-    }
-  }
-}
 .selection-wizard-question a {
   white-space: nowrap;
 }

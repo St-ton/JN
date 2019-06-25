@@ -1,4 +1,4 @@
-@import "variables.less";
+@import "base";
 
 html, body {
     margin: 0;
@@ -7,6 +7,11 @@ html, body {
     height: 100%;
     overflow: hidden;
     box-sizing: border-box;
+    line-height: 1.5;
+}
+
+#opc {
+    height: 100%;
 }
 
 .nav.nav-tabs {
@@ -19,11 +24,11 @@ html, body {
         > a {
             position: relative;
             display: block;
-            color: @navtab-text;
+            color: $navtab-text;
             border: 2px solid transparent;
 
             &:hover, &:focus {
-                color: @jtl-shop-darker;
+                color: $text-color;
                 text-decoration: none;
                 border: 2px solid transparent;
             }
@@ -32,15 +37,15 @@ html, body {
         &.active {
             > a, > a:hover, > a:focus {
                 color: #555;
-                border-bottom: 2px solid @jtl-shop-darker;
+                border-bottom: 2px solid $text-color;
                 cursor: default;
             }
         }
     }
 }
 
-#sidebarPanel {
-    width: @sidebar-width;
+#opcSidebar {
+    width: $sidebar-width;
     height: 100%;
     float: left;
     position: relative;
@@ -56,26 +61,22 @@ html, body {
         }
     }
 
-    #topNav {
-        background-color: @jtl-shop;
-        background-image: none;
-        margin-bottom: 0;
-
+    #opcHeader {
         a {
-            color: @brand-text;
+            color: $brand-text;
 
             &:hover {
-                color: @jtl-shop-darker;
+                color: $text-color;
             }
         }
 
         .dropdown-menu {
             a {
-                color: @jtl-shop-darker;
+                color: $text-color;
                 padding: 8px;
 
                 i.fa {
-                    color: @jtl-shop;
+                    color: $primary-color;
                 }
             }
 
@@ -88,7 +89,7 @@ html, body {
     #portlets {
         .collapseGroup {
             display: block;
-            color: @jtl-shop-darker;
+            color: $text-color;
             font-size: 16px;
             padding: 8px 25px;
             margin: 0 -15px 5px -15px;
@@ -102,15 +103,15 @@ html, body {
         }
 
         .portletButton {
-            color: @jtl-shop-darker;
-            background-color: @portlet-btn-bg;
+            color: $text-color;
+            background-color: $portlet-btn-bg;
             height: 95px;
             display: block;
             width: 100%;
             border-radius: 5px;
 
             .fa {
-                color: @jtl-shop;
+                color: $primary-color;
                 margin: 7px 0 5px;
                 font-size: 30px;
                 height: 30px;
@@ -167,7 +168,7 @@ html, body {
             padding: 8px 16px;
             background: #f7f7f7;
             border-radius: 5px;
-            color: @jtl-shop-darker;
+            color: $text-color;
         }
     }
 
@@ -182,7 +183,7 @@ html, body {
         text-align: center;
         position: absolute;
         bottom: 0;
-        background-color: @display-prevs-bg;
+        background-color: $display-prevs-bg;
 
         ul {
             padding: 0;
@@ -198,7 +199,7 @@ html, body {
                 background-color: #d1d1d1;
 
                 a {
-                    color: @jtl-shop-darker;
+                    color: $text-color;
                 }
             }
         }
@@ -209,7 +210,7 @@ html, body {
             &:active,
             &:focus,
             &.active {
-                color: @jtl-shop-darker;
+                color: $text-color;
             }
         }
     }
@@ -219,8 +220,8 @@ html, body {
 #previewPanel {
     height: 100%;
     text-align: center;
-    background: @iframe-panel-bg;
-    margin-left: @sidebar-width;
+    background: $iframe-panel-bg;
+    margin-left: $sidebar-width;
 
     iframe {
         border: 0;
@@ -232,7 +233,7 @@ html, body {
 
 .modal {
     .modal-header {
-        background-color: @jtl-shop;
+        background-color: $primary-color;
         color: #fff;
 
         button {
@@ -260,7 +261,7 @@ html, body {
             background-color: #bbb;
         }
         .btn-primary {
-            background-color: @jtl-shop;
+            background-color: $primary-color;
         }
         .btn-xs {
             padding: 1px 5px;
@@ -287,7 +288,7 @@ html, body {
     }
 
     input:checked + .panel-default > .panel-heading {
-        background-color: @jtl-shop;
+        background-color: $primary-color;
         background-image: none;
         color: #fff;
     }

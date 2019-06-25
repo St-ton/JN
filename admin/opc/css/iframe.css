@@ -1,15 +1,14 @@
-#opc-switcher {
-  display: none;
-}
 [data-portlet] {
   min-height: 2em;
   outline: 2px dashed #eee;
   position: relative;
   z-index: 19;
 }
+
 .opc-area {
   min-height: 2em;
 }
+
 .opc-dragged {
   opacity: 0.5;
   box-shadow: 4px 4px 4px #000;
@@ -17,14 +16,17 @@
   top: -4px;
   left: -4px;
 }
+
 .opc-hovered {
   outline: 2px dashed #abd1f6 !important;
   cursor: pointer;
 }
+
 .opc-selected {
   outline: 2px dashed #5cbcf6 !important;
   cursor: pointer;
 }
+
 .opc-droptarget {
   min-height: 2em;
   background-color: #eee;
@@ -34,9 +36,11 @@
   border-radius: 8px;
   transition: background-color 0.125s;
 }
+
 .opc-active-droptarget {
   background-color: #5cbcf6;
 }
+
 .opc-portlet-toolbar {
   z-index: 19;
   height: 2em;
@@ -61,6 +65,7 @@
 .opc-portlet-toolbar .opc-label:hover {
   background-color: #5cbcf6;
 }
+
 .opc-label {
   background-color: #abd1f6;
   color: #fff;
@@ -69,4 +74,5 @@
   border-radius: 4px;
   z-index: 19;
 }
+
 /*# sourceMappingURL=iframe.css.map */

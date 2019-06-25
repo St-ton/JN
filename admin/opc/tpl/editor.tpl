@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -7,19 +7,22 @@
 
     <title>{__('onPageComposer')}</title>
 
-    <link rel="stylesheet" href="{$templateUrl}css/bootstrap.min.css">
+    <link rel="stylesheet" href="{$shopUrl}/templates/NOVA/themes/base/bootstrap/bootstrap.css">
+    {*<link rel="stylesheet" href="{$templateUrl}css/bootstrap.min.css">*}
     <link rel="stylesheet" href="{$templateUrl}css/bootstrap-theme.min.css">
-    <link rel="stylesheet" href="{$templateUrl}css/font-awesome.min.css">
+    {*<link rel="stylesheet" href="{$templateUrl}css/font-awesome.min.css">*}
+    <link rel="stylesheet" href="{$shopUrl}/templates/NOVA/themes/base/fontawesome/css/all.min.css">
     <link rel="stylesheet" href="{$templateUrl}css/bootstrap-colorpicker.min.css">
     <link rel="stylesheet" href="{$templateUrl}css/typeaheadjs.css">
     <link rel="stylesheet" href="{$templateUrl}css/bootstrap-tour.min.css">
     <link rel="stylesheet" href="{$templateUrl}css/bootstrap-datetimepicker.min.css">
 
-    <link rel="stylesheet" href="{$templateUrl}css/onpage-composer/host.css">
+    <link rel="stylesheet" href="{$shopUrl}/admin/opc/css/editor.css">
 
     <script src="{$templateUrl}js/jquery-3.3.1.min.js"></script>
     <script src="{$templateUrl}js/jquery-ui.min.js"></script>
-    <script src="{$templateUrl}js/bootstrap.min.js"></script>
+    {*<script src="{$templateUrl}js/bootstrap.min.js"></script>*}
+    <script src="{$shopUrl}/templates/NOVA/js/bootstrap.bundle.min.js"></script>
 
     <script src="{$templateUrl}js/global.js"></script>
     <script src="{$templateUrl}js/searchpicker.js"></script>
@@ -31,15 +34,15 @@
     <script src="{$templateUrl}js/typeahead.bundle.js"></script>
     <script src="{$templateUrl}js/bootstrap-datetimepicker.min.js"></script>
 
-    <script src="{$templateUrl}js/onpage-composer/utils.js"></script>
-    <script src="{$templateUrl}js/onpage-composer/OPC.js"></script>
-    <script src="{$templateUrl}js/onpage-composer/GUI.js"></script>
-    <script src="{$templateUrl}js/onpage-composer/Iframe.js"></script>
-    <script src="{$templateUrl}js/onpage-composer/Page.js"></script>
-    <script src="{$templateUrl}js/onpage-composer/IO.js"></script>
-    <script src="{$templateUrl}js/onpage-composer/Tutorial.js"></script>
-    <script src="{$templateUrl}js/onpage-composer/PageTree.js"></script>
-    <script src="{$templateUrl}js/onpage-composer/PreviewFrame.js"></script>
+    <script src="{$shopUrl}/admin/opc/js/utils.js"></script>
+    <script src="{$shopUrl}/admin/opc/js/OPC.js"></script>
+    <script src="{$shopUrl}/admin/opc/js/GUI.js"></script>
+    <script src="{$shopUrl}/admin/opc/js/Iframe.js"></script>
+    <script src="{$shopUrl}/admin/opc/js/Page.js"></script>
+    <script src="{$shopUrl}/admin/opc/js/IO.js"></script>
+    <script src="{$shopUrl}/admin/opc/js/Tutorial.js"></script>
+    <script src="{$shopUrl}/admin/opc/js/PageTree.js"></script>
+    <script src="{$shopUrl}/admin/opc/js/PreviewFrame.js"></script>
 
     <script>
         let opc = new OPC({
@@ -54,159 +57,8 @@
     </script>
 </head>
 <body>
-    <div id="sidebarPanel">
-
-        <nav id="topNav" class="navbar navbar-default">
-            <div class="container-fluid">
-                <div class="navbar-header">
-                    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
-                            data-target="#top-navbar-collapse">
-                        <span class="sr-only">{__('toggleNavigation')}</span>
-                        <i class="fa fa-bars"></i>
-                    </button>
-                    <a class="navbar-brand" href="#">{__('onPageComposer')}</a>
-                </div>
-                <div class="collapse navbar-collapse" id="top-navbar-collapse">
-                    <ul class="nav navbar-nav navbar-right">
-                        <li class="dropdown">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                                <i class="fa fa-ellipsis-v"></i>
-                            </a>
-                            <ul class="dropdown-menu">
-                                <li>
-                                    <a href="#" id="btnImport" data-toggle="tooltip" data-placement="right">
-                                        <i class="fa fa-upload"></i> {__('Import')}
-                                    </a>
-                                </li>
-                                <li role="separator" class="divider"></li>
-                                <li>
-                                    <a href="#" id="btnExport" data-toggle="tooltip" data-placement="right">
-                                        <i class="fa fa-download"></i> {__('Export')}
-                                    </a>
-                                </li>
-                                <li role="separator" class="divider"></li>
-                                <li>
-                                    <a href="#" id="btnHelp" data-toggle="tooltip" data-placement="right">
-                                        <i class="fa fa-question-circle"></i> {__('help')}
-                                    </a>
-                                </li>
-                            </ul>
-                        </li>
-                        <li>
-                            <a href="#" id="btnPublish" data-toggle="tooltip" data-placement="bottom"
-                               title="{__('Publish')}">
-                                <i class="fa fa-newspaper-o fa-fw"></i>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" id="btnSave" data-toggle="tooltip" data-placement="bottom"
-                               title="{__('Save page')}">
-                                <i class="fa fa-save"></i>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#" id="btnClose" data-toggle="tooltip" data-placement="bottom"
-                               title="{__('Close OnPage-Composer')}">
-                                <i class="fa fa-close"></i>
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-
-        <ul id="composer-tabs" class="nav nav-tabs">
-            <li class="active"><a href="#portlets" data-toggle="tab">{__('Portlets')}</a></li>
-            <li><a href="#blueprints" data-toggle="tab">{__('Blueprints')}</a></li>
-            <li><a href="#revisions" data-toggle="tab">{__('Revisions')}</a></li>
-            <li>
-                <a href="#pagetree" data-toggle="tab" title="{__('Page structure')}">
-                    <i class="fa fa-sitemap"></i>
-                </a>
-            </li>
-        </ul>
-
-        <div id="sidebarInnerPanel" class="container-fluid">
-            <div class="tab-content">
-
-                <div class="tab-pane active" id="portlets">
-                    {foreach $opc->getPortletGroups() as $group}
-                        {assign var="groupId" value=$group->getName()|regex_replace:'/[^a-zA-Z0-9]/':'-'|lower}
-                        <a href="#collapse-{$groupId}" data-toggle="collapse" class="collapseGroup">
-                            <i class="fa fa-plus-circle"></i> {$group->getName()}
-                        </a>
-                        <div class="collapse" id="collapse-{$groupId}">
-                            <div class="row">
-                                {foreach $group->getPortlets() as $i => $portlet}
-                                    {if $i > 0 && $i % 3 === 0}</div><div class="row">{/if}
-                                    <div class="col-xs-4">
-                                        <a href="#" class="btn portletButton" draggable="true"
-                                           data-portlet-class="{$portlet->getClass()}">
-                                            {$portlet->getButtonHtml()}
-                                        </a>
-                                    </div>
-                                {/foreach}
-                            </div>
-                        </div>
-                    {/foreach}
-                </div>
-
-                <div class="tab-pane" id="blueprints">
-                    <div class="list-group">
-                        <div id="blueprintList"></div>
-                        <div class="list-group-item">
-                            <a href="#" class="blueprintButton btn" id="btnImportBlueprint">
-                                <i class="fa fa-upload"></i> <span>{__('Import blueprint')}</span>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="tab-pane" id="revisions">
-                    <div class="list-group">
-                        <a class="list-group-item revisionBtn" href="#" data-revision-id="-1" id="unsavedRevision">
-                            <i>{__('Unsaved revision')}</i>
-                        </a>
-                        <a class="list-group-item revisionBtn" href="#" data-revision-id="0">
-                            {__('Current revision')}
-                        </a>
-                        <div id="revisionList"></div>
-                    </div>
-                </div>
-
-                <div class="tab-pane" id="pagetree">
-                    <div id="pageTreeView"></div>
-                </div>
-
-            </div>
-        </div>
-
-        <div id="displayPreviews">
-            <ul id="displayWidths">
-                <li>
-                    <a href="#" id="btnDisplayWidthMobile"><i class="fa fa-mobile"></i></a>
-                </li>
-                <li>
-                    <a href="#" id="btnDisplayWidthTablet"><i class="fa fa-tablet"></i></a>
-                </li>
-                <li>
-                    <a href="#" id="btnDisplayWidthLaptop"><i class="fa fa-laptop"></i></a>
-                </li>
-                <li class="active">
-                    <a href="#" id="btnDisplayWidthDesktop"><i class="fa fa-desktop"></i></a>
-                </li>
-            </ul>
-            <ul>
-                <li>
-                    <a href="#" id="btnPreview" data-toggle="tooltip" data-placement="right"
-                       title="Preview">
-                        <i class="fa fa-eye"></i>
-                    </a>
-                </li>
-            </ul>
-        </div>
-
-    </div>
+    <div id="opc">
+    {include file="./sidebar.tpl"}
 
     <div id="iframePanel">
         <iframe id="iframe"></iframe>
@@ -495,6 +347,6 @@
     <a class="list-group-item revisionBtn" href="#" data-revision-id="999"
        style="display:none" id="revisionBtnBlueprint"></a>
     {*/blueprint*}
-
+    </div>
 </body>
 </html>

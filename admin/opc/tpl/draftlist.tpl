@@ -41,7 +41,7 @@
                 {/if}
             </div>
             <div class="opc-draft-actions">
-                <form method="post" action="{$ShopURL}/admin/onpage-composer.php">
+                <form method="post" action="{$opcStartUrl}">
                     <input type="hidden" name="jtl_token" value="{$adminSessionToken}">
                     <input type="hidden" name="pageKey" value="{$draft->getKey()}">
                     <button type="submit" name="action" value="edit" data-toggle="tooltip"
@@ -58,7 +58,7 @@
                     <button type="button"
                             data-toggle="dropdown" title="Für andere Sprache übernehmen"
                             data-placement="bottom" data-container="#opc">
-                        <img src="{$ShopURL}/admin/opc/icon-copysprache.svg">
+                        <img src="{$ShopURL}/admin/opc/gfx/icon-copysprache.svg">
                     </button>
                     <div class="dropdown-menu opc-dropdown-menu">
                         {foreach $languages as $lang}
@@ -74,7 +74,7 @@
                                     {$langPageUri = $opcPageService->getCurPageUri($lang->id)}
                                 {/if}
                                 <form method="post"
-                                      action="{$ShopURL}/admin/onpage-composer.php">
+                                      action="{$opcStartUrl}">
                                     <input type="hidden" name="jtl_token"
                                            value="{$adminSessionToken}">
                                     <input type="hidden" name="action" value="adopt">

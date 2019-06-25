@@ -18,8 +18,8 @@ class GUI
         this.tutorial     = tutorial;
 
         installGuiElements(this, [
-            'sidebarPanel',
-            'topNav',
+            'opcSidebar',
+            'opcHeader',
             'iframePanel',
             'previewPanel',
             'loaderModal',

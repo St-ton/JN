@@ -1,4 +1,5 @@
 {if \JTL\Shop::isAdmin() && $opc->isEditMode() === false && $opc->isPreviewMode() === false}
+    {$opcStartUrl       = "{$ShopURL}/admin/opc.php"}
     {$curPageUrl        = $opcPageService->getCurPageUri()}
     {$curPageId         = $opcPageService->createCurrentPageId()}
     {$publicDraft       = $opcPageService->getPublicPage($curPageId)}
@@ -26,14 +27,14 @@
 
         function openOpcStartMenu()
         {
-            $('#opc-sidebar').addClass('opc-open');
+            $('#opcSidebar').addClass('opc-open');
             $('#opc-startmenu').addClass('opc-close');
             $('#opc-page-wrapper').addClass('opc-shifted');
         }
 
         function closeOpcStartMenu()
         {
-            $('#opc-sidebar').removeClass('opc-open');
+            $('#opcSidebar').removeClass('opc-open');
             $('#opc-startmenu').removeClass('opc-close');
             $('#opc-page-wrapper').removeClass('opc-shifted');
         }
@@ -43,7 +44,7 @@
             if (confirm("Wollen Sie diesen Entwurf wirklich löschen?")) {
                 $.ajax({
                     method: 'post',
-                    url: '{$ShopURL}/admin/onpage-composer.php',
+                    url: '{$opcStartUrl}',
                     data: {
                         action: 'discard',
                         pageKey: draftKey,
@@ -76,7 +77,7 @@
             if (confirm(draftKeys.length + " Entwürfe werden gelöscht! Fortfahren?")) {
                 $.ajax({
                     method: 'post',
-                    url: '{$ShopURL}/admin/onpage-composer.php',
+                    url: '{$opcStartUrl}',
                     data: {
                         action: 'discard-bulk',
                         draftKeys: draftKeys,
@@ -153,7 +154,7 @@
         {
             $.ajax({
                 method: 'post',
-                url: '{$ShopURL}/admin/onpage-composer.php',
+                url: '{$opcStartUrl}',
                 data: {
                     action: 'duplicate-bulk',
                     draftKeys: [draftKey],
@@ -180,7 +181,7 @@
 
             $.ajax({
                 method: 'post',
-                url: '{$ShopURL}/admin/onpage-composer.php',
+                url: '{$opcStartUrl}',
                 data: {
                     action: 'duplicate-bulk',
                     draftKeys: draftKeys,
@@ -210,12 +211,12 @@
     <div id="opc">
         {if $pageDrafts|count === 0}
             <nav id="opc-startmenu">
-                <form method="post" action="{$ShopURL}/admin/onpage-composer.php">
+                <form method="post" action="{$opcStartUrl}">
                     <input type="hidden" name="jtl_token" value="{$adminSessionToken}">
                     <input type="hidden" name="pageId" value="{$curPageId}">
                     <input type="hidden" name="pageUrl" value="{$curPageUrl}">
                     <button type="submit" name="action" value="extend" class="opc-btn-primary">
-                        <img src="{$ShopURL}/admin/opc/icon-OPC.svg" alt="OPC Start Icon" id="opc-start-icon">
+                        <img src="{$ShopURL}/admin/opc/gfx/icon-OPC.svg" alt="OPC Start Icon" id="opc-start-icon">
                         <span id="opc-start-label">OnPage Composer</span>
                     </button>
                 </form>
@@ -223,15 +224,15 @@
         {else}
             <nav id="opc-startmenu">
                 <button type="button" class="opc-btn-primary" onclick="openOpcStartMenu()">
-                    <img src="{$ShopURL}/admin/opc/icon-OPC.svg" alt="OPC Start Icon" id="opc-start-icon">
+                    <img src="{$ShopURL}/admin/opc/gfx/icon-OPC.svg" alt="OPC Start Icon" id="opc-start-icon">
                     <span id="opc-start-label">OnPage Composer</span>
                 </button>
             </nav>
-            <div id="opc-sidebar">
-                <header id="opc-header">
-                    {*<button>*}
-                        {*<i class="fa fas fa-ellipsis-v"></i>*}
-                    {*</button>*}
+            <div id="opcSidebar">
+                <header id="opcHeader">
+                    <button id="opcMenuBtn">
+                        <i class="fa fas fa-ellipsis-v"></i>
+                    </button>
                     <h1 id="opc-sidebar-title">
                         Seite bearbeiten
                     </h1>
@@ -277,11 +278,11 @@
                 </div>
                 <div id="opc-sidebar-content">
                     <ul id="opc-draft-list">
-                        {include file=$opcDir|cat:'draftlist.tpl'}
+                        {include file=$opcDir|cat:'tpl/draftlist.tpl'}
                     </ul>
                 </div>
                 <div id="opc-sidebar-footer">
-                    <form method="post" action="{$ShopURL}/admin/onpage-composer.php">
+                    <form method="post" action="{$opcStartUrl}">
                         <input type="hidden" name="jtl_token" value="{$adminSessionToken}">
                         <input type="hidden" name="pageId" value="{$curPageId}">
                         <input type="hidden" name="pageUrl" value="{$curPageUrl}">

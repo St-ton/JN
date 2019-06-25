@@ -923,7 +923,7 @@ function checkeWarenkorbEingang()
                                     C_WARENKORBPOS_TYP_ARTIKEL,
                                     $cUnique,
                                     $oKonfigitem->getKonfigitem(),
-                                    false
+                                    true
                                 );
                                 break;
 

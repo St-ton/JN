@@ -5,7 +5,7 @@
 {block name='checkout-inc-payment-methods'}
     {radiogroup}
         {foreach $Zahlungsarten as $zahlungsart}
-            {col cols=12 id=$zahlungsart->cModulId}
+            {col cols=12 id=$zahlungsart->cModulId class="mb-3"}
                 {radio name="Zahlungsart"
                         value=$zahlungsart->kZahlungsart
                         id="payment{$zahlungsart->kZahlungsart}"

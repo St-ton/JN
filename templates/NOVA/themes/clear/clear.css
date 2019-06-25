@@ -15205,7 +15205,7 @@ input.form-control[name=wishlist-url] {
 .label-slide .form-group {
   position: relative;
 }
-.label-slide .form-group input:not([type=checkbox]), .label-slide .form-group select {
+.label-slide .form-group input:not([type=checkbox]):not([type=radio]), .label-slide .form-group select {
   width: 100%;
   height: 40px;
   border: 1px solid #ccc;
@@ -15213,7 +15213,7 @@ input.form-control[name=wishlist-url] {
   outline: none;
   padding: 0 15px;
 }
-.label-slide .form-group input:not([type=checkbox]):focus + label, .label-slide .form-group select:focus + label {
+.label-slide .form-group input:not([type=checkbox]):not([type=radio]):focus + label, .label-slide .form-group select:focus + label {
   top: -10px;
   background: #fff;
   padding: 3px 6px;
@@ -15221,7 +15221,7 @@ input.form-control[name=wishlist-url] {
   color: #525252;
   font-size: 12px;
 }
-.label-slide .form-group input:not([type=checkbox]):not([value=""]):not(:focus) + label, .label-slide .form-group select:not([value=""]):not(:focus) + label {
+.label-slide .form-group input:not([type=checkbox]):not([type=radio]):not([value=""]):not(:focus) + label, .label-slide .form-group select:not([value=""]):not(:focus) + label {
   top: -10px;
   background: #fff;
   padding: 3px 6px;
@@ -15229,7 +15229,7 @@ input.form-control[name=wishlist-url] {
   color: #525252;
   font-size: 12px;
 }
-.label-slide .form-group input:not([type=checkbox]) + label, .label-slide .form-group select + label {
+.label-slide .form-group input:not([type=checkbox]):not([type=radio]) + label, .label-slide .form-group select + label {
   position: absolute;
   top: 12px;
   z-index: 5;
@@ -15239,19 +15239,14 @@ input.form-control[name=wishlist-url] {
   pointer-events: none;
   transition: 0.4s all;
 }
-.label-slide .form-group input:not([type=checkbox])::-webkit-input-placeholder, .label-slide .form-group select::-webkit-input-placeholder {
-  color: transparent;
+
+legend {
+  font-size: 1rem;
+  font-weight: bolder;
 }
-.label-slide .form-group input:not([type=checkbox]):-moz-placeholder, .label-slide .form-group select:-moz-placeholder {
-  /* Firefox 18- */
-  color: transparent;
-}
-.label-slide .form-group input:not([type=checkbox])::-moz-placeholder, .label-slide .form-group select::-moz-placeholder {
-  /* Firefox 19+ */
-  color: transparent;
-}
-.label-slide .form-group input:not([type=checkbox]):-ms-input-placeholder, .label-slide .form-group select:-ms-input-placeholder {
-  color: transparent;
+
+label {
+  display: block;
 }
 
 /*# sourceMappingURL=clear.css.map */

@@ -98,7 +98,6 @@
                             <fieldset id="fieldset-payment">
                                 {block name='checkout-step3-shipping-options-legend-payment'}
                                     <legend>{lang key='paymentOptions'}</legend>
-                                    <hr class="mt-0 mb-4">
                                 {/block}
                                 {$step4_payment_content}
                             </fieldset>
@@ -108,7 +107,6 @@
                                 <fieldset>
                                     {block name='checkout-step3-shipping-options-legend-packaging-types'}
                                         <legend>{lang section='checkout' key='additionalPackaging'}</legend>
-                                        <hr class="mt-0 mb-4">
                                     {/block}
                                     {checkboxgroup stacked=true}
                                     {foreach $Verpackungsarten as $oVerpackung}

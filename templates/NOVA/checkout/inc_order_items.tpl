@@ -17,13 +17,19 @@
             && $tplscope !== 'cart'}
             {$headcols=6}{$headsm=5}
         {/if}
+        {if $Einstellungen.kaufabwicklung.bestellvorgang_einzelpreise_anzeigen !== 'Y'}
+            {$headcols=$headcols+2}
+            {$headsm=$headsm+2}
+        {/if}
     {block name='checkout-inc-order-items-order-items'}
         {row class="border-bottom mb-3 font-weight-bold"}
             {col cols=2}{/col}
             {col ols=$headcols sm=$headsm}{lang key='product'}{/col}
-            {col cols=2}Einzelpreis{/col}
-            {col cols=2 class="text-center"}Anzahl{/col}
-            {col cols=2 class="text-right"}Preis{/col}
+            {if $Einstellungen.kaufabwicklung.bestellvorgang_einzelpreise_anzeigen === 'Y'}
+                {col cols=2}{lang key="pricePerUnit" section="productDetails"}{/col}
+            {/if}
+            {col cols=2 class="text-center"}{lang key="quantity" section="checkout"}{/col}
+            {col cols=2 class="text-right"}{lang key="price"}{/col}
         {/row}
         {foreach $smarty.session.Warenkorb->PositionenArr as $oPosition}
             {if !$oPosition->istKonfigKind()}
@@ -198,17 +204,19 @@
                                 {/block}
                             {/if}
                         {/col}
-                        {col cols=2}
-                            {block name='checkout-inc-order-items-price-single'}
-                                {if $Einstellungen.kaufabwicklung.bestellvorgang_einzelpreise_anzeigen === 'Y'}
+
+                        {block name='checkout-inc-order-items-price-single'}
+                            {if $Einstellungen.kaufabwicklung.bestellvorgang_einzelpreise_anzeigen === 'Y'}
+                                {col cols=2}
                                     {if $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_ARTIKEL}
                                         {if !$oPosition->istKonfigVater()}
                                             <p>{$oPosition->cEinzelpreisLocalized[$NettoPreise][$smarty.session.cWaehrungName]}</p>
                                         {/if}
                                     {/if}
-                                {/if}
-                            {/block}
-                        {/col}
+                                {/col}
+                            {/if}
+                        {/block}
+
                         {col cols=2 class="text-center"}
                             {block name='checkout-inc-order-items-quantity'}
                                 {if $tplscope === 'cart'}

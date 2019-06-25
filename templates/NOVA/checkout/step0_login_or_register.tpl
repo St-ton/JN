@@ -20,13 +20,13 @@
         {assign var=withSidebar value=0}
     {/if}
     {row id="register-customer"}
-        {col cols=12 id="existing-customer" md="{if $withSidebar === 0}4{else}12{/if}"}
+        {col cols=12 id="existing-customer" md="{if $withSidebar === 0}4{else}8{/if}"}
             {block name='checkout-step0-login-or-register-form-login'}
-                {form method="post" action="{get_static_route id='bestellvorgang.php'}" class="evo-validate" id="order_register_or_login"}
+                {form method="post" action="{get_static_route id='bestellvorgang.php'}" class="evo-validate label-slide" id="order_register_or_login"}
                     {block name='checkout-step0-login-or-register-fieldset-form-login-content'}
                         <fieldset>
-                            {block name='checkout-step0-login-or-register-legend-form-login-content'}
-                                <legend>{lang key='alreadyCustomer'}</legend>
+                            {block name='checkout-step0-login-or-register-headline-form-login-content'}
+                                <div class="h2 mb-3">{lang key='alreadyCustomer'}</div>
                             {/block}
                             {block name='checkout-step0-login-or-register-include-customer-login'}
                                 {include file='register/form/customer_login.tpl' withSidebar=$withSidebar}
@@ -39,16 +39,20 @@
         {/col}
         {col cols=12 id="customer" md="{if $withSidebar === 0}8{else}12{/if}" class="mt-3"}
             {block name='checkout-step0-login-or-register-form'}
-                {form method="post" action="{get_static_route id='bestellvorgang.php'}" class="form evo-validate " id="form-register"}
+                {form method="post" action="{get_static_route id='bestellvorgang.php'}" class="form evo-validate label-slide" id="form-register"}
                     {block name='checkout-step0-login-or-register-include-customer-account'}
                         {include file='register/form/customer_account.tpl' checkout=1 step="formular"}
-                        <hr/>
+                        {row}
+                            {col cols=12 md=8}
+                                <hr class="my-4">
+                            {/col}
+                        {/row}
                     {/block}
                     {block name='checkout-step0-login-or-register-include-inc-shipping-address'}
                         {include file='checkout/inc_shipping_address.tpl'}
                     {/block}
                     {block name='checkout-step0-login-or-register-form-submit'}
-                        <div class="text-right">
+                        <div class="text-left mt-5">
                             {input type="hidden" name="checkout" value="1"}
                             {input type="hidden" name="form" value="1"}
                             {input type="hidden" name="editRechnungsadresse" value="0"}

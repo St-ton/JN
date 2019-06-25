@@ -43,6 +43,7 @@
                                     autocomplete="off"
                                     aria-autocomplete="none"
                                     disabled=($unregForm === 1)
+                                    value=""
                                 }
                                 {if isset($fehlendeAngaben.pass_zu_kurz)}
                                     <div class="form-error-msg text-danger"><i class="fa fa-exclamation-triangle"></i> {$warning_passwortlaenge}</div>
@@ -69,6 +70,7 @@
                                     autocomplete="off"
                                     aria-autocomplete="none"
                                     disabled=($unregForm === 1)
+                                    value=""
                                 }
                                 {if isset($fehlendeAngaben.pass_ungleich)}
                                     <div class="form-error-msg text-danger"><i class="fa fa-exclamation-triangle"></i>

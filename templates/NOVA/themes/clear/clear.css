@@ -15235,14 +15235,50 @@ input.form-control[name=wishlist-url] {
   z-index: 5;
   left: 10px;
   font-size: 14px;
-  color: #b7b7b7;
+  color: #9b9b9b;
   pointer-events: none;
   transition: 0.4s all;
+}
+.label-slide .form-group input:not([type=checkbox]):not([type=radio])::-webkit-input-placeholder, .label-slide .form-group select::-webkit-input-placeholder {
+  color: transparent;
+}
+.label-slide .form-group input:not([type=checkbox]):not([type=radio]):-moz-placeholder, .label-slide .form-group select:-moz-placeholder {
+  /* Firefox 18- */
+  color: transparent;
+}
+.label-slide .form-group input:not([type=checkbox]):not([type=radio])::-moz-placeholder, .label-slide .form-group select::-moz-placeholder {
+  /* Firefox 19+ */
+  color: transparent;
+}
+.label-slide .form-group input:not([type=checkbox]):not([type=radio]):-ms-input-placeholder, .label-slide .form-group select:-ms-input-placeholder {
+  color: transparent;
+}
+
+input.typeahead::-webkit-input-placeholder {
+  color: #9b9b9b !important;
+}
+input.typeahead:-moz-placeholder {
+  /* Firefox 18- */
+  color: #9b9b9b !important;
+}
+input.typeahead::-moz-placeholder {
+  /* Firefox 19+ */
+  color: #9b9b9b !important;
+}
+input.typeahead:-ms-input-placeholder {
+  color: #9b9b9b !important;
 }
 
 legend {
   font-size: 1rem;
   font-weight: bolder;
+  padding-bottom: 5px;
+  margin: 10px 0 20px 0;
+  border-bottom: solid 1px #ebebeb;
+}
+
+label[for=city] {
+  padding: 0;
 }
 
 label {

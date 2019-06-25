@@ -241,7 +241,7 @@
                                     {button type="submit" variant="primary" id="complete-order-button" class="submit_once float-right ml-3"}
                                         {lang key='orderLiableToPay' section='checkout'}
                                     {/button}
-                                    {link href="{get_static_route id='warenkorb.php'}" class="btn btn-light float-left"}
+                                    {link href="{get_static_route id='warenkorb.php'}" class="btn btn-secondary float-left"}
                                         {lang key='modifyBasket' section='checkout'}
                                     {/link}
                                 </div>

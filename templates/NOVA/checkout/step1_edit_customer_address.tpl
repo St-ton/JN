@@ -27,7 +27,7 @@
                             {include file='checkout/inc_shipping_address.tpl'}
                         {/block}
                         {block name='checkout-step1-edit-customer-address-form-submit'}
-                            <div class="text-right">
+                            <div class="text-left mt-5">
                                 {input type="hidden" name="unreg_form" value=$unreg_form}
                                 {input type="hidden" name="editRechnungsadresse" value=$editRechnungsadresse}
                                 {button variant="primary" type="submit" class="submit_once"}

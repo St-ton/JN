@@ -5,24 +5,30 @@
 {block name='checkout-inc-billing-address-form'}
     <fieldset>
         {block name='checkout-inc-billing-address-form-legend'}
-            <legend class="mb-5">
+            {row class="h2"}
+                {col cols=12 md=8}
                 {if isset($checkout)}
                     {lang key='proceedNewCustomer' section='checkout'}
                 {elseif $nSeitenTyp === $smarty.const.PAGE_MEINKONTO}
                     {lang key='myPersonalData'}
-                {else}
-                    {lang key='address' section='account data'}
                 {/if}
-            </legend>
+                {/col}
+            {/row}
+            {if isset($checkout)}
+            {row}
+                {col cols=12 md=8}
+                    Sie können als Gast bestellen oder einen neuen Account erstellen.
+                {/col}
+            {/row}
+            {/if}
         {/block}
         {* salutation / title *}
         {block name='checkout-inc-billing-address-form-salutation-title'}
             {row}
                 {col md=8}
-                    <div class="h5">{lang key='billingAdress' section='account data'}</div>
+                    <legend>{lang key='billingAdress' section='account data'}</legend>
                 {/col}
             {/row}
-            <hr class="mb-4 mt-2">
             {row}
                 {if $Einstellungen.kunden.kundenregistrierung_abfragen_anrede !== 'N'}
                     {col cols=12 md=4}
@@ -310,7 +316,7 @@
                     {formgroup
                         class="{if isset($fehlendeAngaben.ort)} has-error{/if}"
                         label-for="city"
-                        label={lang key='city' section='account data'}
+                        label=''
                     }
                         {input
                             type="text"
@@ -381,10 +387,9 @@
         {block name='checkout-inc-billing-address-form-mail'}
             {row}
                 {col md=8}
-                    <div class="h5">{lang key='contactInformation' section='account data'}</div>
+                    <legend>{lang key='contactInformation' section='account data'}</legend>
                 {/col}
             {/row}
-            <hr class="mb-4 mt-2">
             {row}
                 {col md=8}
                     {if isset($cPost_var['email'])}
@@ -509,10 +514,9 @@
             <fieldset>
                 {row}
                     {col md=8}
-                        <div class="h5">{lang key='miscellaneous'}</div>
+                        <legend>{lang key='miscellaneous'}</legend>
                     {/col}
                 {/row}
-                <hr class="mb-4 mt-2">
                 {row}
                     {col md=8}
                         {if $step === 'formular' || $step === 'edit_customer_address' || $step === 'Lieferadresse' || $step === 'rechnungsdaten'}

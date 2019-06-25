@@ -70,9 +70,6 @@ function get_product_list($params, $smarty)
     $searchFilters    = isset($params['cSuchFilter'])
         ? ProductFilter::initSearchFilter(explode(';', $params['cSuchFilter']))
         : [];
-    $tagFilters       = isset($params['cTagFilter'])
-        ? ProductFilter::initTagFilter(explode(';', $params['cTagFilter']))
-        : [];
     $params           = [
         'kKategorie'             => $params['kKategorie'] ?? null,
         'kHersteller'            => $params['kHersteller'] ?? null,
@@ -90,7 +87,6 @@ function get_product_list($params, $smarty)
         'kSuchspecialFilter'     => $params['kSuchspecialFilter'] ?? null,
         'nSortierung'            => $sort,
         'MerkmalFilter_arr'      => $attributeFilters,
-        'TagFilter_arr'          => $tagFilters,
         'SuchFilter_arr'         => $searchFilters,
         'nArtikelProSeite'       => $params['nArtikelProSeite'] ?? null,
         'cSuche'                 => $params['cSuche'] ?? null,

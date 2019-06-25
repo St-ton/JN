@@ -155,8 +155,7 @@ final class Customer extends AbstractSync
         if (!isset($xml['gutscheine']['gutschein']) || !\is_array($xml['gutscheine']['gutschein'])) {
             return;
         }
-        $vouchers = $this->mapper->mapArray($xml['gutscheine'], 'gutschein', 'mGutschein');
-        foreach ($vouchers as $voucher) {
+        foreach ($this->mapper->mapArray($xml['gutscheine'], 'gutschein', 'mGutschein') as $voucher) {
             if (!($voucher->kGutschein > 0 && $voucher->kKunde > 0)) {
                 continue;
             }

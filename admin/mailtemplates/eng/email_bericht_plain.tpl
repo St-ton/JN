@@ -55,14 +55,6 @@ Rating credit paid: {$oMailObjekt->oAnzahlGezahltesGuthaben->nAnzahl}
 Rating credit total: {$oMailObjekt->oAnzahlGezahltesGuthaben->fSummeGuthaben}
 {/if}
 
-{if $oMailObjekt->nAnzahlTags !== -1}
-Tags: {$oMailObjekt->nAnzahlTags}
-{/if}
-
-{if $oMailObjekt->nAnzahlTagsNichtFreigeschaltet !== -1}
-Tags not approved: {$oMailObjekt->nAnzahlTagsNichtFreigeschaltet}
-{/if}
-
 {if $oMailObjekt->nAnzahlGeworbenerKunden !== -1}
 Acquired customers: {$oMailObjekt->nAnzahlGeworbenerKunden}
 {/if}

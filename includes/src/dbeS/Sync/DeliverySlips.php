@@ -47,12 +47,12 @@ final class DeliverySlips extends AbstractSync
             $deliverySlip->dErstellt = \date_format(\date_create($deliverySlip->dErstellt), 'U');
             $this->upsert('tlieferschein', [$deliverySlip], 'kLieferschein');
 
-            foreach ($item->tlieferscheinpos as $xmlPosition) {
-                $sItem                = $this->mapper->map($xmlPosition, 'mLieferscheinpos');
+            foreach ($item->tlieferscheinpos as $xmlItem) {
+                $sItem                = $this->mapper->map($xmlItem, 'mLieferscheinpos');
                 $sItem->kLieferschein = $deliverySlip->kLieferschein;
                 $this->upsert('tlieferscheinpos', [$sItem], 'kLieferscheinPos');
 
-                foreach ($xmlPosition->tlieferscheinposInfo as $info) {
+                foreach ($xmlItem->tlieferscheinposInfo as $info) {
                     $posInfo                   = $this->mapper->map($info, 'mLieferscheinposinfo');
                     $posInfo->kLieferscheinPos = $sItem->kLieferscheinPos;
                     $this->upsert('tlieferscheinposinfo', [$posInfo], 'kLieferscheinPosInfo');

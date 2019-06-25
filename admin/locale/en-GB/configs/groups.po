@@ -65,9 +65,6 @@ msgstr "Back in stock notification email"
 msgid "configgroup_5_comparelist"
 msgstr "Comparison list"
 
-msgid "configgroup_5_product_tagging"
-msgstr "Item tagging"
-
 msgid "configgroup_5_media_module"
 msgstr "Media files"
 
@@ -119,9 +116,6 @@ msgstr "Box: Coming soon"
 msgid "configgroup_8_box_searchcloud"
 msgstr "Search cloud"
 
-msgid "configgroup_8_box_tagcloud"
-msgstr "Tag cloud"
-
 msgid "configgroup_8_box_wishlist"
 msgstr "Wish list"
 
@@ -136,9 +130,6 @@ msgstr "Box: Price radar"
 
 msgid "configgroup_9_image_settings"
 msgstr "Image settings"
-
-msgid "configgroup_10_tagging_overview"
-msgstr "Tagging overview"
 
 msgid "configgroup_10_livesearch_overview"
 msgstr "Live search overview"
@@ -197,9 +188,6 @@ msgstr "Category filter"
 msgid "configgroup_110_rating_filter"
 msgstr "Customer review filter"
 
-msgid "configgroup_110_tag_filter"
-msgstr "Tag filter"
-
 msgid "configgroup_110_search_filter"
 msgstr "Search result filter"
 
@@ -248,3 +236,5 @@ msgstr "Recipient address for the return of goods"
 msgid "ftp_header"
 msgstr "FTP connection"
 
+msgid "configgroup_110_manufacturer_filter"
+msgstr "Manufacturer filter"

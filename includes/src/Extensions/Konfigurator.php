@@ -252,7 +252,7 @@ class Konfigurator
     }
 
     /**
-     * @param array $confGroups
+     * @param Konfiggruppe[] $confGroups
      * @return bool
      */
     public static function hasUnavailableGroup(array $confGroups): bool

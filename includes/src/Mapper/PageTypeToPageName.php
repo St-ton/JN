@@ -23,7 +23,6 @@ class PageTypeToPageName
             case \PAGE_VERSAND:
             case \PAGE_WRB:
             case \PAGE_AGB:
-            case \PAGE_TAGGING:
             case \PAGE_LIVESUCHE:
             case \PAGE_DATENSCHUTZ:
             case \PAGE_HERSTELLER:

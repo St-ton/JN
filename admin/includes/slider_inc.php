@@ -7,10 +7,10 @@
 use JTL\Shop;
 
 /**
- * @param int $kSlider
+ * @param int $sliderID
  * @return mixed
  */
-function holeExtension(int $kSlider)
+function holeExtension(int $sliderID)
 {
-    return Shop::Container()->getDB()->select('textensionpoint', 'cClass', 'Slider', 'kInitial', $kSlider);
+    return Shop::Container()->getDB()->select('textensionpoint', 'cClass', 'Slider', 'kInitial', $sliderID);
 }

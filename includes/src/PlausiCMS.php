@@ -15,16 +15,16 @@ use JTL\Link\Link;
 class PlausiCMS extends Plausi
 {
     /**
-     * @param null|string $cType
+     * @param null|string $type
      * @param bool        $update
      * @return bool
      */
-    public function doPlausi($cType = null, bool $update = false): bool
+    public function doPlausi($type = null, bool $update = false): bool
     {
-        if (\count($this->xPostVar_arr) === 0 || \mb_strlen($cType) === 0) {
+        if (\count($this->xPostVar_arr) === 0 || \mb_strlen($type) === 0) {
             return false;
         }
-        switch ($cType) {
+        switch ($type) {
             case 'lnk':
                 // unique special page
                 if (isset($this->xPostVar_arr['nSpezialseite'], $this->xPostVar_arr['nLinkart'])

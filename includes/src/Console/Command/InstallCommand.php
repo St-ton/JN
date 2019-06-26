@@ -14,6 +14,10 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
+/**
+ * Class InstallCommand
+ * @package JTL\Console\Command
+ */
 class InstallCommand extends Command
 {
     /**
@@ -84,11 +88,14 @@ class InstallCommand extends Command
         'uploads',
     ];
 
+    /**
+     * @inheritDoc
+     */
     protected function configure()
     {
         $this->steps       = 6;
         $this->currentStep = 1;
-        $this->currentUser = trim(getenv('USER'));
+        $this->currentUser = \trim(\getenv('USER'));
 
         $this
             ->setName('shop:install')
@@ -108,17 +115,20 @@ class InstallCommand extends Command
                 null,
                 InputOption::VALUE_REQUIRED,
                 'Set file owner, needs root permissions',
-                sprintf('%s', $this->currentUser)
+                \sprintf('%s', $this->currentUser)
             )
             ->addOption(
                 'file-group',
                 null,
                 InputOption::VALUE_REQUIRED,
                 'Set file group, needs root permissions',
-                sprintf('%s', $this->currentUser)
+                \sprintf('%s', $this->currentUser)
             );
     }
 
+    /**
+     * @inheritDoc
+     */
     protected function interact(InputInterface $input, OutputInterface $output)
     {
         $io              = $this->getIO();
@@ -145,10 +155,7 @@ class InstallCommand extends Command
     }
 
     /**
-     * @param InputInterface $input
-     * @param OutputInterface $output
-     * @return int|null
-     * @throws \Exception
+     * @inheritDoc
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
@@ -165,24 +172,24 @@ class InstallCommand extends Command
         $adminPass       = $this->getOption('admin-password');
         $syncUser        = $this->getOption('sync-user');
         $syncPass        = $this->getOption('sync-password');
-        $localFilesystem = new Filesystem((new LocalFilesystem(['root' => PFAD_ROOT])));
+        $localFilesystem = new Filesystem(new LocalFilesystem(['root' => \PFAD_ROOT]));
 
         if ($uri !== null) {
-            if ($scheme = parse_url($uri, PHP_URL_SCHEME)) {
-                if (!in_array($scheme, ['http', 'https'], true)) {
+            if ($scheme = \parse_url($uri, \PHP_URL_SCHEME)) {
+                if (!\in_array($scheme, ['http', 'https'], true)) {
                     throw new Exception("Invalid Shop url '{$uri}'");
                 }
             } else {
                 throw new Exception("Invalid Shop url '{$uri}'");
             }
         }
-        $parsedUri = parse_url($uri);
-        $uri       = $parsedUri['scheme'].'://'.$parsedUri['host']
-            .(empty($parsedUri['path']) ? '/' : $parsedUri['path']);
-        defined('URL_SHOP') || define('URL_SHOP', $uri);
+        $parsedUri = \parse_url($uri);
+        $uri       = $parsedUri['scheme'] . '://' . $parsedUri['host']
+            . (empty($parsedUri['path']) ? '/' : $parsedUri['path']);
+        \defined('URL_SHOP') || \define('URL_SHOP', $uri);
 
         if (empty($dbHost) && empty($dbSocket)) {
-            throw new Exception("Invalid database host '".$dbHost."' or socket '".$dbSocket."'");
+            throw new Exception("Invalid database host '" . $dbHost . "' or socket '" . $dbSocket . "'");
         }
 
         $io->setStep($this->currentStep++, $this->steps, 'Check if shop is installed');
@@ -234,7 +241,7 @@ class InstallCommand extends Command
 
         $dirCheck = (new \VueInstaller('dircheck', [], true))->run();
 
-        if (in_array(false, $dirCheck['testresults'])) {
+        if (\in_array(false, $dirCheck['testresults'])) {
             $this->printDirCheckTable($dirCheck['testresults'], $localFilesystem);
             $io->error('File permissions are incorrect.');
             return 1;
@@ -253,10 +260,8 @@ class InstallCommand extends Command
         if ($dbCredentialsCheck['error']) {
             $io->error($dbCredentialsCheck['msg']);
             return 1;
-        } else {
-            $io->success('Credentials matched');
         }
-
+        $io->success('Credentials matched');
         $io->setStep($this->currentStep++, $this->steps, 'JTL-Shop install');
 
         $posts = [
@@ -268,18 +273,18 @@ class InstallCommand extends Command
         $installed = (new \VueInstaller('doinstall', $posts, true))->run();
 
         if ($installed['error']) {
-            $io->error(implode(' | ', $installed['msg']));
+            $io->error(\implode(' | ', $installed['msg']));
         } else {
             $io->success('Successful installed');
         }
 
         $io->writeln('  <info>Admin-Login</info>');
-        $io->writeln("    Username <comment>".$adminUser."</comment>");
-        $io->writeln("    Password <comment>".$adminPass."</comment>");
+        $io->writeln('    Username <comment>' . $adminUser . '</comment>');
+        $io->writeln('    Password <comment>' . $adminPass . '</comment>');
         $io->writeln('');
         $io->writeln('  <info>Sync-Login</info>');
-        $io->writeln("    Username <comment>".$syncUser."</comment>");
-        $io->writeln("    Password <comment>".$syncPass."</comment>");
+        $io->writeln('    Username <comment>' . $syncUser . '</comment>');
+        $io->writeln('    Password <comment>' . $syncPass . '</comment>');
 
         $io->setStep($this->currentStep++, $this->steps, 'Remove install dir and set new permissions for config file');
 
@@ -301,7 +306,7 @@ class InstallCommand extends Command
     /**
      * @param array $recommendations
      */
-    protected function printSystemCheckTable(array $recommendations)
+    protected function printSystemCheckTable(array $recommendations): void
     {
         $rows    = [];
         $headers = ['Name', 'Requirement', 'Actual Value'];
@@ -312,32 +317,32 @@ class InstallCommand extends Command
                 $recommendation->getRequiredState(),
                 (int)$recommendation->getResult() === 0
                     ? '<info> ✔ </info>'
-                    : '<comment> '.$recommendation->getCurrentState().' </comment>'
+                    : '<comment> ' . $recommendation->getCurrentState() . ' </comment>'
             ];
         }
 
         $tableStyle = new TableStyle();
-        $tableStyle->setPadType(STR_PAD_BOTH);
+        $tableStyle->setPadType(\STR_PAD_BOTH);
         $this->getIO()->writeln('');
         $this->getIO()->table($headers, $rows, ['style' => $tableStyle]);
     }
 
     /**
-     * @param array $list
+     * @param array      $list
      * @param Filesystem $localFilesystem
      */
-    protected function printDirCheckTable(array $list, Filesystem $localFilesystem)
+    protected function printDirCheckTable(array $list, Filesystem $localFilesystem): void
     {
         $rows    = [];
         $headers = ['File/Dir', 'Correct permission', 'Permission'];
 
         foreach ($list as $path => $val) {
-            $permission = substr(sprintf('%o', $localFilesystem->getMeta($path)->getPerms()), -4);
+            $permission = \substr(\sprintf('%o', $localFilesystem->getMeta($path)->getPerms()), -4);
             $rows[]     = [$path, $val ? '<info> ✔ </info>' : '<comment> • </comment>', $permission];
         }
 
         $tableStyle = new TableStyle();
-        $tableStyle->setPadType(STR_PAD_BOTH);
+        $tableStyle->setPadType(\STR_PAD_BOTH);
         $this->getIO()->writeln('');
         $this->getIO()->table($headers, $rows, ['style' => $tableStyle]);
     }

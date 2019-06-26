@@ -209,7 +209,6 @@ class BoxService implements BoxServiceInterface
         $mf  = $pf->getManufacturerFilter();
         $prf = $pf->getPriceRangeFilter();
         $rf  = $pf->getRatingFilter();
-        $tf  = $pf->tagFilterCompat;
         $afc = $pf->getAttributeFilterCollection();
         $ssf = $pf->getSearchSpecialFilter();
         $sf  = $pf->searchFilterCompat;
@@ -221,7 +220,6 @@ class BoxService implements BoxServiceInterface
             || ($mf->getVisibility() !== $invis && $mf->getVisibility() !== $visContent)
             || ($prf->getVisibility() !== $invis && $prf->getVisibility() !== $visContent)
             || ($rf->getVisibility() !== $invis && $rf->getVisibility() !== $visContent)
-            || ($tf->getVisibility() !== $invis && $tf->getVisibility() !== $visContent)
             || ($afc->getVisibility() !== $invis && $afc->getVisibility() !== $visContent)
             || ($ssf->getVisibility() !== $invis && $ssf->getVisibility() !== $visContent)
             || ($sf->getVisibility() !== $invis && $sf->getVisibility() !== $visContent)
@@ -290,7 +288,6 @@ class BoxService implements BoxServiceInterface
      * @param int   $pageType
      * @return array
      * @throws \Exception
-     * @throws \SmartyException
      */
     public function render(array $positionedBoxes, int $pageType): array
     {

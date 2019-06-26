@@ -25,60 +25,60 @@ function baueFilterSQL($bActiveOnly = false)
  * Falls Ja => return false
  * Falls Nein => return true
  *
- * @param string $cKommentar
- * @param string $cName
- * @param string $cEmail
- * @param int    $kNews
+ * @param string $comment
+ * @param string $name
+ * @param string $email
+ * @param int    $newsID
  * @param array  $conf
  * @return array
  * @deprecated since 5.0.0
  */
-function pruefeKundenKommentar($cKommentar, $cName, $cEmail, $kNews, $conf)
+function pruefeKundenKommentar($comment, $name, $email, $newsID, $conf)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use \News\Controller::checkComment() instead.', E_USER_DEPRECATED);
     if (!isset($_POST['cEmail'])) {
-        $_POST['cEmail'] = $cEmail;
+        $_POST['cEmail'] = $email;
     }
     if (!isset($_POST['cName'])) {
-        $_POST['cName'] = $cName;
+        $_POST['cName'] = $name;
     }
-    $_POST['cKommentar'] = $cKommentar;
+    $_POST['cKommentar'] = $comment;
 
-    return Controller::checkComment($_POST, (int)$kNews, $conf);
+    return Controller::checkComment($_POST, (int)$newsID, $conf);
 }
 
 /**
- * @param array $nPlausiValue_arr
+ * @param array $checks
  * @return string
  * @deprecated since 5.0.0
  */
-function gibNewskommentarFehler($nPlausiValue_arr)
+function gibNewskommentarFehler(array $checks)
 {
     trigger_error(
         __FUNCTION__ . ' is deprecated. Use \News\Controller::getCommentErrors() instead.',
         E_USER_DEPRECATED
     );
-    return Controller::getCommentErrors($nPlausiValue_arr);
+    return Controller::getCommentErrors($checks);
 }
 
 /**
- * @param string $cDatumSQL
- * @param bool   $bActiveOnly
+ * @param string $dateSQL
+ * @param bool   $activeOnly
  * @return array
  * @deprecated since 5.0.0
  */
-function holeNewsKategorien($cDatumSQL, $bActiveOnly = false)
+function holeNewsKategorien($dateSQL, $activeOnly = false)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    $kSprache     = Shop::getLanguageID();
-    $cSQL         = '';
-    $activeFilter = $bActiveOnly ? ' AND tnewskategorie.nAktiv = 1 ' : '';
-    if (mb_strlen($cDatumSQL) > 0) {
-        $cSQL = '   JOIN tnewskategorienews 
+    $languageID   = Shop::getLanguageID();
+    $sql          = '';
+    $activeFilter = $activeOnly ? ' AND tnewskategorie.nAktiv = 1 ' : '';
+    if (mb_strlen($dateSQL) > 0) {
+        $sql = '   JOIN tnewskategorienews 
                         ON tnewskategorienews.kNewsKategorie = tnewskategorie.kNewsKategorie
                     JOIN tnews 
                         ON tnews.kNews = tnewskategorienews.kNews
-                    ' . $cDatumSQL;
+                    ' . $dateSQL;
     }
 
     return Shop::Container()->getDB()->query(
@@ -90,13 +90,13 @@ function holeNewsKategorien($cDatumSQL, $bActiveOnly = false)
             FROM tnewskategorie
             JOIN tnewskategoriesprache t 
                 ON t.kNewsKategorie = tnewskategorie.kNewsKategorie
-            " . $cSQL . "
+            " . $sql . "
             LEFT JOIN tseo 
                 ON tseo.cKey = 'kNewsKategorie'
                 AND tseo.kKey = tnewskategorie.kNewsKategorie
-                AND tseo.kSprache = " . $kSprache . '
-                AND tnewskategorie.kSprache = ' . $kSprache . '
-            WHERE t.languageID = ' . $kSprache
+                AND tseo.kSprache = " . $languageID . '
+                AND tnewskategorie.kSprache = ' . $languageID . '
+            WHERE t.languageID = ' . $languageID
             . $activeFilter . '
             GROUP BY tnewskategorie.kNewsKategorie
             ORDER BY tnewskategorie.nSort',
@@ -137,88 +137,80 @@ function mappeDatumName($cMonat, $nJahr, $cISOSprache)
 }
 
 /**
- * @param object $oNewsNaviFilter
- * @param array  $oNewsUebersicht_arr
  * @return string
  * @deprecated since 4.04
  */
-function baueNewsMetaTitle($oNewsNaviFilter, $oNewsUebersicht_arr)
+function baueNewsMetaTitle()
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return '';
 }
 
 /**
- * @param object $oNewsNaviFilter
- * @param array  $oNewsUebersicht_arr
  * @return string
  * @deprecated since 4.04
  */
-function baueNewsMetaDescription($oNewsNaviFilter, $oNewsUebersicht_arr)
+function baueNewsMetaDescription()
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return '';
 }
 
 /**
- * @param object $oNewsNaviFilter
- * @param array  $oNewsUebersicht_arr
+ * @param object $unused
+ * @param array  $newsOverview
  * @return string
  * @deprecated since 5.0.0
  */
-function baueNewsMetaKeywords($oNewsNaviFilter, $oNewsUebersicht_arr)
+function baueNewsMetaKeywords($unused, $newsOverview)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    $cMetaKeywords = '';
-    if (is_array($oNewsUebersicht_arr) && count($oNewsUebersicht_arr) > 0) {
-        $nCount = 6;
-        if (count($oNewsUebersicht_arr) < $nCount) {
-            $nCount = count($oNewsUebersicht_arr);
+    $keywords = '';
+    if (is_array($newsOverview) && count($newsOverview) > 0) {
+        $count = 6;
+        if (count($newsOverview) < $count) {
+            $count = count($newsOverview);
         }
-        for ($i = 0; $i < $nCount; $i++) {
+        for ($i = 0; $i < $count; $i++) {
             if ($i > 0) {
-                $cMetaKeywords .= ', ' . $oNewsUebersicht_arr[$i]->cMetaKeywords;
+                $keywords .= ', ' . $newsOverview[$i]->cMetaKeywords;
             } else {
-                $cMetaKeywords .= $oNewsUebersicht_arr[$i]->cMetaKeywords;
+                $keywords .= $newsOverview[$i]->cMetaKeywords;
             }
         }
     }
 
-    return $cMetaKeywords;
+    return $keywords;
 }
 
 /**
- * @param object $oNewsNaviFilter
  * @return string
  * @deprecated since 4.04
  */
-function baueNewsMetaStart($oNewsNaviFilter)
+function baueNewsMetaStart()
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return '';
 }
 
 /**
- * @param \JTL\Smarty\JTLSmarty $smarty
- * @param string|null           $AktuelleSeite
- * @param string                $cCanonicalURL
  * @deprecated since 5.0.0
  */
-function baueNewsKruemel($smarty, $AktuelleSeite, &$cCanonicalURL)
+function baueNewsKruemel()
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
 }
 
 /**
- * @param int  $kNews
- * @param bool $bActiveOnly
+ * @param int  $newsID
+ * @param bool $activeOnly
  * @return stdClass|null
  * @deprecated since 5.0.0
  */
-function getNewsArchive(int $kNews, bool $bActiveOnly = false)
+function getNewsArchive(int $newsID, bool $activeOnly = false)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    $activeFilter = $bActiveOnly ? ' AND tnews.nAktiv = 1 ' : '';
+    $activeFilter = $activeOnly ? ' AND tnews.nAktiv = 1 ' : '';
 
     return Shop::Container()->getDB()->query(
         "SELECT tnews.kNews, t.languageID AS kSprache, tnews.cKundengruppe, t.title AS cBetreff, 
@@ -234,7 +226,7 @@ function getNewsArchive(int $kNews, bool $bActiveOnly = false)
                 ON tseo.cKey = 'kNews'
                 AND tseo.kKey = tnews.kNews
                 AND tseo.kSprache = " . Shop::getLanguageID() . '
-            WHERE tnews.kNews = ' . $kNews . " 
+            WHERE tnews.kNews = ' . $newsID . " 
                 AND (tnews.cKundengruppe LIKE '%;-1;%' 
                     OR FIND_IN_SET('" . Frontend::getCustomerGroup()->getID()
                         . "', REPLACE(tnews.cKundengruppe, ';', ',')) > 0)
@@ -245,15 +237,15 @@ function getNewsArchive(int $kNews, bool $bActiveOnly = false)
 }
 
 /**
- * @param int  $kNewsKategorie
- * @param bool $bActiveOnly
+ * @param int  $newsCategoryID
+ * @param bool $activeOnly
  * @return stdClass|null
  * @deprecated since 5.0.0
  */
-function getCurrentNewsCategory(int $kNewsKategorie, bool $bActiveOnly = false)
+function getCurrentNewsCategory(int $newsCategoryID, bool $activeOnly = false)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    $activeFilter = $bActiveOnly ? ' AND tnewskategorie.nAktiv = 1 ' : '';
+    $activeFilter = $activeOnly ? ' AND tnewskategorie.nAktiv = 1 ' : '';
 
     return Shop::Container()->getDB()->queryPrepared(
         "SELECT tnewskategorie.cName, tnewskategorie.cMetaTitle, tnewskategorie.cMetaDescription, tseo.cSeo
@@ -264,7 +256,7 @@ function getCurrentNewsCategory(int $kNewsKategorie, bool $bActiveOnly = false)
                 AND tseo.kSprache = :lid
             WHERE tnewskategorie.kNewsKategorie = :cat" . $activeFilter,
         [
-            'cat' => $kNewsKategorie,
+            'cat' => $newsCategoryID,
             'lid' => Shop::getLanguageID()
         ],
         ReturnType::SINGLE_OBJECT
@@ -272,18 +264,18 @@ function getCurrentNewsCategory(int $kNewsKategorie, bool $bActiveOnly = false)
 }
 
 /**
- * @param int $kNews
+ * @param int $newsID
  * @return array
  * @deprecated since 5.0.0
  */
-function getNewsCategory(int $kNews)
+function getNewsCategory(int $newsID)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $newsCategories = \Functional\map(
         \Functional\pluck(Shop::Container()->getDB()->selectAll(
             'tnewskategorienews',
             'kNews',
-            $kNews,
+            $newsID,
             'kNewsKategorie'
         ), 'kNewsKategorie'),
         function ($e) {
@@ -314,18 +306,18 @@ function getNewsCategory(int $kNews)
 }
 
 /**
- * @param int    $kNews
+ * @param int    $newsID
  * @param string $cLimitSQL
  * @return array
  * @deprecated since 5.0.0
  */
-function getNewsComments(int $kNews, $cLimitSQL)
+function getNewsComments(int $newsID, $cLimitSQL)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return Shop::Container()->getDB()->query(
         "SELECT *, DATE_FORMAT(tnewskommentar.dErstellt, '%d.%m.%Y %H:%i') AS dErstellt_de
             FROM tnewskommentar
-            WHERE tnewskommentar.kNews = " . $kNews . '
+            WHERE tnewskommentar.kNews = " . $newsID . '
                 AND tnewskommentar.nAktiv = 1
             ORDER BY tnewskommentar.dErstellt DESC
             LIMIT ' . $cLimitSQL,
@@ -334,11 +326,11 @@ function getNewsComments(int $kNews, $cLimitSQL)
 }
 
 /**
- * @param int $kNews
+ * @param int $newsID
  * @return stdClass
  * @deprecated since 5.0.0
  */
-function getCommentCount(int $kNews)
+function getCommentCount(int $newsID)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return Shop::Container()->getDB()->queryPrepared(
@@ -346,17 +338,17 @@ function getCommentCount(int $kNews)
             FROM tnewskommentar
             WHERE kNews = :nid
             AND nAktiv = 1',
-        ['nid' => $kNews],
+        ['nid' => $newsID],
         ReturnType::SINGLE_OBJECT
     );
 }
 
 /**
- * @param int $kNewsMonatsUebersicht
+ * @param int $overviewID
  * @return stdClass|null
  * @deprecated since 5.0.0
  */
-function getMonthOverview(int $kNewsMonatsUebersicht)
+function getMonthOverview(int $overviewID)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return Shop::Container()->getDB()->queryPrepared(
@@ -368,7 +360,7 @@ function getMonthOverview(int $kNewsMonatsUebersicht)
                 AND tseo.kSprache = :lid
             WHERE tnewsmonatsuebersicht.kNewsMonatsUebersicht = :nmi",
         [
-            'nmi' => $kNewsMonatsUebersicht,
+            'nmi' => $overviewID,
             'lid' => Shop::getLanguageID()
         ],
         ReturnType::SINGLE_OBJECT
@@ -376,12 +368,12 @@ function getMonthOverview(int $kNewsMonatsUebersicht)
 }
 
 /**
- * @param object $oSQL
- * @param string $cLimitSQL
+ * @param object $sql
+ * @param string $limitSQL
  * @return array
  * @deprecated since 5.0.0
  */
-function getNewsOverview($oSQL, $cLimitSQL)
+function getNewsOverview($sql, $limitSQL)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return Shop::Container()->getDB()->query(
@@ -397,27 +389,27 @@ function getNewsOverview($oSQL, $cLimitSQL)
             LEFT JOIN tnewskommentar 
                 ON tnewskommentar.kNews = tnews.kNews 
                 AND tnewskommentar.nAktiv = 1
-            ' . $oSQL->cNewsKatSQL . "
+            ' . $sql->cNewsKatSQL . "
             WHERE tnews.nAktiv = 1
                 AND tnews.dGueltigVon <= NOW()
                 AND (tnews.cKundengruppe LIKE '%;-1;%' 
                     OR FIND_IN_SET('" . Frontend::getCustomerGroup()->getID()
                         . "', REPLACE(tnews.cKundengruppe, ';', ',')) > 0)
                 AND t.languageID = " . Shop::getLanguageID() . '
-                ' . $oSQL->cDatumSQL . '
+                ' . $sql->cDatumSQL . '
             GROUP BY tnews.kNews
-            ' . $oSQL->cSortSQL . '
-            LIMIT ' . $cLimitSQL,
+            ' . $sql->cSortSQL . '
+            LIMIT ' . $limitSQL,
         ReturnType::ARRAY_OF_OBJECTS
     );
 }
 
 /**
- * @param object $oSQL
+ * @param object $sql
  * @return stdClass
  * @deprecated since 5.0.0
  */
-function getFullNewsOverview($oSQL)
+function getFullNewsOverview($sql)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return Shop::Container()->getDB()->query(
@@ -425,24 +417,24 @@ function getFullNewsOverview($oSQL)
             FROM tnews
             JOIN tnewssprache t
                 ON t.kNews = tnews.kNews
-            ' . $oSQL->cNewsKatSQL . "
+            ' . $sql->cNewsKatSQL . "
             WHERE tnews.nAktiv = 1
                 AND tnews.dGueltigVon <= NOW()
                 AND (tnews.cKundengruppe LIKE '%;-1;%' 
                     OR FIND_IN_SET('" . Frontend::getCustomerGroup()->getID()
                         . "', REPLACE(tnews.cKundengruppe, ';', ',')) > 0)
-                " . $oSQL->cDatumSQL . '
+                " . $sql->cDatumSQL . '
                 AND t.languageID = ' . Shop::getLanguageID(),
         ReturnType::SINGLE_OBJECT
     );
 }
 
 /**
- * @param object $oSQL
+ * @param object $sql
  * @return array
  * @deprecated since 5.0.0
  */
-function getNewsDateArray($oSQL)
+function getNewsDateArray($sql)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return Shop::Container()->getDB()->query(
@@ -450,7 +442,7 @@ function getNewsDateArray($oSQL)
             FROM tnews
             JOIN tnewssprache t
                 ON tnews.kNews = t.kNews
-            ' . $oSQL->cNewsKatSQL . "
+            ' . $sql->cNewsKatSQL . "
             WHERE tnews.nAktiv = 1
                 AND tnews.dGueltigVon <= NOW()
                 AND (tnews.cKundengruppe LIKE '%;-1;%' 
@@ -476,24 +468,24 @@ function cmp_obj($a, $b)
 }
 
 /**
- * @param int    $kNews
+ * @param int    $newsID
  * @param string $uploadDir
  * @return array
  * @deprecated since 5.0.0
  */
-function holeNewsBilder(int $kNews, $uploadDir)
+function holeNewsBilder(int $newsID, $uploadDir)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $images = [];
-    if ($kNews > 0 && is_dir($uploadDir . $kNews)) {
-        $handle  = opendir($uploadDir . $kNews);
+    if ($newsID > 0 && is_dir($uploadDir . $newsID)) {
+        $handle  = opendir($uploadDir . $newsID);
         $baseURL = Shop::getURL() . '/';
         while (($file = readdir($handle)) !== false) {
             if ($file !== '.' && $file !== '..') {
                 $image           = new stdClass();
                 $image->cName    = mb_substr($file, 0, mb_strpos($file, '.'));
-                $image->cURL     = PFAD_NEWSBILDER . $kNews . '/' . $file;
-                $image->cURLFull = $baseURL . PFAD_NEWSBILDER . $kNews . '/' . $file;
+                $image->cURL     = PFAD_NEWSBILDER . $newsID . '/' . $file;
+                $image->cURLFull = $baseURL . PFAD_NEWSBILDER . $newsID . '/' . $file;
                 $image->cDatei   = $file;
 
                 $images[] = $image;

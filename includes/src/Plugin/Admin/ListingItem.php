@@ -6,6 +6,7 @@
 
 namespace JTL\Plugin\Admin;
 
+use JTL\Helpers\GeneralObject;
 use JTL\Mapper\PluginValidation;
 use JTL\Plugin\InstallCode;
 
@@ -104,10 +105,10 @@ class ListingItem
         $node       = null;
         $this->name = $xml['cVerzeichnis'];
         $this->dir  = $xml['cVerzeichnis'];
-        if (isset($xml['jtlshopplugin']) && \is_array($xml['jtlshopplugin'])) {
+        if (GeneralObject::isCountable('jtlshopplugin', $xml)) {
             $node                    = $xml['jtlshopplugin'][0];
             $this->isShop5Compatible = true;
-        } elseif (isset($xml['jtlshop3plugin']) && \is_array($xml['jtlshop3plugin'])) {
+        } elseif (GeneralObject::isCountable('jtlshop3plugin', $xml)) {
             $node = $xml['jtlshop3plugin'][0];
         }
         if ($node !== null) {

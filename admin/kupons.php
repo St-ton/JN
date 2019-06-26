@@ -8,6 +8,7 @@ use JTL\Alert\Alert;
 use JTL\Checkout\Kupon;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
+use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Language\LanguageHelper;
@@ -51,13 +52,13 @@ $res         = handleCsvImportAction('kupon', function ($obj, &$importDeleteDone
     }
 
     unset($obj->dLastUse);
-    $kKupon = $db->insert('tkupon', $obj);
-    if ($kKupon === 0) {
+    $couponID = $db->insert('tkupon', $obj);
+    if ($couponID === 0) {
         return false;
     }
 
     foreach ($couponNames as $key => $val) {
-        $res = $db->insert('tkuponsprache', (object)['kKupon' => $kKupon, 'cISOSprache' => $key, 'cName' => $val]);
+        $res = $db->insert('tkuponsprache', (object)['kKupon' => $couponID, 'cISOSprache' => $key, 'cName' => $val]);
         if ($res === 0) {
             return false;
         }
@@ -85,9 +86,9 @@ if (Form::validateToken()) {
 }
 
 if ($action === 'bearbeiten') {
-    $kKupon = isset($_GET['kKupon']) ? (int)$_GET['kKupon'] : (int)$_POST['kKuponBearbeiten'];
-    if ($kKupon > 0) {
-        $coupon = getCoupon($kKupon);
+    $couponID = isset($_GET['kKupon']) ? (int)$_GET['kKupon'] : (int)$_POST['kKuponBearbeiten'];
+    if ($couponID > 0) {
+        $coupon = getCoupon($couponID);
     } else {
         $coupon = createNewCoupon($_REQUEST['cKuponTyp']);
     }
@@ -121,9 +122,9 @@ if ($action === 'bearbeiten') {
     }
 } elseif ($action === 'loeschen') {
     // Kupons loeschen
-    if (isset($_POST['kKupon_arr']) && is_array($_POST['kKupon_arr']) && count($_POST['kKupon_arr']) > 0) {
-        $kKupon_arr = array_map('\intval', $_POST['kKupon_arr']);
-        if (loescheKupons($kKupon_arr)) {
+    if (GeneralObject::hasCount('kKupon_arr', $_POST)) {
+        $couponIDs = array_map('\intval', $_POST['kKupon_arr']);
+        if (loescheKupons($couponIDs)) {
             $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successCouponDelete'), 'successCouponDelete');
         } else {
             $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorCouponDelete'), 'errorCouponDelete');
@@ -145,8 +146,8 @@ if ($action === 'bearbeiten') {
     $categories     = getCategories($coupon->cKategorien);
     $customerIDs    = array_filter(
         Text::parseSSK($coupon->cKunden),
-        function ($kKunde) {
-            return (int)$kKunde > 0;
+        function ($customerID) {
+            return (int)$customerID > 0;
         }
     );
     if ($coupon->kKupon > 0) {

@@ -6,10 +6,6 @@
 
 namespace JTL\Services;
 
-use Exception;
-use InvalidArgumentException;
-use JTL\Exceptions\CircularReferenceException;
-use JTL\Exceptions\ServiceNotFoundException;
 use Illuminate\Container\Container as IlluminateContainer;
 
 /**

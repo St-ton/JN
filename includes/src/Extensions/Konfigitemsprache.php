@@ -39,13 +39,13 @@ class Konfigitemsprache
 
     /**
      * Konfigitemsprache constructor.
-     * @param int $kKonfigitem
-     * @param int $kSprache
+     * @param int $itemID
+     * @param int $languageID
      */
-    public function __construct(int $kKonfigitem = 0, int $kSprache = 0)
+    public function __construct(int $itemID = 0, int $languageID = 0)
     {
-        if ($kKonfigitem > 0 && $kSprache > 0) {
-            $this->loadFromDB($kKonfigitem, $kSprache);
+        if ($itemID > 0 && $languageID > 0) {
+            $this->loadFromDB($itemID, $languageID);
         }
     }
 
@@ -60,10 +60,10 @@ class Konfigitemsprache
     /**
      * Loads database member into class member
      *
-     * @param int $kKonfigitem
-     * @param int $kSprache
+     * @param int $itemID
+     * @param int $languageID
      */
-    private function loadFromDB(int $kKonfigitem = 0, int $kSprache = 0): void
+    private function loadFromDB(int $itemID = 0, int $languageID = 0): void
     {
         if (!self::checkLicense()) {
             return;
@@ -71,16 +71,16 @@ class Konfigitemsprache
         $item            = Shop::Container()->getDB()->select(
             'tkonfigitemsprache',
             'kKonfigitem',
-            $kKonfigitem,
+            $itemID,
             'kSprache',
-            $kSprache
+            $languageID
         );
         $defaultLanguage = LanguageHelper::getDefaultLanguage();
         if ($item !== null && empty($item->cName)) {
             $localized   = Shop::Container()->getDB()->select(
                 'tkonfigitemsprache',
                 'kKonfigitem',
-                $kKonfigitem,
+                $itemID,
                 'kSprache',
                 (int)$defaultLanguage->kSprache,
                 null,
@@ -94,7 +94,7 @@ class Konfigitemsprache
             $localized           = Shop::Container()->getDB()->select(
                 'tkonfigitemsprache',
                 'kKonfigitem',
-                $kKonfigitem,
+                $itemID,
                 'kSprache',
                 (int)$defaultLanguage->kSprache,
                 null,
@@ -174,23 +174,23 @@ class Konfigitemsprache
     }
 
     /**
-     * @param int $kSprache
+     * @param int $languageID
      * @return $this
      */
-    public function setSprache(int $kSprache): self
+    public function setSprache(int $languageID): self
     {
-        $this->kSprache = $kSprache;
+        $this->kSprache = $languageID;
 
         return $this;
     }
 
     /**
-     * @param string $cName
+     * @param string $name
      * @return $this
      */
-    public function setName(string $cName): self
+    public function setName(string $name): self
     {
-        $this->cName = Shop::Container()->getDB()->escape($cName);
+        $this->cName = Shop::Container()->getDB()->escape($name);
 
         return $this;
     }

@@ -66,17 +66,17 @@ class QueueEntry
     public $foreignKey;
 
     /**
-     * @var \DateTime
+     * @var DateTime
      */
     public $startTime;
 
     /**
-     * @var \DateTime
+     * @var DateTime
      */
     public $lastStart;
 
     /**
-     * @var \DateTime
+     * @var DateTime
      */
     public $lastFinish;
 

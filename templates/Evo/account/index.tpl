@@ -86,10 +86,6 @@
                 {include file='account/delete_account.tpl'}
             {elseif $step === 'wunschliste'}
                 {include file='account/wishlists.tpl'}
-            {elseif $step === 'wunschliste anzeigen'}
-                {include file='account/wishlist.tpl'}
-            {elseif $step === 'wunschliste versenden'}
-                {include file='account/wishlist_email_form.tpl'}
             {elseif $step === 'kunden_werben_kunden'}
                 {include file='account/customers_recruiting.tpl'}
             {elseif $step === 'bewertungen'}

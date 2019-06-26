@@ -8,6 +8,7 @@ namespace JTL\Console\Command\Migration;
 
 use Exception;
 use JTL\Console\Command\Command;
+use JTL\Shop;
 use JTL\Update\IMigration;
 use JTL\Update\MigrationManager;
 use PDOException;
@@ -15,29 +16,30 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * Class MigrateCommand.
+ * Class MigrateCommand
+ * @package JTL\Console\Command\Migration
  */
 class MigrateCommand extends Command
 {
+    /**
+     * @inheritDoc
+     */
     protected function configure()
     {
-        $this
-            ->setName('migrate')
+        $this->setName('migrate')
             ->setDescription('Run the database migrations');
     }
 
     /**
      * @param InputInterface  $input
      * @param OutputInterface $output
-     *
-     * @throws \Exception
-     *
      * @return int|null|void
+     * @throws Exception
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $io                 = $this->getIO();
-        $manager            = new MigrationManager();
+        $manager            = new MigrationManager(Shop::Container()->getDB());
         $migrations         = $manager->getMigrations();
         $executedMigrations = $manager->getExecutedMigrations();
         $identifier         = \max(\array_merge($executedMigrations, \array_keys($migrations)));
@@ -56,7 +58,7 @@ class MigrateCommand extends Command
                 if (!\in_array($migration->getId(), $executedMigrations)) {
                     $executedMigrations[] = $migration;
                     $manager->executeMigration($migration);
-                    $io->writeln("<info>Migrated:</info> ".$migration->getName()." ".$migration->getDescription());
+                    $io->writeln('<info>Migrated:</info> ' . $migration->getName() . ' ' . $migration->getDescription());
                 }
             }
         } catch (PDOException $e) {

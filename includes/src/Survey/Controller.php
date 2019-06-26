@@ -8,6 +8,7 @@ namespace JTL\Survey;
 
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
+use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Nice;
@@ -263,7 +264,7 @@ class Controller
         if (Frontend::getCustomer()->getID() > 0) {
             // Bekommt der Kunde einen Kupon und ist dieser gültig?
             if ($this->survey->getCouponID() > 0) {
-                $oKupon = $this->db->queryPrepared(
+                $coupon = $this->db->queryPrepared(
                     "SELECT tkuponsprache.cName, tkupon.kKupon, tkupon.cCode
                         FROM tkupon
                         JOIN tkuponsprache 
@@ -285,8 +286,8 @@ class Controller
                     ],
                     ReturnType::SINGLE_OBJECT
                 );
-                if ($oKupon->kKupon > 0) {
-                    $msg = \sprintf(Shop::Lang()->get('pollCoupon', 'messages'), $oKupon->cCode);
+                if ($coupon->kKupon > 0) {
+                    $msg = \sprintf(Shop::Lang()->get('pollCoupon', 'messages'), $coupon->cCode);
                 } else {
                     Shop::Container()->getLogService()->error(\sprintf(
                         'Fehlerhafter Kupon in Umfragebelohnung. Kunde: %s  Kupon: %s',
@@ -477,7 +478,7 @@ class Controller
                                 return $questionID;
                             }
                         } elseif ($type === QuestionType::MATRIX_MULTI) {
-                            if (\is_array($post[$idx]) && \count($post[$idx]) > 0) {
+                            if (GeneralObject::hasCount($idx, $_POST)) {
                                 $exists = false;
                                 foreach ($post[$idx] as $givenMatrix) {
                                     [$questionIDAntwortTMP] = \explode('_', $givenMatrix);

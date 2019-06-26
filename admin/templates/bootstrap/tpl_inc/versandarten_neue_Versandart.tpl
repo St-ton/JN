@@ -685,7 +685,7 @@
                         <i class="fa fa-edit"></i> {__('modifyedShippingType')}
                     {/if}
                 </button>
-                <a href="versandarten.php" value="{__('cancel')}" class="btn btn-danger"><i class="fa fa-exclamation"></i> {__('cancel')}</a>
+                <a href="versandarten.php" title="{__('cancel')}" class="btn btn-danger"><i class="fa fa-exclamation"></i> {__('cancel')}</a>
             </div>
         </div>
     </form>

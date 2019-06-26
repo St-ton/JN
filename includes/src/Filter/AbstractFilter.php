@@ -328,7 +328,7 @@ abstract class AbstractFilter implements FilterInterface
      */
     public function getUnsetFilterURL($idx = null): ?string
     {
-        if ($idx !== null && \is_array($idx) && \count($idx) === 1) {
+        if (\is_array($idx) && \count($idx) === 1) {
             $idx = $idx[0];
         }
 

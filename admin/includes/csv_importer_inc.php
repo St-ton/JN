@@ -19,34 +19,34 @@ use JTL\DB\ReturnType;
  * @param string|callable $target - either target table name or callback function that takes an object to be imported
  * @param string[] $fields - array of names of the fields in the order they appear in one data row. If and only if this
  *      array is empty, a header line of field names is expected, otherwise not.
- * @param string|null $cDelim - delimiter character or null to guess it from the first row
+ * @param string|null $delim - delimiter character or null to guess it from the first row
  * @param int $importType -
  *      0 = clear table, then import (careful!!! again: this will clear the table denoted by $target)
  *      1 = insert new, overwrite existing
  *      2 = insert only non-existing
  * @return int - -1 if importer-id-mismatch / 0 on success / >1 import error count
  */
-function handleCsvImportAction($importerId, $target, $fields = [], $cDelim = null, $importType = 2)
+function handleCsvImportAction($importerId, $target, $fields = [], $delim = null, $importType = 2)
 {
     if (Form::validateToken() && Request::verifyGPDataString('importcsv') === $importerId) {
-        if (isset($_FILES['csvfile']['type']) &&
-            (
-                $_FILES['csvfile']['type'] === 'application/vnd.ms-excel' ||
-                $_FILES['csvfile']['type'] === 'text/csv' ||
-                $_FILES['csvfile']['type'] === 'application/csv' ||
-                $_FILES['csvfile']['type'] === 'application/vnd.msexcel'
+        if (isset($_FILES['csvfile']['type'])
+            && (
+                $_FILES['csvfile']['type'] === 'application/vnd.ms-excel'
+                || $_FILES['csvfile']['type'] === 'text/csv'
+                || $_FILES['csvfile']['type'] === 'application/csv'
+                || $_FILES['csvfile']['type'] === 'application/vnd.msexcel'
             )
         ) {
             $csvFilename = $_FILES['csvfile']['tmp_name'];
             $fs          = fopen($_FILES['csvfile']['tmp_name'], 'rb');
             $nErrors     = 0;
 
-            if ($cDelim === null) {
-                $cDelim = getCsvDelimiter($csvFilename);
+            if ($delim === null) {
+                $delim = getCsvDelimiter($csvFilename);
             }
 
             if (count($fields) === 0) {
-                $fields = fgetcsv($fs, 0, $cDelim);
+                $fields = fgetcsv($fs, 0, $delim);
             }
 
             if (isset($_REQUEST['importType'])) {
@@ -57,7 +57,7 @@ function handleCsvImportAction($importerId, $target, $fields = [], $cDelim = nul
                 Shop::Container()->getDB()->query('TRUNCATE ' . $target, ReturnType::AFFECTED_ROWS);
             }
             $importDeleteDone = false;
-            while (($row = fgetcsv($fs, 0, $cDelim)) !== false) {
+            while (($row = fgetcsv($fs, 0, $delim)) !== false) {
                 $obj = new stdClass();
 
                 foreach ($fields as $i => $field) {
@@ -72,17 +72,17 @@ function handleCsvImportAction($importerId, $target, $fields = [], $cDelim = nul
                         ++$nErrors;
                     }
                 } elseif (is_string($target)) {
-                    $cTable = $target;
+                    $table = $target;
 
                     if ($importType === 0 || $importerId === 2) {
-                        $res = Shop::Container()->getDB()->insert($cTable, $obj);
+                        $res = Shop::Container()->getDB()->insert($table, $obj);
 
                         if ($res === 0) {
                             ++$nErrors;
                         }
                     } elseif ($importType === 1) {
                         Shop::Container()->getDB()->delete($target, $fields, $row);
-                        $res = Shop::Container()->getDB()->insert($cTable, $obj);
+                        $res = Shop::Container()->getDB()->insert($table, $obj);
 
                         if ($res === 0) {
                             ++$nErrors;

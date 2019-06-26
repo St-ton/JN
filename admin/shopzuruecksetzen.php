@@ -17,10 +17,10 @@ $oAccount->permission('RESET_SHOP_VIEW', true, true);
 $alertHelper = Shop::Container()->getAlertService();
 $db          = Shop::Container()->getDB();
 if (isset($_POST['zuruecksetzen']) && (int)$_POST['zuruecksetzen'] === 1 && Form::validateToken()) {
-    $cOption_arr = $_POST['cOption_arr'];
-    if (is_array($cOption_arr) && count($cOption_arr) > 0) {
-        foreach ($cOption_arr as $cOption) {
-            switch ($cOption) {
+    $options = $_POST['cOption_arr'];
+    if (is_array($options) && count($options) > 0) {
+        foreach ($options as $option) {
+            switch ($option) {
                 // JTL-Wawi Inhalte
                 case 'artikel':
                     $db->query('TRUNCATE tartikel', ReturnType::DEFAULT);
@@ -170,15 +170,6 @@ if (isset($_POST['zuruecksetzen']) && (int)$_POST['zuruecksetzen'] === 1 && Form
                     $db->query('TRUNCATE tsuchcachetreffer', ReturnType::DEFAULT);
 
                     $db->delete('tseo', 'cKey', 'kSuchanfrage');
-                    break;
-
-                case 'tags':
-                    $db->query('TRUNCATE ttagmapping', ReturnType::DEFAULT);
-                    $db->query('TRUNCATE ttag', ReturnType::DEFAULT);
-                    $db->query('TRUNCATE ttagartikel', ReturnType::DEFAULT);
-                    $db->query('TRUNCATE ttagkunde', ReturnType::DEFAULT);
-
-                    $db->delete('tseo', 'cKey', 'kTag');
                     break;
 
                 case 'bewertungen':

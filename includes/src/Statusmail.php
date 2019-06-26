@@ -101,7 +101,7 @@ class Statusmail
         $d = new DateTime();
         $d->modify('+1 days');
         $d->setTime(0, 0);
-        $oCron = new LegacyCron(
+        $cron = new LegacyCron(
             0,
             $id,
             $nAlleXStunden,
@@ -113,7 +113,7 @@ class Statusmail
             $d->format('H:i:s')
         );
 
-        return $oCron->speicherInDB() !== false;
+        return $cron->speicherInDB() !== false;
     }
 
     /**
@@ -170,8 +170,6 @@ class Statusmail
             __('contentTypeCountRatings')                   => 8,
             __('contentTypeCountRatingsLocked')             => 9,
             __('contentTypeCountRatingDepositPayed')        => 10,
-            __('contentTypeCountTags')                      => 11,
-            __('contentTypeCountTagsLocked')                => 12,
             __('contentTypeCountCustomerRecruited')         => 13,
             __('contentTypeCountCustomerRecruitedOrdered')  => 14,
             __('contentTypeCountSentWishlists')             => 15,
@@ -199,7 +197,7 @@ class Statusmail
             'SELECT kKundengruppe, cName FROM tkundengruppe',
             ReturnType::ARRAY_OF_OBJECTS
         );
-        foreach ($customerGroups as $oKundengruppe) {
+        foreach ($customerGroups as $customerGroup) {
             $productData            = $this->db->queryPrepared(
                 'SELECT COUNT(*) AS cnt
                     FROM tartikel
@@ -207,13 +205,13 @@ class Statusmail
                         ON tartikelsichtbarkeit.kArtikel = tartikel.kArtikel
                         AND tartikelsichtbarkeit.kKundengruppe = :cgid
                     WHERE tartikelsichtbarkeit.kArtikel IS NULL',
-                ['cgid' => (int)$oKundengruppe->kKundengruppe],
+                ['cgid' => (int)$customerGroup->kKundengruppe],
                 ReturnType::SINGLE_OBJECT
             );
             $product                = new stdClass();
             $product->nAnzahl       = (int)$productData->cnt;
-            $product->kKundengruppe = (int)$oKundengruppe->kKundengruppe;
-            $product->cName         = $oKundengruppe->cName;
+            $product->kKundengruppe = (int)$customerGroup->kKundengruppe;
+            $product->cName         = $customerGroup->cName;
 
             $products[] = $product;
         }
@@ -456,52 +454,6 @@ class Statusmail
         $res->fSummeGuthaben = $rating->fSummeGuthaben;
 
         return $res;
-    }
-
-    /**
-     * Holt die Anzahl von Tags für einen bestimmten Zeitraum
-     *
-     * @return int
-     */
-    private function getTagCount(): int
-    {
-        return (int)$this->db->queryPrepared(
-            'SELECT COUNT(*) AS cnt
-                FROM ttagkunde
-                JOIN ttag 
-                    ON ttag.kTag = ttagkunde.kTag
-                    AND ttag.nAktiv = 1
-                WHERE ttagkunde.dZeit >= :from
-                    AND ttagkunde.dZeit < :to',
-            [
-                'from' => $this->dateStart,
-                'to'   => $this->dateEnd
-            ],
-            ReturnType::SINGLE_OBJECT
-        )->cnt;
-    }
-
-    /**
-     * Holt die Anzahl von Tags für einen bestimmten Zeitraum die nicht freigeschaltet wurden
-     *
-     * @return int
-     */
-    private function getNonApprovedTagsCounts(): int
-    {
-        return (int)$this->db->queryPrepared(
-            'SELECT COUNT(*) AS cnt
-                FROM ttagkunde
-                JOIN ttag 
-                    ON ttag.kTag = ttagkunde.kTag
-                    AND ttag.nAktiv = 0
-                WHERE ttagkunde.dZeit >= :from
-                    AND ttagkunde.dZeit < :to',
-            [
-                'from' => $this->dateStart,
-                'to'   => $this->dateEnd
-            ],
-            ReturnType::SINGLE_OBJECT
-        )->cnt;
     }
 
     /**
@@ -782,7 +734,6 @@ class Statusmail
         $mail->nAnzahlBewertungenNichtFreigeschaltet    = -1;
         $mail->oAnzahlGezahltesGuthaben                 = -1;
         $mail->nAnzahlTags                              = -1;
-        $mail->nAnzahlTagsNichtFreigeschaltet           = -1;
         $mail->nAnzahlGeworbenerKunden                  = -1;
         $mail->nAnzahlErfolgreichGeworbenerKunden       = -1;
         $mail->nAnzahlVersendeterWunschlisten           = -1;
@@ -831,12 +782,6 @@ class Statusmail
                     break;
                 case 10:
                     $mail->oAnzahlGezahltesGuthaben = $this->getRatingCreditsCount();
-                    break;
-                case 11:
-                    $mail->nAnzahlTags = $this->getTagCount();
-                    break;
-                case 12:
-                    $mail->nAnzahlTagsNichtFreigeschaltet = $this->getNonApprovedTagsCounts();
                     break;
                 case 13:
                     $mail->nAnzahlGeworbenerKunden = $this->getNewCustomerPromotionsCount();

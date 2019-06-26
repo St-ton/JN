@@ -16,7 +16,7 @@
                 <div class="input-group{if isset($cError_arr.cGruppe)} error{/if}">
                     <span class="input-group-addon"><label for="cGruppe">{__('name')}</label></span>
                     <input class="form-control" type="text" name="cGruppe" id="cGruppe" value="{if isset($oAdminGroup->cGruppe)}{$oAdminGroup->cGruppe}{/if}" />
-                    {if isset($cError_arr.cGruppe)}<span class="input-group-addon error" title="{__('FillOut')}><i class="fa fa-exclamation-triangle"></i></span>{/if}
+                    {if isset($cError_arr.cGruppe)}<span class="input-group-addon error" title="{__('FillOut')}"><i class="fa fa-exclamation-triangle"></i></span>{/if}
                 </div>
                 <div class="input-group{if isset($cError_arr.cBeschreibung)} error{/if}">
                     <span class="input-group-addon"><label for="cBeschreibung">{__('description')}</label></span>

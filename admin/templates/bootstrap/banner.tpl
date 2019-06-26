@@ -1,9 +1,9 @@
-{include file='tpl_inc/header.tpl' bForceFluid=($cAction === 'area')}
+{include file='tpl_inc/header.tpl' bForceFluid=($action === 'area')}
 {config_load file="$lang.conf" section='banner'}
 {include file='tpl_inc/seite_header.tpl' cTitel=__('banner') cBeschreibung=__('bannerDesc') cDokuURL=__('bannerURL')}
 
 <div id="content">
-    {if $cAction === 'edit' || $cAction === 'new'}
+    {if $action === 'edit' || $action === 'new'}
     <script type="text/javascript">
         var file2large = false;
 
@@ -76,8 +76,8 @@
     <div id="settings">
         <form name="banner" action="banner.php" method="post" enctype="multipart/form-data" onsubmit="checkfile(event);">
             {$jtl_token}
-            <input type="hidden" name="action" value="{$cAction}" />
-            {if $cAction === 'edit'}
+            <input type="hidden" name="action" value="{$action}" />
+            {if $action === 'edit'}
                 <input type="hidden" name="kImageMap" value="{$oBanner->kImageMap}" />
             {/if}
 
@@ -174,9 +174,6 @@
                                     <option value="" {if isset($oExtension->cKey) && $oExtension->cKey === ''}selected="selected"{/if}>
                                         {__('noFilter')}
                                     </option>
-                                    <option value="kTag" {if isset($cKey) && $cKey === 'kTag'}selected="selected" {elseif isset($oExtension->cKey) && $oExtension->cKey === 'kTag'}selected="selected"{/if}>
-                                        {__('tag')}
-                                    </option>
                                     <option value="kMerkmalWert" {if isset($cKey) && $cKey === 'kMerkmalWert'}selected="selected" {elseif isset($oExtension->cKey) && $oExtension->cKey === 'kMerkmalWert'}selected="selected"{/if}>
                                         {__('attribute')}
                                     </option>
@@ -226,24 +223,6 @@
                                 {if (isset($cKey) && $cKey === 'kLink') || (isset($oExtension->cKey) && $oExtension->cKey === 'kLink')}
                                     ioCall('getPages', [[$('#link_key').val()]], function (data) {
                                         $('#link_name').val(data[0].cName);
-                                    });
-                                {/if}
-                            </script>
-                        </div>
-                        <div id="keykTag" class="input-group key">
-                            <span class="input-group-addon"><label for="tag_name">{__('tag')}</label></span>
-                            <input type="hidden" name="tag_key" id="tag_key"
-                                   value="{if (isset($cKey) && $cKey === 'kTag') || (isset($oExtension->cKey) && $oExtension->cKey === 'kTag')}{$oExtension->cValue}{/if}">
-                            <input class="form-control" type="text" name="tag_name" id="tag_name">
-                            <span class="input-group-addon">{getHelpDesc cDesc=__('typeAheadTag')}</span>
-                            <script>
-                                enableTypeahead('#tag_name', 'getTags', 'cName', null, function(e, item) {
-                                    $('#tag_name').val(item.cName);
-                                    $('#tag_key').val(item.kTag);
-                                });
-                                {if (isset($cKey) && $cKey === 'kTag') || (isset($oExtension->cKey) && $oExtension->cKey === 'kTag')}
-                                    ioCall('getTags', [[$('#tag_key').val()]], function (data) {
-                                        $('#tag_name').val(data[0].cName);
                                     });
                                 {/if}
                             </script>
@@ -325,7 +304,7 @@
 
         </form>
     </div>
-    {elseif $cAction === 'area'}
+    {elseif $action === 'area'}
     <script type="text/javascript" src="{$shopURL}/includes/libs/flashchart/js/json/json2.js"></script>
     <script type="text/javascript" src="{$shopURL}/{$PFAD_ADMIN}/{$currentTemplateDir}js/clickareas.js"></script>
     <link rel="stylesheet" href="{$shopURL}/{$PFAD_ADMIN}/{$currentTemplateDir}css/clickareas.css" type="text/css" media="screen" />
@@ -418,7 +397,7 @@
         <a class="btn btn-danger" href="banner.php" id="cancel"><i class="fa fa-angle-double-left"></i> {__('back')}</a>
     </div>
     {else}
-        {include file='tpl_inc/pagination.tpl' oPagination=$pagination}
+        {include file='tpl_inc/pagination.tpl' pagination=$pagination}
 
         <div id="settings">
             <div class="panel panel-default">

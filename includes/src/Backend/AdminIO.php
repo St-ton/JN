@@ -22,12 +22,12 @@ class AdminIO extends IO
     protected $oAccount;
 
     /**
-     * @param AdminAccount $oAccount
+     * @param AdminAccount $account
      * @return $this
      */
-    public function setAccount(AdminAccount $oAccount): self
+    public function setAccount(AdminAccount $account): self
     {
-        $this->oAccount = $oAccount;
+        $this->oAccount = $account;
 
         return $this;
     }

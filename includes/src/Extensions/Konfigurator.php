@@ -35,125 +35,140 @@ class Konfigurator
     /**
      * getKonfig
      *
-     * @param int $kArtikel
-     * @param int $kSprache
+     * @param int $productID
+     * @param int $languageID
      * @return array
      */
-    public static function getKonfig(int $kArtikel, int $kSprache = 0): array
+    public static function getKonfig(int $productID, int $languageID = 0): array
     {
-        if (isset(self::$groups[$kArtikel])) {
+        if (isset(self::$groups[$productID])) {
             //#7482
-            return self::$groups[$kArtikel];
+            return self::$groups[$productID];
         }
         $groups = Shop::Container()->getDB()->selectAll(
             'tartikelkonfiggruppe',
             'kArtikel',
-            $kArtikel,
+            $productID,
             'kArtikel, kKonfigGruppe',
             'nSort ASC'
         );
         if (!\is_array($groups) || \count($groups) === 0 || !self::checkLicense()) {
             return [];
         }
-        if (!$kSprache) {
-            $kSprache = Shop::getLanguageID();
+        if (!$languageID) {
+            $languageID = Shop::getLanguageID();
         }
         foreach ($groups as &$group) {
-            $group = new Konfiggruppe((int)$group->kKonfigGruppe, $kSprache);
+            $group = new Konfiggruppe((int)$group->kKonfigGruppe, $languageID);
         }
         unset($group);
 
-        self::$groups[$kArtikel] = $groups;
+        self::$groups[$productID] = $groups;
 
         return $groups;
     }
 
     /**
-     * @param int $kArtikel
+     * @param int $productID
      * @return bool
      */
-    public static function hasKonfig(int $kArtikel): bool
+    public static function hasKonfig(int $productID): bool
     {
         if (!self::checkLicense()) {
             return false;
         }
-        $groups = Shop::Container()->getDB()->query(
-            'SELECT kArtikel, kKonfigGruppe
-                 FROM tartikelkonfiggruppe
-                 WHERE tartikelkonfiggruppe.kArtikel = ' . $kArtikel . '
-                 ORDER BY tartikelkonfiggruppe.nSort ASC',
-            ReturnType::ARRAY_OF_OBJECTS
-        );
 
-        return \is_array($groups) && \count($groups) > 0;
+        return (int)Shop::Container()->getDB()->queryPrepared(
+            'SELECT COUNT(*) AS cnt
+                 FROM tartikelkonfiggruppe
+                 WHERE tartikelkonfiggruppe.kArtikel = :pid',
+            ['pid' => $productID],
+            ReturnType::SINGLE_OBJECT
+        )->cnt > 0;
     }
 
     /**
-     * @param int $kArtikel
+     * @param int $productID
      * @return bool
      */
-    public static function validateKonfig($kArtikel): bool
+    public static function validateKonfig($productID): bool
     {
         /* Vorvalidierung deaktiviert */
         return true;
     }
 
     /**
-     * @param object $oBasket
+     * @param object $cart
+     * @deprecated since 5.0.0
      */
-    public static function postcheckBasket(&$oBasket): void
+    public static function postcheckBasket(&$cart): void
     {
-        if (!\is_array($oBasket->PositionenArr) || \count($oBasket->PositionenArr) === 0 || !self::checkLicense()) {
+        self::postcheckCart($cart);
+    }
+
+    /**
+     * @param object $cart
+     */
+    public static function postcheckCart(&$cart): void
+    {
+        if (!\is_array($cart->PositionenArr) || \count($cart->PositionenArr) === 0 || !self::checkLicense()) {
             return;
         }
-        $deletedPositions = [];
-        foreach ($oBasket->PositionenArr as $index => $position) {
+        $deletedItems = [];
+        foreach ($cart->PositionenArr as $index => $item) {
             $deleted = false;
-            if ($position->nPosTyp === \C_WARENKORBPOS_TYP_ARTIKEL) {
-                if ($position->cUnique && $position->kKonfigitem == 0) {
+            if ($item->nPosTyp === \C_WARENKORBPOS_TYP_ARTIKEL) {
+                if ($item->cUnique && $item->kKonfigitem == 0) {
                     $configItems = [];
-                    // Alle Kinder suchen
-                    foreach ($oBasket->PositionenArr as $childPosition) {
-                        if ($childPosition->cUnique
-                            && $childPosition->cUnique === $position->cUnique
-                            && $childPosition->kKonfigitem > 0
-                        ) {
-                            $configItems[] = new Konfigitem($childPosition->kKonfigitem);
+                    foreach ($cart->PositionenArr as $child) {
+                        if ($child->cUnique && $child->cUnique === $item->cUnique && $child->kKonfigitem > 0) {
+                            $configItems[] = new Konfigitem($child->kKonfigitem);
                         }
                     }
                     // Konfiguration validieren
-                    if (self::validateBasket($position->kArtikel, $configItems) !== true) {
-                        $deleted            = true;
-                        $deletedPositions[] = $index;
+                    if (self::validateCart($item->kArtikel, $configItems) !== true) {
+                        $deleted        = true;
+                        $deletedItems[] = $index;
                         //loescheWarenkorbPosition($nPos);
                     }
-                } elseif (!$position->cUnique) {
+                } elseif (!$item->cUnique) {
                     // Konfiguration vorhanden -> löschen
-                    if (self::hasKonfig($position->kArtikel)) {
-                        $deleted            = true;
-                        $deletedPositions[] = $index;
+                    if (self::hasKonfig($item->kArtikel)) {
+                        $deleted        = true;
+                        $deletedItems[] = $index;
                         //loescheWarenkorbPosition($nPos);
                     }
                 }
                 if ($deleted) {
                     Shop::Container()->getLogService()->error(
                         'Validierung der Konfiguration fehlgeschlagen - Warenkorbposition wurde entfernt: ' .
-                        $position->cName[$_SESSION['cISOSprache']] . '(' . $position->kArtikel . ')'
+                        $item->cName[$_SESSION['cISOSprache']] . '(' . $item->kArtikel . ')'
                     );
                 }
             }
         }
-        Cart::deleteCartPositions($deletedPositions, false);
+        Cart::deleteCartItems($deletedItems, false);
     }
 
     /**
-     * @param int   $kArtikel
+     * @param int   $productID
+     * @param array $configItems
+     * @return array|bool
+     * @deprecated since 5.0.0
+     */
+    public static function validateBasket(int $productID, $configItems)
+    {
+        return self::validateCart($productID, $configItems);
+    }
+
+    /**
+     * @param int   $productID
      * @param array $configItems
      * @return array|bool
      */
-    public static function validateBasket(int $kArtikel, $configItems)
+    public static function validateCart(int $productID, $configItems)
     {
-        if ($kArtikel === 0 || !\is_array($configItems)) {
+        if ($productID === 0 || !\is_array($configItems)) {
             Shop::Container()->getLogService()->error(
                 'Validierung der Konfiguration fehlgeschlagen - Ungültige Daten'
             );
@@ -163,11 +178,11 @@ class Konfigurator
         // Gesamtpreis
         $fFinalPrice = 0.0;
         // Hauptartikel
-        $oArtikel = new Artikel();
-        $oArtikel->fuelleArtikel($kArtikel, Artikel::getDefaultOptions());
+        $product = new Artikel();
+        $product->fuelleArtikel($productID, Artikel::getDefaultOptions());
         // Grundpreis
-        if ($oArtikel && (int)$oArtikel->kArtikel > 0) {
-            $fFinalPrice += $oArtikel->Preise->fVKNetto;
+        if ($product && (int)$product->kArtikel > 0) {
+            $fFinalPrice += $product->Preise->fVKNetto;
         }
         foreach ($configItems as $configItem) {
             if (!isset($configItem->fAnzahl) ||
@@ -178,30 +193,30 @@ class Konfigurator
             $fFinalPrice += $configItem->getPreis(true) * $configItem->fAnzahl;
         }
         $errors = [];
-        foreach (self::getKonfig($kArtikel) as $group) {
-            $itemCount     = 0;
-            $kKonfiggruppe = $group->getKonfiggruppe();
+        foreach (self::getKonfig($productID) as $group) {
+            $itemCount = 0;
+            $groupID   = $group->getKonfiggruppe();
             foreach ($configItems as $configItem) {
-                if ($configItem->getKonfiggruppe() == $kKonfiggruppe) {
+                if ($configItem->getKonfiggruppe() == $groupID) {
                     $itemCount++;
                 }
             }
             if ($itemCount < $group->getMin() && $group->getMin() > 0) {
                 if ($group->getMin() == $group->getMax()) {
-                    $errors[$kKonfiggruppe] =
+                    $errors[$groupID] =
                         Shop::Lang()->get('configChooseNComponents', 'productDetails', $group->getMin());
                 } else {
-                    $errors[$kKonfiggruppe] =
+                    $errors[$groupID] =
                         Shop::Lang()->get('configChooseMinComponents', 'productDetails', $group->getMin());
                 }
-                $errors[$kKonfiggruppe] .= self::langComponent($group->getMin() > 1);
+                $errors[$groupID] .= self::langComponent($group->getMin() > 1);
             } elseif ($itemCount > $group->getMax() && $group->getMax() > 0) {
                 if ($group->getMin() == $group->getMax()) {
-                    $errors[$kKonfiggruppe] =
+                    $errors[$groupID] =
                         Shop::Lang()->get('configChooseNComponents', 'productDetails', $group->getMin()) .
                         self::langComponent($group->getMin() > 1);
                 } else {
-                    $errors[$kKonfiggruppe] =
+                    $errors[$groupID] =
                         Shop::Lang()->get('configChooseMaxComponents', 'productDetails', $group->getMax()) .
                         self::langComponent($group->getMax() > 1);
                 }
@@ -211,8 +226,8 @@ class Konfigurator
         if ($fFinalPrice < 0.0) {
             $cError = \sprintf(
                 "Negative Konfigurationssumme für Artikel '%s' (Art.Nr.: %s, Netto: %s) - Vorgang abgebrochen",
-                $oArtikel->cName,
-                $oArtikel->cArtNr,
+                $product->cName,
+                $product->cArtNr,
                 Preise::getLocalizedPriceString($fFinalPrice)
             );
             Shop::Container()->getLogService()->error($cError);
@@ -236,7 +251,7 @@ class Konfigurator
     }
 
     /**
-     * @param array $confGroups
+     * @param Konfiggruppe[] $confGroups
      * @return bool
      */
     public static function hasUnavailableGroup(array $confGroups): bool

@@ -6,6 +6,7 @@
 
 namespace JTL\Plugin\Admin\Installation\Items;
 
+use JTL\Helpers\GeneralObject;
 use JTL\Plugin\Admin\InputType;
 use JTL\Plugin\Data\Config;
 use JTL\Plugin\InstallCode;
@@ -151,25 +152,22 @@ class SettingsLinks extends AbstractItem
                         // Ist der Typ eine Selectbox => Es müssen SelectboxOptionen vorhanden sein
                         if ($type === InputType::SELECT) {
                             $optNode = $setting['SelectboxOptions'][0] ?? [];
-                            if (isset($setting['OptionsSource'])
-                                && \is_array($setting['OptionsSource'])
-                                && \count($setting['OptionsSource']) > 0
-                            ) {
+                            if (GeneralObject::hasCount('OptionsSource', $setting['OptionsSource'])) {
                                 //do nothing for now
                             } elseif (\count($optNode) === 1) { // Es gibt mehr als eine Option
                                 foreach ($optNode['Option'] as $y => $option) {
                                     $y = (string)$y;
                                     \preg_match('/[0-9]+\sattr/', $y, $hits6);
                                     if (isset($hits6[0]) && \mb_strlen($hits6[0]) === \mb_strlen($y)) {
-                                        $cWert = $option['value'];
+                                        $value = $option['value'];
                                         $sort  = $option['sort'];
                                         $yx    = \mb_substr($y, 0, \mb_strpos($y, ' '));
-                                        $cName = $optNode['Option'][$yx];
+                                        $name  = $optNode['Option'][$yx];
 
                                         $plgnConfValues                           = new stdClass();
                                         $plgnConfValues->kPluginEinstellungenConf = $confID;
-                                        $plgnConfValues->cName                    = $cName;
-                                        $plgnConfValues->cWert                    = $cWert;
+                                        $plgnConfValues->cName                    = $name;
+                                        $plgnConfValues->cWert                    = $value;
                                         $plgnConfValues->nSort                    = $sort;
 
                                         $this->db->insert('tplugineinstellungenconfwerte', $plgnConfValues);
@@ -185,23 +183,20 @@ class SettingsLinks extends AbstractItem
                             }
                         } elseif ($type === InputType::RADIO) {
                             $optNode = $setting['RadioOptions'][0] ?? [];
-                            if (isset($setting['OptionsSource'])
-                                && \is_array($setting['OptionsSource'])
-                                && \count($setting['OptionsSource']) > 0
-                            ) {
+                            if (GeneralObject::hasCount('OptionsSource', $setting['OptionsSource'])) {
                             } elseif (\count($optNode) === 1) { // Es gibt mehr als eine Option
                                 foreach ($optNode['Option'] as $y => $option) {
                                     \preg_match('/[0-9]+\sattr/', $y, $hits6);
                                     if (isset($hits6[0]) && \mb_strlen($hits6[0]) === \mb_strlen($y)) {
-                                        $cWert = $option['value'];
+                                        $value = $option['value'];
                                         $sort  = $option['sort'];
                                         $yx    = \mb_substr($y, 0, \mb_strpos($y, ' '));
-                                        $cName = $optNode['Option'][$yx];
+                                        $name  = $optNode['Option'][$yx];
 
                                         $plgnConfValues                           = new stdClass();
                                         $plgnConfValues->kPluginEinstellungenConf = $confID;
-                                        $plgnConfValues->cName                    = $cName;
-                                        $plgnConfValues->cWert                    = $cWert;
+                                        $plgnConfValues->cName                    = $name;
+                                        $plgnConfValues->cWert                    = $value;
                                         $plgnConfValues->nSort                    = $sort;
 
                                         $this->db->insert(

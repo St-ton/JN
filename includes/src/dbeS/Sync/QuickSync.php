@@ -84,7 +84,7 @@ final class QuickSync extends AbstractSync
             $this->db->update('tartikel', 'kArtikel', (int)$product->kArtikel, $upd);
             \executeHook(\HOOK_QUICKSYNC_XML_BEARBEITEINSERT, ['oArtikel' => $product]);
             // clear object cache for this article and its parent if there is any
-            $oarentProduct = $this->db->select(
+            $parentProduct = $this->db->select(
                 'tartikel',
                 'kArtikel',
                 $product->kArtikel,
@@ -95,8 +95,8 @@ final class QuickSync extends AbstractSync
                 false,
                 'kVaterArtikel'
             );
-            if (!empty($oarentProduct->kVaterArtikel)) {
-                $clearTags[] = (int)$oarentProduct->kVaterArtikel;
+            if (!empty($parentProduct->kVaterArtikel)) {
+                $clearTags[] = (int)$parentProduct->kVaterArtikel;
             }
             $clearTags[] = (int)$product->kArtikel;
             $this->sendAvailabilityMails($product, $conf);

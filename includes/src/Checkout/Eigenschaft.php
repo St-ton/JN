@@ -55,22 +55,22 @@ class Eigenschaft
 
     /**
      * Eigenschaft constructor.
-     * @param int $kEigenschaft
+     * @param int $id
      */
-    public function __construct(int $kEigenschaft = 0)
+    public function __construct(int $id = 0)
     {
-        if ($kEigenschaft > 0) {
-            $this->loadFromDB($kEigenschaft);
+        if ($id > 0) {
+            $this->loadFromDB($id);
         }
     }
 
     /**
-     * @param int $kEigenschaft
+     * @param int $id
      * @return $this
      */
-    public function loadFromDB(int $kEigenschaft): self
+    public function loadFromDB(int $id): self
     {
-        $obj = Shop::Container()->getDB()->select('teigenschaft', 'kEigenschaft', $kEigenschaft);
+        $obj = Shop::Container()->getDB()->select('teigenschaft', 'kEigenschaft', $id);
         foreach (\get_object_vars($obj) as $k => $v) {
             $this->$k = $v;
         }

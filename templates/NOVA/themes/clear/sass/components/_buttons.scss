@@ -75,7 +75,6 @@
 
 .badge-circle {
   background-color: $white;
-  border-color: $gray;
   -webkit-box-shadow: none;
   box-shadow: none;
   min-width: 44px;
@@ -101,6 +100,43 @@
     border-color: $primary;
     color: $white;
     opacity: 1;
+  }
+}
+
+.badge-circle-1 {
+  background-color: $white;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+  min-width: 44px;
+  width: 44px;
+  height: 44px;
+  border: 1.5px solid $gray;
+  opacity: 0.8;
+  color: $gray;
+  font-size: 18px !important;
+  line-height: 15px !important;
+  border-radius: 50% !important;
+  transition: all .2s;
+  &::before { display: none; }
+  &.circle-small {
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+    font-size: 14px !important;
+    line-height: 12px !important;
+  }
+  &:hover {
+    color: $gray-dark;
+    border-color: $gray-dark;
+    opacity: 1 !important;
+    background: #fff;
+  }
+  &.on-list {
+    animation: size .4s;
+    color:#fff;
+    opacity: 1.0;
+    border: 1.5px solid #F8BF00;
+    background-color:#F8BF00;
   }
 }
 

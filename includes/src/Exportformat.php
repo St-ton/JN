@@ -21,15 +21,11 @@ use JTL\Helpers\Tax;
 use JTL\Helpers\Text;
 use JTL\Language\LanguageModel;
 use JTL\Session\Frontend;
-use JTL\Smarty\ContextType;
 use JTL\Smarty\ExportSmarty;
 use JTL\Smarty\JTLSmarty;
-use JTL\Smarty\SmartyResourceNiceDB;
 use Psr\Log\LoggerInterface;
-use SmartyException;
 use stdClass;
 use function Functional\first;
-use function Functional\map;
 
 /**
  * Class Exportformat
@@ -123,7 +119,7 @@ class Exportformat
     protected $nUseCache = 1;
 
     /**
-     * @var \JTL\Smarty\JTLSmarty
+     * @var JTLSmarty
      */
     protected $smarty;
 
@@ -168,7 +164,7 @@ class Exportformat
     private $tempFileName;
 
     /**
-     * @var \Psr\Log\LoggerInterface|null
+     * @var LoggerInterface|null
      */
     private $logger;
 
@@ -180,14 +176,14 @@ class Exportformat
     /**
      * Exportformat constructor.
      *
-     * @param int              $kExportformat
+     * @param int              $id
      * @param DbInterface|null $db
      */
-    public function __construct(int $kExportformat = 0, DbInterface $db = null)
+    public function __construct(int $id = 0, DbInterface $db = null)
     {
         $this->db = $db ?? Shop::Container()->getDB();
-        if ($kExportformat > 0) {
-            $this->loadFromDB($kExportformat);
+        if ($id > 0) {
+            $this->loadFromDB($id);
         }
     }
 
@@ -229,25 +225,25 @@ class Exportformat
     /**
      * Loads database member into class member
      *
-     * @param int $kExportformat
+     * @param int $id
      * @return $this
      */
-    private function loadFromDB(int $kExportformat = 0): self
+    private function loadFromDB(int $id = 0): self
     {
-        $oObj = $this->db->query(
+        $data = $this->db->query(
             'SELECT texportformat.*, tkampagne.cParameter AS campaignParameter, tkampagne.cWert AS campaignValue
                FROM texportformat
                LEFT JOIN tkampagne 
                   ON tkampagne.kKampagne = texportformat.kKampagne
                   AND tkampagne.nAktiv = 1
-               WHERE texportformat.kExportformat = ' . $kExportformat,
+               WHERE texportformat.kExportformat = ' . $id,
             ReturnType::SINGLE_OBJECT
         );
-        if (isset($oObj->kExportformat) && $oObj->kExportformat > 0) {
-            foreach (\get_object_vars($oObj) as $k => $v) {
+        if (isset($data->kExportformat) && $data->kExportformat > 0) {
+            foreach (\get_object_vars($data) as $k => $v) {
                 $this->$k = $v;
             }
-            $this->setConfig($kExportformat);
+            $this->setConfig($id);
             if (!$this->getKundengruppe()) {
                 $this->setKundengruppe(Kundengruppe::getDefaultGroupID());
             }
@@ -388,24 +384,24 @@ class Exportformat
     }
 
     /**
-     * @param int $kKundengruppe
+     * @param int $customerGroupID
      * @return $this
      */
-    public function setKundengruppe(int $kKundengruppe): self
+    public function setKundengruppe(int $customerGroupID): self
     {
-        $this->kKundengruppe = $kKundengruppe;
+        $this->kKundengruppe = $customerGroupID;
 
         return $this;
     }
 
     /**
      * /**
-     * @param int $kSprache
+     * @param int $languageID
      * @return $this
      */
-    public function setSprache(int $kSprache): self
+    public function setSprache(int $languageID): self
     {
-        $this->kSprache = $kSprache;
+        $this->kSprache = $languageID;
 
         return $this;
     }
@@ -444,12 +440,12 @@ class Exportformat
     }
 
     /**
-     * @param string $cName
+     * @param string $name
      * @return $this
      */
-    public function setName(string $cName): self
+    public function setName(string $name): self
     {
-        $this->cName = $cName;
+        $this->cName = $name;
 
         return $this;
     }
@@ -1347,18 +1343,18 @@ class Exportformat
                     ? 'https://'
                     : 'http://';
                 if ($isAsync) {
-                    $oCallback                 = new stdClass();
-                    $oCallback->kExportformat  = $this->getExportformat();
-                    $oCallback->kExportqueue   = $this->queue->jobQueueID;
-                    $oCallback->nMax           = $max;
-                    $oCallback->nCurrent       = $this->queue->tasksExecuted;
-                    $oCallback->nLastArticleID = $this->queue->lastProductID;
-                    $oCallback->bFinished      = false;
-                    $oCallback->bFirst         = ((int)$this->queue->tasksExecuted === 0);
-                    $oCallback->cURL           = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'];
-                    $oCallback->cacheMisses    = $cacheMisses;
-                    $oCallback->cacheHits      = $cacheHits;
-                    echo \json_encode($oCallback);
+                    $callback                 = new stdClass();
+                    $callback->kExportformat  = $this->getExportformat();
+                    $callback->kExportqueue   = $this->queue->jobQueueID;
+                    $callback->nMax           = $max;
+                    $callback->nCurrent       = $this->queue->tasksExecuted;
+                    $callback->nLastArticleID = $this->queue->lastProductID;
+                    $callback->bFinished      = false;
+                    $callback->bFirst         = ((int)$this->queue->tasksExecuted === 0);
+                    $callback->cURL           = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'];
+                    $callback->cacheMisses    = $cacheMisses;
+                    $callback->cacheHits      = $cacheHits;
+                    echo \json_encode($callback);
                 } else {
                     $cURL = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'] .
                         '?e=' . (int)$this->queue->jobQueueID .
@@ -1392,17 +1388,17 @@ class Exportformat
                 $this->splitFile();
                 if ($back === true) {
                     if ($isAsync) {
-                        $oCallback                 = new stdClass();
-                        $oCallback->kExportformat  = $this->getExportformat();
-                        $oCallback->nMax           = $max;
-                        $oCallback->nCurrent       = $this->queue->tasksExecuted;
-                        $oCallback->nLastArticleID = $this->queue->lastProductID;
-                        $oCallback->bFinished      = true;
-                        $oCallback->cacheMisses    = $cacheMisses;
-                        $oCallback->cacheHits      = $cacheHits;
-                        $oCallback->errorMessage   = $errorMessage;
+                        $callback                 = new stdClass();
+                        $callback->kExportformat  = $this->getExportformat();
+                        $callback->nMax           = $max;
+                        $callback->nCurrent       = $this->queue->tasksExecuted;
+                        $callback->nLastArticleID = $this->queue->lastProductID;
+                        $callback->bFinished      = true;
+                        $callback->cacheMisses    = $cacheMisses;
+                        $callback->cacheHits      = $cacheHits;
+                        $callback->errorMessage   = $errorMessage;
 
-                        echo \json_encode($oCallback);
+                        echo \json_encode($callback);
                     } else {
                         \header(
                             'Location: exportformate.php?action=exported&token=' .

@@ -22,26 +22,26 @@ if ($cDatei === null) {
     header('Retry-After: 86400');
     exit;
 }
-$cIP              = Request::getRealIP();
-$nFloodProtection = Shop::Container()->getDB()->queryPrepared(
+$ip              = Request::getRealIP();
+$floodProtection = Shop::Container()->getDB()->queryPrepared(
     'SELECT * 
         FROM `tsitemaptracker` 
         WHERE `cIP` = :ip 
             AND DATE_ADD(`dErstellt`, INTERVAL 2 MINUTE) >= NOW() 
         ORDER BY `dErstellt` DESC',
-    ['ip' => $cIP],
+    ['ip' => $ip],
     ReturnType::AFFECTED_ROWS
 );
-if ($nFloodProtection === 0) {
+if ($floodProtection === 0) {
     // Track request
-    $oSitemapTracker               = new stdClass();
-    $oSitemapTracker->cSitemap     = basename($cDatei);
-    $oSitemapTracker->kBesucherBot = getRequestBot();
-    $oSitemapTracker->cIP          = $cIP;
-    $oSitemapTracker->cUserAgent   = Text::filterXSS($_SERVER['HTTP_USER_AGENT']);
-    $oSitemapTracker->dErstellt    = 'NOW()';
+    $sitemapTracker               = new stdClass();
+    $sitemapTracker->cSitemap     = basename($cDatei);
+    $sitemapTracker->kBesucherBot = getRequestBot();
+    $sitemapTracker->cIP          = $ip;
+    $sitemapTracker->cUserAgent   = Text::filterXSS($_SERVER['HTTP_USER_AGENT']);
+    $sitemapTracker->dErstellt    = 'NOW()';
 
-    Shop::Container()->getDB()->insert('tsitemaptracker', $oSitemapTracker);
+    Shop::Container()->getDB()->insert('tsitemaptracker', $sitemapTracker);
 }
 
 sendRequestFile($cDatei);
@@ -53,9 +53,9 @@ function getRequestBot(): int
 {
     foreach (array_keys(Visitor::getSpiders()) as $agent) {
         if (mb_stripos($_SERVER['HTTP_USER_AGENT'], $agent) !== false) {
-            $oBesucherBot = Shop::Container()->getDB()->select('tbesucherbot', 'cUserAgent', $agent);
+            $bot = Shop::Container()->getDB()->select('tbesucherbot', 'cUserAgent', $agent);
 
-            return isset($oBesucherBot->kBesucherBot) ? (int)$oBesucherBot->kBesucherBot : 0;
+            return isset($bot->kBesucherBot) ? (int)$bot->kBesucherBot : 0;
         }
     }
 
@@ -84,40 +84,40 @@ function getRequestFile($file)
 }
 
 /**
- * @param string $cFile
+ * @param string $file
  */
-function sendRequestFile($cFile)
+function sendRequestFile($file)
 {
-    $cFile          = basename($cFile);
-    $cAbsoluteFile  = PFAD_ROOT . PFAD_EXPORT . basename($cFile);
-    $cFileExtension = pathinfo($cAbsoluteFile, PATHINFO_EXTENSION);
+    $file         = basename($file);
+    $absoluteFile = PFAD_ROOT . PFAD_EXPORT . basename($file);
+    $extension    = pathinfo($absoluteFile, PATHINFO_EXTENSION);
 
-    switch (mb_convert_case($cFileExtension, MB_CASE_LOWER)) {
+    switch (mb_convert_case($extension, MB_CASE_LOWER)) {
         case 'xml':
-            $cContentType = 'application/xml';
+            $contentType = 'application/xml';
             break;
         case 'txt':
-            $cContentType = 'text/plain';
+            $contentType = 'text/plain';
             break;
         default:
-            $cContentType = 'application/octet-stream';
+            $contentType = 'application/octet-stream';
             break;
     }
 
-    if (file_exists($cAbsoluteFile)) {
-        header('Content-Type: ' . $cContentType);
-        header('Content-Length: ' . filesize($cAbsoluteFile));
-        header('Last-Modified: ' . gmdate('D, d M Y H:i:s', filemtime($cAbsoluteFile)) . ' GMT');
+    if (file_exists($absoluteFile)) {
+        header('Content-Type: ' . $contentType);
+        header('Content-Length: ' . filesize($absoluteFile));
+        header('Last-Modified: ' . gmdate('D, d M Y H:i:s', filemtime($absoluteFile)) . ' GMT');
 
-        if ($cContentType === 'application/octet-stream') {
+        if ($contentType === 'application/octet-stream') {
             header('Content-Description: File Transfer');
-            header('Content-Disposition: attachment; filename=' . $cFile);
+            header('Content-Disposition: attachment; filename=' . $file);
             header('Content-Transfer-Encoding: binary');
         }
 
         ob_end_clean();
         flush();
-        readfile($cAbsoluteFile);
+        readfile($absoluteFile);
         exit;
     }
 }

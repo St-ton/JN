@@ -37,83 +37,82 @@ class Bewertung
     public $oBewertungGesamt;
 
     /**
-     * @param int    $kArtikel
-     * @param int    $kSprache
-     * @param int    $nAnzahlSeite
-     * @param int    $nSeite
-     * @param int    $nSterne
-     * @param string $cFreischalten
-     * @param int    $nOption
-     * @param bool   $bAlleSprachen
+     * @param int    $productID
+     * @param int    $languageID
+     * @param int    $pageOffset
+     * @param int    $page
+     * @param int    $stars
+     * @param string $activate
+     * @param int    $option
+     * @param bool   $allLanguages
      */
     public function __construct(
-        int $kArtikel,
-        int $kSprache,
-        int $nAnzahlSeite = -1,
-        int $nSeite = 1,
-        int $nSterne = 0,
-        string $cFreischalten = 'N',
-        int $nOption = 0,
-        bool $bAlleSprachen = false
+        int $productID,
+        int $languageID,
+        int $pageOffset = -1,
+        int $page = 1,
+        int $stars = 0,
+        string $activate = 'N',
+        int $option = 0,
+        bool $allLanguages = false
     ) {
-        if (!$kSprache) {
-            $kSprache = Shop::getLanguageID();
+        if (!$languageID) {
+            $languageID = Shop::getLanguageID();
         }
-        if ($nOption === 1) {
-            $this->holeHilfreichsteBewertung($kArtikel, $kSprache);
+        if ($option === 1) {
+            $this->holeHilfreichsteBewertung($productID, $languageID);
         } else {
             $this->holeProduktBewertungen(
-                $kArtikel,
-                $kSprache,
-                $nAnzahlSeite,
-                $nSeite,
-                $nSterne,
-                $cFreischalten,
-                $nOption,
-                $bAlleSprachen
+                $productID,
+                $languageID,
+                $pageOffset,
+                $page,
+                $stars,
+                $activate,
+                $option,
+                $allLanguages
             );
         }
     }
 
     /**
-     * @param int $kArtikel
-     * @param int $kSprache
+     * @param int $productID
+     * @param int $languageID
      * @return $this
      */
-    public function holeHilfreichsteBewertung(int $kArtikel, int $kSprache): self
+    public function holeHilfreichsteBewertung(int $productID, int $languageID): self
     {
         $this->oBewertung_arr = [];
-        if ($kArtikel > 0 && $kSprache > 0) {
-            $oBewertungHilfreich = Shop::Container()->getDB()->query(
+        if ($productID > 0 && $languageID > 0) {
+            $data = Shop::Container()->getDB()->query(
                 "SELECT *, DATE_FORMAT(dDatum, '%d.%m.%Y') AS Datum,
                         DATE_FORMAT(dAntwortDatum, '%d.%m.%Y') AS AntwortDatum
                     FROM tbewertung
-                    WHERE kSprache = " . $kSprache . '
-                        AND kArtikel = ' . $kArtikel . '
+                    WHERE kSprache = " . $languageID . '
+                        AND kArtikel = ' . $productID . '
                         AND nAktiv = 1
                     ORDER BY nHilfreich DESC
                     LIMIT 1',
                 ReturnType::SINGLE_OBJECT
             );
-            if (!empty($oBewertungHilfreich)) {
-                $oBewertungHilfreich->nAnzahlHilfreich = $oBewertungHilfreich->nHilfreich +
-                    $oBewertungHilfreich->nNichtHilfreich;
+            if (!empty($data)) {
+                $data->nAnzahlHilfreich = $data->nHilfreich + $data->nNichtHilfreich;
             }
 
             \executeHook(\HOOK_BEWERTUNG_CLASS_HILFREICHSTEBEWERTUNG);
-            $this->oBewertung_arr[] = $oBewertungHilfreich;
+            $this->oBewertung_arr[] = $data;
         }
 
         return $this;
     }
 
     /**
-     * @param int $nOption
+     * @param int $option
      * @return string
      */
-    private function getOrderSQL(int $nOption): string
+    private function getOrderSQL(int $option): string
     {
-        switch ($nOption) {
+        switch ($option) {
             case 2:
                 return ' dDatum DESC';
             case 3:
@@ -132,71 +131,67 @@ class Bewertung
     }
 
     /**
-     * @param int    $kArtikel
-     * @param int    $kSprache
-     * @param int    $nAnzahlSeite
-     * @param int    $nSeite
-     * @param int    $nSterne
-     * @param string $cFreischalten
-     * @param int    $nOption
-     * @param bool   $bAlleSprachen
+     * @param int    $productID
+     * @param int    $languageID
+     * @param int    $pageOffset
+     * @param int    $page
+     * @param int    $stars
+     * @param string $activate
+     * @param int    $option
+     * @param bool   $allLanguages
      * @return $this
      */
     public function holeProduktBewertungen(
-        int $kArtikel,
-        int $kSprache,
-        int $nAnzahlSeite,
-        int $nSeite = 1,
-        int $nSterne = 0,
-        string $cFreischalten = 'N',
-        int $nOption = 0,
-        bool $bAlleSprachen = false
+        int $productID,
+        int $languageID,
+        int $pageOffset,
+        int $page = 1,
+        int $stars = 0,
+        string $activate = 'N',
+        int $option = 0,
+        bool $allLanguages = false
     ): self {
         $this->oBewertung_arr = [];
-        if ($kArtikel <= 0 || $kSprache <= 0) {
+        if ($productID <= 0 || $languageID <= 0) {
             return $this;
         }
         $ratingCounts = [];
-        $cSQL         = '';
-        $cOrderSQL    = $this->getOrderSQL($nOption);
+        $condSQL      = '';
+        $orderSQL     = $this->getOrderSQL($option);
         $db           = Shop::Container()->getDB();
         \executeHook(\HOOK_BEWERTUNG_CLASS_SWITCH_SORTIERUNG);
 
-        $cSQLFreischalten = $cFreischalten === 'Y'
+        $activateSQL = $activate === 'Y'
             ? ' AND nAktiv = 1'
             : '';
-        // Bewertungen nur in einer bestimmten Sprache oder in allen Sprachen?
-        $cSprachSQL = ' AND kSprache = ' . $kSprache;
-        if ($bAlleSprachen) {
-            $cSprachSQL = '';
-        }
+        $langSQL     = $allLanguages ? '' : ' AND kSprache = ' . $languageID;
         // Anzahl Bewertungen für jeden Stern unabhängig von Sprache SHOP-2313
-        if ($nSterne !== -1) {
-            if ($nSterne > 0) {
-                $cSQL = ' AND nSterne = ' . $nSterne;
+        if ($stars !== -1) {
+            if ($stars > 0) {
+                $condSQL = ' AND nSterne = ' . $stars;
             }
             $ratingCounts = $db->query(
                 'SELECT COUNT(*) AS nAnzahl, nSterne
                     FROM tbewertung
-                    WHERE kArtikel = ' . $kArtikel . $cSQLFreischalten . '
+                    WHERE kArtikel = ' . $productID . $activateSQL . '
                     GROUP BY nSterne
                     ORDER BY nSterne DESC',
                 ReturnType::ARRAY_OF_OBJECTS
             );
         }
-        if ($nSeite > 0) {
-            $nLimit = '';
-            if ($nAnzahlSeite > 0) {
-                $nLimit = ($nSeite > 1)
-                    ? ' LIMIT ' . (($nSeite - 1) * $nAnzahlSeite) . ', ' . $nAnzahlSeite
-                    : ' LIMIT ' . $nAnzahlSeite;
+        if ($page > 0) {
+            $limitSQL = '';
+            if ($pageOffset > 0) {
+                $limitSQL = ($page > 1)
+                    ? ' LIMIT ' . (($page - 1) * $pageOffset) . ', ' . $pageOffset
+                    : ' LIMIT ' . $pageOffset;
             }
             $this->oBewertung_arr = $db->query(
                 "SELECT *, DATE_FORMAT(dDatum, '%d.%m.%Y') AS Datum,
                         DATE_FORMAT(dAntwortDatum, '%d.%m.%Y') AS AntwortDatum
                     FROM tbewertung
-                    WHERE kArtikel = " . $kArtikel . $cSprachSQL . $cSQL . $cSQLFreischalten . '
-                    ORDER BY' . $cOrderSQL . $nLimit,
+                    WHERE kArtikel = " . $productID . $langSQL . $condSQL . $activateSQL . '
+                    ORDER BY' . $orderSQL . $limitSQL,
                 ReturnType::ARRAY_OF_OBJECTS
             );
         }
@@ -205,7 +200,7 @@ class Bewertung
                 FROM tartikelext
                 JOIN tbewertung 
                     ON tbewertung.kArtikel = tartikelext.kArtikel
-                WHERE tartikelext.kArtikel = ' . $kArtikel . $cSQLFreischalten . '
+                WHERE tartikelext.kArtikel = ' . $productID . $activateSQL . '
                 GROUP BY tartikelext.kArtikel',
             ReturnType::SINGLE_OBJECT
         );
@@ -213,7 +208,7 @@ class Bewertung
         $totalLocalized = $db->query(
             'SELECT COUNT(*) AS nAnzahlSprache
                 FROM tbewertung
-                WHERE kArtikel = ' . $kArtikel . $cSprachSQL . $cSQLFreischalten,
+                WHERE kArtikel = ' . $productID . $langSQL . $activateSQL,
             ReturnType::SINGLE_OBJECT
         );
         if (isset($total->fDurchschnitt) && (int)$total->fDurchschnitt > 0) {
@@ -232,11 +227,10 @@ class Bewertung
         foreach ($this->oBewertung_arr as $i => $rating) {
             $this->oBewertung_arr[$i]->nAnzahlHilfreich = $rating->nHilfreich + $rating->nNichtHilfreich;
         }
-        $stars = [0, 0, 0, 0, 0];
+        $this->nSterne_arr = [0, 0, 0, 0, 0];
         foreach ($ratingCounts as $item) {
-            $stars[5 - $item->nSterne] = $item->nAnzahl;
+            $this->nSterne_arr[5 - $item->nSterne] = $item->nAnzahl;
         }
-        $this->nSterne_arr = $stars;
 
         \executeHook(\HOOK_BEWERTUNG_CLASS_BEWERTUNG, ['oBewertung' => &$this]);
 

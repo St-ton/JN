@@ -71,21 +71,21 @@ class Statistik
     }
 
     /**
-     * @param int $nAnzeigeIntervall - (1) = Stunden, (2) = Tage, (3) = Monate, (4) = Jahre
+     * @param int $interval - (1) = Stunden, (2) = Tage, (3) = Monate, (4) = Jahre
      * @return array
      */
-    public function holeBesucherStats(int $nAnzeigeIntervall = 0): array
+    public function holeBesucherStats(int $interval = 0): array
     {
         if (($this->nStampVon > 0 && $this->nStampBis > 0)
             || (\count($this->cDatumVon_arr) > 0 && \count($this->cDatumBis_arr) > 0)
         ) {
             $this->gibDifferenz();
             $this->gibAnzeigeIntervall();
-            if ($nAnzeigeIntervall > 0) {
-                $this->nAnzeigeIntervall = (int)$nAnzeigeIntervall;
+            if ($interval > 0) {
+                $this->nAnzeigeIntervall = $interval;
             }
-            $oDatumSQL    = $this->baueDatumSQL('dZeit');
-            $oStatTMP_arr = Shop::Container()->getDB()->query(
+            $dateSQL = $this->baueDatumSQL('dZeit');
+            $stats   = Shop::Container()->getDB()->query(
                 "SELECT * , sum( t.nCount ) AS nCount
                     FROM (
                     SELECT dZeit, DATE_FORMAT( dZeit, '%d.%m.%Y' ) AS dTime, 
@@ -95,9 +95,9 @@ class Statistik
                         DATE_FORMAT( dZeit, '%Y' ) AS nYear, 
                         COUNT( dZeit ) AS nCount
                     FROM tbesucherarchiv
-                    " . $oDatumSQL->cWhere . '
+                    " . $dateSQL->cWhere . '
                         AND kBesucherBot = 0
-                        ' . $oDatumSQL->cGroupBy . "
+                        ' . $dateSQL->cGroupBy . "
                         UNION SELECT dZeit, DATE_FORMAT( dZeit, '%d.%m.%Y' ) AS dTime, 
                             DATE_FORMAT( dZeit, '%m' ) AS nMonth, 
                             DATE_FORMAT( dZeit, '%H' ) AS nHour,
@@ -105,16 +105,16 @@ class Statistik
                             DATE_FORMAT( dZeit, '%Y' ) AS nYear, 
                             COUNT( dZeit ) AS nCount
                         FROM tbesucher
-                        " . $oDatumSQL->cWhere . '
+                        " . $dateSQL->cWhere . '
                             AND kBesucherBot = 0
-                        ' . $oDatumSQL->cGroupBy . '
+                        ' . $dateSQL->cGroupBy . '
                         ) AS t
-                        ' . $oDatumSQL->cGroupBy . '
+                        ' . $dateSQL->cGroupBy . '
                         ORDER BY dTime ASC',
                 ReturnType::ARRAY_OF_OBJECTS
             );
 
-            return $this->mergeDaten($oStatTMP_arr);
+            return $this->mergeDaten($stats);
         }
 
         return [];
@@ -125,13 +125,13 @@ class Statistik
      */
     public function holeKundenherkunftStats()
     {
-        if (($this->nStampVon > 0 && $this->nStampBis > 0) ||
-            (\count($this->cDatumVon_arr) > 0 && \count($this->cDatumBis_arr) > 0)
+        if (($this->nStampVon > 0 && $this->nStampBis > 0)
+            || (\count($this->cDatumVon_arr) > 0 && \count($this->cDatumBis_arr) > 0)
         ) {
             $this->gibDifferenz();
             $this->gibAnzeigeIntervall();
 
-            $oDatumSQL = $this->baueDatumSQL('dZeit');
+            $dateSQL = $this->baueDatumSQL('dZeit');
 
             return Shop::Container()->getDB()->queryPrepared(
                 "SELECT * , SUM(t.nCount) AS nCount
@@ -139,13 +139,13 @@ class Statistik
                         SELECT IF(cReferer = '', :directEntry, cReferer) AS cReferer, 
                         COUNT(dZeit) AS nCount
                         FROM tbesucher
-                        " . $oDatumSQL->cWhere . "
+                        " . $dateSQL->cWhere . "
                         AND kBesucherBot = 0
                         GROUP BY cReferer
                         UNION SELECT IF(cReferer = '', :directEntry, cReferer) AS cReferer, 
                         COUNT(dZeit) AS nCount
                         FROM tbesucherarchiv
-                        " . $oDatumSQL->cWhere . '
+                        " . $dateSQL->cWhere . '
                             AND kBesucherBot = 0
                         GROUP BY cReferer
                     ) AS t
@@ -160,10 +160,10 @@ class Statistik
     }
 
     /**
-     * @return array
-     * @param int $nLimit
+     * @param int $limit
+     *@return array
      */
-    public function holeBotStats(int $nLimit = -1): array
+    public function holeBotStats(int $limit = -1): array
     {
         if (($this->nStampVon > 0 && $this->nStampBis > 0) ||
             (\count($this->cDatumVon_arr) > 0 && \count($this->cDatumBis_arr) > 0)
@@ -171,7 +171,7 @@ class Statistik
             $this->gibDifferenz();
             $this->gibAnzeigeIntervall();
 
-            $oDatumSQL = $this->baueDatumSQL('dZeit');
+            $dateSQL = $this->baueDatumSQL('dZeit');
 
             return Shop::Container()->getDB()->query(
                 'SELECT tbesucherbot.cUserAgent, SUM(t.nCount) AS nCount
@@ -179,16 +179,16 @@ class Statistik
                     (
                         SELECT kBesucherBot, COUNT(dZeit) AS nCount
                         FROM tbesucherarchiv
-                        ' . $oDatumSQL->cWhere . '
+                        ' . $dateSQL->cWhere . '
                         GROUP BY kBesucherBot
                         UNION SELECT kBesucherBot, COUNT(dZeit) AS nCount
                         FROM tbesucher
-                        ' . $oDatumSQL->cWhere . '
+                        ' . $dateSQL->cWhere . '
                         GROUP BY kBesucherBot
                     ) AS t
                     JOIN tbesucherbot ON tbesucherbot.kBesucherBot = t.kBesucherBot
                     GROUP BY t.kBesucherBot
-                    ORDER BY nCount DESC ' . ($nLimit > -1 ? 'LIMIT ' . $nLimit : ''),
+                    ORDER BY nCount DESC ' . ($limit > -1 ? 'LIMIT ' . $limit : ''),
                 ReturnType::ARRAY_OF_OBJECTS
             );
         }
@@ -207,7 +207,7 @@ class Statistik
             $this->gibDifferenz();
             $this->gibAnzeigeIntervall();
 
-            $oDatumSQL = $this->baueDatumSQL('tbestellung.dErstellt');
+            $dateSQL = $this->baueDatumSQL('tbestellung.dErstellt');
 
             return $this->mergeDaten(Shop::Container()->getDB()->query(
                 "SELECT tbestellung.dErstellt AS dZeit, SUM(tbestellung.fGesamtsumme) AS nCount,
@@ -216,9 +216,9 @@ class Statistik
                     DATE_FORMAT(tbestellung.dErstellt, '%d') AS nDay,
                     DATE_FORMAT(tbestellung.dErstellt, '%Y') AS nYear
                     FROM tbestellung
-                    " . $oDatumSQL->cWhere . "
+                    " . $dateSQL->cWhere . "
                     AND cStatus != '-1'
-                    " . $oDatumSQL->cGroupBy . '
+                    " . $dateSQL->cGroupBy . '
                     ORDER BY tbestellung.dErstellt ASC',
                 ReturnType::ARRAY_OF_OBJECTS
             ));
@@ -238,7 +238,7 @@ class Statistik
             $this->gibDifferenz();
             $this->gibAnzeigeIntervall();
 
-            $oDatumSQL = $this->baueDatumSQL('dZeit');
+            $dateSQL = $this->baueDatumSQL('dZeit');
 
             return Shop::Container()->getDB()->query(
                 "SELECT *, SUM(t.nCount) AS nCount
@@ -246,12 +246,12 @@ class Statistik
                     (
                         SELECT cEinstiegsseite, COUNT(dZeit) AS nCount
                         FROM tbesucher
-                        {$oDatumSQL->cWhere}
+                        {$dateSQL->cWhere}
                             AND kBesucherBot = 0
                         GROUP BY cEinstiegsseite
                         UNION SELECT cEinstiegsseite, COUNT(dZeit) AS nCount
                         FROM tbesucherarchiv
-                        {$oDatumSQL->cWhere}
+                        {$dateSQL->cWhere}
                             AND kBesucherBot = 0
                         GROUP BY cEinstiegsseite
                     ) AS t
@@ -316,9 +316,9 @@ class Statistik
      */
     private function baueDatumSQL(string $cDatumSpalte): stdClass
     {
-        $oDatum           = new stdClass();
-        $oDatum->cWhere   = '';
-        $oDatum->cGroupBy = '';
+        $date           = new stdClass();
+        $date->cWhere   = '';
+        $date->cGroupBy = '';
 
         if (\count($this->cDatumVon_arr) > 0 && \count($this->cDatumBis_arr) > 0) {
             $cZeitVon = '00:00:00';
@@ -331,11 +331,11 @@ class Statistik
                 $cZeitBis = $this->cDatumBis_arr['cZeit'];
             }
 
-            $oDatum->cWhere = ' WHERE ' . $cDatumSpalte . " BETWEEN '" .
+            $date->cWhere = ' WHERE ' . $cDatumSpalte . " BETWEEN '" .
                 $this->cDatumVon_arr['cDatum'] . ' ' . $cZeitVon . "' AND '" .
                 $this->cDatumBis_arr['cDatum'] . ' ' . $cZeitBis . "' ";
         } elseif ($this->nStampVon > 0 && $this->nStampBis > 0) {
-            $oDatum->cWhere = ' WHERE ' . $cDatumSpalte . " BETWEEN '" .
+            $date->cWhere = ' WHERE ' . $cDatumSpalte . " BETWEEN '" .
                 \date('Y-m-d H:i:s', $this->nStampVon) . "' AND '" .
                 \date('Y-m-d H:i:s', $this->nStampBis) . "' ";
         }
@@ -343,25 +343,25 @@ class Statistik
         if ($this->nAnzeigeIntervall > 0) {
             switch ($this->nAnzeigeIntervall) {
                 case 1: // Stunden
-                    $oDatum->cGroupBy = ' GROUP BY HOUR(' . $cDatumSpalte . ')';
+                    $date->cGroupBy = ' GROUP BY HOUR(' . $cDatumSpalte . ')';
                     break;
 
                 case 2: // Tage
-                    $oDatum->cGroupBy = ' GROUP BY DAY(' . $cDatumSpalte . '), YEAR(' .
+                    $date->cGroupBy = ' GROUP BY DAY(' . $cDatumSpalte . '), YEAR(' .
                         $cDatumSpalte . '), MONTH(' . $cDatumSpalte . ')';
                     break;
 
                 case 3: // Monate
-                    $oDatum->cGroupBy = ' GROUP BY MONTH(' . $cDatumSpalte . '), YEAR(' . $cDatumSpalte . ')';
+                    $date->cGroupBy = ' GROUP BY MONTH(' . $cDatumSpalte . '), YEAR(' . $cDatumSpalte . ')';
                     break;
 
                 case 4: // Jahre
-                    $oDatum->cGroupBy = ' GROUP BY YEAR(' . $cDatumSpalte . ')';
+                    $date->cGroupBy = ' GROUP BY YEAR(' . $cDatumSpalte . ')';
                     break;
             }
         }
 
-        return $oDatum;
+        return $date;
     }
 
     /**

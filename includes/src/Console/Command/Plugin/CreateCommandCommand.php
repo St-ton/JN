@@ -15,8 +15,15 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
+/**
+ * Class CreateCommandCommand
+ * @package JTL\Console\Command\Plugin
+ */
 class CreateCommandCommand extends Command
 {
+    /**
+     * @inheritDoc
+     */
     protected function configure()
     {
         $this
@@ -28,20 +35,20 @@ class CreateCommandCommand extends Command
     }
 
     /**
-     * @param InputInterface $input
+     * @param InputInterface  $input
      * @param OutputInterface $output
      * @return int|null
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $pluginId    = trim($input->getArgument('plugin-id'));
-        $commandName = trim($input->getArgument('command-name'));
-        $author      = trim($input->getArgument('author'));
+        $pluginId    = \trim($input->getArgument('plugin-id'));
+        $commandName = \trim($input->getArgument('command-name'));
+        $author      = \trim($input->getArgument('author'));
 
         try {
             $commandPath = $this->createFile($pluginId, $commandName, $author);
 
-            $output->writeln("<info>Created command:</info> <comment>'".$commandPath."'</comment>");
+            $output->writeln("<info>Created command:</info> <comment>'" . $commandPath . "'</comment>");
         } catch (\Exception $e) {
             $this->getIO()->error($e->getMessage());
 
@@ -64,8 +71,8 @@ class CreateCommandCommand extends Command
         }
 
         $datetime      = new \DateTime('NOW');
-        $relPath       = 'plugins/'.$pluginId.'/Commands';
-        $migrationPath = $relPath.'/'.$commandName.'.php';
+        $relPath       = 'plugins/' . $pluginId . '/Commands';
+        $migrationPath = $relPath . '/' . $commandName . '.php';
         $fileSystem    = new Filesystem(new LocalFilesystem(['root' => PFAD_ROOT]));
 
         if (!$fileSystem->exists($relPath)) {
@@ -77,7 +84,7 @@ class CreateCommandCommand extends Command
             ->assign('author', $author)
             ->assign('created', $datetime->format(\DateTime::RSS))
             ->assign('pluginId', $pluginId)
-            ->fetch(PFAD_ROOT.'includes/src/Console/Command/Plugin/Template/command.class.tpl');
+            ->fetch(PFAD_ROOT . 'includes/src/Console/Command/Plugin/Template/command.class.tpl');
 
         $fileSystem->put($migrationPath, $content);
 

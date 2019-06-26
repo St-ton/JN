@@ -8,6 +8,7 @@ namespace JTL;
 
 use DateTime;
 use InvalidArgumentException;
+use JTL\Alert\Alert;
 use JTL\Cron\LegacyCron;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
@@ -98,9 +99,19 @@ class Statusmail
      */
     private function createCronJob(int $id, int $nAlleXStunden): bool
     {
-        $d = new DateTime();
+        $startDate = date('Y-m-d', strtotime(
+            $nAlleXStunden === 720 ?
+            'last day of this month'
+            : ($nAlleXStunden === 168 ? 'last day of this week' : 'today')
+        ));
+        $d         = new DateTime($startDate);
         $d->modify('+1 days');
         $d->setTime(0, 0);
+        Shop::Container()->getAlertService()->addAlert(
+            Alert::TYPE_INFO,
+            sprintf('Der nächste Statusbericht wird am %s versendet', $d->format('Y-m-d')),
+            'nextStatusMail'
+        );
         $cron = new LegacyCron(
             0,
             $id,
@@ -896,15 +907,18 @@ class Statusmail
         $nIntervall              = (int)$statusMail->nInterval;
         switch ($nIntervall) {
             case 1:
-                $interval    = 'day';
+                $startDate   = date('Y-m-d', strtotime('yesterday'));
+                $endDate     = date('Y-m-d', strtotime('today'));
                 $intervalLoc = 'Tägliche';
                 break;
             case 7:
-                $interval    = 'week';
+                $startDate   = date('Y-m-d', strtotime('last week monday'));
+                $endDate     = date('Y-m-d', strtotime('last week sunday'));
                 $intervalLoc = 'Wöchentliche';
                 break;
             case 30:
-                $interval    = 'month';
+                $startDate   = date('Y-m-d', strtotime('first day of previous month'));
+                $endDate     = date('Y-m-d', strtotime('last day of previous month'));
                 $intervalLoc = 'Monatliche';
                 break;
             default:
@@ -912,11 +926,7 @@ class Statusmail
                 break;
         }
 
-        $data = $this->generate(
-            $statusMail,
-            \date_create()->modify('-1 ' . $interval)->format('Y-m-d'),
-            \date_create()->format('Y-m-d')
-        );
+        $data = $this->generate($statusMail, $startDate, $endDate);
         if ($data) {
             $data->cIntervall = $intervalLoc . ' Status-Email';
 

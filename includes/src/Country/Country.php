@@ -9,7 +9,6 @@ namespace JTL\Country;
 use JTL\Language\LanguageModel;
 use JTL\Shop;
 use JTL\MagicCompatibilityTrait;
-use JTL\Helpers\Text;
 
 /**
  * Class Country

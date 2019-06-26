@@ -19,6 +19,196 @@ use stdClass;
 class Text
 {
     /**
+     * @var array
+     */
+    private static $mappings = [
+        'aar' => 'aa', // Afar
+        'abk' => 'ab', // Abkhazian
+        'afr' => 'af', // Afrikaans
+        'aka' => 'ak', // Akan
+        'alb' => 'sq', // Albanian
+        'amh' => 'am', // Amharic
+        'ara' => 'ar', // Arabic
+        'arg' => 'an', // Aragonese
+        'arm' => 'hy', // Armenian
+        'asm' => 'as', // Assamese
+        'ava' => 'av', // Avaric
+        'ave' => 'ae', // Avestan
+        'aym' => 'ay', // Aymara
+        'aze' => 'az', // Azerbaijani
+        'bak' => 'ba', // Bashkir
+        'bam' => 'bm', // Bambara
+        'baq' => 'eu', // Basque
+        'bel' => 'be', // Belarusian
+        'ben' => 'bn', // Bengali
+        'bih' => 'bh', // Bihari languages
+        'bis' => 'bi', // Bislama
+        'bos' => 'bs', // Bosnian
+        'bre' => 'br', // Breton
+        'bul' => 'bg', // Bulgarian
+        'bur' => 'my', // Burmese
+        'cat' => 'ca', // Catalan; Valencian
+        'cze' => 'cs', // Czech
+        'cha' => 'ch', // Chamorro
+        'che' => 'ce', // Chechen
+        'chi' => 'zh', // Chinese
+        'chu' => 'cu', // Church Slavic; Old Slavonic; Church Slavonic; Old Bulgarian; Old Church Slavonic
+        'chv' => 'cv', // Chuvash
+        'cor' => 'kw', // Cornish
+        'cos' => 'co', // Corsican
+        'cre' => 'cr', // Cree
+        'dan' => 'da', // Danish
+        'div' => 'dv', // Divehi; Dhivehi; Maldivian
+        'dut' => 'nl', // Dutch; Flemish
+        'dzo' => 'dz', // Dzongkha
+        'eng' => 'en', // English
+        'epo' => 'eo', // Esperanto
+        'est' => 'et', // Estonian
+        'ewe' => 'ee', // Ewe
+        'fao' => 'fo', // Faroese
+        'fij' => 'fj', // Fijian
+        'fin' => 'fi', // Finnish
+        'fre' => 'fr', // French
+        'fry' => 'fy', // Western Frisian
+        'ful' => 'ff', // Fulah
+        'geo' => 'ka', // Georgian
+        'ger' => 'de', // German
+        'gla' => 'gd', // Gaelic; Scottish Gaelic
+        'gle' => 'ga', // Irish
+        'glg' => 'gl', // Galician
+        'glv' => 'gv', // Manx
+        'gre' => 'el', // Greek, Modern (1453-)
+        'grn' => 'gn', // Guarani
+        'guj' => 'gu', // Gujarati
+        'hat' => 'ht', // Haitian; Haitian Creole
+        'hau' => 'ha', // Hausa
+        'heb' => 'he', // Hebrew
+        'her' => 'hz', // Herero
+        'hin' => 'hi', // Hindi
+        'hmo' => 'ho', // Hiri Motu
+        'hrv' => 'hr', // Croatian
+        'hun' => 'hu', // Hungarian
+        'ibo' => 'ig', // Igbo
+        'ice' => 'is', // Icelandic
+        'ido' => 'io', // Ido
+        'iii' => 'ii', // Sichuan Yi; Nuosu
+        'iku' => 'iu', // Inuktitut
+        'ile' => 'ie', // Interlingue; Occidental
+        'ina' => 'ia', // Interlingua (International Auxiliary Language Association)
+        'ind' => 'id', // Indonesian
+        'ipk' => 'ik', // Inupiaq
+        'ita' => 'it', // Italian
+        'jav' => 'jv', // Javanese
+        'jpn' => 'ja', // Japanese
+        'kal' => 'kl', // Kalaallisut; Greenlandic
+        'kan' => 'kn', // Kannada
+        'kas' => 'ks', // Kashmiri
+        'kau' => 'kr', // Kanuri
+        'kaz' => 'kk', // Kazakh
+        'khm' => 'km', // Central Khmer
+        'kik' => 'ki', // Kikuyu; Gikuyu
+        'kin' => 'rw', // Kinyarwanda
+        'kir' => 'ky', // Kirghiz; Kyrgyz
+        'kom' => 'kv', // Komi
+        'kon' => 'kg', // Kongo
+        'kor' => 'ko', // Korean
+        'kua' => 'kj', // Kuanyama; Kwanyama
+        'kur' => 'ku', // Kurdish
+        'lao' => 'lo', // Lao
+        'lat' => 'la', // Latin
+        'lav' => 'lv', // Latvian
+        'lim' => 'li', // Limburgan; Limburger; Limburgish
+        'lin' => 'ln', // Lingala
+        'lit' => 'lt', // Lithuanian
+        'ltz' => 'lb', // Luxembourgish; Letzeburgesch
+        'lub' => 'lu', // Luba-Katanga
+        'lug' => 'lg', // Ganda
+        'mac' => 'mk', // Macedonian
+        'mah' => 'mh', // Marshallese
+        'mal' => 'ml', // Malayalam
+        'mao' => 'mi', // Maori
+        'mar' => 'mr', // Marathi
+        'may' => 'ms', // Malay
+        'mlg' => 'mg', // Malagasy
+        'mlt' => 'mt', // Maltese
+        'mon' => 'mn', // Mongolian
+        'nau' => 'na', // Nauru
+        'nav' => 'nv', // Navajo; Navaho
+        'nbl' => 'nr', // Ndebele, South; South Ndebele
+        'nde' => 'nd', // Ndebele, North; North Ndebele
+        'ndo' => 'ng', // Ndonga
+        'nep' => 'ne', // Nepali
+        'nno' => 'nn', // Norwegian Nynorsk; Nynorsk, Norwegian
+        'nob' => 'nb', // Bokm?l, Norwegian; Norwegian Bokm?l
+        'nor' => 'no', // Norwegian
+        'nya' => 'ny', // Chichewa; Chewa; Nyanja
+        'oci' => 'oc', // Occitan (post 1500)
+        'oji' => 'oj', // Ojibwa
+        'ori' => 'or', // Oriya
+        'orm' => 'om', // Oromo
+        'oss' => 'os', // Ossetian; Ossetic
+        'pan' => 'pa', // Panjabi; Punjabi
+        'per' => 'fa', // Persian
+        'pli' => 'pi', // Pali
+        'pol' => 'pl', // Polish
+        'por' => 'pt', // Portuguese
+        'pus' => 'ps', // Pushto; Pashto
+        'que' => 'qu', // Quechua
+        'roh' => 'rm', // Romansh
+        'rum' => 'ro', // Romanian; Moldavian; Moldovan
+        'run' => 'rn', // Rundi
+        'rus' => 'ru', // Russian
+        'sag' => 'sg', // Sango
+        'san' => 'sa', // Sanskrit
+        'sin' => 'si', // Sinhala; Sinhalese
+        'slo' => 'sk', // Slovak
+        'slv' => 'sl', // Slovenian
+        'sme' => 'se', // Northern Sami
+        'smo' => 'sm', // Samoan
+        'sna' => 'sn', // Shona
+        'snd' => 'sd', // Sindhi
+        'som' => 'so', // Somali
+        'sot' => 'st', // Sotho, Southern
+        'spa' => 'es', // Spanish; Castilian
+        'srd' => 'sc', // Sardinian
+        'srp' => 'sr', // Serbian
+        'ssw' => 'ss', // Swati
+        'sun' => 'su', // Sundanese
+        'swa' => 'sw', // Swahili
+        'swe' => 'sv', // Swedish
+        'tah' => 'ty', // Tahitian
+        'tam' => 'ta', // Tamil
+        'tat' => 'tt', // Tatar
+        'tel' => 'te', // Telugu
+        'tgk' => 'tg', // Tajik
+        'tgl' => 'tl', // Tagalog
+        'tha' => 'th', // Thai
+        'tib' => 'bo', // Tibetan
+        'tir' => 'ti', // Tigrinya
+        'ton' => 'to', // Tonga (Tonga Islands)
+        'tsn' => 'tn', // Tswana
+        'tso' => 'ts', // Tsonga
+        'tuk' => 'tk', // Turkmen
+        'tur' => 'tr', // Turkish
+        'twi' => 'tw', // Twi
+        'uig' => 'ug', // Uighur; Uyghur
+        'ukr' => 'uk', // Ukrainian
+        'urd' => 'ur', // Urdu
+        'uzb' => 'uz', // Uzbek
+        'ven' => 've', // Venda
+        'vie' => 'vi', // Vietnamese
+        'vol' => 'vo', // Volapük
+        'wel' => 'cy', // Welsh
+        'wln' => 'wa', // Walloon
+        'wol' => 'wo', // Wolof
+        'xho' => 'xh', // Xhosa
+        'yid' => 'yi', // Yiddish
+        'yor' => 'yo', // Yoruba
+        'zha' => 'za', // Zhuang; Chuang
+        'zul' => 'zu'
+    ];
+
+    /**
      * @param string $input
      * @param int    $flags
      * @param string $enc
@@ -140,9 +330,7 @@ class Text
         if ($res === false) {
             //some kind of pcre error happend - probably PREG_JIT_STACKLIMIT_ERROR.
             //we could check this via preg_last_error()
-            $res = \function_exists('mb_detect_encoding')
-                ? (int)(\mb_detect_encoding($input, 'UTF-8', true) === 'UTF-8')
-                : 0;
+            $res = (int)(\mb_detect_encoding($input, 'UTF-8', true) === 'UTF-8');
         }
 
         return $res;
@@ -244,29 +432,20 @@ class Text
 
     /**
      * @param string $iso
-     * @return mixed
+     * @return string
      */
-    public static function convertISO2ISO639(string $iso)
+    public static function convertISO2ISO639(string $iso): string
     {
-        $mappings = self::getISOMappings();
-
-        return $mappings[$iso];
+        return self::$mappings[$iso] ?? $iso;
     }
 
     /**
      * @param string $iso
-     * @return int|string
+     * @return string
      */
-    public static function convertISO6392ISO(string $iso)
+    public static function convertISO6392ISO(string $iso): string
     {
-        $mappings = self::getISOMappings();
-        foreach ($mappings as $cISO639 => $cISO) {
-            if (\mb_convert_case($cISO, \MB_CASE_LOWER) === \mb_convert_case($iso, \MB_CASE_LOWER)) {
-                return $cISO639;
-            }
-        }
-
-        return $iso;
+        return \array_search(\mb_convert_case($iso, \MB_CASE_LOWER), self::$mappings, true) ?: $iso;
     }
 
     /**
@@ -274,192 +453,7 @@ class Text
      */
     public static function getISOMappings(): array
     {
-        return [
-            'aar' => 'aa', // Afar
-            'abk' => 'ab', // Abkhazian
-            'afr' => 'af', // Afrikaans
-            'aka' => 'ak', // Akan
-            'alb' => 'sq', // Albanian
-            'amh' => 'am', // Amharic
-            'ara' => 'ar', // Arabic
-            'arg' => 'an', // Aragonese
-            'arm' => 'hy', // Armenian
-            'asm' => 'as', // Assamese
-            'ava' => 'av', // Avaric
-            'ave' => 'ae', // Avestan
-            'aym' => 'ay', // Aymara
-            'aze' => 'az', // Azerbaijani
-            'bak' => 'ba', // Bashkir
-            'bam' => 'bm', // Bambara
-            'baq' => 'eu', // Basque
-            'bel' => 'be', // Belarusian
-            'ben' => 'bn', // Bengali
-            'bih' => 'bh', // Bihari languages
-            'bis' => 'bi', // Bislama
-            'bos' => 'bs', // Bosnian
-            'bre' => 'br', // Breton
-            'bul' => 'bg', // Bulgarian
-            'bur' => 'my', // Burmese
-            'cat' => 'ca', // Catalan; Valencian
-            'cze' => 'cs', // Czech
-            'cha' => 'ch', // Chamorro
-            'che' => 'ce', // Chechen
-            'chi' => 'zh', // Chinese
-            'chu' => 'cu', // Church Slavic; Old Slavonic; Church Slavonic; Old Bulgarian; Old Church Slavonic
-            'chv' => 'cv', // Chuvash
-            'cor' => 'kw', // Cornish
-            'cos' => 'co', // Corsican
-            'cre' => 'cr', // Cree
-            'dan' => 'da', // Danish
-            'div' => 'dv', // Divehi; Dhivehi; Maldivian
-            'dut' => 'nl', // Dutch; Flemish
-            'dzo' => 'dz', // Dzongkha
-            'eng' => 'en', // English
-            'epo' => 'eo', // Esperanto
-            'est' => 'et', // Estonian
-            'ewe' => 'ee', // Ewe
-            'fao' => 'fo', // Faroese
-            'fij' => 'fj', // Fijian
-            'fin' => 'fi', // Finnish
-            'fre' => 'fr', // French
-            'fry' => 'fy', // Western Frisian
-            'ful' => 'ff', // Fulah
-            'geo' => 'ka', // Georgian
-            'ger' => 'de', // German
-            'gla' => 'gd', // Gaelic; Scottish Gaelic
-            'gle' => 'ga', // Irish
-            'glg' => 'gl', // Galician
-            'glv' => 'gv', // Manx
-            'gre' => 'el', // Greek, Modern (1453-)
-            'grn' => 'gn', // Guarani
-            'guj' => 'gu', // Gujarati
-            'hat' => 'ht', // Haitian; Haitian Creole
-            'hau' => 'ha', // Hausa
-            'heb' => 'he', // Hebrew
-            'her' => 'hz', // Herero
-            'hin' => 'hi', // Hindi
-            'hmo' => 'ho', // Hiri Motu
-            'hrv' => 'hr', // Croatian
-            'hun' => 'hu', // Hungarian
-            'ibo' => 'ig', // Igbo
-            'ice' => 'is', // Icelandic
-            'ido' => 'io', // Ido
-            'iii' => 'ii', // Sichuan Yi; Nuosu
-            'iku' => 'iu', // Inuktitut
-            'ile' => 'ie', // Interlingue; Occidental
-            'ina' => 'ia', // Interlingua (International Auxiliary Language Association)
-            'ind' => 'id', // Indonesian
-            'ipk' => 'ik', // Inupiaq
-            'ita' => 'it', // Italian
-            'jav' => 'jv', // Javanese
-            'jpn' => 'ja', // Japanese
-            'kal' => 'kl', // Kalaallisut; Greenlandic
-            'kan' => 'kn', // Kannada
-            'kas' => 'ks', // Kashmiri
-            'kau' => 'kr', // Kanuri
-            'kaz' => 'kk', // Kazakh
-            'khm' => 'km', // Central Khmer
-            'kik' => 'ki', // Kikuyu; Gikuyu
-            'kin' => 'rw', // Kinyarwanda
-            'kir' => 'ky', // Kirghiz; Kyrgyz
-            'kom' => 'kv', // Komi
-            'kon' => 'kg', // Kongo
-            'kor' => 'ko', // Korean
-            'kua' => 'kj', // Kuanyama; Kwanyama
-            'kur' => 'ku', // Kurdish
-            'lao' => 'lo', // Lao
-            'lat' => 'la', // Latin
-            'lav' => 'lv', // Latvian
-            'lim' => 'li', // Limburgan; Limburger; Limburgish
-            'lin' => 'ln', // Lingala
-            'lit' => 'lt', // Lithuanian
-            'ltz' => 'lb', // Luxembourgish; Letzeburgesch
-            'lub' => 'lu', // Luba-Katanga
-            'lug' => 'lg', // Ganda
-            'mac' => 'mk', // Macedonian
-            'mah' => 'mh', // Marshallese
-            'mal' => 'ml', // Malayalam
-            'mao' => 'mi', // Maori
-            'mar' => 'mr', // Marathi
-            'may' => 'ms', // Malay
-            'mlg' => 'mg', // Malagasy
-            'mlt' => 'mt', // Maltese
-            'mon' => 'mn', // Mongolian
-            'nau' => 'na', // Nauru
-            'nav' => 'nv', // Navajo; Navaho
-            'nbl' => 'nr', // Ndebele, South; South Ndebele
-            'nde' => 'nd', // Ndebele, North; North Ndebele
-            'ndo' => 'ng', // Ndonga
-            'nep' => 'ne', // Nepali
-            'nno' => 'nn', // Norwegian Nynorsk; Nynorsk, Norwegian
-            'nob' => 'nb', // Bokm?l, Norwegian; Norwegian Bokm?l
-            'nor' => 'no', // Norwegian
-            'nya' => 'ny', // Chichewa; Chewa; Nyanja
-            'oci' => 'oc', // Occitan (post 1500)
-            'oji' => 'oj', // Ojibwa
-            'ori' => 'or', // Oriya
-            'orm' => 'om', // Oromo
-            'oss' => 'os', // Ossetian; Ossetic
-            'pan' => 'pa', // Panjabi; Punjabi
-            'per' => 'fa', // Persian
-            'pli' => 'pi', // Pali
-            'pol' => 'pl', // Polish
-            'por' => 'pt', // Portuguese
-            'pus' => 'ps', // Pushto; Pashto
-            'que' => 'qu', // Quechua
-            'roh' => 'rm', // Romansh
-            'rum' => 'ro', // Romanian; Moldavian; Moldovan
-            'run' => 'rn', // Rundi
-            'rus' => 'ru', // Russian
-            'sag' => 'sg', // Sango
-            'san' => 'sa', // Sanskrit
-            'sin' => 'si', // Sinhala; Sinhalese
-            'slo' => 'sk', // Slovak
-            'slv' => 'sl', // Slovenian
-            'sme' => 'se', // Northern Sami
-            'smo' => 'sm', // Samoan
-            'sna' => 'sn', // Shona
-            'snd' => 'sd', // Sindhi
-            'som' => 'so', // Somali
-            'sot' => 'st', // Sotho, Southern
-            'spa' => 'es', // Spanish; Castilian
-            'srd' => 'sc', // Sardinian
-            'srp' => 'sr', // Serbian
-            'ssw' => 'ss', // Swati
-            'sun' => 'su', // Sundanese
-            'swa' => 'sw', // Swahili
-            'swe' => 'sv', // Swedish
-            'tah' => 'ty', // Tahitian
-            'tam' => 'ta', // Tamil
-            'tat' => 'tt', // Tatar
-            'tel' => 'te', // Telugu
-            'tgk' => 'tg', // Tajik
-            'tgl' => 'tl', // Tagalog
-            'tha' => 'th', // Thai
-            'tib' => 'bo', // Tibetan
-            'tir' => 'ti', // Tigrinya
-            'ton' => 'to', // Tonga (Tonga Islands)
-            'tsn' => 'tn', // Tswana
-            'tso' => 'ts', // Tsonga
-            'tuk' => 'tk', // Turkmen
-            'tur' => 'tr', // Turkish
-            'twi' => 'tw', // Twi
-            'uig' => 'ug', // Uighur; Uyghur
-            'ukr' => 'uk', // Ukrainian
-            'urd' => 'ur', // Urdu
-            'uzb' => 'uz', // Uzbek
-            'ven' => 've', // Venda
-            'vie' => 'vi', // Vietnamese
-            'vol' => 'vo', // Volapük
-            'wel' => 'cy', // Welsh
-            'wln' => 'wa', // Walloon
-            'wol' => 'wo', // Wolof
-            'xho' => 'xh', // Xhosa
-            'yid' => 'yi', // Yiddish
-            'yor' => 'yo', // Yoruba
-            'zha' => 'za', // Zhuang; Chuang
-            'zul' => 'zu'
-        ];
+        return self::$mappings;
     }
 
     /**
@@ -520,14 +514,10 @@ class Text
         if (!\is_string($input)) {
             return $validate ? false : '';
         }
-        if ((\function_exists('mb_detect_encoding') && \mb_detect_encoding($input) !== 'UTF-8')
-            || !self::is_utf8($input)
-        ) {
+        if (\mb_detect_encoding($input) !== 'UTF-8' || !self::is_utf8($input)) {
             $input = self::convertUTF8($input);
         }
-        $input     = \function_exists('idn_to_ascii')
-            ? \idn_to_ascii($input, \IDNA_DEFAULT, \INTL_IDNA_VARIANT_UTS46)
-            : $input;
+        $input     = \idn_to_ascii($input, \IDNA_DEFAULT, \INTL_IDNA_VARIANT_UTS46);
         $sanitized = \filter_var($input, \FILTER_SANITIZE_EMAIL);
 
         return $validate
@@ -544,14 +534,10 @@ class Text
      */
     public static function filterURL($input, bool $validate = true)
     {
-        if ((\function_exists('mb_detect_encoding') && \mb_detect_encoding($input) !== 'UTF-8')
-            || !self::is_utf8($input)
-        ) {
+        if (\mb_detect_encoding($input) !== 'UTF-8' || !self::is_utf8($input)) {
             $input = self::convertUTF8($input);
         }
-        $input     = \function_exists('idn_to_ascii')
-            ? \idn_to_ascii($input, \IDNA_DEFAULT, \INTL_IDNA_VARIANT_UTS46)
-            : $input;
+        $input     = \idn_to_ascii($input, \IDNA_DEFAULT, \INTL_IDNA_VARIANT_UTS46);
         $sanitized = \filter_var($input, \FILTER_SANITIZE_URL);
 
         return $validate
@@ -606,21 +592,14 @@ class Text
     public static function checkDate(string $data, bool $required = true): int
     {
         if (!$data) {
-            if ($required) {
-                return 1;
-            }
-
-            return 0;
+            return $required ? 1 : 0;
         }
         if (!\preg_match('/^\d{1,2}\.\d{1,2}\.(\d{4})$/', $data)) {
             return 2;
         }
         [$tag, $monat, $jahr] = \explode('.', $data);
-        if (!\checkdate($monat, $tag, $jahr)) {
-            return 3;
-        }
 
-        return 0;
+        return !\checkdate($monat, $tag, $jahr) ? 3 : 0;
     }
 
     /**
@@ -630,7 +609,6 @@ class Text
      * $#h:ID:NAME#$ => ID = kHersteller NAME => Wunschname - wird in eine URL (evt. SEO) zum Hersteller umgewandelt.
      * $#m:ID:NAME#$ => ID = kMerkmalWert NAME => Wunschname - wird in eine URL (evt. SEO) zum MerkmalWert umgewandelt.
      * $#n:ID:NAME#$ => ID = kNews NAME => Wunschname - wird in eine URL (evt. SEO) zur News umgewandelt.
-     * $#t:ID:NAME#$ => ID = kTag NAME => Wunschname - wird in eine URL (evt. SEO) zum Tag umgewandelt.
      * $#l:ID:NAME#$ => ID = kSuchanfrage NAME => Wunschname - wird in eine URL (evt. SEO) zur Livesuche umgewandelt.
      *
      * @param string $text
@@ -659,7 +637,6 @@ class Text
             'h' => \URLART_HERSTELLER,
             'm' => \URLART_MERKMAL,
             'n' => \URLART_NEWS,
-            't' => \URLART_TAG,
             'l' => \URLART_LIVESUCHE
         ];
         foreach ($hits[0] as $hit) {
@@ -821,27 +798,6 @@ class Text
                     }
                     break;
 
-                case \URLART_TAG:
-                    $item->kNews = (int)$keyName;
-                    $item->cKey  = 'kTag';
-                    $data        = Shop::Container()->getDB()->query(
-                        "SELECT ttag.kTag, ttag.cName, tseo.cSeo
-                            FROM ttag
-                            LEFT JOIN tseo
-                                ON tseo.cKey = 'kTag'
-                                AND tseo.kKey = ttag.kTag
-                                AND tseo.kSprache = " . $languageID . '
-                            WHERE ttag.kTag = ' . (int)$keyName,
-                        ReturnType::SINGLE_OBJECT
-                    );
-
-                    if (isset($data->kTag) && $data->kTag > 0) {
-                        $exists      = true;
-                        $item->cSeo  = $data->cSeo;
-                        $item->cName = !empty($data->cName) ? $data->cName : 'Link';
-                    }
-                    break;
-
                 case \URLART_LIVESUCHE:
                     $item->kNews = (int)$keyName;
                     $item->cKey  = 'kSuchanfrage';
@@ -917,7 +873,6 @@ class Text
     {
         if (\is_string($data)) {
             $isUtf8 = \mb_detect_encoding($data, 'UTF-8', true) !== false;
-
             if ((!$isUtf8 && $encode) || ($isUtf8 && !$encode)) {
                 $data = $encode ? self::convertUTF8($data) : self::convertISO($data);
             }
@@ -932,7 +887,6 @@ class Text
             if ($copy) {
                 $data = clone $data;
             }
-
             foreach (\get_object_vars($data) as $key => $val) {
                 $newKey = (string)self::utf8_convert_recursive($key, $encode);
                 $newVal = self::utf8_convert_recursive($val, $encode);

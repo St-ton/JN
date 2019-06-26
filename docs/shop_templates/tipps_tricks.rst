@@ -331,8 +331,6 @@ Der Funktion können die folgenden Parameter übergeben werden:
 +-------------------------+----------+-----------------+---------------------------------------------------------------------------------------------------------------------------------------------------------+
 | kMerkmalWert            | String   | -               | Primärschlüssel eines Merkmalwerts, siehe Datenbank tmerkmalwert.kMerkmalwert                                                                           |
 +-------------------------+----------+-----------------+---------------------------------------------------------------------------------------------------------------------------------------------------------+
-| kTag                    | String   | -               | Primärschlüssel eines Tags siehe ttag.kTag                                                                                                              |
-+-------------------------+----------+-----------------+---------------------------------------------------------------------------------------------------------------------------------------------------------+
 | kSuchspecial            | Numeric  | -               | Filterung nach Suchspecials, siehe Tabelle unten Suchspecialschlüssel                                                                                   |
 +-------------------------+----------+-----------------+---------------------------------------------------------------------------------------------------------------------------------------------------------+
 | kKategorieFilter        | Numeric  | -               | Zusätzlicher Filter nach einer Kategorie in Kombination mit einem Hauptfilter z.B. kHersteller.                                                         |
@@ -348,8 +346,6 @@ Der Funktion können die folgenden Parameter übergeben werden:
 | cMerkmalFilter          | String   | -               | Primärschlüssel der Merkmalwerte durch Semikolon getrennt z.B. "100;101". Primärschlüsselangabe siehe Datenbank tmerkmalwert.kMerkmalwert               |
 +-------------------------+----------+-----------------+---------------------------------------------------------------------------------------------------------------------------------------------------------+
 | cSuchFilter             | String   | -               | Primärschlüssel der Suchfilter durch Semikolon getrennt z.B. "200;201". Primärschlüsselangabe siehe Datenbank tsuchcache.kSuchCache                     |
-+-------------------------+----------+-----------------+---------------------------------------------------------------------------------------------------------------------------------------------------------+
-| cTagFilter              | String   | -               | Primärschlüssel der Tags durch Semikolon getrennt z.B. "300;301". Primärschlüsselangabe siehe Datenbank ttag.kTag                                       |
 +-------------------------+----------+-----------------+---------------------------------------------------------------------------------------------------------------------------------------------------------+
 | cSuche                  | String   | -               | Suchbegriff z.B. "zwiebel ananas baguette"                                                                                                              |
 +-------------------------+----------+-----------------+---------------------------------------------------------------------------------------------------------------------------------------------------------+

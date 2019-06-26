@@ -9,6 +9,7 @@ namespace JTL\Checkout;
 use JTL\Alert\Alert;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Cart;
+use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Product;
 use JTL\Session\Frontend;
 use JTL\Shop;
@@ -1035,7 +1036,7 @@ class Kupon
             // Alle Positionen prüfen ob der Kupon greift und falls ja, dann Position rabattieren
             if ($coupon->nGanzenWKRabattieren === 0) {
                 $productNames = [];
-                if (\is_array($cart->PositionenArr) && \count($cart->PositionenArr) > 0) {
+                if (GeneralObject::hasCount('PositionenArr', $cart)) {
                     $productPrice = 0;
                     foreach ($cart->PositionenArr as $item) {
                         $productPrice += Cart::checkSetPercentCouponWKPos($item, $coupon)->fPreis;

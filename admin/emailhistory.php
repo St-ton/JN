@@ -7,6 +7,7 @@
 use JTL\Alert\Alert;
 use JTL\Emailhistory;
 use JTL\Helpers\Form;
+use JTL\Helpers\GeneralObject;
 use JTL\Pagination\Pagination;
 
 require_once __DIR__ . '/includes/admininclude.php';
@@ -23,10 +24,7 @@ if ($action === 'delete') {
         if ($history->deleteAll() !== true) {
             $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorHistoryDelete'), 'errorHistoryDelete');
         }
-    } elseif (isset($_POST['kEmailhistory'])
-        && is_array($_POST['kEmailhistory'])
-        && count($_POST['kEmailhistory']) > 0
-    ) {
+    } elseif (GeneralObject::hasCount('kEmailhistory', $_POST)) {
         $history->deletePack($_POST['kEmailhistory']);
         $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successHistoryDelete'), 'successHistoryDelete');
     } else {

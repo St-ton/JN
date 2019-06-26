@@ -61,24 +61,19 @@ final class Orders extends AbstractSync
      */
     private function handleACK($xml): void
     {
-        if (!\is_array($xml['ack_bestellungen']['kBestellung']) && (int)$xml['ack_bestellungen']['kBestellung'] > 0) {
-            $xml['ack_bestellungen']['kBestellung'] = [$xml['ack_bestellungen']['kBestellung']];
+        $source = $xml['ack_bestellungen']['kBestellung'] ?? [];
+        if (\is_numeric($source)) {
+            $source = [$source];
         }
-        if (!\is_array($xml['ack_bestellungen']['kBestellung'])) {
-            return;
-        }
-        foreach ($xml['ack_bestellungen']['kBestellung'] as $orderID) {
-            $orderID = (int)$orderID;
-            if ($orderID > 0) {
-                $this->db->update('tbestellung', 'kBestellung', $orderID, (object)['cAbgeholt' => 'Y']);
-                $this->db->update(
-                    'tbestellung',
-                    ['kBestellung', 'cStatus'],
-                    [$orderID, \BESTELLUNG_STATUS_OFFEN],
-                    (object)['cStatus' => \BESTELLUNG_STATUS_IN_BEARBEITUNG]
-                );
-                $this->db->update('tzahlungsinfo', 'kBestellung', $orderID, (object)['cAbgeholt' => 'Y']);
-            }
+        foreach (\array_filter(\array_map('\intval', $source)) as $orderID) {
+            $this->db->update('tbestellung', 'kBestellung', $orderID, (object)['cAbgeholt' => 'Y']);
+            $this->db->update(
+                'tbestellung',
+                ['kBestellung', 'cStatus'],
+                [$orderID, \BESTELLUNG_STATUS_OFFEN],
+                (object)['cStatus' => \BESTELLUNG_STATUS_IN_BEARBEITUNG]
+            );
+            $this->db->update('tzahlungsinfo', 'kBestellung', $orderID, (object)['cAbgeholt' => 'Y']);
         }
     }
 
@@ -107,10 +102,11 @@ final class Orders extends AbstractSync
      */
     private function handleDeletes(array $xml): void
     {
-        if (!\is_array($xml['del_bestellungen']['kBestellung'])) {
-            $xml['del_bestellungen']['kBestellung'] = [$xml['del_bestellungen']['kBestellung']];
+        $source = $xml['del_bestellungen']['kBestellung'] ?? [];
+        if (\is_numeric($source)) {
+            $source = [$source];
         }
-        foreach ($xml['del_bestellungen']['kBestellung'] as $orderID) {
+        foreach (\array_filter(\array_map('\intval', $source)) as $orderID) {
             $orderID = (int)$orderID;
             if ($orderID <= 0) {
                 continue;
@@ -141,15 +137,12 @@ final class Orders extends AbstractSync
         $orderIDs = \is_array($xml['del_bestellungen']['kBestellung'])
             ? $xml['del_bestellungen']['kBestellung']
             : [$xml['del_bestellungen']['kBestellung']];
-        foreach ($orderIDs as $orderID) {
-            $orderID = (int)$orderID;
-            if ($orderID > 0) {
-                $module = $this->getPaymentMethod($orderID);
-                if ($module) {
-                    $module->cancelOrder($orderID, true);
-                }
-                $this->deleteOrder($orderID);
+        foreach (\array_filter(\array_map('\intval', $orderIDs)) as $orderID) {
+            $module = $this->getPaymentMethod($orderID);
+            if ($module) {
+                $module->cancelOrder($orderID, true);
             }
+            $this->deleteOrder($orderID);
         }
     }
 
@@ -158,11 +151,11 @@ final class Orders extends AbstractSync
      */
     private function handleCancelation(array $xml): void
     {
-        if (!\is_array($xml['storno_bestellungen']['kBestellung'])) {
-            $xml['storno_bestellungen']['kBestellung'] = [$xml['storno_bestellungen']['kBestellung']];
+        $source = $xml['storno_bestellungen']['kBestellung'] ?? [];
+        if (\is_numeric($source)) {
+            $source = [$source];
         }
-        foreach ($xml['storno_bestellungen']['kBestellung'] as $orderID) {
-            $orderID  = (int)$orderID;
+        foreach (\array_filter(\array_map('\intval', $source)) as $orderID) {
             $module   = $this->getPaymentMethod($orderID);
             $tmpOrder = new Bestellung($orderID);
             $customer = new Kunde($tmpOrder->kKunde);
@@ -199,10 +192,11 @@ final class Orders extends AbstractSync
      */
     private function handleReactivated(array $xml): void
     {
-        if (!\is_array($xml['reaktiviere_bestellungen']['kBestellung'])) {
-            $xml['reaktiviere_bestellungen']['kBestellung'] = [$xml['reaktiviere_bestellungen']['kBestellung']];
+        $source = $xml['reaktiviere_bestellungen']['kBestellung'] ?? [];
+        if (\is_numeric($source)) {
+            $source = [$source];
         }
-        foreach ($xml['reaktiviere_bestellungen']['kBestellung'] as $orderID) {
+        foreach (\array_filter(\array_map('\intval', $source)) as $orderID) {
             $module = $this->getPaymentMethod($orderID);
             if ($module) {
                 $module->reactivateOrder($orderID);
@@ -234,23 +228,17 @@ final class Orders extends AbstractSync
      */
     private function handlePaymentACK(array $xml): void
     {
-        if (!\is_array($xml['ack_zahlungseingang']['kZahlungseingang'])
-            && (int)$xml['ack_zahlungseingang']['kZahlungseingang'] > 0
-        ) {
-            $xml['ack_zahlungseingang']['kZahlungseingang'] = [$xml['ack_zahlungseingang']['kZahlungseingang']];
+        $source = $xml['ack_zahlungseingang']['kZahlungseingang'] ?? [];
+        if (\is_numeric($source)) {
+            $source = [$source];
         }
-        if (!\is_array($xml['ack_zahlungseingang']['kZahlungseingang'])) {
-            return;
-        }
-        foreach ($xml['ack_zahlungseingang']['kZahlungseingang'] as $kZahlungseingang) {
-            if ((int)$kZahlungseingang > 0) {
-                $this->db->update(
-                    'tzahlungseingang',
-                    'kZahlungseingang',
-                    (int)$kZahlungseingang,
-                    (object)['cAbgeholt' => 'Y']
-                );
-            }
+        foreach (\array_filter(\array_map('\intval', $source)) as $id) {
+            $this->db->update(
+                'tzahlungseingang',
+                'kZahlungseingang',
+                $id,
+                (object)['cAbgeholt' => 'Y']
+            );
         }
     }
 
@@ -326,9 +314,9 @@ final class Orders extends AbstractSync
                 ReturnType::SINGLE_OBJECT
             );
         }
-        $cZAUpdateSQL = '';
+        $updateSql = '';
         if (isset($paymentMethod->kZahlungsart) && $paymentMethod->kZahlungsart > 0) {
-            $cZAUpdateSQL = ' , kZahlungsart = ' . (int)$paymentMethod->kZahlungsart .
+            $updateSql = ' , kZahlungsart = ' . (int)$paymentMethod->kZahlungsart .
                 ", cZahlungsartName = '" . $paymentMethod->cName . "' ";
         }
         $correctionFactor = 1.0;
@@ -349,7 +337,7 @@ final class Orders extends AbstractSync
             'UPDATE tbestellung SET
             fGuthaben = :fg,
             fGesamtsumme = :total,
-            cKommentar = :cmt ' . $cZAUpdateSQL . '
+            cKommentar = :cmt ' . $updateSql . '
             WHERE kBestellung = :oid',
             [
                 'fg'    => $order->fGuthaben,
@@ -586,27 +574,27 @@ final class Orders extends AbstractSync
      */
     private function updateOrder(stdClass $shopOrder, stdClass $order, int $state): Bestellung
     {
-        $trackingURL      = $this->getTrackingURL($shopOrder, $order);
-        $cZahlungsartName = $this->db->escape($order->cZahlungsartName);
-        $dBezahltDatum    = $this->db->escape($order->dBezahltDatum);
-        $dVersandDatum    = $this->db->escape($order->dVersandt);
-        if ($dVersandDatum === null || $dVersandDatum === '') {
-            $dVersandDatum = '_DBNULL_';
+        $trackingURL = $this->getTrackingURL($shopOrder, $order);
+        $methodName  = $this->db->escape($order->cZahlungsartName);
+        $clearedDate = $this->db->escape($order->dBezahltDatum);
+        $shippedDate = $this->db->escape($order->dVersandt);
+        if ($shippedDate === null || $shippedDate === '') {
+            $shippedDate = '_DBNULL_';
         }
 
         $upd                = new stdClass;
-        $upd->dVersandDatum = $dVersandDatum;
+        $upd->dVersandDatum = $shippedDate;
         $upd->cTracking     = $this->db->escape($order->cIdentCode);
         $upd->cLogistiker   = $this->db->escape($order->cLogistik);
         $upd->cTrackingURL  = $this->db->escape($trackingURL);
         $upd->cStatus       = $state;
         $upd->cVersandInfo  = $this->db->escape($order->cVersandInfo);
-        if (\strlen($cZahlungsartName) > 0) {
-            $upd->cZahlungsartName = $cZahlungsartName;
+        if (\strlen($methodName) > 0) {
+            $upd->cZahlungsartName = $methodName;
         }
-        $upd->dBezahltDatum = empty($dBezahltDatum)
+        $upd->dBezahltDatum = empty($clearedDate)
             ? '_DBNULL_'
-            : $dBezahltDatum;
+            : $clearedDate;
 
         $this->db->update('tbestellung', 'kBestellung', $order->kBestellung, $upd);
 
@@ -737,7 +725,7 @@ final class Orders extends AbstractSync
      */
     private function deleteOrder(int $orderID): void
     {
-        $cartID = $this->db->select(
+        $cartID = (int)($this->db->select(
             'tbestellung',
             'kBestellung',
             $orderID,
@@ -747,20 +735,20 @@ final class Orders extends AbstractSync
             null,
             false,
             'kWarenkorb'
-        );
+        )->kWarenkob ?? 0);
         $this->db->delete('tbestellung', 'kBestellung', $orderID);
         $this->db->delete('tbestellid', 'kBestellung', $orderID);
         $this->db->delete('tbestellstatus', 'kBestellung', $orderID);
         $this->db->delete('tkuponbestellung', 'kBestellung', $orderID);
         $this->db->delete('tuploaddatei', ['kCustomID', 'nTyp'], [$orderID, \UPLOAD_TYP_BESTELLUNG]);
         $this->db->delete('tuploadqueue', 'kBestellung', $orderID);
-        if ((int)$cartID->kWarenkorb > 0) {
-            $this->db->delete('twarenkorb', 'kWarenkorb', (int)$cartID->kWarenkorb);
-            $this->db->delete('twarenkorbpos', 'kWarenkorb', (int)$cartID->kWarenkorb);
+        if ($cartID > 0) {
+            $this->db->delete('twarenkorb', 'kWarenkorb', $cartID);
+            $this->db->delete('twarenkorbpos', 'kWarenkorb', $cartID);
             foreach ($this->db->selectAll(
                 'twarenkorbpos',
                 'kWarenkorb',
-                (int)$cartID->kWarenkorb,
+                $cartID,
                 'kWarenkorbPos'
             ) as $item) {
                 $this->db->delete(

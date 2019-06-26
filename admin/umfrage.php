@@ -7,6 +7,7 @@
 use JTL\Alert\Alert;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
+use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Request;
 use JTL\Helpers\Seo;
 use JTL\Helpers\Text;
@@ -281,12 +282,10 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
             }
         } elseif (isset($_POST['umfrage_loeschen']) && (int)$_POST['umfrage_loeschen'] === 1) {
             // Umfrage loeschen
-            if (is_array($_POST['kUmfrage']) && count($_POST['kUmfrage']) > 0) {
-                foreach ($_POST['kUmfrage'] as $surveyID) {
-                    $surveyID = (int)$surveyID;
-                    // tumfrage loeschen
+            $surveyIDs = Request::verifyGPDataIntegerArray('kUmfrage');
+            if (count($surveyIDs) > 0) {
+                foreach ($surveyIDs as $surveyID) {
                     $db->delete('tumfrage', 'kUmfrage', $surveyID);
-
                     $surveyQuestions = $db->query(
                         'SELECT kUmfrageFrage
                             FROM tumfragefrage
@@ -294,7 +293,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                         ReturnType::ARRAY_OF_OBJECTS
                     );
                     foreach ($surveyQuestions as $question) {
-                        loescheFrage($question->kUmfrageFrage);
+                        loescheFrage((int)$question->kUmfrageFrage);
                     }
                     // tseo loeschen
                     $db->delete('tseo', ['cKey', 'kKey'], ['kUmfrage', $surveyID]);
@@ -348,10 +347,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                 $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successAnswerDelete'), 'successAnswerDelete');
             }
             // Bestimmte Optionen loeschen
-            if (isset($_POST['kUmfrageMatrixOption'])
-                && is_array($_POST['kUmfrageMatrixOption'])
-                && count($_POST['kUmfrageMatrixOption']) > 0
-            ) {
+            if (GeneralObject::hasCount('kUmfrageMatrixOption', $_POST)) {
                 foreach ($_POST['kUmfrageMatrixOption'] as $kUmfrageMatrixOption) {
                     $kUmfrageMatrixOption = (int)$kUmfrageMatrixOption;
                     $db->query(

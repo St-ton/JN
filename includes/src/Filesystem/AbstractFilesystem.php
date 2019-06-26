@@ -31,7 +31,7 @@ abstract class AbstractFilesystem implements IFilesystem
      */
     public function __construct(array $options = [])
     {
-        $this->options = array_merge(
+        $this->options = \array_merge(
             ['root' => null],
             $options
         );
@@ -87,7 +87,7 @@ abstract class AbstractFilesystem implements IFilesystem
         $rooted = Path::combine($this->getPathPrefix(), $path);
 
         if (!$this->hasPathPrefix($rooted)) {
-            throw new \Exception(sprintf("Path '%s' is not within defined root", $rooted));
+            throw new \Exception(\sprintf("Path '%s' is not within defined root", $rooted));
         }
 
         return $rooted;
@@ -106,8 +106,8 @@ abstract class AbstractFilesystem implements IFilesystem
             return $path;
         }
 
-        $path = substr($path, strlen($this->getPathPrefix()) + 1);
-        $path = ltrim($path, DIRECTORY_SEPARATOR);
+        $path = \substr($path, \strlen($this->getPathPrefix()) + 1);
+        $path = \ltrim($path, \DIRECTORY_SEPARATOR);
 
         return $path;
     }
@@ -123,6 +123,6 @@ abstract class AbstractFilesystem implements IFilesystem
     {
         $prefix = $this->getPathPrefix();
 
-        return strpos($path, $prefix) === 0;
+        return \strpos($path, $prefix) === 0;
     }
 }

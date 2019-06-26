@@ -247,7 +247,7 @@ class FileInfo
      */
     public function __debugInfo()
     {
-        $info = get_object_vars($this);
+        $info = \get_object_vars($this);
 
         return $info;
     }

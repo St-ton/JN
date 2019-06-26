@@ -17,6 +17,7 @@ use JTL\dbeS\Starter;
 use JTL\Exceptions\CircularReferenceException;
 use JTL\Exceptions\EmptyResultSetException;
 use JTL\Exceptions\ServiceNotFoundException;
+use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Text;
 use JTL\Kampagne;
 use JTL\Mail\Mail\Mail;
@@ -84,7 +85,7 @@ abstract class AbstractSync
     protected function updateXMLinDB($xml, $table, $toMap, $pk1, $pk2 = 0): void
     {
         $idx = $table . ' attr';
-        if ((isset($xml[$table]) && \is_array($xml[$table])) || (isset($xml[$idx]) && \is_array($xml[$idx]))) {
+        if (GeneralObject::isCountable($table, $xml) || GeneralObject::isCountable($idx, $xml)) {
             $this->upsert($table, $this->mapper->mapArray($xml, $table, $toMap), $pk1, $pk2);
         }
     }
@@ -99,7 +100,7 @@ abstract class AbstractSync
     protected function insertOnExistsUpdateXMLinDB(array $xml, string $table, string $toMap, array $pks): array
     {
         $idx = $table . ' attr';
-        if ((isset($xml[$table]) && \is_array($xml[$table])) || (isset($xml[$idx]) && \is_array($xml[$idx]))) {
+        if (GeneralObject::isCountable($table, $xml) || GeneralObject::isCountable($idx, $xml)) {
             return $this->insertOnExistUpdate($table, $this->mapper->mapArray($xml, $table, $toMap), $pks);
         }
 
@@ -720,7 +721,7 @@ abstract class AbstractSync
             }
         } else {
             $seo = $this->db->selectAll('tseo', ['kKey', 'cKey'], [$keyValue, $keyName]);
-            if (\is_array($seo) && \count($seo) > 0) {
+            if (\count($seo) > 0) {
                 if ($assoc !== null && \strlen($assoc) > 0) {
                     $seoData = [];
                     foreach ($seo as $oSeo) {

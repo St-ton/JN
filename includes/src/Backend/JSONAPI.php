@@ -194,31 +194,6 @@ class JSONAPI
      * @param string            $keyName
      * @return string|bool
      */
-    public function getTags($search = null, $limit = 0, $keyName = 'kTag')
-    {
-        $searchIn = null;
-        if (\is_string($search)) {
-            $searchIn = ['cName'];
-        } elseif (\is_array($search)) {
-            $searchIn = $keyName;
-        }
-
-        return $this->itemsToJson($this->getItems(
-            'ttag',
-            ['kTag', 'cName'],
-            \CACHING_GROUP_ARTICLE,
-            $searchIn,
-            $search,
-            $limit
-        ));
-    }
-
-    /**
-     * @param string|array|null $search
-     * @param int               $limit
-     * @param string            $keyName
-     * @return string|bool
-     */
     public function getAttributes($search = null, $limit = 0, $keyName = 'kMerkmalWert')
     {
         $searchIn = null;

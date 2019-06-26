@@ -170,8 +170,6 @@ class Statusmail
             __('contentTypeCountRatings')                   => 8,
             __('contentTypeCountRatingsLocked')             => 9,
             __('contentTypeCountRatingDepositPayed')        => 10,
-            __('contentTypeCountTags')                      => 11,
-            __('contentTypeCountTagsLocked')                => 12,
             __('contentTypeCountCustomerRecruited')         => 13,
             __('contentTypeCountCustomerRecruitedOrdered')  => 14,
             __('contentTypeCountSentWishlists')             => 15,
@@ -459,52 +457,6 @@ class Statusmail
     }
 
     /**
-     * Holt die Anzahl von Tags für einen bestimmten Zeitraum
-     *
-     * @return int
-     */
-    private function getTagCount(): int
-    {
-        return (int)$this->db->queryPrepared(
-            'SELECT COUNT(*) AS cnt
-                FROM ttagkunde
-                JOIN ttag 
-                    ON ttag.kTag = ttagkunde.kTag
-                    AND ttag.nAktiv = 1
-                WHERE ttagkunde.dZeit >= :from
-                    AND ttagkunde.dZeit < :to',
-            [
-                'from' => $this->dateStart,
-                'to'   => $this->dateEnd
-            ],
-            ReturnType::SINGLE_OBJECT
-        )->cnt;
-    }
-
-    /**
-     * Holt die Anzahl von Tags für einen bestimmten Zeitraum die nicht freigeschaltet wurden
-     *
-     * @return int
-     */
-    private function getNonApprovedTagsCounts(): int
-    {
-        return (int)$this->db->queryPrepared(
-            'SELECT COUNT(*) AS cnt
-                FROM ttagkunde
-                JOIN ttag 
-                    ON ttag.kTag = ttagkunde.kTag
-                    AND ttag.nAktiv = 0
-                WHERE ttagkunde.dZeit >= :from
-                    AND ttagkunde.dZeit < :to',
-            [
-                'from' => $this->dateStart,
-                'to'   => $this->dateEnd
-            ],
-            ReturnType::SINGLE_OBJECT
-        )->cnt;
-    }
-
-    /**
      * Holt die Anzahl Kunden die geworben wurden für einen bestimmten Zeitraum
      *
      * @return int
@@ -782,7 +734,6 @@ class Statusmail
         $mail->nAnzahlBewertungenNichtFreigeschaltet    = -1;
         $mail->oAnzahlGezahltesGuthaben                 = -1;
         $mail->nAnzahlTags                              = -1;
-        $mail->nAnzahlTagsNichtFreigeschaltet           = -1;
         $mail->nAnzahlGeworbenerKunden                  = -1;
         $mail->nAnzahlErfolgreichGeworbenerKunden       = -1;
         $mail->nAnzahlVersendeterWunschlisten           = -1;
@@ -831,12 +782,6 @@ class Statusmail
                     break;
                 case 10:
                     $mail->oAnzahlGezahltesGuthaben = $this->getRatingCreditsCount();
-                    break;
-                case 11:
-                    $mail->nAnzahlTags = $this->getTagCount();
-                    break;
-                case 12:
-                    $mail->nAnzahlTagsNichtFreigeschaltet = $this->getNonApprovedTagsCounts();
                     break;
                 case 13:
                     $mail->nAnzahlGeworbenerKunden = $this->getNewCustomerPromotionsCount();

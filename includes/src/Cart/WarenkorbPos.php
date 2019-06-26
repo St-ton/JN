@@ -618,7 +618,7 @@ class WarenkorbPos
     public function isUsedForShippingCostCalculation(string $isoCode, bool $excludeShippingCostAttributes = false): bool
     {
         return (!$excludeShippingCostAttributes
-            || $this->nPosTyp !== C_WARENKORBPOS_TYP_ARTIKEL
+            || $this->nPosTyp !== \C_WARENKORBPOS_TYP_ARTIKEL
             || ($this->Artikel && $this->Artikel->isUsedForShippingCostCalculation($isoCode))
         );
     }

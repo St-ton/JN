@@ -60,8 +60,7 @@ class Cart
 
         foreach (Frontend::getCart()->PositionenArr as $item) {
             $amountItem = $item->fPreisEinzelNetto;
-            if (isset($item->WarenkorbPosEigenschaftArr)
-                && \is_array($item->WarenkorbPosEigenschaftArr)
+            if (GeneralObject::isCountable('WarenkorbPosEigenschaftArr', $item)
                 && (!isset($item->Artikel->kVaterArtikel) || (int)$item->Artikel->kVaterArtikel === 0)
             ) {
                 foreach ($item->WarenkorbPosEigenschaftArr as $attr) {
@@ -392,7 +391,7 @@ class Cart
                 $isConfigProduct = false;
             } else {
                 $groups          = Konfigurator::getKonfig($productID);
-                $isConfigProduct = \is_array($groups) && \count($groups) > 0;
+                $isConfigProduct = GeneralObject::hasCount($groups);
             }
         }
 
@@ -403,13 +402,13 @@ class Cart
         $errors            = [];
         $itemErrors        = [];
         $configItems       = [];
-        $configGroups      = (isset($_POST['item']) && \is_array($_POST['item']))
+        $configGroups      = GeneralObject::isCountable('item', $_POST)
             ? $_POST['item']
             : [];
-        $configGroupCounts = (isset($_POST['quantity']) && \is_array($_POST['quantity']))
+        $configGroupCounts = GeneralObject::isCountable('quantity', $_POST)
             ? $_POST['quantity']
             : [];
-        $configItemCounts  = (isset($_POST['item_quantity']) && \is_array($_POST['item_quantity']))
+        $configItemCounts  = GeneralObject::isCountable('item_quantity', $_POST)
             ? $_POST['item_quantity']
             : false;
         $ignoreLimits      = isset($_POST['konfig_ignore_limits']);
@@ -502,8 +501,7 @@ class Cart
                             $configItem->oEigenschaftwerte_arr,
                             \C_WARENKORBPOS_TYP_ARTIKEL,
                             $cUnique,
-                            $configItem->getKonfigitem(),
-                            false
+                            $configItem->getKonfigitem()
                         );
                         break;
 
@@ -1261,8 +1259,8 @@ class Cart
                 $properties                      = Product::getPropertiesForVarCombiArticle($productID, $parentID);
                 $variKombi                       = new stdClass();
                 $variKombi->fAnzahl              = (float)$variBoxCounts[$key];
-                $variKombi->kEigenschaft_arr     = array_keys($properties);
-                $variKombi->kEigenschaftWert_arr = array_values($properties);
+                $variKombi->kEigenschaft_arr     = \array_keys($properties);
+                $variKombi->kEigenschaftWert_arr = \array_values($properties);
 
                 $_POST['eigenschaftwert']            = $properties;
                 $_SESSION['variBoxAnzahl_arr'][$key] = $variKombi;
@@ -1274,7 +1272,7 @@ class Cart
                         'kEigenschaftWert' => $properties[$a],
                     ];
                 }, $variKombi->kEigenschaft_arr);
-            } elseif (preg_match('/([0-9:]+)?_([0-9:]+)/', $key, $hits) && count($hits) === 3) {
+            } elseif (\preg_match('/([0-9:]+)?_([0-9:]+)/', $key, $hits) && \count($hits) === 3) {
                 if (empty($hits[1])) {
                     // 1-dimensional matrix - key is combination of property id and property value
                     unset($hits[1]);
@@ -1283,7 +1281,7 @@ class Cart
                     // 2-dimensional matrix - key is set of combinations of property id and property value
                     $n = 2;
                 }
-                array_shift($hits);
+                \array_shift($hits);
 
                 $variKombi          = new stdClass();
                 $variKombi->fAnzahl = (float)$variBoxCounts[$key];

@@ -7,13 +7,12 @@
 namespace JTL\Model;
 
 use Exception;
-use function Functional\select;
 use Illuminate\Support\Collection;
 use InvalidArgumentException;
 use Iterator;
 use JTL\DB\DbInterface;
-use JTL\Shop;
 use stdClass;
+use function Functional\select;
 
 /**
  * Class DataModel

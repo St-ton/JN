@@ -41,8 +41,6 @@ class LinkTypeToPageType
                 return \PAGE_DATENSCHUTZ;
             case \LINKTYP_KONTAKT:
                 return \PAGE_KONTAKT;
-            case \LINKTYP_TAGGING:
-                return \PAGE_TAGGING;
             case \LINKTYP_LIVESUCHE:
                 return \PAGE_LIVESUCHE;
             case \LINKTYP_HERSTELLER:

@@ -16,7 +16,7 @@ use JTL\OPC\PortletInstance;
  */
 class ImageSlider extends Portlet
 {
-    const EFFECT_LIST = [
+    public const EFFECT_LIST = [
         'sliceDown', 'sliceDownLeft', 'sliceUp', 'sliceUpLeft', 'sliceUpDown', 'sliceUpDownLeft', 'fold', 'fade',
         'slideInRight', 'slideInLeft', 'boxRandom', 'boxRain', 'boxRainReverse', 'boxRainGrow', 'boxRainGrowReverse'
     ];
@@ -35,7 +35,7 @@ class ImageSlider extends Portlet
             }
         }
 
-        return implode(',', $effects);
+        return \implode(',', $effects);
     }
 
     /**

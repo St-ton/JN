@@ -411,7 +411,7 @@ class Download
                         }
                     }
                     // Check Datum
-                    $paymentDate = new \DateTime($order->dBezahltDatum);
+                    $paymentDate = new DateTime($order->dBezahltDatum);
                     $paymentDate->modify('+' . ($download->getTage() + 1) . ' day');
                     if ($download->getTage() > 0 && $paymentDate < new DateTime()) {
                         return self::ERROR_DOWNLOAD_EXPIRED;

@@ -39,8 +39,6 @@
         {quantityStatisticRow cAnzahlTitle='Rating credit total' nAnzahlVar=$oMailObjekt->oAnzahlGezahltesGuthaben->fSummeGuthaben}
     {/if}
 
-    {quantityStatisticRow cAnzahlTitle='Tags' nAnzahlVar=$oMailObjekt->nAnzahlTags}
-    {quantityStatisticRow cAnzahlTitle='Tags not approved' nAnzahlVar=$oMailObjekt->nAnzahlTagsNichtFreigeschaltet}
     {quantityStatisticRow cAnzahlTitle='Acquired customers' nAnzahlVar=$oMailObjekt->nAnzahlGeworbenerKunden}
     {quantityStatisticRow cAnzahlTitle='Acquired customers who purchased something' nAnzahlVar=$oMailObjekt->nAnzahlErfolgreichGeworbenerKunden}
     {quantityStatisticRow cAnzahlTitle='Wish lists sent' nAnzahlVar=$oMailObjekt->nAnzahlVersendeterWunschlisten}

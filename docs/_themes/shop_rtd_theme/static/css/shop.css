@@ -102,3 +102,8 @@ a:hover, a:focus, a:active {
     margin-bottom: 24px;
     max-width: 100%;
 }
+
+.strike {
+    text-decoration: line-through;
+    font-size: x-small;
+}

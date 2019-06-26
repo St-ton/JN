@@ -998,7 +998,6 @@ final class Products extends AbstractSync
         foreach ($xml['del_artikel']['kArtikel'] as $productID) {
             $productID = (int)$productID;
             $parent    = Product::getParent($productID);
-            $this->deleteProductImages($productID);
 
             $this->db->queryPrepared(
                 'DELETE teigenschaftkombiwert
@@ -1087,23 +1086,6 @@ final class Products extends AbstractSync
         }
 
         return 0;
-    }
-
-    /**
-     * @param int $productID
-     */
-    private function deleteProductImages(int $productID): void
-    {
-        $images = $this->db->selectAll(
-            'tartikelpict',
-            'kArtikel',
-            $productID,
-            'kArtikelPict, kMainArtikelBild, cPfad'
-        );
-        foreach ($images as $image) {
-            $this->deleteProductImage($image, $productID);
-        }
-        $this->cache->flush('arr_article_images_' . $productID);
     }
 
     /**

@@ -945,7 +945,6 @@ final class Products extends AbstractSync
         $this->addUploads($xml);
         $this->addMinPurchaseData($xml, $productID);
         $this->addConfigGroups($xml);
-        $this->addPrices($xml, $productID);
         $this->updateXMLinDB(
             $xml['tartikel'],
             'tkategorieartikel',
@@ -972,6 +971,7 @@ final class Products extends AbstractSync
         $this->addWarehouseData($xml, $productID);
         $this->addCharacteristics($xml);
         $this->addCategoryDiscounts($productID);
+        $this->addPrices($xml, $productID);
         $res[] = $productID;
         if (!empty($products[0]->kVaterartikel)) {
             $res[] = (int)$products[0]->kVaterartikel;

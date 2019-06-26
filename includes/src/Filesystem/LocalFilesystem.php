@@ -177,10 +177,8 @@ class LocalFilesystem extends AbstractFilesystem
         $location    = $this->applyPathPrefix($from);
         $destination = $this->applyPathPrefix($to);
 
-        if ($overwrite && \is_dir($destination)) {
-            if (!$this->deleteDirectory($destination)) {
-                return false;
-            }
+        if ($overwrite && \is_dir($destination) && !$this->deleteDirectory($destination)) {
+            return false;
         }
 
         return $this->move($location, $destination) === true;
@@ -272,7 +270,7 @@ class LocalFilesystem extends AbstractFilesystem
     /**
      * Get the normalized path from a SplFileInfo object.
      *
-     * @param \SplFileInfo $file
+     * @param SplFileInfo $file
      *
      * @return string
      */
@@ -281,11 +279,11 @@ class LocalFilesystem extends AbstractFilesystem
         $location = $file->getPathname();
         $path     = $this->removePathPrefix($location);
 
-        return trim(str_replace('\\', '/', $path), '/');
+        return \trim(\str_replace('\\', '/', $path), '/');
     }
 
     /**
-     * @param \SplFileInfo $file
+     * @param SplFileInfo $file
      *
      * @return FileInfo
      */
@@ -360,7 +358,7 @@ class LocalFilesystem extends AbstractFilesystem
         $zipArchive = new \ZipArchive();
         $count      = $finder->count();
         $index      = 0;
-        $basePath   = rtrim($finder->getIterator()->getPath(), '/').'/';
+        $basePath   = \rtrim($finder->getIterator()->getPath(), '/').'/';
 
         if (($code = $zipArchive->open($archivePath, \ZipArchive::CREATE | \ZipArchive::OVERWRITE)) !== true) {
             throw new Exception('Archive file could not be created.', $code);
@@ -368,8 +366,8 @@ class LocalFilesystem extends AbstractFilesystem
 
         foreach ($finder->files() as $file) {
             if (!$file->isDir()) {
-                $zipArchive->addFile($file->getRealpath(), str_replace($basePath, '', $file->getRealpath()));
-                if (is_callable($callback)) {
+                $zipArchive->addFile($file->getRealpath(), \str_replace($basePath, '', $file->getRealpath()));
+                if (\is_callable($callback)) {
                     $callback($count, $index);
                     ++$index;
                 }

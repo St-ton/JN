@@ -32,7 +32,7 @@ class SmartyResourceNiceDB extends Smarty_Resource_Custom
      * @param DbInterface $db
      * @param string      $type
      */
-    public function __construct(DbInterface $db, string $type = 'export')
+    public function __construct(DbInterface $db, string $type = ContextType::EXPORT)
     {
         $this->db   = $db;
         $this->type = $type;
@@ -61,11 +61,11 @@ class SmartyResourceNiceDB extends Smarty_Resource_Custom
      */
     public function fetch($name, &$source, &$mtime)
     {
-        if ($this->type === 'export') {
+        if ($this->type === ContextType::EXPORT) {
             $source = $this->getExportSource((int)$name);
-        } elseif ($this->type === 'mail') {
+        } elseif ($this->type === ContextType::MAIL) {
             $source = $this->getMailSource($name);
-        } elseif ($this->type === 'newsletter') {
+        } elseif ($this->type === ContextType::NEWSLETTER) {
             $source = $this->getNewsletterSource($name);
         } else {
             $source = '';

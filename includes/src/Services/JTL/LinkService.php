@@ -505,11 +505,8 @@ final class LinkService implements LinkServiceInterface
             /** @var LinkInterface $sp */
             if ($sp->getLinkType() === \LINKTYP_AGB) {
                 $linkAGB = $sp;
-                break;
-            }
-            if ($sp->getLinkType() === \LINKTYP_WRB) {
+            } elseif ($sp->getLinkType() === \LINKTYP_WRB) {
                 $linkWRB = $sp;
-                break;
             }
         }
         $data = $this->db->select(

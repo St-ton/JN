@@ -247,8 +247,8 @@ final class Attributes extends AbstractSync
                         'kMerkmal',
                         'kSprache'
                     );
-                    $mmwCount = \count($attrValues);
-                    if (\is_array($attrValues) && $mmwCount > 0) {
+                    $mmwCount = \is_array($attrValues) ? \count($attrValues) : 0;
+                    if ($mmwCount > 0) {
                         for ($o = 0; $o < $mmwCount; $o++) {
                             $item               = $attributeValues[$i]->oMMW_arr[$o];
                             $item->kMerkmalWert = (int)$attrValues[$o]->kMerkmalWert;

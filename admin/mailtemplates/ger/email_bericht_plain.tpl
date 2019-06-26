@@ -55,14 +55,6 @@ Bewertungsguthaben gezahlt: {$oMailObjekt->oAnzahlGezahltesGuthaben->nAnzahl}
 Bewertungsguthaben Summe: {$oMailObjekt->oAnzahlGezahltesGuthaben->fSummeGuthaben}
 {/if}
 
-{if $oMailObjekt->nAnzahlTags !== -1}
-Tags: {$oMailObjekt->nAnzahlTags}
-{/if}
-
-{if $oMailObjekt->nAnzahlTagsNichtFreigeschaltet !== -1}
-Tags nicht freigeschaltet: {$oMailObjekt->nAnzahlTagsNichtFreigeschaltet}
-{/if}
-
 {if $oMailObjekt->nAnzahlGeworbenerKunden !== -1}
 Geworbene Kunden: {$oMailObjekt->nAnzahlGeworbenerKunden}
 {/if}

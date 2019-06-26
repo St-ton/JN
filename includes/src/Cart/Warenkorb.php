@@ -6,29 +6,28 @@
 
 namespace JTL\Cart;
 
-use function Functional\select;
-use function Functional\some;
 use JTL\Alert\Alert;
 use JTL\Catalog\Product\Artikel;
-use JTL\DB\ReturnType;
-use JTL\Checkout\Eigenschaft;
 use JTL\Catalog\Product\EigenschaftWert;
+use JTL\Catalog\Product\Preise;
+use JTL\Checkout\Eigenschaft;
+use JTL\Checkout\Kupon;
+use JTL\Checkout\Versandart;
+use JTL\DB\ReturnType;
+use JTL\Extensions\Download;
 use JTL\Extensions\Konfigitem;
 use JTL\Extensions\Konfigitemsprache;
-use JTL\Extensions\Download;
 use JTL\GlobalSetting;
 use JTL\Helpers\Cart;
 use JTL\Helpers\Product;
 use JTL\Helpers\Request;
 use JTL\Helpers\ShippingMethod;
 use JTL\Helpers\Tax;
-use JTL\Checkout\Kupon;
-use JTL\Catalog\Product\Preise;
-use JTL\Services\JTL\AlertService;
 use JTL\Session\Frontend;
 use JTL\Shop;
-use JTL\Checkout\Versandart;
 use stdClass;
+use function Functional\select;
+use function Functional\some;
 
 /**
  * Class Warenkorb
@@ -177,7 +176,7 @@ class Warenkorb
             return $tmpAmount[$productID] ?? 0;
         }
 
-        if (!isset($depAmount, $depAmount[$productID])) {
+        if (!isset($depAmount[$productID])) {
             $depAmount = $this->getAllDependentAmount($onlyStockRelevant);
         }
 

@@ -6,6 +6,7 @@
 
 use JTL\Backend\DirManager;
 use JTL\Helpers\Form;
+use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Request;
 use JTL\Shop;
 use JTL\Template;
@@ -59,7 +60,7 @@ switch ($action) {
         $tab = 'massaction';
         switch ($cacheAction) {
             case 'flush':
-                if (isset($_POST['cache-types']) && is_array($_POST['cache-types'])) {
+                if (GeneralObject::isCountable('cache-types', $_POST)) {
                     $okCount = 0;
                     foreach ($_POST['cache-types'] as $cacheType) {
                         $hookInfo = ['type' => $cacheType, 'key' => null, 'isTag' => true];
@@ -113,7 +114,7 @@ switch ($action) {
                 }
                 break;
             case 'deactivate':
-                if (isset($_POST['cache-types']) && is_array($_POST['cache-types'])) {
+                if (GeneralObject::isCountable('cache-types', $_POST)) {
                     foreach ($_POST['cache-types'] as $cacheType) {
                         $cache->flushTags([$cacheType]);
                         $currentlyDisabled[] = $cacheType;
@@ -405,7 +406,7 @@ if (function_exists('opcache_get_status')) {
     $opcacheStats->hitRate      = isset($_opcacheStatus['opcache_statistics']['opcache_hit_rate'])
         ? round($_opcacheStatus['opcache_statistics']['opcache_hit_rate'], 2)
         : -1;
-    $opcacheStats->scripts      = (isset($_opcacheStatus['scripts']) && is_array($_opcacheStatus['scripts']))
+    $opcacheStats->scripts      = GeneralObject::isCountable('scripts', $_opcacheStatus)
         ? $_opcacheStatus['scripts']
         : [];
 }

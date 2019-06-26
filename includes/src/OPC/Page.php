@@ -6,6 +6,8 @@
 
 namespace JTL\OPC;
 
+use JTL\Helpers\GeneralObject;
+
 /**
  * Class Page
  * @package JTL\OPC
@@ -284,9 +286,12 @@ class Page implements \JsonSerializable
         return $this;
     }
 
+    /**
+     * @return int
+     */
     public function getStatus()
     {
-        $now   = date('Y-m-d H:i:s');
+        $now   = \date('Y-m-d H:i:s');
         $start = $this->getPublishFrom();
         $end   = $this->getPublishTo();
 
@@ -331,7 +336,7 @@ class Page implements \JsonSerializable
         $this->setUrl($data['url'] ?? $this->getUrl());
         $this->setRevId($data['revId'] ?? $this->getRevId());
 
-        if (isset($data['areas']) && \is_array($data['areas'])) {
+        if (GeneralObject::isCountable('areas', $data)) {
             $this->getAreaList()->deserialize($data['areas']);
         }
 

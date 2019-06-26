@@ -812,21 +812,6 @@ msgstr "Yes"
 msgid "artikeldetails_vergleichsliste_anzeigen_value(N)"
 msgstr "No"
 
-msgid "tagging_freischaltung_value(Y)"
-msgstr "Yes, only for logged-in customers"
-
-msgid "tagging_freischaltung_value(O)"
-msgstr "Yes, for all visitors"
-
-msgid "tagging_freischaltung_value(N)"
-msgstr "No"
-
-msgid "tagging_anzeigen_value(Y)"
-msgstr "Yes"
-
-msgid "tagging_anzeigen_value(N)"
-msgstr "No"
-
 msgid "mediendatei_anzeigen_value(YM)"
 msgstr "Yes, as a separate tab for every media group"
 
@@ -1293,12 +1278,6 @@ msgid "boxen_livesuche_anzeigen_value(Y)"
 msgstr "Yes"
 
 msgid "boxen_livesuche_anzeigen_value(N)"
-msgstr "No"
-
-msgid "boxen_tagging_anzeigen_value(Y)"
-msgstr "Yes"
-
-msgid "boxen_tagging_anzeigen_value(N)"
 msgstr "No"
 
 msgid "boxen_wunschzettel_bilder_value(Y)"
@@ -1778,24 +1757,6 @@ msgstr "Yes, in content area and in navigation box"
 msgid "bewertungsfilter_benutzen_value(N)"
 msgstr "No"
 
-msgid "allgemein_tagfilter_benutzen_value(content)"
-msgstr "Yes, in content area"
-
-msgid "allgemein_tagfilter_benutzen_value(box)"
-msgstr "Yes, in navigation box"
-
-msgid "allgemein_tagfilter_benutzen_value(Y)"
-msgstr "Yes, in content area and in navigation box"
-
-msgid "allgemein_tagfilter_benutzen_value(N)"
-msgstr "No"
-
-msgid "tag_filter_type_value(A)"
-msgstr "No multiple selection (only restriction of results)"
-
-msgid "tag_filter_type_value(O)"
-msgstr "Multiple selection"
-
 msgid "suchtrefferfilter_nutzen_value(Y)"
 msgstr "Yes"
 
@@ -2019,12 +1980,6 @@ msgid "sitemap_weitereseiten_artikeluebersicht_value(Y)"
 msgstr "Yes"
 
 msgid "sitemap_weitereseiten_artikeluebersicht_value(N)"
-msgstr "No"
-
-msgid "sitemap_tags_anzeigen_value(Y)"
-msgstr "Yes"
-
-msgid "sitemap_tags_anzeigen_value(N)"
 msgstr "No"
 
 msgid "sitemap_livesuche_anzeigen_value(Y)"
@@ -2473,3 +2428,12 @@ msgstr "Yes"
 
 msgid "ftp_ssl_value(0)"
 msgstr "No"
+
+msgid "hersteller_anzeigen_als_value(T)"
+msgstr "Text"
+
+msgid "hersteller_anzeigen_als_value(BT)"
+msgstr "Image and Text"
+
+msgid "hersteller_anzeigen_als_value(B)"
+msgstr "Image"

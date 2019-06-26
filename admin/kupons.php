@@ -8,6 +8,7 @@ use JTL\Alert\Alert;
 use JTL\Checkout\Kupon;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
+use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Language\LanguageHelper;
@@ -121,7 +122,7 @@ if ($action === 'bearbeiten') {
     }
 } elseif ($action === 'loeschen') {
     // Kupons loeschen
-    if (isset($_POST['kKupon_arr']) && is_array($_POST['kKupon_arr']) && count($_POST['kKupon_arr']) > 0) {
+    if (GeneralObject::hasCount('kKupon_arr', $_POST)) {
         $couponIDs = array_map('\intval', $_POST['kKupon_arr']);
         if (loescheKupons($couponIDs)) {
             $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successCouponDelete'), 'successCouponDelete');

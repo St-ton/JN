@@ -270,52 +270,6 @@ class CMS
     }
 
     /**
-     * @param array $conf
-     * @return array
-     * @since  5.0.0
-     * @former gibTagging()
-     */
-    public static function getTagging(array $conf): array
-    {
-        $limit    = (int)$conf['sonstiges']['sonstiges_tagging_all_count'] > 0
-            ? (int)$conf['sonstiges']['sonstiges_tagging_all_count']
-            : 100;
-        $tagData  = Shop::Container()->getDB()->queryPrepared(
-            "SELECT ttag.kTag, ttag.cName, tseo.cSeo, sum(ttagartikel.nAnzahlTagging) AS Anzahl
-                FROM ttag
-                JOIN ttagartikel 
-                    ON ttagartikel.kTag = ttag.kTag
-                LEFT JOIN tseo 
-                    ON tseo.cKey = 'kTag' 
-                    AND tseo.kKey = ttag.kTag 
-                    AND tseo.kSprache = :lid
-                WHERE ttag.nAktiv = 1
-                    AND ttag.kSprache = :lid
-                    AND ttag.kTag > 0
-                GROUP BY ttag.cName
-                ORDER BY Anzahl DESC LIMIT :lmt",
-            ['lid' => Shop::getLanguageID(), 'lmt' => $limit],
-            ReturnType::ARRAY_OF_OBJECTS
-        );
-        $count    = \count($tagData);
-        $tags     = [];
-        $priority = $count > 0
-            ? (($tagData[0]->Anzahl - $tagData[$count - 1]->Anzahl) / 9)
-            : 0;
-        foreach ($tagData as $tag) {
-            $tag->Klasse   = ($priority < 1) ?
-                \rand(1, 10) :
-                (\round(($tag->Anzahl - $tagData[$count - 1]->Anzahl) / $priority) + 1);
-            $tag->cURL     = URL::buildURL($tag, \URLART_TAG);
-            $tag->cURLFull = URL::buildURL($tag, \URLART_TAG, true);
-            $tags[]        = $tag;
-        }
-        \shuffle($tags);
-
-        return $tags;
-    }
-
-    /**
      * @return array
      * @since  5.0.0
      * @former gibNewsletterHistory()

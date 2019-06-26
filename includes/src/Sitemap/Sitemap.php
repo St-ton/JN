@@ -9,14 +9,13 @@ namespace JTL\Sitemap;
 use JTL\Cache\JTLCacheInterface;
 use JTL\Catalog\Category\KategorieListe;
 use JTL\Catalog\Hersteller;
-use JTL\Catalog\Product\Merkmal;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
+use JTL\Helpers\Category as CategoryHelper;
 use JTL\Helpers\URL;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
-use JTL\Helpers\Category as CategoryHelper;
 
 /**
  * Class Sitemap

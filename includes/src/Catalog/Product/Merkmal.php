@@ -7,6 +7,7 @@
 namespace JTL\Catalog\Product;
 
 use JTL\DB\ReturnType;
+use JTL\Helpers\GeneralObject;
 use JTL\Language\LanguageHelper;
 use JTL\Shop;
 
@@ -254,7 +255,7 @@ class Merkmal
             ReturnType::ARRAY_OF_OBJECTS
         );
 
-        if ($getValues && \is_array($attributes) && \count($attributes) > 0) {
+        if ($getValues && GeneralObject::hasCount($attributes)) {
             $imageBaseURL = Shop::getImageBaseURL();
             foreach ($attributes as $attribute) {
                 $attrValue                   = new MerkmalWert(0, $this->kSprache);

@@ -786,7 +786,7 @@ final class Controller
         if ($this->sanitizeDir($imageName, $id, $uploadDir) === false) {
             return false;
         }
-        $iterator = new \DirectoryIterator($uploadDir . $id);
+        $iterator = new DirectoryIterator($uploadDir . $id);
         foreach ($iterator as $fileinfo) {
             if ($fileinfo->isDot()
                 || !$fileinfo->isFile()

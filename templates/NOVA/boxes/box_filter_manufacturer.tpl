@@ -16,8 +16,8 @@
             {/button}
         </div>
         {collapse class="box box-filter-manufacturer" id="sidebox{$oBox->getID()}" visible=$oBox->getItems()->isActive()}
-        {block name='boxes-box-filter-search-special-content'}
-            {include file='snippets/filter/genericFilterItem.tpl' filter=$oBox->getItems()}
+        {block name='boxes-box-filter-manufacturer-include-manufacturer'}
+                {include file='snippets/filter/manufacturer.tpl' filter=$oBox->getItems()}
         {/block}
         {/collapse}
         <hr class="mt-0 mb-4">

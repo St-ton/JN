@@ -37,27 +37,17 @@ final class Data extends AbstractSync
      */
     private function handleAvailabilityMessages(array $xml): void
     {
-        if (!isset($xml['ack_verfuegbarkeitsbenachrichtigungen']['kVerfuegbarkeitsbenachrichtigung'])) {
-            return;
+        $source = $xml['ack_verfuegbarkeitsbenachrichtigungen']['kVerfuegbarkeitsbenachrichtigung'] ?? [];
+        if (\is_numeric($source)) {
+            $source = [$source];
         }
-        if (!\is_array($xml['ack_verfuegbarkeitsbenachrichtigungen']['kVerfuegbarkeitsbenachrichtigung'])
-            && (int)$xml['ack_verfuegbarkeitsbenachrichtigungen']['kVerfuegbarkeitsbenachrichtigung'] > 0
-        ) {
-            $xml['ack_verfuegbarkeitsbenachrichtigungen']['kVerfuegbarkeitsbenachrichtigung'] =
-                [$xml['ack_verfuegbarkeitsbenachrichtigungen']['kVerfuegbarkeitsbenachrichtigung']];
-        }
-        if (\is_array($xml['ack_verfuegbarkeitsbenachrichtigungen']['kVerfuegbarkeitsbenachrichtigung'])) {
-            foreach ($xml['ack_verfuegbarkeitsbenachrichtigungen']['kVerfuegbarkeitsbenachrichtigung'] as $msg) {
-                $msg = (int)$msg;
-                if ($msg > 0) {
-                    $this->db->update(
-                        'tverfuegbarkeitsbenachrichtigung',
-                        'kVerfuegbarkeitsbenachrichtigung',
-                        $msg,
-                        (object)['cAbgeholt' => 'Y']
-                    );
-                }
-            }
+        foreach (\array_filter(\array_map('\intval', $source)) as $msg) {
+            $this->db->update(
+                'tverfuegbarkeitsbenachrichtigung',
+                'kVerfuegbarkeitsbenachrichtigung',
+                $msg,
+                (object)['cAbgeholt' => 'Y']
+            );
         }
     }
 
@@ -66,19 +56,14 @@ final class Data extends AbstractSync
      */
     private function handleUploadQueueAck(array $xml): void
     {
-        if (\is_array($xml['ack_uploadqueue']['kuploadqueue'])) {
-            foreach ($xml['ack_uploadqueue']['kuploadqueue'] as $kUploadqueue) {
-                $kUploadqueue = (int)$kUploadqueue;
-                if ($kUploadqueue > 0) {
-                    $this->db->delete('tuploadqueue', 'kUploadqueue', $kUploadqueue);
-                }
+        $source = $xml['ack_uploadqueue']['kuploadqueue'] ?? [];
+        if (\is_numeric($source)) {
+            $source = [$source];
+        }
+        foreach (\array_filter(\array_map('\intval', $source)) as $queueID) {
+            if ($queueID > 0) {
+                $this->db->delete('tuploadqueue', 'kUploadqueue', $queueID);
             }
-        } elseif ((int)$xml['ack_uploadqueue']['kuploadqueue'] > 0) {
-            $this->db->delete(
-                'tuploadqueue',
-                'kUploadqueue',
-                (int)$xml['ack_uploadqueue']['kuploadqueue']
-            );
         }
     }
 }

@@ -8,6 +8,7 @@ use JTL\Alert\Alert;
 use JTL\ContentAuthor;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
+use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Request;
 use JTL\Language\LanguageHelper;
 use JTL\News\Admin\Controller;
@@ -142,7 +143,7 @@ if (Request::verifyGPCDataInt('news') === 1 && Form::validateToken()) {
     } elseif (isset($_POST['news_speichern']) && (int)$_POST['news_speichern'] === 1) {
         $controller->createOrUpdateNewsItem($_POST, $languages, $author);
     } elseif (isset($_POST['news_loeschen']) && (int)$_POST['news_loeschen'] === 1) {
-        if (isset($_POST['kNews']) && is_array($_POST['kNews']) && count($_POST['kNews']) > 0) {
+        if (GeneralObject::hasCount('kNews', $_POST)) {
             $controller->deleteNewsItems($_POST['kNews'], $author);
             $controller->setMsg(__('successNewsDelete'));
             $controller->newsRedirect('aktiv', $controller->getMsg());
@@ -192,9 +193,10 @@ if (Request::verifyGPCDataInt('news') === 1 && Form::validateToken()) {
         && (int)$_POST['newskommentar_freischalten']
         && !isset($_POST['kommentareloeschenSubmit'])
     ) {
-        if (is_array($_POST['kNewsKommentar']) && count($_POST['kNewsKommentar']) > 0) {
-            foreach ($_POST['kNewsKommentar'] as $id) {
-                $db->update('tnewskommentar', 'kNewsKommentar', (int)$id, (object)['nAktiv' => 1]);
+        $deleteIDs = Request::verifyGPDataIntegerArray('kNewsKommentar');
+        if (count($deleteIDs) > 0) {
+            foreach ($deleteIDs as $id) {
+                $db->update('tnewskommentar', 'kNewsKommentar', $id, (object)['nAktiv' => 1]);
             }
             $controller->setMsg(__('successNewsCommentUnlock'));
             $tab = Request::verifyGPDataString('tab');

@@ -20,6 +20,7 @@ use JTL\DB\ReturnType;
 use JTL\Catalog\Product\EigenschaftWert;
 use JTL\Extensions\AuswahlAssistent;
 use JTL\Helpers\Cart;
+use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Product;
 use JTL\Helpers\ShippingMethod;
 use JTL\Helpers\Text;
@@ -185,7 +186,7 @@ class IOMethods
             // Variationskombi-Artikel
             $_POST['eigenschaftwert'] = $properties['eigenschaftwert'];
             $properties               = Product::getSelectedPropertiesForVarCombiArticle($productID);
-        } elseif (isset($properties['eigenschaftwert']) && \is_array($properties['eigenschaftwert'])) {
+        } elseif (GeneralObject::isCountable('eigenschaftwert', $properties)) {
             // einfache Variation - keine Varkombi
             $_POST['eigenschaftwert'] = $properties['eigenschaftwert'];
             $properties               = Product::getSelectedPropertiesForArticle($productID);
@@ -594,7 +595,7 @@ class IOMethods
         $smarty->assign('wishlists', Wunschliste::getWishlists());
 
         $response->content         = $smarty->fetch('snippets/wishlist_dropdown.tpl');
-        $response->currentPosCount = count(Frontend::getWishList()->CWunschlistePos_arr);
+        $response->currentPosCount = \count(Frontend::getWishList()->CWunschlistePos_arr);
 
         $objResponse->script('this.response = ' . \json_encode($response) . ';');
 

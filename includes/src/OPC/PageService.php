@@ -238,7 +238,7 @@ class PageService
     {
         if ($this->opc->isOPCInstalled()) {
             $drafts = $this->pageDB->getDrafts($id);
-            usort($drafts, function ($a, $b) {
+            \usort($drafts, function ($a, $b) {
                 /**
                  * @var Page $a
                  * @var Page $b

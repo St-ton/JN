@@ -8,6 +8,7 @@ namespace JTL\Extensions;
 
 use JTL\DB\ReturnType;
 use JTL\Catalog\Product\Merkmal;
+use JTL\Helpers\GeneralObject;
 use JTL\Shop;
 use stdClass;
 
@@ -200,10 +201,7 @@ class AuswahlAssistentFrage
      */
     public static function deleteQuestion(array $params): bool
     {
-        if (isset($params['kAuswahlAssistentFrage_arr'])
-            && \is_array($params['kAuswahlAssistentFrage_arr'])
-            && \count($params['kAuswahlAssistentFrage_arr']) > 0
-        ) {
+        if (GeneralObject::hasCount('kAuswahlAssistentFrage_arr', $params)) {
             foreach ($params['kAuswahlAssistentFrage_arr'] as $kAuswahlAssistentFrage) {
                 Shop::Container()->getDB()->delete(
                     'tauswahlassistentfrage',

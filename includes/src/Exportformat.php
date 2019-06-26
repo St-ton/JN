@@ -21,15 +21,11 @@ use JTL\Helpers\Tax;
 use JTL\Helpers\Text;
 use JTL\Language\LanguageModel;
 use JTL\Session\Frontend;
-use JTL\Smarty\ContextType;
 use JTL\Smarty\ExportSmarty;
 use JTL\Smarty\JTLSmarty;
-use JTL\Smarty\SmartyResourceNiceDB;
 use Psr\Log\LoggerInterface;
-use SmartyException;
 use stdClass;
 use function Functional\first;
-use function Functional\map;
 
 /**
  * Class Exportformat
@@ -123,7 +119,7 @@ class Exportformat
     protected $nUseCache = 1;
 
     /**
-     * @var \JTL\Smarty\JTLSmarty
+     * @var JTLSmarty
      */
     protected $smarty;
 
@@ -168,7 +164,7 @@ class Exportformat
     private $tempFileName;
 
     /**
-     * @var \Psr\Log\LoggerInterface|null
+     * @var LoggerInterface|null
      */
     private $logger;
 

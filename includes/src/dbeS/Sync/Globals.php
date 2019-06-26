@@ -8,6 +8,7 @@ namespace JTL\dbeS\Sync;
 
 use JTL\DB\ReturnType;
 use JTL\dbeS\Starter;
+use JTL\Helpers\GeneralObject;
 
 /**
  * Class Globals
@@ -42,14 +43,12 @@ final class Globals extends AbstractSync
      */
     private function handleDeletes(array $xml): void
     {
-        if (\is_array($xml['del_globals_wg']['kWarengruppe'])) {
-            foreach ($xml['del_globals_wg']['kWarengruppe'] as $kWarengruppe) {
-                if ((int)$kWarengruppe > 0) {
-                    $this->deleteProductTypeGroup((int)$kWarengruppe);
-                }
-            }
-        } elseif ((int)$xml['del_globals_wg']['kWarengruppe'] > 0) {
-            $this->deleteProductTypeGroup((int)$xml['del_globals_wg']['kWarengruppe']);
+        $source = $xml['del_globals_wg']['kWarengruppe'] ?? [];
+        if (\is_numeric($source)) {
+            $source = [$source];
+        }
+        foreach (\array_filter(\array_map('\intval', $source)) as $groupID) {
+            $this->deleteProductTypeGroup($groupID);
         }
     }
 
@@ -58,15 +57,16 @@ final class Globals extends AbstractSync
      */
     private function handleInserts(array $xml): void
     {
-        if (isset($xml['globals']['tfirma'], $xml['globals']['tfirma attr']['kFirma'])
-            && \is_array($xml['globals']['tfirma'])
-            && $xml['globals']['tfirma attr']['kFirma'] > 0
+        $source = $xml['globals'] ?? null;
+        if (isset($source['tfirma'], $source['tfirma attr']['kFirma'])
+            && \is_array($source['tfirma'])
+            && $source['tfirma attr']['kFirma'] > 0
         ) {
-            $this->mapper->mapObject($Firma, $xml['globals']['tfirma'], 'mFirma');
-            $this->dbDelInsert('tfirma', [$Firma], 1);
+            $this->mapper->mapObject($company, $source['tfirma'], 'mFirma');
+            $this->dbDelInsert('tfirma', [$company], 1);
         }
-        if (isset($xml['globals'])) {
-            $languages = $this->mapper->mapArray($xml['globals'], 'tsprache', 'mSprache');
+        if ($source !== null) {
+            $languages = $this->mapper->mapArray($source, 'tsprache', 'mSprache');
             $langCount = \count($languages);
             for ($i = 0; $i < $langCount; $i++) {
                 $languages[$i]->cStandard = $languages[$i]->cWawiStandard;
@@ -76,57 +76,45 @@ final class Globals extends AbstractSync
             if (\count($languages) > 0) {
                 $this->dbDelInsert('tsprache', $languages, 1);
             }
-
-            $this->xml2db($xml['globals'], 'tlieferstatus', 'mLieferstatus');
-            $this->xml2db($xml['globals'], 'txsellgruppe', 'mXsellgruppe');
-            $this->xml2db($xml['globals'], 'teinheit', 'mEinheit');
-            $this->xml2db($xml['globals'], 'twaehrung', 'mWaehrung');
-            $this->xml2db($xml['globals'], 'tsteuerklasse', 'mSteuerklasse');
-            $this->xml2db($xml['globals'], 'tsteuersatz', 'mSteuersatz');
-            $this->xml2db($xml['globals'], 'tversandklasse', 'mVersandklasse');
-
-            if (isset($xml['globals']['tsteuerzone']) && \is_array($xml['globals']['tsteuerzone'])) {
-                $taxZones = $this->mapper->mapArray($xml['globals'], 'tsteuerzone', 'mSteuerzone');
+            $this->xml2db($source, 'tlieferstatus', 'mLieferstatus');
+            $this->xml2db($source, 'txsellgruppe', 'mXsellgruppe');
+            $this->xml2db($source, 'teinheit', 'mEinheit');
+            $this->xml2db($source, 'twaehrung', 'mWaehrung');
+            $this->xml2db($source, 'tsteuerklasse', 'mSteuerklasse');
+            $this->xml2db($source, 'tsteuersatz', 'mSteuersatz');
+            $this->xml2db($source, 'tversandklasse', 'mVersandklasse');
+            if (GeneralObject::isCountable('tsteuerzone', $source)) {
+                $taxZones = $this->mapper->mapArray($source, 'tsteuerzone', 'mSteuerzone');
                 $this->dbDelInsert('tsteuerzone', $taxZones, 1);
                 $this->db->query('DELETE FROM tsteuerzoneland', ReturnType::DEFAULT);
                 $taxCount = \count($taxZones);
                 for ($i = 0; $i < $taxCount; $i++) {
                     if ($taxCount < 2) {
-                        $this->xml2db($xml['globals']['tsteuerzone'], 'tsteuerzoneland', 'mSteuerzoneland', 0);
+                        $this->xml2db($source['tsteuerzone'], 'tsteuerzoneland', 'mSteuerzoneland', 0);
                     } else {
-                        $this->xml2db($xml['globals']['tsteuerzone'][$i], 'tsteuerzoneland', 'mSteuerzoneland', 0);
+                        $this->xml2db($source['tsteuerzone'][$i], 'tsteuerzoneland', 'mSteuerzoneland', 0);
                     }
                 }
             }
-            if (isset($xml['globals']['tkundengruppe']) && \is_array($xml['globals']['tkundengruppe'])) {
-                $customerGroups = $this->mapper->mapArray($xml['globals'], 'tkundengruppe', 'mKundengruppe');
+            if (GeneralObject::isCountable('tkundengruppe', $source)) {
+                $customerGroups = $this->mapper->mapArray($source, 'tkundengruppe', 'mKundengruppe');
                 $this->dbDelInsert('tkundengruppe', $customerGroups, 1);
                 $this->db->query('TRUNCATE TABLE tkundengruppensprache', ReturnType::DEFAULT);
                 $this->db->query('TRUNCATE TABLE tkundengruppenattribut', ReturnType::DEFAULT);
                 $cgCount = \count($customerGroups);
                 for ($i = 0; $i < $cgCount; $i++) {
                     if ($cgCount < 2) {
-                        $this->xml2db(
-                            $xml['globals']['tkundengruppe'],
-                            'tkundengruppensprache',
-                            'mKundengruppensprache',
-                            0
-                        );
-                        $this->xml2db(
-                            $xml['globals']['tkundengruppe'],
-                            'tkundengruppenattribut',
-                            'mKundengruppenattribut',
-                            0
-                        );
+                        $this->xml2db($source['tkundengruppe'], 'tkundengruppensprache', 'mKundengruppensprache', 0);
+                        $this->xml2db($source['tkundengruppe'], 'tkundengruppenattribut', 'mKundengruppenattribut', 0);
                     } else {
                         $this->xml2db(
-                            $xml['globals']['tkundengruppe'][$i],
+                            $source['tkundengruppe'][$i],
                             'tkundengruppensprache',
                             'mKundengruppensprache',
                             0
                         );
                         $this->xml2db(
-                            $xml['globals']['tkundengruppe'][$i],
+                            $source['tkundengruppe'][$i],
                             'tkundengruppenattribut',
                             'mKundengruppenattribut',
                             0
@@ -135,8 +123,8 @@ final class Globals extends AbstractSync
                 }
                 $this->cache->flushTags([\CACHING_GROUP_ARTICLE, \CACHING_GROUP_CATEGORY]);
             }
-            if (isset($xml['globals']['twarenlager']) && \is_array($xml['globals']['twarenlager'])) {
-                $storages   = $this->mapper->mapArray($xml['globals'], 'twarenlager', 'mWarenlager');
+            if (GeneralObject::isCountable('twarenlager', $source)) {
+                $storages   = $this->mapper->mapArray($source, 'twarenlager', 'mWarenlager');
                 $visibility = $this->db->query(
                     'SELECT kWarenlager, nAktiv FROM twarenlager WHERE nAktiv = 1',
                     ReturnType::ARRAY_OF_OBJECTS
@@ -151,8 +139,8 @@ final class Globals extends AbstractSync
                     }
                 }
             }
-            if (isset($xml['globals']['tmasseinheit']) && \is_array($xml['globals']['tmasseinheit'])) {
-                $units = $this->mapper->mapArray($xml['globals'], 'tmasseinheit', 'mMasseinheit');
+            if (GeneralObject::isCountable('tmasseinheit', $source)) {
+                $units = $this->mapper->mapArray($source, 'tmasseinheit', 'mMasseinheit');
                 foreach ($units as &$_me) {
                     //hack?
                     unset($_me->kBezugsMassEinheit);
@@ -163,19 +151,9 @@ final class Globals extends AbstractSync
                 $meCount = \count($units);
                 for ($i = 0; $i < $meCount; $i++) {
                     if ($meCount < 2) {
-                        $this->xml2db(
-                            $xml['globals']['tmasseinheit'],
-                            'tmasseinheitsprache',
-                            'mMasseinheitsprache',
-                            0
-                        );
+                        $this->xml2db($source['tmasseinheit'], 'tmasseinheitsprache', 'mMasseinheitsprache', 0);
                     } else {
-                        $this->xml2db(
-                            $xml['globals']['tmasseinheit'][$i],
-                            'tmasseinheitsprache',
-                            'mMasseinheitsprache',
-                            0
-                        );
+                        $this->xml2db($source['tmasseinheit'][$i], 'tmasseinheitsprache', 'mMasseinheitsprache', 0);
                     }
                 }
             }
@@ -203,7 +181,7 @@ final class Globals extends AbstractSync
      */
     private function xml2db($xml, $table, $toMap, $del = 1): void
     {
-        if (isset($xml[$table]) && \is_array($xml[$table])) {
+        if (GeneralObject::isCountable($table, $xml)) {
             $objects = $this->mapper->mapArray($xml, $table, $toMap);
             $this->dbDelInsert($table, $objects, $del);
         }

@@ -38,6 +38,7 @@ use JTL\Session\Frontend;
 use JTL\Shop;
 use stdClass;
 use function Functional\map;
+use function Functional\reduce_left;
 use function Functional\select;
 
 /**
@@ -4014,7 +4015,7 @@ class Artikel
         //EXPERIMENTAL_MULTILANG_SHOP
         if ($tmpProduct->cSeo === null
             && \defined('EXPERIMENTAL_MULTILANG_SHOP')
-            && EXPERIMENTAL_MULTILANG_SHOP === true
+            && \EXPERIMENTAL_MULTILANG_SHOP === true
         ) {
             //redo the query with modified seo join - without language ID
             $productSQL = \str_replace(
@@ -5687,19 +5688,11 @@ class Artikel
      */
     public function getPurchaseQuantityFromCart()
     {
-        $purchaseQuantity = 0;
-        $cart             = Frontend::getCart();
-        if ($cart !== null && \is_array($cart->PositionenArr) && \count($cart->PositionenArr) > 0) {
-            foreach ($cart->PositionenArr as $i => $item) {
-                if ((int)$item->nPosTyp === \C_WARENKORBPOS_TYP_ARTIKEL
-                    && (int)$item->Artikel->kArtikel === $this->kArtikel
-                ) {
-                    $purchaseQuantity += $item->nAnzahl;
-                }
-            }
-        }
-
-        return $purchaseQuantity;
+        return reduce_left(select(Frontend::getCart()->PositionenArr ?? [], function ($item) {
+            return $item->nPosTyp === \C_WARENKORBPOS_TYP_ARTIKEL && (int)$item->Artikel->kArtikel === $this->kArtikel;
+        }), function ($value, $index, $collection, $reduction) {
+            return $reduction + $value->nAnzahl;
+        }, 0.0);
     }
 
     /**
@@ -6503,8 +6496,8 @@ class Artikel
             && !$this->kArtikelVariKombi
             && !$this->kVariKindArtikel
             && !$this->nErscheinendesProdukt
-            && $this->nVariationOhneFreifeldAnzahl === count($this->Variationen)
-            && (count($this->Variationen) <= 2
+            && $this->nVariationOhneFreifeldAnzahl === \count($this->Variationen)
+            && (\count($this->Variationen) <= 2
                 || ($this->conf['artikeldetails']['artikeldetails_warenkorbmatrix_anzeigeformat'] === 'L'
                     && $this->nIstVater === 1)
             )
@@ -6727,7 +6720,7 @@ class Artikel
         foreach ($excludedAttributes as $excludedAttribute) {
             if (isset($this->FunktionsAttribute[$excludedAttribute])
                 && ($cISO === ''
-                    || (strpos($this->FunktionsAttribute[$excludedAttribute], $cISO) !== false)
+                    || (\strpos($this->FunktionsAttribute[$excludedAttribute], $cISO) !== false)
                 )
             ) {
                 return false;

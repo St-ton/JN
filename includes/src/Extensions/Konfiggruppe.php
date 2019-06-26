@@ -374,7 +374,7 @@ class Konfiggruppe implements JsonSerializable
     {
         $inStockCount = 0;
         foreach ($this->oItem_arr as $item) {
-            if ($item->isInStock() && ++$inStockCount === $this->nMin) {
+            if ($item->isInStock() && ++$inStockCount >= $this->nMin) {
                 return true;
             }
         }

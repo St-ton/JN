@@ -757,10 +757,6 @@ class Redirect
                 'cKey'   => 'kMerkmalWert',
                 'cParam' => 'm'
             ],
-            'getTag'            => [
-                'cKey'   => 'kTag',
-                'cParam' => 't'
-            ],
             'getSearchSpecial'  => [
                 'cKey'   => 'kKey',
                 'cParam' => 'q'

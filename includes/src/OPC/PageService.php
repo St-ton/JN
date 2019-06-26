@@ -243,8 +243,6 @@ class PageService
             $res .= 'link:' . $params->kLink;
         } elseif ($params->kMerkmalWert > 0) {
             $res .= 'attrib:' . $params->kMerkmalWert;
-        } elseif ($params->kTag > 0) {
-            $res .= 'tag:' . $params->kTag;
         } elseif ($params->kSuchspecial > 0) {
             $res .= 'special:' . $params->kSuchspecial;
         } elseif ($params->kNews > 0) {

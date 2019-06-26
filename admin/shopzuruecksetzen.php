@@ -172,15 +172,6 @@ if (isset($_POST['zuruecksetzen']) && (int)$_POST['zuruecksetzen'] === 1 && Form
                     $db->delete('tseo', 'cKey', 'kSuchanfrage');
                     break;
 
-                case 'tags':
-                    $db->query('TRUNCATE ttagmapping', ReturnType::DEFAULT);
-                    $db->query('TRUNCATE ttag', ReturnType::DEFAULT);
-                    $db->query('TRUNCATE ttagartikel', ReturnType::DEFAULT);
-                    $db->query('TRUNCATE ttagkunde', ReturnType::DEFAULT);
-
-                    $db->delete('tseo', 'cKey', 'kTag');
-                    break;
-
                 case 'bewertungen':
                     $db->query('TRUNCATE tartikelext', ReturnType::DEFAULT);
                     $db->query('TRUNCATE tbewertung', ReturnType::DEFAULT);

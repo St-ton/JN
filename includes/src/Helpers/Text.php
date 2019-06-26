@@ -630,7 +630,6 @@ class Text
      * $#h:ID:NAME#$ => ID = kHersteller NAME => Wunschname - wird in eine URL (evt. SEO) zum Hersteller umgewandelt.
      * $#m:ID:NAME#$ => ID = kMerkmalWert NAME => Wunschname - wird in eine URL (evt. SEO) zum MerkmalWert umgewandelt.
      * $#n:ID:NAME#$ => ID = kNews NAME => Wunschname - wird in eine URL (evt. SEO) zur News umgewandelt.
-     * $#t:ID:NAME#$ => ID = kTag NAME => Wunschname - wird in eine URL (evt. SEO) zum Tag umgewandelt.
      * $#l:ID:NAME#$ => ID = kSuchanfrage NAME => Wunschname - wird in eine URL (evt. SEO) zur Livesuche umgewandelt.
      *
      * @param string $text
@@ -659,7 +658,6 @@ class Text
             'h' => \URLART_HERSTELLER,
             'm' => \URLART_MERKMAL,
             'n' => \URLART_NEWS,
-            't' => \URLART_TAG,
             'l' => \URLART_LIVESUCHE
         ];
         foreach ($hits[0] as $hit) {
@@ -815,27 +813,6 @@ class Text
                     );
 
                     if (isset($data->kUmfrage) && $data->kUmfrage > 0) {
-                        $exists      = true;
-                        $item->cSeo  = $data->cSeo;
-                        $item->cName = !empty($data->cName) ? $data->cName : 'Link';
-                    }
-                    break;
-
-                case \URLART_TAG:
-                    $item->kNews = (int)$keyName;
-                    $item->cKey  = 'kTag';
-                    $data        = Shop::Container()->getDB()->query(
-                        "SELECT ttag.kTag, ttag.cName, tseo.cSeo
-                            FROM ttag
-                            LEFT JOIN tseo
-                                ON tseo.cKey = 'kTag'
-                                AND tseo.kKey = ttag.kTag
-                                AND tseo.kSprache = " . $languageID . '
-                            WHERE ttag.kTag = ' . (int)$keyName,
-                        ReturnType::SINGLE_OBJECT
-                    );
-
-                    if (isset($data->kTag) && $data->kTag > 0) {
                         $exists      = true;
                         $item->cSeo  = $data->cSeo;
                         $item->cName = !empty($data->cName) ? $data->cName : 'Link';

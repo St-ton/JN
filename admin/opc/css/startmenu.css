@@ -189,6 +189,7 @@
   cursor: pointer;
   margin: 0;
   font-weight: 500;
+  display: inline-block;
 }
 #opc #opcSidebar input[type=checkbox] + label:before {
   content: "";

@@ -23,7 +23,9 @@
         {/if}
     {block name='checkout-inc-order-items-order-items'}
         {row class="border-bottom mb-3 font-weight-bold"}
-            {col cols=2}{/col}
+            {if $Einstellungen.kaufabwicklung.warenkorb_produktbilder_anzeigen === 'Y'}
+                {col cols=2}{/col}
+            {/if}
             {col ols=$headcols sm=$headsm}{lang key='product'}{/col}
             {if $Einstellungen.kaufabwicklung.bestellvorgang_einzelpreise_anzeigen === 'Y'}
                 {col cols=2}{lang key="pricePerUnit" section="productDetails"}{/col}

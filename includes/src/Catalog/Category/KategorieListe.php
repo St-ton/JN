@@ -335,7 +335,7 @@ class KategorieListe
                 }
                 //EXPERIMENTAL_MULTILANG_SHOP
                 if ((!isset($category->cSeo) || $category->cSeo === null || $category->cSeo === '')
-                    && \defined('EXPERIMENTAL_MULTILANG_SHOP') && EXPERIMENTAL_MULTILANG_SHOP === true
+                    && \defined('EXPERIMENTAL_MULTILANG_SHOP') && \EXPERIMENTAL_MULTILANG_SHOP === true
                 ) {
                     $kDefaultLang = (int)$defaultLanguage->kSprache;
                     if ($languageID !== $kDefaultLang) {

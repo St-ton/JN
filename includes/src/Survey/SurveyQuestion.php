@@ -186,7 +186,7 @@ class SurveyQuestion
             ['id' => $id],
             ReturnType::ARRAY_OF_OBJECTS
         );
-        $question = map($question, function (\stdClass $e) {
+        $question = map($question, function (stdClass $e) {
             return $e->kUmfragefrage;
         });
         $this->mapGroup($question);

@@ -86,25 +86,26 @@ final class ImageLink extends AbstractSync
     private function deleteImageItem($item): void
     {
         $image = $this->db->select('tartikelpict', 'kArtikel', $item->kArtikel, 'nNr', $item->nNr);
-        if (\is_object($image)) {
-            // is last reference
-            $res = $this->db->query(
-                'SELECT COUNT(*) AS cnt FROM tartikelpict WHERE kBild = ' . (int)$image->kBild,
-                ReturnType::SINGLE_OBJECT
-            );
-            if ((int)$res->cnt === 1) {
-                $this->db->delete('tbild', 'kBild', (int)$image->kBild);
-                $storage = \PFAD_ROOT . \PFAD_MEDIA_IMAGE_STORAGE . $image->cPfad;
-                if (\file_exists($storage)) {
-                    @\unlink($storage);
-                }
-            }
-            $this->db->delete(
-                'tartikelpict',
-                ['kArtikel', 'nNr'],
-                [(int)$item->kArtikel, (int)$item->nNr]
-            );
+        if (!\is_object($image)) {
+            return;
         }
+        // is last reference
+        $res = $this->db->query(
+            'SELECT COUNT(*) AS cnt FROM tartikelpict WHERE kBild = ' . (int)$image->kBild,
+            ReturnType::SINGLE_OBJECT
+        );
+        if ((int)$res->cnt === 1) {
+            $this->db->delete('tbild', 'kBild', (int)$image->kBild);
+            $storage = \PFAD_ROOT . \PFAD_MEDIA_IMAGE_STORAGE . $image->cPfad;
+            if (\file_exists($storage)) {
+                @\unlink($storage);
+            }
+        }
+        $this->db->delete(
+            'tartikelpict',
+            ['kArtikel', 'nNr'],
+            [(int)$item->kArtikel, (int)$item->nNr]
+        );
     }
 
     /**

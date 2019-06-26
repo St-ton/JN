@@ -17,7 +17,6 @@ use JTL\Filter\Type;
 use JTL\Helpers\Category as CategoryHelper;
 use JTL\Language\LanguageHelper;
 use JTL\Shop;
-use stdClass;
 
 /**
  * Class Category

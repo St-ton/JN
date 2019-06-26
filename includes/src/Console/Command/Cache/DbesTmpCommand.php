@@ -12,8 +12,15 @@ use JTL\Filesystem\LocalFilesystem;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
+/**
+ * Class DbesTmpCommand
+ * @package JTL\Console\Command\Cache
+ */
 class DbesTmpCommand extends Command
 {
+    /**
+     * @inheritDoc
+     */
     protected function configure()
     {
         $this
@@ -22,7 +29,7 @@ class DbesTmpCommand extends Command
     }
 
     /**
-     * @param InputInterface $input
+     * @param InputInterface  $input
      * @param OutputInterface $output
      */
     protected function execute(InputInterface $input, OutputInterface $output)

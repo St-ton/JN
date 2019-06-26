@@ -7,6 +7,7 @@
 namespace JTL\Boxes\Items;
 
 use JTL\Catalog\Product\Artikel;
+use JTL\Helpers\GeneralObject;
 use JTL\Session\Frontend;
 
 /**
@@ -23,9 +24,7 @@ final class RecentlyViewedProducts extends AbstractBox
     {
         parent::__construct($config);
         $this->setShow(false);
-        if (isset($_SESSION['ZuletztBesuchteArtikel'])
-            && \is_array($_SESSION['ZuletztBesuchteArtikel'])
-            && \count($_SESSION['ZuletztBesuchteArtikel']) > 0
+        if (GeneralObject::hasCount('ZuletztBesuchteArtikel', $_SESSION)
             && Frontend::getCustomerGroup()->mayViewCategories()
         ) {
             $products       = [];

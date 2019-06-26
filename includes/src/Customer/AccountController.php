@@ -26,7 +26,6 @@ use JTL\GeneralDataProtection\Journal;
 use JTL\Helpers\Cart;
 use JTL\Helpers\Date;
 use JTL\Helpers\Form;
-use JTL\Helpers\Product;
 use JTL\Helpers\Request;
 use JTL\Helpers\ShippingMethod;
 use JTL\Helpers\Tax;

@@ -6,6 +6,7 @@
 
 namespace JTL\Plugin\Admin\Installation\Items;
 
+use JTL\Helpers\GeneralObject;
 use JTL\Plugin\Admin\InputType;
 use JTL\Plugin\Data\Config;
 use JTL\Plugin\InstallCode;
@@ -151,10 +152,7 @@ class SettingsLinks extends AbstractItem
                         // Ist der Typ eine Selectbox => Es müssen SelectboxOptionen vorhanden sein
                         if ($type === InputType::SELECT) {
                             $optNode = $setting['SelectboxOptions'][0] ?? [];
-                            if (isset($setting['OptionsSource'])
-                                && \is_array($setting['OptionsSource'])
-                                && \count($setting['OptionsSource']) > 0
-                            ) {
+                            if (GeneralObject::hasCount('OptionsSource', $setting['OptionsSource'])) {
                                 //do nothing for now
                             } elseif (\count($optNode) === 1) { // Es gibt mehr als eine Option
                                 foreach ($optNode['Option'] as $y => $option) {
@@ -185,10 +183,7 @@ class SettingsLinks extends AbstractItem
                             }
                         } elseif ($type === InputType::RADIO) {
                             $optNode = $setting['RadioOptions'][0] ?? [];
-                            if (isset($setting['OptionsSource'])
-                                && \is_array($setting['OptionsSource'])
-                                && \count($setting['OptionsSource']) > 0
-                            ) {
+                            if (GeneralObject::hasCount('OptionsSource', $setting['OptionsSource'])) {
                             } elseif (\count($optNode) === 1) { // Es gibt mehr als eine Option
                                 foreach ($optNode['Option'] as $y => $option) {
                                     \preg_match('/[0-9]+\sattr/', $y, $hits6);

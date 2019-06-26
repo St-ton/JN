@@ -43,17 +43,11 @@ final class Manufacturers extends AbstractSync
     private function handleDeletes(array $xml): void
     {
         $cacheTags = [];
-        if (isset($xml['del_hersteller']['kHersteller']) && (int)$xml['del_hersteller']['kHersteller'] > 0) {
-            $xml['del_hersteller']['kHersteller'] = [$xml['del_hersteller']['kHersteller']];
+        $source    = $xml['del_hersteller']['kHersteller'] ?? [];
+        if (\is_numeric($source)) {
+            $source = [$source];
         }
-        if (!isset($xml['del_hersteller']['kHersteller']) || !\is_array($xml['del_hersteller']['kHersteller'])) {
-            return;
-        }
-        foreach ($xml['del_hersteller']['kHersteller'] as $manufacturerID) {
-            $manufacturerID = (int)$manufacturerID;
-            if ($manufacturerID <= 0) {
-                continue;
-            }
+        foreach (\array_filter(\array_map('\intval', $source)) as $manufacturerID) {
             $affectedProducts = $this->db->selectAll(
                 'tartikel',
                 'kHersteller',
@@ -78,7 +72,8 @@ final class Manufacturers extends AbstractSync
      */
     private function handleInserts(array $xml): void
     {
-        if (!isset($xml['hersteller']['thersteller']) || !\is_array($xml['hersteller']['thersteller'])) {
+        $source = $xml['hersteller']['thersteller'] ?? null;
+        if (!\is_array($source)) {
             return;
         }
         $manufacturers = $this->mapper->mapArray($xml['hersteller'], 'thersteller', 'mHersteller');
@@ -100,15 +95,14 @@ final class Manufacturers extends AbstractSync
                 ReturnType::SINGLE_OBJECT
             );
             $manufacturers[$i]->cBildPfad = $manufacturerImage->cBildPfad ?? '';
-            $manufacturers[$i]->cSeo      = Seo::getSeo($manufacturers[$i]->cSeo);
-            $manufacturers[$i]->cSeo      = Seo::checkSeo($manufacturers[$i]->cSeo);
+            $manufacturers[$i]->cSeo      = Seo::checkSeo(Seo::getSeo($manufacturers[$i]->cSeo));
             $this->upsert('thersteller', [$manufacturers[$i]], 'kHersteller');
 
             $xmlLanguage = [];
-            if (isset($xml['hersteller']['thersteller'][$i])) {
-                $xmlLanguage = $xml['hersteller']['thersteller'][$i];
-            } elseif (isset($xml['hersteller']['thersteller']['therstellersprache'])) {
-                $xmlLanguage = $xml['hersteller']['thersteller'];
+            if (isset($source[$i])) {
+                $xmlLanguage = $source[$i];
+            } elseif (isset($source['therstellersprache'])) {
+                $xmlLanguage = $source;
             }
             $mfSeo = $this->mapper->mapArray($xmlLanguage, 'therstellersprache', 'mHerstellerSpracheSeo');
             foreach ($languages as $language) {
@@ -138,12 +132,8 @@ final class Manufacturers extends AbstractSync
 
             \executeHook(\HOOK_HERSTELLER_XML_BEARBEITEINSERT, ['oHersteller' => $manufacturers[$i]]);
             $cacheTags[] = \CACHING_GROUP_MANUFACTURER . '_' . $id;
-            if (\is_array($affectedProducts)) {
-                $productCacheTags = [];
-                foreach ($affectedProducts as $product) {
-                    $productCacheTags[] = \CACHING_GROUP_ARTICLE . '_' . $product->kArtikel;
-                }
-                $this->cache->flushTags($productCacheTags);
+            foreach ($affectedProducts as $product) {
+                $cacheTags[] = \CACHING_GROUP_ARTICLE . '_' . (int)$product->kArtikel;
             }
         }
         $this->cache->flushTags($cacheTags);

@@ -4,6 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Helpers\GeneralObject;
 use JTL\Shop;
 use JTL\Helpers\Text;
 use JTL\DB\ReturnType;
@@ -184,7 +185,7 @@ function speicherAntwortZuFrage(
             }
             break;
         case QuestionType::MATRIX_SINGLE:
-            if (is_array($answerName) && is_array($optionName) && count($answerName) > 0 && count($optionName) > 0) {
+            if (GeneralObject::hasCount($answerName) && GeneralObject::hasCount($optionName)) {
                 $count = count($answerName);
                 for ($i = $data->nAnzahlAntworten; $i < $count; $i++) {
                     unset($answer);

@@ -11,6 +11,7 @@ use JTL\Catalog\Hersteller;
 use JTL\Catalog\Product\Artikel;
 use JTL\Customer\Kunde;
 use JTL\DB\ReturnType;
+use JTL\Helpers\GeneralObject;
 use JTL\Kampagne;
 use JTL\Language\LanguageHelper;
 use JTL\Session\Frontend;
@@ -326,10 +327,7 @@ function speicherVorlageStd($defaultTpl, int $kNewslettervorlageStd, $post, int 
     $cHersteller   = ';' . $post['cHersteller'] . ';';
     $cKategorie    = ';' . $post['cKategorie'] . ';';
     $cKundengruppe = ';' . implode(';', $post['kKundengruppe']) . ';';
-    if (isset($defaultTpl->oNewslettervorlageStdVar_arr)
-        && is_array($defaultTpl->oNewslettervorlageStdVar_arr)
-        && count($defaultTpl->oNewslettervorlageStdVar_arr) > 0
-    ) {
+    if (GeneralObject::hasCount('oNewslettervorlageStdVar_arr', $defaultTpl)) {
         foreach ($defaultTpl->oNewslettervorlageStdVar_arr as $i => $nlTplStdVar) {
             if ($nlTplStdVar->cTyp === 'TEXT') {
                 $defaultTpl->oNewslettervorlageStdVar_arr[$i]->cInhalt =

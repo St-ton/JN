@@ -10,6 +10,7 @@ use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\ArtikelListe;
 use JTL\Boxes\Renderer\DefaultRenderer;
 use JTL\Boxes\Type;
+use JTL\Helpers\GeneralObject;
 use JTL\MagicCompatibilityTrait;
 use JTL\Plugin\PluginInterface;
 use JTL\Shop;
@@ -74,7 +75,6 @@ abstract class AbstractBox implements BoxInterface
         \PAGE_VERSAND,
         \PAGE_AGB,
         \PAGE_DATENSCHUTZ,
-        \PAGE_TAGGING,
         \PAGE_LIVESUCHE,
         \PAGE_HERSTELLER,
         \PAGE_SITEMAP,
@@ -335,7 +335,7 @@ abstract class AbstractBox implements BoxInterface
         }
         $vis = empty($this->filter) || (isset($this->filter[$pageType]) && $this->filter[$pageType] === true);
 
-        if ($vis === false && $pageID > 0 && isset($this->filter[$pageType]) && \is_array($this->filter[$pageType])) {
+        if ($vis === false && $pageID > 0 && GeneralObject::isCountable($pageType, $this->filter)) {
             $vis = \in_array($pageID, $this->filter[$pageType], true);
         }
 

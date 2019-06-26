@@ -32,14 +32,10 @@ class Tax
      */
     public static function getSalesTax(int $taxID)
     {
-        if (!isset($_SESSION['Steuersatz'])
-            || !\is_array($_SESSION['Steuersatz'])
-            || \count($_SESSION['Steuersatz']) === 0
-        ) {
+        if (!GeneralObject::hasCount('Steuersatz', $_SESSION)) {
             self::setTaxRates();
         }
-        if (isset($_SESSION['Steuersatz'])
-            && \is_array($_SESSION['Steuersatz'])
+        if (GeneralObject::isCountable('Steuersatz', $_SESSION['Steuersatz'])
             && !isset($_SESSION['Steuersatz'][$taxID])
         ) {
             $keys  = \array_keys($_SESSION['Steuersatz']);

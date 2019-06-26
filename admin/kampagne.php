@@ -8,6 +8,7 @@ use JTL\Alert\Alert;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Date;
 use JTL\Helpers\Form;
+use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Request;
 use JTL\Kampagne;
 use JTL\Pagination\Pagination;
@@ -103,7 +104,7 @@ if (Request::verifyGPCDataInt('neu') === 1 && Form::validateToken()) {
     }
 } elseif (Request::verifyGPCDataInt('delete') === 1 && Form::validateToken()) {
     // Loeschen
-    if (isset($_POST['kKampagne']) && is_array($_POST['kKampagne']) && count($_POST['kKampagne']) > 0) {
+    if (GeneralObject::hasCount('kKampagne', $_POST)) {
         $res = loescheGewaehlteKampagnen($_POST['kKampagne']);
         if ($res === 1) {
             $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successCampaignDelete'), 'successCampaignDelete');
@@ -136,8 +137,7 @@ if (Request::verifyGPCDataInt('neu') === 1 && Form::validateToken()) {
 if ($step === 'kampagne_uebersicht') {
     $campaigns   = holeAlleKampagnen(true, false);
     $definitions = holeAlleKampagnenDefinitionen();
-
-    $maxKey = 0;
+    $maxKey      = 0;
     if (is_array($campaigns) && count($campaigns) > 0) {
         $members = array_keys($campaigns);
         $maxKey  = $members[count($members) - 1];

@@ -56,7 +56,6 @@ final class BoxAdmin
         \PAGE_VERSAND,
         \PAGE_AGB,
         \PAGE_DATENSCHUTZ,
-        \PAGE_TAGGING,
         \PAGE_LIVESUCHE,
         \PAGE_HERSTELLER,
         \PAGE_SITEMAP,
@@ -428,7 +427,7 @@ final class BoxAdmin
      */
     public function activate(int $boxID, int $pageID, $active = true): bool
     {
-        $upd            = new \stdClass();
+        $upd            = new stdClass();
         $upd->bAktiv    = (int)$active;
         $validPageTypes = $this->getValidPageTypes();
         if ($pageID === 0) {

@@ -14,8 +14,15 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Finder\Finder;
 
+/**
+ * Class FilesCommand
+ * @package JTL\Console\Command\Backup
+ */
 class FilesCommand extends Command
 {
+    /**
+     * @inheritDoc
+     */
     protected function configure()
     {
         $this
@@ -29,11 +36,16 @@ class FilesCommand extends Command
             );
     }
 
+    /**
+     * @param InputInterface  $input
+     * @param OutputInterface $output
+     * @return int|void|null
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $io                 = $this->getIO();
         $archivePath        = \PFAD_ROOT . \PFAD_EXPORT_BACKUP . \date('YmdHis') . '_file_backup.zip';
-        $excludeDirectories = array_merge(['export',
+        $excludeDirectories = \array_merge(['export',
             'templates_c',
             'admin/templates_c',
             'dbeS/tmp',
@@ -41,7 +53,7 @@ class FilesCommand extends Command
             'jtllogs',
             'install/logs'], $this->getOption('exclude-dir'));
         $localFilesystem    = new Filesystem(new LocalFilesystem([
-            'root'         => PFAD_ROOT
+            'root' => PFAD_ROOT
         ]));
 
         $finder = Finder::create()

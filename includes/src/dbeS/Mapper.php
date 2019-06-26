@@ -6,6 +6,7 @@
 
 namespace JTL\dbeS;
 
+use JTL\Helpers\GeneralObject;
 use stdClass;
 
 /**
@@ -724,23 +725,21 @@ final class Mapper
     {
         $objects = [];
         $idx     = $name . ' attr';
-        if ((isset($xml[$name]) && \is_array($xml[$name])) || (isset($xml[$idx]) && \is_array($xml[$idx]))) {
-            if (isset($xml[$idx]) && \is_array($xml[$idx])) {
-                $obj = new stdClass();
-                $this->mapAttributes($obj, $xml[$idx]);
-                $this->mapObject($obj, $xml[$name], $toMap);
+        if (GeneralObject::isCountable($idx, $xml)) {
+            $obj = new stdClass();
+            $this->mapAttributes($obj, $xml[$idx]);
+            $this->mapObject($obj, $xml[$name], $toMap);
 
-                return [$obj];
-            }
-            if (\count($xml[$name]) > 2) {
-                $cnt = \count($xml[$name]) / 2;
-                for ($i = 0; $i < $cnt; $i++) {
-                    if (!isset($objects[$i]) || $objects[$i] === null) {
-                        $objects[$i] = new stdClass();
-                    }
-                    $this->mapAttributes($objects[$i], $xml[$name][$i . ' attr']);
-                    $this->mapObject($objects[$i], $xml[$name][$i], $toMap);
+            return [$obj];
+        }
+        if (GeneralObject::isCountable($name, $xml) && \count($xml[$name]) > 2) {
+            $cnt = \count($xml[$name]) / 2;
+            for ($i = 0; $i < $cnt; $i++) {
+                if (!isset($objects[$i]) || $objects[$i] === null) {
+                    $objects[$i] = new stdClass();
                 }
+                $this->mapAttributes($objects[$i], $xml[$name][$i . ' attr']);
+                $this->mapObject($objects[$i], $xml[$name][$i], $toMap);
             }
         }
 

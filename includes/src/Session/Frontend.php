@@ -15,6 +15,7 @@ use JTL\Checkout\Lieferadresse;
 use JTL\Customer\Kunde;
 use JTL\Customer\Kundengruppe;
 use JTL\DB\ReturnType;
+use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Manufacturer;
 use JTL\Helpers\Request;
 use JTL\Helpers\Tax;
@@ -306,10 +307,7 @@ class Frontend extends AbstractSession
     private function checkComparelistDeletes(): self
     {
         $listID = Request::verifyGPCDataInt('vlplo');
-        if ($listID !== 0
-            && isset($_SESSION['Vergleichsliste']->oArtikel_arr)
-            && \is_array($_SESSION['Vergleichsliste']->oArtikel_arr)
-        ) {
+        if ($listID !== 0 && GeneralObject::isCountable('oArtikel_arr', $_SESSION['Vergleichsliste'])) {
             // Wunschliste Position aus der Session löschen
             foreach ($_SESSION['Vergleichsliste']->oArtikel_arr as $i => $product) {
                 if ((int)$product->kArtikel === $listID) {
@@ -712,7 +710,6 @@ class Frontend extends AbstractSession
         $manufacturerID        = Request::verifyGPCDataInt('h');
         $searchQueryID         = Request::verifyGPCDataInt('l');
         $kMerkmalWert          = Request::verifyGPCDataInt('m');
-        $kTag                  = Request::verifyGPCDataInt('t');
         $kSuchspecial          = Request::verifyGPCDataInt('q');
         $kNews                 = Request::verifyGPCDataInt('n');
         $kNewsMonatsUebersicht = Request::verifyGPCDataInt('nm');
@@ -742,9 +739,6 @@ class Frontend extends AbstractSession
         } elseif ($kMerkmalWert > 0) {
             $key = 'kMerkmalWert';
             $val = $kMerkmalWert;
-        } elseif ($kTag > 0) {
-            $key = 'kTag';
-            $val = $kTag;
         } elseif ($kSuchspecial > 0) {
             $key = 'kSuchspecial';
             $val = $kSuchspecial;

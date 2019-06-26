@@ -12,8 +12,15 @@ use JTL\Filesystem\LocalFilesystem;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
+/**
+ * Class DeleteFileCacheCommand
+ * @package JTL\Console\Command\Cache
+ */
 class DeleteFileCacheCommand extends Command
 {
+    /**
+     * @inheritDoc
+     */
     protected function configure()
     {
         $this
@@ -22,7 +29,7 @@ class DeleteFileCacheCommand extends Command
     }
 
     /**
-     * @param InputInterface $input
+     * @param InputInterface  $input
      * @param OutputInterface $output
      * @return int|void|null
      * @throws \Exception

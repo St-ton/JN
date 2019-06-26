@@ -203,8 +203,6 @@ class PageService
             $res .= 'link:' . $params->kLink;
         } elseif ($params->kMerkmalWert > 0) {
             $res .= 'attrib:' . $params->kMerkmalWert;
-        } elseif ($params->kTag > 0) {
-            $res .= 'tag:' . $params->kTag;
         } elseif ($params->kSuchspecial > 0) {
             $res .= 'special:' . $params->kSuchspecial;
         } elseif ($params->kNews > 0) {
@@ -240,7 +238,7 @@ class PageService
     {
         if ($this->opc->isOPCInstalled()) {
             $drafts = $this->pageDB->getDrafts($id);
-            usort($drafts, function ($a, $b) {
+            \usort($drafts, function ($a, $b) {
                 /**
                  * @var Page $a
                  * @var Page $b

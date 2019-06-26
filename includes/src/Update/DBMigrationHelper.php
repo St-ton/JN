@@ -32,7 +32,7 @@ class DBMigrationHelper
     /**
      * @return stdClass
      */
-    public static function getMySQLVersion(): \stdClass
+    public static function getMySQLVersion(): stdClass
     {
         static $versionInfo = null;
 
@@ -264,7 +264,7 @@ class DBMigrationHelper
             'SHOW OPEN TABLES
                 WHERE `Database` LIKE :schema
                     AND `Table` LIKE :table',
-            ['schema' => $database, 'table' => $cTable,],
+            ['schema' => $database, 'table' => $table,],
             ReturnType::SINGLE_OBJECT
         );
 

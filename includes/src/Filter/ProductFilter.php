@@ -22,7 +22,6 @@ use JTL\Filter\Items\Rating;
 use JTL\Filter\Items\Search;
 use JTL\Filter\Items\SearchSpecial;
 use JTL\Filter\Items\Sort;
-use JTL\Filter\Items\Tag;
 use JTL\Filter\Pagination\Info;
 use JTL\Filter\SortingOptions\Factory;
 use JTL\Filter\States\BaseAttribute;
@@ -30,7 +29,6 @@ use JTL\Filter\States\BaseCategory;
 use JTL\Filter\States\BaseManufacturer;
 use JTL\Filter\States\BaseSearchQuery;
 use JTL\Filter\States\BaseSearchSpecial;
-use JTL\Filter\States\BaseTag;
 use JTL\Filter\States\DummyState;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
@@ -87,11 +85,6 @@ class ProductFilter
     private $searchFilter = [];
 
     /**
-     * @var Tag[]
-     */
-    private $tagFilter = [];
-
-    /**
      * @var Attribute[]
      */
     private $attributeFilter = [];
@@ -110,11 +103,6 @@ class ProductFilter
      * @var PriceRange
      */
     private $priceRangeFilter;
-
-    /**
-     * @var BaseTag
-     */
-    private $tag;
 
     /**
      * @var BaseSearchSpecial
@@ -170,11 +158,6 @@ class ProductFilter
      * @var NavigationURLsInterface
      */
     private $url;
-
-    /**
-     * @var Tag
-     */
-    public $tagFilterCompat;
 
     /**
      * @var Attribute
@@ -253,11 +236,9 @@ class ProductFilter
         'HerstellerFilter'   => 'ManufacturerFilter',
         'Suchanfrage'        => 'SearchQuery',
         'MerkmalWert'        => 'AttributeValue',
-        'Tag'                => 'Tag',
         'Suchspecial'        => 'SearchSpecial',
         'MerkmalFilter'      => 'AttributeFilter',
         'SuchFilter'         => 'SearchFilter',
-        'TagFilter'          => 'TagFilter',
         'SuchspecialFilter'  => 'SearchSpecialFilter',
         'BewertungFilter'    => 'RatingFilter',
         'PreisspannenFilter' => 'PriceRangeFilter',
@@ -561,7 +542,6 @@ class ProductFilter
             'kLink'                  => 0,
             'kSuchanfrage'           => 0,
             'kMerkmalWert'           => 0,
-            'kTag'                   => 0,
             'kSuchspecial'           => 0,
             'kUmfrage'               => 0,
             'kKategorieFilter'       => 0,
@@ -572,7 +552,6 @@ class ProductFilter
             'nSortierung'            => 0,
             'nSort'                  => 0,
             'MerkmalFilter_arr'      => [],
-            'TagFilter_arr'          => [],
             'SuchFilter_arr'         => [],
             'nArtikelProSeite'       => null,
             'cSuche'                 => null,
@@ -582,7 +561,6 @@ class ProductFilter
             'kWunschliste'           => 0,
             'MerkmalFilter'          => null,
             'SuchFilter'             => null,
-            'TagFilter'              => null,
             'vergleichsliste'        => null,
             'nDarstellung'           => 0,
             'isSeoMainword'          => false,
@@ -609,14 +587,11 @@ class ProductFilter
 
         $this->attributeValue = new BaseAttribute($this);
 
-        $this->tag = new BaseTag($this);
-
         $this->searchSpecial = new BaseSearchSpecial($this);
 
         $this->filters         = [];
         $this->attributeFilter = [];
         $this->searchFilter    = [];
-        $this->tagFilter       = [];
 
         $this->searchSpecialFilter = new SearchSpecial($this);
 
@@ -624,7 +599,6 @@ class ProductFilter
 
         $this->priceRangeFilter = new PriceRange($this);
 
-        $this->tagFilterCompat           = new Tag($this);
         $this->attributeFilterCollection = new Attribute($this);
         $this->searchFilterCompat        = new Search($this);
 
@@ -665,9 +639,6 @@ class ProductFilter
         } elseif ($params['kMerkmalWert'] > 0) {
             $this->attributeValue = (new BaseAttribute($this))->init($params['kMerkmalWert']);
             $this->baseState      = $this->attributeValue;
-        } elseif ($params['kTag'] > 0) {
-            $this->tag->init($params['kTag']);
-            $this->baseState = $this->tag;
         } elseif ($params['kSuchspecial'] > 0) {
             $this->searchSpecial->init($params['kSuchspecial']);
             $this->baseState = $this->searchSpecial;
@@ -686,9 +657,6 @@ class ProductFilter
             $this->addActiveFilter($this->priceRangeFilter, $params['cPreisspannenFilter']);
         }
         $this->initAttributeFilters($params['MerkmalFilter_arr']);
-        foreach ($params['TagFilter_arr'] as $tf) {
-            $this->tagFilter[] = $this->addActiveFilter(new Tag($this), $tf);
-        }
         if ($params['kSuchspecialFilter'] > 0 && \count($params['searchSpecialFilters']) === 0) {
             // backwards compatibility
             $params['searchSpecialFilters'][] = $params['kSuchspecialFilter'];
@@ -1199,54 +1167,6 @@ class ProductFilter
     }
 
     /**
-     * @param null|int $idx
-     * @return Tag|Tag[]
-     */
-    public function getTagFilter(int $idx = null)
-    {
-        return $idx === null ? $this->tagFilter : $this->tagFilter[$idx];
-    }
-
-    /**
-     * @return bool
-     */
-    public function hasTagFilter(): bool
-    {
-        return \count($this->tagFilter) > 0;
-    }
-
-    /**
-     * @return BaseTag
-     */
-    public function getTag(): FilterInterface
-    {
-        return $this->tag;
-    }
-
-    /**
-     * @param BaseTag $filter
-     * @return $this
-     */
-    public function setTag($filter): self
-    {
-        if (\is_a($filter, stdClass::class) && !isset($filter->kTag)) {
-            // disallow setting tag filter to empty stdClass
-            return $this;
-        }
-        $this->tagFilter = $filter;
-
-        return $this;
-    }
-
-    /**
-     * @return bool
-     */
-    public function hasTag(): bool
-    {
-        return $this->tag->isInitialized();
-    }
-
-    /**
      * @return BaseCategory
      */
     public function getCategory(): FilterInterface
@@ -1286,7 +1206,7 @@ class ProductFilter
     }
 
     /**
-     * @param BaseTag $filter
+     * @param BaseCategory $filter
      * @return $this
      */
     public function setCategoryFilter($filter): self
@@ -1499,7 +1419,6 @@ class ProductFilter
         if (empty($this->search->getName())
             && !$this->hasManufacturer()
             && !$this->hasCategory()
-            && !$this->hasTag()
             && !$this->hasSearchQuery()
             && !$this->hasAttributeValue()
             && !$this->hasSearchSpecial()
@@ -1997,48 +1916,6 @@ class ProductFilter
             while ($i < 20) {
                 if (Request::verifyGPCDataInt('sf' . $i) > 0) {
                     $filter[] = Request::verifyGPCDataInt('sf' . $i);
-                }
-                ++$i;
-            }
-        }
-
-        return $filter;
-    }
-
-    /**
-     * @param array $filters
-     * @return array
-     */
-    public static function initTagFilter(array $filters = []): array
-    {
-        $filter = [];
-        if (\is_array($filters) && \count($filters) > 1) {
-            foreach ($filters as $nFilter) {
-                if ((int)$nFilter > 0) {
-                    $filter[] = (int)$nFilter;
-                }
-            }
-        } elseif (isset($_GET['tf'])) {
-            if (\is_string($_GET['tf'])) {
-                $filter[] = $_GET['tf'];
-            } else {
-                foreach ($_GET['tf'] as $mf => $value) {
-                    $filter[] = $value;
-                }
-            }
-        } elseif (isset($_POST['tf'])) {
-            if (\is_string($_POST['tf'])) {
-                $filter[] = $_POST['tf'];
-            } else {
-                foreach ($_POST['tf'] as $mf => $value) {
-                    $filter[] = $value;
-                }
-            }
-        } else {
-            $i = 1;
-            while ($i < 20) {
-                if (Request::verifyGPCDataInt('tf' . $i) > 0) {
-                    $filter[] = Request::verifyGPCDataInt('tf' . $i);
                 }
                 ++$i;
             }

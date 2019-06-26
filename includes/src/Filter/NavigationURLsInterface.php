@@ -37,17 +37,6 @@ interface NavigationURLsInterface
     /**
      * @return string
      */
-    public function getTags(): string;
-
-    /**
-     * @param string $tags
-     * @return NavigationURLsInterface
-     */
-    public function setTags(string $tags): NavigationURLsInterface;
-
-    /**
-     * @return string
-     */
     public function getSearchSpecials(): string;
 
     /**

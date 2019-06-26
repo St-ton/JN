@@ -74,7 +74,6 @@ abstract class AbstractBox implements BoxInterface
         \PAGE_VERSAND,
         \PAGE_AGB,
         \PAGE_DATENSCHUTZ,
-        \PAGE_TAGGING,
         \PAGE_LIVESUCHE,
         \PAGE_HERSTELLER,
         \PAGE_SITEMAP,

@@ -61,33 +61,6 @@ function gibSuchanfrageFreischalten(string $sql, $searchSQL, bool $checkLanguage
  * @param bool   $checkLanguage
  * @return array
  */
-function gibTagFreischalten(string $sql, $searchSQL, bool $checkLanguage = true): array
-{
-    $cond = $checkLanguage === true
-        ? 'AND ttag.kSprache = ' . (int)$_SESSION['kSprache'] . ' '
-        : '';
-
-    return Shop::Container()->getDB()->query(
-        'SELECT ttag.*, sum(ttagartikel.nAnzahlTagging) AS Anzahl, ttagartikel.kArtikel, 
-            tartikel.cName AS cArtikelName, tartikel.cSeo AS cArtikelSeo
-            FROM ttag
-            LEFT JOIN ttagartikel 
-                ON ttagartikel.kTag = ttag.kTag
-            LEFT JOIN tartikel 
-                ON tartikel.kArtikel = ttagartikel.kArtikel
-            WHERE ttag.nAktiv = 0 ' . $cond . $searchSQL->cWhere . '
-            GROUP BY ttag.kTag
-            ORDER BY Anzahl DESC' . $sql,
-        ReturnType::ARRAY_OF_OBJECTS
-    );
-}
-
-/**
- * @param string $sql
- * @param object $searchSQL
- * @param bool   $checkLanguage
- * @return array
- */
 function gibNewskommentarFreischalten(string $sql, $searchSQL, bool $checkLanguage = true): array
 {
     $cond         = $checkLanguage === true
@@ -198,56 +171,6 @@ function schalteSuchanfragenFrei($searchQueries): bool
 }
 
 /**
- * @param array $tags
- * @return bool
- */
-function schalteTagsFrei($tags): bool
-{
-    if (!is_array($tags) || count($tags) === 0) {
-        return false;
-    }
-    $db        = Shop::Container()->getDB();
-    $tags      = array_map('\intval', $tags);
-    $cacheTags = [];
-    $products  = $db->query(
-        'SELECT DISTINCT kArtikel
-            FROM ttagartikel
-            WHERE kTag IN (' . implode(',', $tags) . ')',
-        ReturnType::ARRAY_OF_OBJECTS
-    );
-    foreach ($products as $product) {
-        $cacheTags[] = CACHING_GROUP_ARTICLE . '_' . $product->kArtikel;
-    }
-    foreach ($tags as $kTag) {
-        $kTag = (int)$kTag;
-        $oTag = $db->select('ttag', 'kTag', $kTag);
-        if (isset($oTag->kTag) && $oTag->kTag > 0) {
-            // Aktivierte Suchanfragen in tseo eintragen
-            $db->delete(
-                'tseo',
-                ['cKey', 'kKey', 'kSprache'],
-                ['kTag', $kTag, (int)$oTag->kSprache]
-            );
-            $oSeo           = new stdClass();
-            $oSeo->cSeo     = Seo::checkSeo(Seo::getSeo($oTag->cName));
-            $oSeo->cKey     = 'kTag';
-            $oSeo->kKey     = $kTag;
-            $oSeo->kSprache = (int)$oTag->kSprache;
-            $db->insert('tseo', $oSeo);
-            $db->update(
-                'ttag',
-                'kTag',
-                $kTag,
-                (object)['nAktiv' => 1, 'cSeo' => $oSeo->cSeo]
-            );
-        }
-    }
-    Shop::Container()->getCache()->flushTags($cacheTags);
-
-    return true;
-}
-
-/**
  * @param array $newsComments
  * @return bool
  */
@@ -329,29 +252,6 @@ function loescheSuchanfragen($queries): bool
         "DELETE FROM tseo
             WHERE cKey = 'kSuchanfrage'
                 AND kKey IN (" . implode(',', $queries) . ')',
-        ReturnType::AFFECTED_ROWS
-    );
-
-    return true;
-}
-
-/**
- * @param array $tags
- * @return bool
- */
-function loescheTags($tags): bool
-{
-    if (!is_array($tags) || count($tags) === 0) {
-        return false;
-    }
-    $tags = array_map('\intval', $tags);
-
-    Shop::Container()->getDB()->query(
-        'DELETE ttag, ttagartikel 
-            FROM ttag
-            LEFT JOIN ttagartikel 
-                ON ttagartikel.kTag = ttag.kTag
-            WHERE ttag.kTag IN (' . implode(',', $tags) . ')',
         ReturnType::AFFECTED_ROWS
     );
 
@@ -480,20 +380,6 @@ function gibMaxSuchanfragen(): int
     return (int)Shop::Container()->getDB()->query(
         'SELECT COUNT(*) AS nAnzahl
             FROM tsuchanfrage
-            WHERE nAktiv = 0
-                AND kSprache = ' . (int)$_SESSION['kSprache'],
-        ReturnType::SINGLE_OBJECT
-    )->nAnzahl;
-}
-
-/**
- * @return int
- */
-function gibMaxTags(): int
-{
-    return (int)Shop::Container()->getDB()->query(
-        'SELECT COUNT(*) AS nAnzahl
-            FROM ttag
             WHERE nAktiv = 0
                 AND kSprache = ' . (int)$_SESSION['kSprache'],
         ReturnType::SINGLE_OBJECT

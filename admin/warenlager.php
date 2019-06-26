@@ -8,6 +8,7 @@ use JTL\Alert\Alert;
 use JTL\Catalog\Warenlager;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
+use JTL\Helpers\GeneralObject;
 use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
@@ -21,7 +22,7 @@ $db          = Shop::Container()->getDB();
 
 if ($action === 'update') {
     $db->query('UPDATE twarenlager SET nAktiv = 0', ReturnType::AFFECTED_ROWS);
-    if (isset($_REQUEST['kWarenlager']) && is_array($_REQUEST['kWarenlager']) && count($_REQUEST['kWarenlager']) > 0) {
+    if (GeneralObject::hasCount('kWarenlager', $_REQUEST)) {
         $wl = [];
         foreach ($_REQUEST['kWarenlager'] as $_wl) {
             $wl[] = (int)$_wl;
@@ -31,7 +32,7 @@ if ($action === 'update') {
             ReturnType::AFFECTED_ROWS
         );
     }
-    if (is_array($_REQUEST['cNameSprache']) && count($_REQUEST['cNameSprache']) > 0) {
+    if (GeneralObject::hasCount('cNameSprache', $_REQUEST)) {
         foreach ($_REQUEST['cNameSprache'] as $kWarenlager => $assocLang) {
             $db->delete('twarenlagersprache', 'kWarenlager', (int)$kWarenlager);
 

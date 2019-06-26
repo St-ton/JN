@@ -11,6 +11,7 @@ use JTL\Catalog\Product\Preise;
 use JTL\Checkout\Kupon;
 use JTL\Customer\Kunde;
 use JTL\DB\ReturnType;
+use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Text;
 use JTL\Language\LanguageModel;
 use JTL\Mail\Mail\Mail;
@@ -368,17 +369,10 @@ function createCouponFromInput()
         $setDays                 = new DateInterval('P' . $_POST['dDauerTage'] . 'D');
         $coupon->dGueltigBis     = date_add($actualTimestampEndofDay, $setDays)->format('Y-m-d H:i:s');
     }
-    if (!empty($_POST['kHersteller'])
-        && is_array($_POST['kHersteller'])
-        && count($_POST['kHersteller']) > 0
-        && !in_array('-1', $_POST['kHersteller'])
-    ) {
+    if (GeneralObject::hasCount('kHersteller', $_POST) && !in_array('-1', $_POST['kHersteller'])) {
         $coupon->cHersteller = Text::createSSK($_POST['kHersteller']);
     }
-    if (!empty($_POST['kKategorien'])
-        && is_array($_POST['kKategorien']) && count($_POST['kKategorien']) > 0
-        && !in_array('-1', $_POST['kKategorien'])
-    ) {
+    if (GeneralObject::hasCount('kKategorien', $_POST) && !in_array('-1', $_POST['kKategorien'])) {
         $coupon->cKategorien = Text::createSSK($_POST['kKategorien']);
     }
     if (!empty($_POST['cKunden']) && $_POST['cKunden'] != '-1') {

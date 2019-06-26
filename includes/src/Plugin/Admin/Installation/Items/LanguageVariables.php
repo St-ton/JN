@@ -6,6 +6,7 @@
 
 namespace JTL\Plugin\Admin\Installation\Items;
 
+use JTL\Helpers\GeneralObject;
 use JTL\Language\LanguageHelper;
 use JTL\Plugin\InstallCode;
 use stdClass;
@@ -39,7 +40,7 @@ class LanguageVariables extends AbstractItem
             $pluginLangVar          = new stdClass();
             $pluginLangVar->kPlugin = $this->plugin->kPlugin;
             $pluginLangVar->cName   = $langVar['Name'];
-            if (isset($langVar['Description']) && \is_array($langVar['Description'])) {
+            if (GeneralObject::isCountable('Description', $langVar)) {
                 $pluginLangVar->cBeschreibung = '';
             } else {
                 $pluginLangVar->cBeschreibung = \preg_replace('/\s+/', ' ', $langVar['Description']);
@@ -54,10 +55,7 @@ class LanguageVariables extends AbstractItem
             $isDefault  = false;
             $defaultVar = new stdClass();
             // Nur eine Sprache vorhanden
-            if (isset($langVar['VariableLocalized attr'])
-                && \is_array($langVar['VariableLocalized attr'])
-                && \count($langVar['VariableLocalized attr']) > 0
-            ) {
+            if (GeneralObject::hasCount('VariableLocalized attr', $langVar)) {
                 // tpluginsprachvariablesprache füllen
                 $localized                        = new stdClass();
                 $localized->kPluginSprachvariable = $id;
@@ -77,10 +75,7 @@ class LanguageVariables extends AbstractItem
                     unset($languages[\mb_convert_case($localized->cISO, \MB_CASE_LOWER)]);
                     $languages = \array_merge($languages);
                 }
-            } elseif (isset($langVar['VariableLocalized'])
-                && \is_array($langVar['VariableLocalized'])
-                && \count($langVar['VariableLocalized']) > 0
-            ) {
+            } elseif (GeneralObject::hasCount('VariableLocalized', $langVar)) {
                 foreach ($langVar['VariableLocalized'] as $i => $loc) {
                     $i = (string)$i;
                     \preg_match('/[0-9]+\sattr/', $i, $hits1);

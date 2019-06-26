@@ -17,6 +17,7 @@ use JTL\Language\LanguageHelper;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use stdClass;
+use function Functional\map;
 use function Functional\some;
 
 /**
@@ -583,7 +584,7 @@ class ShippingMethod
             }
         }
 
-        if (isset($cart->PositionenArr) && \is_array($cart->PositionenArr) && \count($cart->PositionenArr) > 0) {
+        if (GeneralObject::hasCount('PositionenArr', $cart)) {
             // Wenn etwas im Warenkorb ist, dann Vesandart vom Warenkorb rausfinden
             $currentShippingMethod = self::getFavourableShippingMethod(
                 $iso,
@@ -1432,7 +1433,7 @@ class ShippingMethod
                 ReturnType::ARRAY_OF_OBJECTS
             );
             $countries        = $countryHelper->getFilteredCountryList(
-                \Functional\map($countryISOFilter, function ($country) {
+                map($countryISOFilter, function ($country) {
                     return $country->cISO;
                 })
             )->toArray();

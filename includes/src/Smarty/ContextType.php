@@ -23,4 +23,6 @@ class ContextType extends Enum
     public const NEWSLETTER = 'newsletter';
 
     public const EXPORT = 'export';
+
+    public const CLI = 'cli';
 }

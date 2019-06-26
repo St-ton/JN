@@ -15300,4 +15300,8 @@ label {
   display: block;
 }
 
+.btn-scale-small {
+  transform: scale(0.5);
+}
+
 /*# sourceMappingURL=clear.css.map */

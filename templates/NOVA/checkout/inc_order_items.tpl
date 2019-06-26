@@ -194,15 +194,20 @@
                             {/if}
                             {if $tplscope === 'cart'}
                                 {block name='checkout-inc-order-items-cart-submit'}
-                                    {col cols=2 class="delitem-col text-right"}
                                     {if $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_ARTIKEL
                                         || $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_GRATISGESCHENK
                                     }
-                                        {button type="submit" variant="light" size="sm" class="droppos border-0" name="dropPos" value=$oPosition@index title="{lang key='delete'}"}
-                                            <span class="fa fa-trash">&nbsp;{lang key='delete'}</span>
-                                        {/button}
+                                        <div data-toggle="product-actions">
+                                            {if $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_ARTIKEL}
+                                                <div class="btn-scale-small d-inline-block">
+                                                    {include file='snippets/wishlist_button.tpl' Artikel=$oPosition->Artikel}
+                                                </div>
+                                            {/if}
+                                            {button type="submit" variant="light" size="sm" class="droppos border-0" name="dropPos" value=$oPosition@index title="{lang key='delete'}"}
+                                                <span class="fa fa-trash"></span>
+                                            {/button}
+                                        </div>
                                     {/if}
-                                    {/col}
                                 {/block}
                             {/if}
                         {/col}

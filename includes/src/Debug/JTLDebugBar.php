@@ -16,6 +16,7 @@ use DebugBar\DataCollector\PhpInfoCollector;
 use DebugBar\DataCollector\RequestDataCollector;
 use DebugBar\DataCollector\TimeDataCollector;
 use DebugBar\DebugBar;
+use DebugBar\DebugBarException;
 use DebugBar\JavascriptRenderer;
 use JTL\Debug\DataCollector\DummyTimeDataCollector;
 use JTL\Debug\DataCollector\Errors;
@@ -35,7 +36,7 @@ class JTLDebugBar extends DebugBar
      * JTLDebugBar constructor.
      * @param \PDO  $pdo
      * @param array $config
-     * @throws \DebugBar\DebugBarException
+     * @throws DebugBarException
      */
     public function __construct(\PDO $pdo, array $config)
     {
@@ -57,7 +58,7 @@ class JTLDebugBar extends DebugBar
     /**
      * @param \PDO  $pdo
      * @param array $config
-     * @throws \DebugBar\DebugBarException
+     * @throws DebugBarException
      */
     private function initDefault(\PDO $pdo, array $config): void
     {

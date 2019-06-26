@@ -269,8 +269,8 @@ final class Upload
     public static function formatTypen(string $type): array
     {
         $fileTypes = \explode(',', $type);
-        foreach ($fileTypes as &$type) {
-            $type = '*' . $type;
+        foreach ($fileTypes as &$fileTtype) {
+            $fileTtype = '*' . $fileTtype;
         }
 
         return $fileTypes;

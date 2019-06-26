@@ -9,7 +9,6 @@ namespace JTL\Cron;
 use DateTime;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
-use JTL\Shop;
 use Psr\Log\LoggerInterface;
 use stdClass;
 
@@ -73,7 +72,7 @@ class Queue
     }
 
     /**
-     * @param \stdClass[] $jobs
+     * @param stdClass[] $jobs
      */
     public function enqueueCronJobs(array $jobs): void
     {

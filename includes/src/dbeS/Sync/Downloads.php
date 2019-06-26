@@ -38,13 +38,12 @@ final class Downloads extends AbstractSync
      */
     private function handleDeletes(array $xml): void
     {
-        if (!\is_array($xml['del_downloads']['kDownload'])) {
-            $xml['del_downloads']['kDownload'] = [$xml['del_downloads']['kDownload']];
+        $source = $xml['del_downloads']['kDownload'] ?? [];
+        if (\is_numeric($source)) {
+            $source = [$source];
         }
-        foreach ($xml['del_downloads']['kDownload'] as $downloadID) {
-            if ((int)$downloadID > 0) {
-                $this->delete($downloadID);
-            }
+        foreach (\array_filter(\array_map('\intval', $source)) as $downloadID) {
+            $this->delete($downloadID);
         }
     }
 

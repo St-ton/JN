@@ -123,7 +123,7 @@ class Category implements CategoryInterface
     protected $isActive = true;
 
     /**
-     * @var \DateTime
+     * @var DateTime
      */
     protected $dateLastModified;
 

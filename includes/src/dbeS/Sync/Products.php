@@ -165,7 +165,7 @@ final class Products extends AbstractSync
                     $check = true;
                 }
                 if ($check === true) {
-                    if (\is_array($newCategoryIDs) && !empty($newCategoryIDs)) {
+                    if (\count($newCategoryIDs) > 0) {
                         // get count of visible products in the product's futre categories
                         $productCount = $this->db->query(
                             'SELECT tkategorieartikel.kKategorie, COUNT(tkategorieartikel.kArtikel) AS cnt
@@ -945,7 +945,6 @@ final class Products extends AbstractSync
         $this->addUploads($xml);
         $this->addMinPurchaseData($xml, $productID);
         $this->addConfigGroups($xml);
-        $this->addPrices($xml, $productID);
         $this->updateXMLinDB(
             $xml['tartikel'],
             'tkategorieartikel',
@@ -972,6 +971,7 @@ final class Products extends AbstractSync
         $this->addWarehouseData($xml, $productID);
         $this->addCharacteristics($xml);
         $this->addCategoryDiscounts($productID);
+        $this->addPrices($xml, $productID);
         $res[] = $productID;
         if (!empty($products[0]->kVaterartikel)) {
             $res[] = (int)$products[0]->kVaterartikel;

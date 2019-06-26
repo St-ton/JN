@@ -147,7 +147,7 @@ function sendeMail($moduleID, $data, $mail = null)
             'kEmailvorlage',
             $mailTPL->kEmailvorlage
         );
-        if (is_array($mailTPL->oEinstellung_arr) && count($mailTPL->oEinstellung_arr) > 0) {
+        if (GeneralObject::hasCount('oEinstellung_arr', $mailTPL)) {
             $mailTPL->oEinstellungAssoc_arr = [];
             foreach ($mailTPL->oEinstellung_arr as $conf) {
                 $mailTPL->oEinstellungAssoc_arr[$conf->cKey] = $conf->cValue;

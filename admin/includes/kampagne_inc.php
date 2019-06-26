@@ -8,6 +8,7 @@ use JTL\Catalog\Product\Preise;
 use JTL\Customer\Kundengruppe;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Date;
+use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Request;
 use JTL\Kampagne;
 use JTL\Linechart;
@@ -85,11 +86,7 @@ function holeKampagneGesamtStats($campaigns, $definitions)
             break;
     }
 
-    if (is_array($campaigns)
-        && count($campaigns) > 0
-        && is_array($definitions)
-        && count($definitions)
-    ) {
+    if (GeneralObject::hasCount($campaigns) && GeneralObject::hasCount($definitions)) {
         foreach ($campaigns as $campaign) {
             foreach ($definitions as $definition) {
                 $stats[$campaign->kKampagne][$definition->kKampagneDef] = 0;
@@ -280,7 +277,7 @@ function holeKampagneDetailStats($campaignID, $definitions)
     }
     // Finde den maximalen Wert heraus, um die Höhe des Graphen zu ermitteln
     $graphMax = []; // Assoc Array key = kKampagneDef
-    if (is_array($stats) && is_array($definitions) && count($stats) > 0 && count($definitions) > 0) {
+    if (GeneralObject::hasCount($stats) && GeneralObject::hasCount($definitions)) {
         foreach ($stats as $stat) {
             foreach ($definitions as $definition) {
                 if (isset($statsAssoc[$stat->cDatum][$definition->kKampagneDef])) {

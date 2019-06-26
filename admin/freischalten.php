@@ -6,6 +6,7 @@
 
 use JTL\Alert\Alert;
 use JTL\Helpers\Form;
+use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Pagination\Pagination;
@@ -128,17 +129,17 @@ if (Request::verifyGPCDataInt('freischalten') === 1 && Form::validateToken()) {
     } elseif (Request::verifyGPCDataInt('suchanfragen') === 1) { // Suchanfragen
         // Mappen
         if (isset($_POST['submitMapping'])) {
-            $cMapping = Request::verifyGPDataString('cMapping');
-            if (mb_strlen($cMapping) > 0) {
-                $nReturnValue = 0;
-                if (is_array($_POST['kSuchanfrage']) && count($_POST['kSuchanfrage']) > 0) {
-                    $nReturnValue = mappeLiveSuche($_POST['kSuchanfrage'], $cMapping);
+            $mapping = Request::verifyGPDataString('cMapping');
+            if (mb_strlen($mapping) > 0) {
+                $res = 0;
+                if (GeneralObject::hasCount('kSuchanfrage', $_POST)) {
+                    $res = mappeLiveSuche($_POST['kSuchanfrage'], $mapping);
 
-                    if ($nReturnValue === 1) { // Alles O.K.
+                    if ($res === 1) { // Alles O.K.
                         if (schalteSuchanfragenFrei($_POST['kSuchanfrage'])) {
                             $alertHelper->addAlert(
                                 Alert::TYPE_SUCCESS,
-                                sprintf(__('successLiveSearchMap'), $cMapping),
+                                sprintf(__('successLiveSearchMap'), $mapping),
                                 'successLiveSearchMap'
                             );
                         } else {
@@ -149,7 +150,7 @@ if (Request::verifyGPCDataInt('freischalten') === 1 && Form::validateToken()) {
                             );
                         }
                     } else {
-                        switch ($nReturnValue) {
+                        switch ($res) {
                             case 2:
                                 $searchError = __('errorMapUnknown');
                                 break;

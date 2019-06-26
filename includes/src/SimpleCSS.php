@@ -104,9 +104,7 @@ class SimpleCSS
      */
     public function getSelector($selector)
     {
-        return \is_array($this->cCSS_arr) && \count($this->cCSS_arr) && isset($this->cCSS_arr[$selector])
-            ? $this->cCSS_arr[$selector]
-            : false;
+        return $this->cCSS_arr[$selector] ?? false;
     }
 
     /**

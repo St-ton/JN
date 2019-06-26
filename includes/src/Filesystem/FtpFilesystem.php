@@ -301,6 +301,11 @@ class FtpFilesystem extends AbstractFilesystem
         throw new RuntimeException();
     }
 
+    /**
+     * @param $directory
+     * @return bool
+     * @throws Exception
+     */
     protected function isDir($directory)
     {
         $location = $this->applyPathPrefix($directory);
@@ -314,6 +319,9 @@ class FtpFilesystem extends AbstractFilesystem
         return false;
     }
 
+    /**
+     * @throws Exception
+     */
     protected function connect()
     {
         if ($this->options['ssl'] && \function_exists('ftp_ssl_connect')) {
@@ -358,6 +366,9 @@ class FtpFilesystem extends AbstractFilesystem
         }
     }
 
+    /**
+     *
+     */
     protected function disconnect()
     {
         if ($this->isConnected()) {
@@ -367,6 +378,9 @@ class FtpFilesystem extends AbstractFilesystem
         $this->link = null;
     }
 
+    /**
+     * @return bool
+     */
     protected function isConnected()
     {
         try {
@@ -381,11 +395,18 @@ class FtpFilesystem extends AbstractFilesystem
         }
     }
 
+    /**
+     * @return mixed
+     */
     protected function getRoot()
     {
         return $this->options['root'];
     }
 
+    /**
+     * @param null $path
+     * @throws Exception
+     */
     protected function setRoot($path = null)
     {
         $root = $path ?: $this->options['root'];
@@ -400,6 +421,10 @@ class FtpFilesystem extends AbstractFilesystem
         $this->setPathPrefix($this->options['root']);
     }
 
+    /**
+     * @return resource
+     * @throws Exception
+     */
     protected function getLink()
     {
         static $tries = 0;
@@ -419,7 +444,7 @@ class FtpFilesystem extends AbstractFilesystem
      * @param array $listing
      * @param string $prefix
      *
-     * @return \Generator
+     * @return Generator
      * @throws Exception
      */
     protected function normalizeListing(array $listing, $prefix = '')
@@ -449,6 +474,12 @@ class FtpFilesystem extends AbstractFilesystem
         }
     }
 
+    /**
+     * @param $options
+     * @param $path
+     * @return array
+     * @throws Exception
+     */
     protected function getRawList($options, $path)
     {
         return @\ftp_rawlist($this->getLink(), $options.' '.$path);
@@ -465,7 +496,7 @@ class FtpFilesystem extends AbstractFilesystem
     protected function parseListing($item, $path)
     {
         $location = $this->removePathPrefix($path);
-        $item     = \preg_replace('#\s+#', ' ', trim($item), 7);
+        $item     = \preg_replace('#\s+#', ' ', \trim($item), 7);
 
         if (\count(\explode(' ', $item, 9)) !== 9) {
             throw new Exception(\sprintf("Error parsing '%s' , not enough parts.", $item));
@@ -498,6 +529,10 @@ class FtpFilesystem extends AbstractFilesystem
         return new FileInfo($options);
     }
 
+    /**
+     * @param $permissions
+     * @return float|int
+     */
     protected function parsePermissions($permissions)
     {
         $map = ['-' => '0', 'r' => '4', 'w' => '2', 'x' => '1'];
@@ -515,6 +550,12 @@ class FtpFilesystem extends AbstractFilesystem
         return \octdec(\implode('', $parts));
     }
 
+    /**
+     * @param $owner
+     * @param $group
+     * @param $permissions
+     * @return array|false
+     */
     protected function calcMode($owner, $group, $permissions)
     {
         $p = $permissions;
@@ -530,11 +571,18 @@ class FtpFilesystem extends AbstractFilesystem
         return \array_combine(['readable', 'writable', 'executable'], $res);
     }
 
+    /**
+     * @param $permissions
+     * @return string
+     */
     protected function parseType($permissions)
     {
         return \substr($permissions, 0, 1) === 'd' ? 'dir' : 'file';
     }
 
+    /**
+     * @return int
+     */
     protected function parseDate()
     {
         $dateStr = \implode(' ', \func_get_args());
@@ -542,6 +590,10 @@ class FtpFilesystem extends AbstractFilesystem
         return \date_create($dateStr)->getTimestamp();
     }
 
+    /**
+     * @param $path
+     * @return array
+     */
     protected function directoryTree($path)
     {
         $tree        = [];
@@ -555,6 +607,12 @@ class FtpFilesystem extends AbstractFilesystem
         return $tree;
     }
 
+    /**
+     * @param $directory
+     * @param $link
+     * @return bool
+     * @throws Exception
+     */
     protected function createActualDirectory($directory, $link)
     {
         $location = $this->applyPathPrefix($directory);
@@ -568,6 +626,9 @@ class FtpFilesystem extends AbstractFilesystem
         return @\ftp_mkdir($link, $location) !== false;
     }
 
+    /**
+     *
+     */
     protected function getActualPermissions()
     {
         $file = Path::combine(\PFAD_COMPILEDIR, \sha1(\md5(\microtime(true))));

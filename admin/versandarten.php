@@ -345,20 +345,18 @@ if (isset($_POST['neueVersandart']) && (int)$_POST['neueVersandart'] > 0 && Form
     }
 
     $VersandartZahlungsarten = [];
-    if (isset($_POST['kZahlungsart']) && is_array($_POST['kZahlungsart'])) {
-        foreach ($_POST['kZahlungsart'] as $kZahlungsart) {
-            $versandartzahlungsart               = new stdClass();
-            $versandartzahlungsart->kZahlungsart = $kZahlungsart;
-            if ($_POST['fAufpreis_' . $kZahlungsart] != 0) {
-                $versandartzahlungsart->fAufpreis    = (float)str_replace(
-                    ',',
-                    '.',
-                    $_POST['fAufpreis_' . $kZahlungsart]
-                );
-                $versandartzahlungsart->cAufpreisTyp = $_POST['cAufpreisTyp_' . $kZahlungsart];
-            }
-            $VersandartZahlungsarten[] = $versandartzahlungsart;
+    foreach (Request::verifyGPDataIntegerArray('kZahlungsart') as $kZahlungsart) {
+        $versandartzahlungsart               = new stdClass();
+        $versandartzahlungsart->kZahlungsart = $kZahlungsart;
+        if ($_POST['fAufpreis_' . $kZahlungsart] != 0) {
+            $versandartzahlungsart->fAufpreis    = (float)str_replace(
+                ',',
+                '.',
+                $_POST['fAufpreis_' . $kZahlungsart]
+            );
+            $versandartzahlungsart->cAufpreisTyp = $_POST['cAufpreisTyp_' . $kZahlungsart];
         }
+        $VersandartZahlungsarten[] = $versandartzahlungsart;
     }
 
     $VersandartStaffeln       = [];

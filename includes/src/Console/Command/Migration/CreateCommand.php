@@ -13,10 +13,14 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * Class CreateCommand.
+ * Class CreateCommand
+ * @package JTL\Console\Command\Migration
  */
 class CreateCommand extends Command
 {
+    /**
+     * @inheritDoc
+     */
     protected function configure()
     {
         $this
@@ -32,21 +36,21 @@ class CreateCommand extends Command
      */
     protected function interact(InputInterface $input, OutputInterface $output)
     {
-        $description = trim($input->getArgument('description'));
-        $author      = trim($input->getArgument('author'));
+        $description = \trim($input->getArgument('description'));
+        $author      = \trim($input->getArgument('author'));
 
-        if (strlen($description) < 5) {
+        if (\strlen($description) < 5) {
             $description = $this->getIO()->ask('Short migration description');
             $input->setArgument('description', $description);
         }
-        if (strlen($author) < 2) {
+        if (\strlen($author) < 2) {
             $author = $this->getIO()->ask('Migration author');
             $input->setArgument('author', $author);
         }
     }
 
     /**
-     * @param InputInterface $input
+     * @param InputInterface  $input
      * @param OutputInterface $output
      *
      * @return int|null|void
@@ -54,10 +58,10 @@ class CreateCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $description   = trim($input->getArgument('description'));
-        $author        = trim($input->getArgument('author'));
+        $description   = \trim($input->getArgument('description'));
+        $author        = \trim($input->getArgument('author'));
         $migrationPath = MigrationHelper::create($description, $author);
 
-        $output->writeln("<info>Created Migration:</info> <comment>'".$migrationPath."'</comment>");
+        $output->writeln("<info>Created Migration:</info> <comment>'" . $migrationPath . "'</comment>");
     }
 }

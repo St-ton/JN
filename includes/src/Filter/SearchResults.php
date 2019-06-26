@@ -25,7 +25,7 @@ class SearchResults implements SearchResultsInterface
     use MagicCompatibilityTrait;
 
     /**
-     * @var \Illuminate\Support\Collection()
+     * @var Collection()
      * @former Artikel
      */
     private $products;

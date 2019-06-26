@@ -264,10 +264,10 @@ class Product
     /**
      * @former gibGewaehlteEigenschaftenZuVariKombiArtikel()
      * @param int $productID
-     * @param int $nArtikelVariAufbau
+     * @param int $getVariations
      * @return array
      */
-    public static function getSelectedPropertiesForVarCombiArticle(int $productID, int $nArtikelVariAufbau = 0): array
+    public static function getSelectedPropertiesForVarCombiArticle(int $productID, int $getVariations = 0): array
     {
         if ($productID <= 0) {
             return [];
@@ -419,7 +419,7 @@ class Product
                 '&r=' . \R_VARWAEHLEN, true, 301);
             exit();
         }
-        if ($nArtikelVariAufbau > 0) {
+        if ($getVariations > 0) {
             $variations = [];
             foreach ($properties as $i => $propValue) {
                 $oEigenschaftWert                   = new stdClass();
@@ -808,10 +808,7 @@ class Product
 
         $product->fuelleArtikel($productID, $productOptions);
 
-        if ($product->oVariationenNurKind_arr !== null
-            && \is_array($product->oVariationenNurKind_arr)
-            && \count($product->oVariationenNurKind_arr) > 0
-        ) {
+        if (GeneralObject::hasCount('oVariationenNurKind_arr', $product)) {
             foreach ($product->oVariationenNurKind_arr as $child) {
                 $attributeValue                       = new stdClass();
                 $attributeValue->kEigenschaftWert     = $child->Werte[0]->kEigenschaftWert;
@@ -1277,7 +1274,7 @@ class Product
                     ->setFirstName('')
                     ->setLastName('')
                     ->setProductId((int)$_POST['a'])
-                    ->setEmail(Text::filterXSS($dbHandler->escape(strip_tags($_POST['email']))) ?: '')
+                    ->setEmail(Text::filterXSS($dbHandler->escape(\strip_tags($_POST['email']))) ?: '')
                     ->setLanguageID(Shop::getLanguage())
                     ->setRealIP(Request::getRealIP());
                 try {
@@ -1770,13 +1767,9 @@ class Product
         $conf            = Shop::getSettings([\CONF_ARTIKELDETAILS]);
         $xSeller         = self::getXSelling($productID);
         $xsellProductIDs = [];
-        if ($xSeller !== null
-            && isset($xSeller->Standard->XSellGruppen)
-            && \is_array($xSeller->Standard->XSellGruppen)
-            && \count($xSeller->Standard->XSellGruppen) > 0
-        ) {
+        if ($xSeller !== null && GeneralObject::hasCount('XSellGruppen', $xSeller->Standard)) {
             foreach ($xSeller->Standard->XSellGruppen as $xSeller) {
-                if (\is_array($xSeller->Artikel) && \count($xSeller->Artikel) > 0) {
+                if (GeneralObject::hasCount('Artikel', $xSeller)) {
                     foreach ($xSeller->Artikel as $product) {
                         $product->kArtikel = (int)$product->kArtikel;
                         if (!\in_array($product->kArtikel, $xsellProductIDs, true)) {
@@ -1786,12 +1779,9 @@ class Product
                 }
             }
         }
-        if (isset($xSeller->Kauf->XSellGruppen)
-            && \is_array($xSeller->Kauf->XSellGruppen)
-            && \count($xSeller->Kauf->XSellGruppen) > 0
-        ) {
+        if (isset($xSeller->Kauf) && GeneralObject::hasCount('XSellGruppen', $xSeller->Kauf)) {
             foreach ($xSeller->Kauf->XSellGruppen as $xSeller) {
-                if (\is_array($xSeller->Artikel) && \count($xSeller->Artikel) > 0) {
+                if (GeneralObject::hasCount('Artikel', $xSeller)) {
                     foreach ($xSeller->Artikel as $product) {
                         $product->kArtikel = (int)$product->kArtikel;
                         if (!\in_array($product->kArtikel, $xsellProductIDs, true)) {

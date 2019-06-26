@@ -119,7 +119,7 @@ class MigrationManager
     {
         $migrations = $this->getMigrations();
         if (!\array_key_exists($id, $migrations)) {
-            throw new \InvalidArgumentException(\sprintf(
+            throw new InvalidArgumentException(\sprintf(
                 'Migration "%s" not found',
                 $id
             ));
@@ -160,7 +160,7 @@ class MigrationManager
             Shop::Container()->getDB()->rollback();
             $migrationFile = new \ReflectionClass($migration->getName());
 
-            throw new \Exception(
+            throw new Exception(
                 '"'.$e->getMessage().'" in: '.$migrationFile->getFileName(),
                 (int)$e->getCode()
             );
@@ -194,7 +194,7 @@ class MigrationManager
     /**
      * Gets an array of the database migrations.
      *
-     * @throws \InvalidArgumentException
+     * @throws InvalidArgumentException
      * @throws Exception
      * @return IMigration[]
      */
@@ -216,7 +216,7 @@ class MigrationManager
                     require_once $filePath;
 
                     if (!\class_exists($class)) {
-                        throw new \InvalidArgumentException(\sprintf(
+                        throw new InvalidArgumentException(\sprintf(
                             'Could not find class "%s" in file "%s"',
                             $class,
                             $filePath
@@ -226,7 +226,7 @@ class MigrationManager
                     $migration = new $class($this->db, $info, $date);
 
                     if (!\is_subclass_of($migration, IMigration::class)) {
-                        throw new \InvalidArgumentException(\sprintf(
+                        throw new InvalidArgumentException(\sprintf(
                             'The class "%s" in file "%s" must implement IMigration interface',
                             $class,
                             $filePath

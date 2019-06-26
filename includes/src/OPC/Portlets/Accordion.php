@@ -9,6 +9,10 @@ namespace JTL\OPC\Portlets;
 use JTL\OPC\InputType;
 use JTL\OPC\Portlet;
 
+/**
+ * Class Accordion
+ * @package JTL\OPC\Portlets
+ */
 class Accordion extends Portlet
 {
     /**

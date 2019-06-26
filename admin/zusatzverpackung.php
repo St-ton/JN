@@ -7,6 +7,7 @@
 use JTL\Alert\Alert;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
+use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Request;
 use JTL\Language\LanguageHelper;
 use JTL\Pagination\Pagination;
@@ -123,7 +124,7 @@ if ($action === 'save') {
     $smarty->assign('kVerpackung', $packaging->kVerpackung)
         ->assign('oVerpackungEdit', $packaging);
 } elseif ($action === 'delete') {
-    if (isset($_POST['kVerpackung']) && is_array($_POST['kVerpackung']) && count($_POST['kVerpackung']) > 0) {
+    if (GeneralObject::hasCount('kVerpackung', $_POST)) {
         foreach ($_POST['kVerpackung'] as $packagingID) {
             $packagingID = (int)$packagingID;
             // tverpackung loeschen

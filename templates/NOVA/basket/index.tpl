@@ -72,8 +72,8 @@
                                                                             <div class="freegift mb-4">
                                                                                 <div class="custom-control custom-radio pl-0">
                                                                                     <input class="custom-control-input " type="radio" id="gift{$oArtikelGeschenk->kArtikel}" name="gratisgeschenk" value="{$oArtikelGeschenk->kArtikel}" onclick="submit();">
-                                                                                    <label for="gift{$oArtikelGeschenk->kArtikel}" class="custom-control-label">
-                                                                                        {if $selectedFreegift===$oArtikelGeschenk->kArtikel}<div class="text-success text-right"><i class="fa fa-check"></i></div>{/if}
+                                                                                    <label for="gift{$oArtikelGeschenk->kArtikel}" class="p-3 custom-control-label {if $selectedFreegift===$oArtikelGeschenk->kArtikel}badge-check{/if}">
+                                                                                        {if $selectedFreegift===$oArtikelGeschenk->kArtikel}{badge class="badge-circle"}<i class="fas fa-check mx-auto"></i>{/badge}{/if}
                                                                                         {image src=$oArtikelGeschenk->Bilder[0]->cURLKlein class="image" alt=$oArtikelGeschenk->cName}
                                                                                         <div class="caption">
                                                                                             <p class="small text-muted">{lang key='freeGiftFrom1'} {$oArtikelGeschenk->cBestellwert} {lang key='freeGiftFrom2'}</p>

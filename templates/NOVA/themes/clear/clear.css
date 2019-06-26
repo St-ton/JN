@@ -15112,6 +15112,21 @@ input.form-control[name=wishlist-url] {
   display: none;
 }
 
+.badge-check {
+  border: 2px solid #F8BF00;
+}
+.badge-check .badge-circle {
+  display: flex;
+  background-color: #F8BF00;
+  border-color: #F8BF00;
+  color: #fff;
+  opacity: 1;
+  align-items: center;
+  position: absolute;
+  top: -20px;
+  right: -22px;
+}
+
 /* Artikel Bilder Slider vertikal */
 .slick-down,
 .slick-up {

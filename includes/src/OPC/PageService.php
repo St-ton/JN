@@ -281,7 +281,7 @@ class PageService
         if ($this->opc->isOPCInstalled()) {
             $drafts         = $this->pageDB->getDrafts($id);
             $publicDraft    = $this->getPublicPage($id);
-            $publicDraftKey = $publicDraft->getKey();
+            $publicDraftKey = $publicDraft === null ? 0 : $publicDraft->getKey();
             usort($drafts, function ($a, $b) use ($publicDraftKey) {
                 /**
                  * @var Page $a

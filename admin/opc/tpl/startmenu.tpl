@@ -3,7 +3,11 @@
     {$curPageUrl        = $opcPageService->getCurPageUri()}
     {$curPageId         = $opcPageService->createCurrentPageId()}
     {$publicDraft       = $opcPageService->getPublicPage($curPageId)}
-    {$publicDraftKey    = $publicDraft->getKey()}
+    {if $publicDraft === null}
+        {$publicDraftKey = 0}
+    {else}
+        {$publicDraftKey = $publicDraft->getKey()}
+    {/if}
     {$pageDrafts        = $opcPageService->getDrafts($curPageId)}
     {$adminSessionToken = $opc->getAdminSessionToken()}
     {$languages         = $smarty.session.Sprachen}

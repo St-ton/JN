@@ -14,7 +14,7 @@
                     block=true
                     data=["toggle"=> "collapse", "target"=>"#sidebox{$oBox->getID()}-{$Merkmal->kMerkmal}"]
                     }
-                    {if $Einstellungen.navigationsfilter.merkmal_anzeigen_als !== 'T' && $Merkmal->getData('cBildpfadKlein') !== $smarty.const.BILD_KEIN_MERKMALBILD_VORHANDEN}
+                    {if $Einstellungen.navigationsfilter.merkmal_anzeigen_als !== 'T' && $Merkmal->getData('cBildpfadKlein')|strpos:$smarty.const.BILD_KEIN_MERKMALBILD_VORHANDEN === false}
                         <img src='{$Merkmal->getData('cBildURLKlein')}' alt='' class='vmiddle' />
                     {/if}
                     {if $Einstellungen.navigationsfilter.merkmal_anzeigen_als !== 'B'}

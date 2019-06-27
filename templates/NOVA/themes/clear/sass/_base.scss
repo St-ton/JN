@@ -1439,16 +1439,6 @@ $jqcloud-classes: 7;
       background-color: transparent;
     }
   }
-  .filter-collapsible-control a {
-    text-decoration: none;
-    border-bottom: $highlight-border-size solid transparent;
-    &[data-toggle="collapse"][aria-expanded=true] {
-      border-bottom: $highlight-border-size solid $primary;
-      i.fa-chevron-down {
-        transform: rotate(180deg);
-      }
-    }
-  }
   .form-group {
     margin-right: 25px;
     &.open {

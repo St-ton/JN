@@ -16051,16 +16051,6 @@ aside .badge-light {
   font-weight: 600;
   background-color: transparent;
 }
-#result-options .filter-collapsible-control a {
-  text-decoration: none;
-  border-bottom: 0.375rem solid transparent;
-}
-#result-options .filter-collapsible-control a[data-toggle=collapse][aria-expanded=true] {
-  border-bottom: 0.375rem solid #F8BF00;
-}
-#result-options .filter-collapsible-control a[data-toggle=collapse][aria-expanded=true] i.fa-chevron-down {
-  transform: rotate(180deg);
-}
 #result-options .form-group {
   margin-right: 25px;
 }

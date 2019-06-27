@@ -12,54 +12,65 @@ html, body {
 
 #opc {
     height: 100%;
-}
 
-.nav.nav-tabs {
-    margin-bottom: 15px;
-    box-shadow: 0 4px 10px 0 rgba(189, 189, 189, 0.8);
+    ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+        background-color: transparent;
+    }
+    ::-webkit-scrollbar-track {
+        border-radius: 0;
+        background-color: transparent;
+        border: 1px solid $light-bg;
+    }
 
-    > li {
-        margin-bottom: 0;
+    ::-webkit-scrollbar-thumb {
+        border-radius: 4px;
+        background: $gray-light;
+        border: 0;
 
-        > a {
-            position: relative;
-            display: block;
-            color: $navtab-text;
-            border: 2px solid transparent;
-
-            &:hover, &:focus {
-                color: $text-color;
-                text-decoration: none;
-                border: 2px solid transparent;
-            }
-        }
-
-        &.active {
-            > a, > a:hover, > a:focus {
-                color: #555;
-                border-bottom: 2px solid $text-color;
-                cursor: default;
-            }
+        &:hover, &:active {
+            background: $gray-light;
+            border: 1px solid $gray-dark;
         }
     }
 }
+
+//.nav.nav-tabs {
+//    margin-bottom: 15px;
+//    box-shadow: 0 4px 10px 0 rgba(189, 189, 189, 0.8);
+//
+//    > li {
+//        margin-bottom: 0;
+//
+//        > a {
+//            position: relative;
+//            display: block;
+//            color: $navtab-text;
+//            border: 2px solid transparent;
+//
+//            &:hover, &:focus {
+//                color: $text-color;
+//                text-decoration: none;
+//                border: 2px solid transparent;
+//            }
+//        }
+//
+//        &.active {
+//            > a, > a:hover, > a:focus {
+//                color: #555;
+//                border-bottom: 2px solid $text-color;
+//                cursor: default;
+//            }
+//        }
+//    }
+//}
 
 #opcSidebar {
     width: $sidebar-width;
     height: 100%;
     float: left;
     position: relative;
-
-    #sidebarInnerPanel {
-        height: calc(100vh - 160px);
-        overflow-y: auto;
-
-        .tab-content {
-            min-height: 100%;
-            overflow-x: hidden;
-            overflow-y: auto;
-        }
-    }
 
     #opcHeader {
         a {
@@ -82,6 +93,115 @@ html, body {
 
             .divider {
                 margin: 0;
+            }
+        }
+    }
+
+    #opcTabs {
+        border: none;
+        background-color: $light-bg;
+        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
+        position: relative;
+
+        .nav-item {
+            margin: 0;
+
+            .nav-link {
+                border: none;
+                border-bottom: 2px solid transparent;
+                border-radius: 0;
+                padding: 14px 2px 12px;
+                margin: 0 14px;
+                color: $muted-text;
+                background: none;
+
+                &.active {
+                    border-color: $text-color;
+                    color: $text-color;
+                }
+            }
+        }
+    }
+
+    #sidebarInnerPanel {
+        height: calc(100vh - 288px);
+        overflow-y: scroll;
+        padding: 24px;
+        padding-right: 18px;
+
+        .tab-content {
+            min-height: 100%;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+
+        #portlets {
+            .portletGroupBtn {
+                display: block;
+                font-weight: 600;
+                width: 100%;
+                text-align: left;
+                margin-bottom: 16px;
+
+                .fas {
+                    float: right;
+                    line-height: inherit;
+                }
+            }
+
+            .collapse {
+                &:after {
+                    content: ' ';
+                    display: block;
+                    clear: both;
+                }
+            }
+
+            .portletButton {
+                display: block;
+                float: left;
+                width: 96px;
+                height: 96px;
+                margin-right: 22px;
+                margin-bottom: 22px;
+                background-color: $light-bg;
+                border-radius: 5px;
+
+                &:nth-child(3n) {
+                    margin-right: 0;
+                }
+
+                > .portletBtnInner {
+                    display: block;
+                    width: 96px;
+                    height: 96px;
+                    position: relative;
+
+                    > img {
+                        position: absolute;
+                        left: 50%;
+                        top: 36%;
+                        transform: translate(-50%, -50%);
+                    }
+
+                    > i {
+                        display: block;
+                        position: absolute;
+                        left: 50%;
+                        top: 36%;
+                        transform: translate(-50%, -50%);
+                        font-size: 32px;
+                        color: $primary-color;
+                    }
+
+                    > span {
+                        position: absolute;
+                        left: 0;
+                        bottom: 8px;
+                        width: 100%;
+                        line-height: 16px;
+                    }
+                }
             }
         }
     }
@@ -144,6 +264,47 @@ html, body {
         .col-xs-12, .col-sm-12, .col-md-12, .col-lg-12 {
             padding-left: 7px;
             padding-right: 7px;
+        }
+    }
+
+    #sidebarFooter {
+        position: absolute;
+        bottom: 0;
+        height: 185px;
+        width: 100%;
+        box-shadow: 0 -3px 14px rgba(0, 0, 0, 0.16);
+
+        #savePublishPanel {
+            height: 135px;
+            background-color: $bg-color;
+        }
+
+        #previewToolbar {
+            height: 50px;
+            background-color: $light-bg;
+            padding: 17px 24px;
+            padding-right: 28px;
+
+            #displayWidths {
+                float: right;
+                padding: 0;
+
+                > li {
+                    list-style: none;
+                    display: inline-block;
+                    width: 16px;
+                    height: 16px;
+                    margin-left: 24px;
+
+                    > button {
+                        color: $muted-text;
+                    }
+
+                    &.active > button {
+                        color: $text-color;
+                    }
+                }
+            }
         }
     }
 

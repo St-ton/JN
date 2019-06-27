@@ -12,7 +12,7 @@
     border: none;
     padding: 0;
     color: inherit;
-    font-size: inherit;
+    font-size: 14px;
     cursor: pointer;
   }
 
@@ -42,7 +42,7 @@
   }
 
   .fas, .fa {
-    vertical-align: initial;
+    //vertical-align: initial;
   }
 
   .tooltip {
@@ -77,6 +77,46 @@
     text-align: left;
   }
 
+  .toggle-switch {
+    cursor: pointer;
+
+    input {
+      display: none;
+    }
+  }
+
+  .toggle-slider {
+    margin-left: 8px;
+    display: inline-block;
+    height: 20px;
+    width: 38px;
+    border: 2px solid $muted-text;
+    border-radius: 20px;
+    vertical-align: middle;
+    position: relative;
+
+    &:before {
+      position: absolute;
+      left: 1px;
+      top: 1px;
+      content: "";
+      width: 14px;
+      height: 14px;
+      border-radius: 16px;
+      background: $muted-text;
+      transition: 0.125s;
+    }
+  }
+
+  input:checked + .toggle-slider {
+    border-color: $text-color;
+
+    &:before {
+      transform: translateX(18px);
+      background: $text-color;
+    }
+  }
+
   ::placeholder {
     color: $muted-text;
     font-family: $fontawesome-mixed;
@@ -106,14 +146,17 @@
       margin: 0;
       padding: 0;
       box-shadow: 0 0 8px 4px rgba(0, 0, 0, 0.125);
+      border-radius: 2px;
       min-width: 0;
       width: 100%;
       color: $text-color;
 
-      & > * {
+      .opc-dropdown-item {
         display: block;
         width: 100%;
         padding: 8px 12px;
+        border-radius: 2px;
+        text-align: left;
 
         &:hover {
           text-decoration: none;
@@ -146,17 +189,21 @@
     #opc-sidebar-title {
       display: inline-block;
       margin: 0;
-      font-size: 16px;
+      font-size: 17px;
       color: inherit;
-      font-weight: 600;
+      //font-weight: 600;
     }
 
-    button {
+    .opc-header-btn {
       padding: 0 4px;
     }
 
     #opcMenuBtnDropdown {
       display: inline;
+
+      .opc-dropdown-menu {
+        width: 200px;
+      }
     }
   }
 }

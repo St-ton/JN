@@ -47,7 +47,6 @@ class GUI
             'btnImport',
             'btnExport',
             'btnHelp',
-            'btnPreview',
             'btnPublish',
             'btnSave',
             'btnClose',
@@ -58,7 +57,7 @@ class GUI
             'blueprintList',
             'blueprintBtnBlueprint',
             'portletButton',
-            'collapseGroup',
+            'portletGroupBtn',
             'restoreUnsavedModal',
             'restoreUnsavedForm',
             'btnDisplayWidthMobile',
@@ -84,7 +83,6 @@ class GUI
                 this.publishFrom.data("DateTimePicker").maxDate(e.date);
             });
 
-            this.collapseGroups.first().click();
             this.updateBlueprintList();
             this.updateRevisionList();
         }
@@ -177,18 +175,16 @@ class GUI
         this.tutorial.start();
     }
 
-    onBtnPreview(e)
+    onBtnPreview()
     {
         if (this.inPreviewMode) {
             this.iframePanel.show();
             this.previewFrame.previewPanel.hide();
             this.inPreviewMode = false;
-            this.btnPreview.parent().removeClass('active');
         } else {
             this.iframePanel.hide();
             this.previewFrame.showPreview(this.page.fullUrl, JSON.stringify(this.page.toJSON()));
             this.inPreviewMode = true;
-            this.btnPreview.parent().addClass('active');
         }
     }
 
@@ -230,7 +226,7 @@ class GUI
         });
     }
 
-    onCollapseGroup(e)
+    onPortletGroupBtn(e)
     {
         $(e.target)
             .find('i.fa')

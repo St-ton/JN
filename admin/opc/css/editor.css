@@ -10,7 +10,7 @@
   border: none;
   padding: 0;
   color: inherit;
-  font-size: inherit;
+  font-size: 14px;
   cursor: pointer;
 }
 #opc button, #opc input {
@@ -31,9 +31,6 @@
 }
 #opc button.opc-btn-link:hover {
   text-decoration: underline;
-}
-#opc .fas, #opc .fa {
-  vertical-align: initial;
 }
 #opc .tooltip {
   border: none;
@@ -62,6 +59,40 @@
   margin-bottom: 24px;
   text-align: left;
 }
+#opc .toggle-switch {
+  cursor: pointer;
+}
+#opc .toggle-switch input {
+  display: none;
+}
+#opc .toggle-slider {
+  margin-left: 8px;
+  display: inline-block;
+  height: 20px;
+  width: 38px;
+  border: 2px solid #BDBDBD;
+  border-radius: 20px;
+  vertical-align: middle;
+  position: relative;
+}
+#opc .toggle-slider:before {
+  position: absolute;
+  left: 1px;
+  top: 1px;
+  content: "";
+  width: 14px;
+  height: 14px;
+  border-radius: 16px;
+  background: #BDBDBD;
+  transition: 0.125s;
+}
+#opc input:checked + .toggle-slider {
+  border-color: #435A6B;
+}
+#opc input:checked + .toggle-slider:before {
+  transform: translateX(18px);
+  background: #435A6B;
+}
 #opc ::placeholder {
   color: #BDBDBD;
   font-family: "Font Awesome 5 Free", FontAwesome, sans-serif;
@@ -88,16 +119,19 @@
   margin: 0;
   padding: 0;
   box-shadow: 0 0 8px 4px rgba(0, 0, 0, 0.125);
+  border-radius: 2px;
   min-width: 0;
   width: 100%;
   color: #435A6B;
 }
-#opc .opc-dropdown .opc-dropdown-menu > * {
+#opc .opc-dropdown .opc-dropdown-menu .opc-dropdown-item {
   display: block;
   width: 100%;
   padding: 8px 12px;
+  border-radius: 2px;
+  text-align: left;
 }
-#opc .opc-dropdown .opc-dropdown-menu > *:hover {
+#opc .opc-dropdown .opc-dropdown-menu .opc-dropdown-item:hover {
   text-decoration: none;
   background-color: #F5F7FA;
 }
@@ -122,15 +156,17 @@
 #opc #opcHeader #opc-sidebar-title {
   display: inline-block;
   margin: 0;
-  font-size: 16px;
+  font-size: 17px;
   color: inherit;
-  font-weight: 600;
 }
-#opc #opcHeader button {
+#opc #opcHeader .opc-header-btn {
   padding: 0 4px;
 }
 #opc #opcHeader #opcMenuBtnDropdown {
   display: inline;
+}
+#opc #opcHeader #opcMenuBtnDropdown .opc-dropdown-menu {
+  width: 200px;
 }
 
 html, body {
@@ -146,29 +182,24 @@ html, body {
 #opc {
   height: 100%;
 }
-
-.nav.nav-tabs {
-  margin-bottom: 15px;
-  box-shadow: 0 4px 10px 0 rgba(189, 189, 189, 0.8);
+#opc ::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+  background-color: transparent;
 }
-.nav.nav-tabs > li {
-  margin-bottom: 0;
+#opc ::-webkit-scrollbar-track {
+  border-radius: 0;
+  background-color: transparent;
+  border: 1px solid #F5F7FA;
 }
-.nav.nav-tabs > li > a {
-  position: relative;
-  display: block;
-  color: #98978b;
-  border: 2px solid transparent;
+#opc ::-webkit-scrollbar-thumb {
+  border-radius: 4px;
+  background: #9b9b9b;
+  border: 0;
 }
-.nav.nav-tabs > li > a:hover, .nav.nav-tabs > li > a:focus {
-  color: #435A6B;
-  text-decoration: none;
-  border: 2px solid transparent;
-}
-.nav.nav-tabs > li.active > a, .nav.nav-tabs > li.active > a:hover, .nav.nav-tabs > li.active > a:focus {
-  color: #555;
-  border-bottom: 2px solid #435A6B;
-  cursor: default;
+#opc ::-webkit-scrollbar-thumb:hover, #opc ::-webkit-scrollbar-thumb:active {
+  background: #9b9b9b;
+  border: 1px solid #525252;
 }
 
 #opcSidebar {
@@ -176,15 +207,6 @@ html, body {
   height: 100%;
   float: left;
   position: relative;
-}
-#opcSidebar #sidebarInnerPanel {
-  height: calc(100vh - 160px);
-  overflow-y: auto;
-}
-#opcSidebar #sidebarInnerPanel .tab-content {
-  min-height: 100%;
-  overflow-x: hidden;
-  overflow-y: auto;
 }
 #opcSidebar #opcHeader a {
   color: #fff;
@@ -201,6 +223,96 @@ html, body {
 }
 #opcSidebar #opcHeader .dropdown-menu .divider {
   margin: 0;
+}
+#opcSidebar #opcTabs {
+  border: none;
+  background-color: #F5F7FA;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
+  position: relative;
+}
+#opcSidebar #opcTabs .nav-item {
+  margin: 0;
+}
+#opcSidebar #opcTabs .nav-item .nav-link {
+  border: none;
+  border-bottom: 2px solid transparent;
+  border-radius: 0;
+  padding: 14px 2px 12px;
+  margin: 0 14px;
+  color: #BDBDBD;
+  background: none;
+}
+#opcSidebar #opcTabs .nav-item .nav-link.active {
+  border-color: #435A6B;
+  color: #435A6B;
+}
+#opcSidebar #sidebarInnerPanel {
+  height: calc(100vh - 288px);
+  overflow-y: scroll;
+  padding: 24px;
+  padding-right: 18px;
+}
+#opcSidebar #sidebarInnerPanel .tab-content {
+  min-height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+#opcSidebar #sidebarInnerPanel #portlets .portletGroupBtn {
+  display: block;
+  font-weight: 600;
+  width: 100%;
+  text-align: left;
+  margin-bottom: 16px;
+}
+#opcSidebar #sidebarInnerPanel #portlets .portletGroupBtn .fas {
+  float: right;
+  line-height: inherit;
+}
+#opcSidebar #sidebarInnerPanel #portlets .collapse:after {
+  content: " ";
+  display: block;
+  clear: both;
+}
+#opcSidebar #sidebarInnerPanel #portlets .portletButton {
+  display: block;
+  float: left;
+  width: 96px;
+  height: 96px;
+  margin-right: 22px;
+  margin-bottom: 22px;
+  background-color: #F5F7FA;
+  border-radius: 5px;
+}
+#opcSidebar #sidebarInnerPanel #portlets .portletButton:nth-child(3n) {
+  margin-right: 0;
+}
+#opcSidebar #sidebarInnerPanel #portlets .portletButton > .portletBtnInner {
+  display: block;
+  width: 96px;
+  height: 96px;
+  position: relative;
+}
+#opcSidebar #sidebarInnerPanel #portlets .portletButton > .portletBtnInner > img {
+  position: absolute;
+  left: 50%;
+  top: 36%;
+  transform: translate(-50%, -50%);
+}
+#opcSidebar #sidebarInnerPanel #portlets .portletButton > .portletBtnInner > i {
+  display: block;
+  position: absolute;
+  left: 50%;
+  top: 36%;
+  transform: translate(-50%, -50%);
+  font-size: 32px;
+  color: #5cbcf6;
+}
+#opcSidebar #sidebarInnerPanel #portlets .portletButton > .portletBtnInner > span {
+  position: absolute;
+  left: 0;
+  bottom: 8px;
+  width: 100%;
+  line-height: 16px;
 }
 #opcSidebar #portlets .collapseGroup {
   display: block;
@@ -251,6 +363,40 @@ html, body {
 #opcSidebar #portlets .col-xs-12, #opcSidebar #portlets .col-sm-12, #opcSidebar #portlets .col-md-12, #opcSidebar #portlets .col-lg-12 {
   padding-left: 7px;
   padding-right: 7px;
+}
+#opcSidebar #sidebarFooter {
+  position: absolute;
+  bottom: 0;
+  height: 185px;
+  width: 100%;
+  box-shadow: 0 -3px 14px rgba(0, 0, 0, 0.16);
+}
+#opcSidebar #sidebarFooter #savePublishPanel {
+  height: 135px;
+  background-color: #fff;
+}
+#opcSidebar #sidebarFooter #previewToolbar {
+  height: 50px;
+  background-color: #F5F7FA;
+  padding: 17px 24px;
+  padding-right: 28px;
+}
+#opcSidebar #sidebarFooter #previewToolbar #displayWidths {
+  float: right;
+  padding: 0;
+}
+#opcSidebar #sidebarFooter #previewToolbar #displayWidths > li {
+  list-style: none;
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  margin-left: 24px;
+}
+#opcSidebar #sidebarFooter #previewToolbar #displayWidths > li > button {
+  color: #BDBDBD;
+}
+#opcSidebar #sidebarFooter #previewToolbar #displayWidths > li.active > button {
+  color: #435A6B;
 }
 #opcSidebar #blueprints .btn-group .blueprintButton {
   text-align: left;

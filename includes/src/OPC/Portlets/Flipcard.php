@@ -16,14 +16,6 @@ use JTL\OPC\Portlet;
 class Flipcard extends Portlet
 {
     /**
-     * @return string
-     */
-    public function getButtonHtml(): string
-    {
-        return $this->getFontAwesomeButtonHtml('clone');
-    }
-
-    /**
      * @return array
      */
     public function getPropertyDesc(): array

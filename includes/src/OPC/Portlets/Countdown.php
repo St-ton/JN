@@ -20,7 +20,7 @@ class Countdown extends Portlet
      */
     public function getButtonHtml(): string
     {
-        return $this->getFontAwesomeButtonHtml('bell');
+        return $this->getFontAwesomeButtonHtml('far fa-calendar-alt');
     }
 
     /**

@@ -53,7 +53,7 @@ class Text extends Portlet
      */
     public function getButtonHtml(): string
     {
-        return '<i class="fa fa-font"></i><br>Text';
+        return $this->getFontAwesomeButtonHtml('fas fa-font');
     }
 
     /**

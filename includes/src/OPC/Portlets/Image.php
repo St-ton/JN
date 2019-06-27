@@ -48,7 +48,7 @@ class Image extends Portlet
      */
     public function getButtonHtml(): string
     {
-        return $this->getFontAwesomeButtonHtml('image');
+        return $this->getFontAwesomeButtonHtml('far fa-image');
     }
 
     /**

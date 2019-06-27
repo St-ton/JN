@@ -82,7 +82,7 @@
                                            value="{$draft->getKey()}">
                                     <input type="hidden" name="pageId"
                                            value="{$langPageId}">
-                                    <button type="submit" name="pageUrl"
+                                    <button type="submit" name="pageUrl" class="opc-dropdown-item"
                                             value="{$langPageUri}">
                                         {$lang->nameDE}
                                     </button>

@@ -50,16 +50,18 @@ trait PortletHtml
      */
     public function getButtonHtml(): string
     {
-        return '<img alt="" class="fa" src="' . $this->getDefaultIconSvgUrl() . '"><br>' . $this->getTitle();
+        return '<img alt="Portlet Button" src="' . $this->getDefaultIconSvgUrl() . '">'
+            . '<span>' . $this->getTitle() . '</span>';
     }
 
     /**
      * @param string $faType
      * @return string
      */
-    public function getFontAwesomeButtonHtml(string $faType): string
+    public function getFontAwesomeButtonHtml(string $faClasses): string
     {
-        return '<i class="fa fa-' . $faType . '"></i><br>' . $this->getTitle();
+        return '<i class="' . $faClasses . '"></i>'
+            . '<span>' . $this->getTitle() . '</span>';
     }
 
     /**

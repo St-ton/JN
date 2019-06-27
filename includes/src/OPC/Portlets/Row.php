@@ -20,7 +20,7 @@ class Row extends Portlet
      */
     public function getButtonHtml(): string
     {
-        return $this->getFontAwesomeButtonHtml('columns');
+        return $this->getFontAwesomeButtonHtml('fas fa-columns');
     }
 
     /**

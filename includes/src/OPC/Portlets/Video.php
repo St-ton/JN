@@ -20,7 +20,7 @@ class Video extends Portlet
      */
     public function getButtonHtml(): string
     {
-        return $this->getFontAwesomeButtonHtml('film');
+        return $this->getFontAwesomeButtonHtml('fas fa-film');
     }
 
     /**

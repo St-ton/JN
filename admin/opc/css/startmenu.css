@@ -10,7 +10,7 @@
   border: none;
   padding: 0;
   color: inherit;
-  font-size: inherit;
+  font-size: 14px;
   cursor: pointer;
 }
 #opc button, #opc input {
@@ -31,9 +31,6 @@
 }
 #opc button.opc-btn-link:hover {
   text-decoration: underline;
-}
-#opc .fas, #opc .fa {
-  vertical-align: initial;
 }
 #opc .tooltip {
   border: none;
@@ -62,6 +59,40 @@
   margin-bottom: 24px;
   text-align: left;
 }
+#opc .toggle-switch {
+  cursor: pointer;
+}
+#opc .toggle-switch input {
+  display: none;
+}
+#opc .toggle-slider {
+  margin-left: 8px;
+  display: inline-block;
+  height: 20px;
+  width: 38px;
+  border: 2px solid #BDBDBD;
+  border-radius: 20px;
+  vertical-align: middle;
+  position: relative;
+}
+#opc .toggle-slider:before {
+  position: absolute;
+  left: 1px;
+  top: 1px;
+  content: "";
+  width: 14px;
+  height: 14px;
+  border-radius: 16px;
+  background: #BDBDBD;
+  transition: 0.125s;
+}
+#opc input:checked + .toggle-slider {
+  border-color: #435A6B;
+}
+#opc input:checked + .toggle-slider:before {
+  transform: translateX(18px);
+  background: #435A6B;
+}
 #opc ::placeholder {
   color: #BDBDBD;
   font-family: "Font Awesome 5 Free", FontAwesome, sans-serif;
@@ -88,16 +119,19 @@
   margin: 0;
   padding: 0;
   box-shadow: 0 0 8px 4px rgba(0, 0, 0, 0.125);
+  border-radius: 2px;
   min-width: 0;
   width: 100%;
   color: #435A6B;
 }
-#opc .opc-dropdown .opc-dropdown-menu > * {
+#opc .opc-dropdown .opc-dropdown-menu .opc-dropdown-item {
   display: block;
   width: 100%;
   padding: 8px 12px;
+  border-radius: 2px;
+  text-align: left;
 }
-#opc .opc-dropdown .opc-dropdown-menu > *:hover {
+#opc .opc-dropdown .opc-dropdown-menu .opc-dropdown-item:hover {
   text-decoration: none;
   background-color: #F5F7FA;
 }
@@ -122,15 +156,17 @@
 #opc #opcHeader #opc-sidebar-title {
   display: inline-block;
   margin: 0;
-  font-size: 16px;
+  font-size: 17px;
   color: inherit;
-  font-weight: 600;
 }
-#opc #opcHeader button {
+#opc #opcHeader .opc-header-btn {
   padding: 0 4px;
 }
 #opc #opcHeader #opcMenuBtnDropdown {
   display: inline;
+}
+#opc #opcHeader #opcMenuBtnDropdown .opc-dropdown-menu {
+  width: 200px;
 }
 
 #opc #opc-startmenu {

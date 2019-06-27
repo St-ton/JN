@@ -234,13 +234,13 @@
             </nav>
             <div id="opcSidebar">
                 <header id="opcHeader">
-                    <button id="opcMenuBtn">
+                    <button id="opcMenuBtn" class="opc-header-btn">
                         <i class="fa fas fa-ellipsis-v"></i>
                     </button>
                     <h1 id="opc-sidebar-title">
                         Seite bearbeiten
                     </h1>
-                    <button onclick="closeOpcStartMenu()" class="opc-float-right">
+                    <button onclick="closeOpcStartMenu()" class="opc-float-right opc-header-btn">
                         <i class="fa fas fa-times"></i>
                     </button>
                 </header>
@@ -254,8 +254,8 @@
                                 Status
                             </button>
                             <div class="dropdown-menu opc-dropdown-menu">
-                                <a href="#" onclick="orderOpcDraftsBy(0);return false">Status</a>
-                                <a href="#" onclick="orderOpcDraftsBy(1);return false">Name</a>
+                                <button class="opc-dropdown-item" onclick="orderOpcDraftsBy(0);return false">Status</button>
+                                <button class="opc-dropdown-item" onclick="orderOpcDraftsBy(1);return false">Name</button>
                             </div>
                         </div>
                     </div>
@@ -271,10 +271,10 @@
                             <i class="fa fas fa-fw fa-chevron-down"></i>
                         </button>
                         <div class="dropdown-menu opc-dropdown-menu" id="opc-bulk-dropdown">
-                            <a href="#" onclick="duplicateSelectedOpcDrafts();return false">
+                            <a href="#" onclick="duplicateSelectedOpcDrafts();return false" class="opc-dropdown-item">
                                 Duplizieren
                             </a>
-                            <a href="#" onclick="deleteSelectedOpcDrafts();return false">
+                            <a href="#" onclick="deleteSelectedOpcDrafts();return false" class="opc-dropdown-item">
                                 Löschen
                             </a>
                         </div>

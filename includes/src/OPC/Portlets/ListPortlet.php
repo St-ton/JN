@@ -45,7 +45,7 @@ class ListPortlet extends Portlet
      */
     public function getButtonHtml(): string
     {
-        return $this->getFontAwesomeButtonHtml('list-ol');
+        return $this->getFontAwesomeButtonHtml('fas fa-list-ol');
     }
 
     /**

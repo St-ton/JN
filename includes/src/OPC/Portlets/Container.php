@@ -22,7 +22,7 @@ class Container extends Portlet
      */
     public function getButtonHtml(): string
     {
-        return '<i class="fa fa-object-group"></i><br/> Container';
+        return $this->getFontAwesomeButtonHtml('far fa-object-group');
     }
 
     /**

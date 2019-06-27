@@ -49,7 +49,7 @@ class Panel extends Portlet
      */
     public function getButtonHtml(): string
     {
-        return '<i class="fa fa-square-o"></i><br/> Panel';
+        return $this->getFontAwesomeButtonHtml('far fa-square');
     }
 
     /**

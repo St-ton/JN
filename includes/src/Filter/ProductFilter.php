@@ -979,7 +979,7 @@ class ProductFilter
                 /** @var FilterInterface $f */
                 return $f->getVisibility() === Visibility::SHOW_ALWAYS
                     || $f->getVisibility() === Visibility::SHOW_CONTENT
-                    || ($device->isMobile() && !$device->isTablet());
+                    || ($device->isMobile() && !$device->isTablet() && $f->getVisibility() !== Visibility::SHOW_NEVER());
             }
         );
     }

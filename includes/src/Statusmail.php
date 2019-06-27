@@ -101,15 +101,14 @@ class Statusmail
     {
         $startDate = date('Y-m-d', strtotime(
             $nAlleXStunden === 720 ?
-            'last day of this month'
-            : ($nAlleXStunden === 168 ? 'last day of this week' : 'today')
+            'first day of next month'
+            : ($nAlleXStunden === 168 ? 'next week' : 'tomorrow')
         ));
         $d         = new DateTime($startDate);
-        $d->modify('+1 days');
         $d->setTime(0, 0);
         Shop::Container()->getAlertService()->addAlert(
             Alert::TYPE_INFO,
-            sprintf('Der nächste Statusbericht wird am %s versendet', $d->format('Y-m-d')),
+            sprintf(__('nextStatusMail'), $d->format('Y-m-d')),
             'nextStatusMail'
         );
         $cron = new LegacyCron(

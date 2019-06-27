@@ -1,6 +1,12 @@
 # JTL-Shop Changelog
 
-## [4.06.12]
+## [4.06.13]
+
+Dieses Update enthält Bugfixes und Sicherheitsupdates.
+
+Alle für diese Zielversion gelösten Vorgänge finden Sie unter diesem Link: https://jtl-url.de/cl40613
+
+## [4.06.12] - 2019-04-02
 
 Dieses Update enthält Bugfixes und Sicherheitsupdates.
 

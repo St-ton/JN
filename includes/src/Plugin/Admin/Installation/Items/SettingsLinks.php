@@ -186,6 +186,7 @@ class SettingsLinks extends AbstractItem
                             if (GeneralObject::hasCount('OptionsSource', $setting['OptionsSource'])) {
                             } elseif (\count($optNode) === 1) { // Es gibt mehr als eine Option
                                 foreach ($optNode['Option'] as $y => $option) {
+                                    $y = (string)$y;
                                     \preg_match('/[0-9]+\sattr/', $y, $hits6);
                                     if (isset($hits6[0]) && \mb_strlen($hits6[0]) === \mb_strlen($y)) {
                                         $value = $option['value'];

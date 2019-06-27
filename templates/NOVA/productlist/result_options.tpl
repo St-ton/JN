@@ -11,7 +11,7 @@
         <div id="result-options" class="{if !$show_filters} d-none d-sm-block{/if}">
             {row}
             {block name='productlist-result-options-filter-link'}
-                {col cols=12 md=4 class="filter-collapsible-control order-1 order-md-0"}
+                {col cols=12 md=4 class="filter-collapsible-control order-1 order-md-0 d-flex justify-content-between"}
                     {button variant="light"
                         data=["toggle" => "collapse", "target" => "#filter-collapsible"]
                         aria=["expanded" => {$Einstellungen.template.productlist.initial_display_filter === 'Y'},
@@ -21,6 +21,29 @@
                         <span class="fas fa-filter{if $NaviFilter->getFilterCount() > 0} text-primary{/if}"></span> {lang key='filter'}
                         <i class="fas fa-chevron-down"></i>
                     {/button}
+                    {if isset($oErweiterteDarstellung->nDarstellung)
+                        && $Einstellungen.artikeluebersicht.artikeluebersicht_erw_darstellung === 'Y'
+                        && empty($AktuelleKategorie->categoryFunctionAttributes['darstellung'])
+                        && $navid === 'header'}
+                        {buttongroup class="ml-2"}
+                            {link href=$oErweiterteDarstellung->cURL_arr[$smarty.const.ERWDARSTELLUNG_ANSICHT_LISTE]
+                                id="ed_list"
+                                class="btn btn-light btn-option ed list{if $oErweiterteDarstellung->nDarstellung === $smarty.const.ERWDARSTELLUNG_ANSICHT_LISTE} active{/if}"
+                                role="button"
+                                title="{lang key='list' section='productOverview'}"
+                            }
+                                <span class="fa fa-th-list"></span>
+                            {/link}
+                            {link href=$oErweiterteDarstellung->cURL_arr[$smarty.const.ERWDARSTELLUNG_ANSICHT_GALERIE]
+                                id="ed_gallery"
+                                class="btn btn-light btn-option ed gallery{if $oErweiterteDarstellung->nDarstellung === $smarty.const.ERWDARSTELLUNG_ANSICHT_GALERIE} active{/if}"
+                                role="button"
+                                title="{lang key='gallery' section='productOverview'}"
+                            }
+                                <span class="fa fa-th-large"></span>
+                            {/link}
+                        {/buttongroup}
+                    {/if}
                 {/col}
             {/block}
             {/row}

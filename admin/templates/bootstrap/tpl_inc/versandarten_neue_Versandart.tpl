@@ -19,7 +19,7 @@
     function addShippingCombination() {
         var newCombi = '<li class=\'input-group\'>'+$('#ulVK #liVKneu').html()+'</li>';
         newCombi = newCombi.replace(/selectX/gi,'select');
-        if ($("select[name='Versandklassen']").size() >= 1) {
+        if ($("select[name='Versandklassen']").length >= 1) {
             newCombi = newCombi.replace(/<option value="-1">/gi, '<option value="-1" disabled="disabled">');
         }
 
@@ -48,7 +48,7 @@
                         $('.select2').select2();
                         return false;
                     }
-                    if ($("select[name='Versandklassen']").size() >= 1) {
+                    if ($("select[name='Versandklassen']").length >= 1) {
                         $(this).val("-1");
                         $('#addNewShippingClassCombi').prop('disabled', true);
                         remove = true;

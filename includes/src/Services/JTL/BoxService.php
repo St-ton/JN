@@ -10,6 +10,7 @@ use JTL\Boxes\Admin\BoxAdmin;
 use JTL\Boxes\Factory;
 use JTL\Boxes\FactoryInterface;
 use JTL\Boxes\Items\BoxInterface;
+use JTL\Boxes\Items\Extension;
 use JTL\Boxes\Renderer\RendererInterface;
 use JTL\Boxes\Type;
 use JTL\Cache\JTLCacheInterface;
@@ -18,9 +19,9 @@ use JTL\DB\ReturnType;
 use JTL\Filter\ProductFilter;
 use JTL\Filter\Visibility;
 use JTL\Plugin\LegacyPlugin;
-use JTL\Plugin\Plugin;
 use JTL\Plugin\PluginLoader;
 use JTL\Plugin\State;
+use JTL\Boxes\Items\Plugin;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
@@ -450,7 +451,7 @@ class BoxService implements BoxServiceInterface
             $box   = $this->factory->getBoxByBaseType($first->kBoxvorlage, $first->eTyp);
             $box->map($boxes);
             $class = \get_class($box);
-            if ($class === LegacyPlugin::class) {
+            if ($class === Plugin::class) {
                 $plugin = new LegacyPlugin($box->getCustomID());
                 $box->setTemplateFile(
                     $plugin->getPaths()->getFrontendPath() .
@@ -458,7 +459,7 @@ class BoxService implements BoxServiceInterface
                     $box->getTemplateFile()
                 );
                 $box->setPlugin($plugin);
-            } elseif ($class === Plugin::class) {
+            } elseif ($class === Extension::class) {
                 $loader = new PluginLoader($this->db, $this->cache);
                 $plugin = $loader->init($box->getCustomID());
                 $box->setTemplateFile(

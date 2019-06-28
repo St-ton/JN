@@ -331,7 +331,6 @@
                 prevElem    = $(this.element).find('button[name="btnGalleryPre"]');
                 nextElem    = $(this.element).find('button[name="btnGalleryNext"]');
                 if ($(this.element).find('.image-thumbs').css('position') === 'absolute') { //V
-                    primary_h   = $('#gallery').height();
                     primary_h -= 40;//wegen up / down Buttons
                     $(this.element).find('.thumbs-box').scrollLeft(0);
                     rect = listElem[0].getBoundingClientRect();

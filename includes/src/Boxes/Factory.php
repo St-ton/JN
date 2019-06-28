@@ -21,7 +21,6 @@ use JTL\Boxes\Items\FilterManufacturer;
 use JTL\Boxes\Items\FilterPricerange;
 use JTL\Boxes\Items\FilterRating;
 use JTL\Boxes\Items\FilterSearch;
-use JTL\Boxes\Items\FilterTag;
 use JTL\Boxes\Items\LinkGroup;
 use JTL\Boxes\Items\Login;
 use JTL\Boxes\Items\Manufacturer;

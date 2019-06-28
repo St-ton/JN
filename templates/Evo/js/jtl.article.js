@@ -619,7 +619,7 @@
                         offset: {
                             top: function () {
                                 var navHeight = $('#evo-main-nav-wrapper.affix').outerHeight(true);
-                                if (navHeight === undefined) navHeight = 0;
+                                navHeight = navHeight === undefined ? 0 : navHeight;
                                 var top = parseInt(container.offset().top - navHeight);
                                 if (sidebar.hasClass('affix')) {
                                     sidebar.css('top', navHeight);

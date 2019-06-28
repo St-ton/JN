@@ -4,24 +4,28 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Filesystem\Filesystem;
+use JTL\Filesystem\LocalFilesystem;
 use JTLShop\SemVer\Version;
+use Symfony\Component\Finder\Finder;
+use function Functional\map;
 
 /**
  * @param array $files
- * @param int $errorsCount
+ * @param int   $errorsCount
  * @return int
  */
 function getAllModifiedFiles(&$files, &$errorsCount)
 {
 
     $version    = Version::parse(APPLICATION_VERSION);
-    $versionStr = $version->getMajor().'-'.$version->getMinor().'-'.$version->getPatch();
+    $versionStr = $version->getMajor() . '-' . $version->getMinor() . '-' . $version->getPatch();
 
     if ($version->hasPreRelease()) {
         $preRelease  = $version->getPreRelease();
-        $versionStr .= '-'.$preRelease->getGreek();
+        $versionStr .= '-' . $preRelease->getGreek();
         if ($preRelease->getReleaseNumber() > 0) {
-            $versionStr .= '-'.$preRelease->getReleaseNumber();
+            $versionStr .= '-' . $preRelease->getReleaseNumber();
         }
     }
 
@@ -66,20 +70,20 @@ function getAllModifiedFiles(&$files, &$errorsCount)
 
 /**
  * @param array $files
- * @param int $errorsCount
+ * @param int   $errorsCount
  * @return int
  */
 function getAllOrphanedFiles(&$files, &$errorsCount)
 {
 
     $version    = Version::parse(APPLICATION_VERSION);
-    $versionStr = $version->getMajor().'-'.$version->getMinor().'-'.$version->getPatch();
+    $versionStr = $version->getMajor() . '-' . $version->getMinor() . '-' . $version->getPatch();
 
     if ($version->hasPreRelease()) {
         $preRelease  = $version->getPreRelease();
-        $versionStr .= '-'.$preRelease->getGreek();
+        $versionStr .= '-' . $preRelease->getGreek();
         if ($preRelease->getReleaseNumber() > 0) {
-            $versionStr .= '-'.$preRelease->getReleaseNumber();
+            $versionStr .= '-' . $preRelease->getReleaseNumber();
         }
     }
 
@@ -103,7 +107,6 @@ function getAllOrphanedFiles(&$files, &$errorsCount)
             if (mb_strlen($shopFile) === 0) {
                 continue;
             }
-
             if (file_exists(PFAD_ROOT . $shopFile)) {
                 $files[] = $shopFile;
 
@@ -113,4 +116,34 @@ function getAllOrphanedFiles(&$files, &$errorsCount)
     }
 
     return 1;
+}
+
+/**
+ * @param array  $orphanedFiles
+ * @param string $backupFile
+ * @return int
+ */
+function deleteOrphanedFiles(array &$orphanedFiles, string $backupFile): int
+{
+    $count   = 0;
+    $adapter = new LocalFilesystem(['root' => PFAD_ROOT]);
+    $fs      = new Filesystem($adapter);
+    $finder  = new Finder();
+    $finder->append(map($orphanedFiles, function ($e) {
+        return PFAD_ROOT . $e;
+    }));
+
+    try {
+        $fs->zip($finder, $backupFile);
+    } catch (Exception $e) {
+        return -1;
+    }
+    foreach ($orphanedFiles as $i => $file) {
+        if ($fs->delete($file)) {
+            unset($orphanedFiles[$i]);
+            ++$count;
+        }
+    }
+
+    return $count;
 }

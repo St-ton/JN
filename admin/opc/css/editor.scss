@@ -278,6 +278,12 @@ html, body {
             padding: 16px 24px;
             height: 135px;
             background-color: $bg-color;
+
+            #footerDraftName {
+                i {
+                    margin-left: 8px;
+                }
+            }
         }
 
         #previewToolbar {

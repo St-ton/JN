@@ -376,6 +376,9 @@ html, body {
   height: 135px;
   background-color: #fff;
 }
+#opcSidebar #sidebarFooter #savePublishPanel #footerDraftName i {
+  margin-left: 8px;
+}
 #opcSidebar #sidebarFooter #previewToolbar {
   height: 50px;
   background-color: #F5F7FA;

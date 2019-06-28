@@ -52,6 +52,7 @@ if ($opc->isOPCInstalled() === false) {
     }
 
     $smarty->assign('error', $error)
+           ->assign('page', $page)
            ->display(PFAD_ROOT . PFAD_ADMIN . '/opc/tpl/editor.tpl');
 } elseif ($action !== '' && Form::validateToken() === false) {
     // OPC action while XSRF validation failed

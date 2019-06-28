@@ -107,7 +107,11 @@
     </div>
 
     <div id="sidebarFooter">
-        <div id="savePublishPanel"></div>
+        <div id="savePublishPanel">
+            <button type="button" id="footerDraftName">
+                <span>{$page->getName()}</span><i class="fas fa-pencil-alt"></i>
+            </button>
+        </div>
         <div id="previewToolbar">
             <label class="toggle-switch">
                 Preview

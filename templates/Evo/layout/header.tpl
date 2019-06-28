@@ -68,8 +68,8 @@
         {else}
             <link type="text/css" href="{$ShopURL}/asset/{$Einstellungen.template.theme.theme_default}.css{if isset($cPluginCss_arr) && $cPluginCss_arr|@count > 0},plugin_css{/if}?v={$nTemplateVersion}" rel="stylesheet">
         {/if}
-        {if \JTL\Shop::isAdmin() && $opc->isEditMode() === false}
-            <link type="text/css" href="{$ShopURL}/admin/opc/style.css" rel="stylesheet">
+        {if \JTL\Shop::isAdmin() && $opc->isEditMode() === false && $opc->isPreviewMode() === false}
+            <link type="text/css" href="{$ShopURL}/admin/opc/opc.css" rel="stylesheet">
         {/if}
         {* RSS *}
         {if isset($Einstellungen.rss.rss_nutzen) && $Einstellungen.rss.rss_nutzen === 'Y'}

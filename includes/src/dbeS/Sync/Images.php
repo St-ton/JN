@@ -119,7 +119,6 @@ final class Images extends AbstractSync
     private function getConfig(): array
     {
         $config = Shop::getSettings([\CONF_BILDER]);
-
         if (!$config['bilder']['bilder_kategorien_breite']) {
             $config['bilder']['bilder_kategorien_breite'] = 100;
         }
@@ -1401,7 +1400,6 @@ final class Images extends AbstractSync
                 }
             }
         }
-        // The image copy
         \imagecopy($destImg, $srcImg, $destX, $destY, $srcX, $srxY, $srcW, $srcH);
 
         return true;
@@ -1577,9 +1575,7 @@ final class Images extends AbstractSync
         if (!$im) {
             return false;
         }
-
         $path = $this->getNewFilename($path);
-
         switch (\strtolower($format)) {
             case 'jpg':
                 $res = \function_exists('imagejpeg') ? \imagejpeg($im, $path, $quality) : false;

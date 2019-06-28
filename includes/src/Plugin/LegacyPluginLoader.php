@@ -167,7 +167,7 @@ class LegacyPluginLoader extends AbstractLoader
     {
         $widgets = parent::loadWidgets($extension);
         foreach ($widgets->getWidgets() as $widget) {
-            $widget->className = \str_replace($widget->namespace, 'Widget', $widget->className);
+            $widget->className = \str_replace('\Plugin' . $widget->namespace, 'Widget', $widget->className);
             $widget->namespace = null;
             $widget->classFile = \str_replace(
                 \PFAD_PLUGIN_ADMINMENU . \PFAD_PLUGIN_WIDGET,

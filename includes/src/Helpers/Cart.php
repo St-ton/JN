@@ -501,8 +501,7 @@ class Cart
                             $configItem->oEigenschaftwerte_arr,
                             \C_WARENKORBPOS_TYP_ARTIKEL,
                             $cUnique,
-                            $configItem->getKonfigitem(),
-                            false
+                            $configItem->getKonfigitem()
                         );
                         break;
 

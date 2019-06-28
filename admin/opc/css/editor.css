@@ -141,7 +141,7 @@
   width: 380px;
   height: 100vh;
   background-color: #fff;
-  box-shadow: 0 0 8px 4px rgba(0, 0, 0, 0.125);
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.125);
   font-size: 14px;
   color: #435A6B;
 }
@@ -227,7 +227,7 @@ html, body {
 #opcSidebar #opcTabs {
   border: none;
   background-color: #F5F7FA;
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
+  box-shadow: -4px 3px 6px rgba(0, 0, 0, 0.16);
   position: relative;
 }
 #opcSidebar #opcTabs .nav-item {
@@ -369,9 +369,10 @@ html, body {
   bottom: 0;
   height: 185px;
   width: 100%;
-  box-shadow: 0 -3px 14px rgba(0, 0, 0, 0.16);
+  box-shadow: -4px -3px 8px rgba(0, 0, 0, 0.16);
 }
 #opcSidebar #sidebarFooter #savePublishPanel {
+  padding: 16px 24px;
   height: 135px;
   background-color: #fff;
 }

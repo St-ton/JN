@@ -128,42 +128,12 @@
                     <button id="btnDisplayWidthDesktop"><i class="fas fa-desktop"></i></button>
                 </li>
             </ul>
-            {*<ul>*}
-                {*<li>*}
-                    {*<a href="#" id="btnPreview" data-toggle="tooltip" data-placement="right"*}
-                       {*title="Preview">*}
-                        {*<i class="fa fa-eye"></i>*}
-                    {*</a>*}
-                {*</li>*}
-            {*</ul>*}
         </div>
     </div>
 
     {if false}
     <div id="sidebarInnerPanel" class="container-fluid">
         <div class="tab-content">
-
-            <div class="tab-pane active" id="portlets">
-                {foreach $opc->getPortletGroups() as $group}
-                    {assign var="groupId" value=$group->getName()|regex_replace:'/[^a-zA-Z0-9]/':'-'|lower}
-                    <a href="#collapse-{$groupId}" data-toggle="collapse" class="collapseGroup">
-                        <i class="fa fa-plus-circle"></i> {$group->getName()}
-                    </a>
-                    <div class="collapse" id="collapse-{$groupId}">
-                        <div class="row">
-                            {foreach $group->getPortlets() as $i => $portlet}
-                            {if $i > 0 && $i % 3 === 0}</div><div class="row">{/if}
-                            <div class="col-xs-4">
-                                <a href="#" class="btn portletButton" draggable="true"
-                                   data-portlet-class="{$portlet->getClass()}">
-                                    {$portlet->getButtonHtml()}
-                                </a>
-                            </div>
-                            {/foreach}
-                        </div>
-                    </div>
-                {/foreach}
-            </div>
 
             <div class="tab-pane" id="blueprints">
                 <div class="list-group">
@@ -193,31 +163,6 @@
             </div>
 
         </div>
-    </div>
-
-    <div id="displayPreviews">
-        <ul id="displayWidths">
-            <li>
-                <a href="#" id="btnDisplayWidthMobile"><i class="fa fa-mobile"></i></a>
-            </li>
-            <li>
-                <a href="#" id="btnDisplayWidthTablet"><i class="fa fa-tablet"></i></a>
-            </li>
-            <li>
-                <a href="#" id="btnDisplayWidthLaptop"><i class="fa fa-laptop"></i></a>
-            </li>
-            <li class="active">
-                <a href="#" id="btnDisplayWidthDesktop"><i class="fa fa-desktop"></i></a>
-            </li>
-        </ul>
-        <ul>
-            <li>
-                <a href="#" id="btnPreview" data-toggle="tooltip" data-placement="right"
-                   title="Preview">
-                    <i class="fa fa-eye"></i>
-                </a>
-            </li>
-        </ul>
     </div>
     {/if}
 </div>

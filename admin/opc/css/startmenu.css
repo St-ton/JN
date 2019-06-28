@@ -141,7 +141,7 @@
   width: 380px;
   height: 100vh;
   background-color: #fff;
-  box-shadow: 0 0 8px 4px rgba(0, 0, 0, 0.125);
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.125);
   font-size: 14px;
   color: #435A6B;
 }

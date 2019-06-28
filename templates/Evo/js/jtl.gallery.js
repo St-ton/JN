@@ -331,6 +331,7 @@
                 prevElem    = $(this.element).find('button[name="btnGalleryPre"]');
                 nextElem    = $(this.element).find('button[name="btnGalleryNext"]');
                 if ($(this.element).find('.image-thumbs').css('position') === 'absolute') { //V
+                    primary_h   = $('#gallery').height();
                     primary_h -= 40;//wegen up / down Buttons
                     $(this.element).find('.thumbs-box').scrollLeft(0);
                     rect = listElem[0].getBoundingClientRect();
@@ -345,7 +346,7 @@
 
                     prevElem.removeClass('btn-gallery-left').addClass('btn-gallery-up').css({'top': '', 'left': btn_left + 'px'});
                     nextElem.removeClass('btn-gallery-right').addClass('btn-gallery-down').css({'top': '', 'left': btn_left + 'px'});
-                    
+
                     //Show / Hide Navi Button
                     if ($(this.element).find('.image-thumbs').height() <= $(this.element).find('.thumbs').height()) {
                         prevElem.hide();

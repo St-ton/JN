@@ -545,7 +545,7 @@
 
             if (data.nCount > 1 && data.cNavBadge.length) {
                 var badge = $(data.cNavBadge);
-                if ($badgeUpd.size() > 0) {
+                if ($badgeUpd.length > 0) {
                     $badgeUpd.replaceWith(badge);
                 } else {
                     $(this.options.selector.navBadgeAppend).before(badge);
@@ -564,13 +564,13 @@
 
                     return false;
                 });
-            } else if ($badgeUpd.size() > 0) {
+            } else if ($badgeUpd.length > 0) {
                 $badgeUpd.remove();
             }
 
             var $list = $(this.options.selector.boxContainer);
 
-            if ($list.size() > 0) {
+            if ($list.length > 0) {
                 if (data.cBoxContainer.length) {
                     var $boxContent = $(data.cBoxContainer);
                     this.registerProductActions($boxContent);

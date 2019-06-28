@@ -322,10 +322,10 @@
                 imagesPerView, //amount of images visible at each gallery "page"
                 ulw;
             if (imgCount > 0) {
-                primary_h   = $('.product-primary').height();
+                primary_h   = Math.max($('.product-gallery').height(), $('.product-info').height());
                 listElem    = $(this.element).find('.image-thumbs li');
                 main_img_w  = $(this.element).find('.thumbs').width();
-                main_img_h  = $('.product-gallery').height();
+                main_img_h  = primary_h;
                 img_w       = listElem.outerWidth(true);
                 img_w_outer = (listElem.outerWidth(true) - listElem.outerWidth(false));
                 prevElem    = $(this.element).find('button[name="btnGalleryPre"]');
@@ -345,7 +345,7 @@
 
                     prevElem.removeClass('btn-gallery-left').addClass('btn-gallery-up').css({'top': '', 'left': btn_left + 'px'});
                     nextElem.removeClass('btn-gallery-right').addClass('btn-gallery-down').css({'top': '', 'left': btn_left + 'px'});
-                    
+
                     //Show / Hide Navi Button
                     if ($(this.element).find('.image-thumbs').height() <= $(this.element).find('.thumbs').height()) {
                         prevElem.hide();

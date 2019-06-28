@@ -177,19 +177,6 @@
             float: right;
             width: 84px;
             white-space: nowrap;
-
-            &.opc-public {
-              color: #0F9D48;
-            }
-            &.opc-planned {
-              color: #F68B25;
-            }
-            &.opc-status-draft {
-              color: $muted-text;
-            }
-            &.opc-backdate {
-              color: #0B6AA2;
-            }
           }
 
           .opc-draft-info {

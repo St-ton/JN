@@ -108,9 +108,39 @@
 
     <div id="sidebarFooter">
         <div id="savePublishPanel">
-            <button type="button" id="footerDraftName">
+            <label for="footerDraftNameInput" id="footerDraftName" onclick="opc.gui.onBeginEditDraftName()">
                 <span>{$page->getName()}</span><i class="fas fa-pencil-alt"></i>
-            </button>
+            </label>
+            <input type="text" id="footerDraftNameInput" onblur="opc.gui.onFinishEditDraftName()"
+                   onkeydown="if(event.key==='Enter'){ opc.gui.onFinishEditDraftName() }" style="display:none">
+            <div class="opc-draft-status">
+                {$draftStatus = $page->getStatus(0)}
+                {if $draftStatus === 0}
+                    {if $page->getPublishTo() === null}
+                        <span class="opc-public">öffentlich seit</span>
+                        {$page->getPublishFrom()|date_format:'%d.%m.%Y - %H:%M'}
+                    {else}
+                        <span class="opc-public">öffentlich bis</span>
+                        {$page->getPublishTo()|date_format:'%d.%m.%Y - %H:%M'}
+                    {/if}
+                {elseif $draftStatus === 1}
+                    <span class="opc-planned">geplant ab</span>
+                    {$page->getPublishFrom()|date_format:'%d.%m.%Y - %H:%M'}
+                {elseif $draftStatus === 2}
+                    <span class="opc-status-draft">keine Veröffentlichung geplant</span>
+                {elseif $draftStatus === 3}
+                    <span class="opc-backdate">abgelaufen am</span>
+                    {$page->getPublishTo()|date_format:'%d.%m.%Y - %H:%M'}
+                {/if}
+            </div>
+            <div id="savePublishButtons">
+                <button type="button" class="opc-btn-secondary opc-small-btn">
+                    Entwurf speichern
+                </button>
+                <button type="button" class="opc-btn-primary opc-small-btn" id="btnPublish">
+                    Speichern & Veröffentlichen
+                </button>
+            </div>
         </div>
         <div id="previewToolbar">
             <label class="toggle-switch">

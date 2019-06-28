@@ -21,7 +21,7 @@ html, body {
     ::-webkit-scrollbar-track {
         border-radius: 0;
         background-color: transparent;
-        border: 1px solid $light-bg;
+        border: none;
     }
 
     ::-webkit-scrollbar-thumb {
@@ -275,13 +275,31 @@ html, body {
         box-shadow: -4px -3px 8px rgba(0, 0, 0, 0.16);
 
         #savePublishPanel {
-            padding: 16px 24px;
+            padding: 16px;
             height: 135px;
             background-color: $bg-color;
 
             #footerDraftName {
+                cursor: pointer;
                 i {
                     margin-left: 8px;
+                }
+            }
+            .opc-draft-status {
+              color: $muted-text;
+            }
+            #savePublishButtons {
+                margin-top: 16px;
+                .opc-btn-secondary {
+                  display: block;
+                  float: left;
+                  width: 134px;
+                  margin-right: 16px;
+                }
+                .opc-btn-primary {
+                  display: block;
+                  float: left;
+                  width: 194px;
                 }
             }
         }

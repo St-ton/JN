@@ -28,16 +28,20 @@
             <div class="opc-draft-info-line">
                 {if $draftStatus === 0}
                     {if $draft->getPublishTo() === null}
-                        öffentlich seit {$draft->getPublishFrom()|date_format:'%d.%m.%Y - %H:%M'}
+                        <span class="opc-public">öffentlich seit</span>
+                        {$draft->getPublishFrom()|date_format:'%d.%m.%Y - %H:%M'}
                     {else}
-                        öffentlich bis {$draft->getPublishTo()|date_format:'%d.%m.%Y - %H:%M'}
+                        <span class="opc-public">öffentlich bis</span>
+                        {$draft->getPublishTo()|date_format:'%d.%m.%Y - %H:%M'}
                     {/if}
                 {elseif $draftStatus === 1}
-                    geplant ab {$draft->getPublishFrom()|date_format:'%d.%m.%Y - %H:%M'}
+                    <span class="opc-planned">geplant ab</span>
+                    {$draft->getPublishFrom()|date_format:'%d.%m.%Y - %H:%M'}
                 {elseif $draftStatus === 2}
-                    keine Veröffentlichung geplant
+                    <span class="opc-status-draft">keine Veröffentlichung geplant</span>
                 {elseif $draftStatus === 3}
-                    abgelaufen am {$draft->getPublishTo()|date_format:'%d.%m.%Y - %H:%M'}
+                    <span class="opc-backdate">abgelaufen am</span>
+                    {$draft->getPublishTo()|date_format:'%d.%m.%Y - %H:%M'}
                 {/if}
             </div>
             <div class="opc-draft-actions">

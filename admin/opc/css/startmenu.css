@@ -13,24 +13,46 @@
   font-size: 14px;
   cursor: pointer;
 }
-#opc button, #opc input {
-  outline: none;
-}
-#opc button.opc-btn-primary {
+#opc button.opc-btn-primary, #opc button.opc-btn-secondary {
   border-radius: 1000px;
   border: none;
   background-color: #5cbcf6;
   color: #fff;
-  text-align: left;
+  text-align: center;
   padding: 12px;
   box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.125);
 }
-#opc button.opc-btn-primary.opc-full-width {
+#opc button.opc-btn-primary.opc-full-width, #opc button.opc-btn-secondary.opc-full-width {
   width: 100%;
-  text-align: center;
+}
+#opc button.opc-btn-secondary {
+  background-color: #fff;
+  border: 1px solid #5cbcf6;
+  color: #5cbcf6;
+}
+#opc button.opc-small-btn {
+  padding: 8px 10px;
 }
 #opc button.opc-btn-link:hover {
   text-decoration: underline;
+}
+#opc button, #opc input {
+  outline: none;
+}
+#opc .fas, #opc .fa {
+  vertical-align: middle;
+}
+#opc .opc-public {
+  color: #0F9D48;
+}
+#opc .opc-planned {
+  color: #F68B25;
+}
+#opc .opc-status-draft {
+  color: #BDBDBD;
+}
+#opc .opc-backdate {
+  color: #0B6AA2;
 }
 #opc .tooltip {
   border: none;
@@ -314,18 +336,6 @@
   float: right;
   width: 84px;
   white-space: nowrap;
-}
-#opc #opcSidebar #opc-sidebar-content #opc-draft-list .opc-draft .opc-draft-status.opc-public {
-  color: #0F9D48;
-}
-#opc #opcSidebar #opc-sidebar-content #opc-draft-list .opc-draft .opc-draft-status.opc-planned {
-  color: #F68B25;
-}
-#opc #opcSidebar #opc-sidebar-content #opc-draft-list .opc-draft .opc-draft-status.opc-status-draft {
-  color: #BDBDBD;
-}
-#opc #opcSidebar #opc-sidebar-content #opc-draft-list .opc-draft .opc-draft-status.opc-backdate {
-  color: #0B6AA2;
 }
 #opc #opcSidebar #opc-sidebar-content #opc-draft-list .opc-draft .opc-draft-info {
   position: relative;

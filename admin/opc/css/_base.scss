@@ -14,35 +14,59 @@
     color: inherit;
     font-size: 14px;
     cursor: pointer;
+
+    &.opc-btn-primary,
+    &.opc-btn-secondary {
+      border-radius: 1000px;
+      border: none;
+      background-color: $primary-color;
+      color: $bg-color;
+      text-align: center;
+      padding: 12px;
+      box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.125);
+
+      &.opc-full-width {
+        width: 100%;
+      }
+    }
+
+    &.opc-btn-secondary {
+      background-color: $bg-color;
+      border: 1px solid $primary-color;
+      color: $primary-color;
+    }
+
+    &.opc-small-btn {
+      padding: 8px 10px;
+    }
+
+    &.opc-btn-link {
+      &:hover {
+        text-decoration: underline;
+      }
+    }
   }
 
   button, input {
     outline: none;
   }
 
-  button.opc-btn-primary {
-    border-radius: 1000px;
-    border: none;
-    background-color: $primary-color;
-    color: $bg-color;
-    text-align: left;
-    padding: 12px;
-    box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.125);
-
-    &.opc-full-width {
-      width: 100%;
-      text-align: center;
-    }
-  }
-
-  button.opc-btn-link {
-    &:hover {
-      text-decoration: underline;
-    }
-  }
-
   .fas, .fa {
+    vertical-align: middle;
     //vertical-align: initial;
+  }
+
+  .opc-public {
+    color: #0F9D48;
+  }
+  .opc-planned {
+    color: #F68B25;
+  }
+  .opc-status-draft {
+    color: $muted-text;
+  }
+  .opc-backdate {
+    color: #0B6AA2;
   }
 
   .tooltip {

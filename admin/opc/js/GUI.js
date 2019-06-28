@@ -204,7 +204,7 @@ class GUI
     {
         record = record || false;
 
-        this.btnSave.find('i').html(enable ? '*' : '');
+        // this.btnSave.find('i').html(enable ? '*' : '');
 
         if(enable) {
             if(record) {
@@ -547,5 +547,32 @@ class GUI
         this.previewFrame.previewFrame.width('100%');
         $('#displayWidths .active').removeClass('active');
         this.btnDisplayWidthDesktop.parent().addClass('active');
+    }
+
+    onBeginEditDraftName()
+    {
+        let draftName = $('#footerDraftName span').text();
+
+        $('#footerDraftName').hide();
+        $('#footerDraftNameInput').val(this.page.name).show();
+    }
+
+    onFinishEditDraftName()
+    {
+        let draftNameSpan = $('#footerDraftName');
+        let draftNameInput = $('#footerDraftNameInput');
+        let draftName = draftNameInput.val();
+
+        if(draftName === '') {
+            draftNameSpan.show();
+        } else {
+            this.io.changeDraftName(this.page.key, draftName).then(() => {
+                this.page.name = draftName;
+                $('#footerDraftName span').text(draftName);
+            });
+        }
+
+        draftNameInput.hide();
+        draftNameSpan.show();
     }
 }

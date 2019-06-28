@@ -72,6 +72,7 @@ class PageService
             'saveDraft',
             'createPagePreview',
             'deleteDraft',
+            'changeDraftName',
         ];
     }
 
@@ -413,5 +414,15 @@ class PageService
     public function getPreviewPageData()
     {
         return \json_decode(Request::verifyGPDataString('pageData'), true);
+    }
+
+    /**
+     * @param int $draftKey
+     * @param string $draftName
+     * @throws \Exception
+     */
+    public function changeDraftName(int $draftKey, string $draftName)
+    {
+        $this->pageDB->saveDraftName($draftKey, $draftName);
     }
 }

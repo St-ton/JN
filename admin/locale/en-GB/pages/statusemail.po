@@ -129,4 +129,4 @@ msgid "intervalMonth"
 msgstr "Monthly report"
 
 msgid "nextStatusMail"
-msgstr "The next report will be sent on %s."
+msgstr "The next %s will be sent on %s."

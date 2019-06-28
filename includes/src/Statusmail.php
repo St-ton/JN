@@ -99,17 +99,18 @@ class Statusmail
      */
     private function createCronJob(int $id, int $nAlleXStunden): bool
     {
-        $startDate = date('Y-m-d', strtotime(
-            $nAlleXStunden === 720 ?
-            'first day of next month'
-            : ($nAlleXStunden === 168 ? 'next week' : 'tomorrow')
-        ));
+        $types     = [
+            24  => ['name' => __('intervalDay'), 'date' => 'tomorrow'],
+            168 => ['name' => __('intervalWeek'), 'date' => 'next week'],
+            720 => ['name' => __('intervalMonth'), 'date' => 'first day of next month']
+        ];
+        $startDate = date('Y-m-d', strtotime($types[$nAlleXStunden]['date']));
         $d         = new DateTime($startDate);
         $d->setTime(0, 0);
         Shop::Container()->getAlertService()->addAlert(
             Alert::TYPE_INFO,
-            sprintf(__('nextStatusMail'), $d->format('Y-m-d')),
-            'nextStatusMail'
+            sprintf(__('nextStatusMail'), $types[$nAlleXStunden]['name'], $d->format('Y-m-d')),
+            'nextStatusMail' . $nAlleXStunden
         );
         $cron = new LegacyCron(
             0,

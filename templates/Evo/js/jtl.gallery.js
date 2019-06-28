@@ -325,7 +325,7 @@
                 primary_h   = Math.max($('.product-gallery').height(), $('.product-info').height());
                 listElem    = $(this.element).find('.image-thumbs li');
                 main_img_w  = $(this.element).find('.thumbs').width();
-                main_img_h  = $('.product-gallery').height();
+                main_img_h  = primary_h;
                 img_w       = listElem.outerWidth(true);
                 img_w_outer = (listElem.outerWidth(true) - listElem.outerWidth(false));
                 prevElem    = $(this.element).find('button[name="btnGalleryPre"]');

@@ -1,78 +1,75 @@
 {include file='tpl_inc/header.tpl'}
 {config_load file="$lang.conf" section='filecheck'}
 {include file='tpl_inc/seite_header.tpl' cTitel=__('filecheck') cBeschreibung=__('filecheckDesc') cDokuURL=__('filecheckURL')}
-{if $modifiedFilesCheck}
-    <div class="panel panel-collapse">
-        <div class="panel-heading">
-            {__('fileCheckModifiedFilesHeadline')}
+
+{$alertList->displayAlertByKey('orphanedFilesError')}
+{$alertList->displayAlertByKey('modifiedFilesError')}
+{$alertList->displayAlertByKey('backupMessage')}
+{$alertList->displayAlertByKey('zipArchiveError')}
+
+<div class="panel collapsed">
+    <div class="panel-heading{if $modifiedFiles|count > 0} accordion-toggle" data-toggle="collapse" data-target="#pageCheckModifiedFiles" style="cursor:pointer"{else}"{/if}>
+        <h3 class="panel-title">
+            {if $modifiedFiles|count > 0}<i class="fa fas fa-plus"></i> {/if}
+            {__('fileCheckNumberModifiedFiles')}: {$modifiedFiles|count}
+        </h3>
+    </div>
+    {if $modifiedFiles|count > 0}
+        <div class="panel-body panel-collapse collapse" id="pageCheckModifiedFiles">
             <p class="small text-muted">{__('fileCheckModifiedFilesNote')}</p>
-        </div>
-        <div class="panel-body">
-            <div id="content" class="container-fluid">
-                <div id="pageCheckModifiedFiles">
-                    {$alertList->displayAlertByKey('modifiedFilesError')}
-                    {if !$modifiedFilesError}
-                        {if isset($modifiedFiles) && $modifiedFiles|@count > 0}
-                            <div id="contentModifiedFilesCheck">
-                                <div class="alert alert-info">
-                                    <strong>{__('fileCheckNumberModifiedFiles')}:</strong> {$errorsCounModifiedFiles}
-                                </div>
-                                <table class="table req">
-                                    <thead>
-                                    <tr>
-                                        <th>{__('file')}</th>
-                                    </tr>
-                                    </thead>
-                                    {foreach $modifiedFiles as $file}
-                                        <tr class="filestate mod{$file@iteration % 2} modified">
-                                            <td>{$file}</td>
-                                        </tr>
-                                    {/foreach}
-                                </table>
-                            </div>
-                        {else}
-                        {/if}
-                    {/if}
-                </div>
+            <div id="contentModifiedFilesCheck">
+                <table class="table req">
+                    <thead>
+                    <tr>
+                        <th>{__('file')}</th>
+                    </tr>
+                    </thead>
+                    {foreach $modifiedFiles as $file}
+                        <tr class="filestate mod{$file@iteration % 2} modified">
+                            <td>{$file}</td>
+                        </tr>
+                    {/foreach}
+                </table>
             </div>
         </div>
+    {/if}
+</div>
+<div class="panel collapsed">
+    <div class="panel-heading{if $orphanedFiles|count > 0} accordion-toggle" data-toggle="collapse" data-target="#pageCheckOrphanedFiles" style="cursor:pointer"{else}"{/if}>
+        <h3 class="panel-title">
+            {if $orphanedFiles|count > 0}<i class="fa fas fa-plus"></i> {/if}
+            {__('fileCheckNumberOrphanedFiles')}: {$orphanedFiles|count}
+        </h3>
     </div>
-{/if}
-{if $orphanedFilesCheck}
-    <div class="panel panel-collapse">
-        <div class="panel-heading">
-            {__('fileCheckOrphanedFilesHeadline')}
+    {if $orphanedFiles|count > 0}
+        <div class="panel-body panel-collapse collapse" id="pageCheckOrphanedFiles">
             <p class="small text-muted">{__('fileCheckOrphanedFilesNote')}</p>
-        </div>
-        <div class="panel-body">
-            <div id="content" class="container-fluid">
-                <div id="pageCheckOrphanedFiles">
-                    {$alertList->displayAlertByKey('orphanedFilesError')}
-                    {if !$orphanedFilesError}
-                        {if isset($orphanedFiles) && $orphanedFiles|@count > 0}
-                            <div id="contentOrphanedFilesCheck">
-                                <div class="alert alert-info">
-                                    <strong>{__('fileCheckNumberOrphanedFiles')}:</strong> {$errorsCountOrphanedFiles}
-                                </div>
-                                <table class="table req">
-                                    <thead>
-                                        <tr>
-                                            <th>{__('file')}</th>
-                                        </tr>
-                                    </thead>
-                                    {foreach $orphanedFiles as $file}
-                                        <tr class="filestate mod{$file@iteration % 2} orphaned">
-                                            <td>{$file}</td>
-                                        </tr>
-                                    {/foreach}
-                                </table>
-                            </div>
-                        {else}
-                        {/if}
-                    {/if}
-                </div>
+            <div id="contentOrphanedFilesCheck">
+                <table class="table req">
+                    <thead>
+                        <tr>
+                            <th>{__('file')}</th>
+                        </tr>
+                    </thead>
+                    {foreach $orphanedFiles as $file}
+                        <tr class="filestate mod{$file@iteration % 2} orphaned">
+                            <td>{$file}</td>
+                        </tr>
+                    {/foreach}
+                </table>
+                <form method="post">
+                    {$jtl_token}
+                    <button class="btn btn-danger" name="delete-orphans" value="1" onclick="return confirmDelete();">
+                        <i class="fa fas fa-trash"></i> {__('delete')}
+                    </button>
+                </form>
             </div>
         </div>
-    </div>
-{/if}
+    {/if}
+</div>
+<script type="text/javascript">
+    function confirmDelete() {ldelim}
+        return confirm('{__('confirmDeleteText')}');
+    {rdelim}
+</script>
 {include file='tpl_inc/footer.tpl'}

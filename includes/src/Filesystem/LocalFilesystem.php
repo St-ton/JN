@@ -7,12 +7,12 @@
 namespace JTL\Filesystem;
 
 use Exception;
+use FilesystemIterator;
 use Generator;
 use JTL\Path;
-use SplFileInfo;
-use FilesystemIterator;
-use RecursiveIteratorIterator;
 use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
+use SplFileInfo;
 use Symfony\Component\Finder\Finder;
 
 /**
@@ -24,7 +24,7 @@ class LocalFilesystem extends AbstractFilesystem
     /**
      * {@inheritdoc}
      */
-    public function getMeta($path) : FileInfo
+    public function getMeta($path): FileInfo
     {
         $location = $this->applyPathPrefix($path);
 
@@ -34,7 +34,7 @@ class LocalFilesystem extends AbstractFilesystem
     /**
      * {@inheritdoc}
      */
-    public function get($path, $mode = null) :? string
+    public function get($path, $mode = null): ?string
     {
         $location = $this->applyPathPrefix($path);
 
@@ -48,7 +48,7 @@ class LocalFilesystem extends AbstractFilesystem
     /**
      * {@inheritdoc}
      */
-    public function put($path, $contents, $mode = null) : bool
+    public function put($path, $contents, $mode = null): bool
     {
         $location = $this->applyPathPrefix($path);
 
@@ -66,7 +66,7 @@ class LocalFilesystem extends AbstractFilesystem
     /**
      * {@inheritdoc}
      */
-    public function cwd() :? string
+    public function cwd(): ?string
     {
         return @\getcwd();
     }
@@ -74,7 +74,7 @@ class LocalFilesystem extends AbstractFilesystem
     /**
      * {@inheritdoc}
      */
-    public function chdir($path) : bool
+    public function chdir($path): bool
     {
         $location = $this->applyPathPrefix($path);
 
@@ -84,7 +84,7 @@ class LocalFilesystem extends AbstractFilesystem
     /**
      * {@inheritdoc}
      */
-    public function chgrp($path, $group) : bool
+    public function chgrp($path, $group): bool
     {
         $location = $this->applyPathPrefix($path);
 
@@ -94,7 +94,7 @@ class LocalFilesystem extends AbstractFilesystem
     /**
      * {@inheritdoc}
      */
-    public function chmod($path, $mode = null) : bool
+    public function chmod($path, $mode = null): bool
     {
         $location = $this->applyPathPrefix($path);
 
@@ -108,7 +108,7 @@ class LocalFilesystem extends AbstractFilesystem
     /**
      * {@inheritdoc}
      */
-    public function chown($path, $owner) : bool
+    public function chown($path, $owner): bool
     {
         $location = $this->applyPathPrefix($path);
 
@@ -118,7 +118,7 @@ class LocalFilesystem extends AbstractFilesystem
     /**
      * {@inheritdoc}
      */
-    public function move($path, $target) : bool
+    public function move($path, $target): bool
     {
         $location = $this->applyPathPrefix($path);
 
@@ -128,7 +128,7 @@ class LocalFilesystem extends AbstractFilesystem
     /**
      * {@inheritdoc}
      */
-    public function copy($path, $target) : bool
+    public function copy($path, $target): bool
     {
         $location = $this->applyPathPrefix($path);
 
@@ -138,7 +138,7 @@ class LocalFilesystem extends AbstractFilesystem
     /**
      * {@inheritdoc}
      */
-    public function delete($path) : bool
+    public function delete($path): bool
     {
         $location = $this->applyPathPrefix($path);
 
@@ -148,7 +148,7 @@ class LocalFilesystem extends AbstractFilesystem
     /**
      * {@inheritdoc}
      */
-    public function exists($path) : bool
+    public function exists($path): bool
     {
         $location = $this->applyPathPrefix($path);
 
@@ -158,7 +158,7 @@ class LocalFilesystem extends AbstractFilesystem
     /**
      * {@inheritdoc}
      */
-    public function makeDirectory($path, $mode = null, $recursive = false) : bool
+    public function makeDirectory($path, $mode = null, $recursive = false): bool
     {
         $location = $this->applyPathPrefix($path);
 
@@ -172,7 +172,7 @@ class LocalFilesystem extends AbstractFilesystem
     /**
      * {@inheritdoc}
      */
-    public function moveDirectory($from, $to, $overwrite = false) : bool
+    public function moveDirectory($from, $to, $overwrite = false): bool
     {
         $location    = $this->applyPathPrefix($from);
         $destination = $this->applyPathPrefix($to);
@@ -187,7 +187,7 @@ class LocalFilesystem extends AbstractFilesystem
     /**
      * {@inheritdoc}
      */
-    public function copyDirectory($from, $to, $mode = null) : bool
+    public function copyDirectory($from, $to, $mode = null): bool
     {
         $location    = $this->applyPathPrefix($from);
         $destination = $this->applyPathPrefix($to);
@@ -222,7 +222,7 @@ class LocalFilesystem extends AbstractFilesystem
     /**
      * {@inheritdoc}
      */
-    public function deleteDirectory($directory, $preserve = false) : bool
+    public function deleteDirectory($directory, $preserve = false): bool
     {
         $location = $this->applyPathPrefix($directory);
 
@@ -250,7 +250,7 @@ class LocalFilesystem extends AbstractFilesystem
     /**
      * {@inheritdoc}
      */
-    public function listContents($directory = '', $recursive = false) : Generator
+    public function listContents($directory = '', $recursive = false): Generator
     {
         $location = $this->applyPathPrefix($directory);
 
@@ -274,7 +274,7 @@ class LocalFilesystem extends AbstractFilesystem
      *
      * @return string
      */
-    protected function getFilePath(SplFileInfo $file) : string
+    protected function getFilePath(SplFileInfo $file): string
     {
         $location = $file->getPathname();
         $path     = $this->removePathPrefix($location);
@@ -287,12 +287,12 @@ class LocalFilesystem extends AbstractFilesystem
      *
      * @return FileInfo
      */
-    protected function mapFileInfo(SplFileInfo $file) : FileInfo
+    protected function mapFileInfo(SplFileInfo $file): FileInfo
     {
         $location = $this->removePathPrefix($file->getPathname());
 
         $options = [
-            'path' => (string)$location,
+            'path'     => (string)$location,
             'filename' => $file->getFilename(),
         ];
 
@@ -300,9 +300,9 @@ class LocalFilesystem extends AbstractFilesystem
             $options = \array_merge(
                 $options,
                 [
-                    'type' => $file->getType(),
+                    'type'  => $file->getType(),
                     'perms' => $file->getPerms(),
-                    'size' => $file->getSize(),
+                    'size'  => $file->getSize(),
                     'owner' => $file->getOwner(),
                     'group' => $file->getGroup(),
 
@@ -310,8 +310,8 @@ class LocalFilesystem extends AbstractFilesystem
                     'mTime' => $file->getMTime(),
                     'cTime' => $file->getCTime(),
 
-                    'readable' => $file->isReadable(),
-                    'writable' => $file->isWritable(),
+                    'readable'   => $file->isReadable(),
+                    'writable'   => $file->isWritable(),
                     'executable' => $file->isExecutable(),
                 ]
             );
@@ -322,7 +322,7 @@ class LocalFilesystem extends AbstractFilesystem
 
     /**
      * @param string $path
-     * @param int $mode
+     * @param int    $mode
      *
      * @return RecursiveIteratorIterator
      */
@@ -347,8 +347,8 @@ class LocalFilesystem extends AbstractFilesystem
     }
 
     /**
-     * @param Finder $finder
-     * @param string $archivePath
+     * @param Finder        $finder
+     * @param string        $archivePath
      * @param callable|null $callback
      * @return bool
      * @throws Exception
@@ -358,23 +358,25 @@ class LocalFilesystem extends AbstractFilesystem
         $zipArchive = new \ZipArchive();
         $count      = $finder->count();
         $index      = 0;
-        $basePath   = \rtrim($finder->getIterator()->getPath(), '/').'/';
-
+        $basePath   = \rtrim($this->getPathPrefix(), '/') . '/';
         if (($code = $zipArchive->open($archivePath, \ZipArchive::CREATE | \ZipArchive::OVERWRITE)) !== true) {
             throw new Exception('Archive file could not be created.', $code);
         }
 
         foreach ($finder->files() as $file) {
-            if (!$file->isDir()) {
-                $zipArchive->addFile($file->getRealpath(), \str_replace($basePath, '', $file->getRealpath()));
+            /** @var SplFileInfo $file */
+            $real = $file->getRealpath();
+            if ($real !== false && !$file->isDir()) {
+                $zipArchive->addFile($real, \str_replace($basePath, '', $real));
                 if (\is_callable($callback)) {
                     $callback($count, $index);
                     ++$index;
                 }
             }
         }
-
-        $zipArchive->close();
+        if ($zipArchive->close() !== true) {
+            throw new Exception('Archive file could not be created.');
+        }
 
         return true;
     }

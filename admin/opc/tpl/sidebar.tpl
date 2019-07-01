@@ -65,7 +65,7 @@
                     {assign var="groupId" value=$group->getName()|regex_replace:'/[^a-zA-Z0-9]/':'-'|lower}
                     <button class="portletGroupBtn" type="button"
                             data-toggle="collapse" data-target="#collapse-{$groupId}">
-                        {$group->getName()} <i class="fas fa-chevron-down"></i>
+                        {$group->getName()} <i class="fas fa-chevron-up"></i>
                     </button>
                     <div class="collapse show" id="collapse-{$groupId}">
                         {foreach $group->getPortlets() as $i => $portlet}

@@ -208,6 +208,10 @@ html, body {
           float: right;
           line-height: inherit;
         }
+
+        &.collapsed .fas::before {
+          content: '\f078';
+        }
       }
 
       .collapse {

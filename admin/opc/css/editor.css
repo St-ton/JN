@@ -380,6 +380,9 @@ html, body {
   float: right;
   line-height: inherit;
 }
+#opcSidebar #sidebarInnerPanel #portlets .portletGroupBtn.collapsed .fas::before {
+  content: "";
+}
 #opcSidebar #sidebarInnerPanel #portlets .collapse:after {
   content: " ";
   display: block;

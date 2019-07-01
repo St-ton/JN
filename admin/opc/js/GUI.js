@@ -659,7 +659,8 @@ class GUI
         let draftNameInput = $('#footerDraftNameInput');
         let draftName = draftNameInput.val();
 
-        if(draftName === '') {
+        if(draftName === '' || this.escapedDraftNameInput === true) {
+            this.escapedDraftNameInput = false;
             draftNameSpan.show();
         } else {
             this.io.changeDraftName(this.page.key, draftName).then(() => {
@@ -670,5 +671,15 @@ class GUI
 
         draftNameInput.hide();
         draftNameSpan.show();
+    }
+
+    onDraftNameInputKeydown()
+    {
+        if (event.key === 'Enter') {
+            $('#footerDraftNameInput').blur();
+        } else if(event.key === 'Escape') {
+            this.escapedDraftNameInput = true;
+            $('#footerDraftNameInput').blur();
+        }
     }
 }

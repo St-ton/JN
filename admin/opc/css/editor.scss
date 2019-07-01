@@ -349,10 +349,18 @@ html, body {
 
       #footerDraftName {
         cursor: pointer;
+        margin-bottom: 8px;
 
         i {
           margin-left: 8px;
         }
+      }
+
+      #footerDraftNameInput {
+        border: none;
+        padding: 0;
+        margin-bottom: 8px;
+        width: 100%;
       }
 
       .opc-draft-status {

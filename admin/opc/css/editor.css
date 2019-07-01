@@ -496,9 +496,16 @@ html, body {
 }
 #opcSidebar #sidebarFooter #savePublishPanel #footerDraftName {
   cursor: pointer;
+  margin-bottom: 8px;
 }
 #opcSidebar #sidebarFooter #savePublishPanel #footerDraftName i {
   margin-left: 8px;
+}
+#opcSidebar #sidebarFooter #savePublishPanel #footerDraftNameInput {
+  border: none;
+  padding: 0;
+  margin-bottom: 8px;
+  width: 100%;
 }
 #opcSidebar #sidebarFooter #savePublishPanel .opc-draft-status {
   color: #BDBDBD;

@@ -112,7 +112,7 @@
                 <span>{$page->getName()}</span><i class="fas fa-pencil-alt"></i>
             </label>
             <input type="text" id="footerDraftNameInput" onblur="opc.gui.onFinishEditDraftName()"
-                   onkeydown="if(event.key==='Enter'){ opc.gui.onFinishEditDraftName() }" style="display:none">
+                   onkeydown="opc.gui.onDraftNameInputKeydown()" style="display:none">
             <div class="opc-draft-status" id="opcDraftStatus">
                 {include file="./draftstatus.tpl"}
             </div>

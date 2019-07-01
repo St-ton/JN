@@ -2,7 +2,7 @@
 
 Dear {$Kunde->cVorname} {$Kunde->cNachname},<br>
 <br>
-The tracking status for order no. {$Bestellung->cBestellNr} has changed.<br>
+the tracking status for order no. {$Bestellung->cBestellNr} has changed.<br>
 <br>
 {foreach $Bestellung->oLieferschein_arr as $oLieferschein}
     {if !$oLieferschein->getEmailVerschickt()}
@@ -29,17 +29,17 @@ The tracking status for order no. {$Bestellung->cBestellNr} has changed.<br>
 
                             {* Seriennummer *}
                             {if $Position->cSeriennummer|strlen > 0}
-                                <br>Serialnumber: {$Position->cSeriennummer}
+                                <br>Serial number: {$Position->cSeriennummer}
                             {/if}
 
                             {* MHD *}
                             {if $Position->dMHD|strlen > 0}
-                                <br>Best before: {$Position->dMHD_de}
+                                <br>Shelf life expiration date: {$Position->dMHD_de}
                             {/if}
 
                             {* Charge *}
                             {if $Position->cChargeNr|strlen > 0}
-                                <br>Charge: {$Position->cChargeNr}
+                                <br>Batch: {$Position->cChargeNr}
                             {/if}
                         {else}
                             <strong>{$Position->cName}</strong>
@@ -50,13 +50,13 @@ The tracking status for order no. {$Bestellung->cBestellNr} has changed.<br>
         </table>
         {foreach $oLieferschein->oVersand_arr as $oVersand}
             {if $oVersand->getIdentCode()|strlen > 0}
-                <br><strong>Tracking-Url:</strong> <a href="{$oVersand->getLogistikVarUrl()}">{$oVersand->getIdentCode()}</a>
+                <br><strong>Tracking Url:</strong> <a href="{$oVersand->getLogistikVarUrl()}">{$oVersand->getIdentCode()}</a>
             {/if}
         {/foreach}
     {/if}
 {/foreach}<br>
 <br>
-You will be notified about the subsequent status of your order separately.<br>
+You will be notified of the status of your order separately.<br>
 <br>
 Yours sincerely,<br>
 {$Firma->cName}

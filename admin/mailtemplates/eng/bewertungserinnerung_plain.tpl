@@ -2,9 +2,9 @@
 
 Dear {$Kunde->cVorname}  {$Kunde->cNachname},
 
-We would love it if you could write a rating and share your experience with your recently products.
+We are always greatful for feedback on recently bought products. We would love for you to leave a rating!
 
-Please click on the product to rate it:
+Please click on the item to rate it:
 
 {foreach $Bestellung->Positionen as $Position}
     {if $Position->nPosTyp == 1}
@@ -18,7 +18,7 @@ Please click on the product to rate it:
     {/if}
 {/foreach}
 
-Thank you for sharing!
+Thanks for sharing your feedback!
 
 
 Yours sincerely,

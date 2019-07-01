@@ -9,6 +9,7 @@ class GUI
         this.configSaveCb  = noop;
         this.imageSelectCB = noop;
         this.inPreviewMode = false;
+        this.loaderShown   = false;
     }
 
     init(iframe, previewFrame, tutorial, error)
@@ -40,15 +41,16 @@ class GUI
             'publishModal',
             'publishForm',
             'draftName',
+            'checkPublishNot',
+            'checkPublishNow',
+            'checkPublishSchedule',
+            'checkPublishInfinite',
             'publishFrom',
-            'publishFromEnabled',
             'publishTo',
-            'publishToEnabled',
             'btnImport',
             'btnExport',
             'btnHelp',
             'btnPublish',
-            'btnSave',
             'btnClose',
             'btnImportBlueprint',
             'revisionList',
@@ -64,6 +66,7 @@ class GUI
             'btnDisplayWidthTablet',
             'btnDisplayWidthLaptop',
             'btnDisplayWidthDesktop',
+            'unsavedState',
         ]);
 
         this.missingConfigButtons.hide();
@@ -72,15 +75,15 @@ class GUI
             return this.showError(error);
         } else {
             this.showLoader();
-            this.publishFrom.datetimepicker({locale: 'de', useCurrent: false});
-            this.publishTo.datetimepicker({locale: 'de', useCurrent: false});
+            this.initDateTimePicker(this.publishFrom);
+            this.initDateTimePicker(this.publishTo);
 
-            this.publishFrom.on("dp.change", e => {
-                this.publishTo.data("DateTimePicker").minDate(e.date);
+            this.publishFrom.on("change.datetimepicker", e => {
+                this.publishTo.datetimepicker('minDate', e.date);
             });
 
-            this.publishTo.on("dp.change", e => {
-                this.publishFrom.data("DateTimePicker").maxDate(e.date);
+            this.publishTo.on("change.datetimepicker", e => {
+                this.publishFrom.datetimepicker('maxDate', e.date);
             });
 
             this.updateBlueprintList();
@@ -88,14 +91,47 @@ class GUI
         }
     }
 
+    initDateTimePicker(elm)
+    {
+        elm.datetimepicker({
+            locale: 'de',
+            useCurrent: false,
+            icons: {
+                time: 'far fa-clock',
+                date: 'far fa-calendar',
+                up: 'fas fa-chevron-up',
+                down: 'fas fa-chevron-down',
+                previous: 'fas fa-chevron-left',
+                next: 'fas fa-chevron-right',
+                today: 'far fa-calendar-check',
+                clear: 'fas fa-trash',
+                close: 'fas fa-times',
+            },
+        });
+    }
+
     showLoader()
     {
+        this.loaderModal.one('shown.bs.modal', () => {
+            this.loaderShown = true;
+        });
+
         this.loaderModal.modal('show');
     }
 
     hideLoader()
     {
-        this.loaderModal.modal('hide');
+        this.loaderModal.one('hidden.bs.modal', () => {
+            this.loaderShown = false;
+        });
+
+        if(this.loaderShown) {
+            this.loaderModal.modal('hide');
+        } else {
+            this.loaderModal.one('shown.bs.modal', () => {
+                this.loaderModal.modal('hide');
+            });
+        }
     }
 
     showRestoreUnsaved()
@@ -188,7 +224,7 @@ class GUI
         }
     }
 
-    onBtnSave(e)
+    savePage()
     {
         this.showLoader();
         this.page.save()
@@ -204,14 +240,16 @@ class GUI
     {
         record = record || false;
 
-        // this.btnSave.find('i').html(enable ? '*' : '');
-
         if(enable) {
+            this.unsavedState.show();
+
             if(record) {
                 this.page.savePageToWebStorage();
                 this.unsavedRevision.show();
             }
         } else {
+            this.unsavedState.hide();
+
             if(record) {
                 this.page.clearPageWebStorage();
                 this.unsavedRevision.hide();
@@ -413,67 +451,125 @@ class GUI
     onBtnPublish(e)
     {
         if(typeof this.page.publishFrom === 'string' && this.page.publishFrom.length > 0) {
+            this.setPublishSchedule();
             this.publishFrom.val(this.page.publishFrom);
-            this.publishFrom.prop('disabled', false);
-            this.publishFromEnabled.prop('checked', true);
-        } else {
-            this.publishFrom.val('Unveröffentlicht');
-            this.publishFrom.prop('disabled', true);
-            this.publishFromEnabled.prop('checked', false);
-        }
 
-        if(typeof this.page.publishTo === 'string' && this.page.publishTo.length > 0) {
-            this.publishTo.val(this.page.publishTo);
-            this.publishTo.prop('disabled', false);
-            this.publishToEnabled.prop('checked', true);
+            if(typeof this.page.publishTo === 'string' && this.page.publishTo.length > 0) {
+                this.unsetInfiniteSchedule();
+                this.publishTo.val(this.page.publishTo);
+            } else {
+                this.setInfiniteSchedule();
+            }
         } else {
-            this.publishTo.val('Auf unbestimmte Zeit öffentlich');
-            this.publishTo.prop('disabled', true);
-            this.publishToEnabled.prop('checked', false);
+            this.setUnpublished();
         }
 
         this.draftName.val(this.page.name);
         this.publishModal.modal('show');
     }
 
+    onChangePublishStrategy()
+    {
+        if (this.checkPublishNot.prop('checked')) {
+            this.setUnpublished();
+        } else if (this.checkPublishNow.prop('checked')) {
+            this.setPublishNow();
+        } else {
+            this.setPublishSchedule();
+        }
+    }
+
+    onChangePublishInfinite()
+    {
+        if(this.checkPublishInfinite.prop('checked')) {
+            this.setInfiniteSchedule();
+        } else {
+            this.unsetInfiniteSchedule();
+        }
+    }
+
+    setUnpublished()
+    {
+        this.checkPublishNot.prop('checked', true);
+        this.publishFrom.prop('disabled', true);
+        this.publishFrom.val('Unveröffentlicht');
+        this.publishTo.prop('disabled', true);
+        this.publishTo.val('Auf unbestimmte Zeit');
+        this.checkPublishInfinite.prop('checked', true);
+        this.checkPublishInfinite.prop('disabled', true);
+    }
+
+    setPublishNow()
+    {
+        this.checkPublishNow.prop('checked', true);
+        this.publishFrom.prop('disabled', true);
+        this.publishFrom.val('Jetzt');
+        this.publishTo.prop('disabled', true);
+        this.publishTo.val('Auf unbestimmte Zeit');
+        this.checkPublishInfinite.prop('checked', true);
+        this.checkPublishInfinite.prop('disabled', true);
+    }
+
+    setPublishSchedule()
+    {
+        this.checkPublishSchedule.prop('checked', true);
+        this.publishFrom.prop('disabled', false);
+        this.publishFrom.val(moment().format(localDateFormat));
+        this.checkPublishInfinite.prop('disabled', false);
+    }
+
+    setInfiniteSchedule()
+    {
+        this.checkPublishInfinite.prop('checked', true);
+        this.publishTo.prop('disabled', true);
+        this.publishTo.val('Auf unbestimmte Zeit');
+        this.publishFrom.datetimepicker('maxDate', false);
+    }
+
+    unsetInfiniteSchedule()
+    {
+        this.checkPublishInfinite.prop('checked', false);
+        this.publishTo.prop('disabled', false);
+        this.publishTo.val(moment(this.publishFrom.val(), localDateFormat).add(1, 'M').format(localDateFormat));
+    }
+
     onPublishForm (e)
     {
         e.preventDefault();
 
-        this.page.name        = this.draftName.val();
-        this.page.publishFrom = this.publishFromEnabled.prop('checked') ? this.publishFrom.val() : null;
-        this.page.publishTo   = this.publishToEnabled.prop('checked') ? this.publishTo.val() : null;
+        this.page.name = this.draftName.val();
 
-        this.page.publicate().catch(er => this.showError(er.error.message));
-        this.publishModal.modal('hide');
-    }
-
-    onPublishFromEnabled (e)
-    {
-        if(this.publishFromEnabled.prop('checked')) {
-            this.publishFrom.val(moment().format(localDateFormat));
-            this.publishFrom.prop('disabled', false);
+        if (this.checkPublishNot.prop('checked')) {
+            this.page.publishFrom = null;
+        } else if (this.checkPublishNow.prop('checked')) {
+            this.page.publishFrom = moment().format(localDateFormat);
         } else {
-            this.publishFrom.val('Unveröffentlicht');
-            this.publishFrom.prop('disabled', true);
-            this.publishTo.data("DateTimePicker").minDate(false);
-        }
-    }
+            let datetime = moment(this.publishFrom.val(), localDateFormat);
 
-    onPublishToEnabled (e)
-    {
-        if(this.publishToEnabled.prop('checked')) {
-            if(this.publishFromEnabled.prop('checked')) {
-                this.publishTo.val(moment(this.publishFrom.val(), localDateFormat).add(1, 'M').format(localDateFormat));
-            } else {
-                this.publishTo.val(moment().add(1, 'M').format(localDateFormat));
+            if (datetime.isValid() === false) {
+                throw this.showError('Invalid From Date');
             }
-            this.publishTo.prop('disabled', false);
-        } else {
-            this.publishTo.val('Auf unbestimmte Zeit öffentlich');
-            this.publishTo.prop('disabled', true);
-            this.publishFrom.data('DateTimePicker').maxDate(false);
+
+            this.page.publishFrom = this.publishFrom.val();
         }
+
+        if (this.checkPublishInfinite.prop('checked')) {
+            this.page.publishTo = null;
+        } else {
+            let datetime = moment(this.publishTo.val(), localDateFormat);
+
+            if (datetime.isValid() === false) {
+                throw this.showError('Invalid To Date');
+            }
+
+            this.page.publishTo = this.publishTo.val();
+        }
+
+        this.page.publicate()
+            .catch(er => this.showError(er.error.message))
+            .then(() => this.io.getDraftStatusHtml(this.page.key));
+
+        this.publishModal.modal('hide');
     }
 
     selectImageProp(propName)

@@ -158,7 +158,7 @@ msgid "draftPublic"
 msgstr "Diesen Entwurf veröffentlichen"
 
 msgid "draftName"
-msgstr "Interner Name des Entwurfes"
+msgstr "Interner Name"
 
 msgid "restoreChanges"
 msgstr "Lokale Änderungen wiederherstellen"

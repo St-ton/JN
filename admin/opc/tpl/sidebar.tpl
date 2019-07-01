@@ -113,38 +113,21 @@
             </label>
             <input type="text" id="footerDraftNameInput" onblur="opc.gui.onFinishEditDraftName()"
                    onkeydown="if(event.key==='Enter'){ opc.gui.onFinishEditDraftName() }" style="display:none">
-            <div class="opc-draft-status">
-                {$draftStatus = $page->getStatus(0)}
-                {if $draftStatus === 0}
-                    {if $page->getPublishTo() === null}
-                        <span class="opc-public">öffentlich seit</span>
-                        {$page->getPublishFrom()|date_format:'%d.%m.%Y - %H:%M'}
-                    {else}
-                        <span class="opc-public">öffentlich bis</span>
-                        {$page->getPublishTo()|date_format:'%d.%m.%Y - %H:%M'}
-                    {/if}
-                {elseif $draftStatus === 1}
-                    <span class="opc-planned">geplant ab</span>
-                    {$page->getPublishFrom()|date_format:'%d.%m.%Y - %H:%M'}
-                {elseif $draftStatus === 2}
-                    <span class="opc-status-draft">keine Veröffentlichung geplant</span>
-                {elseif $draftStatus === 3}
-                    <span class="opc-backdate">abgelaufen am</span>
-                    {$page->getPublishTo()|date_format:'%d.%m.%Y - %H:%M'}
-                {/if}
+            <div class="opc-draft-status" id="opcDraftStatus">
+                {include file="./draftstatus.tpl"}
             </div>
             <div id="savePublishButtons">
-                <button type="button" class="opc-btn-secondary opc-small-btn">
-                    Entwurf speichern
+                <button type="button" class="opc-btn-secondary opc-small-btn" onclick="opc.gui.savePage()">
+                    Speichern <i class="fas fa-asterisk" id="unsavedState" style="display: none"></i>
                 </button>
                 <button type="button" class="opc-btn-primary opc-small-btn" id="btnPublish">
-                    Speichern & Veröffentlichen
+                    Veröffentlichen
                 </button>
             </div>
         </div>
         <div id="previewToolbar">
             <label class="toggle-switch">
-                Preview
+                Vorschau
                 <input type="checkbox" onchange="opc.gui.onBtnPreview()">
                 <span class="toggle-slider"></span>
             </label>
@@ -164,39 +147,4 @@
             </ul>
         </div>
     </div>
-
-    {if false}
-    <div id="sidebarInnerPanel" class="container-fluid">
-        <div class="tab-content">
-
-            <div class="tab-pane" id="blueprints">
-                <div class="list-group">
-                    <div id="blueprintList"></div>
-                    <div class="list-group-item">
-                        <a href="#" class="blueprintButton btn" id="btnImportBlueprint">
-                            <i class="fa fa-upload"></i> <span>{__('Import blueprint')}</span>
-                        </a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="tab-pane" id="revisions">
-                <div class="list-group">
-                    <a class="list-group-item revisionBtn" href="#" data-revision-id="-1" id="unsavedRevision">
-                        <i>{__('Unsaved revision')}</i>
-                    </a>
-                    <a class="list-group-item revisionBtn" href="#" data-revision-id="0">
-                        {__('Current revision')}
-                    </a>
-                    <div id="revisionList"></div>
-                </div>
-            </div>
-
-            <div class="tab-pane" id="pagetree">
-                <div id="pageTreeView"></div>
-            </div>
-
-        </div>
-    </div>
-    {/if}
 </div>

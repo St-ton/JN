@@ -158,7 +158,7 @@ msgid "draftPublic"
 msgstr "Publish this draft"
 
 msgid "draftName"
-msgstr "Internal name of draft"
+msgstr "Internal name"
 
 msgid "restoreChanges"
 msgstr "Restoring local changes"

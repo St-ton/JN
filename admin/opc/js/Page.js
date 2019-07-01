@@ -198,8 +198,14 @@ class Page
     {
         withDom = withDom || false;
 
-        var result = {id: this.id, url: this.url, key: this.key, areas: {}};
-        var areas  = this.rootAreas;
+        var result = {
+            id:    this.id,
+            url:   this.url,
+            key:   this.key,
+            areas: {}
+        };
+
+        var areas = this.rootAreas;
 
         for(var i=0; i<areas.length; i++) {
             var area     = this.jq(areas[i]);

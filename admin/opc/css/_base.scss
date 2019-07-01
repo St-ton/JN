@@ -51,6 +51,37 @@
     outline: none;
   }
 
+  input[type=checkbox] ,
+  input[type=radio] {
+    display: none;
+
+    + label {
+      cursor: pointer;
+      margin: 0;
+      font-weight: 500;
+      display: inline-block;
+
+      &:before {
+        content: "\f0c8";
+        font-family: $fontawesome-mixed;
+        margin-right: 4px;
+      }
+    }
+
+    &:checked + label:before {
+      content: "\f14a";
+      font-weight: 900;
+    }
+
+    &:disabled + label {
+      color: $muted-text;
+
+      &:before {
+        color: $muted-text;
+      }
+    }
+  }
+
   .fas, .fa {
     vertical-align: middle;
     //vertical-align: initial;
@@ -89,6 +120,7 @@
     float: right;
   }
 
+  .opc-control ,
   .opc-filter-control {
     border: 1px solid $text-color;
     border-radius: 5px;
@@ -97,8 +129,18 @@
     color: inherit;
     padding: 8px;
     float: left;
-    margin-bottom: 24px;
     text-align: left;
+    font-size: 14px;
+
+    &:disabled {
+      background-color: $light-bg;
+      color: $muted-text;
+      border-color: $muted-text;
+    }
+  }
+
+  .opc-filter-control {
+    margin-bottom: 24px;
   }
 
   .toggle-switch {
@@ -118,6 +160,7 @@
     border-radius: 20px;
     vertical-align: middle;
     position: relative;
+    transition: 0.125s;
 
     &:before {
       position: absolute;
@@ -134,10 +177,11 @@
 
   input:checked + .toggle-slider {
     border-color: $text-color;
+    background: $text-color;
 
     &:before {
       transform: translateX(18px);
-      background: $text-color;
+      background: $light-bg;
     }
   }
 

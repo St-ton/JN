@@ -912,10 +912,10 @@ msgid "draft"
 msgstr "Entwurf"
 
 msgid "publicFrom"
-msgstr "Veröffentlichen ab"
+msgstr "ab"
 
 msgid "publicTill"
-msgstr "Veröffentlichen bis"
+msgstr "bis"
 
 msgid "replaced"
 msgstr "Ersetzt"

@@ -39,6 +39,36 @@
 #opc button, #opc input {
   outline: none;
 }
+#opc input[type=checkbox],
+#opc input[type=radio] {
+  display: none;
+}
+#opc input[type=checkbox] + label,
+#opc input[type=radio] + label {
+  cursor: pointer;
+  margin: 0;
+  font-weight: 500;
+  display: inline-block;
+}
+#opc input[type=checkbox] + label:before,
+#opc input[type=radio] + label:before {
+  content: "";
+  font-family: "Font Awesome 5 Free", FontAwesome, sans-serif;
+  margin-right: 4px;
+}
+#opc input[type=checkbox]:checked + label:before,
+#opc input[type=radio]:checked + label:before {
+  content: "";
+  font-weight: 900;
+}
+#opc input[type=checkbox]:disabled + label,
+#opc input[type=radio]:disabled + label {
+  color: #BDBDBD;
+}
+#opc input[type=checkbox]:disabled + label:before,
+#opc input[type=radio]:disabled + label:before {
+  color: #BDBDBD;
+}
 #opc .fas, #opc .fa {
   vertical-align: middle;
 }
@@ -70,6 +100,7 @@
 #opc .opc-float-right {
   float: right;
 }
+#opc .opc-control,
 #opc .opc-filter-control {
   border: 1px solid #435A6B;
   border-radius: 5px;
@@ -78,8 +109,17 @@
   color: inherit;
   padding: 8px;
   float: left;
-  margin-bottom: 24px;
   text-align: left;
+  font-size: 14px;
+}
+#opc .opc-control:disabled,
+#opc .opc-filter-control:disabled {
+  background-color: #F5F7FA;
+  color: #BDBDBD;
+  border-color: #BDBDBD;
+}
+#opc .opc-filter-control {
+  margin-bottom: 24px;
 }
 #opc .toggle-switch {
   cursor: pointer;
@@ -96,6 +136,7 @@
   border-radius: 20px;
   vertical-align: middle;
   position: relative;
+  transition: 0.125s;
 }
 #opc .toggle-slider:before {
   position: absolute;
@@ -110,10 +151,11 @@
 }
 #opc input:checked + .toggle-slider {
   border-color: #435A6B;
+  background: #435A6B;
 }
 #opc input:checked + .toggle-slider:before {
   transform: translateX(18px);
-  background: #435A6B;
+  background: #F5F7FA;
 }
 #opc ::placeholder {
   color: #BDBDBD;
@@ -222,6 +264,54 @@ html, body {
 #opc ::-webkit-scrollbar-thumb:hover, #opc ::-webkit-scrollbar-thumb:active {
   background: #9b9b9b;
   border: 1px solid #525252;
+}
+#opc .modal {
+  font-size: 14px;
+  color: #435A6B;
+}
+#opc .modal label {
+  margin-bottom: 8px;
+}
+#opc .modal .opc-control {
+  margin-bottom: 16px;
+}
+#opc .modal .modal-content {
+  border: none;
+  border-radius: 0;
+}
+#opc .modal .modal-header {
+  padding: 12px 24px;
+  background-color: #5cbcf6;
+  color: #fff;
+  border: none;
+  border-radius: 0;
+}
+#opc .modal .modal-header h5 {
+  font-size: 16px;
+  font-weight: normal;
+}
+#opc .modal .modal-header .opc-header-btn {
+  font-size: 16px;
+}
+#opc .modal .modal-body {
+  padding: 24px;
+}
+#opc .modal .modal-body .form-group {
+  margin: 0;
+  padding: 0;
+  margin-bottom: 16px;
+}
+#opc .modal .modal-footer {
+  border: none;
+  padding: 24px;
+  padding-top: 0;
+  margin-top: 24px;
+}
+#opc .modal .modal-footer button {
+  padding: 8px 32px;
+}
+#opc .modal .modal-footer > :not(:last-child) {
+  margin-right: 16px;
 }
 
 #opcSidebar {
@@ -398,6 +488,12 @@ html, body {
   height: 135px;
   background-color: #fff;
 }
+#opcSidebar #sidebarFooter #savePublishPanel #unsavedState {
+  font-size: 8px;
+  position: relative;
+  top: -4px;
+  color: #ff9b66;
+}
 #opcSidebar #sidebarFooter #savePublishPanel #footerDraftName {
   cursor: pointer;
 }
@@ -507,48 +603,57 @@ html, body {
   transition: all 0.2s ease-in-out;
 }
 
-.modal .modal-header {
-  background-color: #5cbcf6;
-  color: #fff;
-}
-.modal .modal-header button {
-  color: #fff;
-  opacity: 1;
-}
-.modal .modal-body {
-  overflow: hidden;
-}
-.modal .modal-body .nav.nav-tabs {
-  margin: -15px -15px 15px -15px;
-}
-.modal .modal-content .btn {
-  background-image: none;
-  border: none;
-  border-radius: 5px;
-  padding: 8px 16px;
-  font-size: 16px;
-}
-.modal .modal-content .btn-danger {
-  background-color: #bbb;
-}
-.modal .modal-content .btn-primary {
-  background-color: #5cbcf6;
-}
-.modal .modal-content .btn-xs {
-  padding: 1px 5px;
-  font-size: 12px;
-  border-radius: 0;
-}
-.modal .modal-content .btn-sm {
-  padding: 5px 10px;
-  font-size: 16px;
-  line-height: 1.5;
-}
-.modal .modal-content .input-group-addon {
-  min-width: 128px;
-  text-align: left;
-}
+/*
+.modal {
+    .modal-header {
+        background-color: $primary-color;
+        color: #fff;
 
+        button {
+            color: #fff;
+            opacity: 1;
+        }
+    }
+
+    .modal-body {
+        overflow: hidden;
+        .nav.nav-tabs {
+            margin: -15px -15px 15px -15px;
+        }
+    }
+
+    .modal-content {
+        .btn {
+            background-image: none;
+            border: none;
+            border-radius: 5px;
+            padding: 8px 16px;
+            font-size: 16px;
+        }
+        .btn-danger {
+            background-color: #bbb;
+        }
+        .btn-primary {
+            background-color: $primary-color;
+        }
+        .btn-xs {
+            padding: 1px 5px;
+            font-size: 12px;
+            border-radius: 0;
+        }
+        .btn-sm {
+            padding: 5px 10px;
+            font-size: 16px;
+            line-height: 1.5;
+        }
+
+        .input-group-addon {
+            min-width: 128px;
+            text-align: left;
+        }
+    }
+}
+*/
 #tourForm .tour-label {
   padding-left: 0;
   width: 100%;

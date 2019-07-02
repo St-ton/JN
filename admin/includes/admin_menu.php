@@ -9,11 +9,9 @@
 /** @var array $adminMenu */
 $adminMenu = [
     __('Presentation')   => [
-        __('Template') => [
-            __('Template settings') => (object)[
-                'link'   => 'shoptemplate.php',
-                'rights' => 'DISPLAY_TEMPLATE_VIEW',
-            ],
+        __('Template settings') => (object)[
+            'link'   => 'shoptemplate.php',
+            'rights' => 'DISPLAY_TEMPLATE_VIEW',
         ],
         __('Images')   => [
             __('Settings')      => (object)[
@@ -168,22 +166,9 @@ $adminMenu = [
                 'rights' => 'MODULE_SAVED_BASKETS_VIEW',
             ],
         ],
-        __('Payments')      => [
-            __('Method of payment') => (object)[
-                'link'   => 'zahlungsarten.php',
-                'rights' => 'ORDER_PAYMENT_VIEW',
-            ],
-            //            __('Amazon Payments') => (object)[
-            //                'link' => 'premiumplugin.php?plugin_id=s360_amazon_lpa_shop4',
-            //                'rights' => 'PLUGIN_ADMIN_VIEW',
-            //                'partner' => true
-            //            ],
-            //            __('Skrill') => (object)[
-            //                // TODO: correct link and rights
-            //                'link' => '',
-            //                'rights' => '',
-            //                'partner' => true
-            //            ],
+        __('Method of payment') => (object)[
+            'link'   => 'zahlungsarten.php',
+            'rights' => 'ORDER_PAYMENT_VIEW',
         ],
         __('Delivery')      => [
             __('Shipping methods')     => (object)[
@@ -403,21 +388,19 @@ $adminMenu = [
         ],
     ],
     __('Plugins')        => [
-        __('Overview') => [
-//            __('Plug-in marketplace') => (object)[
-//                'link' => 'marktplatz.php',
-//                'rights' => 'PLUGIN_ADMIN_VIEW',
-//            ],
-            __('Plug-in administration') => (object)[
-                'link'   => 'pluginverwaltung.php',
-                'rights' => 'PLUGIN_ADMIN_VIEW',
-            ],
-            __('Plug-in profiler')       => (object)[
-                'link'   => 'profiler.php',
-                'rights' => 'PROFILER_VIEW',
-            ],
+//        __('Plug-in marketplace') => (object)[
+//            'link' => 'marktplatz.php',
+//            'rights' => 'PLUGIN_ADMIN_VIEW',
+//        ],
+        __('Plug-in administration') => (object)[
+            'link'   => 'pluginverwaltung.php',
+            'rights' => 'PLUGIN_ADMIN_VIEW',
         ],
-        __('Plugins')  => 'DYNAMIC_PLUGINS',
+        __('Plug-in profiler')       => (object)[
+            'link'   => 'profiler.php',
+            'rights' => 'PROFILER_VIEW',
+        ],
+        __('My Plugins')  => 'DYNAMIC_PLUGINS',
     ],
 ];
 

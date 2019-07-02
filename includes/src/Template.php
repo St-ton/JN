@@ -570,9 +570,7 @@ class Template
                         }
                         // get the tag-content of "TextAreaValue"; trim leading and trailing spaces
                         $textLines = \mb_split("\n", (string)$XMLSetting->TextAreaValue);
-                        \array_walk($textLines, function (&$szLine) {
-                            $szLine = \trim($szLine);
-                        });
+                        \array_walk($textLines, '\trim');
                         $setting->cTextAreaValue = \implode("\n", $textLines);
                     }
                     foreach ($section->oSettings_arr as $_setting) {

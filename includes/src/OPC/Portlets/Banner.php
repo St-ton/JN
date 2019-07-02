@@ -9,8 +9,6 @@ namespace JTL\OPC\Portlets;
 use JTL\Catalog\Product\Artikel;
 use JTL\OPC\InputType;
 use JTL\OPC\Portlet;
-use JTL\OPC\PortletInstance;
-use JTL\Shop;
 
 /**
  * Class Banner

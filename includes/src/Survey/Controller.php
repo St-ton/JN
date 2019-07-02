@@ -8,6 +8,7 @@ namespace JTL\Survey;
 
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
+use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Nice;
@@ -477,7 +478,7 @@ class Controller
                                 return $questionID;
                             }
                         } elseif ($type === QuestionType::MATRIX_MULTI) {
-                            if (\is_array($post[$idx]) && \count($post[$idx]) > 0) {
+                            if (GeneralObject::hasCount($idx, $_POST)) {
                                 $exists = false;
                                 foreach ($post[$idx] as $givenMatrix) {
                                     [$questionIDAntwortTMP] = \explode('_', $givenMatrix);

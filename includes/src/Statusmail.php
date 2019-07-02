@@ -8,6 +8,7 @@ namespace JTL;
 
 use DateTime;
 use InvalidArgumentException;
+use JTL\Alert\Alert;
 use JTL\Cron\LegacyCron;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
@@ -98,9 +99,19 @@ class Statusmail
      */
     private function createCronJob(int $id, int $nAlleXStunden): bool
     {
-        $d = new DateTime();
-        $d->modify('+1 days');
+        $types     = [
+            24  => ['name' => __('intervalDay'), 'date' => 'tomorrow'],
+            168 => ['name' => __('intervalWeek'), 'date' => 'next week'],
+            720 => ['name' => __('intervalMonth'), 'date' => 'first day of next month']
+        ];
+        $startDate = date('Y-m-d', strtotime($types[$nAlleXStunden]['date']));
+        $d         = new DateTime($startDate);
         $d->setTime(0, 0);
+        Shop::Container()->getAlertService()->addAlert(
+            Alert::TYPE_INFO,
+            sprintf(__('nextStatusMail'), $types[$nAlleXStunden]['name'], $d->format('Y-m-d')),
+            'nextStatusMail' . $nAlleXStunden
+        );
         $cron = new LegacyCron(
             0,
             $id,
@@ -170,8 +181,6 @@ class Statusmail
             __('contentTypeCountRatings')                   => 8,
             __('contentTypeCountRatingsLocked')             => 9,
             __('contentTypeCountRatingDepositPayed')        => 10,
-            __('contentTypeCountTags')                      => 11,
-            __('contentTypeCountTagsLocked')                => 12,
             __('contentTypeCountCustomerRecruited')         => 13,
             __('contentTypeCountCustomerRecruitedOrdered')  => 14,
             __('contentTypeCountSentWishlists')             => 15,
@@ -459,52 +468,6 @@ class Statusmail
     }
 
     /**
-     * Holt die Anzahl von Tags für einen bestimmten Zeitraum
-     *
-     * @return int
-     */
-    private function getTagCount(): int
-    {
-        return (int)$this->db->queryPrepared(
-            'SELECT COUNT(*) AS cnt
-                FROM ttagkunde
-                JOIN ttag 
-                    ON ttag.kTag = ttagkunde.kTag
-                    AND ttag.nAktiv = 1
-                WHERE ttagkunde.dZeit >= :from
-                    AND ttagkunde.dZeit < :to',
-            [
-                'from' => $this->dateStart,
-                'to'   => $this->dateEnd
-            ],
-            ReturnType::SINGLE_OBJECT
-        )->cnt;
-    }
-
-    /**
-     * Holt die Anzahl von Tags für einen bestimmten Zeitraum die nicht freigeschaltet wurden
-     *
-     * @return int
-     */
-    private function getNonApprovedTagsCounts(): int
-    {
-        return (int)$this->db->queryPrepared(
-            'SELECT COUNT(*) AS cnt
-                FROM ttagkunde
-                JOIN ttag 
-                    ON ttag.kTag = ttagkunde.kTag
-                    AND ttag.nAktiv = 0
-                WHERE ttagkunde.dZeit >= :from
-                    AND ttagkunde.dZeit < :to',
-            [
-                'from' => $this->dateStart,
-                'to'   => $this->dateEnd
-            ],
-            ReturnType::SINGLE_OBJECT
-        )->cnt;
-    }
-
-    /**
      * Holt die Anzahl Kunden die geworben wurden für einen bestimmten Zeitraum
      *
      * @return int
@@ -782,7 +745,6 @@ class Statusmail
         $mail->nAnzahlBewertungenNichtFreigeschaltet    = -1;
         $mail->oAnzahlGezahltesGuthaben                 = -1;
         $mail->nAnzahlTags                              = -1;
-        $mail->nAnzahlTagsNichtFreigeschaltet           = -1;
         $mail->nAnzahlGeworbenerKunden                  = -1;
         $mail->nAnzahlErfolgreichGeworbenerKunden       = -1;
         $mail->nAnzahlVersendeterWunschlisten           = -1;
@@ -831,12 +793,6 @@ class Statusmail
                     break;
                 case 10:
                     $mail->oAnzahlGezahltesGuthaben = $this->getRatingCreditsCount();
-                    break;
-                case 11:
-                    $mail->nAnzahlTags = $this->getTagCount();
-                    break;
-                case 12:
-                    $mail->nAnzahlTagsNichtFreigeschaltet = $this->getNonApprovedTagsCounts();
                     break;
                 case 13:
                     $mail->nAnzahlGeworbenerKunden = $this->getNewCustomerPromotionsCount();
@@ -951,15 +907,18 @@ class Statusmail
         $nIntervall              = (int)$statusMail->nInterval;
         switch ($nIntervall) {
             case 1:
-                $interval    = 'day';
+                $startDate   = date('Y-m-d', strtotime('yesterday'));
+                $endDate     = date('Y-m-d', strtotime('today'));
                 $intervalLoc = 'Tägliche';
                 break;
             case 7:
-                $interval    = 'week';
+                $startDate   = date('Y-m-d', strtotime('last week monday'));
+                $endDate     = date('Y-m-d', strtotime('last week sunday'));
                 $intervalLoc = 'Wöchentliche';
                 break;
             case 30:
-                $interval    = 'month';
+                $startDate   = date('Y-m-d', strtotime('first day of previous month'));
+                $endDate     = date('Y-m-d', strtotime('last day of previous month'));
                 $intervalLoc = 'Monatliche';
                 break;
             default:
@@ -967,11 +926,7 @@ class Statusmail
                 break;
         }
 
-        $data = $this->generate(
-            $statusMail,
-            \date_create()->modify('-1 ' . $interval)->format('Y-m-d H:i:s'),
-            \date_create()->format('Y-m-d H:i:s')
-        );
+        $data = $this->generate($statusMail, $startDate, $endDate);
         if ($data) {
             $data->cIntervall = $intervalLoc . ' Status-Email';
 

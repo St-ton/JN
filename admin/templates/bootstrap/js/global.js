@@ -44,10 +44,6 @@ function get_list_callback(type, id) {
             return (id == 0) ? 'getCategoryList' :
                 'getCategoryListFromString';
 
-        case 'tag':
-            return (id == 0) ? 'getTagList' :
-                'getTagListFromString';
-
         case 'attribute':
             return (id == 0) ? 'getAttributeList' :
                 'getAttributeListFromString';

@@ -8,6 +8,7 @@ namespace JTL\Extensions;
 
 use JTL\DB\ReturnType;
 use JTL\Catalog\Category\Kategorie;
+use JTL\Helpers\GeneralObject;
 use JTL\Shop;
 use stdClass;
 
@@ -150,7 +151,7 @@ class AuswahlAssistentOrt
                     }
                 }
             }
-            if (isset($params['kLink_arr']) && \is_array($params['kLink_arr']) && \count($params['kLink_arr']) > 0) {
+            if (GeneralObject::hasCount('kLink_arr', $params)) {
                 foreach ($params['kLink_arr'] as $key) {
                     if ((int)$key > 0) {
                         $ins                          = new stdClass();
@@ -237,23 +238,21 @@ class AuswahlAssistentOrt
             }
         }
         // Ort Spezialseite
-        if (isset($params['kLink_arr'])
-            && \is_array($params['kLink_arr'])
-            && \count($params['kLink_arr']) > 0
-        ) {
+        if (GeneralObject::hasCount('kLink_arr', $params)) {
             foreach ($params['kLink_arr'] as $key) {
-                if ((int)$key > 0) {
-                    if ($update) {
-                        if (self::isLinkTaken(
-                            $key,
-                            $params['kSprache'],
-                            $params['kAuswahlAssistentGruppe']
-                        )) {
-                            $checks['kLink_arr'] = 1;
-                        }
-                    } elseif (self::isLinkTaken($key, $params['kSprache'])) {
+                if ((int)$key <= 0) {
+                    continue;
+                }
+                if ($update) {
+                    if (self::isLinkTaken(
+                        $key,
+                        $params['kSprache'],
+                        $params['kAuswahlAssistentGruppe']
+                    )) {
                         $checks['kLink_arr'] = 1;
                     }
+                } elseif (self::isLinkTaken($key, $params['kSprache'])) {
+                    $checks['kLink_arr'] = 1;
                 }
             }
         }

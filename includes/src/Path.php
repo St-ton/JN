@@ -138,12 +138,12 @@ class Path
 
         $up = false;
         foreach (\explode('/', $path) as $chunk) {
-            if ('..' === $chunk && ($absolute || $up)) {
+            if ($chunk === '..' && ($absolute || $up)) {
                 \array_pop($parts);
-                $up = !(empty($parts) || '..' === \end($parts));
-            } elseif ('.' !== $chunk && '' !== $chunk) {
+                $up = !(empty($parts) || \end($parts) === '..');
+            } elseif ($chunk !== '.' && $chunk !== '') {
                 $parts[] = $chunk;
-                $up      = '..' !== $chunk;
+                $up      = $chunk !== '..';
             }
         }
 

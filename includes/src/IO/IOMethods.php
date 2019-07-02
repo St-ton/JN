@@ -20,6 +20,7 @@ use JTL\DB\ReturnType;
 use JTL\Catalog\Product\EigenschaftWert;
 use JTL\Extensions\AuswahlAssistent;
 use JTL\Helpers\Cart;
+use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Product;
 use JTL\Helpers\ShippingMethod;
 use JTL\Helpers\Text;
@@ -86,7 +87,8 @@ class IOMethods
                         ->register('getRegionsByCountry', [$this, 'getRegionsByCountry'])
                         ->register('checkDeliveryCountry', [$this, 'checkDeliveryCountry'])
                         ->register('setSelectionWizardAnswers', [$this, 'setSelectionWizardAnswers'])
-                        ->register('getCitiesByZip', [$this, 'getCitiesByZip']);
+                        ->register('getCitiesByZip', [$this, 'getCitiesByZip'])
+                        ->register('getOpcDraftsHtml', [$this, 'getOpcDraftsHtml']);
     }
 
     /**
@@ -178,14 +180,16 @@ class IOMethods
         if ($amount <= 0 || $productID <= 0) {
             return $objResponse;
         }
-        $product = new Artikel();
-        $product->fuelleArtikel($productID, Artikel::getDefaultOptions());
+        $product               = new Artikel();
+        $options               = Artikel::getDefaultOptions();
+        $options->nStueckliste = 1;
+        $product->fuelleArtikel($productID, $options);
         // Falls der Artikel ein Variationskombikind ist, hole direkt seine Eigenschaften
         if ($product->kEigenschaftKombi > 0 || $product->nIstVater === 1) {
             // Variationskombi-Artikel
             $_POST['eigenschaftwert'] = $properties['eigenschaftwert'];
             $properties               = Product::getSelectedPropertiesForVarCombiArticle($productID);
-        } elseif (isset($properties['eigenschaftwert']) && \is_array($properties['eigenschaftwert'])) {
+        } elseif (GeneralObject::isCountable('eigenschaftwert', $properties)) {
             // einfache Variation - keine Varkombi
             $_POST['eigenschaftwert'] = $properties['eigenschaftwert'];
             $properties               = Product::getSelectedPropertiesForArticle($productID);
@@ -386,6 +390,7 @@ class IOMethods
 
         Frontend::getInstance()->setStandardSessionVars();
         $response->nType     = 2;
+        $response->productID = $productID;
         $response->nCount    = isset($_SESSION['Vergleichsliste']->oArtikel_arr) ?
             \count($_SESSION['Vergleichsliste']->oArtikel_arr) : 0;
         $response->cTitle    = Shop::Lang()->get('compare');
@@ -464,10 +469,16 @@ class IOMethods
 
         Cart::checkAdditions();
 
-        $response->nType  = 2;
-        $response->nCount = \count($_SESSION['Wunschliste']->CWunschlistePos_arr);
-        $response->cTitle = Shop::Lang()->get('goToWishlist');
-        $buttons          = [
+        foreach ($_SESSION['Wunschliste']->CWunschlistePos_arr as $wlPos) {
+            if ($wlPos->kArtikel === $productID) {
+                $response->wlPosAdd = $wlPos->kWunschlistePos;
+            }
+        }
+        $response->nType     = 2;
+        $response->nCount    = \count($_SESSION['Wunschliste']->CWunschlistePos_arr);
+        $response->productID = $productID;
+        $response->cTitle    = Shop::Lang()->get('goToWishlist');
+        $buttons             = [
             (object)[
                 'href'    => '#',
                 'fa'      => 'fa fa-arrow-circle-right',
@@ -542,9 +553,10 @@ class IOMethods
         $_GET['wlplo']       = $productID;
 
         Frontend::getInstance()->setStandardSessionVars();
-        $response->nType  = 2;
-        $response->nCount = \count($_SESSION['Wunschliste']->CWunschlistePos_arr);
-        $response->cTitle = Shop::Lang()->get('goToWishlist');
+        $response->nType       = 2;
+        $response->wlPosRemove = $productID;
+        $response->nCount      = \count($_SESSION['Wunschliste']->CWunschlistePos_arr);
+        $response->cTitle      = Shop::Lang()->get('goToWishlist');
 
         $response->cNavBadge = $smarty->assign('Einstellungen', $conf)
                                        ->fetch('layout/header_shop_nav_wish.tpl');
@@ -586,7 +598,7 @@ class IOMethods
         $smarty->assign('wishlists', Wunschliste::getWishlists());
 
         $response->content         = $smarty->fetch('snippets/wishlist_dropdown.tpl');
-        $response->currentPosCount = count(Frontend::getWishList()->CWunschlistePos_arr);
+        $response->currentPosCount = \count(Frontend::getWishList()->CWunschlistePos_arr);
 
         $objResponse->script('this.response = ' . \json_encode($response) . ';');
 
@@ -1256,6 +1268,44 @@ class IOMethods
                 $response->assign('selectionwizard', 'innerHTML', $AWA->fetchForm($smarty));
             }
         }
+
+        return $response;
+    }
+
+    /**
+     * @param string $curPageId
+     * @param string $adminSessionToken
+     * @param array  $languages
+     * @param $currentLanguage
+     * @return IOResponse
+     * @throws SmartyException|Exception
+     */
+    public function getOpcDraftsHtml(
+        string $curPageId,
+        string $adminSessionToken,
+        array $languages,
+        $currentLanguage
+    ): IOResponse {
+        foreach ($languages as $i => $lang) {
+            $languages[$i] = (object)$lang;
+        }
+
+        $opcPageService   = Shop::Container()->getOPCPageService();
+        $smarty           = Shop::Smarty();
+        $response         = new IOResponse();
+        $publicDraft      = $opcPageService->getPublicPage($curPageId);
+        $publicDraftkey   = $publicDraft === null ? 0 : $publicDraft->getKey();
+        $newDraftListHtml = $smarty
+            ->assign('pageDrafts', $opcPageService->getDrafts($curPageId))
+            ->assign('ShopURL', Shop::getURL())
+            ->assign('adminSessionToken', $adminSessionToken)
+            ->assign('languages', $languages)
+            ->assign('currentLanguage', (object)$currentLanguage)
+            ->assign('opcPageService', $opcPageService)
+            ->assign('publicDraftKey', $publicDraftkey)
+            ->fetch(PFAD_ROOT . PFAD_ADMIN . '/opc/draftlist.tpl');
+
+        $response->assign('opc-draft-list', 'innerHTML', $newDraftListHtml);
 
         return $response;
     }

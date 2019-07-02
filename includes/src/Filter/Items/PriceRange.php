@@ -17,6 +17,7 @@ use JTL\Filter\Option;
 use JTL\Filter\ProductFilter;
 use JTL\Filter\StateSQL;
 use JTL\Filter\StateSQLInterface;
+use JTL\Helpers\GeneralObject;
 use JTL\MagicCompatibilityTrait;
 use JTL\Session\Frontend;
 use JTL\Shop;
@@ -391,7 +392,7 @@ class PriceRange extends AbstractFilter
             ? (float)$_SESSION['Kunde']->fRabatt
             : 0.0;
         $state         = (new StateSQL())->from($this->productFilter->getCurrentStateData(self::class));
-        if (!$isMerchant && \is_array($_SESSION['Steuersatz']) && \count($_SESSION['Steuersatz']) > 0) {
+        if (!$isMerchant && GeneralObject::hasCount('Steuersatz', $_SESSION)) {
             $maxTaxRate = \max($_SESSION['Steuersatz']);
             $minTaxRate = \min($_SESSION['Steuersatz']);
         } elseif ($isMerchant) {

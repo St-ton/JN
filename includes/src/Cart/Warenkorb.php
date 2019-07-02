@@ -6,28 +6,28 @@
 
 namespace JTL\Cart;
 
-use function Functional\select;
-use function Functional\some;
 use JTL\Alert\Alert;
 use JTL\Catalog\Product\Artikel;
-use JTL\DB\ReturnType;
-use JTL\Checkout\Eigenschaft;
 use JTL\Catalog\Product\EigenschaftWert;
+use JTL\Catalog\Product\Preise;
+use JTL\Checkout\Eigenschaft;
+use JTL\Checkout\Kupon;
+use JTL\Checkout\Versandart;
+use JTL\DB\ReturnType;
+use JTL\Extensions\Download;
 use JTL\Extensions\Konfigitem;
 use JTL\Extensions\Konfigitemsprache;
-use JTL\Extensions\Download;
+use JTL\GlobalSetting;
 use JTL\Helpers\Cart;
 use JTL\Helpers\Product;
 use JTL\Helpers\Request;
 use JTL\Helpers\ShippingMethod;
 use JTL\Helpers\Tax;
-use JTL\Checkout\Kupon;
-use JTL\Catalog\Product\Preise;
-use JTL\Services\JTL\AlertService;
 use JTL\Session\Frontend;
 use JTL\Shop;
-use JTL\Checkout\Versandart;
 use stdClass;
+use function Functional\select;
+use function Functional\some;
 
 /**
  * Class Warenkorb
@@ -176,7 +176,7 @@ class Warenkorb
             return $tmpAmount[$productID] ?? 0;
         }
 
-        if (!isset($depAmount, $depAmount[$productID])) {
+        if (!isset($depAmount[$productID])) {
             $depAmount = $this->getAllDependentAmount($onlyStockRelevant);
         }
 
@@ -350,7 +350,9 @@ class Warenkorb
                 }
             }
         }
+
         $options               = Artikel::getDefaultOptions();
+        $options->nStueckliste = 1;
         $options->nVariationen = 1;
         if ($configItemID > 0) {
             $options->nKeineSichtbarkeitBeachten = 1;
@@ -363,7 +365,7 @@ class Warenkorb
         $cartItem->kVersandklasse    = $cartItem->Artikel->kVersandklasse;
         $cartItem->kSteuerklasse     = $cartItem->Artikel->kSteuerklasse;
         $cartItem->fPreisEinzelNetto = $cartItem->Artikel->gibPreis($cartItem->nAnzahl, []);
-        $cartItem->fPreis            = $cartItem->Artikel->gibPreis($qty, []);
+        $cartItem->fPreis            = $cartItem->fPreisEinzelNetto;
         $cartItem->cArtNr            = $cartItem->Artikel->cArtNr;
         $cartItem->nPosTyp           = $type;
         $cartItem->cEinheit          = $cartItem->Artikel->cEinheit;
@@ -884,16 +886,23 @@ class Warenkorb
      * gibt Gesamtanzahl eines bestimmten Artikels im Warenkorb zurueck
      * @param int $productID
      * @param int $excludePos
+     * @param bool $countParentProducts
      * @return int
      */
-    public function gibAnzahlEinesArtikels(int $productID, int $excludePos = -1)
+    public function gibAnzahlEinesArtikels(int $productID, int $excludePos = -1, bool $countParentProducts = false): int
     {
         if (!$productID) {
             return 0;
         }
         $qty = 0;
         foreach ($this->PositionenArr as $i => $item) {
-            if ((int)$item->kArtikel === $productID && $excludePos !== $i) {
+            if ($excludePos === $i) {
+                continue;
+            }
+            $compareID = $countParentProducts && isset($item->Artikel) && $item->Artikel->kVaterArtikel > 0
+                ? (int)$item->Artikel->kVaterArtikel
+                : (int)$item->kArtikel;
+            if ($compareID === $productID) {
                 $qty += $item->nAnzahl;
             }
         }
@@ -906,12 +915,13 @@ class Warenkorb
      */
     public function setzePositionsPreise(): self
     {
-        $defaultOptions = Artikel::getDefaultOptions();
+        $defaultOptions               = Artikel::getDefaultOptions();
+        $defaultOptions->nStueckliste = 1;
         foreach ($this->PositionenArr as $i => $item) {
             if ($item->kArtikel > 0 && $item->nPosTyp === \C_WARENKORBPOS_TYP_ARTIKEL) {
                 $oldItem = clone $item;
                 $product = new Artikel();
-                if (!$product->fuelleArtikel($item->kArtikel, $defaultOptions) || $product->kArtikel === null) {
+                if (!$product->fuelleArtikel($item->kArtikel, $defaultOptions)) {
                     continue;
                 }
                 // Baue Variationspreise im Warenkorb neu, aber nur wenn es ein gültiger Artikel ist
@@ -938,7 +948,14 @@ class Warenkorb
                         }
                     }
                 }
-                $qty                     = $this->gibAnzahlEinesArtikels($product->kArtikel);
+                if ($product->kVaterArtikel > 0 && GlobalSetting::getInstance()->getValue(
+                    GlobalSetting::CHILD_ITEM_BULK_PRICING,
+                    DEFAULT_GENERAL_CHILD_ITEM_BULK_PRICING
+                )) {
+                    $qty = $this->gibAnzahlEinesArtikels($product->kVaterArtikel, -1, true);
+                } else {
+                    $qty = $this->gibAnzahlEinesArtikels($product->kArtikel);
+                }
                 $item->Artikel           = $product;
                 $item->fPreisEinzelNetto = $product->gibPreis($qty, []);
                 $item->fPreis            = $product->gibPreis($qty, $item->WarenkorbPosEigenschaftArr);

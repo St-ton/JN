@@ -11,6 +11,7 @@ use JTL\Backend\Revision;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
+use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Seo;
 use JTL\Language\LanguageHelper;
 use JTL\Link\Link;
@@ -482,7 +483,7 @@ final class LinkAdmin
         $link->cNoFollow          = 'N';
         $link->cIdentifier        = $post['cIdentifier'];
         $link->bIsFluid           = (isset($post['bIsFluid']) && $post['bIsFluid'] === '1') ? 1 : 0;
-        if (isset($post['cKundengruppen']) && \is_array($post['cKundengruppen'])) {
+        if (GeneralObject::isCountable('cKundengruppen', $post)) {
             $link->cKundengruppen = \implode(';', $post['cKundengruppen']) . ';';
             if (\in_array('-1', $post['cKundengruppen'], true)) {
                 $link->cKundengruppen = 'NULL';

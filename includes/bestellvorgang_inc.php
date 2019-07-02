@@ -18,6 +18,7 @@ use JTL\Customer\Kunde;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Date;
 use JTL\Helpers\Form;
+use JTL\Helpers\GeneralObject;
 use JTL\Helpers\PaymentMethod as Helper;
 use JTL\Helpers\Request;
 use JTL\Helpers\ShippingMethod;
@@ -705,7 +706,7 @@ function gibStepZahlung()
         }
     }
 
-    if (is_array($shippingMethods) && count($shippingMethods) > 0) {
+    if (GeneralObject::hasCount($shippingMethods)) {
         $shippingMethod = gibAktiveVersandart($shippingMethods);
         $paymentMethods = gibZahlungsarten($shippingMethod, $customerGroupID);
         if (!is_array($paymentMethods) || count($paymentMethods) === 0) {
@@ -870,14 +871,13 @@ function gibStepVersand(): void
             }
         }
     }
-    if ((is_array($shippingMethods) && count($shippingMethods) > 0)
-        || (is_array($shippingMethods) && count($shippingMethods) === 1
-            && is_array($packagings) && count($packagings) > 0)
+    if (GeneralObject::hasCount($shippingMethods)
+        || (is_array($shippingMethods) && count($shippingMethods) === 1 && GeneralObject::hasCount($packagings))
     ) {
         Shop::Smarty()->assign('Versandarten', $shippingMethods)
             ->assign('Verpackungsarten', $packagings);
-    } elseif (is_array($shippingMethods) && count($shippingMethods) === 1 &&
-        (is_array($packagings) && count($packagings) === 0)
+    } elseif (is_array($shippingMethods) && count($shippingMethods) === 1
+        && (is_array($packagings) && count($packagings) === 0)
     ) {
         pruefeVersandartWahl($shippingMethods[0]->kVersandart);
     } elseif (!is_array($shippingMethods) || count($shippingMethods) === 0) {
@@ -1580,7 +1580,7 @@ function gibAktiveVersandart($shippingMethods)
 {
     if (isset($_SESSION['Versandart'])) {
         $_SESSION['AktiveVersandart'] = $_SESSION['Versandart']->kVersandart;
-    } elseif (!empty($_SESSION['AktiveVersandart']) && is_array($shippingMethods) && count($shippingMethods) > 0) {
+    } elseif (!empty($_SESSION['AktiveVersandart']) && GeneralObject::hasCount($shippingMethods)) {
         $active = (int)$_SESSION['AktiveVersandart'];
         if (array_reduce($shippingMethods, function ($carry, $item) use ($active) {
             return (int)$item->kVersandart === $active ? (int)$item->kVersandart : $carry;
@@ -1602,7 +1602,7 @@ function gibAktiveZahlungsart($shippingMethods)
 {
     if (isset($_SESSION['Zahlungsart'])) {
         $_SESSION['AktiveZahlungsart'] = $_SESSION['Zahlungsart']->kZahlungsart;
-    } elseif (!empty($_SESSION['AktiveZahlungsart']) && is_array($shippingMethods) && count($shippingMethods) > 0) {
+    } elseif (!empty($_SESSION['AktiveZahlungsart']) && GeneralObject::hasCount($shippingMethods)) {
         $active = (int)$_SESSION['AktiveZahlungsart'];
         if (array_reduce($shippingMethods, function ($carry, $item) use ($active) {
             return (int)$item->kZahlungsart === $active ? (int)$item->kZahlungsart : $carry;
@@ -1793,14 +1793,12 @@ function pruefeZahlungsartMaxBestellwert($fMaxBestellwert): bool
 function versandartKorrekt(int $kVersandart, $aFormValues = 0)
 {
     $cart                   = Frontend::getCart();
-    $packagingIDs           = (isset($_POST['kVerpackung'])
-        && is_array($_POST['kVerpackung'])
-        && count($_POST['kVerpackung']) > 0)
+    $packagingIDs           = GeneralObject::hasCount('kVerpackung', $_POST)
         ? $_POST['kVerpackung']
         : $aFormValues['kVerpackung'];
     $fSummeWarenkorb        = $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true);
     $_SESSION['Verpackung'] = [];
-    if (is_array($packagingIDs) && count($packagingIDs) > 0) {
+    if (GeneralObject::hasCount($packagingIDs)) {
         $cart->loescheSpezialPos(C_WARENKORBPOS_TYP_VERPACKUNG);
         foreach ($packagingIDs as $kVerpackung) {
             $kVerpackung = (int)$kVerpackung;

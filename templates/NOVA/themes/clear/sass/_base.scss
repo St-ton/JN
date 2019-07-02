@@ -1330,11 +1330,11 @@ aside {
   }
 }
 
-.box-filter-characteristics {
+.box-filter-characteristics, .box-filter-manufacturer {
   .filter-img {
     width: auto;
     height: 28px;
-    margin: 0 $spacer $spacer 0;
+    margin: 0.2rem;
     border: 3px solid transparent;
   }
 
@@ -2530,4 +2530,36 @@ input.form-control[name="wishlist-url"] {
   &:hover {
     opacity: 1;
   }
+}
+
+/* Action buttons */
+.action-tip-animation {
+  position: absolute;
+  bottom: 50px;
+  width: 200px;
+  right: -50px;
+  visibility: hidden;
+  transition: .6s;
+  z-index: -2;
+  font-size: 2px;
+  color: transparent;
+  font-weight: $font-weight-normal;
+  &.press {
+    font-size: 16px;
+    font-weight: $font-weight-bold;
+    visibility: visible;
+    animation: fade 1.5s;
+  }
+}
+
+@keyframes fade {
+  0% {color: transparent;}
+  35% {color:$gray-dark;}
+  100% {color: transparent;}
+}
+
+@keyframes size {
+  0% {width: 36px; height: 36px; margin: 0 8px;}
+  50% {width: 40px; height: 40px; margin: -4px 4px 0 8px;}
+  100% {width: 36px; height: 36px; margin: 0 8px;}
 }

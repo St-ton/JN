@@ -119,7 +119,6 @@ final class Images extends AbstractSync
     private function getConfig(): array
     {
         $config = Shop::getSettings([\CONF_BILDER]);
-
         if (!$config['bilder']['bilder_kategorien_breite']) {
             $config['bilder']['bilder_kategorien_breite'] = 100;
         }
@@ -1102,7 +1101,7 @@ final class Images extends AbstractSync
     private function handleDeletes($xml): void
     {
         \executeHook(\HOOK_BILDER_XML_BEARBEITEDELETES, [
-            'Artikel'          => $xml['del_bilder']['kArtikelPict'] ?? [],
+            'Artikel'          => $xml['del_bilder']['tArtikelPict'] ?? [],
             'Kategorie'        => $xml['del_bilder']['kKategoriePict'] ?? [],
             'KategoriePK'      => $xml['del_bilder']['kKategorie'] ?? [],
             'Eigenschaftswert' => $xml['del_bilder']['kEigenschaftWertPict'] ?? [],
@@ -1110,18 +1109,6 @@ final class Images extends AbstractSync
             'Merkmal'          => $xml['del_bilder']['kMerkmal'] ?? [],
             'Merkmalwert'      => $xml['del_bilder']['kMerkmalWert'] ?? [],
         ]);
-        // Artikelbilder löschen Wawi <= .99923
-        if (isset($xml['del_bilder']['kArtikelPict'])) {
-            if (\is_array($xml['del_bilder']['kArtikelPict'])) {
-                foreach ($xml['del_bilder']['kArtikelPict'] as $pictID) {
-                    if ((int)$pictID > 0) {
-                        $this->deleteArtikelPict((int)$pictID);
-                    }
-                }
-            } elseif ((int)$xml['del_bilder']['kArtikelPict'] > 0) {
-                $this->deleteArtikelPict((int)$xml['del_bilder']['kArtikelPict']);
-            }
-        }
         // Artikelbilder löschen Wawi > .99923
         if (isset($xml['del_bilder']['tArtikelPict'])) {
             if (\count($xml['del_bilder']['tArtikelPict']) > 1) {
@@ -1135,144 +1122,76 @@ final class Images extends AbstractSync
                 $this->deleteArtikelPict($productImage->kArtikel, $productImage->nNr);
             }
         }
-        // Kategoriebilder löschen Wawi <= .99923
-        if (isset($xml['del_bilder']['kKategoriePict'])) {
-            if (\is_array($xml['del_bilder']['kKategoriePict'])) {
-                foreach ($xml['del_bilder']['kKategoriePict'] as $categoryImageID) {
-                    if ((int)$categoryImageID > 0) {
-                        $this->deleteCategoryImage($categoryImageID);
-                    }
-                }
-            } elseif ((int)$xml['del_bilder']['kKategoriePict'] > 0) {
-                $this->deleteCategoryImage((int)$xml['del_bilder']['kKategoriePict']);
-            }
-        }
         // Kategoriebilder löschen Wawi > .99923
-        if (isset($xml['del_bilder']['kKategorie'])) {
-            foreach ((array)$xml['del_bilder']['kKategorie'] as $categoryID) {
-                if ((int)$categoryID > 0) {
-                    $this->deleteCategoryImage(null, $categoryID);
-                }
-            }
+        $source = $xml['del_bilder']['kKategorie'] ?? [];
+        if (\is_numeric($source)) {
+            $source = [$source];
         }
-        // Variationsbilder löschen Wawi <= .99923
-        if (isset($xml['del_bilder']['kEigenschaftWertPict'])) {
-            if (\is_array($xml['del_bilder']['kEigenschaftWertPict'])) {
-                foreach ($xml['del_bilder']['kEigenschaftWertPict'] as $kEigenschaftWertPict) {
-                    if ((int)$kEigenschaftWertPict > 0) {
-                        $this->deleteAttributeValueImage($kEigenschaftWertPict);
-                    }
-                }
-            } elseif ((int)$xml['del_bilder']['kEigenschaftWertPict'] > 0) {
-                $this->deleteAttributeValueImage($xml['del_bilder']['kEigenschaftWertPict']);
-            }
+        foreach (\array_filter(\array_map('\intval', $source)) as $id) {
+            $this->deleteCategoryImage(null, $id);
         }
         // Variationsbilder löschen Wawi > .99923
-        if (isset($xml['del_bilder']['kEigenschaftWert'])) {
-            if (\is_array($xml['del_bilder']['kEigenschaftWert'])) {
-                foreach ($xml['del_bilder']['kEigenschaftWert'] as $kEigenschaftWert) {
-                    if ((int)$kEigenschaftWert > 0) {
-                        $this->deleteAttributeValueImage(null, $kEigenschaftWert);
-                    }
-                }
-            } elseif ((int)$xml['del_bilder']['kEigenschaftWert'] > 0) {
-                $this->deleteAttributeValueImage(null, $xml['del_bilder']['kEigenschaftWert']);
-            }
+        $source = $xml['del_bilder']['kEigenschaftWert'] ?? [];
+        if (\is_numeric($source)) {
+            $source = [$source];
+        }
+        foreach (\array_filter(\array_map('\intval', $source)) as $id) {
+            $this->deleteAttributeValueImage(null, $id);
         }
         // Herstellerbilder löschen
-        if (isset($xml['del_bilder']['kHersteller'])) {
-            $cacheTags = [];
-            if (\is_array($xml['del_bilder']['kHersteller'])) {
-                foreach ($xml['del_bilder']['kHersteller'] as $manufacturerID) {
-                    if ((int)$manufacturerID > 0) {
-                        $this->db->update(
-                            'thersteller',
-                            'kHersteller',
-                            (int)$manufacturerID,
-                            (object)['cBildpfad' => '']
-                        );
-                        foreach ($this->db->selectAll(
-                            'tartikel',
-                            'kHersteller',
-                            (int)$manufacturerID,
-                            'kArtikel'
-                        ) as $product) {
-                            $cacheTags[] = $product->kArtikel;
-                        }
-                    }
-                }
-            } elseif ((int)$xml['del_bilder']['kHersteller'] > 0) {
-                $this->db->update(
-                    'thersteller',
-                    'kHersteller',
-                    (int)$xml['del_bilder']['kHersteller'],
-                    (object)['cBildpfad' => '']
-                );
-                foreach ($this->db->selectAll(
-                    'tartikel',
-                    'kHersteller',
-                    (int)$xml['del_bilder']['kHersteller'],
-                    'kArtikel'
-                ) as $product) {
-                    $cacheTags[] = $product->kArtikel;
-                }
+        $source = $xml['del_bilder']['kHersteller'] ?? [];
+        if (\is_numeric($source)) {
+            $source = [$source];
+        }
+        $cacheTags = [];
+        foreach (\array_filter(\array_map('\intval', $source)) as $manufacturerID) {
+            $this->db->update(
+                'thersteller',
+                'kHersteller',
+                (int)$manufacturerID,
+                (object)['cBildpfad' => '']
+            );
+            foreach ($this->db->selectAll(
+                'tartikel',
+                'kHersteller',
+                (int)$manufacturerID,
+                'kArtikel'
+            ) as $product) {
+                $cacheTags[] = $product->kArtikel;
             }
-            if (\count($cacheTags) > 0) {
-                \array_walk($cacheTags, function (&$i) {
-                    $i = \CACHING_GROUP_ARTICLE . '_' . $i;
-                });
-                $this->cache->flushTags($cacheTags);
-            }
+        }
+        if (\count($cacheTags) > 0) {
+            \array_walk($cacheTags, function (&$i) {
+                $i = \CACHING_GROUP_ARTICLE . '_' . $i;
+            });
+            $this->cache->flushTags($cacheTags);
         }
         // Merkmalbilder löschen
-        if (isset($xml['del_bilder']['kMerkmal'])) {
-            if (\is_array($xml['del_bilder']['kMerkmal'])) {
-                foreach ($xml['del_bilder']['kMerkmal'] as $attrID) {
-                    if ((int)$attrID > 0) {
-                        $this->db->update(
-                            'tmerkmal',
-                            'kMerkmal',
-                            (int)$attrID,
-                            (object)['cBildpfad' => '']
-                        );
-                    }
-                }
-            } elseif ((int)$xml['del_bilder']['kMerkmal'] > 0) {
-                $this->db->update(
-                    'tmerkmal',
-                    'kMerkmal',
-                    (int)$xml['del_bilder']['kMerkmal'],
-                    (object)['cBildpfad' => '']
-                );
-            }
+        $source = $xml['del_bilder']['kMerkmal'] ?? [];
+        if (\is_numeric($source)) {
+            $source = [$source];
+        }
+        foreach (\array_filter(\array_map('\intval', $source)) as $attrID) {
+            $this->db->update(
+                'tmerkmal',
+                'kMerkmal',
+                (int)$attrID,
+                (object)['cBildpfad' => '']
+            );
         }
         // Merkmalwertbilder löschen
-        if (isset($xml['del_bilder']['kMerkmalWert'])) {
-            if (\is_array($xml['del_bilder']['kMerkmalWert'])) {
-                foreach ($xml['del_bilder']['kMerkmalWert'] as $attrValID) {
-                    if ((int)$attrValID > 0) {
-                        $this->db->update(
-                            'tmerkmalwert',
-                            'kMerkmalWert',
-                            (int)$attrValID,
-                            (object)['cBildpfad' => '']
-                        );
-                        $this->db->delete('tmerkmalwertbild', 'kMerkmalWert', (int)$attrValID);
-                    }
-                }
-            } elseif ((int)$xml['del_bilder']['kMerkmalWert'] > 0) {
-                $this->db->update(
-                    'tmerkmalwert',
-                    'kMerkmalWert',
-                    (int)$xml['del_bilder']['kMerkmalWert'],
-                    (object)['cBildpfad' => '']
-                );
-                $this->db->delete(
-                    'tmerkmalwertbild',
-                    'kMerkmalWert',
-                    (int)$xml['del_bilder']['kMerkmalWert']
-                );
-            }
+        $source = $xml['del_bilder']['kMerkmalWert'] ?? [];
+        if (\is_numeric($source)) {
+            $source = [$source];
+        }
+        foreach (\array_filter(\array_map('\intval', $source)) as $attrValID) {
+            $this->db->update(
+                'tmerkmalwert',
+                'kMerkmalWert',
+                (int)$attrValID,
+                (object)['cBildpfad' => '']
+            );
+            $this->db->delete('tmerkmalwertbild', 'kMerkmalWert', (int)$attrValID);
         }
     }
 
@@ -1285,7 +1204,6 @@ final class Images extends AbstractSync
         if ($productImageID <= 0) {
             return;
         }
-        $image = null;
         if ($no !== null && $no > 0) {
             $image          = $this->db->select('tartikelpict', 'kArtikel', $productImageID, 'nNr', $no);
             $productImageID = $image->kArtikelPict ?? 0;
@@ -1330,134 +1248,119 @@ final class Images extends AbstractSync
     {
         if (!$brand
             || (isset($oBranding->oBrandingEinstellung->nAktiv) && (int)$oBranding->oBrandingEinstellung->nAktiv === 0)
+            || !isset($oBranding->oBrandingEinstellung->cBrandingBild)
         ) {
-            return $im;
-        }
-        // file_exists will return true even if cBrandingBild is not set - check before to avoid warning
-        if (!isset($oBranding->oBrandingEinstellung->cBrandingBild)) {
             return $im;
         }
         $brandingImage = \PFAD_ROOT . \PFAD_BRANDINGBILDER . $oBranding->oBrandingEinstellung->cBrandingBild;
         if (!\file_exists($brandingImage)) {
             return $im;
         }
-
         $position     = $oBranding->oBrandingEinstellung->cPosition;
         $transparency = $oBranding->oBrandingEinstellung->dTransparenz;
         $brandingSize = $oBranding->oBrandingEinstellung->dGroesse;
         $randabstand  = $oBranding->oBrandingEinstellung->dRandabstand / 100;
         $branding     = $this->imageloadAlpha($brandingImage, 0, 0, true);
-
-        if ($im && $branding) {
-            $imageWidth        = \imagesx($im);
-            $imageHeight       = \imagesy($im);
-            $brandingWidth     = \imagesx($branding);
-            $brandingHeight    = \imagesy($branding);
-            $brandingNewWidth  = $brandingWidth;
-            $brandingNewHeight = $brandingHeight;
-            $image_branding    = $branding;
-            // branding auf diese Breite skalieren
-            if ($brandingSize > 0) {
-                $brandingNewWidth  = \round(($imageWidth * $brandingSize) / 100.0);
-                $brandingNewHeight = \round(($brandingNewWidth / $brandingWidth) * $brandingHeight);
-
-                $image_branding = $this->imageloadAlpha($brandingImage, $brandingNewWidth, $brandingNewHeight, true);
-            }
-            // position bestimmen
-            $brandingPosX = 0;
-            $brandingPosY = 0;
-            switch ($position) {
-                case 'oben':
-                    $brandingPosX = $imageWidth / 2 - $brandingNewWidth / 2;
-                    $brandingPosY = $imageHeight * $randabstand;
-                    break;
-
-                case 'oben-rechts':
-                    $brandingPosX = $imageWidth - $brandingNewWidth - $imageWidth * $randabstand;
-                    $brandingPosY = $imageHeight * $randabstand;
-                    break;
-
-                case 'rechts':
-                    $brandingPosX = $imageWidth - $brandingNewWidth - $imageWidth * $randabstand;
-                    $brandingPosY = $imageHeight / 2 - $brandingNewHeight / 2;
-                    break;
-
-                case 'unten-rechts':
-                    $brandingPosX = $imageWidth - $brandingNewWidth - $imageWidth * $randabstand;
-                    $brandingPosY = $imageHeight - $brandingNewHeight - $imageHeight * $randabstand;
-                    break;
-
-                case 'unten':
-                    $brandingPosX = $imageWidth / 2 - $brandingNewWidth / 2;
-                    $brandingPosY = $imageHeight - $brandingNewHeight - $imageHeight * $randabstand;
-                    break;
-
-                case 'unten-links':
-                    $brandingPosX = $imageWidth * $randabstand;
-                    $brandingPosY = $imageHeight - $brandingNewHeight - $imageHeight * $randabstand;
-                    break;
-
-                case 'links':
-                    $brandingPosX = $imageWidth * $randabstand;
-                    $brandingPosY = $imageHeight / 2 - $brandingNewHeight / 2;
-                    break;
-
-                case 'oben-links':
-                    $brandingPosX = $imageWidth * $randabstand;
-                    $brandingPosY = $imageHeight * $randabstand;
-                    break;
-
-                case 'zentriert':
-                    $brandingPosX = $imageWidth / 2 - $brandingNewWidth / 2;
-                    $brandingPosY = $imageHeight / 2 - $brandingNewHeight / 2;
-                    break;
-            }
-            $brandingPosX = \round($brandingPosX);
-            $brandingPosY = \round($brandingPosY);
-            // bild mit branding composen
-            \imagealphablending($im, true);
-            \imagesavealpha($im, true);
-            $this->imagecopymergeAlpha(
-                $im,
-                $image_branding,
-                $brandingPosX,
-                $brandingPosY,
-                0,
-                0,
-                $brandingNewWidth,
-                $brandingNewHeight,
-                100 - $transparency
-            );
-
+        if (!$im || !$branding) {
             return $im;
         }
+        $imageWidth        = \imagesx($im);
+        $imageHeight       = \imagesy($im);
+        $brandingWidth     = \imagesx($branding);
+        $brandingHeight    = \imagesy($branding);
+        $brandingNewWidth  = $brandingWidth;
+        $brandingNewHeight = $brandingHeight;
+        $image_branding    = $branding;
+        if ($brandingSize > 0) { // branding auf diese Breite skalieren
+            $brandingNewWidth  = \round(($imageWidth * $brandingSize) / 100.0);
+            $brandingNewHeight = \round(($brandingNewWidth / $brandingWidth) * $brandingHeight);
+
+            $image_branding = $this->imageloadAlpha($brandingImage, $brandingNewWidth, $brandingNewHeight, true);
+        }
+        // position bestimmen
+        $brandingPosX = 0;
+        $brandingPosY = 0;
+        switch ($position) {
+            case 'oben':
+                $brandingPosX = $imageWidth / 2 - $brandingNewWidth / 2;
+                $brandingPosY = $imageHeight * $randabstand;
+                break;
+            case 'oben-rechts':
+                $brandingPosX = $imageWidth - $brandingNewWidth - $imageWidth * $randabstand;
+                $brandingPosY = $imageHeight * $randabstand;
+                break;
+            case 'rechts':
+                $brandingPosX = $imageWidth - $brandingNewWidth - $imageWidth * $randabstand;
+                $brandingPosY = $imageHeight / 2 - $brandingNewHeight / 2;
+                break;
+            case 'unten-rechts':
+                $brandingPosX = $imageWidth - $brandingNewWidth - $imageWidth * $randabstand;
+                $brandingPosY = $imageHeight - $brandingNewHeight - $imageHeight * $randabstand;
+                break;
+            case 'unten':
+                $brandingPosX = $imageWidth / 2 - $brandingNewWidth / 2;
+                $brandingPosY = $imageHeight - $brandingNewHeight - $imageHeight * $randabstand;
+                break;
+            case 'unten-links':
+                $brandingPosX = $imageWidth * $randabstand;
+                $brandingPosY = $imageHeight - $brandingNewHeight - $imageHeight * $randabstand;
+                break;
+            case 'links':
+                $brandingPosX = $imageWidth * $randabstand;
+                $brandingPosY = $imageHeight / 2 - $brandingNewHeight / 2;
+                break;
+            case 'oben-links':
+                $brandingPosX = $imageWidth * $randabstand;
+                $brandingPosY = $imageHeight * $randabstand;
+                break;
+            case 'zentriert':
+                $brandingPosX = $imageWidth / 2 - $brandingNewWidth / 2;
+                $brandingPosY = $imageHeight / 2 - $brandingNewHeight / 2;
+                break;
+        }
+        $brandingPosX = \round($brandingPosX);
+        $brandingPosY = \round($brandingPosY);
+        // bild mit branding composen
+        \imagealphablending($im, true);
+        \imagesavealpha($im, true);
+        $this->imagecopymergeAlpha(
+            $im,
+            $image_branding,
+            $brandingPosX,
+            $brandingPosY,
+            0,
+            0,
+            $brandingNewWidth,
+            $brandingNewHeight,
+            100 - $transparency
+        );
 
         return $im;
     }
 
     /**
-     * @param resource $dst_im
-     * @param resource $src_im
-     * @param int      $dst_x
-     * @param int      $dst_y
-     * @param int      $src_x
-     * @param int      $src_y
-     * @param int      $src_w
-     * @param int      $src_h
+     * @param resource $destImg
+     * @param resource $srcImg
+     * @param int      $destX
+     * @param int      $destY
+     * @param int      $srcX
+     * @param int      $srxY
+     * @param int      $srcW
+     * @param int      $srcH
      * @param int      $pct
      * @return bool
      */
-    private function imagecopymergeAlpha($dst_im, $src_im, $dst_x, $dst_y, $src_x, $src_y, $src_w, $src_h, $pct): bool
+    private function imagecopymergeAlpha($destImg, $srcImg, $destX, $destY, $srcX, $srxY, $srcW, $srcH, $pct): bool
     {
         if ($pct === null) {
             return false;
         }
         $pct /= 100;
         // Get image width and height
-        $w = \imagesx($src_im);
-        $h = \imagesy($src_im);
+        $w = \imagesx($srcImg);
+        $h = \imagesy($srcImg);
         // Turn alpha blending off
-        \imagealphablending($src_im, false);
+        \imagealphablending($srcImg, false);
         // Find the most opaque pixel in the image (the one with the smallest alpha value)
         /*
         $minalpha = 127;
@@ -1475,7 +1378,7 @@ final class Images extends AbstractSync
         for ($x = 0; $x < $w; $x++) {
             for ($y = 0; $y < $h; $y++) {
                 // get current alpha value (represents the TANSPARENCY!)
-                $colorxy = \imagecolorat($src_im, $x, $y);
+                $colorxy = \imagecolorat($srcImg, $x, $y);
                 $alpha   = ($colorxy >> 24) & 0xFF;
                 // calculate new alpha
                 if ($minalpha !== 127) {
@@ -1485,20 +1388,19 @@ final class Images extends AbstractSync
                 }
                 // get the color index with new alpha
                 $alphacolorxy = \imagecolorallocatealpha(
-                    $src_im,
+                    $srcImg,
                     ($colorxy >> 16) & 0xFF,
                     ($colorxy >> 8) & 0xFF,
                     $colorxy & 0xFF,
                     $alpha
                 );
                 // set pixel with the new color + opacity
-                if (!\imagesetpixel($src_im, $x, $y, $alphacolorxy)) {
+                if (!\imagesetpixel($srcImg, $x, $y, $alphacolorxy)) {
                     return false;
                 }
             }
         }
-        // The image copy
-        \imagecopy($dst_im, $src_im, $dst_x, $dst_y, $src_x, $src_y, $src_w, $src_h);
+        \imagecopy($destImg, $srcImg, $destX, $destY, $srcX, $srxY, $srcW, $srcH);
 
         return true;
     }
@@ -1513,35 +1415,25 @@ final class Images extends AbstractSync
             return false;
         }
         $size = \getimagesize($imgFilename);
-        $type = $size[2];
-        switch ($type) {
+        switch ($size[2]) {
             case \IMAGETYPE_JPEG:
-                return 'jpg';
+                $ext = 'jpg';
                 break;
-
             case \IMAGETYPE_PNG:
-                if (\function_exists('imagecreatefrompng')) {
-                    return 'png';
-                }
+                $ext = \function_exists('imagecreatefrompng') ? 'png' : false;
                 break;
-
             case \IMAGETYPE_GIF:
-                if (\function_exists('imagecreatefromgif')) {
-                    return 'gif';
-                }
+                $ext = \function_exists('imagecreatefromgif') ? 'gif' : false;
                 break;
-
             case \IMAGETYPE_BMP:
-                if (\function_exists('imagecreatefromwbmp')) {
-                    return 'bmp';
-                }
+                $ext = \function_exists('imagecreatefromwbmp') ? 'bmp' : false;
                 break;
-
             default:
+                $ext = false;
                 break;
         }
 
-        return false;
+        return $ext;
     }
 
     /**
@@ -1589,10 +1481,10 @@ final class Images extends AbstractSync
         \imagesavealpha($newImg, true);
         \imagefilledrectangle($newImg, 0, 0, $containerWidth, $containerHeight, $color);
 
-        $nPosX = ($containerWidth / 2) - ($width / 2);
-        $nPosY = ($containerHeight / 2) - ($height / 2);
+        $posX = ($containerWidth / 2) - ($width / 2);
+        $posY = ($containerHeight / 2) - ($height / 2);
 
-        \imagecopyresampled($newImg, $im, $nPosX, $nPosY, 0, 0, $width, $height, $imgInfo[0], $imgInfo[1]);
+        \imagecopyresampled($newImg, $im, $posX, $posY, 0, 0, $width, $height, $imgInfo[0], $imgInfo[1]);
 
         return $newImg;
     }
@@ -1667,9 +1559,8 @@ final class Images extends AbstractSync
     {
         $format = \strtolower($this->config['bilder']['bilder_dateiformat']);
         $path   = \substr($path, 0, -3);
-        $path  .= $format;
 
-        return $path;
+        return $path . $format;
     }
 
     /**
@@ -1681,24 +1572,29 @@ final class Images extends AbstractSync
      */
     private function saveImage($im, $format, $path, int $quality = 80): bool
     {
-        if (!$format || !$im) {
+        if (!$im) {
             return false;
         }
-
         $path = $this->getNewFilename($path);
-
         switch (\strtolower($format)) {
             case 'jpg':
-                return \function_exists('imagejpeg') ? \imagejpeg($im, $path, $quality) : false;
+                $res = \function_exists('imagejpeg') ? \imagejpeg($im, $path, $quality) : false;
+                break;
             case 'png':
-                return \function_exists('imagepng') ? \imagepng($im, $path) : false;
+                $res = \function_exists('imagepng') ? \imagepng($im, $path) : false;
+                break;
             case 'gif':
-                return \function_exists('imagegif') ? \imagegif($im, $path) : false;
+                $res = \function_exists('imagegif') ? \imagegif($im, $path) : false;
+                break;
             case 'bmp':
-                return \function_exists('imagewbmp') ? \imagewbmp($im, $path) : false;
+                $res = \function_exists('imagewbmp') ? \imagewbmp($im, $path) : false;
+                break;
+            default:
+                $res = false;
+                break;
         }
 
-        return false;
+        return $res;
     }
 
     /**

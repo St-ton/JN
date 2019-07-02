@@ -7,6 +7,7 @@
 use JTL\Alert\Alert;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
+use JTL\Helpers\GeneralObject;
 use JTL\Language\LanguageHelper;
 use JTL\Shop;
 use function Functional\map;
@@ -69,7 +70,7 @@ if (isset($_POST['betreff']) && (int)$_POST['betreff'] === 1 && Form::validateTo
         if (is_array($_POST['cKundengruppen'])) {
             $newSubject->cKundengruppen = implode(';', $_POST['cKundengruppen']) . ';';
         }
-        if (is_array($_POST['cKundengruppen']) && in_array(0, $_POST['cKundengruppen'])) {
+        if (GeneralObject::hasCount('cKundengruppen', $_POST) && in_array(0, $_POST['cKundengruppen'])) {
             $newSubject->cKundengruppen = 0;
         }
         $newSubject->nSort = 0;

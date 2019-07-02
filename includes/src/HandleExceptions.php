@@ -38,7 +38,7 @@ class HandleExceptions
      * @param  array  $context
      * @return void
      *
-     * @throws \ErrorException
+     * @throws ErrorException
      */
     public function handleError($level, $message, $file = '', $line = 0, $context = []): void
     {

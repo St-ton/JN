@@ -8,6 +8,7 @@ namespace JTL\Catalog\Product;
 
 use JTL\Catalog\Category\KategorieListe;
 use JTL\DB\ReturnType;
+use JTL\Helpers\GeneralObject;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use function Functional\map;
@@ -197,7 +198,7 @@ class ArtikelListe
         if (!empty($categoryList->elemente)) {
             foreach ($categoryList->elemente as $i => $category) {
                 $categoryIDs[] = (int)$category->kKategorie;
-                if (isset($category->Unterkategorien) && \is_array($category->Unterkategorien)) {
+                if (GeneralObject::isCountable('Unterkategorien', $category)) {
                     foreach ($category->Unterkategorien as $level2) {
                         $categoryIDs[] = (int)$level2->kKategorie;
                     }
@@ -254,10 +255,10 @@ class ArtikelListe
             return $this->elemente;
         }
         $categoryIDs = [];
-        if (isset($categoryList->elemente) && \is_array($categoryList->elemente)) {
+        if (GeneralObject::isCountable('elemente', $categoryList)) {
             foreach ($categoryList->elemente as $i => $category) {
                 $categoryIDs[] = (int)$category->kKategorie;
-                if (isset($category->Unterkategorien) && \is_array($category->Unterkategorien)) {
+                if (GeneralObject::isCountable('Unterkategorien', $category)) {
                     foreach ($category->Unterkategorien as $level2) {
                         $categoryIDs[] = (int)$level2->kKategorie;
                     }
@@ -276,7 +277,7 @@ class ArtikelListe
             $customerGroupID = Frontend::getCustomerGroup()->getID();
             // top artikel nicht nochmal in den bestsellen vorkommen lassen
             $excludes = '';
-            if (isset($topProductsList->elemente) && \is_array($topProductsList->elemente)) {
+            if (GeneralObject::isCountable('elemente', $topProductsList)) {
                 $exclude  = map($topProductsList->elemente, function ($e) {
                     return (int)$e->kArtikel;
                 });

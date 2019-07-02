@@ -8,6 +8,7 @@ namespace JTL\Catalog\Product;
 
 use Countable;
 use JTL\DB\ReturnType;
+use JTL\Helpers\GeneralObject;
 use JTL\Shop;
 
 /**
@@ -146,7 +147,7 @@ class Bestseller
     {
         $products = [];
         if ($this->customergrp !== null) {
-            $productsql = \is_array($this->products) && \count($this->products) > 0
+            $productsql = GeneralObject::hasCount($this->products)
                 ? ' AND tartikel.kArtikel IN (' . \implode(',', \array_map('\intval', $this->products)) . ') '
                 : '';
             $storagesql = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();

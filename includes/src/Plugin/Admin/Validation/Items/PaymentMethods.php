@@ -6,7 +6,6 @@
 
 namespace JTL\Plugin\Admin\Validation\Items;
 
-use JTL\DB\ReturnType;
 use JTL\Plugin\Admin\InputType;
 use JTL\Plugin\InstallCode;
 

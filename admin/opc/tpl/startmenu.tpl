@@ -102,13 +102,13 @@
 
         function filterOpcDrafts()
         {
-            let searchTerm = $('#opc-filter-search').val();
+            let searchTerm = $('#opc-filter-search').val().toLowerCase();
 
             $('#opc-draft-list').children().each((i, item) => {
                 item = $(item);
                 item.find('.draft-checkbox').prop('checked', false);
 
-                let draftName = item.find('.opc-draft-name')[0].innerText;
+                let draftName = item.find('.opc-draft-name')[0].innerText.toLowerCase();
 
                 if (draftName.indexOf(searchTerm) === -1) {
                     item.hide();

@@ -313,6 +313,9 @@ html, body {
 #opc .modal .modal-footer > :not(:last-child) {
   margin-right: 16px;
 }
+#opc .modal .progress-bar {
+  background-color: #5cbcf6;
+}
 
 #opcSidebar {
   width: 380px;

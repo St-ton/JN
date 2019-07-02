@@ -21,6 +21,7 @@ JTL\Shop::Container()->getGetText()->loadAdminLocale('opc');
 $pageKey      = Request::verifyGPCDataInt('pageKey');
 $pageId       = Request::verifyGPDataString('pageId');
 $pageUrl      = Request::verifyGPDataString('pageUrl');
+$pageName     = Request::verifyGPDataString('pageName');
 $adoptFromKey = Request::verifyGPCDataInt('adoptFromKey');
 $action       = Request::verifyGPDataString('action');
 $draftKeys    = array_map('intval', $_POST['draftKeys'] ?? []);
@@ -77,11 +78,12 @@ if ($opc->isOPCInstalled() === false) {
     // Adopt new draft from another draft
     try {
         $adoptFromDraft = $opcPage->getDraft($pageKey);
-        $newName        = $adoptFromDraft->getName() . ' (Copy)';
         $page           = $opcPage
             ->createDraft($pageId)
             ->setUrl($pageUrl)
-            ->setName($newName)
+            ->setName($pageName)
+            ->setPublishFrom($adoptFromDraft->getPublishFrom())
+            ->setPublishTo($adoptFromDraft->getPublishTo())
             ->setAreaList($adoptFromDraft->getAreaList());
         $opcPageDB->saveDraft($page);
         $pageKey = $page->getKey();

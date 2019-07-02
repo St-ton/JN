@@ -1,14 +1,15 @@
 {include file="./modals/publish.tpl"}
 
-<div id="loaderModal" class="modal fade" tabindex="-1" style="padding-top:25%">
-    <div class="modal-dialog">
+<div id="loaderModal" class="modal fade" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title">{__('Please wait...')}</h4>
+                <h5 class="modal-title">{__('Please wait...')}</h5>
             </div>
             <div class="modal-body">
                 <div class="progress">
-                    <div class="progress-bar progress-bar-striped progress-bar-info active" style="width:100%">
+                    <div class="progress-bar progress-bar-striped progress-bar-info progress-bar-animated"
+                         style="width:100%">
                     </div>
                 </div>
             </div>
@@ -16,11 +17,11 @@
     </div>
 </div>
 
-<div id="errorModal" class="modal fade" tabindex="-1" style="padding-top:25%">
+<div id="errorModal" class="modal fade" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title">{__('error')}</h4>
+                <h5 class="modal-title">{__('error')}</h5>
             </div>
             <div class="modal-body">
                 <div class="alert alert-danger" id="errorAlert">
@@ -35,19 +36,24 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">
-                    <i class="fa fa-lg fa-times"></i>
+                <h5 class="modal-title" id="configModalTitle">{__('Edit Portlet')}</h5>
+                <button type="button" class="opc-header-btn" data-toggle="tooltip" data-dismiss="modal"
+                        data-placement="bottom">
+                    <i class="fa fas fa-times"></i>
                 </button>
-                <h4 class="modal-title" id="configModalTitle">{__('Edit Portlet')}</h4>
             </div>
             <form id="configForm">
                 <div class="modal-body" id="configModalBody"></div>
-                <div class="modal-footer">
-                    <div class="btn-group" id="stdConfigButtons">
-                        <button type="button" class="btn btn-danger" data-dismiss="modal">{__('Cancel')}</button>
-                        <button class="btn btn-primary">{__('Save')}</button>
-                    </div>
-                    <button type="button" class="btn btn-primary" data-dismiss="modal" id="missingConfigButtons">
+                <div class="modal-footer" id="stdConfigButtons">
+                    <button type="button" class="opc-btn-secondary opc-small-btn" data-dismiss="modal">
+                        {__('cancel')}
+                    </button>
+                    <button type="submit" class="opc-btn-primary opc-small-btn">
+                        {__('Save')}
+                    </button>
+                </div>
+                <div class="modal-footer" id="missingConfigButtons">
+                    <button type="submit" class="opc-btn-primary opc-small-btn"  data-dismiss="modal">
                         {__('OK')}
                     </button>
                 </div>
@@ -60,7 +66,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title">{__('Save this Portlet as a blueprint')}</h4>
+                <h5 class="modal-title">{__('Save this Portlet as a blueprint')}</h5>
             </div>
             <form id="blueprintForm">
                 <div class="modal-body">
@@ -71,10 +77,12 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <div class="btn-group">
-                        <button type="button" class="btn btn-danger" data-dismiss="modal">{__('Cancel')}</button>
-                        <button class="btn btn-primary">{__('Save')}</button>
-                    </div>
+                    <button type="button" class="opc-btn-secondary opc-small-btn" data-dismiss="modal">
+                        {__('cancel')}
+                    </button>
+                    <button type="submit" class="opc-btn-primary opc-small-btn">
+                        {__('Save')}
+                    </button>
                 </div>
             </form>
         </div>

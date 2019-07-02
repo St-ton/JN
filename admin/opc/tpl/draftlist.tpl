@@ -79,13 +79,11 @@
                                 {/if}
                                 <form method="post"
                                       action="{$opcStartUrl}">
-                                    <input type="hidden" name="jtl_token"
-                                           value="{$adminSessionToken}">
+                                    <input type="hidden" name="jtl_token" value="{$adminSessionToken}">
                                     <input type="hidden" name="action" value="adopt">
-                                    <input type="hidden" name="pageKey"
-                                           value="{$draft->getKey()}">
-                                    <input type="hidden" name="pageId"
-                                           value="{$langPageId}">
+                                    <input type="hidden" name="pageKey" value="{$draft->getKey()}">
+                                    <input type="hidden" name="pageId" value="{$langPageId}">
+                                    <input type="hidden" name="pageName" value="{$draft->getName()} ({$lang->nameDE})">
                                     <button type="submit" name="pageUrl" class="opc-dropdown-item"
                                             value="{$langPageUri}">
                                         {$lang->nameDE}

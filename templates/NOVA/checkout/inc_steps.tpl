@@ -12,10 +12,12 @@
                 title="{lang section='account data' key='billingAndDeliveryAddress'}"
                 class="nav-item nav-link {if $step1_active}active{/if}"
             }
-                <span class="align-items-center {if !$step1_active}d-none d-md-flex{/if}">
-                    <div class="nav-number active">1</div>
-                    {lang section='account data' key='billingAndDeliveryAddress'}
-                    {if $step2_active || $step3_active}<i class="fas fa-check"></i>{/if}
+                <span class="align-items-center">
+                    <div class="nav-number active mr-md-2">1</div>
+                    <span class="{if !$step1_active}d-none d-md-inline-flex{/if}">
+                        {lang section='account data' key='billingAndDeliveryAddress'}
+                        {if $step2_active || $step3_active}<i class="fas fa-check"></i>{/if}
+                    </span>
                 </span>
             {/link}
 
@@ -23,16 +25,19 @@
                 title="{lang section='account data' key='shippingAndPaymentOptions'}"
                 class="nav-item nav-link {if $step2_active}active{/if} {if $step1_active}nav-todo{/if}"
             }
-                <span class="align-items-center {if !$step2_active}d-none d-md-flex{/if}">
-                    <div class="nav-number {if $step2_active || $step3_active}active{/if}">2</div>
-                    {lang section='account data' key='shippingAndPaymentOptions'}
-                    {if $step3_active}<i class="fas fa-check"></i>{/if}
+                <span class="align-items-center">
+                    <div class="nav-number mr-md-2 {if $step2_active || $step3_active}active{/if}">2</div>
+                    <span class="{if !$step2_active}d-none d-md-inline-flex{/if}">
+                        {lang section='account data' key='shippingAndPaymentOptions'}
+                        {if $step3_active}<i class="fas fa-check"></i>{/if}
+                    </span>
+
                 </span>
             {/link}
 
             <span class="nav-item nav-link {if $step3_active}active{/if} {if $step1_active || $step2_active}nav-todo{/if}">
                 <span class="align-items-center {if !$step3_active}d-none d-md-flex{/if}">
-                    <div class="nav-number {if $step3_active}active{/if}">3</div>
+                    <div class="nav-number mr-md-2 {if $step3_active}active{/if}">3</div>
                     {lang section='checkout' key='summary'}
                 </span>
             </span>

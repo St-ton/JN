@@ -14,7 +14,7 @@
         {/block}
 
         {row class="row-eq-height"}
-            {col cols=6 id="billing-address"}
+            {col cols=12 md=6 id="billing-address"}
                 {block name='checkout-step5-confirmation-delivery-billing-address'}
                     {card no-body=true class="mb-3"}
                         {cardheader}
@@ -28,13 +28,13 @@
                         {/cardheader}
                         {cardbody}
                             {row}
-                                {col cols=6}
+                                {col cols=12 md=6}
                                     {block name='checkout-step5-confirmation-include-inc-billing-address'}
                                         <p><strong class="title">{lang key='billingAdress' section='account data'}</strong></p>
                                         <p>{include file='checkout/inc_billing_address.tpl'}</p>
                                     {/block}
                                 {/col}
-                                {col cols=6}
+                                {col cols=12 md=6}
                                     {block name='checkout-step5-confirmation-include-inc-delivery-address'}
                                         <p><strong class="title">{lang key='shippingAdress' section='account data'}</strong></p>
                                         <p>{include file='checkout/inc_delivery_address.tpl'}</p>
@@ -45,7 +45,7 @@
                     {/card}
                 {/block}
             {/col}
-            {col cols=6 id="shipping-method" class="mb-3 border-0"}
+            {col cols=12 md=6 id="shipping-method" class="mb-3 border-0"}
                 {block name='checkout-step5-confirmation-shipping-billing-method'}
                     {card no-body=true class="mb-3"}
                         {cardheader}
@@ -60,7 +60,7 @@
                         {/cardheader}
                         {cardbody}
                             {row}
-                            {col cols=6}
+                                {col cols=12 md=6}
                                     {block name='checkout-step5-confirmation-shipping-method'}
                                         <p><strong class="title">{lang key='shippingOptions'}</strong></p>
                                         <p>{$smarty.session.Versandart->angezeigterName|trans}</p>
@@ -73,7 +73,7 @@
                                         {/if}
                                     {/block}
                                 {/col}
-                                {col cols=6}
+                                {col cols=12 md=6}
                                     {block name='checkout-step5-confirmation-payment-method'}
                                         <p><strong class="title">{lang key='paymentOptions'}</strong></p>
                                         <p>{$smarty.session.Zahlungsart->angezeigterName|trans}</p>
@@ -94,7 +94,7 @@
                         {cardheader}
                             {lang key='comment' section='product rating'}
                         {/cardheader}
-                        {cardbody class="p-0 border-1"}
+                        {cardbody class="border-1"}
                             {block name='checkout-step5-confirmation-comment-body'}
                                 {lang assign='orderCommentsTitle' key='orderComments' section='shipping payment'}
                                 {textarea title=$orderCommentsTitle|escape:'html'
@@ -103,7 +103,7 @@
                                     rows="3"
                                     id="comment"
                                     placeholder="{lang key='comment' section='product rating'}"
-                                    class="border-0"
+                                    class="border-0 p-0"
                                 }
                                     {if isset($smarty.session.kommentar)}{$smarty.session.kommentar}{/if}
                                 {/textarea}
@@ -148,7 +148,7 @@
         {/row}
 
         {block name="checkout-step5-confirmation-pre-form-hr"}
-            <hr class="my-0">
+            <hr class="my-7">
         {/block}
 
         {block name='checkout-step5-confirmation-form'}
@@ -238,10 +238,10 @@
                                             {include file='checkout/inc_order_items.tpl' tplscope='confirmation'}
                                         </div>
                                     {/block}
-                                    {button type="submit" variant="primary" id="complete-order-button" class="submit_once float-right ml-3"}
+                                    {button type="submit" variant="primary" id="complete-order-button" class="submit_once float-right ml-3 mb-3"}
                                         {lang key='orderLiableToPay' section='checkout'}
                                     {/button}
-                                    {link href="{get_static_route id='warenkorb.php'}" class="btn btn-secondary float-left"}
+                                    {link href="{get_static_route id='warenkorb.php'}" class="btn btn-secondary float-right float-md-left"}
                                         {lang key='modifyBasket' section='checkout'}
                                     {/link}
                                 </div>

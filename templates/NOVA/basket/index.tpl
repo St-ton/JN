@@ -128,117 +128,119 @@
                     {/if}
                 {/col}
                 {col cols=12 md=4}
-                    <div class="h1 mb-4">{lang key="orderOverview" section="account data"}</div>
-                    {if $Einstellungen.kaufabwicklung.warenkorb_kupon_anzeigen === 'Y' && $KuponMoeglich == 1}
-                        {block name='basket-index-coupon'}
-                            {card no-body=true}
-                                {cardheader class="h6 mb-0" data=["toggle" => "collapse", "target"=>"#coupon-form"]}
-                                {block name='basket-index-coupon-heading'}
-                                    {lang key='useCoupon' section='checkout'} <i class="fa fa-chevron-down float-right"></i>
-                                {/block}
-                                {/cardheader}
-                                {collapse id="coupon-form"}
-                                    {cardbody}
-                                    {block name='basket-index-coupon-form'}
-                                        {form class="form-inline evo-validate" id="basket-coupon-form" method="post" action="{get_static_route id='warenkorb.php'}"}
-                                        {formgroup class="{if !empty($invalidCouponCode)} has-error{/if}"}
-                                        {inputgroup}
-                                        {input aria=["label"=>"{lang key='couponCode' section='account data'}"] type="text" name="Kuponcode" id="couponCode" maxlength="32" placeholder="{lang key='couponCode' section='account data'}" required=true}
-                                        {button type="submit" value=1}{lang key='useCoupon' section='checkout'}{/button}
-                                        {/inputgroup}
-                                        {/formgroup}
-                                        {/form}
+                    <div class="sticky-top cart-summary">
+                        <div class="h1 mb-4">{lang key="orderOverview" section="account data"}</div>
+                        {if $Einstellungen.kaufabwicklung.warenkorb_kupon_anzeigen === 'Y' && $KuponMoeglich == 1}
+                            {block name='basket-index-coupon'}
+                                {card no-body=true}
+                                    {cardheader class="h6 mb-0" data=["toggle" => "collapse", "target"=>"#coupon-form"]}
+                                    {block name='basket-index-coupon-heading'}
+                                        {lang key='useCoupon' section='checkout'} <i class="fa fa-chevron-down float-right"></i>
                                     {/block}
-                                    {/cardbody}
-                                {/collapse}
-                            {/card}
-                        {/block}
-                    {/if}
-                    {card class="bg-info mt-4"}
-                        {block name='baske-index-price-tax'}
-                            {if $NettoPreise}
-                                {block name='baske-index-price-net'}
-                                    {row class="total-net"}
-                                        {col class="text-left" cols=7}
-                                            <span class="price_label"><strong>{lang key='totalSum'} ({lang key='net'}):</strong></span>
-                                        {/col}
-                                        {col class="text-right price-col" cols=5}
-                                            <strong class="price total-sum">{$WarensummeLocalized[$NettoPreise]}</strong>
-                                        {/col}
-                                    {/row}
-                                {/block}
-                            {/if}
-
-                            {if $Einstellungen.global.global_steuerpos_anzeigen !== 'N' && $Steuerpositionen|@count > 0}
-                                {block name='baske-index-tax'}
-                                    {foreach $Steuerpositionen as $Steuerposition}
-                                        {row class="tax"}
+                                    {/cardheader}
+                                    {collapse id="coupon-form"}
+                                        {cardbody}
+                                        {block name='basket-index-coupon-form'}
+                                            {form class="form-inline evo-validate" id="basket-coupon-form" method="post" action="{get_static_route id='warenkorb.php'}"}
+                                            {formgroup class="{if !empty($invalidCouponCode)} has-error{/if}"}
+                                            {inputgroup}
+                                            {input aria=["label"=>"{lang key='couponCode' section='account data'}"] type="text" name="Kuponcode" id="couponCode" maxlength="32" placeholder="{lang key='couponCode' section='account data'}" required=true}
+                                            {button type="submit" value=1}{lang key='useCoupon' section='checkout'}{/button}
+                                            {/inputgroup}
+                                            {/formgroup}
+                                            {/form}
+                                        {/block}
+                                        {/cardbody}
+                                    {/collapse}
+                                {/card}
+                            {/block}
+                        {/if}
+                        {card class="bg-info mt-4"}
+                            {block name='baske-index-price-tax'}
+                                {if $NettoPreise}
+                                    {block name='baske-index-price-net'}
+                                        {row class="total-net"}
                                             {col class="text-left" cols=7}
-                                                <span class="tax_label">{$Steuerposition->cName}:</span>
+                                                <span class="price_label"><strong>{lang key='totalSum'} ({lang key='net'}):</strong></span>
                                             {/col}
                                             {col class="text-right price-col" cols=5}
-                                                <span class="tax_label">{$Steuerposition->cPreisLocalized}</span>
+                                                <strong class="price total-sum">{$WarensummeLocalized[$NettoPreise]}</strong>
                                             {/col}
                                         {/row}
-                                    {/foreach}
-                                {/block}
-                            {/if}
+                                    {/block}
+                                {/if}
 
-                            {if isset($smarty.session.Bestellung->GuthabenNutzen) && $smarty.session.Bestellung->GuthabenNutzen == 1}
-                                {block name='baske-index-credit'}
-                                    {row class="customer-credit"}
+                                {if $Einstellungen.global.global_steuerpos_anzeigen !== 'N' && $Steuerpositionen|@count > 0}
+                                    {block name='baske-index-tax'}
+                                        {foreach $Steuerpositionen as $Steuerposition}
+                                            {row class="tax"}
+                                                {col class="text-left" cols=7}
+                                                    <span class="tax_label">{$Steuerposition->cName}:</span>
+                                                {/col}
+                                                {col class="text-right price-col" cols=5}
+                                                    <span class="tax_label">{$Steuerposition->cPreisLocalized}</span>
+                                                {/col}
+                                            {/row}
+                                        {/foreach}
+                                    {/block}
+                                {/if}
+
+                                {if isset($smarty.session.Bestellung->GuthabenNutzen) && $smarty.session.Bestellung->GuthabenNutzen == 1}
+                                    {block name='baske-index-credit'}
+                                        {row class="customer-credit"}
+                                            {col class="text-left" cols=7}
+                                                {lang key='useCredit' section='account data'}
+                                            {/col}
+                                            {col class="text-right" cols=5}
+                                                {$smarty.session.Bestellung->GutscheinLocalized}
+                                            {/col}
+                                        {/row}
+                                    {/block}
+                                {/if}
+                                {block name='baske-index-price-sticky'}
+                                    {row class="total bg-info border-top mt-3 pt-3"}
                                         {col class="text-left" cols=7}
-                                            {lang key='useCredit' section='account data'}
+                                            <span class="price_label"><strong>{lang key='totalSum'}:</strong></span>
                                         {/col}
-                                        {col class="text-right" cols=5}
-                                            {$smarty.session.Bestellung->GutscheinLocalized}
+                                        {col class="text-right price-col" cols=5}
+                                            <strong class="price total-sum">{$WarensummeLocalized[0]}</strong>
                                         {/col}
                                     {/row}
                                 {/block}
-                            {/if}
-                            {block name='baske-index-price-sticky'}
-                                {row class="total bg-info border-top mt-3 pt-3"}
-                                    {col class="text-left" cols=7}
-                                        <span class="price_label"><strong>{lang key='totalSum'}:</strong></span>
-                                    {/col}
-                                    {col class="text-right price-col" cols=5}
-                                        <strong class="price total-sum">{$WarensummeLocalized[0]}</strong>
-                                    {/col}
+                            {/block}
+                            {block name='baske-index-shipping'}
+                                {if isset($FavourableShipping)}
+                                    {if $NettoPreise}
+                                        {$shippingCosts = "`$FavourableShipping->cPriceLocalized[$NettoPreise]` {lang key='plus' section='basket'} {lang key='vat' section='productDetails'}"}
+                                    {else}
+                                        {$shippingCosts = $FavourableShipping->cPriceLocalized[$NettoPreise]}
+                                    {/if}
+                                    {row class="shipping-costs"}
+                                        {col cols=12}
+                                            <small>{lang|sprintf:$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL():$shippingCosts:$FavourableShipping->cCountryCode key='shippingInformationSpecific' section='basket'}</small>
+                                        {/col}
+                                    {/row}
+                                {elseif empty($FavourableShipping) && empty($smarty.session.Versandart)}
+                                    {row class="shipping-costs"}
+                                        {col cols=12}
+                                            <small>{lang|sprintf:$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL() key='shippingInformation' section='basket'}</small>
+                                        {/col}
+                                    {/row}
+                                {/if}
+                            {/block}
+                            {block name='basket-index-proceed-button'}
+                                {link href="{get_static_route id='bestellvorgang.php'}?wk=1" class="btn btn-primary w-100 mt-3"}{lang key='nextStepCheckout' section='checkout'}{/link}
+                            {/block}
+                        {/card}
+                        {if !empty($WarenkorbVersandkostenfreiHinweis) && $Warenkorb->PositionenArr|@count > 0}
+                            {block name='basket-index-alert'}
+                                {row class="mt-5"}
+                                    {col cols=1}<i class="fas fa-truck"></i>{/col}
+                                    {col cols=10 class="basket_notice"}{$WarenkorbVersandkostenfreiHinweis}{/col}
                                 {/row}
                             {/block}
-                        {/block}
-                        {block name='baske-index-shipping'}
-                            {if isset($FavourableShipping)}
-                                {if $NettoPreise}
-                                    {$shippingCosts = "`$FavourableShipping->cPriceLocalized[$NettoPreise]` {lang key='plus' section='basket'} {lang key='vat' section='productDetails'}"}
-                                {else}
-                                    {$shippingCosts = $FavourableShipping->cPriceLocalized[$NettoPreise]}
-                                {/if}
-                                {row class="shipping-costs"}
-                                    {col cols=12}
-                                        <small>{lang|sprintf:$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL():$shippingCosts:$FavourableShipping->cCountryCode key='shippingInformationSpecific' section='basket'}</small>
-                                    {/col}
-                                {/row}
-                            {elseif empty($FavourableShipping) && empty($smarty.session.Versandart)}
-                                {row class="shipping-costs"}
-                                    {col cols=12}
-                                        <small>{lang|sprintf:$oSpezialseiten_arr[$smarty.const.LINKTYP_VERSAND]->getURL() key='shippingInformation' section='basket'}</small>
-                                    {/col}
-                                {/row}
-                            {/if}
-                        {/block}
-                        {block name='basket-index-proceed-button'}
-                            {link href="{get_static_route id='bestellvorgang.php'}?wk=1" class="btn btn-primary w-100 mt-3"}{lang key='nextStepCheckout' section='checkout'}{/link}
-                        {/block}
-                    {/card}
-                    {if !empty($WarenkorbVersandkostenfreiHinweis) && $Warenkorb->PositionenArr|@count > 0}
-                        {block name='basket-index-alert'}
-                            {row class="mt-5"}
-                                {col cols=1}<i class="fas fa-truck"></i>{/col}
-                                {col cols=10 class="basket_notice"}{$WarenkorbVersandkostenfreiHinweis}{/col}
-                            {/row}
-                        {/block}
-                    {/if}
+                        {/if}
+                    </div>
                 {/col}
             {/row}
         {/container}

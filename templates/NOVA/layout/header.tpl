@@ -216,7 +216,7 @@
     {/block}
     {block name='layout-header-content-all-starttags'}
         {block name='layout-header-content-wrapper-starttag'}
-            <div id="content-wrapper" class="container-fluid mt-0 pt-4 px-md-4">
+            <div id="content-wrapper" class="container-fluid mt-0 pt-4 px-0 px-md-4">
         {/block}
 
         {block name='layout-header-breadcrumb'}

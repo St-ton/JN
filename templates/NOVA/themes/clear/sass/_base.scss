@@ -2067,7 +2067,6 @@ table caption {
   position: relative;
   overflow: hidden;
   border: 1px solid $card-border-color;
-  border-bottom: 4px solid $primary;
   .nav-item {
     padding: 0 0 0 15px;
     @include media-breakpoint-up(md) {
@@ -2110,6 +2109,10 @@ table caption {
     & i {
       margin-left: 1rem;
       color: $primary;
+      align-self: center;
+    }
+    &:not(.nav-todo) {
+      border-bottom: 4px solid $primary;
     }
     &.nav-todo {
       background-color: $gray-lighter;
@@ -2145,6 +2148,10 @@ table caption {
       border-color: $primary;
     }
   }
+}
+
+.cart-summary{
+  z-index: $zindex-sticky - 10;
 }
 
 #cart-form .total,
@@ -2586,9 +2593,9 @@ input.form-control[name="wishlist-url"] {
 }
 
 @keyframes size {
-  0% {width: 36px; height: 36px; margin: 0 8px;}
-  50% {width: 40px; height: 40px; margin: -4px 4px 0 8px;}
-  100% {width: 36px; height: 36px; margin: 0 8px;}
+  0% {transform: scale(1);}
+  50% {transform: scale(1.2);}
+  100% {transform: scale(1);}
 }
 
 .nav-number {
@@ -2598,7 +2605,6 @@ input.form-control[name="wishlist-url"] {
   height: 20px;
   color: $gray-lighter;
   display: inline-block;
-  margin-right: 1rem;
   line-height: initial;
   &.active {
     background-color: $primary;
@@ -2614,7 +2620,6 @@ input.form-control[name="wishlist-url"] {
   position:relative;
   input:not([type="checkbox"]):not([type="radio"]), select {
     width:100%;
-    height:40px;
     border:1px solid #ccc;
     border-radius:4px;
     outline:none;
@@ -2695,6 +2700,10 @@ label {
   display: block;
 }
 
-.btn-scale-small {
-  transform: scale(0.5);
+.btn-scale-small .btn {
+  /*transform: scale(0.5);*/
+  min-width: 25px;
+  width: 25px;
+  height: 25px;
+  font-size: 12px;
 }

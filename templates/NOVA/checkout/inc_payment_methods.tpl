@@ -23,7 +23,7 @@
                     {/block}
                     {if $zahlungsart->fAufpreis != 0}
                         {block name='checkout-inc-payment-methods-badge'}
-                            <span class="badge badge-pill badge-primary float-right">
+                            <span class="ml-3 float-right font-weight-bold">
                             {if $zahlungsart->cGebuehrname|has_trans}
                                 <span>{$zahlungsart->cGebuehrname|trans} </span>
                             {/if}

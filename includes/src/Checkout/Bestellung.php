@@ -1110,30 +1110,4 @@ class Bestellung
             ReturnType::SINGLE_OBJECT
         );
     }
-
-    /**
-     * @param int $customerID
-     * @return object|null
-     */
-    public static function getLastOrderRefIDs(int $customerID): ?object
-    {
-        $order = Shop::Container()->getDB()->queryPrepared(
-            'SELECT kBestellung, kWarenkorb, kLieferadresse, kRechnungsadresse, kZahlungsart, kVersandart
-                FROM tbestellung
-                WHERE kKunde = :customerID
-                ORDER BY dErstellt DESC
-                LIMIT 1',
-            ['customerID' => $customerID],
-            ReturnType::SINGLE_OBJECT
-        );
-
-        return \is_object($order) ? $order : (object)[
-             'kBestellung'       => 0,
-             'kWarenkorb'        => 0,
-             'kLieferadresse'    => 0,
-             'kRechnungsadresse' => 0,
-             'kZahlungsart'      => 0,
-             'kVersandart'       => 0,
-        ];
-    }
 }

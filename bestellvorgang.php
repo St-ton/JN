@@ -7,12 +7,12 @@
 use JTL\Alert\Alert;
 use JTL\Cart\Warenkorb;
 use JTL\Cart\WarenkorbPers;
-use JTL\Checkout\Bestellung;
 use JTL\Checkout\Kupon;
 use JTL\Customer\AccountController;
 use JTL\Extensions\Download;
 use JTL\Extensions\Upload;
 use JTL\Helpers\Cart;
+use JTL\Helpers\Order;
 use JTL\Helpers\Request;
 use JTL\Helpers\ShippingMethod;
 use JTL\Session\Frontend;
@@ -112,7 +112,7 @@ if (isset($_GET['unreg'])
 if (isset($_SESSION['Kunde']) && $_SESSION['Kunde']) {
     if (!isset($_SESSION['Lieferadresse'])) {
         pruefeLieferdaten([
-            'kLieferadresse' => Bestellung::getLastOrderRefIDs((int)$_SESSION['Kunde']->kKunde)->kLieferadresse
+            'kLieferadresse' => Order::getLastOrderRefIDs((int)$_SESSION['Kunde']->kKunde)->kLieferadresse
         ]);
         if (isset($_SESSION['Lieferadresse']) && $_SESSION['Lieferadresse']->kLieferadresse > 0) {
             $_GET['editLieferadresse'] = 1;

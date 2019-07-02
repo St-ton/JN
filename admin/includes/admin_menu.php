@@ -33,6 +33,10 @@ $adminMenu = [
                 'link'   => 'suchspecialoverlay.php',
                 'rights' => 'ORDER_AGB_WRB_VIEW',
             ],
+            __('Image administration') => (object)[
+                'link'   => 'bilderverwaltung.php',
+                'rights' => 'DISPLAY_IMAGES_VIEW',
+            ],
         ],
     ],
     __('Contents')       => [
@@ -93,10 +97,6 @@ $adminMenu = [
             __('Boxes')                   => (object)[
                 'link'   => 'boxen.php',
                 'rights' => 'BOXES_VIEW',
-            ],
-            __('Language administration') => (object)[
-                'link'   => 'sprache.php',
-                'rights' => 'LANGUAGE_VIEW',
             ],
             //            __('IT-Recht Kanzlei') => (object)[
             //                // TODO: correct link and rights
@@ -167,10 +167,6 @@ $adminMenu = [
                 'link'   => 'warenkorbpers.php',
                 'rights' => 'MODULE_SAVED_BASKETS_VIEW',
             ],
-            __('Free gift')              => (object)[
-                'link'   => 'gratisgeschenk.php',
-                'rights' => 'MODULE_GIFT_VIEW',
-            ],
         ],
         __('Payments')      => [
             __('Method of payment') => (object)[
@@ -215,6 +211,10 @@ $adminMenu = [
             __('Coupons')                 => (object)[
                 'link'   => 'kupons.php',
                 'rights' => 'ORDER_COUPON_VIEW',
+            ],
+            __('Free gift')              => (object)[
+                'link'   => 'gratisgeschenk.php',
+                'rights' => 'MODULE_GIFT_VIEW',
             ],
             __('Wish list')               => (object)[
                 'link'   => 'wunschliste.php',
@@ -315,6 +315,10 @@ $adminMenu = [
                 'rights' => 'SETTINGS_GLOBAL_VIEW',
                 'section' => CONF_GLOBAL,
             ],
+            __('Language administration') => (object)[
+                'link'   => 'sprache.php',
+                'rights' => 'LANGUAGE_VIEW',
+            ],
             __('Back end user')                 => (object)[
                 'link'   => 'benutzerverwaltung.php',
                 'rights' => 'ACCOUNT_VIEW',
@@ -366,10 +370,6 @@ $adminMenu = [
             __('Update')               => (object)[
                 'link'   => 'dbupdater.php',
                 'rights' => 'SHOP_UPDATE_VIEW',
-            ],
-            __('Image administration') => (object)[
-                'link'   => 'bilderverwaltung.php',
-                'rights' => 'DISPLAY_IMAGES_VIEW',
             ],
             __('Re-directions')        => (object)[
                 'link'   => 'redirect.php',

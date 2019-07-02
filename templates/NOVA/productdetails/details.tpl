@@ -76,11 +76,16 @@
                                                 {/if}
                                             {/col}
                                         {/if}
+                                        {if !empty($Artikel->cBarcode)}
+                                            {col cols=12}
+                                                <p class="text-muted">{lang key='ean'}: <span itemprop="{if $Artikel->cBarcode|count_characters === 8}gtin8{else}gtin13{/if}">{$Artikel->cBarcode}</span></p>
+                                            {/col}
+                                        {/if}
                                         {if !empty($Artikel->cISBN)
                                         && ($Einstellungen.artikeldetails.isbn_display === 'D'
                                         || $Einstellungen.artikeldetails.isbn_display === 'DL')}
                                             {col cols=12}
-                                                <p class="text-muted">{lang key='isbn'}: <span>{$Artikel->cISBN}</span></p>
+                                                <p class="text-muted">{lang key='isbn'}: <span itemprop="gtin13">{$Artikel->cISBN}</span></p>
                                             {/col}
                                         {/if}
                                         {block name='productdetails-details-info-category-wrapper'}

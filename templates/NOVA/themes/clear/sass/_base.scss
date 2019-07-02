@@ -10,7 +10,9 @@ html {
     padding: $alert-padding-y $alert-padding-x;
   }
 }
-
+.close:hover {
+  cursor: pointer;
+}
 .fs-large {
   font-size: large;
 }
@@ -93,7 +95,7 @@ html {
   }
 }
 
-aside button[data-toggle="collapse"][aria-expanded="true"] i.fa-plus:before {
+[data-toggle="collapse"][aria-expanded="true"] i.fa-plus:before{
   content: "\f068";
 }
 
@@ -574,6 +576,7 @@ ul.partlist-items {
   text-align: center;
   img {
     display: inherit;
+    margin: 0 auto;
   }
 }
 
@@ -1041,8 +1044,8 @@ ul.partlist-items {
     }
   }
   .actions-small {
-    .actions { position: static; margin: 10px 10px 0 auto;
-      .btn { margin: 0 8px; }
+    .actions {
+      position: static; margin: 10px 10px 0 auto;
     }
   }
 }
@@ -1333,7 +1336,7 @@ aside {
 .box-filter-characteristics, .box-filter-manufacturer {
   .filter-img {
     width: auto;
-    height: 28px;
+    height: 35px;
     margin: 0.2rem;
     border: 3px solid transparent;
   }
@@ -1347,8 +1350,6 @@ aside {
 // boxes
 .box_login {
   .register {
-    padding: $spacer;
-    background: $sand;
     text-decoration: underline;
     &:hover {
       text-decoration: none;
@@ -1499,7 +1500,7 @@ $jqcloud-classes: 7;
   }
 }
 
-.product-sku, .product-category { font-size: 12px; }
+.info-essential { font-size: 12px; }
 
 /* ADR hazard sign */
 .adr-table {
@@ -1731,6 +1732,9 @@ footer {
         color: $gray-dark;
       }
     }
+    .card-body {
+      padding: 0;
+    }
   }
 
   .footer-additional {
@@ -1775,6 +1779,9 @@ footer {
     width: auto;
     height: 18px;
     vertical-align: bottom;
+  }
+  .list-group-item {
+    background: transparent;
   }
 }
 #system-credits a {
@@ -2107,7 +2114,6 @@ table caption {
       right: -15px;
     }
     & i {
-      margin-left: 1rem;
       color: $primary;
       align-self: center;
     }
@@ -2571,7 +2577,7 @@ input.form-control[name="wishlist-url"] {
   position: absolute;
   bottom: 50px;
   width: 200px;
-  right: -50px;
+  right: 0;
   visibility: hidden;
   transition: .6s;
   z-index: -2;

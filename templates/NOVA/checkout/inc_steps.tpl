@@ -16,8 +16,10 @@
                     <div class="nav-number active mr-md-2">1</div>
                     <span class="{if !$step1_active}d-none d-md-inline-flex{/if}">
                         {lang section='account data' key='billingAndDeliveryAddress'}
-                        {if $step2_active || $step3_active}<i class="fas fa-check"></i>{/if}
                     </span>
+                    {if $step2_active || $step3_active}
+                        <i class="fas fa-check mr-md-2"></i>
+                    {/if}
                 </span>
             {/link}
 
@@ -29,9 +31,10 @@
                     <div class="nav-number mr-md-2 {if $step2_active || $step3_active}active{/if}">2</div>
                     <span class="{if !$step2_active}d-none d-md-inline-flex{/if}">
                         {lang section='account data' key='shippingAndPaymentOptions'}
-                        {if $step3_active}<i class="fas fa-check"></i>{/if}
                     </span>
-
+                    {if $step3_active}
+                        <i class="fas fa-check mr-md-2"></i>
+                    {/if}
                 </span>
             {/link}
 

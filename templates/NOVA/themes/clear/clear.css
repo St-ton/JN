@@ -78,7 +78,7 @@ hr {
 
 h1, h2, h3, h4, h5, h6 {
   margin-top: 0;
-  margin-bottom: 0.5rem;
+  margin-bottom: 1.5rem;
 }
 
 p {
@@ -359,7 +359,7 @@ template {
 
 h1, h2, h3, h4, h5, h6,
 .h1, .h2, .h3, .h4, .h5, .h6 {
-  margin-bottom: 0.5rem;
+  margin-bottom: 1.5rem;
   font-family: "Montserrat", Helvetica, Arial, sans-serif;
   font-weight: 500;
   line-height: 1.2;
@@ -12528,6 +12528,10 @@ html {
   padding: 0.75rem 1.25rem;
 }
 
+.close:hover {
+  cursor: pointer;
+}
+
 .fs-large {
   font-size: large;
 }
@@ -12691,7 +12695,7 @@ button.bg-info:focus {
   transform: rotate(180deg);
 }
 
-aside button[data-toggle=collapse][aria-expanded=true] i.fa-plus:before {
+[data-toggle=collapse][aria-expanded=true] i.fa-plus:before {
   content: "";
 }
 
@@ -13180,6 +13184,7 @@ ul.partlist-items {
 }
 .slick-slide img {
   display: inherit;
+  margin: 0 auto;
 }
 
 .slick-loading .slick-list {
@@ -13653,11 +13658,6 @@ ul.partlist-items {
   position: static;
   margin: 10px 10px 0 auto;
 }
-.list .product-cell .actions-small .actions .btn,
-.gallery .product-cell .actions-small .actions .btn,
-.gallery-with-action .actions-small .actions .btn {
-  margin: 0 8px;
-}
 
 .gallery,
 .list {
@@ -13919,7 +13919,7 @@ aside .badge-light {
 
 .box-filter-characteristics .filter-img, .box-filter-manufacturer .filter-img {
   width: auto;
-  height: 28px;
+  height: 35px;
   margin: 0.2rem;
   border: 3px solid transparent;
 }
@@ -13929,8 +13929,6 @@ aside .badge-light {
 }
 
 .box_login .register {
-  padding: 1rem;
-  background: #ebebeb;
   text-decoration: underline;
 }
 .box_login .register:hover {
@@ -14098,7 +14096,7 @@ aside .badge-light {
   border-bottom: 1px solid #f5f7fa;
 }
 
-.product-sku, .product-category {
+.info-essential {
   font-size: 12px;
 }
 
@@ -14325,6 +14323,9 @@ footer .card a:hover {
   font-weight: 600;
   color: #525252;
 }
+footer .card .card-body {
+  padding: 0;
+}
 footer .footer-additional {
   border-top: 0;
   padding-top: 20px;
@@ -14366,6 +14367,9 @@ footer .footer-logo {
   width: auto;
   height: 18px;
   vertical-align: bottom;
+}
+footer .list-group-item {
+  background: transparent;
 }
 
 #system-credits a {
@@ -14710,7 +14714,6 @@ table caption {
   right: -15px;
 }
 .nav-wizard .nav-item i {
-  margin-left: 1rem;
   color: #F8BF00;
   align-self: center;
 }
@@ -15162,7 +15165,7 @@ input.form-control[name=wishlist-url] {
   position: absolute;
   bottom: 50px;
   width: 200px;
-  right: -50px;
+  right: 0;
   visibility: hidden;
   transition: 0.6s;
   z-index: -2;

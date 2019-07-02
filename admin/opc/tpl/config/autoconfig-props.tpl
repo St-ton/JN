@@ -10,7 +10,7 @@
         {$propval = $propDesc.default|default:null}
     {/if}
 
-    <div class="col-xs-{$width}">
+    <div class="col-{$width}">
         {if $type === 'text' || $type === 'email' || $type === 'password' || $type === 'number'
                 || $type === 'date' || $type === 'time'}
             <div class='form-group'>
@@ -36,7 +36,7 @@
     {/if}
 
     {if isset($propdesc.children)}
-        <div id="children-{$propname}" class="col-xs-12 collapse">
+        <div id="children-{$propname}" class="col-12 collapse">
             <div class="row">
                 {include file='./autoconfig-props.tpl' props=$propdesc.children}
             </div>
@@ -46,7 +46,7 @@
     {if isset($propdesc.childrenFor)}
         {foreach $propdesc.childrenFor as $option => $childProps}
             <div id="childrenFor-{$option}-{$propname}"
-                 class="col-xs-12 collapse childrenFor-{$propname}">
+                 class="col-12 collapse childrenFor-{$propname}">
                 <div class="row">
                     {include file='./autoconfig-props.tpl' props=$childProps}
                 </div>

@@ -101,7 +101,8 @@
   float: right;
 }
 #opc .opc-control,
-#opc .opc-filter-control {
+#opc .opc-filter-control,
+#opc .form-control {
   border: 1px solid #435A6B;
   border-radius: 5px;
   display: block;
@@ -113,7 +114,8 @@
   font-size: 14px;
 }
 #opc .opc-control:disabled,
-#opc .opc-filter-control:disabled {
+#opc .opc-filter-control:disabled,
+#opc .form-control:disabled {
   background-color: #F5F7FA;
   color: #BDBDBD;
   border-color: #BDBDBD;
@@ -294,7 +296,7 @@ html, body {
 #opc .modal label {
   margin-bottom: 8px;
 }
-#opc .modal .opc-control {
+#opc .modal .form-control {
   margin-bottom: 16px;
 }
 #opc .modal .nav-tabs {

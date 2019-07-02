@@ -121,7 +121,8 @@
   }
 
   .opc-control ,
-  .opc-filter-control {
+  .opc-filter-control ,
+  .form-control {
     border: 1px solid $text-color;
     border-radius: 5px;
     display: block;

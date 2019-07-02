@@ -88,53 +88,67 @@ foreach ($adminMenu as $rootName => $rootEntry) {
         } else {
             $thirdKey = 0;
 
-            foreach ($secondEntry as $thirdName => $thirdEntry) {
-                if ($thirdEntry === 'DYNAMIC_JTL_SEARCH'
-                    && isset($oPluginSearch->kPlugin)
-                    && $oPluginSearch->kPlugin > 0
-                ) {
-                    $link = (object)[
-                        'cLinkname' => 'JTL Search',
-                        'cURL'      => $shopURL . '/' . PFAD_ADMIN . 'plugin.php?kPlugin=' . $oPluginSearch->kPlugin,
-                        'cRecht'    => 'PLUGIN_ADMIN_VIEW',
-                        'key'       => "$rootKey.$secondKey.$thirdKey",
-                    ];
-                } elseif (is_object($thirdEntry)) {
-                    $link = (object)[
-                        'cLinkname' => $thirdName,
-                        'cURL'      => $thirdEntry->link,
-                        'cRecht'    => $thirdEntry->rights,
-                        'key'       => "$rootKey.$secondKey.$thirdKey",
-                    ];
-                } else {
-                    continue;
-                }
-
-                $urlParts             = parse_url($link->cURL);
-                $urlParts['basename'] = basename($urlParts['path']);
-
-                if (empty($urlParts['query'])) {
-                    $urlParts['query'] = [];
-                } else {
-                    mb_parse_str($urlParts['query'], $urlParts['query']);
-                }
-
-                if ($link->cURL === $curScriptFileName
-                    || $curScriptFileName === 'einstellungen.php'
-                    && $urlParts['basename'] === 'einstellungen.php'
-                    && Request::verifyGPCDataInt('kSektion') === (int)$urlParts['query']['kSektion']
-                    || $curScriptFileName === 'statistik.php'
-                    && $urlParts['basename'] === 'statistik.php'
-                    && isset($urlParts['query']['s'])
-                    && Request::verifyGPCDataInt('s') === (int)$urlParts['query']['s']
-                ) {
+            if (is_object($secondEntry)) {
+                $linkGruppe->oLink_arr = (object)[
+                    'cLinkname' => $secondName,
+                    'cURL' => $secondEntry->link,
+                    'cRecht' => $secondEntry->rights,
+                ];
+                if ($linkGruppe->oLink_arr->cURL === $curScriptFileName) {
                     $currentToplevel    = $mainGroup->key;
                     $currentSecondLevel = $linkGruppe->key;
-                    $currentThirdLevel  = $link->key;
                 }
+            } else {
+                foreach ($secondEntry as $thirdName => $thirdEntry) {
+                    if ($thirdEntry === 'DYNAMIC_JTL_SEARCH'
+                        && isset($oPluginSearch->kPlugin)
+                        && $oPluginSearch->kPlugin > 0
+                    ) {
+                        $link = (object)[
+                            'cLinkname' => 'JTL Search',
+                            'cURL' => $shopURL . '/' . PFAD_ADMIN . 'plugin.php?kPlugin=' . $oPluginSearch->kPlugin,
+                            'cRecht' => 'PLUGIN_ADMIN_VIEW',
+                            'key' => "$rootKey.$secondKey.$thirdKey",
+                        ];
+                    } elseif (is_object($thirdEntry)) {
+                        $link = (object)[
+                            'cLinkname' => $thirdName,
+                            'cURL' => $thirdEntry->link,
+                            'cRecht' => $thirdEntry->rights,
+                            'key' => "$rootKey.$secondKey.$thirdKey",
+                        ];
+                    } else {
+                        continue;
+                    }
 
-                $linkGruppe->oLink_arr[] = $link;
-                $thirdKey++;
+                    $urlParts             = parse_url($link->cURL);
+                    $urlParts['basename'] = basename($urlParts['path']);
+
+                    if (empty($urlParts['query'])) {
+                        $urlParts['query'] = [];
+                    } else {
+                        mb_parse_str($urlParts['query'], $urlParts['query']);
+                    }
+
+                    if ($link->cURL === $curScriptFileName
+                        || ($curScriptFileName === 'einstellungen.php'
+                            && $urlParts['basename'] === 'einstellungen.php'
+                            && Request::verifyGPCDataInt('kSektion') === (int)$urlParts['query']['kSektion']
+                        )
+                        || ($curScriptFileName === 'statistik.php'
+                            && $urlParts['basename'] === 'statistik.php'
+                            && isset($urlParts['query']['s'])
+                            && Request::verifyGPCDataInt('s') === (int)$urlParts['query']['s']
+                        )
+                    ) {
+                        $currentToplevel    = $mainGroup->key;
+                        $currentSecondLevel = $linkGruppe->key;
+                        $currentThirdLevel  = $link->key;
+                    }
+
+                    $linkGruppe->oLink_arr[] = $link;
+                    $thirdKey++;
+                }
             }
         }
 
@@ -145,8 +159,6 @@ foreach ($adminMenu as $rootName => $rootEntry) {
     $mainGroups[] = $mainGroup;
     $rootKey++;
 }
-
-
 
 if (is_array($currentTemplateDir)) {
     $currentTemplateDir = $currentTemplateDir[$smarty->context];

@@ -93,6 +93,16 @@ function adminMenuSearch($query)
                         ];
                     }
                 }
+            } elseif (is_object($subMenu)
+                && (stripos($subMenuName, $query) !== false
+                    || stripos($menuName, $query) !== false
+                )
+            ) {
+                $results[] = (object)[
+                    'title' => $subMenuName,
+                    'path'  => highlightSearchTerm($menuName . ' > ' . $subMenuName, $query),
+                    'link'  => $subMenu->link,
+                ];
             }
         }
     }

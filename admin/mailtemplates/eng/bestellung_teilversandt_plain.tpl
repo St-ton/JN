@@ -2,7 +2,7 @@
 
 Dear {$Kunde->cVorname} {$Kunde->cNachname},
 
-The tracking status for order no. {$Bestellung->cBestellNr} has changed.
+the tracking status for order no. {$Bestellung->cBestellNr} has changed.
 
 {foreach $Bestellung->oLieferschein_arr as $oLieferschein}
     {if !$oLieferschein->getEmailVerschickt()}
@@ -12,13 +12,13 @@ The tracking status for order no. {$Bestellung->cBestellNr} has changed.
                 {$WKPosEigenschaft->cEigenschaftName}: {$WKPosEigenschaft->cEigenschaftWertName}
             {/foreach}
             {if $Position->cSeriennummer|strlen > 0}
-                Serialnumber: {$Position->cSeriennummer}
+                Serial number: {$Position->cSeriennummer}
             {/if}
             {if $Position->dMHD|strlen > 0}
-                Best before: {$Position->dMHD}
+                shelf life expiration date: {$Position->dMHD}
             {/if}
             {if $Position->cChargeNr|strlen > 0}
-                Charge: {$Position->cChargeNr}
+                Batch: {$Position->cChargeNr}
             {/if}
         {else}
             {$Position->cName}
@@ -27,13 +27,13 @@ The tracking status for order no. {$Bestellung->cBestellNr} has changed.
 
         {foreach $oLieferschein->oVersand_arr as $oVersand}
             {if $oVersand->getIdentCode()|strlen > 0}
-                Tracking-Url: {$oVersand->getLogistikVarUrl()}
+                Tracking URL: {$oVersand->getLogistikVarUrl()}
             {/if}
         {/foreach}
     {/if}
 {/foreach}
 
-You will be notified about the subsequent status of your order separately.
+You will be notified of the status of your order separately.
 
 Yours sincerely,
 {$Firma->cName}

@@ -2,7 +2,7 @@
 
 Guten Tag {$Kunde->cVorname} {$Kunde->cNachname},
 <br>
-wir freuen uns Ihnen mitteilen zu dürfen, dass in unserem Onlineshop folgenden Kupon ({$Kupon->AngezeigterName}) verwenden dürfen:<br>
+wir freuen uns, Ihnen mitteilen zu dürfen, dass in unserem Onlineshop folgender Kupon ({$Kupon->AngezeigterName}) für Sie bereitliegt:<br>
 <br>
 {if $Kupon->cKuponTyp == $couponTypes.standard}
 <table cellpadding="0" cellspacing="0" border="0" width="100%">
@@ -86,18 +86,18 @@ wir freuen uns Ihnen mitteilen zu dürfen, dass in unserem Onlineshop folgenden 
 	<br>
 {/if}
 
-Gültig vom {$Kupon->cGueltigAbLong}{if $Kupon->dGueltigBis != 0} bis {$Kupon->cGueltigBisLong}{/if}<br>
+Gültig vom {$Kupon->cGueltigAbLong}{if $Kupon->dGueltigBis != 0} bis zum {$Kupon->cGueltigBisLong}{/if}<br>
 <br>
 {if $Kupon->nVerwendungenProKunde>1}
-	Sie dürfen diesen Kupon bei insgesamt {$Kupon->nVerwendungenProKunde} Einkäufen bei uns nutzen.<br>
+	Sie dürfen diesen Kupon für insgesamt {$Kupon->nVerwendungenProKunde} Einkäufe bei uns nutzen.<br>
 	<br>
 {elseif $Kupon->nVerwendungenProKunde==0}
-	Sie dürfen diesen Kupon bei beliebig vielen Einkäufen bei uns nutzen.<br>
+	Sie dürfen diesen Kupon für beliebig vielen Einkäufe bei uns nutzen.<br>
 	<br>
 {/if}
 
 {if $Kupon->nVerwendungen>0}
-	Bitte beachten Sie, dass dieser Kupon auf eine maximale Verwendungsanzahl hat.<br>
+	Bitte beachten Sie, dass dieser Kupon auf eine maximale Verwendungsanzahl begrenzt ist.<br>
 	<br>
 {/if}
 
@@ -118,7 +118,7 @@ Sie lösen den Kupon ein, indem Sie beim Bestellvorgang den Kuponcode in das vor
 <br>
 Viel Spaß bei Ihrem nächsten Einkauf in unserem Shop.<br>
 <br>
-Mit freundlichem Gruß,<br>
+Mit freundlichem Gruß<br>
 Ihr Team von {$Firma->cName}
 
 {includeMailTemplate template=footer type=html}

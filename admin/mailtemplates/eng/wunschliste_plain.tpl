@@ -18,7 +18,7 @@ Take a look at my wish list at {$Firma->cName}.
 View all products
 {$ShopURL}/index.php?wlid={$CWunschliste->cURLID}
 
-Thank you.
+Kind regards,
 {$Kunde->cVorname} {$Kunde->cNachname}
 
 {includeMailTemplate template=footer type=plain}

@@ -2,13 +2,13 @@
 
 Hello {$Nachricht->cName},
 
-I can only recommend the following product for you:
+I would like to recommend a product to you.
 
 Please take a look: {$Artikel->cName} - {$ShopURL}/{$Artikel->cURL}
 
 Thank you!
 
-With best regards,
+Yours sincerely,
 {$VonKunde->cVorname} {$VonKunde->cNachname}
 
 {includeMailTemplate template=footer type=plain}

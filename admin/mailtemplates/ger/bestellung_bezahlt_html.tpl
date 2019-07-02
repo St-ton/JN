@@ -69,7 +69,7 @@ Nachfolgend erhalten Sie nochmals einen Überblick über Ihre Bestellung:<br>
 <br>
 Über den Versand der Ware werden wir Sie gesondert informieren.<br>
 <br>
-Mit freundlichem Gruß,<br>
+Mit freundlichem Gruß<br>
 Ihr Team von {$Firma->cName}
 
 {includeMailTemplate template=footer type=html}

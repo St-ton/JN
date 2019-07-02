@@ -7,6 +7,7 @@
 use JTL\Alert\Alert;
 use JTL\Cart\Warenkorb;
 use JTL\Cart\WarenkorbPers;
+use JTL\Checkout\Bestellung;
 use JTL\Checkout\Kupon;
 use JTL\Customer\AccountController;
 use JTL\Extensions\Download;
@@ -110,7 +111,12 @@ if (isset($_GET['unreg'])
 //autom. step ermitteln
 if (isset($_SESSION['Kunde']) && $_SESSION['Kunde']) {
     if (!isset($_SESSION['Lieferadresse'])) {
-        pruefeLieferdaten(['kLieferadresse' => 0]);
+        pruefeLieferdaten([
+            'kLieferadresse' => Bestellung::getLastOrderRefIDs((int)$_SESSION['Kunde']->kKunde)->kLieferadresse
+        ]);
+        if (isset($_SESSION['Lieferadresse']) && $_SESSION['Lieferadresse']->kLieferadresse > 0) {
+            $_GET['editLieferadresse'] = 1;
+        }
     }
 
     if (!isset($_SESSION['Versandart']) || !is_object($_SESSION['Versandart'])) {

@@ -38,10 +38,10 @@
                     <script type="text/javascript">
                         $(window).on('load', function() {
                             $(function() {
+                                eModal.addLabel('{lang key='yes' section='global'}', '{lang key='no' section='global'}');
                                 var options = {
                                     message: '{lang key='basket2PersMerge' section='login'}',
-                                    label1: '{lang key='no' section='global'}',
-                                    label2: '{lang key='yes' section='global'}',
+                                    label: '{lang key='yes' section='global'}',
                                     title: '{lang key='basket' section='global'}'
                                 };
                                 eModal.confirm(options).then(

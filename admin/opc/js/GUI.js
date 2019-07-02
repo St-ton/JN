@@ -337,8 +337,8 @@ class GUI
                 this.missingConfigButtons.hide();
             }
 
-            this.configModalBody.html(html);
-            this.configModalTitle.html(portletData.title + ' bearbeiten');
+            this.configModalBody[0].innerHTML  = html;
+            this.configModalTitle[0].innerText = portletData.title + ' bearbeiten';
             this.configModal.modal('show');
         });
 

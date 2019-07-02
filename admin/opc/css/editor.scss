@@ -48,6 +48,11 @@ html, body {
       margin-bottom: 16px;
     }
 
+    .nav-tabs {
+      margin: -24px;
+      margin-bottom: 24px;
+    }
+
     .modal-content {
       border: none;
       border-radius: 0;
@@ -97,6 +102,14 @@ html, body {
 
     .progress-bar {
       background-color: $primary-color;
+    }
+  }
+
+  #loaderModal {
+    .modal-dialog {
+      top: 50%;
+      transform: translate(0, -75%);
+      margin: 0 auto;
     }
   }
 }
@@ -158,32 +171,6 @@ html, body {
 
       .divider {
         margin: 0;
-      }
-    }
-  }
-
-  #opcTabs {
-    border: none;
-    background-color: $light-bg;
-    box-shadow: -4px 3px 6px rgba(0, 0, 0, 0.16);
-    position: relative;
-
-    .nav-item {
-      margin: 0;
-
-      .nav-link {
-        border: none;
-        border-bottom: 2px solid transparent;
-        border-radius: 0;
-        padding: 14px 2px 12px;
-        margin: 0 14px;
-        color: $muted-text;
-        background: none;
-
-        &.active {
-          border-color: $text-color;
-          color: $text-color;
-        }
       }
     }
   }

@@ -23,24 +23,6 @@
                 data-placement="bottom" title="{__('Close OnPage-Composer')}">
             <i class="fa fas fa-times"></i>
         </button>
-        {*
-        <div class="collapse navbar-collapse" id="top-navbar-collapse">
-            <ul class="nav navbar-nav navbar-right">
-                <li>
-                    <a href="#" id="btnPublish" data-toggle="tooltip" data-placement="bottom"
-                       title="{__('Publish')}">
-                        <i class="fa fa-newspaper-o fa-fw"></i>
-                    </a>
-                </li>
-                <li>
-                    <a href="#" id="btnSave" data-toggle="tooltip" data-placement="bottom"
-                       title="{__('Save page')}">
-                        <i class="fa fa-save"></i>
-                    </a>
-                </li>
-            </ul>
-        </div>
-        *}
     </header>
 
     <ul class="nav nav-tabs" id="opcTabs">

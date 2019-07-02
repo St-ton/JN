@@ -74,7 +74,14 @@
             </form>
         </div>
 
-        {include file="./modals.tpl"}
+        {include file="./modals/publish.tpl"}
+        {include file="./modals/loader.tpl"}
+        {include file="./modals/error.tpl"}
+        {include file="./modals/config.tpl"}
+        {include file="./modals/blueprint.tpl"}
+        {include file="./modals/blueprint_delete.tpl"}
+        {include file="./modals/tour.tpl"}
+        {include file="./modals/restore_unsaved.tpl"}
 
         <div id="portletToolbar" class="opc-portlet-toolbar btn-group" style="display:none">
             <button type="button" class="btn btn-default btn-sm opc-label" id="portletLabel">

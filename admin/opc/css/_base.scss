@@ -274,4 +274,30 @@
       }
     }
   }
+
+  .nav-tabs {
+    border: none;
+    background-color: $light-bg;
+    box-shadow: -4px 3px 6px rgba(0, 0, 0, 0.16);
+    position: relative;
+
+    .nav-item {
+      margin: 0;
+
+      .nav-link {
+        border: none;
+        border-bottom: 2px solid transparent;
+        border-radius: 0;
+        padding: 14px 2px 12px;
+        margin: 0 14px;
+        color: $muted-text;
+        background: none;
+
+        &.active {
+          border-color: $text-color;
+          color: $text-color;
+        }
+      }
+    }
+  }
 }

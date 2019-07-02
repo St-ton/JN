@@ -1,9 +1,9 @@
-<ul class="nav nav-tabs" role="tablist">
+<ul class="nav nav-tabs">
     {foreach $tabs as $tabname => $tab}
         {$tabId = 'conftab'|cat:$tab@index}
 
-        <li role="presentation"{if $tab@index === 0} class="active"{/if}>
-            <a href="#{$tabId}" aria-controls="{$tabId}" role="tab" data-toggle="tab">
+        <li class="nav-item">
+            <a href="#{$tabId}" data-toggle="tab" class="nav-link {if $tab@index === 0}active{/if}">
                 {$tabname}
             </a>
         </li>
@@ -14,7 +14,7 @@
     {foreach $tabs as $tabname => $tab}
         {$tabId = 'conftab'|cat:$tab@index}
 
-        <div role="tabpanel" class="tab-pane{if $tab@index === 0} active{/if}" id="{$tabId}">
+        <div class="tab-pane fade {if $tab@index === 0}show active{/if}" id="{$tabId}">
             <div class="row">
                 {$rowWidthAccu = 0}
                 {include file='./autoconfig-props.tpl' props=$tab}

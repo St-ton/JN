@@ -232,6 +232,28 @@
 #opc #opcHeader #opcMenuBtnDropdown .opc-dropdown-menu {
   width: 200px;
 }
+#opc .nav-tabs {
+  border: none;
+  background-color: #F5F7FA;
+  box-shadow: -4px 3px 6px rgba(0, 0, 0, 0.16);
+  position: relative;
+}
+#opc .nav-tabs .nav-item {
+  margin: 0;
+}
+#opc .nav-tabs .nav-item .nav-link {
+  border: none;
+  border-bottom: 2px solid transparent;
+  border-radius: 0;
+  padding: 14px 2px 12px;
+  margin: 0 14px;
+  color: #BDBDBD;
+  background: none;
+}
+#opc .nav-tabs .nav-item .nav-link.active {
+  border-color: #435A6B;
+  color: #435A6B;
+}
 
 html, body {
   margin: 0;
@@ -275,6 +297,10 @@ html, body {
 #opc .modal .opc-control {
   margin-bottom: 16px;
 }
+#opc .modal .nav-tabs {
+  margin: -24px;
+  margin-bottom: 24px;
+}
 #opc .modal .modal-content {
   border: none;
   border-radius: 0;
@@ -316,6 +342,11 @@ html, body {
 #opc .modal .progress-bar {
   background-color: #5cbcf6;
 }
+#opc #loaderModal .modal-dialog {
+  top: 50%;
+  transform: translate(0, -75%);
+  margin: 0 auto;
+}
 
 #opcSidebar {
   width: 380px;
@@ -338,28 +369,6 @@ html, body {
 }
 #opcSidebar #opcHeader .dropdown-menu .divider {
   margin: 0;
-}
-#opcSidebar #opcTabs {
-  border: none;
-  background-color: #F5F7FA;
-  box-shadow: -4px 3px 6px rgba(0, 0, 0, 0.16);
-  position: relative;
-}
-#opcSidebar #opcTabs .nav-item {
-  margin: 0;
-}
-#opcSidebar #opcTabs .nav-item .nav-link {
-  border: none;
-  border-bottom: 2px solid transparent;
-  border-radius: 0;
-  padding: 14px 2px 12px;
-  margin: 0 14px;
-  color: #BDBDBD;
-  background: none;
-}
-#opcSidebar #opcTabs .nav-item .nav-link.active {
-  border-color: #435A6B;
-  color: #435A6B;
 }
 #opcSidebar #sidebarInnerPanel {
   height: calc(100vh - 288px);

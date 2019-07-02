@@ -232,6 +232,28 @@
 #opc #opcHeader #opcMenuBtnDropdown .opc-dropdown-menu {
   width: 200px;
 }
+#opc .nav-tabs {
+  border: none;
+  background-color: #F5F7FA;
+  box-shadow: -4px 3px 6px rgba(0, 0, 0, 0.16);
+  position: relative;
+}
+#opc .nav-tabs .nav-item {
+  margin: 0;
+}
+#opc .nav-tabs .nav-item .nav-link {
+  border: none;
+  border-bottom: 2px solid transparent;
+  border-radius: 0;
+  padding: 14px 2px 12px;
+  margin: 0 14px;
+  color: #BDBDBD;
+  background: none;
+}
+#opc .nav-tabs .nav-item .nav-link.active {
+  border-color: #435A6B;
+  color: #435A6B;
+}
 
 #opc #opc-startmenu {
   position: fixed;

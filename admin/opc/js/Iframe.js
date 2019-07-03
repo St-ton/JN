@@ -52,7 +52,7 @@ class Iframe
             this.loadStylesheet(this.shopUrl + '/admin/opc/css/iframe.css');
 
             this.loadScript(
-                'https://unpkg.com/popper.js/dist/umd/popper.min.js',
+                this.shopUrl + '/templates/NOVA/js/popper.min.js',
                 () => {
                     this.toolbarPopper      = this.makePopper(this.portletToolbar);
                     this.previewLabelPopper = this.makePopper(this.portletPreviewLabel);

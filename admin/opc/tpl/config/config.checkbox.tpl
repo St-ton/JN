@@ -1,12 +1,3 @@
-{*<div class="checkbox">*}
-    {*<label>*}
-        {*<input type="hidden" value="0" name="{$propname}">*}
-        {*<input type="checkbox" value="1" id="config-{$propname}" name="{$propname}"*}
-                {*{if $propval == '1'}checked{/if} {if $required === true}required{/if}>*}
-        {*{$propdesc.label}*}
-    {*</label>*}
-{*</div>*}
-
 <div class="form-group">
     <input type="hidden" value="0" name="{$propname}">
     <input type="checkbox" id="config-{$propname}" value="1" name="{$propname}"

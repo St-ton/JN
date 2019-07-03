@@ -17,6 +17,7 @@
     <link rel="stylesheet" href="{$templateUrl}css/bootstrap-tour.min.css">
     {*<link rel="stylesheet" href="{$templateUrl}css/bootstrap-datetimepicker.min.css">*}
     <link rel="stylesheet" href="{$templateUrl}css/tempusdominus-bootstrap-4.min.css">
+    <link rel="stylesheet" href="{$templateUrl}css/fontawesome-iconpicker.min.css">
 
     <link rel="stylesheet" href="{$shopUrl}/admin/opc/css/editor.css">
 
@@ -35,6 +36,7 @@
     <script src="{$templateUrl}js/typeahead.bundle.js"></script>
     {*<script src="{$templateUrl}js/bootstrap-datetimepicker.min.js"></script>*}
     <script src="{$templateUrl}js/tempusdominus-bootstrap-4.min.js"></script>
+    <script src="{$templateUrl}js/fontawesome-iconpicker.min.js"></script>
 
     <script src="{$shopUrl}/admin/opc/js/utils.js"></script>
     <script src="{$shopUrl}/admin/opc/js/OPC.js"></script>
@@ -59,6 +61,7 @@
     </script>
 </head>
 <body>
+    <div id="iconpicker" data-placement="inline" style="display: none"></div>
     <div id="opc">
         {include file="./sidebar.tpl"}
 

@@ -103,6 +103,16 @@ html, body {
     .progress-bar {
       background-color: $primary-color;
     }
+
+    #iconpicker {
+      .form-control {
+        float: none;
+      }
+
+      .iconpicker-popover {
+        width: 100%;
+      }
+    }
   }
 
   #loaderModal {

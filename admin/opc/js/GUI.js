@@ -8,6 +8,7 @@ class GUI
         this.page          = page;
         this.configSaveCb  = noop;
         this.imageSelectCB = noop;
+        this.iconPickerCB  = noop;
         this.inPreviewMode = false;
         this.loaderShown   = false;
     }
@@ -67,6 +68,7 @@ class GUI
             'btnDisplayWidthLaptop',
             'btnDisplayWidthDesktop',
             'unsavedState',
+            'iconpicker',
         ]);
 
         this.missingConfigButtons.hide();
@@ -88,6 +90,14 @@ class GUI
 
             this.updateBlueprintList();
             this.updateRevisionList();
+
+            this.iconpicker.iconpicker().on('iconpickerSelected', e => {
+                this.iconPickerCB(e.iconpickerValue);
+            });
+
+            this.configModal.on('hidden.bs.modal', e => {
+                $('#opc').append(this.iconpicker);
+            })
         }
     }
 
@@ -337,7 +347,7 @@ class GUI
                 this.missingConfigButtons.hide();
             }
 
-            this.configModalBody[0].innerHTML  = html;
+            this.configModalBody.html(html);
             this.configModalTitle[0].innerText = portletData.title + ' bearbeiten';
             this.configModal.modal('show');
         });
@@ -611,6 +621,11 @@ class GUI
     setImageSelectCallback(callback)
     {
         this.imageSelectCB = callback;
+    }
+
+    setIconPickerCallback(callback)
+    {
+        this.iconPickerCB = callback;
     }
 
     onBtnDisplayWidthMobile(e)

@@ -344,6 +344,12 @@ html, body {
 #opc .modal .progress-bar {
   background-color: #5cbcf6;
 }
+#opc .modal #iconpicker .form-control {
+  float: none;
+}
+#opc .modal #iconpicker .iconpicker-popover {
+  width: 100%;
+}
 #opc #loaderModal .modal-dialog {
   top: 50%;
   transform: translate(0, -75%);

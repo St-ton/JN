@@ -26,7 +26,7 @@
                                 eModal.addLabel('{lang key='yes' section='global'}', '{lang key='no' section='global'}');
                                 var options = {
                                     message: '{lang key='basket2PersMerge' section='login'}',
-                                    label: '{lang key='yes' section='global'}'
+                                    label: '{lang key='yes' section='global'}',
                                     title: '{lang key='basket' section='global'}'
                                 };
                                 eModal.confirm(options).then(

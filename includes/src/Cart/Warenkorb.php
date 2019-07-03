@@ -1456,7 +1456,7 @@ class Warenkorb
         }
 
         if ($redirect) {
-            $this->setzePositionsPreise();
+            Cart::deleteAllSpecialItems();
             $linkHelper = Shop::Container()->getLinkService();
             \header('Location: ' . $linkHelper->getStaticRoute('warenkorb.php') . '?fillOut=10', true, 303);
             exit;

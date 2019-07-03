@@ -54,10 +54,20 @@
       }
     }
 
+    &.opc-btn-primary {
+      &:hover {
+        background-color: $primary-darker;
+      }
+    }
+
     &.opc-btn-secondary {
       background-color: $bg-color;
       border: 1px solid $primary-color;
       color: $primary-color;
+
+      &:hover {
+        color: $primary-darker;
+      }
     }
 
     &.opc-small-btn {
@@ -289,6 +299,10 @@
 
     .opc-header-btn {
       padding: 0 4px;
+
+      &:hover {
+        color: $primary-lighter;
+      }
     }
 
     #opcMenuBtnDropdown {
@@ -317,6 +331,10 @@
         margin: 0 14px;
         color: $muted-text;
         background: none;
+
+        &:hover {
+          color: $text-color;
+        }
 
         &.active {
           border-color: $text-color;

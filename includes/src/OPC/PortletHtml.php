@@ -50,7 +50,7 @@ trait PortletHtml
      */
     public function getButtonHtml(): string
     {
-        return '<img alt="Portlet Button" src="' . $this->getDefaultIconSvgUrl() . '">'
+        return '<img alt="Portlet Button" draggable="false" src="' . $this->getDefaultIconSvgUrl() . '">'
             . '<span>' . $this->getTitle() . '</span>';
     }
 

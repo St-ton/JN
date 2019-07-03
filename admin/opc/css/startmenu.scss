@@ -19,9 +19,11 @@
       overflow: hidden;
       transition: 0.25s;
       white-space: nowrap;
+      text-align: left;
 
       &:hover {
         width: 182px;
+        background-color: $primary-color;
 
         #opc-start-label {
           opacity: 1.0;

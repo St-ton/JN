@@ -45,10 +45,16 @@
 #opc button.opc-btn-primary.opc-full-width, #opc button.opc-btn-secondary.opc-full-width {
   width: 100%;
 }
+#opc button.opc-btn-primary:hover {
+  background-color: #22a4f3;
+}
 #opc button.opc-btn-secondary {
   background-color: #fff;
   border: 1px solid #5cbcf6;
   color: #5cbcf6;
+}
+#opc button.opc-btn-secondary:hover {
+  color: #22a4f3;
 }
 #opc button.opc-small-btn {
   padding: 8px 10px;
@@ -248,6 +254,9 @@
 #opc #opcHeader .opc-header-btn {
   padding: 0 4px;
 }
+#opc #opcHeader .opc-header-btn:hover {
+  color: #d5eefd;
+}
 #opc #opcHeader #opcMenuBtnDropdown {
   display: inline;
 }
@@ -272,6 +281,9 @@
   color: #BDBDBD;
   background: none;
 }
+#opc .nav-tabs .nav-item .nav-link:hover {
+  color: #435A6B;
+}
 #opc .nav-tabs .nav-item .nav-link.active {
   border-color: #435A6B;
   color: #435A6B;
@@ -294,9 +306,11 @@
   overflow: hidden;
   transition: 0.25s;
   white-space: nowrap;
+  text-align: left;
 }
 #opc #opc-startmenu button:hover {
   width: 182px;
+  background-color: #5cbcf6;
 }
 #opc #opc-startmenu button:hover #opc-start-label {
   opacity: 1;

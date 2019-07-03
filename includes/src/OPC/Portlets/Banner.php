@@ -51,12 +51,12 @@ class Banner extends Portlet
             ],
             'zones' => [
                 'type'    => InputType::ZONES,
-                'label'   => 'Banner-Zonen',
+                'label'   => __('bannerAreas'),
                 'srcProp' => 'src',
                 'default' => [],
             ],
             'alt'   => [
-                'label' => __('Alternativ text'),
+                'label' => __('Alternative text'),
             ],
         ];
     }

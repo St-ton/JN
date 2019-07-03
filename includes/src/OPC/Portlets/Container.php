@@ -33,41 +33,41 @@ class Container extends Portlet
         return [
             'min-height'      => [
                 'type'    => InputType::NUMBER,
-                'label'   => 'Mindesthöhe in px',
+                'label'   => __('minHeightPX'),
                 'default' => 300,
                 'width'   => 50,
             ],
             'boxed' => [
                 'type'  => InputType::CHECKBOX,
-                'label' => 'Boxed Container',
+                'label' => __('Boxed Container'),
                 'width' => 50,
             ],
             'background-flag' => [
                 'type'    => InputType::RADIO,
-                'label'   => 'Hintergrund',
+                'label'   => __('background'),
                 'options' => [
-                    'image' => 'mitlaufendes Bild (parallax)',
-                    'video' => 'Hintergrundvideo',
-                    'false' => 'kein Hintergrund',
+                    'image' => __('imageParallax'),
+                    'video' => __('backgroundVideo'),
+                    'false' => __('noBackground'),
                 ],
                 'default' => 'false',
                 'width'   => 50,
                 'childrenFor' => [
                     'image' => [
                         'src'  => [
-                            'label' => 'Hintergrundbild',
+                            'label' => __('backgroundImage'),
                             'type'  => InputType::IMAGE,
                         ],
                     ],
                     'video' => [
                         'video-src' => [
                             'type'  => InputType::VIDEO,
-                            'label' => 'Video',
+                            'label' => __('video'),
                             'width' => 50,
                         ],
                         'video-poster' => [
                             'type'  => InputType::IMAGE,
-                            'label' => 'Platzhalterbild',
+                            'label' => __('placeholderImage'),
                             'width' => 50,
                         ],
                     ],
@@ -82,8 +82,8 @@ class Container extends Portlet
     public function getPropertyTabs(): array
     {
         return [
-            'Styles'    => 'styles',
-            'Animation' => 'animations',
+            __('Styles')    => 'styles',
+            __('Animation') => 'animations',
         ];
     }
 }

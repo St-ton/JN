@@ -354,6 +354,9 @@ html, body {
   margin: -24px;
   margin-bottom: 24px;
 }
+#opc .modal .modal-dialog {
+  max-width: 550px;
+}
 #opc .modal .modal-content {
   border: none;
   border-radius: 0;

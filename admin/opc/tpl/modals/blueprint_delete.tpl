@@ -1,17 +1,21 @@
-
 <div id="blueprintDeleteModal" class="modal fade" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title">{__('Delete Blueprint?')}</h4>
+                <h5 class="modal-title">{__('Delete Blueprint?')}</h5>
+            </div>
+            <div class="modal-body">
+                Wollen Sie diese Vorlage wirklich löschen?
             </div>
             <form id="blueprintDeleteForm">
                 <div class="modal-footer">
-                    <div class="btn-group">
-                        <input type="hidden" id="blueprintDeleteId" name="id" value="">
-                        <button type="button" class="btn btn-danger" data-dismiss="modal">{__('cancel')}</button>
-                        <button class="btn btn-primary">{__('delete')}</button>
-                    </div>
+                    <input type="hidden" id="blueprintDeleteId" name="id" value="">
+                    <button type="button" class="opc-btn-secondary opc-small-btn" data-dismiss="modal">
+                        {__('cancel')}
+                    </button>
+                    <button type="submit" class="opc-btn-primary opc-small-btn">
+                        {__('delete')}
+                    </button>
                 </div>
             </form>
         </div>

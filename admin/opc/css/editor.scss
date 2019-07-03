@@ -28,6 +28,10 @@ html, body {
       margin-bottom: 24px;
     }
 
+    .modal-dialog {
+      max-width: 550px;
+    }
+
     .modal-content {
       border: none;
       border-radius: 0;

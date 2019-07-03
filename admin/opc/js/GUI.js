@@ -105,6 +105,7 @@ class GUI
     {
         elm.datetimepicker({
             locale: 'de',
+            format: localDateFormat,
             useCurrent: false,
             icons: {
                 time: 'far fa-clock',
@@ -164,13 +165,14 @@ class GUI
 
             blueprints.forEach(blueprint => {
                 var newBtn = this.blueprintBtnBlueprint.clone()
-                    .attr('id', '').css('display', '')
+                    .attr('id', null)
+                    .attr('data-blueprint-id', blueprint.id)
+                    .show()
                     .appendTo(this.blueprintList);
 
-                newBtn.find('.blueprintButton').attr('data-blueprint-id', blueprint.id);
                 newBtn.find('.blueprintExport').attr('data-blueprint-id', blueprint.id);
                 newBtn.find('.blueprintDelete').attr('data-blueprint-id', blueprint.id);
-                newBtn.find('span').html(blueprint.name);
+                newBtn.find('.blueprintTitle').text(blueprint.name);
             });
 
             this.updateDynamicGui();
@@ -186,7 +188,7 @@ class GUI
                 this.revisionBtnBlueprint.clone()
                     .attr('id', '').css('display', '')
                     .attr('data-revision-id', rev.id)
-                    .html(rev.timestamp)
+                    .html(moment(rev.timestamp, internalDateFormat).format(localDateFormat))
                     .appendTo(this.revisionList);
             });
 

@@ -62,25 +62,19 @@
                 {/foreach}
             </div>
             <div class="tab-pane" id="blueprints">
-                <div class="list-group">
-                    <div id="blueprintList"></div>
-                    <div class="list-group-item">
-                        <a href="#" class="blueprintButton btn" id="btnImportBlueprint">
-                            <i class="fa fa-upload"></i> <span>{__('Import blueprint')}</span>
-                        </a>
-                    </div>
-                </div>
+                <div id="blueprintList"></div>
+                <button type="button" class="opc-btn-secondary opc-small-btn" id="btnImportBlueprint">
+                    <i class="fa fa-upload"></i> <span>{__('Import blueprint')}</span>
+                </button>
             </div>
             <div class="tab-pane" id="revisions">
-                <div class="list-group">
-                    <a class="list-group-item revisionBtn" href="#" data-revision-id="-1" id="unsavedRevision">
-                        <i>{__('Unsaved revision')}</i>
-                    </a>
-                    <a class="list-group-item revisionBtn" href="#" data-revision-id="0">
-                        {__('Current revision')}
-                    </a>
-                    <div id="revisionList"></div>
-                </div>
+                <a class="revisionBtn" href="#" data-revision-id="-1" id="unsavedRevision">
+                    <i>{__('Unsaved revision')}</i>
+                </a>
+                <a class="revisionBtn" href="#" data-revision-id="0">
+                    {__('Current revision')}
+                </a>
+                <div id="revisionList"></div>
             </div>
             <div class="tab-pane" id="pagetree">
                 <div id="pageTreeView"></div>
@@ -130,3 +124,23 @@
         </div>
     </div>
 </div>
+
+{*blueprint for blueprint entry*}
+<div class="blueprintButton" style="display:none" id="blueprintBtnBlueprint" draggable="true" data-blueprint-id="42">
+    <i class="blueprint-icon fas fa-puzzle-piece"></i>
+    <span class="blueprintTitle">{__('templateTitle')}</span>
+    <div class="blueprint-btn-actions">
+        <button type="button" class="blueprintExport" data-blueprint-id="999">
+            <i class="fas fa-download fa-fw"></i>
+        </button>
+        <button type="button" class="blueprintDelete" data-blueprint-id="999">
+            <i class="fas fa-trash fa-fw"></i>
+        </button>
+    </div>
+</div>
+{*/blueprint*}
+
+{*blueprint for revision entry*}
+<a class="revisionBtn" href="#" data-revision-id="999"
+   style="display:none" id="revisionBtnBlueprint"></a>
+{*/blueprint*}

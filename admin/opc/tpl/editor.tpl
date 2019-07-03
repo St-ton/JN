@@ -110,27 +110,6 @@
         <div id="portletPreviewLabel" class="opc-label" style="display:none">
             {__('portletPreviewLabel')}
         </div>
-
-        {*blueprint for blueprint entry*}
-        <div class="list-group-item" style="display:none" id="blueprintBtnBlueprint">
-            <a href="#" class="blueprintButton btn" draggable="true" data-blueprint-id="42">
-                <i class="fa fa-puzzle-piece"></i> <span>{__('templateTitle')}</span>
-            </a>
-            <div class="btn-group pull-right">
-                <a href="#" class="blueprintExport btn" data-blueprint-id="999">
-                    <i class="fa fa-download"></i>
-                </a>
-                <a href="#" class="blueprintDelete btn" data-blueprint-id="999">
-                    <i class="fa fa-times"></i>
-                </a>
-            </div>
-        </div>
-        {*/blueprint*}
-
-        {*blueprint for revision entry*}
-        <a class="list-group-item revisionBtn" href="#" data-revision-id="999"
-           style="display:none" id="revisionBtnBlueprint"></a>
-        {*/blueprint*}
     </div>
 </body>
 </html>

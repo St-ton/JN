@@ -1,6 +1,26 @@
 @charset "UTF-8";
 #opc {
   font-family: sans-serif;
+  height: 100%;
+}
+#opc ::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+  background-color: transparent;
+}
+#opc ::-webkit-scrollbar-track {
+  border-radius: 0;
+  background-color: transparent;
+  border: none;
+}
+#opc ::-webkit-scrollbar-thumb {
+  border-radius: 4px;
+  background: #9b9b9b;
+  border: 0;
+}
+#opc ::-webkit-scrollbar-thumb:hover, #opc ::-webkit-scrollbar-thumb:active {
+  background: #9b9b9b;
+  border: 1px solid #525252;
 }
 #opc h1, #opc h2, #opc h3, #opc h4, #opc h5, #opc h6 {
   font-family: inherit;

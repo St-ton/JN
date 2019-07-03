@@ -1,6 +1,26 @@
 @charset "UTF-8";
 #opc {
   font-family: sans-serif;
+  height: 100%;
+}
+#opc ::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+  background-color: transparent;
+}
+#opc ::-webkit-scrollbar-track {
+  border-radius: 0;
+  background-color: transparent;
+  border: none;
+}
+#opc ::-webkit-scrollbar-thumb {
+  border-radius: 4px;
+  background: #9b9b9b;
+  border: 0;
+}
+#opc ::-webkit-scrollbar-thumb:hover, #opc ::-webkit-scrollbar-thumb:active {
+  background: #9b9b9b;
+  border: 1px solid #525252;
 }
 #opc h1, #opc h2, #opc h3, #opc h4, #opc h5, #opc h6 {
   font-family: inherit;
@@ -268,26 +288,57 @@ html, body {
 }
 
 #opc {
-  height: 100%;
-}
-#opc ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-  background-color: transparent;
-}
-#opc ::-webkit-scrollbar-track {
-  border-radius: 0;
-  background-color: transparent;
-  border: none;
-}
-#opc ::-webkit-scrollbar-thumb {
-  border-radius: 4px;
-  background: #9b9b9b;
-  border: 0;
-}
-#opc ::-webkit-scrollbar-thumb:hover, #opc ::-webkit-scrollbar-thumb:active {
-  background: #9b9b9b;
-  border: 1px solid #525252;
+  /*
+  .modal {
+      .modal-header {
+          background-color: $primary-color;
+          color: #fff;
+
+          button {
+              color: #fff;
+              opacity: 1;
+          }
+      }
+
+      .modal-body {
+          overflow: hidden;
+          .nav.nav-tabs {
+              margin: -15px -15px 15px -15px;
+          }
+      }
+
+      .modal-content {
+          .btn {
+              background-image: none;
+              border: none;
+              border-radius: 5px;
+              padding: 8px 16px;
+              font-size: 16px;
+          }
+          .btn-danger {
+              background-color: #bbb;
+          }
+          .btn-primary {
+              background-color: $primary-color;
+          }
+          .btn-xs {
+              padding: 1px 5px;
+              font-size: 12px;
+              border-radius: 0;
+          }
+          .btn-sm {
+              padding: 5px 10px;
+              font-size: 16px;
+              line-height: 1.5;
+          }
+
+          .input-group-addon {
+              min-width: 128px;
+              text-align: left;
+          }
+      }
+  }
+  */
 }
 #opc .modal {
   font-size: 14px;
@@ -355,60 +406,59 @@ html, body {
   transform: translate(0, -75%);
   margin: 0 auto;
 }
-
-#opcSidebar {
+#opc #opcSidebar {
   width: 380px;
   height: 100%;
   float: left;
   position: relative;
 }
-#opcSidebar #opcHeader a {
+#opc #opcSidebar #opcHeader a {
   color: #fff;
 }
-#opcSidebar #opcHeader a:hover {
+#opc #opcSidebar #opcHeader a:hover {
   color: #435A6B;
 }
-#opcSidebar #opcHeader .dropdown-menu a {
+#opc #opcSidebar #opcHeader .dropdown-menu a {
   color: #435A6B;
   padding: 8px;
 }
-#opcSidebar #opcHeader .dropdown-menu a i.fa {
+#opc #opcSidebar #opcHeader .dropdown-menu a i.fa {
   color: #5cbcf6;
 }
-#opcSidebar #opcHeader .dropdown-menu .divider {
+#opc #opcSidebar #opcHeader .dropdown-menu .divider {
   margin: 0;
 }
-#opcSidebar #sidebarInnerPanel {
+#opc #opcSidebar #sidebarInnerPanel {
   height: calc(100vh - 288px);
   overflow-y: scroll;
   padding: 24px;
   padding-right: 18px;
 }
-#opcSidebar #sidebarInnerPanel .tab-content {
+#opc #opcSidebar #sidebarInnerPanel .tab-content {
   min-height: 100%;
   overflow-x: hidden;
   overflow-y: auto;
 }
-#opcSidebar #sidebarInnerPanel #portlets .portletGroupBtn {
+#opc #opcSidebar #sidebarInnerPanel #portlets .portletGroupBtn {
   display: block;
   font-weight: 600;
   width: 100%;
   text-align: left;
   margin-bottom: 16px;
 }
-#opcSidebar #sidebarInnerPanel #portlets .portletGroupBtn .fas {
+#opc #opcSidebar #sidebarInnerPanel #portlets .portletGroupBtn .fas {
   float: right;
   line-height: inherit;
 }
-#opcSidebar #sidebarInnerPanel #portlets .portletGroupBtn.collapsed .fas::before {
+#opc #opcSidebar #sidebarInnerPanel #portlets .portletGroupBtn.collapsed .fas::before {
   content: "";
 }
-#opcSidebar #sidebarInnerPanel #portlets .collapse:after {
+#opc #opcSidebar #sidebarInnerPanel #portlets .collapse:after {
   content: " ";
   display: block;
   clear: both;
 }
-#opcSidebar #sidebarInnerPanel #portlets .portletButton {
+#opc #opcSidebar #sidebarInnerPanel #portlets .portletButton {
   display: block;
   float: left;
   width: 96px;
@@ -418,22 +468,22 @@ html, body {
   background-color: #F5F7FA;
   border-radius: 5px;
 }
-#opcSidebar #sidebarInnerPanel #portlets .portletButton:nth-child(3n) {
+#opc #opcSidebar #sidebarInnerPanel #portlets .portletButton:nth-child(3n) {
   margin-right: 0;
 }
-#opcSidebar #sidebarInnerPanel #portlets .portletButton > .portletBtnInner {
+#opc #opcSidebar #sidebarInnerPanel #portlets .portletButton > .portletBtnInner {
   display: block;
   width: 96px;
   height: 96px;
   position: relative;
 }
-#opcSidebar #sidebarInnerPanel #portlets .portletButton > .portletBtnInner > img {
+#opc #opcSidebar #sidebarInnerPanel #portlets .portletButton > .portletBtnInner > img {
   position: absolute;
   left: 50%;
   top: 36%;
   transform: translate(-50%, -50%);
 }
-#opcSidebar #sidebarInnerPanel #portlets .portletButton > .portletBtnInner > i {
+#opc #opcSidebar #sidebarInnerPanel #portlets .portletButton > .portletBtnInner > i {
   display: block;
   position: absolute;
   left: 50%;
@@ -442,14 +492,14 @@ html, body {
   font-size: 32px;
   color: #5cbcf6;
 }
-#opcSidebar #sidebarInnerPanel #portlets .portletButton > .portletBtnInner > span {
+#opc #opcSidebar #sidebarInnerPanel #portlets .portletButton > .portletBtnInner > span {
   position: absolute;
   left: 0;
   bottom: 8px;
   width: 100%;
   line-height: 16px;
 }
-#opcSidebar #portlets .collapseGroup {
+#opc #opcSidebar #sidebarInnerPanel #portlets .collapseGroup {
   display: block;
   color: #435A6B;
   font-size: 16px;
@@ -457,332 +507,282 @@ html, body {
   margin: 0 -15px 5px -15px;
   text-decoration: none;
 }
-#opcSidebar #portlets .collapse .row {
+#opc #opcSidebar #sidebarInnerPanel #portlets .collapse .row {
   padding-bottom: 14px;
 }
-#opcSidebar #portlets .portletButton {
-  color: #435A6B;
-  background-color: #f5f7fa;
-  height: 95px;
-  display: block;
-  width: 100%;
-  border-radius: 5px;
-}
-#opcSidebar #portlets .portletButton .fa {
-  color: #5cbcf6;
-  margin: 7px 0 5px;
-  font-size: 30px;
-  height: 30px;
-  max-width: 100%;
-}
-#opcSidebar #portlets .container-fluid {
+#opc #opcSidebar #sidebarInnerPanel #portlets .container-fluid {
   padding-left: 24px;
   padding-right: 24px;
 }
-#opcSidebar #portlets .row {
+#opc #opcSidebar #sidebarInnerPanel #portlets .row {
   margin-left: -7px;
   margin-right: -7px;
   padding-bottom: 14px;
 }
-#opcSidebar #portlets .col-xs-1, #opcSidebar #portlets .col-sm-1, #opcSidebar #portlets .col-md-1, #opcSidebar #portlets .col-lg-1,
-#opcSidebar #portlets .col-xs-2, #opcSidebar #portlets .col-sm-2, #opcSidebar #portlets .col-md-2, #opcSidebar #portlets .col-lg-2,
-#opcSidebar #portlets .col-xs-3, #opcSidebar #portlets .col-sm-3, #opcSidebar #portlets .col-md-3, #opcSidebar #portlets .col-lg-3,
-#opcSidebar #portlets .col-xs-4, #opcSidebar #portlets .col-sm-4, #opcSidebar #portlets .col-md-4, #opcSidebar #portlets .col-lg-4,
-#opcSidebar #portlets .col-xs-5, #opcSidebar #portlets .col-sm-5, #opcSidebar #portlets .col-md-5, #opcSidebar #portlets .col-lg-5,
-#opcSidebar #portlets .col-xs-6, #opcSidebar #portlets .col-sm-6, #opcSidebar #portlets .col-md-6, #opcSidebar #portlets .col-lg-6,
-#opcSidebar #portlets .col-xs-7, #opcSidebar #portlets .col-sm-7, #opcSidebar #portlets .col-md-7, #opcSidebar #portlets .col-lg-7,
-#opcSidebar #portlets .col-xs-8, #opcSidebar #portlets .col-sm-8, #opcSidebar #portlets .col-md-8, #opcSidebar #portlets .col-lg-8,
-#opcSidebar #portlets .col-xs-9, #opcSidebar #portlets .col-sm-9, #opcSidebar #portlets .col-md-9, #opcSidebar #portlets .col-lg-9,
-#opcSidebar #portlets .col-xs-10, #opcSidebar #portlets .col-sm-10, #opcSidebar #portlets .col-md-10, #opcSidebar #portlets .col-lg-10,
-#opcSidebar #portlets .col-xs-11, #opcSidebar #portlets .col-sm-11, #opcSidebar #portlets .col-md-11, #opcSidebar #portlets .col-lg-11,
-#opcSidebar #portlets .col-xs-12, #opcSidebar #portlets .col-sm-12, #opcSidebar #portlets .col-md-12, #opcSidebar #portlets .col-lg-12 {
+#opc #opcSidebar #sidebarInnerPanel #portlets .col-xs-1, #opc #opcSidebar #sidebarInnerPanel #portlets .col-sm-1, #opc #opcSidebar #sidebarInnerPanel #portlets .col-md-1, #opc #opcSidebar #sidebarInnerPanel #portlets .col-lg-1,
+#opc #opcSidebar #sidebarInnerPanel #portlets .col-xs-2, #opc #opcSidebar #sidebarInnerPanel #portlets .col-sm-2, #opc #opcSidebar #sidebarInnerPanel #portlets .col-md-2, #opc #opcSidebar #sidebarInnerPanel #portlets .col-lg-2,
+#opc #opcSidebar #sidebarInnerPanel #portlets .col-xs-3, #opc #opcSidebar #sidebarInnerPanel #portlets .col-sm-3, #opc #opcSidebar #sidebarInnerPanel #portlets .col-md-3, #opc #opcSidebar #sidebarInnerPanel #portlets .col-lg-3,
+#opc #opcSidebar #sidebarInnerPanel #portlets .col-xs-4, #opc #opcSidebar #sidebarInnerPanel #portlets .col-sm-4, #opc #opcSidebar #sidebarInnerPanel #portlets .col-md-4, #opc #opcSidebar #sidebarInnerPanel #portlets .col-lg-4,
+#opc #opcSidebar #sidebarInnerPanel #portlets .col-xs-5, #opc #opcSidebar #sidebarInnerPanel #portlets .col-sm-5, #opc #opcSidebar #sidebarInnerPanel #portlets .col-md-5, #opc #opcSidebar #sidebarInnerPanel #portlets .col-lg-5,
+#opc #opcSidebar #sidebarInnerPanel #portlets .col-xs-6, #opc #opcSidebar #sidebarInnerPanel #portlets .col-sm-6, #opc #opcSidebar #sidebarInnerPanel #portlets .col-md-6, #opc #opcSidebar #sidebarInnerPanel #portlets .col-lg-6,
+#opc #opcSidebar #sidebarInnerPanel #portlets .col-xs-7, #opc #opcSidebar #sidebarInnerPanel #portlets .col-sm-7, #opc #opcSidebar #sidebarInnerPanel #portlets .col-md-7, #opc #opcSidebar #sidebarInnerPanel #portlets .col-lg-7,
+#opc #opcSidebar #sidebarInnerPanel #portlets .col-xs-8, #opc #opcSidebar #sidebarInnerPanel #portlets .col-sm-8, #opc #opcSidebar #sidebarInnerPanel #portlets .col-md-8, #opc #opcSidebar #sidebarInnerPanel #portlets .col-lg-8,
+#opc #opcSidebar #sidebarInnerPanel #portlets .col-xs-9, #opc #opcSidebar #sidebarInnerPanel #portlets .col-sm-9, #opc #opcSidebar #sidebarInnerPanel #portlets .col-md-9, #opc #opcSidebar #sidebarInnerPanel #portlets .col-lg-9,
+#opc #opcSidebar #sidebarInnerPanel #portlets .col-xs-10, #opc #opcSidebar #sidebarInnerPanel #portlets .col-sm-10, #opc #opcSidebar #sidebarInnerPanel #portlets .col-md-10, #opc #opcSidebar #sidebarInnerPanel #portlets .col-lg-10,
+#opc #opcSidebar #sidebarInnerPanel #portlets .col-xs-11, #opc #opcSidebar #sidebarInnerPanel #portlets .col-sm-11, #opc #opcSidebar #sidebarInnerPanel #portlets .col-md-11, #opc #opcSidebar #sidebarInnerPanel #portlets .col-lg-11,
+#opc #opcSidebar #sidebarInnerPanel #portlets .col-xs-12, #opc #opcSidebar #sidebarInnerPanel #portlets .col-sm-12, #opc #opcSidebar #sidebarInnerPanel #portlets .col-md-12, #opc #opcSidebar #sidebarInnerPanel #portlets .col-lg-12 {
   padding-left: 7px;
   padding-right: 7px;
 }
-#opcSidebar #sidebarFooter {
+#opc #opcSidebar #sidebarInnerPanel #revisions .revisionBtn,
+#opc #opcSidebar #sidebarInnerPanel #blueprints .blueprintButton {
+  display: block;
+  background-color: #F5F7FA;
+  border-radius: 5px;
+  padding: 16px;
+  margin: 0;
+  margin-bottom: 16px;
+  color: #435A6B;
+}
+#opc #opcSidebar #sidebarInnerPanel #revisions .revisionBtn:hover,
+#opc #opcSidebar #sidebarInnerPanel #blueprints .blueprintButton:hover {
+  text-decoration: none;
+}
+#opc #opcSidebar #sidebarInnerPanel #blueprints #blueprintList {
+  padding-bottom: 46px;
+}
+#opc #opcSidebar #sidebarInnerPanel #blueprints .blueprintButton {
+  cursor: pointer;
+}
+#opc #opcSidebar #sidebarInnerPanel #blueprints .blueprintButton .blueprint-icon {
+  color: #5cbcf6;
+  font-size: 22px;
+  vertical-align: bottom;
+  margin-right: 8px;
+}
+#opc #opcSidebar #sidebarInnerPanel #blueprints .blueprintButton .blueprint-btn-actions {
+  float: right;
+  display: none;
+}
+#opc #opcSidebar #sidebarInnerPanel #blueprints .blueprintButton .blueprint-btn-actions button {
+  padding: 0 4px;
+  font-size: 16px;
+}
+#opc #opcSidebar #sidebarInnerPanel #blueprints .blueprintButton:hover .blueprint-btn-actions {
+  display: block;
+}
+#opc #opcSidebar #sidebarInnerPanel #blueprints #btnImportBlueprint {
+  position: fixed;
+  bottom: 212px;
+  width: 334px;
+  box-shadow: none;
+}
+#opc #opcSidebar #sidebarInnerPanel #pagetree #pageTreeView {
+  padding: 1em 0;
+}
+#opc #opcSidebar #sidebarInnerPanel #pagetree #pageTreeView a {
+  text-decoration: none;
+  color: #435A6B;
+}
+#opc #opcSidebar #sidebarInnerPanel #pagetree #pageTreeView ul {
+  list-style: none;
+  padding: 0;
+  padding-left: 1em;
+  margin: 0;
+}
+#opc #opcSidebar #sidebarInnerPanel #pagetree #pageTreeView a {
+  display: inline-block;
+  padding: 0.25em;
+}
+#opc #opcSidebar #sidebarInnerPanel #pagetree #pageTreeView li > a > .fa-chevron-down {
+  display: none;
+}
+#opc #opcSidebar #sidebarInnerPanel #pagetree #pageTreeView li > a > .fa-chevron-right {
+  display: inline-block;
+}
+#opc #opcSidebar #sidebarInnerPanel #pagetree #pageTreeView li > ul {
+  display: none;
+}
+#opc #opcSidebar #sidebarInnerPanel #pagetree #pageTreeView li.expanded > a > .fa-chevron-down {
+  display: inline-block;
+}
+#opc #opcSidebar #sidebarInnerPanel #pagetree #pageTreeView li.expanded > a > .fa-chevron-right {
+  display: none;
+}
+#opc #opcSidebar #sidebarInnerPanel #pagetree #pageTreeView li.expanded > ul {
+  display: block;
+}
+#opc #opcSidebar #sidebarInnerPanel #pagetree #pageTreeView li.leaf > a > .fa {
+  visibility: hidden;
+}
+#opc #opcSidebar #sidebarInnerPanel #pagetree #pageTreeView li.selected > .item-label {
+  font-weight: bold;
+}
+#opc #opcSidebar #sidebarFooter {
   position: absolute;
   bottom: 0;
   height: 185px;
   width: 100%;
   box-shadow: -4px -3px 8px rgba(0, 0, 0, 0.16);
 }
-#opcSidebar #sidebarFooter #savePublishPanel {
+#opc #opcSidebar #sidebarFooter #savePublishPanel {
   padding: 16px;
   height: 135px;
   background-color: #fff;
 }
-#opcSidebar #sidebarFooter #savePublishPanel #unsavedState {
+#opc #opcSidebar #sidebarFooter #savePublishPanel #unsavedState {
   font-size: 8px;
   position: relative;
   top: -4px;
   color: #ff9b66;
 }
-#opcSidebar #sidebarFooter #savePublishPanel #footerDraftName {
+#opc #opcSidebar #sidebarFooter #savePublishPanel #footerDraftName {
   cursor: pointer;
   margin-bottom: 8px;
 }
-#opcSidebar #sidebarFooter #savePublishPanel #footerDraftName i {
+#opc #opcSidebar #sidebarFooter #savePublishPanel #footerDraftName i {
   margin-left: 8px;
 }
-#opcSidebar #sidebarFooter #savePublishPanel #footerDraftNameInput {
+#opc #opcSidebar #sidebarFooter #savePublishPanel #footerDraftNameInput {
   border: none;
   padding: 0;
   margin-bottom: 8px;
   width: 100%;
 }
-#opcSidebar #sidebarFooter #savePublishPanel .opc-draft-status {
+#opc #opcSidebar #sidebarFooter #savePublishPanel .opc-draft-status {
   color: #BDBDBD;
 }
-#opcSidebar #sidebarFooter #savePublishPanel #savePublishButtons {
+#opc #opcSidebar #sidebarFooter #savePublishPanel #savePublishButtons {
   margin-top: 16px;
 }
-#opcSidebar #sidebarFooter #savePublishPanel #savePublishButtons .opc-btn-secondary {
+#opc #opcSidebar #sidebarFooter #savePublishPanel #savePublishButtons .opc-btn-secondary {
   display: block;
   float: left;
   width: 134px;
   margin-right: 16px;
 }
-#opcSidebar #sidebarFooter #savePublishPanel #savePublishButtons .opc-btn-primary {
+#opc #opcSidebar #sidebarFooter #savePublishPanel #savePublishButtons .opc-btn-primary {
   display: block;
   float: left;
   width: 194px;
 }
-#opcSidebar #sidebarFooter #previewToolbar {
+#opc #opcSidebar #sidebarFooter #previewToolbar {
   height: 50px;
   background-color: #F5F7FA;
   padding: 17px 24px;
   padding-right: 28px;
 }
-#opcSidebar #sidebarFooter #previewToolbar #displayWidths {
+#opc #opcSidebar #sidebarFooter #previewToolbar #displayWidths {
   float: right;
   padding: 0;
 }
-#opcSidebar #sidebarFooter #previewToolbar #displayWidths > li {
+#opc #opcSidebar #sidebarFooter #previewToolbar #displayWidths > li {
   list-style: none;
   display: inline-block;
   width: 16px;
   height: 16px;
   margin-left: 24px;
 }
-#opcSidebar #sidebarFooter #previewToolbar #displayWidths > li > button {
+#opc #opcSidebar #sidebarFooter #previewToolbar #displayWidths > li > button {
   color: #BDBDBD;
 }
-#opcSidebar #sidebarFooter #previewToolbar #displayWidths > li.active > button {
+#opc #opcSidebar #sidebarFooter #previewToolbar #displayWidths > li.active > button {
   color: #435A6B;
 }
-#opcSidebar #blueprints .btn-group .blueprintButton {
-  text-align: left;
-}
-#opcSidebar #blueprints .btn-group .blueprintDelete {
-  vertical-align: bottom;
-  border-left: 1px solid #eee;
-}
-#opcSidebar #revisions .list-group-item,
-#opcSidebar #blueprints .list-group-item {
-  border: 0;
-  margin: 14px 0;
-  padding: 8px 16px;
-  background: #f7f7f7;
-  border-radius: 5px;
-  color: #435A6B;
-}
-#opcSidebar #revisions .list-group {
-  box-shadow: none;
-}
-#opcSidebar #displayPreviews {
+#opc #opcSidebar #displayPreviews {
   width: 100%;
   text-align: center;
   position: absolute;
   bottom: 0;
   background-color: #f5f7fa;
 }
-#opcSidebar #displayPreviews ul {
+#opc #opcSidebar #displayPreviews ul {
   padding: 0;
   margin: 0;
   display: inline-block;
 }
-#opcSidebar #displayPreviews li {
+#opc #opcSidebar #displayPreviews li {
   display: inline-block;
   padding: 15px 10px 10px 10px;
 }
-#opcSidebar #displayPreviews li.active {
+#opc #opcSidebar #displayPreviews li.active {
   background-color: #d1d1d1;
 }
-#opcSidebar #displayPreviews li.active a {
+#opc #opcSidebar #displayPreviews li.active a {
   color: #435A6B;
 }
-#opcSidebar #displayPreviews a {
+#opc #opcSidebar #displayPreviews a {
   color: #d1d1d1;
 }
-#opcSidebar #displayPreviews a:hover, #opcSidebar #displayPreviews a:active, #opcSidebar #displayPreviews a:focus, #opcSidebar #displayPreviews a.active {
+#opc #opcSidebar #displayPreviews a:hover, #opc #opcSidebar #displayPreviews a:active, #opc #opcSidebar #displayPreviews a:focus, #opc #opcSidebar #displayPreviews a.active {
   color: #435A6B;
 }
-
-#iframePanel,
-#previewPanel {
+#opc #iframePanel,
+#opc #previewPanel {
   height: 100%;
   text-align: center;
   background: #ddd;
   margin-left: 380px;
 }
-#iframePanel iframe,
-#previewPanel iframe {
+#opc #iframePanel iframe,
+#opc #previewPanel iframe {
   border: 0;
   width: 100%;
   height: 100%;
   transition: all 0.2s ease-in-out;
 }
-
-/*
-.modal {
-    .modal-header {
-        background-color: $primary-color;
-        color: #fff;
-
-        button {
-            color: #fff;
-            opacity: 1;
-        }
-    }
-
-    .modal-body {
-        overflow: hidden;
-        .nav.nav-tabs {
-            margin: -15px -15px 15px -15px;
-        }
-    }
-
-    .modal-content {
-        .btn {
-            background-image: none;
-            border: none;
-            border-radius: 5px;
-            padding: 8px 16px;
-            font-size: 16px;
-        }
-        .btn-danger {
-            background-color: #bbb;
-        }
-        .btn-primary {
-            background-color: $primary-color;
-        }
-        .btn-xs {
-            padding: 1px 5px;
-            font-size: 12px;
-            border-radius: 0;
-        }
-        .btn-sm {
-            padding: 5px 10px;
-            font-size: 16px;
-            line-height: 1.5;
-        }
-
-        .input-group-addon {
-            min-width: 128px;
-            text-align: left;
-        }
-    }
-}
-*/
-#tourForm .tour-label {
+#opc #tourForm .tour-label {
   padding-left: 0;
   width: 100%;
 }
-#tourForm input:checked + .panel-default > .panel-heading {
+#opc #tourForm input:checked + .panel-default > .panel-heading {
   background-color: #5cbcf6;
   background-image: none;
   color: #fff;
 }
-
-.image-btn {
+#opc .image-btn {
   min-width: 64px;
   min-height: 64px;
 }
-.image-btn img {
+#opc .image-btn img {
   min-width: 64px;
   min-height: 64px;
   max-width: 100%;
   max-height: 100%;
 }
-
-#pageTreeView {
-  padding: 1em 0;
-}
-#pageTreeView a {
-  text-decoration: none;
-}
-#pageTreeView ul {
-  list-style: none;
-  padding: 0;
-  padding-left: 1em;
-  margin: 0;
-}
-#pageTreeView a {
-  display: inline-block;
-  padding: 0.25em;
-}
-#pageTreeView li > a > .fa-chevron-down {
-  display: none;
-}
-#pageTreeView li > a > .fa-chevron-right {
-  display: inline-block;
-}
-#pageTreeView li > ul {
-  display: none;
-}
-#pageTreeView li.expanded > a > .fa-chevron-down {
-  display: inline-block;
-}
-#pageTreeView li.expanded > a > .fa-chevron-right {
-  display: none;
-}
-#pageTreeView li.expanded > ul {
-  display: block;
-}
-#pageTreeView li.leaf > a > .fa {
-  visibility: hidden;
-}
-#pageTreeView li.selected > .item-label {
-  font-weight: bold;
-}
-
-#publishModal .modal-body {
+#opc #publishModal .modal-body {
   overflow: inherit;
 }
-
-.icons-container .fa {
+#opc .icons-container .fa {
   margin: 3px;
 }
-
-.popover[class*=tour-] {
+#opc .popover[class*=tour-] {
   z-index: 1102;
   /* top: 20px !important;
   left: auto !important;
   right: 20px !important;*/
 }
-.popover[class*=tour-] .popover-title {
+#opc .popover[class*=tour-] .popover-title {
   color: #fff;
   background-color: #5cbcf6;
 }
-
-#configModalBody {
+#opc #configModalBody {
   overflow: initial;
 }
-
-.banner-zones {
+#opc .banner-zones {
   position: absolute;
   width: 100%;
   height: 100%;
   top: 0;
   left: 0;
 }
-.banner-zones > .banner-zone {
+#opc .banner-zones > .banner-zone {
   position: absolute;
   background-color: rgba(192, 192, 192, 0.5);
   cursor: grabbing;
   overflow: hidden;
 }
-.banner-zones > .banner-zone > .zone-resizer {
+#opc .banner-zones > .banner-zone > .zone-resizer {
   position: absolute;
   background-color: rgba(192, 192, 192, 0.5);
   width: 16px;
@@ -791,10 +791,10 @@ html, body {
   bottom: 0;
   cursor: se-resize;
 }
-.banner-zones > .banner-zone.selected {
+#opc .banner-zones > .banner-zone.selected {
   background-color: rgba(255, 0, 0, 0.5);
 }
-.banner-zones > .banner-zone.selected > .zone-resizer {
+#opc .banner-zones > .banner-zone.selected > .zone-resizer {
   background-color: rgba(255, 0, 0, 0.5);
 }
 

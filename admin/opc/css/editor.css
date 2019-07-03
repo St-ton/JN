@@ -350,6 +350,13 @@ html, body {
 #opc .modal .form-control {
   margin-bottom: 16px;
 }
+#opc .modal .alert-info {
+  background: #d5eefd;
+  border: 1px solid #5cbcf6;
+  border-radius: 5px;
+  color: #435A6B;
+  margin: 0;
+}
 #opc .modal .nav-tabs {
   margin: -24px;
   margin-bottom: 24px;

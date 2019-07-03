@@ -23,6 +23,14 @@ html, body {
       margin-bottom: 16px;
     }
 
+    .alert-info {
+      background: lighten($primary-color, 25%);
+      border: 1px solid $primary-color;
+      border-radius: 5px;
+      color: $text-color;
+      margin: 0;
+    }
+
     .nav-tabs {
       margin: -24px;
       margin-bottom: 24px;

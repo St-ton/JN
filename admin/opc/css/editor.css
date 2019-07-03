@@ -398,7 +398,8 @@ html, body {
   color: #d5eefd;
 }
 #opc .modal .modal-body {
-  padding: 24px;
+  padding: 0;
+  margin: 24px;
 }
 #opc .modal .modal-body .form-group {
   margin: 0;
@@ -430,6 +431,10 @@ html, body {
   top: 50%;
   transform: translate(0, -75%);
   margin: 0 auto;
+}
+#opc #configModal .modal-dialog {
+  width: 700px;
+  max-width: none;
 }
 #opc #opcSidebar {
   width: 380px;

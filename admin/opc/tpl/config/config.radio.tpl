@@ -1,14 +1,12 @@
-<div class='form-group'>
+<div class="form-group">
     <label for="config-{$propname}">{$propdesc.label}</label>
-    <div class='radio' id="config-{$propname}">
+    <div class="radio" id="config-{$propname}">
         {foreach $propdesc.options as $value => $name}
-            {if empty($inline)}<div class="radio">{/if}
-                <label {if !empty($inline)}class="radio-inline"{/if}>
-                    <input type="radio" name="{$propname}" value="{$value}"
-                           {if $propval == $value}checked{/if}
-                           {if $required}required{/if}> {$name}
-                </label>
-            {if empty($inline)}</div>{/if}
+            <div>
+                <input type="radio" name="{$propname}" value="{$value}" id="config-{$propname}-{$name@index}"
+                       {if $propval == $value}checked{/if} {if $required}required{/if}>
+                <label for="config-{$propname}-{$name@index}">{$name}</label>
+            </div>
         {/foreach}
     </div>
 </div>

@@ -19,11 +19,11 @@
         <div class="col-xs-2" style="width: 17%">
             <div class="btn-group">
                 <div type="button" class="btn btn-primary btn-sm btn-slide-mover"
-                     title="Eintrag verschieben" style="cursor: move">
+                     title="{__('entryMove')}" style="cursor: move">
                     <i class="fa fa-bars"></i>
                 </div>
                 <button type="button" class="btn btn-danger btn-sm" onclick="removeSlide_{$propname}()"
-                        title="Eintrag löschen">
+                        title="{__('entryDelete')}">
                     <i class="fa fa-trash"></i>
                 </button>
             </div>
@@ -32,20 +32,20 @@
             {$imgUrl = $slideData.url|default:'templates/bootstrap/gfx/layout/upload.png'}
             <img src="{$imgUrl}" alt="Bild-Wähler" class="img-responsive"
                  onclick="opc.gui.openElFinder(elfinderCallback_{$propname}.bind(this), 'Bilder')"
-                 style="cursor: pointer" title="Bild auswählen">
+                 style="cursor: pointer" title="{__('imageSelect')}">
             <input type="hidden" name="{$propname}[#SORT#][url]" value="{$slideData.url|default:''}">
         </div>
         <div class="col-xs-7" style="width: 59%">
             {if $useTitles}
-                <input type="text" class="form-control" placeholder="Titel"
+                <input type="text" class="form-control" placeholder="{__('title')}"
                        name="{$propname}[#SORT#][title]" value="{$slideData.title|default:''}">
             {/if}
-            <input type="text" class="form-control" placeholder="Alternativtext"
+            <input type="text" class="form-control" placeholder="{__('alternativeText')}"
                    name="{$propname}[#SORT#][alt]" value="{$slideData.alt|default:''}">
-            <input type="text" class="form-control" placeholder="Beschreibung"
+            <input type="text" class="form-control" placeholder="{__('description')}"
                    name="{$propname}[#SORT#][desc]" value="{$slideData.desc|default:''}">
             {if $useLinks}
-                <input type="text" class="form-control" placeholder="Link"
+                <input type="text" class="form-control" placeholder="{__('link')}"
                        name="{$propname}[#SORT#][link]" value="{$slideData.link|default:''}">
             {/if}
             {if $useColumns}
@@ -72,7 +72,7 @@
     <div class="panel-footer">
         <div class="btn-group">
             <button type="button" class="btn btn-primary" onclick="addSlide_{$propname}()">
-                <i class="fa fa-plus"></i> Bild hinzufügen
+                <i class="fa fa-plus"></i> {__('imageAdd')}
             </button>
         </div>
     </div>

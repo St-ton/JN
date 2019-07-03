@@ -5,7 +5,7 @@
                 <h5 class="modal-title">{__('Delete Blueprint?')}</h5>
             </div>
             <div class="modal-body">
-                Wollen Sie diese Vorlage wirklich löschen?
+                {__('templateDeleteSure')}
             </div>
             <form id="blueprintDeleteForm">
                 <div class="modal-footer">

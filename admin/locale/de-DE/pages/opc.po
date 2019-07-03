@@ -195,3 +195,99 @@ msgstr "Portlet-Preview-Label"
 
 msgid "templateTitle"
 msgstr "Name der Vorlage"
+
+msgid "availableFilters"
+msgstr "Verfügbare Filter"
+
+msgid "activeFilters"
+msgstr "Aktive Filter"
+
+msgid "noMoreFilters"
+msgstr "Keine weiteren Filter vorhanden."
+
+msgid "entryMove"
+msgstr "Eintrag verschieben"
+
+msgid "entryDelete"
+msgstr "Eintrag löschen"
+
+msgid "imageSelect"
+msgstr "Bild auswählen"
+
+msgid "alternativeText"
+msgstr "Alternativtext"
+
+msgid "imageAdd"
+msgstr "Bild hinzufügen"
+
+msgid "videoTagNotSupported"
+msgstr "Ihr Browser supportet das Video-Tag nicht."
+
+msgid "zoneNew"
+msgstr "Neue Zone"
+
+msgid "zoneDelete"
+msgstr "Zone löschen"
+
+msgid "templateDeleteSure"
+msgstr "Wollen Sie diese Vorlage wirklich löschen?"
+
+msgid "publishNot"
+msgstr "Nicht veröffentlichen"
+
+msgid "publishImmediately"
+msgstr "Sofort veröffentlichen"
+
+msgid "selectDate"
+msgstr "Zeitraum auswählen"
+
+msgid "indefinitePeriodOfTime"
+msgstr "Auf unbestimmte Zeit"
+
+msgid "draftUpper"
+msgstr "ENTWURF"
+
+msgid "publicUpper"
+msgstr "ÖFFENTLICH"
+
+msgid "plannedUpper"
+msgstr "GEPLANT"
+
+msgid "pastUpper"
+msgstr "VERGANGEN"
+
+msgid "publicSince"
+msgstr "öffentlich seit"
+
+msgid "publicTill"
+msgstr "öffentlich bis"
+
+msgid "plannedFrom"
+msgstr "geplant ab"
+
+msgid "noPublicationPlanned"
+msgstr "keine Veröffentlichung geplant"
+
+msgid "expiredOn"
+msgstr "abgelaufen am"
+
+msgid "duplicate"
+msgstr "Duplizieren"
+
+msgid "useForOtherLang"
+msgstr "Für andere Sprache übernehmen"
+
+msgid "editPage"
+msgstr "Seite bearbeiten"
+
+msgid "newDraft"
+msgstr "Neuer Entwurf"
+
+msgid "allDrafts"
+msgstr "Alle Entwürfe"
+
+msgid "deleteDraftsContinue"
+msgstr "Entwürfe werden gelöscht! Fortfahren?"
+
+msgid "draftDeleteSure"
+msgstr "Wollen Sie diesen Entwurf wirklich löschen?"

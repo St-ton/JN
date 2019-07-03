@@ -195,3 +195,97 @@ msgstr "Portlet preview label"
 
 msgid "templateTitle"
 msgstr "Template name"
+
+msgid "availableFilters"
+msgstr "Available filters"
+
+msgid "activeFilters"
+msgstr "Active filters"
+
+msgid "noMoreFilters"
+msgstr "No more filters available."
+
+msgid "entryMove"
+msgstr "Move entry"
+
+msgid "entryDelete"
+msgstr "Delete entry"
+
+msgid "imageSelect"
+msgstr "Select image"
+
+msgid "alternativeText"
+msgstr "Alternativ text"
+
+msgid "imageAdd"
+msgstr "Add image"
+
+msgid "videoTagNotSupported"
+msgstr "Your browser does not support the video tag."
+
+msgid "zoneNew"
+msgstr "New area"
+
+msgid "zoneDelete"
+msgstr "Delete area"
+
+msgid "templateDeleteSure"
+msgstr "Are you sure to delete the template?"
+
+msgid "publishNot"
+msgstr "Do not publish"
+
+msgid "publishImmediately"
+msgstr "Publish immediately"
+
+msgid "selectDate"
+msgstr "Select date"
+
+msgid "indefinitePeriodOfTime"
+msgstr "For an indefinite period of time"
+
+msgid "draftUpper"
+msgstr "DRAFT"
+
+msgid "publicUpper"
+msgstr "PUBLIC"
+
+msgid "plannedUpper"
+msgstr "PLANNED"
+
+msgid "pastUpper"
+msgstr "PAST"
+
+msgid "publicSince"
+msgstr "public since"
+
+msgid "publicUntill"
+msgstr "public untill"
+
+msgid "plannedFrom"
+msgstr "public from"
+
+msgid "noPublicationPlanned"
+msgstr "no pulication planned"
+
+msgid "expiredOn"
+msgstr "expired on"
+
+msgid "duplicate"
+msgstr "Duplicate"
+
+msgid "useForOtherLang"
+msgstr "Use for other languages"
+
+msgid "editPage"
+msgstr "Edit page"
+
+msgid "newDraft"
+msgstr "New draft"
+
+msgid "allDrafts"
+msgstr "All drafts"
+
+msgid "deleteDraftsContinue"
+msgstr "drafts are deleted! Continue?"
+

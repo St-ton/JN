@@ -1,6 +1,12 @@
 @charset "UTF-8";
+@font-face {
+  font-family: "Open Sans";
+  src: local("OpenSans-Regular"), local("OpenSans-Regular"), url("../../../templates/NOVA/themes/base/fonts/opensans/open-sans-regular.eot?") format("eot"), url("../../../templates/NOVA/themes/base/fonts/opensans/open-sans-regular.woff2") format("woff2"), url("../../../templates/NOVA/themes/base/fonts/opensans/open-sans-regular.woff") format("woff"), url("../../../templates/NOVA/themes/base/fonts/opensans/open-sans-regular.ttf") format("truetype"), url("../../../templates/NOVA/themes/base/fonts/opensans/open-sans-regular.svg#Open_Sans") format("svg");
+  font-style: normal;
+  font-weight: 400;
+}
 #opc {
-  font-family: sans-serif;
+  font-family: "Open Sans";
   height: 100%;
 }
 #opc ::-webkit-scrollbar {
@@ -21,6 +27,9 @@
 #opc ::-webkit-scrollbar-thumb:hover, #opc ::-webkit-scrollbar-thumb:active {
   background: #9b9b9b;
   border: 1px solid #525252;
+}
+#opc a {
+  outline: none;
 }
 #opc h1, #opc h2, #opc h3, #opc h4, #opc h5, #opc h6 {
   font-family: inherit;
@@ -79,7 +88,7 @@
 #opc input[type=checkbox] + label:before,
 #opc input[type=radio] + label:before {
   content: "";
-  font-family: "Font Awesome 5 Free", FontAwesome, sans-serif;
+  font-family: "Font Awesome 5 Free", FontAwesome, "Open Sans";
   margin-right: 4px;
 }
 #opc input[type=checkbox]:checked + label:before,
@@ -135,7 +144,6 @@
   height: 38px;
   color: inherit;
   padding: 8px;
-  float: left;
   text-align: left;
   font-size: 14px;
 }
@@ -145,6 +153,9 @@
   background-color: #F5F7FA;
   color: #BDBDBD;
   border-color: #BDBDBD;
+}
+#opc .float-left {
+  float: left;
 }
 #opc .opc-filter-control {
   margin-bottom: 24px;
@@ -187,7 +198,7 @@
 }
 #opc ::placeholder {
   color: #BDBDBD;
-  font-family: "Font Awesome 5 Free", FontAwesome, sans-serif;
+  font-family: "Font Awesome 5 Free", FontAwesome, "Open Sans";
   font-weight: 900;
 }
 #opc .opc-dropdown {
@@ -203,7 +214,7 @@
   display: block;
   float: right;
   content: "";
-  font-family: "Font Awesome 5 Free", FontAwesome, sans-serif;
+  font-family: "Font Awesome 5 Free", FontAwesome, "Open Sans";
   font-weight: 900;
 }
 #opc .opc-dropdown .opc-dropdown-menu {
@@ -278,6 +289,7 @@
   border-radius: 0;
   padding: 14px 2px 12px;
   margin: 0 14px;
+  margin-right: 8px;
   color: #BDBDBD;
   background: none;
 }
@@ -465,7 +477,6 @@ html, body {
   padding-right: 18px;
 }
 #opc #opcSidebar #sidebarInnerPanel .tab-content {
-  min-height: 100%;
   overflow: visible;
 }
 #opc #opcSidebar #sidebarInnerPanel #portlets .portletGroupBtn {
@@ -482,10 +493,16 @@ html, body {
 #opc #opcSidebar #sidebarInnerPanel #portlets .portletGroupBtn.collapsed .fas::before {
   content: "";
 }
+#opc #opcSidebar #sidebarInnerPanel #portlets .collapse {
+  width: 340px;
+}
 #opc #opcSidebar #sidebarInnerPanel #portlets .collapse:after {
   content: " ";
   display: block;
   clear: both;
+}
+#opc #opcSidebar #sidebarInnerPanel #portlets .collapsing {
+  width: 340px;
 }
 #opc #opcSidebar #sidebarInnerPanel #portlets .portletButton {
   display: block;
@@ -581,7 +598,7 @@ html, body {
   text-decoration: none;
 }
 #opc #opcSidebar #sidebarInnerPanel #blueprints #blueprintList {
-  padding-bottom: 46px;
+  padding-bottom: 60px;
 }
 #opc #opcSidebar #sidebarInnerPanel #blueprints .blueprintButton {
   cursor: pointer;

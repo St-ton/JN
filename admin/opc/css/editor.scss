@@ -160,7 +160,6 @@ html, body {
       padding-right: 18px;
 
       .tab-content {
-        min-height: 100%;
         overflow: visible;
       }
 
@@ -183,11 +182,17 @@ html, body {
         }
 
         .collapse {
+          width: 340px;
+
           &:after {
             content: ' ';
             display: block;
             clear: both;
           }
+        }
+
+        .collapsing {
+          width: 340px;
         }
 
         .portletButton {
@@ -300,7 +305,7 @@ html, body {
 
       #blueprints {
         #blueprintList {
-          padding-bottom: 46px;
+          padding-bottom: 60px;
         }
 
         .blueprintButton {

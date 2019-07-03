@@ -27,6 +27,10 @@
     }
   }
 
+  a {
+    outline: none;
+  }
+
   h1, h2, h3, h4, h5, h6 {
     font-family: inherit;
   }
@@ -163,7 +167,6 @@
     height: 38px;
     color: inherit;
     padding: 8px;
-    float: left;
     text-align: left;
     font-size: 14px;
 
@@ -172,6 +175,10 @@
       color: $muted-text;
       border-color: $muted-text;
     }
+  }
+
+  .float-left {
+    float: left;
   }
 
   .opc-filter-control {
@@ -329,6 +336,7 @@
         border-radius: 0;
         padding: 14px 2px 12px;
         margin: 0 14px;
+        margin-right: 8px;
         color: $muted-text;
         background: none;
 

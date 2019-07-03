@@ -364,6 +364,23 @@ html, body {
   }
   */
 }
+#opc select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  position: relative;
+}
+#opc .select-wrapper {
+  position: relative;
+}
+#opc .select-wrapper:after {
+  font-family: "Font Awesome 5 Free", FontAwesome, "Open Sans";
+  font-weight: 600;
+  content: "";
+  position: absolute;
+  right: 14px;
+  top: 10px;
+  pointer-events: none;
+}
 #opc .modal {
   font-size: 14px;
   color: #435A6B;

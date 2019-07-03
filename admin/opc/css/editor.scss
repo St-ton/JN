@@ -11,6 +11,26 @@ html, body {
 }
 
 #opc {
+  select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    position: relative;
+  }
+
+  .select-wrapper {
+    position: relative;
+
+    &:after {
+      font-family: $fontawesome-mixed;
+      font-weight: 600;
+      content: "\f078";
+      position: absolute;
+      right: 14px;
+      top: 10px;
+      pointer-events: none;
+    }
+  }
+
   .modal {
     font-size: 14px;
     color: $text-color;

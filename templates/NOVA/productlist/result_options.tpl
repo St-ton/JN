@@ -82,9 +82,7 @@
                                             {/if}
                                         {/foreach}
                                     {else}
-                                        {if $filter->getInputType() === \JTL\Filter\InputType::SELECT
-                                            && $filter->getOptions()|count > 0
-                                        }
+                                        {if $filter->getFrontendName() === "Preisspanne"}
                                             {assign var=outerClass value='filter-type-'|cat:$filter->getNiceName()}
                                             {assign var=innerClass value='dropdown-menu'}
                                             {assign var=itemClass value=''}
@@ -104,20 +102,119 @@
                                                         {if $filterIsActive === true}{$filterOption->getName()}{if !$filterOption@last},{/if} {/if}
                                                     {/foreach}
                                                 </span>
-                                                {collapse id="filter-collapse-{$filter->getFrontendName()|@seofy}" class="mb-2 col-12 col-md-4 max-h-150-scroll"}
-                                                    {include file='snippets/filter/genericFilterItem.tpl' displayAt='content' itemClass=$itemClass filter=$filter}
+                                                {collapse id="filter-collapse-{$filter->getFrontendName()|@seofy}" class="mb-2 py-3 col-12 col-md-4 max-h-150-scroll"}
+                                                    {inputgroup class="mb-3" size="sm"}
+                                                        {input id="price-range-from" class="price-range-input mr-4" placeholder=0}
+                                                        {input id="price-range-to" class="price-range-input ml-4" placeholder=$priceRangeMax}
+                                                    {/inputgroup}
+                                                    <div id="price-range-slider" class="mx-3"></div>
                                                 {/collapse}
                                             {/button}
-                                        {elseif $filter->getInputType() === \JTL\Filter\InputType::BUTTON}
-                                            {assign var=outerClass value='no-dropdown filter-type-'|cat:$filter->getNiceName()}
-                                            {assign var=innerClass value='no-dropdown'}
-                                            {assign var=itemClass value='btn btn-light'}
-                                            {include file='snippets/filter/genericFilterItem.tpl' class=$innerClass itemClass=$itemClass filter=$filter}
+
+
+                                            <script>
+                                                $(window).on('load', function(){
+                                                    let priceRange       = (new URL(window.location.href)).searchParams.get("pf"),
+                                                        priceRangeMin    = 0,
+                                                        priceRangeMax    = {$priceRangeMax},
+                                                        currentPriceMin  = priceRangeMin,
+                                                        currentPriceMax  = priceRangeMax,
+                                                        $priceRangeFrom  = $("#price-range-from"),
+                                                        $priceRangeTo    = $("#price-range-to");
+                                                    if (priceRange != null) {
+                                                        let priceRangeMinMax = priceRange.split('_');
+                                                        currentPriceMin      = priceRangeMinMax[0];
+                                                        currentPriceMax      = priceRangeMinMax[1];
+                                                        $priceRangeFrom.val(currentPriceMin);
+                                                        $priceRangeTo.val(currentPriceMax);
+                                                    }
+                                                    $('#price-range-slider').slider({
+                                                        range: true,
+                                                        min: priceRangeMin,
+                                                        max: priceRangeMax,
+                                                        values: [currentPriceMin, currentPriceMax],
+                                                        slide: function(event, ui) {
+                                                            $priceRangeFrom.val(ui.values[0]);
+                                                            $priceRangeTo.val(ui.values[1]);
+                                                        },
+                                                        stop: function(event, ui) {
+                                                            redirectToNewPriceRange(ui.values[0] + '_' + ui.values[1]);
+                                                        }
+                                                    });
+                                                    $('.price-range-input').change(function () {
+                                                        let prFrom = $priceRangeFrom.val(),
+                                                            prTo   = $priceRangeTo.val();
+                                                        redirectToNewPriceRange(
+                                                            (prFrom > 0 ? prFrom : priceRangeMin) + '_' + (prTo > 0 ? prTo : priceRangeMax)
+                                                        );
+                                                    });
+
+                                                    function redirectToNewPriceRange(priceRange) {
+                                                        window.location.href = updateURLParameter(
+                                                            window.location.href,
+                                                            'pf',
+                                                            priceRange
+                                                        );
+                                                    }
+
+                                                    function updateURLParameter(url, param, paramVal){
+                                                        let newAdditionalURL = '',
+                                                            tempArray        = url.split('?'),
+                                                            baseURL          = tempArray[0],
+                                                            additionalURL    = tempArray[1],
+                                                            temp             = '';
+                                                        if (additionalURL) {
+                                                            tempArray = additionalURL.split('&');
+                                                            for (let i=0; i<tempArray.length; i++){
+                                                                if(tempArray[i].split('=')[0] != param){
+                                                                    newAdditionalURL += temp + tempArray[i];
+                                                                    temp = '&';
+                                                                }
+                                                            }
+                                                        }
+
+                                                        return baseURL + '?' + newAdditionalURL + temp + param + '=' + paramVal;
+                                                    }
+                                                });
+                                            </script>
                                         {else}
-                                            {assign var=outerClass value='no-dropdown filter-type-'|cat:$filter->getNiceName()}
-                                            {assign var=innerClass value='no-dropdown'}
-                                            {assign var=itemClass value=''}
-                                            {include file='snippets/filter/genericFilterItem.tpl' class=$innerClass itemClass=$itemClass filter=$filter}
+                                            {if $filter->getInputType() === \JTL\Filter\InputType::SELECT
+                                                && $filter->getOptions()|count > 0
+                                            }
+                                                {assign var=outerClass value='filter-type-'|cat:$filter->getNiceName()}
+                                                {assign var=innerClass value='dropdown-menu'}
+                                                {assign var=itemClass value=''}
+                                                {button
+                                                    variant="link"
+                                                    class="text-decoration-none text-left"
+                                                    role="button"
+                                                    block=true
+                                                    data=["toggle"=> "collapse", "target"=>"#filter-collapse-{$filter->getFrontendName()|@seofy}"]
+                                                }
+                                                    {$filter->getFrontendName()}
+                                                    <i class="float-right ml-3 fas fa-plus"></i>
+                                                    <span class="float-right mx-3 font-italic text-right text-truncate w-40 pr-1">
+                                                        {foreach $filter->getOptions() as $filterOption}
+                                                            {*TODO: Preisfilter nicht als aktiv markiert*}
+                                                            {assign var=filterIsActive value=$filterOption->isActive() || $NaviFilter->getFilterValue($filter->getClassName()) === $filterOption->getValue()}
+                                                            {if $filterIsActive === true}{$filterOption->getName()}{if !$filterOption@last},{/if} {/if}
+                                                        {/foreach}
+                                                    </span>
+                                                    {collapse id="filter-collapse-{$filter->getFrontendName()|@seofy}" class="mb-2 col-12 col-md-4 max-h-150-scroll"}
+                                                        {include file='snippets/filter/genericFilterItem.tpl' displayAt='content' itemClass=$itemClass filter=$filter}
+                                                    {/collapse}
+                                                {/button}
+                                            {elseif $filter->getInputType() === \JTL\Filter\InputType::BUTTON}
+                                                {assign var=outerClass value='no-dropdown filter-type-'|cat:$filter->getNiceName()}
+                                                {assign var=innerClass value='no-dropdown'}
+                                                {assign var=itemClass value='btn btn-light'}
+                                                {include file='snippets/filter/genericFilterItem.tpl' class=$innerClass itemClass=$itemClass filter=$filter}
+                                            {else}
+                                                {assign var=outerClass value='no-dropdown filter-type-'|cat:$filter->getNiceName()}
+                                                {assign var=innerClass value='no-dropdown'}
+                                                {assign var=itemClass value=''}
+                                                {include file='snippets/filter/genericFilterItem.tpl' class=$innerClass itemClass=$itemClass filter=$filter}
+                                            {/if}
                                         {/if}
                                     {/if}
                                 {/foreach}
@@ -191,7 +288,6 @@
                                 {/if}
                             </div>
                         {/block}
-                        {$alertList->displayAlertByKey('noFilterResults')}
                     {/if}
                 {/collapse}
             {/block}

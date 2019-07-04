@@ -911,12 +911,6 @@ msgstr "Templates"
 msgid "draft"
 msgstr "Draft"
 
-msgid "publicFrom"
-msgstr "Public from:"
-
-msgid "publicTill"
-msgstr "Public until:"
-
 msgid "replaced"
 msgstr "Replaced"
 

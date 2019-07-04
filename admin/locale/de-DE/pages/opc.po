@@ -259,11 +259,14 @@ msgstr "VERGANGEN"
 msgid "publicSince"
 msgstr "öffentlich seit"
 
-msgid "publicTill"
-msgstr "öffentlich bis"
-
 msgid "plannedFrom"
 msgstr "geplant ab"
+
+msgid "publicFrom"
+msgstr "ab"
+
+msgid "publicTill"
+msgstr "bis"
 
 msgid "noPublicationPlanned"
 msgstr "keine Veröffentlichung geplant"

@@ -760,11 +760,16 @@ html, body {
 #opc #tourForm .tour-label {
   padding-left: 0;
   width: 100%;
+  margin-bottom: 16px;
+  cursor: pointer;
 }
-#opc #tourForm input:checked + .panel-default > .panel-heading {
+#opc #tourForm input:checked + .card {
+  border-color: #5cbcf6;
+}
+#opc #tourForm input:checked + .card .card-header {
   background-color: #5cbcf6;
   background-image: none;
-  color: #fff;
+  color: #F5F7FA;
 }
 #opc .image-btn {
   min-width: 64px;

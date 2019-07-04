@@ -598,12 +598,18 @@ html, body {
     .tour-label {
       padding-left: 0;
       width: 100%;
+      margin-bottom: 16px;
+      cursor: pointer;
     }
 
-    input:checked + .panel-default > .panel-heading {
-      background-color: $primary-color;
-      background-image: none;
-      color: #fff;
+    input:checked + .card {
+      border-color: $primary-color;
+      
+      .card-header {
+        background-color: $primary-color;
+        background-image: none;
+        color: $light-bg;
+      }
     }
   }
 

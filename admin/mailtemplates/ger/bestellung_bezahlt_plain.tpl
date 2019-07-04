@@ -7,22 +7,22 @@ die Zahlung für Ihre Bestellung mit Bestellnummer {$Bestellung->cBestellNr} vom
 Nachfolgend erhalten Sie nochmals einen Überblick über Ihre Bestellung:
 
 {foreach $Bestellung->Positionen as $Position}
-{if $Position->nPosTyp == 1}
-{$Position->nAnzahl}x {$Position->cName} - {$Position->cGesamtpreisLocalized[$NettoPreise]}
-{foreach $Position->WarenkorbPosEigenschaftArr as $WKPosEigenschaft}
-{$WKPosEigenschaft->cEigenschaftName}: {$WKPosEigenschaft->cEigenschaftWertName}
-{/foreach}
-{else}
-{$Position->nAnzahl}x {$Position->cName} - {$Position->cGesamtpreisLocalized[$NettoPreise]}
-{/if}
+    {if $Position->nPosTyp == 1}
+        {$Position->nAnzahl}x {$Position->cName} - {$Position->cGesamtpreisLocalized[$NettoPreise]}
+        {foreach $Position->WarenkorbPosEigenschaftArr as $WKPosEigenschaft}
+            {$WKPosEigenschaft->cEigenschaftName}: {$WKPosEigenschaft->cEigenschaftWertName}
+        {/foreach}
+    {else}
+        {$Position->nAnzahl}x {$Position->cName} - {$Position->cGesamtpreisLocalized[$NettoPreise]}
+    {/if}
 {/foreach}
 
 {foreach $Bestellung->Steuerpositionen as $Steuerposition}
-{$Steuerposition->cName}: {$Steuerposition->cPreisLocalized}
+    {$Steuerposition->cName}: {$Steuerposition->cPreisLocalized}
 {/foreach}
 
 {if isset($GuthabenNutzen) && $GuthabenNutzen == 1}
-Gutschein: -{$GutscheinLocalized}
+    Gutschein: -{$GutscheinLocalized}
 {/if}
 
 Gesamtsumme: {$Bestellung->WarensummeLocalized[0]}
@@ -30,7 +30,7 @@ Gesamtsumme: {$Bestellung->WarensummeLocalized[0]}
 
 Über den Versand der Ware werden wir Sie gesondert informieren.
 
-Mit freundlichem Gruß,
+Mit freundlichem Gruß
 Ihr Team von {$Firma->cName}
 
 {includeMailTemplate template=footer type=plain}

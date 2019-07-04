@@ -21,7 +21,7 @@ Zur Abgabe einer Bewertung klicken Sie einfach auf eines Ihrer erworbenen Produk
 Vielen Dank für Ihre Mühe.
 
 
-Mit freundlichem Gruß,
+Mit freundlichem Gruß
 Ihr Team von {$Firma->cName}
 
 {includeMailTemplate template=footer type=plain}

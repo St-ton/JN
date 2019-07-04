@@ -6,7 +6,7 @@ Sie erhalten im Rahmen der Aktion Kunden werben Kunden ein Guthaben von {$Bestan
 <br>
 Wir bedanken uns für Ihre Teilnahme!<br>
 <br>
-Mit freundlichem Gruß,<br>
+Mit freundlichem Gruß<br>
 Ihr Team von {$Firma->cName}
 
 {includeMailTemplate template=footer type=html}

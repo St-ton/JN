@@ -63,6 +63,7 @@
                         <i class="fa fas fa-trash"></i> {__('delete')}
                     </button>
                 </form>
+<pre style="margin-top:1em;">{$deleteScript}</pre>
             </div>
         </div>
     {/if}

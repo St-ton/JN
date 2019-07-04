@@ -98,7 +98,6 @@ $alertHelper->addAlert(
     'orphanedFilesError',
     ['showInAlertListTemplate' => false]
 );
-
 $smarty->assign('modifiedFilesError', $modifiedFilesError !== '')
     ->assign('orphanedFilesError', $orphanedFilesError !== '')
     ->assign('modifiedFiles', $modifiedFiles)
@@ -107,4 +106,5 @@ $smarty->assign('modifiedFilesError', $modifiedFilesError !== '')
     ->assign('orphanedFilesCheck', $orphanedFilesCheck)
     ->assign('errorsCounModifiedFiles', $errorsCounModifiedFiles)
     ->assign('errorsCountOrphanedFiles', $errorsCountOrphanedFiles)
+    ->assign('deleteScript', generateBashScript())
     ->display('filecheck.tpl');

@@ -15,21 +15,10 @@ use function Functional\map;
  * @param int   $errorsCount
  * @return int
  */
-function getAllModifiedFiles(&$files, &$errorsCount)
+function getAllModifiedFiles(&$files, &$errorsCount): int
 {
 
-    $version    = Version::parse(APPLICATION_VERSION);
-    $versionStr = $version->getMajor() . '-' . $version->getMinor() . '-' . $version->getPatch();
-
-    if ($version->hasPreRelease()) {
-        $preRelease  = $version->getPreRelease();
-        $versionStr .= '-' . $preRelease->getGreek();
-        if ($preRelease->getReleaseNumber() > 0) {
-            $versionStr .= '-' . $preRelease->getReleaseNumber();
-        }
-    }
-
-    $md5file = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_SHOPMD5 . $versionStr . '.csv';
+    $md5file = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_SHOPMD5 . getVersionString() . '.csv';
     if (!is_array($files)) {
         return 4;
     }
@@ -69,13 +58,10 @@ function getAllModifiedFiles(&$files, &$errorsCount)
 }
 
 /**
- * @param array $files
- * @param int   $errorsCount
- * @return int
+ * @return string
  */
-function getAllOrphanedFiles(&$files, &$errorsCount)
+function getVersionString(): string
 {
-
     $version    = Version::parse(APPLICATION_VERSION);
     $versionStr = $version->getMajor() . '-' . $version->getMinor() . '-' . $version->getPatch();
 
@@ -87,7 +73,17 @@ function getAllOrphanedFiles(&$files, &$errorsCount)
         }
     }
 
-    $csvFile = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_SHOPMD5 . 'deleted_files_' . $versionStr . '.csv';
+    return $versionStr;
+}
+
+/**
+ * @param array $files
+ * @param int   $errorsCount
+ * @return int
+ */
+function getAllOrphanedFiles(&$files, &$errorsCount)
+{
+    $csvFile = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_SHOPMD5 . 'deleted_files_' . getVersionString() . '.csv';
     if (!is_array($files)) {
         return 4;
     }
@@ -146,4 +142,28 @@ function deleteOrphanedFiles(array &$orphanedFiles, string $backupFile): int
     }
 
     return $count;
+}
+
+/**
+ * @return string
+ */
+function generateBashScript(): string
+{
+    return '#!/bin/bash
+base="' . PFAD_ROOT . '"
+source=$base"' . PFAD_ADMIN . PFAD_INCLUDES . PFAD_SHOPMD5 . 'deleted_files_' . getVersionString() . '.csv"
+if [ -f $source ]
+then
+    while IFS= read -r line
+    do
+        file=$base$line
+        if [ -f $file ]
+        then
+            echo "deleting $file"
+            rm -rf "$file"
+        fi
+    done <"$source"
+else
+    echo "$source does not exist!"
+fi';
 }

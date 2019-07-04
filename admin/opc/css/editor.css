@@ -391,6 +391,19 @@ html, body {
 #opc .modal .form-control {
   margin-bottom: 16px;
 }
+#opc .modal .input-group .form-control {
+  border-bottom-right-radius: 0;
+  border-top-right-radius: 0;
+  border-right: none;
+}
+#opc .modal .input-group .input-group-text {
+  margin-bottom: 16px;
+  background: none;
+  border: 1px solid #435A6B;
+  border-left: none;
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+}
 #opc .modal .alert-info {
   background: #d5eefd;
   border: 1px solid #5cbcf6;

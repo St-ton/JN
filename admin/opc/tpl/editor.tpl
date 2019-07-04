@@ -29,7 +29,7 @@
     <script src="{$templateUrl}js/global.js"></script>
     <script src="{$templateUrl}js/searchpicker.js"></script>
     <script src="{$shopUrl}/includes/libs/ckeditor/ckeditor.js"></script>
-    <script src="{$templateUrl}js/bootstrap-colorpicker/js/bootstrap-colorpicker.min.js"></script>
+    <script src="{$templateUrl}js/bootstrap-colorpicker.min.js"></script>
     <script src="{$templateUrl}js/moment-with-locales.js"></script>
     <script src="{$templateUrl}js/download.js"></script>
     <script src="{$templateUrl}js/bootstrap-tour.min.js"></script>

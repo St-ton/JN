@@ -43,6 +43,23 @@ html, body {
       margin-bottom: 16px;
     }
 
+    .input-group {
+      .form-control {
+        border-bottom-right-radius: 0;
+        border-top-right-radius: 0;
+        border-right: none;
+      }
+
+      .input-group-text {
+        margin-bottom: 16px;
+        background: none;
+        border: 1px solid $text-color;
+        border-left: none;
+        border-top-right-radius: 5px;
+        border-bottom-right-radius: 5px;
+      }
+    }
+
     .alert-info {
       background: $primary-lighter;
       border: 1px solid $primary-color;

@@ -416,8 +416,10 @@ class GUI
 
     onBlueprintDelete(e)
     {
-        var elm = $(e.target).closest('.blueprintDelete');
+        let elm   = $(e.target).closest('.blueprintDelete');
+        let title = elm.closest('.blueprintButton').find('.blueprintTitle').text();
 
+        $('#blueprintDeleteTitle').text(title);
         this.blueprintDeleteId.val(elm.data('blueprint-id'));
         this.blueprintDeleteModal.modal('show');
     }

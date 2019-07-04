@@ -648,7 +648,14 @@ html, body {
 }
 #opc #opcSidebar #sidebarInnerPanel #blueprints .blueprintButton .blueprint-btn-actions button {
   padding: 0 4px;
+  margin-top: -4px;
   font-size: 16px;
+  width: 28px;
+  height: 28px;
+  border-radius: 100px;
+}
+#opc #opcSidebar #sidebarInnerPanel #blueprints .blueprintButton .blueprint-btn-actions button:hover {
+  background-color: #dfe1e2;
 }
 #opc #opcSidebar #sidebarInnerPanel #blueprints .blueprintButton:hover .blueprint-btn-actions {
   display: block;

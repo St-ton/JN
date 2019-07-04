@@ -365,7 +365,15 @@ html, body {
 
             button {
               padding: 0 4px;
+              margin-top: -4px;
               font-size: 16px;
+              width: 28px;
+              height: 28px;
+              border-radius: 100px;
+
+              &:hover {
+                background-color: $hover-btn-bg;
+              }
             }
           }
 

@@ -8,14 +8,11 @@
     <title>{__('onPageComposer')}</title>
 
     <link rel="stylesheet" href="{$shopUrl}/templates/NOVA/themes/base/bootstrap/bootstrap.css">
-    {*<link rel="stylesheet" href="{$templateUrl}css/bootstrap.min.css">*}
     <link rel="stylesheet" href="{$templateUrl}css/bootstrap-theme.min.css">
-    {*<link rel="stylesheet" href="{$templateUrl}css/font-awesome.min.css">*}
     <link rel="stylesheet" href="{$shopUrl}/templates/NOVA/themes/base/fontawesome/css/all.min.css">
     <link rel="stylesheet" href="{$templateUrl}css/bootstrap-colorpicker.min.css">
     <link rel="stylesheet" href="{$templateUrl}css/typeaheadjs.css">
     <link rel="stylesheet" href="{$templateUrl}css/bootstrap-tour.min.css">
-    {*<link rel="stylesheet" href="{$templateUrl}css/bootstrap-datetimepicker.min.css">*}
     <link rel="stylesheet" href="{$templateUrl}css/tempusdominus-bootstrap-4.min.css">
     <link rel="stylesheet" href="{$templateUrl}css/fontawesome-iconpicker.min.css">
 
@@ -23,7 +20,6 @@
 
     <script src="{$templateUrl}js/jquery-3.3.1.min.js"></script>
     <script src="{$templateUrl}js/jquery-ui.min.js"></script>
-    {*<script src="{$templateUrl}js/bootstrap.min.js"></script>*}
     <script src="{$shopUrl}/templates/NOVA/js/bootstrap.bundle.min.js"></script>
 
     <script src="{$templateUrl}js/global.js"></script>
@@ -34,7 +30,6 @@
     <script src="{$templateUrl}js/download.js"></script>
     <script src="{$templateUrl}js/bootstrap-tour.min.js"></script>
     <script src="{$templateUrl}js/typeahead.bundle.js"></script>
-    {*<script src="{$templateUrl}js/bootstrap-datetimepicker.min.js"></script>*}
     <script src="{$templateUrl}js/tempusdominus-bootstrap-4.min.js"></script>
     <script src="{$templateUrl}js/fontawesome-iconpicker.min.js"></script>
 

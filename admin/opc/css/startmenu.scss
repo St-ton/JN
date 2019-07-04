@@ -195,7 +195,7 @@
                 display: inline-block;
 
                 &:hover {
-                  background-color: #dfe1e2;
+                  background-color: $hover-btn-bg;
                   border-radius: 100%;
                 }
               }

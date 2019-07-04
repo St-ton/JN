@@ -5,7 +5,8 @@
                 <h5 class="modal-title">{__('Delete Blueprint?')}</h5>
             </div>
             <div class="modal-body">
-                {__('templateDeleteSure')}
+                <p>"<span id="blueprintDeleteTitle">FOO</span>"</p>
+                <p>{__('templateDeleteSure')}</p>
             </div>
             <form id="blueprintDeleteForm">
                 <div class="modal-footer">

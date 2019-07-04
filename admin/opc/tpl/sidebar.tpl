@@ -130,10 +130,10 @@
     <i class="blueprint-icon fas fa-puzzle-piece"></i>
     <span class="blueprintTitle">{__('templateTitle')}</span>
     <div class="blueprint-btn-actions">
-        <button type="button" class="blueprintExport" data-blueprint-id="999">
+        <button type="button" class="blueprintExport" data-blueprint-id="999" title="Vorlage exportieren">
             <i class="fas fa-download fa-fw"></i>
         </button>
-        <button type="button" class="blueprintDelete" data-blueprint-id="999">
+        <button type="button" class="blueprintDelete" data-blueprint-id="999" title="Vorlage löschen">
             <i class="fas fa-trash fa-fw"></i>
         </button>
     </div>

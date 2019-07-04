@@ -5,14 +5,11 @@ msgstr ""
 msgid "minHeightPX"
 msgstr "Mindesthöhe in px"
 
-msgid "Boxed Container"
+msgid "boxedContainer"
 msgstr "Boxed Container"
 
 msgid "imageParallax"
 msgstr "mitlaufendes Bild (parallax)"
-
-msgid "backgroundVideo"
-msgstr "Hintergrundvideo"
 
 msgid "backgroundVideo"
 msgstr "Hintergrundvideo"

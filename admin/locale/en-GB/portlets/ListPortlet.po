@@ -1,5 +1,9 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
 msgid "List"
-msgstr "Liste"
+msgstr "List"
 
 msgid "Item Count"
 msgstr "Anzahl Einträge"

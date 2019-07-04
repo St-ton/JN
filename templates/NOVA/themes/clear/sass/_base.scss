@@ -1886,27 +1886,34 @@ footer {
   }
 }
 
-.megamenu > .nav-item .wee {
-  height: 6px;
-  width: 100%;
-  background-color: #F8BF00;
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  z-index: 0;
-  transition: 0.75s;
-}
-.megamenu > .nav-item > a {
-  padding: 16px;
-  margin: 0;
-  font-size: 14px;
-  font-weight: 500;
-  color: #525252;
-  transition: 0.75s;
-}
-.megamenu > .nav-item:hover > a {
-  color: #525252;
-  background: #F5F7FA;
+.megamenu {
+  > .nav-item {
+    .wee {
+      height: 6px;
+      width: 100%;
+      background-color: #F8BF00;
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      z-index: 0;
+      transition: 0.75s;
+    }
+    > a {
+      padding: 16px;
+      margin: 0;
+      font-size: 14px;
+      font-weight: 500;
+      color: #525252;
+      transition: 0.75s;
+      &.subcat-link {
+        padding: 1.2rem $nav-link-padding-x/2;
+      }
+    }
+    &:hover > a {
+      color: #525252;
+      background: #F5F7FA;
+    }
+  }
 }
 
 .ns-ScrollWrapper {
@@ -2214,8 +2221,10 @@ table caption {
     }
   }
 }
-.selection-wizard-question a {
+.selection-wizard-question .selection-wizard-answer {
   white-space: nowrap;
+  margin: 0 $spacer $spacer 0;
+  display: inline-block;
 }
 
 .flipcard {
@@ -2713,3 +2722,77 @@ label {
   height: 25px;
   font-size: 12px;
 }
+
+.card-columns {
+  column-count: 1;
+  .card {
+    margin-bottom: $card-columns-margin;
+    display: inline-block; // Don't let them vertically span multiple columns
+    width: 100%; // Don't let their width change
+  }
+
+  @include media-breakpoint-up(md) {
+    column-count: $card-columns-count - 1;
+    column-gap: $card-columns-gap;
+    orphans: 1;
+    widows: 1;
+  }
+
+  @include media-breakpoint-up(lg) {
+    column-count: $card-columns-count;
+  }
+
+  &.manufacturers-columns {
+    column-count: 2;
+    column-gap: $card-columns-gap;
+    orphans: 1;
+    widows: 1;
+    @include media-breakpoint-up(md) {
+      column-count: $card-columns-count;
+    }
+
+    @include media-breakpoint-up(lg) {
+      column-count: $card-columns-count + 1;
+    }
+  }
+}
+
+
+/*
+a:not(.no-deco):not(.nav-link) {
+  position: relative;
+  text-decoration: none;
+  display: inline-block;
+  color: #525252;
+  padding: 0 1px;
+  cursor: pointer;
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    background-color: #525252;
+    height: 5%;
+  }
+  &::before {
+    width: 0%;
+    left: 0;
+    bottom: 0;
+    transition: width ease 0.4s;
+  }
+  &::after {
+    width: 100%;
+    left: 0;
+    bottom: 0;
+    transition: all ease 0.6s;
+  }
+  &:hover {
+    &::before {
+      width: 100%;
+    }
+    &::after {
+      left: 100%;
+      width: 0%;
+      transition: all ease 0.2s;
+    }
+  }
+}*/

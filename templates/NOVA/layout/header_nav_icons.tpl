@@ -10,8 +10,8 @@
         {/navitem}
     {/block}
     {block name='layout-header-nav-icons-login'}
-        {navitem tag="div" aria=['expanded' => 'false'] data=['toggle' => 'collapse', 'target' => '#nav-account-collapse']}
-            <span class="fas fa-user mr-md-3"></span>
+        {navitem tag="div" class="mr-2" aria=['expanded' => 'false'] data=['toggle' => 'collapse', 'target' => '#nav-account-collapse']}
+            <span class="fas fa-user"></span>
         {/navitem}
     {/block}
     {block name='layout-header-nav-icons-include-header-shop-nav-compare'}

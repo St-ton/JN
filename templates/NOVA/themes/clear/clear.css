@@ -14490,7 +14490,6 @@ footer .list-group-item {
   z-index: 0;
   transition: 0.75s;
 }
-
 .megamenu > .nav-item > a {
   padding: 16px;
   margin: 0;
@@ -14499,7 +14498,9 @@ footer .list-group-item {
   color: #525252;
   transition: 0.75s;
 }
-
+.megamenu > .nav-item > a.subcat-link {
+  padding: 1.2rem 0.5rem;
+}
 .megamenu > .nav-item:hover > a {
   color: #525252;
   background: #F5F7FA;
@@ -14804,8 +14805,10 @@ table caption {
   background-color: #f8f8f8;
 }
 
-.selection-wizard-question a {
+.selection-wizard-question .selection-wizard-answer {
   white-space: nowrap;
+  margin: 0 1rem 1rem 0;
+  display: inline-block;
 }
 
 .flipcard .flipcard-inner {
@@ -15309,5 +15312,82 @@ label {
   height: 25px;
   font-size: 12px;
 }
+
+.card-columns {
+  column-count: 1;
+}
+.card-columns .card {
+  margin-bottom: 0.75rem;
+  display: inline-block;
+  width: 100%;
+}
+@media (min-width: 768px) {
+  .card-columns {
+    column-count: 2;
+    column-gap: 1.25rem;
+    orphans: 1;
+    widows: 1;
+  }
+}
+@media (min-width: 992px) {
+  .card-columns {
+    column-count: 3;
+  }
+}
+.card-columns.manufacturers-columns {
+  column-count: 2;
+  column-gap: 1.25rem;
+  orphans: 1;
+  widows: 1;
+}
+@media (min-width: 768px) {
+  .card-columns.manufacturers-columns {
+    column-count: 3;
+  }
+}
+@media (min-width: 992px) {
+  .card-columns.manufacturers-columns {
+    column-count: 4;
+  }
+}
+
+/*
+a:not(.no-deco):not(.nav-link) {
+  position: relative;
+  text-decoration: none;
+  display: inline-block;
+  color: #525252;
+  padding: 0 1px;
+  cursor: pointer;
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    background-color: #525252;
+    height: 5%;
+  }
+  &::before {
+    width: 0%;
+    left: 0;
+    bottom: 0;
+    transition: width ease 0.4s;
+  }
+  &::after {
+    width: 100%;
+    left: 0;
+    bottom: 0;
+    transition: all ease 0.6s;
+  }
+  &:hover {
+    &::before {
+      width: 100%;
+    }
+    &::after {
+      left: 100%;
+      width: 0%;
+      transition: all ease 0.2s;
+    }
+  }
+}*/
 
 /*# sourceMappingURL=clear.css.map */

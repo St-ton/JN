@@ -48,7 +48,10 @@
                         {if $category@first}
                             <div class="wee d-none d-md-block"></div>
                         {/if}
-                        {link href=$category->cURLFull title=$category->cSeo class="nav-link" data=["toggle"=>"dropdown"] target="_self"}
+                        {link href=$category->cURLFull title=$category->cSeo class="float-right subcat-link d-inline-block d-md-none"}
+                            <i class="fas fa-arrow-alt-circle-right"></i>
+                        {/link}
+                        {link title=$category->cSeo class="nav-link" data=["toggle"=>"dropdown"] target="_self"}
                             {$category->cName}
                         {/link}
                         <div class="dropdown-menu">

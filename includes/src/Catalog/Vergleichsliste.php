@@ -80,10 +80,16 @@ class Vergleichsliste
      */
     public function umgebungsWechsel(): self
     {
+        $options        = new stdClass();
+        $options->nMain = 1;
         foreach ($_SESSION['Vergleichsliste']->oArtikel_arr as $i => $item) {
-            $tmpProduct                                    = new stdClass();
-            $tmpProduct->kArtikel                          = $item->kArtikel;
-            $_SESSION['Vergleichsliste']->oArtikel_arr[$i] = $tmpProduct;
+            $product = new Artikel();
+            try {
+                $product->fuelleArtikel($item->kArtikel, $options);
+            } catch (Exception $e) {
+                continue;
+            }
+            $_SESSION['Vergleichsliste']->oArtikel_arr[$i] = $product;
         }
 
         return $this;

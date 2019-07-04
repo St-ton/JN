@@ -38,6 +38,7 @@
     {block name='register-form-customer-login-submit'}
         {formgroup}
             {input type="hidden" name="login" value="1"}
+            {input type="hidden" name="wk" value="{if isset($one_step_wk)}{$one_step_wk}{else}0{/if}"}
             {if !empty($oRedirect->cURL)}
                 {foreach $oRedirect->oParameter_arr as $oParameter}
                     {input type="hidden" name=$oParameter->Name value=$oParameter->Wert}

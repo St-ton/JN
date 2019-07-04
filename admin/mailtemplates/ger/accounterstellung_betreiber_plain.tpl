@@ -5,7 +5,7 @@ Guten Tag {$Kunde->cVorname} {$Kunde->cNachname},
 wunschgemäß haben wir für Sie in unserem Onlineshop unter {$ShopURL}
 ein Kundenkonto für Sie eingerichtet.
 
-Zur Kontrolle hier noch einmal Ihre Kundendaten: 
+Zur Kontrolle hier noch einmal Ihre Kundendaten:
 
 {$Kunde->cVorname} {$Kunde->cNachname}
 {$Kunde->cStrasse} {$Kunde->cHausnummer}
@@ -31,7 +31,7 @@ nehmen Sie einfach Kontakt mit uns auf.
 
 Wir wünschen Ihnen viel Spaß beim Stöbern in unserem Sortiment.
 
-Mit freundlichem Gruß,
+Mit freundlichem Gruß
 Ihr Team von {$Firma->cName}
 
 {includeMailTemplate template=footer type=plain}

@@ -502,3 +502,6 @@ msgstr "Benutzerverwaltung"
 
 msgid "The algorithm for saving passwords has changed. <br/>Please generate a new emergency code for the 2 factor authentication."
 msgstr "Der Algorithmus zur Passwortspeicherung hat sich geändert.<br/>Bitte erzeugen Sie neue Notfall-Codes für die Zwei-Faktor-Authentifizierung."
+
+msgid "My Plugins"
+msgstr "Meine Plugins"

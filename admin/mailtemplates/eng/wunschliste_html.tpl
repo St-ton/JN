@@ -26,7 +26,7 @@ Take a look at my wish list at {$Firma->cName}.<br>
 </table><br>
 <a href="{$ShopURL}/index.php?wlid={$Wunschliste->cURLID}">View all products</a><br>
 <br>
-Thank you.<br>
+Kind regards,<br>
 <strong>{$Kunde->cVorname} {$Kunde->cNachname}</strong>
 
 {includeMailTemplate template=footer type=html}

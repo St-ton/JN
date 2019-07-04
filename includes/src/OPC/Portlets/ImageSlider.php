@@ -45,7 +45,7 @@ class ImageSlider extends Portlet
     {
         $desc = [
             'slider-theme'                => [
-                'label'      => '',
+                'label'      => __('Theme'),
                 'type'       => InputType::SELECT,
                 'options'    => [
                     'default' => __('themeStandard'),

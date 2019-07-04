@@ -123,6 +123,8 @@
             </ul>
         </div>
     </div>
+
+    <div id="disableVeil" style="display: none"></div>
 </div>
 
 {*blueprint for blueprint entry*}

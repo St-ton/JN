@@ -311,59 +311,6 @@ html, body {
   line-height: 1.5;
 }
 
-#opc {
-  /*
-  .modal {
-      .modal-header {
-          background-color: $primary-color;
-          color: #fff;
-
-          button {
-              color: #fff;
-              opacity: 1;
-          }
-      }
-
-      .modal-body {
-          overflow: hidden;
-          .nav.nav-tabs {
-              margin: -15px -15px 15px -15px;
-          }
-      }
-
-      .modal-content {
-          .btn {
-              background-image: none;
-              border: none;
-              border-radius: 5px;
-              padding: 8px 16px;
-              font-size: 16px;
-          }
-          .btn-danger {
-              background-color: #bbb;
-          }
-          .btn-primary {
-              background-color: $primary-color;
-          }
-          .btn-xs {
-              padding: 1px 5px;
-              font-size: 12px;
-              border-radius: 0;
-          }
-          .btn-sm {
-              padding: 5px 10px;
-              font-size: 16px;
-              line-height: 1.5;
-          }
-
-          .input-group-addon {
-              min-width: 128px;
-              text-align: left;
-          }
-      }
-  }
-  */
-}
 #opc select {
   -webkit-appearance: none;
   -moz-appearance: none;
@@ -589,30 +536,6 @@ html, body {
 #opc #opcSidebar #sidebarInnerPanel #portlets .collapse .row {
   padding-bottom: 14px;
 }
-#opc #opcSidebar #sidebarInnerPanel #portlets .container-fluid {
-  padding-left: 24px;
-  padding-right: 24px;
-}
-#opc #opcSidebar #sidebarInnerPanel #portlets .row {
-  margin-left: -7px;
-  margin-right: -7px;
-  padding-bottom: 14px;
-}
-#opc #opcSidebar #sidebarInnerPanel #portlets .col-xs-1, #opc #opcSidebar #sidebarInnerPanel #portlets .col-sm-1, #opc #opcSidebar #sidebarInnerPanel #portlets .col-md-1, #opc #opcSidebar #sidebarInnerPanel #portlets .col-lg-1,
-#opc #opcSidebar #sidebarInnerPanel #portlets .col-xs-2, #opc #opcSidebar #sidebarInnerPanel #portlets .col-sm-2, #opc #opcSidebar #sidebarInnerPanel #portlets .col-md-2, #opc #opcSidebar #sidebarInnerPanel #portlets .col-lg-2,
-#opc #opcSidebar #sidebarInnerPanel #portlets .col-xs-3, #opc #opcSidebar #sidebarInnerPanel #portlets .col-sm-3, #opc #opcSidebar #sidebarInnerPanel #portlets .col-md-3, #opc #opcSidebar #sidebarInnerPanel #portlets .col-lg-3,
-#opc #opcSidebar #sidebarInnerPanel #portlets .col-xs-4, #opc #opcSidebar #sidebarInnerPanel #portlets .col-sm-4, #opc #opcSidebar #sidebarInnerPanel #portlets .col-md-4, #opc #opcSidebar #sidebarInnerPanel #portlets .col-lg-4,
-#opc #opcSidebar #sidebarInnerPanel #portlets .col-xs-5, #opc #opcSidebar #sidebarInnerPanel #portlets .col-sm-5, #opc #opcSidebar #sidebarInnerPanel #portlets .col-md-5, #opc #opcSidebar #sidebarInnerPanel #portlets .col-lg-5,
-#opc #opcSidebar #sidebarInnerPanel #portlets .col-xs-6, #opc #opcSidebar #sidebarInnerPanel #portlets .col-sm-6, #opc #opcSidebar #sidebarInnerPanel #portlets .col-md-6, #opc #opcSidebar #sidebarInnerPanel #portlets .col-lg-6,
-#opc #opcSidebar #sidebarInnerPanel #portlets .col-xs-7, #opc #opcSidebar #sidebarInnerPanel #portlets .col-sm-7, #opc #opcSidebar #sidebarInnerPanel #portlets .col-md-7, #opc #opcSidebar #sidebarInnerPanel #portlets .col-lg-7,
-#opc #opcSidebar #sidebarInnerPanel #portlets .col-xs-8, #opc #opcSidebar #sidebarInnerPanel #portlets .col-sm-8, #opc #opcSidebar #sidebarInnerPanel #portlets .col-md-8, #opc #opcSidebar #sidebarInnerPanel #portlets .col-lg-8,
-#opc #opcSidebar #sidebarInnerPanel #portlets .col-xs-9, #opc #opcSidebar #sidebarInnerPanel #portlets .col-sm-9, #opc #opcSidebar #sidebarInnerPanel #portlets .col-md-9, #opc #opcSidebar #sidebarInnerPanel #portlets .col-lg-9,
-#opc #opcSidebar #sidebarInnerPanel #portlets .col-xs-10, #opc #opcSidebar #sidebarInnerPanel #portlets .col-sm-10, #opc #opcSidebar #sidebarInnerPanel #portlets .col-md-10, #opc #opcSidebar #sidebarInnerPanel #portlets .col-lg-10,
-#opc #opcSidebar #sidebarInnerPanel #portlets .col-xs-11, #opc #opcSidebar #sidebarInnerPanel #portlets .col-sm-11, #opc #opcSidebar #sidebarInnerPanel #portlets .col-md-11, #opc #opcSidebar #sidebarInnerPanel #portlets .col-lg-11,
-#opc #opcSidebar #sidebarInnerPanel #portlets .col-xs-12, #opc #opcSidebar #sidebarInnerPanel #portlets .col-sm-12, #opc #opcSidebar #sidebarInnerPanel #portlets .col-md-12, #opc #opcSidebar #sidebarInnerPanel #portlets .col-lg-12 {
-  padding-left: 7px;
-  padding-right: 7px;
-}
 #opc #opcSidebar #sidebarInnerPanel #revisions .revisionBtn,
 #opc #opcSidebar #sidebarInnerPanel #blueprints .blueprintButton {
   display: block;
@@ -626,6 +549,9 @@ html, body {
 #opc #opcSidebar #sidebarInnerPanel #revisions .revisionBtn:hover,
 #opc #opcSidebar #sidebarInnerPanel #blueprints .blueprintButton:hover {
   text-decoration: none;
+}
+#opc #opcSidebar #sidebarInnerPanel #revisions .revisionBtn:hover {
+  background-color: #dfe1e2;
 }
 #opc #opcSidebar #sidebarInnerPanel #blueprints #blueprintList {
   padding-bottom: 60px;
@@ -672,6 +598,9 @@ html, body {
 #opc #opcSidebar #sidebarInnerPanel #pagetree #pageTreeView a {
   text-decoration: none;
   color: #435A6B;
+}
+#opc #opcSidebar #sidebarInnerPanel #pagetree #pageTreeView a:hover {
+  text-decoration: underline;
 }
 #opc #opcSidebar #sidebarInnerPanel #pagetree #pageTreeView ul {
   list-style: none;
@@ -805,6 +734,14 @@ html, body {
 }
 #opc #opcSidebar #displayPreviews a:hover, #opc #opcSidebar #displayPreviews a:active, #opc #opcSidebar #displayPreviews a:focus, #opc #opcSidebar #displayPreviews a.active {
   color: #435A6B;
+}
+#opc #opcSidebar #disableVeil {
+  position: absolute;
+  top: 54px;
+  left: 0;
+  width: 380px;
+  bottom: 50px;
+  background-color: rgba(67, 90, 107, 0.66);
 }
 #opc #iframePanel,
 #opc #previewPanel {

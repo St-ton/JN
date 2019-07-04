@@ -69,6 +69,7 @@ class GUI
             'btnDisplayWidthDesktop',
             'unsavedState',
             'iconpicker',
+            'disableVeil',
         ]);
 
         this.missingConfigButtons.hide();
@@ -185,10 +186,14 @@ class GUI
             this.revisionList.empty();
 
             revisions.forEach(rev => {
+                console.log(rev);
                 this.revisionBtnBlueprint.clone()
                     .attr('id', '').css('display', '')
                     .attr('data-revision-id', rev.id)
-                    .html(moment(rev.timestamp, internalDateFormat).format(localDateFormat))
+                    .html(
+                        '<div>' + rev.content.cName + '</div>' +
+                        '<div>' + moment(rev.timestamp, internalDateFormat).format(localDateFormat) + '</div>'
+                    )
                     .appendTo(this.revisionList);
             });
 
@@ -229,10 +234,12 @@ class GUI
             this.iframePanel.show();
             this.previewFrame.previewPanel.hide();
             this.inPreviewMode = false;
+            this.disableVeil.hide();
         } else {
             this.iframePanel.hide();
             this.previewFrame.showPreview(this.page.fullUrl, JSON.stringify(this.page.toJSON()));
             this.inPreviewMode = true;
+            this.disableVeil.show();
         }
     }
 

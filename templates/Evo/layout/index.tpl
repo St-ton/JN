@@ -53,6 +53,30 @@
                 {/if}
                 {include file='snippets/opc_mount_point.tpl' id='opc_after_revocation'}
             </div>
+        {elseif $Link->getLinkType() === $smarty.const.LINKTYP_WRB_FORMULAR}
+            <div id="revocation-form" class="well well-sm">
+                {include file='snippets/opc_mount_point.tpl' id='opc_before_revocation_form'}
+                {if $WRB !== false}
+                    {if $WRB->cWRBFormContentHtml}
+                        {$WRB->cWRBFormContentHtml}
+                    {elseif $WRB->cWRBFormContentText}
+                        {$WRB->cWRBFormContentText|nl2br}
+                    {/if}
+                {/if}
+                {include file='snippets/opc_mount_point.tpl' id='opc_after_revocation_form'}
+            </div>
+        {elseif $Link->getLinkType() === $smarty.const.LINKTYP_DATENSCHUTZ}
+            <div id="data-privacy" class="well well-sm">
+                {include file='snippets/opc_mount_point.tpl' id='opc_before_data_privacy'}
+                {if $WRB !== false}
+                    {if $WRB->cDSEContentHtml}
+                        {$WRB->cDSEContentHtml}
+                    {elseif $WRB->cDSEContentText}
+                        {$WRB->cDSEContentText|nl2br}
+                    {/if}
+                {/if}
+                {include file='snippets/opc_mount_point.tpl' id='opc_after_data_privacy'}
+            </div>
         {elseif $Link->getLinkType() === $smarty.const.LINKTYP_STARTSEITE}
             {include file='page/index.tpl'}
         {elseif $Link->getLinkType() === $smarty.const.LINKTYP_VERSAND}

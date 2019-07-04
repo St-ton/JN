@@ -11,6 +11,7 @@ use JTL\Catalog\Currency;
 use JTL\Customer\Kunde;
 use JTL\Checkout\Lieferadresse;
 use JTL\Checkout\Rechnungsadresse;
+use JTL\DB\ReturnType;
 use JTL\Shop;
 use stdClass;
 
@@ -218,5 +219,41 @@ class Order extends Cart
     public function getIdentifier(): int
     {
         return (int)$this->object->kBestellung;
+    }
+
+    /**
+     * @param int $customerID
+     * @return object|null
+     * @since 5.0.0
+     */
+    public static function getLastOrderRefIDs(int $customerID): ?object
+    {
+        $order = Shop::Container()->getDB()->queryPrepared(
+            'SELECT kBestellung, kWarenkorb, kLieferadresse, kRechnungsadresse, kZahlungsart, kVersandart
+                FROM tbestellung
+                WHERE kKunde = :customerID
+                ORDER BY dErstellt DESC
+                LIMIT 1',
+            ['customerID' => $customerID],
+            ReturnType::SINGLE_OBJECT
+        );
+
+        return \is_object($order)
+            ? (object)[
+                'kBestellung'       => (int)$order->kBestellung,
+                'kWarenkorb'        => (int)$order->kWarenkorb,
+                'kLieferadresse'    => (int)$order->kLieferadresse,
+                'kRechnungsadresse' => (int)$order->kRechnungsadresse,
+                'kZahlungsart'      => (int)$order->kZahlungsart,
+                'kVersandart'       => (int)$order->kVersandart,
+            ]
+            : (object)[
+                'kBestellung'       => 0,
+                'kWarenkorb'        => 0,
+                'kLieferadresse'    => 0,
+                'kRechnungsadresse' => 0,
+                'kZahlungsart'      => 0,
+                'kVersandart'       => 0,
+            ];
     }
 }

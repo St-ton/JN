@@ -180,8 +180,10 @@ class IOMethods
         if ($amount <= 0 || $productID <= 0) {
             return $objResponse;
         }
-        $product = new Artikel();
-        $product->fuelleArtikel($productID, Artikel::getDefaultOptions());
+        $product               = new Artikel();
+        $options               = Artikel::getDefaultOptions();
+        $options->nStueckliste = 1;
+        $product->fuelleArtikel($productID, $options);
         // Falls der Artikel ein Variationskombikind ist, hole direkt seine Eigenschaften
         if ($product->kEigenschaftKombi > 0 || $product->nIstVater === 1) {
             // Variationskombi-Artikel

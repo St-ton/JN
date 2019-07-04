@@ -2,14 +2,12 @@
 
 Dear Customer,<br>
 <br>
-Please use the following confirmation-Link<br>
-<a href="{$Optin->activationURL}">{$Optin->activationURL}</a>,<br>
-to get the information, if the article
+Please copy the following confirmation-Link into your browser
+if you would like to be notified when the item<br>
 <b>{$Artikel->cName}</b><br>
-is available again.<br>
+becomes available again: <a href="{$Optin->activationURL}">{$Optin->activationURL}</a><br>
 <br>
-If you want to unsubscribe from this notification feature,<br>
-please click the following link:<br>
+If you want to unsubscribe from this notification feature, please insert the following link into your browser:<br>
 <a href="{$Optin->deactivationURL}">{$Optin->deactivationURL}<a><br>
 <br>
 <br>

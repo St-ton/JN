@@ -1597,7 +1597,7 @@ msgstr "Batteriegesetzhinweise"
 
 # page type (tspezialseite)
 msgid "WRB-Formular"
-msgstr "Widerrufsformular"
+msgstr "Muster-Widerrufsformular"
 
 msgid "exception"
 msgstr "Ausnahme"

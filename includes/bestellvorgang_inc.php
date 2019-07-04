@@ -20,6 +20,7 @@ use JTL\Helpers\Date;
 use JTL\Helpers\Form;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\PaymentMethod as Helper;
+use JTL\Helpers\Request;
 use JTL\Helpers\ShippingMethod;
 use JTL\Helpers\Tax;
 use JTL\Helpers\Text;
@@ -579,7 +580,9 @@ function gibStepAccountwahl(): void
             'continueAfterActivation'
         );
     }
-    Shop::Smarty()->assign('untertitel', lang_warenkorb_bestellungEnthaeltXArtikel(Frontend::getCart()));
+    Shop::Smarty()
+        ->assign('untertitel', lang_warenkorb_bestellungEnthaeltXArtikel(Frontend::getCart()))
+        ->assign('one_step_wk', Request::verifyGPCDataInt('wk'));
 
     executeHook(HOOK_BESTELLVORGANG_PAGE_STEPACCOUNTWAHL);
 }

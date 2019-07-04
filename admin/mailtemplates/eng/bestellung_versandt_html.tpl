@@ -2,7 +2,7 @@
 
 Dear {$Kunde->cVorname} {$Kunde->cNachname},<br>
 <br>
-Your order dated {$Bestellung->dErstelldatum_de} with order no. {$Bestellung->cBestellNr} has been shipped to you today.<br>
+your order of {$Bestellung->dErstelldatum_de} with order no. {$Bestellung->cBestellNr} has been shipped to you today.<br>
 <br>
 {foreach $Bestellung->oLieferschein_arr as $oLieferschein}
     {if $oLieferschein->oVersand_arr|count > 1}
@@ -21,7 +21,7 @@ Your order dated {$Bestellung->dErstelldatum_de} with order no. {$Bestellung->cB
     {/foreach}
 {/foreach}
 <br>
-We hope the merchandise meets with your full satisfaction and thank you for your purchase.
+We hope the merchandise meets your expectations and thank you for your purchase.
 <br>
 Yours sincerely,<br>
 {$Firma->cName}

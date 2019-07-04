@@ -54,7 +54,7 @@ if ($link->getLinkType() === LINKTYP_STARTSEITE) {
         Shop::getLanguage(),
         Frontend::getCustomerGroup()->getID()
     ));
-} elseif ($link->getLinkType() === LINKTYP_WRB) {
+} elseif (\in_array($link->getLinkType(), [LINKTYP_WRB, LINKTYP_WRB_FORMULAR, LINKTYP_DATENSCHUTZ], true)) {
     $smarty->assign('WRB', Shop::Container()->getLinkService()->getAGBWRB(
         Shop::getLanguage(),
         Frontend::getCustomerGroup()->getID()

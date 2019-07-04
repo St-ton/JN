@@ -1,9 +1,10 @@
 {includeMailTemplate template=header type=plain}
 
-Forgotten or lost your login details for our shop? No problem! Just click the following link to reset your password.
+We received a request to reset your password. Please click on the following link to do so.
 
 {$passwordResetLink}
 
-We recommend changing your password regularly to prevent misuse.
+We recommend changing your password regularly to prevent potential misuse. If you did not request a password reset,
+please ignore this email.
 
 {includeMailTemplate template=footer type=plain}

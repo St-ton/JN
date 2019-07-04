@@ -179,10 +179,10 @@
                             {if !empty($oPosition->Artikel->kStueckliste) && !empty($oPosition->Artikel->oStueckliste_arr)}
                                 {block name='checkout-inc-order-items-product-partlist-items'}
                                     <ul class="partlist-items text-muted small">
-                                        {foreach from=$oPosition->Artikel->oStueckliste_arr item=oStuecklistPos}
+                                        {foreach $oPosition->Artikel->oStueckliste_arr as $partListItem}
                                             <li>
-                                                <span class="qty">{$oStuecklistPos->fAnzahl_stueckliste}x</span>
-                                                {$oStuecklistPos->cName|trans}
+                                                <span class="qty">{$partListItem->fAnzahl_stueckliste}x</span>
+                                                {$partListItem->cName|trans}
                                             </li>
                                         {/foreach}
                                     </ul>

@@ -1772,3 +1772,30 @@ msgstr "Period of time"
 
 msgid "directEntry"
 msgstr "Direct entry"
+
+msgid "width"
+msgstr "Width"
+
+msgid "height"
+msgstr "Height"
+
+msgid "YouTube"
+msgstr "YouTube"
+
+msgid "Vimeo"
+msgstr "Vimeo"
+
+msgid "start"
+msgstr "Start"
+
+msgid "end"
+msgstr "End"
+
+msgid "color"
+msgstr "Color"
+
+msgid "white"
+msgstr "white"
+
+msgid "red"
+msgstr "red"

@@ -1,3 +1,7 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
 msgid "Accordion"
 msgstr "Akkordeon"
 
@@ -36,3 +40,6 @@ msgstr "Gefahr"
 
 msgid "groupName"
 msgstr "Gruppen-Name"
+
+msgid "unfoldFirstGroup"
+msgstr "Erste Gruppe bereits aufklappen?"

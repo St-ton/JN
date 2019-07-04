@@ -289,3 +289,44 @@ msgstr "All drafts"
 msgid "deleteDraftsContinue"
 msgstr "drafts are deleted! Continue?"
 
+msgid "draftDeleteSure"
+msgstr "Wollen Sie diesen Entwurf wirklich löschen?"
+
+msgid "label"
+msgstr "Label"
+
+msgid "style"
+msgstr "Stil"
+
+msgid "stylePrimary"
+msgstr "Primär"
+
+msgid "styleSuccess"
+msgstr "Erfolg"
+
+msgid "styleInfo"
+msgstr "Info"
+
+msgid "styleWarning"
+msgstr "Warnung"
+
+msgid "styleDanger"
+msgstr "Gefahr"
+
+msgid "Icon"
+msgstr "Icon"
+
+msgid "background"
+msgstr "Hintergrund"
+
+msgid "backgroundImage"
+msgstr "Hintergrundbild"
+
+msgid "video"
+msgstr "Video"
+
+msgid "vertical"
+msgstr "vertical"
+
+msgid "horizontal"
+msgstr "horizontal"

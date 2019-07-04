@@ -5,39 +5,6 @@ msgstr ""
 msgid "Accordion"
 msgstr "Akkordeon"
 
-msgid "initially expanded"
-msgstr "initial als ausgeklappt anzeigen"
-
-msgid "In the preview and while editing the area is always visible."
-msgstr "In der Vorschau und beim Bearbeiten wird der Bereich immer angezeigt."
-
-msgid "Display as"
-msgstr "Anzeigen als"
-
-msgid "Size"
-msgstr "Größe"
-
-msgid "Type"
-msgstr "Typ"
-
-msgid "default"
-msgstr "Standard"
-
-msgid "primary"
-msgstr "Primär"
-
-msgid "success"
-msgstr "Erfolg"
-
-msgid "info"
-msgstr "Info"
-
-msgid "warning"
-msgstr "Warnung"
-
-msgid "danger"
-msgstr "Gefahr"
-
 msgid "groupName"
 msgstr "Gruppen-Name"
 

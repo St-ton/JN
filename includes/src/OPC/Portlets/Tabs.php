@@ -22,7 +22,7 @@ class Tabs extends Portlet
     {
         return [
             'tabs' => [
-                'label'   => __('tabs'),
+                'label'   => __('Tabs'),
                 'type'    => InputType::TEXT_LIST,
                 'default' => [__('tabOne'), __('tabTwo'), __('tabThree')],
             ],

@@ -23,7 +23,7 @@ class Button extends Portlet
         return [
             'label' => [
                 'label'   => __('label'),
-                'default' => __('Hey there!'),
+                'default' => __('defaultText'),
                 'width'   => 50,
             ],
             'url' => [

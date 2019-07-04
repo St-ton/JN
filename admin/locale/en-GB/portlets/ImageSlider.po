@@ -2,6 +2,9 @@ msgid ""
 msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
+msgid "Bilder-Slider"
+msgstr "Image slider"
+
 msgid "Slides"
 msgstr "Slides"
 

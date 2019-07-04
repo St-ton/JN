@@ -10,8 +10,6 @@
         {/block}
     {/if}
 
-    {$Suchergebnisse->getSearchUnsuccessful()|@var_dump}
-
     {if $Suchergebnisse->getSearchUnsuccessful() == true}
         {block name='productlist-header-alert'}
             {include file='snippets/opc_mount_point.tpl' id='opc_before_no_results'}

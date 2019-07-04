@@ -247,9 +247,9 @@
                 <div id="opc-sidebar-tools">
                     <h2 id="opc-sidebar-second-title">{__('allDrafts')}</h2>
                     <div class="opc-group">
-                        <input type="search" class="opc-filter-control" placeholder="&#xF002; {__('search')}"
+                        <input type="search" class="opc-filter-control float-left" placeholder="&#xF002; {__('search')}"
                                oninput="filterOpcDrafts()" id="opc-filter-search">
-                        <div class="opc-filter-control opc-dropdown" id="opc-filter-status">
+                        <div class="opc-filter-control opc-dropdown float-left" id="opc-filter-status">
                             <button class="opc-dropdown-btn" data-toggle="dropdown">
                                 {__('status')}
                             </button>

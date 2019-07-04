@@ -60,6 +60,7 @@ class Portlet implements \JsonSerializable
     {
         $this->class = $class;
         $this->id    = $id;
+
         if ($pluginId > 0) {
             $loader       = new PluginLoader(Shop::Container()->getDB(), Shop::Container()->getCache());
             $this->plugin = $loader->init($pluginId);

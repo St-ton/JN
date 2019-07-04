@@ -1,14 +1,18 @@
-$primary-color: #5cbcf6;
-$text-color:    #435A6B;
-$bg-color:      #fff;
-$light-bg:      #F5F7FA;
-$muted-text:    #BDBDBD;
-$gray-dark:     #525252;
-$gray-light:    #9b9b9b;
-$brand-text:    #fff;
+@import "fonts";
+
+$primary-color:   #5cbcf6;
+$primary-lighter: lighten($primary-color, 25%);
+$primary-darker:  darken($primary-color, 12%);
+$text-color:      #435A6B;
+$bg-color:        #fff;
+$light-bg:        #F5F7FA;
+$muted-text:      #BDBDBD;
+$gray-dark:       #525252;
+$gray-light:      #9b9b9b;
+$brand-text:      #fff;
 
 $transition: 0.5s;
-$main-font: sans-serif;
+$main-font: "Open Sans";
 $fontawesome-mixed: "Font Awesome 5 Free", FontAwesome, $main-font;
 
 $portlet-btn-bg:    #f5f7fa;

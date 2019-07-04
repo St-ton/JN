@@ -11,6 +11,26 @@ html, body {
 }
 
 #opc {
+  select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    position: relative;
+  }
+
+  .select-wrapper {
+    position: relative;
+
+    &:after {
+      font-family: $fontawesome-mixed;
+      font-weight: 600;
+      content: "\f078";
+      position: absolute;
+      right: 14px;
+      top: 10px;
+      pointer-events: none;
+    }
+  }
+
   .modal {
     font-size: 14px;
     color: $text-color;
@@ -24,7 +44,7 @@ html, body {
     }
 
     .alert-info {
-      background: lighten($primary-color, 25%);
+      background: $primary-lighter;
       border: 1px solid $primary-color;
       border-radius: 5px;
       color: $text-color;
@@ -59,11 +79,16 @@ html, body {
 
       .opc-header-btn {
         font-size: 16px;
+
+        &:hover {
+          color: $primary-lighter;
+        }
       }
     }
 
     .modal-body {
-      padding: 24px;
+      padding: 0;
+      margin: 24px;
 
       .form-group {
         margin: 0;
@@ -110,6 +135,13 @@ html, body {
     }
   }
 
+  #configModal {
+    .modal-dialog {
+      width: 700px;
+      max-width: none;
+    }
+  }
+
   #opcSidebar {
     width: $sidebar-width;
     height: 100%;
@@ -148,9 +180,7 @@ html, body {
       padding-right: 18px;
 
       .tab-content {
-        min-height: 100%;
-        overflow-x: hidden;
-        overflow-y: auto;
+        overflow: visible;
       }
 
       #portlets {
@@ -172,11 +202,17 @@ html, body {
         }
 
         .collapse {
+          width: 340px;
+
           &:after {
             content: ' ';
             display: block;
             clear: both;
           }
+        }
+
+        .collapsing {
+          width: 340px;
         }
 
         .portletButton {
@@ -188,6 +224,10 @@ html, body {
           margin-bottom: 22px;
           background-color: $light-bg;
           border-radius: 5px;
+
+          &:hover {
+            box-shadow: 4px 4px 4px rgba(0,0,0,0.125);
+          }
 
           &:nth-child(3n) {
             margin-right: 0;
@@ -285,11 +325,15 @@ html, body {
 
       #blueprints {
         #blueprintList {
-          padding-bottom: 46px;
+          padding-bottom: 60px;
         }
 
         .blueprintButton {
           cursor: pointer;
+
+          &:hover {
+            box-shadow: 4px 4px 4px rgba(0,0,0,0.125);
+          }
 
           .blueprint-icon {
             color: $primary-color;

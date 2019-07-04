@@ -1,24 +1,26 @@
 <div class='form-group'>
     <label for="config-{$propname}">{$propdesc.label}</label>
-    <select class="form-control" id="config-{$propname}" name="{$propname}" {if $required === true}required{/if}>
-        {foreach $propdesc.options as $value => $label}
-            {if is_string($label)}
-                <option value="{$value}" {if $value == $propval}selected{/if}>
-                    {$label}
-                </option>
-            {else}
-                {$subgroup = $label}
+    <div class="select-wrapper">
+        <select class="form-control" id="config-{$propname}" name="{$propname}" {if $required === true}required{/if}>
+            {foreach $propdesc.options as $value => $label}
+                {if is_string($label)}
+                    <option value="{$value}" {if $value == $propval}selected{/if}>
+                        {$label}
+                    </option>
+                {else}
+                    {$subgroup = $label}
 
-                <optgroup label="{$subgroup.label}">
-                    {foreach $subgroup.options as $value => $label}
-                        <option value="{$value}" {if $value == $propval}selected{/if}>
-                            {$label}
-                        </option>
-                    {/foreach}
-                </optgroup>
-            {/if}
-        {/foreach}
-    </select>
+                    <optgroup label="{$subgroup.label}">
+                        {foreach $subgroup.options as $value => $label}
+                            <option value="{$value}" {if $value == $propval}selected{/if}>
+                                {$label}
+                            </option>
+                        {/foreach}
+                    </optgroup>
+                {/if}
+            {/foreach}
+        </select>
+    </div>
 </div>
 
 {if isset($propdesc.childrenFor)}

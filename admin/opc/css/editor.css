@@ -1,6 +1,12 @@
 @charset "UTF-8";
+@font-face {
+  font-family: "Open Sans";
+  src: local("OpenSans-Regular"), local("OpenSans-Regular"), url("../../../templates/NOVA/themes/base/fonts/opensans/open-sans-regular.eot?") format("eot"), url("../../../templates/NOVA/themes/base/fonts/opensans/open-sans-regular.woff2") format("woff2"), url("../../../templates/NOVA/themes/base/fonts/opensans/open-sans-regular.woff") format("woff"), url("../../../templates/NOVA/themes/base/fonts/opensans/open-sans-regular.ttf") format("truetype"), url("../../../templates/NOVA/themes/base/fonts/opensans/open-sans-regular.svg#Open_Sans") format("svg");
+  font-style: normal;
+  font-weight: 400;
+}
 #opc {
-  font-family: sans-serif;
+  font-family: "Open Sans";
   height: 100%;
 }
 #opc ::-webkit-scrollbar {
@@ -21,6 +27,9 @@
 #opc ::-webkit-scrollbar-thumb:hover, #opc ::-webkit-scrollbar-thumb:active {
   background: #9b9b9b;
   border: 1px solid #525252;
+}
+#opc a {
+  outline: none;
 }
 #opc h1, #opc h2, #opc h3, #opc h4, #opc h5, #opc h6 {
   font-family: inherit;
@@ -45,10 +54,16 @@
 #opc button.opc-btn-primary.opc-full-width, #opc button.opc-btn-secondary.opc-full-width {
   width: 100%;
 }
+#opc button.opc-btn-primary:hover {
+  background-color: #22a4f3;
+}
 #opc button.opc-btn-secondary {
   background-color: #fff;
   border: 1px solid #5cbcf6;
   color: #5cbcf6;
+}
+#opc button.opc-btn-secondary:hover {
+  color: #22a4f3;
 }
 #opc button.opc-small-btn {
   padding: 8px 10px;
@@ -73,7 +88,7 @@
 #opc input[type=checkbox] + label:before,
 #opc input[type=radio] + label:before {
   content: "";
-  font-family: "Font Awesome 5 Free", FontAwesome, sans-serif;
+  font-family: "Font Awesome 5 Free", FontAwesome, "Open Sans";
   margin-right: 4px;
 }
 #opc input[type=checkbox]:checked + label:before,
@@ -129,7 +144,6 @@
   height: 38px;
   color: inherit;
   padding: 8px;
-  float: left;
   text-align: left;
   font-size: 14px;
 }
@@ -139,6 +153,9 @@
   background-color: #F5F7FA;
   color: #BDBDBD;
   border-color: #BDBDBD;
+}
+#opc .float-left {
+  float: left;
 }
 #opc .opc-filter-control {
   margin-bottom: 24px;
@@ -181,7 +198,7 @@
 }
 #opc ::placeholder {
   color: #BDBDBD;
-  font-family: "Font Awesome 5 Free", FontAwesome, sans-serif;
+  font-family: "Font Awesome 5 Free", FontAwesome, "Open Sans";
   font-weight: 900;
 }
 #opc .opc-dropdown {
@@ -197,7 +214,7 @@
   display: block;
   float: right;
   content: "";
-  font-family: "Font Awesome 5 Free", FontAwesome, sans-serif;
+  font-family: "Font Awesome 5 Free", FontAwesome, "Open Sans";
   font-weight: 900;
 }
 #opc .opc-dropdown .opc-dropdown-menu {
@@ -248,6 +265,9 @@
 #opc #opcHeader .opc-header-btn {
   padding: 0 4px;
 }
+#opc #opcHeader .opc-header-btn:hover {
+  color: #d5eefd;
+}
 #opc #opcHeader #opcMenuBtnDropdown {
   display: inline;
 }
@@ -269,8 +289,12 @@
   border-radius: 0;
   padding: 14px 2px 12px;
   margin: 0 14px;
+  margin-right: 8px;
   color: #BDBDBD;
   background: none;
+}
+#opc .nav-tabs .nav-item .nav-link:hover {
+  color: #435A6B;
 }
 #opc .nav-tabs .nav-item .nav-link.active {
   border-color: #435A6B;
@@ -340,6 +364,23 @@ html, body {
   }
   */
 }
+#opc select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  position: relative;
+}
+#opc .select-wrapper {
+  position: relative;
+}
+#opc .select-wrapper:after {
+  font-family: "Font Awesome 5 Free", FontAwesome, "Open Sans";
+  font-weight: 600;
+  content: "";
+  position: absolute;
+  right: 14px;
+  top: 10px;
+  pointer-events: none;
+}
 #opc .modal {
   font-size: 14px;
   color: #435A6B;
@@ -382,8 +423,12 @@ html, body {
 #opc .modal .modal-header .opc-header-btn {
   font-size: 16px;
 }
+#opc .modal .modal-header .opc-header-btn:hover {
+  color: #d5eefd;
+}
 #opc .modal .modal-body {
-  padding: 24px;
+  padding: 0;
+  margin: 24px;
 }
 #opc .modal .modal-body .form-group {
   margin: 0;
@@ -416,6 +461,10 @@ html, body {
   transform: translate(0, -75%);
   margin: 0 auto;
 }
+#opc #configModal .modal-dialog {
+  width: 700px;
+  max-width: none;
+}
 #opc #opcSidebar {
   width: 380px;
   height: 100%;
@@ -445,9 +494,7 @@ html, body {
   padding-right: 18px;
 }
 #opc #opcSidebar #sidebarInnerPanel .tab-content {
-  min-height: 100%;
-  overflow-x: hidden;
-  overflow-y: auto;
+  overflow: visible;
 }
 #opc #opcSidebar #sidebarInnerPanel #portlets .portletGroupBtn {
   display: block;
@@ -463,10 +510,16 @@ html, body {
 #opc #opcSidebar #sidebarInnerPanel #portlets .portletGroupBtn.collapsed .fas::before {
   content: "";
 }
+#opc #opcSidebar #sidebarInnerPanel #portlets .collapse {
+  width: 340px;
+}
 #opc #opcSidebar #sidebarInnerPanel #portlets .collapse:after {
   content: " ";
   display: block;
   clear: both;
+}
+#opc #opcSidebar #sidebarInnerPanel #portlets .collapsing {
+  width: 340px;
 }
 #opc #opcSidebar #sidebarInnerPanel #portlets .portletButton {
   display: block;
@@ -477,6 +530,9 @@ html, body {
   margin-bottom: 22px;
   background-color: #F5F7FA;
   border-radius: 5px;
+}
+#opc #opcSidebar #sidebarInnerPanel #portlets .portletButton:hover {
+  box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.125);
 }
 #opc #opcSidebar #sidebarInnerPanel #portlets .portletButton:nth-child(3n) {
   margin-right: 0;
@@ -559,10 +615,13 @@ html, body {
   text-decoration: none;
 }
 #opc #opcSidebar #sidebarInnerPanel #blueprints #blueprintList {
-  padding-bottom: 46px;
+  padding-bottom: 60px;
 }
 #opc #opcSidebar #sidebarInnerPanel #blueprints .blueprintButton {
   cursor: pointer;
+}
+#opc #opcSidebar #sidebarInnerPanel #blueprints .blueprintButton:hover {
+  box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.125);
 }
 #opc #opcSidebar #sidebarInnerPanel #blueprints .blueprintButton .blueprint-icon {
   color: #5cbcf6;

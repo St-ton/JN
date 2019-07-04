@@ -85,7 +85,7 @@ class ListPortlet extends Portlet
     public function getPropertyTabs(): array
     {
         return [
-            'Styles' => 'styles',
+            __('Styles') => 'styles',
         ];
     }
 

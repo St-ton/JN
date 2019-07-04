@@ -59,29 +59,29 @@ class Panel extends Portlet
     {
         return [
             'panel-class' => [
-                'label' => 'CSS Klasse',
+                'label' => __('cssClass'),
                 'width' => 50,
             ],
             'panel-state' => [
-                'label' => 'Typ',
+                'label' => __('type'),
                 'type'  => InputType::SELECT,
                 'width' => 50,
                 'options'    => [
-                    'default' => 'Standard',
-                    'primary' => 'Primär',
-                    'success' => 'Erfolg',
-                    'info'    => 'Info',
-                    'warning' => 'Warnung',
-                    'danger'  => 'Gefahr',
+                    'default' => __('standard'),
+                    'primary' => __('stylePrimary'),
+                    'success' => __('styleSuccess'),
+                    'info'    => __('styleInfo'),
+                    'warning' => __('styleWarning'),
+                    'danger'  => __('styleDanger'),
                 ],
             ],
             'title-flag'  => [
-                'label' => 'Kopf anzeigen?',
+                'label' => __('showHeader'),
                 'type'  => InputType::CHECKBOX,
                 'width' => 50,
             ],
             'footer-flag' => [
-                'label' => 'Fuß anzeigen?',
+                'label' => __('showFooter'),
                 'type'  => InputType::CHECKBOX,
                 'width' => 50,
             ],
@@ -94,8 +94,8 @@ class Panel extends Portlet
     public function getPropertyTabs(): array
     {
         return [
-            'Styles'    => 'styles',
-            'Animation' => 'animations',
+            __('Styles')    => 'styles',
+            __('Animation') => 'animations',
         ];
     }
 }

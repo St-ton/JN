@@ -23,11 +23,11 @@ class Accordion extends Portlet
         return [
             'groups' => [
                 'type' => InputType::TEXT_LIST,
-                'label' => 'Gruppen-Name',
+                'label' => __('groupName'),
             ],
             'expanded' => [
                 'type' => InputType::CHECKBOX,
-                'label' => 'Erste Gruppe bereits aufklappen?'
+                'label' => __('unfoldFirstGroup')
             ]
         ];
     }

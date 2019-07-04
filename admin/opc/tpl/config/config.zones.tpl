@@ -14,45 +14,45 @@
     </div>
 
     <div class="form-group">
-        <button type="button" class="btn btn-primary" id="banner-add-zone">Neue Zone</button>
+        <button type="button" class="btn btn-primary" id="banner-add-zone">{__('zoneNew')}</button>
         <button type="button" class="btn btn-danger" id="banner-del-zone" style="display: none">
-            Zone löschen
+            {__('zoneDelete')}
         </button>
     </div>
 
     <div id="zone-props-{$propname}" style="display: none">
         <div class="form-group">
             <div class="input-group">
-                <label for="zone-title-{$propname}" class="sr-only">Titel</label>
-                <span class="input-group-addon">Title</span>
+                <label for="zone-title-{$propname}" class="sr-only">{__('title')}</label>
+                <span class="input-group-addon">{__('title')}</span>
                 <input type="text" class="form-control" id="zone-title-{$propname}">
             </div>
         </div>
         <div class="form-group">
             <div class="input-group">
-                <label for="zone-desc-{$propname}" class="sr-only">Beschreibung</label>
-                <span class="input-group-addon">Beschreibung</span>
+                <label for="zone-desc-{$propname}" class="sr-only">{__('description')}</label>
+                <span class="input-group-addon">{__('description')}</span>
                 <textarea class="form-control" id="zone-desc-{$propname}"></textarea>
             </div>
         </div>
         <div class="form-group">
             <div class="input-group">
-                <label for="zone-url-{$propname}" class="sr-only">URL</label>
-                <span class="input-group-addon">URL</span>
+                <label for="zone-url-{$propname}" class="sr-only">{__('url')}</label>
+                <span class="input-group-addon">{__('url')}</span>
                 <input type="text" class="form-control" id="zone-url-{$propname}">
             </div>
         </div>
         <div class="form-group">
             <div class="input-group">
-                <label for="zone-class-{$propname}" class="sr-only">CSS-Klasse</label>
-                <span class="input-group-addon">CSS-Klasse</span>
+                <label for="zone-class-{$propname}" class="sr-only">{__('cssClass')}</label>
+                <span class="input-group-addon">{__('cssClass')}</span>
                 <input type="text" class="form-control" id="zone-class-{$propname}">
             </div>
         </div>
         <div class="form-group">
             <div class="input-group">
-                <label for="zone-product-{$propname}" class="sr-only">Artikel</label>
-                <span class="input-group-addon">Artikel</span>
+                <label for="zone-product-{$propname}" class="sr-only">{__('products')}</label>
+                <span class="input-group-addon">{__('products')}</span>
                 <input type="text" class="form-control" id="zone-product-{$propname}">
                 <span class="input-group-btn">
                     <button type="button" class="btn btn-sm btn-danger" id="banner-del-product">

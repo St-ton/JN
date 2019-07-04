@@ -45,7 +45,7 @@
 
         function deleteOpcDraft(draftKey)
         {
-            if (confirm("Wollen Sie diesen Entwurf wirklich löschen?")) {
+            if (confirm('{__('draftDeleteSure')}')) {
                 $.ajax({
                     method: 'post',
                     url: '{$opcStartUrl}',
@@ -78,7 +78,7 @@
         {
             let draftKeys = getSelectedOpcDraftkeys();
 
-            if (confirm(draftKeys.length + " Entwürfe werden gelöscht! Fortfahren?")) {
+            if (confirm(draftKeys.length + ' {__('deleteDraftsContinue')}')) {
                 $.ajax({
                     method: 'post',
                     url: '{$opcStartUrl}',
@@ -221,7 +221,7 @@
                     <input type="hidden" name="pageUrl" value="{$curPageUrl}">
                     <button type="submit" name="action" value="extend" class="opc-btn-primary">
                         <img src="{$ShopURL}/admin/opc/gfx/icon-OPC.svg" alt="OPC Start Icon" id="opc-start-icon">
-                        <span id="opc-start-label">OnPage Composer</span>
+                        <span id="opc-start-label">{__('onPageComposer')}</span>
                     </button>
                 </form>
             </nav>
@@ -229,7 +229,7 @@
             <nav id="opc-startmenu">
                 <button type="button" class="opc-btn-primary" onclick="openOpcStartMenu()">
                     <img src="{$ShopURL}/admin/opc/gfx/icon-OPC.svg" alt="OPC Start Icon" id="opc-start-icon">
-                    <span id="opc-start-label">OnPage Composer</span>
+                    <span id="opc-start-label">{__('onPageComposer')}</span>
                 </button>
             </nav>
             <div id="opcSidebar">
@@ -238,44 +238,44 @@
                         <i class="fa fas fa-ellipsis-v"></i>
                     </button>
                     <h1 id="opc-sidebar-title">
-                        Seite bearbeiten
+                        {__('editPage')}
                     </h1>
-                    <button onclick="closeOpcStartMenu()" class="opc-float-right opc-header-btn">
+                    <button onclick="closeOpcStartMenu()" class="opc-float-right opc-header-btn" title="{__('Close OnPage-Composer')}">
                         <i class="fa fas fa-times"></i>
                     </button>
                 </header>
                 <div id="opc-sidebar-tools">
-                    <h2 id="opc-sidebar-second-title">Alle Entwürfe</h2>
+                    <h2 id="opc-sidebar-second-title">{__('allDrafts')}</h2>
                     <div class="opc-group">
-                        <input type="search" class="opc-filter-control float-left" placeholder="&#xF002; Suche"
+                        <input type="search" class="opc-filter-control float-left" placeholder="&#xF002; {__('search')}"
                                oninput="filterOpcDrafts()" id="opc-filter-search">
                         <div class="opc-filter-control opc-dropdown float-left" id="opc-filter-status">
                             <button class="opc-dropdown-btn" data-toggle="dropdown">
-                                Status
+                                {__('status')}
                             </button>
                             <div class="dropdown-menu opc-dropdown-menu">
-                                <button class="opc-dropdown-item" onclick="orderOpcDraftsBy(0);return false">Status</button>
-                                <button class="opc-dropdown-item" onclick="orderOpcDraftsBy(1);return false">Name</button>
+                                <button class="opc-dropdown-item" onclick="orderOpcDraftsBy(0);return false">{__('status')}</button>
+                                <button class="opc-dropdown-item" onclick="orderOpcDraftsBy(1);return false">{__('name')}</button>
                             </div>
                         </div>
                     </div>
                     <input type="checkbox" id="check-all-drafts" onchange="checkAllOpcDrafts()">
                     <label for="check-all-drafts" class="opc-check-all">
-                        Alle an-/abwählen
+                        {__('selectAll')}
                     </label>
                     <div class="opc-dropdown" id="opc-bulk-actions-dropdown">
                         <button type="button" id="opc-bulk-actions" data-toggle="dropdown" disabled>
                             <span id="opc-bulk-actions-label">
-                                Aktionen
+                                {__('actions')}
                             </span>
                             <i class="fa fas fa-fw fa-chevron-down"></i>
                         </button>
                         <div class="dropdown-menu opc-dropdown-menu" id="opc-bulk-dropdown">
                             <a href="#" onclick="duplicateSelectedOpcDrafts();return false" class="opc-dropdown-item">
-                                Duplizieren
+                                {__('duplicate')}
                             </a>
                             <a href="#" onclick="deleteSelectedOpcDrafts();return false" class="opc-dropdown-item">
-                                Löschen
+                                {__('delete')}
                             </a>
                         </div>
                     </div>
@@ -291,7 +291,7 @@
                         <input type="hidden" name="pageId" value="{$curPageId}">
                         <input type="hidden" name="pageUrl" value="{$curPageUrl}">
                         <button type="submit" name="action" value="extend" class="opc-btn-primary opc-full-width">
-                            Neuer Entwurf
+                            {__('newDraft')}
                         </button>
                     </form>
                 </div>

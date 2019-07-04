@@ -1,7 +1,7 @@
-<h2>Verfügbare Filter</h2>
+<h2>{__('availableFilters')}</h2>
 <div id="filters-available"></div>
 
-<h2>Aktive Filter</h2>
+<h2>{__('activeFilters')}</h2>
 <div id="filters-enabled"></div>
 
 <input type="hidden" id="config-{$propname}" name="{$propname}" value="{$propval|json_encode|htmlentities}"
@@ -70,7 +70,7 @@
         clearFiltersAvailable();
 
         if(filters.length === 0) {
-            $filtersAvailable.html('No more filters available');
+            $filtersAvailable.html('{__('noMoreFilters')}');
         } else {
             filters.forEach(function(filter) {
                 if (filter.options.length > 0) {

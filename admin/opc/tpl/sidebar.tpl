@@ -17,7 +17,7 @@
             </div>
         </div>
         <h1 id="opc-sidebar-title">
-            Seite bearbeiten
+            {__('editPage')}
         </h1>
         <button type="button" id="btnClose" class="opc-float-right opc-header-btn" data-toggle="tooltip"
                 data-placement="bottom" title="{__('Close OnPage-Composer')}">
@@ -94,16 +94,16 @@
             </div>
             <div id="savePublishButtons">
                 <button type="button" class="opc-btn-secondary opc-small-btn" onclick="opc.gui.savePage()">
-                    Speichern <i class="fas fa-asterisk" id="unsavedState" style="display: none"></i>
+                    {__('save')} <i class="fas fa-asterisk" id="unsavedState" style="display: none"></i>
                 </button>
                 <button type="button" class="opc-btn-primary opc-small-btn" id="btnPublish">
-                    Veröffentlichen
+                    {__('Publish')}
                 </button>
             </div>
         </div>
         <div id="previewToolbar">
             <label class="toggle-switch">
-                Vorschau
+                {__('preview')}
                 <input type="checkbox" onchange="opc.gui.onBtnPreview()">
                 <span class="toggle-slider"></span>
             </label>

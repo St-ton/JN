@@ -19,28 +19,28 @@
                         <input type="radio" id="checkPublishNot" name="scheduleStrategy"
                                onchange="opc.gui.onChangePublishStrategy()">
                         <label for="checkPublishNot">
-                            Nicht veröffentlichen
+                            {__('publishNot')}
                         </label>
                     </div>
                     <div class="form-group">
                         <input type="radio" id="checkPublishNow" name="scheduleStrategy"
                                onchange="opc.gui.onChangePublishStrategy()">
                         <label for="checkPublishNow">
-                            Sofort veröffentlichen
+                            {__('publishImmediately')}
                         </label>
                     </div>
                     <div class="form-group" style="float:left; width:50%">
                         <input type="radio" id="checkPublishSchedule" name="scheduleStrategy"
                                onchange="opc.gui.onChangePublishStrategy()">
                         <label for="checkPublishSchedule">
-                            Planen
+                            {__('selectDate')}
                         </label>
                     </div>
                     <div class="form-group">
                         <input type="checkbox" id="checkPublishInfinite"
                                onchange="opc.gui.onChangePublishInfinite()">
                         <label for="checkPublishInfinite">
-                            Auf unbestimmte Zeit
+                            {__('indefinitePeriodOfTime')}
                         </label>
                     </div>
                     <div class="form-group" style="float:left; width:50%; padding-right:16px">

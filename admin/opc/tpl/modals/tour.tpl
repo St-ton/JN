@@ -3,6 +3,10 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">{__('help')}</h5>
+                <button type="button" class="opc-header-btn" data-toggle="tooltip" data-dismiss="modal"
+                        data-placement="bottom">
+                    <i class="fa fas fa-times"></i>
+                </button>
             </div>
             <form id="tourForm">
                 <div class="modal-body">

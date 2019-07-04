@@ -186,7 +186,6 @@ class GUI
             this.revisionList.empty();
 
             revisions.forEach(rev => {
-                console.log(rev);
                 this.revisionBtnBlueprint.clone()
                     .attr('id', '').css('display', '')
                     .attr('data-revision-id', rev.id)

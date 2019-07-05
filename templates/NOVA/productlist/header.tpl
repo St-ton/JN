@@ -127,13 +127,12 @@
         {/if}
     {/if}
 
-    {$alertList->displayAlertByKey('noFilterResults')}
-
     {block name='productlist-header-include-productlist-page-nav'}
         {include file='snippets/productlist_page_nav.tpl' navid='header'}
     {/block}
 
-    {if !$device->isMobile()}
+    {if !$device->isMobile() || $Suchergebnisse->getProducts()|@count <= 0}
+        {$alertList->displayAlertByKey('noFilterResults')}
         <div class="my-3">
             {include file='snippets/filter/active_filter.tpl'}
         </div>

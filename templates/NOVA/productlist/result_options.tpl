@@ -95,16 +95,8 @@
                                             }
                                                 {$filter->getFrontendName()}
                                                 <i class="float-right ml-3 fas fa-plus"></i>
-                                                <span class="float-right mx-3 font-italic text-right text-truncate w-40 pr-1">
-                                                    {foreach $filter->getOptions() as $filterOption}
-                                                        {*TODO: Preisfilter nicht als aktiv markiert*}
-                                                        {assign var=filterIsActive value=$filterOption->isActive() || $NaviFilter->getFilterValue($filter->getClassName()) === $filterOption->getValue()}
-                                                        {if $filterIsActive === true}{$filterOption->getName()}{if !$filterOption@last},{/if} {/if}
-                                                    {/foreach}
-                                                </span>
-
                                             {/button}
-                                            {collapse id="filter-collapse-{$filter->getFrontendName()|@seofy}" class="mb-2 py-3 col-12 col-md-4 max-h-150-scroll"}
+                                            {collapse id="filter-collapse-{$filter->getFrontendName()|@seofy}" class="mb-2 py-3 col-12 col-md-4 max-h-150-scroll" visible=$filter->isActive()}
                                                 {block name='boxes-box-filter-pricerange-include-price-slider'}
                                                     {include file='snippets/filter/price_slider.tpl' id='price-slider-content'}
                                                 {/block}

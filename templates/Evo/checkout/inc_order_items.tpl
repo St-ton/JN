@@ -191,6 +191,16 @@
                             {/foreach}
                         </ul>
                     {/if}
+                    {if !empty($oPosition->Artikel->kStueckliste) && !empty($oPosition->Artikel->oStueckliste_arr)}
+                        <ul class="partlist-items text-muted small">
+                            {foreach $oPosition->Artikel->oStueckliste_arr as $partListItem}
+                                <li>
+                                    <span class="qty">{$partListItem->fAnzahl_stueckliste}x</span>
+                                    {$partListItem->cName|trans}
+                                </li>
+                            {/foreach}
+                        </ul>
+                    {/if}
                 </td>
 
                 <td class="qty-col">

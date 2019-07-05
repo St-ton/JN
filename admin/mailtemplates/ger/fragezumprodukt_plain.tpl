@@ -4,7 +4,7 @@ Shop: {$Einstellungen.global.global_shopname}
 
 Frage zu folgendem Produkt: {$Artikel->cName}
 
-Emailadresse des Kunden: {$Nachricht->cMail}
+E-Mail-Adresse des Kunden: {$Nachricht->cMail}
 
 Frage: {$Nachricht->cNachricht}
 
@@ -15,8 +15,8 @@ Frage: {$Nachricht->cNachricht}
     {if !empty($Nachricht->cFirma)}{$Nachricht->cFirma}{/if}
 {/if}
 
-Email: {$Nachricht->cMail}
-{if !empty($Nachricht->cTel)}Tel: {$Nachricht->cTel}{/if}
+E-Mail-Adresse: {$Nachricht->cMail}
+{if !empty($Nachricht->cTel)}Tel.: {$Nachricht->cTel}{/if}
 {if !empty($Nachricht->cMobil)}Mobil: {$Nachricht->cMobil}{/if}
 {if !empty($Nachricht->cFax)}Fax: {$Nachricht->cFax}{/if}
 

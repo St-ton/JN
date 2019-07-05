@@ -350,7 +350,9 @@ class Warenkorb
                 }
             }
         }
+
         $options               = Artikel::getDefaultOptions();
+        $options->nStueckliste = 1;
         $options->nVariationen = 1;
         if ($configItemID > 0) {
             $options->nKeineSichtbarkeitBeachten = 1;
@@ -913,12 +915,13 @@ class Warenkorb
      */
     public function setzePositionsPreise(): self
     {
-        $defaultOptions = Artikel::getDefaultOptions();
+        $defaultOptions               = Artikel::getDefaultOptions();
+        $defaultOptions->nStueckliste = 1;
         foreach ($this->PositionenArr as $i => $item) {
             if ($item->kArtikel > 0 && $item->nPosTyp === \C_WARENKORBPOS_TYP_ARTIKEL) {
                 $oldItem = clone $item;
                 $product = new Artikel();
-                if (!$product->fuelleArtikel($item->kArtikel, $defaultOptions) || $product->kArtikel === null) {
+                if (!$product->fuelleArtikel($item->kArtikel, $defaultOptions)) {
                     continue;
                 }
                 // Baue Variationspreise im Warenkorb neu, aber nur wenn es ein gültiger Artikel ist

@@ -486,3 +486,6 @@ msgstr "User management"
 
 msgid "The algorithm for saving passwords has changed. <br/>Please generate a new emergency code for the 2 factor authentication."
 msgstr "The algorithm for changing the password has changed.<br/>Please generate new emergency codes for the two-factor authentication."
+
+msgid "My Plugins"
+msgstr "My Plugins"

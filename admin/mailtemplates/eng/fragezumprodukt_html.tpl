@@ -31,7 +31,7 @@
 				<tr>
 					<td align="right" valign="top">
 						<font color="#313131" face="Helvetica, Arial, sans-serif" size="3" style="color: #313131; font-family: Helvetica, Arial, sans-serif; font-size: 15px; line-height: 18px;">
-							<strong>Product:</strong>
+							<strong>Item:</strong>
 						</font>
 					</td>
 				</tr>
@@ -134,7 +134,7 @@
 				<tr>
 					<td align="right" valign="top">
 						<font color="#313131" face="Helvetica, Arial, sans-serif" size="3" style="color: #313131; font-family: Helvetica, Arial, sans-serif; font-size: 15px; line-height: 18px;">
-							<strong>Email:</strong>
+							<strong>Email address:</strong>
 						</font>
 					</td>
 				</tr>
@@ -159,7 +159,7 @@
 					<tr>
 						<td align="right" valign="top">
 							<font color="#313131" face="Helvetica, Arial, sans-serif" size="3" style="color: #313131; font-family: Helvetica, Arial, sans-serif; font-size: 15px; line-height: 18px;">
-								<strong>Tel:</strong>
+								<strong>Phone:</strong>
 							</font>
 						</td>
 					</tr>

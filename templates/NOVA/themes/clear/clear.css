@@ -16079,8 +16079,14 @@ aside .badge-light {
   margin: 0 0.75rem;
   border-bottom: 1px solid #ebebeb;
 }
+#result-options #filter-collapsible button[data-toggle=collapse][aria-expanded=true] {
+  border-bottom: 0;
+}
 #result-options #filter-collapsible button[data-toggle=collapse][aria-expanded=true] i.fa-plus:before {
   content: "";
+}
+#result-options #filter-collapsible button + .collapse {
+  border-bottom: 1px solid #ebebeb;
 }
 #result-options .max-h-150-scroll {
   max-height: 150px;

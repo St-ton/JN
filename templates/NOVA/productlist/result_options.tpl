@@ -75,10 +75,10 @@
                                                             {if $filterIsActive === true}{$filterOption->getName()}{if !$filterOption@last},{/if} {/if}
                                                         {/foreach}
                                                     </span>
-                                                    {collapse id="filter-collapse-{$subFilter->getFrontendName()|@seofy}" class="mb-2 col-12 col-md-4 max-h-150-scroll"}
-                                                        {include file='snippets/filter/genericFilterItem.tpl' itemClass='' displayAt='content' filter=$subFilter sub=true}
-                                                    {/collapse}
                                                 {/button}
+                                                {collapse id="filter-collapse-{$subFilter->getFrontendName()|@seofy}" class="mb-2 col-12 col-md-4 max-h-150-scroll"}
+                                                    {include file='snippets/filter/genericFilterItem.tpl' itemClass='' displayAt='content' filter=$subFilter sub=true}
+                                                {/collapse}
                                             {/if}
                                         {/foreach}
                                     {else}
@@ -102,15 +102,15 @@
                                                         {if $filterIsActive === true}{$filterOption->getName()}{if !$filterOption@last},{/if} {/if}
                                                     {/foreach}
                                                 </span>
-                                                {collapse id="filter-collapse-{$filter->getFrontendName()|@seofy}" class="mb-2 py-3 col-12 col-md-4 max-h-150-scroll"}
-                                                    {inputgroup class="mb-3" size="sm"}
-                                                        {input id="price-range-from" class="price-range-input mr-4" placeholder=0}
-                                                        {input id="price-range-to" class="price-range-input ml-4" placeholder=$priceRangeMax}
-                                                    {/inputgroup}
-                                                    <div id="price-range-slider" class="mx-3"></div>
-                                                {/collapse}
-                                            {/button}
 
+                                            {/button}
+                                            {collapse id="filter-collapse-{$filter->getFrontendName()|@seofy}" class="mb-2 py-3 col-12 col-md-4 max-h-150-scroll"}
+                                                {inputgroup class="mb-3" size="sm"}
+                                                    {input id="price-range-from-content" class="price-range-input mr-4" placeholder=0}
+                                                    {input id="price-range-to-content" class="price-range-input ml-4" placeholder=$priceRangeMax}
+                                                {/inputgroup}
+                                                <div id="price-range-slider-content" class="mx-3 mb-3"></div>
+                                            {/collapse}
 
                                             <script>
                                                 $(window).on('load', function(){
@@ -119,8 +119,8 @@
                                                         priceRangeMax    = {$priceRangeMax},
                                                         currentPriceMin  = priceRangeMin,
                                                         currentPriceMax  = priceRangeMax,
-                                                        $priceRangeFrom  = $("#price-range-from"),
-                                                        $priceRangeTo    = $("#price-range-to");
+                                                        $priceRangeFrom  = $("#price-range-from-content"),
+                                                        $priceRangeTo    = $("#price-range-to-content");
                                                     if (priceRange != null) {
                                                         let priceRangeMinMax = priceRange.split('_');
                                                         currentPriceMin      = priceRangeMinMax[0];
@@ -128,7 +128,7 @@
                                                         $priceRangeFrom.val(currentPriceMin);
                                                         $priceRangeTo.val(currentPriceMax);
                                                     }
-                                                    $('#price-range-slider').slider({
+                                                    $('#price-range-slider-content').slider({
                                                         range: true,
                                                         min: priceRangeMin,
                                                         max: priceRangeMax,
@@ -200,10 +200,10 @@
                                                             {if $filterIsActive === true}{$filterOption->getName()}{if !$filterOption@last},{/if} {/if}
                                                         {/foreach}
                                                     </span>
-                                                    {collapse id="filter-collapse-{$filter->getFrontendName()|@seofy}" class="mb-2 col-12 col-md-4 max-h-150-scroll"}
-                                                        {include file='snippets/filter/genericFilterItem.tpl' displayAt='content' itemClass=$itemClass filter=$filter}
-                                                    {/collapse}
                                                 {/button}
+                                                {collapse id="filter-collapse-{$filter->getFrontendName()|@seofy}" class="mb-2 col-12 col-md-4 max-h-150-scroll"}
+                                                    {include file='snippets/filter/genericFilterItem.tpl' displayAt='content' itemClass=$itemClass filter=$filter}
+                                                {/collapse}
                                             {elseif $filter->getInputType() === \JTL\Filter\InputType::BUTTON}
                                                 {assign var=outerClass value='no-dropdown filter-type-'|cat:$filter->getNiceName()}
                                                 {assign var=innerClass value='no-dropdown'}
@@ -235,60 +235,20 @@
                                     {if $option->isActive()} {$option->getName()}{/if}
                                 {/foreach}
                             </span>
-                            {collapse id="sorting-collapse" class="mb-2 col-12 col-md-4"}
-                                {foreach $Suchergebnisse->getSortingOptions() as $option}
-                                    {dropdownitem class="filter-item py-1"
-                                        active=$option->isActive()
-                                        href=$option->getURL()
-                                        rel='nofollow'
-                                    }
-                                        {$option->getName()}
-                                    {/dropdownitem}
-                                {/foreach}
-                            {/collapse}
                         {/button}
+                        {collapse id="sorting-collapse" class="mb-2 col-12 col-md-4"}
+                            {foreach $Suchergebnisse->getSortingOptions() as $option}
+                                {dropdownitem class="filter-item py-1"
+                                active=$option->isActive()
+                                href=$option->getURL()
+                                rel='nofollow'
+                                }
+                                {$option->getName()}
+                                {/dropdownitem}
+                            {/foreach}
+                        {/collapse}
                     {/row}
-
-                    {if $NaviFilter->getFilterCount() > 0}
-                        {block name='productlist-result-options-active-filters'}
-                            <div class="clearfix mt-2"></div>
-                            <div class="active-filters">
-                                {foreach $NaviFilter->getActiveFilters() as $activeFilter}
-                                    {assign var=activeFilterValue value=$activeFilter->getValue()}
-                                    {assign var=activeValues value=$activeFilter->getActiveValues()}
-                                    {if $activeFilterValue !== null}
-                                        {if $activeValues|is_array}
-                                            {foreach $activeValues as $filterOption}
-                                                {link
-                                                    href=$activeFilter->getUnsetFilterURL($filterOption->getValue())
-                                                    rel="nofollow"
-                                                    title="Filter {lang key='delete'}"
-                                                    class="btn btn-light btn-sm filter-type-{$activeFilter->getNiceName()} mb-2 mr-2"
-                                                }
-                                                    {$filterOption->getFrontendName()}<span class="fa fa-times ml-2"></span>
-                                                {/link}
-                                            {/foreach}
-                                        {else}
-                                            {link
-                                                href=$activeFilter->getUnsetFilterURL($activeFilter->getValue())
-                                                rel="nofollow"
-                                                title="Filter {lang key='delete'}"
-                                                class="btn btn-light btn-sm filter-type-{$activeFilter->getNiceName()} mb-2 mr-2"
-                                            }
-                                                {$activeValues->getFrontendName()}<span class="fa fa-times ml-2"></span>
-                                            {/link}
-                                        {/if}
-                                    {/if}
-                                {/foreach}
-                                {if $NaviFilter->getURL()->getUnsetAll() !== null}
-                                    <br/>
-                                    {link href=$NaviFilter->getURL()->getUnsetAll() title="{lang key='removeFilters'}"}
-                                        {lang key='removeFilters'}
-                                    {/link}
-                                {/if}
-                            </div>
-                        {/block}
-                    {/if}
+                    {include file='snippets/filter/active_filter.tpl'}
                 {/collapse}
             {/block}
         </div>

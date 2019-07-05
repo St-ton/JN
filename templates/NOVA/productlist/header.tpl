@@ -132,4 +132,10 @@
     {block name='productlist-header-include-productlist-page-nav'}
         {include file='snippets/productlist_page_nav.tpl' navid='header'}
     {/block}
+
+    {if !$device->isMobile()}
+        <div class="my-3">
+            {include file='snippets/filter/active_filter.tpl'}
+        </div>
+    {/if}
 {/block}

@@ -1471,8 +1471,14 @@ $jqcloud-classes: 7;
     padding: map_get($spacers, 3) 0;
     margin: 0 $btn-padding-x;
     border-bottom: 1px solid $sand;
-    &[data-toggle="collapse"][aria-expanded="true"] i.fa-plus:before {
-      content: "\f068";
+    &[data-toggle="collapse"][aria-expanded="true"] {
+      border-bottom: 0;
+      i.fa-plus:before {
+        content: "\f068";
+      }
+    }
+    + .collapse{
+      border-bottom: 1px solid $sand;
     }
   }
   .max-h-150-scroll {

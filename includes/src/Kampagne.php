@@ -60,25 +60,25 @@ class Kampagne
 
     /**
      * Kampagne constructor.
-     * @param int $kKampagne
+     * @param int $id
      */
-    public function __construct(int $kKampagne = 0)
+    public function __construct(int $id = 0)
     {
-        if ($kKampagne > 0) {
-            $this->loadFromDB($kKampagne);
+        if ($id > 0) {
+            $this->loadFromDB($id);
         }
     }
 
     /**
-     * @param int $kKampagne
+     * @param int $id
      * @return $this
      */
-    public function loadFromDB(int $kKampagne): self
+    public function loadFromDB(int $id): self
     {
         $campaign = Shop::Container()->getDB()->query(
             "SELECT tkampagne.*, DATE_FORMAT(tkampagne.dErstellt, '%d.%m.%Y %H:%i:%s') AS dErstellt_DE
                 FROM tkampagne
-                WHERE tkampagne.kKampagne = " . $kKampagne,
+                WHERE tkampagne.kKampagne = " . $id,
             ReturnType::SINGLE_OBJECT
         );
 

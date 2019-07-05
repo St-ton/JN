@@ -123,7 +123,7 @@ if (isset($_GET['fillOut'])) {
         $warning = Shop::Lang()->get('yourbasketisempty', 'checkout');
     } elseif ((int)$_GET['fillOut'] === 10) {
         $warning = Shop::Lang()->get('missingProducts', 'checkout');
-        Cart::deleteAllSpecialPositions();
+        Cart::deleteAllSpecialItems();
     } elseif ((int)$_GET['fillOut'] === UPLOAD_ERROR_NEED_UPLOAD) {
         $warning = Shop::Lang()->get('missingFilesUpload', 'checkout');
     }

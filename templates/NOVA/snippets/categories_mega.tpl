@@ -36,7 +36,7 @@
             {/if}
             {block name='snippets-categories-mega-categories'}
             {foreach $categories as $category}
-                {assign var=isDropdown value=$category->bUnterKategorien && $category->Unterkategorien|count > 0}
+                {assign var=isDropdown value=$category->bUnterKategorien}
                 {if isset($activeParents) && is_array($activeParents) && isset($activeParents[$i])}
                     {assign var=activeParent value=$activeParents[$i]}
                 {/if}

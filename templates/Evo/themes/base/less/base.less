@@ -1256,8 +1256,9 @@ table.matrix tbody > tr > td {
     .price-col {
         white-space: nowrap;
     }
-    ul.config-items {
-        padding-left: 0;
+    ul.config-items,
+    ul.partlist-items {
+        padding-left: 15px;
         list-style-position: inside;
     }
 }
@@ -2031,10 +2032,6 @@ fieldset {
 
     #product-configuration-sidebar {
         margin: 0;
-    }
-
-    #product-configuration-sidebar.affix {
-        top: 65px;
     }
 
     #product-configuration-sidebar.affix-top {
@@ -3811,3 +3808,7 @@ li span.value {
     height:200px;
 }
 
+.filter-img {
+    width: auto;
+    height: 28px;
+}

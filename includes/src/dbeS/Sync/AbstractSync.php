@@ -17,6 +17,7 @@ use JTL\dbeS\Starter;
 use JTL\Exceptions\CircularReferenceException;
 use JTL\Exceptions\EmptyResultSetException;
 use JTL\Exceptions\ServiceNotFoundException;
+use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Text;
 use JTL\Kampagne;
 use JTL\Mail\Mail\Mail;
@@ -84,7 +85,7 @@ abstract class AbstractSync
     protected function updateXMLinDB($xml, $table, $toMap, $pk1, $pk2 = 0): void
     {
         $idx = $table . ' attr';
-        if ((isset($xml[$table]) && \is_array($xml[$table])) || (isset($xml[$idx]) && \is_array($xml[$idx]))) {
+        if (GeneralObject::isCountable($table, $xml) || GeneralObject::isCountable($idx, $xml)) {
             $this->upsert($table, $this->mapper->mapArray($xml, $table, $toMap), $pk1, $pk2);
         }
     }
@@ -99,7 +100,7 @@ abstract class AbstractSync
     protected function insertOnExistsUpdateXMLinDB(array $xml, string $table, string $toMap, array $pks): array
     {
         $idx = $table . ' attr';
-        if ((isset($xml[$table]) && \is_array($xml[$table])) || (isset($xml[$idx]) && \is_array($xml[$idx]))) {
+        if (GeneralObject::isCountable($table, $xml) || GeneralObject::isCountable($idx, $xml)) {
             return $this->insertOnExistUpdate($table, $this->mapper->mapArray($xml, $table, $toMap), $pks);
         }
 
@@ -233,18 +234,13 @@ abstract class AbstractSync
                 );
                 // Lösche das MainArtikelBild
                 if (\count($productImages) === 0) {
-                    // Bild von der Platte löschen
-                    @\unlink(\PFAD_ROOT . \PFAD_PRODUKTBILDER_MINI . $image->cPfad);
-                    @\unlink(\PFAD_ROOT . \PFAD_PRODUKTBILDER_KLEIN . $image->cPfad);
-                    @\unlink(\PFAD_ROOT . \PFAD_PRODUKTBILDER_NORMAL . $image->cPfad);
-                    @\unlink(\PFAD_ROOT . \PFAD_PRODUKTBILDER_GROSS . $image->cPfad);
-                    // Bild vom Main aus DB löschen
+                    $this->deleteImageFiles($image->cPfad);
                     $this->db->delete('tartikelpict', 'kArtikelPict', (int)$image->kMainArtikelBild);
                 }
             }
             // Bildverknüpfung aus DB löschen
             $this->db->delete('tartikelpict', 'kArtikelPict', (int)$image->kArtikelPict);
-        } elseif (isset($image->kMainArtikelBild) && $image->kMainArtikelBild == 0) {
+        } elseif (isset($image->kMainArtikelBild) && (int)$image->kMainArtikelBild === 0) {
             // Das Bild ist ein Hauptbild
             // Gibt es Artikel die auf Bilder des zu löschenden Artikel verknüpfen?
             $childProducts = $this->db->queryPrepared(
@@ -255,20 +251,15 @@ abstract class AbstractSync
                 ReturnType::ARRAY_OF_OBJECTS
             );
             if (\count($childProducts) === 0) {
-                // Gibt ein neue Artikel die noch auf den physikalischen Pfad zeigen?
-                $oObj = $this->db->queryPrepared(
+                $data = $this->db->queryPrepared(
                     'SELECT COUNT(*) AS nCount
                     FROM tartikelpict
                     WHERE cPfad = :pth',
                     ['pth' => $image->cPfad],
                     ReturnType::SINGLE_OBJECT
                 );
-                if (isset($oObj->nCount) && $oObj->nCount < 2) {
-                    // Bild von der Platte löschen
-                    @\unlink(\PFAD_ROOT . \PFAD_PRODUKTBILDER_MINI . $image->cPfad);
-                    @\unlink(\PFAD_ROOT . \PFAD_PRODUKTBILDER_KLEIN . $image->cPfad);
-                    @\unlink(\PFAD_ROOT . \PFAD_PRODUKTBILDER_NORMAL . $image->cPfad);
-                    @\unlink(\PFAD_ROOT . \PFAD_PRODUKTBILDER_GROSS . $image->cPfad);
+                if (isset($data->nCount) && $data->nCount < 2) {
+                    $this->deleteImageFiles($image->cPfad);
                 }
             } else {
                 // Reorder linked images because master imagelink will be deleted
@@ -291,6 +282,25 @@ abstract class AbstractSync
             $this->db->delete('tartikelpict', 'kArtikelPict', (int)$image->kArtikelPict);
         }
         $this->cache->flushTags([\CACHING_GROUP_ARTICLE . '_' . $productID]);
+    }
+
+    /**
+     * @param string $path
+     */
+    private function deleteImageFiles(string $path): void
+    {
+        $files = [
+            \PFAD_ROOT . \PFAD_PRODUKTBILDER_MINI . $path,
+            \PFAD_ROOT . \PFAD_PRODUKTBILDER_KLEIN . $path,
+            \PFAD_ROOT . \PFAD_PRODUKTBILDER_NORMAL . $path,
+            \PFAD_ROOT . \PFAD_PRODUKTBILDER_GROSS . $path,
+            \PFAD_ROOT . \PFAD_MEDIA_IMAGE_STORAGE . $path
+        ];
+        foreach ($files as $file) {
+            if (\file_exists($file)) {
+                @\unlink($file);
+            }
+        }
     }
 
     /**
@@ -667,12 +677,12 @@ abstract class AbstractSync
     }
 
     /**
-     * @param int $kKunde
+     * @param int $customerID
      * @return bool|int
      */
-    protected function flushCustomerPriceCache(int $kKunde)
+    protected function flushCustomerPriceCache(int $customerID)
     {
-        return $this->cache->flush('custprice_' . $kKunde);
+        return $this->cache->flush('custprice_' . $customerID);
     }
 
     /**
@@ -711,7 +721,7 @@ abstract class AbstractSync
             }
         } else {
             $seo = $this->db->selectAll('tseo', ['kKey', 'cKey'], [$keyValue, $keyName]);
-            if (\is_array($seo) && \count($seo) > 0) {
+            if (\count($seo) > 0) {
                 if ($assoc !== null && \strlen($assoc) > 0) {
                     $seoData = [];
                     foreach ($seo as $oSeo) {

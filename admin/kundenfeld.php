@@ -23,7 +23,7 @@ $alertHelper = Shop::Container()->getAlertService();
 
 setzeSprache();
 
-$smarty->assign('cTab', $cStep ?? null);
+$smarty->assign('cTab', $step ?? null);
 if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
     $smarty->assign('cTab', Request::verifyGPDataString('tab'));
 }
@@ -39,8 +39,8 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
     if (isset($_POST['loeschen'])) {
         $fieldIDs = $_POST['kKundenfeld'];
         if (is_array($fieldIDs) && count($fieldIDs) > 0) {
-            foreach ($fieldIDs as $kKundenfeld) {
-                $success = $success && $cf->delete((int)$kKundenfeld);
+            foreach ($fieldIDs as $fieldID) {
+                $success = $success && $cf->delete((int)$fieldID);
             }
             if ($success) {
                 $alertHelper->addAlert(
@@ -119,9 +119,9 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
         }
     }
 } elseif (Request::verifyGPDataString('a') === 'edit') {
-    $kKundenfeld = Request::verifyGPCDataInt('kKundenfeld');
-    if ($kKundenfeld > 0) {
-        $customerField = $cf->getCustomerField($kKundenfeld);
+    $fieldID = Request::verifyGPCDataInt('kKundenfeld');
+    if ($fieldID > 0) {
+        $customerField = $cf->getCustomerField($fieldID);
 
         if ($customerField !== null) {
             $customerField->oKundenfeldWert_arr = $cf->getCustomerFieldValues($customerField);

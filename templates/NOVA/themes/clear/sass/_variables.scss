@@ -152,21 +152,33 @@ $breadcrumb-bg:                     transparent;
 $breadcrumb-divider-color:          $gray-dark;
 $breadcrumb-active-color:           $gray-dark;
 
+$tap-target-size:                   44px;
+$tap-target-size-sm:                36px;
+
 //BESTSELLER, 1
 $ribbon-bg-1:                       #eeb728;
+$ribbon-color-1:                    #fff;
 //SPECIALOFFERS, 2
 $ribbon-bg-2:                       #4bc223;
+$ribbon-color-2:                    #fff;
 //NEWPRODUCTS, 3
 $ribbon-bg-3:                       #525252;
+$ribbon-color-3:                    #fff;
 //TOPOFFERS, 4
 $ribbon-bg-4:                       #c3ebe6;
+$ribbon-color-4:                    $gray-dark;
 //UPCOMINGPRODUCTS, 5
 $ribbon-bg-5:                       #b9056f;
+$ribbon-color-5:                    #fff;
 //TOPREVIEWS, 6
 $ribbon-bg-6:                       #ebebeb;
+$ribbon-color-6:                    $gray-dark;
 //OUTOFSTOCK, 7
 $ribbon-bg-7:                       #b9080e;
+$ribbon-color-7:                    #fff;
 //ONSTOCK, 8
 $ribbon-bg-8:                       #11926b;
+$ribbon-color-8:                    #fff;
 //PREORDER, 9
 $ribbon-bg-9:                       #f78e26;
+$ribbon-color-9:                    #fff;

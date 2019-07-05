@@ -257,7 +257,7 @@ class Notification implements IteratorAggregate, Countable
             $this->add(
                 NotificationEntry::TYPE_WARNING,
                 __('getDuplicateLinkGroupTemplateNamesTitle'),
-                sprintf(
+                \sprintf(
                     __('getDuplicateLinkGroupTemplateNamesMessage'),
                     \implode(', ', pluck($status->getDuplicateLinkGroupTemplateNames(), 'cName'))
                 ),

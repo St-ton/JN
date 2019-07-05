@@ -162,7 +162,7 @@ class PageService
                 $pageData      = $this->getPreviewPageData();
                 $this->curPage = $this->createPageFromData($pageData);
             } else {
-                $curPageUrl    = '/' . \ltrim(Shop::getRequestUri(), '/');
+                $curPageUrl    = $this->getCurPageUri();
                 $curPageId     = $this->createCurrentPageId();
                 $this->curPage = $this->getPublicPage($curPageId) ?? new Page();
                 $this->curPage->setId($curPageId);
@@ -171,6 +171,46 @@ class PageService
         }
 
         return $this->curPage;
+    }
+
+    /**
+     * @param int $langId
+     * @return string
+     */
+    public function getCurPageUri(int $langId = 0)
+    {
+        if ($langId > 0) {
+            $languages = $_SESSION['Sprachen'];
+            foreach ($languages as $language) {
+                if ($language->id === $langId) {
+                    $uri = $language->url;
+                    break;
+                }
+            }
+        } else {
+            $uri = $_SERVER['HTTP_X_REWRITE_URL'] ?? $_SERVER['REQUEST_URI'];
+        }
+
+        $shopURLdata = \parse_url(Shop::getURL());
+        $baseURLdata = \parse_url($uri);
+
+        if (empty($shopURLdata['path'])) {
+            $shopURLdata['path'] = '/';
+        }
+
+        if (!isset($baseURLdata['path'])) {
+            return '/';
+        }
+
+        $result = \mb_substr($baseURLdata['path'], \mb_strlen($shopURLdata['path']));
+
+        if (isset($baseURLdata['query'])) {
+            $result .= '?' . $baseURLdata['query'];
+        }
+
+        $result = '/' . \ltrim($result, '/');
+
+        return $result;
     }
 
     /**
@@ -185,7 +225,7 @@ class PageService
     /**
      * @return string
      */
-    public function createCurrentPageId(): string
+    public function createCurrentPageId(int $langId = 0): string
     {
         $res              = '';
         $params           = (object)Shop::getParameters();
@@ -203,8 +243,6 @@ class PageService
             $res .= 'link:' . $params->kLink;
         } elseif ($params->kMerkmalWert > 0) {
             $res .= 'attrib:' . $params->kMerkmalWert;
-        } elseif ($params->kTag > 0) {
-            $res .= 'tag:' . $params->kTag;
         } elseif ($params->kSuchspecial > 0) {
             $res .= 'special:' . $params->kSuchspecial;
         } elseif ($params->kNews > 0) {
@@ -226,7 +264,7 @@ class PageService
             $res .= ';range:' . $params->cPreisspannenFilter;
         }
 
-        $res .= ';lang:' . $params->kSprache;
+        $res .= ';lang:' . ($langId > 0 ? $langId : $params->kSprache);
 
         return $res;
     }
@@ -239,13 +277,15 @@ class PageService
     public function getDrafts(string $id): array
     {
         if ($this->opc->isOPCInstalled()) {
-            $drafts = $this->pageDB->getDrafts($id);
-            usort($drafts, function ($a, $b) {
+            $drafts         = $this->pageDB->getDrafts($id);
+            $publicDraft    = $this->getPublicPage($id);
+            $publicDraftKey = $publicDraft === null ? 0 : $publicDraft->getKey();
+            usort($drafts, function ($a, $b) use ($publicDraftKey) {
                 /**
                  * @var Page $a
                  * @var Page $b
                  */
-                return $a->getStatus() - $b->getStatus();
+                return $a->getStatus($publicDraftKey) - $b->getStatus($publicDraftKey);
             });
             return $drafts;
         }

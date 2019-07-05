@@ -239,18 +239,18 @@ class Form
      */
     public static function checkSubject(): bool
     {
-        $kKundengruppe = Frontend::getCustomerGroup()->getID();
-        if (!$kKundengruppe) {
-            $kKundengruppe = (int)$_SESSION['Kunde']->kKundengruppe;
-            if (!$kKundengruppe) {
-                $kKundengruppe = Kundengruppe::getDefaultGroupID();
+        $customerGroupID = Frontend::getCustomerGroup()->getID();
+        if (!$customerGroupID) {
+            $customerGroupID = (int)$_SESSION['Kunde']->kKundengruppe;
+            if (!$customerGroupID) {
+                $customerGroupID = Kundengruppe::getDefaultGroupID();
             }
         }
 
         $subjects = Shop::Container()->getDB()->query(
             "SELECT kKontaktBetreff
                 FROM tkontaktbetreff
-                WHERE FIND_IN_SET('" . $kKundengruppe . "', REPLACE(cKundengruppen, ';', ',')) > 0
+                WHERE FIND_IN_SET('" . $customerGroupID . "', REPLACE(cKundengruppen, ';', ',')) > 0
                     OR cKundengruppen = '0'",
             ReturnType::ARRAY_OF_OBJECTS
         );

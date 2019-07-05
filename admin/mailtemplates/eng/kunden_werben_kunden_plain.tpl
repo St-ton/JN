@@ -4,9 +4,9 @@ Hello {$Kunde->cVorname},
 
 Please find attached a voucher worth {$Neukunde->fGuthaben} for {$Firma->cName}.
 
-By the way, I'm recommending you as part of {$Firma->cName}'s customer recommendation program.
+By the way, I'm inviting you as part of the customer referral programme by {$Firma->cName}.
 
-Yours sincerely,
+Kind regards,
 {$Bestandskunde->cVorname} {$Bestandskunde->cNachname}
 
 {includeMailTemplate template=footer type=plain}

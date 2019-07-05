@@ -208,37 +208,37 @@ function getRemoteDataIO($url, $dataName, $tpl, $wrapperID, $post = null, $callb
     $urlsToCache = ['oNews_arr', 'oMarketplace_arr', 'oMarketplaceUpdates_arr', 'oPatch_arr', 'oDuk', 'oHelp_arr'];
     if (in_array($dataName, $urlsToCache, true)) {
         $cacheID = str_replace('/', '_', $dataName . '_' . $tpl . '_' . md5($wrapperID . $url));
-        if (($cData = Shop::Container()->getCache()->get($cacheID)) === false) {
-            $cData = Request::http_get_contents($url, 15, $post);
-            Shop::Container()->getCache()->set($cacheID, $cData, [CACHING_GROUP_OBJECT], 3600);
+        if (($remoteData = Shop::Container()->getCache()->get($cacheID)) === false) {
+            $remoteData = Request::http_get_contents($url, 15, $post);
+            Shop::Container()->getCache()->set($cacheID, $remoteData, [CACHING_GROUP_OBJECT], 3600);
         }
     } else {
-        $cData = Request::http_get_contents($url, 15, $post);
+        $remoteData = Request::http_get_contents($url, 15, $post);
     }
 
-    if (mb_strpos($cData, '<?xml') === 0) {
-        $data = simplexml_load_string($cData);
+    if (mb_strpos($remoteData, '<?xml') === 0) {
+        $data = simplexml_load_string($remoteData);
     } else {
-        $data = json_decode($cData);
+        $data = json_decode($remoteData);
     }
     $data    = $decodeUTF8 ? Text::utf8_convert_recursive($data) : $data;
     $wrapper = Shop::Smarty()->assign($dataName, $data)->fetch('tpl_inc/' . $tpl);
     $response->assign($wrapperID, 'innerHTML', $wrapper);
 
     if ($callback !== null) {
-        $response->script("if(typeof {$callback} === 'function') {$callback}({$cData});");
+        $response->script("if(typeof {$callback} === 'function') {$callback}({$remoteData});");
     }
 
     return $response;
 }
 
 /**
- * @param string $cTpl
- * @param string $cWrapperID
+ * @param string $tpl
+ * @param string $wrapperID
  * @return IOResponse
  * @throws SmartyException
  */
-function getShopInfoIO($cTpl, $cWrapperID)
+function getShopInfoIO($tpl, $wrapperID)
 {
     Shop::Container()->getGetText()->loadAdminLocale('widgets');
 
@@ -249,14 +249,14 @@ function getShopInfoIO($cTpl, $cWrapperID)
         ? sprintf('%d.%02d', $oLatestVersion->getMajor(), $oLatestVersion->getMinor())
         : null;
 
-    $cWrapper = Shop::Smarty()
+    $wrapper = Shop::Smarty()
         ->assign('oSubscription', $api->getSubscription())
         ->assign('oVersion', $oLatestVersion)
         ->assign('strLatestVersion', $strLatestVersion)
         ->assign('bUpdateAvailable', $api->hasNewerVersion())
-        ->fetch('tpl_inc/' . $cTpl);
+        ->fetch('tpl_inc/' . $tpl);
 
-    return $response->assign($cWrapperID, 'innerHTML', $cWrapper);
+    return $response->assign($wrapperID, 'innerHTML', $wrapper);
 }
 
 /**

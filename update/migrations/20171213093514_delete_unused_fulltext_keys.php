@@ -20,14 +20,14 @@ class Migration_20171213093514 extends Migration implements IMigration
     public function up()
     {
         foreach (['tartikel', 'tartikelsprache'] as $table) {
-            $oKeys = $this->fetchAll(
+            $keys = $this->fetchAll(
                 "SHOW INDEX FROM `{$table}` 
                     WHERE Index_type = 'FULLTEXT' 
 	                    AND Column_name IN ('cBeschreibung', 'cKurzBeschreibung')
                         AND Key_name != 'idx_{$table}_fulltext'"
             );
-            if (is_array($oKeys)) {
-                foreach ($oKeys as $key) {
+            if (is_array($keys)) {
+                foreach ($keys as $key) {
                     $this->execute("ALTER TABLE $table DROP KEY {$key->Key_name}");
                 }
             }

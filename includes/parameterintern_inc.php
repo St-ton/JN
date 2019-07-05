@@ -15,7 +15,6 @@ $kLink                 = Request::verifyGPCDataInt('s');
 $kHersteller           = Request::verifyGPCDataInt('h');
 $kSuchanfrage          = Request::verifyGPCDataInt('l');
 $kMerkmalWert          = Request::verifyGPCDataInt('m');
-$kTag                  = Request::verifyGPCDataInt('t');
 $kSuchspecial          = Request::verifyGPCDataInt('q');
 $kNews                 = Request::verifyGPCDataInt('n');
 $kNewsMonatsUebersicht = Request::verifyGPCDataInt('nm');

@@ -13,7 +13,7 @@ Your order with the order number {$Bestellung->cBestellNr} consists of the follo
                 {if $Position->nPosTyp == 1}
                     <strong>{$Position->cName} ({$Position->cArtNr})</strong>
                     {if $Einstellungen.kaufabwicklung.bestellvorgang_lieferstatus_anzeigen === 'Y' && $Position->cLieferstatus}
-                        <br><small>Shipping time: {$Position->cLieferstatus}</small>
+                        <br><small>Delivery time: {$Position->cLieferstatus}</small>
                     {/if}<br>
                     {foreach $Position->WarenkorbPosEigenschaftArr as $WKPosEigenschaft}
                         <br><strong>{$WKPosEigenschaft->cEigenschaftName}</strong>: {$WKPosEigenschaft->cEigenschaftWertName}
@@ -26,12 +26,12 @@ Your order with the order number {$Bestellung->cBestellNr} consists of the follo
 
                     {* MHD *}
                     {if $Position->dMHD|strlen > 0}
-                        <br>Best before: {$Position->dMHD_de}
+                        <br>Shelf life expiration date: {$Position->dMHD_de}
                     {/if}
 
                     {* Charge *}
                     {if $Position->cChargeNr|strlen > 0}
-                        <br>Charge: {$Position->cChargeNr}
+                        <br>Batch: {$Position->cChargeNr}
                     {/if}
                 {else}
                     <strong>{$Position->cName}</strong>
@@ -122,7 +122,7 @@ Your order with the order number {$Bestellung->cBestellNr} consists of the follo
                 <tr>
                     <td>
                         <font color="#313131" face="Helvetica, Arial, sans-serif" size="3" style="color: #313131; font-family: Helvetica, Arial, sans-serif; font-size: 15px; line-height: 18px;">
-                            <strong>Tel:</strong>
+                            <strong>Phone:</strong>
                         </font>
                     </td>
                 </tr>
@@ -254,7 +254,7 @@ Your order with the order number {$Bestellung->cBestellNr} consists of the follo
     </tr>
 </table><br>
 {if !empty($Bestellung->Lieferadresse->kLieferadresse)}
-    <strong>Your shipping address:</strong><br>
+    <strong>Your delivery address:</strong><br>
     <br>
     <table cellpadding="0" cellspacing="0" border="0" width="100%" style="border-bottom: 1px dotted #929292;">
         <tr>
@@ -400,8 +400,10 @@ Your order with the order number {$Bestellung->cBestellNr} consists of the follo
             </td>
         </tr>
     </table><br>
+{else}
+    Delivery address same as billing address.<br><br>
 {/if}
-You have chosen the following shipping option: {$Bestellung->cZahlungsartName}<br>
+You have chosen the following payment option: {$Bestellung->cZahlungsartName}<br>
 <br>
 {if $Bestellung->Zahlungsart->cModulId === 'za_rechnung_jtl'}
 {elseif $Bestellung->Zahlungsart->cModulId === 'za_lastschrift_jtl'}
@@ -414,7 +416,7 @@ You have chosen the following shipping option: {$Bestellung->cZahlungsartName}<b
     <br>
 {/if}
 <br>
-You will be notified of the subsequent status of your order separately.
+You will be notified of the status of your order separately.
 
 <br>
 <br>

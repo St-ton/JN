@@ -47,7 +47,7 @@ function getDBStruct(bool $extended = false, bool $clearCache = false)
                 ? Shop::Container()->getCache()->get($cacheID)
                 : Backend::get($cacheID, false);
         }
-        $cDBStruct_arr =& $dbStruct['extended'];
+        $dbStructure =& $dbStruct['extended'];
 
         if (version_compare($mysqlVersion->innodb->version, '5.6', '>=')) {
             $dbStatus = $db->queryPrepared(
@@ -71,11 +71,11 @@ function getDBStruct(bool $extended = false, bool $clearCache = false)
                 ? Shop::Container()->getCache()->get($cacheID)
                 : Backend::get($cacheID);
         }
-        $cDBStruct_arr =& $dbStruct['normal'];
+        $dbStructure =& $dbStruct['normal'];
     }
 
-    if ($cDBStruct_arr === false) {
-        $oData_arr = $db->queryPrepared(
+    if ($dbStructure === false) {
+        $dbData = $db->queryPrepared(
             "SELECT t.`TABLE_NAME`, t.`ENGINE`, `TABLE_COLLATION`, t.`TABLE_ROWS`, t.`TABLE_COMMENT`,
                     t.`DATA_LENGTH` + t.`INDEX_LENGTH` AS DATA_SIZE,
                     COUNT(c.COLUMN_NAME) TEXT_FIELDS,
@@ -94,24 +94,23 @@ function getDBStruct(bool $extended = false, bool $clearCache = false)
             ReturnType::ARRAY_OF_OBJECTS
         );
 
-        foreach ($oData_arr as $oData) {
-            $cTable = $oData->TABLE_NAME;
-
+        foreach ($dbData as $data) {
+            $table = $data->TABLE_NAME;
             if ($extended) {
-                $cDBStruct_arr[$cTable]            = $oData;
-                $cDBStruct_arr[$cTable]->Columns   = [];
-                $cDBStruct_arr[$cTable]->Migration = DBMigrationHelper::MIGRATE_NONE;
+                $dbStructure[$table]            = $data;
+                $dbStructure[$table]->Columns   = [];
+                $dbStructure[$table]->Migration = DBMigrationHelper::MIGRATE_NONE;
 
                 if (version_compare($mysqlVersion->innodb->version, '5.6', '<')) {
-                    $cDBStruct_arr[$cTable]->Locked = mb_strpos($oData->TABLE_COMMENT, ':Migrating') !== false ? 1 : 0;
+                    $dbStructure[$table]->Locked = mb_strpos($data->TABLE_COMMENT, ':Migrating') !== false ? 1 : 0;
                 } else {
-                    $cDBStruct_arr[$cTable]->Locked = $dbLocked[$cTable] ?? 0;
+                    $dbStructure[$table]->Locked = $dbLocked[$table] ?? 0;
                 }
             } else {
-                $cDBStruct_arr[$cTable] = [];
+                $dbStructure[$table] = [];
             }
 
-            $oCol_arr = $db->queryPrepared(
+            $columns = $db->queryPrepared(
                 'SELECT `COLUMN_NAME`, `DATA_TYPE`, `COLUMN_TYPE`, `CHARACTER_SET_NAME`, `COLLATION_NAME`
                     FROM information_schema.COLUMNS
                     WHERE `TABLE_SCHEMA` = :schema
@@ -119,39 +118,39 @@ function getDBStruct(bool $extended = false, bool $clearCache = false)
                     ORDER BY `ORDINAL_POSITION`',
                 [
                     'schema' => $database,
-                    'table'  => $cTable
+                    'table'  => $table
                 ],
                 ReturnType::ARRAY_OF_OBJECTS
             );
-            if ($oCol_arr !== false) {
-                foreach ($oCol_arr as $oCol) {
+            if ($columns !== false) {
+                foreach ($columns as $column) {
                     if ($extended) {
-                        $cDBStruct_arr[$cTable]->Columns[$oCol->COLUMN_NAME] = $oCol;
+                        $dbStructure[$table]->Columns[$column->COLUMN_NAME] = $column;
                     } else {
-                        $cDBStruct_arr[$cTable][] = $oCol->COLUMN_NAME;
+                        $dbStructure[$table][] = $column->COLUMN_NAME;
                     }
                 }
             }
             if ($extended) {
-                $cDBStruct_arr[$cTable]->Migration = DBMigrationHelper::isTableNeedMigration($oData);
+                $dbStructure[$table]->Migration = DBMigrationHelper::isTableNeedMigration($data);
             }
         }
         if (Shop::Container()->getCache()->isActive()) {
             Shop::Container()->getCache()->set(
                 $cacheID,
-                $cDBStruct_arr,
+                $dbStructure,
                 [CACHING_GROUP_CORE, CACHING_GROUP_CORE . '_getDBStruct']
             );
         } else {
-            Backend::set($cacheID, $cDBStruct_arr);
+            Backend::set($cacheID, $dbStructure);
         }
     } elseif ($extended) {
-        foreach (array_keys($cDBStruct_arr) as $cTable) {
-            $cDBStruct_arr[$cTable]->Locked = $dbLocked[$cTable] ?? 0;
+        foreach (array_keys($dbStructure) as $table) {
+            $dbStructure[$table]->Locked = $dbLocked[$table] ?? 0;
         }
     }
 
-    return $cDBStruct_arr;
+    return $dbStructure;
 }
 
 /**
@@ -319,24 +318,23 @@ function doEngineUpdateScript(string $fileName, array $shopTables)
     $result .= '-- ' . $nl;
     $result .= 'use `' . $database . '`;' . $nl;
 
-    $oTable_arr = DBMigrationHelper::getTablesNeedMigration();
-    foreach ($oTable_arr as $oTable) {
+    foreach (DBMigrationHelper::getTablesNeedMigration() as $table) {
         $fulltextSQL = [];
-        $migration   = DBMigrationHelper::isTableNeedMigration($oTable);
+        $migration   = DBMigrationHelper::isTableNeedMigration($table);
 
-        if (!in_array($oTable->TABLE_NAME, $shopTables, true)) {
+        if (!in_array($table->TABLE_NAME, $shopTables, true)) {
             continue;
         }
 
         if (version_compare($mysqlVer->innodb->version, '5.6', '<')) {
             // Fulltext indizes are not supported for innoDB on MySQL < 5.6
-            $fulltextIndizes = DBMigrationHelper::getFulltextIndizes($oTable->TABLE_NAME);
+            $fulltextIndizes = DBMigrationHelper::getFulltextIndizes($table->TABLE_NAME);
 
             if ($fulltextIndizes) {
                 $result .= "$nl--$nl";
                 $result .= "-- remove fulltext indizes because there is no support for innoDB on MySQL < 5.6 $nl";
                 foreach ($fulltextIndizes as $fulltextIndex) {
-                    $fulltextSQL[] = "ALTER TABLE `{$oTable->TABLE_NAME}` DROP KEY `{$fulltextIndex->INDEX_NAME}`";
+                    $fulltextSQL[] = "ALTER TABLE `{$table->TABLE_NAME}` DROP KEY `{$fulltextIndex->INDEX_NAME}`";
                 }
             }
         }
@@ -344,11 +342,11 @@ function doEngineUpdateScript(string $fileName, array $shopTables)
         if (($migration & DBMigrationHelper::MIGRATE_TABLE) !== DBMigrationHelper::MIGRATE_NONE) {
             $result .= "$nl--$nl";
             if (($migration & DBMigrationHelper::MIGRATE_TABLE) === DBMigrationHelper::MIGRATE_TABLE) {
-                $result .= "-- migrate engine and collation for {$oTable->TABLE_NAME}$nl";
+                $result .= "-- migrate engine and collation for {$table->TABLE_NAME}$nl";
             } elseif (($migration & DBMigrationHelper::MIGRATE_INNODB) === DBMigrationHelper::MIGRATE_INNODB) {
-                $result .= "-- migrate engine for {$oTable->TABLE_NAME}$nl";
+                $result .= "-- migrate engine for {$table->TABLE_NAME}$nl";
             } elseif (($migration & DBMigrationHelper::MIGRATE_UTF8) === DBMigrationHelper::MIGRATE_UTF8) {
-                $result .= "-- migrate collation for {$oTable->TABLE_NAME}$nl";
+                $result .= "-- migrate collation for {$table->TABLE_NAME}$nl";
             }
         } else {
             $result .= $nl;
@@ -358,16 +356,16 @@ function doEngineUpdateScript(string $fileName, array $shopTables)
             $result .= implode(';' . $nl, $fulltextSQL) . ';' . $nl;
         }
 
-        $sql = DBMigrationHelper::sqlMoveToInnoDB($oTable);
+        $sql = DBMigrationHelper::sqlMoveToInnoDB($table);
         if (!empty($sql)) {
             $result .= '--' . $nl;
             $result .= $sql . ';' . $nl;
         }
 
-        $sql = DBMigrationHelper::sqlConvertUTF8($oTable, $nl);
+        $sql = DBMigrationHelper::sqlConvertUTF8($table, $nl);
         if (!empty($sql)) {
             $result .= '--' . $nl;
-            $result .= '-- migrate collation and / or datatype for columns in ' . $oTable->TABLE_NAME . $nl;
+            $result .= '-- migrate collation and / or datatype for columns in ' . $table->TABLE_NAME . $nl;
             $result .= '--' . $nl;
             $result .= $sql . ';' . $nl;
         }

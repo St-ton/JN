@@ -4,9 +4,9 @@
 
 <script src="{$currentTemplateDir}js/slider.js" type="text/javascript"></script>
 <div id="content" class="container-fluid">
-    {if $cAction === 'new' || $cAction === 'edit' }
+    {if $action === 'new' || $action === 'edit' }
         {include file='tpl_inc/slider_form.tpl'}
-    {elseif $cAction === 'slides'}
+    {elseif $action === 'slides'}
         {include file='tpl_inc/slider_slide_form.tpl'}
     {else}
         <div id="settings">
@@ -16,7 +16,7 @@
                         <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                     </div>
                 {else}
-                    {include file='tpl_inc/pagination.tpl' oPagination=$pagination}
+                    {include file='tpl_inc/pagination.tpl' pagination=$pagination}
                     <div class="panel-heading">
                         <h3 class="panel-title">{__('slider')}</h3>
                     </div>

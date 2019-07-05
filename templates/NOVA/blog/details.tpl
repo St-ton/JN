@@ -107,8 +107,7 @@
                                     {/block}
                                 {/block}
                             {/if}
-
-                            {if ($Einstellungen.news.news_kommentare_eingeloggt === 'Y' && !empty($smarty.session.Kunde->kKunde)) || $Einstellungen.news.news_kommentare_eingeloggt !== 'Y'}
+                            {if $userCanComment === true}
                                 {block name='blog-details-form-comment'}
                                     <hr>
                                     {row}
@@ -121,86 +120,25 @@
                                                     {input type="hidden" name="n" value=$oNewsArchiv->getID()}
 
                                                     {formgroup}
-                                                        {if $Einstellungen.news.news_kommentare_eingeloggt === 'N'}
-                                                            {block name='blog-details-form-comment-not-logged-in'}
-                                                                {if empty($smarty.session.Kunde->kKunde)}
-                                                                    {block name='blog-details-form-comment-not-logged-in-name'}
-                                                                    {row}
-                                                                        {col cols=12 md=6}
-                                                                            {include file='snippets/form_group_simple.tpl'
-                                                                                options=[
-                                                                                    'text', 'comment-name', 'cName',
-                                                                                    {$cPostVar_arr.cName|default:null}, {lang key='newsName' section='news'},
-                                                                                    true
-                                                                                ]
-                                                                            }
-                                                                        {/col}
-                                                                        {col cols=12 md=6}
-                                                                            {include file='snippets/form_group_simple.tpl'
-                                                                                options=[
-                                                                                    'email', 'comment-email', 'cEmail',
-                                                                                    {$cPostVar_arr.cEmail|default:null}, {lang key='newsEmail' section='news'},
-                                                                                    true
-                                                                                ]
-                                                                            }
-                                                                        {/col}
-                                                                    {/row}
-                                                                    {/block}
+                                                        {block name='blog-details-form-comment-logged-in'}
+                                                            {formgroup
+                                                                id="commentText"
+                                                                class="{if $nPlausiValue_arr.cKommentar > 0} has-error{/if}"
+                                                                label="<strong>{lang key='newsComment' section='news'}</strong>"
+                                                                label-for="comment-text"
+                                                                label-class="commentForm"
+                                                            }
+                                                                {textarea id="comment-text" name="cKommentar" required=true}{/textarea}
+                                                                {if $nPlausiValue_arr.cKommentar > 0}
+                                                                    <div class="form-error-msg text-danger"><i class="fas fa-exclamation-triangle"></i>
+                                                                        {lang key='fillOut' section='global'}
+                                                                    </div>
                                                                 {/if}
-                                                                {block name='blog-details-form-comment-not-logged-in-textarea'}
-                                                                    {formgroup
-                                                                        id="commentText"
-                                                                        class="{if $nPlausiValue_arr.cKommentar > 0} has-error{/if}"
-                                                                        label="{lang key='newsComment' section='news'}"
-                                                                        label-form="comment-text"
-                                                                        label-class="commentForm"
-                                                                    }
-                                                                        {textarea id="comment-text" required=true name="cKommentar"}{if !empty($cPostVar_arr.cKommentar)}{$cPostVar_arr.cKommentar}{/if}{/textarea}
-                                                                        {if $nPlausiValue_arr.cKommentar > 0}
-                                                                            <div class="form-error-msg text-danger"><i class="fas fa-exclamation-triangle"></i>
-                                                                                {lang key='fillOut' section='global'}
-                                                                            </div>
-                                                                        {/if}
-                                                                    {/formgroup}
-                                                                {/block}
-                                                                {if (!isset($smarty.session.bAnti_spam_already_checked) || $smarty.session.bAnti_spam_already_checked !== true)
-                                                                    && isset($Einstellungen.news.news_sicherheitscode)
-                                                                    && $Einstellungen.news.news_sicherheitscode !== 'N'
-                                                                    && empty($smarty.session.Kunde->kKunde)
-                                                                }
-                                                                    {block name='blog-details-form-comment-not-logged-in-captcha'}
-                                                                        <div class="form-group{if !empty($nPlausiValue_arr.captcha)} has-error{/if}">
-                                                                            {captchaMarkup getBody=true}
-                                                                        </div>
-                                                                    {/block}
-                                                                {/if}
-                                                                {block name='blog-details-form-comment-not-logged-in-name-submit'}
-                                                                    {button type="submit" name="speichern" value="1" variant="primary"}
-                                                                        {lang key='newsCommentSave' section='news'}
-                                                                    {/button}
-                                                                {/block}
-                                                            {/block}
-                                                        {elseif $Einstellungen.news.news_kommentare_eingeloggt === 'Y' && !empty($smarty.session.Kunde->kKunde)}
-                                                            {block name='blog-details-form-comment-logged-in'}
-                                                                {formgroup
-                                                                    id="commentText"
-                                                                    class="{if $nPlausiValue_arr.cKommentar > 0} has-error{/if}"
-                                                                    label="<strong>{lang key='newsComment' section='news'}</strong>"
-                                                                    label-for="comment-text"
-                                                                    label-class="commentForm"
-                                                                }
-                                                                    {textarea id="comment-text" name="cKommentar" required=true}{/textarea}
-                                                                    {if $nPlausiValue_arr.cKommentar > 0}
-                                                                        <div class="form-error-msg text-danger"><i class="fas fa-exclamation-triangle"></i>
-                                                                            {lang key='fillOut' section='global'}
-                                                                        </div>
-                                                                    {/if}
-                                                                {/formgroup}
-                                                                {button variant="primary" name="speichern" type="submit" class="float-right"}
-                                                                    {lang key='newsCommentSave' section='news'}
-                                                                {/button}
-                                                            {/block}
-                                                        {/if}
+                                                            {/formgroup}
+                                                            {button variant="primary" name="speichern" type="submit" class="float-right"}
+                                                                {lang key='newsCommentSave' section='news'}
+                                                            {/button}
+                                                        {/block}
                                                     {/formgroup}
                                                 {/form}
                                             {/card}

@@ -11,7 +11,7 @@ require_once __DIR__ . '/includes/plz_ort_import_inc.php';
 
 $oAccount->permission('PLZ_ORT_IMPORT_VIEW', true, true);
 
-$cAction  = 'index';
+$action   = 'index';
 $messages = [
     'notice' => '',
     'error'  => '',

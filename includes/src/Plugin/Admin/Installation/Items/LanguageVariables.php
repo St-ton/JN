@@ -6,6 +6,7 @@
 
 namespace JTL\Plugin\Admin\Installation\Items;
 
+use JTL\Helpers\GeneralObject;
 use JTL\Language\LanguageHelper;
 use JTL\Plugin\InstallCode;
 use stdClass;
@@ -39,7 +40,7 @@ class LanguageVariables extends AbstractItem
             $pluginLangVar          = new stdClass();
             $pluginLangVar->kPlugin = $this->plugin->kPlugin;
             $pluginLangVar->cName   = $langVar['Name'];
-            if (isset($langVar['Description']) && \is_array($langVar['Description'])) {
+            if (GeneralObject::isCountable('Description', $langVar)) {
                 $pluginLangVar->cBeschreibung = '';
             } else {
                 $pluginLangVar->cBeschreibung = \preg_replace('/\s+/', ' ', $langVar['Description']);
@@ -51,13 +52,10 @@ class LanguageVariables extends AbstractItem
             // Ist der erste Standard Link gesetzt worden? => wird etwas weiter unten gebraucht
             // Falls Shopsprachen vom Plugin nicht berücksichtigt wurden, werden diese weiter unten
             // nachgetragen. Dafür wird die erste Sprache vom Plugin als Standard genutzt.
-            $bVariableStandard   = false;
-            $oVariableSpracheStd = new stdClass();
+            $isDefault  = false;
+            $defaultVar = new stdClass();
             // Nur eine Sprache vorhanden
-            if (isset($langVar['VariableLocalized attr'])
-                && \is_array($langVar['VariableLocalized attr'])
-                && \count($langVar['VariableLocalized attr']) > 0
-            ) {
+            if (GeneralObject::hasCount('VariableLocalized attr', $langVar)) {
                 // tpluginsprachvariablesprache füllen
                 $localized                        = new stdClass();
                 $localized->kPluginSprachvariable = $id;
@@ -67,9 +65,9 @@ class LanguageVariables extends AbstractItem
                 $this->db->insert('tpluginsprachvariablesprache', $localized);
 
                 // Erste PluginSprachVariableSprache vom Plugin als Standard setzen
-                if (!$bVariableStandard) {
-                    $oVariableSpracheStd = $localized;
-                    $bVariableStandard   = true;
+                if (!$isDefault) {
+                    $defaultVar = $localized;
+                    $isDefault  = true;
                 }
 
                 if (isset($languages[\mb_convert_case($localized->cISO, \MB_CASE_LOWER)])) {
@@ -77,28 +75,25 @@ class LanguageVariables extends AbstractItem
                     unset($languages[\mb_convert_case($localized->cISO, \MB_CASE_LOWER)]);
                     $languages = \array_merge($languages);
                 }
-            } elseif (isset($langVar['VariableLocalized'])
-                && \is_array($langVar['VariableLocalized'])
-                && \count($langVar['VariableLocalized']) > 0
-            ) {
+            } elseif (GeneralObject::hasCount('VariableLocalized', $langVar)) {
                 foreach ($langVar['VariableLocalized'] as $i => $loc) {
                     $i = (string)$i;
                     \preg_match('/[0-9]+\sattr/', $i, $hits1);
 
                     if (isset($hits1[0]) && \mb_strlen($hits1[0]) === \mb_strlen($i)) {
-                        $cISO                             = $loc['iso'];
+                        $iso                              = $loc['iso'];
                         $yx                               = \mb_substr($i, 0, \mb_strpos($i, ' '));
-                        $cName                            = $langVar['VariableLocalized'][$yx];
+                        $name                             = $langVar['VariableLocalized'][$yx];
                         $localized                        = new stdClass();
                         $localized->kPluginSprachvariable = $id;
-                        $localized->cISO                  = $cISO;
-                        $localized->cName                 = \preg_replace('/\s+/', ' ', $cName);
+                        $localized->cISO                  = $iso;
+                        $localized->cName                 = \preg_replace('/\s+/', ' ', $name);
 
                         $this->db->insert('tpluginsprachvariablesprache', $localized);
                         // Erste PluginSprachVariableSprache vom Plugin als Standard setzen
-                        if (!$bVariableStandard) {
-                            $oVariableSpracheStd = $localized;
-                            $bVariableStandard   = true;
+                        if (!$isDefault) {
+                            $defaultVar = $localized;
+                            $isDefault  = true;
                         }
 
                         if (isset($languages[\mb_convert_case($localized->cISO, \MB_CASE_LOWER)])) {
@@ -108,9 +103,9 @@ class LanguageVariables extends AbstractItem
                     }
                 }
             }
-            foreach ($languages as $oSprachAssoc) {
-                $oVariableSpracheStd->cISO = \mb_convert_case($oSprachAssoc->cISO, \MB_CASE_UPPER);
-                if (!$this->db->insert('tpluginsprachvariablesprache', $oVariableSpracheStd)) {
+            foreach ($languages as $language) {
+                $defaultVar->cISO = \mb_convert_case($language->cISO, \MB_CASE_UPPER);
+                if (!$this->db->insert('tpluginsprachvariablesprache', $defaultVar)) {
                     return InstallCode::SQL_CANNOT_SAVE_LANG_VAR_LOCALIZATION;
                 }
             }

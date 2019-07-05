@@ -105,9 +105,9 @@ class KundenwerbenKunden
                 foreach (\array_keys(\get_object_vars($oKwK)) as $member) {
                     $this->$member = $oKwK->$member;
                 }
-                $oKundeTMP                = new Kunde();
+                $tmpCustomer              = new Kunde();
                 $this->fGuthabenLocalized = Preise::getLocalizedPriceString($this->fGuthaben);
-                $this->oNeukunde          = $oKundeTMP->holRegKundeViaEmail($this->cEmail);
+                $this->oNeukunde          = $tmpCustomer->holRegKundeViaEmail($this->cEmail);
                 $this->oBestandskunde     = new Kunde($this->kKunde);
             }
         }
@@ -133,23 +133,23 @@ class KundenwerbenKunden
     }
 
     /**
-     * @param int $kKunde
+     * @param int $customerID
      * @return null|stdClass
      */
-    public function insertBoniDB(int $kKunde): ?stdClass
+    public function insertBoniDB(int $customerID): ?stdClass
     {
-        if ($kKunde <= 0) {
+        if ($customerID <= 0) {
             return null;
         }
-        $conf                           = Shop::getSettings([\CONF_GLOBAL, \CONF_KUNDENWERBENKUNDEN]);
-        $kwkb                           = new stdClass();
-        $kwkb->kKunde                   = $kKunde;
-        $kwkb->fGuthaben                = (float)$conf['kundenwerbenkunden']['kwk_bestandskundenguthaben'];
-        $kwkb->nBonuspunkte             = 0;
-        $kwkb->dErhalten                = 'NOW()';
-        $kwkb->kKundenWerbenKundenBonus = Shop::Container()->getDB()->insert('tkundenwerbenkundenbonus', $kwkb);
+        $conf                          = Shop::getSettings([\CONF_GLOBAL, \CONF_KUNDENWERBENKUNDEN]);
+        $ins                           = new stdClass();
+        $ins->kKunde                   = $customerID;
+        $ins->fGuthaben                = (float)$conf['kundenwerbenkunden']['kwk_bestandskundenguthaben'];
+        $ins->nBonuspunkte             = 0;
+        $ins->dErhalten                = 'NOW()';
+        $ins->kKundenWerbenKundenBonus = Shop::Container()->getDB()->insert('tkundenwerbenkundenbonus', $ins);
 
-        return $kwkb;
+        return $ins;
     }
 
     /**
@@ -177,8 +177,8 @@ class KundenwerbenKunden
                 $guthaben             = (float)$conf['kundenwerbenkunden']['kwk_bestandskundenguthaben'];
                 $data                 = new stdClass();
                 $data->tkunde         = new Kunde($customer->kKunde);
-                $oKundeTMP            = new Kunde();
-                $data->oNeukunde      = $oKundeTMP->holRegKundeViaEmail($email);
+                $tmpCustomer          = new Kunde();
+                $data->oNeukunde      = $tmpCustomer->holRegKundeViaEmail($email);
                 $data->oBestandskunde = $data->tkunde;
                 $data->Einstellungen  = $conf;
                 // Update das Guthaben vom Bestandskunden
@@ -189,7 +189,7 @@ class KundenwerbenKunden
                     ReturnType::AFFECTED_ROWS
                 );
                 // in tkundenwerbenkundenboni eintragen
-                $oKundenWerbenKundenBoni = $this->insertBoniDB($customer->kKunde);
+                $bonus = $this->insertBoniDB($customer->kKunde);
                 // tkundenwerbenkunden updaten und hinterlegen, dass der Bestandskunde das Guthaben erhalten hat
                 Shop::Container()->getDB()->update(
                     'tkundenwerbenkunden',
@@ -198,10 +198,10 @@ class KundenwerbenKunden
                     (object)['nGuthabenVergeben' => 1]
                 );
 
-                $oKundenWerbenKundenBoni->fGuthaben = Preise::getLocalizedPriceString(
+                $bonus->fGuthaben         = Preise::getLocalizedPriceString(
                     (float)$conf['kundenwerbenkunden']['kwk_bestandskundenguthaben']
                 );
-                $data->BestandskundenBoni           = $oKundenWerbenKundenBoni;
+                $data->BestandskundenBoni = $bonus;
                 // verschicke Email an Bestandskunden
                 $mailer = Shop::Container()->get(Mailer::class);
                 $mail   = new Mail();

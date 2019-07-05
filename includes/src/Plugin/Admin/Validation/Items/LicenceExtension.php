@@ -8,7 +8,6 @@ namespace JTL\Plugin\Admin\Validation\Items;
 
 use JTL\Plugin\InstallCode;
 use JTL\Plugin\LicenseInterface;
-use JTL\Shop;
 
 /**
  * Class LicenceExtension

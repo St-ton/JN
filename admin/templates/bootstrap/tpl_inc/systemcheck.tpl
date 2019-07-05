@@ -1,6 +1,6 @@
 {function test_result}
     {if $test->getResult() === Systemcheck_Tests_Test::RESULT_OK}
-        <span class="hidden-xs">
+        <div class="hidden-xs">
             <h4 class="label-wrap"><span class="label label-success">
                 {$state = $test->getCurrentState()}
                 {if $state !== null && $state|strlen > 0}
@@ -9,15 +9,15 @@
                     <i class="fa fa-check" aria-hidden="true"></i>
                 {/if}
             </span></h4>
-        </span>
-        <span class="visible-xs">
-            <h4 class="label-wrap"><span class="label label-success">
-                <i class="fa fa-check" aria-hidden="true"></i>
-            </span></h4>
-        </span>
+        </div>
+        <div class="visible-xs">
+            <h4 class="label-wrap">
+                <span class="label label-success"> <i class="fa fa-check" aria-hidden="true"></i></span>
+            </h4>
+        </div>
     {elseif $test->getResult() === Systemcheck_Tests_Test::RESULT_FAILED}
         {if $test->getIsOptional()}
-            <span class="hidden-xs">
+            <div class="hidden-xs">
                 {if $test->getIsRecommended()}
                     {$state = $test->getCurrentState()}
                     <h4 class="label-wrap">
@@ -41,8 +41,8 @@
                         </span>
                     </h4>
                 {/if}
-            </span>
-            <span class="visible-xs">
+            </div>
+            <div class="visible-xs">
                 {if $test->getIsRecommended()}
                     <h4 class="label-wrap">
                         <span class="label label-warning">
@@ -54,9 +54,9 @@
                         <i class="fa fa-times" aria-hidden="true"></i>
                     </span></h4>
                 {/if}
-            </span>
+            </div>
         {else}
-            <span class="hidden-xs">
+            <div class="hidden-xs">
                 {$state = $test->getCurrentState()}
                 <h4 class="label-wrap">
                     <span class="label label-danger">
@@ -67,14 +67,14 @@
                         {/if}
                     </span>
                 </h4>
-            </span>
-            <span class="visible-xs">
+            </div>
+            <div class="visible-xs">
                 <h4 class="label-wrap">
                     <span class="label label-danger">
                         <i class="fa fa-times" aria-hidden="true"></i>
                     </span>
                 </h4>
-            </span>
+            </div>
         {/if}
     {/if}
 {/function}

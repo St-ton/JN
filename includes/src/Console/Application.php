@@ -21,7 +21,6 @@ use JTL\Plugin\Admin\Listing;
 use JTL\Plugin\Admin\ListingItem;
 use JTL\Plugin\Admin\Validation\LegacyPluginValidator;
 use JTL\Plugin\Admin\Validation\PluginValidator;
-use JTL\Plugin\PluginLoader;
 use JTL\Shop;
 use JTL\XMLParser;
 use Symfony\Component\Console\Application as BaseApplication;
@@ -33,8 +32,8 @@ use Symfony\Component\Finder\Finder;
 /**
  * Class Application
  * @property ConsoleIO io
- * @property bool devMode
- * @property bool isInstalled
+ * @property bool      devMode
+ * @property bool      isInstalled
  * @package JTL\Console
  */
 class Application extends BaseApplication
@@ -54,51 +53,59 @@ class Application extends BaseApplication
      */
     protected $isInstalled = false;
 
+    /**
+     * Application constructor.
+     */
     public function __construct()
     {
-        $this->devMode     = !empty(APPLICATION_BUILD_SHA) && APPLICATION_BUILD_SHA === '#DEV#' ?? false;
-        $this->isInstalled = defined('DB_HOST') && Shop::Container()->getDB()->isConnected();
+        $this->devMode     = !empty(\APPLICATION_BUILD_SHA) && \APPLICATION_BUILD_SHA === '#DEV#' ?? false;
+        $this->isInstalled = \defined('DB_HOST') && Shop::Container()->getDB()->isConnected();
 
-        parent::__construct('JTL-Shop', APPLICATION_VERSION.' - '.($this->devMode ? 'develop' : 'production'));
+        parent::__construct('JTL-Shop', \APPLICATION_VERSION . ' - ' . ($this->devMode ? 'develop' : 'production'));
     }
 
-    public function initPluginCommands()
+    /**
+     *
+     */
+    public function initPluginCommands(): void
     {
-        if ($this->isInstalled) {
-            $db              = Shop::Container()->getDB();
-            $cache           = Shop::Container()->getCache();
-            $parser          = new XMLParser();
-            $validator       = new LegacyPluginValidator($db, $parser);
-            $modernValidator = new PluginValidator($db, $parser);
-            $listing         = new Listing($db, $cache, $validator, $modernValidator);
-            $installed       = $listing->getInstalled();
-            $sorted          = $listing->getAll($installed);
-            $filteredPlugins = $sorted->filter(function (ListingItem $i) {
-                return $i->isShop5Compatible();
-            });
+        if (!$this->isInstalled) {
+            return;
+        }
+        $db              = Shop::Container()->getDB();
+        $cache           = Shop::Container()->getCache();
+        $parser          = new XMLParser();
+        $validator       = new LegacyPluginValidator($db, $parser);
+        $modernValidator = new PluginValidator($db, $parser);
+        $listing         = new Listing($db, $cache, $validator, $modernValidator);
+        $installed       = $listing->getInstalled();
+        $sorted          = $listing->getAll($installed);
+        $filteredPlugins = $sorted->filter(function (ListingItem $i) {
+            return $i->isShop5Compatible();
+        });
 
-            foreach ($filteredPlugins as $plugin) {
-                if (is_dir($plugin->getPath().'/Commands')) {
-                    $finder = Finder::create()
-                        ->ignoreVCS(false)
-                        ->ignoreDotFiles(false)
-                        ->in($plugin->getPath().'/Commands');
+        foreach ($filteredPlugins as $plugin) {
+            if (!\is_dir($plugin->getPath() . '/Commands')) {
+                continue;
+            }
+            $finder = Finder::create()
+                ->ignoreVCS(false)
+                ->ignoreDotFiles(false)
+                ->in($plugin->getPath() . '/Commands');
 
-                    foreach ($finder->files() as $file) {
-                        $class = sprintf(
-                            'Plugin\\%s\\Commands\\%s',
-                            $plugin->getDir(),
-                            str_replace('.'.$file->getExtension(), '', $file->getBasename())
-                        );
-                        if (!class_exists($class)) {
-                            throw new \RuntimeException("Class '".$class."' does not exist");
-                        }
-
-                        $command = new $class();
-                        $command->setName($plugin->getId().':'.$command->getName());
-                        $this->add($command);
-                    }
+            foreach ($finder->files() as $file) {
+                $class = \sprintf(
+                    'Plugin\\%s\\Commands\\%s',
+                    $plugin->getDir(),
+                    \str_replace('.' . $file->getExtension(), '', $file->getBasename())
+                );
+                if (!\class_exists($class)) {
+                    throw new \RuntimeException("Class '" . $class . "' does not exist");
                 }
+
+                $command = new $class();
+                $command->setName($plugin->getId() . ':' . $command->getName());
+                $this->add($command);
             }
         }
     }
@@ -110,9 +117,7 @@ class Application extends BaseApplication
     {
         $this->io = new ConsoleIO($input, $output, $this->getHelperSet());
 
-        $exitCode = parent::doRun($input, $output);
-
-        return $exitCode;
+        return parent::doRun($input, $output);
     }
 
     /**
@@ -123,6 +128,9 @@ class Application extends BaseApplication
         return $this->io;
     }
 
+    /**
+     * @inheritDoc
+     */
     protected function getDefaultCommands()
     {
         $cmds = parent::getDefaultCommands();
@@ -139,7 +147,7 @@ class Application extends BaseApplication
             if ($this->devMode) {
                 $cmds[] = new CreateCommand();
             }
-            if (PLUGIN_DEV_MODE) {
+            if (\defined('PLUGIN_DEV_MODE') && \PLUGIN_DEV_MODE) {
                 $cmds[] = new CreateMigrationCommand();
                 $cmds[] = new CreateCommandCommand();
             }
@@ -151,20 +159,20 @@ class Application extends BaseApplication
     }
 
     /**
-     * {@inheritdoc}
+     * @return array
      */
-    protected function createAdditionalStyles()
+    protected function createAdditionalStyles(): array
     {
         return [
-            'plain' => new OutputFormatterStyle(),
+            'plain'     => new OutputFormatterStyle(),
             'highlight' => new OutputFormatterStyle('red'),
-            'warning' => new OutputFormatterStyle('black', 'yellow'),
-            'verbose' => new OutputFormatterStyle('white', 'magenta'),
+            'warning'   => new OutputFormatterStyle('black', 'yellow'),
+            'verbose'   => new OutputFormatterStyle('white', 'magenta'),
 
-            'info_inverse' => new OutputFormatterStyle('white', 'blue'),
+            'info_inverse'    => new OutputFormatterStyle('white', 'blue'),
             'comment_inverse' => new OutputFormatterStyle('black', 'yellow'),
             'success_inverse' => new OutputFormatterStyle('black', 'green'),
-            'white_invert' => new OutputFormatterStyle('black', 'white'),
+            'white_invert'    => new OutputFormatterStyle('black', 'white'),
         ];
     }
 }

@@ -39,7 +39,6 @@
                         <select class="form-control" name="cSuchTyp" id="search_type">
                             <option value="Bewertung"{if isset($cSuchTyp) && $cSuchTyp === 'Bewertung'} selected{/if}>{__('reviews')}</option>
                             <option value="Livesuche"{if isset($cSuchTyp) && $cSuchTyp === 'Livesuche'} selected{/if}>{__('freischaltenLivesearch')}</option>
-                            <option value="Tag"{if isset($cSuchTyp) && $cSuchTyp === 'Tag'} selected{/if}>{__('tags')}</option>
                             <option value="Newskommentar"{if isset($cSuchTyp) && $cSuchTyp === 'Newskommentar'} selected{/if}>{__('freischaltenNewsComments')}</option>
                             <option value="Newsletterempfaenger"{if isset($cSuchTyp) && $cSuchTyp === 'Newsletterempfaenger'} selected{/if}>{__('freischaltenNewsletterReceiver')}</option>
                         </select>
@@ -68,9 +67,6 @@
         <li class="tab{if isset($cTab) && $cTab === 'livesearch'} active{/if}">
             <a data-toggle="tab" role="tab" href="#livesearch">{__('freischaltenLivesearch')} <span class="badge">{$oPagiSuchanfragen->getItemCount()}</span></a>
         </li>
-        <li class="tab{if isset($cTab) && $cTab === 'tags'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#tags">{__('tags')} <span class="badge">{$oPagiTags->getItemCount()}</span></a>
-        </li>
         <li class="tab{if isset($cTab) && $cTab === 'newscomments'} active{/if}">
             <a data-toggle="tab" role="tab" href="#newscomments">{__('freischaltenNewsComments')} <span class="badge">{$oPagiNewskommentare->getItemCount()}</span></a>
         </li>
@@ -81,7 +77,7 @@
     <div class="tab-content">
         <div id="bewertungen" class="tab-pane fade {if !isset($cTab) || empty($cTab) || $cTab === 'bewertungen'} active in{/if}">
             {if $oBewertung_arr|@count > 0 && $oBewertung_arr}
-                {include file='tpl_inc/pagination.tpl' oPagination=$oPagiBewertungen cAnchor='bewertungen'}
+                {include file='tpl_inc/pagination.tpl' pagination=$oPagiBewertungen cAnchor='bewertungen'}
                 <form method="post" action="freischalten.php">
                     {$jtl_token}
                     <input type="hidden" name="freischalten" value="1" />
@@ -153,7 +149,7 @@
         </div>
         <div id="livesearch" class="tab-pane fade {if isset($cTab) && $cTab === 'livesearch'} active in{/if}">
             {if $oSuchanfrage_arr|@count > 0 && $oSuchanfrage_arr}
-                {include file='tpl_inc/pagination.tpl' oPagination=$oPagiSuchanfragen cAnchor='livesearch'}
+                {include file='tpl_inc/pagination.tpl' pagination=$oPagiSuchanfragen cAnchor='livesearch'}
                 <div class="panel panel-default">
                     <form method="post" action="freischalten.php">
                         {$jtl_token}
@@ -222,60 +218,9 @@
                 <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
             {/if}
         </div>
-        <div id="tags" class="tab-pane fade {if isset($cTab) && $cTab === 'tags'} active in{/if}">
-            {if $oTag_arr|@count > 0}
-                {include file='tpl_inc/pagination.tpl' oPagination=$oPagiTags cAnchor='tags'}
-                <div class="panel panel-default">
-                    <form method="post" action="freischalten.php">
-                        {$jtl_token}
-                        <input type="hidden" name="freischalten" value="1" />
-                        <input type="hidden" name="tags" value="1" />
-                        <input type="hidden" name="tab" value="tags" />
-                        <div class="table-responsive">
-                            <table class="list table">
-                                <thead>
-                                    <tr>
-                                        <th class="check">&nbsp;</th>
-                                        <th class="tleft">{__('name')}</th>
-                                        <th>{__('product')}</th>
-                                        <th>{__('freischaltenTagsCount')}</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {foreach $oTag_arr as $oTag}
-                                        <tr>
-                                            <td class="check"><input name="kTag[]" type="checkbox" value="{$oTag->kTag}" /></td>
-                                            <td>{$oTag->cName}</td>
-                                            <td class="tcenter"><a href="{if isset($oTag->cArtikelSeo) && $oTag->cArtikelSeo|strlen > 0}{$shopURL}/{$oTag->cArtikelSeo}{else}{$shopURL}/index.php?a={$oTag->kArtikel}{/if}" target="_blank">{$oTag->cArtikelName}</a></td>
-                                            <td class="tcenter">{$oTag->Anzahl}</td>
-                                        </tr>
-                                    {/foreach}
-                                </tbody>
-                                <tfoot>
-                                    <tr>
-                                        <td class="check"><input name="ALLMSGS" id="ALLMSGS3" type="checkbox" onclick="AllMessages(this.form);" /></td>
-                                        <td colspan="5"><label for="ALLMSGS3">{__('globalSelectAll')}</label></td>
-                                    </tr>
-                                </tfoot>
-                            </table>
-                        </div>
-                        <div class="panel-footer">
-                            <div class="btn-group">
-                                <button name="freischaltensubmit" type="submit" value="{__('activate')}" class="btn btn-primary"><i class="fa fa-thumbs-up"></i> {__('unlockMarked')}</button>
-                                <button name="freischaltenleoschen" type="submit" value="{__('delete')}" class="btn btn-danger">
-                                    <i class="fa fa-trash"></i> {__('deleteSelected')}
-                                </button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            {else}
-                <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
-            {/if}
-        </div>
         <div id="newscomments" class="tab-pane fade {if isset($cTab) && $cTab === 'newscomments'} active in{/if}">
             {if $oNewsKommentar_arr|@count > 0 && $oNewsKommentar_arr}
-                {include file='tpl_inc/pagination.tpl' oPagination=$oPagiNewskommentare cAnchor='newscomments'}
+                {include file='tpl_inc/pagination.tpl' pagination=$oPagiNewskommentare cAnchor='newscomments'}
                 <div class="panel panel-default">
                     <form method="post" action="freischalten.php">
                         {$jtl_token}
@@ -341,7 +286,7 @@
         </div>
         <div id="newsletter" class="tab-pane fade {if isset($cTab) && $cTab === 'newsletter'} active in{/if}">
             {if $oNewsletterEmpfaenger_arr|@count > 0 && $oNewsletterEmpfaenger_arr}
-                {include file='tpl_inc/pagination.tpl' oPagination=$oPagiNewsletterEmpfaenger cAnchor='newsletter'}
+                {include file='tpl_inc/pagination.tpl' pagination=$oPagiNewsletterEmpfaenger cAnchor='newsletter'}
                 <div class="panel panel-default">
                     <form method="post" action="freischalten.php">
                         {$jtl_token}

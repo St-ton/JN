@@ -6,6 +6,7 @@
 
 namespace JTL\OPC;
 
+use JTL\Helpers\GeneralObject;
 use JTL\Shop;
 
 /**
@@ -90,8 +91,7 @@ class Area implements \JsonSerializable
     public function deserialize(array $data): self
     {
         $this->id = $data['id'];
-
-        if (isset($data['content']) && \is_array($data['content'])) {
+        if (GeneralObject::hasCount('content', $data)) {
             $this->clear();
 
             foreach ($data['content'] as $portletData) {

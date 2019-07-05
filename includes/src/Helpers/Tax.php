@@ -32,14 +32,10 @@ class Tax
      */
     public static function getSalesTax(int $taxID)
     {
-        if (!isset($_SESSION['Steuersatz'])
-            || !\is_array($_SESSION['Steuersatz'])
-            || \count($_SESSION['Steuersatz']) === 0
-        ) {
+        if (!GeneralObject::hasCount('Steuersatz', $_SESSION)) {
             self::setTaxRates();
         }
-        if (isset($_SESSION['Steuersatz'])
-            && \is_array($_SESSION['Steuersatz'])
+        if (GeneralObject::isCountable('Steuersatz', $_SESSION['Steuersatz'])
             && !isset($_SESSION['Steuersatz'][$taxID])
         ) {
             $keys  = \array_keys($_SESSION['Steuersatz']);
@@ -188,7 +184,7 @@ class Tax
     }
 
     /**
-     * @param array             $positions
+     * @param array             $items
      * @param int|bool          $net
      * @param true              $html
      * @param Currency|stdClass $currency
@@ -196,7 +192,7 @@ class Tax
      * @former gibAlteSteuerpositionen()
      * @since since 5.0.0
      */
-    public static function getOldTaxPositions(array $positions, $net = -1, $html = true, $currency = null): array
+    public static function getOldTaxItems(array $items, $net = -1, $html = true, $currency = null): array
     {
         if ($net === -1) {
             $net = Frontend::getCustomerGroup()->isMerchant();
@@ -207,25 +203,25 @@ class Tax
         if ($conf['global']['global_steuerpos_anzeigen'] === 'N') {
             return $taxPos;
         }
-        foreach ($positions as $position) {
-            if ($position->fMwSt > 0 && !\in_array($position->fMwSt, $taxRates, true)) {
-                $taxRates[] = $position->fMwSt;
+        foreach ($items as $item) {
+            if ($item->fMwSt > 0 && !\in_array($item->fMwSt, $taxRates, true)) {
+                $taxRates[] = $item->fMwSt;
             }
         }
         \sort($taxRates);
-        foreach ($positions as $position) {
-            if ($position->fMwSt <= 0) {
+        foreach ($items as $item) {
+            if ($item->fMwSt <= 0) {
                 continue;
             }
-            $i = \array_search($position->fMwSt, $taxRates, true);
+            $i = \array_search($item->fMwSt, $taxRates, true);
             if (!isset($taxPos[$i]->fBetrag) || !$taxPos[$i]->fBetrag) {
                 $taxPos[$i]                  = new stdClass();
-                $taxPos[$i]->cName           = \lang_steuerposition($position->fMwSt, $net);
-                $taxPos[$i]->fUst            = $position->fMwSt;
-                $taxPos[$i]->fBetrag         = ($position->fPreis * $position->nAnzahl * $position->fMwSt) / 100.0;
+                $taxPos[$i]->cName           = \lang_steuerposition($item->fMwSt, $net);
+                $taxPos[$i]->fUst            = $item->fMwSt;
+                $taxPos[$i]->fBetrag         = ($item->fPreis * $item->nAnzahl * $item->fMwSt) / 100.0;
                 $taxPos[$i]->cPreisLocalized = Preise::getLocalizedPriceString($taxPos[$i]->fBetrag, $currency, $html);
             } else {
-                $taxPos[$i]->fBetrag        += ($position->fPreis * $position->nAnzahl * $position->fMwSt) / 100.0;
+                $taxPos[$i]->fBetrag        += ($item->fPreis * $item->nAnzahl * $item->fMwSt) / 100.0;
                 $taxPos[$i]->cPreisLocalized = Preise::getLocalizedPriceString($taxPos[$i]->fBetrag, $currency, $html);
             }
         }

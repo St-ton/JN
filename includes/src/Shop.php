@@ -165,11 +165,6 @@ final class Shop
     /**
      * @var int
      */
-    public static $kTag;
-
-    /**
-     * @var int
-     */
     public static $kSuchspecial;
 
     /**
@@ -276,11 +271,6 @@ final class Shop
      * @var array
      */
     public static $SuchFilter;
-
-    /**
-     * @var array
-     */
-    public static $TagFilter;
 
     /**
      * @var int
@@ -668,7 +658,8 @@ final class Shop
      */
     public function _Cache(): JTLCacheInterface
     {
-//        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
+        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
+
         return self::Container()->getCache();
     }
 
@@ -881,7 +872,6 @@ final class Shop
         self::$kHersteller            = Request::verifyGPCDataInt('h');
         self::$kSuchanfrage           = Request::verifyGPCDataInt('l');
         self::$kMerkmalWert           = Request::verifyGPCDataInt('m');
-        self::$kTag                   = Request::verifyGPCDataInt('t');
         self::$kSuchspecial           = Request::verifyGPCDataInt('q');
         self::$kNews                  = Request::verifyGPCDataInt('n');
         self::$kNewsMonatsUebersicht  = Request::verifyGPCDataInt('nm');
@@ -1021,7 +1011,6 @@ final class Shop
             'kLink'                  => self::$kLink,
             'kSuchanfrage'           => self::$kSuchanfrage,
             'kMerkmalWert'           => self::$kMerkmalWert,
-            'kTag'                   => self::$kTag,
             'kSuchspecial'           => self::$kSuchspecial,
             'kNews'                  => self::$kNews,
             'kNewsMonatsUebersicht'  => self::$kNewsMonatsUebersicht,
@@ -1035,7 +1024,6 @@ final class Shop
             'nSortierung'            => self::$nSortierung,
             'nSort'                  => self::$nSort,
             'MerkmalFilter_arr'      => self::$MerkmalFilter,
-            'TagFilter_arr'          => self::$TagFilter ?? [],
             'SuchFilter_arr'         => self::$SuchFilter ?? [],
             'nArtikelProSeite'       => self::$nArtikelProSeite,
             'cSuche'                 => self::$cSuche,
@@ -1046,7 +1034,6 @@ final class Shop
             'kWunschliste'           => self::$kWunschliste,
             'MerkmalFilter'          => self::$MerkmalFilter,
             'SuchFilter'             => self::$SuchFilter,
-            'TagFilter'              => self::$TagFilter,
             'vergleichsliste'        => self::$vergleichsliste,
             'nDarstellung'           => self::$nDarstellung,
             'isSeoMainword'          => false,
@@ -1072,7 +1059,7 @@ final class Shop
         \executeHook(\HOOK_SEOCHECK_ANFANG, ['uri' => &$uri]);
         $seite       = 0;
         $manufSeo    = [];
-        $katseo      = '';
+        $categorySeo = '';
         $customSeo   = [];
         $shopURLdata = \parse_url(self::getURL());
         $baseURLdata = \parse_url($uri);
@@ -1204,26 +1191,26 @@ final class Shop
             }
             $categories = \explode(\SEP_KAT, $seo);
             if (\is_array($categories) && \count($categories) > 1) {
-                [$seo, $katseo] = $categories;
-                if (\mb_strpos($katseo, \SEP_HST) !== false) {
-                    $arr    = \explode(\SEP_HST, $katseo);
-                    $katseo = $arr[0];
-                    $seo   .= \SEP_HST . $arr[1];
+                [$seo, $categorySeo] = $categories;
+                if (\mb_strpos($categorySeo, \SEP_HST) !== false) {
+                    $arr         = \explode(\SEP_HST, $categorySeo);
+                    $categorySeo = $arr[0];
+                    $seo        .= \SEP_HST . $arr[1];
                 }
-                if (\mb_strpos($katseo, \SEP_MERKMAL) !== false) {
-                    $arr    = \explode(\SEP_MERKMAL, $katseo);
-                    $katseo = $arr[0];
-                    $seo   .= \SEP_MERKMAL . $arr[1];
+                if (\mb_strpos($categorySeo, \SEP_MERKMAL) !== false) {
+                    $arr         = \explode(\SEP_MERKMAL, $categorySeo);
+                    $categorySeo = $arr[0];
+                    $seo        .= \SEP_MERKMAL . $arr[1];
                 }
-                if (\mb_strpos($katseo, \SEP_MM_MMW) !== false) {
-                    $arr    = \explode(\SEP_MM_MMW, $katseo);
-                    $katseo = $arr[0];
-                    $seo   .= \SEP_MM_MMW . $arr[1];
+                if (\mb_strpos($categorySeo, \SEP_MM_MMW) !== false) {
+                    $arr         = \explode(\SEP_MM_MMW, $categorySeo);
+                    $categorySeo = $arr[0];
+                    $seo        .= \SEP_MM_MMW . $arr[1];
                 }
-                if (\mb_strpos($katseo, \SEP_SEITE) !== false) {
-                    $arr    = \explode(\SEP_SEITE, $katseo);
-                    $katseo = $arr[0];
-                    $seo   .= \SEP_SEITE . $arr[1];
+                if (\mb_strpos($categorySeo, \SEP_SEITE) !== false) {
+                    $arr         = \explode(\SEP_SEITE, $categorySeo);
+                    $categorySeo = $arr[0];
+                    $seo        .= \SEP_SEITE . $arr[1];
                 }
             } else {
                 $seo = $categories[0];
@@ -1251,9 +1238,9 @@ final class Shop
                 }
             }
             // category filter
-            if (\mb_strlen($katseo) > 0) {
-                $oSeo = self::Container()->getDB()->select('tseo', 'cKey', 'kKategorie', 'cSeo', $katseo);
-                if (isset($oSeo->kKey) && \strcasecmp($oSeo->cSeo, $katseo) === 0) {
+            if (\mb_strlen($categorySeo) > 0) {
+                $oSeo = self::Container()->getDB()->select('tseo', 'cKey', 'kKategorie', 'cSeo', $categorySeo);
+                if (isset($oSeo->kKey) && \strcasecmp($oSeo->cSeo, $categorySeo) === 0) {
                     self::$kKategorieFilter = (int)$oSeo->kKey;
                 } else {
                     self::$bKatFilterNotFound = true;
@@ -1367,10 +1354,6 @@ final class Shop
                         self::$kMerkmalWert = $oSeo->kKey;
                         break;
 
-                    case 'kTag':
-                        self::$kTag = $oSeo->kKey;
-                        break;
-
                     case 'suchspecial':
                         self::$kSuchspecial = $oSeo->kKey;
                         break;
@@ -1398,7 +1381,6 @@ final class Shop
         }
         self::$MerkmalFilter = ProductFilter::initAttributeFilter();
         self::$SuchFilter    = ProductFilter::initSearchFilter();
-        self::$TagFilter     = ProductFilter::initTagFilter();
 
         \executeHook(\HOOK_SEOCHECK_ENDE);
     }
@@ -1430,9 +1412,9 @@ final class Shop
         if ((self::$kArtikel > 0 && !self::$kKategorie)
             || (self::$kArtikel > 0 && self::$kKategorie > 0 && self::$show === 1)
         ) {
-            $kVaterArtikel = Product::getParent(self::$kArtikel);
-            if ($kVaterArtikel > 0) {
-                $kArtikel = $kVaterArtikel;
+            $parentID = Product::getParent(self::$kArtikel);
+            if ($parentID > 0) {
+                $productID = $parentID;
                 //save data from child article POST and add to redirect
                 $cRP = '';
                 if (\is_array($_POST) && \count($_POST) > 0) {
@@ -1443,7 +1425,7 @@ final class Shop
                     $cRP = '&cRP=' . \base64_encode($cRP);
                 }
                 \http_response_code(301);
-                \header('Location: ' . self::getURL() . '/?a=' . $kArtikel . $cRP);
+                \header('Location: ' . self::getURL() . '/?a=' . $productID . $cRP);
                 exit();
             }
 
@@ -1455,7 +1437,6 @@ final class Shop
             && ((self::$kHersteller > 0
                     || self::$kSuchanfrage > 0
                     || self::$kMerkmalWert > 0
-                    || self::$kTag > 0
                     || self::$kKategorie > 0
                     || self::$nBewertungSterneFilter > 0
                     || self::$kHerstellerFilter > 0
@@ -1540,8 +1521,6 @@ final class Shop
                     self::setPageType(\PAGE_VERSAND);
                 } elseif ($linkType === \LINKTYP_LIVESUCHE) {
                     self::setPageType(\PAGE_LIVESUCHE);
-                } elseif ($linkType === \LINKTYP_TAGGING) {
-                    self::setPageType(\PAGE_TAGGING);
                 } elseif ($linkType === \LINKTYP_HERSTELLER) {
                     self::setPageType(\PAGE_HERSTELLER);
                 } elseif ($linkType === \LINKTYP_NEWSLETTERARCHIV) {

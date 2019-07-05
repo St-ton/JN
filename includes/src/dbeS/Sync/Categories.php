@@ -224,11 +224,9 @@ final class Categories extends AbstractSync
                 FROM tkategorieattribut
                 LEFT JOIN tkategorieattributsprache
                     ON tkategorieattributsprache.kAttribut = tkategorieattribut.kKategorieAttribut
-                WHERE tkategorieattribut.kKategorie = :categoryID' .(count($attribPKs) > 0 ? '
-                    AND tkategorieattribut.kKategorieAttribut NOT IN (' . implode(', ', $attribPKs) . ')' : ''),
-            [
-                'categoryID' => $category->kKategorie,
-            ],
+                WHERE tkategorieattribut.kKategorie = :categoryID' .(\count($attribPKs) > 0 ? '
+                    AND tkategorieattribut.kKategorieAttribut NOT IN (' . \implode(', ', $attribPKs) . ')' : ''),
+            ['categoryID' => $category->kKategorie],
             ReturnType::DEFAULT
         );
     }
@@ -244,9 +242,7 @@ final class Categories extends AbstractSync
                 LEFT JOIN tkategorieattributsprache
                     ON tkategorieattributsprache.kAttribut = tkategorieattribut.kKategorieAttribut
                 WHERE tkategorieattribut.kKategorie = :categoryID',
-            [
-                'categoryID' => $id,
-            ],
+            ['categoryID' => $id],
             ReturnType::DEFAULT
         );
         $this->db->delete('tseo', ['kKey', 'cKey'], [$id, 'kKategorie']);

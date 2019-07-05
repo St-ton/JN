@@ -294,9 +294,6 @@
                             {if $NaviFilter->hasAttributeValue()}
                                 <input type="hidden" name="m" value="{$NaviFilter->getAttributeValue()->getValue()}" />
                             {/if}
-                            {if $NaviFilter->hasTag()}
-                                <input type="hidden" name="t" value="{$NaviFilter->getTag()->getValue()}">
-                            {/if}
                             {if $NaviFilter->hasCategoryFilter()}
                                 {assign var=cfv value=$NaviFilter->getCategoryFilter()->getValue()}
                                 {if is_array($cfv)}
@@ -320,11 +317,6 @@
                             {if $NaviFilter->hasAttributeFilter()}
                                 {foreach $NaviFilter->getAttributeFilter() as $attributeFilter}
                                     <input type="hidden" name="mf{$attributeFilter@iteration}" value="{$attributeFilter->getValue()}" />
-                                {/foreach}
-                            {/if}
-                            {if $NaviFilter->hasTagFilter()}
-                                {foreach $NaviFilter->getTagFilter() as $tagFilter}
-                                    <input type="hidden" name="tf{$tagFilter@iteration}" value="{$tagFilter->getValue()}" />
                                 {/foreach}
                             {/if}
                             {/block}

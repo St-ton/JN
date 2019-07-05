@@ -8,16 +8,16 @@
     {assign var=cUrlAppend value=$cUrlAppend|cat:'#'|cat:$cAnchor}
 {/if}
 
-{assign var=bItemsAvailable value=$oPagination->getItemCount() > 0}
-{assign var=bMultiplePages value=$oPagination->getPageCount() > 1}
-{assign var=bSortByOptions value=$oPagination->getSortByOptions()|@count > 0}
+{assign var=bItemsAvailable value=$pagination->getItemCount() > 0}
+{assign var=bMultiplePages value=$pagination->getPageCount() > 1}
+{assign var=bSortByOptions value=$pagination->getSortByOptions()|@count > 0}
 
 {function pageButtons}
     <label>
         {if $bMultiplePages}
-            {__('entries')} {$oPagination->getFirstPageItem() + 1}
-            - {$oPagination->getFirstPageItem() + $oPagination->getPageItemCount()}
-            von {$oPagination->getItemCount()}
+            {__('entries')} {$pagination->getFirstPageItem() + 1}
+            - {$pagination->getFirstPageItem() + $pagination->getPageItemCount()}
+            von {$pagination->getItemCount()}
         {else}
             {__('allEntries')}
         {/if}
@@ -25,52 +25,52 @@
     {if $bMultiplePages}
         <ul class="pagination">
             <li>
-                <a {if $oPagination->getPrevPage() != $oPagination->getPage()}href="?{$oPagination->getId()}_nPage={$oPagination->getPrevPage()}&{$cUrlAppend}"{/if}>&laquo;</a>
+                <a {if $pagination->getPrevPage() != $pagination->getPage()}href="?{$pagination->getId()}_nPage={$pagination->getPrevPage()}&{$cUrlAppend}"{/if}>&laquo;</a>
             </li>
-            {if $oPagination->getLeftRangePage() > 0}
+            {if $pagination->getLeftRangePage() > 0}
                 <li>
-                    <a href="?{$oPagination->getId()}_nPage=0&{$cUrlAppend}">1</a>
+                    <a href="?{$pagination->getId()}_nPage=0&{$cUrlAppend}">1</a>
                 </li>
             {/if}
-            {if $oPagination->getLeftRangePage() > 1}
+            {if $pagination->getLeftRangePage() > 1}
                 <li>
                     <a>&hellip;</a>
                 </li>
             {/if}
-            {for $i=$oPagination->getLeftRangePage() to $oPagination->getRightRangePage()}
-                <li{if $oPagination->getPage() == $i} class="active"{/if}>
-                    <a href="?{$oPagination->getId()}_nPage={$i}&{$cUrlAppend}">{$i+1}</a>
+            {for $i=$pagination->getLeftRangePage() to $pagination->getRightRangePage()}
+                <li{if $pagination->getPage() == $i} class="active"{/if}>
+                    <a href="?{$pagination->getId()}_nPage={$i}&{$cUrlAppend}">{$i+1}</a>
                 </li>
             {/for}
-            {if $oPagination->getRightRangePage() < $oPagination->getPageCount() - 2}
+            {if $pagination->getRightRangePage() < $pagination->getPageCount() - 2}
                 <li>
                     <a>&hellip;</a>
                 </li>
             {/if}
-            {if $oPagination->getRightRangePage() < $oPagination->getPageCount() - 1}
+            {if $pagination->getRightRangePage() < $pagination->getPageCount() - 1}
                 <li>
-                    <a href="?{$oPagination->getId()}_nPage={$oPagination->getPageCount() - 1}&{$cUrlAppend}">{$oPagination->getPageCount()}</a>
+                    <a href="?{$pagination->getId()}_nPage={$pagination->getPageCount() - 1}&{$cUrlAppend}">{$pagination->getPageCount()}</a>
                 </li>
             {/if}
             <li>
-                <a {if $oPagination->getNextPage() != $oPagination->getPage()}href="?{$oPagination->getId()}_nPage={$oPagination->getNextPage()}&{$cUrlAppend}"{/if}>&raquo;</a>
+                <a {if $pagination->getNextPage() != $pagination->getPage()}href="?{$pagination->getId()}_nPage={$pagination->getNextPage()}&{$cUrlAppend}"{/if}>&raquo;</a>
             </li>
         </ul>
     {else}
         <ul class="pagination">
             <li>
-                <a>{$oPagination->getItemCount()}</a>
+                <a>{$pagination->getItemCount()}</a>
             </li>
         </ul>
     {/if}
 {/function}
 
 {function itemsPerPageOptions}
-    <label for="{$oPagination->getId()}_nItemsPerPage">{__('entriesPerPage')}</label>
-    <select class="form-control" name="{$oPagination->getId()}_nItemsPerPage" id="{$oPagination->getId()}_nItemsPerPage"
+    <label for="{$pagination->getId()}_nItemsPerPage">{__('entriesPerPage')}</label>
+    <select class="form-control" name="{$pagination->getId()}_nItemsPerPage" id="{$pagination->getId()}_nItemsPerPage"
             onchange="this.form.submit()">
-        {foreach $oPagination->getItemsPerPageOptions() as $nItemsPerPageOption}
-            <option value="{$nItemsPerPageOption}"{if $oPagination->getItemsPerPage() == $nItemsPerPageOption} selected="selected"{/if}>
+        {foreach $pagination->getItemsPerPageOptions() as $nItemsPerPageOption}
+            <option value="{$nItemsPerPageOption}"{if $pagination->getItemsPerPage() == $nItemsPerPageOption} selected="selected"{/if}>
                 {if $nItemsPerPageOption === -1}
                     {__('all')}
                 {else}
@@ -82,16 +82,16 @@
 {/function}
 
 {function sortByDirOptions}
-    <label for="{$oPagination->getId()}_nSortByDir">{__('sorting')}</label>
-    <select class="form-control" name="{$oPagination->getId()}_nSortByDir" id="{$oPagination->getId()}_nSortByDir"
+    <label for="{$pagination->getId()}_nSortByDir">{__('sorting')}</label>
+    <select class="form-control" name="{$pagination->getId()}_nSortByDir" id="{$pagination->getId()}_nSortByDir"
             onchange="this.form.submit()">
-        {foreach $oPagination->getSortByOptions() as $i => $cSortByOption}
+        {foreach $pagination->getSortByOptions() as $i => $cSortByOption}
             <option value="{$i * 2}"
-                    {if $i * 2 == $oPagination->getSortByDir()} selected="selected"{/if}>
+                    {if $i * 2 == $pagination->getSortByDir()} selected="selected"{/if}>
                 {$cSortByOption[1]} {__('entriesPerPage')}
             </option>
             <option value="{$i * 2 + 1}"
-                    {if $i * 2 + 1 == $oPagination->getSortByDir()} selected="selected"{/if}>
+                    {if $i * 2 + 1 == $pagination->getSortByDir()} selected="selected"{/if}>
                 {$cSortByOption[1]} {__('entriesPerPage')}
             </option>
         {/foreach}
@@ -106,7 +106,7 @@
                     {pageButtons}
                 </div>
                 <div class="col-md-{if $bSortByOptions}4{else}2{/if} toolbar-col">
-                    <form action="{if isset($cAnchor)}#{$cAnchor}{/if}" method="get" name="{$oPagination->getId()}" id="{$oPagination->getId()}">
+                    <form action="{if isset($cAnchor)}#{$cAnchor}{/if}" method="get" name="{$pagination->getId()}" id="{$pagination->getId()}">
                         {foreach $cParam_arr as $cParamName => $cParamValue}
                             <input type="hidden" name="{$cParamName}" value="{$cParamValue}">
                         {/foreach}

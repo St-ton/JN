@@ -142,52 +142,52 @@ function checkformat($data, $format)
  */
 function processImport($fmt, $data)
 {
-    $kunde                = new Kunde();
-    $kunde->kKundengruppe = (int)$_POST['kKundengruppe'];
-    $kunde->kSprache      = (int)$_POST['kSprache'];
-    $kunde->cAbgeholt     = 'Y';
-    $kunde->cSperre       = 'N';
-    $kunde->cAktiv        = 'Y';
-    $kunde->nRegistriert  = 1;
-    $kunde->dErstellt     = 'NOW()';
-    $cnt                  = count($data);
+    $customer                = new Kunde();
+    $customer->kKundengruppe = (int)$_POST['kKundengruppe'];
+    $customer->kSprache      = (int)$_POST['kSprache'];
+    $customer->cAbgeholt     = 'Y';
+    $customer->cSperre       = 'N';
+    $customer->cAktiv        = 'Y';
+    $customer->nRegistriert  = 1;
+    $customer->dErstellt     = 'NOW()';
+    $cnt                     = count($data);
     for ($i = 0; $i < $cnt; $i++) {
         if (!empty($fmt[$i])) {
-            $kunde->{$fmt[$i]} = $data[$i];
+            $customer->{$fmt[$i]} = $data[$i];
         }
     }
-    if (Text::filterEmailAddress($kunde->cMail) === false) {
-        return sprintf(__('errorInvalidEmail'), $kunde->cMail);
+    if (Text::filterEmailAddress($customer->cMail) === false) {
+        return sprintf(__('errorInvalidEmail'), $customer->cMail);
     }
     if ((int)$_POST['PasswortGenerieren'] !== 1
-        && (!$kunde->cPasswort || $kunde->cPasswort === 'd41d8cd98f00b204e9800998ecf8427e')
+        && (!$customer->cPasswort || $customer->cPasswort === 'd41d8cd98f00b204e9800998ecf8427e')
     ) {
         return __('errorNoPassword');
     }
-    if (!$kunde->cNachname) {
+    if (!$customer->cNachname) {
         return __('errorNoSurname');
     }
 
-    $old_mail = Shop::Container()->getDB()->select('tkunde', 'cMail', $kunde->cMail);
+    $old_mail = Shop::Container()->getDB()->select('tkunde', 'cMail', $customer->cMail);
     if (isset($old_mail->kKunde) && $old_mail->kKunde > 0) {
-        return sprintf(__('errorEmailDuplicate'), $kunde->cMail);
+        return sprintf(__('errorEmailDuplicate'), $customer->cMail);
     }
-    if ($kunde->cAnrede === 'f' || mb_convert_case($kunde->cAnrede, MB_CASE_LOWER) === 'frau') {
-        $kunde->cAnrede = 'w';
+    if ($customer->cAnrede === 'f' || mb_convert_case($customer->cAnrede, MB_CASE_LOWER) === 'frau') {
+        $customer->cAnrede = 'w';
     }
-    if ($kunde->cAnrede === 'h' || mb_convert_case($kunde->cAnrede, MB_CASE_LOWER) === 'herr') {
-        $kunde->cAnrede = 'm';
+    if ($customer->cAnrede === 'h' || mb_convert_case($customer->cAnrede, MB_CASE_LOWER) === 'herr') {
+        $customer->cAnrede = 'm';
     }
-    if ($kunde->cNewsletter == 0 || $kunde->cNewsletter == 'NULL') {
-        $kunde->cNewsletter = 'N';
+    if ($customer->cNewsletter == 0 || $customer->cNewsletter == 'NULL') {
+        $customer->cNewsletter = 'N';
     }
-    if ($kunde->cNewsletter == 1) {
-        $kunde->cNewsletter = 'Y';
+    if ($customer->cNewsletter == 1) {
+        $customer->cNewsletter = 'Y';
     }
 
-    if (empty($kunde->cLand)) {
+    if (empty($customer->cLand)) {
         if (isset($_SESSION['kundenimport']['cLand']) && mb_strlen($_SESSION['kundenimport']['cLand']) > 0) {
-            $kunde->cLand = $_SESSION['kundenimport']['cLand'];
+            $customer->cLand = $_SESSION['kundenimport']['cLand'];
         } else {
             $oRes = Shop::Container()->getDB()->query(
                 "SELECT cWert AS cLand 
@@ -197,35 +197,35 @@ function processImport($fmt, $data)
             );
             if (is_object($oRes) && isset($oRes->cLand) && mb_strlen($oRes->cLand) > 0) {
                 $_SESSION['kundenimport']['cLand'] = $oRes->cLand;
-                $kunde->cLand                      = $oRes->cLand;
+                $customer->cLand                   = $oRes->cLand;
             }
         }
     }
-    $cPasswortKlartext = '';
+    $password = '';
     if ((int)$_POST['PasswortGenerieren'] === 1) {
-        $cPasswortKlartext = Shop::Container()->getPasswordService()->generate(PASSWORD_DEFAULT_LENGTH);
-        $kunde->cPasswort  = Shop::Container()->getPasswordService()->hash($cPasswortKlartext);
+        $password            = Shop::Container()->getPasswordService()->generate(PASSWORD_DEFAULT_LENGTH);
+        $customer->cPasswort = Shop::Container()->getPasswordService()->hash($password);
     }
     $tmp              = new stdClass();
-    $tmp->cNachname   = $kunde->cNachname;
-    $tmp->cFirma      = $kunde->cFirma;
-    $tmp->cStrasse    = $kunde->cStrasse;
-    $tmp->cHausnummer = $kunde->cHausnummer;
-    if ($kunde->insertInDB()) {
+    $tmp->cNachname   = $customer->cNachname;
+    $tmp->cFirma      = $customer->cFirma;
+    $tmp->cStrasse    = $customer->cStrasse;
+    $tmp->cHausnummer = $customer->cHausnummer;
+    if ($customer->insertInDB()) {
         if ((int)$_POST['PasswortGenerieren'] === 1) {
-            $kunde->cPasswortKlartext = $cPasswortKlartext;
-            $kunde->cNachname         = $tmp->cNachname;
-            $kunde->cFirma            = $tmp->cFirma;
-            $kunde->cStrasse          = $tmp->cStrasse;
-            $kunde->cHausnummer       = $tmp->cHausnummer;
-            $obj                      = new stdClass();
-            $obj->tkunde              = $kunde;
-            $mailer                   = Shop::Container()->get(Mailer::class);
-            $mail                     = new Mail();
+            $customer->cPasswortKlartext = $password;
+            $customer->cNachname         = $tmp->cNachname;
+            $customer->cFirma            = $tmp->cFirma;
+            $customer->cStrasse          = $tmp->cStrasse;
+            $customer->cHausnummer       = $tmp->cHausnummer;
+            $obj                         = new stdClass();
+            $obj->tkunde                 = $customer;
+            $mailer                      = Shop::Container()->get(Mailer::class);
+            $mail                        = new Mail();
             $mailer->send($mail->createFromTemplateID(MAILTEMPLATE_ACCOUNTERSTELLUNG_DURCH_BETREIBER, $obj));
         }
 
-        return __('importRecord') . $kunde->cVorname . ' ' . $kunde->cNachname;
+        return __('importRecord') . $customer->cVorname . ' ' . $customer->cNachname;
     }
 
     return __('errorImportRecord');

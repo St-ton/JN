@@ -2,7 +2,7 @@
 
 Dear {$Kunde->cVorname} {$Kunde->cNachname},
 
-We have received your payment of {$Bestellung->WarensummeLocalized[0]} for your order of {$Bestellung->dErstelldatum_en}.
+we have received your payment of {$Bestellung->WarensummeLocalized[0]} for your order of {$Bestellung->dErstelldatum_en}.
 
 Your order is as follows:
 
@@ -27,7 +27,7 @@ Your order is as follows:
 
 Total: {$Bestellung->WarensummeLocalized[0]}
 
-You will be notified about the dispatch of your goods separately.
+You will be notified of the dispatch of your goods separately.
 
 Yours sincerely,
 

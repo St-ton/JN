@@ -6,12 +6,14 @@
 
 namespace JTL\Update;
 
+use DateTime;
+use Exception;
 use JTL\DB\ReturnType;
 use JTL\Filesystem\Filesystem;
 use JTL\Filesystem\LocalFilesystem;
 use JTL\Shop;
+use JTL\Smarty\ContextType;
 use JTL\Smarty\JTLSmarty;
-use Smarty;
 
 /**
  * Class MigrationHelper
@@ -35,8 +37,6 @@ class MigrationHelper
     public const MIGRATION_FILE_NAME_PATTERN = '/^(\d+)_([\w_]+).php$/i';
 
     /**
-     * Gets the migration path.
-     *
      * @return string
      */
     public static function getMigrationPath(): string
@@ -45,8 +45,6 @@ class MigrationHelper
     }
 
     /**
-     * Gets an array of all the existing migration class names.
-     *
      * @return array
      */
     public static function getExistingMigrationClassNames(): array
@@ -69,14 +67,13 @@ class MigrationHelper
      * @param string $fileName File Name
      * @return string|null
      */
-    public static function getIdFromFileName($fileName): ?string
+    public static function getIdFromFileName(string $fileName): ?string
     {
         $matches = [];
-        if (\preg_match(static::MIGRATION_FILE_NAME_PATTERN, \basename($fileName), $matches)) {
-            return $matches[1];
-        }
 
-        return null;
+        return \preg_match(static::MIGRATION_FILE_NAME_PATTERN, \basename($fileName), $matches)
+            ? $matches[1]
+            : null;
     }
 
     /**
@@ -107,7 +104,7 @@ class MigrationHelper
      * @param string $fileName File Name
      * @return string
      */
-    public static function mapFileNameToClassName($fileName): string
+    public static function mapFileNameToClassName(string $fileName): string
     {
         return 'Migration_' . static::getIdFromFileName($fileName);
     }
@@ -118,7 +115,7 @@ class MigrationHelper
      * @param string $className File Name
      * @return string|null
      */
-    public static function mapClassNameToId($className): ?string
+    public static function mapClassNameToId(string $className): ?string
     {
         $matches = [];
         if (\preg_match(static::MIGRATION_CLASS_NAME_PATTERN, $className, $matches)) {
@@ -134,7 +131,7 @@ class MigrationHelper
      * @param string $fileName File Name
      * @return bool|int
      */
-    public static function isValidMigrationFileName($fileName)
+    public static function isValidMigrationFileName(string $fileName)
     {
         $matches = [];
 
@@ -230,39 +227,35 @@ class MigrationHelper
      * @param string $description
      * @param string $author
      * @return string
-     * @throws \SmartyException
-     * @throws \Exception
+     * @throws Exception
      */
-    public static function create(string $description, string $author)
+    public static function create(string $description, string $author): string
     {
-        $datetime  = new \DateTime('NOW');
-        $timestamp = $datetime->format('YmdHis');
+        $datetime      = new DateTime('NOW');
+        $timestamp     = $datetime->format('YmdHis');
+        $asFilePath    = function ($text) {
+            $text = \preg_replace('/\W/', '_', $text);
+            $text = \preg_replace('/_+/', '_', $text);
 
-        $asFilePath = function ($text) {
-            $text = preg_replace('/\W/', '_', $text);
-            $text = preg_replace('/_+/', '_', $text);
-
-            return strtolower($text);
+            return \strtolower($text);
         };
-
-        $filePath = implode(
+        $filePath      = \implode(
             '_',
-            array_filter([$timestamp, $asFilePath($description)])
+            \array_filter([$timestamp, $asFilePath($description)])
         );
-
         $relPath       = 'update/migrations';
-        $migrationPath = $relPath.'/'.$filePath.'.php';
+        $migrationPath = $relPath . '/' . $filePath . '.php';
         $fileSystem    = new Filesystem(new LocalFilesystem(['root' => PFAD_ROOT]));
 
         if (!$fileSystem->exists($relPath)) {
-            throw new \Exception('Migrations path doesn\'t exist!');
+            throw new Exception('Migrations path doesn\'t exist!');
         }
 
-        $smartyCli  = Shop::Smarty(true, 'cli');
-        $smartyCli->setCaching(Smarty::CACHING_OFF);
+        $smartyCli  = Shop::Smarty(true, ContextType::CLI);
+        $smartyCli->setCaching(JTLSmarty::CACHING_OFF);
         $content = $smartyCli->assign('description', $description)
             ->assign('author', $author)
-            ->assign('created', $datetime->format(\DateTime::RSS))
+            ->assign('created', $datetime->format(DateTime::RSS))
             ->assign('timestamp', $timestamp)
             ->fetch(PFAD_ROOT.'includes/src/Console/Command/Migration/Template/migration.class.tpl');
 

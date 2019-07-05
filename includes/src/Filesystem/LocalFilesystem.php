@@ -10,10 +10,12 @@ use Exception;
 use FilesystemIterator;
 use Generator;
 use JTL\Path;
+use JTL\Shop;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use SplFileInfo;
 use Symfony\Component\Finder\Finder;
+use ZipArchive;
 
 /**
  * Class LocalFilesystem
@@ -310,19 +312,21 @@ class LocalFilesystem extends AbstractFilesystem
      */
     public function zip(Finder $finder, string $archivePath, callable $callback = null): bool
     {
-        $zipArchive = new \ZipArchive();
+        $zipArchive = new ZipArchive();
         $count      = $finder->count();
         $index      = 0;
         $basePath   = \rtrim($this->getPathPrefix(), '/') . '/';
-        if (($code = $zipArchive->open($archivePath, \ZipArchive::CREATE | \ZipArchive::OVERWRITE)) !== true) {
+        if (($code = $zipArchive->open($archivePath, ZipArchive::CREATE | ZipArchive::OVERWRITE)) !== true) {
             throw new Exception('Archive file could not be created.', $code);
         }
-
         foreach ($finder->files() as $file) {
-            /** @var SplFileInfo $file */
+            /** @var \Symfony\Component\Finder\SplFileInfo $file */
             $real = $file->getRealpath();
             if ($real !== false && !$file->isDir()) {
-                $zipArchive->addFile($real, \str_replace($basePath, '', $real));
+                $relative = $file instanceof \Symfony\Component\Finder\SplFileInfo
+                    ? $file->getRelativePathname()
+                    :  \str_replace($basePath, '', $file->getPathname());
+                $zipArchive->addFile($real, $relative);
                 if (\is_callable($callback)) {
                     $callback($count, $index);
                     ++$index;

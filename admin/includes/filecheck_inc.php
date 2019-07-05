@@ -121,10 +121,9 @@ function getAllOrphanedFiles(&$files, &$errorsCount)
  */
 function deleteOrphanedFiles(array &$orphanedFiles, string $backupFile): int
 {
-    $count   = 0;
-    $adapter = new LocalFilesystem(['root' => PFAD_ROOT]);
-    $fs      = new Filesystem($adapter);
-    $finder  = new Finder();
+    $count  = 0;
+    $fs     = new Filesystem(new LocalFilesystem(['root' => PFAD_ROOT]));
+    $finder = new Finder();
     $finder->append(map($orphanedFiles, function ($e) {
         return PFAD_ROOT . $e;
     }));

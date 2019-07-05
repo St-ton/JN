@@ -325,7 +325,7 @@ class LocalFilesystem extends AbstractFilesystem
             if ($real !== false && !$file->isDir()) {
                 $relative = $file instanceof \Symfony\Component\Finder\SplFileInfo
                     ? $file->getRelativePathname()
-                    :  \str_replace($basePath, '', $file->getPathname());
+                    : \str_replace($basePath, '', $file->getPathname());
                 $zipArchive->addFile($real, $relative);
                 if (\is_callable($callback)) {
                     $callback($count, $index);

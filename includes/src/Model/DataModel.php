@@ -400,7 +400,7 @@ abstract class DataModel implements DataModelInterface, Iterator
      */
     private static function getType(string $type)
     {
-        if (\strpos($type, 'app\\models\\') !== false || \strpos($type, 'jtl\\') === 0) {
+        if (\strpos($type, 'japi\\models\\') !== false || \strpos($type, 'jtl\\') === 0) {
             return 'model';
         }
         $typeMap = [

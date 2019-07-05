@@ -311,6 +311,8 @@ abstract class DataModel implements DataModelInterface, Iterator
         } else {
             switch ($option) {
                 case self::ON_NOTEXISTS_NEW:
+                    $instance->fill($attributes);
+
                     return $instance;
                 case self::ON_NOTEXISTS_CREATE:
                     return static::create($attributes, $db);

@@ -145,34 +145,38 @@
                                 {/block}
                             {/if}
                         {/if}
-                        {button
-                            variant="link"
-                            class="text-decoration-none text-left filter-type-FilterItemSort"
-                            role="button"
-                            block=true
-                            data=["toggle"=> "collapse", "target"=>"#sorting-collapse"]
-                        }
-                            {lang key='sorting' section='productOverview'}
-                            <i class="float-right ml-3 fas fa-plus"></i>
-                            <span class="float-right mx-3 font-italic text-right text-truncate w-40 pr-1">
+                        {block name='productlist-result-options-sorting'}
+                            {button
+                                variant="link"
+                                class="text-decoration-none text-left filter-type-FilterItemSort"
+                                role="button"
+                                block=true
+                                data=["toggle"=> "collapse", "target"=>"#sorting-collapse"]
+                            }
+                                {lang key='sorting' section='productOverview'}
+                                <i class="float-right ml-3 fas fa-plus"></i>
+                                <span class="float-right mx-3 font-italic text-right text-truncate w-40 pr-1">
+                                    {foreach $Suchergebnisse->getSortingOptions() as $option}
+                                        {if $option->isActive()} {$option->getName()}{/if}
+                                    {/foreach}
+                                </span>
+                            {/button}
+                            {collapse id="sorting-collapse" class="mb-2 col-12 col-md-4"}
                                 {foreach $Suchergebnisse->getSortingOptions() as $option}
-                                    {if $option->isActive()} {$option->getName()}{/if}
+                                    {dropdownitem class="filter-item py-1"
+                                    active=$option->isActive()
+                                    href=$option->getURL()
+                                    rel='nofollow'
+                                    }
+                                    {$option->getName()}
+                                    {/dropdownitem}
                                 {/foreach}
-                            </span>
-                        {/button}
-                        {collapse id="sorting-collapse" class="mb-2 col-12 col-md-4"}
-                            {foreach $Suchergebnisse->getSortingOptions() as $option}
-                                {dropdownitem class="filter-item py-1"
-                                active=$option->isActive()
-                                href=$option->getURL()
-                                rel='nofollow'
-                                }
-                                {$option->getName()}
-                                {/dropdownitem}
-                            {/foreach}
-                        {/collapse}
+                            {/collapse}
+                        {/block}
                     {/row}
-                    {include file='snippets/filter/active_filter.tpl'}
+                    {block name='productlist-result-options-include-active-filter'}
+                        {include file='snippets/filter/active_filter.tpl'}
+                    {/block}
                 {/collapse}
             {/block}
         </div>

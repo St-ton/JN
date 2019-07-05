@@ -132,9 +132,11 @@
     {/block}
 
     {if !$device->isMobile() || $Suchergebnisse->getProducts()|@count <= 0}
-        {$alertList->displayAlertByKey('noFilterResults')}
-        <div class="my-3">
-            {include file='snippets/filter/active_filter.tpl'}
-        </div>
+        {block name='productlist-header-include-active-filter'}
+            {$alertList->displayAlertByKey('noFilterResults')}
+            <div class="my-3">
+                {include file='snippets/filter/active_filter.tpl'}
+            </div>
+        {/block}
     {/if}
 {/block}

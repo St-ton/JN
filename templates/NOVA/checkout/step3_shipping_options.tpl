@@ -18,14 +18,13 @@
                                     <legend>{lang key='shippingOptions'}</legend>
                                 {/block}
                                 {block name='checkout-step3-shipping-options-shipping-address-link'}
-                                    <span>
+                                    <div class="mb-3">
                                         {lang key='shippingTo' section='checkout'}:
                                         {link href="{get_static_route id='bestellvorgang.php'}?editLieferadresse=1"}
                                             {$Lieferadresse->cStrasse}, {$Lieferadresse->cPLZ} {$Lieferadresse->cOrt}, {$Lieferadresse->cLand}
                                         {/link}
                                         <span class="ml-1 fa fa-pencil-alt"></span>
-                                    </span>
-                                    <hr class="mb-3 mt-1">
+                                    </div>
                                 {/block}
                                 <div class="mb-3 form-group pl-md-7">
                                     {radiogroup stacked=true}

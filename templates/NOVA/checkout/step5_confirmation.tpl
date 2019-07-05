@@ -226,8 +226,7 @@
                                     {input type="hidden" id="comment-hidden" name="kommentar" value=""}
                                     {block name='checkout-step5-confirmation-include-inc-order-items'}
                                         {row class="mx-0"}
-                                            {col cols=9 md=10 lg=11}{/col}
-                                            {col cols=3 md=2 lg=1 class="bg-info py-2 text-right"}
+                                            {col cols=4 md=3 lg=1 class="ml-auto bg-info py-2 text-right"}
                                                 {link class="small edit mr-1" href="{get_static_route id='warenkorb.php'}"}
                                                     {lang key='change'}
                                                 {/link}

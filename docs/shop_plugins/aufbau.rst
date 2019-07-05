@@ -118,7 +118,7 @@ Analog verhält es sich bei einem Update. Hat man die Version 1.07 von einem Plu
 SQL/Migrationen (ab Version 5.X)
 --------------------------------
 
-Ab Shop 5.0.0 wird der Unterordner *sq*` nicht mehr unterstützt und somit auch keine SQL-Dateien mehr ausgeführt.
+Ab Shop 5.0.0 wird der Unterordner *sql*` nicht mehr unterstützt und somit auch keine SQL-Dateien mehr ausgeführt.
 Stattdessen können Plugins - wie der Shop selbst - Migrationen nutzen.
 
 Diese müssen nicht via XML definiert werden, sondern im Unterodner *Migrations* des Plugin-Verzeichnisses liegen.
@@ -142,7 +142,7 @@ Ein Beispiel könnte wie folgt lauten:
 	{
 	    public function up()
 	    {
-	        $this->execute("CREATE TABLE IF NOT EXISTS `xplugin_jtl_test_table` (
+	        $this->execute("CREATE TABLE IF NOT EXISTS `jtl_test_table` (
 	                      `id` int(10) NOT NULL AUTO_INCREMENT,
 	                      `test` int(10) unsigned NOT NULL,
 	                      PRIMARY KEY (`id`)

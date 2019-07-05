@@ -236,8 +236,10 @@ abstract class DataModel implements DataModelInterface, Iterator
     {
         $instance = static::newInstance($db);
         $instance->fill($attributes);
+        $instance->createNew($option);
+        $instance->updateChildModels();
 
-        return $instance->createNew($option);
+        return $instance;
     }
 
     /**

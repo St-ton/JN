@@ -98,6 +98,7 @@ build_create_deleted_files_csv()
     local DELETE_FILES_CSV_FILENAME_TMP="${REPOSITORY_DIR}/admin/includes/shopmd5files/deleted_files_${VERSION}_tmp.csv";
 
     cd ${REPOSITORY_DIR};
+    git fetch --all;
     git diff --name-status --diff-filter D v4.03.0 ${APPLICATION_VERSION} -- ${REPOSITORY_DIR} ':!admin/classes' ':!classes' ':!includes/ext' ':!includes/plugins' > ${DELETE_FILES_CSV_FILENAME_TMP};
     cd ${CUR_PWD};
 

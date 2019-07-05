@@ -151,7 +151,7 @@ Ein Beispiel könnte wie folgt lauten:
 
 	    public function down()
 	    {
-	        $this->execute("DROP TABLE IF EXISTS `xplugin_jtl_test_table`");
+	        $this->execute("DROP TABLE IF EXISTS `jtl_test_table`");
 	    }
 	}
 

@@ -105,78 +105,10 @@
 
                                             {/button}
                                             {collapse id="filter-collapse-{$filter->getFrontendName()|@seofy}" class="mb-2 py-3 col-12 col-md-4 max-h-150-scroll"}
-                                                {inputgroup class="mb-3" size="sm"}
-                                                    {input id="price-range-from-content" class="price-range-input mr-4" placeholder=0}
-                                                    {input id="price-range-to-content" class="price-range-input ml-4" placeholder=$priceRangeMax}
-                                                {/inputgroup}
-                                                <div id="price-range-slider-content" class="mx-3 mb-3"></div>
+                                                {block name='boxes-box-filter-pricerange-include-price-slider'}
+                                                    {include file='snippets/filter/price_slider.tpl' id='price-slider-content'}
+                                                {/block}
                                             {/collapse}
-
-                                            <script>
-                                                $(window).on('load', function(){
-                                                    let priceRange       = (new URL(window.location.href)).searchParams.get("pf"),
-                                                        priceRangeMin    = 0,
-                                                        priceRangeMax    = {$priceRangeMax},
-                                                        currentPriceMin  = priceRangeMin,
-                                                        currentPriceMax  = priceRangeMax,
-                                                        $priceRangeFrom  = $("#price-range-from-content"),
-                                                        $priceRangeTo    = $("#price-range-to-content");
-                                                    if (priceRange != null) {
-                                                        let priceRangeMinMax = priceRange.split('_');
-                                                        currentPriceMin      = priceRangeMinMax[0];
-                                                        currentPriceMax      = priceRangeMinMax[1];
-                                                        $priceRangeFrom.val(currentPriceMin);
-                                                        $priceRangeTo.val(currentPriceMax);
-                                                    }
-                                                    $('#price-range-slider-content').slider({
-                                                        range: true,
-                                                        min: priceRangeMin,
-                                                        max: priceRangeMax,
-                                                        values: [currentPriceMin, currentPriceMax],
-                                                        slide: function(event, ui) {
-                                                            $priceRangeFrom.val(ui.values[0]);
-                                                            $priceRangeTo.val(ui.values[1]);
-                                                        },
-                                                        stop: function(event, ui) {
-                                                            redirectToNewPriceRange(ui.values[0] + '_' + ui.values[1]);
-                                                        }
-                                                    });
-                                                    $('.price-range-input').change(function () {
-                                                        let prFrom = $priceRangeFrom.val(),
-                                                            prTo   = $priceRangeTo.val();
-                                                        redirectToNewPriceRange(
-                                                            (prFrom > 0 ? prFrom : priceRangeMin) + '_' + (prTo > 0 ? prTo : priceRangeMax)
-                                                        );
-                                                    });
-
-                                                    function redirectToNewPriceRange(priceRange) {
-                                                        window.location.href = updateURLParameter(
-                                                            window.location.href,
-                                                            'pf',
-                                                            priceRange
-                                                        );
-                                                    }
-
-                                                    function updateURLParameter(url, param, paramVal){
-                                                        let newAdditionalURL = '',
-                                                            tempArray        = url.split('?'),
-                                                            baseURL          = tempArray[0],
-                                                            additionalURL    = tempArray[1],
-                                                            temp             = '';
-                                                        if (additionalURL) {
-                                                            tempArray = additionalURL.split('&');
-                                                            for (let i=0; i<tempArray.length; i++){
-                                                                if(tempArray[i].split('=')[0] != param){
-                                                                    newAdditionalURL += temp + tempArray[i];
-                                                                    temp = '&';
-                                                                }
-                                                            }
-                                                        }
-
-                                                        return baseURL + '?' + newAdditionalURL + temp + param + '=' + paramVal;
-                                                    }
-                                                });
-                                            </script>
                                         {else}
                                             {if $filter->getInputType() === \JTL\Filter\InputType::SELECT
                                                 && $filter->getOptions()|count > 0

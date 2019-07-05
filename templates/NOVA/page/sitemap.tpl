@@ -36,13 +36,13 @@
                                 {col cols=12 md=4 lg=3}
                                     <ul class="list-unstyled">
                                         <li class="py-2">
-                                            {link href=$oKategorie->cURLFull title=$oKategorie->cName}
+                                            {link href=$oKategorie->cURLFull title=$oKategorie->cName class="nice-deco"}
                                                 <strong>{$oKategorie->cKurzbezeichnung}</strong>
                                             {/link}
                                         </li>
                                         {foreach $oKategorie->Unterkategorien as $oSubKategorie}
                                             <li class="py-2">
-                                                {link href=$oSubKategorie->cURLFull title=$oKategorie->cName}
+                                                {link href=$oSubKategorie->cURLFull title=$oKategorie->cName class="nice-deco"}
                                                     {$oSubKategorie->cKurzbezeichnung}
                                                 {/link}
                                             </li>
@@ -52,7 +52,7 @@
                                                         {foreach $oSubKategorie->Unterkategorien as $oSubSubKategorie}
                                                             <li class="py-2">
                                                                 {link href=$oSubSubKategorie->cURLFull
-                                                                   title=$oKategorie->cName}
+                                                                   title=$oKategorie->cName class="nice-deco"}
                                                                     {$oSubSubKategorie->cKurzbezeichnung}
                                                                 {/link}
                                                             </li>
@@ -71,7 +71,7 @@
                                 {foreach $oKategorieliste->elemente as $oKategorie}
                                     {if $oKategorie->Unterkategorien|@count == 0}
                                         <li class="py-2">
-                                            &nbsp;&nbsp;{link href=$oKategorie->cURLFull title=$oKategorie->cName}
+                                            &nbsp;&nbsp;{link href=$oKategorie->cURLFull title=$oKategorie->cName class="nice-deco"}
                                                 {$oKategorie->cKurzbezeichnung}
                                             {/link}
                                         </li>
@@ -92,7 +92,7 @@
                     {row}
                         {foreach $oHersteller_arr as $oHersteller}
                             {col cols=12 md=4 lg=3 class="py-2"}
-                                {link href=$oHersteller->cURL}{$oHersteller->cName}{/link}
+                                {link href=$oHersteller->cURL  class="nice-deco"}{$oHersteller->cName}{/link}
                             {/col}
                         {/foreach}
                     {/row}
@@ -110,10 +110,10 @@
                             {if $oNewsMonatsUebersicht->oNews_arr|@count > 0}
                                 {math equation='x-y' x=$oNewsMonatsUebersicht@iteration y=1 assign='i'}
                                 {col cols=12 md=4 lg=3}
-                                    <strong>{link href=$oNewsMonatsUebersicht->cURLFull}{$oNewsMonatsUebersicht->cName}{/link}</strong>
+                                    <strong>{link href=$oNewsMonatsUebersicht->cURLFull class="nice-deco"}{$oNewsMonatsUebersicht->cName}{/link}</strong>
                                     <ul class="list-unstyled">
                                         {foreach $oNewsMonatsUebersicht->oNews_arr as $oNews}
-                                            <li class="py-2">&nbsp;&nbsp;{link href=$oNews->cURLFull}{$oNews->cBetreff}{/link}</li>
+                                            <li class="py-2">&nbsp;&nbsp;{link href=$oNews->cURLFull class="nice-deco"}{$oNews->cBetreff}{/link}</li>
                                         {/foreach}
                                     </ul>
                                 {/col}
@@ -141,7 +141,7 @@
                                     <ul class="list-unstyled">
                                         {foreach $oNewsKategorie->oNews_arr as $oNews}
                                             <li class="py-2">
-                                                &nbsp;&nbsp;{link href=$oNews->cURLFull}{$oNews->cBetreff}{/link}
+                                                &nbsp;&nbsp;{link href=$oNews->cURLFull class="nice-deco"}{$oNews->cBetreff}{/link}
                                             </li>
                                         {/foreach}
                                     </ul>

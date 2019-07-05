@@ -1080,13 +1080,6 @@ ul.partlist-items {
   }
 }
 
-.content-wrapper a {
-  text-decoration: underline;
-  &:hover {
-    text-decoration: none;
-  }
-}
-
 @include media-breakpoint-up(lg) {
   #content.col-lg-9.order-lg-1 {
     padding-left: map_get($spacers, 4);
@@ -1099,13 +1092,6 @@ ul.partlist-items {
 }
 
 .attr-group { font-size: 13px; }
-
-.attr-characteristic a {
-  text-decoration: none;
-  &:hover {
-    text-decoration: underline;
-  }
-}
 
 hr {
   border-top: 1px solid $sand;
@@ -1144,13 +1130,6 @@ hr {
     .nav > li > a {
       color: $link-color;
       padding-bottom: 20px;
-    }
-  }
-  #login-dropdown a {
-    text-decoration: underline;
-    &:hover,
-    &:focus {
-      text-decoration: none;
     }
   }
 }
@@ -1306,10 +1285,6 @@ aside {
     }
   }
 
-  a {
-    text-decoration: none;
-  }
-
   .box-monthlynews a .value {
     text-decoration: underline;
     &:hover {
@@ -1462,15 +1437,8 @@ $jqcloud-classes: 7;
   }
   .active-filters {
     margin: 5px 0 15px;
-    a {
-      &.filter-remove-all {
-        border: 0;
-        text-decoration: underline;
-        &:hover,
-        &focus {
-          text-decoration: none;
-        }
-      }
+    a .filter-remove-all {
+      border: 0;
     }
   }
 }
@@ -1480,12 +1448,7 @@ $jqcloud-classes: 7;
     font-family: $font-family-sans-serif;
     font-weight: $font-weight-normal;
     a {
-      text-decoration: underline;
       word-break: break-word;
-      &:active,
-      &:hover {
-        text-decoration: none;
-      }
     }
   }
 }
@@ -2757,9 +2720,10 @@ label {
   }
 }
 
-
-/*
-a:not(.no-deco):not(.nav-link) {
+#login-dropdown a,
+.attr-characteristica,
+.content-wrapper a,
+a.nice-deco {
   position: relative;
   text-decoration: none;
   display: inline-block;
@@ -2785,7 +2749,8 @@ a:not(.no-deco):not(.nav-link) {
     bottom: 0;
     transition: all ease 0.6s;
   }
-  &:hover {
+  &:hover,
+  &:focus {
     &::before {
       width: 100%;
     }
@@ -2795,4 +2760,4 @@ a:not(.no-deco):not(.nav-link) {
       transition: all ease 0.2s;
     }
   }
-}*/
+}

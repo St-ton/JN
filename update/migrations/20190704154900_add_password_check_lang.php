@@ -19,8 +19,8 @@ class Migration_20190704154900 extends Migration implements IMigration
 
     public function up()
     {
-        $this->setLocalization('ger', 'login', 'passwordTooShort', 'Das Passwort ist zu kurz.');
-        $this->setLocalization('eng', 'login', 'passwordTooShort', 'The password is too short.');
+        $this->setLocalization('ger', 'login', 'passwordTooShort', 'Das Passwort muss aus mindestens %s zeichen bestehen.');
+        $this->setLocalization('eng', 'login', 'passwordTooShort', 'The password should have at least %s characters.');
         $this->setLocalization('ger', 'login', 'passwordIsWeak', 'Schwach; Versuchen Sie Buchstaben und Zahlen zu kombinieren.');
         $this->setLocalization('eng', 'login', 'passwordIsWeak', 'Weak; try combining letters & numbers.');
         $this->setLocalization('ger', 'login', 'passwordIsMedium', 'Medium; Versuchen Sie Spezialzeichen.');
@@ -31,6 +31,12 @@ class Migration_20190704154900 extends Migration implements IMigration
         $this->setLocalization('eng', 'login', 'passwordhasUsername', 'The password contains your username.');
         $this->setLocalization('ger', 'login', 'typeYourPassword', 'Geben Sie ein Passwort ein.');
         $this->setLocalization('eng', 'login', 'typeYourPassword', 'Type your password.');
+
+        $this->execute(
+            "UPDATE teinstellungen
+                SET cWert = GREATEST(cWert, 8)
+                WHERE cName = 'kundenregistrierung_passwortlaenge'"
+        );
     }
 
     public function down()

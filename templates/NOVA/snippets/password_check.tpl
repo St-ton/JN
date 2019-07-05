@@ -1,7 +1,7 @@
 <script>
     $(window).on('load', function () {
         $('{$id}').password({
-            shortPass: '{lang key='passwordTooShort' section='login'}',
+            shortPass: '{lang key='passwordTooShort' section='login' printf=$Einstellungen.kunden.kundenregistrierung_passwortlaenge}',
             badPass: '{lang key='passwordIsWeak' section='login'}',
             goodPass: '{lang key='passwordIsMedium' section='login'}',
             strongPass: '{lang key='passwordIsStrong' section='login'}',
@@ -13,7 +13,7 @@
             animateSpeed: 'fast',
             field: false,
             fieldPartialMatch: true,
-            minimumLength: 8
+            minimumLength: {$Einstellungen.kunden.kundenregistrierung_passwortlaenge}
         });
     });
 </script>

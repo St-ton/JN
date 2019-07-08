@@ -2388,7 +2388,7 @@ msgid "allgemein_herstellerfilter_benutzen_name"
 msgstr "Herstellerfilter benutzen"
 
 msgid "allgemein_herstellerfilter_benutzen_desc"
-msgstr "Mit dieser Option legen Sie fest, ob Ihren Kunden in der Ergebnisliste unter dem Punkt „Filtern nach“ der Hersteller als Filtermöglichkeit angezeigt wird."
+msgstr "Mit dieser Option legen Sie fest, ob Ihren Kunden in der Ergebnisliste unter dem Punkt „Filtern nach“ der Hersteller als Filtermöglichkeit angezeigt wird. Diese Optionen werden im NOVA-Template nur teilweise unterstützt. Bitte wählen Sie 'Ja, im Content-Bereich und der Navigationsbox' oder 'Nein', falls Sie NOVA verwenden."
 
 msgid "manufacturer_filter_type_name"
 msgstr "Herstellerfilter-Typ"
@@ -2400,7 +2400,7 @@ msgid "allgemein_suchspecialfilter_benutzen_name"
 msgstr "Besondere-Artikel-Filter benutzen"
 
 msgid "allgemein_suchspecialfilter_benutzen_desc"
-msgstr "Mit dieser Option legen Sie fest, ob Ihren Kunden in der Ergebnisliste unter dem Punkt „Filtern nach“ besondere Artikel (z. B. Top-Angebote) als Filtermöglichkeit angezeigt werden."
+msgstr "Mit dieser Option legen Sie fest, ob Ihren Kunden in der Ergebnisliste unter dem Punkt „Filtern nach“ besondere Artikel (z. B. Top-Angebote) als Filtermöglichkeit angezeigt werden. Diese Optionen werden im NOVA-Template nur teilweise unterstützt. Bitte wählen Sie 'Ja, im Content-Bereich und der Navigationsbox' oder 'Nein', falls Sie NOVA verwenden."
 
 msgid "search_special_filter_type_name"
 msgstr "Spezialfilter-Typ"
@@ -2412,7 +2412,7 @@ msgid "allgemein_kategoriefilter_benutzen_name"
 msgstr "Kategoriefilterung benutzen"
 
 msgid "allgemein_kategoriefilter_benutzen_desc"
-msgstr "Mit dieser Option legen Sie fest, ob Ihren Kunden in der Ergebnisliste unter dem Punkt „Filtern nach“ die Kategorie als Filtermöglichkeit angezeigt wird."
+msgstr "Mit dieser Option legen Sie fest, ob Ihren Kunden in der Ergebnisliste unter dem Punkt „Filtern nach“ die Kategorie als Filtermöglichkeit angezeigt wird. Diese Optionen werden im NOVA-Template nur teilweise unterstützt. Bitte wählen Sie 'Ja, im Content-Bereich und der Navigationsbox' oder 'Nein', falls Sie NOVA verwenden."
 
 msgid "kategoriefilter_anzeigen_als_name"
 msgstr "Kategoriefilter anzeigen als"
@@ -2430,13 +2430,13 @@ msgid "bewertungsfilter_benutzen_name"
 msgstr "Bewertungsfilter benutzen"
 
 msgid "bewertungsfilter_benutzen_desc"
-msgstr "Hier legen Sie fest, ob bei vorhandenen Bewertungen nach diesen gefiltert werden kann."
+msgstr "Hier legen Sie fest, ob bei vorhandenen Bewertungen nach diesen gefiltert werden kann.  Diese Optionen werden im NOVA-Template nur teilweise unterstützt. Bitte wählen Sie 'Ja, im Content-Bereich und der Navigationsbox' oder 'Nein', falls Sie NOVA verwenden."
 
 msgid "suchtrefferfilter_nutzen_name"
 msgstr "Suchtrefferfilter benutzen"
 
 msgid "suchtrefferfilter_nutzen_desc"
-msgstr "Hier legen Sie fest, ob Kunden andere Suchen angezeigt werden sollen, die für die angezeigten Artikel ebenfalls zutreffen. Dazu müssen Sie Live-Suchen-Ergebnisse freischalten."
+msgstr "Hier legen Sie fest, ob Kunden andere Suchen angezeigt werden sollen, die für die angezeigten Artikel ebenfalls zutreffen. Dazu müssen Sie Live-Suchen-Ergebnisse freischalten. Diese Optionen werden im NOVA-Template nur teilweise unterstützt. Bitte wählen Sie 'Ja, im Content-Bereich und der Navigationsbox' oder 'Nein', falls Sie NOVA verwenden."
 
 msgid "suchtrefferfilter_anzahl_name"
 msgstr "Anzahl Suchtreffer"
@@ -2448,7 +2448,7 @@ msgid "merkmalfilter_verwenden_name"
 msgstr "Merkmalfilter benutzen"
 
 msgid "merkmalfilter_verwenden_desc"
-msgstr "Hier legen Sie fest, ob Merkmalfilter angezeigt werden sollen."
+msgstr "Hier legen Sie fest, ob Merkmalfilter angezeigt werden sollen. Diese Optionen werden im NOVA-Template nur teilweise unterstützt. Bitte wählen Sie 'Ja, im Content-Bereich und der Navigationsbox' oder 'Nein', falls Sie NOVA verwenden."
 
 msgid "merkmal_anzeigen_als_name"
 msgstr "Merkmale anzeigen als"
@@ -2472,7 +2472,7 @@ msgid "preisspannenfilter_benutzen_name"
 msgstr "Preisspannenfilter benutzen"
 
 msgid "preisspannenfilter_benutzen_desc"
-msgstr "Mit dieser Option legen Sie fest, ob Ihren Kunden bei der Anzeige einer Artikelliste die Möglichkeit gegeben werden soll, nach bestimmten Preisspannen zu filtern."
+msgstr "Mit dieser Option legen Sie fest, ob Ihren Kunden bei der Anzeige einer Artikelliste die Möglichkeit gegeben werden soll, nach bestimmten Preisspannen zu filtern. Diese Optionen werden im NOVA-Template nur teilweise unterstützt. Bitte wählen Sie 'Ja, im Content-Bereich und der Navigationsbox' oder 'Nein', falls Sie NOVA verwenden."
 
 msgid "preisspannenfilter_spannen_ausblenden_name"
 msgstr "Leere Preisspannen ausblenden"

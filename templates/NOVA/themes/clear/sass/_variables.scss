@@ -102,6 +102,13 @@ $spacers: (
   8:                                ($spacer * 5)
 );
 
+$sizes: (
+  20:                               20%,
+  40:                               40%,
+  60:                               60%,
+  80:                               80%
+);
+
 // paths
 
 $url-0:                             url(../base/images/loading.gif);

@@ -2388,7 +2388,7 @@ msgid "allgemein_herstellerfilter_benutzen_name"
 msgstr "Allow filtering by manufacturer"
 
 msgid "allgemein_herstellerfilter_benutzen_desc"
-msgstr "Specify whether to display the manufacturer as a filter option for your customers in the results list under \"Filter by\"."
+msgstr "Specify whether to display the manufacturer as a filter option for your customers in the results list under \"Filter by\". This option is not supported by NOVA template. Please select 'Yes, in content area and in navigation box' or 'No' when using NOVA."
 
 msgid "manufacturer_filter_type_name"
 msgstr "Type of manufacturer filter"
@@ -2400,7 +2400,7 @@ msgid "allgemein_suchspecialfilter_benutzen_name"
 msgstr "Use filter for special items"
 
 msgid "allgemein_suchspecialfilter_benutzen_desc"
-msgstr "Specify whether to display special items (e.g. top offers) as a filter option for your customers in the results list under \"Filter by\"."
+msgstr "Specify whether to display special items (e.g. top offers) as a filter option for your customers in the results list under \"Filter by\". This option is not supported by NOVA template. Please select 'Yes, in content area and in navigation box' or 'No' when using NOVA."
 
 msgid "search_special_filter_type_name"
 msgstr "Special filter type"
@@ -2412,7 +2412,7 @@ msgid "allgemein_kategoriefilter_benutzen_name"
 msgstr "Allow filtering by category"
 
 msgid "allgemein_kategoriefilter_benutzen_desc"
-msgstr "Specify whether to display the category as a filter option for your customers in the results list under \"Filter by\"."
+msgstr "Specify whether to display the category as a filter option for your customers in the results list under \"Filter by\". This option is not supported by NOVA template. Please select 'Yes, in content area and in navigation box' or 'No' when using NOVA."
 
 msgid "kategoriefilter_anzeigen_als_name"
 msgstr "Show category filter as"
@@ -2430,7 +2430,7 @@ msgid "bewertungsfilter_benutzen_name"
 msgstr "Allow filtering by customer review"
 
 msgid "bewertungsfilter_benutzen_desc"
-msgstr "Specify whether it is possible to filter by customer reviews (if present)."
+msgstr "Specify whether it is possible to filter by customer reviews (if present).  This option is not supported by NOVA template. Please select 'Yes, in content area and in navigation box' or 'No' when using NOVA."
 
 msgid "suchtrefferfilter_nutzen_name"
 msgstr "Allow filtering by search result"
@@ -2448,7 +2448,7 @@ msgid "merkmalfilter_verwenden_name"
 msgstr "Allow filtering by characteristics"
 
 msgid "merkmalfilter_verwenden_desc"
-msgstr "Specify whether to display characteristics filters."
+msgstr "Specify whether to display characteristics filters. This option is not supported by NOVA template. Please select 'Yes, in content area and in navigation box' or 'No' when using NOVA."
 
 msgid "merkmal_anzeigen_als_name"
 msgstr "Show characteristics as"
@@ -2472,7 +2472,7 @@ msgid "preisspannenfilter_benutzen_name"
 msgstr "Allow filtering by price range"
 
 msgid "preisspannenfilter_benutzen_desc"
-msgstr "Specify whether your customers are able to filter by specific price ranges when displaying an item list."
+msgstr "Specify whether your customers are able to filter by specific price ranges when displaying an item list. This option is not supported by NOVA template. Please select 'Yes, in content area and in navigation box' or 'No' when using NOVA."
 
 msgid "preisspannenfilter_spannen_ausblenden_name"
 msgstr "Hide empty price ranges"

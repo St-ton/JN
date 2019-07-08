@@ -10,7 +10,7 @@
             </div>
         {/block}
         {block name='selectionwizard-form-list'}
-            {listgroup class="selection-wizard list-group-flush"}
+            {listgroup class="selection-wizard list-group-flush py-5"}
                 {foreach $AWA->getQuestions() as $nQuestion => $oFrage}
                     {if $AWA->getConf('auswahlassistent_allefragen') === 'Y' || $nQuestion <= $AWA->getCurQuestion()}
                         {block name='selectionwizard-form-include-question'}

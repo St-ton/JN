@@ -32,7 +32,7 @@
                                 role="button"
                                 title="{lang key='list' section='productOverview'}"
                             }
-                                <span class="fa fa-th-list"></span>
+                                <span class="fa fa-th-list d-none d-md-inline-flex"></span><span class="fa fa-square d-inline-flex d-md-none"></span>
                             {/link}
                             {link href=$oErweiterteDarstellung->cURL_arr[$smarty.const.ERWDARSTELLUNG_ANSICHT_GALERIE]
                                 id="ed_gallery"

@@ -31,7 +31,8 @@ $grid-gutter-width:                 32px;
 
 $font-family-sans-serif:            "Open Sans", Helvetica, Arial, sans-serif;
 $headings-font-family:              "Montserrat", Helvetica, Arial, sans-serif;
-$font-size-base:                    0.875rem;
+$headings-margin-bottom:            1.5rem;
+$font-size-base:                    0.95rem;
 $line-height-base:                  1.5;
 
 $font-weight-normal:                400;
@@ -134,7 +135,7 @@ $tooltip-margin:                    .25rem;
 
 $border-width:                      1px;
 $input-btn-padding-y:               .375rem;
-$input-height:                      calc(#{$line-height-base * 1em} + #{$input-btn-padding-y * 2} + #{$border-width * 4});
+$input-height:                      calc(#{$line-height-base * 1em} + #{$input-btn-padding-y * 2} + #{$border-width * 9});
 $custom-control-indicator-bg:       $sand;
 $custom-control-indicator-border-color: transparent;
 

@@ -52,7 +52,7 @@
             </script>
         {/block}
         {block name='selectionwizard-index-include-form'}
-            <div id="selectionwizard" class="mb-5">
+            <div id="selectionwizard" class="my-7">
                 {include file='selectionwizard/form.tpl' AWA=$AWA}
             </div>
         {/block}

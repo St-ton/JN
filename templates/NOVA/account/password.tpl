@@ -27,7 +27,11 @@
                     {col cols=12 md=8 md-offset=2}
                         {block name='account-password-form-password-reset'}
                             {card}
-                                {form id="passwort_vergessen" action="{get_static_route id='pass.php'}{if $bExclusive === true}?exclusive_content=1{/if}" method="post" class="evo-validate"}
+                                {form id="passwort_vergessen"
+                                    action="{get_static_route id='pass.php'}{if $bExclusive === true}?exclusive_content=1{/if}"
+                                    method="post"
+                                    class="evo-validate label-slide"
+                                }
                                     {block name='account-password-form-password-reset-content'}
                                         <fieldset>
                                             {include file='snippets/form_group_simple.tpl'

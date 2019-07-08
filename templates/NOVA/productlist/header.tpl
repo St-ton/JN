@@ -127,15 +127,16 @@
         {/if}
     {/if}
 
-    {$alertList->displayAlertByKey('noFilterResults')}
-
     {block name='productlist-header-include-productlist-page-nav'}
         {include file='snippets/productlist_page_nav.tpl' navid='header'}
     {/block}
 
-    {if !$device->isMobile()}
-        <div class="my-3">
-            {include file='snippets/filter/active_filter.tpl'}
-        </div>
+    {if !$device->isMobile() || $Suchergebnisse->getProducts()|@count <= 0}
+        {block name='productlist-header-include-active-filter'}
+            {$alertList->displayAlertByKey('noFilterResults')}
+            <div class="my-3">
+                {include file='snippets/filter/active_filter.tpl'}
+            </div>
+        {/block}
     {/if}
 {/block}

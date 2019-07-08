@@ -95,88 +95,12 @@
                                             }
                                                 {$filter->getFrontendName()}
                                                 <i class="float-right ml-3 fas fa-plus"></i>
-                                                <span class="float-right mx-3 font-italic text-right text-truncate w-40 pr-1">
-                                                    {foreach $filter->getOptions() as $filterOption}
-                                                        {*TODO: Preisfilter nicht als aktiv markiert*}
-                                                        {assign var=filterIsActive value=$filterOption->isActive() || $NaviFilter->getFilterValue($filter->getClassName()) === $filterOption->getValue()}
-                                                        {if $filterIsActive === true}{$filterOption->getName()}{if !$filterOption@last},{/if} {/if}
-                                                    {/foreach}
-                                                </span>
-
                                             {/button}
-                                            {collapse id="filter-collapse-{$filter->getFrontendName()|@seofy}" class="mb-2 py-3 col-12 col-md-4 max-h-150-scroll"}
-                                                {inputgroup class="mb-3" size="sm"}
-                                                    {input id="price-range-from-content" class="price-range-input mr-4" placeholder=0}
-                                                    {input id="price-range-to-content" class="price-range-input ml-4" placeholder=$priceRangeMax}
-                                                {/inputgroup}
-                                                <div id="price-range-slider-content" class="mx-3 mb-3"></div>
+                                            {collapse id="filter-collapse-{$filter->getFrontendName()|@seofy}" class="mb-2 py-3 col-12 col-md-4 max-h-150-scroll" visible=$filter->isActive()}
+                                                {block name='boxes-box-filter-pricerange-include-price-slider'}
+                                                    {include file='snippets/filter/price_slider.tpl' id='price-slider-content'}
+                                                {/block}
                                             {/collapse}
-
-                                            <script>
-                                                $(window).on('load', function(){
-                                                    let priceRange       = (new URL(window.location.href)).searchParams.get("pf"),
-                                                        priceRangeMin    = 0,
-                                                        priceRangeMax    = {$priceRangeMax},
-                                                        currentPriceMin  = priceRangeMin,
-                                                        currentPriceMax  = priceRangeMax,
-                                                        $priceRangeFrom  = $("#price-range-from-content"),
-                                                        $priceRangeTo    = $("#price-range-to-content");
-                                                    if (priceRange != null) {
-                                                        let priceRangeMinMax = priceRange.split('_');
-                                                        currentPriceMin      = priceRangeMinMax[0];
-                                                        currentPriceMax      = priceRangeMinMax[1];
-                                                        $priceRangeFrom.val(currentPriceMin);
-                                                        $priceRangeTo.val(currentPriceMax);
-                                                    }
-                                                    $('#price-range-slider-content').slider({
-                                                        range: true,
-                                                        min: priceRangeMin,
-                                                        max: priceRangeMax,
-                                                        values: [currentPriceMin, currentPriceMax],
-                                                        slide: function(event, ui) {
-                                                            $priceRangeFrom.val(ui.values[0]);
-                                                            $priceRangeTo.val(ui.values[1]);
-                                                        },
-                                                        stop: function(event, ui) {
-                                                            redirectToNewPriceRange(ui.values[0] + '_' + ui.values[1]);
-                                                        }
-                                                    });
-                                                    $('.price-range-input').change(function () {
-                                                        let prFrom = $priceRangeFrom.val(),
-                                                            prTo   = $priceRangeTo.val();
-                                                        redirectToNewPriceRange(
-                                                            (prFrom > 0 ? prFrom : priceRangeMin) + '_' + (prTo > 0 ? prTo : priceRangeMax)
-                                                        );
-                                                    });
-
-                                                    function redirectToNewPriceRange(priceRange) {
-                                                        window.location.href = updateURLParameter(
-                                                            window.location.href,
-                                                            'pf',
-                                                            priceRange
-                                                        );
-                                                    }
-
-                                                    function updateURLParameter(url, param, paramVal){
-                                                        let newAdditionalURL = '',
-                                                            tempArray        = url.split('?'),
-                                                            baseURL          = tempArray[0],
-                                                            additionalURL    = tempArray[1],
-                                                            temp             = '';
-                                                        if (additionalURL) {
-                                                            tempArray = additionalURL.split('&');
-                                                            for (let i=0; i<tempArray.length; i++){
-                                                                if(tempArray[i].split('=')[0] != param){
-                                                                    newAdditionalURL += temp + tempArray[i];
-                                                                    temp = '&';
-                                                                }
-                                                            }
-                                                        }
-
-                                                        return baseURL + '?' + newAdditionalURL + temp + param + '=' + paramVal;
-                                                    }
-                                                });
-                                            </script>
                                         {else}
                                             {if $filter->getInputType() === \JTL\Filter\InputType::SELECT
                                                 && $filter->getOptions()|count > 0
@@ -221,34 +145,38 @@
                                 {/block}
                             {/if}
                         {/if}
-                        {button
-                            variant="link"
-                            class="text-decoration-none text-left filter-type-FilterItemSort"
-                            role="button"
-                            block=true
-                            data=["toggle"=> "collapse", "target"=>"#sorting-collapse"]
-                        }
-                            {lang key='sorting' section='productOverview'}
-                            <i class="float-right ml-3 fas fa-plus"></i>
-                            <span class="float-right mx-3 font-italic text-right text-truncate w-40 pr-1">
+                        {block name='productlist-result-options-sorting'}
+                            {button
+                                variant="link"
+                                class="text-decoration-none text-left filter-type-FilterItemSort"
+                                role="button"
+                                block=true
+                                data=["toggle"=> "collapse", "target"=>"#sorting-collapse"]
+                            }
+                                {lang key='sorting' section='productOverview'}
+                                <i class="float-right ml-3 fas fa-plus"></i>
+                                <span class="float-right mx-3 font-italic text-right text-truncate w-40 pr-1">
+                                    {foreach $Suchergebnisse->getSortingOptions() as $option}
+                                        {if $option->isActive()} {$option->getName()}{/if}
+                                    {/foreach}
+                                </span>
+                            {/button}
+                            {collapse id="sorting-collapse" class="mb-2 col-12 col-md-4"}
                                 {foreach $Suchergebnisse->getSortingOptions() as $option}
-                                    {if $option->isActive()} {$option->getName()}{/if}
+                                    {dropdownitem class="filter-item py-1"
+                                    active=$option->isActive()
+                                    href=$option->getURL()
+                                    rel='nofollow'
+                                    }
+                                    {$option->getName()}
+                                    {/dropdownitem}
                                 {/foreach}
-                            </span>
-                        {/button}
-                        {collapse id="sorting-collapse" class="mb-2 col-12 col-md-4"}
-                            {foreach $Suchergebnisse->getSortingOptions() as $option}
-                                {dropdownitem class="filter-item py-1"
-                                active=$option->isActive()
-                                href=$option->getURL()
-                                rel='nofollow'
-                                }
-                                {$option->getName()}
-                                {/dropdownitem}
-                            {/foreach}
-                        {/collapse}
+                            {/collapse}
+                        {/block}
                     {/row}
-                    {include file='snippets/filter/active_filter.tpl'}
+                    {block name='productlist-result-options-include-active-filter'}
+                        {include file='snippets/filter/active_filter.tpl'}
+                    {/block}
                 {/collapse}
             {/block}
         </div>

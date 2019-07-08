@@ -96,7 +96,6 @@ class Vergleichsliste
             $_SESSION['Vergleichsliste']->oArtikel_arr[$i] = $product;
         }
 
-        Shop::dbg($_SESSION['Vergleichsliste']->oArtikel_arr);
         return $this;
     }
 

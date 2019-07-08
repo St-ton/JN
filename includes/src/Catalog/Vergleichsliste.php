@@ -83,16 +83,20 @@ class Vergleichsliste
         $options        = new stdClass();
         $options->nMain = 1;
         foreach ($_SESSION['Vergleichsliste']->oArtikel_arr as $i => $item) {
-            $product = new Artikel();
+            $product    = new stdClass();
+            $tmpProduct = new Artikel();
             try {
-                $product->fuelleArtikel($item->kArtikel, $options);
+                $tmpProduct->fuelleArtikel($item->kArtikel, $options);
             } catch (Exception $e) {
                 continue;
             }
-            $_SESSION['Vergleichsliste']->oArtikel_arr[$i]['cName']    = $product->cName;
-            $_SESSION['Vergleichsliste']->oArtikel_arr[$i]['cURLFull'] = $product->cURLFull;
+            $product->kArtikel                             = $item->kArtikel;
+            $product->cName                                = $tmpProduct !== null ? $tmpProduct->cName : '';
+            $product->cURLFull                             = $tmpProduct !== null ? $tmpProduct->cURLFull : '';
+            $_SESSION['Vergleichsliste']->oArtikel_arr[$i] = $product;
         }
 
+        Shop::dbg($_SESSION['Vergleichsliste']->oArtikel_arr);
         return $this;
     }
 

@@ -37,3 +37,15 @@ msgstr "Die Datei mit der aktuellen Dateiliste existiert nicht."
 
 msgid "errorFileListEmpty"
 msgstr "Die Datei mit der aktuellen Dateiliste ist leer."
+
+msgid "errorNotDeleted"
+msgstr "Es konnten nicht alle Dateien gelöscht werden."
+
+msgid "errorCreatingZipArchive"
+msgstr "Konnte Zip-Archiv %s nicht erstellen."
+
+msgid "confirmDeleteText"
+msgstr "Sind Sie sicher, dass Sie alle genannten Dateien löschen möchten? Stellen Sie sicher, dass Sie zuvor ein Backup erstellt haben!"
+
+msgid "backupText"
+msgstr "Backup unter %s erstellt und %d Dateien gelöscht."

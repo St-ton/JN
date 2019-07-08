@@ -1700,6 +1700,10 @@ footer {
     }
   }
 
+  .nav-link {
+    padding: $nav-link-padding-y*0.8 $nav-link-padding-x;
+  }
+
   .footer-additional {
     border-top: 0;
     padding-top: 20px;

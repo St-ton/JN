@@ -9,12 +9,12 @@
     {include file='snippets/opc_mount_point.tpl' id='opc_before_account_page'}
     {block name='account-my-account-head-data'}
         {row}
-            {col md=6}
+            {col cols=12 md=6}
                 {block name='account-my-account-alert'}
                     {$alertList->displayAlertByKey('myAccountDesc')}
                 {/block}
             {/col}
-            {col md=6}
+            {col cols=12 md=6}
                 {block name='account-my-account-account-credit'}
                     {card class='text-center border border-primary'}
                         {lang key='yourMoneyOnAccount' section='login'}: <strong>{$Kunde->cGuthabenLocalized}</strong>

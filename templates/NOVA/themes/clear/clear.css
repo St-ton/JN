@@ -11732,6 +11732,7 @@ input[type=file].file-loading, .file-loading input[type=file] {
   border-width: 2px;
   position: relative;
   overflow: hidden;
+  z-index: 1;
 }
 .btn-secondary:hover {
   color: #212529;
@@ -14294,6 +14295,9 @@ footer .card a:hover {
 }
 footer .card .card-body {
   padding: 0;
+}
+footer .nav-link {
+  padding: 0.4rem 1rem;
 }
 footer .footer-additional {
   border-top: 0;

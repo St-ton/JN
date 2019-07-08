@@ -264,7 +264,10 @@ abstract class DataModel implements DataModelInterface, Iterator
         }
 
         if ($record === null) {
-            return $option === self::ON_NOTEXISTS_NEW ? $this : $this->createNew($option);
+            if ($option === self::ON_NOTEXISTS_FAIL) {
+                throw new Exception(__METHOD__ . ': No Data Found', self::ERR_NOT_FOUND);
+            }
+            return $option === self::ON_NOTEXISTS_NEW ? $this->createNew($option) : $this;
         }
         $this->loaded = true;
 

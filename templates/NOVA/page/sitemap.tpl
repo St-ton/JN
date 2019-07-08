@@ -11,7 +11,7 @@
                     {row}
                         {foreach $linkgroups as $linkgroup}
                             {if !empty($linkgroup->getName()) && $linkgroup->getName() !== 'hidden' && !empty($linkgroup->getLinks())}
-                                {col cols=6 md=4 lg=3}
+                                {col cols=12 md=4 lg=3}
                                     {nav vertical=true}
                                         {block name='page-sitemap-include-linkgroup-list'}
                                             {include file='snippets/linkgroup_list.tpl' linkgroupIdentifier=$linkgroup->getTemplate() tplscope='sitemap'}
@@ -33,26 +33,26 @@
                     {row}
                         {foreach $oKategorieliste->elemente as $oKategorie}
                             {if $oKategorie->Unterkategorien|@count > 0}
-                                {col cols=6 md=4 lg=3}
+                                {col cols=12 md=4 lg=3}
                                     <ul class="list-unstyled">
-                                        <li class="my-2">
-                                            {link href=$oKategorie->cURLFull title=$oKategorie->cName}
+                                        <li class="py-2">
+                                            {link href=$oKategorie->cURLFull title=$oKategorie->cName class="nice-deco"}
                                                 <strong>{$oKategorie->cKurzbezeichnung}</strong>
                                             {/link}
                                         </li>
                                         {foreach $oKategorie->Unterkategorien as $oSubKategorie}
-                                            <li class="my-2">
-                                                {link href=$oSubKategorie->cURLFull title=$oKategorie->cName}
+                                            <li class="py-2">
+                                                {link href=$oSubKategorie->cURLFull title=$oKategorie->cName class="nice-deco"}
                                                     {$oSubKategorie->cKurzbezeichnung}
                                                 {/link}
                                             </li>
                                             {if $oSubKategorie->Unterkategorien|@count > 0}
-                                                <li class="my-2">
+                                                <li class="py-2">
                                                     <ul class="sub-categories list-unstyled pl-4">
                                                         {foreach $oSubKategorie->Unterkategorien as $oSubSubKategorie}
-                                                            <li class="my-2">
+                                                            <li class="py-2">
                                                                 {link href=$oSubSubKategorie->cURLFull
-                                                                   title=$oKategorie->cName}
+                                                                   title=$oKategorie->cName class="nice-deco"}
                                                                     {$oSubSubKategorie->cKurzbezeichnung}
                                                                 {/link}
                                                             </li>
@@ -66,12 +66,12 @@
                             {/if}
                         {/foreach}
 
-                        {col cols=6 md=4 lg=3}
+                        {col cols=12 md=4 lg=3}
                             <ul class="list-unstyled">
                                 {foreach $oKategorieliste->elemente as $oKategorie}
                                     {if $oKategorie->Unterkategorien|@count == 0}
-                                        <li class="my-2">
-                                            &nbsp;&nbsp;{link href=$oKategorie->cURLFull title=$oKategorie->cName}
+                                        <li class="py-2">
+                                            &nbsp;&nbsp;{link href=$oKategorie->cURLFull title=$oKategorie->cName class="nice-deco"}
                                                 {$oKategorie->cKurzbezeichnung}
                                             {/link}
                                         </li>
@@ -91,8 +91,8 @@
                 {block name='page-sitemap-manufacturer-content'}
                     {row}
                         {foreach $oHersteller_arr as $oHersteller}
-                            {col cols=6 md=4 lg=3 class="my-1"}
-                                {link href=$oHersteller->cURL}{$oHersteller->cName}{/link}
+                            {col cols=12 md=4 lg=3 class="py-2"}
+                                {link href=$oHersteller->cURL  class="nice-deco"}{$oHersteller->cName}{/link}
                             {/col}
                         {/foreach}
                     {/row}
@@ -109,11 +109,11 @@
                         {foreach $oNewsMonatsUebersicht_arr as $oNewsMonatsUebersicht}
                             {if $oNewsMonatsUebersicht->oNews_arr|@count > 0}
                                 {math equation='x-y' x=$oNewsMonatsUebersicht@iteration y=1 assign='i'}
-                                {col cols=6 md=4 lg=3}
-                                    <strong>{link href=$oNewsMonatsUebersicht->cURLFull}{$oNewsMonatsUebersicht->cName}{/link}</strong>
+                                {col cols=12 md=4 lg=3}
+                                    <strong>{link href=$oNewsMonatsUebersicht->cURLFull class="nice-deco"}{$oNewsMonatsUebersicht->cName}{/link}</strong>
                                     <ul class="list-unstyled">
                                         {foreach $oNewsMonatsUebersicht->oNews_arr as $oNews}
-                                            <li class="my-2">&nbsp;&nbsp;{link href=$oNews->cURLFull}{$oNews->cBetreff}{/link}</li>
+                                            <li class="py-2">&nbsp;&nbsp;{link href=$oNews->cURLFull class="nice-deco"}{$oNews->cBetreff}{/link}</li>
                                         {/foreach}
                                     </ul>
                                 {/col}
@@ -136,12 +136,12 @@
                     {row}
                         {foreach $oNewsKategorie_arr as $oNewsKategorie}
                             {if $oNewsKategorie->oNews_arr|@count > 0}
-                                {col cols=6 md=4 lg=3}
+                                {col cols=12 md=4 lg=3}
                                     <strong>{link href=$oNewsKategorie->cURLFull}{$oNewsKategorie->cName}{/link}</strong>
                                     <ul class="list-unstyled">
                                         {foreach $oNewsKategorie->oNews_arr as $oNews}
-                                            <li class="my-2">
-                                                &nbsp;&nbsp;{link href=$oNews->cURLFull}{$oNews->cBetreff}{/link}
+                                            <li class="py-2">
+                                                &nbsp;&nbsp;{link href=$oNews->cURLFull class="nice-deco"}{$oNews->cBetreff}{/link}
                                             </li>
                                         {/foreach}
                                     </ul>

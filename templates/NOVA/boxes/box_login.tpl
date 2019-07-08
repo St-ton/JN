@@ -60,8 +60,14 @@
                 {/block}
             {else}
                 {block name='boxes-box-login-actions'}
-                    {link href="{get_static_route id='jtl.php'}" class="btn btn-secondary btn-block btn-sm btn-account"}{lang key='myAccount'}{/link}
-                    {link href="{get_static_route id='jtl.php'}?logout=1&token={$smarty.session.jtl_token}" class="btn btn-block btn-sm btn-warning btn-logout"}{lang key='logOut'}{/link}
+                    {link href="{get_static_route id='jtl.php'}" class="btn btn-secondary btn-block btn-sm btn-account"}
+                        {lang key='myAccount'}
+                    {/link}
+                    {link href="{get_static_route id='jtl.php'}?logout=1&token={$smarty.session.jtl_token}"
+                        class="btn btn-block btn-sm btn-primary btn-logout"
+                    }
+                        {lang key='logOut'}
+                    {/link}
                 {/block}
             {/if}
         {/block}

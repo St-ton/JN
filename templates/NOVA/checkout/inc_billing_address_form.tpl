@@ -5,24 +5,33 @@
 {block name='checkout-inc-billing-address-form'}
     <fieldset>
         {block name='checkout-inc-billing-address-form-legend'}
-            <legend class="mb-5">
+            {row class="h2"}
+                {col cols=12 md=8}
                 {if isset($checkout)}
                     {lang key='proceedNewCustomer' section='checkout'}
                 {elseif $nSeitenTyp === $smarty.const.PAGE_MEINKONTO}
                     {lang key='myPersonalData'}
-                {else}
-                    {lang key='address' section='account data'}
                 {/if}
-            </legend>
+                {/col}
+            {/row}
+            {if isset($checkout)}
+            {row}
+                {col cols=12 md=8}
+                    {lang key='guestOrRegistered' section='checkout'}
+                {/col}
+            {/row}
+            {/if}
         {/block}
         {* salutation / title *}
         {block name='checkout-inc-billing-address-form-salutation-title'}
             {row}
-                {col md=2}
-                    <div class="h5">{lang key='name'}</div>
+                {col md=8}
+                    <legend>{lang key='billingAdress' section='account data'}</legend>
                 {/col}
+            {/row}
+            {row}
                 {if $Einstellungen.kunden.kundenregistrierung_abfragen_anrede !== 'N'}
-                    {col md=5}
+                    {col cols=12 md=4}
                         {formgroup
                             class="{if isset($fehlendeAngaben.anrede)} has-error{/if}"
                             label-for="salutation"
@@ -45,7 +54,7 @@
                 {/if}
 
                 {if $Einstellungen.kunden.kundenregistrierung_abfragen_titel !== 'N'}
-                    {col cols=12 md=5}
+                    {col cols=12 md=4}
                         {if isset($cPost_var['titel'])}
                             {assign var=inputVal_title value=$cPost_var['titel']}
                         {elseif isset($Kunde->cTitel)}
@@ -65,7 +74,7 @@
         {* firstname lastname *}
         {block name='checkout-inc-billing-address-form-firstname-lastname'}
             {row}
-                {col cols=12 md=5 offset-md=2}
+                {col cols=12  md=4}
                     {if isset($cPost_var['vorname'])}
                         {assign var=inputVal_firstName value=$cPost_var['vorname']}
                     {elseif isset($Kunde->cVorname)}
@@ -79,7 +88,7 @@
                         ]
                     }
                 {/col}
-                {col cols=12 md=5}
+                {col cols=12 md=4}
                     {if isset($cPost_var['nachname'])}
                         {assign var=inputVal_lastName value=$cPost_var['nachname']}
                     {elseif isset($Kunde->cNachname)}
@@ -99,7 +108,7 @@
         {block name='checkout-inc-billing-address-form-company'}
             {row}
                 {if $Einstellungen.kunden.kundenregistrierung_abfragen_firma !== 'N'}
-                {col cols=12 md=5 offset-md=2}
+                {col md=4}
                     {if isset($cPost_var['firma'])}
                         {assign var=inputVal_firm value=$cPost_var['firma']}
                     {elseif isset($Kunde->cFirma)}
@@ -116,7 +125,7 @@
                 {/if}
 
                 {if $Einstellungen.kunden.kundenregistrierung_abfragen_firmazusatz !== 'N'}
-                {col cols=12 md=5 offset-md="{if $Einstellungen.kunden.kundenregistrierung_abfragen_firma !== 'N'}0{else}2{/if}"}
+                {col md=4}
                     {if isset($cPost_var['firmazusatz'])}
                         {assign var=inputVal_firmext value=$cPost_var['firmazusatz']}
                     {elseif isset($Kunde->cZusatz)}
@@ -132,16 +141,12 @@
                 {/col}
                 {/if}
             {/row}
-            <hr class="mt-3 mb-5">
         {/block}
 
         {* street / number *}
         {block name='checkout-inc-billing-address-form-street'}
             {row}
-                {col md=2}
-                    <div class="h5">{lang key='billingAdress' section='account data'}</div>
-                {/col}
-                {col cols=12 md=7}
+                {col cols=8 md=6}
                     {if isset($cPost_var['strasse'])}
                         {assign var=inputVal_street value=$cPost_var['strasse']}
                     {elseif isset($Kunde->cStrasse)}
@@ -156,7 +161,7 @@
                     }
                 {/col}
 
-                {col cols=12 md=3}
+                {col cols=4 md=2}
                     {if isset($cPost_var['hausnummer'])}
                         {assign var=inputVal_streetnumber value=$cPost_var['hausnummer']}
                     {elseif isset($Kunde->cHausnummer)}
@@ -176,7 +181,7 @@
         {if $Einstellungen.kunden.kundenregistrierung_abfragen_adresszusatz !== 'N'}
             {block name='checkout-inc-billing-address-form-addition'}
                 {row}
-                    {col cols=12 md=5 offset-md=2}
+                    {col md=8}
                         {if isset($cPost_var['adresszusatz'])}
                             {assign var=inputVal_street2 value=$cPost_var['adresszusatz']}
                         {elseif isset($Kunde->cAdressZusatz)}
@@ -207,7 +212,7 @@
         {/if}
         {block name='checkout-inc-billing-address-form-country'}
             {row}
-                {col cols=12 md=5 offset-md=2}
+                {col md=8}
                     {formgroup
                         class="{if isset($fehlendeAngaben.land)} has-error{/if}"
                         label-for="country"
@@ -235,7 +240,7 @@
                     {else}
                         {assign var=cState value=''}
                     {/if}
-                    {col cols=12 md=5}
+                    {col md=8}
                         {formgroup class="{if isset($fehlendeAngaben.bundesland)} has-error{/if}"
                             label-for="state"
                             label="{lang key='state' section='account data'}{if $Einstellungen.kunden.kundenregistrierung_abfragen_bundesland !== 'Y'}<span class='optional'> - {lang key='optional'}</span>{/if}"
@@ -280,7 +285,7 @@
         {* zip / city *}
         {block name='checkout-inc-billing-address-form-city'}
             {row}
-                {col cols=12 md=3 offset-md=2}
+                {col cols=4 md=2}
                     {formgroup
                         class="{if isset($fehlendeAngaben.plz)} has-error{/if}"
                         label-for="postcode"
@@ -307,11 +312,11 @@
                         {/if}
                     {/formgroup}
                 {/col}
-                {col cols=12 md=5}
+                {col cols=8 md=6}
                     {formgroup
                         class="{if isset($fehlendeAngaben.ort)} has-error{/if}"
                         label-for="city"
-                        label={lang key='city' section='account data'}
+                        label=''
                     }
                         {input
                             type="text"
@@ -340,7 +345,7 @@
         {if $Einstellungen.kunden.kundenregistrierung_abfragen_ustid !== 'N'}
             {block name='checkout-inc-billing-address-form-vat'}
                 {row}
-                    {col cols=12 md=5 offset-md=2}
+                    {col md=8}
                         {formgroup
                             class="{if isset($fehlendeAngaben.ustid)} has-error{/if}"
                             label-for="ustid"
@@ -378,15 +383,15 @@
             {/block}
         {/if}
     </fieldset>
-    <hr class="mt-3 mb-5">
     <fieldset>
-        {* E-Mail *}
         {block name='checkout-inc-billing-address-form-mail'}
             {row}
-                {col md=2}
-                    <div class="h5">{lang key='contactInformation' section='account data'}</div>
+                {col md=8}
+                    <legend>{lang key='contactInformation' section='account data'}</legend>
                 {/col}
-                {col cols=12 md=5}
+            {/row}
+            {row}
+                {col md=8}
                     {if isset($cPost_var['email'])}
                         {assign var=inputVal_email value=$cPost_var['email']}
                     {elseif isset($Kunde->cMail)}
@@ -407,7 +412,7 @@
             {block name='checkout-inc-billing-address-form-phone-fax'}
                 {row}
                     {if $Einstellungen.kunden.kundenregistrierung_abfragen_tel !== 'N'}
-                    {col cols=12 md=5 offset-md=2}
+                    {col cols=12 md=4}
                         {if isset($cPost_var['tel'])}
                             {assign var=inputVal_tel value=$cPost_var['tel']}
                         {elseif isset($Kunde->cTel)}
@@ -424,7 +429,7 @@
                     {/if}
 
                     {if $Einstellungen.kunden.kundenregistrierung_abfragen_fax !== 'N'}
-                    {col cols=12 md=5 offset-md="{if $Einstellungen.kunden.kundenregistrierung_abfragen_tel !== 'N'}0{else}2{/if}"}
+                    {col cols=12 md=4}
                         {if isset($cPost_var['fax'])}
                             {assign var=inputVal_fax value=$cPost_var['fax']}
                         {elseif isset($Kunde->cFax)}
@@ -447,7 +452,7 @@
             {block name='checkout-inc-billing-address-form-mobile-www'}
                 {row}
                     {if $Einstellungen.kunden.kundenregistrierung_abfragen_mobil !== 'N'}
-                        {col cols=12 md=5 offset-md=2}
+                        {col cols=12 md=4}
                             {if isset($cPost_var['mobil'])}
                                 {assign var=inputVal_mobile value=$cPost_var['mobil']}
                             {elseif isset($Kunde->cMobil)}
@@ -464,7 +469,7 @@
                     {/if}
 
                     {if $Einstellungen.kunden.kundenregistrierung_abfragen_www !== 'N'}
-                        {col cols=12 md=5 offset-md="{if $Einstellungen.kunden.kundenregistrierung_abfragen_mobil !== 'N'}0{else}2{/if}"}
+                        {col cols=12 md=4}
                             {if isset($cPost_var['www'])}
                                 {assign var=inputVal_www value=$cPost_var['www']}
                             {elseif isset($Kunde->cWWW)}
@@ -486,7 +491,7 @@
         {if $Einstellungen.kunden.kundenregistrierung_abfragen_geburtstag !== 'N'}
             {block name='checkout-inc-billing-address-form-birthday'}
                 {row}
-                    {col cols=12 md=5 offset-md=2}
+                    {col md=8}
                         {if isset($cPost_var['geburtstag'])}
                             {assign var=inputVal_birthday value=$cPost_var['geburtstag']}
                         {elseif isset($Kunde->dGeburtstag_formatted)}
@@ -506,13 +511,14 @@
     </fieldset>
     {if $Einstellungen.kundenfeld.kundenfeld_anzeigen === 'Y' && !empty($oKundenfeld_arr)}
         {block name='checkout-inc-billing-address-form-custom-fields'}
-            <hr class="mt-3 mb-5">
             <fieldset>
                 {row}
-                    {col md=2}
-                        <div class="h5">{lang key='miscellaneous'}</div>
+                    {col md=8}
+                        <legend>{lang key='miscellaneous'}</legend>
                     {/col}
-                    {col cols=12 md=5}
+                {/row}
+                {row}
+                    {col md=8}
                         {if $step === 'formular' || $step === 'edit_customer_address' || $step === 'Lieferadresse' || $step === 'rechnungsdaten'}
                             {if ($step === 'formular' || $step === 'edit_customer_address') && isset($Kunde)}
                                 {assign var="customerAttributes" value=$Kunde->getCustomerAttributes()}

@@ -157,6 +157,13 @@ html, body {
       width: 700px;
       max-width: none;
     }
+
+    .product-filter-config {
+      label {
+        display: block;
+        font-weight: bold;
+      }
+    }
   }
 
   #opcSidebar {

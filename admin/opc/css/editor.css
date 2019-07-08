@@ -425,6 +425,10 @@ html, body {
   width: 700px;
   max-width: none;
 }
+#opc #configModal .product-filter-config label {
+  display: block;
+  font-weight: bold;
+}
 #opc #opcSidebar {
   width: 380px;
   height: 100%;

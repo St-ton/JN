@@ -1,105 +1,125 @@
-<h2>{__('availableFilters')}</h2>
-<div id="filters-available"></div>
+<div id="filter-{$propname}" class="product-filter-config">
+    <div class="active-filters">
+        <label>{__('activeFilters')}</label>
+        <div class="filters-enabled"></div>
+    </div>
 
-<h2>{__('activeFilters')}</h2>
-<div id="filters-enabled"></div>
+    <div class="available-filters">
+        {*<label>{__('availableFilters')}</label>*}
+        <div class="filters-available"></div>
+    </div>
 
-<input type="hidden" id="config-{$propname}" name="{$propname}" value="{$propval|json_encode|htmlentities}"
-       data-prop-type="json">
+    <input type="hidden" id="config-{$propname}" name="{$propname}" value="{$propval|json_encode|htmlentities}"
+           data-prop-type="json">
 
-<script>
-    var $filtersAvailable = $('#filters-available');
-    var $filtersEnabled   = $('#filters-enabled');
+    <script>
+        $(() => {
+            let filtersAvailable = $('#filter-{$propname} .filters-available');
+            let filtersEnabled   = $('#filter-{$propname} .filters-enabled');
+            let configInput      = $('#config-{$propname}');
+            let cntr             = Math.floor(Math.random() * 0xffFFffFF);
 
-    enableFilters(JSON.parse($('[name="{$propname}"]').val()));
-    opc.setConfigSaveCallback(saveFilterProperties);
+            enableFilters(JSON.parse(configInput.val()));
+            opc.setConfigSaveCallback(saveFilterProperties);
 
-    function enableFilters(filters)
-    {
-        filters.forEach(enableFilter.bind(this, false));
-        updateFiltersAvailable();
-    }
+            function enableFilters(filters)
+            {
+                filters.forEach(enableFilter.bind(this, false));
+                updateFiltersAvailable();
+            }
 
-    function enableFilter(doPostUpdate, filter)
-    {
-        $('<button class="btn btn-xs btn-danger" type="button">')
-            .data('filter', filter)
-            .html(filter.name)
-            .click(disableFilter)
-            .appendTo($filtersEnabled);
+            function enableFilter(doPostUpdate, filter)
+            {
+                $('<div><input type="checkbox" id="filter-check-' + cntr + '">' +
+                        '<label for="filter-check-' + cntr + '">' +
+                            filter.name +
+                        '</label></div>')
+                    .data('filter', filter)
+                    .click(disableFilter)
+                    .appendTo(filtersEnabled);
 
-        if(doPostUpdate) {
-            updateFiltersAvailable();
-        }
-    }
+                // $('<button class="btn btn-xs btn-danger" type="button">')
+                //     .data('filter', filter)
+                //     .html(filter.name)
+                //     .click(disableFilter)
+                //     .appendTo(filtersEnabled);
 
-    function disableFilter()
-    {
-        $(this).remove();
-        updateFiltersAvailable();
-    }
+                if(doPostUpdate) {
+                    updateFiltersAvailable();
+                }
+            }
 
-    function updateFiltersAvailable()
-    {
-        showFilterLoaderSpinner();
-        loadFiltersAvailable();
-    }
+            function disableFilter()
+            {
+                $(this).remove();
+                updateFiltersAvailable();
+            }
 
-    function showFilterLoaderSpinner()
-    {
-        $filtersAvailable.html('<div><i class="fa fa-spinner fa-pulse fa-2x"></i></div>');
-    }
+            function updateFiltersAvailable()
+            {
+                showFilterLoaderSpinner();
+                loadFiltersAvailable();
+            }
 
-    function loadFiltersAvailable()
-    {
-        opc.io.getFilterOptions(getFiltersEnabled()).then(renderFiltersAvailable);
-    }
+            function showFilterLoaderSpinner()
+            {
+                filtersAvailable.html('<div><i class="fa fa-spinner fa-pulse fa-2x"></i></div>');
+            }
 
-    function getFiltersEnabled()
-    {
-        return $filtersEnabled.find('button').map(getElementFilterData).toArray();
-    }
+            function loadFiltersAvailable()
+            {
+                opc.io.getFilterOptions(getFiltersEnabled()).then(renderFiltersAvailable);
+            }
 
-    function getElementFilterData()
-    {
-        return $(this).data('filter');
-    }
+            function getFiltersEnabled()
+            {
+                return filtersEnabled.find('button').map(getElementFilterData).toArray();
+            }
 
-    function renderFiltersAvailable(filters)
-    {
-        clearFiltersAvailable();
+            function getElementFilterData()
+            {
+                return $(this).data('filter');
+            }
 
-        if(filters.length === 0) {
-            $filtersAvailable.html('{__('noMoreFilters')}');
-        } else {
-            filters.forEach(function(filter) {
-                if (filter.options.length > 0) {
-                    var $filterSubCat = $('<div>').append('<h3>' + filter.name + '</h3>').appendTo($filtersAvailable);
+            function renderFiltersAvailable(filters)
+            {
+                clearFiltersAvailable();
 
-                    filter.options.forEach(function(option) {
-                        addFilterAvailableButton(option, $filterSubCat);
+                if(filters.length === 0) {
+                    filtersAvailable.html('{__('noMoreFilters')}');
+                } else {
+                    filters.forEach(function(filter) {
+                        if (filter.options.length > 0) {
+                            let filterSubCat = $('<div>')
+                                .append('<label>' + filter.name + '</label>')
+                                .appendTo(filtersAvailable);
+
+                            filter.options.forEach(function(option) {
+                                addFilterAvailableButton(option, filterSubCat);
+                            });
+                        }
                     });
                 }
-            });
-        }
-    }
+            }
 
-    function clearFiltersAvailable()
-    {
-        $filtersAvailable.empty();
-    }
+            function clearFiltersAvailable()
+            {
+                filtersAvailable.empty();
+            }
 
-    function addFilterAvailableButton(filter, target)
-    {
-        $('<button class="btn btn-xs btn-primary" type="button">')
-            .data('filter', filter)
-            .html(filter.name + ' (' + filter.count + ')')
-            .click(enableFilter.bind(this, true, filter))
-            .appendTo(target);
-    }
+            function addFilterAvailableButton(filter, target)
+            {
+                $('<button class="btn btn-xs btn-primary" type="button">')
+                    .data('filter', filter)
+                    .html(filter.name + ' (' + filter.count + ')')
+                    .click(enableFilter.bind(this, true, filter))
+                    .appendTo(target);
+            }
 
-    function saveFilterProperties()
-    {
-        $('[name="{$propname}"]').val(JSON.stringify(getFiltersEnabled()));
-    }
-</script>
+            function saveFilterProperties()
+            {
+                $('[name="{$propname}"]').val(JSON.stringify(getFiltersEnabled()));
+            }
+        });
+    </script>
+</div>

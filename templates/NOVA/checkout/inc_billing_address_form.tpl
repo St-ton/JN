@@ -17,7 +17,7 @@
             {if isset($checkout)}
             {row}
                 {col cols=12 md=8}
-                    Sie können als Gast bestellen oder einen neuen Account erstellen.
+                    {lang key='guestOrRegistered' section='checkout'}
                 {/col}
             {/row}
             {/if}

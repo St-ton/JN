@@ -25,6 +25,8 @@ class Migration_20190621091000 extends Migration implements IMigration
         $this->setLocalization('eng', 'checkout', 'shippingTo', 'Shipping to');
         $this->setLocalization('ger', 'checkout', 'secureCheckout', 'Secure Checkout');
         $this->setLocalization('eng', 'checkout', 'secureCheckout', 'Secure Checkout');
+        $this->setLocalization('ger', 'checkout', 'guestOrRegistered', 'Sie können als Gast bestellen oder einen neuen Account erstellen.');
+        $this->setLocalization('eng', 'checkout', 'guestOrRegistered', 'Proceed as guest or create a new account.');
     }
 
     public function down()
@@ -32,5 +34,6 @@ class Migration_20190621091000 extends Migration implements IMigration
         $this->removeLocalization('change');
         $this->removeLocalization('shippingTo');
         $this->removeLocalization('secureCheckout');
+        $this->removeLocalization('guestOrRegistered');
     }
 }

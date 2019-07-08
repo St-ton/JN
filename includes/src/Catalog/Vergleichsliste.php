@@ -89,7 +89,8 @@ class Vergleichsliste
             } catch (Exception $e) {
                 continue;
             }
-            $_SESSION['Vergleichsliste']->oArtikel_arr[$i] = $product;
+            $_SESSION['Vergleichsliste']->oArtikel_arr[$i]['cName']    = $product->cName;
+            $_SESSION['Vergleichsliste']->oArtikel_arr[$i]['cURLFull'] = $product->cURLFull;
         }
 
         return $this;

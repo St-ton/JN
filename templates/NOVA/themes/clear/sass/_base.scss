@@ -1095,7 +1095,7 @@ ul.partlist-items {
 }
 @include media-breakpoint-up(xl) {
   #content.col-lg-9.order-lg-1 {
-    padding-left: map_get($spacers, 7);
+    padding-left: map_get($spacers, 8);
   }
 }
 
@@ -1417,15 +1417,10 @@ $jqcloud-classes: 7;
 #result-options {
   .dropdown-item {
     text-decoration: none;
-  }
-  .filter-collapsible-control a {
-    text-decoration: none;
-    border-bottom: $highlight-border-size solid transparent;
-    &[data-toggle="collapse"][aria-expanded=true] {
-      border-bottom: $highlight-border-size solid $primary;
-      i.fa-chevron-down {
-        transform: rotate(180deg);
-      }
+    &.active, &:active {
+      color: $gray-dark;
+      font-weight: $font-weight-semibold;
+      background-color: transparent;
     }
   }
   .form-group {
@@ -1448,6 +1443,24 @@ $jqcloud-classes: 7;
     a .filter-remove-all {
       border: 0;
     }
+  }
+  #filter-collapsible button {
+    padding: map_get($spacers, 3) 0;
+    margin: 0 $btn-padding-x;
+    border-bottom: 1px solid $sand;
+    &[data-toggle="collapse"][aria-expanded="true"] {
+      border-bottom: 0;
+      i.fa-plus:before {
+        content: "\f068";
+      }
+    }
+    + .collapse{
+      border-bottom: 1px solid $sand;
+    }
+  }
+  .max-h-150-scroll {
+    max-height: 150px;
+    overflow-y: scroll;
   }
 }
 

@@ -6,6 +6,7 @@
 
 namespace JTL\Filter;
 
+use Detection\MobileDetect;
 use Illuminate\Support\Collection;
 use JTL\Cache\JTLCacheInterface;
 use JTL\Catalog\Category\Kategorie;
@@ -974,9 +975,11 @@ class ProductFilter
         return \array_filter(
             $this->filters,
             function ($f) {
+                $device = new MobileDetect();
                 /** @var FilterInterface $f */
                 return $f->getVisibility() === Visibility::SHOW_ALWAYS
-                    || $f->getVisibility() === Visibility::SHOW_CONTENT;
+                    || $f->getVisibility() === Visibility::SHOW_CONTENT
+                    || ($device->isMobile() && !$device->isTablet() && $f->getVisibility() !== Visibility::SHOW_NEVER());
             }
         );
     }

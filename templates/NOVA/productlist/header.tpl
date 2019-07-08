@@ -109,15 +109,6 @@
         {include file='selectionwizard/index.tpl'}
     {/block}
 
-    {block name='productlist-header-include-result-options'}
-        {if count($Suchergebnisse->getProducts()) > 0}
-            {include file='snippets/opc_mount_point.tpl' id='opc_before_result_options'}
-        {/if}
-        <div id="improve_search" class="mb-3">
-            {include file='productlist/result_options.tpl'}
-        </div>
-    {/block}
-
     {if $Suchergebnisse->getProducts()|@count <= 0 && isset($KategorieInhalt)}
         {if isset($KategorieInhalt->TopArtikel->elemente) && $KategorieInhalt->TopArtikel->elemente|@count > 0}
             {block name='productlist-header-include-product-slider-top'}
@@ -139,4 +130,13 @@
     {block name='productlist-header-include-productlist-page-nav'}
         {include file='snippets/productlist_page_nav.tpl' navid='header'}
     {/block}
+
+    {if !$device->isMobile() || $Suchergebnisse->getProducts()|@count <= 0}
+        {block name='productlist-header-include-active-filter'}
+            {$alertList->displayAlertByKey('noFilterResults')}
+            <div class="my-3">
+                {include file='snippets/filter/active_filter.tpl'}
+            </div>
+        {/block}
+    {/if}
 {/block}

@@ -251,7 +251,7 @@
         {/block}
 
         {block name='layout-header-content-row-starttag'}
-            <div class="row no-gutters">
+            <div class="row no-gutters px-xl-8">
         {/block}
 
         {block name='layout-header-content-starttag'}

@@ -4,16 +4,22 @@
         <div class="filters-enabled"></div>
     </div>
 
-    <div class="available-filters">
-        {*<label>{__('availableFilters')}</label>*}
-        <div class="filters-available"></div>
-    </div>
+    <div class="available-filters"></div>
 
     <input type="hidden" id="config-{$propname}" name="{$propname}" value="{$propval|json_encode|htmlentities}"
            data-prop-type="json">
 
     <script>
         $(() => {
+            let root        = $('#filter-{$propname}');
+            let configInput = $('#config-{$propname}');
+            let filters     = JSON.parse(configInput.val());
+
+            opc.io.getFilterList(filters).then(html => {
+                root.find('.available-filters').html(html)
+            });
+
+            /*
             let filtersAvailable = $('#filter-{$propname} .filters-available');
             let filtersEnabled   = $('#filter-{$propname} .filters-enabled');
             let configInput      = $('#config-{$propname}');
@@ -120,6 +126,7 @@
             {
                 $('[name="{$propname}"]').val(JSON.stringify(getFiltersEnabled()));
             }
+        */
         });
     </script>
 </div>

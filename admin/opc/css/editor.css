@@ -429,6 +429,28 @@ html, body {
   display: block;
   font-weight: bold;
 }
+#opc #configModal .product-filter-config .filters-section {
+  background-color: #F5F7FA;
+  border-radius: 5px;
+  margin-bottom: 8px;
+  padding: 16px;
+  padding-bottom: 12px;
+}
+#opc #configModal .product-filter-config .filters-section .filters-section-inner {
+  max-height: 98px;
+  overflow-y: auto;
+}
+#opc #configModal .product-filter-config .filters-section .filters-section-inner:after {
+  content: "";
+  display: block;
+  clear: both;
+}
+#opc #configModal .product-filter-config .filters-section .filters-section-inner .filter-option {
+  width: 33%;
+  float: left;
+  margin-bottom: 4px;
+  text-align: left;
+}
 #opc #opcSidebar {
   width: 380px;
   height: 100%;

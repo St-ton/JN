@@ -76,7 +76,7 @@ In der info.xml wurden zwei Versionen definiert. Demnach würden die Unterordner
 
 Für jede Version, die in der Installationsdatei definiert wurde, muss auch ein physischer Ordner existieren.
 
-**Ab Version 5.0.0 entfällt der Unterordner ``version`` und alle anderen Ordner müssen direkt unterhalb des Plugin-Ordners angelegt werden!**
+**Ab Version 5.0.0 entfällt der Unterordner** ``version`` **und alle anderen Ordner müssen direkt unterhalb des Plugin-Ordners angelegt werden!**
 
 
 info.xml
@@ -118,7 +118,7 @@ Analog verhält es sich bei einem Update. Hat man die Version 1.07 von einem Plu
 SQL/Migrationen (ab Version 5.X)
 --------------------------------
 
-Ab Shop 5.0.0 wird der Unterordner *sql*` nicht mehr unterstützt und somit auch keine SQL-Dateien mehr ausgeführt.
+Ab Shop 5.0.0 wird der Unterordner *sql* nicht mehr unterstützt und somit auch keine SQL-Dateien mehr ausgeführt.
 Stattdessen können Plugins - wie der Shop selbst - Migrationen nutzen.
 
 Diese müssen nicht via XML definiert werden, sondern im Unterodner *Migrations* des Plugin-Verzeichnisses liegen.
@@ -356,12 +356,12 @@ Icon
 Aktuell noch nicht implementiert, perspektivisch zur besseren Übersicht geplant.
 
 Version
-~~~~
+~~~~~~~
 
 Aber Version 5.0.0 ist dies Pflichtangabe zur Definition der Plugin-Version.
 
 CreateDate
-~~~~
+~~~~~~~~~~
 
 Aber Version 5.0.0 ist dies Pflichtangabe zur Definition des Erstellungsdatums der jeweiligen Plugin-Version. Das Datum muss im Format YYYY-MM-DD angegeben werden.
 Beispielsweise 2019-03-21 für den 21. März 2019.
@@ -1241,6 +1241,7 @@ Ab Shop 5.0.0 werden Klassen wie folgt generiert:
 * In Beispiel also
 
 .. code-block:: php
+
 	<?php
 
 	namespace jtl_test;
@@ -1556,9 +1557,9 @@ Portlet:
 +-------------+----------------------------------------------------------------------------+
 | Class*      | Der Klassenname                                                            |
 +-------------+----------------------------------------------------------------------------+
-| Group*      | Der Gruppenname                                                            | // @TODO!
+| Group*      | Der Gruppenname                                                            |
 +-------------+----------------------------------------------------------------------------+
-| Active*     | Status (1 = aktiviert, 0 = deaktiviert)                                    | // @TODO!
+| Active*     | Status (1 = aktiviert, 0 = deaktiviert)                                    |
 +-------------+----------------------------------------------------------------------------+
 
 Portlets bestehen immer aus einer PHP-Datei mit dem Dateinamen ``<Class>.php``, die eine einzelne Klasse mit Name ``<Class>`` definiert und sich im Namespace ``Plugin\<PLUGIN-ID>\Portlets`` befinden muss.

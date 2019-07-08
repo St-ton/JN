@@ -5,10 +5,10 @@
 {block name='snippets-filter-price-slider'}
     {block name='snippets-filter-price-slider-content'}
         {inputgroup class="mb-3" size="sm"}
-            {input id="{$id}-from" class="price-range-input mr-4" placeholder=0}
-            {input id="{$id}-to" class="price-range-input ml-4" placeholder=$priceRangeMax}
+            {input id="{$id}-from" class="price-range-input mr-4 font-weight-bold" placeholder=0}
+            {input id="{$id}-to" class="price-range-input ml-4 font-weight-bold" placeholder=$priceRangeMax}
         {/inputgroup}
-        <div id="{$id}" class="mx-3"></div>
+        <div id="{$id}" class="mx-2"></div>
     {/block}
     {block name='snippets-filter-price-slider-script'}
         <script>

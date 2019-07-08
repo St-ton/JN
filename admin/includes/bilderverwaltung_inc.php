@@ -194,6 +194,7 @@ function getCorruptedImages($type, int $limit)
 {
     $corruptedImages = [];
     $totalImages     = MediaImage::getProductImageCount();
+    $db              = Shop::Container()->getDB();
     do {
         $i = 0;
         foreach (MediaImage::getProductImages() as $image) {
@@ -205,20 +206,20 @@ function getCorruptedImages($type, int $limit)
                     'article' => [],
                     'picture' => ''
                 ];
-                $articleDB                 = Shop::Container()->getDB()->select(
+                $data                      = $db->select(
                     'tartikel',
                     'kArtikel',
                     $image->getId()
                 );
-                $articleDB->cURLFull       = URL::buildURL($articleDB, URLART_ARTIKEL, true);
-                $article                   = (object)[
-                    'articleNr'      => $articleDB->cArtNr,
-                    'articleURLFull' => $articleDB->cURLFull
+                $data->cURLFull            = URL::buildURL($data, URLART_ARTIKEL, true);
+                $item                      = (object)[
+                    'articleNr'      => $data->cArtNr,
+                    'articleURLFull' => $data->cURLFull
                 ];
-                $corruptedImage->article[] = $article;
+                $corruptedImage->article[] = $item;
                 $corruptedImage->picture   = $image->getPath();
                 if (array_key_exists($image->getPath(), $corruptedImages)) {
-                    $corruptedImages[$corruptedImage->picture]->article[] = $article;
+                    $corruptedImages[$corruptedImage->picture]->article[] = $item;
                 } else {
                     $corruptedImages[$corruptedImage->picture] = $corruptedImage;
                 }

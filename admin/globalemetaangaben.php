@@ -4,10 +4,9 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Alert\Alert;
 use JTL\Helpers\Form;
 use JTL\Shop;
-use JTL\Sprache;
-use JTL\Alert\Alert;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
@@ -73,5 +72,4 @@ foreach ($meta as $item) {
 $smarty->assign('oConfig_arr', getAdminSectionSettings(CONF_METAANGABEN))
        ->assign('oMetaangaben_arr', $metaData)
        ->assign('keywords', $excludeKeywords)
-       ->assign('Sprachen', Sprache::getAllLanguages())
        ->display('globalemetaangaben.tpl');

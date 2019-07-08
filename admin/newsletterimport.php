@@ -4,12 +4,11 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use JTL\Helpers\Form;
-use JTL\Shop;
-use JTL\Sprache;
-use JTL\Helpers\Text;
-use JTL\DB\ReturnType;
 use JTL\Alert\Alert;
+use JTL\DB\ReturnType;
+use JTL\Helpers\Form;
+use JTL\Helpers\Text;
+use JTL\Shop;
 use JTL\Newsletter\Newsletter;
 
 require_once __DIR__ . '/includes/admininclude.php';
@@ -48,11 +47,10 @@ if (isset($_POST['newsletterimport'], $_FILES['csv']['tmp_name'])
     }
 }
 
-$smarty->assign('sprachen', Sprache::getAllLanguages())
-       ->assign('kundengruppen', Shop::Container()->getDB()->query(
-           'SELECT * FROM tkundengruppe ORDER BY cName',
-           ReturnType::ARRAY_OF_OBJECTS
-       ))
+$smarty->assign('kundengruppen', Shop::Container()->getDB()->query(
+    'SELECT * FROM tkundengruppe ORDER BY cName',
+    ReturnType::ARRAY_OF_OBJECTS
+))
        ->display('newsletterimport.tpl');
 
 /**

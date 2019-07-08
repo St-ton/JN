@@ -5,18 +5,18 @@
  */
 
 use Illuminate\Support\Collection;
+use JTL\Alert\Alert;
+use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
+use JTL\Language\LanguageHelper;
+use JTL\Link\Admin\LinkAdmin;
+use JTL\Link\Link;
 use JTL\Link\LinkGroup;
 use JTL\Link\LinkGroupList;
+use JTL\Link\LinkInterface;
 use JTL\PlausiCMS;
 use JTL\Shop;
-use JTL\Sprache;
-use JTL\DB\ReturnType;
-use JTL\Link\Link;
-use JTL\Link\LinkInterface;
-use JTL\Link\Admin\LinkAdmin;
-use JTL\Alert\Alert;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
@@ -197,12 +197,12 @@ if ($action !== '' && Form::validateToken()) {
             $step = 'edit-link';
             break;
         case 'create-or-update-link':
-            $hasHTML_arr = [];
-            foreach (Sprache::getAllLanguages() as $lang) {
-                $hasHTML_arr[] = 'cContent_' . $lang->cISO;
+            $hasHTML = [];
+            foreach (LanguageHelper::getAllLanguages() as $lang) {
+                $hasHTML[] = 'cContent_' . $lang->getIso();
             }
             $checks = new PlausiCMS();
-            $checks->setPostVar($_POST, $hasHTML_arr, true);
+            $checks->setPostVar($_POST, $hasHTML, true);
             $checks->doPlausi('lnk');
 
             if (count($checks->getPlausiVar()) === 0) {
@@ -255,13 +255,13 @@ if ($action !== '' && Form::validateToken()) {
                 $link = new Link($db);
                 $link->setLinkGroupID((int)$_POST['kLinkgruppe']);
                 $link->setLinkGroups([(int)$_POST['kLinkgruppe']]);
-                $oPlausiVar_arr = $checks->getPlausiVar();
-                if (isset($oPlausiVar_arr['nSpezialseite'])) {
+                $checkVars = $checks->getPlausiVar();
+                if (isset($checkVars['nSpezialseite'])) {
                     $alertHelper->addAlert(Alert::TYPE_ERROR, __('isDuplicateSpecialLink'), 'isDuplicateSpecialLink');
                 } else {
                     $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorFillRequired'), 'errorFillRequired');
                 }
-                $smarty->assign('xPlausiVar_arr', $oPlausiVar_arr)
+                $smarty->assign('xPlausiVar_arr', $checkVars)
                        ->assign('xPostVar_arr', $checks->getPostVar());
             }
             break;
@@ -345,6 +345,5 @@ if ($step === 'neuer Link') {
 $smarty->assign('step', $step)
        ->assign('Link', $link)
        ->assign('kPlugin', Request::verifyGPCDataInt('kPlugin'))
-       ->assign('sprachen', Sprache::getAllLanguages())
        ->assign('linkAdmin', $linkAdmin)
        ->display('links.tpl');

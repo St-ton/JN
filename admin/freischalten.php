@@ -4,13 +4,13 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Alert\Alert;
 use JTL\Helpers\Form;
+use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Request;
-use JTL\Shop;
-use JTL\Sprache;
 use JTL\Helpers\Text;
 use JTL\Pagination\Pagination;
-use JTL\Alert\Alert;
+use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
@@ -24,13 +24,11 @@ setzeSprache();
 $step                  = 'freischalten_uebersicht';
 $ratingsSQL            = new stdClass();
 $liveSearchSQL         = new stdClass();
-$tagsSQL               = new stdClass();
 $commentsSQL           = new stdClass();
 $recipientsSQL         = new stdClass();
 $ratingsSQL->cWhere    = '';
 $liveSearchSQL->cWhere = '';
 $liveSearchSQL->cOrder = ' dZuletztGesucht DESC ';
-$tagsSQL->cWhere       = '';
 $commentsSQL->cWhere   = '';
 $recipientsSQL->cWhere = '';
 $recipientsSQL->cOrder = ' tnewsletterempfaenger.dEingetragen DESC';
@@ -51,11 +49,6 @@ if (Request::verifyGPCDataInt('Suche') === 1) {
             case 'Livesuche':
                 $tab                   = 'livesearch';
                 $liveSearchSQL->cWhere = " AND tsuchanfrage.cSuche LIKE '%" . $search . "%'";
-                break;
-            case 'Tag':
-                $tab             = 'tags';
-                $tagsSQL->cWhere = " AND (ttag.cName LIKE '%" . $search . "%'
-                                        OR tartikel.cName LIKE '%" . $search . "%')";
                 break;
             case 'Newskommentar':
                 $tab                 = 'newscomments';
@@ -121,7 +114,7 @@ if (Request::verifyGPCDataInt('freischalten') === 1 && Form::validateToken()) {
     // Bewertungen
     if (Request::verifyGPCDataInt('bewertungen') === 1) {
         if (isset($_POST['freischaltensubmit'])) {
-            if (schalteBewertungFrei($_POST['kBewertung'], $_POST['kArtikel'], $_POST['kBewertungAll'])) {
+            if (schalteBewertungFrei($_POST['kBewertung'])) {
                 $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successRatingUnlock'), 'successRatingUnlock');
             } else {
                 $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorAtLeastOneRating'), 'errorAtLeastOneRating');
@@ -136,17 +129,17 @@ if (Request::verifyGPCDataInt('freischalten') === 1 && Form::validateToken()) {
     } elseif (Request::verifyGPCDataInt('suchanfragen') === 1) { // Suchanfragen
         // Mappen
         if (isset($_POST['submitMapping'])) {
-            $cMapping = Request::verifyGPDataString('cMapping');
-            if (mb_strlen($cMapping) > 0) {
-                $nReturnValue = 0;
-                if (is_array($_POST['kSuchanfrage']) && count($_POST['kSuchanfrage']) > 0) {
-                    $nReturnValue = mappeLiveSuche($_POST['kSuchanfrage'], $cMapping);
+            $mapping = Request::verifyGPDataString('cMapping');
+            if (mb_strlen($mapping) > 0) {
+                $res = 0;
+                if (GeneralObject::hasCount('kSuchanfrage', $_POST)) {
+                    $res = mappeLiveSuche($_POST['kSuchanfrage'], $mapping);
 
-                    if ($nReturnValue === 1) { // Alles O.K.
+                    if ($res === 1) { // Alles O.K.
                         if (schalteSuchanfragenFrei($_POST['kSuchanfrage'])) {
                             $alertHelper->addAlert(
                                 Alert::TYPE_SUCCESS,
-                                sprintf(__('successLiveSearchMap'), $cMapping),
+                                sprintf(__('successLiveSearchMap'), $mapping),
                                 'successLiveSearchMap'
                             );
                         } else {
@@ -157,7 +150,7 @@ if (Request::verifyGPCDataInt('freischalten') === 1 && Form::validateToken()) {
                             );
                         }
                     } else {
-                        switch ($nReturnValue) {
+                        switch ($res) {
                             case 2:
                                 $searchError = __('errorMapUnknown');
                                 break;
@@ -201,20 +194,6 @@ if (Request::verifyGPCDataInt('freischalten') === 1 && Form::validateToken()) {
                 $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successSearchDelete'), 'successSearchDelete');
             } else {
                 $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorAtLeastOneSearch'), 'errorAtLeastOneSearch');
-            }
-        }
-    } elseif (Request::verifyGPCDataInt('tags') === 1 && Form::validateToken()) { // Tags
-        if (isset($_POST['freischaltensubmit'])) {
-            if (isset($_POST['kTag']) && schalteTagsFrei($_POST['kTag'])) {
-                $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successTagUnlock'), 'successTagUnlock');
-            } else {
-                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorAtLeastOneTag'), 'errorAtLeastOneTag');
-            }
-        } elseif (isset($_POST['freischaltenleoschen'])) {
-            if (isset($_POST['kTag']) && loescheTags($_POST['kTag'])) {
-                $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successTagDelete'), 'successTagDelete');
-            } else {
-                $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorAtLeastOneTag'), 'errorAtLeastOneTag');
             }
         }
     } elseif (Request::verifyGPCDataInt('newskommentare') === 1 && Form::validateToken()) {
@@ -267,9 +246,6 @@ if ($step === 'freischalten_uebersicht') {
     $pagiQueries    = (new Pagination('suchanfragen'))
         ->setItemCount(gibMaxSuchanfragen())
         ->assemble();
-    $pagiTags       = (new Pagination('tags'))
-        ->setItemCount(gibMaxTags())
-        ->assemble();
     $pagiComments   = (new Pagination('newskommentare'))
         ->setItemCount(gibMaxNewskommentare())
         ->assemble();
@@ -277,24 +253,20 @@ if ($step === 'freischalten_uebersicht') {
         ->setItemCount(gibMaxNewsletterEmpfaenger())
         ->assemble();
 
-    $ratings      = gibBewertungFreischalten(' LIMIT ' . $pagiRatings->getLimitSQL(), $ratingsSQL);
+    $reviews      = gibBewertungFreischalten(' LIMIT ' . $pagiRatings->getLimitSQL(), $ratingsSQL);
     $queries      = gibSuchanfrageFreischalten(' LIMIT ' . $pagiQueries->getLimitSQL(), $liveSearchSQL);
-    $tags         = gibTagFreischalten(' LIMIT ' . $pagiTags->getLimitSQL(), $tagsSQL);
     $newsComments = gibNewskommentarFreischalten(' LIMIT ' . $pagiComments->getLimitSQL(), $commentsSQL);
     $recipients   = gibNewsletterEmpfaengerFreischalten(' LIMIT ' . $pagiRecipients->getLimitSQL(), $recipientsSQL);
-    $smarty->assign('oBewertung_arr', $ratings)
+    $smarty->assign('oBewertung_arr', $reviews)
            ->assign('oSuchanfrage_arr', $queries)
-           ->assign('oTag_arr', $tags)
            ->assign('oNewsKommentar_arr', $newsComments)
            ->assign('oNewsletterEmpfaenger_arr', $recipients)
            ->assign('oPagiBewertungen', $pagiRatings)
            ->assign('oPagiSuchanfragen', $pagiQueries)
-           ->assign('oPagiTags', $pagiTags)
            ->assign('oPagiNewskommentare', $pagiComments)
            ->assign('oPagiNewsletterEmpfaenger', $pagiRecipients);
 }
 
 $smarty->assign('step', $step)
-       ->assign('Sprachen', Sprache::getAllLanguages())
        ->assign('cTab', $tab)
        ->display('freischalten.tpl');

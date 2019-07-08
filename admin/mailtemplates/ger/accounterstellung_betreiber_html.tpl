@@ -200,7 +200,7 @@ nehmen Sie einfach Kontakt mit uns auf.<br>
 <br>
 Wir wünschen Ihnen viel Spaß beim Stöbern in unserem Sortiment.<br>
 <br>
-Mit freundlichem Gruß,<br>
+Mit freundlichem Gruß<br>
 Ihr Team von {$Firma->cName}
 
 {includeMailTemplate template=footer type=html}

@@ -6,9 +6,9 @@
 
 namespace JTL\Mail\Mail;
 
+use JTL\Language\LanguageModel;
 use JTL\Mail\Template\TemplateFactory;
 use JTL\Mail\Template\TemplateInterface;
-use stdClass;
 
 /**
  * Interface MailInterface
@@ -25,17 +25,22 @@ interface MailInterface
     public function createFromTemplateID(string $id, $data = null, TemplateFactory $factory = null): MailInterface;
 
     /**
-     * @param TemplateInterface $template
-     * @param mixed             $data
-     * @param stdClass|null     $language
+     * @param TemplateInterface  $template
+     * @param mixed              $data
+     * @param LanguageModel|null $language
      * @return MailInterface
      */
     public function createFromTemplate(TemplateInterface $template, $data = null, $language = null): MailInterface;
 
     /**
-     * @return stdClass
+     * @return LanguageModel
      */
-    public function getLanguage(): stdClass;
+    public function getLanguage(): LanguageModel;
+
+    /**
+     * @param LanguageModel $language
+     */
+    public function setLanguage(LanguageModel $language): void;
 
     /**
      * @return mixed
@@ -58,35 +63,6 @@ interface MailInterface
      * @return MailInterface
      */
     public function setCustomerGroupID(int $customerGroupID): self;
-
-    /**
-     * @return int
-     */
-    public function getLanguageID(): int;
-
-    /**
-     * @param int $languageID
-     * @return MailInterface
-     */
-    public function setLanguageID(int $languageID): self;
-
-    /**
-     * @return string
-     */
-    public function getLanguageCode(): string;
-
-    /**
-     * ISO 639-1
-     *
-     * @return string
-     */
-    public function getLanguageCode6391(): string;
-
-    /**
-     * @param mixed $languageCode
-     * @return MailInterface
-     */
-    public function setLanguageCode($languageCode): self;
 
     /**
      * @return string

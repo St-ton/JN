@@ -11,7 +11,12 @@
 
         {block name='layout-footer-aside'}
             {has_boxes position='left' assign='hasLeftBox'}
-            {if !$bExclusive && $hasLeftBox && !empty($boxes.left|strip_tags|trim)}
+            {if ($Einstellungen.template.sidebar_settings.show_sidebar_product_list === 'Y' && $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp
+                || $Einstellungen.template.sidebar_settings.show_sidebar_product_list === 'N')
+                && !$bExclusive
+                && $hasLeftBox
+                && !empty($boxes.left|strip_tags|trim)
+            }
                 {block name='layout-footer-sidepanel-left'}
                     <aside id="sidepanel_left" class="d-print-none col-12 col-lg-3 order-lg-0 mb-6">
                         {block name='footer-sidepanel-left-content'}{$boxes.left}{/block}
@@ -40,7 +45,7 @@
                     {if $Einstellungen.template.footer.newsletter_footer === 'Y'}
                         {block name='layout-footer-newsletter'}
                             {row class="newsletter-footer" class="text-center text-md-left"}
-                                {col cols=12 md=4 offset-md=2}
+                                {col cols=12 md=6}
                                     <div class="h5">
                                         {lang key='newsletter' section='newsletter'} {lang key='newsletterSendSubscribe' section='newsletter'}
                                     </div>
@@ -52,11 +57,11 @@
                                     {form methopd="post" action="{get_static_route id='newsletter.php'}" class="col-12 col-md-4"}
                                         {block name='layout-footer-form-content'}
                                             {input type="hidden" name="abonnieren" value="2"}
-                                            {formgroup label-for="newsletter_email" label="{lang key='emailadress'}" class="mb-0"}
+                                            {formgroup label-sr-only="{lang key='emailadress'}" class="mb-0"}
                                                 {inputgroup}
                                                     {input type="email" name="cEmail" id="newsletter_email" placeholder="{lang key='emailadress'}"}
                                                     {inputgroupaddon append=true}
-                                                        {button type="submit" variant="primary"}
+                                                        {button type="submit" variant="secondary"}
                                                             {lang key='newsletterSendSubscribe' section='newsletter'}
                                                         {/button}
                                                     {/inputgroupaddon}
@@ -163,8 +168,8 @@
                                     class="d-block d-md-none col-6 text-center language-dropdown"
                                     text="<i class='fa fa-language'></i> {lang key='language'}"}
                                     {foreach $smarty.session.Sprachen as $oSprache}
-                                        {dropdownitem href="{if isset($oSprache->cURLFull)}{$oSprache->cURLFull}{else}{$oSprache->cURL}{/if}" rel="nofollow" }
-                                            {if $lang === 'ger'}{$oSprache->cNameDeutsch}{else}{$oSprache->cNameEnglisch}{/if}
+                                        {dropdownitem href="{$oSprache->url}" rel="nofollow" }
+                                            {$oSprache->displayLanguage}
                                         {/dropdownitem}
                                     {/foreach}
                                 {/dropdown}
@@ -196,7 +201,7 @@
                             {/if}
                         {/block}
                     {/row}
-                    <div class="footnote-vat text-center">
+                    <div class="footnote-vat">
                         {if $NettoPreise == 1}
                             {lang key='footnoteExclusiveVat' assign='footnoteVat'}
                         {else}
@@ -215,21 +220,21 @@
                     </div>
                 {/container}
                 {block name='layout-footer-copyright'}
-                    <div id="copyright" class="py-3">
-                        {container fluid=$isFluidTemplate}
+                    <div id="copyright" class="py-3 text-center">
+                        {container fluid=true}
                             {row}
                                 {assign var=isBrandFree value=JTL\Shop::isBrandfree()}
-                                {col cols=12 md=3}
+                                {col class="text-right"}
                                     {if !empty($meta_copyright)}<span itemprop="copyrightHolder">&copy; {$meta_copyright}</span>{/if}
                                     {if $Einstellungen.global.global_zaehler_anzeigen === 'Y'}{lang key='counter'}: {$Besucherzaehler}{/if}
                                 {/col}
                                 {if !empty($Einstellungen.global.global_fusszeilehinweis)}
-                                    {col cols=12 md="{if $isBrandFree}9{else}6{/if}" class="text-center"}
+                                    {col class="text-left"}
                                         {$Einstellungen.global.global_fusszeilehinweis}
                                     {/col}
                                 {/if}
                                 {if !$isBrandFree}
-                                    {col cols=12 md=3 class="text-right" id="system-credits"}
+                                    {col class="text-right" id="system-credits"}
                                         Powered by {link href="https://jtl-url.de/jtlshop" title="JTL-Shop" target="_blank" rel="noopener nofollow"}JTL-Shop{/link}
                                     {/col}
                                 {/if}
@@ -245,10 +250,8 @@
     {* JavaScripts *}
     {block name='layout-footer-js'}
         {*{assign var=isFluidContent value=isset($Einstellungen.template.theme.pagelayout) && $Einstellungen.template.theme.pagelayout === 'fluid' && isset($Link) && $Link->getIsFluid()}
-        {$isFluidContent|@var_dump}
-        {assign var=isFluidContent value=$Link->getIsFluid()}
-        {$isFluidContent|@var_dump}*}
-        {if !$bExclusive && !$isFluidTemplate && isset($Einstellungen.template.theme.background_image) && $Einstellungen.template.theme.background_image !== ''}
+        {assign var=isFluidContent value=$Link->getIsFluid()}*}
+        {*{if !$bExclusive && !$isFluidTemplate && isset($Einstellungen.template.theme.background_image) && $Einstellungen.template.theme.background_image !== ''}
             {if $Einstellungen.template.theme.background_image === 'custom'}
             {assign var='backstretchImgPath' value=$ShopURL|cat:'/'|cat:$currentTemplateDir|cat:'themes/'|cat:$Einstellungen.template.theme.theme_default|cat:'/background.jpg'}
         {else}
@@ -261,7 +264,7 @@
                     });
                 </script>
             {/block}
-        {/if}
+        {/if}*}
         {$dbgBarBody}
         {block name='layout-footer-script-jtl-load'}
             <script>
@@ -306,6 +309,10 @@
         {/block}
         {captchaMarkup getBody=false}
     {/block}
+
+    {*{if !$bExclusive}*}
+        {*{include file=$opcDir|cat:'footer.tpl'}*}
+    {*{/if}*}
     </body>
     </html>
 {/block}

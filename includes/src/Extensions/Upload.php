@@ -77,25 +77,25 @@ final class Upload
     public static function gibWarenkorbUploads(Warenkorb $cart): array
     {
         $uploads = [];
-        foreach ($cart->PositionenArr as $position) {
-            if ($position->nPosTyp !== \C_WARENKORBPOS_TYP_ARTIKEL || empty($position->Artikel->kArtikel)) {
+        foreach ($cart->PositionenArr as $item) {
+            if ($item->nPosTyp !== \C_WARENKORBPOS_TYP_ARTIKEL || empty($item->Artikel->kArtikel)) {
                 continue;
             }
             $attributes = [];
-            if (!empty($position->WarenkorbPosEigenschaftArr)) {
-                foreach ($position->WarenkorbPosEigenschaftArr as $attribute) {
+            if (!empty($item->WarenkorbPosEigenschaftArr)) {
+                foreach ($item->WarenkorbPosEigenschaftArr as $attribute) {
                     $attributes[$attribute->kEigenschaft] = \is_string($attribute->cEigenschaftWertName)
                         ? $attribute->cEigenschaftWertName
                         : \reset($attribute->cEigenschaftWertName);
                 }
             }
             $upload         = new stdClass();
-            $upload->cName  = $position->Artikel->cName;
-            $upload->prodID = $position->Artikel->kArtikel;
-            if (!empty($position->WarenkorbPosEigenschaftArr)) {
-                $upload->WarenkorbPosEigenschaftArr = $position->WarenkorbPosEigenschaftArr;
+            $upload->cName  = $item->Artikel->cName;
+            $upload->prodID = $item->Artikel->kArtikel;
+            if (!empty($item->WarenkorbPosEigenschaftArr)) {
+                $upload->WarenkorbPosEigenschaftArr = $item->WarenkorbPosEigenschaftArr;
             }
-            $upload->oUpload_arr = self::gibArtikelUploads($position->Artikel->kArtikel, $attributes);
+            $upload->oUpload_arr = self::gibArtikelUploads($item->Artikel->kArtikel, $attributes);
             if (\count($upload->oUpload_arr) > 0) {
                 $uploads[] = $upload;
             }
@@ -142,17 +142,17 @@ final class Upload
 
     /**
      * @param Warenkorb $cart
-     * @param int       $kBestellung
+     * @param int       $orderID
      */
-    public static function speicherUploadDateien(Warenkorb $cart, int $kBestellung): void
+    public static function speicherUploadDateien(Warenkorb $cart, int $orderID): void
     {
         foreach (self::gibWarenkorbUploads($cart) as $scheme) {
             foreach ($scheme->oUpload_arr as $upload) {
                 $info = $_SESSION['Uploader'][$upload->cUnique] ?? null;
                 if ($info !== null && \is_object($info)) {
-                    self::setzeUploadQueue($kBestellung, $upload->kCustomID);
+                    self::setzeUploadQueue($orderID, $upload->kCustomID);
                     self::setzeUploadDatei(
-                        $kBestellung,
+                        $orderID,
                         \UPLOAD_TYP_BESTELLUNG,
                         $info->cName,
                         $upload->cUnique,
@@ -269,8 +269,8 @@ final class Upload
     public static function formatTypen(string $type): array
     {
         $fileTypes = \explode(',', $type);
-        foreach ($fileTypes as &$type) {
-            $type = '*' . $type;
+        foreach ($fileTypes as &$fileTtype) {
+            $fileTtype = '*' . $fileTtype;
         }
 
         return $fileTypes;

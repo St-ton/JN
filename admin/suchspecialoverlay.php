@@ -4,12 +4,11 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Alert\Alert;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Shop;
-use JTL\Sprache;
 use JTL\Template;
-use JTL\Alert\Alert;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
@@ -46,8 +45,7 @@ if ($template->name === 'Evo' && $template->author === 'JTL-Software-GmbH' && (i
     $smarty->assign('isDeprecated', true);
 }
 
-$smarty->assign('Sprachen', Sprache::getAllLanguages())
-       ->assign('cRnd', time())
+$smarty->assign('cRnd', time())
        ->assign('nMaxFileSize', $maxFileSize)
        ->assign('oSuchspecialOverlay_arr', $overlays)
        ->assign('nSuchspecialOverlayAnzahl', count($overlays) + 1)

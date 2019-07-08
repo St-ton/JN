@@ -6,6 +6,7 @@
 
 namespace JTL\Plugin\Admin\Validation\Items;
 
+use JTL\Helpers\GeneralObject;
 use JTL\Plugin\InstallCode;
 
 /**
@@ -45,16 +46,13 @@ final class Localization extends AbstractItem
             if (!isset($var['Name']) || \mb_strlen($var['Name']) === 0) {
                 return InstallCode::INVALID_LANG_VAR_NAME;
             }
-            if (isset($var['VariableLocalized attr'])
-                && \is_array($var['VariableLocalized attr'])
-                && \count($var['VariableLocalized attr']) > 0
-            ) {
+            if (GeneralObject::hasCount('VariableLocalized attr', $var)) {
                 if (($res = $this->validateSingleLanguage($var)) !== InstallCode::OK) {
                     return $res;
                 }
                 continue;
             }
-            if (!empty($var['VariableLocalized']) && \is_array($var['VariableLocalized'])) {
+            if (GeneralObject::isCountable('VariableLocalized', $var)) {
                 if (($res = $this->validateMultiLanguage($var)) !== InstallCode::OK) {
                     return $res;
                 }

@@ -15,9 +15,8 @@ use JTL\Filter\States\BaseCategory;
 use JTL\Filter\StateSQL;
 use JTL\Filter\Type;
 use JTL\Helpers\Category as CategoryHelper;
+use JTL\Language\LanguageHelper;
 use JTL\Shop;
-use JTL\Sprache;
-use stdClass;
 
 /**
  * Class Category
@@ -109,7 +108,7 @@ class Category extends BaseCategory
         // Kategoriefilter anzeige
         if ($categoryFilterType === 'HF' && !$this->productFilter->hasCategory()) {
             //@todo: $this instead of $naviFilter->KategorieFilter?
-            $kKatFilter = $this->productFilter->hasCategoryFilter()
+            $categoryIDFilter = $this->productFilter->hasCategoryFilter()
                 ? ''
                 : ' AND tkategorieartikelgesamt.kOberKategorie = 0';
 
@@ -125,7 +124,7 @@ class Category extends BaseCategory
                     ON tkategorie.lft BETWEEN oberkategorie.lft 
                     AND oberkategorie.rght
                 ) tkategorieartikelgesamt')
-                ->setOn('tartikel.kArtikel = tkategorieartikelgesamt.kArtikel ' . $kKatFilter)
+                ->setOn('tartikel.kArtikel = tkategorieartikelgesamt.kArtikel ' . $categoryIDFilter)
                 ->setOrigin(__CLASS__));
             $sql->addJoin((new Join())
                 ->setComment('join2 from ' . __METHOD__)
@@ -169,10 +168,8 @@ class Category extends BaseCategory
 
             $sql->addCondition('tkategoriesichtbarkeit.kKategorie IS NULL');
         }
-        $cSQLKategorieSprache        = new stdClass();
-        $cSQLKategorieSprache->cJOIN = '';
-        $select                      = ['tkategorie.kKategorie', 'tkategorie.nSort'];
-        if (!Sprache::isDefaultLanguageActive()) {
+        $select = ['tkategorie.kKategorie', 'tkategorie.nSort'];
+        if (!LanguageHelper::isDefaultLanguageActive()) {
             $select[] = "IF(tkategoriesprache.cName = '', tkategorie.cName, tkategoriesprache.cName) AS cName";
             $sql->addJoin((new Join())
                 ->setComment('join5 from ' . __METHOD__)

@@ -1029,7 +1029,7 @@ class NiceDB implements DbInterface
     protected function _execute(int $type, $stmt, $params, int $return, bool $echo = false, $fnInfo = null)
     {
         $params = \is_array($params) ? $params : [];
-        if (!in_array($type, [0, 1], true)) {
+        if (!\in_array($type, [0, 1], true)) {
             throw new InvalidArgumentException('$type parameter must be 0 or 1, "' . $type . '" given');
         }
         if ($return <= 0 || $return > 12) {

@@ -15,7 +15,7 @@
                     active=$filterIsActive
                     href="{if $filterOption->isActive()}{$filter->getUnsetFilterURL($filterOption->getValue())}{else}{$filterOption->getURL()}{/if}"
                     rel='nofollow'}
-                    <span class="badge badge-light float-right">{$filterOption->getCount()}</span>
+                    ({$filterOption->getCount()})
                     <span class="value mr-5">
                         {if $filter->getIcon() !== null}
                             <i class="fa {$filter->getIcon()}"></i>
@@ -39,7 +39,7 @@
             {nav vertical=true}
                 {foreach $filter->getOptions() as $filterOption}
                     {if $limit != -1 && $filterOption@iteration > $limit && !$collapseInit}
-                        <div class="collapse" id="box-collps-filter{$filter->getNiceName()}" aria-expanded="false">
+                        <div class="collapse {if $filter->isActive()} show{/if}" id="box-collps-filter{$filter->getNiceName()}" aria-expanded="false">
                             {$collapseInit = true}
                     {/if}
                     {assign var=filterIsActive value=$filterOption->isActive() || $NaviFilter->getFilterValue($filter->getClassName()) === $filterOption->getValue()}
@@ -61,7 +61,7 @@
                             {/if}
                             <span class="word-break">{$filterOption->getName()}</span>
                         </span>
-                        <span class="badge badge-light float-right">{$filterOption->getCount()}</span>
+                        ({$filterOption->getCount()})
                     {/navitem}
                 {/foreach}
                 {if $limit != -1 && $filter->getOptions()|count > $limit}

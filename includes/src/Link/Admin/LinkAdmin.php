@@ -11,7 +11,9 @@ use JTL\Backend\Revision;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
+use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Seo;
+use JTL\Language\LanguageHelper;
 use JTL\Link\Link;
 use JTL\Link\LinkGroupCollection;
 use JTL\Link\LinkGroupInterface;
@@ -20,7 +22,6 @@ use JTL\Link\LinkInterface;
 use JTL\Services\JTL\LinkService;
 use JTL\Services\JTL\LinkServiceInterface;
 use JTL\Shop;
-use JTL\Sprache;
 use stdClass;
 use function Functional\map;
 
@@ -129,27 +130,26 @@ final class LinkAdmin
         $linkGroup->cTemplatename = $this->specialChars($post['cTemplatename']);
 
         if ($id === 0) {
-            $kLinkgruppe = $this->db->insert('tlinkgruppe', $linkGroup);
+            $groupID = $this->db->insert('tlinkgruppe', $linkGroup);
         } else {
-            $kLinkgruppe = (int)$post['kLinkgruppe'];
-            $this->db->update('tlinkgruppe', 'kLinkgruppe', $kLinkgruppe, $linkGroup);
+            $groupID = (int)$post['kLinkgruppe'];
+            $this->db->update('tlinkgruppe', 'kLinkgruppe', $groupID, $linkGroup);
         }
-        $sprachen                       = Sprache::getAllLanguages();
-        $linkgruppeSprache              = new stdClass();
-        $linkgruppeSprache->kLinkgruppe = $kLinkgruppe;
-        foreach ($sprachen as $sprache) {
-            $linkgruppeSprache->cISOSprache = $sprache->cISO;
-            $linkgruppeSprache->cName       = $linkGroup->cName;
-            if (isset($post['cName_' . $sprache->cISO])) {
-                $linkgruppeSprache->cName = $this->specialChars($post['cName_' . $sprache->cISO]);
+        $localized              = new stdClass();
+        $localized->kLinkgruppe = $groupID;
+        foreach (LanguageHelper::getAllLanguages() as $language) {
+            $localized->cISOSprache = $language->getIso();
+            $localized->cName       = $linkGroup->cName;
+            $idx                    = 'cName_' . $language->getIso();
+            if (isset($post[$idx])) {
+                $localized->cName = $this->specialChars($post[$idx]);
             }
-
             $this->db->delete(
                 'tlinkgruppesprache',
                 ['kLinkgruppe', 'cISOSprache'],
-                [$kLinkgruppe, $sprache->cISO]
+                [$groupID, $language->getIso()]
             );
-            $this->db->insert('tlinkgruppesprache', $linkgruppeSprache);
+            $this->db->insert('tlinkgruppesprache', $localized);
         }
 
         return $linkGroup;
@@ -433,10 +433,7 @@ final class LinkAdmin
                 $ins              = new stdClass();
                 $ins->linkGroupID = $new;
                 $ins->linkID      = $childLink->getID();
-                $this->db->insert(
-                    'tlinkgroupassociations',
-                    $ins
-                );
+                $this->db->insert('tlinkgroupassociations', $ins);
             } else {
                 $this->db->update(
                     'tlinkgroupassociations',
@@ -486,7 +483,7 @@ final class LinkAdmin
         $link->cNoFollow          = 'N';
         $link->cIdentifier        = $post['cIdentifier'];
         $link->bIsFluid           = (isset($post['bIsFluid']) && $post['bIsFluid'] === '1') ? 1 : 0;
-        if (isset($post['cKundengruppen']) && \is_array($post['cKundengruppen'])) {
+        if (GeneralObject::isCountable('cKundengruppen', $post)) {
             $link->cKundengruppen = \implode(';', $post['cKundengruppen']) . ';';
             if (\in_array('-1', $post['cKundengruppen'], true)) {
                 $link->cKundengruppen = 'NULL';
@@ -527,53 +524,50 @@ final class LinkAdmin
             $revision->addRevision('link', $kLink, true);
             $this->db->update('tlink', 'kLink', $kLink, $link);
         }
-        $sprachen           = Sprache::getAllLanguages();
-        $linkSprache        = new stdClass();
-        $linkSprache->kLink = $kLink;
-        foreach ($sprachen as $sprache) {
-            $linkSprache->cISOSprache = $sprache->cISO;
-            $linkSprache->cName       = $link->cName;
-            $linkSprache->cTitle      = '';
-            $linkSprache->cContent    = '';
-            if (!empty($post['cName_' . $sprache->cISO])) {
-                $linkSprache->cName = $this->specialChars($post['cName_' . $sprache->cISO]);
+        $localized        = new stdClass();
+        $localized->kLink = $kLink;
+        foreach (LanguageHelper::getAllLanguages() as $language) {
+            $code                   = $language->getIso();
+            $localized->cISOSprache = $code;
+            $localized->cName       = $link->cName;
+            $localized->cTitle      = '';
+            $localized->cContent    = '';
+            if (!empty($post['cName_' . $code])) {
+                $localized->cName = $this->specialChars($post['cName_' . $code]);
             }
-            if (!empty($post['cTitle_' . $sprache->cISO])) {
-                $linkSprache->cTitle = $this->specialChars($post['cTitle_' . $sprache->cISO]);
+            if (!empty($post['cTitle_' . $code])) {
+                $localized->cTitle = $this->specialChars($post['cTitle_' . $code]);
             }
-            if (!empty($post['cContent_' . $sprache->cISO])) {
-                $linkSprache->cContent = $this->parseText($post['cContent_' . $sprache->cISO], $kLink);
+            if (!empty($post['cContent_' . $code])) {
+                $localized->cContent = $this->parseText($post['cContent_' . $code], $kLink);
             }
-            $linkSprache->cSeo = $linkSprache->cName;
-            if (!empty($post['cSeo_' . $sprache->cISO])) {
-                $linkSprache->cSeo = $post['cSeo_' . $sprache->cISO];
+            $localized->cSeo = $localized->cName;
+            if (!empty($post['cSeo_' . $code])) {
+                $localized->cSeo = $post['cSeo_' . $code];
             }
-            $linkSprache->cMetaTitle = $linkSprache->cTitle;
-            $idx                     = 'cMetaTitle_' . $sprache->cISO;
+            $localized->cMetaTitle = $localized->cTitle;
+            $idx                   = 'cMetaTitle_' . $code;
             if (isset($post[$idx])) {
-                $linkSprache->cMetaTitle = $this->specialChars($post[$idx]);
+                $localized->cMetaTitle = $this->specialChars($post[$idx]);
             }
-            $linkSprache->cMetaKeywords    = $this->specialChars($post['cMetaKeywords_' . $sprache->cISO]);
-            $linkSprache->cMetaDescription = $this->specialChars($post['cMetaDescription_' . $sprache->cISO]);
-            $this->db->delete('tlinksprache', ['kLink', 'cISOSprache'], [$kLink, $sprache->cISO]);
-            $linkSprache->cSeo = $link->nLinkart === \LINKTYP_EXTERNE_URL
-                ? $linkSprache->cSeo
-                : Seo::getSeo($linkSprache->cSeo);
-            $this->db->insert('tlinksprache', $linkSprache);
-            $oSpracheTMP = $this->db->select('tsprache', 'cISO', $linkSprache->cISOSprache);
-            if (isset($oSpracheTMP->kSprache) && $oSpracheTMP->kSprache > 0) {
-                $this->db->delete(
-                    'tseo',
-                    ['cKey', 'kKey', 'kSprache'],
-                    ['kLink', (int)$linkSprache->kLink, (int)$oSpracheTMP->kSprache]
-                );
-                $oSeo           = new stdClass();
-                $oSeo->cSeo     = Seo::checkSeo($linkSprache->cSeo);
-                $oSeo->kKey     = $linkSprache->kLink;
-                $oSeo->cKey     = 'kLink';
-                $oSeo->kSprache = $oSpracheTMP->kSprache;
-                $this->db->insert('tseo', $oSeo);
-            }
+            $localized->cMetaKeywords    = $this->specialChars($post['cMetaKeywords_' . $code]);
+            $localized->cMetaDescription = $this->specialChars($post['cMetaDescription_' . $code]);
+            $this->db->delete('tlinksprache', ['kLink', 'cISOSprache'], [$kLink, $code]);
+            $localized->cSeo = $link->nLinkart === \LINKTYP_EXTERNE_URL
+                ? $localized->cSeo
+                : Seo::getSeo($localized->cSeo);
+            $this->db->insert('tlinksprache', $localized);
+            $this->db->delete(
+                'tseo',
+                ['cKey', 'kKey', 'kSprache'],
+                ['kLink', $localized->kLink, $language->getId()]
+            );
+            $seo           = new stdClass();
+            $seo->cSeo     = Seo::checkSeo($localized->cSeo);
+            $seo->kKey     = $localized->kLink;
+            $seo->cKey     = 'kLink';
+            $seo->kSprache = $language->getId();
+            $this->db->insert('tseo', $seo);
         }
         $linkInstance = new Link($this->db);
         $linkInstance->load($kLink);
@@ -652,14 +646,12 @@ final class LinkAdmin
      */
     public function getSpecialPageTypes(): Collection
     {
-        $links = $this->db->query(
+        return $this->db->query(
             'SELECT *
                 FROM tspezialseite
                 ORDER BY nSort',
             ReturnType::COLLECTION
-        );
-
-        return $links->map(function ($link) {
+        )->map(function ($link) {
             $link->kSpezialseite = (int)$link->kSpezialseite;
             $link->kPlugin       = (int)$link->kPlugin;
             $link->nLinkart      = (int)$link->nLinkart;

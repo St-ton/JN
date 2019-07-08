@@ -6,6 +6,7 @@
 
 namespace JTL\Plugin\Admin\Installation\Items;
 
+use JTL\Helpers\GeneralObject;
 use JTL\Plugin\InstallCode;
 
 /**
@@ -31,10 +32,7 @@ class AdminMenu extends AbstractItem
     public function install(): int
     {
         $node = $this->getNode();
-        if (isset($node[0]['Customlink'])
-            && \is_array($node[0]['Customlink'])
-            && \count($node[0]['Customlink']) > 0
-        ) {
+        if (isset($node[0]) && GeneralObject::hasCount('Customlink', $node[0])) {
             $sort = 0;
             foreach ($node[0]['Customlink'] as $i => $customLink) {
                 $i = (string)$i;

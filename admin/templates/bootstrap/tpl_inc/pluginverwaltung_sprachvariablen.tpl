@@ -31,18 +31,18 @@
                         <tbody>
                         {foreach $plugin->getLocalization()->getLangVars() as $var}
                             <tr>
-                                <td><strong>{$var->name}</strong></td>
+                                <td><i>{$var->name}</i></td>
                                 <td>{__($var->description)}</td>
                             </tr>
                             {foreach $pluginLanguages as $lang}
                                 <tr>
-                                    <td>{$lang->cNameDeutsch}</td>
+                                    {assign var=cISOSprache value=strtoupper($lang->getIso())}
+                                    <td><label for="lv-{$var->id}_{$cISOSprache}">{$lang->getLocalizedName()}</label></td>
                                     <td>
-                                        {assign var=cISOSprache value=strtoupper($lang->cISO)}
                                         {if isset($var->values[$cISOSprache]) && $var->values[$cISOSprache]|strlen > 0}
-                                            <input class="form-control" style="width: 350px;" name="{$var->id}_{$cISOSprache}" type="text" value="{$var->values[$cISOSprache]|escape:'html'}" />
+                                            <input id="lv-{$var->id}_{$cISOSprache}" class="form-control" style="width: 350px;" name="{$var->id}_{$cISOSprache}" type="text" value="{$var->values[$cISOSprache]|escape:'html'}" />
                                         {else}
-                                            <input class="form-control" style="width: 350px;" name="{$var->id}_{$cISOSprache}" type="text" value="" />
+                                            <input id="lv-{$var->id}_{$cISOSprache}" class="form-control" style="width: 350px;" name="{$var->id}_{$cISOSprache}" type="text" value="" />
                                         {/if}
                                     </td>
                                 </tr>

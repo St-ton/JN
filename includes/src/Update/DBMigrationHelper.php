@@ -32,7 +32,7 @@ class DBMigrationHelper
     /**
      * @return stdClass
      */
-    public static function getMySQLVersion(): \stdClass
+    public static function getMySQLVersion(): stdClass
     {
         static $versionInfo = null;
 
@@ -165,10 +165,10 @@ class DBMigrationHelper
     }
 
     /**
-     * @param string $cTable
+     * @param string $table
      * @return stdClass|null
      */
-    public static function getTable($cTable): ?stdClass
+    public static function getTable($table): ?stdClass
     {
         $database = Shop::Container()->getDB()->getConfig()['database'];
 
@@ -185,7 +185,7 @@ class DBMigrationHelper
                     AND t.`TABLE_NAME` = :table
                 GROUP BY t.`TABLE_NAME`, t.`ENGINE`, t.`TABLE_COLLATION`, t.`TABLE_COMMENT`
                 ORDER BY t.`TABLE_NAME` LIMIT 1',
-            ['schema' => $database, 'table' => $cTable,],
+            ['schema' => $database, 'table' => $table,],
             ReturnType::SINGLE_OBJECT
         );
     }
@@ -216,28 +216,28 @@ class DBMigrationHelper
     }
 
     /**
-     * @param string|stdClass $oTable
+     * @param string|stdClass $table
      * @return int
      */
-    public static function isTableNeedMigration($oTable): int
+    public static function isTableNeedMigration($table): int
     {
         $result = self::MIGRATE_NONE;
 
-        if (\is_string($oTable)) {
-            $oTable = self::getTable($oTable);
+        if (\is_string($table)) {
+            $table = self::getTable($table);
         }
 
-        if (\is_object($oTable)) {
-            if ($oTable->ENGINE !== 'InnoDB') {
+        if (\is_object($table)) {
+            if ($table->ENGINE !== 'InnoDB') {
                 $result |= self::MIGRATE_INNODB;
             }
-            if ($oTable->TABLE_COLLATION !== 'utf8_unicode_ci') {
+            if ($table->TABLE_COLLATION !== 'utf8_unicode_ci') {
                 $result |= self::MIGRATE_UTF8;
             }
-            if (isset($oTable->TEXT_FIELDS) && (int)$oTable->TEXT_FIELDS > 0) {
+            if (isset($table->TEXT_FIELDS) && (int)$table->TEXT_FIELDS > 0) {
                 $result |= self::MIGRATE_TEXT;
             }
-            if (isset($oTable->FIELD_COLLATIONS) && (int)$oTable->FIELD_COLLATIONS > 0) {
+            if (isset($table->FIELD_COLLATIONS) && (int)$table->FIELD_COLLATIONS > 0) {
                 $result |= self::MIGRATE_C_UTF8;
             }
         }
@@ -246,25 +246,25 @@ class DBMigrationHelper
     }
 
     /**
-     * @param string $cTable
+     * @param string $table
      * @return bool
      */
-    public static function isTableInUse($cTable): bool
+    public static function isTableInUse($table): bool
     {
         $mysqlVersion = self::getMySQLVersion();
         $database     = Shop::Container()->getDB()->getConfig()['database'];
 
         if (\version_compare($mysqlVersion->innodb->version, '5.6', '<')) {
-            $oTable = self::getTable($cTable);
+            $table = self::getTable($table);
 
-            return \mb_strpos($oTable->TABLE_COMMENT, ':Migrating') !== false;
+            return \mb_strpos($table->TABLE_COMMENT, ':Migrating') !== false;
         }
 
         $tableStatus = Shop::Container()->getDB()->queryPrepared(
             'SHOW OPEN TABLES
                 WHERE `Database` LIKE :schema
                     AND `Table` LIKE :table',
-            ['schema' => $database, 'table' => $cTable,],
+            ['schema' => $database, 'table' => $table,],
             ReturnType::SINGLE_OBJECT
         );
 
@@ -295,49 +295,49 @@ class DBMigrationHelper
     }
 
     /**
-     * @param stdClass $oTable
+     * @param stdClass $table
      * @return string
      */
-    public static function sqlAddLockInfo($oTable): string
+    public static function sqlAddLockInfo($table): string
     {
         $mysqlVersion = self::getMySQLVersion();
 
         return \version_compare($mysqlVersion->innodb->version, '5.6', '<')
-            ? "ALTER TABLE `{$oTable->TABLE_NAME}` COMMENT = '{$oTable->TABLE_COMMENT}:Migrating'"
+            ? "ALTER TABLE `{$table->TABLE_NAME}` COMMENT = '{$table->TABLE_COMMENT}:Migrating'"
             : '';
     }
 
     /**
-     * @param stdClass $oTable
+     * @param stdClass $table
      * @return string
      */
-    public static function sqlClearLockInfo($oTable): string
+    public static function sqlClearLockInfo($table): string
     {
         $mysqlVersion = self::getMySQLVersion();
 
         return \version_compare($mysqlVersion->innodb->version, '5.6', '<')
-            ? "ALTER TABLE `{$oTable->TABLE_NAME}` COMMENT = '{$oTable->TABLE_COMMENT}'"
+            ? "ALTER TABLE `{$table->TABLE_NAME}` COMMENT = '{$table->TABLE_COMMENT}'"
             : '';
     }
 
     /**
-     * @param stdClass $oTable
+     * @param stdClass $table
      * @return string
      */
-    public static function sqlMoveToInnoDB($oTable): string
+    public static function sqlMoveToInnoDB($table): string
     {
         $mysqlVersion = self::getMySQLVersion();
 
-        if (!isset($oTable->Migration)) {
-            $oTable->Migration = self::isTableNeedMigration($oTable);
+        if (!isset($table->Migration)) {
+            $table->Migration = self::isTableNeedMigration($table);
         }
 
-        if (($oTable->Migration & self::MIGRATE_TABLE) === self::MIGRATE_TABLE) {
-            $sql = "ALTER TABLE `{$oTable->TABLE_NAME}` CHARACTER SET='utf8' COLLATE='utf8_unicode_ci' ENGINE='InnoDB'";
-        } elseif (($oTable->Migration & self::MIGRATE_INNODB) === self::MIGRATE_INNODB) {
-            $sql = "ALTER TABLE `{$oTable->TABLE_NAME}` ENGINE='InnoDB'";
-        } elseif (($oTable->Migration & self::MIGRATE_UTF8) === self::MIGRATE_UTF8) {
-            $sql = "ALTER TABLE `{$oTable->TABLE_NAME}` CHARACTER SET='utf8' COLLATE='utf8_unicode_ci'";
+        if (($table->Migration & self::MIGRATE_TABLE) === self::MIGRATE_TABLE) {
+            $sql = "ALTER TABLE `{$table->TABLE_NAME}` CHARACTER SET='utf8' COLLATE='utf8_unicode_ci' ENGINE='InnoDB'";
+        } elseif (($table->Migration & self::MIGRATE_INNODB) === self::MIGRATE_INNODB) {
+            $sql = "ALTER TABLE `{$table->TABLE_NAME}` ENGINE='InnoDB'";
+        } elseif (($table->Migration & self::MIGRATE_UTF8) === self::MIGRATE_UTF8) {
+            $sql = "ALTER TABLE `{$table->TABLE_NAME}` CHARACTER SET='utf8' COLLATE='utf8_unicode_ci'";
         } else {
             return '';
         }
@@ -348,17 +348,17 @@ class DBMigrationHelper
     }
 
     /**
-     * @param stdClass $oTable
+     * @param stdClass $table
      * @param string   $lineBreak
      * @return string
      */
-    public static function sqlConvertUTF8($oTable, $lineBreak = ''): string
+    public static function sqlConvertUTF8($table, $lineBreak = ''): string
     {
         $mysqlVersion = self::getMySQLVersion();
-        $columns      = self::getColumnsNeedMigration($oTable->TABLE_NAME);
+        $columns      = self::getColumnsNeedMigration($table->TABLE_NAME);
         $sql          = '';
         if ($columns !== false && \count($columns) > 0) {
-            $sql = "ALTER TABLE `{$oTable->TABLE_NAME}`$lineBreak";
+            $sql = "ALTER TABLE `{$table->TABLE_NAME}`$lineBreak";
 
             $columnChange = [];
             foreach ($columns as $key => $col) {
@@ -392,25 +392,25 @@ class DBMigrationHelper
     }
 
     /**
-     * @param string $cTable
+     * @param string $tableName
      * @return string - SUCCESS, FAILURE or IN_USE
      */
-    public static function migrateToInnoDButf8(string $cTable): string
+    public static function migrateToInnoDButf8(string $tableName): string
     {
-        $oTable = self::getTable($cTable);
-        if (self::isTableInUse($oTable->TABLE_NAME)) {
+        $table = self::getTable($tableName);
+        if (self::isTableInUse($table->TABLE_NAME)) {
             return self::IN_USE;
         }
 
-        $migration = self::isTableNeedMigration($oTable);
+        $migration = self::isTableNeedMigration($table);
         if (($migration & self::MIGRATE_TEXT) !== self::MIGRATE_NONE) {
-            $sql = self::sqlMoveToInnoDB($oTable);
+            $sql = self::sqlMoveToInnoDB($table);
             if (!empty($sql) && !Shop::Container()->getDB()->executeQuery($sql, ReturnType::QUERYSINGLE)) {
                 return self::FAILURE;
             }
         }
         if (($migration & self::MIGRATE_COLUMN) !== self::MIGRATE_NONE) {
-            $sql = self::sqlConvertUTF8($oTable);
+            $sql = self::sqlConvertUTF8($table);
             if (!empty($sql) && !Shop::Container()->getDB()->executeQuery($sql, ReturnType::QUERYSINGLE)) {
                 return self::FAILURE;
             }

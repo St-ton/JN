@@ -8,7 +8,6 @@
         id="sidebox_categories{$oBox->getCustomID()}"
         title="{if !empty($oBox->getTitle())}{$oBox->getTitle()}{else}{lang key='categories'}{/if}"
     }
-        <hr class="mt-0 mb-4">
         {block name='boxes-box-categories-content'}
             <div class="nav-panel">
                 {nav vertical=true}

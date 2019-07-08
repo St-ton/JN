@@ -4,11 +4,11 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use JTL\Helpers\Form;
-use JTL\Shop;
-use JTL\Sprache;
-use JTL\DB\ReturnType;
 use JTL\Alert\Alert;
+use JTL\DB\ReturnType;
+use JTL\Helpers\Form;
+use JTL\Helpers\GeneralObject;
+use JTL\Shop;
 
 /**
  * @global \JTL\Smarty\JTLSmarty     $smarty
@@ -26,12 +26,7 @@ if (isset($_POST['speichern']) && Form::validateToken()) {
         'saveSettings'
     );
     Shop::Container()->getCache()->flushTags([CACHING_GROUP_CATEGORY]);
-    if (isset($_POST['nVon'], $_POST['nBis'])
-        && is_array($_POST['nVon'])
-        && is_array($_POST['nBis'])
-        && count($_POST['nVon']) > 0
-        && count($_POST['nBis']) > 0
-    ) {
+    if (GeneralObject::hasCount('nVon', $_POST) && GeneralObject::hasCount('nBis', $_POST)) {
         $db->query('TRUNCATE TABLE tpreisspannenfilter', ReturnType::AFFECTED_ROWS);
         foreach ($_POST['nVon'] as $i => $nVon) {
             $nVon = (float)$nVon;
@@ -50,5 +45,4 @@ $priceRangeFilters = $db->query(
 
 $smarty->assign('oConfig_arr', getAdminSectionSettings(CONF_NAVIGATIONSFILTER))
        ->assign('oPreisspannenfilter_arr', $priceRangeFilters)
-       ->assign('Sprachen', Sprache::getAllLanguages())
        ->display('navigationsfilter.tpl');

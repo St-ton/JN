@@ -812,21 +812,6 @@ msgstr "Ja"
 msgid "artikeldetails_vergleichsliste_anzeigen_value(N)"
 msgstr "Nein"
 
-msgid "tagging_freischaltung_value(Y)"
-msgstr "Ja, nur für angemeldete Kunden"
-
-msgid "tagging_freischaltung_value(O)"
-msgstr "Ja, für alle Besucher"
-
-msgid "tagging_freischaltung_value(N)"
-msgstr "Nein"
-
-msgid "tagging_anzeigen_value(Y)"
-msgstr "Ja"
-
-msgid "tagging_anzeigen_value(N)"
-msgstr "Nein"
-
 msgid "mediendatei_anzeigen_value(YM)"
 msgstr "Ja, als neue Registerkarten pro Mediengruppe"
 
@@ -1293,12 +1278,6 @@ msgid "boxen_livesuche_anzeigen_value(Y)"
 msgstr "Ja"
 
 msgid "boxen_livesuche_anzeigen_value(N)"
-msgstr "Nein"
-
-msgid "boxen_tagging_anzeigen_value(Y)"
-msgstr "Ja"
-
-msgid "boxen_tagging_anzeigen_value(N)"
 msgstr "Nein"
 
 msgid "boxen_wunschzettel_bilder_value(Y)"
@@ -1778,24 +1757,6 @@ msgstr "Ja, im Content-Bereich und der Navigationsbox"
 msgid "bewertungsfilter_benutzen_value(N)"
 msgstr "Nein"
 
-msgid "allgemein_tagfilter_benutzen_value(content)"
-msgstr "Ja, im Content-Bereich"
-
-msgid "allgemein_tagfilter_benutzen_value(box)"
-msgstr "Ja, in Navigationsbox"
-
-msgid "allgemein_tagfilter_benutzen_value(Y)"
-msgstr "Ja, im Content-Bereich und der Navigationsbox"
-
-msgid "allgemein_tagfilter_benutzen_value(N)"
-msgstr "Nein"
-
-msgid "tag_filter_type_value(A)"
-msgstr "Keine Mehrfachauswahl (nur Einschränkung der Ergebnisse)"
-
-msgid "tag_filter_type_value(O)"
-msgstr "Mehrfachauswahl"
-
 msgid "suchtrefferfilter_nutzen_value(Y)"
 msgstr "Ja"
 
@@ -1961,12 +1922,6 @@ msgstr "Ja"
 msgid "news_kommentare_freischalten_value(N)"
 msgstr "Nein"
 
-msgid "news_kommentare_eingeloggt_value(Y)"
-msgstr "Ja"
-
-msgid "news_kommentare_eingeloggt_value(N)"
-msgstr "Nein"
-
 msgid "news_kategorie_unternewsanzeigen_value(Y)"
 msgstr "Ja"
 
@@ -1997,12 +1952,6 @@ msgstr "Ja"
 msgid "sitemap_kategorien_anzeigen_value(N)"
 msgstr "Nein"
 
-msgid "sitemap_globalemerkmale_anzeigen_value(Y)"
-msgstr "Ja"
-
-msgid "sitemap_globalemerkmale_anzeigen_value(N)"
-msgstr "Nein"
-
 msgid "sitemap_hersteller_anzeigen_value(Y)"
 msgstr "Ja"
 
@@ -2025,12 +1974,6 @@ msgid "sitemap_weitereseiten_artikeluebersicht_value(Y)"
 msgstr "Ja"
 
 msgid "sitemap_weitereseiten_artikeluebersicht_value(N)"
-msgstr "Nein"
-
-msgid "sitemap_tags_anzeigen_value(Y)"
-msgstr "Ja"
-
-msgid "sitemap_tags_anzeigen_value(N)"
 msgstr "Nein"
 
 msgid "sitemap_livesuche_anzeigen_value(Y)"
@@ -2488,3 +2431,12 @@ msgstr "Template-gesteuert"
 
 msgid "cron_type_value(s2s)"
 msgstr "Curl Server-to-Server"
+
+msgid "hersteller_anzeigen_als_value(T)"
+msgstr "Text"
+
+msgid "hersteller_anzeigen_als_value(BT)"
+msgstr "Bild und Text"
+
+msgid "hersteller_anzeigen_als_value(B)"
+msgstr "Bild"

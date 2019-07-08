@@ -6,10 +6,15 @@
 
 namespace JTL\Console\Command;
 
+use JTL\Console\Application;
+use JTL\Console\ConsoleIO;
 use Symfony\Component\Console\Command\Command as BaseCommand;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputOption;
 
 /**
- * Class Command.
+ * Class Command
+ * @package JTL\Console\Command
  */
 class Command extends BaseCommand
 {
@@ -24,7 +29,7 @@ class Command extends BaseCommand
     }
 
     /**
-     * @return \JTL\Console\Application|\Symfony\Component\Console\Application
+     * @return Application|\Symfony\Component\Console\Application
      */
     public function getApp()
     {
@@ -32,49 +37,41 @@ class Command extends BaseCommand
     }
 
     /**
-     * @return \JTL\Console\ConsoleIO
+     * @return ConsoleIO
      */
     public function getIO()
     {
         return $this->getApp()->getIO();
     }
 
+    /**
+     * @param $name
+     * @return InputArgument
+     */
     public function getArgumentDefinition($name)
     {
-        $argument = $this->getDefinition()->getArgument($name);
-
-        return $argument;
+        return $this->getDefinition()->getArgument($name);
     }
 
     /**
      * @param $name
-     *
      * @return bool
      */
     public function hasMissingOption($name)
     {
         $option = $this->getDefinition()->getOption($name);
-        $value  = trim($this->getIO()->getInput()->getOption($name));
+        $value  = \trim($this->getIO()->getInput()->getOption($name));
 
-        if ($option->isValueRequired() && $option->acceptValue()) {
-            if (empty($value)) {
-                return true;
-            }
-        }
-
-        return false;
+        return $option->isValueRequired() && $option->acceptValue() && empty($value);
     }
 
     /**
      * @param $name
-     *
-     * @return \Symfony\Component\Console\Input\InputOption
+     * @return InputOption
      */
     public function getOptionDefinition($name)
     {
-        $def = $this->getDefinition()->getOption($name);
-
-        return $def;
+        return $this->getDefinition()->getOption($name);
     }
 
     /**
@@ -86,8 +83,8 @@ class Command extends BaseCommand
     {
         $value = $this->getIO()->getInput()->getOption($name);
 
-        if (is_string($value)) {
-            $value = trim($value);
+        if (\is_string($value)) {
+            $value = \trim($value);
         }
 
         /*
@@ -103,8 +100,6 @@ class Command extends BaseCommand
     }
 
     /**
-     * Get options
-     *
      * @return array
      */
     public function getOptions()
@@ -114,8 +109,7 @@ class Command extends BaseCommand
 
     /**
      * @param $name
-     *
-     * @return mixed
+     * @return bool
      */
     public function hasOption($name)
     {

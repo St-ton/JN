@@ -1,23 +1,50 @@
-<div
-    style="{$instance->getStyleString()}"
-    class="{$instance->getAnimationClass()}"
-    {$instance->getAnimationDataAttributeString()}
-    {if $isPreview}{$instance->getDataAttributeString()}{/if}
->
+{$style = "min-height:{$instance->getProperty('min-height')}px; position:relative;"}
+{$class = $instance->getAnimationClass()}
+{$data  = $instance->getAnimationData()}
+{$fluid = $instance->getProperty('boxed') === false}
+
+{if $isPreview}
+    {$data = $data|array_merge:['portlet' => $instance->getDataAttribute()]}
+{/if}
+
+{if $instance->getProperty('background-flag') === 'image' && !empty($instance->getProperty('src'))}
+    {$name = basename($instance->getProperty('src'))}
+    {$class = "{$class} parallax-window"}
+    {$v = $instance->getImageAttributes("{Shop::getURL()}/{\PFAD_MEDIAFILES}Bilder/.xs/{$name}")}
+    {if $isPreview}
+        {$style = "{$style} background-image:url('{Shop::getURL()}/{\PFAD_MEDIAFILES}Bilder/.xs/{$name}');"}
+        {$style = "{$style} background-size:cover;"}
+    {else}
+        {$data = $data|array_merge:[
+            'parallax'  => 'scroll',
+            'z-index'   => '1',
+            'image-src' => "{Shop::getURL()}/{\PFAD_MEDIAFILES}Bilder/.lg/{$name}"
+        ]}
+    {/if}
+{/if}
+
+{if $instance->getProperty('background-flag') === 'video'}
+    {$style          = "{$style} overflow:hidden;"}
+    {$name           = basename($instance->getProperty('video-poster'))}
+    {$videoPosterUrl = "{Shop::getURL()}/{\PFAD_MEDIAFILES}Bilder/.xs/{$name}"}
+    {$name           = basename($instance->getProperty('video-src'))}
+    {$videoSrcUrl    = "{Shop::getURL()}/{\PFAD_MEDIAFILES}Videos/{$name}"}
+{/if}
+
+{container style=$style class=$class data=$data fluid=$fluid}
     {if $instance->getProperty('background-flag') === 'video' && !empty($instance->getProperty('video-src'))}
-        <video autoplay="autoplay"
-               poster="{$instance->getProperty('video-poster-url')}" loop="loop" muted="muted"
-               style="display: inherit; width: 100%; position: absolute; z-index: 1;opacity: 0.5;">
+        <video autoplay loop muted poster="{$videoPosterUrl}"
+               style="display: inherit; width: 100%; position: absolute; opacity: 0.7;">
             {if !$isPreview}
-                <source src="{$instance->getProperty('video-src-url')}" type="video/mp4">
+                <source src="{$videoSrcUrl}" type="video/mp4">
             {/if}
         </video>
     {/if}
-    <div {if $isPreview}class='opc-area' data-area-id='container'{/if} style="position: relative; z-index: 2;">
+    <div {if $isPreview}class='opc-area' data-area-id='container'{/if} style="position: relative;">
         {if $isPreview}
             {$instance->getSubareaPreviewHtml('container')}
         {else}
             {$instance->getSubareaFinalHtml('container')}
         {/if}
     </div>
-</div>
+{/container}

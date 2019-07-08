@@ -20,17 +20,17 @@ class SimpleCSS
     public $cCSS_arr = [];
 
     /**
-     * @param string $cSelector
-     * @param string $cAttribute
-     * @param string $cValue
+     * @param string $selector
+     * @param string $attribute
+     * @param string $value
      * @return $this
      */
-    public function addCSS($cSelector, $cAttribute, $cValue): self
+    public function addCSS($selector, $attribute, $value): self
     {
-        if (isset($this->cCSS_arr[$cSelector])) {
-            $this->cCSS_arr[$cSelector] = \array_merge($this->cCSS_arr[$cSelector], [$cAttribute => $cValue]);
+        if (isset($this->cCSS_arr[$selector])) {
+            $this->cCSS_arr[$selector] = \array_merge($this->cCSS_arr[$selector], [$attribute => $value]);
         } else {
-            $this->cCSS_arr[$cSelector] = [$cAttribute => $cValue];
+            $this->cCSS_arr[$selector] = [$attribute => $value];
         }
 
         return $this;
@@ -104,9 +104,7 @@ class SimpleCSS
      */
     public function getSelector($selector)
     {
-        return \is_array($this->cCSS_arr) && \count($this->cCSS_arr) && isset($this->cCSS_arr[$selector])
-            ? $this->cCSS_arr[$selector]
-            : false;
+        return $this->cCSS_arr[$selector] ?? false;
     }
 
     /**

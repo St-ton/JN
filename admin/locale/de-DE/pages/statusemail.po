@@ -127,3 +127,6 @@ msgstr "Wochenbericht"
 
 msgid "intervalMonth"
 msgstr "Monatsbericht"
+
+msgid "nextStatusMail"
+msgstr "Der nächste %s wird am %s versendet."

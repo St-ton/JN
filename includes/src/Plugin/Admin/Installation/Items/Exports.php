@@ -7,9 +7,9 @@
 namespace JTL\Plugin\Admin\Installation\Items;
 
 use JTL\Customer\Kundengruppe;
+use JTL\Language\LanguageHelper;
 use JTL\Plugin\InstallCode;
 use JTL\Session\Frontend;
-use JTL\Sprache;
 
 /**
  * Class Exports
@@ -34,7 +34,7 @@ class Exports extends AbstractItem
     public function install(): int
     {
         $defaultCustomerGroupID = Kundengruppe::getDefaultGroupID();
-        $language               = Sprache::getDefaultLanguage();
+        $language               = LanguageHelper::getDefaultLanguage();
         $defaultLanguageID      = $language->kSprache;
         $defaultCurrencyID      = Frontend::getCurrency()->getID();
         foreach ($this->getNode() as $i => $data) {

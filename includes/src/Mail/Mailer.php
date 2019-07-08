@@ -250,7 +250,7 @@ class Mailer
         if ($template !== null) {
             $template->setConfig($this->config);
             $template->preRender($this->renderer->getSmarty(), $mail->getData());
-            $template->render($this->renderer, $mail->getLanguageID(), $mail->getCustomerGroupID());
+            $template->render($this->renderer, $mail->getLanguage()->getId(), $mail->getCustomerGroupID());
             $mail->setBodyHTML($template->getHTML());
             $mail->setBodyText($template->getText());
             $mail->setSubject($template->getSubject());
@@ -269,7 +269,7 @@ class Mailer
     private function sendViaPHPMailer(MailInterface $mail): bool
     {
         $phpmailer = new PHPMailer();
-        $phpmailer->setLanguage($mail->getLanguageCode6391());
+        $phpmailer->setLanguage($mail->getLanguage()->getIso639());
         $phpmailer->CharSet = \JTL_CHARSET;
         $phpmailer->Timeout = \SOCKET_TIMEOUT;
         $phpmailer->Sender  = $mail->getFromMail();
@@ -305,6 +305,10 @@ class Mailer
     public function send(MailInterface $mail): bool
     {
         $this->hydrate($mail);
+        \executeHook(\HOOK_MAIL_PRERENDER, [
+            'mailer' => $this,
+            'mail'   => $mail,
+        ]);
         $mail = $this->renderTemplate($mail);
         if (!$this->validator->validate($mail)) {
             $mail->setError('Mail failed validation');
@@ -315,7 +319,7 @@ class Mailer
             'mailsmarty'    => $this->renderer->getSmarty(),
             'mail'          => $mail,
             'kEmailvorlage' => 0,
-            'kSprache'      => $mail->getLanguageID(),
+            'kSprache'      => $mail->getLanguage()->getId(),
             'cPluginBody'   => '',
             'Emailvorlage'  => null,
             'template'      => $mail->getTemplate()

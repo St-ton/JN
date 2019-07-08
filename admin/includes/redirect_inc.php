@@ -10,15 +10,15 @@ use JTL\Shop;
 /**
  * Update and return the availability of a redirect
  *
- * @param int $kRedirect
+ * @param int $redirectID
  * @return bool
  */
-function updateRedirectState(int $kRedirect): bool
+function updateRedirectState(int $redirectID): bool
 {
-    $url        = Shop::Container()->getDB()->select('tredirect', 'kRedirect', $kRedirect)->cToUrl;
-    $cAvailable = $url !== '' && Redirect::checkAvailability($url) ? 'y' : 'n';
+    $url       = Shop::Container()->getDB()->select('tredirect', 'kRedirect', $redirectID)->cToUrl;
+    $available = $url !== '' && Redirect::checkAvailability($url) ? 'y' : 'n';
 
-    Shop::Container()->getDB()->update('tredirect', 'kRedirect', $kRedirect, (object)['cAvailable' => $cAvailable]);
+    Shop::Container()->getDB()->update('tredirect', 'kRedirect', $redirectID, (object)['cAvailable' => $available]);
 
-    return $cAvailable === 'y';
+    return $available === 'y';
 }

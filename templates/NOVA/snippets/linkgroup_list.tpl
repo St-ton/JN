@@ -22,7 +22,7 @@
                 {foreach $links as $li}
                     {if $li->getChildLinks()->count() > 0 && isset($dropdownSupport)}
                         {block name='snippets-linkgroup-list-links-dropdown'}
-                            {navitemdropdown text=$li->getName() data=["tab"=>"lg{$li@iteration}"]}
+                            {navitemdropdown text=$li->getName() class="{if $activeId == $li->getId()}active{/if}"}
                                 {container}
                                     {link href=$li->getURL() title=$li->getName()}
                                         {$li->getName()}
@@ -48,7 +48,7 @@
                         {/block}
                     {else}
                         {block name='snippets-linkgroup-list-links-navitem'}
-                            {navitem href=$li->getURL() nofollow=$li->getNoFollow() data=["tab"=>"lg{$li@iteration}"]}
+                            {navitem href=$li->getURL() nofollow=$li->getNoFollow() class="{if $activeId == $li->getId()}active{/if}"}
                                 {$li->getName()}
                             {/navitem}
                         {/block}

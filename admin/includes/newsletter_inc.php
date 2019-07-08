@@ -75,7 +75,7 @@ function versendeNewsletter(
         $oKundengruppe = Shop::Container()->getDB()->query(
             'SELECT tkundengruppe.nNettoPreise
                 FROM tkunde
-                JOIN tkundengruppe 
+                JOIN tkundengruppe
                     ON tkundengruppe.kKundengruppe = tkunde.kKundengruppe
                 WHERE tkunde.kKunde = ' . (int)$oKunde->kKunde,
             ReturnType::SINGLE_OBJECT
@@ -95,15 +95,15 @@ function versendeNewsletter(
             ($recipients->kNewsletterEmpfaenger ?? 0) . '" alt="Newsletter" />';
     }
 
-    $cTyp = 'VL';
+    $type = 'VL';
     $nKey = $newsletter->kNewsletterVorlage ?? 0;
     if (isset($newsletter->kNewsletter) && $newsletter->kNewsletter > 0) {
-        $cTyp = 'NL';
+        $type = 'NL';
         $nKey = $newsletter->kNewsletter;
     }
     if ($newsletter->cArt === 'text/html' || $newsletter->cArt === 'html') {
         try {
-            $bodyHtml = $mailSmarty->fetch('db:' . $cTyp . '_' . $nKey . '_html') . $cPixel;
+            $bodyHtml = $mailSmarty->fetch('db:' . $type . '_' . $nKey . '_html') . $cPixel;
         } catch (Exception $e) {
             Shop::Smarty()->assign('oSmartyError', $e->getMessage());
 
@@ -111,7 +111,7 @@ function versendeNewsletter(
         }
     }
     try {
-        $bodyText = $mailSmarty->fetch('db:' . $cTyp . '_' . $nKey . '_text');
+        $bodyText = $mailSmarty->fetch('db:' . $type . '_' . $nKey . '_text');
     } catch (Exception $e) {
         Shop::Smarty()->assign('oSmartyError', $e->getMessage());
 
@@ -131,7 +131,7 @@ function versendeNewsletter(
     $mail->subject       = $newsletter->cBetreff;
     $mail->bodyText      = $bodyText;
     $mail->bodyHtml      = $bodyHtml;
-    $mail->lang          = Sprache::getIsoFromLangID((int)$newsletter->kSprache)->cISO;
+    $mail->lang          = LanguageHelper::getIsoFromLangID((int)$newsletter->kSprache)->cISO;
     $mail->methode       = $conf['newsletter']['newsletter_emailmethode'];
     $mail->sendmail_pfad = $conf['newsletter']['newsletter_sendmailpfad'];
     $mail->smtp_hostname = $conf['newsletter']['newsletter_smtp_host'];
@@ -283,46 +283,46 @@ function explodecArtikel($productString): stdClass
 }
 
 /**
- * @param string $cKundengruppe
+ * @param string $customerGroup
  * @return array
  * @deprecated since 5.0.0
  */
-function explodecKundengruppe($cKundengruppe): array
+function explodecKundengruppe($customerGroup): array
 {
     return [];
 }
 
 /**
- * @param int $kArtikel
+ * @param int $productID
  * @return string
  * @deprecated since 5.0.0
  */
-function holeArtikelnummer(int $kArtikel)
+function holeArtikelnummer(int $productID)
 {
     return '';
 }
 
 /**
- * @param int $kNewsletter
+ * @param int $newsletterID
  * @return stdClass
  * @deprecated since 5.0.0
  */
-function getNewsletterEmpfaenger(int $kNewsletter)
+function getNewsletterEmpfaenger(int $newsletterID)
 {
     return new stdClass();
 }
 
 /**
- * @param string $dZeitDB
+ * @param string $time
  * @return stdClass
  * @deprecated since 5.0.0
  */
-function baueZeitAusDB($dZeitDB)
+function baueZeitAusDB($time)
 {
     $oZeit = new stdClass();
 
-    if (mb_strlen($dZeitDB) > 0) {
-        [$dDatum, $dUhrzeit]            = explode(' ', $dZeitDB);
+    if (mb_strlen($time) > 0) {
+        [$dDatum, $dUhrzeit]            = explode(' ', $time);
         [$dJahr, $dMonat, $dTag]        = explode('-', $dDatum);
         [$dStunde, $dMinute, $dSekunde] = explode(':', $dUhrzeit);
 
@@ -334,28 +334,28 @@ function baueZeitAusDB($dZeitDB)
 }
 
 /**
- * @param stdClass $cAktiveSucheSQL
+ * @param stdClass $activeSearchSQL
  * @return int
  * @deprecated since 5.0.0
  */
-function holeAbonnentenAnzahl($cAktiveSucheSQL): int
+function holeAbonnentenAnzahl($activeSearchSQL): int
 {
     return 0;
 }
 
 /**
- * @param string   $cSQL
- * @param stdClass $cAktiveSucheSQL
+ * @param string   $sql
+ * @param stdClass $activeSearchSQL
  * @return array
  * @deprecated since 5.0.0
  */
-function holeAbonnenten($cSQL, $cAktiveSucheSQL): array
+function holeAbonnenten($sql, $activeSearchSQL): array
 {
     return [];
 }
 
 /**
- * @param array $recipientIDs
+ * @param int[] $recipientIDs
  * @return bool
  * @deprecated since 5.0.0
  */
@@ -365,7 +365,7 @@ function loescheAbonnenten($recipientIDs): bool
 }
 
 /**
- * @param array $recipientIDs
+ * @param int[] $recipientIDs
  * @return bool
  * @deprecated since 5.0.0
  */
@@ -379,7 +379,7 @@ function aktiviereAbonnenten($recipientIDs): bool
  * @return int|stdClass
  * @deprecated since 5.0.0
  */
-function gibAbonnent($post)
+function gibAbonnent(array $post)
 {
     return 0;
 }
@@ -408,12 +408,12 @@ function baueNewsletterVorschau($template)
  * Braucht ein String von Keys oder Nummern und gibt ein Array mit kKeys zurueck
  * Der String muss ';' separiert sein z.b. '1;2;3'
  *
- * @param string $cKey
- * @param bool   $bArtikelnummer
+ * @param string $keyName
+ * @param bool   $productNo
  * @return array
  * @deprecated since 5.0.0
  */
-function gibAHKKeys($cKey, $bArtikelnummer = false)
+function gibAHKKeys($keyName, $productNo = false)
 {
     $res  = [];
     $keys = explode(';', $cKey);

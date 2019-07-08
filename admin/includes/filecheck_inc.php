@@ -4,28 +4,21 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Filesystem\Filesystem;
+use JTL\Filesystem\LocalFilesystem;
 use JTLShop\SemVer\Version;
+use Symfony\Component\Finder\Finder;
+use function Functional\map;
 
 /**
  * @param array $files
- * @param int $errorsCount
+ * @param int   $errorsCount
  * @return int
  */
-function getAllModifiedFiles(&$files, &$errorsCount)
+function getAllModifiedFiles(&$files, &$errorsCount): int
 {
 
-    $version    = Version::parse(APPLICATION_VERSION);
-    $versionStr = $version->getMajor().'-'.$version->getMinor().'-'.$version->getPatch();
-
-    if ($version->hasPreRelease()) {
-        $preRelease  = $version->getPreRelease();
-        $versionStr .= '-'.$preRelease->getGreek();
-        if ($preRelease->getReleaseNumber() > 0) {
-            $versionStr .= '-'.$preRelease->getReleaseNumber();
-        }
-    }
-
-    $md5file = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_SHOPMD5 . $versionStr . '.csv';
+    $md5file = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_SHOPMD5 . getVersionString() . '.csv';
     if (!is_array($files)) {
         return 4;
     }
@@ -65,25 +58,32 @@ function getAllModifiedFiles(&$files, &$errorsCount)
 }
 
 /**
+ * @return string
+ */
+function getVersionString(): string
+{
+    $version    = Version::parse(APPLICATION_VERSION);
+    $versionStr = $version->getMajor() . '-' . $version->getMinor() . '-' . $version->getPatch();
+
+    if ($version->hasPreRelease()) {
+        $preRelease  = $version->getPreRelease();
+        $versionStr .= '-' . $preRelease->getGreek();
+        if ($preRelease->getReleaseNumber() > 0) {
+            $versionStr .= '-' . $preRelease->getReleaseNumber();
+        }
+    }
+
+    return $versionStr;
+}
+
+/**
  * @param array $files
- * @param int $errorsCount
+ * @param int   $errorsCount
  * @return int
  */
 function getAllOrphanedFiles(&$files, &$errorsCount)
 {
-
-    $version    = Version::parse(APPLICATION_VERSION);
-    $versionStr = $version->getMajor().'-'.$version->getMinor().'-'.$version->getPatch();
-
-    if ($version->hasPreRelease()) {
-        $preRelease  = $version->getPreRelease();
-        $versionStr .= '-'.$preRelease->getGreek();
-        if ($preRelease->getReleaseNumber() > 0) {
-            $versionStr .= '-'.$preRelease->getReleaseNumber();
-        }
-    }
-
-    $csvFile = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_SHOPMD5 . 'deleted_files_' . $versionStr . '.csv';
+    $csvFile = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_SHOPMD5 . 'deleted_files_' . getVersionString() . '.csv';
     if (!is_array($files)) {
         return 4;
     }
@@ -103,7 +103,6 @@ function getAllOrphanedFiles(&$files, &$errorsCount)
             if (mb_strlen($shopFile) === 0) {
                 continue;
             }
-
             if (file_exists(PFAD_ROOT . $shopFile)) {
                 $files[] = $shopFile;
 
@@ -113,4 +112,57 @@ function getAllOrphanedFiles(&$files, &$errorsCount)
     }
 
     return 1;
+}
+
+/**
+ * @param array  $orphanedFiles
+ * @param string $backupFile
+ * @return int
+ */
+function deleteOrphanedFiles(array &$orphanedFiles, string $backupFile): int
+{
+    $count  = 0;
+    $fs     = new Filesystem(new LocalFilesystem(['root' => PFAD_ROOT]));
+    $finder = new Finder();
+    $finder->append(map($orphanedFiles, function ($e) {
+        return PFAD_ROOT . $e;
+    }));
+
+    try {
+        $fs->zip($finder, $backupFile);
+    } catch (Exception $e) {
+        return -1;
+    }
+    foreach ($orphanedFiles as $i => $file) {
+        if ($fs->delete($file)) {
+            unset($orphanedFiles[$i]);
+            ++$count;
+        }
+    }
+
+    return $count;
+}
+
+/**
+ * @return string
+ */
+function generateBashScript(): string
+{
+    return '#!/bin/bash
+base="' . PFAD_ROOT . '"
+source=$base"' . PFAD_ADMIN . PFAD_INCLUDES . PFAD_SHOPMD5 . 'deleted_files_' . getVersionString() . '.csv"
+if [ -f $source ]
+then
+    while IFS= read -r line
+    do
+        file=$base$line
+        if [ -f $file ]
+        then
+            echo "deleting $file"
+            rm -rf "$file"
+        fi
+    done <"$source"
+else
+    echo "$source does not exist!"
+fi';
 }

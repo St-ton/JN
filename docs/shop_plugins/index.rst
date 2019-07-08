@@ -6,11 +6,13 @@ Plugins
 
     allgemein
     aufbau
+    bootstrapping
     variablen
     hooks
     hinweise
     container
     cache
+    mailing
     hook_list
     fehlercodes
     short_checkout

@@ -14,15 +14,15 @@ use JTL\Alert\Alert;
  */
 function gibAlleSuchspecialOverlays()
 {
-    $overlays                  = [];
-    $searchspecialOverlayTypes = Shop::Container()->getDB()->query(
+    $overlays = [];
+    $types    = Shop::Container()->getDB()->query(
         'SELECT kSuchspecialOverlay
             FROM tsuchspecialoverlay',
         ReturnType::ARRAY_OF_OBJECTS
     );
-    foreach ($searchspecialOverlayTypes as $searchspecialOverlayType) {
+    foreach ($types as $type) {
         $overlays[] = JTL\Media\Image\Overlay::getInstance(
-            $searchspecialOverlayType->kSuchspecialOverlay,
+            $type->kSuchspecialOverlay,
             (int)$_SESSION['kSprache']
         );
     }

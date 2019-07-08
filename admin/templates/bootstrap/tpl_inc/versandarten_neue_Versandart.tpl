@@ -19,7 +19,7 @@
     function addShippingCombination() {
         var newCombi = '<li class=\'input-group\'>'+$('#ulVK #liVKneu').html()+'</li>';
         newCombi = newCombi.replace(/selectX/gi,'select');
-        if ($("select[name='Versandklassen']").size() >= 1) {
+        if ($("select[name='Versandklassen']").length >= 1) {
             newCombi = newCombi.replace(/<option value="-1">/gi, '<option value="-1" disabled="disabled">');
         }
 
@@ -48,7 +48,7 @@
                         $('.select2').select2();
                         return false;
                     }
-                    if ($("select[name='Versandklassen']").size() >= 1) {
+                    if ($("select[name='Versandklassen']").length >= 1) {
                         $(this).val("-1");
                         $('#addNewShippingClassCombi').prop('disabled', true);
                         remove = true;
@@ -98,12 +98,12 @@
                             </span>
                             <input class="form-control" type="text" id="cName" name="cName" value="{if isset($Versandart->cName)}{$Versandart->cName}{/if}" />
                         </li>
-                        {foreach $sprachen as $sprache}
-                            {assign var=cISO value=$sprache->cISO}
+                        {foreach $sprachen as $language}
+                            {assign var=cISO value=$language->getIso()}
                             {if isset($oVersandartSpracheAssoc_arr[$cISO])}
                                 <li class="input-group">
                                     <span class="input-group-addon">
-                                        <label for="cName_{$cISO}">{__('showedName')} ({$sprache->cNameDeutsch})</label>
+                                        <label for="cName_{$cISO}">{__('showedName')} ({$language->getLocalizedName()})</label>
                                     </span>
                                     <input class="form-control" type="text" id="cName_{$cISO}" name="cName_{$cISO}" value="{if isset($oVersandartSpracheAssoc_arr[$cISO]->cName)}{$oVersandartSpracheAssoc_arr[$cISO]->cName}{/if}" />
                                 </li>
@@ -116,12 +116,12 @@
                             <input class="form-control" type="text" id="cBild" name="cBild" value="{if isset($Versandart->cBild)}{$Versandart->cBild}{/if}" />
                             <span class="input-group-addon">{getHelpDesc cDesc=__('pictureDesc')}</span>
                         </li>
-                        {foreach $sprachen as $sprache}
-                            {assign var=cISO value=$sprache->cISO}
+                        {foreach $sprachen as $language}
+                            {assign var=cISO value=$language->getIso()}
                             {if isset($oVersandartSpracheAssoc_arr[$cISO])}
                                 <li class="input-group">
                                     <span class="input-group-addon">
-                                        <label for="cLieferdauer_{$cISO}">{__('shippingTime')} ({$sprache->cNameDeutsch})</label>
+                                        <label for="cLieferdauer_{$cISO}">{__('shippingTime')} ({$language->getLocalizedName()})</label>
                                     </span>
                                     <input class="form-control" type="text" id="cLieferdauer_{$cISO}" name="cLieferdauer_{$cISO}" value="{if isset($oVersandartSpracheAssoc_arr[$cISO]->cLieferdauer)}{$oVersandartSpracheAssoc_arr[$cISO]->cLieferdauer}{/if}" />
                                 </li>
@@ -230,24 +230,24 @@
                             <span class="input-group-addon">{getHelpDesc cDesc=__('customerclassDesc')}</span>
                         </li>
 
-                        {foreach $sprachen as $sprache}
-                            {assign var=cISO value=$sprache->cISO}
+                        {foreach $sprachen as $language}
+                            {assign var=cISO value=$language->getIso()}
                             {if isset($oVersandartSpracheAssoc_arr[$cISO])}
                                 <li class="input-group">
                                     <span class="input-group-addon">
-                                        <label for="cHinweistextShop_{$cISO}">{__('shippingNoteShop')} ({$sprache->cNameDeutsch})</label>
+                                        <label for="cHinweistextShop_{$cISO}">{__('shippingNoteShop')} ({$language->getLocalizedName()})</label>
                                     </span>
                                     <textarea id="cHinweistextShop_{$cISO}" class="form-control combo" name="cHinweistextShop_{$cISO}">{if isset($oVersandartSpracheAssoc_arr[$cISO]->cHinweistextShop)}{$oVersandartSpracheAssoc_arr[$cISO]->cHinweistextShop}{/if}</textarea>
                                 </li>
                             {/if}
                         {/foreach}
 
-                        {foreach $sprachen as $sprache}
-                            {assign var=cISO value=$sprache->cISO}
+                        {foreach $sprachen as $language}
+                            {assign var=cISO value=$language->getIso()}
                             {if isset($oVersandartSpracheAssoc_arr[$cISO])}
                                 <li class="input-group">
                                     <span class="input-group-addon">
-                                        <label for="cHinweistext_{$cISO}">{__('shippingNoteEmail')} ({$sprache->cNameDeutsch})</label>
+                                        <label for="cHinweistext_{$cISO}">{__('shippingNoteEmail')} ({$language->getLocalizedName()})</label>
                                     </span>
                                     <textarea id="cHinweistext_{$cISO}" class="form-control combo" name="cHinweistext_{$cISO}">{if isset($oVersandartSpracheAssoc_arr[$cISO]->cHinweistext)}{$oVersandartSpracheAssoc_arr[$cISO]->cHinweistext}{/if}</textarea>
                                 </li>
@@ -685,7 +685,7 @@
                         <i class="fa fa-edit"></i> {__('modifyedShippingType')}
                     {/if}
                 </button>
-                <a href="versandarten.php" value="{__('cancel')}" class="btn btn-danger"><i class="fa fa-exclamation"></i> {__('cancel')}</a>
+                <a href="versandarten.php" title="{__('cancel')}" class="btn btn-danger"><i class="fa fa-exclamation"></i> {__('cancel')}</a>
             </div>
         </div>
     </form>

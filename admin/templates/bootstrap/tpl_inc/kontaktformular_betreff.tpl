@@ -16,11 +16,11 @@
                         </span>
                         <input type="text" class="form-control" name="cName" id="cName" value="{if isset($Betreff->cName)}{$Betreff->cName}{/if}" tabindex="1" required />
                     </div>
-                    {foreach $sprachen as $sprache}
-                        {assign var=cISO value=$sprache->cISO}
+                    {foreach $sprachen as $language}
+                        {assign var=cISO value=$language->getIso()}
                         <div class="input-group">
                             <span class="input-group-addon">
-                                <label for="cName_{$cISO}">{__('showedName')} ({$sprache->cNameDeutsch})</label>
+                                <label for="cName_{$cISO}">{__('showedName')} ({$language->getLocalizedName()})</label>
                             </span>
                             <input type="text" class="form-control" name="cName_{$cISO}" id="cName_{$cISO}" value="{if isset($Betreffname[$cISO])}{$Betreffname[$cISO]}{/if}" tabindex="2" />
                         </div>
@@ -36,7 +36,7 @@
                             <label for="cKundengruppen">{__('restrictedToCustomerGroups')}</label>
                         </span>
                         <select class="form-control" name="cKundengruppen[]" multiple="multiple" id="cKundengruppen">
-                            <option value="0" {if $gesetzteKundengruppen[0]}selected{/if}>{__('allCustomerGroups')}</option>
+                            <option value="0" {if isset($gesetzteKundengruppen[0]) && $gesetzteKundengruppen[0] === true}selected{/if}>{__('allCustomerGroups')}</option>
                             {foreach $kundengruppen as $kundengruppe}
                                 {assign var=kKundengruppe value=$kundengruppe->kKundengruppe}
                                 <option value="{$kundengruppe->kKundengruppe}" {if isset($gesetzteKundengruppen[$kKundengruppe])}selected{/if}>{$kundengruppe->cName}</option>

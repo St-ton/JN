@@ -5,16 +5,7 @@
             <input type="hidden" name="sprachwechsel" value="1" />
             <div class="block">
                 <div class="input-group p25 left">
-                    <span class="input-group-addon">
-                        <label for="{__('changeLanguage')}">{__('changeLanguage')}:</strong></label>
-                    </span>
-                    <span class="input-group-wrap last">
-                        <select id="{__('changeLanguage')}" name="kSprache" class="form-control selectBox" onchange="document.sprache.submit();">
-                            {foreach $Sprachen as $sprache}
-                                <option value="{$sprache->kSprache}" {if $sprache->kSprache == $smarty.session.kSprache}selected{/if}>{$sprache->cNameDeutsch}</option>
-                            {/foreach}
-                        </select>
-                    </span>
+                    {include file='tpl_inc/language_switcher.tpl'}
                 </div>
             </div>
         </form>
@@ -38,7 +29,7 @@
                     </p>
                 </form>
                 {if $oUmfrage_arr|@count > 0 && $oUmfrage_arr}
-                    {include file='tpl_inc/pagination.tpl' oPagination=$oPagination cAnchor='umfrage'}
+                    {include file='tpl_inc/pagination.tpl' pagination=$pagination cAnchor='umfrage'}
                     <form name="umfrage" method="post" action="umfrage.php">
                         {$jtl_token}
                         <input type="hidden" name="umfrage" value="1" />

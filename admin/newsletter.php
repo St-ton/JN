@@ -27,8 +27,9 @@ $oAccount->permission('MODULE_NEWSLETTER_VIEW', true, true);
 /** @global \JTL\Smarty\JTLSmarty $smarty */
 
 $db            = Shop::Container()->getDB();
-$newsletterTPL = null;
 $conf          = Shop::getSettings([CONF_NEWSLETTER]);
+$alertHelper   = Shop::Container()->getAlertService();
+$newsletterTPL = null;
 $step          = 'uebersicht';
 $option        = '';
 $alertHelper   = Shop::Container()->getAlertService();
@@ -238,19 +239,19 @@ if (Form::validateToken()) {
         $smarty->assign('oNewsletterVorlage', $newsletterTPL)
                ->assign('NettoPreise', Frontend::getCustomerGroup()->getIsMerchant());
     } elseif (Request::verifyGPCDataInt('newslettervorlagenstd') === 1) { // Vorlagen Std
-        $customerGroups    = $db->query(
+        $customerGroups   = $db->query(
             'SELECT kKundengruppe, cName
                 FROM tkundengruppe
                 ORDER BY cStandard DESC',
             ReturnType::ARRAY_OF_OBJECTS
         );
-        $cArtNr_arr        = $_POST['cArtNr'] ?? null;
-        $kKundengruppe_arr = $_POST['kKundengruppe'] ?? null;
-        $cKundengruppe     = '';
+        $productNos       = $_POST['cArtNr'] ?? null;
+        $customerGroupIDs = $_POST['kKundengruppe'] ?? null;
+        $groupString      = '';
         // Kundengruppen in einen String bauen
-        if (is_array($kKundengruppe_arr) && count($kKundengruppe_arr) > 0) {
-            foreach ($kKundengruppe_arr as $kKundengruppe) {
-                $cKundengruppe .= ';' . $kKundengruppe . ';';
+        if (is_array($customerGroupIDs) && count($customerGroupIDs) > 0) {
+            foreach ($customerGroupIDs as $customerGroupID) {
+                $groupString .= ';' . $customerGroupID . ';';
             }
         }
         $smarty->assign('oKundengruppe_arr', $customerGroups)
@@ -337,13 +338,13 @@ if (Form::validateToken()) {
         $smarty->assign('oKundengruppe_arr', $customerGroups)
                ->assign('oKampagne_arr', holeAlleKampagnen(false, true));
 
-        $cArtNr_arr        = $_POST['cArtNr'] ?? null;
-        $kKundengruppe_arr = $_POST['kKundengruppe'] ?? null;
-        $cKundengruppe     = '';
+        $productNos       = $_POST['cArtNr'] ?? null;
+        $customerGroupIDs = $_POST['kKundengruppe'] ?? null;
+        $groupString      = '';
         // Kundengruppen in einen String bauen
-        if (is_array($kKundengruppe_arr) && count($kKundengruppe_arr) > 0) {
-            foreach ($kKundengruppe_arr as $kKundengruppe) {
-                $cKundengruppe .= ';' . (int)$kKundengruppe . ';';
+        if (is_array($customerGroupIDs) && count($customerGroupIDs) > 0) {
+            foreach ($customerGroupIDs as $customerGroupID) {
+                $groupString .= ';' . (int)$customerGroupID . ';';
             }
         }
         // Vorlage hinzufuegen
@@ -435,10 +436,10 @@ if (Form::validateToken()) {
                 $manufacturers = $instance->getManufacturers($manufacturerIDs, $campaign);
                 $categories    = $instance->getCategories($categoryIDs, $campaign);
                 // Kunden Dummy bauen
-                $oKunde            = new stdClass();
-                $oKunde->cAnrede   = 'm';
-                $oKunde->cVorname  = 'Max';
-                $oKunde->cNachname = 'Mustermann';
+                $customer            = new stdClass();
+                $customer->cAnrede   = 'm';
+                $customer->cVorname  = 'Max';
+                $customer->cNachname = 'Mustermann';
                 // Emailempfaenger dummy bauen
                 $oEmailempfaenger              = new stdClass();
                 $oEmailempfaenger->cEmail      = $conf['newsletter']['newsletter_emailtest'];
@@ -451,7 +452,7 @@ if (Form::validateToken()) {
                 // Baue Anzahl Newsletterempfaenger
                 $recipient = $instance->getRecipients($oNewsletter->kNewsletter);
                 // Baue Kundengruppe
-                $cKundengruppe    = '';
+                $groupString      = '';
                 $cKundengruppeKey = '';
                 if (is_array($recipient->cKundengruppe_arr)
                     && count($recipient->cKundengruppe_arr) > 0
@@ -464,9 +465,9 @@ if (Form::validateToken()) {
                             $oKundengruppeTMP = $db->select('tkundengruppe', 'kKundengruppe', (int)$cKundengruppeTMP);
                             if (mb_strlen($oKundengruppeTMP->cName) > 0) {
                                 if ($nCount_arr[0] > 0) {
-                                    $cKundengruppe .= ', ' . $oKundengruppeTMP->cName;
+                                    $groupString .= ', ' . $oKundengruppeTMP->cName;
                                 } else {
-                                    $cKundengruppe .= $oKundengruppeTMP->cName;
+                                    $groupString .= $oKundengruppeTMP->cName;
                                 }
                                 $nCount_arr[0]++;
                             }
@@ -480,9 +481,9 @@ if (Form::validateToken()) {
                             }
                         } else {
                             if ($nCount_arr[0] > 0) {
-                                $cKundengruppe .= ', Newsletterempfänger ohne Kundenkonto';
+                                $groupString .= ', Newsletterempfänger ohne Kundenkonto';
                             } else {
-                                $cKundengruppe .= 'Newsletterempfänger ohne Kundenkonto';
+                                $groupString .= 'Newsletterempfänger ohne Kundenkonto';
                             }
                             if ($nCount_arr[1] > 0) {
                                 $cKundengruppeKey .= ';0';
@@ -494,8 +495,8 @@ if (Form::validateToken()) {
                         }
                     }
                 }
-                if (mb_strlen($cKundengruppe) > 0) {
-                    $cKundengruppe = mb_substr($cKundengruppe, 0, -2);
+                if (mb_strlen($groupString) > 0) {
+                    $groupString = mb_substr($groupString, 0, -2);
                 }
                 $hist                   = new stdClass();
                 $hist->kSprache         = $oNewsletter->kSprache;
@@ -508,9 +509,9 @@ if (Form::validateToken()) {
                     $categories,
                     $campaign,
                     $oEmailempfaenger,
-                    $oKunde
+                    $customer
                 );
-                $hist->cKundengruppe    = $cKundengruppe;
+                $hist->cKundengruppe    = $groupString;
                 $hist->cKundengruppeKey = ';' . $cKundengruppeKey . ';';
                 $hist->dStart           = $newsletterTPL->dStartZeit;
                 $db->insert('tnewsletterhistory', $hist);                // --TODO-- why already history here ?!?!
@@ -535,10 +536,10 @@ if (Form::validateToken()) {
             $manufacturers   = $instance->getManufacturers($manufacturerIDs, $campaign);
             $categories      = $instance->getCategories($categoryIDs, $campaign);
             // dummy customer
-            $oKunde            = new stdClass();
-            $oKunde->cAnrede   = 'm';
-            $oKunde->cVorname  = 'Max';
-            $oKunde->cNachname = 'Mustermann';
+            $customer            = new stdClass();
+            $customer->cAnrede   = 'm';
+            $customer->cVorname  = 'Max';
+            $customer->cNachname = 'Mustermann';
             // dummy recipient
             $oEmailempfaenger              = new stdClass();
             $oEmailempfaenger->cEmail      = $conf['newsletter']['newsletter_emailtest'];
@@ -557,7 +558,7 @@ if (Form::validateToken()) {
                     $manufacturers,
                     $categories,
                     $campaign,
-                    $oKunde
+                    $customer
                 );
             }
             if ($result !== true) {
@@ -731,8 +732,8 @@ if ($step === 'uebersicht') {
         ReturnType::ARRAY_OF_OBJECTS
     );
     foreach ($inactiveRecipients as $recipient) {
-        $oKunde               = new Kunde($recipient->kKunde ?? null);
-        $recipient->cNachname = $oKunde->cNachname;
+        $customer             = new Kunde($recipient->kKunde ?? null);
+        $recipient->cNachname = $customer->cNachname;
     }
 
     $history       = $db->queryPrepared(
@@ -746,13 +747,13 @@ if ($step === 'uebersicht') {
         ['lid' => (int)$_SESSION['kSprache']],
         ReturnType::ARRAY_OF_OBJECTS
     );
-    $kundengruppen = $db->query(
+    $customerGroupsByName = $db->query(
         'SELECT *
             FROM tkundengruppe
             ORDER BY cName',
         ReturnType::ARRAY_OF_OBJECTS
     );
-    $smarty->assign('kundengruppen', $kundengruppen)
+    $smarty->assign('kundengruppen', $customerGroupsByName)
            ->assign('oKundengruppe_arr', $customerGroups)
            ->assign('oNewsletterQueue_arr', $queue)
            ->assign('oNewsletterVorlage_arr', $templates)
@@ -768,7 +769,6 @@ if ($step === 'uebersicht') {
            ->assign('oPagiHistory', $pagiHistory)
            ->assign('oPagiAlleAbos', $pagiSubscriptions);
 }
-$smarty->assign('Sprachen', Sprache::getAllLanguages())
-       ->assign('step', $step)
+$smarty->assign('step', $step)
        ->assign('nRand', time())
        ->display('newsletter.tpl');

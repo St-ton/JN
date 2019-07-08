@@ -7,6 +7,7 @@
 namespace JTL\Sitemap\Items;
 
 use function Functional\first;
+use JTL\Language\LanguageModel;
 
 /**
  * Class AbstractItem
@@ -221,7 +222,7 @@ abstract class AbstractItem implements ItemInterface
     }
 
     /**
-     * @param array $languages
+     * @param LanguageModel[] $languages
      * @param int   $currentLangID
      */
     public function setLanguageData(array $languages, int $currentLangID): void
@@ -229,10 +230,11 @@ abstract class AbstractItem implements ItemInterface
         $lang = first($languages, function ($e) use ($currentLangID) {
             return $e->kSprache === $currentLangID;
         });
+        /** @var LanguageModel $lang */
         if ($lang !== null) {
-            $this->setLanguageCode($lang->cISO);
-            $this->setLanguageID($lang->kSprache);
-            $this->setLanguageCode639($lang->cISO639);
+            $this->setLanguageCode($lang->iso);
+            $this->setLanguageID($lang->id);
+            $this->setLanguageCode639($lang->getIso639());
         }
     }
 

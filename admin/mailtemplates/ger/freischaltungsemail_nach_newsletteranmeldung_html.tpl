@@ -11,7 +11,7 @@ Sie können sich ebenso jederzeit vom Newsletter abmelden, indem Sie entweder de
 <a href="{$NewsletterEmpfaenger->cLoeschURL}">{$NewsletterEmpfaenger->cLoeschURL}</a><br>
 oder sich im Shop anmelden und den "Newsletter"-Link besuchen.<br>
 <br>
-Mit freundlichem Gruß,<br>
+Mit freundlichem Gruß<br>
 Ihr Team von {$Firma->cName}
 
 {includeMailTemplate template=footer type=html}

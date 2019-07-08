@@ -21,8 +21,8 @@
     $.fn.InputSpinner = $.fn.inputSpinner = function (options) {
 
         var config = {
-            decrementButton: "<strong>-</strong>", // button text
-            incrementButton: "<strong>+</strong>", // ..
+            decrementButton: "<i class='fas fa-minus'></i>", // button text
+            incrementButton: "<i class='fas fa-plus'></i>", // ..
             groupClass: "", // css class of the input-group (sizing with input-group-sm, input-group-lg)
             buttonsClass: "btn-outline-secondary",
             buttonsWidth: "2.5rem",
@@ -144,7 +144,8 @@
                     value = 0
                 } else {
                     newValue = parseFloat(newValue)
-                    var min = parseFloat($original.prop("min")) || 0
+                    // var min = parseFloat($original.prop("min")) || -Infinity
+                    var min = isNaN($original.prop("min")) || $original.prop("min") === "" ? -Infinity : parseFloat($original.prop("min"))
                     var max = isNaN($original.prop("max")) || $original.prop("max") === "" ? Infinity : parseFloat($original.prop("max"))
                     newValue = Math.min(Math.max(newValue, min), max)
                     newValue = Math.round(newValue * Math.pow(10, decimals)) / Math.pow(10, decimals)
@@ -216,11 +217,12 @@
 
             function copyAttributes() {
                 $input.prop("required", $original.prop("required"))
+                $input.prop("readonly", $original.prop("readonly"))
                 $input.prop("placeholder", $original.prop("placeholder"))
                 var disabled = $original.prop("disabled")
                 $input.prop("disabled", disabled)
-                $buttonIncrement.prop("disabled", disabled)
-                $buttonDecrement.prop("disabled", disabled)
+                $buttonIncrement.prop("disabled", disabled || $original.prop("readonly"))
+                $buttonDecrement.prop("disabled", disabled || $original.prop("readonly"))
                 $input.prop("class", $original.prop("class"))
                 // $inputGroup.prop("class", "input-group " + $original.prop("class") + " " + config.groupClass)
             }

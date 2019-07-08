@@ -18,7 +18,6 @@ use JTL\DB\ReturnType;
 use JTL\Events\Dispatcher;
 use JTL\Events\Event;
 use JTL\Mapper\JobTypeToJob;
-use JTL\Shop;
 use Psr\Log\LoggerInterface;
 use stdClass;
 

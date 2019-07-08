@@ -9,11 +9,9 @@
 /** @var array $adminMenu */
 $adminMenu = [
     __('Presentation')   => [
-        __('Template') => [
-            __('Template settings') => (object)[
-                'link'   => 'shoptemplate.php',
-                'rights' => 'DISPLAY_TEMPLATE_VIEW',
-            ],
+        __('Template settings') => (object)[
+            'link'   => 'shoptemplate.php',
+            'rights' => 'DISPLAY_TEMPLATE_VIEW',
         ],
         __('Images')   => [
             __('Settings')      => (object)[
@@ -32,6 +30,10 @@ $adminMenu = [
             __('Item overlays') => (object)[
                 'link'   => 'suchspecialoverlay.php',
                 'rights' => 'ORDER_AGB_WRB_VIEW',
+            ],
+            __('Image administration') => (object)[
+                'link'   => 'bilderverwaltung.php',
+                'rights' => 'DISPLAY_IMAGES_VIEW',
             ],
         ],
     ],
@@ -56,10 +58,6 @@ $adminMenu = [
                 'link'   => 'preisverlauf.php',
                 'rights' => 'MODULE_PRICECHART_VIEW',
                 'section' => CONF_PREISVERLAUF,
-            ],
-            __('Tags')             => (object)[
-                'link'   => 'tagging.php',
-                'rights' => 'MODULE_PRODUCTTAGS_VIEW',
             ],
             __('Warehouse')        => (object)[
                 'link'   => 'warenlager.php',
@@ -97,10 +95,6 @@ $adminMenu = [
             __('Boxes')                   => (object)[
                 'link'   => 'boxen.php',
                 'rights' => 'BOXES_VIEW',
-            ],
-            __('Language administration') => (object)[
-                'link'   => 'sprache.php',
-                'rights' => 'LANGUAGE_VIEW',
             ],
             //            __('IT-Recht Kanzlei') => (object)[
             //                // TODO: correct link and rights
@@ -171,27 +165,10 @@ $adminMenu = [
                 'link'   => 'warenkorbpers.php',
                 'rights' => 'MODULE_SAVED_BASKETS_VIEW',
             ],
-            __('Free gift')              => (object)[
-                'link'   => 'gratisgeschenk.php',
-                'rights' => 'MODULE_GIFT_VIEW',
-            ],
         ],
-        __('Payments')      => [
-            __('Method of payment') => (object)[
-                'link'   => 'zahlungsarten.php',
-                'rights' => 'ORDER_PAYMENT_VIEW',
-            ],
-            //            __('Amazon Payments') => (object)[
-            //                'link' => 'premiumplugin.php?plugin_id=s360_amazon_lpa_shop4',
-            //                'rights' => 'PLUGIN_ADMIN_VIEW',
-            //                'partner' => true
-            //            ],
-            //            __('Skrill') => (object)[
-            //                // TODO: correct link and rights
-            //                'link' => '',
-            //                'rights' => '',
-            //                'partner' => true
-            //            ],
+        __('Method of payment') => (object)[
+            'link'   => 'zahlungsarten.php',
+            'rights' => 'ORDER_PAYMENT_VIEW',
         ],
         __('Delivery')      => [
             __('Shipping methods')     => (object)[
@@ -219,6 +196,10 @@ $adminMenu = [
             __('Coupons')                 => (object)[
                 'link'   => 'kupons.php',
                 'rights' => 'ORDER_COUPON_VIEW',
+            ],
+            __('Free gift')              => (object)[
+                'link'   => 'gratisgeschenk.php',
+                'rights' => 'MODULE_GIFT_VIEW',
             ],
             __('Wish list')               => (object)[
                 'link'   => 'wunschliste.php',
@@ -319,6 +300,10 @@ $adminMenu = [
                 'rights' => 'SETTINGS_GLOBAL_VIEW',
                 'section' => CONF_GLOBAL,
             ],
+            __('Language administration') => (object)[
+                'link'   => 'sprache.php',
+                'rights' => 'LANGUAGE_VIEW',
+            ],
             __('Back end user')                 => (object)[
                 'link'   => 'benutzerverwaltung.php',
                 'rights' => 'ACCOUNT_VIEW',
@@ -371,10 +356,6 @@ $adminMenu = [
                 'link'   => 'dbupdater.php',
                 'rights' => 'SHOP_UPDATE_VIEW',
             ],
-            __('Image administration') => (object)[
-                'link'   => 'bilderverwaltung.php',
-                'rights' => 'DISPLAY_IMAGES_VIEW',
-            ],
             __('Re-directions')        => (object)[
                 'link'   => 'redirect.php',
                 'rights' => 'REDIRECT_VIEW',
@@ -407,21 +388,19 @@ $adminMenu = [
         ],
     ],
     __('Plugins')        => [
-        __('Overview') => [
-//            __('Plug-in marketplace') => (object)[
-//                'link' => 'marktplatz.php',
-//                'rights' => 'PLUGIN_ADMIN_VIEW',
-//            ],
-            __('Plug-in administration') => (object)[
-                'link'   => 'pluginverwaltung.php',
-                'rights' => 'PLUGIN_ADMIN_VIEW',
-            ],
-            __('Plug-in profiler')       => (object)[
-                'link'   => 'profiler.php',
-                'rights' => 'PROFILER_VIEW',
-            ],
+//        __('Plug-in marketplace') => (object)[
+//            'link' => 'marktplatz.php',
+//            'rights' => 'PLUGIN_ADMIN_VIEW',
+//        ],
+        __('Plug-in administration') => (object)[
+            'link'   => 'pluginverwaltung.php',
+            'rights' => 'PLUGIN_ADMIN_VIEW',
         ],
-        __('Plugins')  => 'DYNAMIC_PLUGINS',
+        __('Plug-in profiler')       => (object)[
+            'link'   => 'profiler.php',
+            'rights' => 'PROFILER_VIEW',
+        ],
+        __('My Plugins')  => 'DYNAMIC_PLUGINS',
     ],
 ];
 

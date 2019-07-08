@@ -12940,10 +12940,15 @@ body.unboxed-layout header, body.unboxed-layout #main-wrapper {
   margin: 0;
 }
 
-#top-bar .btn-link {
+.top-bar .btn-link {
   text-decoration: none;
+  border-right: 1px solid #9b9b9b;
+  border-radius: 0;
 }
-#top-bar .btn-link:hover {
+.top-bar .btn-link:last-child {
+  border-right: 0;
+}
+.top-bar .btn-link:hover {
   text-decoration: underline;
 }
 

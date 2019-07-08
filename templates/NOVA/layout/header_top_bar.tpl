@@ -13,16 +13,7 @@
                             id="currency-dropdown"
                             variant="link btn-sm"
                             class="currency-dropdown"
-                            text="
-                                {if $smarty.session.Waehrung->getCode() === 'EUR'}
-                                    <i class='fas fa-euro-sign' title='{$smarty.session.Waehrung->getName()}'></i>
-                                {elseif $smarty.session.Waehrung->getCode() === 'USD'}
-                                    <i class='fas fa-dollar-sign' title='{$smarty.session.Waehrung->getName()}'></i>
-                                {elseif $smarty.session.Waehrung->getCode() === 'GBP'}
-                                    <i class='fas fa-pound-sign'' title='{$smarty.session.Waehrung->getName()}''></i>
-                                {else}
-                                    {$smarty.session.Waehrung->getName()}
-                                {/if}"
+                            text=$smarty.session.Waehrung->getName()
                         }
                             {foreach $smarty.session.Waehrungen as $oWaehrung}
                                 {dropdownitem href=$oWaehrung->getURLFull() rel="nofollow" }
@@ -37,17 +28,17 @@
                         {dropdown
                             id="language-dropdown"
                             class="language-dropdown"
-                            variant="link btn-sm"
+                            variant="link btn-sm {if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG}border-0{/if}"
                             text="
                                 {foreach $smarty.session.Sprachen as $Sprache}
                                     {if $Sprache->kSprache == $smarty.session.kSprache}
-                                        {$Sprache->displayLanguage}
+                                        {$Sprache->iso639|upper}
                                     {/if}
                                 {/foreach}"
                         }
                             {foreach $smarty.session.Sprachen as $oSprache}
                                 {dropdownitem href="{$oSprache->cURL}" rel="nofollow" }
-                                    {$oSprache->displayLanguage}
+                                    {$oSprache->iso639|upper}
                                 {/dropdownitem}
                             {/foreach}
                         {/dropdown}
@@ -55,7 +46,7 @@
                 {/block}
             {/block}
         {/if}
-        {if $linkgroups->getLinkGroupByTemplate('Kopf') !== null}
+        {if $linkgroups->getLinkGroupByTemplate('Kopf') !== null && $nSeitenTyp !== $smarty.const.PAGE_BESTELLVORGANG}
             {block name='layout-header-top-bar-cms-pages'}
                 {foreach $linkgroups->getLinkGroupByTemplate('Kopf')->getLinks() as $Link}
                     {link class="btn btn-link btn-sm" active=$Link->getIsActive() href=$Link->getURL() title=$Link->getTitle()}

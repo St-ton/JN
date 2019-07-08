@@ -23,11 +23,14 @@ class Migration_20190621091000 extends Migration implements IMigration
         $this->setLocalization('eng', 'global', 'change', 'Change');
         $this->setLocalization('ger', 'checkout', 'shippingTo', 'Versand nach');
         $this->setLocalization('eng', 'checkout', 'shippingTo', 'Shipping to');
+        $this->setLocalization('ger', 'checkout', 'secureCheckout', 'Secure Checkout');
+        $this->setLocalization('eng', 'checkout', 'secureCheckout', 'Secure Checkout');
     }
 
     public function down()
     {
         $this->removeLocalization('change');
         $this->removeLocalization('shippingTo');
+        $this->removeLocalization('secureCheckout');
     }
 }

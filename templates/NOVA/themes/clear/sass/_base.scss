@@ -321,9 +321,17 @@ body.unboxed-layout {
   }
 }
 
-#top-bar {
-  .btn-link { text-decoration: none;
-    &:hover { text-decoration: underline; }
+.top-bar {
+  .btn-link {
+    text-decoration: none;
+    border-right: 1px solid $gray-light;
+    border-radius: 0;
+    &:last-child {
+      border-right: 0;
+    }
+    &:hover {
+      text-decoration: underline;
+    }
   }
 }
 

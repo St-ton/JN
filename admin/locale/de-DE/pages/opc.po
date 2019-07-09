@@ -164,13 +164,13 @@ msgid "restoreChanges"
 msgstr "Lokale Änderungen wiederherstellen"
 
 msgid "restoreUnsaved"
-msgstr "Dieser Entwurf hat nicht gespeicherte lokale Änderungen. Möchten Sie diese wiederherstellen?"
+msgstr "Dieser Entwurf wurde während der letzten Sitzung nicht gespeichert. Letzte Änderungen weiter bearbeiten?"
 
 msgid "noCurrent"
-msgstr "Nein, aktuelle Version bearbeiten"
+msgstr "Nein, Änderungen verwerfen"
 
 msgid "yesRestore"
-msgstr "Ja, wiederherstellen"
+msgstr "Ja, weiter bearbeiten"
 
 msgid "portletLabel"
 msgstr "Portlet-Label"

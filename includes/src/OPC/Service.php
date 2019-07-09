@@ -272,15 +272,17 @@ class Service
     }
 
     /**
+     * @param string $propname
      * @param array $enabledFilters
      * @return string
      * @throws \SmartyException
      */
-    public function getFilterList(array $enabledFilters = [])
+    public function getFilterList(string $propname, array $enabledFilters = [])
     {
         $filters = $this->getFilterOptions($enabledFilters);
         $smarty  = Shop::Smarty();
         $html    = $smarty
+            ->assign('propname', $propname)
             ->assign('filters', $filters)
             ->fetch(PFAD_ROOT . PFAD_ADMIN . 'opc/tpl/config/filter-list.tpl');
 

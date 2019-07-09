@@ -34,6 +34,7 @@
   border-width: 2px;
   position: relative;
   overflow: hidden;
+  z-index: 1;
   &::before {
     content: '';
     position: absolute;
@@ -113,8 +114,8 @@
   border: 1.5px solid $gray;
   opacity: 0.8;
   color: $gray;
-  font-size: 18px !important;
-  line-height: 15px !important;
+  font-size: 18px;
+  line-height: 15px;
   border-radius: 50% !important;
   transition: all .2s;
   &::before { display: none; }

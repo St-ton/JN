@@ -22,7 +22,7 @@
                         {foreach $oUmfrage->getQuestions() as $question}
                             {assign var=questionID value=$question->getID()}
                             {input name="kUmfrageFrage[]" type="hidden" value=$questionID}
-                            {card no-body=true}
+                            {card no-body=true class="border-0 mb-7"}
                                 {cardheader}
                                     <div id="poll-question-label-{$questionID}" class="h3">{$question->getName()} {if !$question->isRequired()}<span class="optional"> - {lang key='optional'}</span>{/if}</div>
                                 {/cardheader}
@@ -33,10 +33,10 @@
                                     {/if}
 
                                     {if $question->getType() === \JTL\Survey\QuestionType::SELECT_SINGLE}
-                                        <select name="sq{$questionID}[]" class="form-control"{if $question->isRequired()} required{/if} aria-labelledby="poll-question-label-{$questionID}">
+                                        <select name="sq{$questionID}[]" class="form-control mb-3"{if $question->isRequired()} required{/if} aria-labelledby="poll-question-label-{$questionID}">
                                             <option value="">{lang key='pleaseChoose'}</option>
                                     {elseif $question->getType() === \JTL\Survey\QuestionType::SELECT_MULTI}
-                                        <select name="sq{$questionID}[]" multiple="multiple" class="form-control"{if $question->isRequired()} required{/if} aria-labelledby="poll-question-label-{$questionID}">
+                                        <select name="sq{$questionID}[]" multiple="multiple mb-3" class="form-control"{if $question->isRequired()} required{/if} aria-labelledby="poll-question-label-{$questionID}">
                                     {elseif $question->getType() === \JTL\Survey\QuestionType::TEXT_SMALL}
                                         {input name="sq{$questionID}[]"
                                             type="text"
@@ -58,7 +58,7 @@
                                             {/textarea}
                                         {/strip}
                                     {elseif $question->getType() === \JTL\Survey\QuestionType::MATRIX_SINGLE}
-                                        <table class="table table-bordered">
+                                        <table class="table table-striped">
                                         <thead>
                                             <td>&nbsp;</td>
                                             {foreach $question->getMatrixOptions() as $matrixOption}
@@ -66,7 +66,7 @@
                                             {/foreach}
                                         </thead>
                                     {elseif $question->getType() === \JTL\Survey\QuestionType::MATRIX_MULTI}
-                                        <table class="table table-bordered">
+                                        <table class="table table-striped">
                                         <tr>
                                             <td>&nbsp;</td>
                                             {foreach $question->getMatrixOptions() as $matrixOption}
@@ -177,12 +177,12 @@
                                                 </label>
                                             </div>
                                         {elseif $question->getType() === \JTL\Survey\QuestionType::MULTI}
-                                            {input name="sq{$questionID}[]"
-                                                   type="checkbox"
+                                            {checkbox name="sq{$questionID}[]"
                                                    size="sm"
                                                    value="-1"
                                                    checked="{if !empty($nSessionFragenWerte_arr[$questionID]->getAnswer())}{foreach $nSessionFragenWerte_arr[$questionID]->getAnswer() as $cUmfrageFrageAntwort}{if $cUmfrageFrageAntwort == -1} true{/if}{/foreach}{/if}"}
                                             {input name="sq{$questionID}[]" type="text" value="{if $nSessionFragenWerte_arr[$questionID]->getAnswer(1) !== null}{$nSessionFragenWerte_arr[$questionID]->getAnswer(1)}{/if}"}
+                                            {/checkbox}
                                         {else}
                                             {input name="sq{$questionID}[]"
                                                    type="text"

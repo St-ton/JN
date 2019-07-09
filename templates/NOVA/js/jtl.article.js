@@ -531,6 +531,7 @@
             this.registerProductActions($('#footer'));
             this.registerProductActions($('#shop-nav'));
             this.registerProductActions($wrapper);
+            this.registerProductActions('#cart-form');
         },
 
         registerProductActions: function($wrapper) {
@@ -538,6 +539,9 @@
 
             $('*[data-toggle="product-actions"] button', $wrapper)
                 .on('click', function(event) {
+                    if ($wrapper === '#cart-form') {
+                        $('#cart-form input[name="a"]').prop('value', $(this).data('product-id-wl'));
+                    }
                     var data = $(this.form).serializeObject();
 
                     if (that.handleProductAction(this, data)) {

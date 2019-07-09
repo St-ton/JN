@@ -25,11 +25,10 @@
                         {/block}
                     {/if}
                     {block name='snippets-product-slider-box-products'}
-                        <hr class="mt-0 mb-4">
                         <div class="mb-4 {if $tplscope === 'box'}{block name='product-box-slider-class'}evo-box-slider{/block}{else}{block name='product-slider-class'}evo-slider{/block}{/if}">
                             {foreach $productlist as $product}
                                 {block name='snippets-product-slider-include-item-slider-box'}
-                                    <div class="product-wrapper float-left{if isset($style)} {$style}{/if}" {if isset($Link) && $Link->getLinkType() === $smarty.const.LINKTYP_STARTSEITE}itemprop="about"{else}itemprop="isRelatedTo"{/if} itemscope itemtype="http://schema.org/Product">
+                                    <div class="product-wrapper{if isset($style)} {$style}{/if}" {if isset($Link) && $Link->getLinkType() === $smarty.const.LINKTYP_STARTSEITE}itemprop="about"{else}itemprop="isRelatedTo"{/if} itemscope itemtype="http://schema.org/Product">
                                         {include file='productlist/item_slider.tpl' Artikel=$product tplscope=$tplscope class=''}
                                     </div>
                                 {/block}
@@ -58,7 +57,7 @@
                         <div class="mb-4 {block name='product-slider-class'}evo-slider{/block}">
                             {foreach $productlist as $product}
                                 {block name='snippets-product-slider-include-item-slider'}
-                                    <div class="product-wrapper float-left{if isset($style)} {$style}{/if}" {if isset($Link) && $Link->getLinkType() === $smarty.const.LINKTYP_STARTSEITE}itemprop="about"{else}itemprop="isRelatedTo"{/if} itemscope itemtype="http://schema.org/Product">
+                                    <div class="product-wrapper{if isset($style)} {$style}{/if}" {if isset($Link) && $Link->getLinkType() === $smarty.const.LINKTYP_STARTSEITE}itemprop="about"{else}itemprop="isRelatedTo"{/if} itemscope itemtype="http://schema.org/Product">
                                         {include file='productlist/item_slider.tpl' Artikel=$product tplscope=$tplscope class=''}
                                     </div>
                                 {/block}

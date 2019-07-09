@@ -8,7 +8,7 @@
             id="shop-nav-compare"
             tag="div"
             title="{lang key='compare'}"
-            class="mr-2{if $nSeitenTyp === $smarty.const.PAGE_VERGLEICHSLISTE} active{/if} {if empty($smarty.session.Vergleichsliste->oArtikel_arr)}d-none{/if}"
+            class="{if $nSeitenTyp === $smarty.const.PAGE_VERGLEICHSLISTE} active{/if} {if empty($smarty.session.Vergleichsliste->oArtikel_arr)}d-none{/if}"
             data=['toggle' => 'collapse', 'target' => '#nav-comparelist-collapse']
         }
             <span class="fas fa-tasks"></span>

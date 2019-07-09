@@ -48,6 +48,9 @@
                         {if $category@first}
                             <div class="wee d-none d-md-block"></div>
                         {/if}
+                        {link href=$category->cURLFull title=$category->cSeo class="float-right subcat-link d-inline-block d-md-none"}
+                            <i class="fas fa-arrow-alt-circle-right"></i>
+                        {/link}
                         {link href=$category->cURLFull title=$category->cSeo class="nav-link" data=["toggle"=>"dropdown"] target="_self"}
                             {$category->cName}
                         {/link}
@@ -67,21 +70,20 @@
                                                 {/if}
                                                 {foreach $sub_categories as $sub}
                                                     {col cols=12 md=6 lg=3}
-                                                        {dropdownitem tag="div" active=$sub->kKategorie == $activeId || (isset($activeParents[1]) && $activeParents[1]->kKategorie == $sub->kKategorie) class="p-3 mb-md-6"}                                                            <div class="category-wrapper">
-                                                                {if $Einstellungen.template.megamenu.show_category_images !== 'N'}
-                                                                    <div class="d-none d-md-block">
-                                                                        {link href=$sub->cURLFull title=$sub->cSeo}
+                                                        {dropdownitem tag="div" active=$sub->kKategorie == $activeId || (isset($activeParents[1]) && $activeParents[1]->kKategorie == $sub->kKategorie) class="p-3 mb-md-6"}
+                                                            <div class="category-wrapper">
+                                                                {link href=$sub->cURLFull title=$sub->cSeo}
+                                                                    {if $Einstellungen.template.megamenu.show_category_images !== 'N'}
+                                                                        <div class="d-none d-md-block">
                                                                             {image fluid-grow=true lazy=true src="{$imageBaseURL}gfx/trans.png"
                                                                                 alt=$category->cKurzbezeichnung|escape:'html'
                                                                                 data=["src" => $sub->cBildURLFull]}
-                                                                        {/link}
-                                                                    </div>
-                                                                {/if}
+                                                                        </div>
+                                                                    {/if}
                                                                     <div class="title pt-2">
-                                                                        {link href=$sub->cURLFull title=$sub->cSeo}
                                                                             {$sub->cKurzbezeichnung}
-                                                                        {/link}
                                                                     </div>
+                                                                {/link}
                                                                 {if $show_subcategories && $sub->bUnterKategorien}
                                                                     {if !empty($sub->Unterkategorien)}
                                                                         {assign var=subsub_categories value=$sub->Unterkategorien}

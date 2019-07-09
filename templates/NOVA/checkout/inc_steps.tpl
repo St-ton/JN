@@ -12,21 +12,37 @@
                 title="{lang section='account data' key='billingAndDeliveryAddress'}"
                 class="nav-item nav-link {if $step1_active}active{/if}"
             }
-                <i class="fas fa-user d-md-none{if $step1_active} d-none{/if}"></i>
-                <span class="{if !$step1_active}d-none d-md-flex{/if}">{lang section='account data' key='billingAndDeliveryAddress'}</span>
+                <span class="align-items-center">
+                    <div class="nav-number active mr-md-2">1</div>
+                    <span class="{if !$step1_active}d-none d-md-inline-flex{/if}">
+                        {lang section='account data' key='billingAndDeliveryAddress'}
+                    </span>
+                    {if $step2_active || $step3_active}
+                        <i class="fas fa-check mr-md-2"></i>
+                    {/if}
+                </span>
             {/link}
 
             {link href="{get_static_route id='bestellvorgang.php'}?editVersandart=1"
                 title="{lang section='account data' key='shippingAndPaymentOptions'}"
-                class="nav-item nav-link {if $step2_active}active{/if}"
+                class="nav-item nav-link {if $step2_active}active{/if} {if $step1_active}nav-todo{/if}"
             }
-                <i class="fas fa-truck d-md-none{if $step2_active} d-none{/if}"></i>
-                <span class="{if !$step2_active}d-none d-md-flex{/if}">{lang section='account data' key='shippingAndPaymentOptions'}</span>
+                <span class="align-items-center">
+                    <div class="nav-number mr-md-2 {if $step2_active || $step3_active}active{/if}">2</div>
+                    <span class="{if !$step2_active}d-none d-md-inline-flex{/if}">
+                        {lang section='account data' key='shippingAndPaymentOptions'}
+                    </span>
+                    {if $step3_active}
+                        <i class="fas fa-check mr-md-2"></i>
+                    {/if}
+                </span>
             {/link}
 
-            <span class="nav-item nav-link">
-                    <i class="fab fa-wpforms d-md-none{if $step3_active} d-none{/if}"></i>
-                    <span class="{if !$step3_active}d-none d-md-flex{/if}">{lang section='checkout' key='summary'}</span>
+            <span class="nav-item nav-link {if $step3_active}active{/if} {if $step1_active || $step2_active}nav-todo{/if}">
+                <span class="align-items-center {if !$step3_active}d-none d-md-flex{/if}">
+                    <div class="nav-number mr-md-2 {if $step3_active}active{/if}">3</div>
+                    {lang section='checkout' key='summary'}
+                </span>
             </span>
         {/nav}
     {/if}

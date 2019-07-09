@@ -572,4 +572,8 @@ $(document).ready(function () {
     addCopyToClipboardListener();
     addCloseMenuDropdownListener();
     initWow();
+
+    $('.label-slide input').on('keyup', function() {
+        $(this).attr('value', $(this).val());
+    });
 });

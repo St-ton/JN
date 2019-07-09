@@ -96,9 +96,17 @@ build_create_deleted_files_csv()
     local CUR_PWD=$(pwd);
     local DELETE_FILES_CSV_FILENAME="${REPOSITORY_DIR}/admin/includes/shopmd5files/deleted_files_${VERSION}.csv";
     local DELETE_FILES_CSV_FILENAME_TMP="${REPOSITORY_DIR}/admin/includes/shopmd5files/deleted_files_${VERSION}_tmp.csv";
+    local BRANCH_REGEX="(master|release\\/([0-9]{1,})\\.([0-9]{1,}))";
+    local REMOTE_STR="";
+
+    if [[ ${APPLICATION_VERSION} =~ ${BRANCH_REGEX} ]]; then
+        REMOTE_STR="origin/";
+    else
+        REMOTE_STR="tags/";
+    fi
 
     cd ${REPOSITORY_DIR};
-    git diff --name-status --diff-filter D v4.03.0 ${APPLICATION_VERSION} -- ${REPOSITORY_DIR} ':!admin/classes' ':!classes' ':!includes/ext' ':!includes/plugins' > ${DELETE_FILES_CSV_FILENAME_TMP};
+    git diff --name-status --diff-filter D v4.03.0 ${REMOTE_STR}${APPLICATION_VERSION} -- ${REPOSITORY_DIR} ':!admin/classes' ':!classes' ':!includes/ext' ':!includes/plugins' > ${DELETE_FILES_CSV_FILENAME_TMP};
     cd ${CUR_PWD};
 
     while read line; do

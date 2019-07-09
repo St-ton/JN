@@ -50,12 +50,13 @@ final class ImageCheck extends AbstractSync
         foreach ($images as $image) {
             $image->id = (int)$image->id;
             $storage   = \PFAD_ROOT . \PFAD_MEDIA_IMAGE_STORAGE . $image->hash;
-            if (!\file_exists($storage)) {
+            if (\file_exists($storage)) {
+                $found[] = $image->id;
+            } else {
                 $this->logger->debug('Dropping orphan ' . $image->id . ' -> ' . $image->hash . ': no such file');
                 $this->db->delete('tbild', 'kBild', $image->id);
                 $this->db->delete('tartikelpict', 'kBild', $image->id);
             }
-            $found[] = $image->id;
         }
         if ($object->cloud) {
             foreach ($object->items as $item) {

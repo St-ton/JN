@@ -8,40 +8,32 @@
         {row class="no-gutters productlist-page-nav"}
             {if count($NaviFilter->getSearchResults()->getProducts()) > 0}
                 {block name='snippets-productlist-page-nav-result-options-sort'}
-                    {col cols=12 md="auto" class="displayoptions form-inline d-flex justify-content-between mb-3 mb-md-0"}
-                        {dropdown class="filter-type-FilterItemSort btn-group" variant="light" text="{lang key='sorting' section='productOverview'}"}
-                            {foreach $Suchergebnisse->getSortingOptions() as $option}
-                                {dropdownitem rel="nofollow" href=$option->getURL() class="filter-item" active=$option->isActive()}
-                                    {$option->getName()}
-                                {/dropdownitem}
-                            {/foreach}
-                        {/dropdown}
-                        {dropdown class="filter-type-FilterItemLimits btn-group ml-2" variant="light" text="{lang key='productsPerPage' section='productOverview'}"}
-                            {foreach $Suchergebnisse->getLimitOptions() as $option}
-                                {dropdownitem rel="nofollow" href=$option->getURL() class="filter-item" active=$option->isActive()}
-                                    {$option->getName()}
-                                {/dropdownitem}
-                            {/foreach}
-                        {/dropdown}
-                        {if isset($oErweiterteDarstellung->nDarstellung) && $Einstellungen.artikeluebersicht.artikeluebersicht_erw_darstellung === 'Y' && empty($AktuelleKategorie->categoryFunctionAttributes['darstellung'])}
-                            {buttongroup class="ml-2"}
-                                {link href=$oErweiterteDarstellung->cURL_arr[$smarty.const.ERWDARSTELLUNG_ANSICHT_LISTE]
-                                    id="ed_list"
-                                    class="btn btn-light btn-option ed list{if $oErweiterteDarstellung->nDarstellung === $smarty.const.ERWDARSTELLUNG_ANSICHT_LISTE} active{/if}"
-                                    role="button"
-                                    title="{lang key='list' section='productOverview'}"
-                                }
-                                    <span class="fa fa-th-list"></span>
-                                {/link}
-                                {link href=$oErweiterteDarstellung->cURL_arr[$smarty.const.ERWDARSTELLUNG_ANSICHT_GALERIE]
-                                    id="ed_gallery"
-                                    class="btn btn-light btn-option ed gallery{if $oErweiterteDarstellung->nDarstellung === $smarty.const.ERWDARSTELLUNG_ANSICHT_GALERIE} active{/if}"
-                                    role="button"
-                                    title="{lang key='gallery' section='productOverview'}"
-                                }
-                                    <span class="fa fa-th-large"></span>
-                                {/link}
-                            {/buttongroup}
+                    {col cols=12 md="auto" class="displayoptions mb-3 mb-md-0"}
+                        {block name='snippets-productlist-page-nav-include-result-options'}
+                            {if count($Suchergebnisse->getProducts()) > 0}
+                                {include file='snippets/opc_mount_point.tpl' id='opc_before_result_options'}
+                            {/if}
+                            {if $navid === 'header'}
+                                <div id="improve_search">
+                                    {include file='productlist/result_options.tpl'}
+                                </div>
+                            {/if}
+                        {/block}
+                        {if (!$device->isMobile() || $device->isTablet()) && $navid === 'header'}
+                            {dropdown class="filter-type-FilterItemSort btn-group" variant="light" text="{lang key='sorting' section='productOverview'}"}
+                                {foreach $Suchergebnisse->getSortingOptions() as $option}
+                                    {dropdownitem rel="nofollow" href=$option->getURL() class="filter-item" active=$option->isActive()}
+                                        {$option->getName()}
+                                    {/dropdownitem}
+                                {/foreach}
+                            {/dropdown}
+                            {dropdown class="filter-type-FilterItemLimits btn-group ml-2" variant="light" text="{lang key='productsPerPage' section='productOverview'}"}
+                                {foreach $Suchergebnisse->getLimitOptions() as $option}
+                                    {dropdownitem rel="nofollow" href=$option->getURL() class="filter-item" active=$option->isActive()}
+                                        {$option->getName()}
+                                    {/dropdownitem}
+                                {/foreach}
+                            {/dropdown}
                         {/if}
                     {/col}
                 {/block}

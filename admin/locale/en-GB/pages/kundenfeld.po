@@ -84,7 +84,7 @@ msgid "errorChooseField"
 msgstr "Please select a field first."
 
 msgid "sureDeleteSelected"
-msgstr "Delete selected fields? All customer values entered via this field will be deleted as well."
+msgstr "Delete selected fields? All assigned customer values will be deleted."
 
 msgid "infoChangeFieldType"
 msgstr "When you change the field type, all customer values will be changed to match the new type (if possible)."

@@ -104,14 +104,14 @@ msgstr "Fehler in Exportvorlage"
 
 #placeholder: number of affected export formats
 msgid "getExportFormatErrorCountMessage"
-msgstr "%d Exportvorlage(n) enthalten Syntax-Fehler."
+msgstr "In %d Exportvorlage(n) sind Syntax-Fehler vorhanden."
 
 msgid "getEmailTemplateSyntaxErrorCountTitle"
 msgstr "Fehler in E-Mail-Vorlage"
 
 #placeholder: number of affected email templates
 msgid "getEmailTemplateSyntaxErrorCountMessage"
-msgstr "%d E-Mail-Vorlage(n) enthalten Syntax-Fehler."
+msgstr "In %d E-Mail-Vorlage(n) sind Syntax-Fehler vorhanden."
 
 msgid "duplicateSpecialLinkTitle"
 msgstr "Spezialseite mehrmals angelegt"

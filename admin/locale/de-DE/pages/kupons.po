@@ -177,10 +177,10 @@ msgid "successCouponDelete"
 msgstr "Die markierten Coupons wurden erfolgreich gelöscht."
 
 msgid "errorCouponDelete"
-msgstr "Fehler: Ein oder mehrere Coupons konnten nicht gelöscht werden."
+msgstr "Einer oder mehrere Coupons konnten nicht gelöscht werden."
 
 msgid "errorAtLeastOneCoupon"
-msgstr "Fehler: Bitte markieren Sie mindestens einen Coupon."
+msgstr "Bitte markieren Sie mindestens einen Coupon."
 
 msgid "errorCouponNameMissing"
 msgstr "Es wurde kein Couponname angegeben. Bitte geben Sie einen Namen an."
@@ -201,10 +201,10 @@ msgid "errorCouponCodeShort"
 msgstr "Der zu generierende Code ist kürzer als 2 Zeichen. Bitte vergrößern Sie die Anzahl an Zeichen in Präfix und/oder Suffix oder geben Sie eine größere Zahl bei der Länge des Zufallcodes an."
 
 msgid "errorCouponCodeOptionSelect"
-msgstr "Bitte wählen Sie für „Zufallscode mit …“ mindestens eine Option aus."
+msgstr "Bitte wählen Sie für „Zufallscode mit …“ mindestens eine Option aus."
 
 msgid "errorCouponCodeDuplicate"
-msgstr "Der angegeben Code wird bereits von einem anderen Coupon verwendet. Bitte wählen Sie einen anderen Code."
+msgstr "Der angegebene Code wird bereits von einem anderen Coupon verwendet. Bitte wählen Sie einen anderen Code."
 
 msgid "errorProductNumberNotFound"
 msgstr "Die Artikelnummer %s gehört zu keinem gültigen Artikel und wird entfernt."
@@ -213,10 +213,10 @@ msgid "errorISOInvalid"
 msgstr "Der ISO-Code %s gehört zu keinem gültigen Land."
 
 msgid "errorPeriodBeginFormat"
-msgstr "Bitte geben Sie den Beginn des Gültigkeitszeitraumes im Format <strong>tt.MM.jjjj HH:mm</strong> an."
+msgstr "Bitte geben Sie den Beginn des Gültigkeitszeitraumes im Format <strong>TT.MM.JJJJ hh:mm</strong> an."
 
 msgid "errorPeriodEndFormat"
-msgstr "Bitte geben Sie das Ende des Gültigkeitszeitraumes im Format <strong>tt.MM.jjjj HH:mm</strong> an."
+msgstr "Bitte geben Sie das Ende des Gültigkeitszeitraumes im Format <strong>TT.MM.JJJJ hh:mm</strong> an."
 
 msgid "errorPeriodEndAfterBegin"
 msgstr "Das Ende des Gültigkeitszeitraumes muss nach dem Beginn des Gültigkeitszeitraumes liegen."

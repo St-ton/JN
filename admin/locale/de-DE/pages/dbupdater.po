@@ -63,10 +63,10 @@ msgid "sessionExpired"
 msgstr "Sitzung abgelaufen"
 
 msgid "redirectToLogin"
-msgstr "Sie werden zur Anmelde-Maske weitergeleitet…"
+msgstr "Sie werden zum Anmeldefenster weitergeleitet…"
 
 msgid "dbUpToDate"
-msgstr "Ihre Datenbank ist auf dem aktuellen Stand des Systems (Version %s)"
+msgstr "Ihre Datenbank entspricht dem aktuellen Systemstand (Version %s)."
 
 msgid "successfullMigrations"
 msgstr "Erfolgreiche Migrationen"
@@ -90,4 +90,4 @@ msgid "currentShopVersion"
 msgstr "Ihre aktuelle Shopversion"
 
 msgid "currentTemplateVersion"
-msgstr "Ihre aktuelle Templateversion"
+msgstr "Ihre aktuelle Template-Version"

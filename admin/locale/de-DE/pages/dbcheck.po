@@ -42,7 +42,7 @@ msgid "showModifiedTables"
 msgstr "Anzahl modifizierter Tabellen"
 
 msgid "errorDoAction"
-msgstr "Konnte Aktion nicht ausführen."
+msgstr "Aktion konnte nicht ausgeführt werden."
 
 msgid "migrationCancel"
 msgstr "Migration abbrechen"
@@ -105,7 +105,7 @@ msgid "notePatienceOne"
 msgstr "Bitte haben Sie Geduld! Bei %s Tabellen und einer Datenmenge von ca. %s kann die Migration"
 
 msgid "notePatienceTwo"
-msgstr " dauern. Während der Migration werden zudem wichtige Tabellen im Shop gesperrt, so dass es zu erheblichen Einschränkungen im Frontend kommen kann. Es wird deshalb empfohlen, den <a title=\"Globale Einstellungen - Wartungsmodus\" href=\"%s/%s/einstellungen.php?kSektion=1#wartungsmodus_aktiviert\">Wartungsmodus</a> zu aktivieren, während Sie die Migration durchführen.<br/> Jede Tabelle wird einzeln in zwei Schritten migriert. Im ersten Schritt erfolgt die Verschiebung in den InnoDB-Tablespace und im Zweiten die Konvertierung der Daten in den UTF-8-Zeichensatz."
+msgstr " dauern. Während der Migration werden zudem wichtige Tabellen im Shop gesperrt, so dass es zu erheblichen Einschränkungen im Frontend kommen kann. Es wird deshalb empfohlen, den <a title=\"Globale Einstellungen - Wartungsmodus\" href=\"%s/%s/einstellungen.php?kSektion=1#wartungsmodus_aktiviert\">Wartungsmodus</a> zu aktivieren, während Sie die Migration durchführen.<br/> Jede Tabelle wird einzeln in zwei Schritten migriert. Im ersten Schritt erfolgt die Verschiebung in den InnoDB-Tablespace und im zweiten die Konvertierung der Daten in den UTF-8-Zeichensatz."
 
 msgid "lessThanOneMinute"
 msgstr "weniger als eine Minute"
@@ -138,7 +138,7 @@ msgid "noteMigrationScript"
 msgstr "Die Migration per Skript über die MySQL-Konsole wird empfohlen, wenn Sie administrativen Zugang zu Ihrem Datenbankserver haben und eine große Menge an Daten migriert werden muss."
 
 msgid "noteMigrationScriptClick"
-msgstr "Mit einem Klick auf die Schaltfläche „Skript erstellen“ können Sie sich ein Skript zur Durchführung der notwendigen Migration generieren lassen. Dieses Skript können Sie dann komplett oder in Teilen auf der Konsole Ihres Datenbankservers ausführen. Sie benötigen dafür einen administrativen Zugang (z. B. per SSH) zu Ihrem Datenbank-Server. Eine Weboberfläche wie phpMyAdmin ist für das Ausführen dieses Skriptes <strong>nicht</strong> geeignet."
+msgstr "Mit einem Klick auf die Schaltfläche „Skript erstellen“ können Sie sich ein Skript zur Durchführung der notwendigen Migration generieren lassen. Dieses Skript können Sie dann komplett oder in Teilen auf der Konsole Ihres Datenbankservers ausführen. Sie benötigen dafür einen administrativen Zugang (z. B. per SSH) zu Ihrem Datenbank-Server. Eine Weboberfläche wie phpMyAdmin ist für das Ausführen dieses Skriptes <strong>nicht</strong> geeignet."
 
 msgid "noteMigrationScriptDesc"
 msgstr "Das Skript wird anhand der aktuellen Situation erstellt und beinhaltet nur die Änderungen, die für diesen JTL-Shop notwendig sind. Sie können das Skript nicht verwenden, um die Migration auf einem anderen JTL-Shop auszuführen."

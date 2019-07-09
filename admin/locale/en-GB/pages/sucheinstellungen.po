@@ -15,7 +15,7 @@ msgid "successIndexDelete"
 msgstr "Full-text index for %s deleted successfully."
 
 msgid "errorFulltextSearchMYSQL"
-msgstr "The full-text search requires MySQL version 5.6. or higher."
+msgstr "The full-text search requires MySQL version 5.6 or higher."
 
 msgid "successSearchActivate"
 msgstr "Full-text search activated successfully."
@@ -36,7 +36,7 @@ msgid "searchSettingsChange"
 msgstr "Changing the search settings"
 
 msgid "fulltextSearchMysql"
-msgstr "The full-text search requires MySQL version 5.6. or higher."
+msgstr "The full-text search requires MySQL version 5.6 or higher."
 
 msgid "useFulltextSearch"
 msgstr "Use full-text search"

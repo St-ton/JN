@@ -18,7 +18,7 @@ msgid "hasInstallDirTitle"
 msgstr "System"
 
 msgid "hasInstallDirMessage"
-msgstr "Please delete the installation directory /install/ in the root directory of your online Shop."
+msgstr "Please delete the installation directory \"/install/\" in the root directory of your online Shop."
 
 msgid "validDatabaseStructTitle"
 msgstr "Database structure"
@@ -104,17 +104,17 @@ msgstr "Error in export template"
 
 #placeholder: number of affected export formats
 msgid "getExportFormatErrorCountMessage"
-msgstr "%d export template(s) with syntax errors."
+msgstr "%d export template(s) contain(s) syntax errors."
 
 msgid "getEmailTemplateSyntaxErrorCountTitle"
 msgstr "Error in email template"
 
 #placeholder: number of affected email templates
 msgid "getEmailTemplateSyntaxErrorCountMessage"
-msgstr "%d email-template(s) with syntax errors."
+msgstr "%d email template(s) contain(s) syntax errors."
 
 msgid "duplicateSpecialLinkTitle"
-msgstr "Special page created several times"
+msgstr "Special page created multiple times"
 
 msgid "duplicateSpecialLinkDesc"
-msgstr "At least one special page was created more than once for the same customer group(s)."
+msgstr "At least one special page was created several times for the same customer group(s)."

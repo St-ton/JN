@@ -9,7 +9,7 @@ msgid "shoptemplateURL"
 msgstr "https://jtl-url.de/4t1so"
 
 msgid "shoptemplatesDesc"
-msgstr "This page contains all templates included in the folder \"/templates/\" of the online shop root directory. If you have a new template and want to use it, use <abbr title=\"FTP (File Transfer Protocol) is a data transfer protocol\">;FTP</abbr> to move it to this directory first. You can only activate one normal and one mobile template at the same time. Use the button \"Settings\" to configure the activated template."
+msgstr "This page contains all templates included in the folder \"/templates/\" of the online shop root directory. If you have a new template and want to use it, use <abbr title=\"FTP (File Transfer Protocol) is a data transfer protocol\">FTP</abbr> to move it to this directory first. You can only activate one normal and one mobile template for JTL-Shop at the same time. Use the button \"Settings\" to configure the activated template."
 
 msgid "templateName"
 msgstr "Template name"
@@ -21,10 +21,10 @@ msgid "successTemplateSave"
 msgstr "Template and settings changed successfully."
 
 msgid "errorTemplateSave"
-msgstr "Could not change template/settings."
+msgstr "Could not edit template or settings. If the template is a child template, please make sure that the respective parent template is available. If the problem persists, please contact the Support team."
 
 msgid "errorFileUpload"
-msgstr "Could not upload file. Please check write access of the folder \"%s\"."
+msgstr "Could not upload file. Please check the write access of folder \"%s\"."
 
 msgid "successLayoutReset"
 msgstr "Layout reset successfully."
@@ -33,7 +33,7 @@ msgid "errorLayoutReset"
 msgstr "Could not reset layout. File %s does not exist or does not have sufficient write access."
 
 msgid "errorStyleFilePermission"
-msgstr "Could not write style file. Please check the file rights of %s."
+msgstr "Could not write style file. File %s does not exist or does not have sufficient write access."
 
 msgid "successLayoutSave"
 msgstr "Layout changed successfully."
@@ -63,4 +63,4 @@ msgid "parentTemplateMissing"
 msgstr "Missing parent template"
 
 msgid "errorOverlayWritePermissions"
-msgstr "Overlays could not be created - please check write permissions of folder \"%s\" and activate the template again."
+msgstr "Could not create overlays. Please check the write access of the folder \"%s\" and re-enable the template."

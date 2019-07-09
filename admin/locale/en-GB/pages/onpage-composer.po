@@ -101,10 +101,10 @@ msgid "Delay"
 msgstr "Delay"
 
 msgid "Offset (px)"
-msgstr "Scrolling distance (pixels)"
+msgstr "Distance (pixels)"
 
 msgid "Iteration"
-msgstr "Repetitions"
+msgstr "Repetition"
 
 msgid "Change the animation duration (e.g. 2s)"
 msgstr "Duration of the animation (e.g. 2 s)"
@@ -113,7 +113,7 @@ msgid "Delay before the animation starts"
 msgstr "Time until animation begins"
 
 msgid "Distance to start the animation (related to the browser bottom)"
-msgstr "The animation starts when the scrolling distance between the top edge of the respective element and the bottom edge of the current browser window equals the entered pixel value. By adjusting this setting, you can, for example, prevent an animation from starting while the element is not yet completely visible."
+msgstr "The animation starts when the scrolling distance between the top edge of the respective element and the bottom edge of the current browser window equals the entered pixel value. By adjusting this setting, you can, for example, prevent an animation from starting while the element is not&nbsp;yet completely visible."
 
 msgid "Number of times the animation is repeated"
 msgstr "Number of repetitions"
@@ -140,7 +140,7 @@ msgid "animation"
 msgstr "Animation"
 
 msgid "noteMovementOnPage"
-msgstr "Would you like to have more moving elements on your pages? Learn how to get them."
+msgstr "Would you like to have more moving elements on your pages?"
 
 msgid "noteSaveAsTemplate"
 msgstr "You have created a great view that you would like to use more often?<br/> Why don’t you save it as a template so that you can easily use it again and again?"
@@ -170,7 +170,7 @@ msgid "noCurrent"
 msgstr "No, edit current version"
 
 msgid "yesRestore"
-msgstr "Yes, apply changes"
+msgstr "Yes, restore changes"
 
 msgid "portletLabel"
 msgstr "Portlet label"

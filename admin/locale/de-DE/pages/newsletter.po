@@ -102,7 +102,7 @@ msgid "newsletterdraftsaveandtest"
 msgstr "Speichern, Newsletter testen"
 
 msgid "newsletterdraftdate"
-msgstr "Versenden ab"
+msgstr "Versenden am"
 
 msgid "newsletterdraftformat"
 msgstr "(TT/MM/JJJJ hh:mm)"
@@ -111,7 +111,7 @@ msgid "newsletterdraftcal"
 msgstr "Kalender"
 
 msgid "newsletterdesc"
-msgstr "Hier verwalten Sie Ihre Newsletter und sowie Newsletter-Abonnenten. Beachten Sie, dass Newsletter pro Sprache verwaltet werden."
+msgstr "Hier verwalten Sie Ihre Newsletter und Newsletter-Abonnenten. Beachten Sie, dass Newsletter pro Sprache verwaltet werden."
 
 msgid "newslettersubscriberactive"
 msgstr "(*) = nicht aktiviert"
@@ -195,10 +195,10 @@ msgid "errorFillEmail"
 msgstr "Bitte füllen Sie das Feld „E-Mail“ aus."
 
 msgid "successNewsletterQueueDelete"
-msgstr "Die Newsletterqueue(s) %s wurden erfolgreich gelöscht."
+msgstr "Die Newsletter-Queue(s) %s wurde(n) erfolgreich gelöscht."
 
 msgid "successNewsletterHistoryDelete"
-msgstr "Die Newsletterhistory(s) %s wurden erfolgreich gelöscht."
+msgstr "Die Newsletter-Historie(n) %s wurde(n) erfolgreich gelöscht."
 
 msgid "errorAtLeastOneNewsletter"
 msgstr "Bitte markieren Sie mindestens einen Newsletter."
@@ -231,4 +231,4 @@ msgid "newsletterNoAccount"
 msgstr "Newsletter-Empfänger ohne Kundenkonto"
 
 msgid "errorEmailExists"
-msgstr "E-Mail Adresse existiert bereits"
+msgstr "Die E-Mail-Adresse existiert bereits."

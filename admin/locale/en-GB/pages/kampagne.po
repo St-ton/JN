@@ -114,7 +114,7 @@ msgid "errorCampaignParameterDuplicate"
 msgstr "The entered campaign parameters is already in use."
 
 msgid "Hit"
-msgstr "Hit"
+msgstr "Hits"
 
 msgid "Verkauf"
 msgstr "Sales"
@@ -123,22 +123,22 @@ msgid "Anmeldung"
 msgstr "Registrations"
 
 msgid "Verkaufssumme"
-msgstr "Amount"
+msgstr "Sales amount"
 
 msgid "Frage zum Produkt"
-msgstr "Product question"
+msgstr "Questions about item"
 
 msgid "Verfügbarkeits-Anfrage"
-msgstr "Availability notification"
+msgstr "Availability requests"
 
 msgid "Login"
-msgstr "Login"
+msgstr "Logins"
 
 msgid "Produkt auf Wunschliste"
-msgstr "Items to wishlist"
+msgstr "Items on wish list"
 
 msgid "Produkt in den Warenkorb"
-msgstr "Items to cart"
+msgstr "Items in basket"
 
 msgid "Angeschaute Newsletter"
-msgstr "Newsletters viewed"
+msgstr "Read newsletters"

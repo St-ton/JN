@@ -60,7 +60,7 @@ msgid "sitemapCountURL"
 msgstr "Number of URLs"
 
 msgid "errorSitemapCreatePermission"
-msgstr "%s cannot be written. Please note that there must be sufficient write access for this file to create a sitemap. Please review the write access."
+msgstr "Cannot write file %s. Please note that there must be sufficient write access for this file to create a sitemap. Please review the write access."
 
 msgid "successSave"
 msgstr "%s updated successfully."

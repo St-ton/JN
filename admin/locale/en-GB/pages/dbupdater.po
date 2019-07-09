@@ -36,7 +36,7 @@ msgid "eventProtocol"
 msgstr "Event log"
 
 msgid "isDownloaded"
-msgstr " is being downloaded…"
+msgstr " is being downloaded"
 
 msgid "createSuccess"
 msgstr " created successfully."
@@ -63,10 +63,10 @@ msgid "sessionExpired"
 msgstr "Session expired."
 
 msgid "redirectToLogin"
-msgstr "You will shortly be forwarded to the login form…"
+msgstr "You will shortly be forwarded to the login page."
 
 msgid "dbUpToDate"
-msgstr "Your database matches the current system status (version %s)"
+msgstr "Your database corresponds to the current system version (%s)."
 
 msgid "successfullMigrations"
 msgstr "Successful migrations"

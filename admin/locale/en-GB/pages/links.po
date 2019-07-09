@@ -102,7 +102,7 @@ msgid "metaTitleDesc"
 msgstr "Search engines use the meta title as a page's headline. It should be as precise as possible and should not be longer than 69 characters. "
 
 msgid "metaKeywordsDesc"
-msgstr "As meta keywords, enter important keywords for this page. The most important keywords should be right in the front. If the online shop language is German, umlauts are possible. (Note: the Google search engine does not consider the meta keywords of a page.) "
+msgstr "Into Meta Keywords, enter important keywords for this page. The most important keywords should be right in the front. If the shop language is German, umlauts are possible. (Note: the Google search engine does not consider the meta keywords of a page.) "
 
 msgid "metaDescriptionDesc"
 msgstr "The meta description provides a summary of the page contents and is displayed as a text snippet under the page's URL in search engines. The description should mirror the page content as short and precise as possible (156 characters max). "
@@ -117,7 +117,7 @@ msgid "visibleAfterLogin"
 msgstr "Visible only after login"
 
 msgid "showPrintButton"
-msgstr "Display Print button"
+msgstr "Show Print button"
 
 msgid "noFollow"
 msgstr "Set attribute \"nofollow\" or \"noindex\" to prevent the indexation of the page by search engines"
@@ -222,7 +222,7 @@ msgid "sureDeleteLinkGroup"
 msgstr "Delete link group \"<strong>%s</strong>\"?"
 
 msgid "newLinksSaveContinueEdit"
-msgstr "Save page and continue editing"
+msgstr "Save page and keep editing"
 
 msgid "createWithSearchEngineName"
 msgstr "(create under \"Name for search engines\")"
@@ -237,10 +237,10 @@ msgid "dangerLinkWillGetDeleted"
 msgstr "Caution: The link is part of %s link groups and will be deleted from all of them."
 
 msgid "isDuplicateSpecialLink"
-msgstr "The special page already exists for the selected customer group(s)."
+msgstr "Special page already exists for the selected customer group(s)."
 
 msgid "hasDuplicateSpecialLink"
-msgstr "Special page %s exists more than once for the same customer group(s)."
+msgstr "Special page %s exists several times for the same customer group(s)."
 
 msgid "Referenz"
 msgstr "Reference"

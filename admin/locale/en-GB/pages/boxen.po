@@ -197,7 +197,7 @@ msgstr "Special offer"
 
 #box name
 msgid "Top Angebot"
-msgstr "Top offer"
+msgstr "Top item"
 
 #box name
 msgid "Top bewertet"

@@ -15,7 +15,7 @@ msgid "pluginverwaltungLicenceKey"
 msgstr "Lizenzschlüssel"
 
 msgid "pluginverwaltungDesc"
-msgstr "Plugins erweitern den Funktionsumfang von JTL-Shop, ohne den Kern zu verändern. Aktive Plugins können jederzeit deaktiviert bzw. komplett deinstalliert werden. Bitte installieren Sie keine Plugins, deren Ursprung Ihnen nicht bekannt ist. <br/><strong>Sicherheitshinweis: Plugins haben Zugriff auf die gesamte Datenbank des Shop-Systems.</strong>"
+msgstr "Plugins erweitern den Funktionsumfang von JTL-Shop, ohne den Kern zu verändern. Aktive Plugins können jederzeit deaktiviert bzw. komplett deinstalliert werden. Bitte installieren Sie keine Plugins, deren Ursprung Ihnen nicht bekannt ist. <br/><strong>Sicherheitshinweis: Plugins haben Zugriff auf die gesamte Datenbank des Shopsystems.</strong>"
 
 msgid "pluginverwaltungURL"
 msgstr "https://jtl-url.de/5stze"
@@ -153,7 +153,7 @@ msgid "successPluginUpdate"
 msgstr "Das Plugin wurde erfolgreich aktualisiert."
 
 msgid "errorPluginUpdate"
-msgstr "Bei der Aktualisierung ist ein Fehler aufgetreten. Fehlercode: "
+msgstr "Die Aktualisierung konnte nicht durchgeführt werden. Fehlercode: "
 
 msgid "successPluginInstall"
 msgstr "Die ausgewählten Plugins wurden erfolgreich installiert."
@@ -177,16 +177,16 @@ msgid "sureResetLangVar"
 msgstr "Möchten Sie diese Sprachvariable wirklich wieder auf den Installationszustand zurücksetzen?<br/><br/> Dabei gehen alle geänderten Übersetzungen der Variable verloren."
 
 msgid "dangerPluginNotCompatibleShop5"
-msgstr "Bitte beachten Sie, dass das Plugin nicht vollständig mit JTL-Shop 5 kompatibel ist. Es können daher Probleme beim Betrieb entstehen."
+msgstr "Bitte beachten Sie, dass das Plugin nicht vollständig mit JTL-Shop&nbsp;5 kompatibel ist. Es können daher Probleme beim Betrieb entstehen."
 
 msgid "dangerPluginNotCompatibleShop4"
-msgstr "Bitte beachten Sie, dass das Plugin nicht vollständig mit JTL-Shop 4 kompatibel ist. Es können daher Probleme beim Betrieb entstehen."
+msgstr "Bitte beachten Sie, dass das Plugin nicht vollständig mit JTL-Shop&nbsp;4 kompatibel ist. Es können daher Probleme beim Betrieb entstehen."
 
 msgid "licensePlugin"
 msgstr "Plugin-Lizenz"
 
 msgid "storeNotLinkedDesc"
-msgstr "Um auf JTL-Store Inhalte zugreifen zu können, müssen Sie zunächst Ihr JTL-Konto mit dem Marktplatz verknüpfen."
+msgstr "Um auf Inhalte von JTL-Store zugreifen zu können, müssen Sie zunächst Ihr JTL-Konto mit dem Marktplatz verknüpfen."
 
 msgid "storeLink"
 msgstr "Konto verknüpfen"
@@ -201,13 +201,13 @@ msgid "storeListUpdates"
 msgstr "Updates anzeigen"
 
 msgid "storePlugins"
-msgstr "lizenzierte Plug-Ins"
+msgstr "Lizenzierte Plugins"
 
 msgid "storeListAll"
 msgstr "Alle anzeigen"
 
 msgid "storeLastUpdate"
-msgstr "zuletzt aktualisiert"
+msgstr "Zuletzt aktualisiert"
 
 msgid "storeUpdateNow"
 msgstr "Aktualisieren"

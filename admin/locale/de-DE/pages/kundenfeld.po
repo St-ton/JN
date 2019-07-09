@@ -27,7 +27,7 @@ msgid "kundenfeldTyp"
 msgstr "Feldtyp"
 
 msgid "kundenfeldSortDesc"
-msgstr "Ganzzahl, z. B. 10 (wird bei mehreren Feldern 0 oder nichts eingetragen, erscheinen diese Felder in willkürlicher Sortierung)"
+msgstr "Ganzzahl, z. B. 10 (wird bei mehreren Feldern 0 oder nichts eingetragen, erscheinen diese Felder in willkürlicher Sortierung)"
 
 msgid "kundenfeldPflichtDesc"
 msgstr "(*) = Pflichtfeld"

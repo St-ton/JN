@@ -114,7 +114,7 @@ msgid "wholeWKDiscount"
 msgstr "Apply discount to total product value"
 
 msgid "wholeWKDiscountHint"
-msgstr "The setting \"Apply discount to total product value\" only works with discounts in percent. If the setting is set to \"Yes\", the discount is applied to the total product value.<br/>If this setting is set to \"No\", the discount will be detracted from each valid single line item."
+msgstr "The setting \"Apply discount to total product value\" only works with discounts in percent. If the setting is set to \"Yes\", the discount is applied to the total product value.<br/>If this setting is set to \"No\", the discount will be detracted separately from each valid line item."
 
 msgid "gross"
 msgstr "Gross"
@@ -159,7 +159,7 @@ msgid "periodOfValidityHelp"
 msgstr "Enter the number of days that the coupon will be valid. This option can be used alternatively to the option \"Valid until\". If both fields remain empty, the coupon has unlimited validity."
 
 msgid "errorImportCSV"
-msgstr "Could not completely import the CSV file."
+msgstr "The CSV file could not be imported completed."
 
 msgid "successImportCSV"
 msgstr "CSV-Datei imported successfully."
@@ -177,7 +177,7 @@ msgid "successCouponDelete"
 msgstr "Selected coupons deleted successfully."
 
 msgid "errorCouponDelete"
-msgstr "Could not delete one or several coupon(s)."
+msgstr "Could not delete one or more coupons."
 
 msgid "errorAtLeastOneCoupon"
 msgstr "Please select at least one coupon."
@@ -192,7 +192,7 @@ msgid "errorCouponMinOrderValueNegative"
 msgstr "Please enter a minimum order value of 0 or higher."
 
 msgid "errorCouponISOMissing"
-msgstr "Please enter the country codes (ISO codes) for which this free shipping coupon is valid into \"Shipping countries\"."
+msgstr "Please enter the country codes (ISO codes) for which this free shipping coupon is valid into \"Destination countries\"."
 
 msgid "errorCouponCodeLong"
 msgstr "The code to be generated exceeds 32 characters. Please reduce the number of characters in the prefix and/or suffix or enter a smaller number for the length of the random code."
@@ -201,10 +201,10 @@ msgid "errorCouponCodeShort"
 msgstr "The code to be generated has less than 2 characters. Please increase the number of characters in the prefix and/or suffix or enter a higher number for the length of the random code."
 
 msgid "errorCouponCodeOptionSelect"
-msgstr "Please select at least one option for \"Random code with …\"."
+msgstr "Please select at least one option for \"Random code with…\"."
 
 msgid "errorCouponCodeDuplicate"
-msgstr "The entered code is already being used by another coupon. Please select a different code."
+msgstr "The entered code is already in use for a different coupon. Please select a different code."
 
 msgid "errorProductNumberNotFound"
 msgstr "SKU %s is not assigned to a valid item and will be removed."
@@ -213,10 +213,10 @@ msgid "errorISOInvalid"
 msgstr "ISO code %s does not belong to a valid country."
 
 msgid "errorPeriodBeginFormat"
-msgstr "Please enter the start date of the validity period in the format <strong>dd.MM.yyyy HH:mm</strong>."
+msgstr "Please enter the start date of the validity period in the format <strong>DD.MM.YYYY hh:mm</strong>."
 
 msgid "errorPeriodEndFormat"
-msgstr "Please enter the end date of the validity period in the format <strong>dd.MM.yyyy HH:mm</strong>."
+msgstr "Please enter the end date of the validity period in the format <strong>DD.MM.YYYY hh:mm</strong>."
 
 msgid "errorPeriodEndAfterBegin"
 msgstr "The end date of the validity period must be after the start date of the validity period."

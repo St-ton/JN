@@ -22,9 +22,6 @@
                                 ]
                             }
                             <div class="form-group d-flex flex-column" role="group">
-                                <label for="newPassword" class="col-form-label pt-0">
-                                    {lang key='newPassword' section='login'}
-                                </label>
                                 <input type="password"
                                        class="form-control"
                                        placeholder="{lang key='newPassword' section='login'}"
@@ -33,6 +30,9 @@
                                        value=""
                                        name="neuesPasswort1"
                                        autocomplete="">
+                                <label for="newPassword" class="col-form-label pt-0">
+                                    {lang key='newPassword' section='login'}
+                                </label>
                             </div>
                             {block name='account-change-password-include-password-check'}
                                 {include file='snippets/password_check.tpl' id='#newPassword'}

@@ -11,7 +11,6 @@ use Illuminate\Support\Collection;
 use InvalidArgumentException;
 use Iterator;
 use JTL\DB\DbInterface;
-use JTL\Shop;
 use stdClass;
 use function Functional\select;
 
@@ -291,8 +290,12 @@ abstract class DataModel implements DataModelInterface, Iterator
         $attribs  = $instance->getAttributes();
         $conds    = [];
         foreach ($attributes as $key => $value) {
-            $mapped = $attribs[$key]->name ?? null;
-            if ($mapped !== null) {
+            $attribute = $attribs[$key] ?? null;
+            if ($attribute === null) {
+                continue;
+            }
+            $mapped = $attribute->name;
+            if ($mapped !== null && !self::isChildModel($attribute->dataType)) {
                 $conds[$mapped] = $value;
             }
         }
@@ -403,7 +406,7 @@ abstract class DataModel implements DataModelInterface, Iterator
      */
     private static function getType(string $type)
     {
-        if (\strpos($type, 'japi\\models\\') !== false || \strpos($type, 'jtl\\') === 0) {
+        if (self::isChildModel($type)) {
             return 'model';
         }
         $typeMap = [
@@ -539,11 +542,10 @@ abstract class DataModel implements DataModelInterface, Iterator
         $keyName      = null;
         $members      = $this->getSqlObject();
         $allKeyNames  = $this->getAllKeyNames(true);
-
         try {
             $keyValue = $this->getKey();
             $keyName  = $this->getKeyName(true);
-            if (\count($allKeyNames) === 1) {
+            if (\count($allKeyNames) === 1 && empty($members->$keyName)) {
                 unset($members->$keyName);
             }
         } catch (Exception $e) {
@@ -556,13 +558,13 @@ abstract class DataModel implements DataModelInterface, Iterator
         $members = $this->getMembersToSave($members, $partial);
         if (!$this->loaded || $noPrimaryKey || $keyValue === null) {
             $pkValue = $this->db->insert($this->getTableName(), $members);
-            $this->updateChildModels();
-
             if (!($noPrimaryKey || empty($pkValue))) {
                 $this->setKey($pkValue);
+                $this->updateChildModels();
 
                 return true;
             }
+            $this->updateChildModels();
 
             return false;
         }
@@ -693,6 +695,17 @@ abstract class DataModel implements DataModelInterface, Iterator
         }
 
         return isset($mapping[$attribName]);
+    }
+
+    /**
+     * @param string $type
+     * @return bool
+     */
+    private static function isChildModel(string $type): bool
+    {
+        $type = \strtolower($type);
+
+        return \strpos($type, 'japi\\models\\') !== false || \strpos($type, 'jtl\\') !== false;
     }
 
     /**
@@ -869,6 +882,9 @@ abstract class DataModel implements DataModelInterface, Iterator
             }
             $member          = $attr->name;
             $result->$member = $this->members[$name];
+            if ($result->$member === null) {
+                $result->$member = '_DBNULL_';
+            }
         }
 
         return $result;

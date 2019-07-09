@@ -221,7 +221,7 @@ msgstr "Campaigns"
 
 # Mid Menu
 msgid "Statistics"
-msgstr "Statistics"
+msgstr "Reports"
 
 # Menu Items
 msgid "Sales revenues"
@@ -258,7 +258,7 @@ msgid "Import newsletter recipient"
 msgstr "Import newsletter recipients"
 
 msgid "Zip code import"
-msgstr "Zip code import"
+msgstr "Postal code import"
 
 # Mid Menu
 msgid "Export"
@@ -293,7 +293,7 @@ msgid "Back end user"
 msgstr "Back end user"
 
 msgid "Synchronisation with JTL-Wawi"
-msgstr "Synchronization with JTL-Wawi"
+msgstr "Synchronisation with JTL-Wawi"
 
 msgid "Global meta data"
 msgstr "Global meta data"
@@ -378,11 +378,6 @@ msgstr "Plug-in profiler"
 #
 #
 # Right Top Menu
-msgid "Messages"
-msgstr "Notifications"
-
-msgid "Favorites"
-msgstr "Favourites"
 
 msgid "Dashboard"
 msgstr "Dashboard"
@@ -443,7 +438,7 @@ msgid "There are errors within the database structure."
 msgstr "Error in the database structure."
 
 msgid "Your template version differs from your shop version.<br />For additional help about template updates go to <i class='fa fa-external-link'></i> Wiki"
-msgstr "The template version does not match the shop version.<br/>For further information on adjusting the template, please see the<i class=\"fa fa-external-link\"></i> JTL-Guide."
+msgstr "The template version does not match the shop version.<br/>For further information on adjusting the template, please see the <i class=\"fa fa-external-link\"></i> JTL-Guide."
 
 msgid "You are using a full responsive template. The activation of a separate mobile template is not necessary in this case."
 msgstr "You are using a fully responsive template. It is not necessary to activate a separate mobile template."

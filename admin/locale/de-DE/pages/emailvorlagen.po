@@ -90,7 +90,7 @@ msgid "errorFileNameMissing"
 msgstr "Bitte geben Sie zu jeder Datei auch einen Dateinamen ein."
 
 msgid "errorFileSizeType"
-msgstr "Die Datei muss ein PDF sein und darf maximal 2 MB groß sein."
+msgstr "Die Datei muss im PDF-Format vorliegen und darf maximal 2&nbsp;MB groß sein."
 
 msgid "errorFileNamePdfMissing"
 msgstr "Sie haben zu einem PDF keinen Dateinamen angegeben."
@@ -163,7 +163,7 @@ msgstr "Frage zum Artikel"
 
 # email name (temailvorlage)
 msgid "name_core_jtl_verfuegbarkeitsbenachrichtigung"
-msgstr "Benachrichtigung, wenn Produkt wieder verfügbar"
+msgstr "Benachrichtigung, wenn Artikel wieder verfügbar"
 
 # email name (temailvorlage)
 msgid "name_core_jtl_wunschliste"

@@ -163,7 +163,7 @@ msgstr "Question about item"
 
 # email name (temailvorlage)
 msgid "name_core_jtl_verfuegbarkeitsbenachrichtigung"
-msgstr "Notification when item is available again"
+msgstr "Notification when item is back in stock"
 
 # email name (temailvorlage)
 msgid "name_core_jtl_wunschliste"
@@ -235,4 +235,4 @@ msgstr "Email report"
 
 # email name (temailvorlage)
 msgid "name_core_jtl_verfuegbarkeitsbenachrichtigung_optin"
-msgstr "Back in stock notification email (confirmation according to double opt-in process)"
+msgstr "Back in stock notification email (double opt-in confirmation)"

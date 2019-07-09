@@ -102,16 +102,16 @@ msgid "configgroup_8_box_special_offers"
 msgstr "Box: Special offers"
 
 msgid "configgroup_8_box_new_products"
-msgstr "Boxes: New in product range"
+msgstr "Box: New in product range"
 
 msgid "configgroup_8_box_top_products"
-msgstr "Box: Top offer"
+msgstr "Box: Top items"
 
 msgid "configgroup_8_box_last_viewed"
-msgstr "Box: Recently viewed"
+msgstr "Box: Last viewed"
 
 msgid "configgroup_8_box_upcoming_products"
-msgstr "Box: Coming soon"
+msgstr "Box: Items coming soon"
 
 msgid "configgroup_8_box_searchcloud"
 msgstr "Search cloud"
@@ -147,7 +147,7 @@ msgid "configgroup_100_credit_card"
 msgstr "Credit card"
 
 msgid "configgroup_100_invoice"
-msgstr "Pay by invoice"
+msgstr "A/R invoice"
 
 msgid "configgroup_100_debit"
 msgstr "Direct debit"
@@ -228,10 +228,10 @@ msgid "configgroup_119_searchspecial_standard_search"
 msgstr "Default sorting for special items"
 
 msgid "configgroup_122_returns"
-msgstr "Goods return"
+msgstr "Goods returns"
 
 msgid "rma_receiver_head"
-msgstr "Recipient address for the return of goods"
+msgstr "Recipient address for goods return"
 
 msgid "ftp_header"
 msgstr "FTP connection"

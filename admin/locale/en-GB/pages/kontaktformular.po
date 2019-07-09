@@ -12,7 +12,7 @@ msgid "contanctformSubjectDesc"
 msgstr "Using the subject line, you can control to which department emails are sent via the contact form. When the customer selects the subject in the contact form, the email is sent to the email address corresponding to the respective subject."
 
 msgid "mail"
-msgstr "Recipient's email address"
+msgstr "Send email to"
 
 msgid "newSubject"
 msgstr "New subject"
@@ -21,7 +21,7 @@ msgid "restrictedToCustomerGroups"
 msgstr "Visible for"
 
 msgid "contactformSubject"
-msgstr "Subject of the contact form"
+msgstr "Subject line of contact form"
 
 msgid "additionalContent"
 msgstr "Additional contents"

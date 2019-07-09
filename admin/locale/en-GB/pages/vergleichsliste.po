@@ -30,10 +30,10 @@ msgid "compareCount"
 msgstr "Number"
 
 msgid "compareProduct"
-msgstr "Item"
+msgstr "Items"
 
 msgid "compareTimeFilter"
-msgstr "Time period"
+msgstr "Period"
 
 msgid "compareNoTopCompares"
 msgstr "No comparisons found."

@@ -3,7 +3,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "ExtensionViewer_title"
-msgstr "Extension"
+msgstr "Extensions"
 
 msgid "ExtensionViewer_desc"
 msgstr "Shows all active extensions"

@@ -9,7 +9,7 @@ msgid "artikel_artikelanzeigefilter_value(2)"
 msgstr "Show only items with available stock"
 
 msgid "artikel_artikelanzeigefilter_value(3)"
-msgstr "Show only items with available stock or option \"Allow negative stock\""
+msgstr "Show only items with available stock or option “Allow negative stock”"
 
 msgid "artikel_artikelanzeigefilter_seo_value(404)"
 msgstr "Page not found (404 - Not found)"
@@ -117,7 +117,7 @@ msgid "global_versandhinweis_value(inkl)"
 msgstr "includes shipping costs"
 
 msgid "global_versandhinweis_value(kein)"
-msgstr "No reference to shipping costs"
+msgstr "No shipping cost information"
 
 msgid "global_erscheinende_kaeuflich_value(Y)"
 msgstr "Buyable"
@@ -156,10 +156,10 @@ msgid "redirect_save_404_value(N)"
 msgstr "No"
 
 msgid "global_ust_auszeichnung_value(auto)"
-msgstr "Insert \"incl./excl. VAT\" automatically"
+msgstr "insert note \"incl./excl. VAT\" automatically"
 
 msgid "global_ust_auszeichnung_value(endpreis)"
-msgstr "Insert \"final price\""
+msgstr "Insert \"final price*\""
 
 msgid "global_steuerpos_anzeigen_value(Y)"
 msgstr "Yes"
@@ -396,16 +396,16 @@ msgid "artikeluebersicht_sonderpreisanzeige_value(1)"
 msgstr "Show only special price"
 
 msgid "artikeluebersicht_sonderpreisanzeige_value(2)"
-msgstr "Also show old price"
+msgstr "Show also old price"
 
 msgid "topbest_anzeigen_value(Top)"
-msgstr "Show only top offers"
+msgstr "Show only top items"
 
 msgid "topbest_anzeigen_value(Bestseller)"
 msgstr "Only show bestsellers"
 
 msgid "topbest_anzeigen_value(TopBest)"
-msgstr "Show top offers and bestsellers"
+msgstr "Show top items and bestsellers"
 
 msgid "topbest_anzeigen_value(N)"
 msgstr "No"
@@ -504,7 +504,7 @@ msgid "artikel_variationspreisanzeige_value(0)"
 msgstr "Hide extra charges for variations"
 
 msgid "artikel_lagerbestandsanzeige_value(verfuegbarkeit)"
-msgstr "Show only if available "
+msgstr "Show only if available"
 
 msgid "artikel_lagerbestandsanzeige_value(genau)"
 msgstr "Show exact stock level"
@@ -615,7 +615,7 @@ msgid "sie_sparen_x_anzeigen_value(0)"
 msgstr "No"
 
 msgid "artikeldetails_varikombi_vorschautext_value(W)"
-msgstr "\"Other variations\""
+msgstr "\"Further variations\""
 
 msgid "artikeldetails_varikombi_vorschautext_value(S)"
 msgstr "Variation with smallest sort number"
@@ -624,7 +624,7 @@ msgid "artikeldetails_anzahl_pfeile_value(Y)"
 msgstr "Always"
 
 msgid "artikeldetails_anzahl_pfeile_value(I)"
-msgstr "\"If permissible order quantity exists\""
+msgstr "\"If permissible order quantity exits\""
 
 msgid "artikeldetails_anzahl_pfeile_value(N)"
 msgstr "Hide"
@@ -693,7 +693,7 @@ msgid "artikeldetails_fragezumprodukt_anzeigen_value(N)"
 msgstr "No"
 
 msgid "artikeldetails_fragezumprodukt_anzeigen_value(P)"
-msgstr "Yes, as dialogue box"
+msgstr "Yes, as a dialogue box"
 
 msgid "produktfrage_abfragen_anrede_value(Y)"
 msgstr "Yes, mandatory"
@@ -777,10 +777,10 @@ msgid "benachrichtigung_nutzen_value(N)"
 msgstr "No"
 
 msgid "benachrichtigung_nutzen_value(P)"
-msgstr "Yes, as dialogue box"
+msgstr "Yes, as a dialogue box"
 
 msgid "benachrichtigung_nutzen_value(L)"
-msgstr "Yes, as dialogue box (and in all list views)"
+msgstr "Yes, as a dialogue box (and in all list views)"
 
 msgid "benachrichtigung_abfragen_vorname_value(O)"
 msgstr "Yes, optional"
@@ -1071,10 +1071,10 @@ msgid "lieferadresse_abfragen_email_value(O)"
 msgstr "Yes, optional"
 
 msgid "lieferadresse_abfragen_email_value(Y)"
-msgstr "Yes, mandatory"
+msgstr "Yes, required"
 
 msgid "lieferadresse_abfragen_mobil_value(Y)"
-msgstr "Yes, mandatory"
+msgstr "Yes, required"
 
 msgid "lieferadresse_abfragen_email_value(N)"
 msgstr "No"
@@ -1383,7 +1383,7 @@ msgid "sonstiges_gratisgeschenk_sortierung_value(N)"
 msgstr "Name"
 
 msgid "sonstiges_gratisgeschenk_sortierung_value(L)"
-msgstr "Stock level"
+msgstr "Stock"
 
 msgid "zahlungsart_lastschrift_bic_abfrage_value(N)"
 msgstr "Do not prompt"
@@ -1590,7 +1590,7 @@ msgid "vergleichsliste_target_value(blank)"
 msgstr "In a new window"
 
 msgid "vergleichsliste_target_value(popup)"
-msgstr "In a dialogue box"
+msgstr "As a dialogue box"
 
 msgid "bewertung_anzeigen_value(Y)"
 msgstr "Yes"
@@ -1617,7 +1617,7 @@ msgid "bewertungserinnerung_nutzen_value(N)"
 msgstr "Never"
 
 msgid "bewertungserinnerung_nutzen_value(B)"
-msgstr "Bind to newletter consent"
+msgstr "Couple with agreement newsletter subscription"
 
 msgid "bewertung_guthaben_nutzen_value(Y)"
 msgstr "Yes"
@@ -2328,7 +2328,7 @@ msgid "auswahlassistent_anzeigeformat_value(BT)"
 msgstr "Image and text"
 
 msgid "auswahlassistent_anzeigeformat_value(S)"
-msgstr "Drop-down"
+msgstr "Drop-down menu"
 
 msgid "auswahlassistent_allefragen_value(Y)"
 msgstr "Yes"
@@ -2428,6 +2428,15 @@ msgstr "Yes"
 
 msgid "ftp_ssl_value(0)"
 msgstr "No"
+
+msgid "cron_type_value(N)"
+msgstr "deactivated"
+
+msgid "cron_type_value(tpl)"
+msgstr "Controlled by template"
+
+msgid "cron_type_value(s2s)"
+msgstr "Curl server to server"
 
 msgid "hersteller_anzeigen_als_value(T)"
 msgstr "Text"

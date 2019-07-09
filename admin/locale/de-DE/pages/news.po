@@ -147,13 +147,13 @@ msgid "mainCategory"
 msgstr "Hauptkategorie"
 
 msgid "deleteComment"
-msgstr "Möchten Sie die Kommentare löschen?"
+msgstr "Möchten Sie die Kommentare wirklich löschen?"
 
 msgid "successNewsSave"
-msgstr "News erfolgreich gespeichert"
+msgstr "News-Beitrag erfolgreich gespeichert"
 
 msgid "successNewsCatSave"
-msgstr "Newskategorie erfolgreich eingetragen."
+msgstr "News-Kategorie erfolgreich eingetragen."
 
 msgid "successNewsCommentDelete"
-msgstr "Ihre markierten Kommentare wurden erfolgreich gelöscht."
+msgstr "Die markierten Kommentare wurden erfolgreich gelöscht."

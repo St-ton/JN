@@ -191,7 +191,7 @@
                                 doAutoMigration(data.status, data.nextTable, data.nextStep, exclude);
                             } else if (data.status === 'failure' || data.status === 'in_use') {
                                 var msg = data.status === 'failure'
-                                    ? '{/literal}{__('errorMigrationTableOne')}{literal}' + table + '{/literal}{__('errorMigrationTableTwo')} {__('continueQuestion')}{literal}'
+                                    ? sprintf('{/literal}{__('errorMigrationTableContinue')}{literal}', table)
                                     : table + '{/literal}{__('errorTableInUse')}{literal}';
                                 if (window.confirm(msg)) {
                                     exclude.push(table);
@@ -210,7 +210,7 @@
                                 window.location.reload(true);
                             }
                         } else {
-                            if (window.confirm('{/literal}{__('errorMigrationTableOne')}{literal}' + table + '{/literal}{__('errorMigrationTableTwo')} {__('continueQuestion')}{literal}')) {
+                            if (window.confirm(sprintf('{/literal}{__('errorMigrationTableContinue')}{literal}', table)) {
                                 exclude.push(table);
                                 updateModalWait(null, 1);
                                 doAutoMigration('start', '', 1, exclude);
@@ -221,7 +221,7 @@
                         }
                     },
                     function (responseJSON) {
-                        if (window.confirm('{/literal}{__('errorMigrationTableOne')}{literal}' + table + '{/literal}{__('errorMigrationTableTwo')} {__('continueQuestion')}{literal}')) {
+                        if (window.confirm(sprintf('{/literal}{__('errorMigrationTableContinue')}{literal}', table)) {
                             exclude.push(table);
                             updateModalWait(null, 1);
                             doAutoMigration('start', '', 1, exclude);

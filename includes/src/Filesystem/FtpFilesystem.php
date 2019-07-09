@@ -6,9 +6,9 @@
 
 namespace JTL\Filesystem;
 
-use JTL\Path;
-use Generator;
 use Exception;
+use Generator;
+use JTL\Path;
 use RuntimeException;
 
 /**
@@ -31,17 +31,17 @@ class FtpFilesystem extends AbstractFilesystem
     public function __construct($options = array())
     {
         static $defaults = array(
-            'port' => 21,
-            'root' => null,
-            'ssl' => false,
-            'timeout' => 30,
-            'hostname' => null,
-            'username' => null,
-            'password' => null,
+            'port'            => 21,
+            'root'            => null,
+            'ssl'             => false,
+            'timeout'         => 30,
+            'hostname'        => null,
+            'username'        => null,
+            'password'        => null,
             'connection_type' => null,
         );
 
-        if (isset($options['connection_type']) && $options['connection_type'] == 'ftps') {
+        if (isset($options['connection_type']) && $options['connection_type'] === 'ftps') {
             $this->options['ssl'] = true;
         }
 
@@ -58,13 +58,11 @@ class FtpFilesystem extends AbstractFilesystem
     /**
      * {@inheritdoc}
      */
-    public function getMeta($path) : FileInfo
+    public function getMeta($path): FileInfo
     {
         $location  = $this->applyPathPrefix($path);
         $directory = Path::getDirectoryName($path);
-
-        $listing = $this->getRawList('-a', \str_replace('*', '\\*', $location));
-
+        $listing   = $this->getRawList('-a', \str_replace('*', '\\*', $location));
         if (empty($listing) || \preg_match('/.* not found/', $listing[0])) {
             return null;
         }
@@ -79,7 +77,7 @@ class FtpFilesystem extends AbstractFilesystem
     /**
      * {@inheritdoc}
      */
-    public function get($file, $mode = null) :? string
+    public function get($file, $mode = null): ?string
     {
         $stream = \fopen('php://temp', 'w+b');
         $result = @\ftp_fget($this->getLink(), $stream, $file, \FTP_BINARY);
@@ -88,7 +86,7 @@ class FtpFilesystem extends AbstractFilesystem
         if (!$result) {
             \fclose($stream);
 
-            return false;
+            return null;
         }
 
         $contents = \stream_get_contents($stream);
@@ -100,7 +98,7 @@ class FtpFilesystem extends AbstractFilesystem
     /**
      * {@inheritdoc}
      */
-    public function put($file, $contents, $mode = null) : bool
+    public function put($file, $contents, $mode = null): bool
     {
         $stream = \fopen('php://temp', 'w+b');
         \fwrite($stream, $contents);
@@ -116,7 +114,7 @@ class FtpFilesystem extends AbstractFilesystem
     /**
      * {@inheritdoc}
      */
-    public function cwd() :? string
+    public function cwd(): ?string
     {
         $cwd = @\ftp_pwd($this->getLink());
         if ($cwd !== false) {
@@ -129,7 +127,7 @@ class FtpFilesystem extends AbstractFilesystem
     /**
      * {@inheritdoc}
      */
-    public function chown($path, $owner) : bool
+    public function chown($path, $owner): bool
     {
         throw new RuntimeException();
     }
@@ -137,7 +135,7 @@ class FtpFilesystem extends AbstractFilesystem
     /**
      * {@inheritdoc}
      */
-    public function chgrp($path, $group) : bool
+    public function chgrp($path, $group): bool
     {
         throw new RuntimeException();
     }
@@ -145,7 +143,7 @@ class FtpFilesystem extends AbstractFilesystem
     /**
      * {@inheritdoc}
      */
-    public function chmod($file, $mode = null) : bool
+    public function chmod($file, $mode = null): bool
     {
         if (!\function_exists('ftp_chmod')) {
             return (bool)@\ftp_site($this->getLink(), \sprintf('CHMOD %o %s', $mode, $file));
@@ -157,7 +155,7 @@ class FtpFilesystem extends AbstractFilesystem
     /**
      * {@inheritdoc}
      */
-    public function chdir($dir) : bool
+    public function chdir($dir): bool
     {
         return @\ftp_chdir($this->getLink(), $dir);
     }
@@ -165,7 +163,7 @@ class FtpFilesystem extends AbstractFilesystem
     /**
      * {@inheritdoc}
      */
-    public function copy($source, $destination, $overwrite = false, $mode = null) : bool
+    public function copy($source, $destination, $overwrite = false, $mode = null): bool
     {
         if (!$overwrite && $this->exists($destination)) {
             return false;
@@ -181,7 +179,7 @@ class FtpFilesystem extends AbstractFilesystem
     /**
      * {@inheritdoc}
      */
-    public function move($source, $destination) : bool
+    public function move($source, $destination): bool
     {
         return @\ftp_rename($this->getLink(), $source, $destination);
     }
@@ -189,7 +187,7 @@ class FtpFilesystem extends AbstractFilesystem
     /**
      * {@inheritdoc}
      */
-    public function delete($path) : bool
+    public function delete($path): bool
     {
         return @\ftp_delete($this->getLink(), $path);
     }
@@ -197,7 +195,7 @@ class FtpFilesystem extends AbstractFilesystem
     /**
      * {@inheritdoc}
      */
-    public function exists($file) : bool
+    public function exists($file): bool
     {
         $list = @\ftp_nlist($this->getLink(), $file);
 
@@ -211,7 +209,7 @@ class FtpFilesystem extends AbstractFilesystem
     /**
      * {@inheritdoc}
      */
-    public function makeDirectory($path, $mode = null, $recursive = false) : bool
+    public function makeDirectory($path, $mode = null, $recursive = false): bool
     {
         $link = $this->getLink();
 
@@ -231,7 +229,7 @@ class FtpFilesystem extends AbstractFilesystem
     /**
      * {@inheritdoc}
      */
-    public function moveDirectory($from, $to, $overwrite = false) : bool
+    public function moveDirectory($from, $to, $overwrite = false): bool
     {
         if ($overwrite) {
             $this->deleteDirectory($to);
@@ -242,14 +240,14 @@ class FtpFilesystem extends AbstractFilesystem
     /**
      * {@inheritdoc}
      */
-    public function copyDirectory($from, $to, $mode = null) : bool
+    public function copyDirectory($from, $to, $mode = null): bool
     {
     }
 
     /**
      * {@inheritdoc}
      */
-    public function deleteDirectory($directory, $preserve = false) : bool
+    public function deleteDirectory($directory, $preserve = false): bool
     {
         $link     = $this->getLink();
         $contents = $this->listContents($directory, true); // array_reverse
@@ -274,7 +272,7 @@ class FtpFilesystem extends AbstractFilesystem
     /**
      * {@inheritdoc}
      */
-    public function listContents($directory, $recursive = false) : Generator
+    public function listContents($directory, $recursive = false): Generator
     {
         $location = $this->applyPathPrefix($directory);
 
@@ -413,7 +411,7 @@ class FtpFilesystem extends AbstractFilesystem
         $link = $this->getLink();
 
         if ($root !== null && !@\ftp_chdir($link, $root)) {
-            throw new Exception('Invalid root directory: '.$root);
+            throw new Exception('Invalid root directory: ' . $root);
         }
 
         $this->options['root'] = @\ftp_pwd($link);
@@ -441,7 +439,7 @@ class FtpFilesystem extends AbstractFilesystem
     }
 
     /**
-     * @param array $listing
+     * @param array  $listing
      * @param string $prefix
      *
      * @return Generator
@@ -482,7 +480,7 @@ class FtpFilesystem extends AbstractFilesystem
      */
     protected function getRawList($options, $path)
     {
-        return @\ftp_rawlist($this->getLink(), $options.' '.$path);
+        return @\ftp_rawlist($this->getLink(), $options . ' ' . $path);
     }
 
     /**

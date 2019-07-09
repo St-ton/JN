@@ -27,7 +27,7 @@
             {block name='register-form-customer-account-password'}
                 {row id="create_account_data" class="collapse collapse-non-validate {if $unregForm === 1}hidden{else}show{/if}" aria-expanded="true"}
                     {block name='register-form-customer-account-password-first'}
-                        {col cols=12 md=5 offset-md=2}
+                        {col cols=12 md=4}
                             <div class="form-group d-flex flex-column {if isset($fehlendeAngaben.pass_zu_kurz) || isset($fehlendeAngaben.pass_ungleich)} has-error{/if}" role="group">
                                 <label for="pass" class="col-form-label">
                                     {lang key='password' section='account data'}
@@ -49,7 +49,7 @@
                         {/col}
                     {/block}
                     {block name='register-form-customer-account-password-repeat'}
-                        {col cols=12 md=5}
+                        {col cols=12 md=4}
                             {formgroup
                                 class="{if isset($fehlendeAngaben.pass_zu_kurz) || isset($fehlendeAngaben.pass_ungleich)} has-error{/if}"
                                 label="{lang key='passwordRepeat' section='account data'}"
@@ -67,6 +67,7 @@
                                     autocomplete="off"
                                     aria-autocomplete="none"
                                     disabled=($unregForm === 1)
+                                    value=""
                                 }
                                 {if isset($fehlendeAngaben.pass_ungleich)}
                                     <div class="form-error-msg text-danger"><i class="fa fa-exclamation-triangle"></i>

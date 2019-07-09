@@ -1,7 +1,7 @@
 Cache
 =====
 
-Über die Klasse *JTLCache* in ``<Shop-Root>/classes/class.JTL-Shop.JTLCache.php`` sowie die zugehörigen Backends in ``<Shop-Root>/classes/CachingMethods`` wird seit Shop 4 ein auch für Plugins nutzbarer Objektcache bereitgestellt.
+Über die Klasse ``JTLCache`` bzw. ``JTL\Cache\JTLCache`` sowie die zugehörigen Backends in *<Shop-Root>/classes/CachingMethods/* bzw. *<Shop-Root>/includes/src/Cache/Methods/* wird seit Shop 4 ein auch für Plugins nutzbarer Objektcache bereitgestellt.
 
 Die Konfiguration erfolgt im Backend über den Menüpunkt *System->Cache*.
 

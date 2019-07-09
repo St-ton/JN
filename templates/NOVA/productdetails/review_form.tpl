@@ -16,7 +16,7 @@
         {/block}
         {block name='productdetails-review-form-form'}
             <div class="panel-wrap">
-                {form action="{get_static_route id='bewertung.php'}#tab-votes" class="evo-validate"}
+                {form action="{get_static_route id='bewertung.php'}#tab-votes" class="evo-validate label-slide"}
                     {block name='productdetails-review-form-alerts'}
                         {$alertList->displayAlertByKey('productNotBuyed')}
                         {$alertList->displayAlertByKey('loginFirst')}

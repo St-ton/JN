@@ -18,13 +18,18 @@ Verzeichnisstruktur
 Ein Plugin benötigt eine festdefinierte Verzeichnisstruktur, damit es installiert werden kann. Es gibt einige Ausnahmen, wobei man gewisse Verzeichnisse weglassen oder nach eigenen Vorlieben strukturieren kann.
 Jedes Plugin hat sein eigenes Unterverzeichnis innerhalb des Pluginverzeichnisses.
 
-Das Pluginverzeichnis ``plugins``, in dem alle Plugins des Shops zu finden sind, liegt im Ordner ``/includes/``, welcher im Shop Root zu finden ist. Demnach könnte ein typisches Plugin unter ``<shoproot>/includes/plugins/<Ihr_Pluginordner>`` zu finden sein.
+Das Pluginverzeichnis ``plugins``, in dem alle Plugins des Shops zu finden sind, liegt bis Version 4.X im Ordner ``/includes/``, welcher im Shop Root zu finden ist.
+Demnach könnte ein typisches Plugin unter ``<shoproot>/includes/plugins/<Ihr_Pluginordner>`` zu finden sein.
 
 Es sollte darauf geachtet werden, stets aussagekräftige und eindeutige Pluginnamen zu vergeben, damit es niemals eine Pluginverzeichniskollision gibt, was andernfalls bei vielen Plugins unterschiedlicher Autoren in einen Shop vorkommen könnte.
 Das neuere Pluginverzeichnis würde demnach beim Upload das ältere überschreiben und das ursprüngliche Plugin würde nicht mehr funktionieren. Wir empfehlen daher dringend, das Pluginverzeichnis um eindeutige Merkmale wie z.B. den Firmennamen des Autors zu erweitern.
 
 Jedes Plugin muss mindestens einen Versionsordner enthalten. Die Versionen fangen bei der Ganzzahl 100 an (Bedeutung Version 1.00) und werden mit 101, 102 usw. weitergeführt.
 Die ganzzahligen Versionssnummern sind gleichzeitig die Ordnernamen. D.h. jedes Plugin muss auf jeden Fall den Ordner ``100/`` enthalten (siehe Versionen).
+
+Ab 5.0.0 existiert außerdem der Unterodner ``plugins`` direkt im Shopverzeichnis, in dem aktuelle Plugins installiert werden können.
+**Der Name des Plugin-Ordners muss hier zwingend der in der info.xml angegebenen PluginID entsprechen!**
+
 
 Mögliche weitere Ordner
 -----------------------
@@ -38,12 +43,20 @@ Mögliche weitere Ordner
 +---------------+-------------------------------------------------------------------------------------------------------+
 | paymentmethod | Implementierung von Zahlungsmethoden im Shop.                                                         |
 +---------------+-------------------------------------------------------------------------------------------------------+
-| sql           | SQL-Datei, um eigene Datenbanktabellen anzulegen, Daten dort abzulegen oder zu verändern.             |
+| sql           | Bis 4.X, SQL-Datei, um eigene Datenbanktabellen anzulegen, Daten dort abzulegen oder zu verändern.    |
++---------------+-------------------------------------------------------------------------------------------------------+
+| locale        | Ab 5.0.0, Übersetzungsdateien                                                                         |
++---------------+-------------------------------------------------------------------------------------------------------+
+| Migrations    | Ab 5.0.0, SQL-Migrationen                                                                             |
++---------------+-------------------------------------------------------------------------------------------------------+
+| Portlets      | Ab 5.0.0, OPC-Portlets                                                                                |
++---------------+-------------------------------------------------------------------------------------------------------+
+| blueprints    | Ab 5.0.0, OPC-Blueprints                                                                              |
 +---------------+-------------------------------------------------------------------------------------------------------+
 
 
-Versionen
----------
+Versionen bis einschließlich Shop 4.X
+-------------------------------------
 
 Da sich Plugins mit der Zeit auch weiterentwickeln können, gibt es eine Versionierung der Plugins.
 Damit besteht die Möglichkeit, ein Plugin mit dem Updatemechanismus des Pluginsystems zu aktualisieren, um neue Funktionalität einzuführen oder Fehler zu beheben.
@@ -63,6 +76,8 @@ In der info.xml wurden zwei Versionen definiert. Demnach würden die Unterordner
 
 Für jede Version, die in der Installationsdatei definiert wurde, muss auch ein physischer Ordner existieren.
 
+**Ab Version 5.0.0 entfällt der Unterordner** ``version`` **und alle anderen Ordner müssen direkt unterhalb des Plugin-Ordners angelegt werden!**
+
 
 info.xml
 --------
@@ -71,8 +86,8 @@ Auf der obersten Ebene eines Pluginverzeichnisses des jeweiligen Plugins, liegt 
 Jedes Plugin muss eine Datei names info.xml enthalten, die alle Informationen über das Plugin und seine Ressourcen enthält. Den Aufbau dieser XML-Installationsdatei beschreiben die folgenden Abschnitte.
 
 
-SQL
----
+SQL (bis Version 4.X)
+---------------------
 
 Jede Version eines Plugins hat die Möglichkeit, eine SQL-Datei anzugeben, welche beliebige SQL-Befehle ausführt.
 Diese SQL-Datei kann z.B. zum Erstellen neuer Tabellen oder zum Verändern von Daten in der Datenbank genutzt werden.
@@ -98,6 +113,49 @@ Pro Pluginversion kann es immer nur eine SQL-Datei geben. Falls in der info.xml 
 
 Bei der Installation wird jede SQL-Datei von der kleinsten zur größten Version inkrementell abgearbeitet. D.h. liegt ein Plugin in der Version 1.23 vor, so werden bei der Installation die SQL-Dateien aller Versionen, Version 1.00 - 1.23, nacheinander ausgeführt!
 Analog verhält es sich bei einem Update. Hat man die Version 1.07 von einem Plugin installiert und möchte nun auf Version 1.13 updaten, so werden beim Update alle SQL-Dateien ab 1.08 ausgeführt.
+
+
+SQL/Migrationen (ab Version 5.X)
+--------------------------------
+
+Ab Shop 5.0.0 wird der Unterordner *sql* nicht mehr unterstützt und somit auch keine SQL-Dateien mehr ausgeführt.
+Stattdessen können Plugins - wie der Shop selbst - Migrationen nutzen.
+
+Diese müssen nicht via XML definiert werden, sondern im Unterodner *Migrations* des Plugin-Verzeichnisses liegen.
+Das Namensschema der Datei- und somit auch Klassennamen lautet ``Migration<YYYYMMDDHHmi>.php``.
+
+Alle Plugin-Migrationen müssen das Interface ``JTL\Update\IMigration`` implementieren und im Namespace ``Plugin\<PLUGIN-ID>\Migrations`` liegen.
+Dieses definiert die zwei wichtigsten Methoden ``up()`` zur Ausführung von SQL-Code und ``down()`` zum Zurücknehmen dieser Änderungen.
+
+Ein Beispiel könnte wie folgt lauten:
+
+.. code-block:: php
+
+	<?php declare(strict_types=1);
+
+	namespace Plugin\jtl_test\Migrations;
+
+	use JTL\Plugin\Migration;
+	use JTL\Update\IMigration;
+
+	class Migration20190321155500 extends Migration implements IMigration
+	{
+	    public function up()
+	    {
+	        $this->execute("CREATE TABLE IF NOT EXISTS `jtl_test_table` (
+	                      `id` int(10) NOT NULL AUTO_INCREMENT,
+	                      `test` int(10) unsigned NOT NULL,
+	                      PRIMARY KEY (`id`)
+	                    ) ENGINE=InnoDB COLLATE utf8_unicode_ci");
+	    }
+
+	    public function down()
+	    {
+	        $this->execute("DROP TABLE IF EXISTS `jtl_test_table`");
+	    }
+	}
+
+Bei der Installation des Plugins werden automatisch die up()-Methoden aller Migrationen ausgeführt, bei der Deinstallation entsprechend alle down()-Methoden. Hier entfällt auch die Beschränkung auf die Erstellung von Tabellen mit dem Präfix ``xplugin_<PLUGIN-ID>``.
 
 Adminmenü Verzeichnisstruktur
 -----------------------------
@@ -178,13 +236,21 @@ Falls Bereiche im Plugin nicht gebraucht werden, sollte der komplette Block wegg
 Der Rumpf
 ---------
 
-Das Hauptelement der XML-Datei heißt sowohl für Shop3 als auch Version 4 *<jtlshop3plugin>.* Damit wird der Rumpf festgelegt.
+Das Hauptelement der XML-Datei heißt sowohl für Shop3 als auch Version 4 *<jtlshop3plugin>*, ab Version 5.0.0 *<jtlshopplugin>*. Damit wird der Rumpf festgelegt.
 
 .. code-block:: xml
 
   <jtlshop3plugin>
     ...
   </jtlshop3plugin>
+
+bzw. ab 5.0.0
+
+.. code-block:: xml
+
+  <jtlshopplugin>
+    ...
+  </jtlshopplugin>
 
 Globale Plugin-Informationen
 ----------------------------
@@ -225,6 +291,10 @@ Nach dem Rumpf der XML-Datei folgen allgemeine Informationen, die als Kindelemen
 +-------------------+-------------------------------------------------+
 | Icon              | Dateiname zu einem Icon                         |
 +-------------------+-------------------------------------------------+
+| Version           | ab 5.0.0 - die Plugin-Version ([0-9]+)          |
++-------------------+-------------------------------------------------+
+| CreateDate        | ab 5.0.0 - Erstellungsdatum (YYYY-MM-DD)        |
++-------------------+-------------------------------------------------+
 
 (*)Pflichtfelder
 
@@ -264,8 +334,8 @@ Falls nur dieser Wert, nicht aber ``Shop4Version`` konfiguiert wurde, erscheint 
 Shop4Version
 ~~~~~~~~~~~~
 
-Shop4Version gibt die Mindest-Version für Shop4 an. Wurde nur dieser Wert und nicht ``ShopVersion`` konfiguriert, ist eine Installation nur in JTL Shop 4.00+ möglich.
-
+Shop4Version gibt die Mindest-Version für Shop4 an. Wurde nur dieser Wert und nicht ``ShopVersion`` konfiguriert, ist eine Installation nur in JTL Shop 4.X möglich.
+**Ab Version 5.0.0 wird dieser Tag nicht mehr unterstützt!**
 
 PluginID
 ~~~~~~~~
@@ -276,11 +346,25 @@ Beispiel-ID für ein Plugin: **SoftwareFirma_PluginName**
 
 Namenskonvention: Es sind nur Zeichen a-z bzw. A-Z, 0-9 und der Unterstrich erlaubt (Punkt und Bindestrich sind laut Konvention nicht erlaubt).
 
+Ab Shop 5.0.0 entspricht die PluginID außerdem dem automatisch zugewiesenen PSR-4 Namespace (plus Präfix ``Plugin\``) für das gesamte Plugin. Deshalb ist dabei zu beachten, dass der Ordnername des Plugins der PluginID entspricht.
+Ein Plugin mit der PluginID *mycompany_someplugin* erhält so den Namespace ``Plugin\mycompany_someplugin``.
+
 
 Icon
 ~~~~
 
 Aktuell noch nicht implementiert, perspektivisch zur besseren Übersicht geplant.
+
+Version
+~~~~~~~
+
+Aber Version 5.0.0 ist dies Pflichtangabe zur Definition der Plugin-Version.
+
+CreateDate
+~~~~~~~~~~
+
+Aber Version 5.0.0 ist dies Pflichtangabe zur Definition des Erstellungsdatums der jeweiligen Plugin-Version. Das Datum muss im Format YYYY-MM-DD angegeben werden.
+Beispielsweise 2019-03-21 für den 21. März 2019.
 
 
 Install-Block
@@ -299,6 +383,7 @@ Plugin-Versionierung
 
 Ein Plugin kann beliebig viele Versionen beinhalten. Die Versionierung fängt ab Version 100 an und wird dann mit 101, 102 usw. weitergeführt.
 Es muss mindestens ein Block mit der Version 100 vorhanden sein.
+**Ab Version 5.0.0 entfällt dieser Block!**
 
 .. code-block:: xml
 
@@ -576,6 +661,76 @@ Beispiel für eine dynamische Option:
         return $options;
 
 In diesem Beispie würden entsprechend die 3 Auswahlmöglichkeiten "Wert A", "Wert B" und "Wert C" zur Auswahl stehen.
+
+Übersetzungen von Settings
+--------------------------
+
+Ab Shop 5.0.0 können Plugin-Optionen mehrsprachig gestaltet werden.
+Dies betrifft in jedem ``<Setting>``-Element die Knoten ``<Name>`` und ``<Description>`` sowie die Werte von ``<SelectboxOptions>`` und ``<RadioOptions>``.
+Die jeweiligen Werte können als msgid-Schlüssel in der base.po des Plugins angegeben und übersetzt werden.
+
+Generell muss hierzu im Unteroder *locale* des Plugins für jede zu übersetzende Sprache ein Unterordner mit zurgehörigen IETF Language Tag und darin die Datei *base.po* erstellt werden.
+Angenommen man möchte die folgende Option in die Sprachen Englisch und Deutsch übersetzen:
+
+.. code-block:: xml
+
+    <Setting type="selectbox" initialValue="Y" sort="1" conf="Y">
+        <Name>Finden Sie das hier hilfreich?</Name>
+        <Description>Stellt eine simple Ja/Nein-Frage</Description>
+        <ValueName>myplugin_is_helpful</ValueName>
+        <SelectboxOptions>
+            <Option value="Y" sort="0">Ja</Option>
+            <Option value="N" sort="1">Nein</Option>
+            <Option value="V" sort="2">Vielleicht</Option>
+        </SelectboxOptions>
+    </Setting>
+
+So können die folgenden Strings übersetzt werden:
+
+* Finden Sie das hier hilfreich?
+* Stellt eine simple Ja/Nein-Frage
+* Ja
+* Nein
+* Vielleicht
+
+Also folgende zwei Dateien erstellen: ``myplugin/locale/de-DE/base.po`` und ``myplugin/locale/en-US/base.po``.
+
+Der Inhalt könnte im Deutschen folgendermaßen aussehen:
+
+.. code-block:: xml
+
+	msgid "Ja"
+	msgstr "Ja"
+
+	msgid "Nein"
+	msgstr "Nein"
+
+	msgid "Finden Sie das hier hilfreich?"
+	msgstr "Finden Sie das hier hilfreich?"
+
+	msgid "Stellt eine simple Ja/Nein-Frage"
+	msgstr "Stellt eine simple Ja/Nein-Frage"
+
+
+Und im Englischen:
+
+.. code-block:: xml
+
+	msgid "Ja"
+	msgstr "Yes"
+
+	msgid "Nein"
+	msgstr "No"
+
+	msgid "Finden Sie das hier hilfreich?"
+	msgstr "Do you find this helpful?"
+
+	msgid "Stellt eine simple Ja/Nein-Frage"
+	msgstr "Asks a simple yes/no question"
+
+
+Anschließend müssen die .po-Dateien nur noch z.B. mit `Poedit <https://poedit.net/PoEdit>`_ zur base.mo kompliliert werden.
+In unserem Beispiel haben wir jetzt den String "Vielleicht" nicht übersetzt. Dieser würde somit in allen Sprachen unverändert ausgegeben werden.
 
 
 Frontend Links
@@ -878,7 +1033,7 @@ Mit dem Ausgangselement <Emailtemplate>, das im Element <Install> eingefügt wir
             </TemplateLanguage>
         </Template>
     </Emailtemplate>
-    
+
 +------------------+--------------------------------------------------------------------------------------------+
 | Template         | Pro Emailvorlage muss es ein Element Template geben                                        |
 +==================+============================================================================================+
@@ -1030,11 +1185,11 @@ XML Darstellung in der info.xml:
 +-------------+-----------------------------------------------------------------------+
 
 
-Der Klassenname wird wie folgt generiert:
+Der Klassenname wird bis einschließlich Shop 4.X wie folgt generiert:
 
 * Annahme *<Class>Info</Class>* und die PluginId lautet *<PluginID>jtl_test</PluginID>*.
 
-* Dann muss im Verzeichnis "/version/xxx/adminmenu/widget/" vom Plugin die folgende Klasse mit Namen "class.WidgetInfo_jtl_test.php" liegen: ``class.Widget + <Class> + _ + <PluginID> + .php``
+* Dann muss im Verzeichnis "/version/xxx/adminmenu/widget/" des Plugins die folgende Klasse mit Namen "class.WidgetInfo_jtl_test.php" liegen: ``class.Widget + <Class> + _ + <PluginID> + .php``
 
 * Die Klasse in der Datei muss wie folgt lauten: ``Widget + <Class> +_ + <PluginID>`` und muss von der Basisklasse "WidgetBase" abgeleitet sein. In Beispiel also ``class WidgetInfo_jtl_test extends WidgetBase {}``
 
@@ -1069,6 +1224,34 @@ Das folgende Beispiel demonstriert, wie man ein Plugin-Widget zum Anzeigen der S
             </AdminWidget>
         </Install>
     </jtlshop3plugin>
+
+Plugin-Widgets ab 5.0.0
+-----------------------
+
+Ab Shop 5.0.0 werden Klassen wie folgt generiert:
+
+* Annahme *<Class>Info</Class>* und die PluginId lautet *<PluginID>jtl_test</PluginID>*.
+
+* Dann muss im Verzeichnis "/adminmenu/widget/" des Plugins die Datei "Info.php" liegen
+
+* Die Klasse in der Datei muss den Namen "Info" haben und von der Basisklasse "AbstractWidget" abgeleitet sein.
+
+* Die Klasse muss im Namespace *<PluginID>* liegen
+
+* In Beispiel also
+
+.. code-block:: php
+
+	<?php
+
+	namespace jtl_test;
+
+	use JTL\Widgets\AbstractWidget;
+
+	class Info extends AbstractWidget
+	{
+	}
+
 
 Plugin-Exportformate
 --------------------
@@ -1107,7 +1290,7 @@ XML Darstellung in der info.xml:
         <EncodingSemicolon>N</EncodingSemicolon>
         </Format>
     </ExportFormat>
-    
+
 +------------------------------+-------------------------------------------------------------------------------------------------------------+
 | Elementname                  | Beschreibung                                                                                                |
 +==============================+=============================================================================================================+
@@ -1341,3 +1524,108 @@ JS file:
 +-------------+----------------------------------------------------------------------------+
 | position    | Die Position im DOM, an der die Datei eingebunden wird, "body" oder "head" |
 +-------------+----------------------------------------------------------------------------+
+
+
+Portlets (ab 5.0.0)
+-------------------
+
+Ab Shop 5.0.0 können Plugins auch Portlets definieren.
+
+.. code-block:: xml
+
+    <Portlets>
+        <Portlet>
+            <Title>MyTitle</Title>
+            <Class>MyClass</Class>
+            <Group>content</Group>
+            <Active>1</Active>
+        </Portlet>
+        <Portlet>
+            <Title>MyOtherTitle</Title>
+            <Class>MyOtherClass</Class>
+            <Group>content</Group>
+            <Active>1</Active>
+        </Portlet>
+    </Portlets>
+
+Portlet:
+
++-------------+----------------------------------------------------------------------------+
+| Elementname | Beschreibung                                                               |
++=============+============================================================================+
+| Title*      | Der im OPC Control Center angzeigte Name                                   |
++-------------+----------------------------------------------------------------------------+
+| Class*      | Der Klassenname                                                            |
++-------------+----------------------------------------------------------------------------+
+| Group*      | Der Gruppenname                                                            |
++-------------+----------------------------------------------------------------------------+
+| Active*     | Status (1 = aktiviert, 0 = deaktiviert)                                    |
++-------------+----------------------------------------------------------------------------+
+
+Portlets bestehen immer aus einer PHP-Datei mit dem Dateinamen ``<Class>.php``, die eine einzelne Klasse mit Name ``<Class>`` definiert und sich im Namespace ``Plugin\<PLUGIN-ID>\Portlets`` befinden muss.
+Es sollte ``JTL\OPC\Portlet`` extended werden. Zu jeder Klasse muss im Unterordner *Portlets/templates* eine Templatedatei mit den Namen ``<Class>.tpl`` existieren.
+
+Beispiel:
+
+.. code-block:: php
+
+	<?php declare(strict_types=1);
+
+	namespace Plugin\jtl_test\Portlets;
+
+	use JTL\OPC\Portlet;
+
+	class MyPortlet extends Portlet
+	{
+	}
+
+In diesem Beispiel müssten die Dateien **<SHOP-ROOT>/plugins/<PLUGIN-ID>/Portlets/MyPortlet.php** und **<SHOP-ROOT>/plugins/<PLUGIN-ID>/Portlets/templates/MyPortlet.tpl** existieren.
+
+
+Blueprints (ab 5.0.0)
+---------------------
+
+Ab Shop 5.0.0 können Plugins auch Blueprints, also Kompositionen von einzelnen Portlets - definieren.
+
+.. code-block:: xml
+
+    <Blueprints>
+        <Blueprint>
+            <Name>Bild links Text rechts</Name>
+            <JSONFile>image_4_text_8.json</JSONFile>
+        </Blueprint>
+        <Blueprint>
+            <Name>Text links Bild rechts</Name>
+            <JSONFile>text_8_image_4.json</JSONFile>
+        </Blueprint>
+    </Blueprints>
+
+
+Blueprint:
+
++-------------+----------------------------------------------------------------------------+
+| Elementname | Beschreibung                                                               |
++=============+============================================================================+
+| Name*       | Der im OPC Control Center angzeigte Name                                   |
++-------------+----------------------------------------------------------------------------+
+| JSONFile*   | Name der JSON-Datei im Unterordner *blueprints* des Plugins                |
++-------------+----------------------------------------------------------------------------+
+
+Erstellt werden können die json-Datein über den Export im OPC Control Center.
+
+
+Änderungen von Shop Version 4.X zu 5.X.Y
+----------------------------------------
+
+Hier eine kurze Zusammenfassung aller Änderungen für Plugins von Shop 4.X zu 5.X
+
+* neuer Installationsordner: ``<SHOP-ROOT>/plugins/<PLUGIN-ID>/``
+* keine Unterodner ``version/<VERSION>/`` mehr
+* XML-Root ``<jtlshopplugin>`` statt ``<jtlshop3plugin>``
+* Knoten ``<Version>`` als Unterknoten von ``<Install>`` entfallen
+* ``<CreateDate>`` und ``<Version>`` müssen als Unterknoten von ``<jtlshopplugin>`` angegeben werden und nicht mehr von ``<Install><Version>``
+* Plugins erhalten den Namespace ``Plugin\<PLUGIN-ID>``
+* Plugins können Migrationen ausführen aber keine SQL-Dateien
+* Widget-Klassen entsprechen der in der info.xml definierten Klasse und erfodern keinerlei weitere Konventionen
+* Plugins können Lokalisierungen anbieten
+* Plugins können Portlets und Blueprints definieren

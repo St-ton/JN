@@ -7,7 +7,8 @@
     {if $bBoxenFilterNach
         && $ssf->getVisibility() !== \JTL\Filter\Visibility::SHOW_NEVER
         && $ssf->getVisibility() !== \JTL\Filter\Visibility::SHOW_CONTENT
-        && (!empty($Suchergebnisse->getSearchSpecialFilterOptions()) || $ssf->isInitialized())}
+        && (!empty($Suchergebnisse->getSearchSpecialFilterOptions()) || $ssf->isInitialized())
+        && (!$device->isMobile() || $device->isTablet())}
         {if $nSeitenTyp === $smarty.const.PAGE_ARTIKELLISTE}
             <div class="h4">
                 {button

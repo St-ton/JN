@@ -67,7 +67,8 @@
                                         {strip}
                                             <div>
                                                 {image src="{$imageBaseURL}gfx/trans.png" data=["lazy"=>"{$image->cURLKlein}"]
-                                                     alt="{$image->cAltAttribut|escape:"html"}"}
+                                                    alt="{$image->cAltAttribut|escape:"html"}"
+                                                    fluid=true}
                                             </div>
                                         {/strip}
                                     {/foreach}

@@ -12,16 +12,16 @@ msgid "communityForum"
 msgstr "Community forum"
 
 msgid "noPatchesATM"
-msgstr "At the moment there are no patches available."
+msgstr "There are no patches currently available."
 
 msgid "noStatisticsThisMonth"
-msgstr "Until now there are no statistics this month."
+msgstr "No reports available for the current month."
 
 msgid "phpVersion"
 msgstr "PHP version"
 
 msgid "mysqlStatistic"
-msgstr "MySQL statistics"
+msgstr "MySQL reports"
 
 msgid "mysqlVersion"
 msgstr "MySQL version"
@@ -45,40 +45,40 @@ msgid "shopVersion"
 msgstr "Shop version"
 
 msgid "templateVersion"
-msgstr "Template version"
+msgstr "Shop template version"
 
 msgid "dbVersion"
 msgstr "Database version"
 
 msgid "dbLastUpdate"
-msgstr "Database last updated"
+msgstr "Last database update"
 
 msgid "subscriptionValidUntil"
-msgstr "Subscription valid until"
+msgstr "Shop licence valid until"
 
 msgid "shopVersionUpToDate"
-msgstr "You are using the latest version of JTL-Shop."
+msgstr "You are using the current version of JTL-Shop."
 
 msgid "build"
 msgstr "Build"
 
 msgid "noVisitorsATM"
-msgstr "At the moment there are no users in the shop."
+msgstr "There are no visitors currently online."
 
 msgid "lastActivity"
-msgstr "Last activity"
+msgstr "Last action"
 
 msgid "lastPurchase"
 msgstr "Last purchase"
 
 msgid "newsletterSubscriber"
-msgstr "Newsletter subscriber"
+msgstr "Newsletter subscription"
 
 msgid "moreDetailsStatistics"
-msgstr "See <a href=\"statistik.php?s=3\">Statistics</a> for more details."
+msgstr "For more details, please see <a href=\"statistik.php?s=3\">Reports</a>"
 
 msgid "noStatisticsFound"
-msgstr "No statistics found"
+msgstr "No reports found."
 
 msgid "moduleSurvey"
 msgstr "Survey Module"

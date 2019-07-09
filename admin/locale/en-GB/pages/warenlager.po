@@ -9,7 +9,7 @@ msgid "warenlagerURL"
 msgstr "https://jtl-url.de/anf89"
 
 msgid "warenlagerDesc"
-msgstr "Specify whether to display the stocks of individual warehouses in the item details. For this, check \"Active in online shop\" for the respective warehouse and click \"Update\". In the options, you can adjust the names displayed for each warehouse."
+msgstr "Specify whether to display the stocks of individual warehouses on the item detail page. For this, check \"Active in online shop\" for the respective warehouse and click \"Update\". In the options, you can adjust the names displayed for each warehouse."
 
 msgid "warenlagerIntern"
 msgstr "Internal name"

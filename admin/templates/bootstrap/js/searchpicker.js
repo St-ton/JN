@@ -122,7 +122,7 @@ function SearchPicker(options)
             .addClass('list-group-item')
             .html('<i class="fa fa-spinner fa-pulse"></i>')
             .appendTo($searchResultList);
-        $listTitle.html('Suche...');
+        $listTitle.html($searchModal.find('[data-name="searchPending"]').html());
 
         if (searchString !== '') {
             if (pendingRequest !== null) {
@@ -168,11 +168,11 @@ function SearchPicker(options)
     self.updateListTitle = function ()
     {
         if (searchString !== '') {
-            $listTitle.html('Gefundene Eintr&auml;ge: ' + foundItems.length);
+            $listTitle.html($searchModal.find('[data-name="foundEntries"]').html() + foundItems.length);
         } else if (selectedKeys.length > 0) {
-            $listTitle.html('Alle ausgew&auml;hlten Eintr&auml;ge: ' + selectedKeys.length);
+            $listTitle.html($searchModal.find('[data-name="allSelectedEntries"]').html() + selectedKeys.length);
         } else {
-            $listTitle.html('Bisher sind keine Eintr&auml;ge ausgew&auml;hlt. Nutzen Sie die Suche!');
+            $listTitle.html($searchModal.find('[data-name="noEntriesSelected"]').html());
         }
     };
 

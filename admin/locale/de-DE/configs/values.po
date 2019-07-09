@@ -399,13 +399,13 @@ msgid "artikeluebersicht_sonderpreisanzeige_value(2)"
 msgstr "Zusätzlich den alten Preis anzeigen"
 
 msgid "topbest_anzeigen_value(Top)"
-msgstr "Nur Top-Angebote anzeigen"
+msgstr "Nur Top-Artikel anzeigen"
 
 msgid "topbest_anzeigen_value(Bestseller)"
 msgstr "Nur Bestseller anzeigen"
 
 msgid "topbest_anzeigen_value(TopBest)"
-msgstr "Top-Angebote und Bestseller anzeigen"
+msgstr "Top-Artikel und Bestseller anzeigen"
 
 msgid "topbest_anzeigen_value(N)"
 msgstr "Nein"
@@ -693,7 +693,7 @@ msgid "artikeldetails_fragezumprodukt_anzeigen_value(N)"
 msgstr "Nein"
 
 msgid "artikeldetails_fragezumprodukt_anzeigen_value(P)"
-msgstr "Ja, als Pop-up"
+msgstr "Ja, als Dialogfenster"
 
 msgid "produktfrage_abfragen_anrede_value(Y)"
 msgstr "Ja, erforderliche Angabe"
@@ -777,10 +777,10 @@ msgid "benachrichtigung_nutzen_value(N)"
 msgstr "Nein"
 
 msgid "benachrichtigung_nutzen_value(P)"
-msgstr "Ja, als Pop-up"
+msgstr "Ja, als Dialogfenster"
 
 msgid "benachrichtigung_nutzen_value(L)"
-msgstr "Ja, als Pop-up (und in allen Listenansichten)"
+msgstr "Ja, als Dialogfenster (und in allen Listenansichten)"
 
 msgid "benachrichtigung_abfragen_vorname_value(O)"
 msgstr "Ja, optionale Angabe"
@@ -1149,7 +1149,7 @@ msgid "warenkorb_warenkorb2pers_merge_value(N)"
 msgstr "Nein"
 
 msgid "warenkorb_warenkorb2pers_merge_value(P)"
-msgstr "Kunde entscheidet via Pop-up"
+msgstr "Kunde entscheidet via Dialogfenster"
 
 msgid "bestellvorgang_kaufabwicklungsmethode_value(N)"
 msgstr "Normale Kaufabwicklung"
@@ -1590,7 +1590,7 @@ msgid "vergleichsliste_target_value(blank)"
 msgstr "In einem neuen Fenster"
 
 msgid "vergleichsliste_target_value(popup)"
-msgstr "Als Pop-up"
+msgstr "Als Dialogfenster"
 
 msgid "bewertung_anzeigen_value(Y)"
 msgstr "Ja"
@@ -1617,7 +1617,7 @@ msgid "bewertungserinnerung_nutzen_value(N)"
 msgstr "Nie"
 
 msgid "bewertungserinnerung_nutzen_value(B)"
-msgstr "An Newslettereinwilligung koppeln"
+msgstr "An Newsletter-Einwilligung koppeln"
 
 msgid "bewertung_guthaben_nutzen_value(Y)"
 msgstr "Ja"
@@ -2322,7 +2322,7 @@ msgid "auswahlassistent_anzeigeformat_value(BT)"
 msgstr "Bild und Text"
 
 msgid "auswahlassistent_anzeigeformat_value(S)"
-msgstr "Dropdown"
+msgstr "Drop-down-Menü"
 
 msgid "auswahlassistent_allefragen_value(Y)"
 msgstr "Ja"
@@ -2427,7 +2427,7 @@ msgid "cron_type_value(N)"
 msgstr "deaktiviert"
 
 msgid "cron_type_value(tpl)"
-msgstr "Template-gesteuert"
+msgstr "Templategesteuert"
 
 msgid "cron_type_value(s2s)"
 msgstr "Curl Server-to-Server"

@@ -13,3 +13,6 @@ msgstr "SQL command"
 
 msgid "codeCompletion"
 msgstr "Perform code completion via <span class=\"label label-default\">CTRL+Space</span>"
+
+msgid "searchTable"
+msgstr "Search for table"

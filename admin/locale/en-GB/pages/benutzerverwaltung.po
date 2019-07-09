@@ -427,7 +427,7 @@ msgid "permission_DISPLAY_BANNER_VIEW"
 msgstr "Banners"
 
 msgid "permission_REDIRECT_VIEW"
-msgstr "Redirection"
+msgstr "Forwarding"
 
 msgid "permission_EMAILHISTORY_VIEW"
 msgstr "Email history"

@@ -68,18 +68,6 @@ function show_simple_search(type) {
 }
 
 /**
- *
- */
-function banners_datepicker() {
-    var v = $('#vDatum'),
-        b = $('#bDatum');
-    if (v && b && v.length > 0 && b.length > 0) {
-        v.datepicker();
-        b.datepicker();
-    }
-}
-
-/**
  * @param form
  * @constructor
  */
@@ -415,7 +403,6 @@ $(document).ready(function () {
         });
     });
 
-    banners_datepicker();
     $('.help').each(function () {
         var id = $(this).attr('ref'),
             tooltip = $('<div></div>').text($(this).attr('title')).addClass('tooltip').attr('id', 'help' + id),
@@ -739,4 +726,12 @@ function openElFinder(callback, type)
         'elfinderWindow',
         'status=0,toolbar=0,location=0,menubar=0,directories=0,resizable=1,scrollbars=0,width=800,height=600'
     );
+}
+
+function sprintf(format)
+{
+    for( var i=1; i < arguments.length; i++ ) {
+        format = format.replace( /%s/, arguments[i] );
+    }
+    return format;
 }

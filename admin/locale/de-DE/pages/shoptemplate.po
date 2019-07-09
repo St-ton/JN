@@ -12,7 +12,7 @@ msgid "shoptemplatesDesc"
 msgstr "Auf dieser Seite finden Sie alle Templates, die sich im Ordner „/templates/“ des Shop-Wurzelverzeichnis befinden. Falls Sie ein neues Template haben und es nutzen möchten, übertragen Sie es zuerst per <abbr title=\"FTP (File Transfer Protokoll) ist ein Dateiübertragungsprotokoll\">FTP</abbr> in dieses Verzeichnis. Sie können immer nur ein normales und ein Mobile Template zur gleichen Zeit für JTL-Shop aktivieren. Über die Schaltfläche „Einstellungen“ konfigurieren Sie das aktivierte Template."
 
 msgid "templateName"
-msgstr "Templatename"
+msgstr "Template-Name"
 
 msgid "warning_responsive_mobile"
 msgstr "Responsive Templates sind für alle Auflösungen geeignet und sollten nicht explizit als Template für mobile Endgeräte ausgewiesen werden."
@@ -24,7 +24,7 @@ msgid "errorTemplateSave"
 msgstr "Template bzw. Einstellungen konnten nicht geändert werden. Falls das Template ein Child-Template ist, stellen Sie sicher, dass ein entsprechendes Parent-Template existiert. Sollte das Problem dennoch weiterhin bestehen, wenden Sie sich bitte an den Support."
 
 msgid "errorFileUpload"
-msgstr "Datei-Upload konnte nicht ausgeführt werden – bitte überprüfen Sie die Schreibrechte des Ordners „%s“."
+msgstr "Der Datei-Upload konnte nicht ausgeführt werden – bitte überprüfen Sie die Schreibrechte des Ordners „%s“."
 
 msgid "successLayoutReset"
 msgstr "Layout wurde erfolgreich zurückgesetzt."
@@ -63,4 +63,4 @@ msgid "parentTemplateMissing"
 msgstr "Parent-Template fehlt"
 
 msgid "errorOverlayWritePermissions"
-msgstr "Overlays konnten nicht erzeugt werden - bitte Schreibrechte des Ordners „%s“ prüfen und das Template erneut aktivieren."
+msgstr "Die Overlays konnten nicht erzeugt werden. Bitte prüfen Sie die Schreibrechte des Ordners „%s“ und aktivieren Sie das Template erneut."

@@ -140,7 +140,7 @@ if ($step === 'uebersicht') {
     foreach ($subjects as $subject) {
         $groups = '';
         if (!$subject->cKundengruppen) {
-            $groups = __('alle');
+            $groups = __('allCustomerGroups');
         } else {
             foreach (explode(';', $subject->cKundengruppen) as $customerGroupID) {
                 if (!is_numeric($customerGroupID)) {

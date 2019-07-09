@@ -10,7 +10,7 @@
         <div class="alert alert-danger">
             <p><strong>{__('danger')}</strong>: {__('resetEmailTemplate')}</p>
 
-            <p>{{__('sureResetEmailTemplate')}|sprintf:{$mailTemplate->getName()}}</p>
+            <p>{{__('sureResetEmailTemplate')}|sprintf:{__('name_'|cat:$mailTemplate->getModuleID())}}</p>
         </div>
         <div class="btn-group">
             <button name="resetConfirmJaSubmit" type="submit" value="{__('yes')}" class="btn btn-danger">

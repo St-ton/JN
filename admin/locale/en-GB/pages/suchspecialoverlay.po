@@ -36,7 +36,7 @@ msgid "suchspecialoverlayMarginDesc"
 msgstr "Specify the distance in pixels between the overlay graphic and the edge of the item image."
 
 msgid "suchspecialoverlayClarityDesc"
-msgstr "Specify the transparency of the overlay in percent. If you use the EVO template of JTL-Shop 4 or the NOVA template of JTL-Shop 5, this setting is changed by adjusting the template."
+msgstr "Specify the transparency percentage of the overlay. If you use the EVO template of JTL-Shop 4 or the NOVA template of JTL-Shop 5, this setting is changed by adjusting the template."
 
 msgid "suchspecialoverlaySize"
 msgstr "Overlay size in pixels (px)"
@@ -70,7 +70,7 @@ msgstr "New in product range"
 
 #overlay name (tsuchspecialoverlay)
 msgid "Top Angebote"
-msgstr "Top offers"
+msgstr "Top items"
 
 #overlay name (tsuchspecialoverlay)
 msgid "In kürze Verfügbar"

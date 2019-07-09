@@ -6,6 +6,8 @@
 
 namespace JTL\Filesystem;
 
+use JTL\Path;
+
 /**
  * Class FileInfo
  * @package JTL\Filesystem
@@ -50,7 +52,7 @@ class FileInfo
      *
      * @return bool
      */
-    public function exists()
+    public function exists(): bool
     {
         return $this->isDir() || $this->isFile();
     }
@@ -196,7 +198,7 @@ class FileInfo
      *
      * @return bool true if writable, false otherwise;
      */
-    public function isWritable()
+    public function isWritable(): bool
     {
         return ($this->getPerms() & 0200) == 0200;
     }
@@ -206,7 +208,7 @@ class FileInfo
      *
      * @return bool true if readable, false otherwise.
      */
-    public function isReadable()
+    public function isReadable(): bool
     {
         return ($this->getPerms() & 0400) == 0400;
     }
@@ -216,7 +218,7 @@ class FileInfo
      *
      * @return bool true if executable, false otherwise.
      */
-    public function isExecutable()
+    public function isExecutable(): bool
     {
         return ($this->getPerms() & 0100) == 0100;
     }
@@ -226,7 +228,7 @@ class FileInfo
      *
      * @return bool true if the file exists and is a regular file (not a link), false otherwise.
      */
-    public function isFile()
+    public function isFile(): bool
     {
         return $this->type === 'file';
     }
@@ -236,7 +238,7 @@ class FileInfo
      *
      * @return bool true if a directory, false otherwise.
      */
-    public function isDir()
+    public function isDir(): bool
     {
         return $this->type === 'dir';
     }
@@ -245,8 +247,6 @@ class FileInfo
      */
     public function __debugInfo()
     {
-        $info = get_object_vars($this);
-
-        return $info;
+        return \get_object_vars($this);
     }
 }

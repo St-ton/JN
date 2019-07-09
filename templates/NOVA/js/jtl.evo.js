@@ -25,7 +25,6 @@
             $('.evo-box-slider:not(.slick-initialized)').slick({
                 //dots: true,
                 arrows: true,
-                vertical: true,
                 lazyLoad: 'ondemand',
                 slidesToShow: 1
             });
@@ -77,19 +76,25 @@
                     {
                         breakpoint: 576, // xs
                         settings: {
-                            slidesToShow: 1
+                            slidesToShow: 1,
+                            centerMode: true,
+                            centerPadding: '60px',
                         }
                     },
                     {
                         breakpoint: 768, // sm
                         settings: {
-                            slidesToShow: 2
+                            slidesToShow: 2,
+                            centerMode: true,
+                            centerPadding: '60px',
                         }
                     },
                     {
                         breakpoint: 992, // md
                         settings: {
-                            slidesToShow: 3
+                            slidesToShow: 3,
+                            centerMode: true,
+                            centerPadding: '60px',
                         }
                     }
                 ]
@@ -99,9 +104,9 @@
             $('#pushed-success .evo-slider:not(.slick-initialized)').slick(evoSliderOptions);
 
             if ($('#content').hasClass('col-lg-9')) {
-                evoSliderOptions.slidesToShow = 3;
+                evoSliderOptions.slidesToShow = 4;
             } else {
-                evoSliderOptions.slidesToShow = 5;
+                evoSliderOptions.slidesToShow = 6;
             }
             $('.evo-slider:not(.slick-initialized)').slick(evoSliderOptions);
 
@@ -297,7 +302,7 @@
                     //}
                 }
             });*/
-            $('img.lazy', $wrapper).each(function(i, item) {
+            $('img.lazy', 'body').each(function(i, item) {
                 var img = $(this),
                     src = img.data('src');
 
@@ -551,10 +556,7 @@
 
         },
 
-
-
-
-    checkout: function() {
+        checkout: function() {
             // show only the first submit button (i.g. the button from payment plugin)
             var $submits = $('#checkout-shipping-payment')
                 .closest('form')
@@ -661,12 +663,12 @@
         addInactivityCheck: function() {
             var timeoutID;
             var config = {
-                decrementButton: "<strong>-</strong>", // button text
-                incrementButton: "<strong>+</strong>", // ..
+                decrementButton: "<i class='fas fa-minus'></i>", // button text
+                incrementButton: "<i class='fas fa-plus'></i>", // ..
                 groupClass: "", // css class of the input-group (sizing with input-group-sm, input-group-lg)
                 buttonsClass: "btn-light form-control",
-                buttonsWidth: "",
-                textAlign: "right",
+                buttonsWidth: "42px",
+                textAlign: "center",
                 autoDelay: 500, // ms holding before auto value change
                 autoInterval: 100, // speed of auto value change
                 boostThreshold: 10, // boost after these steps
@@ -713,6 +715,87 @@
             $('.comparelist .equal-height').height(h);
         },
 
+        checkMenuScroll: function() {
+            var menu = 'body[data-viewport="lg"] .megamenu, body[data-viewport="md"] .megamenu';
+
+            if ($(menu)[0] != undefined) {
+                var scrollWidth = parseInt(Math.round($(menu)[0].scrollWidth));
+                var width = parseInt(Math.round($(menu).outerWidth() + 2));
+                var btnLeft = $('#scrollMenuLeft');
+                var btnRight = $('#scrollMenuRight');
+                var wee = document.querySelector('.wee').style;
+                // reset
+                btnLeft.off("click.menuScroll");
+                btnRight.off("click.menuScroll");
+
+                checkButtons();
+                if (width < scrollWidth) {
+                    btnLeft.on("click.menuScroll",function () {
+                        var leftPos = parseInt(Math.round($('#navbarToggler').scrollLeft()));
+                        var newLeft = leftPos-250;
+                        var weeMove = 250;
+
+                        if (newLeft < 0) {
+                            weeMove = leftPos;
+                        }
+                        $('#navbarToggler').animate({scrollLeft: newLeft},{
+                            duration: 600,
+                            start: checkButtonsAndWee(newLeft, weeMove)
+                        });
+                    });
+
+                    btnRight.on("click.menuScroll", function () {
+                        var leftPos2 = parseInt(Math.round($('#navbarToggler').scrollLeft()));
+                        var newLeft = leftPos2+250;
+                        var y = parseInt(Math.round(scrollWidth-(width+newLeft)));
+                        var weeMove = -250;
+
+                        if (y < 0) {
+                            weeMove = -(250+y);
+                        }
+                        $('#navbarToggler').animate({scrollLeft: newLeft},{
+                            duration: 600,
+                            start: checkButtonsAndWee(newLeft, weeMove)
+                        });
+                    });
+                }
+            }
+
+            function checkButtonsAndWee(scrollLeft, weeMove) {
+                wee['left'] = parseInt(wee.left) + weeMove + 'px';
+                checkButtons(scrollLeft);
+            }
+
+            function checkButtons(scrollLeft) {
+                if (typeof scrollLeft === 'undefined') {
+                    scrollLeft = 0;
+                }
+                var scrollWidth = parseInt($(menu)[0].scrollWidth);
+                var width = parseInt($(menu).outerWidth() + 2);
+                var btnLeft = $('#scrollMenuLeft');
+                var btnRight = $('#scrollMenuRight');
+
+                btnRight.addClass('d-none');
+                btnLeft.addClass('d-none');
+
+                if (scrollLeft > 0) {
+                    btnLeft.removeClass('d-none');
+                }
+                if ((scrollWidth - width) > scrollLeft) {
+                    btnRight.removeClass('d-none');
+                }
+            }
+        },
+
+        fixStickyElements: function() {
+            var sticky    = '.cart-summary';
+            var navHeight = $('#evo-main-nav-wrapper').outerHeight(true);
+            navHeight = navHeight === undefined ? 0 : parseInt(navHeight + 40);
+            $(sticky).css('top', navHeight);
+        },
+
+
+
         /**
          * $.evo.extended() is deprecated, please use $.evo instead
          */
@@ -738,6 +821,8 @@
             this.checkout();
             this.addInactivityCheck();
             this.setCompareListHeight();
+            this.checkMenuScroll();
+            this.fixStickyElements();
         }
     };
 
@@ -753,7 +838,9 @@
     }
 
     $(window).on('resize', function () {
-        $.evo.autoheight();
+      /*  console.log('resize');
+        $.evo.autoheight();*/
+        $.evo.checkMenuScroll();
     });
 
     // PLUGIN DEFINITION

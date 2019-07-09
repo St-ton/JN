@@ -262,6 +262,11 @@ ifndef('SECURE_PHP_FUNCTIONS', '
 // 0 => off, 1 => html comments, 2 => static badges, 3 => scrolling badges with borders
 ifndef('SHOW_TEMPLATE_HINTS', 0);
 
+ifndef('SEO_SLUG_LOWERCASE', true);
+
+// true - child products are grouped by parent for bulk price calculation
+ifndef('DEFAULT_GENERAL_CHILD_ITEM_BULK_PRICING', false);
+
 /**
  * @param string     $constant
  * @param string|int $value

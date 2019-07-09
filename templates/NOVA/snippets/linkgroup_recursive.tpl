@@ -33,7 +33,7 @@
                         {if isset($activeParents) && is_array($activeParents) && isset($activeParents[$i])}
                             {assign var=activeParent value=$activeParents[$i]}
                         {/if}
-                        <li class="{if $li->getChildLinks()->count() > 0 && isset($dropdownSupport)}dropdown dropdown-multi{/if}{if $li->getIsActive() || (isset($activeParent) && $activeParent == $li->getID())} active{/if}">
+                        <li class="mb-3 {if $li->getChildLinks()->count() > 0 && isset($dropdownSupport)}dropdown dropdown-multi{/if}{if $li->getIsActive() || (isset($activeParent) && $activeParent == $li->getID())} active{/if}">
                             {block name='snippets-linkgroup-recursive-link'}
                                 <a href="{$li->getURL()}"{if $li->getNoFollow()} rel="nofollow"{/if}{if !empty($li->getTitle())} title="{$li->getTitle()}"{/if}{if $li->getChildLinks()->count() > 0 && isset($dropdownSupport)} class="nav-sub"{/if} data-ref="{$li->getID()}">
                                     {$li->getName()}

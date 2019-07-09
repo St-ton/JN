@@ -88,7 +88,7 @@
 
         getFormValues: function (parent) {
             return $('#' + parent).serializeObject();
-        }
+        },
     };
 
     // PLUGIN DEFINITION

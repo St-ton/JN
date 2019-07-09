@@ -38,15 +38,15 @@ class ExtensionPoint
     /**
      * @param int   $pageType
      * @param array $params
-     * @param int   $kSprache
-     * @param int   $kKundengruppe
+     * @param int   $languageID
+     * @param int   $customerGroupID
      */
-    public function __construct(int $pageType, array $params, int $kSprache, int $kKundengruppe)
+    public function __construct(int $pageType, array $params, int $languageID, int $customerGroupID)
     {
         $this->nSeitenTyp    = $pageType;
         $this->cParam_arr    = $params;
-        $this->kSprache      = $kSprache;
-        $this->kKundengruppe = $kKundengruppe;
+        $this->kSprache      = $languageID;
+        $this->kKundengruppe = $customerGroupID;
     }
 
     /**
@@ -141,10 +141,6 @@ class ExtensionPoint
                     // Hersteller
                     $key->cKey   = 'kHersteller';
                     $key->cValue = $productFilter->getManufacturer()->getValue();
-                } elseif ($productFilter->hasTag()) {
-                    // Tag
-                    $key->cKey   = 'kTag';
-                    $key->cValue = $productFilter->getTag()->getValue();
                 } elseif ($productFilter->hasSearch()) {
                     // Suchbegriff
                     $key->cKey   = 'cSuche';

@@ -3,7 +3,7 @@
  * @license https://jtl-url.de/jtlshoplicense
  *}
 {block name='boxes-box-container'}
-    {container class="box box-container" id="sidebox{$oBox->getID()}"}
+    <div class="box box-container" id="sidebox{$oBox->getID()}">
         {$oBox->getHTML()}
-    {/container}
+    </div>
 {/block}

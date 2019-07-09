@@ -5,12 +5,26 @@
 {block name='register-form-customer-login'}
     {block name='register-form-customer-login-email'}
         {formgroup label="{lang key='email' section='account data'}" label-for="login_email"}
-            {input type="text" name="email" id="login_email" placeholder="{lang key='email' section='account data'}" required=true autocomplete="email"}
+            {input type="text"
+                name="email"
+                id="login_email"
+                placeholder="{lang key='email' section='account data'}"
+                required=true
+                autocomplete="email"
+                value=""
+            }
         {/formgroup}
     {/block}
     {block name='register-form-customer-login-password'}
         {formgroup label="{lang key='password' section='account data'}" label-for="login_password"}
-            {input type="password" name="passwort" id="login_password" placeholder="{lang key='password' section='account data'}" required=true autocomplete="current-password"}
+            {input type="password"
+                name="passwort"
+                id="login_password"
+                placeholder="{lang key='password' section='account data'}"
+                required=true
+                autocomplete="current-password"
+                value=""
+            }
         {/formgroup}
     {/block}
     {if isset($showLoginCaptcha) && $showLoginCaptcha}
@@ -24,6 +38,7 @@
     {block name='register-form-customer-login-submit'}
         {formgroup}
             {input type="hidden" name="login" value="1"}
+            {input type="hidden" name="wk" value="{if isset($one_step_wk)}{$one_step_wk}{else}0{/if}"}
             {if !empty($oRedirect->cURL)}
                 {foreach $oRedirect->oParameter_arr as $oParameter}
                     {input type="hidden" name=$oParameter->Name value=$oParameter->Wert}

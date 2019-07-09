@@ -34,7 +34,7 @@
             <Setting Description="Theme" Key="theme_default" Type="select" Value="evo">
                 <Option Value="clear">clear - Handgemacht mit <![CDATA[&hearts;]]> von JTL</Option>
             </Setting>
-            <Setting Description="Hintergrundbild" Key="background_image" Type="select" Value="">
+            <!--<Setting Description="Hintergrundbild" Key="background_image" Type="select" Value="">
                 <Option Value="">- Kein Hintergrundbild -</Option>
                 <Option Value="arktis">Arktis - Berge und Schnee</Option>
                 <Option Value="berge">Tal - Ein gr<![CDATA[&uuml;]]>nes Tal</Option>
@@ -50,11 +50,11 @@
                 <Option Value="vulkan">Vulkan - Inaktiver Vulkan in einer Pr<![CDATA[&auml;]]>rie</Option>
                 <Option Value="wolken">Wolken - <![CDATA[&Uuml;]]>ber den Wolken...</Option>
                 <Option Value="custom">Custom - Ihr eigenes Hintergrundbild (themes/IhrTheme/background.jpg)</Option>
-            </Setting>
-            <Setting Description="Layout" Key="pagelayout" Type="select" Value="fluid">
+            </Setting>-->
+            <!--<Setting Description="Layout" Key="pagelayout" Type="select" Value="fluid">
                 <Option Value="fluid">fluid - Inhalt soll gesamten Bildschirm nutzen</Option>
                 <Option Value="boxed">boxed - Der Inhalt hat eine Maximalbreite</Option>
-            </Setting>
+            </Setting>-->
             <Setting Description="Sliderposition" Key="slider_full_width" Type="select" Value="N">
                 <Option Value="N">im Contentbereich</Option>
                 <Option Value="Y">zwischen Header und Content</Option>
@@ -121,10 +121,6 @@
                 <Option Value="12"><![CDATA[max. 12]]></Option>
                 <Option Value="9999"><![CDATA[keine Beschr&auml;nkung]]></Option>
             </Setting>
-            <Setting Description="Quickview für Artikeldetails" Key="quickview_productlist" Type="select" Value="N">
-                <Option Value="Y">Ja</Option>
-                <Option Value="N">Nein</Option>
-            </Setting>
             <Setting Description="Filteroptionen bei Seitenanruf anzeigen?" Key="initial_display_filter" Type="select" Value="Y">
                 <Option Value="Y">Ja</Option>
                 <Option Value="N">Nein</Option>
@@ -135,6 +131,28 @@
                 <Option Value="9"><![CDATA[max. 9]]></Option>
                 <Option Value="12"><![CDATA[max. 12]]></Option>
                 <Option Value="-1"><![CDATA[keine Beschr&auml;nkung]]></Option>
+            </Setting>
+            <Setting Description="Overlays in Listenansichten" Key="ribbon_type" Type="select" Value="c">
+                <Option Value="a">Variante A</Option>
+                <Option Value="b">Variante B</Option>
+                <Option Value="c">Variante C</Option>
+                <Option Value="custom">custom (eigenes CSS)</Option>
+            </Setting>
+            <Setting Description="Position des Overlays" Key="ribbon_position" Type="select" Value="top-left">
+                <Option Value="top-left">oben links</Option>
+                <Option Value="top-right">oben rechts</Option>
+                <Option Value="bottom-left">unten links</Option>
+                <Option Value="bottom-right">unten rechts</Option>
+            </Setting>
+        </Section>
+        <Section Name="Seitenleiste Einstellungen" Key="sidebar_settings">
+            <Setting Description="Seitenleiste nur auf Artikellisten anzeigen (empfohlen)" Key="show_sidebar_product_list" Type="select" Value="Y">
+                <Option Value="Y">Ja</Option>
+                <Option Value="N">Nein</Option>
+            </Setting>
+            <Setting Description="Preisspanne immer anzeigen (empfohlen)" Key="always_show_price_range" Type="select" Value="Y">
+                <Option Value="Y">Ja</Option>
+                <Option Value="N">Nein</Option>
             </Setting>
         </Section>
         <Section Name="Footer-Einstellungen" Key="footer">
@@ -167,6 +185,7 @@
     <Minify>
         <CSS Name="clear.css">
             <File Path="themes/base/fontawesome/css/all.min.css"/>
+            <File Path="themes/base/nouislider.min.css"/>
             <File Path="themes/clear/clear.css"/>
         </CSS>
         <JS Name="jtl3.js">
@@ -194,6 +213,7 @@
             <File Path="js/Chart.min.js" DependsOnSettingGroup="CONF_PREISVERLAUF" DependsOnSetting="preisverlauf.preisverlauf_anzeigen" DependsOnSettingValue="Y"/>
             <File Path="js/jqcloud.js"/>
             <File Path="js/bs4-input-spinner.js"/>
+            <File Path="js/nouislider.min.js"/>
         </JS>
     </Minify>
     <Boxes>

@@ -6,6 +6,7 @@
 
 use JTL\CheckBox;
 use JTL\Customer\CustomerAttributes;
+use JTL\Customer\CustomerFields;
 use JTL\Customer\Kunde;
 use JTL\Customer\Kundendatenhistory;
 use JTL\DB\ReturnType;
@@ -13,11 +14,11 @@ use JTL\Helpers\ShippingMethod;
 use JTL\Helpers\Tax;
 use JTL\Helpers\Text;
 use JTL\Kampagne;
+use JTL\Language\LanguageHelper;
 use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
 use JTL\Session\Frontend;
 use JTL\Shop;
-use JTL\Sprache;
 
 /**
  * @param array $post
@@ -40,16 +41,16 @@ function kundeSpeichern(array $post)
     $edit = (int)$post['editRechnungsadresse'];
     $step = 'formular';
     Shop::Smarty()->assign('cPost_arr', Text::filterXSS($post));
-    $fehlendeAngaben    = (!$edit)
+    $missingData        = (!$edit)
         ? checkKundenFormular(1)
         : checkKundenFormular(1, 0);
     $knd                = getKundendaten($post, 1, 0);
     $customerAttributes = getKundenattribute($post);
-    $kKundengruppe      = Frontend::getCustomerGroup()->getID();
-    $oCheckBox          = new CheckBox();
-    $fehlendeAngaben    = array_merge(
-        $fehlendeAngaben,
-        $oCheckBox->validateCheckBox(CHECKBOX_ORT_REGISTRIERUNG, $kKundengruppe, $post, true)
+    $customerGroupID    = Frontend::getCustomerGroup()->getID();
+    $checkbox           = new CheckBox();
+    $missingData        = array_merge(
+        $missingData,
+        $checkbox->validateCheckBox(CHECKBOX_ORT_REGISTRIERUNG, $customerGroupID, $post, true)
     );
 
     if (isset($post['shipping_address'])) {
@@ -60,28 +61,28 @@ function kundeSpeichern(array $post)
         } elseif (isset($post['kLieferadresse']) && (int)$post['kLieferadresse'] > 0) {
             pruefeLieferdaten($post);
         } elseif (isset($post['register']['shipping_address'])) {
-            pruefeLieferdaten($post['register']['shipping_address'], $fehlendeAngaben);
+            pruefeLieferdaten($post['register']['shipping_address'], $missingData);
         }
     } elseif (isset($post['lieferdaten']) && (int)$post['lieferdaten'] === 1) {
         // compatibility with older template
-        pruefeLieferdaten($post, $fehlendeAngaben);
+        pruefeLieferdaten($post, $missingData);
     }
-    $nReturnValue = angabenKorrekt($fehlendeAngaben);
+    $nReturnValue = angabenKorrekt($missingData);
 
     executeHook(HOOK_REGISTRIEREN_PAGE_REGISTRIEREN_PLAUSI, [
         'nReturnValue'    => &$nReturnValue,
-        'fehlendeAngaben' => &$fehlendeAngaben
+        'fehlendeAngaben' => &$missingData
     ]);
 
     if ($nReturnValue) {
         // CheckBox Spezialfunktion ausführen
-        $oCheckBox->triggerSpecialFunction(
+        $checkbox->triggerSpecialFunction(
             CHECKBOX_ORT_REGISTRIERUNG,
-            $kKundengruppe,
+            $customerGroupID,
             true,
             $post,
             ['oKunde' => $knd]
-        )->checkLogging(CHECKBOX_ORT_REGISTRIERUNG, $kKundengruppe, $post, true);
+        )->checkLogging(CHECKBOX_ORT_REGISTRIERUNG, $customerGroupID, $post, true);
 
         if ($edit && $_SESSION['Kunde']->kKunde > 0) {
             $knd->cAbgeholt = 'N';
@@ -98,22 +99,22 @@ function kundeSpeichern(array $post)
             $_SESSION['Kunde']->getCustomerAttributes()->load($_SESSION['Kunde']->kKunde);
         } else {
             // Guthaben des Neukunden aufstocken insofern er geworben wurde
-            $oNeukunde     = $db->select(
+            $oNeukunde       = $db->select(
                 'tkundenwerbenkunden',
                 'cEmail',
                 $knd->cMail,
                 'nRegistriert',
                 0
             );
-            $kKundengruppe = Frontend::getCustomerGroup()->getID();
+            $customerGroupID = Frontend::getCustomerGroup()->getID();
             if (isset($oNeukunde->kKundenWerbenKunden, $conf['kundenwerbenkunden']['kwk_kundengruppen'])
                 && $oNeukunde->kKundenWerbenKunden > 0
                 && (int)$conf['kundenwerbenkunden']['kwk_kundengruppen'] > 0
             ) {
-                $kKundengruppe = (int)$conf['kundenwerbenkunden']['kwk_kundengruppen'];
+                $customerGroupID = (int)$conf['kundenwerbenkunden']['kwk_kundengruppen'];
             }
 
-            $knd->kKundengruppe     = $kKundengruppe;
+            $knd->kKundengruppe     = $customerGroupID;
             $knd->kSprache          = Shop::getLanguage();
             $knd->cAbgeholt         = 'N';
             $knd->cSperre           = 'N';
@@ -124,7 +125,7 @@ function kundeSpeichern(array $post)
             $knd->cPasswort         = Shop::Container()->getPasswordService()->hash($cPasswortKlartext);
             $knd->dErstellt         = 'NOW()';
             $knd->nRegistriert      = 1;
-            $knd->angezeigtesLand   = Sprache::getCountryCodeByCountryName($knd->cLand);
+            $knd->angezeigtesLand   = LanguageHelper::getCountryCodeByCountryName($knd->cLand);
             $cLand                  = $knd->cLand;
             $knd->cPasswortKlartext = $cPasswortKlartext;
             $obj                    = new stdClass();
@@ -189,7 +190,7 @@ function kundeSpeichern(array $post)
         if ((int)$post['checkout'] === 1) {
             //weiterleitung zum checkout
             $_SESSION['checkout.register']        = 1;
-            $_SESSION['checkout.fehlendeAngaben'] = $fehlendeAngaben;
+            $_SESSION['checkout.fehlendeAngaben'] = $missingData;
             $_SESSION['checkout.cPost_arr']       = $post;
 
             //keep shipping address on error
@@ -201,10 +202,10 @@ function kundeSpeichern(array $post)
                                       ->getStaticRoute('bestellvorgang.php', true) . '?reg=1', true, 303);
             exit;
         }
-        Shop::Smarty()->assign('fehlendeAngaben', $fehlendeAngaben);
+        Shop::Smarty()->assign('fehlendeAngaben', $missingData);
         $Kunde = $knd;
 
-        return $fehlendeAngaben;
+        return $missingData;
     }
 
     return [];
@@ -238,7 +239,7 @@ function gibFormularDaten(int $nCheckout = 0)
             'warning_passwortlaenge',
             lang_passwortlaenge(Shop::getSettingValue(CONF_KUNDEN, 'kundenregistrierung_passwortlaenge'))
         )
-        ->assign('oKundenfeld_arr', gibSelbstdefKundenfelder());
+        ->assign('oKundenfeld_arr', new CustomerFields(Shop::getLanguageID()));
 
     if ($nCheckout === 1) {
         Shop::Smarty()->assign('checkout', 1)

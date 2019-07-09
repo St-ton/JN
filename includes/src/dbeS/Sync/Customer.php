@@ -6,17 +6,20 @@
 
 namespace JTL\dbeS\Sync;
 
+use JTL\Customer\CustomerAttribute;
+use JTL\Customer\CustomerField;
 use JTL\Customer\Kunde;
 use JTL\Customer\Kundendatenhistory;
 use JTL\DB\ReturnType;
 use JTL\dbeS\Starter;
 use JTL\GeneralDataProtection\Journal;
+use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Text;
+use JTL\Language\LanguageHelper;
 use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
 use JTL\Shop;
 use JTL\SimpleMail;
-use JTL\Sprache;
 use JTL\XML;
 use stdClass;
 
@@ -120,8 +123,8 @@ final class Customer extends AbstractSync
         if (!\is_array($xml['del_kunden']['kKunde'])) {
             $xml['del_kunden']['kKunde'] = [$xml['del_kunden']['kKunde']];
         }
-        foreach ($xml['del_kunden']['kKunde'] as $kKunde) {
-            (new Kunde((int)$kKunde))->deleteAccount(Journal::ISSUER_TYPE_DBES, 0, true);
+        foreach ($xml['del_kunden']['kKunde'] as $customerID) {
+            (new Kunde((int)$customerID))->deleteAccount(Journal::ISSUER_TYPE_DBES, 0, true);
         }
     }
 
@@ -137,10 +140,9 @@ final class Customer extends AbstractSync
             $xml['ack_kunden']['kKunde'] = [$xml['ack_kunden']['kKunde']];
         }
         if (\is_array($xml['ack_kunden']['kKunde'])) {
-            foreach ($xml['ack_kunden']['kKunde'] as $kKunde) {
-                $kKunde = (int)$kKunde;
-                if ($kKunde > 0) {
-                    $this->db->update('tkunde', 'kKunde', $kKunde, (object)['cAbgeholt' => 'Y']);
+            foreach ($xml['ack_kunden']['kKunde'] as $customerID) {
+                if ($customerID > 0) {
+                    $this->db->update('tkunde', 'kKunde', (int)$customerID, (object)['cAbgeholt' => 'Y']);
                 }
             }
         }
@@ -154,8 +156,7 @@ final class Customer extends AbstractSync
         if (!isset($xml['gutscheine']['gutschein']) || !\is_array($xml['gutscheine']['gutschein'])) {
             return;
         }
-        $vouchers = $this->mapper->mapArray($xml['gutscheine'], 'gutschein', 'mGutschein');
-        foreach ($vouchers as $voucher) {
+        foreach ($this->mapper->mapArray($xml['gutscheine'], 'gutschein', 'mGutschein') as $voucher) {
             if (!($voucher->kGutschein > 0 && $voucher->kKunde > 0)) {
                 continue;
             }
@@ -209,19 +210,17 @@ final class Customer extends AbstractSync
             $customer->kKundengruppe = (int)$xml['tkunde attr']['kKundengruppe'];
             $customer->kSprache      = (int)$xml['tkunde attr']['kSprache'];
         }
-        if (!\is_array($xml['tkunde'])) {
+        if (!isset($xml['tkunde']) || !\is_array($xml['tkunde'])) {
             return $res;
         }
+        $source = $xml['tkunde'];
         $crypto = Shop::Container()->getCryptoService();
-        $this->mapper->mapObject($customer, $xml['tkunde'], 'mKunde');
+        $this->mapper->mapObject($customer, $source, 'mKunde');
         // Kundenattribute
-        if (isset($xml['tkunde']['tkundenattribut'])
-            && \is_array($xml['tkunde']['tkundenattribut'])
-            && \count($xml['tkunde']['tkundenattribut']) > 0
-        ) {
-            $members = \array_keys($xml['tkunde']['tkundenattribut']);
+        if (GeneralObject::hasCount('tkundenattribut', $source)) {
+            $members = \array_keys($source['tkundenattribut']);
             if ($members[0] == '0') {
-                foreach ($xml['tkunde']['tkundenattribut'] as $data) {
+                foreach ($source['tkundenattribut'] as $data) {
                     $customerAttribute        = new stdClass();
                     $customerAttribute->cName = $data['cName'];
                     $customerAttribute->cWert = $data['cWert'];
@@ -229,8 +228,8 @@ final class Customer extends AbstractSync
                 }
             } else {
                 $customerAttribute        = new stdClass();
-                $customerAttribute->cName = $xml['tkunde']['tkundenattribut']['cName'];
-                $customerAttribute->cWert = $xml['tkunde']['tkundenattribut']['cWert'];
+                $customerAttribute->cName = $source['tkundenattribut']['cName'];
+                $customerAttribute->cWert = $source['tkundenattribut']['cWert'];
                 $customerAttributes[]     = $customerAttribute;
             }
         }
@@ -241,7 +240,6 @@ final class Customer extends AbstractSync
             $lang               = $this->db->select('tsprache', 'cShopStandard', 'Y');
             $customer->kSprache = $lang->kSprache;
         }
-
         $kInetKunde  = (int)$xml['tkunde attr']['kKunde'];
         $oldCustomer = new stdClass();
         if ($kInetKunde > 0) {
@@ -298,7 +296,7 @@ final class Customer extends AbstractSync
             $customer->updateInDB();
             Kundendatenhistory::saveHistory($oldCustomer, $customer, Kundendatenhistory::QUELLE_DBES);
             if (\count($customerAttributes) > 0) {
-                $this->saveAttribute($customer->kKunde, $customer->kSprache, $customerAttributes, false);
+                $this->saveAttribute($customer->kKunde, $customer->kSprache, $customerAttributes);
             }
             $res['keys']['tkunde attr']['kKunde'] = $kInetKunde;
             $res['keys']['tkunde']                = '';
@@ -349,7 +347,7 @@ final class Customer extends AbstractSync
                 $cstmr[0]['cStrasse'] .= ' ' . $cstmr[0]['cHausnummer'];
                 unset($cstmr[0]['cHausnummer']);
                 // Land ausgeschrieben der Wawi geben
-                $cstmr[0]['cLand'] = Sprache::getCountryCodeByCountryName($cstmr[0]['cLand']);
+                $cstmr[0]['cLand'] = LanguageHelper::getCountryCodeByCountryName($cstmr[0]['cLand']);
                 unset($cstmr[0]['cPasswort']);
                 $cstmr['0 attr']             = $this->buildAttributes($cstmr[0]);
                 $cstmr[0]['tkundenattribut'] = $this->db->query(
@@ -388,7 +386,7 @@ final class Customer extends AbstractSync
             unset($customer->cPasswortKlartext, $customer->Anrede);
             $kInetKunde = $customer->insertInDB();
             if (\count($customerAttributes) > 0) {
-                $this->saveAttribute($customer->kKunde, $customer->kSprache, $customerAttributes, true);
+                $this->saveAttribute($customer->kKunde, $customer->kSprache, $customerAttributes);
             }
 
             $res['keys']['tkunde attr']['kKunde'] = $kInetKunde;
@@ -397,21 +395,19 @@ final class Customer extends AbstractSync
 
         if ($kInetKunde > 0) {
             // kunde akt. bzw. neu inserted
-            if (isset($xml['tkunde']['tadresse'])
-                && \is_array($xml['tkunde']['tadresse'])
-                && \count($xml['tkunde']['tadresse']) > 0
-                && (!isset($xml['tkunde']['tadresse attr']) || !\is_array($xml['tkunde']['tadresse attr']))
+            if (GeneralObject::hasCount('tadresse', $source)
+                && (!isset($source['tadresse attr']) || !\is_array($source['tadresse attr']))
             ) {
-                //mehrere adressen
-                $cntLieferadressen = \count($xml['tkunde']['tadresse']) / 2;
+                // mehrere adressen
+                $cntLieferadressen = \count($source['tadresse']) / 2;
                 for ($i = 0; $i < $cntLieferadressen; $i++) {
                     unset($deliveryAddress);
                     $deliveryAddress = new stdClass();
-                    if ($xml['tkunde']['tadresse'][$i . ' attr']['kInetAdresse'] > 0) {
+                    if ($source['tadresse'][$i . ' attr']['kInetAdresse'] > 0) {
                         //update
-                        $deliveryAddress->kLieferadresse = $xml['tkunde']['tadresse'][$i . ' attr']['kInetAdresse'];
+                        $deliveryAddress->kLieferadresse = $source['tadresse'][$i . ' attr']['kInetAdresse'];
                         $deliveryAddress->kKunde         = $kInetKunde;
-                        $this->mapper->mapObject($deliveryAddress, $xml['tkunde']['tadresse'][$i], 'mLieferadresse');
+                        $this->mapper->mapObject($deliveryAddress, $source['tadresse'][$i], 'mLieferadresse');
                         // Hausnummer extrahieren
                         $this->extractStreet($deliveryAddress);
                         // verschlüsseln: Nachname, Firma, Strasse
@@ -423,7 +419,7 @@ final class Customer extends AbstractSync
                         $this->upsert('tlieferadresse', [$deliveryAddress], 'kLieferadresse');
                     } else {
                         $deliveryAddress->kKunde = $kInetKunde;
-                        $this->mapper->mapObject($deliveryAddress, $xml['tkunde']['tadresse'][$i], 'mLieferadresse');
+                        $this->mapper->mapObject($deliveryAddress, $source['tadresse'][$i], 'mLieferadresse');
                         // Hausnummer extrahieren
                         $this->extractStreet($deliveryAddress);
                         // verschlüsseln: Nachname, Firma, Strasse
@@ -440,7 +436,7 @@ final class Customer extends AbstractSync
                                 ];
                             }
                             $res['keys']['tkunde']['tadresse'][$nr . ' attr'] = [
-                                'kAdresse'     => $xml['tkunde']['tadresse'][$i . ' attr']['kAdresse'],
+                                'kAdresse'     => $source['tadresse'][$i . ' attr']['kAdresse'],
                                 'kInetAdresse' => $kInetLieferadresse,
                             ];
                             $res['keys']['tkunde']['tadresse'][$nr]           = '';
@@ -449,16 +445,16 @@ final class Customer extends AbstractSync
                         }
                     }
                 }
-            } elseif (isset($xml['tkunde']['tadresse attr']) && \is_array($xml['tkunde']['tadresse attr'])) {
+            } elseif (GeneralObject::isCountable('tadresse attr', $source)) {
                 // nur eine lieferadresse
-                if ($xml['tkunde']['tadresse attr']['kInetAdresse'] > 0) {
+                if ($source['tadresse attr']['kInetAdresse'] > 0) {
                     //update
                     if (!isset($deliveryAddress)) {
                         $deliveryAddress = new stdClass();
                     }
-                    $deliveryAddress->kLieferadresse = $xml['tkunde']['tadresse attr']['kInetAdresse'];
+                    $deliveryAddress->kLieferadresse = $source['tadresse attr']['kInetAdresse'];
                     $deliveryAddress->kKunde         = $kInetKunde;
-                    $this->mapper->mapObject($deliveryAddress, $xml['tkunde']['tadresse'], 'mLieferadresse');
+                    $this->mapper->mapObject($deliveryAddress, $source['tadresse'], 'mLieferadresse');
                     // Hausnummer extrahieren
                     $this->extractStreet($deliveryAddress);
                     // verschlüsseln: Nachname, Firma, Strasse
@@ -473,7 +469,7 @@ final class Customer extends AbstractSync
                         $deliveryAddress = new stdClass();
                     }
                     $deliveryAddress->kKunde = $kInetKunde;
-                    $this->mapper->mapObject($deliveryAddress, $xml['tkunde']['tadresse'], 'mLieferadresse');
+                    $this->mapper->mapObject($deliveryAddress, $source['tadresse'], 'mLieferadresse');
                     // Hausnummer extrahieren
                     $this->extractStreet($deliveryAddress);
                     // verschlüsseln: Nachname, Firma, Strasse
@@ -486,7 +482,7 @@ final class Customer extends AbstractSync
                     if ($kInetLieferadresse > 0) {
                         $res['keys']['tkunde'] = [
                             'tadresse attr' => [
-                                'kAdresse'     => $xml['tkunde']['tadresse attr']['kAdresse'],
+                                'kAdresse'     => $source['tadresse attr']['kAdresse'],
                                 'kInetAdresse' => $kInetLieferadresse,
                             ],
                             'tadresse'      => '',
@@ -503,42 +499,21 @@ final class Customer extends AbstractSync
      * @param int   $customerID
      * @param int   $languageID
      * @param array $attributes
-     * @param bool  $isNew
      */
-    private function saveAttribute(int $customerID, int $languageID, $attributes, $isNew): void
+    private function saveAttribute(int $customerID, int $languageID, $attributes): void
     {
         if ($customerID <= 0 || $languageID <= 0 || !\is_array($attributes) || \count($attributes) === 0) {
             return;
         }
         foreach ($attributes as $attribute) {
-            $field = $this->db->queryPrepared(
-                'SELECT tkundenfeld.kKundenfeld, tkundenfeldwert.cWert
-                 FROM tkundenfeld
-                 LEFT JOIN tkundenfeldwert
-                    ON tkundenfeldwert.kKundenfeld = tkundenfeld.kKundenfeld
-                 WHERE tkundenfeld.cWawi = :nm
-                    AND tkundenfeld.kSprache = :lid',
-                ['nm' => $attribute->cName, 'lid' => $languageID],
-                ReturnType::SINGLE_OBJECT
-            );
-            if (isset($field->kKundenfeld) && $field->kKundenfeld > 0) {
-                if (\strlen($field->cWert) > 0 && $field->cWert != $attribute->cWert) {
-                    continue;
-                }
-                if (!$isNew) {
-                    $this->db->delete(
-                        'tkundenattribut',
-                        ['kKunde', 'kKundenfeld'],
-                        [$customerID, (int)$field->kKundenfeld]
-                    );
-                }
-                $ins              = new stdClass();
-                $ins->kKunde      = $customerID;
-                $ins->kKundenfeld = (int)$field->kKundenfeld;
-                $ins->cName       = $attribute->cName;
-                $ins->cWert       = $attribute->cWert;
-
-                $this->db->insert('tkundenattribut', $ins);
+            $field = CustomerField::loadByName($attribute->cName, $languageID);
+            if ($field->getID() > 0 && $field->validate($attribute->cWert) !== CustomerField::VALIDATE_OK) {
+                $customerAttr = new CustomerAttribute();
+                $customerAttr->setCustomerID($customerID);
+                $customerAttr->setCustomerFieldID($field->getID());
+                $customerAttr->setName($attribute->cName);
+                $customerAttr->setValue($attribute->cWert);
+                $customerAttr->save();
             }
         }
     }

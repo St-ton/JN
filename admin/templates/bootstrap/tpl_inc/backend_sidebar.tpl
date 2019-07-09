@@ -40,9 +40,17 @@
                         </div>
                         <ul class="backend-menu secondlevel" id="group-{$rootEntryName}">
                             {foreach $oLinkOberGruppe->oLinkGruppe_arr as $oLinkGruppe}
-                                {if $oLinkGruppe->oLink_arr|@count > 0}
-                                    {assign var=entryName
-                                            value=$oLinkGruppe->cName|replace:' ':'-'|replace:'&':''|lower}
+                                {assign var=entryName value=$oLinkGruppe->cName|replace:' ':'-'|replace:'&':''|lower}
+                                {if is_object($oLinkGruppe->oLink_arr)}
+                                    <li id="dropdown-header-{$entryName}"
+                                        class="backend-dropdown-header
+                                                {if !$oLinkGruppe->oLink_arr->cRecht|permission}noperm{/if}
+                                                {if $oLinkGruppe->key === $currentMenuPath[1]}expanded current{/if}">
+                                        <a href="{$oLinkGruppe->oLink_arr->cURL}">
+                                            <span>{$oLinkGruppe->cName}</span>
+                                        </a>
+                                    </li>
+                                {elseif $oLinkGruppe->oLink_arr|@count > 0}
                                     <li id="dropdown-header-{$entryName}"
                                         class="backend-dropdown-header
                                                {if $oLinkGruppe->key === $currentMenuPath[1]}expanded current{/if}">

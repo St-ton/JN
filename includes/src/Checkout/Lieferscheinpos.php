@@ -78,10 +78,10 @@ class Lieferscheinpos
     }
 
     /**
-     * @param bool $bPrim
+     * @param bool $primary
      * @return bool|int
      */
-    public function save(bool $bPrim = true)
+    public function save(bool $primary = true)
     {
         $ins = new stdClass();
         foreach (\array_keys(\get_object_vars($this)) as $member) {
@@ -92,7 +92,7 @@ class Lieferscheinpos
         $kPrim = Shop::Container()->getDB()->insert('tlieferscheinpos', $ins);
 
         if ($kPrim > 0) {
-            return $bPrim ? $kPrim : true;
+            return $primary ? $kPrim : true;
         }
 
         return false;

@@ -9,14 +9,13 @@ namespace JTL\Sitemap;
 use JTL\Cache\JTLCacheInterface;
 use JTL\Catalog\Category\KategorieListe;
 use JTL\Catalog\Hersteller;
-use JTL\Catalog\Product\Merkmal;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
+use JTL\Helpers\Category as CategoryHelper;
 use JTL\Helpers\URL;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
-use JTL\Helpers\Category as CategoryHelper;
 
 /**
  * Class Sitemap
@@ -70,7 +69,6 @@ class Sitemap
     public function assignData(JTLSmarty $smarty): void
     {
         $smarty->assign('oKategorieliste', $this->getCategories())
-               ->assign('oGlobaleMerkmale_arr', $this->getGlobalAttributes())
                ->assign('oHersteller_arr', $this->getManufacturers())
                ->assign('oNewsMonatsUebersicht_arr', $this->getNews())
                ->assign('oNewsKategorie_arr', $this->getNewsCategories());
@@ -265,23 +263,5 @@ class Sitemap
         return $this->conf['sitemap']['sitemap_hersteller_anzeigen'] === 'Y'
             ? Hersteller::getAll()
             : [];
-    }
-
-    /**
-     * @return array
-     * @former gibSitemapGlobaleMerkmale()
-     */
-    public function getGlobalAttributes(): array
-    {
-        if ($this->conf['sitemap']['sitemap_globalemerkmale_anzeigen'] !== 'Y') {
-            return [];
-        }
-        $attributeIDs = $this->db->selectAll('tmerkmal', 'nGlobal', 1, 'kMerkmal', 'nSort');
-        $attributes   = [];
-        foreach ($attributeIDs as $attributeID) {
-            $attributes[] = new Merkmal($attributeID->kMerkmal, true);
-        }
-
-        return $attributes;
     }
 }

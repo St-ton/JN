@@ -2,7 +2,7 @@
 
 Dear {$Kunde->cVorname} {$Kunde->cNachname},
 
-Your order at {$Einstellungen.global.global_shopname} has been reactivated.
+the cancellation of your order at {$Einstellungen.global.global_shopname} has been reversed.
 Order number: {$Bestellung->cBestellNr}
 
 Yours sincerely,

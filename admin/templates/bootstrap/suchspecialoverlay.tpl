@@ -3,24 +3,13 @@
 {include file='tpl_inc/seite_header.tpl' cTitel=__('suchspecialoverlay') cBeschreibung=__('suchspecialoverlayDesc') cDokuURL=__('suchspecialoverlayUrl')}
 <div id="content" class="container-fluid">
     <div class="block">
-        {if isset($Sprachen) && $Sprachen|@count > 1}
-            <form name="sprache" method="post" action="suchspecialoverlay.php" class="inline_block">
-                {$jtl_token}
-                <input type="hidden" name="sprachwechsel" value="1" />
-                <div class="input-group p25 left" style="margin-right: 20px;">
-                    <span class="input-group-addon">
-                        <label for="{__('changeLanguage')}">{__('changeLanguage')}</label>
-                    </span>
-                    <span class="input-group-wrap last">
-                        <select id="{__('changeLanguage')}" name="kSprache" class="form-control selectBox" onchange="document.sprache.submit();">
-                            {foreach $Sprachen as $sprache}
-                                <option value="{$sprache->kSprache}" {if $sprache->kSprache == $smarty.session.kSprache}selected{/if}>{$sprache->cNameDeutsch}</option>
-                            {/foreach}
-                        </select>
-                    </span>
-                </div>
-            </form>
-        {/if}
+        <form name="sprache" method="post" action="suchspecialoverlay.php" class="inline_block">
+            {$jtl_token}
+            <input type="hidden" name="sprachwechsel" value="1" />
+            <div class="input-group p25 left" style="margin-right: 20px;">
+                {include file='tpl_inc/language_switcher.tpl'}
+            </div>
+        </form>
         <form name="suchspecialoverlay" method="post" action="suchspecialoverlay.php" class="inline_block">
             {$jtl_token}
             <div class="p25 input-group">

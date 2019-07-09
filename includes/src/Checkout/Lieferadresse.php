@@ -7,8 +7,8 @@
 namespace JTL\Checkout;
 
 use JTL\Customer\Kunde;
+use JTL\Language\LanguageHelper;
 use JTL\Shop;
-use JTL\Sprache;
 
 /**
  * Class Lieferadresse
@@ -38,12 +38,12 @@ class Lieferadresse extends Adresse
 
     /**
      * Lieferadresse constructor.
-     * @param int $kLieferadresse
+     * @param int $id
      */
-    public function __construct(int $kLieferadresse = 0)
+    public function __construct(int $id = 0)
     {
-        if ($kLieferadresse > 0) {
-            $this->loadFromDB($kLieferadresse);
+        if ($id > 0) {
+            $this->loadFromDB($id);
         }
     }
 
@@ -62,7 +62,7 @@ class Lieferadresse extends Adresse
         $this->fromObject($obj);
         // Anrede mappen
         $this->cAnredeLocalized = Kunde::mapSalutation($this->cAnrede, 0, $this->kKunde);
-        $this->angezeigtesLand  = Sprache::getCountryCodeByCountryName($this->cLand);
+        $this->angezeigtesLand  = LanguageHelper::getCountryCodeByCountryName($this->cLand);
         if ($this->kLieferadresse > 0) {
             $this->decrypt();
         }
@@ -101,16 +101,12 @@ class Lieferadresse extends Adresse
         $obj = $this->toObject();
 
         $obj->cLand = $this->pruefeLandISO($obj->cLand);
-
         unset($obj->angezeigtesLand, $obj->cAnredeLocalized);
-
-        $cReturn = Shop::Container()->getDB()->update('tlieferadresse', 'kLieferadresse', $obj->kLieferadresse, $obj);
+        $res = Shop::Container()->getDB()->update('tlieferadresse', 'kLieferadresse', $obj->kLieferadresse, $obj);
         $this->decrypt();
-
-        // Anrede mappen
         $this->cAnredeLocalized = $this->mappeAnrede($this->cAnrede);
 
-        return $cReturn;
+        return $res;
     }
 
     /**

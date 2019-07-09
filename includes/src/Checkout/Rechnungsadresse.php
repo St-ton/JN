@@ -7,8 +7,8 @@
 namespace JTL\Checkout;
 
 use JTL\Customer\Kunde;
+use JTL\Language\LanguageHelper;
 use JTL\Shop;
-use JTL\Sprache;
 
 /**
  * Class Rechnungsadresse
@@ -49,22 +49,22 @@ class Rechnungsadresse extends Adresse
     /**
      * Rechnungsadresse constructor.
      *
-     * @param int $kRechnungsadresse
+     * @param int $id
      */
-    public function __construct(int $kRechnungsadresse = 0)
+    public function __construct(int $id = 0)
     {
-        if ($kRechnungsadresse > 0) {
-            $this->loadFromDB($kRechnungsadresse);
+        if ($id > 0) {
+            $this->loadFromDB($id);
         }
     }
 
     /**
-     * @param int $kRechnungsadresse
+     * @param int $id
      * @return int|Rechnungsadresse
      */
-    public function loadFromDB(int $kRechnungsadresse)
+    public function loadFromDB(int $id)
     {
-        $obj = Shop::Container()->getDB()->select('trechnungsadresse', 'kRechnungsadresse', $kRechnungsadresse);
+        $obj = Shop::Container()->getDB()->select('trechnungsadresse', 'kRechnungsadresse', $id);
 
         if ($obj === null || $obj->kRechnungsadresse < 1) {
             return 0;
@@ -74,7 +74,7 @@ class Rechnungsadresse extends Adresse
         $this->kRechnungsadresse = (int)$this->kRechnungsadresse;
 
         $this->cAnredeLocalized = Kunde::mapSalutation($this->cAnrede, 0, $this->kKunde);
-        $this->angezeigtesLand  = Sprache::getCountryCodeByCountryName($this->cLand);
+        $this->angezeigtesLand  = LanguageHelper::getCountryCodeByCountryName($this->cLand);
         if ($this->kRechnungsadresse > 0) {
             $this->decrypt();
         }

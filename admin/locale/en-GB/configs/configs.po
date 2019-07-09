@@ -828,7 +828,7 @@ msgid "artikeldetails_tabs_nutzen_name"
 msgstr "Use tabs"
 
 msgid "artikeldetails_tabs_nutzen_desc"
-msgstr "Specify whether tabs are to be used on the item detail page. These include for example customer reviews, item tags or questions about the item. If you disable this option, the different pieces of information are displayed one below the other."
+msgstr "Specify whether tabs are to be used on the item detail page. These include for example customer reviews or questions about the item. If you disable this option, the different pieces of information are displayed one below the other."
 
 msgid "artikeldetails_navi_blaettern_name"
 msgstr "Show navigation to next/previous item"
@@ -1015,30 +1015,6 @@ msgstr "Show \"Add to comparison list\""
 
 msgid "artikeldetails_vergleichsliste_anzeigen_desc"
 msgstr "Specify whether to display the \"Add to comparison list\" button on the item detail page."
-
-msgid "tagging_freischaltung_name"
-msgstr "Allow entry of item tags"
-
-msgid "tagging_freischaltung_desc"
-msgstr "Specify whether tags can be entered in the item details and whether customers must be logged in."
-
-msgid "tagging_anzeigen_name"
-msgstr "Show item tags with item"
-
-msgid "tagging_anzeigen_desc"
-msgstr "Specify whether to show tags with the item."
-
-msgid "tagging_max_count_name"
-msgstr "Number of displayed item tags"
-
-msgid "tagging_max_count_desc"
-msgstr "Specify how many tags are to be displayed on the item detail page."
-
-msgid "tagging_max_ip_count_name"
-msgstr "Maximum entries per visitor per day"
-
-msgid "tagging_max_ip_count_desc"
-msgstr "Specify the maximum number of entries per visitor per day that is saved to prevent manipulation."
 
 msgid "mediendatei_anzeigen_name"
 msgstr "Show media files"
@@ -1532,18 +1508,6 @@ msgstr "Number of displayed search terms"
 msgid "boxen_livesuche_count_desc"
 msgstr "Specify how many terms are to be displayed in the search cloud. The search cloud can be displayed in a box via the box administration."
 
-msgid "boxen_tagging_anzeigen_name"
-msgstr "Show box"
-
-msgid "boxen_tagging_anzeigen_desc"
-msgstr "Specify whether to display the tag cloud in a box."
-
-msgid "boxen_tagging_count_name"
-msgstr "Number of shown tags"
-
-msgid "boxen_tagging_count_desc"
-msgstr "Specify the number of terms that are displayed in the tag cloud. The search cloud can be displayed in a box via the box administration."
-
 msgid "boxen_wunschzettel_anzahl_name"
 msgstr "Number of items in box"
 
@@ -1837,12 +1801,6 @@ msgstr "Background colour"
 
 msgid "bilder_hintergrundfarbe_desc"
 msgstr ""
-
-msgid "sonstiges_tagging_all_count_name"
-msgstr "Number of tags in overview"
-
-msgid "sonstiges_tagging_all_count_desc"
-msgstr "Specify how many terms are displayed in the complete overview of the tags."
 
 msgid "sonstiges_livesuche_all_top_count_name"
 msgstr "Number of top search queries to be displayed"
@@ -2430,7 +2388,7 @@ msgid "allgemein_herstellerfilter_benutzen_name"
 msgstr "Allow filtering by manufacturer"
 
 msgid "allgemein_herstellerfilter_benutzen_desc"
-msgstr "Specify whether to display the manufacturer as a filter option for your customers in the results list under \"Filter by\"."
+msgstr "Specify whether to display the manufacturer as a filter option for your customers in the results list under \"Filter by\". This option is not supported by NOVA template. Please select 'Yes, in content area and in navigation box' or 'No' when using NOVA."
 
 msgid "manufacturer_filter_type_name"
 msgstr "Type of manufacturer filter"
@@ -2442,7 +2400,7 @@ msgid "allgemein_suchspecialfilter_benutzen_name"
 msgstr "Use filter for special items"
 
 msgid "allgemein_suchspecialfilter_benutzen_desc"
-msgstr "Specify whether to display special items (e.g. top offers) as a filter option for your customers in the results list under \"Filter by\"."
+msgstr "Specify whether to display special items (e.g. top offers) as a filter option for your customers in the results list under \"Filter by\". This option is not supported by NOVA template. Please select 'Yes, in content area and in navigation box' or 'No' when using NOVA."
 
 msgid "search_special_filter_type_name"
 msgstr "Special filter type"
@@ -2454,7 +2412,7 @@ msgid "allgemein_kategoriefilter_benutzen_name"
 msgstr "Allow filtering by category"
 
 msgid "allgemein_kategoriefilter_benutzen_desc"
-msgstr "Specify whether to display the category as a filter option for your customers in the results list under \"Filter by\"."
+msgstr "Specify whether to display the category as a filter option for your customers in the results list under \"Filter by\". This option is not supported by NOVA template. Please select 'Yes, in content area and in navigation box' or 'No' when using NOVA."
 
 msgid "kategoriefilter_anzeigen_als_name"
 msgstr "Show category filter as"
@@ -2472,25 +2430,7 @@ msgid "bewertungsfilter_benutzen_name"
 msgstr "Allow filtering by customer review"
 
 msgid "bewertungsfilter_benutzen_desc"
-msgstr "Specify whether it is possible to filter by customer reviews (if present)."
-
-msgid "allgemein_tagfilter_benutzen_name"
-msgstr "Allow filtering by tags"
-
-msgid "allgemein_tagfilter_benutzen_desc"
-msgstr "If this option is enabled, a box is added that contains all tags entered or activated for the displayed results."
-
-msgid "tagfilter_max_anzeige_name"
-msgstr "Maximum number of tags for filtering"
-
-msgid "tagfilter_max_anzeige_desc"
-msgstr "Specify the maximum number of tags that are to be displayed."
-
-msgid "tag_filter_type_name"
-msgstr "Tag filter type"
-
-msgid "tag_filter_type_desc"
-msgstr "Specify whether multiple selection of filter values is possible or whether a filter restricts the results to the respective selection."
+msgstr "Specify whether it is possible to filter by customer reviews (if present).  This option is not supported by NOVA template. Please select 'Yes, in content area and in navigation box' or 'No' when using NOVA."
 
 msgid "suchtrefferfilter_nutzen_name"
 msgstr "Allow filtering by search result"
@@ -2508,7 +2448,7 @@ msgid "merkmalfilter_verwenden_name"
 msgstr "Allow filtering by characteristics"
 
 msgid "merkmalfilter_verwenden_desc"
-msgstr "Specify whether to display characteristics filters."
+msgstr "Specify whether to display characteristics filters. This option is not supported by NOVA template. Please select 'Yes, in content area and in navigation box' or 'No' when using NOVA."
 
 msgid "merkmal_anzeigen_als_name"
 msgstr "Show characteristics as"
@@ -2532,7 +2472,7 @@ msgid "preisspannenfilter_benutzen_name"
 msgstr "Allow filtering by price range"
 
 msgid "preisspannenfilter_benutzen_desc"
-msgstr "Specify whether your customers are able to filter by specific price ranges when displaying an item list."
+msgstr "Specify whether your customers are able to filter by specific price ranges when displaying an item list. This option is not supported by NOVA template. Please select 'Yes, in content area and in navigation box' or 'No' when using NOVA."
 
 msgid "preisspannenfilter_spannen_ausblenden_name"
 msgstr "Hide empty price ranges"
@@ -2732,12 +2672,6 @@ msgstr "Show all categories"
 msgid "sitemap_kategorien_anzeigen_desc"
 msgstr "Specify whether all category sites should appear in the sitemap."
 
-msgid "sitemap_globalemerkmale_anzeigen_name"
-msgstr "Show global characteristics"
-
-msgid "sitemap_globalemerkmale_anzeigen_desc"
-msgstr "Specify whether pages for global characteristics should appear in the sitemap."
-
 msgid "sitemap_hersteller_anzeigen_name"
 msgstr "Show manufacturer"
 
@@ -2761,12 +2695,6 @@ msgstr "Include pages of item overviews in sitemap"
 
 msgid "sitemap_weitereseiten_artikeluebersicht_desc"
 msgstr "Specify whether to include the pages of the item overviews (e.g. manufacturers, categories etc.) in the sitemap."
-
-msgid "sitemap_tags_anzeigen_name"
-msgstr "Show tags"
-
-msgid "sitemap_tags_anzeigen_desc"
-msgstr "Specify whether all tag pages should appear in the sitemap."
 
 msgid "sitemap_livesuche_anzeigen_name"
 msgstr "Show search queries"
@@ -3133,3 +3061,10 @@ msgstr "Which method should be used?"
 
 msgid "cron_freq_desc"
 msgstr "Start a pseudo cron on each x-th page call"
+
+msgid "hersteller_anzeigen_als_name"
+msgstr "Show manufacturers as"
+
+msgid "hersteller_anzeigen_als_desc"
+msgstr "Specify how to display the manufacturers."
+

@@ -72,14 +72,14 @@ class Konfiggruppe implements JsonSerializable
     /**
      * Constructor
      *
-     * @param int $kKonfiggruppe
-     * @param int $kSprache
+     * @param int $id
+     * @param int $languageID
      */
-    public function __construct(int $kKonfiggruppe = 0, int $kSprache = 0)
+    public function __construct(int $id = 0, int $languageID = 0)
     {
-        $this->kKonfiggruppe = $kKonfiggruppe;
+        $this->kKonfiggruppe = $id;
         if ($this->kKonfiggruppe > 0) {
-            $this->loadFromDB($this->kKonfiggruppe, $kSprache);
+            $this->loadFromDB($this->kKonfiggruppe, $languageID);
         }
     }
 
@@ -122,26 +122,26 @@ class Konfiggruppe implements JsonSerializable
     /**
      * Loads database member into class member
      *
-     * @param int $kKonfiggruppe
-     * @param int $kSprache
+     * @param int $id
+     * @param int $languageID
      * @return $this
      */
-    private function loadFromDB(int $kKonfiggruppe = 0, int $kSprache = 0): self
+    private function loadFromDB(int $id = 0, int $languageID = 0): self
     {
-        $oObj = Shop::Container()->getDB()->select('tkonfiggruppe', 'kKonfiggruppe', $kKonfiggruppe);
-        if (isset($oObj->kKonfiggruppe) && $oObj->kKonfiggruppe > 0) {
-            foreach (\array_keys(\get_object_vars($oObj)) as $member) {
-                $this->$member = $oObj->$member;
+        $data = Shop::Container()->getDB()->select('tkonfiggruppe', 'kKonfiggruppe', $id);
+        if (isset($data->kKonfiggruppe) && $data->kKonfiggruppe > 0) {
+            foreach (\array_keys(\get_object_vars($data)) as $member) {
+                $this->$member = $data->$member;
             }
-            if (!$kSprache) {
-                $kSprache = Shop::getLanguageID();
+            if (!$languageID) {
+                $languageID = Shop::getLanguageID();
             }
             $this->kKonfiggruppe = (int)$this->kKonfiggruppe;
             $this->nMin          = (int)$this->nMin;
             $this->nMax          = (int)$this->nMax;
             $this->nTyp          = (int)$this->nTyp;
             $this->nSort         = (int)$this->nSort;
-            $this->oSprache      = new Konfiggruppesprache($this->kKonfiggruppe, $kSprache);
+            $this->oSprache      = new Konfiggruppesprache($this->kKonfiggruppe, $languageID);
             $this->oItem_arr     = Konfigitem::fetchAll($this->kKonfiggruppe);
         }
 
@@ -200,12 +200,12 @@ class Konfiggruppe implements JsonSerializable
     }
 
     /**
-     * @param int $kKonfiggruppe
+     * @param int $id
      * @return $this
      */
-    public function setKonfiggruppe(int $kKonfiggruppe): self
+    public function setKonfiggruppe(int $id): self
     {
-        $this->kKonfiggruppe = $kKonfiggruppe;
+        $this->kKonfiggruppe = $id;
 
         return $this;
     }
@@ -335,21 +335,21 @@ class Konfiggruppe implements JsonSerializable
      */
     public function quantityEquals(): bool
     {
-        $bEquals = false;
+        $equal = false;
         if (\count($this->oItem_arr) > 0) {
-            $oItem = $this->oItem_arr[0];
-            if ($oItem->getMin() == $oItem->getMax()) {
-                $bEquals = true;
-                $nKey    = $oItem->getMin();
-                foreach ($this->oItem_arr as &$oItem) {
-                    if (!($oItem->getMin() == $oItem->getMax() && $oItem->getMin() == $nKey)) {
-                        $bEquals = false;
+            $item = $this->oItem_arr[0];
+            if ($item->getMin() == $item->getMax()) {
+                $equal = true;
+                $nKey  = $item->getMin();
+                foreach ($this->oItem_arr as &$item) {
+                    if (!($item->getMin() == $item->getMax() && $item->getMin() == $nKey)) {
+                        $equal = false;
                     }
                 }
             }
         }
 
-        return $bEquals;
+        return $equal;
     }
 
     /**
@@ -357,14 +357,14 @@ class Konfiggruppe implements JsonSerializable
      */
     public function getInitQuantity()
     {
-        $fQuantity = 1;
-        foreach ($this->oItem_arr as &$oItem) {
-            if ($oItem->getSelektiert()) {
-                $fQuantity = $oItem->getInitial();
+        $qty = 1;
+        foreach ($this->oItem_arr as &$item) {
+            if ($item->getSelektiert()) {
+                $qty = $item->getInitial();
             }
         }
 
-        return $fQuantity;
+        return $qty;
     }
 
     /**
@@ -374,7 +374,7 @@ class Konfiggruppe implements JsonSerializable
     {
         $inStockCount = 0;
         foreach ($this->oItem_arr as $item) {
-            if ($item->isInStock() && ++$inStockCount === $this->nMin) {
+            if ($item->isInStock() && ++$inStockCount >= $this->nMin) {
                 return true;
             }
         }

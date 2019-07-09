@@ -103,28 +103,28 @@
                     </div>
                     <div class="panel-body">
                         <div class="settings">
-                            {foreach $sprachen as $sprache}
-                                {assign var=cISOcat value=$sprache->cISO|cat:'_titel'}
-                                {assign var=cISO value=$sprache->cISO}
+                            {foreach $sprachen as $language}
+                                {assign var=cISO value=$language->getIso()}
+                                {assign var=cISOcat value=$cISO|cat:'_titel'}
                                 <div class="input-group">
                                     <span class="input-group-addon">
-                                        <label for="cTitle_{$cISO}">{__('title')} ({$sprache->cNameDeutsch})</label>
+                                        <label for="cTitle_{$cISO}">{__('title')} ({$language->getLocalizedName()})</label>
                                     </span>
                                     <span class="input-group-wrap">
                                         <input class="form-control" type="text" name="cTitle_{$cISO}" id="cTitle_{$cISO}" value="{if !empty($Content[$cISOcat])}{$Content[$cISOcat]}{/if}" tabindex="1" />
                                     </span>
                                 </div>
                             {/foreach}
-                            {foreach $sprachen as $sprache}
-                                {assign var=cISOcat value=$sprache->cISO|cat:'_oben'}
-                                {assign var=cISO value=$sprache->cISO}
-                                <div class="category">{__('topContent')} ({$sprache->cNameDeutsch})</div>
+                            {foreach $sprachen as $language}
+                                {assign var=cISO value=$language->getIso()}
+                                {assign var=cISOcat value=$cISO|cat:'_oben'}
+                                <div class="category">{__('topContent')} ({$language->getLocalizedName()})</div>
                                 <textarea class="ckeditor form-control" name="cContentTop_{$cISO}" id="cContentTop_{$cISO}">{if !empty($Content[$cISOcat])}{$Content[$cISOcat]}{/if}</textarea>
                             {/foreach}
-                            {foreach $sprachen as $sprache}
-                                {assign var=cISOcat value=$sprache->cISO|cat:'_unten'}
-                                {assign var=cISO value=$sprache->cISO}
-                                <div class="category">{__('bottomContent')} ({$sprache->cNameDeutsch})</div>
+                            {foreach $sprachen as $language}
+                                {assign var=cISO value=$language->getIso()}
+                                {assign var=cISOcat value=$cISO|cat:'_unten'}
+                                <div class="category">{__('bottomContent')} ({$language->getLocalizedName()})</div>
                                 <textarea class="ckeditor form-control" name="cContentBottom_{$cISO}" id="cContentBottom_{$cISO}">{if !empty($Content[$cISOcat])}{$Content[$cISOcat]}{/if}</textarea>
                             {/foreach}
                         </div>

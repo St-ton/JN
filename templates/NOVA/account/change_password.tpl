@@ -6,9 +6,6 @@
     {block name='account-change-password-heading'}
         <h1>{lang key='changePassword' section='login'}</h1>
     {/block}
-    {block name='account-change-password-include-extension'}
-        {include file='snippets/extension.tpl'}
-    {/block}
     {block name='account-change-password-change-password-form'}
         {block name='account-change-password-alert'}
             {alert variant="info"}{lang key='changePasswordDesc' section='login'}{/alert}
@@ -16,7 +13,7 @@
         {row}
             {col md=5 lg=4}
                 {block name='account-change-password-form-password'}
-                    {form id="password" action="{get_static_route id='jtl.php'}" method="post" class="evo-validate"}
+                    {form id="password" action="{get_static_route id='jtl.php'}" method="post" class="evo-validate label-slide"}
                         {block name='account-change-password-form-password-content'}
                             {include file='snippets/form_group_simple.tpl'
                                 options=[

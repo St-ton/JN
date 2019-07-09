@@ -6,13 +6,14 @@
 
 namespace JTL\dbeS\Sync;
 
+use Illuminate\Support\Collection;
 use JTL\Catalog\Product\Artikel;
 use JTL\DB\ReturnType;
 use JTL\dbeS\Starter;
 use JTL\Helpers\Product;
 use JTL\Helpers\Seo;
+use JTL\Language\LanguageHelper;
 use JTL\Shop;
-use JTL\Sprache;
 use stdClass;
 use function Functional\flatten;
 use function Functional\map;
@@ -164,7 +165,7 @@ final class Products extends AbstractSync
                     $check = true;
                 }
                 if ($check === true) {
-                    if (\is_array($newCategoryIDs) && !empty($newCategoryIDs)) {
+                    if (\count($newCategoryIDs) > 0) {
                         // get count of visible products in the product's futre categories
                         $productCount = $this->db->query(
                             'SELECT tkategorieartikel.kKategorie, COUNT(tkategorieartikel.kArtikel) AS cnt
@@ -307,9 +308,9 @@ final class Products extends AbstractSync
             'tartikelsprache',
             'mArtikelSprache'
         );
-        $allLanguages = Sprache::getAllLanguages(1);
+        $allLanguages = LanguageHelper::getAllLanguages(1);
         foreach ($localized as $item) {
-            if (!Sprache::isShopLanguage($item->kSprache, $allLanguages)) {
+            if (!LanguageHelper::isShopLanguage($item->kSprache, $allLanguages)) {
                 continue;
             }
             if (!$item->cSeo) {
@@ -330,12 +331,12 @@ final class Products extends AbstractSync
                 ['kArtikel', (int)$item->kArtikel, (int)$item->kSprache]
             );
 
-            $oSeo           = new stdClass();
-            $oSeo->cSeo     = $item->cSeo;
-            $oSeo->cKey     = 'kArtikel';
-            $oSeo->kKey     = $item->kArtikel;
-            $oSeo->kSprache = $item->kSprache;
-            $this->db->insert('tseo', $oSeo);
+            $seo           = new stdClass();
+            $seo->cSeo     = $item->cSeo;
+            $seo->cKey     = 'kArtikel';
+            $seo->kKey     = $item->kArtikel;
+            $seo->kSprache = $item->kSprache;
+            $this->db->insert('tseo', $seo);
             // Insert into tredirect weil sich das SEO vom Artikel geändert hat
             if (isset($seoData[$item->kSprache])) {
                 $this->checkDbeSXmlRedirect(
@@ -820,45 +821,27 @@ final class Products extends AbstractSync
 
     /**
      * @param array $xml
-     * @param array $products
      */
-    private function handleSQL(array $xml, array $products): void
+    private function handleSQL(array $xml): void
     {
         if (isset($xml['tartikel']['SQLDEL']) && \strlen($xml['tartikel']['SQLDEL']) > 10) {
             $this->logger->debug('SQLDEL: ' . $xml['tartikel']['SQLDEL']);
-            foreach (\explode("\n", $xml['tartikel']['SQLDEL']) as $cSQL) {
-                if (\strlen($cSQL) <= 10) {
+            foreach (\explode("\n", $xml['tartikel']['SQLDEL']) as $sql) {
+                if (\strlen($sql) <= 10) {
                     continue;
                 }
-                $this->db->query($cSQL, ReturnType::AFFECTED_ROWS);
+                $this->db->query($sql, ReturnType::DEFAULT);
             }
         }
-        if (isset($xml['tartikel']['SQL']) && \strlen($xml['tartikel']['SQL']) > 10) {
-            $this->logger->debug('SQL: ' . $xml['tartikel']['SQL']);
-            foreach (\explode("\n", $xml['tartikel']['SQL']) as $cSQL) {
-                if (\strlen($cSQL) <= 10) {
-                    continue;
-                }
-                // Pre Wawi 0.99862 fix
-                if (isset($products[0]->kVaterArtikel)
-                    && $products[0]->kVaterArtikel > 0
-                    && !isset($xml['tartikel']['SQLDEL'])
-                    && \strpos($cSQL, 'teigenschaftkombiwert') !== false
-                ) {
-                    $del     = \substr($cSQL, \strpos($cSQL, 'values ') + \strlen('values '));
-                    $itemIDs = [];
-                    foreach (\str_replace(['(', ')'], '', \explode('),(', $del)) as $del) {
-                        $itemIDs[] = (int)\substr($del, 0, \strpos($del, ','));
-                    }
-                    $this->db->query(
-                        'DELETE
-                        FROM teigenschaftkombiwert 
-                        WHERE kEigenschaftKombi IN (' . \implode(',', $itemIDs) . ')',
-                        ReturnType::AFFECTED_ROWS
-                    );
-                }
-                $this->db->query($cSQL, ReturnType::AFFECTED_ROWS);
+        if (!isset($xml['tartikel']['SQL']) || \strlen($xml['tartikel']['SQL']) <= 10) {
+            return;
+        }
+        $this->logger->debug('SQL: ' . $xml['tartikel']['SQL']);
+        foreach (\explode("\n", $xml['tartikel']['SQL']) as $sql) {
+            if (\strlen($sql) <= 10) {
+                continue;
             }
+            $this->db->query($sql, ReturnType::DEFAULT);
         }
     }
 
@@ -962,7 +945,6 @@ final class Products extends AbstractSync
         $this->addUploads($xml);
         $this->addMinPurchaseData($xml, $productID);
         $this->addConfigGroups($xml);
-        $this->addPrices($xml, $productID);
         $this->updateXMLinDB(
             $xml['tartikel'],
             'tkategorieartikel',
@@ -985,10 +967,11 @@ final class Products extends AbstractSync
         $this->updateXMLinDB($xml['tartikel'], 'txsell', 'mXSell', 'kXSell');
         $this->updateXMLinDB($xml['tartikel'], 'tartikelmerkmal', 'mArtikelSichtbarkeit', 'kMermalWert');
         $this->addStockData($products[0], $conf);
-        $this->handleSQL($xml, $products);
+        $this->handleSQL($xml);
         $this->addWarehouseData($xml, $productID);
         $this->addCharacteristics($xml);
         $this->addCategoryDiscounts($productID);
+        $this->addPrices($xml, $productID);
         $res[] = $productID;
         if (!empty($products[0]->kVaterartikel)) {
             $res[] = (int)$products[0]->kVaterartikel;
@@ -1013,9 +996,8 @@ final class Products extends AbstractSync
             $xml['del_artikel']['kArtikel'] = [$xml['del_artikel']['kArtikel']];
         }
         foreach ($xml['del_artikel']['kArtikel'] as $productID) {
-            $productID     = (int)$productID;
-            $kVaterArtikel = Product::getParent($productID);
-            $this->deleteProductImages($productID);
+            $productID = (int)$productID;
+            $parent    = Product::getParent($productID);
 
             $this->db->queryPrepared(
                 'DELETE teigenschaftkombiwert
@@ -1029,8 +1011,8 @@ final class Products extends AbstractSync
             $this->removeProductIdfromCoupons($productID);
             $res[] = $this->deleteProduct($productID, false, $conf);
             $this->db->delete('tartikelkategorierabatt', 'kArtikel', $productID);
-            if ($kVaterArtikel > 0) {
-                Artikel::beachteVarikombiMerkmalLagerbestand($kVaterArtikel);
+            if ($parent > 0) {
+                Artikel::beachteVarikombiMerkmalLagerbestand($parent);
             }
             \executeHook(\HOOK_ARTIKEL_XML_BEARBEITEDELETES, ['kArtikel' => $productID]);
         }
@@ -1055,7 +1037,7 @@ final class Products extends AbstractSync
         );
         if ($force === false
             && isset($conf['global']['kategorien_anzeigefilter'])
-            && (int)$conf['global']['kategorien_anzeigefilter'] === 2
+            && (int)$conf['global']['kategorien_anzeigefilter'] === \EINSTELLUNGEN_KATEGORIEANZEIGEFILTER_NICHTLEERE
         ) {
             $stockFilter = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
             foreach ($categories as $category) {
@@ -1107,23 +1089,6 @@ final class Products extends AbstractSync
     }
 
     /**
-     * @param int $productID
-     */
-    private function deleteProductImages(int $productID): void
-    {
-        $images = $this->db->selectAll(
-            'tartikelpict',
-            'kArtikel',
-            $productID,
-            'kArtikelPict, kMainArtikelBild, cPfad'
-        );
-        foreach ($images as $image) {
-            $this->deleteProductImage($image, $productID);
-        }
-        $this->cache->flush('arr_article_images_' . $productID);
-    }
-
-    /**
      * @param int $id
      */
     private function deleteCharacteristic(int $id): void
@@ -1139,8 +1104,7 @@ final class Products extends AbstractSync
      */
     private function deleteProductCharacteristics(int $productID): void
     {
-        $attributes = $this->db->selectAll('teigenschaft', 'kArtikel', $productID, 'kEigenschaft');
-        foreach ($attributes as $attribute) {
+        foreach ($this->db->selectAll('teigenschaft', 'kArtikel', $productID, 'kEigenschaft') as $attribute) {
             $this->deleteCharacteristic((int)$attribute->kEigenschaft);
         }
     }
@@ -1190,8 +1154,7 @@ final class Products extends AbstractSync
      */
     private function deleteProductAttributes(int $productID): void
     {
-        $attributes = $this->db->selectAll('tattribut', 'kArtikel', $productID, 'kAttribut');
-        foreach ($attributes as $attribute) {
+        foreach ($this->db->selectAll('tattribut', 'kArtikel', $productID, 'kAttribut') as $attribute) {
             $this->deleteAttribute((int)$attribute->kAttribut);
         }
     }
@@ -1211,8 +1174,7 @@ final class Products extends AbstractSync
      */
     private function deleteProductMediaFiles(int $productID): void
     {
-        $mediaFiles = $this->db->selectAll('tmediendatei', 'kArtikel', $productID, 'kMedienDatei');
-        foreach ($mediaFiles as $mediaFile) {
+        foreach ($this->db->selectAll('tmediendatei', 'kArtikel', $productID, 'kMedienDatei') as $mediaFile) {
             $this->deleteMediaFile((int)$mediaFile->kMedienDatei);
         }
     }
@@ -1231,8 +1193,7 @@ final class Products extends AbstractSync
      */
     private function deleteProductUploads(int $productID): void
     {
-        $uploads = $this->db->selectAll('tuploadschema', 'kCustomID', $productID, 'kUploadSchema');
-        foreach ($uploads as $upload) {
+        foreach ($this->db->selectAll('tuploadschema', 'kCustomID', $productID, 'kUploadSchema') as $upload) {
             $this->deleteUpload((int)$upload->kUploadSchema);
         }
     }
@@ -1262,15 +1223,13 @@ final class Products extends AbstractSync
      */
     private function getDownloadIDs(int $productID): array
     {
-        if ($productID > 0) {
-            $downloads = $this->db->selectAll('tartikeldownload', 'kArtikel', $productID, 'kDownload');
-
-            return map($downloads, function ($item) {
-                return (int)$item->kDownload;
-            });
+        if ($productID <= 0) {
+            return [];
         }
 
-        return [];
+        return map($this->db->selectAll('tartikeldownload', 'kArtikel', $productID, 'kDownload'), function ($item) {
+            return (int)$item->kDownload;
+        });
     }
 
     /**
@@ -1310,9 +1269,7 @@ final class Products extends AbstractSync
                 FROM tpreis p
                 INNER JOIN tpreisdetail pd ON pd.kPreis = p.kPreis
                 WHERE  p.kArtikel = :productID',
-            [
-                'productID' => $productID,
-            ],
+            ['productID' => $productID],
             ReturnType::AFFECTED_ROWS
         );
     }
@@ -1351,7 +1308,6 @@ final class Products extends AbstractSync
                 ['artno' => '%;' . $artNo . ';%'],
                 ReturnType::DEFAULT
             );
-
             $this->db->query(
                 "UPDATE tkupon SET cArtikel = '' WHERE cArtikel = ';'",
                 ReturnType::DEFAULT
@@ -1418,29 +1374,27 @@ final class Products extends AbstractSync
      */
     private function getConfigParents(int $productID): array
     {
-        $parentProductIDs = [];
-        $configItems      = $this->db->selectAll('tkonfigitem', 'kArtikel', $productID, 'kKonfiggruppe');
-        if (!\is_array($configItems) || \count($configItems) === 0) {
-            return $parentProductIDs;
-        }
-        $configGroupIDs = [];
-        foreach ($configItems as $_configItem) {
-            $configGroupIDs[] = (int)$_configItem->kKonfiggruppe;
-        }
-        $parents = $this->db->query(
-            'SELECT kArtikel 
-            FROM tartikelkonfiggruppe 
-            WHERE kKonfiggruppe IN (' . \implode(',', $configGroupIDs) . ')',
-            ReturnType::ARRAY_OF_OBJECTS
+        $configGroupIDs = map(
+            $this->db->selectAll('tkonfigitem', 'kArtikel', $productID, 'kKonfiggruppe'),
+            function ($item) {
+                return (int)$item->kKonfiggruppe;
+            }
         );
-        if (!\is_array($parents) || \count($parents) === 0) {
-            return $parentProductIDs;
-        }
-        foreach ($parents as $_parent) {
-            $parentProductIDs[] = (int)$_parent->kArtikel;
+        if (\count($configGroupIDs) === 0) {
+            return [];
         }
 
-        return $parentProductIDs;
+        return map(
+            $this->db->query(
+                'SELECT kArtikel AS id
+                    FROM tartikelkonfiggruppe 
+                    WHERE kKonfiggruppe IN (' . \implode(',', $configGroupIDs) . ')',
+                ReturnType::ARRAY_OF_OBJECTS
+            ),
+            function ($item) {
+                return (int)$item->id;
+            }
+        );
     }
 
     /**
@@ -1462,72 +1416,72 @@ final class Products extends AbstractSync
     private function clearProductCaches(array $products): void
     {
         $start     = \microtime(true);
-        $cacheTags = [];
-        $deps      = [];
+        $cacheTags = new Collection();
+        $deps      = new Collection();
         foreach ($products as $product) {
             if (isset($product['kArtikel'])) {
                 // generated by bearbeiteDeletes()
-                $cacheTags[] = \CACHING_GROUP_ARTICLE . '_' . (int)$product['kArtikel'];
+                $cacheTags->push(\CACHING_GROUP_ARTICLE . '_' . (int)$product['kArtikel']);
                 if ($product['kHersteller'] > 0) {
-                    $cacheTags[] = \CACHING_GROUP_MANUFACTURER . '_' . (int)$product['kHersteller'];
+                    $cacheTags->push(\CACHING_GROUP_MANUFACTURER . '_' . (int)$product['kHersteller']);
                 }
-                foreach ($product['categories'] as $category) {
-                    $cacheTags[] = \CACHING_GROUP_CATEGORY . '_' . (int)$category->kKategorie;
-                }
+                $cacheTags = $cacheTags->concat(map($product['categories'], function ($item) {
+                    return \CACHING_GROUP_CATEGORY . '_' . (int)$item->kKategorie;
+                }));
             } elseif (\is_numeric($product)) {
                 // generated by bearbeiteInsert()
-                $parentIDs = $this->getConfigParents($product);
-                foreach ($parentIDs as $parentID) {
-                    $cacheTags[] = \CACHING_GROUP_ARTICLE . '_' . (int)$parentID;
-                }
-                $cacheTags[] = \CACHING_GROUP_ARTICLE . '_' . (int)$product;
-                $deps     [] = (int)$product;
+                $cacheTags = $cacheTags->concat(map($this->getConfigParents($product), function ($item) {
+                    return \CACHING_GROUP_ARTICLE . '_' . (int)$item;
+                }))->push(\CACHING_GROUP_ARTICLE . '_' . (int)$product);
+                $deps->push((int)$product);
             }
         }
         // additionally get dependencies for products that were inserted
-        if (\count($deps) > 0) {
+        if ($deps->count() > 0) {
+            $whereIn = $deps->implode(',');
             // flush cache tags associated with the product's manufacturer ID
-            $manufacturers = $this->db->query(
-                'SELECT DISTINCT kHersteller 
+            $cacheTags = $cacheTags->concat(map($this->db->query(
+                'SELECT DISTINCT kHersteller AS id
                 FROM tartikel 
-                WHERE kArtikel IN (' . \implode(',', $deps) . ') 
+                WHERE kArtikel IN (' . $whereIn . ') 
                     AND kHersteller > 0',
                 ReturnType::ARRAY_OF_OBJECTS
-            );
-            foreach ($manufacturers as $manufacturer) {
-                $cacheTags[] = \CACHING_GROUP_MANUFACTURER . '_' . (int)$manufacturer->kHersteller;
-            }
-            // flush cache tags associated with the product's category IDs
-            $categories = $this->db->query(
-                'SELECT DISTINCT kKategorie
+            ), function ($item) {
+                return \CACHING_GROUP_MANUFACTURER . '_' . (int)$item->id;
+            }))->concat(map($this->db->query(
+                'SELECT DISTINCT kKategorie AS id
                 FROM tkategorieartikel
-                WHERE kArtikel IN (' . \implode(',', $deps) . ')',
+                WHERE kArtikel IN (' . $whereIn . ')',
                 ReturnType::ARRAY_OF_OBJECTS
-            );
-            foreach ($categories as $category) {
-                $cacheTags[] = \CACHING_GROUP_CATEGORY . '_' . (int)$category->kKategorie;
-            }
-            // flush parent product IDs
-            $parentProducts = $this->db->query(
+            ), function ($item) {
+                return \CACHING_GROUP_CATEGORY . '_' . (int)$item->id;
+            }))->concat(map($this->db->query(
                 'SELECT DISTINCT kVaterArtikel AS id
                 FROM tartikel
-                WHERE kArtikel IN (' . \implode(',', $deps) . ')
+                WHERE kArtikel IN (' . $whereIn . ')
                 AND kVaterArtikel > 0',
                 ReturnType::ARRAY_OF_OBJECTS
-            );
-            foreach ($parentProducts as $parentProduct) {
-                $cacheTags[] = \CACHING_GROUP_ARTICLE . '_' . (int)$parentProduct->id;
-            }
+            ), function ($item) {
+                return \CACHING_GROUP_ARTICLE . '_' . (int)$item->id;
+            }))->concat(map($this->db->query(
+                'SELECT DISTINCT kArtikel AS id
+                FROM tartikel
+                WHERE kVaterArtikel IN (' . $whereIn . ')
+                AND kVaterArtikel > 0',
+                ReturnType::ARRAY_OF_OBJECTS
+            ), function ($item) {
+                return \CACHING_GROUP_ARTICLE . '_' . (int)$item->id;
+            }));
         }
 
-        $cacheTags[] = 'jtl_mmf';
-        $cacheTags   = \array_unique($cacheTags);
+        $cacheTags->push('jtl_mmf');
+        $cacheTags = $cacheTags->unique();
         // flush product cache, category cache and cache for gibMerkmalFilterOptionen() and mega menu/category boxes
-        $totalCount = $this->cache->flushTags($cacheTags);
+        $totalCount = $this->cache->flushTags($cacheTags->toArray());
         $end        = \microtime(true);
         $this->logger->debug(
             'Flushed a total of ' . $totalCount .
-            ' keys for ' . \count($cacheTags) .
+            ' keys for ' . $cacheTags->count() .
             ' tags in ' . ($end - $start) . 's'
         );
     }

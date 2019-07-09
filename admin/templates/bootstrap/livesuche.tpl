@@ -7,16 +7,7 @@
         <input type="hidden" name="sprachwechsel" value="1" />
         <div class="block">
             <div class="input-group p25 left">
-                <span class="input-group-addon">
-                    <label for="{__('changeLanguage')}">{__('changeLanguage')}</label>
-                </span>
-                <span class="input-group-wrap last">
-                    <select id="{__('changeLanguage')}" name="kSprache" class="form-control selectBox" onchange="document.sprache.submit();">
-                        {foreach $Sprachen as $sprache}
-                            <option value="{$sprache->kSprache}" {if $sprache->kSprache == $smarty.session.kSprache}selected{/if}>{$sprache->cNameDeutsch}</option>
-                        {/foreach}
-                    </select>
-                </span>
+                {include file='tpl_inc/language_switcher.tpl'}
             </div>
         </div>
     </form>
@@ -40,7 +31,7 @@
     <div class="tab-content">
         <div id="suchanfrage" class="tab-pane fade {if !isset($tab) || $tab === 'suchanfrage'} active in{/if}">
             {if isset($Suchanfragen) && $Suchanfragen|@count > 0}
-                {include file='tpl_inc/pagination.tpl' oPagination=$oPagiSuchanfragen cAnchor='suchanfrage'}
+                {include file='tpl_inc/pagination.tpl' pagination=$oPagiSuchanfragen cAnchor='suchanfrage'}
                 <form name="suche" method="post" action="livesuche.php">
                     {$jtl_token}
                     <input type="hidden" name="Suche" value="1" />
@@ -146,7 +137,7 @@
         </div>
         <div id="erfolglos" class="tab-pane fade {if isset($tab) && $tab === 'erfolglos'} active in{/if}">
             {if $Suchanfragenerfolglos && $Suchanfragenerfolglos|@count > 0}
-                {include file='tpl_inc/pagination.tpl' oPagination=$oPagiErfolglos cAnchor='erfolglos'}
+                {include file='tpl_inc/pagination.tpl' pagination=$oPagiErfolglos cAnchor='erfolglos'}
                 <form name="login" method="post" action="livesuche.php">
                     {$jtl_token}
                     <input type="hidden" name="livesuche" value="2">
@@ -209,7 +200,7 @@
         </div>
         <div id="mapping" class="tab-pane fade {if isset($tab) && $tab === 'mapping'} active in{/if}">
             {if $Suchanfragenmapping && $Suchanfragenmapping|@count > 0}
-                {include file='tpl_inc/pagination.tpl' oPagination=$oPagiMapping cAnchor='mapping'}
+                {include file='tpl_inc/pagination.tpl' pagination=$oPagiMapping cAnchor='mapping'}
                 <form name="login" method="post" action="livesuche.php">
                     {$jtl_token}
                     <input type="hidden" name="livesuche" value="4" />

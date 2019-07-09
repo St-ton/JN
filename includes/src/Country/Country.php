@@ -6,9 +6,9 @@
 
 namespace JTL\Country;
 
+use JTL\Language\LanguageModel;
 use JTL\Shop;
 use JTL\MagicCompatibilityTrait;
-use JTL\Helpers\Text;
 
 /**
  * Class Country
@@ -180,12 +180,12 @@ class Country
     }
 
     /**
-     * @param \stdClass $lang
+     * @param LanguageModel $lang
      * @return Country
      */
-    public function setName(\stdClass $lang): self
+    public function setName(LanguageModel $lang): self
     {
-        $this->names[$lang->kSprache] = $this->getNameForLangISO(Text::convertISO2ISO639($lang->cISO));
+        $this->names[$lang->getId()] = $this->getNameForLangISO($lang->getIso639());
 
         return $this;
     }

@@ -7,10 +7,10 @@
     {assign var=titles value=false}
     <div class="row">
     {foreach $Artikel->oMedienDatei_arr as $oMedienDatei}
-        {if ($cMedienTyp == $oMedienDatei->cMedienTyp
+        {if ($mediaType->name == $oMedienDatei->cMedienTyp
             && $oMedienDatei->cAttributTab|count_characters == 0)
             || ($oMedienDatei->cAttributTab|count_characters > 0
-                && $cMedienTyp|@seofy == $oMedienDatei->cAttributTab|@seofy)}
+                && $mediaType->name|@seofy == $oMedienDatei->cAttributTab|@seofy)}
             {if $oMedienDatei->nErreichbar == 0}
                 <div class="col-xs-12">
                     <p class="box_error">

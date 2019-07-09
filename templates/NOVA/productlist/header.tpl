@@ -5,12 +5,14 @@
 {block name='productlist-header'}
     {if !isset($oNavigationsinfo) || isset($Suchergebnisse) && isset($oNavigationsinfo) && empty($oNavigationsinfo->getName())}
         {block name='productlist-header-heading'}
+            {include file='snippets/opc_mount_point.tpl' id='opc_before_heading'}
             <div class="h1">{$Suchergebnisse->getSearchTermWrite()}</div>
         {/block}
     {/if}
 
     {if $Suchergebnisse->getSearchUnsuccessful() == true}
         {block name='productlist-header-alert'}
+            {include file='snippets/opc_mount_point.tpl' id='opc_before_no_results'}
             {alert variant="info"}{lang key='noResults' section='productOverview'}{/alert}
         {/block}
         {block name='productlist-header-form-search'}
@@ -39,7 +41,12 @@
                         class="mb-5"
                     }
                 {/if}
-                <div class="title mb-4">{if $oNavigationsinfo->getName()}<h1>{$oNavigationsinfo->getName()}</h1>{/if}</div>
+                <div class="title mb-4">
+                    {if $oNavigationsinfo->getName()}
+                        {include file='snippets/opc_mount_point.tpl' id='opc_before_heading'}
+                        <h1>{$oNavigationsinfo->getName()}</h1>
+                    {/if}
+                </div>
                 {if $Einstellungen.navigationsfilter.kategorie_beschreibung_anzeigen === 'Y'
                     && $oNavigationsinfo->getCategory() !== null
                     && $oNavigationsinfo->getCategory()->cBeschreibung|strlen > 0}
@@ -60,8 +67,8 @@
     {/block}
 
     {block name='productlist-header-subcategories'}
-        {include file='snippets/opc_mount_point.tpl' id='opc_productlist_subcats_prepend'}
         {if $Einstellungen.navigationsfilter.artikeluebersicht_bild_anzeigen !== 'N' && $oUnterKategorien_arr|@count > 0}
+            {include file='snippets/opc_mount_point.tpl' id='opc_before_subcategories'}
             {row class="row-eq-height content-cats-small clearfix"}
                 {foreach $oUnterKategorien_arr as $Unterkat}
                     {col cols=6 md=4 lg=3}
@@ -96,31 +103,24 @@
                 {/foreach}
             {/row}
         {/if}
-        {include file='snippets/opc_mount_point.tpl' id='opc_productlist_subcats_append'}
     {/block}
 
     {block name='productlist-header-include-selection-wizard'}
         {include file='selectionwizard/index.tpl'}
     {/block}
 
-    {if count($Suchergebnisse->getProducts()) > 0}
-        {block name='productlist-header-include-result-options'}
-            <div id="improve_search" class="mb-3">
-                {include file='productlist/result_options.tpl'}
-            </div>
-        {/block}
-    {/if}
-
     {if $Suchergebnisse->getProducts()|@count <= 0 && isset($KategorieInhalt)}
-        {if isset($KategorieInhalt->TopArtikel->elemente)}
+        {if isset($KategorieInhalt->TopArtikel->elemente) && $KategorieInhalt->TopArtikel->elemente|@count > 0}
             {block name='productlist-header-include-product-slider-top'}
+                {include file='snippets/opc_mount_point.tpl' id='opc_before_category_top'}
                 {lang key='topOffer' assign='slidertitle'}
                 {include file='snippets/product_slider.tpl' id='slider-top-products' productlist=$KategorieInhalt->TopArtikel->elemente title=$slidertitle}
             {/block}
         {/if}
 
-        {if isset($KategorieInhalt->BestsellerArtikel->elemente)}
+        {if isset($KategorieInhalt->BestsellerArtikel->elemente) && $KategorieInhalt->BestsellerArtikel->elemente|@count > 0}
             {block name='productlist-header-include-product-slider-bestseller'}
+                {include file='snippets/opc_mount_point.tpl' id='opc_before_category_bestseller'}
                 {lang key='bestsellers'  assign='slidertitle'}
                 {include file='snippets/product_slider.tpl' id='slider-bestseller-products' productlist=$KategorieInhalt->BestsellerArtikel->elemente title=$slidertitle}
             {/block}
@@ -128,6 +128,15 @@
     {/if}
 
     {block name='productlist-header-include-productlist-page-nav'}
-        {include file='snippets/productlist_page_nav.tpl'}
+        {include file='snippets/productlist_page_nav.tpl' navid='header'}
     {/block}
+
+    {if !$device->isMobile() || $Suchergebnisse->getProducts()|@count <= 0}
+        {block name='productlist-header-include-active-filter'}
+            {$alertList->displayAlertByKey('noFilterResults')}
+            <div class="my-3">
+                {include file='snippets/filter/active_filter.tpl'}
+            </div>
+        {/block}
+    {/if}
 {/block}

@@ -6,6 +6,7 @@
 
 namespace JTL\OPC;
 
+use JTL\Helpers\GeneralObject;
 use JTL\Media\Image;
 use Intervention\Image\ImageManager;
 use JTL\Shop;
@@ -593,13 +594,13 @@ class PortletInstance implements \JsonSerializable
      */
     public function deserialize($data)
     {
-        if (isset($data['properties']) && \is_array($data['properties'])) {
+        if (GeneralObject::isCountable('properties', $data)) {
             foreach ($data['properties'] as $name => $value) {
                 $this->setProperty($name, $value);
             }
         }
 
-        if (isset($data['subareas']) && \is_array($data['subareas'])) {
+        if (GeneralObject::isCountable('subareas', $data)) {
             foreach ($data['subareas'] as $areaData) {
                 $area = new Area();
                 $area->deserialize($areaData);
@@ -607,7 +608,7 @@ class PortletInstance implements \JsonSerializable
             }
         }
 
-        if (isset($data['widthHeuristics']) && \is_array($data['widthHeuristics'])) {
+        if (GeneralObject::isCountable('widthHeuristics', $data)) {
             $this->widthHeuristics = $data['widthHeuristics'];
         }
 

@@ -4,15 +4,48 @@
  *}
 {block name='snippets-productlist-page-nav'}
     {if $Suchergebnisse->getProductCount() > 0}
+        {include file='snippets/opc_mount_point.tpl' id='opc_before_page_nav_'|cat:$navid}
         {row class="no-gutters productlist-page-nav"}
+            {if count($NaviFilter->getSearchResults()->getProducts()) > 0}
+                {block name='snippets-productlist-page-nav-result-options-sort'}
+                    {col cols=12 md="auto" class="displayoptions mb-3 mb-md-0"}
+                        {block name='snippets-productlist-page-nav-include-result-options'}
+                            {if count($Suchergebnisse->getProducts()) > 0}
+                                {include file='snippets/opc_mount_point.tpl' id='opc_before_result_options'}
+                            {/if}
+                            {if $navid === 'header'}
+                                <div id="improve_search">
+                                    {include file='productlist/result_options.tpl'}
+                                </div>
+                            {/if}
+                        {/block}
+                        {if (!$device->isMobile() || $device->isTablet()) && $navid === 'header'}
+                            {dropdown class="filter-type-FilterItemSort btn-group" variant="light" text="{lang key='sorting' section='productOverview'}"}
+                                {foreach $Suchergebnisse->getSortingOptions() as $option}
+                                    {dropdownitem rel="nofollow" href=$option->getURL() class="filter-item" active=$option->isActive()}
+                                        {$option->getName()}
+                                    {/dropdownitem}
+                                {/foreach}
+                            {/dropdown}
+                            {dropdown class="filter-type-FilterItemLimits btn-group ml-2" variant="light" text="{lang key='productsPerPage' section='productOverview'}"}
+                                {foreach $Suchergebnisse->getLimitOptions() as $option}
+                                    {dropdownitem rel="nofollow" href=$option->getURL() class="filter-item" active=$option->isActive()}
+                                        {$option->getName()}
+                                    {/dropdownitem}
+                                {/foreach}
+                            {/dropdown}
+                        {/if}
+                    {/col}
+                {/block}
+            {/if}
             {block name='snippets-productlist-page-nav-current-page-count'}
-                {col cols=12 md="auto" class="productlist-item-info"}
+                {col cols="auto" class="ml-auto productlist-item-info d-none d-md-flex"}
                     {lang key="products"} {$Suchergebnisse->getOffsetStart()} - {$Suchergebnisse->getOffsetEnd()} {lang key='of' section='productOverview'} {$Suchergebnisse->getProductCount()}
                 {/col}
             {/block}
             {if $Suchergebnisse->getPages()->getMaxPage() > 1}
                 {block name='snippets-productlist-page-nav-page-nav'}
-                    {col cols=12 md="auto" class="productlist-pagination ml-md-auto"}
+                    {col cols=12 md="auto" class="productlist-pagination"}
                         <nav class="navbar-pagination" aria-label="Productlist Navigation">
                             <ul class="pagination">
                                 {block name='snippets-productlist-page-nav-first-page'}

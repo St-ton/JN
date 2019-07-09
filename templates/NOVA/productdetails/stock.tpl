@@ -4,12 +4,12 @@
  *}
 {block name='productdetails-stock'}
     {assign var=anzeige value=$Einstellungen.artikeldetails.artikel_lagerbestandsanzeige}
-    <div class="delivery-status {if !isset($availability) && !isset($shippingTime)}p-3 mt-3 mb-4{/if}">
+    <div class="delivery-status">
     {block name='productdetails-stock-delivery-status'}
         {row class='align-items-center'}
             {if !isset($shippingTime)}
                 {block name='productdetails-stock-shipping-time'}
-                    {col cols="{if !isset($availability) && !isset($shippingTime)}6{else}12{/if}"}
+                    {col cols="{if !isset($availability) && $Artikel->cEstimatedDelivery}6{else}12{/if}"}
                         {block name='productdetails-stock-availability'}
                             {if $Artikel->inWarenkorbLegbar === $smarty.const.INWKNICHTLEGBAR_UNVERKAEUFLICH}
                                 <span class="status"><small>{lang key='productUnsaleable' section='productDetails'}</small></span>
@@ -47,14 +47,14 @@
             {/if}
             {if !isset($availability)}
             {block name='productdetails-stock-estimated-delivery'}
-                {col cols="{if !isset($availability) && !isset($shippingTime)}6{else}12{/if}"}
-                    {if $Artikel->cEstimatedDelivery}
+                {if $Artikel->cEstimatedDelivery}
+                    {col}
                         <div class="estimated-delivery">
-                            {if !isset($availability) && !isset($shippingTime)}{lang key='shippingTime'}:{/if}
+                            {if !isset($shippingTime)}{lang key='shippingTime'}:{/if}
                             <span class="a{$Artikel->Lageranzeige->nStatus}">{$Artikel->cEstimatedDelivery}</span>
                         </div>
-                    {/if}
-                {/col}
+                    {/col}
+                {/if}
             {/block}
             {/if}
         {/row}

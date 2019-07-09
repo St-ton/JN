@@ -4,6 +4,7 @@
  *}
 {block name='selectionwizard-index'}
     {if isset($AWA)}
+        {include file='snippets/opc_mount_point.tpl' id='opc_before_selection_wizard'}
         {block name='selectionwizard-index-script'}
             <script>
                 var nSelection_arr = [{$AWA->getSelections()|implode:','}];
@@ -51,7 +52,7 @@
             </script>
         {/block}
         {block name='selectionwizard-index-include-form'}
-            <div id="selectionwizard" class="mb-5">
+            <div id="selectionwizard" class="my-7">
                 {include file='selectionwizard/form.tpl' AWA=$AWA}
             </div>
         {/block}

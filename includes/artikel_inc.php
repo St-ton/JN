@@ -4,20 +4,20 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use JTL\Helpers\Product;
 use JTL\Catalog\Product\Artikel;
+use JTL\Helpers\Product;
 use JTL\Shop;
 
 /**
- * @param int       $kArtikel
+ * @param int       $productID
  * @param bool|null $isParent
  * @return stdClass|null
  * @deprecated since 5.0.0
  */
-function gibArtikelXSelling(int $kArtikel, $isParent = null)
+function gibArtikelXSelling(int $productID, $isParent = null)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return Product::getXSelling($kArtikel, $isParent);
+    return Product::getXSelling($productID, $isParent);
 }
 
 /**
@@ -110,15 +110,15 @@ function floodSchutzBenachrichtigung(int $min)
 }
 
 /**
- * @param int $kArtikel
- * @param int $kKategorie
+ * @param int $productID
+ * @param int $categoryID
  * @return stdClass
  * @deprecated since 5.0.0
  */
-function gibNaviBlaettern(int $kArtikel, int $kKategorie)
+function gibNaviBlaettern(int $productID, int $categoryID)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return Product::getProductNavigation($kArtikel, $kKategorie);
+    return Product::getProductNavigation($productID, $categoryID);
 }
 
 /**
@@ -135,16 +135,16 @@ function gibNichtErlaubteEigenschaftswerte(int $nEigenschaftWert)
 /**
  * @param null|string|array $redirectParam
  * @param bool              $renew
- * @param null|Artikel      $oArtikel
- * @param null|float        $fAnzahl
- * @param int               $kKonfigitem
+ * @param null|Artikel      $product
+ * @param null|float        $qty
+ * @param int               $configItemID
  * @return array
  * @deprecated since 5.0.0
  */
-function baueArtikelhinweise($redirectParam = null, $renew = false, $oArtikel = null, $fAnzahl = null, $kKonfigitem = 0)
+function baueArtikelhinweise($redirectParam = null, $renew = false, $product = null, $qty = null, $configItemID = 0)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return Product::getProductMessages($redirectParam, $renew, $oArtikel, $fAnzahl, $kKonfigitem);
+    return Product::getProductMessages($redirectParam, $renew, $product, $qty, $configItemID);
 }
 
 /**
@@ -155,61 +155,61 @@ function baueArtikelhinweise($redirectParam = null, $renew = false, $oArtikel = 
 function bearbeiteProdukttags($product)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return Product::editProductTags($product, Shop::getSettings([CONF_ARTIKELDETAILS]));
+    return null;
 }
 
 /**
  * Baue Blätter Navi - Dient für die Blätternavigation unter Bewertungen in der Artikelübersicht
  *
- * @param int $bewertung_seite
- * @param int $bewertung_sterne
- * @param int $nAnzahlBewertungen
- * @param int $nAnzahlSeiten
+ * @param int $ratingPage
+ * @param int $ratingStars
+ * @param int $ratingCount
+ * @param int $pageCount
  * @return stdClass
  * @deprecated since 5.0.0
  */
-function baueBewertungNavi($bewertung_seite, $bewertung_sterne, $nAnzahlBewertungen, $nAnzahlSeiten = 0)
+function baueBewertungNavi($ratingPage, $ratingStars, $ratingCount, $pageCount = 0)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return Product::getRatingNavigation($bewertung_seite, $bewertung_sterne, $nAnzahlBewertungen, $nAnzahlSeiten);
+    return Product::getRatingNavigation($ratingPage, $ratingStars, $ratingCount, $pageCount);
 }
 
 /**
  * Mappt den Fehlercode für Bewertungen
  *
- * @param string $cCode
+ * @param string $code
  * @param float  $fGuthaben
  * @return string
  * @deprecated since 5.0.0
  */
-function mappingFehlerCode($cCode, $fGuthaben = 0.0)
+function mappingFehlerCode($code, $fGuthaben = 0.0)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return Product::mapErrorCode($cCode, $fGuthaben);
+    return Product::mapErrorCode($code, $fGuthaben);
 }
 
 /**
- * @param Artikel $oVaterArtikel
- * @param Artikel $oKindArtikel
+ * @param Artikel $parent
+ * @param Artikel $child
  * @return mixed
  * @deprecated since 5.0.0
  */
-function fasseVariVaterUndKindZusammen($oVaterArtikel, $oKindArtikel)
+function fasseVariVaterUndKindZusammen($parent, $child)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return Product::combineParentAndChild($oVaterArtikel, $oKindArtikel);
+    return Product::combineParentAndChild($parent, $child);
 }
 
 /**
- * @param int $kArtikel
+ * @param int $productID
  * @return array
  * @deprecated since 5.0.0
  */
-function holeAehnlicheArtikel(int $kArtikel)
+function holeAehnlicheArtikel(int $productID)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
 
-    return Product::getSimilarProductsByID($kArtikel);
+    return Product::getSimilarProductsByID($productID);
 }
 
 /**
@@ -224,8 +224,8 @@ function ProductBundleWK(int $productID)
 }
 
 /**
- * @param int       $kArtikel
- * @param float|int $fAnzahl
+ * @param int       $productID
+ * @param float|int $qty
  * @param array     $variations
  * @param array     $configGroups
  * @param array     $configGroupAmounts
@@ -233,12 +233,12 @@ function ProductBundleWK(int $productID)
  * @return stdClass|null
  * @deprecated since 5.0.0
  */
-function buildConfig($kArtikel, $fAnzahl, $variations, $configGroups, $configGroupAmounts, $configItemAmounts)
+function buildConfig($productID, $qty, $variations, $configGroups, $configGroupAmounts, $configItemAmounts)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return Product::buildConfig(
-        $kArtikel,
-        $fAnzahl,
+        $productID,
+        $qty,
         $variations,
         $configGroups,
         $configGroupAmounts,
@@ -247,14 +247,14 @@ function buildConfig($kArtikel, $fAnzahl, $variations, $configGroups, $configGro
 }
 
 /**
- * @param int                   $kKonfig
+ * @param int                   $configID
  * @param \JTL\Smarty\JTLSmarty $smarty
  * @deprecated since 5.0.0
  */
-function holeKonfigBearbeitenModus($kKonfig, $smarty)
+function holeKonfigBearbeitenModus($configID, $smarty)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    Product::getEditConfigMode($kKonfig, $smarty);
+    Product::getEditConfigMode($configID, $smarty);
 }
 
 

@@ -4,18 +4,20 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use JTL\Helpers\Form;
-use JTL\Helpers\Request;
+use JTL\Alert\Alert;
 use JTL\ContentAuthor;
-use JTL\News\Comment;
-use JTL\News\Item;
+use JTL\DB\ReturnType;
+use JTL\Helpers\Form;
+use JTL\Helpers\GeneralObject;
+use JTL\Helpers\Request;
+use JTL\Language\LanguageHelper;
 use JTL\News\Admin\Controller;
 use JTL\News\Category;
-use JTL\Shop;
-use JTL\Sprache;
+use JTL\News\Comment;
+use JTL\News\Item;
 use JTL\Pagination\Pagination;
-use JTL\DB\ReturnType;
-use JTL\Alert\Alert;
+use JTL\Shop;
+use function Functional\map;
 
 require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('CONTENT_NEWS_SYSTEM_VIEW', true, true);
@@ -29,8 +31,8 @@ $db             = Shop::Container()->getDB();
 $author         = ContentAuthor::getInstance();
 $controller     = new Controller($db, $smarty, Shop::Container()->getCache());
 $newsCategory   = new Category($db);
-$languages      = Sprache::getAllLanguages();
-$defaultLang    = Sprache::getDefaultLanguage();
+$languages      = LanguageHelper::getAllLanguages();
+$defaultLang    = LanguageHelper::getDefaultLanguage();
 
 $_SESSION['kSprache'] = $defaultLang->kSprache;
 if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
@@ -65,15 +67,15 @@ if (Request::verifyGPCDataInt('news') === 1 && Form::validateToken()) {
             $db->query('TRUNCATE tnewsmonatspraefix', ReturnType::AFFECTED_ROWS);
             foreach ($languages as $lang) {
                 $monthPrefix           = new stdClass();
-                $monthPrefix->kSprache = $lang->kSprache;
-                if (mb_strlen($_POST['praefix_' . $lang->cISO]) > 0) {
+                $monthPrefix->kSprache = $lang->getId();
+                if (mb_strlen($_POST['praefix_' . $lang->getIso()]) > 0) {
                     $monthPrefix->cPraefix = htmlspecialchars(
-                        $_POST['praefix_' . $lang->cISO],
+                        $_POST['praefix_' . $lang->getIso()],
                         ENT_COMPAT | ENT_HTML401,
                         JTL_CHARSET
                     );
                 } else {
-                    $monthPrefix->cPraefix = $lang->cISO === 'ger'
+                    $monthPrefix->cPraefix = $lang->getIso() === 'ger'
                         ? 'Newsuebersicht'
                         : 'Newsoverview';
                 }
@@ -141,7 +143,7 @@ if (Request::verifyGPCDataInt('news') === 1 && Form::validateToken()) {
     } elseif (isset($_POST['news_speichern']) && (int)$_POST['news_speichern'] === 1) {
         $controller->createOrUpdateNewsItem($_POST, $languages, $author);
     } elseif (isset($_POST['news_loeschen']) && (int)$_POST['news_loeschen'] === 1) {
-        if (isset($_POST['kNews']) && is_array($_POST['kNews']) && count($_POST['kNews']) > 0) {
+        if (GeneralObject::hasCount('kNews', $_POST)) {
             $controller->deleteNewsItems($_POST['kNews'], $author);
             $controller->setMsg(__('successNewsDelete'));
             $controller->newsRedirect('aktiv', $controller->getMsg());
@@ -191,9 +193,10 @@ if (Request::verifyGPCDataInt('news') === 1 && Form::validateToken()) {
         && (int)$_POST['newskommentar_freischalten']
         && !isset($_POST['kommentareloeschenSubmit'])
     ) {
-        if (is_array($_POST['kNewsKommentar']) && count($_POST['kNewsKommentar']) > 0) {
-            foreach ($_POST['kNewsKommentar'] as $id) {
-                $db->update('tnewskommentar', 'kNewsKommentar', (int)$id, (object)['nAktiv' => 1]);
+        $deleteIDs = Request::verifyGPDataIntegerArray('kNewsKommentar');
+        if (count($deleteIDs) > 0) {
+            foreach ($deleteIDs as $id) {
+                $db->update('tnewskommentar', 'kNewsKommentar', $id, (object)['nAktiv' => 1]);
             }
             $controller->setMsg(__('successNewsCommentUnlock'));
             $tab = Request::verifyGPDataString('tab');
@@ -266,17 +269,19 @@ if ($controller->getStep() === 'news_uebersicht') {
     $comments  = $controller->getNonActivatedComments();
     $prefixes  = [];
     foreach ($languages as $i => $lang) {
-        $prefixes[$i]                = new stdClass();
-        $prefixes[$i]->kSprache      = $lang->kSprache;
-        $prefixes[$i]->cNameEnglisch = $lang->cNameEnglisch;
-        $prefixes[$i]->cNameDeutsch  = $lang->cNameDeutsch;
-        $prefixes[$i]->cISOSprache   = $lang->cISO;
-        $monthPrefix                 = $db->select(
+        $item                = new stdClass();
+        $item->kSprache      = $lang->getId();
+        $item->cNameEnglisch = $lang->getNameEN();
+        $item->cNameDeutsch  = $lang->getNameDE();
+        $item->name          = $lang->getLocalizedName();
+        $item->cISOSprache   = $lang->getIso();
+        $monthPrefix         = $db->select(
             'tnewsmonatspraefix',
             'kSprache',
             (int)$lang->kSprache
         );
-        $prefixes[$i]->cPraefix      = $monthPrefix->cPraefix ?? null;
+        $item->cPraefix      = $monthPrefix->cPraefix ?? null;
+        $prefixes[$i]        = $item;
     }
     $newsCategories     = $controller->getAllNewsCategories();
     $commentPagination  = (new Pagination('kommentar'))
@@ -307,7 +312,7 @@ if (!empty($_SESSION['news.cHinweis'])) {
 }
 
 $maxFileSize    = getMaxFileSize(ini_get('upload_max_filesize'));
-$customerGroups = \Functional\map($db->query(
+$customerGroups = map($db->query(
     'SELECT kKundengruppe, cName
         FROM tkundengruppe
         ORDER BY cStandard DESC',
@@ -322,7 +327,6 @@ Shop::Container()->getAlertService()->addAlert(Alert::TYPE_NOTE, $controller->ge
 Shop::Container()->getAlertService()->addAlert(Alert::TYPE_ERROR, $controller->getErrorMsg(), 'newsError');
 
 $smarty->assign('oKundengruppe_arr', $customerGroups)
-       ->assign('sprachen', $languages)
        ->assign('step', $controller->getStep())
        ->assign('nMaxFileSize', $maxFileSize)
        ->assign('kSprache', (int)$_SESSION['kSprache'])

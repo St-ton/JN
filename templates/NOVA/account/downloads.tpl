@@ -10,15 +10,17 @@
         {block name='account-downloads-order-downloads'}
             {foreach $Bestellung->oDownload_arr as $oDownload}
                 {card no-body=true}
-                    {cardheader id="download-{$oDownload@iteration}" class="p-2"}
+                    {cardheader id="download-{$oDownload@iteration}" class="p-2 bg-white"}
                         {button
                             variant="link"
                             role="button"
+                            block=true
+                            class="text-left"
                             aria=["expanded"=>false,"controls"=>"#collapse-download-{$oDownload@iteration}"]
                             data=["toggle"=> "collapse", "target"=>"#collapse-download-{$oDownload@iteration}"]
                         }
-                            <i class="fa fa-chevron-down"></i>
                             {$oDownload->oDownloadSprache->getName()}
+                            <i class="fa fa-chevron-down float-right"></i>
                         {/button}
                     {/cardheader}
                     {collapse id="collapse-download-{$oDownload@iteration}" visible=false}
@@ -66,15 +68,17 @@
                                 {block name='account-downloads-customer-downloads'}
                                     {foreach $oDownload_arr as $oDownload}
                                         {card no-body=true}
-                                            {cardheader id="download-{$oDownload@iteration}" class="p-2"}
+                                            {cardheader id="download-{$oDownload@iteration}" class="p-2 bg-white"}
                                                 {button
                                                     variant="link"
                                                     role="button"
+                                                    block=true
+                                                    class="text-left"
                                                     aria=["expanded"=>false,"controls"=>"#collapse-download-{$oDownload@iteration}"]
                                                     data=["toggle"=> "collapse", "target"=>"#collapse-download-{$oDownload@iteration}"]
                                                 }
-                                                    <i class="fa fa-chevron-down"></i>
                                                     {$oDownload->oDownloadSprache->getName()}
+                                                    <i class="fa fa-chevron-down float-right"></i>
                                                 {/button}
                                             {/cardheader}
                                             {collapse id="collapse-download-{$oDownload@iteration}" visible=false

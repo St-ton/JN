@@ -2,9 +2,9 @@
 
 Dear {$Kunde->cVorname} {$Kunde->cNachname},<br>
 <br>
-We would love it if you could write a rating and share your experience with your recently products.<br>
+We are always greatful for feedback on recently bought products. We would love for you to leave a rating!<br>
 <br>
-Please click on the product to rate it:<br>
+Please click on the item to rate it:<br>
 <br>
 {foreach $Bestellung->Positionen as $Position}
     <table cellpadding="00" cellspacing="0" border="0" width="100%">
@@ -21,7 +21,7 @@ Please click on the product to rate it:<br>
     </table>
 {/foreach}<br>
 <br>
-Thank you for sharing!<br>
+Thanks for sharing your feedback!<br>
 <br>
 Yours sincerely,<br>
 {$Firma->cName}

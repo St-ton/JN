@@ -10,6 +10,7 @@ use JTL\Boxes\Admin\BoxAdmin;
 use JTL\Boxes\Factory;
 use JTL\Boxes\FactoryInterface;
 use JTL\Boxes\Items\BoxInterface;
+use JTL\Boxes\Items\Extension;
 use JTL\Boxes\Renderer\RendererInterface;
 use JTL\Boxes\Type;
 use JTL\Cache\JTLCacheInterface;
@@ -18,9 +19,9 @@ use JTL\DB\ReturnType;
 use JTL\Filter\ProductFilter;
 use JTL\Filter\Visibility;
 use JTL\Plugin\LegacyPlugin;
-use JTL\Plugin\Plugin;
 use JTL\Plugin\PluginLoader;
 use JTL\Plugin\State;
+use JTL\Boxes\Items\Plugin;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
@@ -209,7 +210,6 @@ class BoxService implements BoxServiceInterface
         $mf  = $pf->getManufacturerFilter();
         $prf = $pf->getPriceRangeFilter();
         $rf  = $pf->getRatingFilter();
-        $tf  = $pf->tagFilterCompat;
         $afc = $pf->getAttributeFilterCollection();
         $ssf = $pf->getSearchSpecialFilter();
         $sf  = $pf->searchFilterCompat;
@@ -221,7 +221,6 @@ class BoxService implements BoxServiceInterface
             || ($mf->getVisibility() !== $invis && $mf->getVisibility() !== $visContent)
             || ($prf->getVisibility() !== $invis && $prf->getVisibility() !== $visContent)
             || ($rf->getVisibility() !== $invis && $rf->getVisibility() !== $visContent)
-            || ($tf->getVisibility() !== $invis && $tf->getVisibility() !== $visContent)
             || ($afc->getVisibility() !== $invis && $afc->getVisibility() !== $visContent)
             || ($ssf->getVisibility() !== $invis && $ssf->getVisibility() !== $visContent)
             || ($sf->getVisibility() !== $invis && $sf->getVisibility() !== $visContent)
@@ -290,7 +289,6 @@ class BoxService implements BoxServiceInterface
      * @param int   $pageType
      * @return array
      * @throws \Exception
-     * @throws \SmartyException
      */
     public function render(array $positionedBoxes, int $pageType): array
     {
@@ -453,7 +451,7 @@ class BoxService implements BoxServiceInterface
             $box   = $this->factory->getBoxByBaseType($first->kBoxvorlage, $first->eTyp);
             $box->map($boxes);
             $class = \get_class($box);
-            if ($class === LegacyPlugin::class) {
+            if ($class === Plugin::class) {
                 $plugin = new LegacyPlugin($box->getCustomID());
                 $box->setTemplateFile(
                     $plugin->getPaths()->getFrontendPath() .
@@ -461,7 +459,7 @@ class BoxService implements BoxServiceInterface
                     $box->getTemplateFile()
                 );
                 $box->setPlugin($plugin);
-            } elseif ($class === Plugin::class) {
+            } elseif ($class === Extension::class) {
                 $loader = new PluginLoader($this->db, $this->cache);
                 $plugin = $loader->init($box->getCustomID());
                 $box->setTemplateFile(

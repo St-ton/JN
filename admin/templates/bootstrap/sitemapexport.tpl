@@ -81,7 +81,7 @@
                         </div>
                     </form>
                 </div>
-                {include file='tpl_inc/pagination.tpl' oPagination=$oSitemapDownloadPagination cParam_arr=['tab' => 'downloads', 'nYear_downloads' => {$nSitemapDownloadYear}]}
+                {include file='tpl_inc/pagination.tpl' pagination=$oSitemapDownloadPagination cParam_arr=['tab' => 'downloads', 'nYear_downloads' => {$nSitemapDownloadYear}]}
             </div>
             {if isset($oSitemapDownload_arr) && $oSitemapDownload_arr|@count > 0}
                 <div class="panel panel-default">
@@ -159,7 +159,7 @@
                         </div>
                     </form>
                 </div>
-                {include file='tpl_inc/pagination.tpl' oPagination=$oSitemapReportPagination cParam_arr=['tab' => 'report', 'nYear_reports' => {$nSitemapReportYear}]}
+                {include file='tpl_inc/pagination.tpl' pagination=$oSitemapReportPagination cParam_arr=['tab' => 'report', 'nYear_reports' => {$nSitemapReportYear}]}
             </div>
             {if isset($oSitemapReport_arr) && $oSitemapReport_arr|@count > 0}
                 <div class="panel panel-default">

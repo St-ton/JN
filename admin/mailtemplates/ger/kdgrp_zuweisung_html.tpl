@@ -2,11 +2,11 @@
 
 Guten Tag {$Kunde->cVorname} {$Kunde->cNachname},
 <br>
-wir haben Ihre Kundengruppe geändert. Sie müßten ab sofort andere Preise als den Standardpreis angezeigt bekommen.<br>
+wir haben Ihre Kundengruppe geändert. Ab sofort sollten Ihnen andere Preise angezeigt werden.<br>
 <br>
-Momentan haben wir es noch nicht geschafft, alle Preise anzupassen.<br>
+Ist dies nicht der Fall, melden Sie sich bitte ab und loggen sich dann erneut ein.<br>
 <br>
-Mit freundlichem Gruß,<br>
+Mit freundlichem Gruß<br>
 Ihr Team von {$Firma->cName}
 
 {includeMailTemplate template=footer type=html}

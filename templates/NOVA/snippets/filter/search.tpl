@@ -9,9 +9,8 @@
                 href=$searchFilter->getURL()
                 active=$searchFilter->isActive()
                 router-class="px-0"}
-                    <span class="badge badge-light float-right">{$searchFilter->getCount()}</span>
                     <span class="value">
-                        <i class="far fa-{if $searchFilter->isActive()}check-{/if}square text-muted"></i> {$searchFilter->getName()}
+                        <i class="far fa-{if $searchFilter->isActive()}check-{/if}square text-muted"></i> {$searchFilter->getName()} ({$searchFilter->getCount()})
                     </span>
             {/navitem}
         {/foreach}

@@ -4,11 +4,11 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use JTL\Helpers\Form;
-use JTL\Shop;
-use JTL\Sprache;
-use JTL\DB\ReturnType;
 use JTL\Alert\Alert;
+use JTL\DB\ReturnType;
+use JTL\Helpers\Form;
+use JTL\Helpers\GeneralObject;
+use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
@@ -22,12 +22,7 @@ if (isset($_POST['speichern']) && Form::validateToken()) {
         saveAdminSectionSettings(CONF_SITEMAP, $_POST),
         'saveSettings'
     );
-    if (isset($_POST['nVon'])
-        && is_array($_POST['nVon'])
-        && is_array($_POST['nBis'])
-        && count($_POST['nVon']) > 0
-        && count($_POST['nBis']) > 0
-    ) {
+    if (GeneralObject::hasCount('nVon', $_POST) && GeneralObject::hasCount('nBis', $_POST)) {
         Shop::Container()->getDB()->query('TRUNCATE TABLE tpreisspannenfilter', ReturnType::AFFECTED_ROWS);
         for ($i = 0; $i < 10; $i++) {
             if ((int)$_POST['nVon'][$i] >= 0 && (int)$_POST['nBis'][$i] > 0) {
@@ -42,5 +37,4 @@ if (isset($_POST['speichern']) && Form::validateToken()) {
 }
 
 $smarty->assign('oConfig_arr', getAdminSectionSettings(CONF_SITEMAP))
-       ->assign('Sprachen', Sprache::getAllLanguages())
-       ->display('shopsitemap.tpl');
+    ->display('shopsitemap.tpl');

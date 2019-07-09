@@ -1597,7 +1597,7 @@ msgstr "Note on battery law"
 
 # page type (tspezialseite)
 msgid "WRB-Formular"
-msgstr "Instructions on withdrawal"
+msgstr "Instructions on withdrawal form"
 
 msgid "exception"
 msgstr "Exception"

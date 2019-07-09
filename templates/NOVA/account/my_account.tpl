@@ -6,16 +6,17 @@
     {block name='heading'}
         <h1 class="mb-5">{lang key='welcome' section='login'} {$smarty.session.Kunde->cVorname} {$smarty.session.Kunde->cNachname}</h1>
     {/block}
+    {include file='snippets/opc_mount_point.tpl' id='opc_before_account_page'}
     {block name='account-my-account-head-data'}
         {row}
-            {col md=6}
+            {col cols=12 md=6}
                 {block name='account-my-account-alert'}
                     {$alertList->displayAlertByKey('myAccountDesc')}
                 {/block}
             {/col}
-            {col md=6}
+            {col cols=12 md=6}
                 {block name='account-my-account-account-credit'}
-                    {card class='text-center'}
+                    {card class='text-center border border-primary'}
                         {lang key='yourMoneyOnAccount' section='login'}: <strong>{$Kunde->cGuthabenLocalized}</strong>
                     {/card}
                 {/block}
@@ -174,6 +175,7 @@
             {/col}
         {/row}
     {/block}
+    {include file='snippets/opc_mount_point.tpl' id='opc_after_account_page'}
 
     {block name='account-my-account-include-downloads'}
         {include file='account/downloads.tpl'}
@@ -181,19 +183,15 @@
 
     {block name='account-my-account-actions'}
         {row class='mb-5'}
-            {col cols=12}
-                <div class="float-right">
-                    <p class="mb-3">
-                        {link class='btn btn-secondary' href="{get_static_route id='jtl.php' params=['del' => 1]}"}
-                            <span class="fa fa-chain-broken"></span> {lang key='deleteAccount' section='login'}
-                        {/link}
-                    </p>
-                    <p class="mb-3">
-                        {link href="{get_static_route id='jtl.php'}?logout=1" title="{lang key='logOut'}" class="btn btn-primary"}
-                            <span class="fa fa-sign-out-alt"></span>  {lang key='logOut'}
-                        {/link}
-                    </p>
-                </div>
+            {col cols=12 md=6 class="mb-3 text-right text-md-left"}
+                {link class='btn btn-secondary' href="{get_static_route id='jtl.php' params=['del' => 1]}"}
+                    <span class="fa fa-chain-broken"></span> {lang key='deleteAccount' section='login'}
+                {/link}
+            {/col}
+            {col cols=12 md=6 class="mb-3 text-right"}
+                {link href="{get_static_route id='jtl.php'}?logout=1" title="{lang key='logOut'}" class="btn btn-primary"}
+                    <span class="fa fa-sign-out-alt"></span>  {lang key='logOut'}
+                {/link}
             {/col}
         {/row}
     {/block}

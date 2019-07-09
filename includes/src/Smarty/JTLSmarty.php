@@ -8,9 +8,10 @@ namespace JTL\Smarty;
 
 use JTL\Backend\AdminTemplate;
 use JTL\Events\Dispatcher;
+use JTL\Helpers\GeneralObject;
+use JTL\Language\LanguageHelper;
 use JTL\Plugin\Helper;
 use JTL\Shop;
-use JTL\Sprache;
 use JTL\Template;
 
 /**
@@ -139,7 +140,7 @@ class JTLSmarty extends \SmartyBC
      */
     private function init($parent = null): void
     {
-        $pluginCollection = new PluginCollection($this->config, Sprache::getInstance());
+        $pluginCollection = new PluginCollection($this->config, LanguageHelper::getInstance());
         $this->registerPlugin(self::PLUGIN_FUNCTION, 'lang', [$pluginCollection, 'translate'])
              ->registerPlugin(self::PLUGIN_MODIFIER, 'replace_delim', [$pluginCollection, 'replaceDelimiters'])
              ->registerPlugin(self::PLUGIN_MODIFIER, 'count_characters', [$pluginCollection, 'countCharacters'])
@@ -211,10 +212,8 @@ class JTLSmarty extends \SmartyBC
     public function outputFilter(string $tplOutput): string
     {
         $hookList = Helper::getHookList();
-        if ((isset($hookList[\HOOK_SMARTY_OUTPUTFILTER])
-                && \is_array($hookList[\HOOK_SMARTY_OUTPUTFILTER])
-                && \count($hookList[\HOOK_SMARTY_OUTPUTFILTER]) > 0)
-                || \count(Dispatcher::getInstance()->getListeners('shop.hook.' . \HOOK_SMARTY_OUTPUTFILTER)) > 0
+        if (GeneralObject::hasCount(\HOOK_SMARTY_OUTPUTFILTER, $hookList)
+            || \count(Dispatcher::getInstance()->getListeners('shop.hook.' . \HOOK_SMARTY_OUTPUTFILTER)) > 0
         ) {
             require_once \PFAD_ROOT . \PFAD_PHPQUERY . 'phpquery.class.php';
             $this->unregisterFilter('output', [$this, 'outputFilter']);

@@ -64,7 +64,7 @@ class Visitor
                 $visitor->kBesucher = self::dbUpdate($visitor, $visitor->kBesucher);
             } else {
                 // time-diff is to low! so we do nothing but update this "last-action"-time in the session
-                $visitor->dLetzteAktivitaet = (new \DateTime())->format('Y-m-d H:i:s');
+                $visitor->dLetzteAktivitaet = (new DateTime())->format('Y-m-d H:i:s');
             }
         }
         $_SESSION['oBesucher'] = $visitor;
@@ -133,7 +133,7 @@ class Visitor
         $vis->cUserAgent        = Text::filterXSS($_SERVER['HTTP_USER_AGENT']);
         $vis->cBrowser          = self::getBrowser();
         $vis->cAusstiegsseite   = $_SERVER['REQUEST_URI'];
-        $vis->dLetzteAktivitaet = (new \DateTime())->format('Y-m-d H:i:s');
+        $vis->dLetzteAktivitaet = (new DateTime())->format('Y-m-d H:i:s');
         $vis->kBesucherBot      = $botID;
 
         return $vis;
@@ -159,8 +159,8 @@ class Visitor
         $vis->cUserAgent        = Text::filterXSS($_SERVER['HTTP_USER_AGENT']);
         $vis->cBrowser          = self::getBrowser();
         $vis->cAusstiegsseite   = $_SERVER['REQUEST_URI'];
-        $vis->dLetzteAktivitaet = (new \DateTime())->format('Y-m-d H:i:s');
-        $vis->dZeit             = (new \DateTime())->format('Y-m-d H:i:s');
+        $vis->dLetzteAktivitaet = (new DateTime())->format('Y-m-d H:i:s');
+        $vis->dZeit             = (new DateTime())->format('Y-m-d H:i:s');
         $vis->kBesucherBot      = $botID;
         // store search-string from search-engine too
         if ($vis->cReferer !== '') {
@@ -198,7 +198,7 @@ class Visitor
      */
     public static function refreshCustomerOrderId(int $customerID): int
     {
-        $oOrder = Shop::Container()->getDB()->queryPrepared(
+        $data = Shop::Container()->getDB()->queryPrepared(
             'SELECT `kBestellung`
                 FROM `tbestellung`
                 WHERE `kKunde` = :cid
@@ -207,7 +207,7 @@ class Visitor
             ReturnType::SINGLE_OBJECT
         );
 
-        return (int)($oOrder->kBestellung ?? 0);
+        return (int)($data->kBestellung ?? 0);
     }
 
     /**

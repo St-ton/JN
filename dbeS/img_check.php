@@ -65,7 +65,9 @@ function bildercheck_xml(SimpleXMLElement $xml)
     if ($images !== false) {
         foreach ($images as $image) {
             $storage = PFAD_ROOT . PFAD_MEDIA_IMAGE_STORAGE . $image->hash;
-            if (!file_exists($storage)) {
+            if (file_exists($storage)) {
+                $found[] = $image->id;
+            } else {
                 if (Jtllog::doLog(JTLLOG_LEVEL_DEBUG)) {
                     Jtllog::writeLog("Dropping orphan {$image->id} -> {$image->hash}: no such file",
                         JTLLOG_LEVEL_DEBUG, false, 'img_check_xml');
@@ -73,7 +75,6 @@ function bildercheck_xml(SimpleXMLElement $xml)
                 Shop::DB()->delete('tbild', 'kBild', $image->id);
                 Shop::DB()->delete('tartikelpict', 'kBild', $image->id);
             }
-            $found[] = $image->id;
         }
     }
     if ($object->cloud) {

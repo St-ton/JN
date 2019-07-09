@@ -1,0 +1,18 @@
+
+html, body { height: 100%; width: 100%; display: flex; justify-content: center; align-items: center; }
+.hidden { opacity: 0; visibility: hidden; }
+
+@keyframes spinner-grow {
+	0% {
+		transform: scale(0);
+	}
+	50% {
+		opacity: 1;
+	}
+}
+
+.spinner { display: none;
+	body:not(.ready) & { display: inline-block; width: 4rem; height: 4rem; vertical-align: text-bottom; background-color: #5cbcf6; border-radius: 50%; opacity: 0; animation: spinner-grow .75s linear infinite; position: absolute;
+		.no-js & { display: none; }
+	}
+}

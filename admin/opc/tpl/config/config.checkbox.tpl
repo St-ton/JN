@@ -1,4 +1,4 @@
-<div class="form-group">
+<div class="form-group checkbox-standalone">
     <input type="hidden" value="0" name="{$propname}">
     <input type="checkbox" id="config-{$propname}" value="1" name="{$propname}"
            {if $propval == '1'}checked{/if} {if $required === true}required{/if}>

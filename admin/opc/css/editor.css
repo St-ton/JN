@@ -425,6 +425,9 @@ html, body {
   width: 700px;
   max-width: none;
 }
+#opc #configModal .modal-dialog .checkbox-standalone {
+  padding: 26px 0 0 2px;
+}
 #opc #opcSidebar {
   width: 380px;
   height: 100%;

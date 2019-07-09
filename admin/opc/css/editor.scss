@@ -156,6 +156,10 @@ html, body {
     .modal-dialog {
       width: 700px;
       max-width: none;
+
+      .checkbox-standalone {
+        padding: 26px 0 0 2px;
+      }
     }
   }
 

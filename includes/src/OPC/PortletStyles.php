@@ -47,17 +47,18 @@ trait PortletStyles
                 'type'    => InputType::COLOR,
                 'label'   => __('Font color'),
                 'default' => '',
-                'width'   => 50,
+                'width'   => 42,
             ],
             'background-color' => [
                 'label'   => __('Background color'),
                 'type'    => InputType::COLOR,
                 'default' => '',
-                'width'   => 50,
+                'width'   => 42,
             ],
             'font-size'        => [
                 'label'   => __('Font size'),
                 'default' => '',
+                'width'   => 17,
             ],
             'margin-top'       => [
                 'label'      => 'margin-top',

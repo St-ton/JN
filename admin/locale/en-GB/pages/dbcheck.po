@@ -47,14 +47,14 @@ msgstr "Could not run action."
 msgid "migrationCancel"
 msgstr "Cancel migration"
 
-msgid "errorMigrationTableOne"
-msgstr "Table "
+msgid "errorMigrationTable"
+msgstr "Table %s could not be migrated!"
 
-msgid "errorMigrationTableTwo"
-msgstr " could not be migrated!"
+msgid "errorMigrationTableContinue"
+msgstr "Table %s could not be migrated! Continue?"
 
 msgid "migrationOf"
-msgstr "Running migration of "
+msgstr "Running migration of %s - step %s"
 
 msgid "structureMigrationNeeded"
 msgstr "Structure migration required!"

@@ -53,11 +53,8 @@ msgstr "Migrationen wurden erfolgreich ausgeführt."
 msgid "successMigration"
 msgstr "Migration wurde erfolgreich ausgeführt."
 
-msgid "updateTo"
-msgstr "Update auf "
-
-msgid "successfull"
-msgstr " erfolgreich"
+msgid "updateTosuccessfull"
+msgstr "Update auf %s erfolgreich"
 
 msgid "sessionExpired"
 msgstr "Sitzung abgelaufen"

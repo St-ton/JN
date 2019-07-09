@@ -727,3 +727,11 @@ function openElFinder(callback, type)
         'status=0,toolbar=0,location=0,menubar=0,directories=0,resizable=1,scrollbars=0,width=800,height=600'
     );
 }
+
+function sprintf(format)
+{
+    for( var i=1; i < arguments.length; i++ ) {
+        format = format.replace( /%s/, arguments[i] );
+    }
+    return format;
+}

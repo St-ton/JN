@@ -225,7 +225,7 @@ function processImport($fmt, $data)
             $mailer->send($mail->createFromTemplateID(MAILTEMPLATE_ACCOUNTERSTELLUNG_DURCH_BETREIBER, $obj));
         }
 
-        return __('importRecord') . $customer->cVorname . ' ' . $customer->cNachname;
+        return __('successImportRecord') . $customer->cVorname . ' ' . $customer->cNachname;
     }
 
     return __('errorImportRecord');

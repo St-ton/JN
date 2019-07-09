@@ -47,14 +47,14 @@ msgstr "Aktion konnte nicht ausgeführt werden."
 msgid "migrationCancel"
 msgstr "Migration abbrechen"
 
-msgid "errorMigrationTableOne"
-msgstr "Bei der Migration der Tabelle "
+msgid "errorMigrationTable"
+msgstr "Bei der Migration der Tabelle %s ist ein Fehler aufgetreten!"
 
-msgid "errorMigrationTableTwo"
-msgstr " ist ein Fehler aufgetreten!"
+msgid "errorMigrationTableContinue"
+msgstr "Bei der Migration der Tabelle %s ist ein Fehler aufgetreten! Fortfahren?"
 
 msgid "migrationOf"
-msgstr "Migrieren von "
+msgstr "Migrieren von %s - Schritt %s"
 
 msgid "structureMigrationNeeded"
 msgstr "Struktur-Migration erforderlich!"

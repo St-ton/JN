@@ -30,9 +30,9 @@
 
 {include file='tpl_inc/seite_header.tpl' cTitel=__('kampagneDetailStats')|cat:' '|cat:$oKampagne->cName}
 
-<div id="content" class="panel panel-default container-fluid">
+<div id="content" class="card container-fluid">
 
-    <div id="payment" class="panel-body">
+    <div id="payment" class="card-body">
         
         <form method="post" action="kampagne.php">
             {$jtl_token}
@@ -242,7 +242,7 @@
         </div>
         
     </div>
-    <div class="panel-footer">
+    <div class="card-footer">
         <a href="kampagne.php?tab=globalestats&token={$smarty.session.jtl_token}" class="btn btn-default"><i class="fa fa-angle-double-left"></i> {__('back')}</a>
     </div>
 </div>

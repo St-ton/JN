@@ -16,9 +16,9 @@
         {$jtl_token}
         <input type="hidden" name="einstellungen" value="1" />
         <div class="settings">
-            <div class="panel panel-default">
-                <div class="panel-heading"><h3 class="panel-title">{$currentLanguage}</h3></div>
-                <div class="panel-body">
+            <div class="card">
+                <div class="card-header"><div class"card-title">{$currentLanguage}</div></div>
+                <div class="card-body">
                     <div class="input-group">
                         <span class="input-group-addon">
                             <label for="Title">{__('title')}</label>
@@ -81,11 +81,11 @@
                     </div>
                 {else}
                     {if $open}</div></div>{/if}
-                    <div class="panel panel-default">
+                    <div class="card">
                         {if $oConfig->cName}
-                            <div class="panel-heading"><h3 class="panel-title">{__('settings')}</h3></div>
+                            <div class="card-header"><div class"card-title">{__('settings')}</div></div>
                         {/if}
-                        <div class="panel-body">
+                        <div class="card-body">
                         {assign var=open value=true}
                 {/if}
             {/foreach}

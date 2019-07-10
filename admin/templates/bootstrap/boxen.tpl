@@ -103,9 +103,9 @@
         <div class="alert alert-danger">{__('warningInvisibleBoxes')}</div>
         <form action="boxen.php" method="post" class="block">
             {$jtl_token}
-            <div class="panel panel-default editorInner">
-                <div class="panel-heading">
-                    <h3 class="panel-title">{__('invisibleBoxes')}</h3>
+            <div class="card editorInner">
+                <div class="card-header">
+                    <div class="card-title">{__('invisibleBoxes')}</div>
                 </div>
                 <div class="table-responsive">
                     <table class="table">
@@ -151,7 +151,7 @@
                         </tr>
                     </table>
                 </div>
-                <div class="panel-footer">
+                <div class="card-footer">
                     <button name="action" type="submit" class="btn btn-danger" value="delete-invisible"><i class="fa fa-trash"></i> {__('deleteSelected')}</button>
                 </div>
             </div>
@@ -166,11 +166,11 @@
             <div id="editor" class="editor">
                 <form action="boxen.php" method="post">
                     {$jtl_token}
-                    <div class="panel panel-default editorInner">
-                        <div class="panel-heading">
-                            <h3 class="panel-title">{__('boxEdit')}</h3>
+                    <div class="card editorInner">
+                        <div class="card-header">
+                            <div class="card-title">{__('boxEdit')}</div>
                         </div>
-                        <div class="panel-body">
+                        <div class="card-body">
                             <div class="input-group">
                                 <span class="input-group-addon">
                                     <label for="boxtitle">{__('boxTitle')}:</label>
@@ -247,7 +247,7 @@
                                 {getRevisions type='box' key=$oEditBox->kBox show=['cTitel', 'cInhalt'] secondary=true data=$revisionData}
                             {/if}
                         </div>
-                        <div class="panel-footer">
+                        <div class="card-footer">
                             <div class="btn-group">
                                 <button type="submit" value="{__('save')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
                                 <button type="button" onclick="window.location.href='boxen.php'" class="btn btn-default"><i class="fa fa-angle-double-left"></i> {__('cancel')}</button>

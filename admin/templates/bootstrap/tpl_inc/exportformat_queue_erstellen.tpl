@@ -23,9 +23,9 @@
             <input type="hidden" name="kCron" value="{$cronID}" />
         {/if}
         {if $oExportformat_arr|@count > 0}
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">{if $cronID > 0}{__('save')}{else}{__('exportformatAdd')}{/if}</h3>
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">{if $cronID > 0}{__('save')}{else}{__('exportformatAdd')}{/if}</div>
                 </div>
                 <table class="kundenfeld table" id="formtable">
                     <tr>
@@ -68,7 +68,7 @@
                         </td>
                     </tr>
                 </table>
-                <div class="panel-footer">
+                <div class="card-footer">
                     <div class="btn-group">
                         <button name="action[erstellen_eintragen]" type="submit" value="1" class="btn btn-primary"><i class="fa fa-save"></i> {if $cronID > 0}{__('save')}{else}{__('exportformatAdd')}{/if}</button>
                         <a class="btn btn-danger" href="exportformat_queue.php"><i class="fa fa-exclamation"></i> {__('cancel')}</a>

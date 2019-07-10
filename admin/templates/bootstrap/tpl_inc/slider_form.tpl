@@ -3,11 +3,11 @@
         {$jtl_token}
         <input type="hidden" name="action" value="{$action}" />
         <input type="hidden" name="kSlider" value="{$oSlider->getID()}" />
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">{__('general')}</h3>
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">{__('general')}</div>
             </div>
-            <div class="panel-body">
+            <div class="card-body">
                 <ul class="jtl-list-group">
                     <li class="list-group-item item">
                         <div class="name">
@@ -54,11 +54,11 @@
             </div>
         </div>
 
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">{__('presentation')}</h3>
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">{__('presentation')}</div>
             </div>
-            <div class="panel-body">
+            <div class="card-body">
                 <ul class="jtl-list-group">
                     <li class="list-group-item item">
                         <div class="name">
@@ -183,11 +183,11 @@
             </div>
         </div>
 
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">{__('displayOptions')}</h3>
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">{__('displayOptions')}</div>
             </div>
-            <div class="panel-body">
+            <div class="card-body">
                 <ul class="jtl-list-group">
                     <li class="list-group-item item">
                         <div class="name">

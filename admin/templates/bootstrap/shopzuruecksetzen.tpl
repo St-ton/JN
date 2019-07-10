@@ -48,11 +48,11 @@
         {$jtl_token}
         <input type="hidden" name="zuruecksetzen" value="1" />
 
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">{__('shopContent')}</h3>
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">{__('shopContent')}</div>
             </div>
-            <div class="panel-body">
+            <div class="card-body">
                 <div class="item">
                     <input type="checkbox" name="cOption_arr[]" value="artikel" tabindex="3" id="Artikel" />
                     <label for="Artikel">{__('deleteProductCategory')}</label>
@@ -88,11 +88,11 @@
             </div>
         </div>
 
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">{__('userGeneratedContent')}</h3>
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">{__('userGeneratedContent')}</div>
             </div>
-            <div class="panel-body">
+            <div class="card-body">
                 <div class="item">
                     <input type="checkbox" name="cOption_arr[]" value="suchanfragen" tabindex="11" id="Suchanfragen" />
                     <label for="Suchanfragen">{__('deleteSearch')}</label>
@@ -108,11 +108,11 @@
             </div>
         </div>
         
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">{__('customersOrdersCoupons')}</h3>
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">{__('customersOrdersCoupons')}</div>
             </div>
-            <div class="panel-body">
+            <div class="card-body">
                 <div class="item">
                     <input type="checkbox" name="cOption_arr[]" value="shopkunden" tabindex="14" id="Shopkunden" />
                     <label for="Shopkunden">{__('deleteCustomers')}</label>

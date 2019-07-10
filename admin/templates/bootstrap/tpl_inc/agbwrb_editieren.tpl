@@ -10,9 +10,9 @@
             {if isset($oAGBWRB->kText) && $oAGBWRB->kText > 0}
                 <input type="hidden" name="kText" value="{if isset($oAGBWRB->kText)}{$oAGBWRB->kText}{/if}" />
             {/if}
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">{__('agbwrb')} {foreach $sprachen as $language}{if $language->getId() === $smarty.session.kSprache}({$language->getLocalizedName()}){/if}{/foreach}{if isset($kKundengruppe)} {__('forCustomerGroup')} {$kKundengruppe} {__('edit')}{/if}</h3>
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">{__('agbwrb')} {foreach $sprachen as $language}{if $language->getId() === $smarty.session.kSprache}({$language->getLocalizedName()}){/if}{/foreach}{if isset($kKundengruppe)} {__('forCustomerGroup')} {$kKundengruppe} {__('edit')}{/if}</div>
                 </div>
                 <table class="list table" id="formtable">
                     <tr>
@@ -64,7 +64,7 @@
                         </td>
                     </tr>
                 </table>
-                <div class="panel-footer">
+                <div class="card-footer">
                     <button name="agbwrbsubmit" type="submit" value="{__('save')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
                 </div>
             </div>

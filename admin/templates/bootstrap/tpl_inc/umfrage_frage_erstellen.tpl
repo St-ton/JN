@@ -594,9 +594,9 @@ function checkSelect(selectBox) {ldelim}
                 <input type="hidden" name="umfrage_frage_edit_speichern" value="1" />
                 <input type="hidden" name="kUmfrageFrage" value="{$oUmfrageFrage->kUmfrageFrage}" />
                 {/if}
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">{__('umfrageEnterQ')}</h3>
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">{__('umfrageEnterQ')}</div>
                     </div>
                     <table class="kundenfeld table">
                         <tr>
@@ -707,7 +707,7 @@ function checkSelect(selectBox) {ldelim}
                             {/if}
                         </table>
                     </div>
-                    <div class="panel-footer">
+                    <div class="card-footer">
                         {if isset($oUmfrageFrage->kUmfrageFrage) && $oUmfrageFrage->kUmfrageFrage > 0}
                             <button class="btn btn-primary" name="speichern" type="submit" value="{__('save')}"><i class="fa fa-save"></i> {__('save')}</button>
                         {else}

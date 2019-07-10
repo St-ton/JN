@@ -6,11 +6,11 @@
         {$jtl_token}
         <input type="hidden" name="speichern" value="1" />
         <div id="settings">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">{__('settings')}</h3>
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">{__('settings')}</div>
                 </div>
-                <div class="panel-body">
+                <div class="card-body">
                     {foreach $oConfig_arr as $cnf}
                         {if $cnf->cConf === 'Y'}
                             <div class="input-group item{if isset($cnf->kEinstellungenConf) && isset($cSuche) && $cnf->kEinstellungenConf == $cSuche} highlight{/if}">
@@ -39,7 +39,7 @@
                         {/if}
                     {/foreach}
                 </div>
-                <div class="panel-footer">
+                <div class="card-footer">
                     <button name="speichern" type="submit" value="{__('save')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
                 </div>
             </div>

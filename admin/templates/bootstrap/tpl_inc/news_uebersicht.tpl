@@ -69,9 +69,9 @@
                     <input type="hidden" name="newskommentar_freischalten" value="1" />
                     <input type="hidden" name="nd" value="1" />
                     <input type="hidden" name="tab" value="inaktiv" />
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <h3 class="panel-title">{__('newsCommentActivate')}</h3>
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">{__('newsCommentActivate')}</div>
                         </div>
                         <div class="table-responsive">
                             <table class="list table table-striped">
@@ -120,7 +120,7 @@
                                 </tfoot>
                             </table>
                         </div>
-                        <div class="panel-footer">
+                        <div class="card-footer">
                             <div class="btn-group">
                                 <button name="freischalten" type="submit" value="{__('newsActivate')}" class="btn btn-primary"><i class="fa fa-thumbs-up"></i> {__('newsActivate')}</button>
                                 <input name="kommentareloeschenSubmit" type="submit" data-id="loeschen" value="{__('delete')}" class="hidden-soft">
@@ -140,9 +140,9 @@
                 <input type="hidden" name="news" value="1" />
                 <input type="hidden" name="news_loeschen" value="1" />
                 <input type="hidden" name="tab" value="aktiv" />
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">{__('newsOverview')}</h3>
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">{__('newsOverview')}</div>
                     </div>
                     <div class="table-responsive">
                         <table class="sortable list table table-striped">
@@ -214,7 +214,7 @@
                     <input type="hidden" name="news" value="1" />
                     <input type="hidden" name="erstellen" value="1" />
                     <input type="hidden" name="tab" value="aktiv" />
-                    <div class="panel-footer">
+                    <div class="card-footer">
                         <div class="btn-group">
                             <button name="news_erstellen" type="submit" value="{__('newAdd')}" class="btn btn-primary"><i class="fa fa-share"></i> {__('newAdd')}</button>
                             <input name="loeschen" type="submit" data-id="loeschen" value="{__('delete')}" class="hidden-soft">
@@ -237,9 +237,9 @@
                 <input type="hidden" name="news" value="1" />
                 <input type="hidden" name="news_kategorie_loeschen" value="1" />
                 <input type="hidden" name="tab" value="kategorien" />
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">{__('newsCatOverview')}</h3>
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">{__('newsCatOverview')}</div>
                     </div>
                     <div class="table-responsive">
                         <table id="category-list" class="list table table-striped">
@@ -295,7 +295,7 @@
                     <input type="hidden" name="news" value="1" />
                     <input type="hidden" name="erstellen" value="1" />
                     <input type="hidden" name="tab" value="kategorien" />
-                    <div class="panel-footer">
+                    <div class="card-footer">
                         <div class="btn-group">
                             <button name="news_kategorie_erstellen" type="submit" value="{__('newsCatCreate')}" class="btn btn-primary"><i class="fa fa-share"></i> {__('newsCatCreate')}</button>
                             <input name="loeschen" type="submit" data-id="loeschen" value="{__('delete')}" class="hidden-soft">
@@ -312,8 +312,8 @@
                 <input type="hidden" name="tab" value="einstellungen" />
                 <input type="hidden" name="news" value="1" />
 
-                <div class="panel panel-default settings">
-                    <div class="panel-body">
+                <div class="card settings">
+                    <div class="card-body">
                         {foreach $oConfig_arr as $oConfig}
                             {if $oConfig->cConf === 'Y'}
                                 <div class="input-group">
@@ -355,7 +355,7 @@
                             </div>
                         {/foreach}
                     </div>
-                    <div class="panel-footer">
+                    <div class="card-footer">
                         <button type="submit" value="{__('save')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
                     </div>
                 </div>

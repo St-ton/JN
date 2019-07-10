@@ -21,9 +21,9 @@ function ackCheck(kPlugin, hash)
 {*include file='tpl_inc/seite_header.tpl' cTitel=__('pluginverwaltung') cBeschreibung=__('pluginverwaltungDesc') cDokuURL=__('pluginverwaltungURL')*}
 
 <div id="content" class="container-fluid" style="padding-top: 10px;">
-    <div class="panel panel-default">
-        <div class="panel-heading">
-            <div class="heading-body"><h4 class="panel-title">{__('pluginverwaltung')}</h4></div>
+    <div class="card">
+        <div class="card-header">
+            <div class="heading-body"><div class"card-title">{__('pluginverwaltung')}</div></div>
             <div class="heading-right">
                 {if $hasAuth}
                     <a href="store.php" class="btn btn-xs btn-danger"><i class="fa fa-link"></i> {__('storeRevoke')}</a>
@@ -32,7 +32,7 @@ function ackCheck(kPlugin, hash)
                 {/if}
             </div>
         </div>
-        <div class="panel-body">
+        <div class="card-body">
             <div class="row">
                 {if $hasAuth}
                     <div class="col-md-4 border-right">

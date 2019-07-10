@@ -68,9 +68,9 @@
                     {else}
                         {assign var=cSuchStr value=''}
                     {/if}
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <h3 class="panel-title">{__('searchrequest')}</h3>
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">{__('searchrequest')}</div>
                         </div>
                         <div class="table-responsive">
                             <table class="table table-striped">
@@ -114,7 +114,7 @@
                                 </tr>
                             </table>
                         </div>
-                        <div class="panel-footer">
+                        <div class="card-footer">
                             <div class="btn-group p50">
                                 <button name="suchanfragenUpdate" type="submit" value="{__('update')}" class="btn btn-default reset"><i class="fa fa-refresh"></i> {__('update')}</button>
                                 <button name="delete" type="submit" value="{__('delete')}" class="btn btn-danger"><i class="fa fa-trash"></i> {__('deleteSelected')}</button>
@@ -143,9 +143,9 @@
                     <input type="hidden" name="livesuche" value="2">
                     <input type="hidden" name="tab" value="erfolglos">
                     <input type="hidden" name="nErfolglosEditieren" value="{if isset($nErfolglosEditieren)}{$nErfolglosEditieren}{/if}">
-                    <div class="panel panel-default settings">
-                        <div class="panel-heading">
-                            <h3 class="panel-title">{__('searchmiss')}</h3>
+                    <div class="card settings">
+                        <div class="card-header">
+                            <div class="card-title">{__('searchmiss')}</div>
                         </div>
                         <div class="table-responsive">
                             <table class="table table-striped">
@@ -185,7 +185,7 @@
                                 </tr>
                             </table>
                         </div>
-                        <div class="panel-footer">
+                        <div class="card-footer">
                             <div class="btn-group">
                                 <button class="btn btn-primary" name="erfolglosUpdate" type="submit"><i class="fa fa-refresh"></i> {__('update')}</button>
                                 <button class="btn btn-default" name="erfolglosEdit" type="submit"><i class="fa fa-edit"></i> {__('livesucheEdit')}</button>
@@ -205,9 +205,9 @@
                     {$jtl_token}
                     <input type="hidden" name="livesuche" value="4" />
                     <input type="hidden" name="tab" value="mapping" />
-                    <div class="panel panel-default settings">
-                        <div class="panel-heading">
-                            <h3 class="panel-title">{__('mapping')}</h3>
+                    <div class="card settings">
+                        <div class="card-header">
+                            <div class="card-title">{__('mapping')}</div>
                         </div>
                         <div class="table-responsive">
                             <table class="table table-striped">
@@ -229,7 +229,7 @@
                                 {/foreach}
                             </table>
                         </div>
-                        <div class="panel-footer">
+                        <div class="card-footer">
                             <button name="delete" type="submit" class="btn btn-danger"><i class="fa fa-trash"></i> {__('mappingDelete')}</button>
                         </div>
                     </div>
@@ -244,9 +244,9 @@
                 <input type="hidden" name="livesuche" value="3" />
                 <input type="hidden" name="tab" value="blacklist" />
 
-                <div class="panel panel-default settings">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">{__('blacklist')}</h3>
+                <div class="card settings">
+                    <div class="card-header">
+                        <div class="card-title">{__('blacklist')}</div>
                     </div>
                     <div class="table-responsive">
                         <table class="table">
@@ -260,7 +260,7 @@
                             </tr>
                         </table>
                     </div>
-                    <div class="panel-footer">
+                    <div class="card-footer">
                         <button type="submit" class="btn btn-primary"><i class="fa fa-refresh"></i> {__('update')}</button>
                     </div>
                 </div>

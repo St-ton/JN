@@ -80,9 +80,9 @@
                             </div>
                         </div>
                         {/if}
-                        <div class="panel panel-default">
-                            <div class="panel-heading">
-                                <h3 class="panel-title">
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-title">
                                     {$cnf->cName}
                                     <span class="pull-right">{getHelpDesc cID=$cnf->kEinstellungenConf}</span>
                                     {if !empty($cnf->cSektionsPfad)}
@@ -90,13 +90,13 @@
                                             <strong>{__('settingspath')}:</strong> {$cnf->cSektionsPfad}
                                         </span>
                                     {/if}
-                                </h3>
+                                </div>
                                 {if isset($oSections[$cnf->kEinstellungenSektion])
                                     && $oSections[$cnf->kEinstellungenSektion]->hasSectionMarkup}
                                         {$oSections[$cnf->kEinstellungenSektion]->getSectionMarkup()}
                                 {/if}
                             </div>
-                            <div class="panel-body">
+                            <div class="card-body">
                     {/if}
                 {/foreach}
                     </div>

@@ -3,9 +3,9 @@
         <form name="pluginverwaltung" method="post" action="pluginverwaltung.php">
             {$jtl_token}
             <input type="hidden" name="pluginverwaltung_uebersicht" value="1" />
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">{__('pluginListNotInstalledAndError')}</h3>
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">{__('pluginListNotInstalledAndError')}</div>
                 </div>
                 <div class="table-responsive">
                     <table class="list table">

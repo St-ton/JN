@@ -31,9 +31,9 @@
                     {$jtl_token}
                     <input type="hidden" name="bewertung_nicht_aktiv" value="1" />
                     <input type="hidden" name="tab" value="freischalten" />
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <h3 class="panel-title">{__('ratingsInaktive')}</h3>
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">{__('ratingsInaktive')}</div>
                         </div>
                         <div class="table-responsive">
                             <table  class="table table-striped">
@@ -80,7 +80,7 @@
                                 </tfoot>
                             </table>
                         </div>
-                        <div class="panel-footer">
+                        <div class="card-footer">
                             <div class="btn-group">
                                 <button name="aktivieren" type="submit" value="{__('activate')}" class="btn btn-primary"><i class="fa fa-thumbs-up"></i> {__('activate')}</button>
                                 <button name="loeschen" type="submit" value="{__('delete')}" class="btn btn-danger"><i class="fa fa-trash"></i> {__('delete')}</button>
@@ -99,9 +99,9 @@
                     {$jtl_token}
                     <input type="hidden" name="bewertung_aktiv" value="1" />
                     <input type="hidden" name="tab" value="letzten50" />
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <h3 class="panel-title">{__('ratingLast50')}</h3>
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">{__('ratingLast50')}</div>
                         </div>
                         <div class="table-responsive">
                             <table class="table table-striped">
@@ -165,7 +165,7 @@
                                 </tfoot>
                             </table>
                         </div>
-                        <div class="panel-footer">
+                        <div class="card-footer">
                             <button name="loeschen" type="submit" value="{__('delete')}" class="btn btn-danger"><i class="fa fa-trash"></i> {__('deleteSelected')}</button>
                         </div>
                     </div>
@@ -193,9 +193,9 @@
                     <div class="alert alert-info">{__('ratingSearchedFor')}: {$cArtNr}</div>
                 {/if}
                 {if isset($filteredReviews) && $filteredReviews|@count > 0}
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <h3 class="panel-title">{$cArtNr}</h3>
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">{$cArtNr}</div>
                         </div>
                         <div class="table-responsive">
                             <table class="table table-striped">
@@ -242,7 +242,7 @@
                                 </tfoot>
                             </table>
                         </div>
-                        <div class="panel-footer">
+                        <div class="card-footer">
                             <button name="loeschen" type="submit" class="btn btn-danger"><i class="fa fa-trash"></i> {__('delete')}</button>
                         </div>
                     </div>
@@ -256,11 +256,11 @@
                 {$jtl_token}
                 <input type="hidden" name="einstellungen" value="1" />
                 <input type="hidden" name="tab" value="einstellungen" />
-                <div class="settings panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">{__('settings')}</h3>
+                <div class="settings card">
+                    <div class="card-header">
+                        <div class="card-title">{__('settings')}</div>
                     </div>
-                    <div class="panel-body">
+                    <div class="card-body">
                         {foreach $oConfig_arr as $oConfig}
                             {if $oConfig->cConf === 'Y'}
                                 <div class="input-group">
@@ -299,7 +299,7 @@
                             {/if}
                         {/foreach}
                     </div>
-                    <div class="panel-footer">
+                    <div class="card-footer">
                         <button type="submit" value="{__('save')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
                     </div>
                 </div>

@@ -50,9 +50,9 @@
     <div class="grid">
 
         <div class="grid-item">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <div class="heading-body"><h4 class="panel-title">{__('cache')}</h4></div>
+            <div class="card">
+                <div class="card-header">
+                    <div class="heading-body"><h4 class="card-title">{__('cache')}</h4></div>
                     <div class="heading-right">
                         <div class="btn-group btn-group-xs">
                             <button class="btn btn-primary dropdown-toggle text-uppercase" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -65,7 +65,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="panel-body">
+                <div class="card-body">
                     <div class="row">
                         <div class="col-md-6 border-right">
                             <div class="text-center">
@@ -98,11 +98,11 @@
         </div>
 
         <div class="grid-item">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h4 class="panel-title">{__('general')}</h4>
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">{__('general')}</div>
                 </div>
-                <div class="panel-body">
+                <div class="card-body">
                     <table class="table table-hover table-striped table-blank text-x1 last-child">
                         <tbody>
                             {render_item title=__('databaseStructure') val=$status->validDatabaseStruct() more='dbcheck.php'}
@@ -121,11 +121,11 @@
         </div>
 
         <div class="grid-item">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h4 class="panel-title">{__('subscription')}</h4>
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">{__('subscription')}</div>
                 </div>
-                <div class="panel-body">
+                <div class="card-body">
                     {if $sub === null}
                         <div class="alert alert-danger alert-sm">
                             <p><i class="fa fa-exclamation-circle"></i> {__('atmNoInfo')}</p>
@@ -177,11 +177,11 @@
         {$incorrectPaymentMethods = $status->getPaymentMethodsWithError()}
         {if count($incorrectPaymentMethods) > 0}
             <div class="grid-item">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h4 class="panel-title">{__('paymentTypes')}</h4>
+                <div class="card">
+                    <div class="card-header">
+                        <div class"card-title">{__('paymentTypes')}</div>
                     </div>
-                    <div class="panel-body">
+                    <div class="card-body">
                         <div class="alert alert-info">
                             {__('paymentTypesWithError')}
                         </div>
@@ -210,11 +210,11 @@
         {$shared = $status->getPluginSharedHooks()}
         {if count($shared) > 0}
             <div class="grid-item">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h4 class="panel-title">{__('plugin')}</h4>
+                <div class="card">
+                    <div class="card-header">
+                        <div class"card-title">{__('plugin')}</div>
                     </div>
-                    <div class="panel-body">
+                    <div class="card-body">
                         <div class="alert alert-info">
                             {__('pluginsWithSameHook')}
                         </div>
@@ -246,14 +246,14 @@
         <div class="grid-item">
             {$tests = $status->getEnvironmentTests()}
 
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <div class="heading-body"><h4 class="panel-title">{__('server')}</h4></div>
+            <div class="card">
+                <div class="card-header">
+                    <div class="heading-body"><div class"card-title">{__('server')}</div></div>
                     <div class="heading-right">
                         <a href="systemcheck.php" class="btn btn-primary btn-xs text-uppercase">{__('details')}</a>
                     </div>
                 </div>
-                <div class="panel-body">
+                <div class="card-body">
                     {if $tests.recommendations|count > 0}
                         <table class="table table-condensed table-hover table-striped table-blank">
                             <thead>

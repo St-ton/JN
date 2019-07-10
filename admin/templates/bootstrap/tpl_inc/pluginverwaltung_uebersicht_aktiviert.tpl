@@ -4,9 +4,9 @@
             {$jtl_token}
             <input type="hidden" name="{$session_name}" value="{$session_id}" />
             <input type="hidden" name="pluginverwaltung_uebersicht" value="1" />
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">{__('pluginListInstalled')}</h3>
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">{__('pluginListInstalled')}</div>
                 </div>
                 <div class="table-responsive">
                     <table class="list table">
@@ -111,7 +111,7 @@
                         </tfoot>
                     </table>
                 </div>
-                <div class="panel-footer">
+                <div class="card-footer">
                     <div class="save btn-group">
                         <button name="deaktivieren" type="submit" class="btn btn-warning"><i class="fa fa-close"></i> {__('deactivate')}</button>
                         <button name="deinstallieren" type="submit" class="btn btn-danger"><i class="fa fa-trash"></i> {__('pluginBtnDeInstall')}</button>

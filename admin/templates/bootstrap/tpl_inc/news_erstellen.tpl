@@ -90,12 +90,12 @@
             {/if}
         {/if}
         <div class="settings">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">{if $oNews->getID() > 0}{__('edit')} (ID {$oNews->getID()}){else}{__('newAdd')}{/if}</h3>
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">{if $oNews->getID() > 0}{__('edit')} (ID {$oNews->getID()}){else}{__('newAdd')}{/if}</div>
                 </div>
                 <div class="table-responsive">
-                    <div id="formtable" class="panel-body">
+                    <div id="formtable" class="card-body">
                         <div class="input-group">
                             <span class="input-group-addon">
                                 <label for="kkundengruppe">{__('customerGroup')} *</label>
@@ -240,11 +240,11 @@
                 {assign var=langID value=$language->getId()}
                 <input type="hidden" name="lang_{$cISO}" value="{$langID}">
                 <div id="iso_{$cISO}" class="iso_wrapper{if !$language->isShopDefault()} hidden-soft{/if}">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <h3 class="panel-title">{__('metaSeo')} ({$language->getLocalizedName()})</h3>
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">{__('metaSeo')} ({$language->getLocalizedName()})</div>
                         </div>
-                        <div class="panel-body">
+                        <div class="card-body">
                             <div class="input-group">
                                 <span class="input-group-addon">
                                     <label for="cName_{$cISO}">{__('headline')} *</label>
@@ -292,7 +292,7 @@
                     </div>
                 </div>
             {/foreach}
-            <div class="panel btn-group">
+            <div class="btn-group">
                 <button name="speichern" type="button" value="{__('save')}" onclick="checkfile(event);" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
                 {if $oNews->getID() > 0}
                     <button type="submit" name="continue" value="1" class="btn btn-default" id="save-and-continue">{__('save')} {__('goOnEdit')}</button>

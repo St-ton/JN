@@ -5,7 +5,7 @@
 <form method="post" action="zusatzverpackung.php">
     {$jtl_token}
     {if isset($oVerpackung_arr) && $oVerpackung_arr|@count > 0}
-    <div class="panel panel-default">
+    <div class="card">
         <div class="table-responsive">
             <table class="list table table-striped">
                 <thead>
@@ -51,7 +51,7 @@
         {else}
         <div class="alert alert-info">{__('zusatzverpackungAddedNone')}</div>
         {/if}
-        <div class="panel-footer">
+        <div class="card-footer">
             <div class="btn-group">
                 <a href="zusatzverpackung.php?kVerpackung=0&token={$smarty.session.jtl_token}"
                    class="btn btn-primary" title="{__('modify')}">

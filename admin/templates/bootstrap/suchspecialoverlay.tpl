@@ -36,8 +36,8 @@
             <input type="hidden" name="speicher_einstellung" value="1" />
 
             <div class="clearall">
-                <div class="no_overflow panel panel-default" id="settings">
-                    <div class="panel-body">
+                <div class="no_overflow card" id="settings">
+                    <div class="card-body">
                         <img src="{$oSuchspecialOverlay->getURL($smarty.const.IMAGE_SIZE_SM)}?rnd={$cRnd}" style="margin-bottom: 15px;" />
                         <div class="input-group">
                             <span class="input-group-addon">
@@ -149,7 +149,7 @@
                             </span>
                         </div>
                     </div>
-                    <div class="panel-footer">
+                    <div class="card-footer">
                         <button type="submit" value="{__('save')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
                     </div>
                 </div>

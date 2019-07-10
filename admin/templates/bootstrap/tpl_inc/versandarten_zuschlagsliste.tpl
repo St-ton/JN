@@ -6,9 +6,9 @@
 {include file='tpl_inc/seite_header.tpl' cTitel=$isleListFor|cat: ' '|cat:$cVersandartName|cat:', '|cat:$cLandName|cat:'('|cat:$cLandISO|cat:')' cBeschreibung=__('isleListsDesc')}
 <div id="content" class="container-fluid">
     {foreach $Zuschlaege as $zuschlag}
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">{__('isleList')}: {$zuschlag->cName}</h3>
+        <div class="card">
+            <div class="card-header">
+                <div class"card-title">{__('isleList')}: {$zuschlag->cName}</div>
             </div>
             <div class="table-responsive">
                 <table class="list table">
@@ -91,11 +91,11 @@
             {if isset($oVersandzuschlag->kVersandzuschlag) && $oVersandzuschlag->kVersandzuschlag > 0}
                 <input type="hidden" name="kVersandzuschlag" value="{$oVersandzuschlag->kVersandzuschlag}" />
             {/if}
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">{if isset($oVersandzuschlag->kVersandzuschlag) && $oVersandzuschlag->kVersandzuschlag > 0}{__('additionalFeeEdit')}{else}{__('createNewList')}{/if}</h3>
+            <div class="card">
+                <div class="card-header">
+                    <div class"card-title">{if isset($oVersandzuschlag->kVersandzuschlag) && $oVersandzuschlag->kVersandzuschlag > 0}{__('additionalFeeEdit')}{else}{__('createNewList')}{/if}</div>
                 </div>
-                <div class="panel-body">
+                <div class="card-body">
                     <div class="input-group">
                         <span class="input-group-addon">
                             <label for="cName">{__('isleList')}</label>
@@ -120,7 +120,7 @@
                         <input type="text" id="fZuschlag" name="fZuschlag" value="{if isset($oVersandzuschlag->fZuschlag)}{$oVersandzuschlag->fZuschlag}{/if}" class="form-control price_large" tabindex="{$idx+1}" required>{* onKeyUp="setzePreisAjax(false, 'ajaxzuschlag', this)"/> <span id="ajaxzuschlag"></span>*}
                     </div>
                 </div>
-                <div class="panel-footer">
+                <div class="card-footer">
                     <div class="btn-group">
                         <a href="versandarten.php" type="button" class="btn btn-warning">
                             <i class="fa fa-chevron-left"></i> {__('back2shippingtypes')}

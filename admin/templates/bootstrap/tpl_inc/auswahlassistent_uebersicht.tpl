@@ -25,7 +25,7 @@
                 <form name="uebersichtForm" method="post" action="auswahlassistent.php">
                     {$jtl_token}
                     <input type="hidden" name="tab" value="uebersicht" />
-                    <div class="panel panel-default">
+                    <div class="card">
                         {if isset($oAuswahlAssistentGruppe_arr) && $oAuswahlAssistentGruppe_arr|@count > 0}
                             <div class="table-responsive">
                                 <table class="list table">
@@ -135,7 +135,7 @@
                         {else}
                             <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                         {/if}
-                        <div class="panel-footer">
+                        <div class="card-footer">
                             <div class="btn-group">
                                 {if isset($oAuswahlAssistentGruppe_arr) && $oAuswahlAssistentGruppe_arr|@count > 0}
                                     <button type="submit" name="a" value="delGrp" class="btn btn-danger">

@@ -1,13 +1,13 @@
 {include file='tpl_inc/seite_header.tpl' cTitel=__('lang') cBeschreibung=__('langDesc') cDokuURL=__('langURL')}
 <div id="content" class="container-fluid">
-    <div class="panel panel-default settings">
-        <div class="panel-heading">
-            <h3 class="panel-title">{__('newLangVar')}</h3>
+    <div class="card settings">
+        <div class="card-header">
+            <div class="card-title">{__('newLangVar')}</div>
         </div>
         <form action="sprache.php" method="post">
             {$jtl_token}
             <input type="hidden" name="tab" value="{$tab}">
-            <div class="panel-body">
+            <div class="card-body">
                 <div class="input-group">
                     <span class="input-group-addon">
                         <label for="kSprachsektion">{__('langSection')}</label>
@@ -76,7 +76,7 @@
                     {/if}
                 {/foreach}
             </div>
-            <div class="panel-footer">
+            <div class="card-footer">
                 <div class="btn-group">
                     <button type="submit" class="btn btn-primary" name="action" value="savevar">
                         <i class="fa fa-save"></i>

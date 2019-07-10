@@ -15,8 +15,8 @@
             <p class="text-center">
                 <img src="{$currentTemplateDir}gfx/shop-login.png" alt="JTL-Shop" class="logo" />
             </p>
-            <div id="login_outer" class="panel panel-default">
-                <div class="panel-body">
+            <div id="login_outer" class="card">
+                <div class="card-body">
                     {if $alertError}
                         {include file='snippets/alert_list.tpl'}
                         <script type="text/javascript">

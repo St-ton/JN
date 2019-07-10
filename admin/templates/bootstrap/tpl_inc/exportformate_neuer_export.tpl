@@ -14,8 +14,8 @@
         {if !empty($Exportformat->kPlugin)}
             <input type="hidden" name="kPlugin" value="{$Exportformat->kPlugin}" />
         {/if}
-        <div class="panel panel-default settings">
-            <div class="panel-body">
+        <div class="card settings">
+            <div class="card-body">
                 <ul class="jtl-list-group">
                     <li class="input-group{if isset($cPlausiValue_arr.cName)} error{/if}">
                         <span class="input-group-addon">
@@ -131,11 +131,11 @@
                 {/if}
             </div>
         </div>
-        <div class="panel panel-default settings">
-            <div class="panel-heading">
-                <h3 class="panel-title">{__('settings')}</h3>
+        <div class="card settings">
+            <div class="card-header">
+                <div class="card-title">{__('settings')}</div>
             </div>
-            <div class="panel-body">
+            <div class="card-body">
                 <ul class="jtl-list-group">
                     {foreach $Conf as $cnf}
                         {if $cnf->cConf === 'Y'}

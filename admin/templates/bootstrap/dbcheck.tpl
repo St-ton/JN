@@ -30,9 +30,9 @@
                 {/if}
             {/if}
             <form action="dbcheck.php" method="post">
-                <div id="contentCheck" class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">{__('databaseStructure')}</h3>
+                <div id="contentCheck" class="card">
+                    <div class="card-header">
+                        <div class"card-title">{__('databaseStructure')}</div>
                     </div>
                     <table class="table req">
                         <thead>
@@ -95,7 +95,7 @@
                             </tr>
                         {/foreach}
                     </table>
-                    <div class="panel-footer">
+                    <div class="card-footer">
                         <div class="input-group">
                             <span class="input-group-addon">
                                 <input type="checkbox" name="ALL_MSG" id="ALLMSGS" onclick="AllMessages(this.form);"/> <label for="ALLMSGS">{__('markAll')}</label>

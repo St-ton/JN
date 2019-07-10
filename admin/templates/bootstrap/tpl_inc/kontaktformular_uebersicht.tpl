@@ -16,11 +16,11 @@
             <form name="einstellen" method="post" action="kontaktformular.php">
                 {$jtl_token}
                 <input type="hidden" name="einstellungen" value="1" />
-                <div class="settings panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">{__('settings')}</h3>
+                <div class="settings card">
+                    <div class="card-header">
+                        <div class"card-title">{__('settings')}</div>
                     </div>
-                    <div class="panel-body">
+                    <div class="card-body">
                         {foreach $Conf as $cnf}
                             {if $cnf->cConf === 'Y'}
                                 <div class="input-group">
@@ -45,7 +45,7 @@
                             {/if}
                         {/foreach}
                     </div>
-                    <div class="panel-footer">
+                    <div class="card-footer">
                         <button type="submit" value="{__('save')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
                     </div>
                 </div>
@@ -53,9 +53,9 @@
         </div>
         <div id="subjects" class="tab-pane fade {if isset($cTab) && $cTab === 'subjects'} active in{/if}">
             <div class="alert alert-info">{__('contanctformSubjectDesc')}</div>
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">{__('subjects')}</h3>
+            <div class="card">
+                <div class="card-header">
+                    <div class"card-title">{__('subjects')}</div>
                 </div>
                 <div class="table-responsive">
                     <table class="list table">
@@ -88,7 +88,7 @@
                         </tbody>
                     </table>
                 </div>
-                <div class="panel-footer">
+                <div class="card-footer">
                     <a class="btn btn-primary" href="kontaktformular.php?neu=1&token={$smarty.session.jtl_token}"><i class="fa fa-share"></i> {__('newSubject')}</a>
                 </div>
             </div>
@@ -97,11 +97,11 @@
             <form name="einstellen" method="post" action="kontaktformular.php">
                 {$jtl_token}
                 <input type="hidden" name="content" value="1" />
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">{__('contents')}</h3>
+                <div class="card">
+                    <div class="card-header">
+                        <div class"card-title">{__('contents')}</div>
                     </div>
-                    <div class="panel-body">
+                    <div class="card-body">
                         <div class="settings">
                             {foreach $sprachen as $language}
                                 {assign var=cISO value=$language->getIso()}
@@ -129,7 +129,7 @@
                             {/foreach}
                         </div>
                     </div>
-                    <div class="panel-footer">
+                    <div class="card-footer">
                         <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
                     </div>
                 </div>

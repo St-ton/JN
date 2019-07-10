@@ -253,11 +253,11 @@
         <hr>
         <div class="row">
             <div class="col-md-6" id="plugin-info-1">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">Ihre Vorteile</h3>
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">Ihre Vorteile</div>
                     </div>
-                    <div class="panel-body">
+                    <div class="card-body">
                         <ul class="advantages list-unstyled">
                             {foreach $pp->getAdvantages() as $advantage}
                                 <li class="advantage"><i class="fa fa-check fake-list-style-image"></i> {$advantage}</li>
@@ -267,11 +267,11 @@
                 </div>
             </div>
             <div class="col-md-6" id="plugin-info-2">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">So funktioniert's</h3>
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">So funktioniert's</div>
                     </div>
-                    <div class="panel-body">
+                    <div class="card-body">
                         <ul class="howtos list-unstyled">
                             {foreach $pp->getHowTos() as $howTo}
                                 <li class="howto"><i class="fa fa-check fake-list-style-image"></i> {$howTo}
@@ -279,7 +279,7 @@
                             {/foreach}
                         </ul>
                     </div>
-                    <div class="panel-footer">
+                    <div class="card-footer">
                         <span class="btn-group">
                             {if $pp->getExists()}
                                 {if !$pp->getIsInstalled()}

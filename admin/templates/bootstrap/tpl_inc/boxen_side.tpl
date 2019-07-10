@@ -1,13 +1,13 @@
 {function sideContainerSection} {* direction, directionName, oBox_arr *}
     <div class="col-md-12">
-        <div class="panel panel-default">
+        <div class="card">
             <form action="boxen.php" method="post">
                 {$jtl_token}
-                <div class="panel-heading">
+                <div class="card-header">
                     <h3>{$directionName}</h3>
                     <hr>
                 </div>
-                <div class="panel-heading">
+                <div class="card-header">
                     <input type="checkbox" name="box_show" id="box_{$direction}_show" value="1"
                            {if isset($bBoxenAnzeigen.$direction) && $bBoxenAnzeigen.$direction}checked{/if}>
                     <label for="box_{$direction}_show">{__('showContainer')}</label>
@@ -54,7 +54,7 @@
                     </div>
                 {/if}
             </form>
-            <div class="panel-footer">
+            <div class="card-footer">
                 <form name="newBox_{$direction}" action="boxen.php" method="post" class="form-horizontal">
                     {$jtl_token}
                     <div class="form-group row" style="margin-bottom: 0;">

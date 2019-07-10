@@ -63,11 +63,11 @@
             <input type="hidden" name="kLinkgruppe" value="{$Link->getLinkGroupID()}" />
             <input type="hidden" name="kLink" value="{if $Link->getID() > 0}{$Link->getID()}{/if}" />
             <input type="hidden" name="kPlugin" value="{if $Link->getPluginID() > 0}{$Link->getPluginID()}{/if}" />
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">{__('general')}</h3>
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">{__('general')}</div>
                 </div>
-                <div class="panel-body">
+                <div class="card-body">
                     <div class="input-group{if isset($xPlausiVar_arr.cName)} error{/if}">
                         <span class="input-group-addon">
                             <label for="cName">{__('name')} {if isset($xPlausiVar_arr.cName)} <span class="fillout">{__('FillOut')}</span>{/if}</label>
@@ -241,11 +241,11 @@
                 {assign var=cISO value=$language->getIso()}
                 {assign var=langID value=$language->getId()}
                 <div id="iso_{$cISO}" class="iso_wrapper{if !$language->isShopDefault()} hidden-soft{/if}">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <h3 class="panel-title">{__('metaSeo')} ({$language->getLocalizedName()})</h3>
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">{__('metaSeo')} ({$language->getLocalizedName()})</div>
                         </div>
-                        <div class="panel-body">
+                        <div class="card-body">
                             <div class="input-group">
                                 <span class="input-group-addon"><label for="cName_{$cISO}">{__('showedName')}</label></span>
                                 {assign var=cName_ISO value='cName_'|cat:$cISO}
@@ -300,7 +300,7 @@
                     </div>
                 </div>
             {/foreach}
-            <div class="panel{if isset($Link->getID())} btn-group{/if}">
+            <div class="{if isset($Link->getID())} btn-group{/if}">
                 <button type="submit" value="{__('newLinksSave')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('newLinksSave')}</button>
                 <button type="submit" name="continue" value="1" class="btn btn-default" id="save-and-continue">{__('newLinksSaveContinueEdit')}</button>
             </div>

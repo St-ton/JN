@@ -43,11 +43,11 @@
         {$jtl_token}
         <input type="hidden" name="kKuponBearbeiten" value="{$oKupon->kKupon}">
         <input type="hidden" name="cKuponTyp" value="{$oKupon->cKuponTyp}">
-        <div class="panel panel-default settings">
-            <div class="panel-heading">
-                <h3 class="panel-title">{__('names')}</h3>
+        <div class="card settings">
+            <div class="card-header">
+                <div class"card-title">{__('names')}</div>
             </div>
-            <div class="panel-body">
+            <div class="card-body">
                 <div class="input-group">
                     <span class="input-group-addon">
                         <label for="cName">{__('name')}</label>
@@ -73,11 +73,11 @@
             </div>
         </div>
         {if empty($oKupon->kKupon) && isset($oKupon->cKuponTyp) && $oKupon->cKuponTyp !== $couponTypes.newCustomer}
-            <div class="panel panel-default settings">
-                <div class="panel-heading">
-                    <h3 class="panel-title"><label><input type="checkbox" name="couponCreation" id="couponCreation" class="checkfield"{if isset($oKupon->massCreationCoupon->cActiv) && $oKupon->massCreationCoupon->cActiv == 1} checked{/if} value="1" />{__('couponsCreation')}</label></h3>
+            <div class="card settings">
+                <div class="card-header">
+                    <div class="card-title"><label><input type="checkbox" name="couponCreation" id="couponCreation" class="checkfield"{if isset($oKupon->massCreationCoupon->cActiv) && $oKupon->massCreationCoupon->cActiv == 1} checked{/if} value="1" />{__('couponsCreation')}</label></div>
                 </div>
-                <div class="panel-body{if !isset($oKupon->massCreationCoupon)} hidden{/if}" id="massCreationCouponsBody">
+                <div class="card-body{if !isset($oKupon->massCreationCoupon)} hidden{/if}" id="massCreationCouponsBody">
                     <div class="input-group">
                                  <span class="input-group-addon">
                                      <label for="numberCoupons">{__('numberCouponsDesc')}</label>
@@ -129,11 +129,11 @@
                 </div>
             </div>
         {/if}
-        <div class="panel panel-default settings">
-            <div class="panel-heading">
-                <h3 class="panel-title">{__('general')}</h3>
+        <div class="card settings">
+            <div class="card-header">
+                <div class="card-title">{__('general')}</div>
             </div>
-            <div class="panel-body">
+            <div class="card-body">
                 {if $oKupon->cKuponTyp === $couponTypes.standard || $oKupon->cKuponTyp === $couponTypes.newCustomer}
                     <div class="input-group">
                         <span class="input-group-addon">
@@ -251,11 +251,11 @@
                 {/if}
             </div>
         </div>
-        <div class="panel panel-default settings">
-            <div class="panel-heading">
-                <h3 class="panel-title">{__('validityPeriod')}</h3>
+        <div class="card settings">
+            <div class="card-header">
+                <div class="card-title">{__('validityPeriod')}</div>
             </div>
-            <div class="panel-body">
+            <div class="card-body">
                 <div class="input-group">
                     <span class="input-group-addon">
                         <label for="dGueltigAb">{__('validFrom')}</label>
@@ -309,11 +309,11 @@
                 </div>
             </div>
         </div>
-        <div class="panel panel-default settings">
-            <div class="panel-heading">
-                <h3 class="panel-title">{__('restrictions')}</h3>
+        <div class="card settings">
+            <div class="card-header">
+                <div class="card-title">{__('restrictions')}</div>
             </div>
-            <div class="panel-body">
+            <div class="card-body">
                 {include file='tpl_inc/searchpicker_modal.tpl'
                     searchPickerName='articlePicker'
                     modalTitle="{__('titleChooseProducts')}"

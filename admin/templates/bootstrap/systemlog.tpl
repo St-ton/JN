@@ -18,7 +18,7 @@
             {include file='tpl_inc/pagination.tpl' pagination=$pagination}
         {/if}
 
-        <div class="panel panel-default">
+        <div class="card">
             <form method="post" action="systemlog.php">
                 {$jtl_token}
                 {if $nTotalLogCount === 0}
@@ -70,7 +70,7 @@
                         </div>
                     </div>
                 {/if}
-                <div class="panel-footer">
+                <div class="card-footer">
                     <div class="btn-group">
                         <button name="action" value="clearsyslog" class="btn btn-danger">
                             <i class="fa fa-trash"></i> {__('systemlogReset')}
@@ -84,12 +84,12 @@
         </div>
     </div>
     <div role="tabpanel" class="tab-pane fade{if $cTab === 'config'} active in{/if}" id="config">
-        <form class="panel panel-default settings" action="systemlog.php" method="post">
+        <form class="card settings" action="systemlog.php" method="post">
             {$jtl_token}
-            <div class="panel-heading">
-                <h3 class="panel-title">{__('systemlogLevel')}</h3>
+            <div class="card-header">
+                <div class="card-title">{__('systemlogLevel')}</div>
             </div>
-            <div class="panel-body">
+            <div class="card-body">
                 <div class="input-group">
                     <span class="input-group-addon">
                         <label for="minLogLevel">{__('minLogLevel')}</label>
@@ -104,7 +104,7 @@
                     </span>
                 </div>
             </div>
-            <div class="panel-footer">
+            <div class="card-footer">
                 <div class="btn-group">
                     <button name="action" value="save" class="btn btn-primary">
                         <i class="fa fa-save"></i> {__('save')}

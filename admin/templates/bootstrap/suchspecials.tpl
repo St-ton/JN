@@ -25,11 +25,11 @@
             <form name="suchspecials" method="post" action="suchspecials.php">
                 {$jtl_token}
                 <div id="settings">
-                    <div class="settings panel panel-default">
-                        <div class="panel-heading">
-                            <h3 class="panel-title">{__('suchspecials')}</h3>
+                    <div class="settings card">
+                        <div class="card-header">
+                            <div class="card-title">{__('suchspecials')}</div>
                         </div>
-                        <div class="panel-body">
+                        <div class="card-body">
                             <input type="hidden" name="suchspecials" value="1" />
                             <div class="item input-group">
                                 <span class="input-group-addon">
@@ -68,7 +68,7 @@
                                 <input class="form-control" id="top_bewertet" name="top_bewertet" type="text" value="{if isset($oSuchSpecials_arr[6])}{$oSuchSpecials_arr[6]}{/if}" />
                             </div>
                         </div>
-                        <div class="panel-footer">
+                        <div class="card-footer">
                             <button type="submit" value="{__('save')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
                         </div>
                     </div>

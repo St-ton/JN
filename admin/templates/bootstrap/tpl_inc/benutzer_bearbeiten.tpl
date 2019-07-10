@@ -81,11 +81,11 @@ $(document).ready(function() {
     <form class="navbar-form" action="benutzerverwaltung.php" method="post">
         {$jtl_token}
         <div id="settings" class="settings">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">{__('general')}</h3>
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">{__('general')}</div>
                 </div>
-                <div class="panel-body">
+                <div class="card-body">
                     <div class="item">
                         <div class="input-group{if isset($cError_arr.cName)} error{/if}">
                             <span class="input-group-addon">
@@ -130,11 +130,11 @@ $(document).ready(function() {
                 </div>
             </div>
 
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">{__('logindata')}</h3>
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">{__('logindata')}</div>
                 </div>
-                <div class="panel-body">
+                <div class="card-body">
                     <div class="item">
                         <div class="input-group{if isset($cError_arr.cLogin)} error{/if}">
                             <span class="input-group-addon">
@@ -196,11 +196,11 @@ $(document).ready(function() {
                     {/if}
                 </div>
             </div>
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">{__('twoFactorAuth')}</h3>
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">{__('twoFactorAuth')}</div>
                 </div>
-                <div class="panel-body">
+                <div class="card-body">
                     <div class="item">
                         <div class="input-group">
                             <span class="input-group-addon">
@@ -312,11 +312,11 @@ $(document).ready(function() {
                 </div>
             </div>
             {if !isset($oAccount->kAdminlogingruppe) || (isset($nAdminCount) && !($oAccount->kAdminlogingruppe == 1 && $nAdminCount <= 1))}
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">{__('permissions')}</h3>
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">{__('permissions')}</div>
                     </div>
-                    <div class="panel-body">
+                    <div class="card-body">
                         <div class="item">
                             <div class="input-group">
                                 <span class="input-group-addon">
@@ -343,7 +343,7 @@ $(document).ready(function() {
                 {$extContent}
             {/if}
         </div>
-        <div class="panel-footer">
+        <div class="card-footer">
             <div class="btn-group">
                 <input type="hidden" name="action" value="account_edit" />
                 {if isset($oAccount->kAdminlogin) && $oAccount->kAdminlogin > 0}

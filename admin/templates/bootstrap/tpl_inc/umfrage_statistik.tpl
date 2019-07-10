@@ -36,11 +36,11 @@
                     {if isset($oUmfrageFrage->oUmfrageFrageAntwort_arr) && $oUmfrageFrage->oUmfrageFrageAntwort_arr|@count > 0}
                         {if $oUmfrageFrage->cTyp === \JTL\Survey\QuestionType::MATRIX_SINGLE
                         || $oUmfrageFrage->cTyp === \JTL\Survey\QuestionType::MATRIX_MULTI}
-                            <div class="panel panel-default">
-                                <div class="panel-heading">
+                            <div class="card">
+                                <div class="card-header">
                                     <strong>{$oUmfrageFrage->cName}</strong> - {$oUmfrageFrage->cTypMapped}
                                 </div>
-                                <div class="panel-body">
+                                <div class="card-body">
                                     <div id="payment">
                                         <div id="tabellenLivesuche" class="table-responsive">
                                             <table class="table table-striped">
@@ -79,11 +79,11 @@
                                 </div>
                             </div>
                         {else}
-                            <div class="panel panel-default">
-                                <div class="panel-heading">
+                            <div class="card">
+                                <div class="card-header">
                                     <strong>{$oUmfrageFrage->cName}</strong> - {$oUmfrageFrage->cTypMapped}
                                 </div>
-                                <div class="panel-body">
+                                <div class="card-body">
                                     <div id="payment">
                                         <div id="tabellenLivesuche">
                                             <table class="table table-responsive table-striped">

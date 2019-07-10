@@ -45,9 +45,9 @@
         <div id="massaction" class="tab-pane fade {if !isset($tab) || $tab === 'massaction' || $tab === 'uebersicht'} active in{/if}">
             <form method="post" action="cache.php">
                 {$jtl_token}
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">{__('management')}</h3>
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">{__('management')}</div>
                     </div>
                     <div class="table-responsive">
                     <table id="cache-type-status" class="table list">
@@ -91,7 +91,7 @@
                         </tbody>
                     </table>
                     </div>
-                    <div class="panel-footer">
+                    <div class="card-footer">
                         <div class="input-container" style="max-width: 50%;">
                             <div class="input-group">
                                 <span class="input-group-addon">
@@ -126,9 +126,9 @@
         </div>
         <div id="stats" class="tab-pane fade {if isset($tab) && $tab === 'stats'} active in{/if}">
             {if is_array($stats) && $stats|@count > 0}
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">{__('objectcache')}</h3>
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">{__('objectcache')}</div>
                     </div>
                     <table class="table">
                         {if isset($stats.uptime_h) && $stats.uptime_h !== null}
@@ -178,9 +178,9 @@
                     </table>
                 </div>
                 {if isset($stats.slow) && is_array($stats.slow)}
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <h3 class="panel-title">{__('slowlog')}</h3>
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">{__('slowlog')}</div>
                         </div>
                         {if $stats.slow|@count > 0}
                             <table class="table">
@@ -192,7 +192,7 @@
                                 {/foreach}
                             </table>
                         {else}
-                            <div class="panel-body">
+                            <div class="card-body">
                                 <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                             </div>
                         {/if}
@@ -202,9 +202,9 @@
                 <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
             {/if}
             {if $opcache_stats !== null}
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">OpCache</h3>
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">OpCache</div>
                     </div>
                     <table class="table cache-stats" id="opcache-stats">
                         <tr class="cache-row">
@@ -241,7 +241,7 @@
                         </tr>
                         <tr class="cache-row">
                             <td colspan="2" style="padding: 0">
-                                <div id="hitRateDetail" class="panel-collapse collapse">
+                                <div id="hitRateDetail" class=" collapse">
                                     <table class="table cache-stats">
                                         {foreach $opcache_stats->scripts as $script}
                                             <tr class="cache-row">
@@ -257,9 +257,9 @@
                 </div>
             {/if}
             {if $tplcacheStats !== null}
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">{__('templateCache')}</h3>
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">{__('templateCache')}</div>
                     </div>
                     <table class="table cache-stats" id="tplcache-stats">
                         <tr class="cache-row collapsed clickable" data-toggle="collapse" data-target="#cachefilesFrontendDetail" style="cursor: pointer">
@@ -269,7 +269,7 @@
                         {if $tplcacheStats->frontend|count > 0}
                         <tr class="cache-row">
                             <td colspan="2" style="padding: 0">
-                                <div id="cachefilesFrontendDetail" class="panel-collapse collapse">
+                                <div id="cachefilesFrontendDetail" class=" collapse">
                                     <table class="table cache-stats">
                                         {foreach $tplcacheStats->frontend as $file}
                                             <tr class="cache-row">
@@ -288,7 +288,7 @@
                         {if $tplcacheStats->backend|count > 0}
                         <tr class="cache-row">
                             <td colspan="2" style="padding: 0">
-                                <div id="cachefilesBackendDetail" class="panel-collapse collapse">
+                                <div id="cachefilesBackendDetail" class=" collapse">
                                     <table class="table cache-stats">
                                         {foreach $tplcacheStats->backend as $file}
                                             <tr class="cache-row">
@@ -306,13 +306,13 @@
         </div>
         <div id="benchmark" class="tab-pane fade {if isset($tab) && $tab === 'benchmark'} active in{/if}">
             {if !empty($all_methods) && $all_methods|@count > 0}
-                <div class="panel panel-default settings">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">{__('settings')}</h3>
+                <div class="card settings">
+                    <div class="card-header">
+                        <div class="card-title">{__('settings')}</div>
                     </div>
                     <form method="post" action="cache.php">
                         {$jtl_token}
-                        <div class="panel-body">
+                        <div class="card-body">
                             <div class="input-group">
                                 <span class="input-group-addon">
                                     <label for="runcount">{__('runs')}</label>
@@ -349,7 +349,7 @@
                             </div>
                             <input name="a" type="hidden" value="benchmark" />
                         </div>
-                        <div class="panel-footer">
+                        <div class="card-footer">
                             <button name="submit" type="submit" value="Benchmark starten" class="btn btn-primary">{__('startBenchmark')}</button>
                         </div>
                     </form>
@@ -358,11 +358,11 @@
                     {if is_array($bench_results)}
                         {foreach from=$bench_results key=resultsKey item=result}
                             {if isset($result.method)}
-                                <div class="bench-result panel panel-default" style="margin-top: 20px;">
-                                    <div class="panel-heading">
-                                        <h3 class="panel-title">{$result.method}</h3>
+                                <div class="bench-result card" style="margin-top: 20px;">
+                                    <div class="card-header">
+                                        <div class="card-title">{$result.method}</div>
                                     </div>
-                                    <div class="panel-body">
+                                    <div class="card-body">
                                     <p><span class="opt">{__('status')}: </span> <span class="label {if $result.status === 'ok'}label-success{else}label-danger{/if}">{$result.status}</span></p>
                                     <p><span class="opt">{__('time')} get: </span>
                                         {if $result.status !== 'failed' && $result.status !== 'invalid'}
@@ -399,11 +399,11 @@
                 <input type="hidden" name="a" value="settings" />
                 <input name="tab" type="hidden" value="settings" />
 
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">{__('general')}</h3>
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">{__('general')}</div>
                     </div>
-                    <div class="panel-body">
+                    <div class="card-body">
                         {foreach $settings as $setting}
                             {if $setting->cConf === 'Y'}
                                 <div class="input-group">
@@ -436,11 +436,11 @@
                 <a id="btn_toggle_cache" class="btn btn-default down" style="margin: 10px 0;">{__('showAdvanced')}</a>
 
                 <div id="row_toggle_cache" style="display: none;">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <h3 class="panel-title">{__('extended')}</h3>
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">{__('extended')}</div>
                         </div>
-                        <div class="panel-body">
+                        <div class="card-body">
                             {foreach $advanced_settings as $setting}
                                 {if $setting->cConf === 'Y'}
                                     <div class="input-group">

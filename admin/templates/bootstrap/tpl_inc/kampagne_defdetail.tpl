@@ -14,7 +14,7 @@
         </table>
     </div>
 
-    <div class="panel panel-default" id="payment">
+    <div class="card" id="payment">
         {if isset($oKampagneStat_arr) && $oKampagneStat_arr|@count > 0 && isset($oKampagneDef->kKampagneDef) && $oKampagneDef->kKampagneDef > 0}
             {include file='tpl_inc/pagination.tpl' pagination=$oPagiDefDetail
                      cParam_arr=['kKampagne'=>$oKampagne->kKampagne, 'defdetail'=>1,
@@ -40,7 +40,7 @@
         {else}
             <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
         {/if}
-        <div class="panel-footer">
+        <div class="card-footer">
             <a class="btn btn-default" href="kampagne.php?kKampagne={$oKampagne->kKampagne}&detail=1&token={$smarty.session.jtl_token}">
                 <i class="fa fa-angle-double-left"></i> {__('back')}
             </a>

@@ -44,11 +44,11 @@ function clearInput(inputField) {ldelim}
 
 <div id="page">
     <div id="content" class="container-fluid">
-        <div id="welcome" class="panel panel-default post">
-            <div class="panel-heading">
-                <h3 class="panel-title">{__('umfrageEnter')}</h3>
+        <div id="welcome" class="card post">
+            <div class="card-header">
+                <div class="card-title">{__('umfrageEnter')}</div>
             </div>
-            <div class="panel-body">
+            <div class="card-body">
                 <form name="umfrage" method="post" action="umfrage.php">
                     {$jtl_token}
                     <input type="hidden" name="umfrage" value="1" />
@@ -121,7 +121,7 @@ function clearInput(inputField) {ldelim}
                     </table>
                 </form>
             </div>
-            <div class="panel-footer">
+            <div class="card-footer">
                 <div class="btn-group">
                     <button class="btn btn-primary" name="speichern" type="button" value="{__('save')}" onclick="document.umfrage.submit();"><i class="fa fa-save"></i> {__('save')}</button>
                     <a class="btn btn-default" href="umfrage.php"><i class="fa fa-angle-double-left"></i> {__('pageBack')}</a>

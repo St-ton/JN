@@ -17,8 +17,8 @@
     </ul>
     <div class="tab-content">
         <div id="uebersicht" class="tab-pane fade {if !isset($cTab) || $cTab === 'uebersicht'} active in{/if}">
-            <div class="panel panel-default">
-                <div class="panel-heading"><h3 class="panel-title">{__('kampagneIntern')}</h3></div>
+            <div class="card">
+                <div class="card-header"><div class="card-title">{__('kampagneIntern')}</div></div>
                 {if $oKampagne_arr|count > 0}
                     <div class="table-responsive">
                         <table class="table table-striped">
@@ -62,8 +62,8 @@
                     <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                 {/if}
             </div>
-            <div class="panel panel-default">
-                <div class="panel-heading"><h3 class="panel-title">{__('kampagneExtern')}</h3></div>
+            <div class="card">
+                <div class="card-header"><div class="card-title">{__('kampagneExtern')}</div></div>
                 <form name="kampagnen" method="post" action="kampagne.php">
                     {if isset($nGroessterKey) && $nGroessterKey >= 1000}
                         {$jtl_token}
@@ -123,7 +123,7 @@
                     {else}
                         <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                     {/if}
-                    <div class="panel-footer">
+                    <div class="card-footer">
                         <div class="btn-group">
                             {if isset($nGroessterKey) && $nGroessterKey >= 1000}
                                 <button name="submitDelete" type="submit" value="{__('delete')}" class="btn btn-danger"><i class="fa fa-trash"></i> {__('deleteSelected')}</button>
@@ -151,7 +151,7 @@
                         </span>
                 </div>
             </div>
-            <div class="panel panel-default">
+            <div class="card">
                 {if isset($oKampagne_arr) && $oKampagne_arr|@count > 0 && isset($oKampagneDef_arr) && $oKampagneDef_arr|@count > 0}
                     <div class="table-responsive">
                         <table class="table table-striped">
@@ -200,7 +200,7 @@
                             </tfoot>
                         </table>
                     </div>
-                    <div class="panel-footer">
+                    <div class="card-footer">
                         <div class="btn-group">
                             <a href="kampagne.php?tab=globalestats&nStamp=-1&token={$smarty.session.jtl_token}" class="btn btn-default"><i class="fa fa-angle-double-left"></i> {__('earlier')}</a>
                             {if isset($bGreaterNow) && !$bGreaterNow}

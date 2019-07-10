@@ -335,9 +335,9 @@
                                     <label class="tour-label">
                                         <input type="radio" name="help-tour" id="helpTour1" value="ht1" checked
                                                class="hidden">
-                                        <div class="panel panel-default">
-                                            <div class="panel-heading">{__('generalIntroduction')}</div>
-                                            <div class="panel-body">
+                                        <div class="card">
+                                            <div class="card-header">{__('generalIntroduction')}</div>
+                                            <div class="card-body">
                                                 {__('getToKnowComposer')}
                                             </div>
                                         </div>
@@ -347,9 +347,9 @@
                                     <label class="tour-label">
                                         <input type="radio" name="help-tour" id="helpTour2" value="ht2"
                                                class="hidden">
-                                        <div class="panel panel-default">
-                                            <div class="panel-heading">{__('animation')}</div>
-                                            <div class="panel-body">
+                                        <div class="card">
+                                            <div class="card-header">{__('animation')}</div>
+                                            <div class="card-body">
                                                 {__('noteMovementOnPage')}
                                             </div>
                                         </div>
@@ -359,9 +359,9 @@
                                     <label class="tour-label">
                                         <input type="radio" name="help-tour" id="helpTour3" value="ht3"
                                                class="hidden">
-                                        <div class="panel panel-default">
-                                            <div class="panel-heading">{__('templates')}</div>
-                                            <div class="panel-body">
+                                        <div class="card">
+                                            <div class="card-header">{__('templates')}</div>
+                                            <div class="card-body">
                                                 {__('noteSaveAsTemplate')}
                                             </div>
                                         </div>
@@ -371,9 +371,9 @@
                                     <label class="tour-label">
                                         <input type="radio" name="help-tour" id="helpTour4" value="ht4"
                                                class="hidden">
-                                        <div class="panel panel-default">
-                                            <div class="panel-heading">{__('settingsMore')}</div>
-                                            <div class="panel-body">{__('noteTricks')}</div>
+                                        <div class="card">
+                                            <div class="card-header">{__('settingsMore')}</div>
+                                            <div class="card-body">{__('noteTricks')}</div>
                                         </div>
                                     </label>
                                 </div>

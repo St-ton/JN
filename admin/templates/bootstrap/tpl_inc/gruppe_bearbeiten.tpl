@@ -8,11 +8,11 @@
     <form class="settings navbar-form" action="benutzerverwaltung.php" method="post">
         {$jtl_token}
         <input type="hidden" name="tab" value="group_view" />
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">{__('general')}</h3>
+        <div class="card">
+            <div class="card-header">
+                <div class"card-title">{__('general')}</div>
             </div>
-            <div class="panel-body">
+            <div class="card-body">
                 <div class="input-group{if isset($cError_arr.cGruppe)} error{/if}">
                     <span class="input-group-addon"><label for="cGruppe">{__('name')}</label></span>
                     <input class="form-control" type="text" name="cGruppe" id="cGruppe" value="{if isset($oAdminGroup->cGruppe)}{$oAdminGroup->cGruppe}{/if}" />
@@ -26,16 +26,16 @@
             </div>
         </div>
 
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">{__('permissions')}</h3>
+        <div class="card">
+            <div class="card-header">
+                <div class"card-title">{__('permissions')}</div>
             </div>
-            <div class="panel-body">
+            <div class="card-body">
                 {foreach $oAdminDefPermission_arr as $oGroup}
                     <div id="settings-{$oGroup@iteration}" class=" col-md-4">
-                        <div class="panel panel-default">
-                            <div class="panel-heading"><h3 class="panel-title">{$oGroup->cName}</h3></div>
-                            <div class="perm_list panel-body">
+                        <div class="card">
+                            <div class="card-header"><div class"card-title">{$oGroup->cName}</div></div>
+                            <div class="perm_list card-body">
                                 {foreach $oGroup->oPermission_arr as $oPerm}
                                     <div class="input">
                                     <input type="checkbox" name="perm[]" value="{$oPerm->cRecht}" id="{$oPerm->cRecht}" {if isset($cAdminGroupPermission_arr) && is_array($cAdminGroupPermission_arr)}{if $oPerm->cRecht|in_array:$cAdminGroupPermission_arr}checked="checked"{/if}{/if} />
@@ -45,19 +45,19 @@
                                     </div>
                                 {/foreach}
                             </div>
-                            <div class="panel-footer">
+                            <div class="card-footer">
                                 <input type="checkbox" onclick="checkToggle('#settings-{$oGroup@iteration}');" id="cbtoggle-{$oGroup@iteration}" /> <label for="cbtoggle-{$oGroup@iteration}">{__('globalSelectAll')}</label>
                             </div>
                         </div>
                     </div>
                 {/foreach}
             </div>
-            <div class="panel-footer">
+            <div class="card-footer">
                 <input type="checkbox" onclick="AllMessages(this.form);" id="ALLMSGS" name="ALLMSGS" /> <label for="ALLMSGS">{__('globalSelectAll')}</label>
             </div>
         </div>
 
-        <div class="panel-footer">
+        <div class="card-footer">
             <div class="btn-group">
                 <input type="hidden" name="action" value="group_edit" />
                 {if isset($oAdminGroup) && $oAdminGroup->kAdminlogingruppe > 0}

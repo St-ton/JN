@@ -7,12 +7,12 @@
         {$jtl_token}
         <input type="hidden" name="speichern" value="1">
         <div id="settings">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">{__('imageSizes')}</h3>
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">{__('imageSizes')}</div>
                 </div>
                 <div class="table-responsive">
-                    <table class="list table table-images">
+                    <table class="list table table-border-light table-images">
                         <thead>
                         <tr>
                             <th class="tleft">{__('type')}</th>
@@ -199,16 +199,16 @@
                     </div>
                 {else}
                     {if $open}</div></div>{/if}
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <h3 class="panel-title">{$cnf->cName}
-                            <span class="pull-right">{getHelpDesc cID=$cnf->kEinstellungenConf}</span>
+                    <div class="card">
+                        <div class="card-header">
+                            <h3 class="card-title">{$cnf->cName}
+                            <span class="float-right">{getHelpDesc cID=$cnf->kEinstellungenConf}</span>
                             {if isset($cnf->cSektionsPfad) && $cnf->cSektionsPfad|strlen > 0}
                                 <span class="path"><strong>{__('settingspath')}:</strong> {$cnf->cSektionsPfad}</span>
                             {/if}
                             </h3>
                         </div>
-                        <div class="panel-body">
+                        <div class="card-body">
                         {assign var=open value=true}
                 {/if}
             {/if}

@@ -50,9 +50,9 @@
                         {$jtl_token}
                         <input type="hidden" name="uebersicht" value="1" />
                         <input type="hidden" name="tab" value="uebersicht" />
-                        <div class="panel panel-default">
-                            <div class="panel-heading">
-                                <h3 class="panel-title">{__('availableCheckboxes')}</h3>
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="card-title">{__('availableCheckboxes')}</div>
                             </div>
                             <div class="table-responsive">
                                 <table class="table table-striped">
@@ -109,7 +109,7 @@
                                     </tr>
                                 </table>
                             </div>
-                            <div class="panel-footer">
+                            <div class="card-footer">
                                 <div class="btn-group submit">
                                     <button name="erstellenShowButton" type="submit" class="btn btn-primary" value="neue Checkbox erstellen"><i class="fa fa-share"></i> {__('checkboxCreate')}</button>
                                     <button name="checkboxAktivierenSubmit" type="submit" class="btn btn-default" value="{__('activate')}"><i class="fa fa-check"></i> {__('activate')}</button>
@@ -130,11 +130,11 @@
             {/if}
         </div>
         <div id="erstellen" class="tab-pane fade {if isset($cTab) && $cTab === 'erstellen'} active in{/if}">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">{if isset($oCheckBox->kCheckBox) && $oCheckBox->kCheckBox > 0}{__('edit')}{else}{__('create')}{/if}</h3>
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">{if isset($oCheckBox->kCheckBox) && $oCheckBox->kCheckBox > 0}{__('edit')}{else}{__('create')}{/if}</div>
                 </div>
-                <div class="panel-body">
+                <div class="card-body">
                     <form method="post" action="checkbox.php" >
                         {$jtl_token}
                         <input name="erstellen" type="hidden" value="1" />
@@ -348,7 +348,7 @@
                             {/if}
                         </div>
                     </div>
-                    <div class="panel-footer">
+                    <div class="card-footer">
                         <button name="speichern" type="submit" value="{__('save')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
                     </div>
                 </form>

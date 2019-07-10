@@ -16,8 +16,8 @@
             <div id="login_logo">
                 <img src="{$currentTemplateDir}gfx/shop-login.png" alt="JTL-Shop" />
             </div>
-            <div id="login_outer" class="panel panel-default">
-                <div class="panel-body">
+            <div id="login_outer" class="card">
+                <div class="card-body">
                     <form method="post" action="pass.php" class="form-horizontal" role="form">
                         {$jtl_token}
                         {if $step === 'prepare'}

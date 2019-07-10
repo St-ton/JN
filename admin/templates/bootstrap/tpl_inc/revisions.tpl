@@ -1,9 +1,9 @@
 <hr>
-<div class="panel panel-default">
-    <div class="panel-heading">
-        <h3 class="panel-title">{__('revisions')}</h3>
+<div class="card">
+    <div class="card-header">
+        <div class="card-title">{__('revisions')}</div>
     </div>
-    <div class="panel-body">
+    <div class="card-body">
         {if $revisions|count > 0}
             {if !empty($data)}
                 {if $secondary === true}
@@ -18,18 +18,18 @@
                     {/foreach}
                 {/if}
             {/if}
-            <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+            <div class="card-group" id="accordion" role="tablist" aria-multiselectable="true">
                 {foreach $revisions as $revision}
-                    <div class="panel panel-default">
-                        <div class="panel-heading" role="tab" data-idx="{$revision@iteration}" id="heading-revision-{$revision@iteration}">
-                            <h4 class="panel-title">
+                    <div class="card">
+                        <div class="card-header" role="tab" data-idx="{$revision@iteration}" id="heading-revision-{$revision@iteration}">
+                            <div class="card-title">
                                 <a data-toggle="collapse" data-parent="#accordion" href="#revision-{$revision@iteration}" aria-expanded="true" aria-controls="profile-{$revision@iteration}">
                                     <span class="badge left">{$revision->timestamp}</span> {$revision->author}
                                 </a>
-                            </h4>
+                            </div>
                         </div>
-                        <div id="revision-{$revision@iteration}" data-idx="{$revision@iteration}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading-revision-{$revision@iteration}">
-                            <div class="panel-body">
+                        <div id="revision-{$revision@iteration}" data-idx="{$revision@iteration}" class="collapse" role="tabpanel" aria-labelledby="heading-revision-{$revision@iteration}">
+                            <div class="card-body">
                                 <div class="list-group revision-content">
                                     {if $secondary === true && isset($revision->content->references)}
                                         {foreach $revision->content->references as $secondaryKey => $ref}
@@ -52,7 +52,7 @@
                                     {/if}
                                 </div>
                             </div>
-                            <div class="panel-footer">
+                            <div class="card-footer">
                                 <form class="restore-revision" method="post">
                                     {$jtl_token}
                                     <input type="hidden" value="{$revision->id}" name="revision-id" />
@@ -141,7 +141,7 @@
     }
 
     $(document).ready(function () {
-        $('.panel-collapse').on('shown.bs.collapse', function (a,b) {
+        $('.collapse').on('shown.bs.collapse', function (a,b) {
             var id               = $(this).attr('data-idx'),
                 collapsedElement = $('#revision-' + id),
                 closed           = collapsedElement.hasClass('in'),

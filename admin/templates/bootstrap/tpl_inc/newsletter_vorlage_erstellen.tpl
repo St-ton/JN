@@ -37,11 +37,11 @@ function checkNewsletterSend() {ldelim}
             {if isset($oNewsletterVorlage->kNewsletterVorlage) && $oNewsletterVorlage->kNewsletterVorlage}
                 <input name="kNewsletterVorlage" type="hidden" value="{$oNewsletterVorlage->kNewsletterVorlage}">
             {/if}
-            <div class="panel panel-default settings">
-                <div class="panel-heading">
-                    <h3 class="panel-title">{__('newsletterdraftcreate')}</h3>
+            <div class="card settings">
+                <div class="card-header">
+                    <div class="card-title">{__('newsletterdraftcreate')}</div>
                 </div>
-                <div class="panel-body">
+                <div class="card-body">
                     <div class="input-group">
                         <span class="input-group-addon">
                             <label for="cName">{__('newsletterdraftname')}</label>
@@ -308,7 +308,7 @@ function checkNewsletterSend() {ldelim}
                         <textarea class="codemirror smarty form-control" id="cText" name="cText" style="width: 750px; height: 400px;">{if isset($cPostVar_arr.cText)}{$cPostVar_arr.cText}{elseif isset($oNewsletterVorlage->cInhaltText)}{$oNewsletterVorlage->cInhaltText}{/if}</textarea>
                     </div>
                 </div>
-                <div class="panel-footer">
+                <div class="card-footer">
                     <div class="btn-group">
                         <button class="btn btn-primary" name="speichern" type="submit" value="{__('save')}"><i class="fa fa-save"></i> {__('save')}</button>
                         {if $cOption !== 'editieren'}

@@ -33,11 +33,11 @@
                     </div>
                 {else}
                     {if $open}</div></div>{/if}
-                    <div class="panel panel-default">
+                    <div class="card">
                     {if $oConfig->cName}
-                        <div class="panel-heading"><h3 class="panel-title">{$oConfig->cName}</h3></div>
+                        <div class="card-header"><h3 class="card-title">{$oConfig->cName}</h3></div>
                     {/if}
-                        <div class="panel-body">
+                        <div class="card-body">
                     {assign var=open value=true}
                 {/if}
             {/foreach}
@@ -47,11 +47,11 @@
             {/if}
         </div>
 
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">{__('emailblacklistEmail')} {__('emailblacklistSeperator')}</h3>
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">{__('emailblacklistEmail')} {__('emailblacklistSeperator')}</div>
             </div>
-            <div class="panel-body">
+            <div class="card-body">
                 <textarea class="form-control" name="cEmail" cols="50" rows="10">{if isset($oEmailBlacklist_arr)}{foreach $oEmailBlacklist_arr as $oEmailBlacklist}{$oEmailBlacklist->cEmail}{if !$oEmailBlacklist@last};{/if}{/foreach}{/if}</textarea>
             </div>
         </div>
@@ -60,11 +60,11 @@
         </div>
     </form>
     {if isset($oEmailBlacklistBlock_arr) && $oEmailBlacklistBlock_arr|@count > 0}
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">{__('emailblacklistBlockedEmails')}</h3>
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">{__('emailblacklistBlockedEmails')}</div>
             </div>
-            <div class="panel-body">
+            <div class="card-body">
                 {foreach $oEmailBlacklistBlock_arr as $entry}
                     {$entry->cEmail} ({$entry->dLetzterBlock})<br />
                 {/foreach}

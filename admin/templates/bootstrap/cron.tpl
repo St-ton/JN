@@ -22,11 +22,11 @@
 <div class="tab-content">
     <div id="overview" class="settings tab-pane fade{if $tab === 'overview'} active in{/if}">
         {if $jobs|count > 0}
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">{__('queueEntries')}</h3>
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">{__('queueEntries')}</div>
                 </div>
-                <div class="panel-body">
+                <div class="card-body">
                     <form method="post">
                         {$jtl_token}
                         <table class="table table-striped">
@@ -71,11 +71,11 @@
     </div>
 
     <div id="add-cron" class="settings tab-pane fade{if $tab === 'add-cron'} active in{/if}">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">{__('createQueueEntry')}</h3>
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">{__('createQueueEntry')}</div>
             </div>
-            <div class="panel-body">
+            <div class="card-body">
                 <form method="post">
                     {$jtl_token}
                     <div class="input-group">

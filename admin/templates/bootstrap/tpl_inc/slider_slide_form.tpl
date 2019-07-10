@@ -21,9 +21,9 @@
     <input type="hidden" name="action" value="slide_set" />
     {$jtl_token}
     <div id="settings">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">{__('slider')}</h3>
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">{__('slider')}</div>
             </div>
             <div class="table-responsive">
                 <table id="tableSlide" class="table">
@@ -44,7 +44,7 @@
                 </table>
             </div>
             <table class="hidden"><tbody id="newSlide">{slide oSlide=null kSlide='NEU'}</tbody></table>
-            <div class="panel-footer">
+            <div class="card-footer">
                 <div class="btn-group">
                     <button type="button" class="btn btn-default" onclick="window.location.href = 'slider.php';"><i class="fa fa-angle-double-left"></i> {__('pageBack')}</button>
                     <button type="button" class="btn btn-success" onclick="addSlide();"><i class="glyphicon glyphicon-plus"></i> {__('add')}</button>

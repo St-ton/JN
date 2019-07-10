@@ -4,11 +4,11 @@
         {$jtl_token}
         <input type="hidden" name="einstellungen" value="1" />
         <div id="settings">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">{__('settings')}</h3>
+            <div class="card">
+                <div class="card-header">
+                    <div class"card-title">{__('settings')}</div>
                 </div>
-                <div class="panel-body">
+                <div class="card-body">
                     <div class="item input-group">
                         <span class="input-group-addon">
                             <label for="nAktiv">{__('statusemailUse')}</label>
@@ -74,7 +74,7 @@
                         </span>
                     </div>
                 </div>
-                <div class="panel-footer">
+                <div class="card-footer">
                     <div class="btn-group">
                         <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
                         <button type="submit" class="btn btn-default" name="action" value="sendnow">

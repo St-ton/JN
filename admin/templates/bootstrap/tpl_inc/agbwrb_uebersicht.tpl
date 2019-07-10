@@ -9,9 +9,9 @@
             </div>
         </form>
     </div>
-    <div class="panel panel-default">
-        <div class="panel-heading">
-            <h3 class="panel-title">{__('available')} {__('agbwrb')}</h3>
+    <div class="card">
+        <div class="card-header">
+            <div class"card-title">{__('available')} {__('agbwrb')}</div>
         </div>
         <table class="table table-striped">
             <thead>

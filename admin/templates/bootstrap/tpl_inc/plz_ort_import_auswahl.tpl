@@ -9,7 +9,7 @@
             <div class="modal-body">
                 {if isset($oLand_arr) && count($oLand_arr) > 0}
                 <ul class="list-group">
-                    <li class="boxRow panel-heading">
+                    <li class="boxRow card-header">
                         <div class="col-xs-1"><strong>{__('iso')}</strong></div>
                         <div class="col-xs-4"><strong>{__('country')}</strong></div>
                         <div class="col-xs-3"><strong>{__('date')}</strong></div>

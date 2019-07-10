@@ -10,15 +10,15 @@
         {include file='tpl_inc/slider_slide_form.tpl'}
     {else}
         <div id="settings">
-            <div class="panel panel-default">
+            <div class="card">
                 {if $oSlider_arr|@count == 0}
-                    <div class="panel-body">
+                    <div class="card-body">
                         <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                     </div>
                 {else}
                     {include file='tpl_inc/pagination.tpl' pagination=$pagination}
-                    <div class="panel-heading">
-                        <h3 class="panel-title">{__('slider')}</h3>
+                    <div class="card-header">
+                        <div class="card-title">{__('slider')}</div>
                     </div>
                     <table class="table">
                         <thead>
@@ -53,7 +53,7 @@
                         </tbody>
                     </table>
                 {/if}
-                <div class="panel-footer">
+                <div class="card-footer">
                     <a class="btn btn-primary" href="slider.php?action=new&token={$smarty.session.jtl_token}"><i class="fa fa-share"></i> {__('sliderCreate')}</a>
                 </div>
             </div>

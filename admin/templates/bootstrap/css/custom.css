@@ -546,7 +546,7 @@ h6 {
   box-shadow: 0 0 1px rgba(0, 0, 0, 0.15);
 }
 .panel-body .btn-tooltip,
-.panel-heading .btn-tooltip {
+.card-header .btn-tooltip {
   font-size: 12px;
   padding: 0 6px;
   margin-bottom: 1px;
@@ -885,7 +885,7 @@ body {
   border-radius: 0;
 }
 .widget-head,
-.panel-default > .panel-heading {
+.panel-default > .card-header {
   color: #333;
   background-color: #fff;
   border-bottom: 1px solid rgba(120, 130, 140, 0.13);
@@ -1003,7 +1003,7 @@ ul.linklist li a {
   padding: 0;
   margin: 0 auto;
 }
-#login_wrapper .panel-heading {
+#login_wrapper .card-header {
   background-color: #e7e7e7;
   border-radius: 0;
   padding: 0;
@@ -1548,7 +1548,7 @@ ul.fluid-list .item-extension.item .item-inner {
 #cat-sonstiges:before {
   content: "\f1a8";
 }
-.panel-heading .btn-tooltip.btn-heading {
+.card-header .btn-tooltip.btn-heading {
   margin-right: 16px;
 }
 .table-images {
@@ -2443,20 +2443,20 @@ td.nowrap {
 .panel-body > *:last-child {
   margin-bottom: 0;
 }
-.panel-heading .heading-body,
-.panel-heading .heading-right {
+.card-header .heading-body,
+.card-header .heading-right {
   display: table-cell;
   vertical-align: middle;
 }
-.panel-heading .heading-right > .btn-group {
+.card-header .heading-right > .btn-group {
   border-collapse: collapse;
 }
-.panel-heading .heading-right > .btn-group > .btn {
+.card-header .heading-right > .btn-group > .btn {
   display: table-cell;
   float: none;
   /*width: 1%;*/
 }
-.panel-heading .heading-body {
+.card-header .heading-body {
   width: 10000px;
 }
 .table.table-blank > thead > tr > th,

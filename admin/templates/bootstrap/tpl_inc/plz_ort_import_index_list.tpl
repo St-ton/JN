@@ -1,6 +1,6 @@
 {config_load file="$lang.conf" section='plz_ort_import'}
 <ul class="list-group">
-    <li class="boxRow panel-heading">
+    <li class="boxRow card-header">
         <div class="col-xs-1"><strong>{__('iso')}</strong></div>
         <div class="col-xs-4"><strong>{__('country')}</strong></div>
         <div class="col-xs-3"><strong>{__('continent')}</strong></div>

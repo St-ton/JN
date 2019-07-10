@@ -37,9 +37,9 @@
                         <input type="hidden" name="tab" value="umfrage" />
                         <div id="payment">
                             <div id="tabellenLivesuche">
-                                <div class="panel panel-default">
-                                    <div class="panel-heading">
-                                        <h3 class="panel-title">{__('activePolls')}</h3>
+                                <div class="card">
+                                    <div class="card-header">
+                                        <div class="card-title">{__('activePolls')}</div>
                                     </div>
                                     <div class="table-responsive">
                                         <table class="table table-striped">
@@ -78,7 +78,7 @@
                                             {/foreach}
                                         </table>
                                     </div>
-                                    <div class="panel-footer">
+                                    <div class="card-footer">
                                         <button name="loeschen" type="submit" class="btn btn-danger"><i class="fa fa-trash"></i> {__('deleteSelected')}</button>
                                     </div>
                                 </div>

@@ -9,9 +9,9 @@
 {include file='tpl_inc/seite_header.tpl' cTitel=__('shippingmethods') cBeschreibung=__('isleListsHint') cDokuURL=__('shippingmethodsURL')}
 <div id="content" class="container-fluid">
     {foreach $versandarten as $versandart}
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">{$versandart->cName}</h3>
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">{$versandart->cName}</div>
             </div>
             <table class="table table-list">
                 <tbody>
@@ -104,7 +104,7 @@
                     {/if}
                 </tbody>
             </table>
-            <div class="panel-footer">
+            <div class="card-footer">
                 <form method="post" action="versandarten.php">
                     {$jtl_token}
                     <div class="btn-group">
@@ -118,13 +118,13 @@
     {/foreach}
 
     <div id="settings">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">{__('createShippingMethod')}</h3>
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">{__('createShippingMethod')}</div>
             </div>
             <form name="versandart_neu" method="post" action="versandarten.php">
                 {$jtl_token}
-                <div class="panel-body">
+                <div class="card-body">
                     <input type="hidden" name="neu" value="1" />
                     {foreach $versandberechnungen as $versandberechnung}
                         <div class="item">
@@ -135,7 +135,7 @@
                         </div>
                     {/foreach}
                 </div>
-                <div class="panel-footer">
+                <div class="card-footer">
                     <button type="submit" value="{__('createShippingMethod')}" class="btn btn-primary"><i class="fa fa-share"></i> {__('createShippingMethod')}</button>
                 </div>
             </form>

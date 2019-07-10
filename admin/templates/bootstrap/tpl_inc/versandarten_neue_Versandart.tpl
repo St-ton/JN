@@ -86,11 +86,11 @@
         <input type="hidden" name="kVersandart" value="{if isset($Versandart->kVersandart)}{$Versandart->kVersandart}{/if}" />
         <input type="hidden" name="cModulId" value="{$versandberechnung->cModulId}" />
         <div class="settings">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">{__('general')}</h3>
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">{__('general')}</div>
                 </div>
-                <div class="panel-body">
+                <div class="card-body">
                     <ul class="jtl-list-group">
                         <li class="input-group">
                             <span class="input-group-addon">
@@ -257,11 +257,11 @@
                 </div>
             </div>
 
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">{__('validOnShippingClasses')}</h3>
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">{__('validOnShippingClasses')}</div>
                 </div>
-                <div class="panel-body">
+                <div class="card-body">
                     <input name="kVersandklasse" type="hidden" value="{if !empty($Versandart->cVersandklassen)}{$Versandart->cVersandklassen}{else}-1{/if}">
                     <ul id="ulVK" class="jtl-list-group">
                         <li id='liVKneu' class="input-group" style="display:none;">
@@ -330,7 +330,7 @@
                         {/if}
                     </ul>
                 </div>
-                <div class="panel-footer">
+                <div class="card-footer">
                     <div class="btn-group" role="group">
                         <button id="addNewShippingClassCombi" class="btn btn-success" type="button"
                                 onclick="addShippingCombination();$('.select2').select2();">
@@ -361,11 +361,11 @@
                 </div>
             </div>
 
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">{__('acceptedPaymentMethods')}</h3>
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">{__('acceptedPaymentMethods')}</div>
                 </div>
-                <div class="panel-body">
+                <div class="card-body">
                     <ul class="jtl-list-group">
 
                         <li class="input-group2 table-responsive">
@@ -414,11 +414,11 @@
                     </ul>
                 </div>
             </div>
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">{__('freeShipping')}</h3>
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">{__('freeShipping')}</div>
                 </div>
-                <div class="panel-body">
+                <div class="card-body">
                     <ul class="jtl-list-group">
                         <li class="input-group">
                             <span class="input-group-addon"><label for="versandkostenfreiAktiv">{__('activate')}</label></span>
@@ -436,11 +436,11 @@
                     </ul>
                 </div>
             </div>
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">{__('maxCosts')}</h3>
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">{__('maxCosts')}</div>
                 </div>
-                <div class="panel-body">
+                <div class="card-body">
                     <ul class="jtl-list-group">
                         <li class="input-group2 table-responsive">
                             <table class="list table">
@@ -468,11 +468,11 @@
                 </div>
             </div>
             {if $versandberechnung->cModulId === 'vm_versandberechnung_gewicht_jtl' || $versandberechnung->cModulId === 'vm_versandberechnung_warenwert_jtl' || $versandberechnung->cModulId === 'vm_versandberechnung_artikelanzahl_jtl'}
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">{__('priceScale')}</h3>
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">{__('priceScale')}</div>
                 </div>
-                <div class="panel-body">
+                <div class="card-body">
                     <ul class="jtl-list-group">
                         <li class="input-group2 table-responsive">
                             <table id="price_range" class="table">
@@ -533,11 +533,11 @@
                 </div>
             </div>
             {elseif $versandberechnung->cModulId === 'vm_versandkosten_pauschale_jtl'}
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">{__('shippingPrice')}</h3>
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">{__('shippingPrice')}</div>
                 </div>
-                <div class="panel-body">
+                <div class="card-body">
                     <ul class="jtl-list-group">
                         <li class="input-group2 table-responsive">
                             <table class="list table">
@@ -643,11 +643,11 @@
                     //-->
                 </script>
             {/literal}
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">{__('shipToCountries')}</h3>
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">{__('shipToCountries')}</div>
                 </div>
-                <div class="panel-body">
+                <div class="card-body">
                     <div class="btn-group">
                         <a onclick="toggle('Europa_EU');" class="btn btn-default">{__('checkEU')}</a>
                         <a onclick="toggle('Europa_nichtEU');" class="btn btn-default">{__('checkNonEU')}</a>

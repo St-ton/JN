@@ -19,9 +19,9 @@
         <form method="post" action="warenlager.php">
             {$jtl_token}
             <input name="a" type="hidden" value="update" />
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">{__('warenlager')}</h3>
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">{__('warenlager')}</div>
                 </div>
                 <div class="table-responsive">
                     <table class="list table">
@@ -66,7 +66,7 @@
                         </tbody>
                     </table>
                 </div>
-                <div class="panel-footer">
+                <div class="card-footer">
                     <button name="update" type="submit" title="{__('update')}" class="btn btn-primary"><i class="fa fa-refresh"></i> {__('update')}</button>
                 </div>
             </div>

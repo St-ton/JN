@@ -81,11 +81,11 @@
                 <input type="hidden" name="kImageMap" value="{$oBanner->kImageMap}" />
             {/if}
 
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">{__('general')}</h3>
+            <div class="card">
+                <div class="card-header">
+                    <div class"card-title">{__('general')}</div>
                 </div>
-                <div class="panel-body">
+                <div class="card-body">
                     <div class="input-group">
                         <span class="input-group-addon"><label for="cName">{__('internalName')} *</label></span>
                         <input class="form-control" type="text" name="cName" id="cName" value="{if isset($cName)}{$cName}{elseif isset($oBanner->cTitel)}{$oBanner->cTitel}{/if}" />
@@ -138,11 +138,11 @@
 
             {* extensionpoint begin *}
 
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">{__('viewingOptions')}</h3>
+            <div class="card">
+                <div class="card-header">
+                    <div class"card-title">{__('viewingOptions')}</div>
                 </div>
-                <div class="panel-body">
+                <div class="card-body">
                     <div class="input-group">
                         <span class="input-group-addon"><label for="kSprache">{__('changeLanguage')}</label></span>
                         <span class="input-group-wrap">
@@ -352,11 +352,11 @@
         <div class="right" id="area_info"></div>
     </div>
     <div id="area_container">
-        <div id="area_editor" class="panel panel-default">
-            <div class="category first panel-heading">
-                <h3 class="panel-title">{__('settings')}</h3>
+        <div id="area_editor" class="card">
+            <div class="category first card-header">
+                <div class"card-title">{__('settings')}</div>
             </div>
-            <div id="settings" class="panel-body">
+            <div id="settings" class="card-body">
                 <div class="input-group">
                     <span class="input-group-addon">
                         <label for="title">{__('title')}</label>
@@ -416,9 +416,9 @@
         {include file='tpl_inc/pagination.tpl' pagination=$pagination}
 
         <div id="settings">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">{__('availableBanner')}</h3>
+            <div class="card">
+                <div class="card-header">
+                    <div class"card-title">{__('availableBanner')}</div>
                 </div>
                 <table class="list table">
                     <thead>
@@ -469,11 +469,11 @@
                 </table>
 
                 {if $oBanner_arr|@count === 0}
-                   <div class="panel-body">
+                   <div class="card-body">
                        <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                    </div>
                 {/if}
-                <div class="panel-footer">
+                <div class="card-footer">
                     <a class="btn btn-primary" href="banner.php?action=new&token={$smarty.session.jtl_token}"><i class="fa fa-share"></i> {__('addBanner')}</a>
                 </div>
             </div>

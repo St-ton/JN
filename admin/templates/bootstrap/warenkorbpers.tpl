@@ -38,9 +38,9 @@
                         {append var=cParam_arr index='cSuche' value=$cSuche}
                     {/if}
                     {include file='tpl_inc/pagination.tpl' pagination=$oPagiKunden cParam_arr=$cParam_arr cAnchor='massaction'}
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <h3 class="panel-title">{__('warenkorbpers')}</h3>
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">{__('warenkorbpers')}</div>
                         </div>
                         <div class="table-responsive">
                             <table class="table table-striped">
@@ -83,9 +83,9 @@
     {elseif $step === 'anzeigen'}
         {assign var=pAdditional value="&a="|cat:$kKunde}
         {include file='tpl_inc/pagination.tpl' pagination=$oPagiWarenkorb cParam_arr=['a'=>$kKunde]}
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">{__('warenkorbpersClient')} {$oWarenkorbPersPos_arr[0]->cVorname} {$oWarenkorbPersPos_arr[0]->cNachname}</h3>
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">{__('warenkorbpersClient')} {$oWarenkorbPersPos_arr[0]->cVorname} {$oWarenkorbPersPos_arr[0]->cNachname}</div>
             </div>
             <div class="table-responsive">
                 <table class="table table-striped">

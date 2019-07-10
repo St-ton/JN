@@ -27,8 +27,8 @@
     {if isset($oKampagne->kKampagne) && $oKampagne->kKampagne > 0}
         <input type="hidden" name="kKampagne" value="{$oKampagne->kKampagne}">
     {/if}
-    <div class="panel panel-default settings">
-        <div class="panel-body">
+    <div class="card settings">
+        <div class="card-body">
             <div class="input-group">
                 <span class="input-group-addon"><label for="cName">{__('kampagneName')}</label></span>
                 <span class="input-group-wrap">
@@ -73,7 +73,7 @@
                 </span>
             </div>
         </div>
-        <div class="panel-footer">
+        <div class="card-footer">
             <div class="btn-group">
                 <button name="submitSave" type="submit" value="{__('save')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
                 <a href="kampagne.php?tab=uebersicht" class="button btn btn-default"><i class="fa fa-angle-double-left"></i> {__('back')}</a>

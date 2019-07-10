@@ -4,11 +4,11 @@
 <div id="content" class="container-fluid">
     <form name="uploader" method="post" action="shoplogouploader.php" enctype="multipart/form-data">
         {$jtl_token}
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">{__('yourLogo')}</h3>
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">{__('yourLogo')}</div>
             </div>
-            <div class="panel-body">
+            <div class="card-body">
                 <input type="hidden" name="upload" value="1" />
                 <div class="col-xs-12">
                     <input name="shopLogo" id="shoplogo-upload" type="file" class="file" accept="image/*">

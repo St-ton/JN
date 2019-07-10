@@ -50,13 +50,13 @@
             <br />
             <p><strong>{__('umfrageQs')}:</strong></p>
             {foreach $oUmfrage->oUmfrageFrage_arr as $oUmfrageFrage}
-                <div class="panel panel-default">
-                    <div class="panel-heading">
+                <div class="card">
+                    <div class="card-header">
                         <strong>{$oUmfrageFrage@iteration}.</strong>
                         <input id="question-{$oUmfrageFrage@iteration}" name="kUmfrageFrage[]" type="checkbox" value="{$oUmfrageFrage->kUmfrageFrage}">
                         <label for="question-{$oUmfrageFrage@iteration}">{$oUmfrageFrage->cName}</label> [<a href="umfrage.php?umfrage=1&kUmfrage={$oUmfrage->kUmfrage}&kUmfrageFrage={$oUmfrageFrage->kUmfrageFrage}&fe=1&token={$smarty.session.jtl_token}">{__('edit')}</a>]
                     </div>
-                    <div class="panel-body">
+                    <div class="card-body">
                         <strong>{$oUmfrageFrage->cTypMapped}: </strong>
                         {$oUmfrageFrage->cBeschreibung}
 

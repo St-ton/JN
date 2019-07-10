@@ -3,9 +3,9 @@
     <form name="pluginverwaltung" method="post" action="pluginverwaltung.php">
         {$jtl_token}
         <input type="hidden" name="pluginverwaltung_uebersicht" value="1" />
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">{__('pluginListProblems')}</h3>
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">{__('pluginListProblems')}</div>
             </div>
             <div class="table-responsive">
                 <table class="list table">
@@ -257,7 +257,7 @@
                 </tfoot>
                 </table>
             </div>
-            <div class="panel-footer">
+            <div class="card-footer">
                 <div class="save btn-group">
                     {*<button name="aktivieren" type="submit" class="btn btn-primary">{__('activate')}</button>*}
                     <button name="deaktivieren" type="submit" class="btn btn-warning">{__('deactivate')}</button>

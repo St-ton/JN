@@ -2,9 +2,9 @@
     {$jtl_token}
     <input type="hidden" name="action" value="save" />
     <input type="hidden" name="kVerpackung" value="{if isset($kVerpackung)}{$kVerpackung}{/if}" />
-    <div class="panel panel-default">
-        <div class="panel-heading">
-            <h3 class="panel-title">{if isset($kVerpackung) && $kVerpackung > 0}{__('zusatzverpackungEdit')}{else}{__('zusatzverpackungCreate')}{/if}</h3>
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title">{if isset($kVerpackung) && $kVerpackung > 0}{__('zusatzverpackungEdit')}{else}{__('zusatzverpackungCreate')}{/if}</div>
         </div>
         <div class="table-responsive">
             <table class="kundenfeld table">
@@ -89,7 +89,7 @@
                 </tr>
             </table>
         </div>
-        <div class="panel-footer">
+        <div class="card-footer">
             <button class="btn btn-primary" name="speichern" type="submit">
                 <i class="fa fa-save"></i> {__('save')}
             </button>

@@ -13,9 +13,9 @@
         <div id="aktiv" class="tab-pane fade{if !isset($cTab) || empty($cTab) || $cTab === 'aktiv'} active in{/if}">
             <form method="post" action="exportformat_queue.php">
                 {$jtl_token}
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">{__('exportformatQueue')}</h3>
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">{__('exportformatQueue')}</div>
                     </div>
                     {if $oExportformatCron_arr && $oExportformatCron_arr|@count > 0}
                         <div id="payment">
@@ -62,7 +62,7 @@
                                 </table>
                             </div>
                         </div>
-                        <div class="panel-footer">
+                        <div class="card-footer">
                             <div class="btn-group">
                                 <button name="action[erstellen]" type="submit" value="1" class="btn btn-primary add"><i class="fa fa-share"></i> {__('exportformatAdd')}</button>
                                 <button name="action[loeschen]" type="submit" value="1" class="btn btn-danger"><i class="fa fa-trash"></i> {__('exportformatDelete')}</button>
@@ -71,10 +71,10 @@
                             </div>
                         </div>
                     {else}
-                        <div class="panel-body">
+                        <div class="card-body">
                             <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                         </div>
-                        <div class="panel-footer">
+                        <div class="card-footer">
                             <div class="btn-group">
                                 <button name="action[erstellen]" type="submit" value="1" class="btn btn-primary add"><i class="fa fa-share"></i> {__('exportformatAdd')}</button>
                                 <button name="action[triggern]" type="submit" value="1" class="btn btn-default"><i class="fa fa-play-circle-o"></i> {__('exportformatTriggerCron')}</button>
@@ -98,9 +98,9 @@
                     </div>
                 </form>
             </div>
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">{__('exportformatTodaysWork')}</h3>
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">{__('exportformatTodaysWork')}</div>
                 </div>
                 {if $oExportformatQueueBearbeitet_arr && $oExportformatQueueBearbeitet_arr|@count > 0}
                     <div id="payment">
@@ -128,7 +128,7 @@
                         </div>
                     </div>
                 {else}
-                    <div class="panel-body">
+                    <div class="card-body">
                         <div class="alert alert-info">{__('exportformatNoTodaysWork')}</div>
                     </div>
                 {/if}

@@ -8,7 +8,7 @@
         {$jtl_token}
         <input type="hidden" name="a" value="payments" />
         <input type="hidden" name="kZahlungsart" value="{$oZahlungsart->kZahlungsart}" />
-        <div class="panel panel-default">
+        <div class="card">
             {if $oZahlunseingang_arr|@count > 0}
                 <div class="table-responsive">
                     <table class="table">
@@ -70,7 +70,7 @@
                     {__('noDataAvailable')}
                 </div>
             {/if}
-            <div class="panel-footer">
+            <div class="card-footer">
                 <div class="btn-group">
                     <button type="submit" name="action" value="paymentwawireset" class="btn btn-danger">
                         <i class="fa fa-refresh"></i>

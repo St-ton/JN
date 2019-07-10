@@ -45,9 +45,9 @@
         <form name="pluginverwaltung" method="post" action="pluginverwaltung.php">
             {$jtl_token}
             <input type="hidden" name="pluginverwaltung_uebersicht" value="1" />
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">{__('pluginListNotInstalled')}</h3>
+            <div class="card">
+                <div class="card-header">
+                    <div class"card-title">{__('pluginListNotInstalled')}</div>
                 </div>
                 <div class="table-responsive">
 
@@ -116,7 +116,7 @@
                         </tfoot>
                     </table>
                 </div>
-                <div class="panel-footer">
+                <div class="card-footer">
                     <button name="installieren" type="submit" class="btn btn-primary"><i class="fa fa-share"></i> {__('pluginBtnInstall')}</button>
                 </div>
             </div>

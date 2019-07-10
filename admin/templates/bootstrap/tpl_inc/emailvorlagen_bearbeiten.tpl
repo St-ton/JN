@@ -13,11 +13,11 @@
         <input type="hidden" name="kEmailvorlage" value="{$mailTemplate->getID()}" />
         <div id="settings" class="settings">
             {if $mailTemplate->getModuleID() !== 'core_jtl_anbieterkennzeichnung'}
-                <div class="settings panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">{__('settings')}</h3>
+                <div class="settings card">
+                    <div class="card-header">
+                        <div class"card-title">{__('settings')}</div>
                     </div>
-                    <div class="panel-body">
+                    <div class="card-body">
                         <div class="input-group">
                             <span class="input-group-addon">
                                 <label for="cAktiv">{__('emailActive')}</label>
@@ -127,11 +127,11 @@
                 <input type="hidden" name="cEmailActive" value="Y" />
                 <input type="hidden" name="cMailTyp" value="text/html" />
             {/if}
-            <div class="box_info panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">{__('placeholder')} ({__('example')})</h3>
+            <div class="box_info card">
+                <div class="card-header">
+                    <div class"card-title">{__('placeholder')} ({__('example')})</div>
                 </div>
-                <div class="panel-body">
+                <div class="card-body">
                     <code>
                     <span class="elem">
                         <span class="name">{ldelim}$Kunde->cAnrede{rdelim}</span><br />
@@ -157,12 +157,12 @@
                 </div>
             </div>
             {foreach $availableLanguages as $language}
-                <div class="box_info panel panel-default">
+                <div class="box_info card">
                     {assign var=kSprache value=$language->getId()}
-                    <div class="panel-heading">
-                        <h3 class="panel-title">{__('content')} {$language->getLocalizedName()}</h3>
+                    <div class="card-header">
+                        <div class"card-title">{__('content')} {$language->getLocalizedName()}</div>
                     </div>
-                    <div class="panel-body">
+                    <div class="card-body">
                         {if $mailTemplate->getModuleID() !== 'core_jtl_anbieterkennzeichnung'}
                             <div class="item well">
                                 <div class="name"><label for="cBetreff_{$kSprache}">{__('subject')}</label></div>

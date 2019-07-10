@@ -63,7 +63,7 @@
 <div id="content" class="container-fluid">
     <form method="post">
         {$jtl_token}
-        <div class="panel panel-default">
+        <div class="card">
             <div class="table-responsive">
                 <table class="list table table-hover" id="favs">
                     <thead>
@@ -83,7 +83,7 @@
                     </tbody>
                 </table>
             </div>
-            <div class="panel-footer">
+            <div class="card-footer">
                 <div class="save btn-group">
                     <button type="submit" name="action" value="save" class="btn btn-primary">
                         <i class="fa fa-save"></i> {__('save')}

@@ -171,14 +171,14 @@
                     </div>
                 </div>
                         {/if}
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">
                             {$oConfig->cName}
                             <span class="pull-right">{getHelpDesc cID=$oConfig->kEinstellungenConf}</span>
-                        </h3>
+                        </div>
                     </div>
-                    <div class="panel-body">
+                    <div class="card-body">
                         {assign var=open value=true}
                     {/if}
                 {/if}

@@ -29,11 +29,11 @@
                 <input type="hidden" name="branding" value="1" />
                 <input type="hidden" name="kBranding" value="{$oBranding->kBrandingTMP}" />
                 <input type="hidden" name="speicher_einstellung" value="1" />
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">{{__('headingEditBrandingForProduct')}|sprintf:{$oBranding->cBildKategorie}}</h3>
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">{{__('headingEditBrandingForProduct')}|sprintf:{$oBranding->cBildKategorie}}</div>
                     </div>
-                    <div class="panel-body">
+                    <div class="card-body">
                         {if $oBranding->cBrandingBild|strlen > 0}
                             <div class="thumbnail">
                                 <img src="{$shopURL}/{$PFAD_BRANDINGBILDER}{$oBranding->cBrandingBild}?rnd={$cRnd}" alt="" />
@@ -116,7 +116,7 @@
                             <span class="input-group-addon">{getHelpDesc cDesc=__('brandingFileNameDesc')}</span>
                         </div>
                     </div>
-                    <div class="panel-footer">
+                    <div class="card-footer">
                         <button type="submit" value="{__('save')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
                     </div>
                 </div>

@@ -71,9 +71,9 @@
         {/literal}
     </script>
 
-    <div class="panel panel-default">
-        <div class="panel-heading">
-            <h3 class="panel-title">{__('availableFormats')}</h3>
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title">{__('availableFormats')}</div>
         </div>
         <div class="table-responsive">
             <table class="table">
@@ -130,7 +130,7 @@
                 </tbody>
             </table>
         </div>
-        <div class="panel-footer">
+        <div class="card-footer">
             <div class="submit-wrap btn-group">
                 <a class="btn btn-primary" href="exportformate.php?neuerExport=1&token={$smarty.session.jtl_token}"><i class="fa fa-share"></i> {__('newExportformat')}</a>
                 <a class="btn btn-default" href="#" id="exportall">{__('exportAll')}</a>

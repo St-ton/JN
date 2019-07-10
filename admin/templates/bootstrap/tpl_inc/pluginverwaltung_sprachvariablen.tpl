@@ -16,9 +16,9 @@
             {$jtl_token}
             <input type="hidden" name="pluginverwaltung_sprachvariable" value="1" />
             <input type="hidden" name="kPlugin" value="{$kPlugin}" />
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">{__('pluginverwaltungLocales')}</h3>
+            <div class="card">
+                <div class="card-header">
+                    <div class"card-title">{__('pluginverwaltungLocales')}</div>
                 </div>
                 <div class="table-responsive">
                     <table class="list table">
@@ -55,7 +55,7 @@
                         </tbody>
                     </table>
                 </div>
-                <div class="panel-footer">
+                <div class="card-footer">
                     <button name="speichern" type="submit" value="{__('save')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
                 </div>
             </div>

@@ -4,11 +4,11 @@
         {$jtl_token}
         <input type="hidden" name="kKontaktBetreff" value="{if isset($Betreff->kKontaktBetreff)}{$Betreff->kKontaktBetreff}{/if}" />
         <input type="hidden" name="betreff" value="1" />
-        <div class="panel panel-default">
-            <div class="panel-header">
-                <h3 class="panel-title"></h3>
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title"></div>
             </div>
-            <div class="panel-body">
+            <div class="card-body">
                 <div class="settings">
                     <div class="input-group">
                         <span class="input-group-addon">
@@ -52,7 +52,7 @@
                     </div>
                 </div>
             </div>
-            <div class="panel-footer">
+            <div class="card-footer">
                 <button type="submit" value="{__('save')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
             </div>
         </div>

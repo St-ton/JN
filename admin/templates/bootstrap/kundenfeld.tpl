@@ -153,9 +153,9 @@
                 {else}
                     {assign var=cfEdit value=false}
                 {/if}
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">{if isset($oKundenfeld->kKundenfeld) && $oKundenfeld->kKundenfeld > 0}{__('headingKundenfeldEdit')}{else}{__('headingKundenfeldCreate')}{/if}</h3>
+                <div class="card">
+                    <div class="card-header">
+                        <div class"card-title">{if isset($oKundenfeld->kKundenfeld) && $oKundenfeld->kKundenfeld > 0}{__('headingKundenfeldEdit')}{else}{__('headingKundenfeldCreate')}{/if}</div>
                     </div>
                     <div class="table-responsive">
                         <table class="table list table-bordered" id="formtable">
@@ -279,7 +279,7 @@
                             {/if}
                         </table>
                     </div>
-                    <div class="panel-footer">
+                    <div class="card-footer">
                         <button name="speichern" type="submit" class="btn btn-primary" value="{__('save')}"><i class="fa fa-save"></i> {__('save')}</button>
                     </div>
                 </div>
@@ -287,9 +287,9 @@
             </form>
 
 
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">{__('kundenfeldExistingDesc')}</h3>
+            <div class="card">
+                <div class="card-header">
+                    <div class"card-title">{__('kundenfeldExistingDesc')}</div>
                 </div>
                 {if isset($oKundenfeld_arr) && $oKundenfeld_arr|@count > 0}
                     <form method="post" action="kundenfeld.php">
@@ -341,10 +341,10 @@
                                 </tbody>
                             </table>
                         </div>
-                        <div class="panel-body">
+                        <div class="card-body">
                             <div class="alert alert-info">{__('kundenfeldPflichtDesc')}</div>
                         </div>
-                        <div class="panel-footer">
+                        <div class="card-footer">
                             <div class="btn-group">
                                 <button name="aktualisieren" type="submit" value="{__('update')}" class="btn btn-primary"><i class="fa fa-refresh"></i> {__('update')}</button>
                                 <button name="loeschen" type="submit" value="{__('delete')}" class="btn btn-danger">
@@ -354,7 +354,7 @@
                         </div>
                     </form>
                 {else}
-                    <div class="panel-body">
+                    <div class="card-body">
                         <div class="alert alert-info"><i class="fa fa-info-circle"></i> {__('noDataAvailable')}</div>
                     </div>
                 {/if}

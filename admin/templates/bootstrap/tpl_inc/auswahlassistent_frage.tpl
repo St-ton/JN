@@ -19,8 +19,8 @@ cDokuURL=__('auswahlassistentURL')}
                 <input class="form-control" name="kAuswahlAssistentFrage" type="hidden"
                        value="{if isset($kAuswahlAssistentFrage) && $kAuswahlAssistentFrage > 0}{$kAuswahlAssistentFrage}{else}{$oFrage->kAuswahlAssistentFrage}{/if}">
             {/if}
-            <div class="panel panel-default">
-                <div class="panel-body">
+            <div class="card">
+                <div class="card-body">
                     <div class="input-group">
                         <span class="input-group-addon">
                             <label for="cFrage">
@@ -110,7 +110,7 @@ cDokuURL=__('auswahlassistentURL')}
                         </span>
                     </div>
                 </div>
-                <div class="panel-footer">
+                <div class="card-footer">
                     <div class="btn-group">
                         <button name="speichernSubmit" type="submit" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
                         <a href="auswahlassistent.php" class="btn btn-danger">{__('goBack')}</a>

@@ -25,9 +25,9 @@
             {if isset($cSuche) && $cSuche|strlen > 0}
                 <input type="hidden" name="cSuche" value="{$cSuche}" />
             {/if}
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">{__('order')}</h3>
+            <div class="card">
+                <div class="card-header">
+                    <div class"card-title">{__('order')}</div>
                 </div>
                 <div class="table-responsive">
                     <table class="list table table-striped">
@@ -98,7 +98,7 @@
                         </tfoot>
                     </table>
                 </div>
-                <div class="panel-footer">
+                <div class="card-footer">
                     <button name="zuruecksetzenBTN" type="submit" class="btn btn-danger"><i class="fa fa-refresh"></i> {__('orderPickedUpResetBTN')}</button>
                 </div>
             </div>

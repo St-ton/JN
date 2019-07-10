@@ -40,9 +40,9 @@
                 </div>
             </div>
             <input name="a" type="hidden" value="delete" />
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">{__('emailhistory')}</h3>
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">{__('emailhistory')}</div>
                 </div>
                 <div class="table-responsive">
                     <table class="list table table-striped">
@@ -81,7 +81,7 @@
                         </tfoot>
                     </table>
                 </div>
-                <div class="panel-footer">
+                <div class="card-footer">
                     <div class="btn-group">
                         <button name="zuruecksetzenBTN" type="submit" class="btn btn-warning"><i class="fa fa-trash"></i> {__('deleteSelected')}</button>
                         <button name="remove_all" type="button" class="btn btn-danger" data-target="#confirmModal" data-toggle="modal"><i class="fa fa-trash"></i> {__('deleteAll')}</button>

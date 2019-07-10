@@ -4,11 +4,11 @@
 <div id="content" class="container-fluid">
     <form action="wawisync.php" method="post">
         {$jtl_token}
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">{__('username')}/{__('password')} {__('change')}</h3>
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">{__('username')}/{__('password')} {__('change')}</div>
             </div>
-            <div class="panel-body">
+            <div class="card-body">
                 <div class="input-group">
                     <span class="input-group-addon">
                         <label for="wawi-user">{__('user')}</label>
@@ -22,7 +22,7 @@
                     <input id="wawi-pass" name="wawi-pass" class="form-control" type="password" value="{$wawipass}" />
                 </div>
             </div>
-            <div class="panel-footer">
+            <div class="card-footer">
                 <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
             </div>
         </div>

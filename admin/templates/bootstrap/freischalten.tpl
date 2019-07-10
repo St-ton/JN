@@ -83,9 +83,9 @@
                     <input type="hidden" name="freischalten" value="1" />
                     <input type="hidden" name="bewertungen" value="1" />
                     <input type="hidden" name="tab" value="bewertungen" />
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <h3 class="panel-title">{__('reviews')}</h3>
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">{__('reviews')}</div>
                         </div>
                         <div class="table-responsive">
                             <table class="list table">
@@ -135,7 +135,7 @@
                                 </tfoot>
                             </table>
                         </div>
-                        <div class="panel-footer">
+                        <div class="card-footer">
                             <div class="btn-group">
                                 <button name="freischaltensubmit" type="submit" class="btn btn-primary"><i class="fa fa-thumbs-up"></i> {__('unlockMarked')}</button>
                                 <button name="freischaltenleoschen" type="submit" class="btn btn-danger"><i class="fa fa-trash"></i> {__('deleteSelected')}</button>
@@ -150,7 +150,7 @@
         <div id="livesearch" class="tab-pane fade {if isset($cTab) && $cTab === 'livesearch'} active in{/if}">
             {if $oSuchanfrage_arr|@count > 0 && $oSuchanfrage_arr}
                 {include file='tpl_inc/pagination.tpl' pagination=$oPagiSuchanfragen cAnchor='livesearch'}
-                <div class="panel panel-default">
+                <div class="card">
                     <form method="post" action="freischalten.php">
                         {$jtl_token}
                         <input type="hidden" name="freischalten" value="1" />
@@ -195,7 +195,7 @@
                                 </tfoot>
                             </table>
                         </div>
-                        <div class="panel-footer">
+                        <div class="card-footer">
                             <div class="btn-group p50">
                                 <button name="freischaltensubmit" type="submit" value="Markierte freischalten" class="btn btn-primary"><i class="fa fa-thumbs-up"></i> {__('unlockMarked')}</button>
                                 <button name="freischaltenleoschen" type="submit" value="Markierte löschen" class="btn btn-danger">
@@ -221,7 +221,7 @@
         <div id="newscomments" class="tab-pane fade {if isset($cTab) && $cTab === 'newscomments'} active in{/if}">
             {if $oNewsKommentar_arr|@count > 0 && $oNewsKommentar_arr}
                 {include file='tpl_inc/pagination.tpl' pagination=$oPagiNewskommentare cAnchor='newscomments'}
-                <div class="panel panel-default">
+                <div class="card">
                     <form method="post" action="freischalten.php">
                         {$jtl_token}
                         <input type="hidden" name="freischalten" value="1" />
@@ -270,7 +270,7 @@
                                 </tfoot>
                             </table>
                         </div>
-                        <div class="panel-footer">
+                        <div class="card-footer">
                             <div class="btn-group">
                                 <button name="freischaltensubmit" type="submit" value="Markierte freischalten" class="btn btn-primary"><i class="fa fa-thumbs-up"></i> {__('unlockMarked')}</button>
                                 <button name="freischaltenleoschen" type="submit" value="Markierte löschen" class="btn btn-danger">
@@ -287,7 +287,7 @@
         <div id="newsletter" class="tab-pane fade {if isset($cTab) && $cTab === 'newsletter'} active in{/if}">
             {if $oNewsletterEmpfaenger_arr|@count > 0 && $oNewsletterEmpfaenger_arr}
                 {include file='tpl_inc/pagination.tpl' pagination=$oPagiNewsletterEmpfaenger cAnchor='newsletter'}
-                <div class="panel panel-default">
+                <div class="card">
                     <form method="post" action="freischalten.php">
                         {$jtl_token}
                         <input type="hidden" name="freischalten" value="1" />
@@ -326,7 +326,7 @@
                                 </tfoot>
                             </table>
                         </div>
-                        <div class="panel-footer">
+                        <div class="card-footer">
                             <div class="btn-group">
                                 <button name="freischaltensubmit" type="submit" value="Markierte freischalten" class="btn btn-primary"><i class="fa fa-thumbs-up"></i> {__('unlockMarked')}</button>
                                 <button name="freischaltenleoschen" type="submit" value="Markierte löschen" class="btn btn-danger">

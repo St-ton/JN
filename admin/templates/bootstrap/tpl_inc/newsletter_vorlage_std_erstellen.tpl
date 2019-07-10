@@ -36,11 +36,11 @@
     {/if}
     <form name="formnewslettervorlagestd" id="formnewslettervorlagestd" method="post" action="newsletter.php" enctype="multipart/form-data">
         {$jtl_token}
-        <div class="panel panel-default settings">
-            <div class="panel-heading">
-                <h3 class="panel-title">{if isset($cPostVar_arr.cName)}{$cPostVar_arr.cName}{elseif isset($oNewslettervorlageStd->cName)}{$oNewslettervorlageStd->cName}{/if} {__('edit')}</h3>
+        <div class="card settings">
+            <div class="card-header">
+                <div class"card-title">{if isset($cPostVar_arr.cName)}{$cPostVar_arr.cName}{elseif isset($oNewslettervorlageStd->cName)}{$oNewslettervorlageStd->cName}{/if} {__('edit')}</div>
             </div>
-            <div class="panel-body">
+            <div class="card-body">
                 {$jtl_token}
                 <input name="newslettervorlagenstd" type="hidden" value="1">
                 <input name="vorlage_std_speichern" type="hidden" value="1">
@@ -383,7 +383,7 @@
                     {/foreach}
                 {/if}
             </div>
-            <div class="panel-footer">
+            <div class="card-footer">
                 <div class="btn-group">
                     {if (isset($oNewslettervorlageStd->kNewsletterVorlage) && $oNewslettervorlageStd->kNewsletterVorlage > 0) || (isset($cPostVar_arr.kNewslettervorlage) && $cPostVar_arr.kNewslettervorlage > 0)}
                         <a class="btn btn-default" href="newsletter.php?tab=newslettervorlagen&token={$smarty.session.jtl_token}"><i class="fa fa-angle-double-left"></i> {__('back')}</a>

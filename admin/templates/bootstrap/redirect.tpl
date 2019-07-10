@@ -106,7 +106,7 @@
 
 <div class="tab-content">
     <div role="tabpanel" class="tab-pane fade{if $cTab === 'redirects'} active in{/if}" id="redirects">
-        <div class="panel panel-default">
+        <div class="card">
             {include file='tpl_inc/filtertools.tpl' oFilter=$oFilter}
             {include file='tpl_inc/pagination.tpl' pagination=$pagination cAnchor='redirects'}
             <form method="post">
@@ -237,7 +237,7 @@
                 {else}
                     <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                 {/if}
-                <div class="panel-footer">
+                <div class="card-footer">
                     <div class="btn-group">
                         {if $oRedirect_arr|@count > 0}
                             <button name="action" value="save" class="btn btn-primary">
@@ -260,11 +260,11 @@
     <div role="tabpanel" class="tab-pane fade{if $cTab === 'new_redirect'} active in{/if}" id="new_redirect">
         <form method="post">
             {$jtl_token}
-            <div class="panel panel-default settings">
-                <div class="panel-heading">
-                    <h3 class="panel-title">{__('redirectNew')}</h3>
+            <div class="card settings">
+                <div class="card-header">
+                    <div class="card-title">{__('redirectNew')}</div>
                 </div>
-                <div class="panel-body">
+                <div class="card-body">
                     <div class="input-group">
                         <span class="input-group-addon">
                             <label for="cFromUrl">{__('redirectFrom')}:</label>
@@ -295,7 +295,7 @@
                         </script>
                     </div>
                 </div>
-                <div class="panel-footer">
+                <div class="card-footer">
                     <button name="action" value="new" class="btn btn-primary">
                         <i class="fa fa-save"></i> {__('create')}
                     </button>
@@ -304,11 +304,11 @@
         </form>
         <form method="post" enctype="multipart/form-data">
             {$jtl_token}
-            <div class="panel panel-default settings">
-                <div class="panel-heading">
-                    <h3 class="panel-title">{__('redirectCsvImport')}</h3>
+            <div class="card settings">
+                <div class="card-header">
+                    <div class="card-title">{__('redirectCsvImport')}</div>
                 </div>
-                <div class="panel-body">
+                <div class="card-body">
                     <div class="input-group">
                         <span class="input-group-addon">
                             <label for="cFile">{__('file')}:</label>
@@ -316,7 +316,7 @@
                         <input class="form-control" name="cFile" type="file" required>
                     </div>
                 </div>
-                <div class="panel-footer">
+                <div class="card-footer">
                     <button name="action" value="csvimport" class="btn btn-primary">
                         {__('import')}
                     </button>

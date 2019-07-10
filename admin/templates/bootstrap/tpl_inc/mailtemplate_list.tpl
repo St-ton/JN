@@ -1,9 +1,9 @@
 {if $mailTemplates|count > 0}
-	<div class="panel panel-default">
-		<div class="panel-heading">
-			<h3 class="panel-title">{$heading}</h3>
+	<div class="card">
+		<div class="card-header">
+			<div class="card-title">{$heading}</div>
 		</div>
-		<div class="panel-body table-responsive">
+		<div class="card-body table-responsive">
 			<table class="list table">
 				<thead>
 				<tr>

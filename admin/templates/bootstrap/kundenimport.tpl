@@ -5,11 +5,11 @@
     <form name="kundenimporter" method="post" action="kundenimport.php" enctype="multipart/form-data">
         {$jtl_token}
         <input type="hidden" name="kundenimport" value="1" />
-        <div class="settings panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">{__('customerImport')}</h3>
+        <div class="settings card">
+            <div class="card-header">
+                <div class="card-title">{__('customerImport')}</div>
             </div>
-            <div class="panel-body">
+            <div class="card-body">
                 <div class="input-group">
                     <span class="input-group-addon">
                         <label for="kSprache">{__('language')}</label>
@@ -55,7 +55,7 @@
                     </span>
                 </div>
             </div>
-            <div class="panel-footer">
+            <div class="card-footer">
                 <button type="submit" value="{__('import')}" class="btn btn-primary">{__('import')}</button>
             </div>
         </div>

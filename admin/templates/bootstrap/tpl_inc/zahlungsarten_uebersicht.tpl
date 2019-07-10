@@ -5,11 +5,11 @@
         <input type="hidden" name="checkNutzbar" value="1" />
         <button name="checkSubmit" type="submit" value="{__('paymentmethodsCheckAll')}" class="btn btn-info button"><i class="fa fa-refresh"></i> {__('paymentmethodsCheckAll')}</button>
     </form>
-    <div class="panel panel-default">
-        <div class="panel-heading">
-            <h3 class="panel-title">{__('installedPaymentTypes')}</h3>
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title">{__('installedPaymentTypes')}</div>
         </div>
-        <div class="panel-body table-responsive">
+        <div class="card-body table-responsive">
             <table class="list table">
                 <thead>
                     <tr>

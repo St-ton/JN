@@ -7,13 +7,13 @@
     {if !empty($tab)}
         <input type="hidden" name="tab" value="{$tab}" />
     {/if}
-    <div class="panel panel-default settings">
+    <div class="card settings">
         {if !empty($title)}
-            <div class="panel-heading">
-                <h3 class="panel-title">{$title}</h3>
+            <div class="card-header">
+                <div class="card-title">{$title}</div>
             </div>
         {/if}
-        <div class="panel-body">
+        <div class="card-body">
             {foreach $config as $configItem}
                 {if $configItem->cConf === 'Y'}
                     <div class="input-group">
@@ -54,7 +54,7 @@
                 {/if}
             {/foreach}
         </div>
-        <div class="panel-footer">
+        <div class="card-footer">
             <button name="speichern" type="submit" class="btn btn-primary"><i class="fa fa-save"></i> {if !empty($buttonCaption)}{$buttonCaption}{else}{__('save')}{/if}</button>
         </div>
     </div>

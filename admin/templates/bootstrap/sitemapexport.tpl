@@ -59,7 +59,7 @@
             </form>
         </div>
         <div id="downloads" class="tab-pane fade {if isset($cTab) && $cTab === 'downloads'} active in{/if}">
-            <div class="panel-heading well well-sm">
+            <div class="card-header well well-sm">
                 <div class="toolbar well well-sm">
                     <form id="formDeleteSitemapExport" method="post" action="sitemapexport.php" class="form-inline">
                         <div class="form-group">
@@ -84,7 +84,7 @@
                 {include file='tpl_inc/pagination.tpl' pagination=$oSitemapDownloadPagination cParam_arr=['tab' => 'downloads', 'nYear_downloads' => {$nSitemapDownloadYear}]}
             </div>
             {if isset($oSitemapDownload_arr) && $oSitemapDownload_arr|@count > 0}
-                <div class="panel panel-default">
+                <div class="card">
                     <form name="sitemapdownload" method="post" action="sitemapexport.php">
                         {$jtl_token}
                         <input type="hidden" name="download_edit" value="1" />
@@ -124,7 +124,7 @@
                                     </tr>
                                 </table>
                             </div>
-                            <div class="panel-footer">
+                            <div class="card-footer">
                                 <div class="button-group">
                                     <button class="btn btn-danger" name="loeschen" type="submit" value="{__('delete')}"><i class="fa fa-trash"></i> {__('deleteSelected')}</button>
                                 </div>
@@ -137,7 +137,7 @@
             {/if}
         </div>
         <div id="report" class="tab-pane fade {if isset($cTab) && $cTab === 'report'} active in{/if}">
-            <div class="panel-heading well well-sm">
+            <div class="card-header well well-sm">
                 <div class="toolbar well well-sm">
                     <form id="formDeleteSitemapReport" method="post" action="sitemapexport.php" class="form-inline">
                         <div class="form-group">
@@ -162,7 +162,7 @@
                 {include file='tpl_inc/pagination.tpl' pagination=$oSitemapReportPagination cParam_arr=['tab' => 'report', 'nYear_reports' => {$nSitemapReportYear}]}
             </div>
             {if isset($oSitemapReport_arr) && $oSitemapReport_arr|@count > 0}
-                <div class="panel panel-default">
+                <div class="card">
                     <form name="sitemapreport" method="post" action="sitemapexport.php">
                         {$jtl_token}
                         <input type="hidden" name="report_edit" value="1">
@@ -226,7 +226,7 @@
                                 </tr>
                             </table>
                         </div>
-                        <div class="panel-footer">
+                        <div class="card-footer">
                             <div class="button-group">
                                 <button name="loeschen" type="submit" value="{__('delete')}" class="btn btn-danger"><i class="fa fa-trash"></i> {__('deleteSelected')}</button>
                             </div>

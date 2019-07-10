@@ -15,9 +15,9 @@
         {/if}
         <input type="hidden" name="kNews" value="{$oNewsKommentar->getNewsID()}" />
         <input type="hidden" name="kNewsKommentar" value="{$oNewsKommentar->getID()}" />
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">{$oNewsKommentar->getName()} - {__('newsCommentEdit')}</h3>
+        <div class="card">
+            <div class="card-header">
+                <div class"card-title">{$oNewsKommentar->getName()} - {__('newsCommentEdit')}</div>
             </div>
             <div class="table-responsive">
                 <table class="list table" id="formtable">
@@ -38,7 +38,7 @@
                     </tr>
                 </table>
             </div>
-            <div class="panel-footer">
+            <div class="card-footer">
                 <span class="btn-group">
                     <button name="newskommentarsavesubmit" type="submit" value="{__('save')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
                     <a class="btn btn-danger" href="news.php{if isset($cBackPage)}?{$cBackPage}{elseif isset($cTab)}?tab={$cTab}{/if}"><i class="fa fa-exclamation"></i> {__('Cancel')}</a>

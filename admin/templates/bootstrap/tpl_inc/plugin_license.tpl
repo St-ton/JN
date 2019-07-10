@@ -1,4 +1,4 @@
-<div class="panel panel-default">
+<div class="card">
     <div class="markdown-wrapper">
         <div class="markdown">
             {$content}

@@ -264,7 +264,7 @@ body {
   padding-left: 0;
   width: 100%;
 }
-#tourForm input:checked + .panel-default > .panel-heading {
+#tourForm input:checked + .panel-default > .card-header {
   background-color: #5cbcf6;
   background-image: none;
   color: #fff;

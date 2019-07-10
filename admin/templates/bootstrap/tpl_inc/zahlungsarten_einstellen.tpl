@@ -5,11 +5,11 @@
         <input type="hidden" name="einstellungen_bearbeiten" value="1" />
         <input type="hidden" name="kZahlungsart" value="{if isset($zahlungsart->kZahlungsart)}{$zahlungsart->kZahlungsart}{/if}" />
 
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">{__('settings')}: {__('general')}</h3>
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">{__('settings')}: {__('general')}</div>
             </div>
-            <div class="panel-body">
+            <div class="card-body">
                 <ul class="jtl-list-group">
                     {foreach $sprachen as $language}
                         {assign var=cISO value=$language->getIso()}
@@ -142,11 +142,11 @@
                 </ul>
             </div>
         </div>
-        <div class="panel panel-default">
+        <div class="card">
             {assign var=hasBody value=false}
             {foreach $Conf as $cnf}
             {if $cnf->cConf === 'Y'}
-            {if $hasBody === false}<div class="panel-body">{assign var=hasBody value=true}{/if}
+            {if $hasBody === false}<div class="card-body">{assign var=hasBody value=true}{/if}
             <div class="input-group">
                     <span class="input-group-addon">
                         <label for="{$cnf->cWertName}">{$cnf->cName}</label>
@@ -170,10 +170,10 @@
                     <span class="input-group-addon">{getHelpDesc cDesc=$cnf->cBeschreibung}</span>
                 </div>
                 {else}
-                <div class="panel-heading">
-                    <h3 class="panel-title">{__('settings')}: {$cnf->cName}</h3>
+                <div class="card-header">
+                    <div class="card-title">{__('settings')}: {$cnf->cName}</div>
                 </div>
-                <div class="panel-body">
+                <div class="card-body">
                     {assign var=hasBody value=true}
                     {/if}
                     {/foreach}

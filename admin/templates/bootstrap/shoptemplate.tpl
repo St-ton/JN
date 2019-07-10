@@ -23,11 +23,11 @@
             {if isset($oTemplate->eTyp) && ($oTemplate->eTyp === 'admin' || ($oTemplate->eTyp !== 'mobil' && $oTemplate->bResponsive))}
                 <input type="hidden" name="eTyp" value="{if !empty($oTemplate->eTyp)}{$oTemplate->eTyp}{else}standard{/if}" />
             {else}
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">{__('mobile')}</h3>
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">{__('mobile')}</div>
                     </div>
-                    <div class="panel-body">
+                    <div class="card-body">
                         {if $oTemplate->eTyp === 'mobil' && $oTemplate->bResponsive}
                             <div class="alert alert-warning">{__('warning_responsive_mobile')}</div>
                         {/if}
@@ -51,11 +51,11 @@
             {/if}
 
             {foreach $oEinstellungenXML as $oSection}
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">{$oSection->cName}</h3>
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">{$oSection->cName}</div>
                     </div>
-                    <div class="panel-body">
+                    <div class="card-body">
                         <div class="row">
                             {foreach $oSection->oSettings_arr as $oSetting}
                                 {if $oSetting->cKey === 'theme_default' && isset($themePreviews) && $themePreviews !== null}

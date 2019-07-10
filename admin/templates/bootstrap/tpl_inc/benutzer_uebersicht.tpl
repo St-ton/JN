@@ -10,9 +10,9 @@
     </ul>
     <div class="tab-content">
         <div id="account_view" class="tab-pane fade{if empty($cTab) || $cTab === 'account_view'} active in{/if}">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">{__('benutzerKategorie')}</h3>
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">{__('benutzerKategorie')}</div>
                 </div>
                 <div class="table-responsive">
                     <table class="list table">
@@ -70,7 +70,7 @@
                         </tbody>
                     </table>
                 </div>
-                <div class="panel-footer">
+                <div class="card-footer">
                     <form action="benutzerverwaltung.php" method="post">
                         {$jtl_token}
                         <input type="hidden" name="action" value="account_edit" />
@@ -80,9 +80,9 @@
             </div>
         </div>
         <div id="group_view" class="tab-pane fade{if isset($cTab) && $cTab === 'group_view'} active in{/if}">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">{__('gruppenKategorie')}</h3>
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">{__('gruppenKategorie')}</div>
                 </div>
                 <div class="table-responsive">
                     <table class="list table">
@@ -119,7 +119,7 @@
                         </tbody>
                     </table>
                 </div>
-                <div class="panel-footer">
+                <div class="card-footer">
                     <form action="benutzerverwaltung.php" method="post">
                         <input type="hidden" name="action" value="group_edit" />
                         {$jtl_token}

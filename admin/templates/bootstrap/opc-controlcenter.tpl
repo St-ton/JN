@@ -16,7 +16,7 @@
 
 <div class="tab-content">
     <div class="tab-pane fade active in" id="pages">
-        <div class="panel panel-default">
+        <div class="card">
             {assign var=allPages value=$opcPageDB->getPages()}
             {if $allPages|@count > 0}
                 {assign var=pages value=array_slice(
@@ -139,7 +139,7 @@
         </div>
     </div>
     <div class="tab-pane fade" id="portlets">
-        <div class="panel panel-default">
+        <div class="card">
             <div class="table-responsive">
                 <table class="list table">
                     <thead>
@@ -169,7 +169,7 @@
         </div>
     </div>
     <div class="tab-pane fade" id="blueprints">
-        <div class="panel panel-default">
+        <div class="card">
             {assign var=blueprints value=$opc->getBlueprints()}
             {if $blueprints|@count > 0}
                 <div class="table-responsive">

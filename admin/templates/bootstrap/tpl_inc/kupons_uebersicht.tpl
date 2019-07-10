@@ -3,7 +3,7 @@
 
 {function kupons_uebersicht_tab}
     <div id="{$cKuponTyp}" class="tab-pane fade{if $tab === $cKuponTyp} active in{/if}">
-        <div class="panel panel-default">
+        <div class="card">
             {if $nKuponCount > 0}
                 {include file='tpl_inc/filtertools.tpl' oFilter=$oFilter cParam_arr=['tab'=>$cKuponTyp]}
             {/if}
@@ -112,7 +112,7 @@
                         {__('emptySetMessage1')} {$cKuponTypName}s {__('emptySetMessage2')}
                     </div>
                 {/if}
-                <div class="panel-footer">
+                <div class="card-footer">
                     <div class="btn-group">
                         <a href="kupons.php?kKupon=0&cKuponTyp={$cKuponTyp}&token={$smarty.session.jtl_token}"
                            class="btn btn-primary" title="{__('modify')}">

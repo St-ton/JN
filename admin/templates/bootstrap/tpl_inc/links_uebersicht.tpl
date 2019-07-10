@@ -12,16 +12,16 @@
             <button class="btn btn-primary add" name="action" value="create-linkgroup"><i class="fa fa-share"></i> {__('newLinkGroup')}</button>
         </form>
     </div>
-    <div class="panel-group accordion" id="accordion2" role="tablist" aria-multiselectable="true">
+    <div class="card-group accordion" id="accordion2" role="tablist" aria-multiselectable="true">
         {foreach $linkgruppen as $linkgruppe}
             {if $linkgruppe->getID() < 0 && $linkgruppe->getLinks()->count() === 0}
                 {continue}
             {/if}
             {assign var=lgName value='linkgroup-'|cat:$linkgruppe->getID()}
             {assign var=missingTranslations value=$linkAdmin->getMissingLinkGroupTranslations($linkgruppe->getID())}
-            <div class="panel panel-{if $linkgruppe->getID() > 0}default{else}danger{/if}">
-                <div class="panel-heading accordion-heading">
-                    <h3 class="panel-title" id="heading-{$lgName}">
+            <div class="card panel-{if $linkgruppe->getID() > 0}default{else}danger{/if}">
+                <div class="card-header accordion-heading">
+                    <div class="card-title" id="heading-{$lgName}">
                         <span class="pull-left">
                             <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapse{$lgName}"{if $missingTranslations|count > 0} title="{__('missingTranslations')}: {$missingTranslations|count}"{/if}>
                                 <span class="accordion-toggle-icon"><i class="fa fa-plus"></i></span>
@@ -33,7 +33,7 @@
                                 {if $missingTranslations|count > 0}<i class="fa fa-warning"></i>{/if}
                             </a>
                         </span>
-                    </h3>
+                    </div>
                     <form method="post" action="links.php">
                         {$jtl_token}
                         <span class="btn-group pull-right">
@@ -52,7 +52,7 @@
                         </span>
                     </form>
                 </div>
-                <div id="collapse{$lgName}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading-{$lgName}">
+                <div id="collapse{$lgName}" class=" collapse" role="tabpanel" aria-labelledby="heading-{$lgName}">
                     {*{if $missingTranslations|count > 0}*}
                         {*<div class="help-block container">*}
                             {*<p>Achtung: Übersetzungen fehlen!</p>*}

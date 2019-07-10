@@ -28,18 +28,18 @@ var pies = [];
     <div class="tab-content">
         <div id="plugins" class="tab-pane fade {if !isset($tab) || $tab === 'massaction' || $tab === 'uebersicht'} active in{/if}">
             {if $pluginProfilerData|@count > 0}
-                <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+                <div class="card-group" id="accordion" role="tablist" aria-multiselectable="true">
                     {foreach $pluginProfilerData as $profile}
-                    <div class="panel panel-default">
-                        <div class="panel-heading" role="tab" data-idx="{$profile@index}" id="heading-profile-{$profile@index}">
-                            <h4 class="panel-title">
+                    <div class="card">
+                        <div class="card-header" role="tab" data-idx="{$profile@index}" id="heading-profile-{$profile@index}">
+                            <div class="card-title">
                                 <a data-toggle="collapse" data-parent="#accordion" href="#profile-{$profile@index}" aria-expanded="true" aria-controls="profile-{$profile@index}">
                                     <span class="badge left">{$profile->runID}</span> {$profile->url} - {$profile->timestamp} - {$profile->total_time}s
                                 </a>
-                            </h4>
+                            </div>
                         </div>
-                        <div id="profile-{$profile@index}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading-profile-{$profile@index}">
-                            <div class="panel-body">
+                        <div id="profile-{$profile@index}" class="collapse collapse" role="tabpanel" aria-labelledby="heading-profile-{$profile@index}">
+                            <div class="card-body">
                                 <div id="profile-pie-chart{$profile@index}" class="profiler-pie-chart"></div>
                                 <div class="list-group">
                                     {foreach $profile->data as $file}
@@ -52,7 +52,7 @@ var pies = [];
                                     {/foreach}
                                 </div>
                             </div>
-                            <div class="panel-footer">
+                            <div class="card-footer">
                                 <form class="delete-run" action="profiler.php" method="post">
                                     {$jtl_token}
                                     <input type="hidden" value="{$profile->runID}" name="run-id" />
@@ -69,18 +69,18 @@ var pies = [];
         </div>
         <div id="sqlprofiler" class="tab-pane fade{if isset($tab) && $tab === 'sqlprofiler'} active in{/if}">
             {if $sqlProfilerData !== null && $sqlProfilerData|@count > 0}
-                <div class="panel-group" id="accordion2" role="tablist" aria-multiselectable="true">
+                <div class="card-group" id="accordion2" role="tablist" aria-multiselectable="true">
                     {foreach $sqlProfilerData as $run}
-                        <div class="panel panel-default">
-                            <div class="panel-heading" role="tab" data-idx="{$run@index}" id="heading-sql-profile-{$run@index}">
-                                <h4 class="panel-title">
+                        <div class="card">
+                            <div class="card-header" role="tab" data-idx="{$run@index}" id="heading-sql-profile-{$run@index}">
+                                <div class="card-title">
                                     <a data-toggle="collapse" data-parent="#accordion2" href="#sql-profile-{$run@index}" aria-expanded="true" aria-controls="profile-{$run@index}">
                                         <span class="badge left">{$run->runID}</span> {$run->url} - {$run->timestamp} - {$run->total_time}s
                                     </a>
-                                </h4>
+                                </div>
                             </div>
-                            <div id="sql-profile-{$run@index}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading-sql-profile-{$run@index}">
-                                <div class="panel-body">
+                            <div id="sql-profile-{$run@index}" class="collapse collapse" role="tabpanel" aria-labelledby="heading-sql-profile-{$run@index}">
+                                <div class="card-body">
                                     <p><span class="label2">{__('totalQueries')}: </span> <span class="text"> {$run->total_count}</span></p>
                                     <p><span class="label2">{__('runtime')}: </span> <span class="text"> {$run->total_time}</span></p>
                                     <p><span class="label2">{__('tables')}:</span></p>
@@ -108,7 +108,7 @@ var pies = [];
                                         {/foreach}
                                     </ul>
                                 </div>
-                                <div class="panel-footer">
+                                <div class="card-footer">
                                     <form class="delete-run" action="profiler.php" method="post">
                                         {$jtl_token}
                                         <input type="hidden" value="{$run->runID}" name="run-id" />

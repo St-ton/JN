@@ -65,7 +65,7 @@
     </ul>
     <div class="tab-content">
         <div id="variables" class="tab-pane fade {if $tab === 'variables'}active in{/if}">
-            <div class="panel panel-default">
+            <div class="card">
                 {if $bSpracheAktiv}
                     {include file='tpl_inc/filtertools.tpl' oFilter=$oFilter}
                     {include file='tpl_inc/pagination.tpl' pagination=$pagination}
@@ -140,14 +140,14 @@
                     {else}
                         <div class="alert alert-info" role="alert">{__('notImportedYet')}</div>
                     {/if}
-                    <div class="panel-footer">
+                    <div class="card-footer">
                         {sprache_buttons}
                     </div>
                 </form>
             </div>
         </div>
         <div id="notfound" class="tab-pane fade {if $tab === 'notfound'}active in{/if}">
-            <div class="panel panel-default">
+            <div class="card">
                 {if $oNotFound_arr|@count > 0}
                     <table class="list table">
                         <thead>
@@ -177,7 +177,7 @@
                 {else}
                     <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                 {/if}
-                <div class="panel-footer">
+                <div class="card-footer">
                     <div class="btn-group">
                         <a href="sprache.php?token={$smarty.session.jtl_token}&action=clearlog&tab=notfound" class="btn btn-danger">
                             <i class="fa fa-refresh"></i>

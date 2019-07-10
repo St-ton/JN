@@ -17,8 +17,8 @@
                 <input class="form-control" name="kAuswahlAssistentGruppe" type="hidden"
                        value="{if isset($kAuswahlAssistentGruppe) && $kAuswahlAssistentGruppe > 0}{$kAuswahlAssistentGruppe}{else}{$oGruppe->kAuswahlAssistentGruppe}{/if}">
             {/if}
-            <div class="panel panel-default">
-                <div class="panel-body">
+            <div class="card">
+                <div class="card-body">
                     <div class="input-group">
                     <span class="input-group-addon">
                         <label for="cName">{__('name')}{if isset($cPlausi_arr.cName)} <span class="fillout">{__('FillOut')}</span>{/if}</label>
@@ -159,7 +159,7 @@
                         </span>
                     </div>
                 </div>
-                <div class="panel-footer">
+                <div class="card-footer">
                     <div class="btn-group">
                         <button name="speicherGruppe" type="submit" value="save" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
                         <a href="auswahlassistent.php" class="btn btn-danger">{__('goBack')}</a>

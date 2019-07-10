@@ -61,16 +61,16 @@
                     </div>
                 {else}
                     {if $open}</div></div>{/if}
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <h3 class="panel-title">{$cnf->cName}
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">{$cnf->cName}
                             <span class="pull-right">{getHelpDesc cID=$cnf->kEinstellungenConf}</span>
                             {if isset($cnf->cSektionsPfad) && $cnf->cSektionsPfad|strlen > 0}
                                 <span class="path"><strong>{__('settingspath')}:</strong> {$cnf->cSektionsPfad}</span>
                             {/if}
-                            </h3>
+                            </div>
                         </div>
-                        <div class="panel-body">
+                        <div class="card-body">
                         {assign var=open value=true}
                 {/if}
             {/foreach}

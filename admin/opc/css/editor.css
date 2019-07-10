@@ -450,7 +450,7 @@ html, body {
   font-weight: bold;
 }
 #opc #configModal .product-filter-config .active-filters {
-  margin-bottom: 16px;
+  margin-bottom: 10px;
 }
 #opc #configModal .product-filter-config .active-filters .filters-enabled button {
   background-color: #435A6B;

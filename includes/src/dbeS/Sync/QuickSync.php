@@ -83,7 +83,7 @@ final class QuickSync extends AbstractSync
             $upd->dLetzteAktualisierung = 'NOW()';
             $this->db->update('tartikel', 'kArtikel', (int)$product->kArtikel, $upd);
             \executeHook(\HOOK_QUICKSYNC_XML_BEARBEITEINSERT, ['oArtikel' => $product]);
-            // clear object cache for this article and its parent if there is any
+            // clear object cache for this product and its parent if there is any
             $parentProduct = $this->db->select(
                 'tartikel',
                 'kArtikel',
@@ -101,8 +101,9 @@ final class QuickSync extends AbstractSync
             $clearTags[] = (int)$product->kArtikel;
             $this->sendAvailabilityMails($product, $conf);
         }
+        $clearTags = \array_unique($clearTags);
         $this->handlePriceRange($clearTags);
-        $this->cache->flushTags(map(\array_unique($clearTags), function ($e) {
+        $this->cache->flushTags(map($clearTags, function ($e) {
             return \CACHING_GROUP_ARTICLE . '_' . $e;
         }));
     }

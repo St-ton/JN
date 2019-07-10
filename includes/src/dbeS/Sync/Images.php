@@ -606,10 +606,10 @@ final class Images extends AbstractSync
                 continue;
             }
             // first delete by kArtikelPict
-            $this->deleteArtikelPict($image->kArtikelPict, 0);
+            $this->deleteProductImage((int)$image->kArtikelPict);
             // then delete by kArtikel + nNr since Wawi > .99923 has changed all kArtikelPict keys
-            if (isset($image->nNr) && $image->nNr > 0) {
-                $this->deleteArtikelPict($image->kArtikel, $image->nNr);
+            if ($image->nNr > 0) {
+                $this->deleteProductImageByProductID((int)$image->kArtikel, $image->nNr);
             }
             if ($image->kMainArtikelBild > 0) {
                 $main = $this->db->select(
@@ -1115,11 +1115,11 @@ final class Images extends AbstractSync
                 for ($i = 0; $i < (\count($xml['del_bilder']['tArtikelPict']) / 2); $i++) {
                     $index        = $i . ' attr';
                     $productImage = (object)$xml['del_bilder']['tArtikelPict'][$index];
-                    $this->deleteArtikelPict($productImage->kArtikel, $productImage->nNr);
+                    $this->deleteProductImageByProductID($productImage->kArtikel, $productImage->nNr);
                 }
             } else {
                 $productImage = (object)$xml['del_bilder']['tArtikelPict attr'];
-                $this->deleteArtikelPict($productImage->kArtikel, $productImage->nNr);
+                $this->deleteProductImageByProductID($productImage->kArtikel, $productImage->nNr);
             }
         }
         // Kategoriebilder löschen Wawi > .99923
@@ -1196,19 +1196,120 @@ final class Images extends AbstractSync
     }
 
     /**
-     * @param int      $productImageID
-     * @param int|null $no
+     * @param int      $productID
+     * @param int $no
      */
-    private function deleteArtikelPict(int $productImageID, int $no = null): void
+    private function deleteProductImageByProductID(int $productID, int $no): void
     {
-        if ($productImageID <= 0) {
+        if ($productID < 1 || $no < 1) {
             return;
         }
-        if ($no !== null && $no > 0) {
-            $image          = $this->db->select('tartikelpict', 'kArtikel', $productImageID, 'nNr', $no);
-            $productImageID = $image->kArtikelPict ?? 0;
+        $image = $this->db->select('tartikelpict', 'kArtikel', $productID, 'nNr', $no);
+        $this->deleteProductImage((int)($image->kArtikelPict ?? 0));
+    }
+
+    /**
+     * @param int $imageID
+     * @return int
+     */
+    protected function deleteProductImage(int $imageID): void
+    {
+        if ($imageID < 1) {
+            return;
         }
-        $this->deleteProductImage(null, 0, $productImageID);
+        $image     = $this->db->select('tartikelpict', 'kArtikelPict', $imageID);
+        $productID = isset($image->kArtikel) ? (int)$image->kArtikel : 0;
+        // Das Bild ist eine Verknüpfung
+        if (isset($image->kMainArtikelBild) && $image->kMainArtikelBild > 0 && $productID > 0) {
+            // Existiert der Artikel vom Mainbild noch?
+            $main = $this->db->query(
+                'SELECT kArtikel
+                FROM tartikel
+                WHERE kArtikel = (
+                    SELECT kArtikel
+                        FROM tartikelpict
+                        WHERE kArtikelPict = ' . (int)$image->kMainArtikelBild . ')',
+                ReturnType::SINGLE_OBJECT
+            );
+            // Main Artikel existiert nicht mehr
+            if (!isset($main->kArtikel) || (int)$main->kArtikel === 0) {
+                // Existiert noch eine andere aktive Verknüpfung auf das Mainbild?
+                $productImages = $this->db->query(
+                    'SELECT kArtikelPict
+                    FROM tartikelpict
+                    WHERE kMainArtikelBild = ' . (int)$image->kMainArtikelBild . '
+                        AND kArtikel != ' . $productID,
+                    ReturnType::ARRAY_OF_OBJECTS
+                );
+                // Lösche das MainArtikelBild
+                if (\count($productImages) === 0) {
+                    $this->deleteImageFiles($image->cPfad);
+                    $this->db->delete('tartikelpict', 'kArtikelPict', (int)$image->kMainArtikelBild);
+                }
+            }
+            // Bildverknüpfung aus DB löschen
+            $this->db->delete('tartikelpict', 'kArtikelPict', (int)$image->kArtikelPict);
+        } elseif (isset($image->kMainArtikelBild) && (int)$image->kMainArtikelBild === 0) {
+            // Das Bild ist ein Hauptbild
+            // Gibt es Artikel die auf Bilder des zu löschenden Artikel verknüpfen?
+            $childProducts = $this->db->queryPrepared(
+                'SELECT kArtikelPict
+                FROM tartikelpict
+                WHERE kMainArtikelBild = :img',
+                ['img' => (int)$image->kArtikelPict],
+                ReturnType::ARRAY_OF_OBJECTS
+            );
+            if (\count($childProducts) === 0) {
+                $data = $this->db->queryPrepared(
+                    'SELECT COUNT(*) AS nCount
+                    FROM tartikelpict
+                    WHERE cPfad = :pth',
+                    ['pth' => $image->cPfad],
+                    ReturnType::SINGLE_OBJECT
+                );
+                if (isset($data->nCount) && $data->nCount < 2) {
+                    $this->deleteImageFiles($image->cPfad);
+                }
+            } else {
+                // Reorder linked images because master imagelink will be deleted
+                $next = $childProducts[0]->kArtikelPict;
+                // this will be the next masterimage
+                $this->db->update(
+                    'tartikelpict',
+                    'kArtikelPict',
+                    (int)$next,
+                    (object)['kMainArtikelBild' => 0]
+                );
+                // now link other images to the new masterimage
+                $this->db->update(
+                    'tartikelpict',
+                    'kMainArtikelBild',
+                    (int)$image->kArtikelPict,
+                    (object)['kMainArtikelBild' => (int)$next]
+                );
+            }
+            $this->db->delete('tartikelpict', 'kArtikelPict', (int)$image->kArtikelPict);
+        }
+        $this->cache->flushTags([\CACHING_GROUP_ARTICLE . '_' . $productID]);
+    }
+
+    /**
+     * @param string $path
+     */
+    private function deleteImageFiles(string $path): void
+    {
+        $files = [
+            \PFAD_ROOT . \PFAD_PRODUKTBILDER_MINI . $path,
+            \PFAD_ROOT . \PFAD_PRODUKTBILDER_KLEIN . $path,
+            \PFAD_ROOT . \PFAD_PRODUKTBILDER_NORMAL . $path,
+            \PFAD_ROOT . \PFAD_PRODUKTBILDER_GROSS . $path,
+            \PFAD_ROOT . \PFAD_MEDIA_IMAGE_STORAGE . $path
+        ];
+        foreach ($files as $file) {
+            if (\file_exists($file)) {
+                @\unlink($file);
+            }
+        }
     }
 
     /**

@@ -25,22 +25,25 @@ final class Manufacturers extends AbstractSync
      */
     public function handle(Starter $starter)
     {
+        $cacheTags = [];
         foreach ($starter->getXML() as $i => $item) {
             [$file, $xml] = [\key($item), \reset($item)];
             if (\strpos($file, 'del_hersteller.xml') !== false) {
-                $this->handleDeletes($xml);
+                $cacheTags[] = $this->handleDeletes($xml);
             } elseif (\strpos($file, 'hersteller.xml') !== false) {
-                $this->handleInserts($xml);
+                $cacheTags[] = $this->handleInserts($xml);
             }
         }
+        $this->cache->flushTags(\array_unique(flatten($cacheTags)));
 
         return null;
     }
 
     /**
      * @param array $xml
+     * @return array
      */
-    private function handleDeletes(array $xml): void
+    private function handleDeletes(array $xml): array
     {
         $cacheTags = [];
         $source    = $xml['del_hersteller']['kHersteller'] ?? [];
@@ -64,17 +67,19 @@ final class Manufacturers extends AbstractSync
                 $cacheTags[] = \CACHING_GROUP_ARTICLE . '_' . $product->kArtikel;
             }
         }
-        $this->cache->flushTags(flatten($cacheTags));
+
+        return flatten($cacheTags);
     }
 
     /**
      * @param array $xml
+     * @return array
      */
-    private function handleInserts(array $xml): void
+    private function handleInserts(array $xml): array
     {
         $source = $xml['hersteller']['thersteller'] ?? null;
         if (!\is_array($source)) {
-            return;
+            return [];
         }
         $manufacturers = $this->mapper->mapArray($xml['hersteller'], 'thersteller', 'mHersteller');
         $languages     = LanguageHelper::getAllLanguages();
@@ -136,6 +141,7 @@ final class Manufacturers extends AbstractSync
                 $cacheTags[] = \CACHING_GROUP_ARTICLE . '_' . (int)$product->kArtikel;
             }
         }
-        $this->cache->flushTags($cacheTags);
+
+        return $cacheTags;
     }
 }

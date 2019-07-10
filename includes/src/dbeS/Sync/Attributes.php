@@ -474,18 +474,12 @@ final class Attributes extends AbstractSync
                 $attributeValue->kMerkmalWert = (int)$attributeValue->kMerkmalWert;
                 foreach ($languages as $language) {
                     $language->kSprache = (int)$language->kSprache;
-
-                    $exists = false;
                     foreach ($attributeValue->kSprache_arr as $languageID) {
                         $languageID = (int)$languageID;
                         // Laufe alle gefüllten Sprachen durch
                         if ($languageID === $language->kSprache) {
-                            $exists = true;
-                            break;
+                            continue 2;
                         }
-                    }
-                    if ($exists) {
-                        continue;
                     }
                     // Sprache vom Shop wurde nicht von der Wawi mitgeschickt und muss somit in tseo nachgefüllt werden
                     $seo = Seo::checkSeo(Seo::getSeo($attributeValue->cNameSTD ?? ''));

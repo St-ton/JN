@@ -201,10 +201,8 @@ final class Customer extends AbstractSync
     private function handleInserts(array $xml): array
     {
         $res                     = [];
-        $nr                      = 0;
         $customer                = new Kunde();
         $customer->kKundengruppe = 0;
-        $customerAttributes      = [];
 
         if (\is_array($xml['tkunde attr'])) {
             $customer->kKundengruppe = (int)$xml['tkunde attr']['kKundengruppe'];
@@ -214,26 +212,9 @@ final class Customer extends AbstractSync
             return $res;
         }
         $source = $xml['tkunde'];
-        $crypto = Shop::Container()->getCryptoService();
         $this->mapper->mapObject($customer, $source, 'mKunde');
-        // Kundenattribute
-        if (GeneralObject::hasCount('tkundenattribut', $source)) {
-            $members = \array_keys($source['tkundenattribut']);
-            if ($members[0] == '0') {
-                foreach ($source['tkundenattribut'] as $data) {
-                    $customerAttribute        = new stdClass();
-                    $customerAttribute->cName = $data['cName'];
-                    $customerAttribute->cWert = $data['cWert'];
-                    $customerAttributes[]     = $customerAttribute;
-                }
-            } else {
-                $customerAttribute        = new stdClass();
-                $customerAttribute->cName = $source['tkundenattribut']['cName'];
-                $customerAttribute->cWert = $source['tkundenattribut']['cWert'];
-                $customerAttributes[]     = $customerAttribute;
-            }
-        }
-        $customer->cAnrede = $this->mapSalutation($customer->cAnrede);
+        $customerAttributes = $this->getCustomerAttributes($source);
+        $customer->cAnrede  = $this->mapSalutation($customer->cAnrede);
 
         $lang = $this->db->select('tsprache', 'kSprache', (int)$customer->kSprache);
         if (empty($lang->kSprache)) {
@@ -241,65 +222,11 @@ final class Customer extends AbstractSync
             $customer->kSprache = $lang->kSprache;
         }
         $kInetKunde  = (int)$xml['tkunde attr']['kKunde'];
-        $oldCustomer = new stdClass();
-        if ($kInetKunde > 0) {
-            $oldCustomer = new Kunde($kInetKunde);
-        }
+        $oldCustomer = $kInetKunde > 0 ? new Kunde($kInetKunde) : new stdClass();
         // Kunde existiert mit dieser kInetKunde
         // Kunde wird aktualisiert bzw. seine KdGrp wird geändert
         if (isset($oldCustomer->kKunde) && $oldCustomer->kKunde > 0) {
-            // Angaben vom alten Kunden übernehmen
-            $customer->kKunde      = $kInetKunde;
-            $customer->cAbgeholt   = 'Y';
-            $customer->cAktiv      = 'Y';
-            $customer->dVeraendert = 'NOW()';
-
-            if ($customer->cMail !== $oldCustomer->cMail) {
-                // E-Mail Adresse geändert - Verwendung prüfen!
-                if (Text::filterEmailAddress($customer->cMail) === false
-                    || SimpleMail::checkBlacklist($customer->cMail)
-                    || $this->db->select('tkunde', 'cMail', $customer->cMail, 'nRegistriert', 1) !== null
-                ) {
-                    // E-Mail ist invalide, blacklisted bzw. wird bereits im Shop verwendet
-                    $res['keys']['tkunde attr']['kKunde'] = 0;
-                    $res['keys']['tkunde']                = '';
-
-                    return $res;
-                }
-                // Mail an Kunden mit Info, dass Zugang verändert wurde
-                $obj         = new stdClass();
-                $obj->tkunde = $customer;
-
-                $mailer = Shop::Container()->get(Mailer::class);
-                $mail   = new Mail();
-                $mailer->send($mail->createFromTemplateID(\MAILTEMPLATE_ACCOUNTERSTELLUNG_DURCH_BETREIBER, $obj));
-            }
-
-            $customer->cPasswort    = $oldCustomer->cPasswort;
-            $customer->nRegistriert = $oldCustomer->nRegistriert;
-            $customer->dErstellt    = $oldCustomer->dErstellt;
-            $customer->fGuthaben    = $oldCustomer->fGuthaben;
-            $customer->cHerkunft    = $oldCustomer->cHerkunft;
-            // schaue, ob dieser Kunde diese Kundengruppe schon hat
-            if ($oldCustomer->kKundengruppe != $customer->kKundengruppe && $customer->cMail) {
-                // Mail an Kunden mit Info, dass Kundengruppe verändert wurde
-                $obj         = new stdClass();
-                $obj->tkunde = $customer;
-
-                $mailer = Shop::Container()->get(Mailer::class);
-                $mail   = new Mail();
-                $mailer->send($mail->createFromTemplateID(\MAILTEMPLATE_KUNDENGRUPPE_ZUWEISEN, $obj));
-            }
-            // Hausnummer extrahieren
-            $this->extractStreet($customer);
-            // $this->upsert('tkunde', [$Kunde], 'kKunde');
-            $customer->updateInDB();
-            Kundendatenhistory::saveHistory($oldCustomer, $customer, Kundendatenhistory::QUELLE_DBES);
-            if (\count($customerAttributes) > 0) {
-                $this->saveAttribute($customer->kKunde, $customer->kSprache, $customerAttributes);
-            }
-            $res['keys']['tkunde attr']['kKunde'] = $kInetKunde;
-            $res['keys']['tkunde']                = '';
+            $res = $this->merge($customer, $oldCustomer, $kInetKunde, $customerAttributes, $res);
         } else {
             // Kunde existiert mit dieser kInetKunde im Shop nicht. Gib diese Info zurück an Wawi
             if ($kInetKunde > 0) {
@@ -326,135 +253,215 @@ final class Customer extends AbstractSync
             );
             if (isset($oldCustomer->kKunde) && $oldCustomer->kKunde > 0) {
                 // Email vergeben -> Kunde wird nicht neu angelegt, sondern der Kunde wird an Wawi zurückgegeben
-                $cstmr                        = $this->db->query(
-                    "SELECT kKunde, kKundengruppe, kSprache, cKundenNr, cPasswort, cAnrede, cTitel, cVorname,
+                return $this->notifyDuplicateCustomer($oldCustomer, $xml);
+            }
+            // Email noch nicht belegt, der Kunde muss neu erstellt werden -> KUNDE WIRD NEU ERSTELLT
+            $kInetKunde = $this->addNewCustomer($customer, $customerAttributes);
+
+            $res['keys']['tkunde attr']['kKunde'] = $kInetKunde;
+            $res['keys']['tkunde']                = '';
+        }
+
+        return $kInetKunde > 0 ? $this->addAddressData($kInetKunde, $res, $source) : $res;
+    }
+
+    /**
+     * @param stdClass $oldCustomer
+     * @param array    $xml
+     * @return array
+     */
+    private function notifyDuplicateCustomer(stdClass $oldCustomer, array $xml): array
+    {
+        $cstmr  = $this->db->query(
+            "SELECT kKunde, kKundengruppe, kSprache, cKundenNr, cPasswort, cAnrede, cTitel, cVorname,
                     cNachname, cFirma, cZusatz, cStrasse, cHausnummer, cAdressZusatz, cPLZ, cOrt, cBundesland, 
                     cLand, cTel, cMobil, cFax, cMail, cUSTID, cWWW, fGuthaben, cNewsletter, dGeburtstag, fRabatt,
                     cHerkunft, dErstellt, dVeraendert, cAktiv, cAbgeholt,
                     date_format(dGeburtstag, '%d.%m.%Y') AS dGeburtstag_formatted, nRegistriert
                     FROM tkunde
                     WHERE kKunde = " . (int)$oldCustomer->kKunde,
-                    ReturnType::ARRAY_OF_ASSOC_ARRAYS
-                );
-                $xml['kunden attr']['anzahl'] = 1;
+            ReturnType::ARRAY_OF_ASSOC_ARRAYS
+        );
+        $crypto = Shop::Container()->getCryptoService();
 
-                $cstmr[0]['cNachname'] = \trim($crypto->decryptXTEA($cstmr[0]['cNachname']));
-                $cstmr[0]['cFirma']    = \trim($crypto->decryptXTEA($cstmr[0]['cFirma']));
-                $cstmr[0]['cZusatz']   = \trim($crypto->decryptXTEA($cstmr[0]['cZusatz']));
-                $cstmr[0]['cStrasse']  = \trim($crypto->decryptXTEA($cstmr[0]['cStrasse']));
-                $cstmr[0]['cAnrede']   = Kunde::mapSalutation($cstmr[0]['cAnrede'], $cstmr[0]['kSprache']);
-                // Strasse und Hausnummer zusammenführen
-                $cstmr[0]['cStrasse'] .= ' ' . $cstmr[0]['cHausnummer'];
-                unset($cstmr[0]['cHausnummer']);
-                // Land ausgeschrieben der Wawi geben
-                $cstmr[0]['cLand'] = LanguageHelper::getCountryCodeByCountryName($cstmr[0]['cLand']);
-                unset($cstmr[0]['cPasswort']);
-                $cstmr['0 attr']             = $this->buildAttributes($cstmr[0]);
-                $cstmr[0]['tkundenattribut'] = $this->db->query(
-                    'SELECT *
-                    FROM tkundenattribut
-                     WHERE kKunde = ' . (int)$cstmr['0 attr']['kKunde'],
-                    ReturnType::ARRAY_OF_ASSOC_ARRAYS
-                );
-                $attributeCount              = \count($cstmr[0]['tkundenattribut']);
-                for ($o = 0; $o < $attributeCount; $o++) {
-                    $cstmr[0]['tkundenattribut'][$o . ' attr'] =
-                        $this->buildAttributes($cstmr[0]['tkundenattribut'][$o]);
+        $cstmr[0]['cNachname'] = \trim($crypto->decryptXTEA($cstmr[0]['cNachname']));
+        $cstmr[0]['cFirma']    = \trim($crypto->decryptXTEA($cstmr[0]['cFirma']));
+        $cstmr[0]['cZusatz']   = \trim($crypto->decryptXTEA($cstmr[0]['cZusatz']));
+        $cstmr[0]['cStrasse']  = \trim($crypto->decryptXTEA($cstmr[0]['cStrasse']));
+        $cstmr[0]['cAnrede']   = Kunde::mapSalutation($cstmr[0]['cAnrede'], $cstmr[0]['kSprache']);
+        // Strasse und Hausnummer zusammenführen
+        $cstmr[0]['cStrasse'] .= ' ' . $cstmr[0]['cHausnummer'];
+        unset($cstmr[0]['cHausnummer']);
+        // Land ausgeschrieben der Wawi geben
+        $cstmr[0]['cLand'] = LanguageHelper::getCountryCodeByCountryName($cstmr[0]['cLand']);
+        unset($cstmr[0]['cPasswort']);
+        $cstmr['0 attr']             = $this->buildAttributes($cstmr[0]);
+        $cstmr[0]['tkundenattribut'] = $this->db->query(
+            'SELECT *
+                FROM tkundenattribut
+                 WHERE kKunde = ' . (int)$cstmr['0 attr']['kKunde'],
+            ReturnType::ARRAY_OF_ASSOC_ARRAYS
+        );
+        $attributeCount              = \count($cstmr[0]['tkundenattribut']);
+        for ($o = 0; $o < $attributeCount; $o++) {
+            $cstmr[0]['tkundenattribut'][$o . ' attr'] =
+                $this->buildAttributes($cstmr[0]['tkundenattribut'][$o]);
+        }
+        $xml['kunden attr']['anzahl'] = 1;
+        $xml['kunden']['tkunde']      = $cstmr;
+        $this->logger->error('Dieser Kunde existiert: ' . XML::serialize($xml));
+
+        return $xml;
+    }
+
+    /**
+     * @param array $source
+     * @return array
+     */
+    private function getCustomerAttributes(array $source): array
+    {
+        $customerAttributes = [];
+        if (GeneralObject::hasCount('tkundenattribut', $source)) {
+            $members = \array_keys($source['tkundenattribut']);
+            if ($members[0] == '0') {
+                foreach ($source['tkundenattribut'] as $data) {
+                    $customerAttribute        = new stdClass();
+                    $customerAttribute->cName = $data['cName'];
+                    $customerAttribute->cWert = $data['cWert'];
+                    $customerAttributes[]     = $customerAttribute;
                 }
-                $xml['kunden']['tkunde'] = $cstmr;
-                $this->logger->error('Dieser Kunde existiert: ' . XML::serialize($xml));
-
-                return $xml;
+            } else {
+                $customerAttribute        = new stdClass();
+                $customerAttribute->cName = $source['tkundenattribut']['cName'];
+                $customerAttribute->cWert = $source['tkundenattribut']['cWert'];
+                $customerAttributes[]     = $customerAttribute;
             }
-            // Email noch nicht belegt, der Kunde muss neu erstellt werden -> KUNDE WIRD NEU ERSTELLT
-            $passwordService             = Shop::Container()->getPasswordService();
-            $customer->dErstellt         = 'NOW()';
-            $customer->cPasswortKlartext = $passwordService->generate(12);
-            $customer->cPasswort         = $passwordService->hash($customer->cPasswortKlartext);
-            $customer->nRegistriert      = 1;
-            $customer->cAbgeholt         = 'Y';
-            $customer->cAktiv            = 'Y';
-            $customer->cSperre           = 'N';
-            // mail an Kunden mit Accounterstellung durch Shopbetreiber
-            $obj         = new stdClass();
-            $obj->tkunde = $customer;
-            if ($customer->cMail) {
-                $mailer = Shop::Container()->get(Mailer::class);
-                $mail   = new Mail();
-                $mailer->send($mail->createFromTemplateID(\MAILTEMPLATE_ACCOUNTERSTELLUNG_DURCH_BETREIBER, $obj));
-            }
-            unset($customer->cPasswortKlartext, $customer->Anrede);
-            $kInetKunde = $customer->insertInDB();
-            if (\count($customerAttributes) > 0) {
-                $this->saveAttribute($customer->kKunde, $customer->kSprache, $customerAttributes);
-            }
-
-            $res['keys']['tkunde attr']['kKunde'] = $kInetKunde;
-            $res['keys']['tkunde']                = '';
         }
 
-        if ($kInetKunde > 0) {
-            // kunde akt. bzw. neu inserted
-            if (GeneralObject::hasCount('tadresse', $source)
-                && (!isset($source['tadresse attr']) || !\is_array($source['tadresse attr']))
-            ) {
-                // mehrere adressen
-                $cntLieferadressen = \count($source['tadresse']) / 2;
-                for ($i = 0; $i < $cntLieferadressen; $i++) {
-                    unset($deliveryAddress);
-                    $deliveryAddress = new stdClass();
-                    if ($source['tadresse'][$i . ' attr']['kInetAdresse'] > 0) {
-                        //update
-                        $deliveryAddress->kLieferadresse = $source['tadresse'][$i . ' attr']['kInetAdresse'];
-                        $deliveryAddress->kKunde         = $kInetKunde;
-                        $this->mapper->mapObject($deliveryAddress, $source['tadresse'][$i], 'mLieferadresse');
-                        // Hausnummer extrahieren
-                        $this->extractStreet($deliveryAddress);
-                        // verschlüsseln: Nachname, Firma, Strasse
-                        $deliveryAddress->cNachname = $crypto->encryptXTEA(\trim($deliveryAddress->cNachname));
-                        $deliveryAddress->cFirma    = $crypto->encryptXTEA(\trim($deliveryAddress->cFirma));
-                        $deliveryAddress->cZusatz   = $crypto->encryptXTEA(\trim($deliveryAddress->cZusatz));
-                        $deliveryAddress->cStrasse  = $crypto->encryptXTEA(\trim($deliveryAddress->cStrasse));
-                        $deliveryAddress->cAnrede   = $this->mapSalutation($deliveryAddress->cAnrede);
-                        $this->upsert('tlieferadresse', [$deliveryAddress], 'kLieferadresse');
-                    } else {
-                        $deliveryAddress->kKunde = $kInetKunde;
-                        $this->mapper->mapObject($deliveryAddress, $source['tadresse'][$i], 'mLieferadresse');
-                        // Hausnummer extrahieren
-                        $this->extractStreet($deliveryAddress);
-                        // verschlüsseln: Nachname, Firma, Strasse
-                        $deliveryAddress->cNachname = $crypto->encryptXTEA(\trim($deliveryAddress->cNachname));
-                        $deliveryAddress->cFirma    = $crypto->encryptXTEA(\trim($deliveryAddress->cFirma));
-                        $deliveryAddress->cZusatz   = $crypto->encryptXTEA(\trim($deliveryAddress->cZusatz));
-                        $deliveryAddress->cStrasse  = $crypto->encryptXTEA(\trim($deliveryAddress->cStrasse));
-                        $deliveryAddress->cAnrede   = $this->mapSalutation($deliveryAddress->cAnrede);
-                        $kInetLieferadresse         = $this->db->insert('tlieferadresse', $deliveryAddress);
-                        if ($kInetLieferadresse > 0) {
-                            if (!\is_array($res['keys']['tkunde'])) {
-                                $res['keys']['tkunde'] = [
-                                    'tadresse' => []
-                                ];
-                            }
-                            $res['keys']['tkunde']['tadresse'][$nr . ' attr'] = [
-                                'kAdresse'     => $source['tadresse'][$i . ' attr']['kAdresse'],
-                                'kInetAdresse' => $kInetLieferadresse,
-                            ];
-                            $res['keys']['tkunde']['tadresse'][$nr]           = '';
+        return $customerAttributes;
+    }
 
-                            $nr++;
-                        }
-                    }
-                }
-            } elseif (GeneralObject::isCountable('tadresse attr', $source)) {
-                // nur eine lieferadresse
-                if ($source['tadresse attr']['kInetAdresse'] > 0) {
+    /**
+     * @param Kunde $customer
+     * @param array $customerAttributes
+     * @return int
+     */
+    private function addNewCustomer(Kunde $customer, array $customerAttributes): int
+    {
+        $passwordService             = Shop::Container()->getPasswordService();
+        $customer->dErstellt         = 'NOW()';
+        $customer->cPasswortKlartext = $passwordService->generate(12);
+        $customer->cPasswort         = $passwordService->hash($customer->cPasswortKlartext);
+        $customer->nRegistriert      = 1;
+        $customer->cAbgeholt         = 'Y';
+        $customer->cAktiv            = 'Y';
+        $customer->cSperre           = 'N';
+        // mail an Kunden mit Accounterstellung durch Shopbetreiber
+        $obj         = new stdClass();
+        $obj->tkunde = $customer;
+        if ($customer->cMail) {
+            $mailer = Shop::Container()->get(Mailer::class);
+            $mail   = new Mail();
+            $mailer->send($mail->createFromTemplateID(\MAILTEMPLATE_ACCOUNTERSTELLUNG_DURCH_BETREIBER, $obj));
+        }
+        unset($customer->cPasswortKlartext, $customer->Anrede);
+        $kInetKunde = $customer->insertInDB();
+        if (\count($customerAttributes) > 0) {
+            $this->saveAttribute($customer->kKunde, $customer->kSprache, $customerAttributes);
+        }
+
+        return $kInetKunde;
+    }
+
+    /**
+     * @param Kunde $customer
+     * @param Kunde $oldCustomer
+     * @param int   $kInetKunde
+     * @param array $customerAttributes
+     * @param array $res
+     * @return array
+     */
+    private function merge(Kunde $customer, Kunde $oldCustomer, int $kInetKunde, array $customerAttributes, array $res): array
+    {
+        // Angaben vom alten Kunden übernehmen
+        $customer->kKunde      = $kInetKunde;
+        $customer->cAbgeholt   = 'Y';
+        $customer->cAktiv      = 'Y';
+        $customer->dVeraendert = 'NOW()';
+
+        if ($customer->cMail !== $oldCustomer->cMail) {
+            // E-Mail Adresse geändert - Verwendung prüfen!
+            if (Text::filterEmailAddress($customer->cMail) === false
+                || SimpleMail::checkBlacklist($customer->cMail)
+                || $this->db->select('tkunde', 'cMail', $customer->cMail, 'nRegistriert', 1) !== null
+            ) {
+                // E-Mail ist invalide, blacklisted bzw. wird bereits im Shop verwendet
+                $res['keys']['tkunde attr']['kKunde'] = 0;
+                $res['keys']['tkunde']                = '';
+
+                return $res;
+            }
+            // Mail an Kunden mit Info, dass Zugang verändert wurde
+            $obj         = new stdClass();
+            $obj->tkunde = $customer;
+
+            $mailer = Shop::Container()->get(Mailer::class);
+            $mail   = new Mail();
+            $mailer->send($mail->createFromTemplateID(\MAILTEMPLATE_ACCOUNTERSTELLUNG_DURCH_BETREIBER, $obj));
+        }
+
+        $customer->cPasswort    = $oldCustomer->cPasswort;
+        $customer->nRegistriert = $oldCustomer->nRegistriert;
+        $customer->dErstellt    = $oldCustomer->dErstellt;
+        $customer->fGuthaben    = $oldCustomer->fGuthaben;
+        $customer->cHerkunft    = $oldCustomer->cHerkunft;
+        // schaue, ob dieser Kunde diese Kundengruppe schon hat
+        if ($oldCustomer->kKundengruppe !== $customer->kKundengruppe && $customer->cMail) {
+            // Mail an Kunden mit Info, dass Kundengruppe verändert wurde
+            $obj         = new stdClass();
+            $obj->tkunde = $customer;
+
+            $mailer = Shop::Container()->get(Mailer::class);
+            $mail   = new Mail();
+            $mailer->send($mail->createFromTemplateID(\MAILTEMPLATE_KUNDENGRUPPE_ZUWEISEN, $obj));
+        }
+        // Hausnummer extrahieren
+        $this->extractStreet($customer);
+        // $this->upsert('tkunde', [$Kunde], 'kKunde');
+        $customer->updateInDB();
+        Kundendatenhistory::saveHistory($oldCustomer, $customer, Kundendatenhistory::QUELLE_DBES);
+        if (\count($customerAttributes) > 0) {
+            $this->saveAttribute($customer->kKunde, $customer->kSprache, $customerAttributes);
+        }
+        $res['keys']['tkunde attr']['kKunde'] = $kInetKunde;
+        $res['keys']['tkunde']                = '';
+
+        return $res;
+    }
+
+    /**
+     * @param int   $kInetKunde
+     * @param array $res
+     * @param array $source
+     * @return array
+     */
+    private function addAddressData(int $kInetKunde, array $res, array $source): array
+    {
+        // kunde akt. bzw. neu inserted
+        $crypto = Shop::Container()->getCryptoService();
+        if (GeneralObject::hasCount('tadresse', $source)
+            && (!isset($source['tadresse attr']) || !\is_array($source['tadresse attr']))
+        ) {
+            // mehrere adressen
+            $nr                = 0;
+            $cntLieferadressen = \count($source['tadresse']) / 2;
+            for ($i = 0; $i < $cntLieferadressen; $i++) {
+                $deliveryAddress = new stdClass();
+                if ($source['tadresse'][$i . ' attr']['kInetAdresse'] > 0) {
                     //update
-                    if (!isset($deliveryAddress)) {
-                        $deliveryAddress = new stdClass();
-                    }
-                    $deliveryAddress->kLieferadresse = $source['tadresse attr']['kInetAdresse'];
+                    $deliveryAddress->kLieferadresse = $source['tadresse'][$i . ' attr']['kInetAdresse'];
                     $deliveryAddress->kKunde         = $kInetKunde;
-                    $this->mapper->mapObject($deliveryAddress, $source['tadresse'], 'mLieferadresse');
+                    $this->mapper->mapObject($deliveryAddress, $source['tadresse'][$i], 'mLieferadresse');
                     // Hausnummer extrahieren
                     $this->extractStreet($deliveryAddress);
                     // verschlüsseln: Nachname, Firma, Strasse
@@ -465,11 +472,8 @@ final class Customer extends AbstractSync
                     $deliveryAddress->cAnrede   = $this->mapSalutation($deliveryAddress->cAnrede);
                     $this->upsert('tlieferadresse', [$deliveryAddress], 'kLieferadresse');
                 } else {
-                    if (!isset($deliveryAddress)) {
-                        $deliveryAddress = new stdClass();
-                    }
                     $deliveryAddress->kKunde = $kInetKunde;
-                    $this->mapper->mapObject($deliveryAddress, $source['tadresse'], 'mLieferadresse');
+                    $this->mapper->mapObject($deliveryAddress, $source['tadresse'][$i], 'mLieferadresse');
                     // Hausnummer extrahieren
                     $this->extractStreet($deliveryAddress);
                     // verschlüsseln: Nachname, Firma, Strasse
@@ -480,14 +484,62 @@ final class Customer extends AbstractSync
                     $deliveryAddress->cAnrede   = $this->mapSalutation($deliveryAddress->cAnrede);
                     $kInetLieferadresse         = $this->db->insert('tlieferadresse', $deliveryAddress);
                     if ($kInetLieferadresse > 0) {
-                        $res['keys']['tkunde'] = [
-                            'tadresse attr' => [
-                                'kAdresse'     => $source['tadresse attr']['kAdresse'],
-                                'kInetAdresse' => $kInetLieferadresse,
-                            ],
-                            'tadresse'      => '',
+                        if (!\is_array($res['keys']['tkunde'])) {
+                            $res['keys']['tkunde'] = [
+                                'tadresse' => []
+                            ];
+                        }
+                        $res['keys']['tkunde']['tadresse'][$nr . ' attr'] = [
+                            'kAdresse'     => $source['tadresse'][$i . ' attr']['kAdresse'],
+                            'kInetAdresse' => $kInetLieferadresse,
                         ];
+                        $res['keys']['tkunde']['tadresse'][$nr]           = '';
+
+                        $nr++;
                     }
+                }
+            }
+
+            return $res;
+        }
+        if (GeneralObject::isCountable('tadresse attr', $source)) {
+            // nur eine lieferadresse
+            if ($source['tadresse attr']['kInetAdresse'] > 0) {
+                //update
+                $deliveryAddress                 = new stdClass();
+                $deliveryAddress->kLieferadresse = $source['tadresse attr']['kInetAdresse'];
+                $deliveryAddress->kKunde         = $kInetKunde;
+                $this->mapper->mapObject($deliveryAddress, $source['tadresse'], 'mLieferadresse');
+                // Hausnummer extrahieren
+                $this->extractStreet($deliveryAddress);
+                // verschlüsseln: Nachname, Firma, Strasse
+                $deliveryAddress->cNachname = $crypto->encryptXTEA(\trim($deliveryAddress->cNachname));
+                $deliveryAddress->cFirma    = $crypto->encryptXTEA(\trim($deliveryAddress->cFirma));
+                $deliveryAddress->cZusatz   = $crypto->encryptXTEA(\trim($deliveryAddress->cZusatz));
+                $deliveryAddress->cStrasse  = $crypto->encryptXTEA(\trim($deliveryAddress->cStrasse));
+                $deliveryAddress->cAnrede   = $this->mapSalutation($deliveryAddress->cAnrede);
+                $this->upsert('tlieferadresse', [$deliveryAddress], 'kLieferadresse');
+            } else {
+                $deliveryAddress         = new stdClass();
+                $deliveryAddress->kKunde = $kInetKunde;
+                $this->mapper->mapObject($deliveryAddress, $source['tadresse'], 'mLieferadresse');
+                // Hausnummer extrahieren
+                $this->extractStreet($deliveryAddress);
+                // verschlüsseln: Nachname, Firma, Strasse
+                $deliveryAddress->cNachname = $crypto->encryptXTEA(\trim($deliveryAddress->cNachname));
+                $deliveryAddress->cFirma    = $crypto->encryptXTEA(\trim($deliveryAddress->cFirma));
+                $deliveryAddress->cZusatz   = $crypto->encryptXTEA(\trim($deliveryAddress->cZusatz));
+                $deliveryAddress->cStrasse  = $crypto->encryptXTEA(\trim($deliveryAddress->cStrasse));
+                $deliveryAddress->cAnrede   = $this->mapSalutation($deliveryAddress->cAnrede);
+                $kInetLieferadresse         = $this->db->insert('tlieferadresse', $deliveryAddress);
+                if ($kInetLieferadresse > 0) {
+                    $res['keys']['tkunde'] = [
+                        'tadresse attr' => [
+                            'kAdresse'     => $source['tadresse attr']['kAdresse'],
+                            'kInetAdresse' => $kInetLieferadresse,
+                        ],
+                        'tadresse'      => '',
+                    ];
                 }
             }
         }

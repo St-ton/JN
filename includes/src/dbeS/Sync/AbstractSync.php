@@ -200,110 +200,6 @@ abstract class AbstractSync
     }
 
     /**
-     * @param null|stdClass $image
-     * @param int            $productID
-     * @param int            $imageID
-     */
-    protected function deleteProductImage($image = null, int $productID = 0, int $imageID = 0): void
-    {
-        if ($image === null && $imageID > 0) {
-            $image     = $this->db->select('tartikelpict', 'kArtikelPict', $imageID);
-            $productID = isset($image->kArtikel) ? (int)$image->kArtikel : 0;
-        }
-        // Das Bild ist eine Verknüpfung
-        if (isset($image->kMainArtikelBild) && $image->kMainArtikelBild > 0 && $productID > 0) {
-            // Existiert der Artikel vom Mainbild noch?
-            $main = $this->db->query(
-                'SELECT kArtikel
-                FROM tartikel
-                WHERE kArtikel = (
-                    SELECT kArtikel
-                        FROM tartikelpict
-                        WHERE kArtikelPict = ' . (int)$image->kMainArtikelBild . ')',
-                ReturnType::SINGLE_OBJECT
-            );
-            // Main Artikel existiert nicht mehr
-            if (!isset($main->kArtikel) || (int)$main->kArtikel === 0) {
-                // Existiert noch eine andere aktive Verknüpfung auf das Mainbild?
-                $productImages = $this->db->query(
-                    'SELECT kArtikelPict
-                    FROM tartikelpict
-                    WHERE kMainArtikelBild = ' . (int)$image->kMainArtikelBild . '
-                        AND kArtikel != ' . $productID,
-                    ReturnType::ARRAY_OF_OBJECTS
-                );
-                // Lösche das MainArtikelBild
-                if (\count($productImages) === 0) {
-                    $this->deleteImageFiles($image->cPfad);
-                    $this->db->delete('tartikelpict', 'kArtikelPict', (int)$image->kMainArtikelBild);
-                }
-            }
-            // Bildverknüpfung aus DB löschen
-            $this->db->delete('tartikelpict', 'kArtikelPict', (int)$image->kArtikelPict);
-        } elseif (isset($image->kMainArtikelBild) && (int)$image->kMainArtikelBild === 0) {
-            // Das Bild ist ein Hauptbild
-            // Gibt es Artikel die auf Bilder des zu löschenden Artikel verknüpfen?
-            $childProducts = $this->db->queryPrepared(
-                'SELECT kArtikelPict
-                FROM tartikelpict
-                WHERE kMainArtikelBild = :img',
-                ['img' => (int)$image->kArtikelPict],
-                ReturnType::ARRAY_OF_OBJECTS
-            );
-            if (\count($childProducts) === 0) {
-                $data = $this->db->queryPrepared(
-                    'SELECT COUNT(*) AS nCount
-                    FROM tartikelpict
-                    WHERE cPfad = :pth',
-                    ['pth' => $image->cPfad],
-                    ReturnType::SINGLE_OBJECT
-                );
-                if (isset($data->nCount) && $data->nCount < 2) {
-                    $this->deleteImageFiles($image->cPfad);
-                }
-            } else {
-                // Reorder linked images because master imagelink will be deleted
-                $next = $childProducts[0]->kArtikelPict;
-                // this will be the next masterimage
-                $this->db->update(
-                    'tartikelpict',
-                    'kArtikelPict',
-                    (int)$next,
-                    (object)['kMainArtikelBild' => 0]
-                );
-                // now link other images to the new masterimage
-                $this->db->update(
-                    'tartikelpict',
-                    'kMainArtikelBild',
-                    (int)$image->kArtikelPict,
-                    (object)['kMainArtikelBild' => (int)$next]
-                );
-            }
-            $this->db->delete('tartikelpict', 'kArtikelPict', (int)$image->kArtikelPict);
-        }
-        $this->cache->flushTags([\CACHING_GROUP_ARTICLE . '_' . $productID]);
-    }
-
-    /**
-     * @param string $path
-     */
-    private function deleteImageFiles(string $path): void
-    {
-        $files = [
-            \PFAD_ROOT . \PFAD_PRODUKTBILDER_MINI . $path,
-            \PFAD_ROOT . \PFAD_PRODUKTBILDER_KLEIN . $path,
-            \PFAD_ROOT . \PFAD_PRODUKTBILDER_NORMAL . $path,
-            \PFAD_ROOT . \PFAD_PRODUKTBILDER_GROSS . $path,
-            \PFAD_ROOT . \PFAD_MEDIA_IMAGE_STORAGE . $path
-        ];
-        foreach ($files as $file) {
-            if (\file_exists($file)) {
-                @\unlink($file);
-            }
-        }
-    }
-
-    /**
      * @param object $product
      * @param array  $conf
      * @throws CircularReferenceException
@@ -808,7 +704,7 @@ abstract class AbstractSync
             'DELETE FROM tpricerange WHERE kArtikel IN (' . \implode(',', $productIDs) . ')',
             ReturnType::DEFAULT
         );
-        $uniqueProductIDs = \implode(',', \array_unique($productIDs));
+        $idString = \implode(',', $productIDs);
         $this->db->executeQuery(
             'INSERT INTO tpricerange
             (kArtikel, kKundengruppe, kKunde, nRangeType, fVKNettoMin, fVKNettoMax, nLagerAnzahlMax, dStart, dEnde)
@@ -838,7 +734,7 @@ abstract class AbstractSync
                 INNER JOIN tpreisdetail ON tpreisdetail.kPreis = tpreis.kPreis
                 WHERE tartikel.nIstVater = 0
                     AND IF(tartikel.kVaterartikel = 0, tartikel.kArtikel, tartikel.kVaterartikel) IN ('
-            . $uniqueProductIDs . ')
+            . $idString . ')
                 UNION ALL
                 SELECT IF(tartikel.kVaterartikel = 0, tartikel.kArtikel, tartikel.kVaterartikel) kArtikel,
                     tartikel.kArtikel kKindArtikel,
@@ -860,7 +756,7 @@ abstract class AbstractSync
                     AND tsonderpreise.kKundengruppe = tpreis.kKundengruppe
                 WHERE tartikelsonderpreis.cAktiv = \'Y\'
                     AND IF(tartikel.kVaterartikel = 0, tartikel.kArtikel, tartikel.kVaterartikel) IN ('
-            . $uniqueProductIDs . ')) baseprice
+            . $idString . ')) baseprice
             LEFT JOIN (
                 SELECT variations.kArtikel, variations.kKundengruppe,
                     SUM(variations.fMinAufpreisNetto) fMinAufpreisNetto,
@@ -879,7 +775,7 @@ abstract class AbstractSync
                     LEFT JOIN teigenschaftwertaufpreis
                         ON teigenschaftwertaufpreis.kEigenschaftWert = teigenschaftwert.kEigenschaftWert
                         AND teigenschaftwertaufpreis.kKundengruppe = tkundengruppe.kKundengruppe
-                    WHERE teigenschaft.kArtikel IN (' . $uniqueProductIDs . ')
+                    WHERE teigenschaft.kArtikel IN (' . $idString . ')
                     GROUP BY teigenschaft.kArtikel, tkundengruppe.kKundengruppe, teigenschaft.kEigenschaft
                 ) variations
                 GROUP BY variations.kArtikel, variations.kKundengruppe
@@ -887,7 +783,7 @@ abstract class AbstractSync
                 ON varaufpreis.kArtikel = baseprice.kKindArtikel
                 AND varaufpreis.kKundengruppe = baseprice.kKundengruppe
                 AND baseprice.nIstVater = 0
-            WHERE baseprice.kArtikel IN (' . $uniqueProductIDs . ')
+            WHERE baseprice.kArtikel IN (' . $idString . ')
             GROUP BY baseprice.kArtikel,
                 baseprice.kKundengruppe,
                 baseprice.kKunde,

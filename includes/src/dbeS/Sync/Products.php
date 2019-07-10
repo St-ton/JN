@@ -38,9 +38,7 @@ final class Products extends AbstractSync
             if (\strpos($file, 'artdel.xml') !== false) {
                 $productIDs[] = $this->handleDeletes($xml, $conf);
             } else {
-                foreach ($this->handleInserts($xml, $conf) as $productID) {
-                    $productIDs[] = $productID;
-                }
+                $productIDs[] = $this->handleInserts($xml, $conf);
             }
             if ($i === 0) {
                 $this->db->query(
@@ -51,7 +49,7 @@ final class Products extends AbstractSync
                 );
             }
         }
-        $productIDs = flatten($productIDs);
+        $productIDs = \array_unique(flatten($productIDs));
         $this->handlePriceRange($productIDs);
         $this->db->query('COMMIT', ReturnType::DEFAULT);
         $this->clearProductCaches($productIDs);

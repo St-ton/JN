@@ -3,7 +3,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "Gallery"
-msgstr "Gallerie"
+msgstr "Galerie"
 
 msgid "heightPreviewImages"
 msgstr "Höhe der Vorschaubilder"

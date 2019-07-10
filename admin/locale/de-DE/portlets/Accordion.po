@@ -6,7 +6,7 @@ msgid "Accordion"
 msgstr "Akkordeon"
 
 msgid "groupName"
-msgstr "Gruppen-Name"
+msgstr "Gruppenname"
 
 msgid "unfoldFirstGroup"
 msgstr "Erste Gruppe bereits aufklappen?"

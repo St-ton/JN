@@ -221,7 +221,7 @@ msgid "imageAdd"
 msgstr "Bild hinzufügen"
 
 msgid "videoTagNotSupported"
-msgstr "Ihr Browser supportet das Video-Tag nicht."
+msgstr "Ihr Browser unterstützt das Video-Tag nicht."
 
 msgid "zoneNew"
 msgstr "Neue Zone"

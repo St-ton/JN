@@ -542,6 +542,10 @@ html, body {
               > .item-expander {
                 visibility: hidden;
               }
+
+              > .area-item {
+                color: $muted-text;
+              }
             }
 
             &.selected {

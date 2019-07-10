@@ -719,6 +719,9 @@ html, body {
 #opc #opcSidebar #sidebarInnerPanel #pagetree #pageTreeView li.leaf > .item-expander {
   visibility: hidden;
 }
+#opc #opcSidebar #sidebarInnerPanel #pagetree #pageTreeView li.leaf > .area-item {
+  color: #BDBDBD;
+}
 #opc #opcSidebar #sidebarInnerPanel #pagetree #pageTreeView li.selected > .item-label {
   background-color: #525252;
   color: #F5F7FA;

@@ -475,6 +475,7 @@ html, body {
 }
 #opc #opcSidebar #sidebarInnerPanel .tab-content {
   overflow: visible;
+  height: 100%;
 }
 #opc #opcSidebar #sidebarInnerPanel #portlets .portletGroupBtn {
   display: block;
@@ -612,15 +613,15 @@ html, body {
   width: 334px;
   box-shadow: none;
 }
+#opc #opcSidebar #sidebarInnerPanel #pagetree {
+  height: 100%;
+}
 #opc #opcSidebar #sidebarInnerPanel #pagetree #pageTreeView {
   padding: 1em 0;
-}
-#opc #opcSidebar #sidebarInnerPanel #pagetree #pageTreeView a {
-  text-decoration: none;
-  color: #435A6B;
-}
-#opc #opcSidebar #sidebarInnerPanel #pagetree #pageTreeView a:hover {
-  text-decoration: underline;
+  background-color: #F5F7FA;
+  border-radius: 5px;
+  height: 100%;
+  overflow-y: auto;
 }
 #opc #opcSidebar #sidebarInnerPanel #pagetree #pageTreeView ul {
   list-style: none;
@@ -630,31 +631,43 @@ html, body {
 }
 #opc #opcSidebar #sidebarInnerPanel #pagetree #pageTreeView a {
   display: inline-block;
-  padding: 0.25em;
+  text-decoration: none;
+  color: #435A6B;
 }
-#opc #opcSidebar #sidebarInnerPanel #pagetree #pageTreeView li > a > .fa-chevron-down {
+#opc #opcSidebar #sidebarInnerPanel #pagetree #pageTreeView .area-item {
+  color: #63849d;
+  padding: 0 4px;
+  margin: 2px;
+}
+#opc #opcSidebar #sidebarInnerPanel #pagetree #pageTreeView .portlet-item {
+  border-radius: 4px;
+  padding: 0 4px;
+  margin: 2px;
+}
+#opc #opcSidebar #sidebarInnerPanel #pagetree #pageTreeView .item-expander > .fa-chevron-down {
   display: none;
 }
-#opc #opcSidebar #sidebarInnerPanel #pagetree #pageTreeView li > a > .fa-chevron-right {
+#opc #opcSidebar #sidebarInnerPanel #pagetree #pageTreeView .item-expander > .fa-chevron-right {
   display: inline-block;
 }
 #opc #opcSidebar #sidebarInnerPanel #pagetree #pageTreeView li > ul {
   display: none;
 }
-#opc #opcSidebar #sidebarInnerPanel #pagetree #pageTreeView li.expanded > a > .fa-chevron-down {
+#opc #opcSidebar #sidebarInnerPanel #pagetree #pageTreeView li.expanded > .item-expander > .fa-chevron-down {
   display: inline-block;
 }
-#opc #opcSidebar #sidebarInnerPanel #pagetree #pageTreeView li.expanded > a > .fa-chevron-right {
+#opc #opcSidebar #sidebarInnerPanel #pagetree #pageTreeView li.expanded > .item-expander > .fa-chevron-right {
   display: none;
 }
 #opc #opcSidebar #sidebarInnerPanel #pagetree #pageTreeView li.expanded > ul {
   display: block;
 }
-#opc #opcSidebar #sidebarInnerPanel #pagetree #pageTreeView li.leaf > a > .fa {
+#opc #opcSidebar #sidebarInnerPanel #pagetree #pageTreeView li.leaf > .item-expander {
   visibility: hidden;
 }
 #opc #opcSidebar #sidebarInnerPanel #pagetree #pageTreeView li.selected > .item-label {
-  font-weight: bold;
+  background-color: #525252;
+  color: #F5F7FA;
 }
 #opc #opcSidebar #sidebarFooter {
   position: absolute;

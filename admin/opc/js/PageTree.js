@@ -51,10 +51,10 @@ class PageTree
         this.pageTreeView.empty().append(ul);
     }
 
-    renderBaseItem(text, click)
+    renderBaseItem(text, click, cls = '')
     {
-        var expander = $('<a href="#">');
-        var item     = $('<a href="#" class="item-label">');
+        var expander = $('<a href="#" class="item-expander">');
+        var item     = $('<a href="#" class="item-label ' + cls + '">');
         var li       = $('<li>');
 
         expander.append('<i class="fa fa-fw fa-chevron-right">');
@@ -67,13 +67,18 @@ class PageTree
         }
 
         expander.on('click', expand);
-        item.dblclick(expand);
+
+        if(click) {
+            item.dblclick(expand);
+        }
 
         item.on('click', e => {
             e.preventDefault();
 
             if(click) {
                 click();
+            } else {
+                li.toggleClass('expanded');
             }
         });
 
@@ -86,7 +91,7 @@ class PageTree
         var jq       = area.constructor;
         var data     = area.data('area-id');
         var ul       = $('<ul>');
-        var li       = this.renderBaseItem('Area: "' + data + '"');
+        var li       = this.renderBaseItem('' + data + '', null, 'area-item');
 
         expanded = expanded || false;
 
@@ -116,7 +121,7 @@ class PageTree
 
         var li = this.renderBaseItem(data.class, () => {
             this.iframe.setSelected(portlet);
-        });
+        }, 'portlet-item');
 
         subareas.each((i, area) => {
             area = jq(area);

@@ -48,7 +48,7 @@
                                                 <th class="th-2">{__('name')}</th>
                                                 <th class="th-3">{__('customerGroup')}</th>
                                                 <th class="th-4">{__('umfrageValidation')}</th>
-                                                <th class="th-5">{__('ative')}</th>
+                                                <th class="th-5">{__('active')}</th>
                                                 <th class="th-6">{__('umfrageQCount')}</th>
                                                 <th class="th-7">{__('umfrageDate')}</th>
                                                 <th class="th-8">{__('actions')}</th>

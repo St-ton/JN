@@ -162,7 +162,7 @@ $(document).ready(function() {
                             </span>
                             <span class="input-group-addon">
                                 <button type="button" onclick="ioCall('getRandomPassword');return false;"
-                                        class="btn btn-info btn-xs" title="Passwort generieren">
+                                        class="btn btn-info btn-xs" title="{__('passwordGenerate')}">
                                     <i class="fa fa-random"></i>
                                 </button>
                             </span>

@@ -6,7 +6,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="robots" content="noindex,nofollow">
-    <title>JTL-Shop Administration</title>
+    <title>{__('shopTitle')}</title>
     {assign var=urlPostfix value='?v='|cat:$adminTplVersion}
     <link type="image/x-icon" href="{$faviconAdminURL}" rel="icon">
     {$admin_css}
@@ -35,6 +35,7 @@
         $.fn.bootstrapBtn = bootstrapButton;
         setJtlToken('{$smarty.session.jtl_token}');
     </script>
+    <script type="text/javascript" src="{$URL_SHOP}/{$PFAD_ADMIN}{$currentTemplateDir}js/fileinput/fileinput_locale_{$language}.js"></script>
 </head>
 <body>
 {if $account !== false && isset($smarty.session.loginIsValid) && $smarty.session.loginIsValid === true}

@@ -12,7 +12,7 @@ msgid "navigationsfilterUrl"
 msgstr "https://jtl-url.de/5u1xg"
 
 msgid "thePriceRangeIsInvalid"
-msgstr "Die Preisspanne ist ungültig"
+msgstr "Die Preisspanne ist ungültig."
 
 msgid "thePriceRangeOverlapps"
-msgstr "Die Preisspanne überschneidet sich mit anderen"
+msgstr "Die Preisspanne überschneidet sich mit anderen Preisspannen."

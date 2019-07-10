@@ -107,13 +107,13 @@ msgid "Iteration"
 msgstr "Wiederholung"
 
 msgid "Change the animation duration (e.g. 2s)"
-msgstr "Dauer der Animation (z. B. 2s)"
+msgstr "Dauer der Animation (z.&nbsp;B. 2 s)"
 
 msgid "Delay before the animation starts"
 msgstr "Wartezeit, bis die Animation beginnt"
 
 msgid "Distance to start the animation (related to the browser bottom)"
-msgstr "Die Animation beginnt erst, wenn zwischen der Oberkante des entsprechenden Elements und der Unterkante des aktuellen Browserfensters der angegebene Scroll-Abstand in Pixeln erreicht ist. Somit lässt sich z. B. verhindern, dass eine Animation schon startet, obwohl das Element noch nicht ganz sichtbar ist."
+msgstr "Die Animation beginnt erst, wenn zwischen der Oberkante des entsprechenden Elements und der Unterkante des aktuellen Browserfensters der angegebene Scroll-Abstand in Pixeln erreicht ist. Somit lässt sich z.&nbsp;B. verhindern, dass eine Animation schon startet, obwohl das Element noch nicht ganz sichtbar ist."
 
 msgid "Number of times the animation is repeated"
 msgstr "Anzahl Wiederholungen"

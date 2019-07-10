@@ -71,7 +71,7 @@ if (Request::verifyGPCDataInt('upload') === 1 && Form::validateToken()) {
             case 4:
                 $alertHelper->addAlert(
                     Alert::TYPE_ERROR,
-                    sprintf(__('errorFileMove'), PFAD_ROOT . PFAD_SHOPLOGO . basename($cFiles_arr['shopLogo']['name'])),
+                    sprintf(__('errorFileMove'), PFAD_ROOT . PFAD_SHOPLOGO . basename($_FILES['shopLogo']['name'])),
                     'errorFileMove'
                 );
                 break;

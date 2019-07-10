@@ -13,3 +13,6 @@ msgstr "SQL-Befehl"
 
 msgid "codeCompletion"
 msgstr "Code-Vervollständigung via <span class=\"label label-default\">STRG+Leertaste</span> ausführen"
+
+msgid "searchTable"
+msgstr "Tabelle suchen"

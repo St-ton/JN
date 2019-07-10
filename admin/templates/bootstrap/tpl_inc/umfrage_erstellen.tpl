@@ -110,7 +110,7 @@ function clearInput(inputField) {ldelim}
                             </tr>
                         {/if}
                         <tr>
-                            <td><label for="fGuthaben">{__('credits')}:</label></td>
+                            <td><label for="fGuthaben">{__('credit')}:</label></td>
                             <td><input class="form-control" name="fGuthaben" id="fGuthaben" type="text"  value="{if isset($oUmfrage->fGuthaben)}{$oUmfrage->fGuthaben}{/if}" onclick="checkInput(this,'fGuthaben');" onblur="clearInput(this);" /></td>
                             <input id="nBonuspunkte" type="hidden" />{*placeholder to avoid js errors*}
                         </tr>

@@ -1,7 +1,7 @@
 <div class="content-header well">
     <div class="row">
         <div class="col-md-11">
-            <h1 class="{if isset($cBeschreibung) && $cBeschreibung|@strlen == 0}nospacing{/if}">{if $cTitel|@strlen > 0}{$cTitel}{else}Unbekannt{/if}</h1>
+            <h1 class="{if isset($cBeschreibung) && $cBeschreibung|@strlen == 0}nospacing{/if}">{if $cTitel|@strlen > 0}{$cTitel}{else}{__('unknown')}{/if}</h1>
             {if isset($cBeschreibung) && $cBeschreibung|@strlen > 0}
                 <p class="description {if isset($cClass)}{$cClass}{/if}">
                     <span><!-- right border --></span>
@@ -13,11 +13,11 @@
             <div class="btn-group btn-group-plain btn-group-vertical" role="group">
                 {if isset($cDokuURL) && $cDokuURL|@strlen > 0}
                     <a href="{$cDokuURL}" target="_blank" class="btn btn-default" data-toggle="tooltip"
-                       data-container="body" data-placement="left" title="Zur Dokumentation">
+                       data-container="body" data-placement="left" title="{__('goToDocu')}">
                         <i class="fa fa-medkit" aria-hidden="true"></i>
                     </a>
                 {/if}
-                <a href="favs.php" class="btn btn-default" data-toggle="tooltip" data-container="body" data-placement="left" title="Zu Favoriten hinzufügen" id="fav-add"><i class="fa fa-star" aria-hidden="true"></i></a>
+                <a href="favs.php" class="btn btn-default" data-toggle="tooltip" data-container="body" data-placement="left" title="{__('addToFavourites')}" id="fav-add"><i class="fa fa-star" aria-hidden="true"></i></a>
             </div>
         </div>
     </div>

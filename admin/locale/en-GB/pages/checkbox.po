@@ -102,16 +102,16 @@ msgid "checkboxPositionOrderFinal"
 msgstr "Order completion"
 
 msgid "checkboxPositionNewsletterRegistration"
-msgstr "Newsletter registration"
+msgstr "Newsletter subscription"
 
 msgid "checkboxPositionEditCustomerData"
-msgstr "Edit customer data"
+msgstr "Editing customer data"
 
 msgid "checkboxPositionContactForm"
 msgstr "Contact form"
 
 msgid "checkboxPositionProductQuestion"
-msgstr "Product question"
+msgstr "Question about item"
 
 msgid "checkboxPositionAvailabilityNotification"
-msgstr "Availability notification"
+msgstr "Availability request"

@@ -54,7 +54,7 @@ msgid "successImport"
 msgstr "Import erfolgreich."
 
 msgid "errorParameterInvalid"
-msgstr "Falscher Parameter angegeben."
+msgstr "Der eingegebene Parameter ist ungültig."
 
 msgid "errorDownload"
 msgstr "%s kann nicht heruntergeladen werden."

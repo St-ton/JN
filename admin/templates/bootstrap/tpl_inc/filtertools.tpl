@@ -86,11 +86,11 @@
                     <label>&nbsp;</label>
                     <div class="btn-group">
                         <button type="submit" class="btn btn-primary" name="action" value="{$oFilter->getId()}_filter"
-                                title="Filter anwenden" id="{$oFilter->getId()}_btn_filter">
+                                title="{__('useFilter')}" id="{$oFilter->getId()}_btn_filter">
                             <i class="fa fa-search"></i>
                         </button>
                         <button type="submit" class="btn btn-default" name="action" value="{$oFilter->getId()}_resetfilter"
-                                title="Filter zurücksetzen" id="{$oFilter->getId()}_btn_resetfilter">
+                                title="{__('resetFilter')}" id="{$oFilter->getId()}_btn_resetfilter">
                             <i class="fa fa-eraser"></i>
                         </button>
                     </div>

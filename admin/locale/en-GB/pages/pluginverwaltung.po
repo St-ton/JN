@@ -15,7 +15,7 @@ msgid "pluginverwaltungLicenceKey"
 msgstr "Licence key"
 
 msgid "pluginverwaltungDesc"
-msgstr "Plug-ins extend the functionality of JTL-Shop without changing its core. Active plug-ins can be deactivated or uninstalled at any time. Please do not install any updates from unknown sources. <br/><strong>Security note: Plug-ins have access to the entire database of your online shop system.</strong>"
+msgstr "Plug-ins extend the functionality of JTL-Shop without changing its core. Active plug-ins can be deactivated or uninstalled at any time. Please do not install any updates from unknown sources. <br/><strong>Security note: Plug-ins can access to the entire database of your online shop system.</strong>"
 
 msgid "pluginverwaltungURL"
 msgstr "https://jtl-url.de/gfso0"
@@ -114,16 +114,16 @@ msgid "pluginUpdateExists"
 msgstr "A newer plug-in version was uploaded. The plug-in can now be updated."
 
 msgid "pluginUpdateExistsError"
-msgstr "The plug-in does, however, have the following error"
+msgstr "The plug-in does, however, have the following error."
 
 msgid "successPluginKeySave"
 msgstr "Licence key for plug-in saved successfully."
 
 msgid "errorPluginKeyInvalid"
-msgstr "Invalid licence key. Please check the licence key for potential typing errors and contact the Support team if necessary."
+msgstr "Invalid licence key! Please check the licence key for potential typing errors and contact the Support team if necessary."
 
 msgid "errorPluginNotFound"
-msgstr "Could not find plug-in in database."
+msgstr "Could not find the plug-ins in the database. Please install it again."
 
 msgid "successPluginActivate"
 msgstr "Selected plug-ins activated successfully."
@@ -147,13 +147,13 @@ msgid "successPluginRefresh"
 msgstr "Selected plug-ins updated successfully."
 
 msgid "errorPluginRefresh"
-msgstr "Could not upload one plug-in."
+msgstr "Could not upload one plug-in. Please install the plug-in again."
 
 msgid "successPluginUpdate"
 msgstr "Plug-in updated successfully."
 
 msgid "errorPluginUpdate"
-msgstr "Error updating the plug-in. Error code: "
+msgstr "Could not perform update. Error code: "
 
 msgid "successPluginInstall"
 msgstr "Selected plug-ins installed successfully."
@@ -177,37 +177,37 @@ msgid "sureResetLangVar"
 msgstr "Reset language variable to default settings?<br/><br/> All edited translations of the variable will be deleted."
 
 msgid "dangerPluginNotCompatibleShop5"
-msgstr "Please note that the plug-in is not fully compatible with JTL-Shop 5. This might lead to performance issues."
+msgstr "Please note that the plug-in is not fully compatible with JTL-Shop&nbsp;5. This might lead to performance issues."
 
 msgid "dangerPluginNotCompatibleShop4"
-msgstr "Please note that the plug-in is not fully compatible with JTL-Shop 4. This might lead to performance issues."
+msgstr "Please note that the plug-in is not fully compatible with JTL-Shop&nbsp;4. This might lead to performance issues."
 
 msgid "licensePlugin"
 msgstr "Plug-in licence"
 
 msgid "storeNotLinkedDesc"
-msgstr "To be able to access content relating to JTL-Store, please link the marketplace to your JTL account first."
+msgstr "In order to access content of JTL-Store, connect your JTL account to the marketplace first."
 
 msgid "storeLink"
-msgstr "Link account"
+msgstr "Connect account"
 
 msgid "storeRevoke"
-msgstr "Remove link"
+msgstr "Cancel connection"
 
 msgid "storeUpdatesAvailable"
 msgstr "Available updates"
 
 msgid "storeListUpdates"
-msgstr "Show updates"
+msgstr "View updates"
 
 msgid "storePlugins"
-msgstr "licenced Plug-Ins"
+msgstr "Licensed plug-ins"
 
 msgid "storeListAll"
-msgstr "Show all"
+msgstr "View all"
 
 msgid "storeLastUpdate"
-msgstr "last updated"
+msgstr "Last updated"
 
 msgid "storeUpdateNow"
 msgstr "Update"

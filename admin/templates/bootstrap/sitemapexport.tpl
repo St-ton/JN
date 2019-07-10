@@ -67,7 +67,7 @@
                             <input type="hidden" name="action" value="">
                             <input type="hidden" name="tab" value="downloads">
                             <input type="hidden" name="SitemapDownload_nPage" value="0">
-                            <label for="nYear">Jahr</label>
+                            <label for="nYear">{__('year')}</label>
                             <select id="nYear" name="nYear_downloads">
                                 {foreach $oSitemapDownloadYears_arr as $oSitemapDownloadYear}
                                     <option value="{$oSitemapDownloadYear->year}"{if isset($nSitemapDownloadYear) && $nSitemapDownloadYear == $oSitemapDownloadYear->year} selected="selected"{/if}>{$oSitemapDownloadYear->year}</option>

@@ -1,13 +1,13 @@
 {if $standalonePage}
     {include file='tpl_inc/header.tpl'}
-    {$cTitel = 'Suchergebnisse für: '|cat:$query}
+    {$cTitel = {__('searchResultsFor')}|sprintf:$query}
     {include file='tpl_inc/seite_header.tpl' cTitel=$cTitel}
     <ul>
 {/if}
 
 {if $adminMenuItems|count}
     <li>
-        <h4>Seiten / Menüpunkte</h4>
+        <h4>{__('pagesMenu')}</h4>
     </li>
     <ul class="backend-search-section">
         {foreach $adminMenuItems as $item}
@@ -23,7 +23,7 @@
     {foreach $settings as $setting}
         <li>
             <h4>
-                {$setting->cName}
+                {__($setting->cWertName)}
                 <small>
                     <a href="{$setting->cURL}">{$setting->cSektionsPfad}</a>
                 </small>

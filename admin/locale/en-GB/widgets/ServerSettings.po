@@ -6,4 +6,4 @@ msgid "ServerSettings_title"
 msgstr "Server configuration"
 
 msgid "ServerSettings_desc"
-msgstr "Overview of important server configurations"
+msgstr "Overview of relevant server configurations"

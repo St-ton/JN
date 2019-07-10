@@ -153,10 +153,10 @@ msgid "questionTypeMultipleChoiceMany"
 msgstr "Mehrfachauswahl (mehrere Antworten wählbar)"
 
 msgid "questionTypeSelectboxOne"
-msgstr "Selectbox (eine Antwort wählbar)"
+msgstr "Liste (Einfachauswahl)"
 
 msgid "questionTypeSelectboxMany"
-msgstr "Multiselectbox (mehrere Antworten wählbar)"
+msgstr "Liste (Mehrfachauswahl)"
 
 msgid "questionTypeTextSmall"
 msgstr "Textfeld (klein)"
@@ -165,10 +165,10 @@ msgid "questionTypeTextBig"
 msgstr "Textfeld (groß)"
 
 msgid "questionTypeMatrixOne"
-msgstr "Matrix (Eine Antwort pro Zeile)"
+msgstr "Matrix (eine Antwort pro Zeile)"
 
 msgid "questionTypeMatrixMany"
-msgstr "Matrix (Mehrere Antworten pro Zeile)"
+msgstr "Matrix (mehrere Antworten pro Zeile)"
 
 msgid "questionTypeDivider"
 msgstr "Strukturelement: statischer Text"
@@ -186,4 +186,4 @@ msgid "activePolls"
 msgstr "Aktive Umfragen"
 
 msgid "pollSortHint"
-msgstr "Hier wird eine Nummer für die Sortierung der Fragen angegeben. Je kleiner die Zahl, desto höher liegt die Frage in der Liste."
+msgstr "Geben Sie hier eine Nummer für die Sortierung der Fragen ein. Je kleiner die Zahl, desto weiter oben wird die Frage in der Liste angezeigt."

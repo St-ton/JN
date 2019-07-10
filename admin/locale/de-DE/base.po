@@ -279,7 +279,7 @@ msgid "errorEnterValidDate"
 msgstr "Bitte geben Sie ein gültiges Datum ein."
 
 msgid "smartySyntaxError"
-msgstr "Smarty-Syntax Fehler"
+msgstr "Smarty-Syntax-Fehler"
 
 msgid "errorCheckInput"
 msgstr "Bitte überprüfen Sie Ihre Eingaben."
@@ -369,7 +369,7 @@ msgid "errorImageSizeTooLarge"
 msgstr "Die Bilddatei ist zu groß."
 
 msgid "errorUploadSizeLimit"
-msgstr "Die Datei ist größer als das Uploadlimit des Servers."
+msgstr "Die Datei ist größer als das Upload-Limit des Servers."
 
 msgid "general"
 msgstr "Allgemein"
@@ -1521,7 +1521,7 @@ msgstr "Newsletter"
 
 # page type (tspezialseite)
 msgid "Newsletterarchiv"
-msgstr "Newsletterarchiv"
+msgstr "Newsletter-Archiv"
 
 # page type (tspezialseite)
 msgid "News"
@@ -1534,7 +1534,7 @@ msgid "pageNewsCategory"
 msgstr "Newskategorie"
 
 msgid "pageNewsDetail"
-msgstr "Detailseite für Newsbeitrag"
+msgstr "Detailseite für News-Beitrag"
 
 # page type (tspezialseite)
 msgid "Umfrage"
@@ -1591,7 +1591,7 @@ msgstr "Batteriegesetzhinweise"
 
 # page type (tspezialseite)
 msgid "WRB-Formular"
-msgstr "Muster-Widerrufsformular"
+msgstr "Widerrufsformular"
 
 msgid "exception"
 msgstr "Ausnahme"
@@ -1793,3 +1793,51 @@ msgstr "weiß"
 
 msgid "red"
 msgstr "rot"
+
+msgid "goToDocu"
+msgstr "Zur Dokumentation"
+
+msgid "addToFavourites"
+msgstr "Zu Favoriten hinzufügen"
+
+msgid "length"
+msgstr "Länge"
+
+msgid "foundEntries"
+msgstr "Gefundene Einträge: "
+
+msgid "noEntriesSelected"
+msgstr "Bisher wurden keine Einträge ausgewählt. Bitte nutzen Sie die Suche."
+
+msgid "allSelectedEntries"
+msgstr "Alle ausgewählten Einträge: "
+
+msgid "deleteInput"
+msgstr "Eingabe löschen"
+
+msgid "searchPending"
+msgstr "Suche…"
+
+msgid "searchResultsFor"
+msgstr "Suchergebnisse für: %s"
+
+msgid "pagesMenu"
+msgstr "Seiten / Menüpunkte"
+
+msgid "redirection"
+msgstr "Weiterleitung"
+
+msgid "missing"
+msgstr "Fehlend"
+
+msgid "useFilter"
+msgstr "Filter anwenden"
+
+msgid "resetFilter"
+msgstr "Filter zurücksetzen"
+
+msgid "passwordGenerate"
+msgstr "Passwort generieren"
+
+msgid "shopTitle"
+msgstr "Administration von JTL-Shop"

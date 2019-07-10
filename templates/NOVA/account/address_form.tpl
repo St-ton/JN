@@ -4,14 +4,14 @@
  *}
 {block name='account-address-form'}
     {block name='account-address-form-form-rechnungsdaten'}
-        {form method="post" id='rechnungsdaten' action="{get_static_route params=['editRechnungsadresse' => 1]}" class="evo-validate"}
+        {form method="post" id='rechnungsdaten' action="{get_static_route params=['editRechnungsadresse' => 1]}" class="evo-validate label-slide"}
             <div id="panel-address-form">
                 {block name='account-address-form-include-inc-billing-address-form'}
                     {include file='checkout/inc_billing_address_form.tpl'}
                 {/block}
                 {block name='account-address-form-form-submit'}
                     {row class='mt-5'}
-                        {col md=5 offset-md=2}
+                        {col md=8}
                             {input type="hidden" name="editRechnungsadresse" value="1"}
                             {input type="hidden" name="edit" value="1"}
                             {button type="submit" value="1" class="w-auto" variant="primary"}

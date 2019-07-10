@@ -39,8 +39,9 @@ interface MailInterface
 
     /**
      * @param LanguageModel $language
+     * @return MailInterface
      */
-    public function setLanguage(LanguageModel $language): void;
+    public function setLanguage(LanguageModel $language): self;
 
     /**
      * @return mixed

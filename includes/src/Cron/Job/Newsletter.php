@@ -39,6 +39,32 @@ final class Newsletter extends Job
     public function start(QueueEntry $queueEntry): JobInterface
     {
         parent::start($queueEntry);
+
+        $configuredDelay = (Shop::getConfigValue(\CONF_NEWSLETTER, 'newsletter_send_delay') > 0) ?: 0;
+
+        $lastSendings = $this->db->select(
+            'tnewsletter',
+            'kNewsletter',
+            $this->getForeignKeyID(),
+            null,
+            null,
+            null,
+            null,
+            false,
+            'dLastSendings'
+        )->dLastSendings;
+        if (empty($lastSendings)) {
+            $downStep     = $configuredDelay + 1;
+            $lastSendings = (new \DateTime())
+                ->add(\DateInterval::createFromDateString('-' . $downStep . ' hour'));
+        } else {
+            $lastSendings = \DateTime::createFromFormat('Y-m-d H:i:s', $lastSendings);
+        }
+
+        if ((new \DateTime())->sub(new \DateInterval('PT' . $configuredDelay . 'H')) < $lastSendings) {
+
+            return $this;
+        }
         $oNewsletter = $this->getJobData();
         if ($oNewsletter === null) {
             return $this;
@@ -118,6 +144,12 @@ final class Newsletter extends Job
                 );
                 ++$queueEntry->tasksExecuted;
             }
+
+            // record the real sending work
+            $rowUpdate                = new \stdClass();
+            $rowUpdate->dLastSendings = (new \DateTime())->format('Y-m-d H:i:s');
+            $this->db->update('tnewsletter', 'kNewsletter', $this->getForeignKeyID(), $rowUpdate);
+
             $this->setFinished(false);
         } else {
             $this->setFinished(true);

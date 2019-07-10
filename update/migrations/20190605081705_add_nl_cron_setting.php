@@ -21,13 +21,13 @@ class Migration_20190605081705 extends Migration implements IMigration
     {
         $this->setConfig(
             'newsletter_send_delay',
-            '2',
+            '1',
             \CONF_NEWSLETTER,
             'Newsletter Sendeverzögerung',
             'number',
             130,
             (object)[
-                'cBeschreibung'     => 'Legt die Wartezeit zwischen den Newsletter-Sendungen fest.',
+                'cBeschreibung'     => 'Legt die Wartezeit (in Stunden) zwischen den Newsletter-Sendungen fest.',
                 'nStandardAnzeigen' => 1
             ],
             true

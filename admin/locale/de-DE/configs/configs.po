@@ -2376,7 +2376,7 @@ msgid "newsletter_send_delay_name"
 msgstr "Newsletter Sendeverzögerung"
 
 msgid "newsletter_send_delay_desc"
-msgstr "Legt die Wartezeit zwischen den Newsletter-Sendungen fest."
+msgstr "Legt die Wartezeit (in Stunden) zwischen den Newsletter-Sendungen fest."
 
 msgid "kundenfeld_anzeigen_name"
 msgstr "Eigene Formularfelder anzeigen"

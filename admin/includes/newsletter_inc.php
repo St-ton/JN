@@ -10,7 +10,6 @@ use JTL\Shop;
 use JTL\Smarty\ContextType;
 use JTL\Smarty\JTLSmarty;
 use JTL\Smarty\MailSmarty;
-use JTL\Sprache;
 
 /**
  * @param array $conf

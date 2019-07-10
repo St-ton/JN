@@ -2376,7 +2376,7 @@ msgid "newsletter_send_delay_name"
 msgstr "Newsletter send delay"
 
 msgid "newsletter_send_delay_desc"
-msgstr "Defines the waiting time between newsletter broadcasts."
+msgstr "Defines the waiting time (in hours) between newsletter broadcasts."
 
 msgid "kundenfeld_anzeigen_name"
 msgstr "Show custom form fields"

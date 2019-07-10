@@ -13,8 +13,10 @@ use JTL\Catalog\Product\Artikel;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
 use JTL\Kampagne;
+use JTL\Language\LanguageModel;
 use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
+use JTL\Model\DataModel;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Smarty\ContextType;
@@ -337,7 +339,7 @@ class Newsletter
             ->setSubject($newsletter->cBetreff)
             ->setBodyText($bodyText)
             ->setBodyHTML($bodyHtml)
-            ->setLanguageCode(Sprache::getIsoFromLangID((int)$newsletter->kSprache)->cISO);
+            ->setLanguage(Shop::Lang()->getLanguageByID((int)$newsletter->kSprache));
         $mailer->send($mailNL);
 
         return true;

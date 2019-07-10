@@ -1773,12 +1773,6 @@ msgstr "Breite"
 msgid "height"
 msgstr "Höhe"
 
-msgid "YouTube"
-msgstr "YouTube"
-
-msgid "Vimeo"
-msgstr "Vimeo"
-
 msgid "start"
 msgstr "Start"
 

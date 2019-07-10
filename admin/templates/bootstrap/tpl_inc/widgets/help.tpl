@@ -1,13 +1,13 @@
 <div class="widget-custom-data widget-help">
 
     <div class="row text-center">
-        <div class="col-xs-6 border-right">
+        <div class="col-auto border-right">
             <a href="https://jtl-url.de/0762z" target="_blank" rel="noopener">
                 <i class="fa fa-book text-four-times text-info"></i>
                 <h4>{__('doku')}</h4>
             </a>
         </div>
-        <div class="col-xs-6">
+        <div class="col-auto">
             <a href="https://forum.jtl-software.de" target="_blank" rel="noopener">
                 <i class="fa fa-comments-o text-four-times text-info"></i>
                 <h4>{__('communityForum')}</h4>

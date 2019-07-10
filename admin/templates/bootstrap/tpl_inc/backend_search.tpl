@@ -2,7 +2,7 @@
     <i class="fa fa-search"></i>
     <input id="backend-search-input" placeholder="{__('searchTerm')}" name="cSuche" type="search"
            value="" autocomplete="off">
-    <ul id="backend-search-dropdown"></ul>
+    <div class="dropdown-menu" id="backend-search-dropdown"></div>
     <script>
         var lastIoSearchCall    = null;
         var searchItems         = null;

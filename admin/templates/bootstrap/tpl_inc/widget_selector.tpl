@@ -1,18 +1,15 @@
 {foreach $oAvailableWidget_arr as $oAvailableWidget}
-    <div class="media widget">
-        <div class="media-body">
-            <h4 class="media-heading">{$oAvailableWidget->cTitle}</h4>
-            <span class="text-muted">{$oAvailableWidget->cDescription}</span>
-        </div>
-        <div class="media-right text-vcenter">
-            <a href="#"
-               onclick="addWidget({$oAvailableWidget->kWidget})"
-               class="badge badge-widget"><i class="fa fa-plus"></i></a>
-        </div>
-    </div>
+    <a href="#" class="dropdown-item" data-widget-add="1" onclick="addWidget({$oAvailableWidget->kWidget})">
+        <span class="icon-text-indent">
+            <span class="icon-hover text-primary">
+                <span href="#" class="fa fa-plus"></span>
+            </span>
+            <span class="font-weight-bold">{$oAvailableWidget->cTitle}</span><br />
+            {$oAvailableWidget->cDescription}
+        </span>
+    </a>
+    <div class="dropdown-divider"></div>
 {/foreach}
 {if $oAvailableWidget_arr|@count == 0}
-    <div class="widget_item">
-        <p class="title">{__('noMoreWidgets')}</p>
-    </div>
+    <span class="ml-3 font-weight-bold">{__('noMoreWidgets')}</span>
 {/if}

@@ -1,18 +1,15 @@
-<a href="#" class="dropdown-toggle parent" data-toggle="dropdown" title="{__('favorites')}">
-    <i class="fa fa-star" aria-hidden="true"></i>
+<a href="#" class="btn btn-primary favorites dropdown-toggle parent" data-toggle="dropdown" title="{__('favorites')}">
+    <i class="fa fa-star mr-1" aria-hidden="true"></i> {__('favorites')}
 </a>
-<ul class="dropdown-menu dropdown-menu-right" role="main">
+<div class="dropdown-menu dropdown-menu-right" role="main">
     {if isset($favorites) && is_array($favorites) && count($favorites) > 0}
-
+        <span class="dropdown-header">Favoriten</span>
+        <div class="dropdown-divider"></div>
         {foreach $favorites as $favorite}
-            <li{if $favorite->bExtern} class="icon"{/if}>
-                <a href="{$favorite->cAbsUrl}" rel="{$favorite->kAdminfav}"{if $favorite->bExtern} target="_blank"{/if}>{$favorite->cTitel}{if $favorite->bExtern} <i class="fa fa-external-link"></i>{/if}</a>
-            </li>
+            <a class="dropdown-item" href="{$favorite->cAbsUrl}" rel="{$favorite->kAdminfav}"{if $favorite->bExtern} target="_blank"{/if}>{$favorite->cTitel}{if $favorite->bExtern} <i class="fa fa-external-link"></i>{/if}</a>
         {/foreach}
 
-        <li role="separator" class="divider"></li>
+        <div class="dropdown-divider"></div>
     {/if}
-    <li class="icon">
-        <a href="favs.php">{__('manageFavorites')} <i class="fa fa-pencil"></i></a>
-    </li>
-</ul>
+    <a class="dropdown-item" href="favs.php"><i class="fa fa-pencil mr-1"></i> {__('manageFavorites')}</a>
+</div>

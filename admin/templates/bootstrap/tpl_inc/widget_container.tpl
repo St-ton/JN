@@ -1,13 +1,13 @@
-<ul id="{$eContainer}" class="dashboard-col col-md-4 col-sm-6 col-xs-12">
+<ul id="{$eContainer}" class="dashboard-col  col-12 col-xl-6 col-xxl-4 sortable">
     {foreach $oActiveWidget_arr as $oWidget}
         {if $oWidget->eContainer === $eContainer}
-            <li id="widget-{$oWidget->cClass}" class="widget panel panel-default" ref="{$oWidget->kWidget}">
-                <div class="widget-head panel-heading">
-                    <h4>{$oWidget->cTitle}</h4>
+            <li id="widget-{$oWidget->cClass}" class="widget sortitem card mb-4" ref="{$oWidget->kWidget}">
+                <div class="widget-head card-header">
+                    <span class="widget-title">{$oWidget->cTitle}</span>
                     <span class="options"></span>
                 </div>
                 <div class="widget-content
-                            {if $oWidget->hasBody === true}panel-body{/if}
+                            {if $oWidget->hasBody === true}card-body{/if}
                             {if !$oWidget->bExpanded}widget-hidden{/if}
                 ">
                     {$oWidget->cContent}

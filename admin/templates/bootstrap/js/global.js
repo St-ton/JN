@@ -507,7 +507,7 @@ $(document).ready(function () {
      * alert actions
      */
     $('.alert .close').on('click', function (){
-        $(this).parent().fadeOut(1000);
+        $(this).closest('.alert').fadeOut(1000);
     });
 
     $('.alert').each(function(){

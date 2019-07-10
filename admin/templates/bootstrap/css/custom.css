@@ -2768,4 +2768,7 @@ div.markdown thead tr td {
   color: #666;
   background-color: #f0f0f0;
 }
+.content-header {
+  margin-top: 0;
+}
 /*# sourceMappingURL=custom.css.map */

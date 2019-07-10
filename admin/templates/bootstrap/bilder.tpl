@@ -147,18 +147,15 @@
             {foreach $oConfig_arr as $cnf}
             {if $cnf->kEinstellungenConf == 267 || $cnf->kEinstellungenConf == 268 || $cnf->kEinstellungenConf == 269 || $cnf->kEinstellungenConf == 1135 || $cnf->kEinstellungenConf == 1421 || $cnf->kEinstellungenConf == 172 || $cnf->kEinstellungenConf == 161  || $cnf->kEinstellungenConf == 1483  || $cnf->kEinstellungenConf == 1484 || $cnf->kEinstellungenConf == 1485}
                 {if $cnf->cConf === 'Y'}
-                    <div class="input-group item{if isset($cSuche) && $cnf->kEinstellungenConf == $cSuche} highlight{/if}">
-                        <span class="input-group-addon">
-                            <label for="{$cnf->cWertName}">{$cnf->cName}</label>
-                        </span>
+                    <div class="form-group form-row align-items-center{if isset($cSuche) && $cnf->kEinstellungenConf == $cSuche} highlight{/if}">
+                        <label class="col col-sm-4 col-form-label text-sm-right order-1" for="{$cnf->cWertName}">{$cnf->cName}</label>
+                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                         {if $cnf->cInputTyp === 'selectbox'}
-                            <span class="input-group-wrap">
-                                <select class="form-control" name="{$cnf->cWertName}" id="{$cnf->cWertName}">
-                                    {foreach $cnf->ConfWerte as $wert}
-                                        <option value="{$wert->cWert}" {if $cnf->gesetzterWert == $wert->cWert}selected{/if}>{$wert->cName}</option>
-                                    {/foreach}
-                                </select>
-                            </span>
+                            <select class="custom-select" name="{$cnf->cWertName}" id="{$cnf->cWertName}">
+                                {foreach $cnf->ConfWerte as $wert}
+                                    <option value="{$wert->cWert}" {if $cnf->gesetzterWert == $wert->cWert}selected{/if}>{$wert->cName}</option>
+                                {/foreach}
+                            </select>
                         {elseif $cnf->cInputTyp === 'pass'}
                             <input class="form-control" type="password" name="{$cnf->cWertName}" id="{$cnf->cWertName}" value="{$cnf->gesetzterWert}" tabindex="1" />
                         {elseif $cnf->cInputTyp === 'number'}
@@ -190,12 +187,12 @@
                         {else}
                             <input class="form-control" type="text" name="{$cnf->cWertName}" id="{$cnf->cWertName}" value="{$cnf->gesetzterWert}" tabindex="1" />
                         {/if}
-
-                        <span class="input-group-addon">
+                        </div>
+                        <div class="col-auto ml-sm-n4 order-2 order-sm-3">
                             {if $cnf->cBeschreibung}
                                 {getHelpDesc cDesc=$cnf->cBeschreibung cID=$cnf->kEinstellungenConf}
                             {/if}
-                        </span>
+                        </div>
                     </div>
                 {else}
                     {if $open}</div></div>{/if}

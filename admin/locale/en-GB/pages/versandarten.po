@@ -54,7 +54,7 @@ msgid "grossValue"
 msgstr "19%"
 
 msgid "amount"
-msgstr "Amount"
+msgstr "Value"
 
 msgid "taxshippingcosts"
 msgstr "Taxes for shipping costs and threshold for free shipping"
@@ -90,10 +90,10 @@ msgid "sortnr"
 msgstr "Sort number"
 
 msgid "minLiefertage"
-msgstr "Shipping days min."
+msgstr "Min. DeliveryDays"
 
 msgid "maxLiefertage"
-msgstr "Shipping days max."
+msgstr "Max. DeliveryDays"
 
 msgid "acceptedPaymentMethods"
 msgstr "Accepted payment methods"
@@ -183,10 +183,10 @@ msgid "checkAsia"
 msgstr "Asia"
 
 msgid "checkAllOff"
-msgstr "Uncheck all"
+msgstr "Deselect all"
 
 msgid "checkAllOn"
-msgstr "Check all"
+msgstr "Select all"
 
 msgid "pictureURL"
 msgstr "Image URL"
@@ -201,7 +201,7 @@ msgid "shippingclasses"
 msgstr "Shipping classes"
 
 msgid "shippingclassDesc"
-msgstr "Here you can limit the shipping classes that can be combined with this shipping method. Click \"Add combinations\" to add all shipping classes that are to be available for this shipping method. <br/>EXAMPLE: There are 3 shipping classes (A, B, and C), and you want to allow all possible combinations with shipping class A. So, you add: <br/>1) A, 2) A and B, 3) A and C, and 4) A, B, and C. <br/>Only items with the shipping classes B and C or B only or C only would not be allowed in this example."
+msgstr "Here you can limit the shipping classes allowed for this shipping method. Click \"Add combinations\" to add all shipping classes that are to be available for this shipping method. <br/>EXAMPLE: There are 3 shipping classes (A, B, and C), and you want to allow all possible combinations with shipping class A. So, you add: <br/>1) A, 2) A and B, 3) A and C, and 4) A, B, and C. <br/>Only items with the shipping classes B and C or B only or C only would not be allowed in this example."
 
 msgid "addShippingClass"
 msgstr "Add combination"
@@ -339,7 +339,7 @@ msgstr "Shipping costs according to item quantity and destination country"
 
 # shipping types (tversandberechnung)
 msgid "shippingType_vm_versandberechnung_warenwert_jtl"
-msgstr "Shipping costs according to product value and destination country"
+msgstr "Shipping costs according to goods value and destination country"
 
 # shipping types (tversandberechnung)
 msgid "shippingType_vm_versandberechnung_gewicht_jtl"

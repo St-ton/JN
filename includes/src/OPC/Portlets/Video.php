@@ -64,8 +64,8 @@ class Video extends Portlet
                 'type'    => InputType::SELECT,
                 'default' => 'youtube',
                 'options' => [
-                    'youtube' => __('YouTube'),
-                    'vimeo'   => __('Vimeo'),
+                    'youtube' => 'YouTube',
+                    'vimeo'   => 'Vimeo',
                     'local'   => __('localVideo'),
                 ],
                 'childrenFor' => [

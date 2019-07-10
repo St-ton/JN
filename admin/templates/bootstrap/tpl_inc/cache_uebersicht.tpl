@@ -331,9 +331,9 @@
                                 </span>
                                 <span class="input-group-wrap">
                                     <select class="form-control" name="testdata" id="testdata">
-                                        <option value="array"{if isset($smarty.post.testdata) && $smarty.post.testdata === 'array'} selected{/if}>Array</option>
-                                        <option value="object"{if isset($smarty.post.testdata) && $smarty.post.testdata === 'object'} selected{/if}>Objekt</option>
-                                        <option value="string"{if isset($smarty.post.testdata) && $smarty.post.testdata === 'string'} selected{/if}>String</option>
+                                        <option value="array"{if isset($smarty.post.testdata) && $smarty.post.testdata === 'array'} selected{/if}>{__('typeArray')}</option>
+                                        <option value="object"{if isset($smarty.post.testdata) && $smarty.post.testdata === 'object'} selected{/if}>{__('typeObject')}</option>
+                                        <option value="string"{if isset($smarty.post.testdata) && $smarty.post.testdata === 'string'} selected{/if}>{__('typeString')}</option>
                                     </select>
                                 </span>
                             </div>

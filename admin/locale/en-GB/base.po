@@ -108,13 +108,13 @@ msgid "goBack"
 msgstr "« Back"
 
 msgid "enterResult"
-msgstr "Lösung eingeben"
+msgstr "Enter displayed text"
 
 msgid "invalidCode"
 msgstr "Invalid code"
 
 msgid "invalidResult"
-msgstr "Falsche Lösung"
+msgstr "Invalid entry"
 
 msgid "enterCode"
 msgstr "Enter code"
@@ -219,7 +219,7 @@ msgid "confirm"
 msgstr "Confirm"
 
 msgid "wantToConfirm"
-msgstr "Continue?"
+msgstr "Would you like to continue?"
 
 msgid "reloadCaptcha"
 msgstr "Reload Captcha"
@@ -366,7 +366,7 @@ msgid "showQuestions"
 msgstr "Show questions"
 
 msgid "errorImageSizeTooLarge"
-msgstr "The image is too large."
+msgstr "The image file is too large."
 
 msgid "errorUploadSizeLimit"
 msgstr "The image size exceeds the server upload limit."
@@ -1591,7 +1591,7 @@ msgstr "Note on battery law"
 
 # page type (tspezialseite)
 msgid "WRB-Formular"
-msgstr "Instructions on withdrawal form"
+msgstr "Instructions on withdrawal"
 
 msgid "exception"
 msgstr "Exception"
@@ -1699,7 +1699,7 @@ msgid "validUntil"
 msgstr "Valid until"
 
 msgid "miscellaneous"
-msgstr "miscellaneous"
+msgstr "Other"
 
 msgid "system"
 msgstr "System"
@@ -1711,7 +1711,7 @@ msgid "titleChoosePage"
 msgstr "Selecting custom pages"
 
 msgid "datepickerCustom"
-msgstr "Custom"
+msgstr "User-defined"
 
 msgid "datepickerToday"
 msgstr "Today"
@@ -1741,28 +1741,28 @@ msgid "datepickerSeparator"
 msgstr " - "
 
 msgid "mondayShort"
-msgstr "Mo"
+msgstr "Mon"
 
 msgid "tuesdayShort"
-msgstr "Tu"
+msgstr "Tue"
 
 msgid "wednesdayShort"
-msgstr "We"
+msgstr "Wed"
 
 msgid "thursdayShort"
-msgstr "Th"
+msgstr "Thu"
 
 msgid "fridayShort"
-msgstr "Fr"
+msgstr "Fri"
 
 msgid "saturdayShort"
-msgstr "Sa"
+msgstr "Sat"
 
 msgid "sundayShort"
-msgstr "Su"
+msgstr "Sun"
 
 msgid "Zeitraum"
-msgstr "Period of time"
+msgstr "Period"
 
 msgid "directEntry"
 msgstr "Direct entry"
@@ -1772,12 +1772,6 @@ msgstr "Width"
 
 msgid "height"
 msgstr "Height"
-
-msgid "YouTube"
-msgstr "YouTube"
-
-msgid "Vimeo"
-msgstr "Vimeo"
 
 msgid "start"
 msgstr "Start"
@@ -1793,3 +1787,51 @@ msgstr "white"
 
 msgid "red"
 msgstr "red"
+
+msgid "goToDocu"
+msgstr "Go to help pages"
+
+msgid "addToFavourites"
+msgstr "Add to favourites"
+
+msgid "length"
+msgstr "Length"
+
+msgid "foundEntries"
+msgstr "Found entries: "
+
+msgid "noEntriesSelected"
+msgstr "No entries selected yet. Please use the search."
+
+msgid "allSelectedEntries"
+msgstr "All selected entries: "
+
+msgid "deleteInput"
+msgstr "Delete input"
+
+msgid "searchPending"
+msgstr "Searching…"
+
+msgid "searchResultsFor"
+msgstr "Search results for: %s"
+
+msgid "pagesMenu"
+msgstr "Pages/Menu items"
+
+msgid "redirection"
+msgstr "Forwarding"
+
+msgid "missing"
+msgstr "Missing"
+
+msgid "useFilter"
+msgstr "Apply filter"
+
+msgid "resetFilter"
+msgstr "Reset filter"
+
+msgid "passwordGenerate"
+msgstr "Generate password"
+
+msgid "shopTitle"
+msgstr "Administration of JTL-Shop"

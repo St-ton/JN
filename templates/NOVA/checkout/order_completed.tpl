@@ -7,6 +7,7 @@
         {include file='layout/header.tpl'}
     {/block}
     {block name='checkout-order-completed-content'}
+        {container}
         {block name='checkout-order-completed-heading'}
             {if isset($smarty.session.Zahlungsart->nWaehrendBestellung) && $smarty.session.Zahlungsart->nWaehrendBestellung == 1}
                 <h1>{lang key='orderCompletedPre' section='checkout'}</h1>
@@ -28,7 +29,11 @@
                     {/block}
                 {/if}
             {/block}
+            {button class="mt-3" type="link" href={$ShopURL} variant="primary"}
+                {lang key='continueShopping' section='checkout'}
+            {/button}
         </div>
+        {/container}
     {/block}
     {block name='checkout-order-completed-include-footer'}
         {include file='layout/footer.tpl'}

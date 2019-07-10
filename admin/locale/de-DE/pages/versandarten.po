@@ -9,10 +9,10 @@ msgid "shippingmethodsURL"
 msgstr "https://jtl-url.de/dlkpz"
 
 msgid "documentationHint"
-msgstr "Hier sehen Sie eine Übersicht über alle Versandarten, die aktuell in JTL-Shop zur Verfügung stehen. Wenn Sie auf eines der Lieferländer einer Versandart klicken, können Sie Zuschläge für bestimmte Postleitzahlen hinterlegen (z. B. Inselzuschläge). Außerdem können Sie neue Versandarten anlegen und bestehende bearbeiten. Dokumentation und Beispiele zu diesem Thema finden Sie auf <i class=\"fa fa-external-link\"></i> <a href=\"https://jtl-url.de/guide\">http://guide.jtl-software.com</a>"
+msgstr "Hier sehen Sie eine Übersicht über alle Versandarten, die aktuell in JTL-Shop zur Verfügung stehen. Wenn Sie auf eines der Lieferländer einer Versandart klicken, können Sie Zuschläge für bestimmte Postleitzahlen hinterlegen (z.&nbsp;B. Inselzuschläge). Außerdem können Sie neue Versandarten anlegen und bestehende bearbeiten. Dokumentation und Beispiele zu diesem Thema finden Sie auf <i class=\"fa fa-external-link\"></i> <a href=\"https://jtl-url.de/guide\">http://guide.jtl-software.com</a>"
 
 msgid "isleListsHint"
-msgstr "Klicken Sie auf die einzelnen Versandländer, um Zuschlagslisten (z. B. Inselzuschläge) zu definieren. Ob für ein Lieferland Zuschlagslisten für die jeweilige Versandart hinterlegt sind, erkennen Sie an der entsprechenden Markierung."
+msgstr "Klicken Sie auf die einzelnen Versandländer, um Zuschlagslisten (z. B. Inselzuschläge) zu definieren. Ob für ein Lieferland Zuschlagslisten für die jeweilige Versandart hinterlegt sind, erkennen Sie an der entsprechenden Markierung."
 
 msgid "activeShippingmethods"
 msgstr "Aktive Versandarten"
@@ -51,7 +51,7 @@ msgid "gross"
 msgstr "Brutto (fixer Versandkostenpreis)"
 
 msgid "grossValue"
-msgstr "19 %"
+msgstr "19 %"
 
 msgid "amount"
 msgstr "Betrag"
@@ -120,7 +120,7 @@ msgid "isleListFor"
 msgstr "Zuschlagslisten für"
 
 msgid "isleListsDesc"
-msgstr "Hier können Sie Zuschlagslisten (z. B. Inselzuschläge) auf PLZ-Basis definieren. Die Zuschlagsliste gilt nur für die ausgewählte Versandart und das ausgewählte Lieferland."
+msgstr "Hier können Sie Zuschlagslisten (z. B. Inselzuschläge) auf PLZ-Basis definieren. Die Zuschlagsliste gilt nur für die ausgewählte Versandart und das ausgewählte Lieferland."
 
 msgid "isleList"
 msgstr "Zuschlagsliste"

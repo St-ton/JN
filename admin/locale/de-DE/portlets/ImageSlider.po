@@ -45,7 +45,7 @@ msgid "pointNavigation"
 msgstr "Punktnavigation?"
 
 msgid "useKenBurnsEffect"
-msgstr "Ken-Burns-Effekt nutzen??"
+msgstr "Ken-Burns-Effekt nutzen?"
 
 msgid "overridesOtherSettings"
 msgstr "overrides other settings"

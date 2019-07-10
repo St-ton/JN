@@ -35,7 +35,7 @@
                         <td>{__('shippingclasses')}</td>
                         <td>
                             {if $versandart->versandklassen|@count == 1 && $versandart->versandklassen[0] === 'Alle'}
-                                {$versandart->versandklassen[0]}
+                                {__('all')}
                             {else}
                                 {foreach $versandart->versandklassen as $versandklasse}
                                     [{$versandklasse}] &nbsp;

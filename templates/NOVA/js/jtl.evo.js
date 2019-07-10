@@ -556,10 +556,7 @@
 
         },
 
-
-
-
-    checkout: function() {
+        checkout: function() {
             // show only the first submit button (i.g. the button from payment plugin)
             var $submits = $('#checkout-shipping-payment')
                 .closest('form')
@@ -790,6 +787,15 @@
             }
         },
 
+        fixStickyElements: function() {
+            var sticky    = '.cart-summary';
+            var navHeight = $('#evo-main-nav-wrapper').outerHeight(true);
+            navHeight = navHeight === undefined ? 0 : parseInt(navHeight + 40);
+            $(sticky).css('top', navHeight);
+        },
+
+
+
         /**
          * $.evo.extended() is deprecated, please use $.evo instead
          */
@@ -816,6 +822,7 @@
             this.addInactivityCheck();
             this.setCompareListHeight();
             this.checkMenuScroll();
+            this.fixStickyElements();
         }
     };
 

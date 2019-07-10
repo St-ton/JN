@@ -18,13 +18,13 @@ msgid "orderPaymentName"
 msgstr "Payment method"
 
 msgid "orderWawiPickedUp"
-msgstr "Already transferred to JTL-Wawi"
+msgstr "Already sent to JTL-Wawi"
 
 msgid "orderCostumerRegistered"
 msgstr "Registered customer"
 
 msgid "orderSum"
-msgstr "Total quantity"
+msgstr "Total sum"
 
 msgid "orderDate"
 msgstr "Order date"
@@ -60,7 +60,7 @@ msgid "successOrderReset"
 msgstr "Selected purchase orders reset successfully."
 
 msgid "errorAtLeastOneOrder"
-msgstr "Error: Please select at least one purchase order."
+msgstr "Please select at least one purchase order."
 
 msgid "errorMissingOrderNumber"
-msgstr "Error: Please enter a purchase order ID."
+msgstr "Please enter a purchase order ID."

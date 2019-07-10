@@ -30,10 +30,10 @@ msgid "passNo"
 msgstr "No, use the password from the CSV file and do not inform customers via email"
 
 msgid "errorInvalidEmail"
-msgstr "Invalid email address (%s)! Data set was skipped."
+msgstr "Invalid email address: (%s)! Data set was skipped."
 
 msgid "errorNoPassword"
-msgstr "No password. Data set was skipped. (Could be unregistered customer of JTL-Shop)"
+msgstr "No password. Data set was skipped. (Possibly unregistered customer of JTL-Shop)"
 
 msgid "errorNoSurname"
 msgstr "No last name! Data set was skipped."
@@ -42,7 +42,7 @@ msgid "errorEmailDuplicate"
 msgstr "A customer with this email address already exists: %s. Data set was skipped."
 
 msgid "errorImportRecord"
-msgstr "Could not import row. Please have a look at the log file (Root/logs/) and correct the respective errors in the CSV file."
+msgstr "The row could not be imported. Please have a look at the log file (Root/logs/) and correct the respective errors in the CSV file."
 
 msgid "successImportRecord"
 msgstr "Data set OK. Import of: "
@@ -51,7 +51,7 @@ msgid "checkHead"
 msgstr "Checking header… "
 
 msgid "errorFormatNotFound"
-msgstr " Format not recognised."
+msgstr " Format not recognised!"
 
 msgid "importPending"
 msgstr "Importing…"

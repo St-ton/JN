@@ -132,7 +132,7 @@ msgid "errorKeyChange"
 msgstr " %s konnte nicht geändert werden!"
 
 msgid "sureDeleteGroup"
-msgstr "Sind Sie sicher, dass die Gruppe gelöscht werden soll?"
+msgstr "Möchten Sie die Gruppe wirklich löschen?"
 
 msgid "usernameNotAvailable"
 msgstr "Benutzername <strong>%s</strong> ist bereits vergeben."
@@ -262,7 +262,7 @@ msgid "permission_SETTINGS_GLOBAL_VIEW"
 msgstr "Globale Einstellungen"
 
 msgid "permission_SETTINGS_GLOBAL_META_VIEW"
-msgstr "Globale Meta-Angaben"
+msgstr "Globale Metadaten"
 
 msgid "permission_SETTINGS_CONTACTFORM_VIEW"
 msgstr "Kontaktformular"

@@ -17,7 +17,7 @@
         {if $bMultiplePages}
             {__('entries')} {$pagination->getFirstPageItem() + 1}
             - {$pagination->getFirstPageItem() + $pagination->getPageItemCount()}
-            von {$pagination->getItemCount()}
+            {__('of')} {$pagination->getItemCount()}
         {else}
             {__('allEntries')}
         {/if}
@@ -88,11 +88,11 @@
         {foreach $pagination->getSortByOptions() as $i => $cSortByOption}
             <option value="{$i * 2}"
                     {if $i * 2 == $pagination->getSortByDir()} selected="selected"{/if}>
-                {$cSortByOption[1]} {__('entriesPerPage')}
+                {$cSortByOption[1]} {__('ascending')}
             </option>
             <option value="{$i * 2 + 1}"
                     {if $i * 2 + 1 == $pagination->getSortByDir()} selected="selected"{/if}>
-                {$cSortByOption[1]} {__('entriesPerPage')}
+                {$cSortByOption[1]} {__('descending')}
             </option>
         {/foreach}
     </select>

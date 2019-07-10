@@ -134,6 +134,28 @@ html, body {
     }
 
     #iconpicker {
+      .popover-title {
+        &:after {
+          content: "";
+          display: block;
+          clear: both;
+        }
+
+        i {
+          font-size: 38px;
+          display: block;
+          float: left;
+          min-width: 52px;
+          min-height: 16px;
+        }
+
+        .iconpicker-search {
+          width: calc(100% - 52px);
+          float: left;
+          margin-bottom: 0;
+        }
+      }
+
       .form-control {
         float: none;
       }
@@ -156,6 +178,10 @@ html, body {
     .modal-dialog {
       width: 700px;
       max-width: none;
+
+      .checkbox-standalone {
+        padding: 26px 0 0 2px;
+      }
     }
 
     .product-filter-config {
@@ -270,6 +296,7 @@ html, body {
 
       .tab-content {
         overflow: visible;
+        height: 100%;
       }
 
       #portlets {
@@ -446,17 +473,14 @@ html, body {
       }
 
       #pagetree {
+        height: 100%;
+
         #pageTreeView {
           padding: 1em 0;
-
-          a {
-            text-decoration: none;
-            color: $text-color;
-
-            &:hover {
-              text-decoration: underline;
-            }
-          }
+          background-color: $light-bg;
+          border-radius: 5px;
+          height: 100%;
+          overflow-y: auto;
 
           ul {
             list-style: none;
@@ -467,26 +491,39 @@ html, body {
 
           a {
             display: inline-block;
-            padding: 0.25em;
+            text-decoration: none;
+            color: $text-color;
+          }
+
+          .area-item {
+            color: $text-lighter;
+            padding: 0 4px;
+            margin: 2px;
+          }
+
+          .portlet-item {
+            border-radius: 4px;
+            padding: 0 4px;
+            margin: 2px;
+          }
+
+          .item-expander {
+            > .fa-chevron-down {
+              display: none;
+            }
+
+            > .fa-chevron-right {
+              display: inline-block;
+            }
           }
 
           li {
-            > a {
-              > .fa-chevron-down {
-                display: none;
-              }
-
-              > .fa-chevron-right {
-                display: inline-block;
-              }
-            }
-
             > ul {
               display: none;
             }
 
             &.expanded {
-              > a {
+              > .item-expander {
                 > .fa-chevron-down {
                   display: inline-block;
                 }
@@ -502,14 +539,15 @@ html, body {
             }
 
             &.leaf {
-              > a > .fa {
+              > .item-expander {
                 visibility: hidden;
               }
             }
 
             &.selected {
               > .item-label {
-                font-weight: bold;
+                background-color: $gray-dark;
+                color: $light-bg;
               }
             }
           }

@@ -229,3 +229,12 @@ msgstr "Could not run benchmark."
 
 msgid "errorMethodNotFound"
 msgstr "No methods found."
+
+msgid "typeArray"
+msgstr "Array"
+
+msgid "typeObject"
+msgstr "Object"
+
+msgid "typeString"
+msgstr "String"

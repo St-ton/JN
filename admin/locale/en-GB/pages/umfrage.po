@@ -6,7 +6,7 @@ msgid "umfrage"
 msgstr "Survey system"
 
 msgid "umfrageDesc"
-msgstr "Use the surveys to measure customer satisfaction or carry out market research regarding the demand for new products. In order to use the survey module, you need to purchase it first in the JTL-Customer Centre. You can also test it first. In both cases, activating the module with the licence in the online shop connection of JTL-Wawi is required."
+msgstr "Use the surveys to measure customer satisfaction or carry out market research regarding the demand for new products. In order to use the Survey Module, you need to purchase it first in the JTL-Customer Centre. You can also test it first. In both cases, activating the module with the licence in the online shop connection of JTL-Wawi is required."
 
 msgid "umfrageURL"
 msgstr "https://jtl-url.de/rodci"
@@ -102,7 +102,7 @@ msgid "umfrageQODelete"
 msgstr "Delete option"
 
 msgid "umfrageQSort"
-msgstr "Sorting order"
+msgstr "Sorting"
 
 msgid "errorPollNotFound"
 msgstr "Could not find survey."
@@ -153,10 +153,10 @@ msgid "questionTypeMultipleChoiceMany"
 msgstr "Multiple selection (several possible replies)"
 
 msgid "questionTypeSelectboxOne"
-msgstr "Select box (one possible reply)"
+msgstr "List (single selection)"
 
 msgid "questionTypeSelectboxMany"
-msgstr "Multiselect box (several possible replies)"
+msgstr "List (multiple selection)"
 
 msgid "questionTypeTextSmall"
 msgstr "Text field (small)"
@@ -174,7 +174,7 @@ msgid "questionTypeDivider"
 msgstr "Structural element: static text"
 
 msgid "questionTypeDividerNewPage"
-msgstr "Structural element: static text and go to next page"
+msgstr "Structural element: static text"
 
 msgid "addAnswer"
 msgstr "Add a reply"
@@ -186,4 +186,4 @@ msgid "activePolls"
 msgstr "Active surveys"
 
 msgid "pollSortHint"
-msgstr "Enter a number to specify in which order the questions are to appear. The question with the number 1 will be displayed first."
+msgstr "Enter a number to specify the sorting order of the questions. The smaller the number, the further up the question will be displayed in the list."

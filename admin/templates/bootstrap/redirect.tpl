@@ -169,7 +169,7 @@
                                     <td>
                                         {if $oRedirect->nCount > 0}
                                             <div class="btn-group">
-                                                <button type="button" class="btn btn-default btn-sm" title="Details"
+                                                <button type="button" class="btn btn-default btn-sm" title="{__('details')}"
                                                         onclick="toggleReferer({$oRedirect->kRedirect});">
                                                     <i class="fa fa-list"></i>
                                                 </button>

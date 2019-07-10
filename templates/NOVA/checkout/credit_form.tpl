@@ -13,9 +13,9 @@
                         {/col}
                         {col cols=6}
                             {block name='checkout-credit-form-alert'}
-                                {alert variant="info" class="credit-amount-description text-center"}
+                                <div class="credit-amount-description text-center mb-4">
                                     {lang key='yourCreditIs' section='account data'} <strong class="credit-amount">{$GuthabenLocalized}</strong>
-                                {/alert}
+                                </div>
                             {/block}
                             {block name='checkout-credit-form-submit'}
                                 {input type="hidden" name="guthabenVerrechnen" value="1"}

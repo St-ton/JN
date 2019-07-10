@@ -8,14 +8,12 @@
             {nav vertical=true}
                 {foreach $oBox->getItems() as $oNewsMonatsUebersicht}
                     {block name='boxes-box-news-month-news-link'}
-                        {navitem}
-                            {link href=$oNewsMonatsUebersicht->cURL  title=$oNewsMonatsUebersicht->cName}
-                                <span class="value">
-                                    <i class="far fa-newspaper mr-2"></i>
-                                    {$oNewsMonatsUebersicht->cName}
-                                    <span class="badge badge-light float-right">{$oNewsMonatsUebersicht->nAnzahl}</span>
-                                </span>
-                            {/link}
+                        {navitem href=$oNewsMonatsUebersicht->cURL  title=$oNewsMonatsUebersicht->cName}
+                            <span class="value">
+                                <i class="far fa-newspaper mr-2"></i>
+                                {$oNewsMonatsUebersicht->cName}
+                                <span class="badge badge-light float-right">{$oNewsMonatsUebersicht->nAnzahl}</span>
+                            </span>
                         {/navitem}
                     {/block}
                 {/foreach}

@@ -14,7 +14,7 @@ msgid "ftpTest"
 msgstr "Test"
 
 msgid "ftpValidConnection"
-msgstr "Connection has been succesfully established"
+msgstr "Connection successful."
 
 msgid "ftpInvalidShopRoot"
-msgstr "A valid shop instance has not been found."
+msgstr "Could not find a valid shop installation. Please check the FTP path."

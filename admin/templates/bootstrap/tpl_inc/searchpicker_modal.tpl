@@ -18,11 +18,11 @@
                     <label for="{$searchPickerName}-search-input" class="sr-only">
                         {$searchInputLabel}:
                     </label>
-                    <input type="text" class="form-control" id="{$searchPickerName}-search-input" placeholder="Suche"
+                    <input type="text" class="form-control" id="{$searchPickerName}-search-input" placeholder="{__('search')}"
                            autocomplete="off">
                     <span class="input-group-btn">
                         <button type="button" class="btn btn-default" id="{$searchPickerName}-reset-btn"
-                                title="Eingabe löschen">
+                                title="{__('deleteInput')}">
                             <i class="fa fa-eraser"></i>
                         </button>
                     </span>
@@ -55,4 +55,8 @@
             </div>
         </div>
     </div>
+    <div class="hidden" data-name="foundEntries">{__('foundEntries')}</div>
+    <div class="hidden" data-name="noEntriesSelected">{__('noEntriesSelected')}</div>
+    <div class="hidden" data-name="allSelectedEntries">{__('allSelectedEntries')}</div>
+    <div class="hidden" data-name="searchPending">{__('searchPending')}</div>
 </div>

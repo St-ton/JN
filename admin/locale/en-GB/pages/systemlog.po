@@ -39,7 +39,7 @@ msgid "systemlogBTNSearch"
 msgstr "Search"
 
 msgid "systemlogSearch"
-msgstr "Suchtext"
+msgstr "Search text"
 
 msgid "systemlogEntry"
 msgstr "Entry"

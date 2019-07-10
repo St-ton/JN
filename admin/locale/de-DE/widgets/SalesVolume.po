@@ -6,4 +6,4 @@ msgid "SalesVolume_title"
 msgstr "Umsätze"
 
 msgid "SalesVolume_desc"
-msgstr "Umsatz-Statistik"
+msgstr "Umsatzstatistik"

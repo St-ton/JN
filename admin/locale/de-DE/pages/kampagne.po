@@ -93,7 +93,7 @@ msgid "successCampaignDelete"
 msgstr "Ihre ausgewählten Kampagnen wurden erfolgreich gelöscht."
 
 msgid "errorAtLeastOneCampaign"
-msgstr "Fehler: Bitte markieren Sie mindestens eine Kampagne."
+msgstr "Bitte markieren Sie mindestens eine Kampagne."
 
 msgid "errorCampaignSave"
 msgstr "Kampagne konnte nicht gespeichert werden."
@@ -112,3 +112,33 @@ msgstr "Der angegebene Kampagnenname ist bereits vergeben."
 
 msgid "errorCampaignParameterDuplicate"
 msgstr "Der angegebene Kampagnenparameter ist bereits vergeben."
+
+msgid "Hit"
+msgstr "Hits"
+
+msgid "Verkauf"
+msgstr "Verkäufe"
+
+msgid "Anmeldung"
+msgstr "Anmeldungen"
+
+msgid "Verkaufssumme"
+msgstr "Verkaufssumme"
+
+msgid "Frage zum Produkt"
+msgstr "Fragen zum Artikel"
+
+msgid "Verfügbarkeits-Anfrage"
+msgstr "Verfügbarkeitsanfragen"
+
+msgid "Login"
+msgstr "Logins"
+
+msgid "Produkt auf Wunschliste"
+msgstr "Artikel auf Wunschzettel"
+
+msgid "Produkt in den Warenkorb"
+msgstr "Artikel in Warenkorb"
+
+msgid "Angeschaute Newsletter"
+msgstr "Gelesene Newsletter"

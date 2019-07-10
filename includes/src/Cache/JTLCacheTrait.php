@@ -355,7 +355,9 @@ trait JTLCacheTrait
         $dtF = new \DateTime('@0');
         $dtT = new \DateTime('@' . $seconds);
 
-        return $dtF->diff($dtT)->format('%a Tage, %h Stunden, %i Minuten und %s Sekunden');
+        return $dtF->diff($dtT)->format(
+            '%a ' . __('days') . ', %h' . __('hours') . ', %i ' . __('minutes') . ', %s ' . __('seconds')
+        );
     }
 
     /**

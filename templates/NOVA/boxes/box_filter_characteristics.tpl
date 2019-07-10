@@ -3,7 +3,7 @@
  * @license https://jtl-url.de/jtlshoplicense
  *}
 {block name='boxes-box-filter-characteristics'}
-    {if $nSeitenTyp === $smarty.const.PAGE_ARTIKELLISTE}
+    {if $nSeitenTyp === $smarty.const.PAGE_ARTIKELLISTE && (!$device->isMobile() || $device->isTablet())}
         {foreach $oBox->getItems() as $Merkmal}
             <div class="{if $Merkmal@last} mb-7{/if}">
                 <div class="h4">
@@ -14,7 +14,7 @@
                     block=true
                     data=["toggle"=> "collapse", "target"=>"#sidebox{$oBox->getID()}-{$Merkmal->kMerkmal}"]
                     }
-                    {if $Einstellungen.navigationsfilter.merkmal_anzeigen_als !== 'T' && $Merkmal->getData('cBildpfadKlein') !== $smarty.const.BILD_KEIN_MERKMALBILD_VORHANDEN}
+                    {if $Einstellungen.navigationsfilter.merkmal_anzeigen_als !== 'T' && $Merkmal->getData('cBildpfadKlein')|strpos:$smarty.const.BILD_KEIN_MERKMALBILD_VORHANDEN === false}
                         <img src='{$Merkmal->getData('cBildURLKlein')}' alt='' class='vmiddle' />
                     {/if}
                     {if $Einstellungen.navigationsfilter.merkmal_anzeigen_als !== 'B'}

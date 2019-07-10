@@ -19,7 +19,7 @@
         {col cols=12}
             <div id="order-proceed-as-guest">
                 {block name='checkout-step1-edit-customer-address-form'}
-                    {form id="neukunde" method="post" action="{get_static_route id='bestellvorgang.php'}" class="evo-validate"}
+                    {form id="neukunde" method="post" action="{get_static_route id='bestellvorgang.php'}" class="evo-validate label-slide"}
                         {block name='include-inc-billing-address-form'}
                             {include file='checkout/inc_billing_address_form.tpl' step=$unreg_step}
                         {/block}
@@ -27,7 +27,7 @@
                             {include file='checkout/inc_shipping_address.tpl'}
                         {/block}
                         {block name='checkout-step1-edit-customer-address-form-submit'}
-                            <div class="text-right">
+                            <div class="text-right text-md-left mt-5">
                                 {input type="hidden" name="unreg_form" value=$unreg_form}
                                 {input type="hidden" name="editRechnungsadresse" value=$editRechnungsadresse}
                                 {button variant="primary" type="submit" class="submit_once"}

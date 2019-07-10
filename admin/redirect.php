@@ -99,13 +99,13 @@ if (Form::validateToken()) {
 }
 
 $filter = new Filter();
-$filter->addTextfield('URL', 'cFromUrl', Operation::CONTAINS);
-$filter->addTextfield('Ziel-URL', 'cToUrl', Operation::CONTAINS);
-$select = $filter->addSelectfield('Umleitung', 'cToUrl');
-$select->addSelectOption('alle', '');
-$select->addSelectOption('vorhanden', '', Operation::NOT_EQUAL);
-$select->addSelectOption('fehlend', '', Operation::EQUALS);
-$filter->addTextfield('Aufrufe', 'nCount', Operation::CUSTOM, DataType::NUMBER);
+$filter->addTextfield(__('url'), 'cFromUrl', Operation::CONTAINS);
+$filter->addTextfield(__('redirectTo'), 'cToUrl', Operation::CONTAINS);
+$select = $filter->addSelectfield(__('redirection'), 'cToUrl');
+$select->addSelectOption(__('all'), '');
+$select->addSelectOption(__('available'), '', Operation::NOT_EQUAL);
+$select->addSelectOption(__('missing'), '', Operation::EQUALS);
+$filter->addTextfield(__('calls'), 'nCount', Operation::CUSTOM, DataType::NUMBER);
 $filter->assemble();
 
 $redirectCount = Redirect::getRedirectCount($filter->getWhereSQL());
@@ -114,9 +114,9 @@ $pagination = new Pagination();
 $pagination
     ->setItemCount($redirectCount)
     ->setSortByOptions([
-        ['cFromUrl', 'URL'],
-        ['cToUrl', 'Ziel-URL'],
-        ['nCount', 'Aufrufe']
+        ['cFromUrl', __('url')],
+        ['cToUrl', __('redirectTo')],
+        ['nCount', __('calls')]
     ])
     ->assemble();
 

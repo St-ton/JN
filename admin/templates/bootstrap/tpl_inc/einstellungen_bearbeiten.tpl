@@ -1,5 +1,5 @@
 {if isset($Sektion) && $Sektion}
-    {assign var=cTitel value=__('settings')|cat:': '|cat:$Sektion->cName}
+    {assign var=cTitel value=__('settings')|cat:': '|cat:{__($Sektion->cName)}}
     {if isset($cSearch) && $cSearch|strlen  > 0}
         {assign var=cTitel value=$cSearch}
     {/if}

@@ -69,10 +69,12 @@
                         data=["toggle"=>"tooltip"]
                         class="{if $attributeValue->isActive()}active{/if}"
                     }
-                        {image src=$attributeImageURL alt=$attributeValue->getValue()|escape:'html'
-                            title="{$attributeValue->getValue()|escape:'html'}: {$attributeValue->getCount()}"
-                            class="vmiddle filter-img"
-                        }
+                        {if !empty($attributeImageURL)}
+                            {image src=$attributeImageURL alt=$attributeValue->getValue()|escape:'html'
+                                title="{$attributeValue->getValue()|escape:'html'}: {$attributeValue->getCount()}"
+                                class="vmiddle filter-img"
+                            }
+                        {/if}
                         <span class="word-break">
                             {$attributeValue->getValue()|escape:'html'} ({$attributeValue->getCount()})
                         </span>

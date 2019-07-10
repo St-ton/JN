@@ -384,7 +384,7 @@ $(function() {
 
         <div class="col-md-2">
             <div class="form-group">
-                <input id="db-search" class="form-control" type="search" placeholder="Tabelle suchen">
+                <input id="db-search" class="form-control" type="search" placeholder="{__('searchTable')}">
             </div>
             <nav class="db-sidebar hidden-print hidden-xs hidden-sm">
                 <ul class="nav db-sidenav">
@@ -563,7 +563,7 @@ $(function() {
                         <fieldset>
                             <legend>{__('count')}</legend>
                             <div class="fieldset-body">
-                                <input type="number" id="filter-limit" name="filter[limit]" class="form-control input-xs" placeholder="Anzahl" value="{$filter.limit}" size="3">
+                                <input type="number" id="filter-limit" name="filter[limit]" class="form-control input-xs" placeholder="{__('count')}" value="{$filter.limit}" size="3">
                             </div>
                         </fieldset>
 

@@ -21,7 +21,7 @@ msgid "fileCheckModifiedFilesNote"
 msgstr "The following files are not identical to the files of the current online shop version."
 
 msgid "fileCheckOrphanedFilesHeadline"
-msgstr "Orphaned data"
+msgstr "Orphaned files"
 
 msgid "fileCheckOrphanedFilesNote"
 msgstr "The following files were deleted in earlier versions of JTL-Shop and are not used anymore. The files can therefore be removed."

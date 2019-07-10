@@ -25,14 +25,12 @@
             <File Path="js/jquery-ui.min.js"/>
             <File Path="js/bootstrap.min.js"/>
             <File Path="js/colorpicker.js"/>
-            <File Path="js/jquery.ui.datepicker-de.js"/>
             <File Path="js/jquery-ui-timepicker-addon.js"/>
             <File Path="js/jquery.cookie.js"/>
             <File Path="js/highcharts.min.js"/>
             <File Path="js/global.js"/>
             <File Path="js/versandart_bruttonetto.js"/>
             <File Path="js/fileinput.min.js"/>
-            <File Path="js/fileinput_locale_de.js"/>
             <File Path="js/bootstrap-ladda.js"/>
             <File Path="js/bootstrap-notify.min.js"/>
             <File Path="js/humanize-duration.js"/>

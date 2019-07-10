@@ -221,6 +221,45 @@ class Text
 
     /**
      * @param string $input
+     * @param int    $flags
+     * @param string $enc
+     * @return string
+     * @since 5.0.0
+     */
+    public static function htmlentitiesOnce(
+        string $input,
+        int $flags = \ENT_COMPAT,
+        string $enc = \JTL_CHARSET
+    ): string {
+        return htmlentities($input, $flags, $enc, false);
+    }
+
+    /**
+     * @param string $input
+     * @param int    $length
+     * @return string
+     * @since 5.0.0
+     */
+    public static function htmlentitiesSubstr(string $input, int $length): string
+    {
+        if ($length > 0 && \mb_strlen($input) > $length) {
+            $regex = '/(&#x?[0-9a-f]+;)|(&\w{2,8};)|(\e)/i';
+            if (\preg_match_all($regex, $input, $hits)) {
+                // set escape-sequence as placeholder for html entities
+                $input = \preg_replace($regex, \chr(27), $input);
+            }
+            $input = \mb_substr($input, 0, $length);
+            if (count($hits[0]) > 0) {
+                // reset placeholder to preserved html entities
+                $input = \vsprintf(\str_replace(['%', \chr(27)], ['%%', '%s'], $input), $hits[0]);
+            }
+        }
+
+        return $input;
+    }
+
+    /**
+     * @param string $input
      * @return string
      */
     public static function unhtmlentities($input): string

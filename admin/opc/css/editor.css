@@ -301,6 +301,252 @@
   color: #435A6B;
 }
 
+#portlets .portletGroupBtn {
+  display: block;
+  font-weight: 600;
+  width: 100%;
+  text-align: left;
+  margin-bottom: 16px;
+}
+#portlets .portletGroupBtn .fas {
+  float: right;
+  line-height: inherit;
+}
+#portlets .portletGroupBtn.collapsed .fas::before {
+  content: "";
+}
+#portlets .collapse {
+  width: 340px;
+}
+#portlets .collapse:after {
+  content: " ";
+  display: block;
+  clear: both;
+}
+#portlets .collapsing {
+  width: 340px;
+}
+#portlets .portletButton {
+  display: block;
+  float: left;
+  width: 96px;
+  height: 96px;
+  margin-right: 22px;
+  margin-bottom: 22px;
+  background-color: #F5F7FA;
+  border-radius: 5px;
+}
+#portlets .portletButton:hover {
+  box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.125);
+}
+#portlets .portletButton:nth-child(3n) {
+  margin-right: 0;
+}
+#portlets .portletButton > .portletBtnInner {
+  display: block;
+  width: 96px;
+  height: 96px;
+  position: relative;
+}
+#portlets .portletButton > .portletBtnInner > img {
+  position: absolute;
+  left: 50%;
+  top: 36%;
+  transform: translate(-50%, -50%);
+}
+#portlets .portletButton > .portletBtnInner > i {
+  display: block;
+  position: absolute;
+  left: 50%;
+  top: 36%;
+  transform: translate(-50%, -50%);
+  font-size: 32px;
+  color: #5cbcf6;
+}
+#portlets .portletButton > .portletBtnInner > span {
+  position: absolute;
+  left: 0;
+  bottom: 8px;
+  width: 100%;
+  line-height: 16px;
+}
+#portlets .collapseGroup {
+  display: block;
+  color: #435A6B;
+  font-size: 16px;
+  padding: 8px 25px;
+  margin: 0 -15px 5px -15px;
+  text-decoration: none;
+}
+#portlets .collapse .row {
+  padding-bottom: 14px;
+}
+
+#blueprints #blueprintList {
+  padding-bottom: 60px;
+}
+#blueprints .blueprintButton {
+  cursor: pointer;
+}
+#blueprints .blueprintButton:hover {
+  box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.125);
+}
+#blueprints .blueprintButton .blueprint-icon {
+  color: #5cbcf6;
+  font-size: 22px;
+  vertical-align: bottom;
+  margin-right: 8px;
+}
+#blueprints .blueprintButton .blueprint-btn-actions {
+  float: right;
+  display: none;
+}
+#blueprints .blueprintButton .blueprint-btn-actions button {
+  padding: 0 4px;
+  margin-top: -4px;
+  font-size: 16px;
+  width: 28px;
+  height: 28px;
+  border-radius: 100px;
+}
+#blueprints .blueprintButton .blueprint-btn-actions button:hover {
+  background-color: #dfe1e2;
+}
+#blueprints .blueprintButton:hover .blueprint-btn-actions {
+  display: block;
+}
+#blueprints #btnImportBlueprint {
+  position: fixed;
+  bottom: 212px;
+  width: 334px;
+  box-shadow: none;
+}
+
+#pagetree {
+  height: 100%;
+}
+#pagetree #pageTreeView {
+  padding: 1em 0;
+  background-color: #F5F7FA;
+  border-radius: 5px;
+  height: 100%;
+  overflow-y: auto;
+}
+#pagetree #pageTreeView ul {
+  list-style: none;
+  padding: 0;
+  padding-left: 1em;
+  margin: 0;
+}
+#pagetree #pageTreeView a {
+  display: inline-block;
+  text-decoration: none;
+  color: #435A6B;
+}
+#pagetree #pageTreeView .area-item {
+  color: #63849d;
+  padding: 0 4px;
+  margin: 2px;
+}
+#pagetree #pageTreeView .portlet-item {
+  border-radius: 4px;
+  padding: 0 4px;
+  margin: 2px;
+}
+#pagetree #pageTreeView .item-expander > .fa-chevron-down {
+  display: none;
+}
+#pagetree #pageTreeView .item-expander > .fa-chevron-right {
+  display: inline-block;
+}
+#pagetree #pageTreeView li > ul {
+  display: none;
+}
+#pagetree #pageTreeView li.expanded > .item-expander > .fa-chevron-down {
+  display: inline-block;
+}
+#pagetree #pageTreeView li.expanded > .item-expander > .fa-chevron-right {
+  display: none;
+}
+#pagetree #pageTreeView li.expanded > ul {
+  display: block;
+}
+#pagetree #pageTreeView li.leaf > .item-expander {
+  visibility: hidden;
+}
+#pagetree #pageTreeView li.leaf > .area-item {
+  color: #BDBDBD;
+}
+#pagetree #pageTreeView li.selected > .item-label {
+  background-color: #525252;
+  color: #F5F7FA;
+}
+
+#configModal #configModalBody {
+  overflow: initial;
+}
+#configModal .modal-dialog {
+  width: 700px;
+  max-width: none;
+}
+#configModal .modal-dialog .checkbox-standalone {
+  padding: 26px 0 0 2px;
+}
+#configModal .product-filter-config label {
+  display: block;
+  font-weight: bold;
+}
+#configModal .product-filter-config .active-filters {
+  margin-bottom: 10px;
+}
+#configModal .product-filter-config .active-filters .filters-enabled button {
+  background-color: #435A6B;
+  color: #F5F7FA;
+  padding: 4px 16px;
+  border-radius: 100px;
+  margin-right: 8px;
+  margin-bottom: 8px;
+}
+#configModal .product-filter-config .active-filters .filters-enabled button.restore-all {
+  background-color: #5cbcf6;
+}
+#configModal .product-filter-config .active-filters .filters-enabled button i {
+  margin-left: 4px;
+  font-size: 12px;
+}
+#configModal .product-filter-config .filters-section {
+  background-color: #F5F7FA;
+  border-radius: 5px;
+  margin-bottom: 8px;
+  padding: 16px;
+  padding-bottom: 12px;
+}
+#configModal .product-filter-config .filters-section .no-options {
+  color: #BDBDBD;
+  font-style: italic;
+}
+#configModal .product-filter-config .filters-section .filters-section-inner {
+  max-height: 92px;
+  overflow-y: scroll;
+}
+#configModal .product-filter-config .filters-section .filters-section-inner:after {
+  content: "";
+  display: block;
+  clear: both;
+}
+#configModal .product-filter-config .filters-section .filters-section-inner .filter-option {
+  width: 33%;
+  float: left;
+  margin-bottom: 2px;
+  text-align: left;
+}
+#configModal .product-filter-config .filters-section .filters-section-inner .filter-option:hover i:before {
+  content: "";
+}
+#configModal .product-filter-config .filters-section .filters-section-inner .filter-option i {
+  margin-right: 4px;
+}
+
 html, body {
   margin: 0;
   padding: 0;
@@ -438,67 +684,6 @@ html, body {
   transform: translate(0, -75%);
   margin: 0 auto;
 }
-#opc #configModal .modal-dialog {
-  width: 700px;
-  max-width: none;
-}
-#opc #configModal .modal-dialog .checkbox-standalone {
-  padding: 26px 0 0 2px;
-}
-#opc #configModal .product-filter-config label {
-  display: block;
-  font-weight: bold;
-}
-#opc #configModal .product-filter-config .active-filters {
-  margin-bottom: 10px;
-}
-#opc #configModal .product-filter-config .active-filters .filters-enabled button {
-  background-color: #435A6B;
-  color: #F5F7FA;
-  padding: 4px 16px;
-  border-radius: 100px;
-  margin-right: 8px;
-  margin-bottom: 8px;
-}
-#opc #configModal .product-filter-config .active-filters .filters-enabled button.restore-all {
-  background-color: #5cbcf6;
-}
-#opc #configModal .product-filter-config .active-filters .filters-enabled button i {
-  margin-left: 4px;
-  font-size: 12px;
-}
-#opc #configModal .product-filter-config .filters-section {
-  background-color: #F5F7FA;
-  border-radius: 5px;
-  margin-bottom: 8px;
-  padding: 16px;
-  padding-bottom: 12px;
-}
-#opc #configModal .product-filter-config .filters-section .no-options {
-  color: #BDBDBD;
-  font-style: italic;
-}
-#opc #configModal .product-filter-config .filters-section .filters-section-inner {
-  max-height: 92px;
-  overflow-y: scroll;
-}
-#opc #configModal .product-filter-config .filters-section .filters-section-inner:after {
-  content: "";
-  display: block;
-  clear: both;
-}
-#opc #configModal .product-filter-config .filters-section .filters-section-inner .filter-option {
-  width: 33%;
-  float: left;
-  margin-bottom: 2px;
-  text-align: left;
-}
-#opc #configModal .product-filter-config .filters-section .filters-section-inner .filter-option:hover i:before {
-  content: "";
-}
-#opc #configModal .product-filter-config .filters-section .filters-section-inner .filter-option i {
-  margin-right: 4px;
-}
 #opc #opcSidebar {
   width: 380px;
   height: 100%;
@@ -531,86 +716,6 @@ html, body {
   overflow: visible;
   height: 100%;
 }
-#opc #opcSidebar #sidebarInnerPanel #portlets .portletGroupBtn {
-  display: block;
-  font-weight: 600;
-  width: 100%;
-  text-align: left;
-  margin-bottom: 16px;
-}
-#opc #opcSidebar #sidebarInnerPanel #portlets .portletGroupBtn .fas {
-  float: right;
-  line-height: inherit;
-}
-#opc #opcSidebar #sidebarInnerPanel #portlets .portletGroupBtn.collapsed .fas::before {
-  content: "";
-}
-#opc #opcSidebar #sidebarInnerPanel #portlets .collapse {
-  width: 340px;
-}
-#opc #opcSidebar #sidebarInnerPanel #portlets .collapse:after {
-  content: " ";
-  display: block;
-  clear: both;
-}
-#opc #opcSidebar #sidebarInnerPanel #portlets .collapsing {
-  width: 340px;
-}
-#opc #opcSidebar #sidebarInnerPanel #portlets .portletButton {
-  display: block;
-  float: left;
-  width: 96px;
-  height: 96px;
-  margin-right: 22px;
-  margin-bottom: 22px;
-  background-color: #F5F7FA;
-  border-radius: 5px;
-}
-#opc #opcSidebar #sidebarInnerPanel #portlets .portletButton:hover {
-  box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.125);
-}
-#opc #opcSidebar #sidebarInnerPanel #portlets .portletButton:nth-child(3n) {
-  margin-right: 0;
-}
-#opc #opcSidebar #sidebarInnerPanel #portlets .portletButton > .portletBtnInner {
-  display: block;
-  width: 96px;
-  height: 96px;
-  position: relative;
-}
-#opc #opcSidebar #sidebarInnerPanel #portlets .portletButton > .portletBtnInner > img {
-  position: absolute;
-  left: 50%;
-  top: 36%;
-  transform: translate(-50%, -50%);
-}
-#opc #opcSidebar #sidebarInnerPanel #portlets .portletButton > .portletBtnInner > i {
-  display: block;
-  position: absolute;
-  left: 50%;
-  top: 36%;
-  transform: translate(-50%, -50%);
-  font-size: 32px;
-  color: #5cbcf6;
-}
-#opc #opcSidebar #sidebarInnerPanel #portlets .portletButton > .portletBtnInner > span {
-  position: absolute;
-  left: 0;
-  bottom: 8px;
-  width: 100%;
-  line-height: 16px;
-}
-#opc #opcSidebar #sidebarInnerPanel #portlets .collapseGroup {
-  display: block;
-  color: #435A6B;
-  font-size: 16px;
-  padding: 8px 25px;
-  margin: 0 -15px 5px -15px;
-  text-decoration: none;
-}
-#opc #opcSidebar #sidebarInnerPanel #portlets .collapse .row {
-  padding-bottom: 14px;
-}
 #opc #opcSidebar #sidebarInnerPanel #revisions .revisionBtn,
 #opc #opcSidebar #sidebarInnerPanel #blueprints .blueprintButton {
   display: block;
@@ -627,104 +732,6 @@ html, body {
 }
 #opc #opcSidebar #sidebarInnerPanel #revisions .revisionBtn:hover {
   background-color: #dfe1e2;
-}
-#opc #opcSidebar #sidebarInnerPanel #blueprints #blueprintList {
-  padding-bottom: 60px;
-}
-#opc #opcSidebar #sidebarInnerPanel #blueprints .blueprintButton {
-  cursor: pointer;
-}
-#opc #opcSidebar #sidebarInnerPanel #blueprints .blueprintButton:hover {
-  box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.125);
-}
-#opc #opcSidebar #sidebarInnerPanel #blueprints .blueprintButton .blueprint-icon {
-  color: #5cbcf6;
-  font-size: 22px;
-  vertical-align: bottom;
-  margin-right: 8px;
-}
-#opc #opcSidebar #sidebarInnerPanel #blueprints .blueprintButton .blueprint-btn-actions {
-  float: right;
-  display: none;
-}
-#opc #opcSidebar #sidebarInnerPanel #blueprints .blueprintButton .blueprint-btn-actions button {
-  padding: 0 4px;
-  margin-top: -4px;
-  font-size: 16px;
-  width: 28px;
-  height: 28px;
-  border-radius: 100px;
-}
-#opc #opcSidebar #sidebarInnerPanel #blueprints .blueprintButton .blueprint-btn-actions button:hover {
-  background-color: #dfe1e2;
-}
-#opc #opcSidebar #sidebarInnerPanel #blueprints .blueprintButton:hover .blueprint-btn-actions {
-  display: block;
-}
-#opc #opcSidebar #sidebarInnerPanel #blueprints #btnImportBlueprint {
-  position: fixed;
-  bottom: 212px;
-  width: 334px;
-  box-shadow: none;
-}
-#opc #opcSidebar #sidebarInnerPanel #pagetree {
-  height: 100%;
-}
-#opc #opcSidebar #sidebarInnerPanel #pagetree #pageTreeView {
-  padding: 1em 0;
-  background-color: #F5F7FA;
-  border-radius: 5px;
-  height: 100%;
-  overflow-y: auto;
-}
-#opc #opcSidebar #sidebarInnerPanel #pagetree #pageTreeView ul {
-  list-style: none;
-  padding: 0;
-  padding-left: 1em;
-  margin: 0;
-}
-#opc #opcSidebar #sidebarInnerPanel #pagetree #pageTreeView a {
-  display: inline-block;
-  text-decoration: none;
-  color: #435A6B;
-}
-#opc #opcSidebar #sidebarInnerPanel #pagetree #pageTreeView .area-item {
-  color: #63849d;
-  padding: 0 4px;
-  margin: 2px;
-}
-#opc #opcSidebar #sidebarInnerPanel #pagetree #pageTreeView .portlet-item {
-  border-radius: 4px;
-  padding: 0 4px;
-  margin: 2px;
-}
-#opc #opcSidebar #sidebarInnerPanel #pagetree #pageTreeView .item-expander > .fa-chevron-down {
-  display: none;
-}
-#opc #opcSidebar #sidebarInnerPanel #pagetree #pageTreeView .item-expander > .fa-chevron-right {
-  display: inline-block;
-}
-#opc #opcSidebar #sidebarInnerPanel #pagetree #pageTreeView li > ul {
-  display: none;
-}
-#opc #opcSidebar #sidebarInnerPanel #pagetree #pageTreeView li.expanded > .item-expander > .fa-chevron-down {
-  display: inline-block;
-}
-#opc #opcSidebar #sidebarInnerPanel #pagetree #pageTreeView li.expanded > .item-expander > .fa-chevron-right {
-  display: none;
-}
-#opc #opcSidebar #sidebarInnerPanel #pagetree #pageTreeView li.expanded > ul {
-  display: block;
-}
-#opc #opcSidebar #sidebarInnerPanel #pagetree #pageTreeView li.leaf > .item-expander {
-  visibility: hidden;
-}
-#opc #opcSidebar #sidebarInnerPanel #pagetree #pageTreeView li.leaf > .area-item {
-  color: #BDBDBD;
-}
-#opc #opcSidebar #sidebarInnerPanel #pagetree #pageTreeView li.selected > .item-label {
-  background-color: #525252;
-  color: #F5F7FA;
 }
 #opc #opcSidebar #sidebarFooter {
   position: absolute;
@@ -886,9 +893,6 @@ html, body {
 #opc .popover[class*=tour-] .popover-title {
   color: #fff;
   background-color: #5cbcf6;
-}
-#opc #configModalBody {
-  overflow: initial;
 }
 #opc .banner-zones {
   position: absolute;

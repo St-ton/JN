@@ -1,4 +1,4 @@
-#configModal {
+#opc #configModal {
   #configModalBody {
     overflow: initial;
   }
@@ -82,5 +82,66 @@
         }
       }
     }
+  }
+}
+
+#opc .slide-entry {
+  background-color: $light-bg;
+  padding: 16px;
+  margin-bottom: 16px;
+  display: flex;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  .slide-btns {
+    > button ,
+    > span {
+      display: block;
+      padding: 4px;
+      margin-bottom: 8px;
+    }
+
+    i {
+      font-size: 18px;
+    }
+  }
+
+  .slide-image-col {
+    .slide-image-btn {
+      width: 96px;
+      height: 96px;
+      margin: 0 16px;
+      background-size: cover;
+      background-position: center;
+      cursor: pointer;
+    }
+  }
+
+  .slide-props {
+    flex: auto;
+
+    .form-control {
+      height: 32px;
+      margin-bottom: 16px;
+    }
+  }
+}
+
+#opc button.add-slide-btn {
+  margin: auto;
+  display: block;
+  margin-top: -16px;
+  width: 48px;
+  height: 48px;
+  background-color: $text-color;
+
+  &:hover {
+    background-color: $text-lighter;
+  }
+
+  i {
+    font-size: 18px;
   }
 }

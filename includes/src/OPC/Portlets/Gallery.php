@@ -31,7 +31,6 @@ class Gallery extends Portlet
                 'type'       => InputType::IMAGE_SET,
                 'label'      => __('imageList'),
                 'default'    => [],
-                'useColumns' => true,
             ],
         ];
     }
@@ -42,7 +41,6 @@ class Gallery extends Portlet
     public function getPropertyTabs(): array
     {
         return [
-            __('Images') => ['images'],
             __('Styles') => 'styles',
         ];
     }

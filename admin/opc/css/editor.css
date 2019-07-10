@@ -482,24 +482,24 @@
   color: #F5F7FA;
 }
 
-#configModal #configModalBody {
+#opc #configModal #configModalBody {
   overflow: initial;
 }
-#configModal .modal-dialog {
+#opc #configModal .modal-dialog {
   width: 700px;
   max-width: none;
 }
-#configModal .modal-dialog .checkbox-standalone {
+#opc #configModal .modal-dialog .checkbox-standalone {
   padding: 26px 0 0 2px;
 }
-#configModal .product-filter-config label {
+#opc #configModal .product-filter-config label {
   display: block;
   font-weight: bold;
 }
-#configModal .product-filter-config .active-filters {
+#opc #configModal .product-filter-config .active-filters {
   margin-bottom: 10px;
 }
-#configModal .product-filter-config .active-filters .filters-enabled button {
+#opc #configModal .product-filter-config .active-filters .filters-enabled button {
   background-color: #435A6B;
   color: #F5F7FA;
   padding: 4px 16px;
@@ -507,44 +507,93 @@
   margin-right: 8px;
   margin-bottom: 8px;
 }
-#configModal .product-filter-config .active-filters .filters-enabled button.restore-all {
+#opc #configModal .product-filter-config .active-filters .filters-enabled button.restore-all {
   background-color: #5cbcf6;
 }
-#configModal .product-filter-config .active-filters .filters-enabled button i {
+#opc #configModal .product-filter-config .active-filters .filters-enabled button i {
   margin-left: 4px;
   font-size: 12px;
 }
-#configModal .product-filter-config .filters-section {
+#opc #configModal .product-filter-config .filters-section {
   background-color: #F5F7FA;
   border-radius: 5px;
   margin-bottom: 8px;
   padding: 16px;
   padding-bottom: 12px;
 }
-#configModal .product-filter-config .filters-section .no-options {
+#opc #configModal .product-filter-config .filters-section .no-options {
   color: #BDBDBD;
   font-style: italic;
 }
-#configModal .product-filter-config .filters-section .filters-section-inner {
+#opc #configModal .product-filter-config .filters-section .filters-section-inner {
   max-height: 92px;
   overflow-y: scroll;
 }
-#configModal .product-filter-config .filters-section .filters-section-inner:after {
+#opc #configModal .product-filter-config .filters-section .filters-section-inner:after {
   content: "";
   display: block;
   clear: both;
 }
-#configModal .product-filter-config .filters-section .filters-section-inner .filter-option {
+#opc #configModal .product-filter-config .filters-section .filters-section-inner .filter-option {
   width: 33%;
   float: left;
   margin-bottom: 2px;
   text-align: left;
 }
-#configModal .product-filter-config .filters-section .filters-section-inner .filter-option:hover i:before {
+#opc #configModal .product-filter-config .filters-section .filters-section-inner .filter-option:hover i:before {
   content: "";
 }
-#configModal .product-filter-config .filters-section .filters-section-inner .filter-option i {
+#opc #configModal .product-filter-config .filters-section .filters-section-inner .filter-option i {
   margin-right: 4px;
+}
+
+#opc .slide-entry {
+  background-color: #F5F7FA;
+  padding: 16px;
+  margin-bottom: 16px;
+  display: flex;
+}
+#opc .slide-entry:last-child {
+  margin-bottom: 0;
+}
+#opc .slide-entry .slide-btns > button,
+#opc .slide-entry .slide-btns > span {
+  display: block;
+  padding: 4px;
+  margin-bottom: 8px;
+}
+#opc .slide-entry .slide-btns i {
+  font-size: 18px;
+}
+#opc .slide-entry .slide-image-col .slide-image-btn {
+  width: 96px;
+  height: 96px;
+  margin: 0 16px;
+  background-size: cover;
+  background-position: center;
+  cursor: pointer;
+}
+#opc .slide-entry .slide-props {
+  flex: auto;
+}
+#opc .slide-entry .slide-props .form-control {
+  height: 32px;
+  margin-bottom: 16px;
+}
+
+#opc button.add-slide-btn {
+  margin: auto;
+  display: block;
+  margin-top: -16px;
+  width: 48px;
+  height: 48px;
+  background-color: #435A6B;
+}
+#opc button.add-slide-btn:hover {
+  background-color: #63849d;
+}
+#opc button.add-slide-btn i {
+  font-size: 18px;
 }
 
 html, body {

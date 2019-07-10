@@ -15,27 +15,29 @@
 {function slideEntry
     slideData=['xs' => '', 'sm' => '', 'md' => '', 'lg' => '', 'desc' => '', 'url' => '', 'link' => '', 'title' => '']
 }
-    <div class="row slide-entry" style="margin-bottom: 1em;">
-        <div class="col-xs-2" style="width: 17%">
-            <div class="btn-group">
-                <div type="button" class="btn btn-primary btn-sm btn-slide-mover"
-                     title="{__('entryMove')}" style="cursor: move">
-                    <i class="fa fa-bars"></i>
-                </div>
-                <button type="button" class="btn btn-danger btn-sm" onclick="removeSlide_{$propname}()"
-                        title="{__('entryDelete')}">
-                    <i class="fa fa-trash"></i>
-                </button>
-            </div>
+    <div class="slide-entry">
+        <div class="slide-btns">
+            <span class="btn-slide-mover"
+                 title="{__('entryMove')}" style="cursor: move">
+                <i class="fas fa-arrows-alt-v fa-fw"></i>
+            </span>
+            <button type="button" onclick="" title="Copy">
+                <i class="far fa-clone fa-fw"></i>
+            </button>
+            <button type="button" onclick="removeSlide_{$propname}()"
+                    title="{__('entryDelete')}">
+                <i class="far fa-trash-alt fa-fw"></i>
+            </button>
         </div>
-        <div class="col-xs-3" style="width: 24%">
+        <div class="slide-image-col">
             {$imgUrl = $slideData.url|default:'templates/bootstrap/gfx/layout/upload.png'}
-            <img src="{$imgUrl}" alt="Bild-Wähler" class="img-responsive"
-                 onclick="opc.gui.openElFinder(elfinderCallback_{$propname}.bind(this), 'Bilder')"
-                 style="cursor: pointer" title="{__('imageSelect')}">
+            <div style="background-image: url('{$imgUrl}')" class="slide-image-btn"
+                 onclick="opc.gui.openElFinder(elfinderCallback_{$propname}.bind(this), 'Bilder')">
+
+            </div>
             <input type="hidden" name="{$propname}[#SORT#][url]" value="{$slideData.url|default:''}">
         </div>
-        <div class="col-xs-7" style="width: 59%">
+        <div class="slide-props">
             {if $useTitles}
                 <input type="text" class="form-control" placeholder="{__('title')}"
                        name="{$propname}[#SORT#][title]" value="{$slideData.title|default:''}">
@@ -60,25 +62,20 @@
     </div>
 {/function}
 
-<div class="panel panel-default">
-    <div class="panel-heading">
-        <h3 class="panel-title">{$propdesc.label}</h3>
-    </div>
-    <div class="panel-body" id="{$propname}-slides">
-        {foreach $propval as $slideData}
-            {slideEntry slideData=$slideData}
-        {/foreach}
-    </div>
-    <div class="panel-footer">
-        <div class="btn-group">
-            <button type="button" class="btn btn-primary" onclick="addSlide_{$propname}()">
-                <i class="fa fa-plus"></i> {__('imageAdd')}
-            </button>
-        </div>
-    </div>
+<label>{$propdesc.label}</label>
+
+<div id="{$propname}-slides">
+    {foreach $propval as $slideData}
+        {slideEntry slideData=$slideData}
+    {/foreach}
 </div>
 
-<div class="hidden" id="{$propname}-slide-blueprint">
+<button type="button" class="opc-btn-primary opc-small-btn add-slide-btn" onclick="addSlide_{$propname}()"
+        title="{__('imageAdd')}">
+    <i class="fas fa-plus fa-fw"></i>
+</button>
+
+<div style="display: none" id="{$propname}-slide-blueprint">
     {slideEntry}
 </div>
 
@@ -94,7 +91,7 @@
     function elfinderCallback_{$propname}(url)
     {
         var image = $(this);
-        image.attr('src', url);
+        image.css('background-image', 'url("' + url + '")');
         image.siblings('input').val(url);
     }
 

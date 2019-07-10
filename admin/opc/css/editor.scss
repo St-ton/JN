@@ -134,6 +134,28 @@ html, body {
     }
 
     #iconpicker {
+      .popover-title {
+        &:after {
+          content: "";
+          display: block;
+          clear: both;
+        }
+
+        i {
+          font-size: 38px;
+          display: block;
+          float: left;
+          min-width: 52px;
+          min-height: 16px;
+        }
+
+        .iconpicker-search {
+          width: calc(100% - 52px);
+          float: left;
+          margin-bottom: 0;
+        }
+      }
+
       .form-control {
         float: none;
       }

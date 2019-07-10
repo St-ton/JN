@@ -96,6 +96,8 @@ class GUI
                 this.iconPickerCB(e.iconpickerValue);
             });
 
+            this.iconpicker.find('.popover-title').prepend('<i class=""></i>');
+
             this.configModal.on('hidden.bs.modal', e => {
                 $('#opc').append(this.iconpicker);
             })

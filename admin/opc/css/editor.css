@@ -410,6 +410,23 @@ html, body {
 #opc .modal .progress-bar {
   background-color: #5cbcf6;
 }
+#opc .modal #iconpicker .popover-title:after {
+  content: "";
+  display: block;
+  clear: both;
+}
+#opc .modal #iconpicker .popover-title i {
+  font-size: 38px;
+  display: block;
+  float: left;
+  min-width: 52px;
+  min-height: 16px;
+}
+#opc .modal #iconpicker .popover-title .iconpicker-search {
+  width: calc(100% - 52px);
+  float: left;
+  margin-bottom: 0;
+}
 #opc .modal #iconpicker .form-control {
   float: none;
 }

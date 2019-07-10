@@ -736,7 +736,7 @@ if ($step === 'uebersicht') {
         $recipient->cNachname = $customer->cNachname;
     }
 
-    $history       = $db->queryPrepared(
+    $history              = $db->queryPrepared(
         "SELECT kNewsletterHistory, nAnzahl, cBetreff, cKundengruppe,
             DATE_FORMAT(dStart, '%d.%m.%Y %H:%i') AS Datum
             FROM tnewsletterhistory

@@ -62,7 +62,6 @@ final class Newsletter extends Job
         }
 
         if ((new \DateTime())->sub(new \DateInterval('PT' . $configuredDelay . 'H')) < $lastSendings) {
-
             return $this;
         }
         $oNewsletter = $this->getJobData();

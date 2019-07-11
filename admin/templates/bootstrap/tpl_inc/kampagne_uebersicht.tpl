@@ -16,7 +16,7 @@
         </li>
     </ul>
     <div class="tab-content">
-        <div id="uebersicht" class="tab-pane fade {if !isset($cTab) || $cTab === 'uebersicht'} active in{/if}">
+        <div id="uebersicht" class="tab-pane fade {if !isset($cTab) || $cTab === 'uebersicht'} active show{/if}">
             <div class="card">
                 <div class="card-header"><div class="card-title">{__('kampagneIntern')}</div></div>
                 {if $oKampagne_arr|count > 0}
@@ -134,7 +134,7 @@
                 </form>
             </div>
         </div>
-        <div id="globalestats" class="tab-pane fade {if isset($cTab) && $cTab === 'globalestats'} active in{/if}">
+        <div id="globalestats" class="tab-pane fade {if isset($cTab) && $cTab === 'globalestats'} active show{/if}">
             <div class="block">
                 <div class="input-group p25" style="min-width: 435px;">
                         <span class="input-group-addon">

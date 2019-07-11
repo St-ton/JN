@@ -21,7 +21,7 @@
             </li>
         </ul>
         <div class="tab-content">
-            <div id="overview" class="tab-pane fade{if !isset($cTab) || $cTab === 'uebersicht'} active in{/if}">
+            <div id="overview" class="tab-pane fade{if !isset($cTab) || $cTab === 'uebersicht'} active show{/if}">
                 <form name="uebersichtForm" method="post" action="auswahlassistent.php">
                     {$jtl_token}
                     <input type="hidden" name="tab" value="uebersicht" />
@@ -154,7 +154,7 @@
                 </form>
             </div>
             <!-- #overview -->
-            <div id="config" class="tab-pane fade{if isset($cTab) && $cTab === 'einstellungen'} active in{/if}">
+            <div id="config" class="tab-pane fade{if isset($cTab) && $cTab === 'einstellungen'} active show{/if}">
                 {include file='tpl_inc/config_section.tpl' config=$oConfig_arr name='einstellen' a='saveSettings'
                          action='auswahlassistent.php' buttonCaption=__('save') tab='einstellungen'}
             </div>

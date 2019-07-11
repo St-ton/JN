@@ -17,7 +17,7 @@
         </li>
     </ul>
     <div class="tab-content">
-        <div id="wunschlistepos" class="tab-pane fade {if !isset($cTab) || $cTab === 'wunschlistepos'} active in{/if}">
+        <div id="wunschlistepos" class="tab-pane fade {if !isset($cTab) || $cTab === 'wunschlistepos'} active show{/if}">
             {if isset($CWunschliste_arr) && $CWunschliste_arr|@count > 0}
                 {include file='tpl_inc/pagination.tpl' pagination=$oPagiPos cAnchor='wunschlistepos'}
                 <div class="card table-responsive">
@@ -48,7 +48,7 @@
                 <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
             {/if}
         </div>
-        <div id="wunschlisteartikel" class="tab-pane fade {if isset($cTab) && $cTab === 'wunschlisteartikel'} active in{/if}">
+        <div id="wunschlisteartikel" class="tab-pane fade {if isset($cTab) && $cTab === 'wunschlisteartikel'} active show{/if}">
             {if isset($CWunschlistePos_arr) && $CWunschlistePos_arr|@count > 0}
                 {include file='tpl_inc/pagination.tpl' pagination=$oPagiArtikel cAnchor='wunschlisteartikel'}
                 <div class="card table-responsive">
@@ -73,7 +73,7 @@
                 <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
             {/if}
         </div>
-        <div id="wunschlistefreunde" class="tab-pane fade {if isset($cTab) && $cTab === 'wunschlistefreunde'} active in{/if}">
+        <div id="wunschlistefreunde" class="tab-pane fade {if isset($cTab) && $cTab === 'wunschlistefreunde'} active show{/if}">
             {if $CWunschlisteVersand_arr && $CWunschlisteVersand_arr|@count > 0}
                 {include file='tpl_inc/pagination.tpl' pagination=$oPagiFreunde cAnchor='wunschlistefreunde'}
                 <div class="card table-responsive">
@@ -102,7 +102,7 @@
                 <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
             {/if}
         </div>
-        <div id="einstellungen" class="tab-pane fade {if isset($cTab) && $cTab === 'einstellungen'} active in{/if}">
+        <div id="einstellungen" class="tab-pane fade {if isset($cTab) && $cTab === 'einstellungen'} active show{/if}">
             {include file='tpl_inc/config_section.tpl' config=$oConfig_arr name='einstellen' action='wunschliste.php' buttonCaption=__('save') title=__('settings') tab='einstellungen'}
         </div>
     </div>

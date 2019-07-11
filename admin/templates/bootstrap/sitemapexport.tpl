@@ -36,7 +36,7 @@
         </li>
     </ul>
     <div class="tab-content">
-        <div id="export" class="tab-pane fade {if !isset($cTab) || $cTab === 'export'} active in{/if}">
+        <div id="export" class="tab-pane fade {if !isset($cTab) || $cTab === 'export'} active show{/if}">
             {if isset($errorNoWrite) && $errorNoWrite|strlen > 0}
                 <div class="alert alert-danger">{$errorNoWrite}</div>
             {/if}
@@ -58,7 +58,7 @@
                 </p>
             </form>
         </div>
-        <div id="downloads" class="tab-pane fade {if isset($cTab) && $cTab === 'downloads'} active in{/if}">
+        <div id="downloads" class="tab-pane fade {if isset($cTab) && $cTab === 'downloads'} active show{/if}">
             <div class="card-header well well-sm">
                 <div class="toolbar well well-sm">
                     <form id="formDeleteSitemapExport" method="post" action="sitemapexport.php" class="form-inline">
@@ -136,7 +136,7 @@
                 <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
             {/if}
         </div>
-        <div id="report" class="tab-pane fade {if isset($cTab) && $cTab === 'report'} active in{/if}">
+        <div id="report" class="tab-pane fade {if isset($cTab) && $cTab === 'report'} active show{/if}">
             <div class="card-header well well-sm">
                 <div class="toolbar well well-sm">
                     <form id="formDeleteSitemapReport" method="post" action="sitemapexport.php" class="form-inline">
@@ -237,7 +237,7 @@
                 <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
             {/if}
         </div>
-        <div id="einstellungen" class="tab-pane fade {if isset($cTab) && $cTab === 'einstellungen'} active in{/if}">
+        <div id="einstellungen" class="tab-pane fade {if isset($cTab) && $cTab === 'einstellungen'} active show{/if}">
             {include file='tpl_inc/config_section.tpl' config=$oConfig_arr name='einstellen' action='sitemapexport.php' buttonCaption=__('save') title=__('settings') tab='einstellungen'}
         </div>
     </div>

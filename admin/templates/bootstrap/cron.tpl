@@ -20,7 +20,7 @@
     </li>
 </ul>
 <div class="tab-content">
-    <div id="overview" class="settings tab-pane fade{if $tab === 'overview'} active in{/if}">
+    <div id="overview" class="settings tab-pane fade{if $tab === 'overview'} active show{/if}">
         {if $jobs|count > 0}
             <div class="card">
                 <div class="card-header">
@@ -70,7 +70,7 @@
         {/if}
     </div>
 
-    <div id="add-cron" class="settings tab-pane fade{if $tab === 'add-cron'} active in{/if}">
+    <div id="add-cron" class="settings tab-pane fade{if $tab === 'add-cron'} active show{/if}">
         <div class="card">
             <div class="card-header">
                 <div class="card-title">{__('createQueueEntry')}</div>
@@ -125,7 +125,7 @@
         </div>
     </div>
 
-    <div id="config" class="settings tab-pane fade{if $tab === 'settings'} active in{/if}">
+    <div id="config" class="settings tab-pane fade{if $tab === 'settings'} active show{/if}">
         {include file='tpl_inc/config_section.tpl' config=$oConfig_arr name='einstellen' a='saveSettings'
         action='cron.php' buttonCaption=__('save') tab='einstellungen'}
     </div>

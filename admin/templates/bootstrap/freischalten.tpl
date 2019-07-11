@@ -75,7 +75,7 @@
         </li>
     </ul>
     <div class="tab-content">
-        <div id="bewertungen" class="tab-pane fade {if !isset($cTab) || empty($cTab) || $cTab === 'bewertungen'} active in{/if}">
+        <div id="bewertungen" class="tab-pane fade {if !isset($cTab) || empty($cTab) || $cTab === 'bewertungen'} active show{/if}">
             {if $oBewertung_arr|@count > 0 && $oBewertung_arr}
                 {include file='tpl_inc/pagination.tpl' pagination=$oPagiBewertungen cAnchor='bewertungen'}
                 <form method="post" action="freischalten.php">
@@ -147,7 +147,7 @@
                 <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
             {/if}
         </div>
-        <div id="livesearch" class="tab-pane fade {if isset($cTab) && $cTab === 'livesearch'} active in{/if}">
+        <div id="livesearch" class="tab-pane fade {if isset($cTab) && $cTab === 'livesearch'} active show{/if}">
             {if $oSuchanfrage_arr|@count > 0 && $oSuchanfrage_arr}
                 {include file='tpl_inc/pagination.tpl' pagination=$oPagiSuchanfragen cAnchor='livesearch'}
                 <div class="card">
@@ -218,7 +218,7 @@
                 <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
             {/if}
         </div>
-        <div id="newscomments" class="tab-pane fade {if isset($cTab) && $cTab === 'newscomments'} active in{/if}">
+        <div id="newscomments" class="tab-pane fade {if isset($cTab) && $cTab === 'newscomments'} active show{/if}">
             {if $oNewsKommentar_arr|@count > 0 && $oNewsKommentar_arr}
                 {include file='tpl_inc/pagination.tpl' pagination=$oPagiNewskommentare cAnchor='newscomments'}
                 <div class="card">
@@ -284,7 +284,7 @@
                 <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
             {/if}
         </div>
-        <div id="newsletter" class="tab-pane fade {if isset($cTab) && $cTab === 'newsletter'} active in{/if}">
+        <div id="newsletter" class="tab-pane fade {if isset($cTab) && $cTab === 'newsletter'} active show{/if}">
             {if $oNewsletterEmpfaenger_arr|@count > 0 && $oNewsletterEmpfaenger_arr}
                 {include file='tpl_inc/pagination.tpl' pagination=$oPagiNewsletterEmpfaenger cAnchor='newsletter'}
                 <div class="card">

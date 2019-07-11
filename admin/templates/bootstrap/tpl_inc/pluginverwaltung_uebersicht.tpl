@@ -134,9 +134,9 @@ function ackCheck(kPlugin, hash)
                                 $('a[href="#verfuegbar"]').find('.badge').html(response.html.verfuegbar_count);
                                 $('#plugin-upload-success').show().removeClass('hidden');
                                 if (wasActiveFehlerhaft) {ldelim}
-                                    $('#fehlerhaft').addClass('active in');
+                                    $('#fehlerhaft').addClass('active show');
                                     {rdelim} else if (wasActiveVerfuegbar) {ldelim}
-                                    $('#verfuegbar').addClass('active in');
+                                    $('#verfuegbar').addClass('active show');
                                     {rdelim}
                                 {rdelim} else {ldelim}
                                     $('#plugin-upload-error').show().removeClass('hidden');

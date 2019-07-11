@@ -26,7 +26,7 @@ var pies = [];
         </li>
     </ul>
     <div class="tab-content">
-        <div id="plugins" class="tab-pane fade {if !isset($tab) || $tab === 'massaction' || $tab === 'uebersicht'} active in{/if}">
+        <div id="plugins" class="tab-pane fade {if !isset($tab) || $tab === 'massaction' || $tab === 'uebersicht'} active show{/if}">
             {if $pluginProfilerData|@count > 0}
                 <div class="card-group" id="accordion" role="tablist" aria-multiselectable="true">
                     {foreach $pluginProfilerData as $profile}
@@ -67,7 +67,7 @@ var pies = [];
                 <div class="alert alert-info"><i class="fa fa-info-circle"></i> {__('noDataAvailable')}</div>
             {/if}
         </div>
-        <div id="sqlprofiler" class="tab-pane fade{if isset($tab) && $tab === 'sqlprofiler'} active in{/if}">
+        <div id="sqlprofiler" class="tab-pane fade{if isset($tab) && $tab === 'sqlprofiler'} active show{/if}">
             {if $sqlProfilerData !== null && $sqlProfilerData|@count > 0}
                 <div class="card-group" id="accordion2" role="tablist" aria-multiselectable="true">
                     {foreach $sqlProfilerData as $run}

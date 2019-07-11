@@ -12,7 +12,7 @@
 </ul>
 
 <div class="tab-content">
-    <div role="tabpanel" class="tab-pane fade{if $cTab === 'log'} active in{/if}" id="log">
+    <div role="tabpanel" class="tab-pane fade{if $cTab === 'log'} active show{/if}" id="log">
         {if $nTotalLogCount !== 0}
             {include file='tpl_inc/filtertools.tpl' oFilter=$oFilter}
             {include file='tpl_inc/pagination.tpl' pagination=$pagination}
@@ -83,7 +83,7 @@
             </form>
         </div>
     </div>
-    <div role="tabpanel" class="tab-pane fade{if $cTab === 'config'} active in{/if}" id="config">
+    <div role="tabpanel" class="tab-pane fade{if $cTab === 'config'} active show{/if}" id="config">
         <form class="card settings" action="systemlog.php" method="post">
             {$jtl_token}
             <div class="card-header">

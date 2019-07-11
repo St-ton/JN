@@ -176,7 +176,7 @@
             </li>
         </ul>
         <div class="tab-content">
-            <div id="detailansicht" class="tab-pane fade {if !isset($cTab) || $cTab === 'detailansicht'} active in{/if}">
+            <div id="detailansicht" class="tab-pane fade {if !isset($cTab) || $cTab === 'detailansicht'} active show{/if}">
                 {if isset($oKampagneStat_arr) && $oKampagneStat_arr|@count > 0 && isset($oKampagneDef_arr) && $oKampagneDef_arr|@count > 0}
                     <div class="table-responsive">
                         <table class="table table-striped">
@@ -219,7 +219,7 @@
                     <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                 {/if}
             </div>
-            <div id="detailgraphen" class="tab-pane fade{if isset($cTab) && $cTab === 'detailgraphen'} active in{/if}">
+            <div id="detailgraphen" class="tab-pane fade{if isset($cTab) && $cTab === 'detailgraphen'} active show{/if}">
                 {if $Charts|@count > 0}
                     {foreach name=charts from=$Charts key=key item=Chart}
                         <h3>{$TypeNames[$key]}:</h3>

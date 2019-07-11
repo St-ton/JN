@@ -21,7 +21,7 @@
             </ul>
             <div class="tab-content">
                 {foreach $oPlugin->getAdminMenu()->getItems()->toArray() as $oPluginAdminMenu}
-                    <div id="plugin-tab-{$oPluginAdminMenu->id}" class="settings tab-pane fade {if (!isset($defaultTabbertab) && $oPluginAdminMenu@index === 0) || isset($defaultTabbertab) && ($defaultTabbertab == $oPluginAdminMenu->id || $defaultTabbertab == $oPluginAdminMenu->cName)} {assign var=hasActiveMenuItem value=true}active in{/if}">
+                    <div id="plugin-tab-{$oPluginAdminMenu->id}" class="settings tab-pane fade {if (!isset($defaultTabbertab) && $oPluginAdminMenu@index === 0) || isset($defaultTabbertab) && ($defaultTabbertab == $oPluginAdminMenu->id || $defaultTabbertab == $oPluginAdminMenu->cName)} {assign var=hasActiveMenuItem value=true}active show{/if}">
                         {$oPluginAdminMenu->html}
                     </div>
                 {/foreach}

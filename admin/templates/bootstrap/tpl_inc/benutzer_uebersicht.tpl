@@ -9,7 +9,7 @@
         </li>
     </ul>
     <div class="tab-content">
-        <div id="account_view" class="tab-pane fade{if empty($cTab) || $cTab === 'account_view'} active in{/if}">
+        <div id="account_view" class="tab-pane fade{if empty($cTab) || $cTab === 'account_view'} active show{/if}">
             <div class="card">
                 <div class="card-header">
                     <div class="card-title">{__('benutzerKategorie')}</div>
@@ -79,7 +79,7 @@
                 </div>
             </div>
         </div>
-        <div id="group_view" class="tab-pane fade{if isset($cTab) && $cTab === 'group_view'} active in{/if}">
+        <div id="group_view" class="tab-pane fade{if isset($cTab) && $cTab === 'group_view'} active show{/if}">
             <div class="card">
                 <div class="card-header">
                     <div class="card-title">{__('gruppenKategorie')}</div>

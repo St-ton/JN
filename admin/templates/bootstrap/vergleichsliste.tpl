@@ -15,7 +15,7 @@
         </li>
     </ul>
     <div class="tab-content">
-        <div id="letztenvergleiche" class="tab-pane fade {if !isset($cTab) || $cTab === 'letztenvergleiche'} active in{/if}">
+        <div id="letztenvergleiche" class="tab-pane fade {if !isset($cTab) || $cTab === 'letztenvergleiche'} active show{/if}">
             {if $Letzten20Vergleiche && $Letzten20Vergleiche|@count > 0}
                 {include file='tpl_inc/pagination.tpl' pagination=$pagination cAnchor='letztenvergleiche'}
                 <div class="settings card table-responsive">
@@ -43,7 +43,7 @@
                 <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
             {/if}
         </div>
-        <div id="topartikel" class="tab-pane fade {if isset($cTab) && $cTab === 'topartikel'} active in{/if}">
+        <div id="topartikel" class="tab-pane fade {if isset($cTab) && $cTab === 'topartikel'} active show{/if}">
             <form id="postzeitfilter" name="postzeitfilter" method="post" action="vergleichsliste.php">
                 {$jtl_token}
                 <input type="hidden" name="zeitfilter" value="1" />
@@ -119,7 +119,7 @@
                 <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
             {/if}
         </div>
-        <div id="einstellungen" class="tab-pane fade {if isset($cTab) && $cTab === 'einstellungen'} active in{/if}">
+        <div id="einstellungen" class="tab-pane fade {if isset($cTab) && $cTab === 'einstellungen'} active show{/if}">
             {include file='tpl_inc/config_section.tpl' config=$oConfig_arr name='einstellen' action='vergleichsliste.php' buttonCaption=__('save') title=__('settings') tab='einstellungen'}
         </div>
     </div>

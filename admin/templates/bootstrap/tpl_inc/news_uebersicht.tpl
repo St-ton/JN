@@ -60,7 +60,7 @@
     </ul>
 
     <div class="tab-content">
-        <div id="inaktiv" class="tab-pane fade{if !isset($cTab) || $cTab === 'inaktiv'} active in{/if}">
+        <div id="inaktiv" class="tab-pane fade{if !isset($cTab) || $cTab === 'inaktiv'} active show{/if}">
             {if $oNewsKommentar_arr && $oNewsKommentar_arr|@count > 0}
                 {include file='tpl_inc/pagination.tpl' pagination=$oPagiKommentar cAnchor='inaktiv'}
                 <form method="post" action="news.php">
@@ -133,7 +133,7 @@
                 <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
             {/if}
         </div>
-        <div id="aktiv" class="tab-pane fade{if isset($cTab) && $cTab === 'aktiv'} active in{/if}">
+        <div id="aktiv" class="tab-pane fade{if isset($cTab) && $cTab === 'aktiv'} active show{/if}">
             {include file='tpl_inc/pagination.tpl' pagination=$oPagiNews cAnchor='aktiv'}
             <form name="news" method="post" action="news.php">
                 {$jtl_token}
@@ -230,7 +230,7 @@
             </div>
         </div>
         <!-- #inaktiv -->
-        <div id="kategorien" class="tab-pane fade{if isset($cTab) && $cTab === 'kategorien'} active in{/if}">
+        <div id="kategorien" class="tab-pane fade{if isset($cTab) && $cTab === 'kategorien'} active show{/if}">
             {include file='tpl_inc/pagination.tpl' pagination=$oPagiKats cAnchor='kategorien'}
             <form name="news" method="post" action="news.php">
                 {$jtl_token}
@@ -305,7 +305,7 @@
                 </div>
             </form>
         </div>
-        <div id="einstellungen" class="tab-pane fade{if isset($cTab) && $cTab === 'einstellungen'} active in{/if}">
+        <div id="einstellungen" class="tab-pane fade{if isset($cTab) && $cTab === 'einstellungen'} active show{/if}">
             <form name="einstellen" method="post" action="news.php">
                 {$jtl_token}
                 <input type="hidden" name="einstellungen" value="1" />

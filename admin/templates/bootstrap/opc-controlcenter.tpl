@@ -15,7 +15,7 @@
 </ul>
 
 <div class="tab-content">
-    <div class="tab-pane fade active in" id="pages">
+    <div class="tab-pane fade active show" id="pages">
         <div class="card">
             {assign var=allPages value=$opcPageDB->getPages()}
             {if $allPages|@count > 0}

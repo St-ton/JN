@@ -42,7 +42,7 @@
         </li>
     </ul>
     <div class="tab-content">
-        <div id="massaction" class="tab-pane fade {if !isset($tab) || $tab === 'massaction' || $tab === 'uebersicht'} active in{/if}">
+        <div id="massaction" class="tab-pane fade {if !isset($tab) || $tab === 'massaction' || $tab === 'uebersicht'} active show{/if}">
             <form method="post" action="cache.php">
                 {$jtl_token}
                 <div class="card">
@@ -124,7 +124,7 @@
                 </div>
             </form>
         </div>
-        <div id="stats" class="tab-pane fade {if isset($tab) && $tab === 'stats'} active in{/if}">
+        <div id="stats" class="tab-pane fade {if isset($tab) && $tab === 'stats'} active show{/if}">
             {if is_array($stats) && $stats|@count > 0}
                 <div class="card">
                     <div class="card-header">
@@ -304,7 +304,7 @@
                 </div>
             {/if}
         </div>
-        <div id="benchmark" class="tab-pane fade {if isset($tab) && $tab === 'benchmark'} active in{/if}">
+        <div id="benchmark" class="tab-pane fade {if isset($tab) && $tab === 'benchmark'} active show{/if}">
             {if !empty($all_methods) && $all_methods|@count > 0}
                 <div class="card settings">
                     <div class="card-header">
@@ -393,7 +393,7 @@
                 <div class="alert alert-warning">{__('errorMethodNotFound')}</div>
             {/if}
         </div>
-        <div id="settings" class="tab-pane fade {if isset($tab) && $tab === 'settings'} active in{/if}">
+        <div id="settings" class="tab-pane fade {if isset($tab) && $tab === 'settings'} active show{/if}">
             <form method="post" action="cache.php">
                 {$jtl_token}
                 <input type="hidden" name="a" value="settings" />

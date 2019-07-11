@@ -44,7 +44,7 @@
                 <div class="card-header">
                     <div class="card-title">{__('emailhistory')}</div>
                 </div>
-                <div class="table-responsive">
+                <div class="card-body table-responsive">
                     <table class="list table table-striped">
                         <thead>
                         <tr>

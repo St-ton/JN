@@ -12,34 +12,33 @@
         </li>
     </ul>
     <div class="tab-content">
-        <div id="config" class="tab-pane fade {if !isset($cTab) || $cTab === 'config'} active in{/if}">
+        <div id="config" class="tab-pane fade {if !isset($cTab) || $cTab === 'config'} active show{/if}">
             <form name="einstellen" method="post" action="kontaktformular.php">
                 {$jtl_token}
                 <input type="hidden" name="einstellungen" value="1" />
                 <div class="settings card">
                     <div class="card-header">
                         <div class="subheading1">{__('settings')}</div>
+                        <hr class="mb-n3">
                     </div>
                     <div class="card-body">
                         {foreach $Conf as $cnf}
                             {if $cnf->cConf === 'Y'}
-                                <div class="input-group">
-                                    <span class="input-group-addon">
-                                        <label for="{$cnf->cWertName}">{$cnf->cName}</label>
-                                    </span>
-                                    {if $cnf->cInputTyp === 'selectbox'}
-                                        <span class="input-group-wrap">
-                                            <select name="{$cnf->cWertName}" id="{$cnf->cWertName}" class="form-control combo">
+                                <div class="form-group form-row align-items-center">
+                                    <label class="col col-sm-4 col-form-label text-sm-right" for="{$cnf->cWertName}">{$cnf->cName}:</label>
+                                    <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                        {if $cnf->cInputTyp === 'selectbox'}
+                                            <select name="{$cnf->cWertName}" id="{$cnf->cWertName}" class="custom-select combo">
                                                 {foreach $cnf->ConfWerte as $wert}
                                                     <option value="{$wert->cWert}" {if $cnf->gesetzterWert == $wert->cWert}selected{/if}>{$wert->cName}</option>
                                                 {/foreach}
                                             </select>
-                                        </span>
-                                    {else}
-                                        <input class="form-control" type="text" name="{$cnf->cWertName}" id="{$cnf->cWertName}" value="{$cnf->gesetzterWert}" tabindex="1" />
-                                    {/if}
+                                        {else}
+                                            <input class="form-control" type="text" name="{$cnf->cWertName}" id="{$cnf->cWertName}" value="{$cnf->gesetzterWert}" tabindex="1" />
+                                        {/if}
+                                    </div>
                                     {if isset($cnf->cBeschreibung)}
-                                        <span class="input-group-addon">{getHelpDesc cDesc=$cnf->cBeschreibung}</span>
+                                        <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=$cnf->cBeschreibung}</div>
                                     {/if}
                                 </div>
                             {/if}
@@ -51,49 +50,52 @@
                 </div>
             </form>
         </div>
-        <div id="subjects" class="tab-pane fade {if isset($cTab) && $cTab === 'subjects'} active in{/if}">
+        <div id="subjects" class="tab-pane fade {if isset($cTab) && $cTab === 'subjects'} active show{/if}">
             <div class="alert alert-info">{__('contanctformSubjectDesc')}</div>
             <div class="card">
                 <div class="card-header">
                     <div class="subheading1">{__('subjects')}</div>
+                    <hr class="mb-n3">
                 </div>
-                <div class="table-responsive">
-                    <table class="list table">
-                        <thead>
-                        <tr>
-                            <th class="tleft">{__('subject')}</th>
-                            <th class="tleft">{__('mail')}</th>
-                            <th>{__('customerGroup')}</th>
-                            <th>{__('actions')}</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {foreach $Betreffs as $Betreff}
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="list table">
+                            <thead>
                             <tr>
-                                <td>
-                                    <a href="kontaktformular.php?kKontaktBetreff={$Betreff->kKontaktBetreff}&token={$smarty.session.jtl_token}">{$Betreff->cName}</a>
-                                </td>
-                                <td>{$Betreff->cMail}</td>
-                                <td class="tcenter">{$Betreff->Kundengruppen}</td>
-                                <td class="tcenter">
-                                    <span class="btn-group">
-                                        <a href="kontaktformular.php?kKontaktBetreff={$Betreff->kKontaktBetreff}&token={$smarty.session.jtl_token}"
-                                           class="btn btn-default" title="{__('modify')}"><i class="fa fa-edit"></i>
-                                        </a>
-                                        <a href="kontaktformular.php?del={$Betreff->kKontaktBetreff}&token={$smarty.session.jtl_token}" class="btn btn-danger" title="{__('delete')}"><i class="fa fa-trash"></i></a>
-                                    </span>
-                                </td>
+                                <th class="tleft">{__('subject')}</th>
+                                <th class="tleft">{__('mail')}</th>
+                                <th>{__('customerGroup')}</th>
+                                <th>{__('actions')}</th>
                             </tr>
-                        {/foreach}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                            {foreach $Betreffs as $Betreff}
+                                <tr>
+                                    <td>
+                                        <a href="kontaktformular.php?kKontaktBetreff={$Betreff->kKontaktBetreff}&token={$smarty.session.jtl_token}">{$Betreff->cName}</a>
+                                    </td>
+                                    <td>{$Betreff->cMail}</td>
+                                    <td class="tcenter">{$Betreff->Kundengruppen}</td>
+                                    <td class="tcenter">
+                                        <span class="btn-group">
+                                            <a href="kontaktformular.php?kKontaktBetreff={$Betreff->kKontaktBetreff}&token={$smarty.session.jtl_token}"
+                                               class="btn btn-default" title="{__('modify')}"><i class="fa fa-edit"></i>
+                                            </a>
+                                            <a href="kontaktformular.php?del={$Betreff->kKontaktBetreff}&token={$smarty.session.jtl_token}" class="btn btn-danger" title="{__('delete')}"><i class="fa fa-trash"></i></a>
+                                        </span>
+                                    </td>
+                                </tr>
+                            {/foreach}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
                 <div class="card-footer">
                     <a class="btn btn-primary" href="kontaktformular.php?neu=1&token={$smarty.session.jtl_token}"><i class="fa fa-share"></i> {__('newSubject')}</a>
                 </div>
             </div>
         </div>
-        <div id="contents" class="tab-pane fade {if isset($cTab) && $cTab === 'content'} active in{/if}">
+        <div id="contents" class="tab-pane fade {if isset($cTab) && $cTab === 'content'} active show{/if}">
             <form name="einstellen" method="post" action="kontaktformular.php">
                 {$jtl_token}
                 <input type="hidden" name="content" value="1" />
@@ -106,11 +108,9 @@
                             {foreach $sprachen as $language}
                                 {assign var=cISO value=$language->getIso()}
                                 {assign var=cISOcat value=$cISO|cat:'_titel'}
-                                <div class="input-group">
-                                    <span class="input-group-addon">
-                                        <label for="cTitle_{$cISO}">{__('title')} ({$language->getLocalizedName()})</label>
-                                    </span>
-                                    <span class="input-group-wrap">
+                                <div class="form-group form-row align-items-center">
+                                    <label class="col col-sm-4 col-form-label text-sm-right" for="cTitle_{$cISO}">{__('title')} ({$language->getLocalizedName()}):</label>
+                                    <span class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                         <input class="form-control" type="text" name="cTitle_{$cISO}" id="cTitle_{$cISO}" value="{if !empty($Content[$cISOcat])}{$Content[$cISOcat]}{/if}" tabindex="1" />
                                     </span>
                                 </div>

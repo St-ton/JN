@@ -105,7 +105,7 @@
 </ul>
 
 <div class="tab-content">
-    <div role="tabpanel" class="tab-pane fade{if $cTab === 'redirects'} active in{/if}" id="redirects">
+    <div role="tabpanel" class="tab-pane fade{if $cTab === 'redirects'} active show{/if}" id="redirects">
         <div class="card">
             {include file='tpl_inc/filtertools.tpl' oFilter=$oFilter}
             {include file='tpl_inc/pagination.tpl' pagination=$pagination cAnchor='redirects'}
@@ -257,7 +257,7 @@
             </form>
         </div>
     </div>
-    <div role="tabpanel" class="tab-pane fade{if $cTab === 'new_redirect'} active in{/if}" id="new_redirect">
+    <div role="tabpanel" class="tab-pane fade{if $cTab === 'new_redirect'} active show{/if}" id="new_redirect">
         <form method="post">
             {$jtl_token}
             <div class="card settings">

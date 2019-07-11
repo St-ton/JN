@@ -16,14 +16,13 @@
                 <div class="settings card">
                     <div class="card-header">
                         <div class="subheading1">{__('settings')}</div>
+                        <hr class="mb-n3">
                     </div>
                     <div class="card-body">
-                        <div class="input-group">
-                            <span class="input-group-addon">
-                                <label for="cAktiv">{__('emailActive')}</label>
-                            </span>
-                            <span class="input-group-wrap">
-                                <select name="cAktiv" id="cAktiv" class="form-control">
+                        <div class="form-group form-row align-items-center">
+                            <label class="col col-sm-4 col-form-label text-sm-right" for="cAktiv">{__('emailActive')}</label>
+                            <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                <select name="cAktiv" id="cAktiv" class="custom-select">
                                     <option value="Y"{if $mailTemplate->getActive()} selected{/if}>
                                         {__('yes')}
                                     </option>
@@ -31,95 +30,83 @@
                                         {__('no')}
                                     </option>
                                 </select>
-                            </span>
+                            </div>
                         </div>
-                        <div class="input-group">
-                            <span class="input-group-addon">
-                                <label for="cEmailOut">{__('emailOut')}</label>
-                            </span>
-                            <input class="form-control" id="cEmailOut" name="cEmailOut" type="text" value="{if isset($mailConfig.cEmailOut)}{$mailConfig.cEmailOut|escape}{/if}" />
+                        <div class="form-group form-row align-items-center">
+                            <label class="col col-sm-4 col-form-label text-sm-right" for="cEmailOut">{__('emailOut')}</label>
+                            <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                <input class="form-control" id="cEmailOut" name="cEmailOut" type="text" value="{if isset($mailConfig.cEmailOut)}{$mailConfig.cEmailOut|escape}{/if}" />
+                            </div>
                         </div>
-                        <div class="input-group">
-                            <span class="input-group-addon">
-                                <label for="cEmailSenderName">{__('emailSenderName')}</label>
-                            </span>
-                            <input class="form-control" id="cEmailSenderName" name="cEmailSenderName" type="text" value="{if isset($mailConfig.cEmailSenderName)}{$mailConfig.cEmailSenderName|escape}{/if}" />
+                        <div class="form-group form-row align-items-center">
+                            <label class="col col-sm-4 col-form-label text-sm-right" for="cEmailSenderName">{__('emailSenderName')}</label>
+                            <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                <input class="form-control" id="cEmailSenderName" name="cEmailSenderName" type="text" value="{if isset($mailConfig.cEmailSenderName)}{$mailConfig.cEmailSenderName|escape}{/if}" />
+                            </div>
                         </div>
-                        <div class="input-group">
-                            <span class="input-group-addon">
-                                <label for="cEmailCopyTo">{__('emailCopyTo')} </label>
-                            </span>
-                            <input class="form-control" id="cEmailCopyTo" name="cEmailCopyTo" type="text" value="{if isset($mailConfig.cEmailCopyTo)}{$mailConfig.cEmailCopyTo|escape}{/if}" />
-                            <span class="input-group-addon">{__('multipleDividedColon')} </span>
+                        <div class="form-group form-row align-items-center">
+                            <label class="col col-sm-4 col-form-label text-sm-right" for="cEmailCopyTo">{__('emailCopyTo')} </label>
+                            <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                <input class="form-control" id="cEmailCopyTo" name="cEmailCopyTo" type="text" value="{if isset($mailConfig.cEmailCopyTo)}{$mailConfig.cEmailCopyTo|escape}{/if}" />
+                            </div>
+                            <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=__('multipleDividedColon')}</div>
                         </div>
-                        <div class="input-group">
-                            <span class="input-group-addon">
-                                <label for="cMailTyp">{__('mailType')}</label>
-                            </span>
-                            <span class="input-group-wrap">
-                                <select name="cMailTyp" id="cMailTyp" class="form-control">
+                        <div class="form-group form-row align-items-center">
+                            <label class="col col-sm-4 col-form-label text-sm-right" for="cMailTyp">{__('mailType')}</label>
+                            <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                <select name="cMailTyp" id="cMailTyp" class="custom-select">
                                     <option value="text/html" {if $mailTemplate->getType() === 'text/html'}selected{/if}>
                                         {__('textHtml')}
                                     </option>
                                     <option value="text" {if $mailTemplate->getType() === 'text'}selected{/if}>{__('text')}
                                     </option>
                                 </select>
-                            </span>
+                            </div>
                         </div>
-                        <div class="input-group">
-                            <span class="input-group-addon">
-                                <label for="nAKZ">{__('emailAddAKZ')}</label>
-                            </span>
-                            <span class="input-group-wrap">
-                                <select id="nAKZ" name="nAKZ" class="form-control">
+                        <div class="form-group form-row align-items-center">
+                            <label class="col col-sm-4 col-form-label text-sm-right" for="nAKZ">{__('emailAddAKZ')}</label>
+                            <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                <select id="nAKZ" name="nAKZ" class="custom-select">
                                     <option value="0"{if $mailTemplate->getShowAKZ() === false} selected{/if}>{__('no')}</option>
                                     <option value="1"{if $mailTemplate->getShowAKZ() === true} selected{/if}>{__('yes')}</option>
                                 </select>
-                            </span>
+                            </div>
                         </div>
-                        <div class="input-group">
-                            <span class="input-group-addon">
-                                <label for="nAFK">{__('emailAddAGB')}</label>
-                            </span>
-                            <span class="input-group-wrap">
-                                <select id="nAFK" name="nAGB" class="form-control">
+                        <div class="form-group form-row align-items-center">
+                            <label class="col col-sm-4 col-form-label text-sm-right" for="nAFK">{__('emailAddAGB')}</label>
+                            <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                <select id="nAFK" name="nAGB" class="custom-select">
                                     <option value="0"{if $mailTemplate->getShowAGB() === false} selected{/if}>{__('no')}</option>
                                     <option value="1"{if $mailTemplate->getShowAGB() === true} selected{/if}>{__('yes')}</option>
                                 </select>
-                            </span>
+                            </div>
                         </div>
-                        <div class="input-group">
-                            <span class="input-group-addon">
-                                <label for="nWRB">{__('emailAddWRB')}</label>
-                            </span>
-                            <span class="input-group-wrap">
-                                <select id="nWRB" name="nWRB" class="form-control">
+                        <div class="form-group form-row align-items-center">
+                            <label class="col col-sm-4 col-form-label text-sm-right" for="nWRB">{__('emailAddWRB')}</label>
+                            <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                <select id="nWRB" name="nWRB" class="custom-select">
                                     <option value="0"{if $mailTemplate->getShowWRB() === false} selected{/if}>{__('no')}</option>
                                     <option value="1"{if $mailTemplate->getShowWRB() === true} selected{/if}>{__('yes')}</option>
                                 </select>
-                            </span>
+                            </div>
                         </div>
-                        <div class="input-group">
-                            <span class="input-group-addon">
-                                <label for="nWRBForm">{__('emailAddWRBForm')}</label>
-                            </span>
-                            <span class="input-group-wrap">
-                                <select id="nWRBForm" name="nWRBForm" class="form-control">
+                        <div class="form-group form-row align-items-center">
+                            <label class="col col-sm-4 col-form-label text-sm-right" for="nWRBForm">{__('emailAddWRBForm')}</label>
+                            <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                <select id="nWRBForm" name="nWRBForm" class="custom-select">
                                     <option value="0"{if $mailTemplate->getShowWRBForm() === false} selected{/if}>{__('no')}</option>
                                     <option value="1"{if $mailTemplate->getShowWRBForm() === true} selected{/if}>{__('yes')}</option>
                                 </select>
-                            </span>
+                            </div>
                         </div>
-                        <div class="input-group">
-                            <span class="input-group-addon">
-                                <label for="nDSE">{__('emailAddDSE')}</label>
-                            </span>
-                            <span class="input-group-wrap">
-                                <select id="nDSE" name="nDSE" class="form-control">
+                        <div class="form-group form-row align-items-center">
+                            <label class="col col-sm-4 col-form-label text-sm-right" for="nDSE">{__('emailAddDSE')}</label>
+                            <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                <select id="nDSE" name="nDSE" class="custom-select">
                                     <option value="0"{if $mailTemplate->getShowDSE() === false} selected{/if}>{__('no')}</option>
                                     <option value="1"{if $mailTemplate->getShowDSE() === true} selected{/if}>{__('yes')}</option>
                                 </select>
-                            </span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -130,29 +117,30 @@
             <div class="box_info card">
                 <div class="card-header">
                     <div class="subheading1">{__('placeholder')} ({__('example')})</div>
+                    <hr class="mb-n3">
                 </div>
                 <div class="card-body">
                     <code>
-                    <span class="elem">
-                        <span class="name">{ldelim}$Kunde->cAnrede{rdelim}</span><br />
-                        <span class="for">{__('maleShort')}</span><br />
-                    </span>
-                    <span class="elem">
-                        <span class="name">{ldelim}$Kunde->cAnredeLocalized{rdelim}</span><br />
-                        <span class="for">{__('mister')}</span><br />
-                    </span>
-                    <span class="elem">
-                        <span class="name">{ldelim}$Kunde->cVorname{rdelim}</span><br />
-                        <span class="for">{__('firstNameStub')}</span><br />
-                    </span>
-                    <span class="elem">
-                        <span class="name">{ldelim}$Kunde->cNachname{rdelim}</span><br />
-                        <span class="for">{__('lastNameStub')}</span><br />
-                    </span>
-                    <span class="elem">
-                        <span class="name">{ldelim}$Firma->cName{rdelim}</span><br />
-                        <span class="for">{__('companyStub')}</span><br />
-                    </span>
+                        <span class="elem">
+                            <span class="name">{ldelim}$Kunde->cAnrede{rdelim}</span><br />
+                            <span class="for">{__('maleShort')}</span><br />
+                        </span>
+                        <span class="elem">
+                            <span class="name">{ldelim}$Kunde->cAnredeLocalized{rdelim}</span><br />
+                            <span class="for">{__('mister')}</span><br />
+                        </span>
+                        <span class="elem">
+                            <span class="name">{ldelim}$Kunde->cVorname{rdelim}</span><br />
+                            <span class="for">{__('firstNameStub')}</span><br />
+                        </span>
+                        <span class="elem">
+                            <span class="name">{ldelim}$Kunde->cNachname{rdelim}</span><br />
+                            <span class="for">{__('lastNameStub')}</span><br />
+                        </span>
+                        <span class="elem">
+                            <span class="name">{ldelim}$Firma->cName{rdelim}</span><br />
+                            <span class="for">{__('companyStub')}</span><br />
+                        </span>
                     </code>
                 </div>
             </div>

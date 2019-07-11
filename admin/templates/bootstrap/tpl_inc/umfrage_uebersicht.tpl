@@ -18,7 +18,7 @@
             </li>
         </ul>
         <div class="tab-content">
-            <div id="umfrage" class="tab-pane fade{if !isset($cTab) || $cTab === 'umfrage'} active in{/if}">
+            <div id="umfrage" class="tab-pane fade{if !isset($cTab) || $cTab === 'umfrage'} active show{/if}">
                 <form name="erstellen" method="post" action="umfrage.php">
                     {$jtl_token}
                     <input type="hidden" name="umfrage" value="1" />
@@ -89,7 +89,7 @@
                     <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                 {/if}
             </div>
-            <div id="einstellungen" class="tab-pane fade{if isset($cTab) && $cTab === 'einstellungen'} active in{/if}">
+            <div id="einstellungen" class="tab-pane fade{if isset($cTab) && $cTab === 'einstellungen'} active show{/if}">
                 {include file='tpl_inc/config_section.tpl' config=$oConfig_arr name='einstellen' action='umfrage.php' buttonCaption=__('save') title=__('settings') tab='einstellungen'}
             </div>
         </div>

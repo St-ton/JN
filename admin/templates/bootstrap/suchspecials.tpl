@@ -21,7 +21,7 @@
         </li>
     </ul>
     <div class="tab-content">
-        <div id="suchspecials" class="tab-pane fade {if !isset($cTab) || $cTab === 'suchspecials'} active in{/if}">
+        <div id="suchspecials" class="tab-pane fade {if !isset($cTab) || $cTab === 'suchspecials'} active show{/if}">
             <form name="suchspecials" method="post" action="suchspecials.php">
                 {$jtl_token}
                 <div id="settings">
@@ -75,7 +75,7 @@
                 </div>
             </form>
         </div>
-        <div id="einstellungen" class="tab-pane fade {if isset($cTab) && $cTab === 'einstellungen'} active in{/if}">
+        <div id="einstellungen" class="tab-pane fade {if isset($cTab) && $cTab === 'einstellungen'} active show{/if}">
             {include file='tpl_inc/config_section.tpl' config=$oConfig_arr name='einstellen' a='saveSettings' action='suchspecials.php' buttonCaption=__('save') title=__('settings') tab='einstellungen'}
         </div>
     </div>

@@ -12,7 +12,7 @@
             </li>
         </ul>
         <div class="tab-content">
-            <div id="massaction" class="tab-pane fade {if !isset($tab) || $tab === 'massaction' || $tab === 'uebersicht'} active in{/if}">
+            <div id="massaction" class="tab-pane fade {if !isset($tab) || $tab === 'massaction' || $tab === 'uebersicht'} active show{/if}">
                 <form name="suche" method="post" action="warenkorbpers.php">
                     {$jtl_token}
                     <input type="hidden" name="Suche" value="1" />
@@ -76,7 +76,7 @@
                     <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                 {/if}
             </div>
-            <div id="settings" class="tab-pane fade {if isset($tab) && $tab === 'einstellungen'} active in{/if}">
+            <div id="settings" class="tab-pane fade {if isset($tab) && $tab === 'einstellungen'} active show{/if}">
                 {include file='tpl_inc/config_section.tpl' a='speichern' config=$oConfig_arr name='einstellen' action='warenkorbpers.php' buttonCaption=__('save') title=__('settings') tab='einstellungen'}
             </div>
         </div>

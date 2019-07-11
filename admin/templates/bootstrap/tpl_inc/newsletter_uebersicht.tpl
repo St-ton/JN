@@ -36,7 +36,7 @@
         </li>
     </ul>
     <div class="tab-content">
-        <div id="inaktiveabonnenten" class="tab-pane fade{if !isset($cTab) || $cTab === 'inaktiveabonnenten'} active in{/if}">
+        <div id="inaktiveabonnenten" class="tab-pane fade{if !isset($cTab) || $cTab === 'inaktiveabonnenten'} active show{/if}">
             {if isset($oNewsletterEmpfaenger_arr) && $oNewsletterEmpfaenger_arr|@count > 0}
                 <form name="suche" method="post" action="newsletter.php">
                     {$jtl_token}
@@ -110,7 +110,7 @@
                 <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
             {/if}
         </div>
-        <div id="alleabonnenten" class="tab-pane fade{if isset($cTab) && $cTab === 'alleabonnenten'} active in{/if}">
+        <div id="alleabonnenten" class="tab-pane fade{if isset($cTab) && $cTab === 'alleabonnenten'} active show{/if}">
             {if isset($oAbonnenten_arr) && $oAbonnenten_arr|@count > 0}
                 <form name="suche" method="post" action="newsletter.php">
                     {$jtl_token}
@@ -195,7 +195,7 @@
                 {/if}
             {/if}
         </div>
-        <div id="neuerabonnenten" class="tab-pane fade{if isset($cTab) && $cTab === 'neuerabonnenten'} active in{/if}">
+        <div id="neuerabonnenten" class="tab-pane fade{if isset($cTab) && $cTab === 'neuerabonnenten'} active show{/if}">
             <form method="post" action="newsletter.php">
                 {$jtl_token}
                 <input type="hidden" name="newsletterabonnent_neu" value="1">
@@ -245,7 +245,7 @@
                 </div>
             </form>
         </div>
-        <div id="newsletterqueue" class="tab-pane fade{if isset($cTab) && $cTab === 'newsletterqueue'} active in{/if}">
+        <div id="newsletterqueue" class="tab-pane fade{if isset($cTab) && $cTab === 'newsletterqueue'} active show{/if}">
             {if isset($oNewsletterQueue_arr) && $oNewsletterQueue_arr|@count > 0}
                 {include file='tpl_inc/pagination.tpl' pagination=$oPagiWarteschlange cAnchor='newsletterqueue'}
                 <form method="post" action="newsletter.php">
@@ -306,7 +306,7 @@
                 <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
             {/if}
         </div>
-        <div id="newslettervorlagen" class="tab-pane fade{if isset($cTab) && $cTab === 'newslettervorlagen'} active in{/if}">
+        <div id="newslettervorlagen" class="tab-pane fade{if isset($cTab) && $cTab === 'newslettervorlagen'} active show{/if}">
             {if isset($oNewsletterVorlage_arr) && $oNewsletterVorlage_arr|@count > 0}
                 {include file='tpl_inc/pagination.tpl' pagination=$oPagiVorlagen cAnchor='newslettervorlagen'}
                 <form method="post" action="newsletter.php">
@@ -396,7 +396,7 @@
                 </form>
             {/if}
         </div>
-        <div id="newslettervorlagenstd" class="tab-pane fade{if isset($cTab) && $cTab === 'newslettervorlagenstd'} active in{/if}">
+        <div id="newslettervorlagenstd" class="tab-pane fade{if isset($cTab) && $cTab === 'newslettervorlagenstd'} active show{/if}">
             {if isset($oNewslettervorlageStd_arr) && $oNewslettervorlageStd_arr|@count > 0}
                 <form method="post" action="newsletter.php">
                     {$jtl_token}
@@ -435,7 +435,7 @@
                 <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
             {/if}
         </div>
-        <div id="newsletterhistory" class="tab-pane fade{if isset($cTab) && $cTab === 'newsletterhistory'} active in{/if}">
+        <div id="newsletterhistory" class="tab-pane fade{if isset($cTab) && $cTab === 'newsletterhistory'} active show{/if}">
             {if isset($oNewsletterHistory_arr) && $oNewsletterHistory_arr|@count > 0}
                 {include file='tpl_inc/pagination.tpl' pagination=$oPagiHistory cAnchor='newsletterhistory'}
                 <form method="post" action="newsletter.php">
@@ -487,7 +487,7 @@
                 <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
             {/if}
         </div>
-        <div id="einstellungen" class="tab-pane fade{if isset($cTab) && $cTab === 'einstellungen'} active in{/if}">
+        <div id="einstellungen" class="tab-pane fade{if isset($cTab) && $cTab === 'einstellungen'} active show{/if}">
             {include file='tpl_inc/config_section.tpl' config=$oConfig_arr name='einstellen' action='newsletter.php' buttonCaption=__('save') title=__('settings') tab='einstellungen'}
         </div>
     </div><!-- .tab-content-->

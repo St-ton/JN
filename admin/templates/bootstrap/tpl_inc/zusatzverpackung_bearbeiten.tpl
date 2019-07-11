@@ -4,9 +4,11 @@
     <input type="hidden" name="kVerpackung" value="{if isset($kVerpackung)}{$kVerpackung}{/if}" />
     <div class="card">
         <div class="card-header">
-            <div class="card-title">{if isset($kVerpackung) && $kVerpackung > 0}{__('zusatzverpackungEdit')}{else}{__('zusatzverpackungCreate')}{/if}</div>
+            <div class="subheading1">
+                {if isset($kVerpackung) && $kVerpackung > 0}{__('zusatzverpackungEdit')}{else}{__('zusatzverpackungCreate')}{/if}
+            </div>
         </div>
-        <div class="table-responsive">
+        <div class="card-body table-responsive">
             <table class="kundenfeld table">
                 {foreach $sprachen as $key => $language}
                     {assign var=cISO value=$language->getIso()}

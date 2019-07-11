@@ -29,7 +29,7 @@
         </li>
     </ul>
     <div class="tab-content">
-        <div id="suchanfrage" class="tab-pane fade {if !isset($tab) || $tab === 'suchanfrage'} active in{/if}">
+        <div id="suchanfrage" class="tab-pane fade {if !isset($tab) || $tab === 'suchanfrage'} active show{/if}">
             {if isset($Suchanfragen) && $Suchanfragen|@count > 0}
                 {include file='tpl_inc/pagination.tpl' pagination=$oPagiSuchanfragen cAnchor='suchanfrage'}
                 <form name="suche" method="post" action="livesuche.php">
@@ -135,7 +135,7 @@
                 <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
             {/if}
         </div>
-        <div id="erfolglos" class="tab-pane fade {if isset($tab) && $tab === 'erfolglos'} active in{/if}">
+        <div id="erfolglos" class="tab-pane fade {if isset($tab) && $tab === 'erfolglos'} active show{/if}">
             {if $Suchanfragenerfolglos && $Suchanfragenerfolglos|@count > 0}
                 {include file='tpl_inc/pagination.tpl' pagination=$oPagiErfolglos cAnchor='erfolglos'}
                 <form name="login" method="post" action="livesuche.php">
@@ -198,7 +198,7 @@
                 <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
             {/if}
         </div>
-        <div id="mapping" class="tab-pane fade {if isset($tab) && $tab === 'mapping'} active in{/if}">
+        <div id="mapping" class="tab-pane fade {if isset($tab) && $tab === 'mapping'} active show{/if}">
             {if $Suchanfragenmapping && $Suchanfragenmapping|@count > 0}
                 {include file='tpl_inc/pagination.tpl' pagination=$oPagiMapping cAnchor='mapping'}
                 <form name="login" method="post" action="livesuche.php">
@@ -238,7 +238,7 @@
                 <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
             {/if}
         </div>
-        <div id="blacklist" class="tab-pane fade {if isset($tab) && $tab === 'blacklist'} active in{/if}">
+        <div id="blacklist" class="tab-pane fade {if isset($tab) && $tab === 'blacklist'} active show{/if}">
             <form name="login" method="post" action="livesuche.php">
                 {$jtl_token}
                 <input type="hidden" name="livesuche" value="3" />
@@ -266,7 +266,7 @@
                 </div>
             </form>
         </div>
-        <div id="einstellungen" class="tab-pane fade {if isset($tab) && $tab === 'einstellungen'} active in{/if}">
+        <div id="einstellungen" class="tab-pane fade {if isset($tab) && $tab === 'einstellungen'} active show{/if}">
             {include file='tpl_inc/config_section.tpl' config=$oConfig_arr name='einstellen' a='saveSettings' action='livesuche.php' buttonCaption=__('save') title=__('settings') tab='einstellungen'}
         </div>
     </div>

@@ -7,71 +7,68 @@
             <div class="card">
                 <div class="card-header">
                     <div class="subheading1">{__('settings')}</div>
+                    <hr class="mb-n3">
                 </div>
                 <div class="card-body">
-                    <div class="item input-group">
-                        <span class="input-group-addon">
-                            <label for="nAktiv">{__('statusemailUse')}</label>
-                        </span>
-                        <span class="input-group-wrap">
-                            <select class="form-control" name="nAktiv" id="nAktiv">
+                    <div class="item form-group form-row align-items-center">
+                        <label class="col col-sm-4 col-form-label text-sm-right" for="nAktiv">{__('statusemailUse')}</label>
+                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                            <select class="custom-select" name="nAktiv" id="nAktiv">
                                 <option value="1" {if isset($oStatusemailEinstellungen->nAktiv) && $oStatusemailEinstellungen->nAktiv == 1}selected{/if}>{__('yes')}</option>
                                 <option value="0" {if isset($oStatusemailEinstellungen->nAktiv) && $oStatusemailEinstellungen->nAktiv == 0}selected{/if}>{__('no')}</option>
                             </select>
-                        </span>
-                        <span class="input-group-addon">
+                        </div>
+                        <div class="col-auto ml-sm-n4 order-2 order-sm-3">
                             {getHelpDesc cDesc=__('statusemailUseDesc')}
-                        </span>
+                        </div>
                     </div>
 
-                    <div class="item input-group">
-                        <span class="input-group-addon">
-                            <label for="cEmail">{__('statusemailEmail')}</label>
-                        </span>
-                        <span class="input-group-wrap">
+                    <div class="item form-group form-row align-items-center">
+                        <label class="col col-sm-4 col-form-label text-sm-right" for="cEmail">{__('statusemailEmail')}</label>
+                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                             <input class="form-control" type="text" name="cEmail" id="cEmail"
                                    value="{if isset($oStatusemailEinstellungen->cEmail)}{$oStatusemailEinstellungen->cEmail}{/if}"
                                    tabindex="1">
-                        </span>
-                        <span class="input-group-addon">
+                        </div>
+                        <div class="col-auto ml-sm-n4 order-2 order-sm-3">
                             {getHelpDesc cDesc=__('statusemailEmailDesc')}
-                        </span>
+                        </div>
                     </div>
 
-                    <div class="item input-group">
-                        <span class="input-group-addon">
-                            <label for="cIntervall">{__('statusemailIntervall')}</label>
-                        </span>
-                        <select name="cIntervall_arr[]" id="cIntervall" multiple="multiple" class="form-control multiple"
-                                size="3">
-                            {foreach $oStatusemailEinstellungen->cIntervallMoeglich_arr as $key => $nIntervallMoeglich}
-                                <option value="{$nIntervallMoeglich}"
-                                        {if $nIntervallMoeglich|in_array:$oStatusemailEinstellungen->nIntervall_arr}selected{/if}>
-                                    {$key}
-                                </option>
-                            {/foreach}
-                        </select>
-                        <span class="input-group-addon">
+                    <div class="item form-group form-row align-items-center">
+                        <label class="col col-sm-4 col-form-label text-sm-right" for="cIntervall">{__('statusemailIntervall')}</label>
+                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                            <select name="cIntervall_arr[]" id="cIntervall" multiple="multiple" class="custom-select multiple"
+                                    size="3">
+                                {foreach $oStatusemailEinstellungen->cIntervallMoeglich_arr as $key => $nIntervallMoeglich}
+                                    <option value="{$nIntervallMoeglich}"
+                                            {if $nIntervallMoeglich|in_array:$oStatusemailEinstellungen->nIntervall_arr}selected{/if}>
+                                        {$key}
+                                    </option>
+                                {/foreach}
+                            </select>
+                        </div>
+                        <div class="col-auto ml-sm-n4 order-2 order-sm-3">
                             {getHelpDesc cDesc=__('statusemailIntervallDesc')}
-                        </span>
+                        </div>
                     </div>
 
-                    <div class="item input-group">
-                        <span class="input-group-addon">
-                            <label for="cInhalt">{__('statusemailContent')}</label>
-                        </span>
-                        <select name="cInhalt_arr[]" id="cInhalt" multiple="multiple" class="form-control multiple"
-                                size="15">
-                            {foreach $oStatusemailEinstellungen->cInhaltMoeglich_arr as $key => $nInhaltMoeglich}
-                                <option value="{$nInhaltMoeglich}"
-                                        {if $nInhaltMoeglich|in_array:$oStatusemailEinstellungen->nInhalt_arr}selected{/if}>
-                                    {$key}
-                                </option>
-                            {/foreach}
-                        </select>
-                        <span class="input-group-addon">
+                    <div class="item form-group form-row align-items-center">
+                        <label class="col col-sm-4 col-form-label text-sm-right" for="cInhalt">{__('statusemailContent')}</label>
+                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                            <select name="cInhalt_arr[]" id="cInhalt" multiple="multiple" class="custom-select multiple"
+                                    size="15">
+                                {foreach $oStatusemailEinstellungen->cInhaltMoeglich_arr as $key => $nInhaltMoeglich}
+                                    <option value="{$nInhaltMoeglich}"
+                                            {if $nInhaltMoeglich|in_array:$oStatusemailEinstellungen->nInhalt_arr}selected{/if}>
+                                        {$key}
+                                    </option>
+                                {/foreach}
+                            </select>
+                        </div>
+                        <div class="col-auto ml-sm-n4 order-2 order-sm-3">
                             {getHelpDesc cDesc=__('statusemailContentDesc')}
-                        </span>
+                        </div>
                     </div>
                 </div>
                 <div class="card-footer">

@@ -2,7 +2,7 @@
 {include file='tpl_inc/sortcontrols.tpl'}
 
 {function kupons_uebersicht_tab}
-    <div id="{$cKuponTyp}" class="tab-pane fade{if $tab === $cKuponTyp} active in{/if}">
+    <div id="{$cKuponTyp}" class="tab-pane fade{if $tab === $cKuponTyp} active show{/if}">
         <div class="card">
             {if $nKuponCount > 0}
                 {include file='tpl_inc/filtertools.tpl' oFilter=$oFilter cParam_arr=['tab'=>$cKuponTyp]}

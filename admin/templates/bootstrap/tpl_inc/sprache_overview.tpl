@@ -64,7 +64,7 @@
         </li>
     </ul>
     <div class="tab-content">
-        <div id="variables" class="tab-pane fade {if $tab === 'variables'}active in{/if}">
+        <div id="variables" class="tab-pane fade {if $tab === 'variables'}active show{/if}">
             <div class="card">
                 {if $bSpracheAktiv}
                     {include file='tpl_inc/filtertools.tpl' oFilter=$oFilter}
@@ -146,7 +146,7 @@
                 </form>
             </div>
         </div>
-        <div id="notfound" class="tab-pane fade {if $tab === 'notfound'}active in{/if}">
+        <div id="notfound" class="tab-pane fade {if $tab === 'notfound'}active show{/if}">
             <div class="card">
                 {if $oNotFound_arr|@count > 0}
                     <table class="list table">

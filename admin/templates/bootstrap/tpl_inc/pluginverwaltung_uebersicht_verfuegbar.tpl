@@ -40,7 +40,7 @@
 </script>
 {/literal}
 
-<div id="verfuegbar" class="tab-pane fade {if isset($cTab) && $cTab === 'verfuegbar'} active in{/if}">
+<div id="verfuegbar" class="tab-pane fade {if isset($cTab) && $cTab === 'verfuegbar'} active show{/if}">
     {if $pluginsAvailable->count() > 0}
         <form name="pluginverwaltung" method="post" action="pluginverwaltung.php">
             {$jtl_token}

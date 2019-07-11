@@ -19,7 +19,7 @@
     </ul>
 
     <div class="tab-content">
-        <div id="einladungen" class="tab-pane fade {if !isset($cTab) || $cTab === 'einladungen'} active in{/if}">
+        <div id="einladungen" class="tab-pane fade {if !isset($cTab) || $cTab === 'einladungen'} active show{/if}">
             {if $oKwKNichtReg_arr|@count > 0 && $oKwKNichtReg_arr}
                 {include file='tpl_inc/pagination.tpl' pagination=$oPagiNichtReg cAnchor='einladungen'}
                 <form name="umfrage" method="post" action="kundenwerbenkunden.php">
@@ -63,7 +63,7 @@
                 <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
             {/if}
         </div>
-        <div id="registrierung" class="tab-pane fade {if isset($cTab) && $cTab === 'registrierung'} active in{/if}">
+        <div id="registrierung" class="tab-pane fade {if isset($cTab) && $cTab === 'registrierung'} active show{/if}">
             {if $oKwKReg_arr && $oKwKReg_arr|@count > 0}
                 {include file='tpl_inc/pagination.tpl' pagination=$oPagiReg cAnchor='registrierung'}
                 <div id="payment">
@@ -94,7 +94,7 @@
                 <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
             {/if}
         </div>
-        <div id="praemie" class="tab-pane fade {if isset($cTab) && $cTab === 'praemie'} active in{/if}">
+        <div id="praemie" class="tab-pane fade {if isset($cTab) && $cTab === 'praemie'} active show{/if}">
             {if $oKwKBestandBonus_arr|@count > 0 && $oKwKBestandBonus_arr}
                 {include file='tpl_inc/pagination.tpl' pagination=$oPagiPraemie cAnchor='praemie'}
                 <div id="payment">
@@ -123,7 +123,7 @@
                 <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
             {/if}
         </div>
-        <div id="einstellungen" class="tab-pane fade {if isset($cTab) && $cTab === 'einstellungen'} active in{/if}">
+        <div id="einstellungen" class="tab-pane fade {if isset($cTab) && $cTab === 'einstellungen'} active show{/if}">
             {include file='tpl_inc/config_section.tpl' config=$oConfig_arr name='einstellen' a='saveSettings' action='kundenwerbenkunden.php' buttonCaption=__('save') title='Einstellungen' tab='einstellungen'}
         </div>
     </div>

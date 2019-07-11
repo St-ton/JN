@@ -10,7 +10,7 @@
     </ul>
 
     <div class="tab-content">
-        <div id="aktiv" class="tab-pane fade{if !isset($cTab) || empty($cTab) || $cTab === 'aktiv'} active in{/if}">
+        <div id="aktiv" class="tab-pane fade{if !isset($cTab) || empty($cTab) || $cTab === 'aktiv'} active show{/if}">
             <form method="post" action="exportformat_queue.php">
                 {$jtl_token}
                 <div class="card">
@@ -84,7 +84,7 @@
                 </div>
             </form>
         </div>
-        <div id="fertig" class="tab-pane fade{if isset($cTab) && $cTab === 'fertig'} active in{/if}">
+        <div id="fertig" class="tab-pane fade{if isset($cTab) && $cTab === 'fertig'} active show{/if}">
             <div class="block well well-sm">
                 <form method="post" action="exportformat_queue.php" class="form-inline">
                     {$jtl_token}

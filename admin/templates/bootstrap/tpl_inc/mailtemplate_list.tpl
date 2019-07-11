@@ -1,7 +1,8 @@
 {if $mailTemplates|count > 0}
 	<div class="card">
 		<div class="card-header">
-			<div class="card-title">{$heading}</div>
+			<div class="subheading1">{$heading}</div>
+			<hr class="mb-n3">
 		</div>
 		<div class="card-body table-responsive">
 			<table class="list table">

@@ -24,7 +24,7 @@
         </li>
     </ul>
     <div class="tab-content">
-        <div id="freischalten" class="tab-pane fade {if !isset($cTab) || $cTab === 'freischalten'} active in{/if}">
+        <div id="freischalten" class="tab-pane fade {if !isset($cTab) || $cTab === 'freischalten'} active show{/if}">
             {if $inactiveReviews|count > 0}
                 {include file='tpl_inc/pagination.tpl' pagination=$oPagiInaktiv cAnchor='freischalten'}
                 <form method="post" action="bewertung.php">
@@ -92,7 +92,7 @@
                 <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
             {/if}
         </div>
-        <div id="letzten50" class="tab-pane fade {if isset($cTab) && $cTab === 'letzten50'} active in{/if}">
+        <div id="letzten50" class="tab-pane fade {if isset($cTab) && $cTab === 'letzten50'} active show{/if}">
             {if $activeReviews|count > 0}
                 {include file='tpl_inc/pagination.tpl' pagination=$oPagiAktiv cAnchor='letzten50'}
                 <form name="letzten50" method="post" action="bewertung.php">
@@ -175,7 +175,7 @@
                 <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
             {/if}
         </div>
-        <div id="artikelbewertung" class="tab-pane fade {if isset($cTab) && $cTab === 'artikelbewertung'} active in{/if}">
+        <div id="artikelbewertung" class="tab-pane fade {if isset($cTab) && $cTab === 'artikelbewertung'} active show{/if}">
             <form name="artikelbewertung" method="post" action="bewertung.php">
                 {$jtl_token}
                 <div class="input-group col-xs-6" style="float: none;">
@@ -251,7 +251,7 @@
                 {/if}
             </form>
         </div>
-        <div id="einstellungen" class="tab-pane fade {if isset($cTab) && $cTab === 'einstellungen'} active in{/if}">
+        <div id="einstellungen" class="tab-pane fade {if isset($cTab) && $cTab === 'einstellungen'} active show{/if}">
             <form name="einstellen" method="post" action="bewertung.php">
                 {$jtl_token}
                 <input type="hidden" name="einstellungen" value="1" />

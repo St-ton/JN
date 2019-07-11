@@ -2,44 +2,64 @@
     {$data = ['portlet' => $instance->getDataAttribute()]}
 {/if}
 
-{$galleryHeight = $instance->getProperty('height')}
+{$galleryStyle = $instance->getProperty('galleryStyle')}
 
 {row
     id=$instance->getUid()
-    class='img-gallery'
+    class='img-gallery img-gallery-'|cat:$galleryStyle
     data=$data|default:null
     style=$instance->getStyleString()
 }
     {foreach $instance->getProperty('images') as $key => $image}
-        {$image.xs = $image.xs|default:12}
-        {$image.sm = $image.sm|default:$image.xs}
-        {$image.md = $image.md|default:$image.sm}
-        {$image.lg = $image.lg|default:$image.md}
         {$imgAttribs = $instance->getImageAttributes($image.url, '', '')}
 
-        {col cols=$image.xs sm=$image.sm md=$image.md lg=$image.lg class="img-gallery-item"
-                style='height:'|cat:$galleryHeight|cat:'px'}
-            {if $isPreview}
+        {if $galleryStyle === 'alternate'}
+            {$image.xs = 6}
+            {$image.sm = 5}
+            {$image.md = 3}
+            {$image.xl = 3}
+            {if $key % 3 === 0}
+                {$image.xs = 12}
+            {/if}
+            {if $key % 4 === 0 || $key % 4 === 3}
+                {$image.sm = 7}
+            {/if}
+            {if $key % 6 === 0 || $key % 6 === 5}
+                {$image.md = 5}
+            {elseif $key % 6 === 1 || $key % 6 === 4}
+                {$image.md = 4}
+            {/if}
+            {if $key % 8 === 0}
+                {$image.xl = 4}
+            {elseif $key % 8 === 1}
+                {$image.xl = 2}
+            {elseif $key % 8 === 5}
+                {$image.xl = 2}
+            {elseif $key % 8 === 7}
+                {$image.xl = 4}
+            {/if}
+        {elseif $galleryStyle === 'grid'}
+            {$image.xs = 6}
+            {$image.sm = 4}
+            {$image.md = 3}
+            {$image.xl = 2}
+        {/if}
+
+        {$image.lg = $image.md}
+
+        {col cols=$image.xs sm=$image.sm md=$image.md lg=$image.lg xl=$image.xl class="img-gallery-item"}
+            <a href="#"
+               class="img-gallery-btn">
                 {image
                     class='img-gallery-img'
                     srcset=$imgAttribs.srcset
                     sizes=$imgAttribs.srcsizes
                     src=$imgAttribs.src
+                    data=['index' => $key, 'desc' => $image.desc]
                     alt=$imgAttribs.alt
                     title=$imgAttribs.title}
-            {else}
-                <a href="#" class="img-gallery-btn" style="height: {$instance->getProperty('height')}px">
-                    {image
-                        class='img-gallery-img'
-                        srcset=$imgAttribs.srcset
-                        sizes=$imgAttribs.srcsizes
-                        src=$imgAttribs.src
-                        data=['index' => $key, 'desc' => $image.desc]
-                        alt=$imgAttribs.alt
-                        title=$imgAttribs.title}
-                    <i class="img-gallery-zoom fa fa-search fa-2x"></i>
-                </a>
-            {/if}
+                <i class="img-gallery-zoom fa fa-search fa-2x"></i>
+            </a>
         {/col}
     {/foreach}
 {/row}

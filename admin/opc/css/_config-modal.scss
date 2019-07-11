@@ -85,6 +85,12 @@
   }
 }
 
+#opc .slides-container {
+  padding-right: 8px;
+  max-height: calc(100vh - 440px);
+  overflow-y: auto;
+}
+
 #opc .slide-entry {
   background-color: $light-bg;
   padding: 16px;
@@ -101,6 +107,10 @@
       display: block;
       padding: 4px;
       margin-bottom: 8px;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
     }
 
     i {

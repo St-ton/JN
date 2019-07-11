@@ -64,19 +64,19 @@
 
 <label>{$propdesc.label}</label>
 
-<div id="{$propname}-slides">
-    {foreach $propval as $slideData}
-        {slideEntry slideData=$slideData}
-    {/foreach}
-</div>
-
-<button type="button" class="opc-btn-primary opc-small-btn add-slide-btn" onclick="addSlide_{$propname}()"
-        title="{__('imageAdd')}">
-    <i class="fas fa-plus fa-fw"></i>
-</button>
-
-<div style="display: none" id="{$propname}-slide-blueprint">
-    {slideEntry}
+<div class="slides-container">
+    <div id="{$propname}-slides">
+        {foreach $propval as $slideData}
+            {slideEntry slideData=$slideData}
+        {/foreach}
+    </div>
+    <button type="button" class="opc-btn-primary opc-small-btn add-slide-btn" onclick="addSlide_{$propname}()"
+            title="{__('imageAdd')}">
+        <i class="fas fa-plus fa-fw"></i>
+    </button>
+    <div style="display: none" id="{$propname}-slide-blueprint">
+        {slideEntry}
+    </div>
 </div>
 
 <script>

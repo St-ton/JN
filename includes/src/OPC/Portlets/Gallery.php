@@ -21,11 +21,16 @@ class Gallery extends Portlet
     public function getPropertyDesc(): array
     {
         return [
-            'height' => [
-                'type'    => InputType::NUMBER,
-                'label'   => __('heightPreviewImages'),
-                'default' => 250,
-                'width'   => 50,
+            'galleryStyle' => [
+                'type' => InputType::SELECT,
+                'label' => 'Layout',
+                'default' => 'grid',
+                'width' => 50,
+                'options' => [
+                    'grid' => 'Gitter',
+                    'alternate' => 'Alternierend',
+                    'masonry' => 'Mauerwerk',
+                ],
             ],
             'images' => [
                 'type'       => InputType::IMAGE_SET,

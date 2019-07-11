@@ -547,6 +547,12 @@
   margin-right: 4px;
 }
 
+#opc .slides-container {
+  padding-right: 8px;
+  max-height: calc(100vh - 440px);
+  overflow-y: auto;
+}
+
 #opc .slide-entry {
   background-color: #F5F7FA;
   padding: 16px;
@@ -561,6 +567,10 @@
   display: block;
   padding: 4px;
   margin-bottom: 8px;
+}
+#opc .slide-entry .slide-btns > button:last-child,
+#opc .slide-entry .slide-btns > span:last-child {
+  margin-bottom: 0;
 }
 #opc .slide-entry .slide-btns i {
   font-size: 18px;

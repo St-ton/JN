@@ -26,8 +26,8 @@
             <span class="input-group-addon">
                 <label for="statType">{__('statisticType')}:</label>
             </span>
-            <span class="input-group-wrap last">
-                <select class="form-control" name="statType" id="statType" onChange="changeStatType(this);">
+            <span class="label-wrap last">
+                <select class="custom-select" name="statType" id="statType" onChange="changeStatType(this);">
                     <option value="{$STATS_ADMIN_TYPE_BESUCHER}"{if $nTyp == $STATS_ADMIN_TYPE_BESUCHER} selected{/if}>{__('visitors')}</option>
                     <option value="{$STATS_ADMIN_TYPE_KUNDENHERKUNFT}"{if $nTyp == $STATS_ADMIN_TYPE_KUNDENHERKUNFT} selected{/if}>{__('customerHeritage')}</option>
                     <option value="{$STATS_ADMIN_TYPE_SUCHMASCHINE}"{if $nTyp == $STATS_ADMIN_TYPE_SUCHMASCHINE} selected{/if}>{__('searchEngines')}</option>

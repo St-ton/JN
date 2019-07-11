@@ -596,7 +596,7 @@ function checkSelect(selectBox) {ldelim}
                 {/if}
                 <div class="card">
                     <div class="card-header">
-                        <div class="card-title">{__('umfrageEnterQ')}</div>
+                        <div class="subheading1">{__('umfrageEnterQ')}</div>
                     </div>
                     <table class="kundenfeld table">
                         <tr>
@@ -604,11 +604,12 @@ function checkSelect(selectBox) {ldelim}
                             <td><input class="form-control" id="cName" name="cName" type="text"  value="{if isset($oUmfrageFrage->cName)}{$oUmfrageFrage->cName}{/if}" /></td>
                         </tr>
 
+
                         <tr>
                             <td><label for="cTypSelect">{__('umfrageType')}</label></td>
                             <td>
-                                <span class="input-group-wrap">
-                                    <select name="cTyp" id="cTypSelect" class="form-control combo" onchange="checkSelect(this);">
+                                <span class="label-wrap">
+                                    <select name="cTyp" id="cTypSelect" class="custom-select combo" onchange="checkSelect(this);">
                                         <option {if isset($oUmfrageFrage->kUmfrageFrage) && $oUmfrageFrage->kUmfrageFrage > 0}{else}selected{/if}></option>
                                         <option value="{\JTL\Survey\QuestionType::MULTI_SINGLE}"{if isset($oUmfrageFrage->cTyp) && $oUmfrageFrage->cTyp === \JTL\Survey\QuestionType::MULTI_SINGLE}selected{/if}>{__('questionTypeMultipleChoiceOne')}</option>
                                         <option value="{\JTL\Survey\QuestionType::MULTI}"{if isset($oUmfrageFrage->cTyp) && $oUmfrageFrage->cTyp === \JTL\Survey\QuestionType::MULTI}selected{/if}>{__('questionTypeMultipleChoiceMany')}</option>
@@ -638,7 +639,7 @@ function checkSelect(selectBox) {ldelim}
                         <tr>
                             <td><label for="nFreifeld">{__('umfrageQFreeField')}</label></td>
                             <td>
-                                <select id="nFreifeld" name="nFreifeld" class="form-control combo">
+                                <select id="nFreifeld" name="nFreifeld" class="custom-select combo">
                                     <option value="1"{if isset($oUmfrageFrage->nFreifeld) && $oUmfrageFrage->nFreifeld == 1}selected{/if}>{__('yes')}</option>
                                     <option value="0"{if !isset($oUmfrageFrage->nFreifeld) || (isset($oUmfrageFrage->nFreifeld) && $oUmfrageFrage->nFreifeld == 0)}selected{/if}>{__('no')}</option>
                                 </select>
@@ -648,7 +649,7 @@ function checkSelect(selectBox) {ldelim}
                         <tr>
                             <td><label for="nNotwendig">{__('umfrageQEssential')}</label></td>
                             <td>
-                                <select id="nNotwendig" name="nNotwendig" class="form-control combo">
+                                <select id="nNotwendig" name="nNotwendig" class="custom-select combo">
                                     <option value="1"{if isset($oUmfrageFrage->nNotwendig) && $oUmfrageFrage->nNotwendig == 1}selected{/if}>{__('yes')}</option>
                                     <option value="0"{if isset($oUmfrageFrage->nNotwendig) && $oUmfrageFrage->nNotwendig == 0}selected{/if}>{__('no')}</option>
                                 </select>

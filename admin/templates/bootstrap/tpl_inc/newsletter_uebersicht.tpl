@@ -142,7 +142,7 @@
                     <div id="newsletter-all-content">
                         <div class="card">
                             <div class="card-header">
-                                <div class="card-title">{__('newsletterAllSubscriber')}</div>
+                                <div class="subheading1">{__('newsletterAllSubscriber')}</div>
                             </div>
                             <div class="table-responsive">
                                 <table class="table table-striped">
@@ -202,36 +202,35 @@
                 <input name="tab" type="hidden" value="neuerabonnenten">
                 <div class="card settings">
                     <div class="card-header">
-                        <div class="card-title">{__('newsletterNewSubscriber')}</div>
+                        <div class="subheading1">{__('newsletterNewSubscriber')}</div>
+                        <hr class="mb-n3">
                     </div>
                     <div class="card-body">
-                        <div class="input-group">
-                            <span class="input-group-addon">
-                                <label for="cVorname">{__('firstName')}</label>
-                            </span>
-                            <input class="form-control" type="text" name="cVorname" id="cVorname" value="{if isset($oNewsletter->cVorname)}{$oNewsletter->cVorname}{/if}" />
+                        <div class="form-group form-row align-items-center">
+                            <label class="col col-sm-4 col-form-label text-sm-right" for="cVorname">{__('firstName')}:</label>
+                            <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                <input class="form-control" type="text" name="cVorname" id="cVorname" value="{if isset($oNewsletter->cVorname)}{$oNewsletter->cVorname}{/if}" />
+                            </div>
                         </div>
 
-                        <div class="input-group">
-                            <span class="input-group-addon">
-                                <label for="cNachname">{__('lastName')}</label>
-                            </span>
-                            <input class="form-control" type="text" name="cNachname" id="cNachname" value="{if isset($oNewsletter->cNachname)}{$oNewsletter->cNachname}{/if}" />
+                        <div class="form-group form-row align-items-center">
+                            <label class="col col-sm-4 col-form-label text-sm-right" for="cNachname">{__('lastName')}:</label>
+                            <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                <input class="form-control" type="text" name="cNachname" id="cNachname" value="{if isset($oNewsletter->cNachname)}{$oNewsletter->cNachname}{/if}" />
+                            </div>
                         </div>
 
-                        <div class="input-group">
-                            <span class="input-group-addon">
-                                <label for="cEmail">{__('email')}</label>
-                            </span>
-                            <input class="form-control" type="text" name="cEmail" id="cEmail" value="{if isset($oNewsletter->cEmail)}{$oNewsletter->cEmail}{/if}" />
+                        <div class="form-group form-row align-items-center">
+                            <label class="col col-sm-4 col-form-label text-sm-right" for="cEmail">{__('email')}:</label>
+                            <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                <input class="form-control" type="text" name="cEmail" id="cEmail" value="{if isset($oNewsletter->cEmail)}{$oNewsletter->cEmail}{/if}" />
+                            </div>
                         </div>
 
-                        <div class="input-group">
-                            <span class="input-group-addon">
-                                <label for="kSprache">{__('language')}</label>
-                            </span>
-                            <span class="input-group-wrap">
-                                <select class="form-control" name="kSprache" id="kSprache">
+                        <div class="form-group form-row align-items-center">
+                            <label class="col col-sm-4 col-form-label text-sm-right" for="kSprache">{__('language')}:</label>
+                            <span class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                <select class="custom-select" name="kSprache" id="kSprache">
                                     {foreach $sprachen as $language}
                                         <option value="{$language->getId()}">{$language->getLocalizedName()}</option>
                                     {/foreach}
@@ -255,7 +254,7 @@
                     <div id="newsletter-queue-content">
                         <div class="card">
                             <div class="card-header">
-                                <div class="card-title">{__('newsletterqueue')}</div>
+                                <div class="subheading1">{__('newsletterqueue')}</div>
                             </div>
                             <div class="table-responsive">
                                 <table class="table table-striped">
@@ -316,7 +315,7 @@
                     <div id="newsletter-vorlagen-content">
                         <div class="card">
                             <div class="card-header">
-                                <div class="card-title">{__('marked')}</div>
+                                <div class="subheading1">{__('marked')}</div>
                             </div>
                             <div class="table-responsive">
                                 <table class="table table-striped">
@@ -407,7 +406,7 @@
                     <div id="newsletter-vorlage-std-content">
                         <div class="card">
                             <div class="card-header">
-                                <div class="card-title">{__('newsletterdraftStd')}</div>
+                                <div class="subheading1">{__('newsletterdraftStd')}</div>
                             </div>
                             <div class="table-responsive">
                                 <table class="table table-striped">
@@ -445,7 +444,7 @@
                     <div id="newsletter-history-content">
                         <div class="card">
                             <div class="card-header">
-                                <div class="card-title">{__('newsletterhistory')}</div>
+                                <div class="subheading1">{__('newsletterhistory')}</div>
                             </div>
                             <div class="table-responsive">
                                 <table class="table table-striped">

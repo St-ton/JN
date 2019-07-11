@@ -53,7 +53,7 @@
                 {/if}
             {/foreach}
         </div>
-        <div class="card-footer">
+        <div class="save_wrapper card-footer">
             <button name="speichern" type="submit" class="btn btn-primary"><i class="fa fa-save"></i> {if !empty($buttonCaption)}{$buttonCaption}{else}{__('save')}{/if}</button>
         </div>
     </div>

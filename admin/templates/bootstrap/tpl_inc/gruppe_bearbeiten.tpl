@@ -11,17 +11,22 @@
         <div class="card">
             <div class="card-header">
                 <div class="subheading1">{__('general')}</div>
+                <hr class="mb-n3">
             </div>
             <div class="card-body">
-                <div class="input-group{if isset($cError_arr.cGruppe)} error{/if}">
-                    <span class="input-group-addon"><label for="cGruppe">{__('name')}</label></span>
-                    <input class="form-control" type="text" name="cGruppe" id="cGruppe" value="{if isset($oAdminGroup->cGruppe)}{$oAdminGroup->cGruppe}{/if}" />
-                    {if isset($cError_arr.cGruppe)}<span class="input-group-addon error" title="{__('FillOut')}"><i class="fa fa-exclamation-triangle"></i></span>{/if}
+                <div class="form-group form-row align-items-center{if isset($cError_arr.cGruppe)} error{/if}">
+                    <label class="col col-sm-4 col-form-label text-sm-right" for="cGruppe">{__('name')}</label>
+                    <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                        <input class="form-control" type="text" name="cGruppe" id="cGruppe" value="{if isset($oAdminGroup->cGruppe)}{$oAdminGroup->cGruppe}{/if}" />
+                        {if isset($cError_arr.cGruppe)}<span class="input-group-addon error" title="{__('FillOut')}"><i class="fa fa-exclamation-triangle"></i></span>{/if}
+                    </div>
                 </div>
-                <div class="input-group{if isset($cError_arr.cBeschreibung)} error{/if}">
-                    <span class="input-group-addon"><label for="cBeschreibung">{__('description')}</label></span>
-                    <input class="form-control" type="text" id="cBeschreibung" name="cBeschreibung" value="{if isset($oAdminGroup->cBeschreibung)}{$oAdminGroup->cBeschreibung}{/if}" />
-                    {if isset($cError_arr.cBeschreibung)}<span class="input-group-addon error" title="{__('FillOut')}"><i class="fa fa-exclamation-triangle"></i></span>{/if}
+                <div class="form-group form-row align-items-center{if isset($cError_arr.cBeschreibung)} error{/if}">
+                    <label class="col col-sm-4 col-form-label text-sm-right" for="cBeschreibung">{__('description')}</label>
+                    <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                        <input class="form-control" type="text" id="cBeschreibung" name="cBeschreibung" value="{if isset($oAdminGroup->cBeschreibung)}{$oAdminGroup->cBeschreibung}{/if}" />
+                        {if isset($cError_arr.cBeschreibung)}<span class="input-group-addon error" title="{__('FillOut')}"><i class="fa fa-exclamation-triangle"></i></span>{/if}
+                    </div>
                 </div>
             </div>
         </div>
@@ -29,12 +34,16 @@
         <div class="card">
             <div class="card-header">
                 <div class="subheading1">{__('permissions')}</div>
+                <hr class="mb-n3">
             </div>
-            <div class="card-body">
+            <div class="card-body row">
                 {foreach $oAdminDefPermission_arr as $oGroup}
                     <div id="settings-{$oGroup@iteration}" class=" col-md-4">
                         <div class="card">
-                            <div class="card-header"><div class="subheading1">{$oGroup->cName}</div></div>
+                            <div class="card-header">
+                                <div class="subheading1">{$oGroup->cName}</div>
+                                <hr class="mb-n3">
+                            </div>
                             <div class="perm_list card-body">
                                 {foreach $oGroup->oPermission_arr as $oPerm}
                                     <div class="input">

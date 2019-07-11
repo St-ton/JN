@@ -18,7 +18,7 @@
                 {else}
                     {include file='tpl_inc/pagination.tpl' pagination=$pagination}
                     <div class="card-header">
-                        <div class="card-title">{__('slider')}</div>
+                        <div class="heading">{__('slider')}</div>
                     </div>
                     <table class="table">
                         <thead>

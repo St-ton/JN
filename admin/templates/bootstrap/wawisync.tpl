@@ -6,20 +6,21 @@
         {$jtl_token}
         <div class="card">
             <div class="card-header">
-                <div class="card-title">{__('username')}/{__('password')} {__('change')}</div>
+                <div class="subheading1">{__('username')}/{__('password')} {__('change')}</div>
+                <hr class="mb-n3">
             </div>
             <div class="card-body">
-                <div class="input-group">
-                    <span class="input-group-addon">
-                        <label for="wawi-user">{__('user')}</label>
-                    </span>
-                    <input id="wawi-user" name="wawi-user" class="form-control" type="text" value="{$wawiuser}" />
+                <div class="form-group form-row align-items-center">
+                    <label class="col col-sm-4 col-form-label text-sm-right" for="wawi-user">{__('user')}</label>
+                    <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                        <input id="wawi-user" name="wawi-user" class="form-control" type="text" value="{$wawiuser}" />
+                    </div>
                 </div>
-                <div class="input-group">
-                    <span class="input-group-addon">
-                        <label for="wawi-pass">{__('password')}</label>
-                    </span>
-                    <input id="wawi-pass" name="wawi-pass" class="form-control" type="password" value="{$wawipass}" />
+                <div class="form-group form-row align-items-center">
+                    <label class="col col-sm-4 col-form-label text-sm-right" for="wawi-pass">{__('password')}</label>
+                    <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                        <input id="wawi-pass" name="wawi-pass" class="form-control" type="password" value="{$wawipass}" />
+                    </div>
                 </div>
             </div>
             <div class="card-footer">

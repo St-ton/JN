@@ -46,7 +46,7 @@ function clearInput(inputField) {ldelim}
     <div id="content" class="container-fluid">
         <div id="welcome" class="card post">
             <div class="card-header">
-                <div class="card-title">{__('umfrageEnter')}</div>
+                <div class="subheading1">{__('umfrageEnter')}</div>
             </div>
             <div class="card-body">
                 <form name="umfrage" method="post" action="umfrage.php">
@@ -71,7 +71,7 @@ function clearInput(inputField) {ldelim}
                         <tr>
                             <td><label for="kKundengruppe">{__('customerGroup')}</label></td>
                             <td>
-                                <select id="kKundengruppe" name="kKundengruppe[]" multiple="multiple" class="combo form-control">
+                                <select id="kKundengruppe" name="kKundengruppe[]" multiple="multiple" class="combo custom-select">
                                     <option value="-1" {if isset($oUmfrage->kKundengruppe_arr)}{foreach $oUmfrage->kKundengruppe_arr as $kKundengruppe}{if $kKundengruppe == '-1'}selected{/if}{/foreach}{/if}>{__('all')}</option>
                                 {foreach $oKundengruppe_arr as $oKundengruppe}
                                     <option value="{$oKundengruppe->kKundengruppe}" {if isset($oUmfrage->kKundengruppe_arr)}{foreach $oUmfrage->kKundengruppe_arr as $kKundengruppe}{if $oKundengruppe->kKundengruppe == $kKundengruppe}selected{/if}{/foreach}{/if}>{$oKundengruppe->cName}</option>
@@ -90,7 +90,7 @@ function clearInput(inputField) {ldelim}
                         <tr>
                             <td><label for="nAktiv">{__('active')}:</label></td>
                             <td>
-                                <select id="nAktiv" name="nAktiv" class="combo form-control" style="width: 80px;">
+                                <select id="nAktiv" name="nAktiv" class="combo custom-select" style="width: 80px;">
                                     <option value="1"{if isset($oUmfrage->nAktiv) && $oUmfrage->nAktiv == 1} selected{/if}>{__('yes')}</option>
                                     <option value="0"{if isset($oUmfrage->nAktiv) && $oUmfrage->nAktiv == 0} selected{/if}>{__('no')}</option>
                                 </select>
@@ -100,7 +100,7 @@ function clearInput(inputField) {ldelim}
                             <tr>
                                 <td><label for="kupon">{__('coupon')}:</label></td>
                                 <td valign="top">
-                                    <select id="kupon" name="kKupon" class="combo form-control" onchange="selectCheck(this);" style="width: 180px;">
+                                    <select id="kupon" name="kKupon" class="combo custom-select" onchange="selectCheck(this);" style="width: 180px;">
                                         <option value="0"{if isset($oUmfrage->kKupon) && $oUmfrage->kKupon == 0} selected{/if} index=0>{__('umfrageNoCoupon')}</option>
                                         {foreach $oKupon_arr as $oKupon}
                                             <option value="{$oKupon->kKupon}"{if isset($oUmfrage->kKupon) && $oKupon->kKupon == $oUmfrage->kKupon} selected{/if}>{$oKupon->cName}</option>

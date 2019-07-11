@@ -46,28 +46,25 @@
         <div class="card settings">
             <div class="card-header">
                 <div class="subheading1">{__('names')}</div>
+                <hr class="mb-n3">
             </div>
             <div class="card-body">
-                <div class="input-group">
-                    <span class="input-group-addon">
-                        <label for="cName">{__('name')}</label>
-                    </span>
-                    <span class="input-group-wrap">
+                <div class="form-group form-row align-items-center">
+                    <label class="col col-sm-4 col-form-label text-sm-right" for="cName">{__('name')}:</label>
+                    <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                         <input type="text" class="form-control" name="cName" id="cName" value="{$oKupon->cName}">
-                    </span>
+                    </div>
                 </div>
                 {foreach $sprachen as $language}
                     {assign var=langCode value=$language->getIso()}
-                    <div class="input-group">
-                        <span class="input-group-addon">
-                            <label for="cName_{$langCode}">{__('showedName')} ({$language->getLocalizedName()})</label>
-                        </span>
-                        <span class="input-group-wrap">
+                    <div class="form-group form-row align-items-center">
+                        <label class="col col-sm-4 col-form-label text-sm-right" for="cName_{$langCode}">{__('showedName')} ({$language->getLocalizedName()}):</label>
+                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                             <input
                                 type="text" class="form-control" name="cName_{$langCode}"
                                 id="cName_{$langCode}"
                                 value="{if isset($oKuponName_arr[$langCode])}{$oKuponName_arr[$langCode]}{/if}">
-                        </span>
+                        </div>
                     </div>
                 {/foreach}
             </div>
@@ -75,75 +72,73 @@
         {if empty($oKupon->kKupon) && isset($oKupon->cKuponTyp) && $oKupon->cKuponTyp !== $couponTypes.newCustomer}
             <div class="card settings">
                 <div class="card-header">
-                    <div class="card-title"><label><input type="checkbox" name="couponCreation" id="couponCreation" class="checkfield"{if isset($oKupon->massCreationCoupon->cActiv) && $oKupon->massCreationCoupon->cActiv == 1} checked{/if} value="1" />{__('couponsCreation')}</label></div>
+                    <div class="subheading1">
+                        <label>
+                            <input type="checkbox" name="couponCreation" id="couponCreation" class="checkfield"{if isset($oKupon->massCreationCoupon->cActiv) && $oKupon->massCreationCoupon->cActiv == 1} checked{/if} value="1" />{__('couponsCreation')}
+                        </label>
+                    </div>
+                    <hr class="mb-n3">
                 </div>
                 <div class="card-body{if !isset($oKupon->massCreationCoupon)} hidden{/if}" id="massCreationCouponsBody">
-                    <div class="input-group">
-                                 <span class="input-group-addon">
-                                     <label for="numberCoupons">{__('numberCouponsDesc')}</label>
-                                 </span>
-                        <input class="form-control" type="number" name="numberOfCoupons" id="numberOfCoupons" min="2" step="1" {if isset($oKupon->massCreationCoupon->numberOfCoupons)}value="{$oKupon->massCreationCoupon->numberOfCoupons}"{else}value="2"{/if}/>
+                    <div class="form-group form-row align-items-center">
+                        <label class="col col-sm-4 col-form-label text-sm-right" for="numberOfCoupons">{__('numberCouponsDesc')}:</label>
+                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                            <input class="form-control" type="number" name="numberOfCoupons" id="numberOfCoupons" min="2" step="1" {if isset($oKupon->massCreationCoupon->numberOfCoupons)}value="{$oKupon->massCreationCoupon->numberOfCoupons}"{else}value="2"{/if}/>
+                        </div>
                     </div>
-                    <div class="input-group">
-                                 <span class="input-group-addon">
-                                     <label for="lowerCase">{__('lowerCaseDesc')}</label>
-                                 </span>
-                        <div class="input-group-wrap">
+                    <div class="form-group form-row align-items-center">
+                        <label class="col col-sm-4 col-form-label text-sm-right" for="lowerCase">{__('lowerCaseDesc')}:</label>
+                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                             <input type="checkbox" name="lowerCase" id="lowerCase" class="checkfield" {if isset($oKupon->massCreationCoupon->lowerCase) && $oKupon->massCreationCoupon->lowerCase == true}checked{elseif isset($oKupon->massCreationCoupon->lowerCase) && $oKupon->massCreationCoupon->lowerCase == false}unchecked{else}checked{/if} />
                         </div>
                     </div>
-                    <div class="input-group">
-                                 <span class="input-group-addon">
-                                     <label for="upperCase">{__('upperCaseDesc')}</label>
-                                 </span>
-                        <div class="input-group-wrap">
+                    <div class="form-group form-row align-items-center">
+                        <label class="col col-sm-4 col-form-label text-sm-right" for="upperCase">{__('upperCaseDesc')}:</label>
+                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                             <input type="checkbox" name="upperCase" id="upperCase" class="checkfield" {if isset($oKupon->massCreationCoupon->upperCase) && $oKupon->massCreationCoupon->upperCase == true}checked{elseif isset($oKupon->massCreationCoupon->upperCase) && $oKupon->massCreationCoupon->upperCase == false}unchecked{else}checked{/if} />
                         </div>
                     </div>
-                    <div class="input-group">
-                                 <span class="input-group-addon">
-                                     <label for="numbersHash">{__('numbersHashDesc')}</label>
-                                 </span>
-                        <div class="input-group-wrap">
+                    <div class="form-group form-row align-items-center">
+                        <label class="col col-sm-4 col-form-label text-sm-right" for="numbersHash">{__('numbersHashDesc')}:</label>
+                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                             <input type="checkbox" name="numbersHash" id="numbersHash" class="checkfield" {if isset($oKupon->massCreationCoupon->numbersHash) && $oKupon->massCreationCoupon->numbersHash == true}checked{elseif isset($oKupon->massCreationCoupon->numbersHash) && $oKupon->massCreationCoupon->numbersHash == false}unchecked{else}checked{/if} />
                         </div>
                     </div>
-                    <div class="input-group">
-                                 <span class="input-group-addon">
-                                     <label for="hashLength">{__('hashLengthDesc')}</label>
-                                 </span>
-                        <input class="form-control" type="number" name="hashLength" id="hashLength" min="2" max="16" step="1" {if isset($oKupon->massCreationCoupon->hashLength)}value="{$oKupon->massCreationCoupon->hashLength}"{else}value="2"{/if} />
+                    <div class="form-group form-row align-items-center">
+                        <label class="col col-sm-4 col-form-label text-sm-right" for="hashLength">{__('hashLengthDesc')}:</label>
+                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                            <input class="form-control" type="number" name="hashLength" id="hashLength" min="2" max="16" step="1" {if isset($oKupon->massCreationCoupon->hashLength)}value="{$oKupon->massCreationCoupon->hashLength}"{else}value="2"{/if} />
+                        </div>
                     </div>
-                    <div class="input-group">
-                                 <span class="input-group-addon">
-                                     <label for="prefixHash">{__('prefixHashDesc')}</label>
-                                 </span>
-                        <input class="form-control" type="text" name="prefixHash" id="prefixHash" placeholder="SUMMER"{if isset($oKupon->massCreationCoupon->prefixHash)} value="{$oKupon->massCreationCoupon->prefixHash}"{/if} />
+                    <div class="form-group form-row align-items-center">
+                         <label class="col col-sm-4 col-form-label text-sm-right" for="prefixHash">{__('prefixHashDesc')}:</label>
+                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                            <input class="form-control" type="text" name="prefixHash" id="prefixHash" placeholder="SUMMER"{if isset($oKupon->massCreationCoupon->prefixHash)} value="{$oKupon->massCreationCoupon->prefixHash}"{/if} />
+                        </div>
                     </div>
-                    <div class="input-group">
-                                 <span class="input-group-addon">
-                                     <label for="suffixHash">{__('suffixHashDesc')}</label>
-                                 </span>
-                        <input class="form-control" type="text" name="suffixHash" id="suffixHash"{if isset($oKupon->massCreationCoupon->suffixHash)} value="{$oKupon->massCreationCoupon->suffixHash}"{/if} />
+                    <div class="form-group form-row align-items-center">
+                         <label class="col col-sm-4 col-form-label text-sm-right" for="suffixHash">{__('suffixHashDesc')}:</label>
+                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                            <input class="form-control" type="text" name="suffixHash" id="suffixHash"{if isset($oKupon->massCreationCoupon->suffixHash)} value="{$oKupon->massCreationCoupon->suffixHash}"{/if} />
+                        </div>
                     </div>
                 </div>
             </div>
         {/if}
         <div class="card settings">
             <div class="card-header">
-                <div class="card-title">{__('general')}</div>
+                <div class="subheading1">{__('general')}</div>
+                <hr class="mb-n3">
             </div>
             <div class="card-body">
                 {if $oKupon->cKuponTyp === $couponTypes.standard || $oKupon->cKuponTyp === $couponTypes.newCustomer}
-                    <div class="input-group">
-                        <span class="input-group-addon">
-                            <label for="fWert">{__('value')} ({__('gross')})</label>
-                        </span>
-                        <span class="input-group-wrap">
+                    <div class="form-group form-row align-items-center">
+                        <label class="col col-sm-4 col-form-label text-sm-right" for="fWert">{__('value')} ({__('gross')}):</label>
+                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                             <input type="text" class="form-control" name="fWert" id="fWert" value="{$oKupon->fWert}">
-                        </span>
-                        <span class="input-group-wrap">
-                            <select name="cWertTyp" id="cWertTyp" class="form-control combo">
+                        </div>
+                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                            <select name="cWertTyp" id="cWertTyp" class="custom-select combo">
                                 <option value="festpreis"{if $oKupon->cWertTyp === 'festpreis'} selected{/if}>
                                     {__('amount')}
                                 </option>
@@ -151,17 +146,15 @@
                                     %
                                 </option>
                             </select>
-                        </span>
-                        <span class="input-group-addon" {if $oKupon->cWertTyp === 'prozent'} style="display: none;"{/if}>
+                        </div>
+                        <div class="col-auto ml-sm-n4 order-2 order-sm-3" {if $oKupon->cWertTyp === 'prozent'} style="display: none;"{/if}>
                             {getCurrencyConversionTooltipButton inputId='fWert'}
-                        </span>
+                        </div>
                     </div>
-                    <div class="input-group">
-                        <span class="input-group-addon">
-                            <label for="nGanzenWKRabattieren">{__('wholeWKDiscount')}</label>
-                        </span>
-                        <span class="input-group-wrap">
-                            <select name="nGanzenWKRabattieren" id="nGanzenWKRabattieren" class="form-control combo">
+                    <div class="form-group form-row align-items-center">
+                        <label class="col col-sm-4 col-form-label text-sm-right" for="nGanzenWKRabattieren">{__('wholeWKDiscount')}:</label>
+                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                            <select name="nGanzenWKRabattieren" id="nGanzenWKRabattieren" class="custom-select combo">
                                 <option value="1"{if $oKupon->nGanzenWKRabattieren == 1} selected{/if}>
                                     {__('yes')}
                                 </option>
@@ -169,98 +162,83 @@
                                     {__('no')}
                                 </option>
                             </select>
-                        </span>
-                        <span class="input-group-addon">{getHelpDesc cDesc=__('wholeWKDiscountHint')}</span>
+                        </div>
+                        <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=__('wholeWKDiscountHint')}</div>
                     </div>
-                    <div class="input-group">
-                        <span class="input-group-addon">
-                            <label for="kSteuerklasse">{__('taxClass')}</label>
-                        </span>
-                        <span class="input-group-wrap">
-                            <select name="kSteuerklasse" id="kSteuerklasse" class="form-control combo">
+                    <div class="form-group form-row align-items-center">
+                        <label class="col col-sm-4 col-form-label text-sm-right" for="kSteuerklasse">{__('taxClass')}:</label>
+                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                            <select name="kSteuerklasse" id="kSteuerklasse" class="custom-select combo">
                                 {foreach $oSteuerklasse_arr as $oSteuerklasse}
                                     <option value="{$oSteuerklasse->kSteuerklasse}"{if $oKupon->kSteuerklasse == $oSteuerklasse->kSteuerklasse} selected{/if}>
                                         {$oSteuerklasse->cName}
                                     </option>
                                 {/foreach}
                             </select>
-                        </span>
+                        </div>
                     </div>
                 {/if}
                 {if $oKupon->cKuponTyp === $couponTypes.shipping}
-                    <div class="input-group">
-                        <span class="input-group-addon">
-                            <label for="cZusatzgebuehren">{__('additionalShippingCosts')}</label>
-                        </span>
-                        <div class="input-group-wrap">
+                    <div class="form-group form-row align-items-center">
+                        <label class="col col-sm-4 col-form-label text-sm-right" for="cZusatzgebuehren">{__('additionalShippingCosts')}:</label>
+                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                             <input type="checkbox" class="checkfield" name="cZusatzgebuehren" id="cZusatzgebuehren" value="Y"{if $oKupon->cZusatzgebuehren === 'Y'} checked{/if}>
                         </div>
-                        <span class="input-group-addon">{getHelpDesc cDesc=__('additionalShippingCostsHint')}</span>
+                        <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=__('additionalShippingCostsHint')}</div>
                     </div>
                 {/if}
-                <div class="input-group">
-                    <span class="input-group-addon">
-                        <label for="fMindestbestellwert">{__('minOrderValue')} ({__('gross')})</label>
-                    </span>
-                    <span class="input-group-wrap">
+                <div class="form-group form-row align-items-center">
+                    <label class="col col-sm-4 col-form-label text-sm-right" for="fMindestbestellwert">{__('minOrderValue')} ({__('gross')}):</label>
+                    <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                         <input type="text" class="form-control" name="fMindestbestellwert" id="fMindestbestellwert" value="{$oKupon->fMindestbestellwert}">
-                    </span>
-                    <span class="input-group-addon">
+                    </div>
+                    <div class="col-auto ml-sm-n4 order-2 order-sm-3">
                         {getCurrencyConversionTooltipButton inputId='fMindestbestellwert'}
-                    </span>
+                    </div>
                 </div>
                 {if $oKupon->cKuponTyp === $couponTypes.standard || $oKupon->cKuponTyp === $couponTypes.shipping}
-                    <div class="input-group{if isset($oKupon->massCreationCoupon)} hidden{/if}" id="singleCouponCode">
-                        <span class="input-group-addon">
-                            <label for="cCode">{__('code')}</label>
-                        </span>
-                        <span class="input-group-wrap">
+                    <div class="form-group form-row align-items-center{if isset($oKupon->massCreationCoupon)} hidden{/if}" id="singleCouponCode">
+                        <label class="col col-sm-4 col-form-label text-sm-right" for="cCode">{__('code')}:</label>
+                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                             <input type="text" class="form-control" name="cCode" id="cCode"{if !isset($oKupon->massCreationCoupon)} value="{$oKupon->cCode}"{/if}>
-                        </span>
-                        <span class="input-group-addon">{getHelpDesc cDesc=__('codeHint')}</span>
+                        </div>
+                        <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=__('codeHint')}</div>
                     </div>
                 {/if}
                 {if $oKupon->cKuponTyp === $couponTypes.shipping}
-                    <div class="input-group">
-                        <span class="input-group-addon">
-                            <label for="cLieferlaender">{__('shippingCountries')}</label>
-                        </span>
-                        <span class="input-group-wrap">
+                    <div class="form-group form-row align-items-center">
+                        <label class="col col-sm-4 col-form-label text-sm-right" for="cLieferlaender">{__('shippingCountries')}:</label>
+                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                             <input type="text" class="form-control" name="cLieferlaender" id="cLieferlaender" value="{$oKupon->cLieferlaender}">
-                        </span>
-                        <span class="input-group-addon">{getHelpDesc cDesc=__('shippingCountriesHint')}</span>
+                        </div>
+                        <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=__('shippingCountriesHint')}</div>
                     </div>
                 {/if}
-                <div class="input-group">
-                    <span class="input-group-addon">
-                        <label for="nVerwendungen">{__('uses')}</label>
-                    </span>
-                    <span class="input-group-wrap">
+                <div class="form-group form-row align-items-center">
+                    <label class="col col-sm-4 col-form-label text-sm-right" for="nVerwendungen">{__('uses')}:</label>
+                    <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                         <input type="text" class="form-control" name="nVerwendungen" id="nVerwendungen" value="{$oKupon->nVerwendungen}">
-                    </span>
+                    </div>
                 </div>
                 {if $oKupon->cKuponTyp === $couponTypes.standard || $oKupon->cKuponTyp === $couponTypes.shipping}
-                    <div class="input-group">
-                        <span class="input-group-addon">
-                            <label for="nVerwendungenProKunde">{__('usesPerCustomer')}</label>
-                        </span>
-                        <span class="input-group-wrap">
+                    <div class="form-group form-row align-items-center">
+                        <label class="col col-sm-4 col-form-label text-sm-right" for="nVerwendungenProKunde">{__('usesPerCustomer')}:</label>
+                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                             <input type="text" class="form-control" name="nVerwendungenProKunde" id="nVerwendungenProKunde" value="{$oKupon->nVerwendungenProKunde}">
-                        </span>
+                        </div>
                     </div>
                 {/if}
             </div>
         </div>
         <div class="card settings">
             <div class="card-header">
-                <div class="card-title">{__('validityPeriod')}</div>
+                <div class="subheading1">{__('validityPeriod')}</div>
+                <hr class="mb-n3">
             </div>
             <div class="card-body">
-                <div class="input-group">
-                    <span class="input-group-addon">
-                        <label for="dGueltigAb">{__('validFrom')}</label>
-                    </span>
-                    <span class="input-group-wrap">
+                <div class="form-group form-row align-items-center">
+                    <label class="col col-sm-4 col-form-label text-sm-right" for="dGueltigAb">{__('validFrom')}:</label>
+                    <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                         <input type="text" class="form-control" name="dGueltigAb" id="dGueltigAb" >
                         {include
                             file="snippets/daterange_picker.tpl"
@@ -270,14 +248,12 @@
                             separator="{__('datepickerSeparator')}"
                             single=true
                         }
-                    </span>
-                    <span class="input-group-addon">{getHelpDesc cDesc=__('validFromHelp')}</span>
+                    </div>
+                    <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=__('validFromHelp')}</div>
                 </div>
-                <div class="input-group">
-                    <span class="input-group-addon">
-                        <label for="dGueltigBis">{__('validUntil')}</label>
-                    </span>
-                    <span class="input-group-wrap">
+                <div class="form-group form-row align-items-center">
+                    <label class="col col-sm-4 col-form-label text-sm-right" for="dGueltigBis">{__('validUntil')}:</label>
+                    <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                         <input type="datetime" class="form-control" name="dGueltigBis" id="dGueltigBis">
                         {include
                             file="snippets/daterange_picker.tpl"
@@ -287,31 +263,28 @@
                             separator="{__('datepickerSeparator')}"
                             single=true
                         }
-                    </span>
-                    <span class="input-group-addon">{getHelpDesc cDesc=__('validUntilHelp')}</span>
+                    </div>
+                    <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=__('validUntilHelp')}</div>
                 </div>
-                <div class="input-group">
-                    <span class="input-group-addon">
-                        <label for="dDauerTage">{__('periodOfValidity')}</label>
-                    </span>
-                    <span class="input-group-wrap">
+                <div class="form-group form-row align-items-center">
+                    <label class="col col-sm-4 col-form-label text-sm-right" for="dDauerTage">{__('periodOfValidity')}:</label>
+                    <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                         <input type="text" class="form-control" name="dDauerTage" id="dDauerTage">
-                    </span>
-                    <span class="input-group-addon">{getHelpDesc cDesc=__('periodOfValidityHelp')}</span>
+                    </div>
+                    <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=__('periodOfValidityHelp')}</div>
                 </div>
-                <div class="input-group">
-                    <span class="input-group-addon">
-                        <label for="bOpenEnd">{__('openEnd')}</label>
-                    </span>
-                    <span class="input-group-wrap">
+                <div class="form-group form-row align-items-center">
+                    <label class="col col-sm-4 col-form-label text-sm-right" for="bOpenEnd">{__('openEnd')}:</label>
+                    <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                         <input type="checkbox" class="checkfield" name="bOpenEnd" id="bOpenEnd" value="Y"{if $oKupon->bOpenEnd} checked{/if}>
-                    </span>
+                    </div>
                 </div>
             </div>
         </div>
         <div class="card settings">
             <div class="card-header">
-                <div class="card-title">{__('restrictions')}</div>
+                <div class="subheading1">{__('restrictions')}</div>
+                <hr class="mb-n3">
             </div>
             <div class="card-body">
                 {include file='tpl_inc/searchpicker_modal.tpl'
@@ -344,27 +317,23 @@
                         }
                     }
                 </script>
-                <div class="input-group">
-                    <span class="input-group-addon">
-                        <label for="articleSelectionInfo">{__('productRestrictions')}</label>
-                    </span>
-                    <span class="input-group-wrap">
+                <div class="form-group form-row align-items-center">
+                    <label class="col col-sm-4 col-form-label text-sm-right" for="articleSelectionInfo">{__('productRestrictions')}:</label>
+                    <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                         <input type="text" class="form-control" readonly="readonly" id="articleSelectionInfo">
                         <input type="hidden" id="cArtikel" name="cArtikel" value="{$oKupon->cArtikel}">
-                    </span>
-                    <span class="input-group-addon">
+                    </div>
+                    <div class="col-auto ml-sm-n4 order-2 order-sm-3">
                         <button type="button" class="btn btn-info btn-xs" data-toggle="modal"
                                 data-target="#articlePicker-modal">
                             <i class="fa fa-edit"></i>
                         </button>
-                    </span>
+                    </div>
                 </div>
-                <div class="input-group">
-                    <span class="input-group-addon">
-                        <label for="kHersteller">{__('restrictedToManufacturers')}</label>
-                    </span>
-                    <span class="input-group-wrap">
-                        <select multiple size="10" name="kHersteller[]" id="kHersteller" class="form-control combo">
+                <div class="form-group form-row align-items-center">
+                    <label class="col col-sm-4 col-form-label text-sm-right" for="kHersteller">{__('restrictedToManufacturers')}:</label>
+                    <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                        <select multiple size="10" name="kHersteller[]" id="kHersteller" class="custom-select combo">
                             <option value="-1"{if $oKupon->cHersteller === '-1'} selected{/if}>
                                 Alle Hersteller
                             </option>
@@ -374,15 +343,13 @@
                                 </option>
                             {/foreach}
                         </select>
-                    </span>
-                    <span class="input-group-addon">{getHelpDesc cDesc=__('multipleChoice')}</span>
+                    </div>
+                    <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=__('multipleChoice')}</div>
                 </div>
-                <div class="input-group">
-                    <span class="input-group-addon">
-                        <label for="kKundengruppe">{__('restrictionToCustomerGroup')}</label>
-                    </span>
-                    <span class="input-group-wrap">
-                        <select name="kKundengruppe" id="kKundengruppe" class="form-control combo">
+                <div class="form-group form-row align-items-center">
+                    <label class="col col-sm-4 col-form-label text-sm-right" for="kKundengruppe">{__('restrictionToCustomerGroup')}:</label>
+                    <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                        <select name="kKundengruppe" id="kKundengruppe" class="custom-select combo">
                             <option value="-1"{if $oKupon->kKundengruppe == -1} selected{/if}>
                                 {__('allCustomerGroups')}
                             </option>
@@ -392,22 +359,18 @@
                                 </option>
                             {/foreach}
                         </select>
-                    </span>
+                    </div>
                 </div>
-                <div class="input-group">
-                    <span class="input-group-addon">
-                        <label for="cAktiv">{__('active')}</label>
-                    </span>
-                    <span class="input-group-wrap">
+                <div class="form-group form-row align-items-center">
+                    <label class="col col-sm-4 col-form-label text-sm-right" for="cAktiv">{__('active')}:</label>
+                    <span class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                         <input type="checkbox" class="checkfield" name="cAktiv" id="cAktiv" value="Y"{if $oKupon->cAktiv === 'Y'} checked{/if}>
                     </span>
                 </div>
-                <div class="input-group">
-                    <span class="input-group-addon">
-                        <label for="kKategorien">{__('restrictedToCategories')}</label>
-                    </span>
-                    <span class="input-group-wrap">
-                        <select multiple size="10" name="kKategorien[]" id="kKategorien" class="form-control combo">
+                <div class="form-group form-row align-items-center">
+                    <label class="col col-sm-4 col-form-label text-sm-right" for="kKategorien">{__('restrictedToCategories')}:</label>
+                    <span class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                        <select multiple size="10" name="kKategorien[]" id="kKategorien" class="custom-select combo">
                             <option value="-1"{if $oKupon->cKategorien === '-1'} selected{/if}>
                                 Alle Kategorien
                             </option>
@@ -418,7 +381,7 @@
                             {/foreach}
                         </select>
                     </span>
-                    <span class="input-group-addon">{getHelpDesc cDesc=__('multipleChoice')}</span>
+                    <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=__('multipleChoice')}</div>
                 </div>
                 {if $oKupon->cKuponTyp === $couponTypes.standard || $oKupon->cKuponTyp === $couponTypes.shipping}
                     {include file='tpl_inc/searchpicker_modal.tpl'
@@ -456,26 +419,22 @@
                             }
                         }
                     </script>
-                    <div class="input-group{if isset($oKupon->massCreationCoupon)} hidden{/if}" id="limitedByCustomers">
-                        <span class="input-group-addon">
-                            <label for="customerSelectionInfo">{__('restrictedToCustomers')}</label>
-                        </span>
-                        <span class="input-group-wrap">
+                    <div class="form-group form-row align-items-center{if isset($oKupon->massCreationCoupon)} hidden{/if}" id="limitedByCustomers">
+                        <label class="col col-sm-4 col-form-label text-sm-right" for="customerSelectionInfo">{__('restrictedToCustomers')}:</label>
+                        <span class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                             <input type="text" class="form-control" readonly="readonly" id="customerSelectionInfo">
                             <input type="hidden" id="cKunden" name="cKunden" value="{$oKupon->cKunden}">
                         </span>
-                        <span class="input-group-addon">
+                        <div class="col-auto ml-sm-n4 order-2 order-sm-3">
                             <button type="button" class="btn btn-info btn-xs" data-toggle="modal"
                                     data-target="#customerPicker-modal">
                                 <i class="fa fa-edit"></i>
                             </button>
-                        </span>
+                        </div>
                     </div>
-                    <div class="input-group{if isset($oKupon->massCreationCoupon)} hidden{/if}" id="informCustomers">
-                        <span class="input-group-addon">
-                            <label for="informieren">{__('informCustomers')}</label>
-                        </span>
-                        <div class="input-group-wrap">
+                    <div class="form-group form-row align-items-center{if isset($oKupon->massCreationCoupon)} hidden{/if}" id="informCustomers">
+                        <label class="col col-sm-4 col-form-label text-sm-right" for="informieren">{__('informCustomers')}:</label>
+                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                             <input type="checkbox" class="checkfield" name="informieren" id="informieren" value="Y">
                         </div>
                     </div>

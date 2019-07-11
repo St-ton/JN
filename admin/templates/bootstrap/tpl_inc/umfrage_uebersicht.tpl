@@ -39,9 +39,9 @@
                             <div id="tabellenLivesuche">
                                 <div class="card">
                                     <div class="card-header">
-                                        <div class="card-title">{__('activePolls')}</div>
+                                        <div class="subheading1">{__('activePolls')}</div>
                                     </div>
-                                    <div class="table-responsive">
+                                    <div class="card-body table-responsive">
                                         <table class="table table-striped">
                                             <tr>
                                                 <th class="th-1"></th>

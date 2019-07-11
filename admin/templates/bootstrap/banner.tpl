@@ -84,21 +84,26 @@
             <div class="card">
                 <div class="card-header">
                     <div class="subheading1">{__('general')}</div>
+                    <hr class="mb-n3">
                 </div>
                 <div class="card-body">
-                    <div class="input-group">
-                        <span class="input-group-addon"><label for="cName">{__('internalName')} *</label></span>
-                        <input class="form-control" type="text" name="cName" id="cName" value="{if isset($cName)}{$cName}{elseif isset($oBanner->cTitel)}{$oBanner->cTitel}{/if}" />
+                    <div class="form-group form-row align-items-center">
+                        <label class="col col-sm-4 col-form-label text-sm-right" for="cName">{__('internalName')} *:</label>
+                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                            <input class="form-control" type="text" name="cName" id="cName" value="{if isset($cName)}{$cName}{elseif isset($oBanner->cTitel)}{$oBanner->cTitel}{/if}" />
+                        </div>
                     </div>
-                    <div class="input-group file-input">
-                        <span class="input-group-addon"><label for="oFile">{__('banner')} *</label></span>
-                        <input class="form-control" id="oFile" type="file" name="oFile" />
+                    <div class="form-group form-row align-items-center file-input">
+                        <label class="col col-sm-4 col-form-label text-sm-right" for="oFile">{__('banner')} *:</label>
+                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                            <input class="form-control" id="oFile" type="file" name="oFile" />
+                        </div>
                     </div>
-                    <div class="input-group">
-                        <span class="input-group-addon"><label for="cPath">&raquo; {__('chooseAvailableFile')}</label></span>
-                        <span class="input-group-wrap">
+                    <div class="form-group form-row align-items-center">
+                        <label class="col col-sm-4 col-form-label text-sm-right" for="cPath">&raquo; {__('chooseAvailableFile')}:</label>
+                        <span class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                         {if $cBannerFile_arr|@count > 0}
-                            <select id="cPath" name="cPath" class="form-control">
+                            <select id="cPath" name="cPath" class="custom-select">
                                 <option value="">{__('chooseBanner')}</option>
                                 {foreach $cBannerFile_arr as $cBannerFile}
                                     <option value="{$cBannerFile}" {if (isset($oBanner->cBildPfad) && $cBannerFile == $oBanner->cBildPfad) || (isset($oBanner->cBild) && $cBannerFile == $oBanner->cBild)}selected="selected"{/if}>{$cBannerFile}</option>
@@ -109,9 +114,11 @@
                         {/if}
                         </span>
                     </div>
-                    <div class="input-group">
-                        <span class="input-group-addon"><label for="vDatum">{__('activeFrom')}</label></span>
-                        <input class="form-control" type="text" name="vDatum" id="vDatum"/>
+                    <div class="form-group form-row align-items-center">
+                        <label class="col col-sm-4 col-form-label text-sm-right" for="vDatum">{__('activeFrom')}:</label>
+                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                            <input class="form-control" type="text" name="vDatum" id="vDatum"/>
+                        </div>
                         {include
                             file="snippets/daterange_picker.tpl"
                             datepickerID="#vDatum"
@@ -121,9 +128,11 @@
                             single=true
                         }
                     </div>
-                    <div class="input-group">
-                        <span class="input-group-addon"><label for="bDatum">{__('activeTo')}</label></span>
-                        <input class="form-control" type="text" name="bDatum" id="bDatum"  />
+                    <div class="form-group form-row align-items-center">
+                        <label class="col col-sm-4 col-form-label text-sm-right" for="bDatum">{__('activeTo')}:</label>
+                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                            <input class="form-control" type="text" name="bDatum" id="bDatum"  />
+                        </div>
                         {include
                             file="snippets/daterange_picker.tpl"
                             datepickerID="#bDatum"
@@ -141,12 +150,13 @@
             <div class="card">
                 <div class="card-header">
                     <div class="subheading1">{__('viewingOptions')}</div>
+                    <hr class="mb-n3">
                 </div>
                 <div class="card-body">
-                    <div class="input-group">
-                        <span class="input-group-addon"><label for="kSprache">{__('changeLanguage')}</label></span>
-                        <span class="input-group-wrap">
-                            <select class="form-control" id="kSprache" name="kSprache">
+                    <div class="form-group form-row align-items-center">
+                        <label class="col col-sm-4 col-form-label text-sm-right" for="kSprache">{__('changeLanguage')}:</label>
+                        <span class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                            <select class="custom-select" id="kSprache" name="kSprache">
                                 <option value="0">{__('all')}</option>
                                 {foreach $oSprachen_arr as $language}
                                     <option value="{$language->getId()}" {if isset($kSprache) && $kSprache === $language->getId()}selected="selected" {elseif isset($oExtension->kSprache) && (int)$oExtension->kSprache === $language->getId()}selected="selected"{/if}>{$language->getLocalizedName()}</option>
@@ -154,10 +164,10 @@
                             </select>
                         </span>
                     </div>
-                    <div class="input-group">
-                        <span class="input-group-addon"><label for="kKundengruppe">{__('customerGroup')}</label></span>
-                        <span class="input-group-wrap">
-                            <select class="form-control" id="kKundengruppe" name="kKundengruppe">
+                    <div class="form-group form-row align-items-center">
+                        <label class="col col-sm-4 col-form-label text-sm-right" for="kKundengruppe">{__('customerGroup')}:</label>
+                        <span class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                            <select class="custom-select" id="kKundengruppe" name="kKundengruppe">
                                 <option value="0">{__('all')}</option>
                                 {foreach $oKundengruppe_arr as $oKundengruppe}
                                     <option value="{$oKundengruppe->getID()}"
@@ -168,10 +178,10 @@
                             </select>
                         </span>
                     </div>
-                    <div class="input-group">
-                        <span class="input-group-addon"><label for="nSeitenTyp">{__('pageType')}</label></span>
-                        <span class="input-group-wrap">
-                            <select class="form-control" id="nSeitenTyp" name="nSeitenTyp">
+                    <div class="form-group form-row align-items-center">
+                        <label class="col col-sm-4 col-form-label text-sm-right" for="nSeitenTyp">{__('pageType')}:</label>
+                        <span class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                            <select class="custom-select" id="nSeitenTyp" name="nSeitenTyp">
                                 {if isset($nSeitenTyp) && intval($nSeitenTyp) > 0}
                                     {include file='tpl_inc/seiten_liste.tpl' nPage=$nSeitenTyp}
                                 {elseif isset($oExtension->nSeite)}
@@ -183,10 +193,10 @@
                         </span>
                     </div>
                     <div id="type2" class="custom">
-                        <div class="input-group">
-                            <span class="input-group-addon"><label for="cKey">{__('filter')}</label></span>
-                            <span class="input-group-wrap">
-                                <select class="form-control" id="cKey" name="cKey">
+                        <div class="form-group form-row align-items-center">
+                            <label class="col col-sm-4 col-form-label text-sm-right" for="cKey">{__('filter')}</label>
+                            <span class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                <select class="custom-select" id="cKey" name="cKey">
                                     <option value="" {if isset($oExtension->cKey) && $oExtension->cKey === ''}selected="selected"{/if}>
                                         {__('noFilter')}
                                     </option>
@@ -207,12 +217,14 @@
                         </div>
                     </div>
                     <div class="nl">
-                        <div id="keykArtikel" class="input-group key">
-                            <span class="input-group-addon"><label for="article_name">{__('product')}</label></span>
-                            <input type="hidden" name="article_key" id="article_key"
-                                   value="{if (isset($cKey) && $cKey === 'kArtikel') || (isset($oExtension->cKey) && $oExtension->cKey === 'kArtikel')}{$oExtension->cValue}{/if}">
-                            <input class="form-control" type="text" name="article_name" id="article_name">
-                            <span class="input-group-addon">{getHelpDesc cDesc=__('typeAheadProduct')}</span>
+                        <div id="keykArtikel" class="form-group form-row align-items-center key">
+                            <label class="col col-sm-4 col-form-label text-sm-right" for="article_name">{__('product')}</label>
+                            <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                <input type="hidden" name="article_key" id="article_key"
+                                       value="{if (isset($cKey) && $cKey === 'kArtikel') || (isset($oExtension->cKey) && $oExtension->cKey === 'kArtikel')}{$oExtension->cValue}{/if}">
+                                <input class="form-control" type="text" name="article_name" id="article_name">
+                            </div>
+                            <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=__('typeAheadProduct')}</div>
                             <script>
                                 enableTypeahead('#article_name', 'getProducts', 'cName', null, function(e, item) {
                                     $('#article_name').val(item.cName);
@@ -225,12 +237,14 @@
                                 {/if}
                             </script>
                         </div>
-                        <div id="keykLink" class="input-group key">
-                            <span class="input-group-addon"><label for="link_name">{__('pageSelf')}</label></span>
-                            <input type="hidden" name="link_key" id="link_key"
-                                   value="{if (isset($cKey) && $cKey === 'kLink') || (isset($oExtension->cKey) && $oExtension->cKey === 'kLink')}{$oExtension->cValue}{/if}">
-                            <input class="form-control" type="text" name="link_name" id="link_name">
-                            <span class="input-group-addon">{getHelpDesc cDesc=__('typeAheadPage')}</span>
+                        <div id="keykLink" class="form-group form-row align-items-center key">
+                            <label class="col col-sm-4 col-form-label text-sm-right" for="link_name">{__('pageSelf')}</label>
+                            <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                <input type="hidden" name="link_key" id="link_key"
+                                       value="{if (isset($cKey) && $cKey === 'kLink') || (isset($oExtension->cKey) && $oExtension->cKey === 'kLink')}{$oExtension->cValue}{/if}">
+                                <input class="form-control" type="text" name="link_name" id="link_name">
+                            </div>
+                            <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=__('typeAheadPage')}</div>
                             <script>
                                 enableTypeahead('#link_name', 'getPages', 'cName', null, function(e, item) {
                                     $('#link_name').val(item.cName);
@@ -243,12 +257,14 @@
                                 {/if}
                             </script>
                         </div>
-                        <div id="keykMerkmalWert" class="input-group key">
-                            <span class="input-group-addon"><label for="attribute_name">{__('attribute')}</label></span>
-                            <input type="hidden" name="attribute_key" id="attribute_key"
-                                   value="{if (isset($cKey) && $cKey === 'kMerkmalWert') || (isset($oExtension->cKey) && $oExtension->cKey === 'kMerkmalWert')}{$oExtension->cValue}{/if}">
-                            <input class="form-control" type="text" name="attribute_name" id="attribute_name">
-                            <span class="input-group-addon">{getHelpDesc cDesc=__('typeAheadAttribute')}</span>
+                        <div id="keykMerkmalWert" class="form-group form-row align-items-center key">
+                            <label class="col col-sm-4 col-form-label text-sm-right" for="attribute_name">{__('attribute')}</label>
+                            <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                <input type="hidden" name="attribute_key" id="attribute_key"
+                                       value="{if (isset($cKey) && $cKey === 'kMerkmalWert') || (isset($oExtension->cKey) && $oExtension->cKey === 'kMerkmalWert')}{$oExtension->cValue}{/if}">
+                                <input class="form-control" type="text" name="attribute_name" id="attribute_name">
+                            </div>
+                            <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=__('typeAheadAttribute')}</div>
                             <script>
                                 enableTypeahead('#attribute_name', 'getAttributes', 'cWert', null, function(e, item) {
                                     $('#attribute_name').val(item.cWert);
@@ -261,12 +277,14 @@
                                 {/if}
                             </script>
                         </div>
-                        <div id="keykKategorie" class="input-group key">
-                            <span class="input-group-addon"><label for="categories_name">{__('category')}</label></span>
-                            <input type="hidden" name="categories_key" id="categories_key"
-                                   value="{if (isset($cKey) && $cKey === 'kKategorie') || (isset($oExtension->cKey) && $oExtension->cKey === 'kKategorie')}{$oExtension->cValue}{/if}">
-                            <input class="form-control" type="text" name="categories_name" id="categories_name">
-                            <span class="input-group-addon">{getHelpDesc cDesc=__('typeAheadCategory')}</span>
+                        <div id="keykKategorie" class="form-group form-row align-items-center key">
+                            <label class="col col-sm-4 col-form-label text-sm-right" for="categories_name">{__('category')}</label>
+                            <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                <input type="hidden" name="categories_key" id="categories_key"
+                                       value="{if (isset($cKey) && $cKey === 'kKategorie') || (isset($oExtension->cKey) && $oExtension->cKey === 'kKategorie')}{$oExtension->cValue}{/if}">
+                                <input class="form-control" type="text" name="categories_name" id="categories_name">
+                            </div>
+                            <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=__('typeAheadCategory')}</div>
                             <script>
                                 enableTypeahead('#categories_name', 'getCategories', function(item) {
                                         var parentName = '';
@@ -285,12 +303,14 @@
                                 {/if}
                             </script>
                         </div>
-                        <div id="keykHersteller" class="input-group key">
-                            <span class="input-group-addon"><label for="manufacturer_name">{__('manufacturer')}</label></span>
-                            <input type="hidden" name="manufacturer_key" id="manufacturer_key"
-                                   value="{if (isset($cKey) && $cKey === 'kHersteller') || (isset($oExtension->cKey) && $oExtension->cKey === 'kHersteller')}{$oExtension->cValue}{/if}">
-                            <input class="form-control" type="text" name="manufacturer_name" id="manufacturer_name">
-                            <span class="input-group-addon">{getHelpDesc cDesc=__('typeAheadManufacturer')}</span>
+                        <div id="keykHersteller" class="form-group form-row align-items-center key">
+                            <label class="col col-sm-4 col-form-label text-sm-right" for="manufacturer_name">{__('manufacturer')}</label>
+                            <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                <input type="hidden" name="manufacturer_key" id="manufacturer_key"
+                                       value="{if (isset($cKey) && $cKey === 'kHersteller') || (isset($oExtension->cKey) && $oExtension->cKey === 'kHersteller')}{$oExtension->cValue}{/if}">
+                                <input class="form-control" type="text" name="manufacturer_name" id="manufacturer_name">
+                            </div>
+                            <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=__('typeAheadManufacturer')}</div>
                             <script>
                                 enableTypeahead('#manufacturer_name', 'getManufacturers', 'cName', null, function(e, item) {
                                     $('#manufacturer_name').val(item.cName);
@@ -303,11 +323,13 @@
                                 {/if}
                             </script>
                         </div>
-                        <div id="keycSuche" class="key input-group">
-                            <span class="input-group-addon"><label for="ikeycSuche">{__('searchTerm')}</label></span>
-                            <input class="form-control" type="text" id="ikeycSuche" name="keycSuche"
-                                   value="{if (isset($cKey) &&  $cKey === 'cSuche') || (isset($oExtension->cKey) && $oExtension->cKey === 'cSuche')}{if isset($keycSuche) && $keycSuche !== ''}{$keycSuche}{else}{$oExtension->cValue}{/if}{/if}" />
-                            <span class="input-group-addon">{getHelpDesc cDesc=__('enterSearchTerm')}</span>
+                        <div id="keycSuche" class="key form-group form-row align-items-center">
+                            <label class="col col-sm-4 col-form-label text-sm-right" for="ikeycSuche">{__('searchTerm')}</label>
+                            <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                <input class="form-control" type="text" id="ikeycSuche" name="keycSuche"
+                                       value="{if (isset($cKey) &&  $cKey === 'cSuche') || (isset($oExtension->cKey) && $oExtension->cKey === 'cSuche')}{if isset($keycSuche) && $keycSuche !== ''}{$keycSuche}{else}{$oExtension->cValue}{/if}{/if}" />
+                            </div>
+                            <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=__('enterSearchTerm')}</div>
                         </div>
                     </div>
                     {* extensionpoint end *}

@@ -5,7 +5,8 @@
         <input type="hidden" name="kSlider" value="{$oSlider->getID()}" />
         <div class="card">
             <div class="card-header">
-                <div class="card-title">{__('general')}</div>
+                <div class="subheading1">{__('general')}</div>
+                <hr class="mb-n3">
             </div>
             <div class="card-body">
                 <ul class="jtl-list-group">
@@ -22,7 +23,7 @@
                             <label for="bAktiv">{__('status')}</label>
                         </div>
                         <div class="for">
-                            <select id="bAktiv" name="bAktiv" class="form-control">
+                            <select id="bAktiv" name="bAktiv" class="custom-select">
                                 <option value="0"{if $oSlider->getIsActive() === false} selected="selected"{/if}>{__('deactivated')}</option>
                                 <option value="1"{if $oSlider->getIsActive() === true} selected="selected"{/if}>{__('activated')}</option>
                             </select>
@@ -33,7 +34,7 @@
                             <label for="bRandomStart">{__('randomStart')}</label>
                         </div>
                         <div class="for">
-                            <select id="bRandomStart" name="bRandomStart" class="form-control">
+                            <select id="bRandomStart" name="bRandomStart" class="custom-select">
                                 <option value="0"{if $oSlider->getRandomStart() === false} selected="selected"{/if}>{__('no')}</option>
                                 <option value="1"{if $oSlider->getRandomStart() === true} selected="selected"{/if}>{__('yes')}</option>
                             </select>
@@ -44,7 +45,7 @@
                             <label for="bPauseOnHover">{__('pauseOnHover')}</label>
                         </div>
                         <div class="for">
-                            <select id="bPauseOnHover" name="bPauseOnHover" class="form-control">
+                            <select id="bPauseOnHover" name="bPauseOnHover" class="custom-select">
                                 <option value="0"{if $oSlider->getPauseOnHover() === false} selected="selected"{/if}>{__('no')}</option>
                                 <option value="1"{if $oSlider->getPauseOnHover() === true} selected="selected"{/if}>{__('yes')}</option>
                             </select>
@@ -56,7 +57,8 @@
 
         <div class="card">
             <div class="card-header">
-                <div class="card-title">{__('presentation')}</div>
+                <div class="subheading1">{__('presentation')}</div>
+                <hr class="mb-n3">
             </div>
             <div class="card-body">
                 <ul class="jtl-list-group">
@@ -65,7 +67,7 @@
                             <label for="bUseKB">{__('kenBurnsEffect')}</label>
                         </div>
                         <div class="for">
-                            <select class="form-control" id="bUseKB" name="bUseKB">
+                            <select class="custom-select" id="bUseKB" name="bUseKB">
                                 <option value="0"{if $oSlider->getUseKB() === false} selected="selected"{/if}>{__('deactivated')}</option>
                                 <option value="1"{if $oSlider->getUseKB() === true} selected="selected"{/if}>{__('activated')}</option>
                             </select>
@@ -77,7 +79,7 @@
                             <label for="bControlNav">{__('navigation')}</label>
                         </div>
                         <div class="for">
-                            <select class="form-control" id="bControlNav" name="bControlNav">
+                            <select class="custom-select" id="bControlNav" name="bControlNav">
                                 <option value="0"{if $oSlider->getControlNav() === false} selected="selected"{/if}>{__('hide')}
                                 </option>
                                 <option value="1"{if $oSlider->getControlNav() === true} selected="selected"{/if}>{__('show')}</option>
@@ -89,7 +91,7 @@
                             <label for="bThumbnail">{__('thumbnail')} {__('navigation')}</label>
                         </div>
                         <div class="for">
-                            <select class="form-control" id="bThumbnail" name="bThumbnail">
+                            <select class="custom-select" id="bThumbnail" name="bThumbnail">
                                 <option value="0"{if $oSlider->getThumbnail() === false} selected="selected"{/if}>{__('deactivated')}
                                 </option>
                                 <option value="1"{if $oSlider->getThumbnail() === true} selected="selected"{/if}>{__('activated')}</option>
@@ -101,7 +103,7 @@
                             <label for="bDirectionNav">{__('navigation')} ({__('direction')})</label>
                         </div>
                         <div class="for">
-                            <select class="form-control" id="bDirectionNav" name="bDirectionNav">
+                            <select class="custom-select" id="bDirectionNav" name="bDirectionNav">
                                 <option value="0"{if $oSlider->getDirectionNav() === false} selected="selected"{/if}>{__('hide')}</option>
                                 <option value="1"{if $oSlider->getDirectionNav() === true} selected="selected"{/if}>{__('show')}</option>
                             </select>
@@ -117,7 +119,7 @@
                             <div class="select_container row">
                                 <div class="col-xs-12 col-md-6 select_box">
                                     <label for="cSelectedEffects">{__('selectedEffects')}</label>
-                                    <select class="form-control" id="cSelectedEffects" name="cSelectedEffects" size="10" multiple {$disabled}>
+                                    <select class="custom-select" id="cSelectedEffects" name="cSelectedEffects" size="10" multiple {$disabled}>
                                         {if isset($cEffects)}{$cEffects}{/if}
                                     </select>
                                     <input type="hidden" name="cEffects" value="{if isset($oSlider)}{$oSlider->getEffects()}{/if}" {$disabled}/>
@@ -125,7 +127,7 @@
                                 </div>
                                 <div class="col-xs-12 col-md-6 select_box">
                                     <label for="cAvaibleEffects">{__('availableEffects')}</label>
-                                    <select class="form-control" id="cAvaibleEffects" name="cAvaibleEffects" size="10" multiple {$disabled}>
+                                    <select class="custom-select" id="cAvaibleEffects" name="cAvaibleEffects" size="10" multiple {$disabled}>
                                         <option value="sliceDown">{__('sliceDown')}</option>
                                         <option value="sliceDownLeft">{__('sliceDownLeft')}</option>
                                         <option value="sliceUp">{__('sliceUp')}</option>
@@ -152,7 +154,7 @@
                             <label for="cTheme">{__('theme')}</label>
                         </div>
                         <div class="for">
-                            <select id="cTheme" name="cTheme" class="form-control">
+                            <select id="cTheme" name="cTheme" class="custom-select">
                                 <option value="default"{if $oSlider->getTheme() === 'default'} selected="selected"{/if}>{__('default')}</option>
                                 <option value="bar"{if $oSlider->getTheme() === 'bar'} selected="selected"{/if}>{__('bar')}</option>
                                 <option value="light"{if $oSlider->getTheme() === 'light'} selected="selected"{/if}>{__('light')}</option>
@@ -185,7 +187,8 @@
 
         <div class="card">
             <div class="card-header">
-                <div class="card-title">{__('displayOptions')}</div>
+                <div class="subheading1">{__('displayOptions')}</div>
+                <hr class="mb-n3">
             </div>
             <div class="card-body">
                 <ul class="jtl-list-group">
@@ -194,7 +197,7 @@
                             <label for="kSprache">{__('language')}</label>
                         </div>
                         <div class="for">
-                            <select id="kSprache" name="kSprache" class="form-control">
+                            <select id="kSprache" name="kSprache" class="custom-select">
                                 <option value="0">{__('all')}</option>
                                 {foreach $oSprachen_arr as $language}
                                     <option value="{$language->getId()}" {if isset($oExtension->kSprache) && (int)$oExtension->kSprache === $language->getId()}selected="selected"{/if}>{$language->getLocalizedName()}</option>
@@ -207,7 +210,7 @@
                             <label for="kKundengruppe">{__('customerGroup')}</label>
                         </div>
                         <div class="for">
-                            <select id="kKundengruppe" name="kKundengruppe" class="form-control">
+                            <select id="kKundengruppe" name="kKundengruppe" class="custom-select">
                                 <option value="0">{__('all')}</option>
                                 {foreach $oKundengruppe_arr as $oKundengruppe}
                                     <option value="{$oKundengruppe->getID()}" {if isset($oExtension->kKundengruppe) && $oExtension->kKundengruppe == $oKundengruppe->getID()}selected="selected"{/if}>{$oKundengruppe->getName()}</option>
@@ -221,9 +224,9 @@
                         </div>
                         <div class="for">
                             {if isset($oExtension->nSeite)}
-                                <select class="form-control" id="nSeitenTyp" name="nSeitenTyp"> {include file='tpl_inc/seiten_liste.tpl' nPage=$oExtension->nSeite}</select>
+                                <select class="custom-select" id="nSeitenTyp" name="nSeitenTyp"> {include file='tpl_inc/seiten_liste.tpl' nPage=$oExtension->nSeite}</select>
                             {else}
-                                <select class="form-control" id="nSeitenTyp" name="nSeitenTyp"> {include file='tpl_inc/seiten_liste.tpl' nPage=0}</select>
+                                <select class="custom-select" id="nSeitenTyp" name="nSeitenTyp"> {include file='tpl_inc/seiten_liste.tpl' nPage=0}</select>
                             {/if}
                         </div>
                         <div id="type2" class="custom">
@@ -232,7 +235,7 @@
                                     <label for="cKey">{__('filter')}</label>
                                 </div>
                                 <div class="for">
-                                    <select class="form-control" name="cKey" id="cKey">
+                                    <select class="custom-select" name="cKey" id="cKey">
                                         <option value="" {if isset($oExtension->cKey) && $oExtension->cKey === ''} selected="selected"{/if}>
                                             {__('noFilter')}
                                         </option>

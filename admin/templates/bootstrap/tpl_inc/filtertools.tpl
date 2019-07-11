@@ -8,9 +8,9 @@
             {foreach $cParam_arr as $cParamName => $cParamValue}
                 <input type="hidden" name="{$cParamName}" value="{$cParamValue}">
             {/foreach}
-            <div class="toolbar-row">
-                <div class="col-md-11 toolbar-col">
-                    <div class="toolbar-row">
+            <div class="row">
+                <div class="col-md-11 col">
+                    <div class="row">
                         {foreach $oFilter->getFields() as $oField}
                             {if $oField->getType() === 'text'}
                                 {if $oField->isCustomTestOp()}
@@ -35,10 +35,10 @@
                                             {/if}
                                         </select>
                                     </div>
-                                    <div class="col-md-2 toolbar-col">
+                                    <div class="col-md-2">
                                         <label>&nbsp;</label>
                                 {else}
-                                    <div class="col-md-2 toolbar-col">
+                                    <div class="col-md-2">
                                         <label for="{$oFilter->getId()}_{$oField->getId()}">{$oField->getTitle()}</label>
                                 {/if}
                                         <input type="{if $oField->getDataType() == 1}number{else}text{/if}"
@@ -49,7 +49,7 @@
                                                data-placement="bottom" title="{$oField->getTitleLong()}"{/if}>
                                     </div>
                             {elseif $oField->getType() === 'select'}
-                                <div class="col-md-2 toolbar-col">
+                                <div class="col-md-2">
                                     <label for="{$oFilter->getId()}_{$oField->getId()}">{$oField->getTitle()}</label>
                                     <select class="form-control"
                                             name="{$oFilter->getId()}_{$oField->getId()}"
@@ -65,7 +65,7 @@
                                     </select>
                                 </div>
                             {elseif $oField->getType() === 'daterange'}
-                                <div class="col-md-3 toolbar-col">
+                                <div class="col-md-3">
                                     <label for="{$oFilter->getId()}_{$oField->getId()}">{__($oField->getTitle())}</label>
                                     <input type="text"  class="form-control"
                                            name="{$oFilter->getId()}_{$oField->getId()}"
@@ -82,7 +82,7 @@
                         {/foreach}
                     </div>
                 </div>
-                <div class="col-md-1 toolbar-col tright">
+                <div class="col-md-1 tright">
                     <label>&nbsp;</label>
                     <div class="btn-group">
                         <button type="submit" class="btn btn-primary" name="action" value="{$oFilter->getId()}_filter"

@@ -38,7 +38,7 @@
 
     function onClickCsvImport_{$importerId} ()
     {
-        $fileInput_{$importerId}.trigger('click');
+        $fileInput_{$importerId}.click();
     }
 
     {if $bCustomStrategy === true}

@@ -9,8 +9,8 @@
     $(function()
     {
         $('#einstellen').submit(validateFormData);
-        $('#btn-add-range').on('click', function() { addPriceRange(); });
-        $('.btn-remove-range').on('click', removePriceRange);
+        $('#btn-add-range').click(function() { addPriceRange(); });
+        $('.btn-remove-range').click(removePriceRange);
 
         selectCheck(document.getElementById('preisspannenfilter_anzeige_berechnung'));
 
@@ -37,7 +37,7 @@
             '</div>'
         );
 
-        $('.btn-remove-range').off('click').on('click', removePriceRange);
+        $('.btn-remove-range').off('click').click(removePriceRange);
     }
 
     function removePriceRange()

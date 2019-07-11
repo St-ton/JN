@@ -96,7 +96,7 @@ function regionsToState() {
         var stateIsRequired = false;
     }
 
-    $('#country').on('change', function() {
+    $('#country').change(function() {
         var result = {};
         var io = $.evo.io();
         var val = $(this).find(':selected').val();
@@ -253,7 +253,7 @@ function isTouchCapable() {
     return 'ontouchstart' in window || (window.DocumentTouch && document instanceof window.DocumentTouch);
 }
 
-$(window).on('load', function(){
+$(window).load(function(){
     navigation();
 });
 
@@ -289,7 +289,7 @@ $(document).ready(function () {
         .find('fieldset, .form-control')
         .attr('disabled', true);
 
-    $('#complete-order-button').on('click', function () {
+    $('#complete-order-button').click(function () {
         var commentField = $('#comment'),
             commentFieldHidden = $('#comment-hidden');
         if (commentField && commentFieldHidden) {
@@ -364,13 +364,13 @@ $(document).ready(function () {
         },
         dataType: "json"
     });
-    $('.city_input').on('focusin', function () {
+    $('.city_input').focusin(function () {
         citySuggestion.remote.url = 'io.php?io={"name":"getCitiesByZip", "params":["%QUERY", "' + $(this).closest('fieldset').find('.country_input').val() + '", "' + $(this).closest('fieldset').find('.postcode_input').val() + '"]}';
     });
-    $('.postcode_input').on('change', function () {
+    $('.postcode_input').change(function () {
         citySuggestion.remote.url = 'io.php?io={"name":"getCitiesByZip", "params":["%QUERY", "' + $(this).closest('fieldset').find('.country_input').val() + '", "' + $(this).val() + '"]}';
     });
-    $('.country_input').on('change', function () {
+    $('.country_input').change(function () {
         citySuggestion.remote.url = 'io.php?io={"name":"getCitiesByZip", "params":["%QUERY", "' + $(this).val() + '", "' + $(this).closest('fieldset').find('.postcode_input').val() + '"]}';
     });
 
@@ -385,8 +385,8 @@ $(document).ready(function () {
         }
     );
 
-    $('.btn-offcanvas').on('click', function() {
-        $('body').trigger('click');
+    $('.btn-offcanvas').click(function() {
+        $('body').click();
     });
 
     if ("ontouchstart" in document.documentElement) {
@@ -445,7 +445,7 @@ $(document).ready(function () {
         }
     });
 
-    bannerLink.on('mouseenter', function () {
+    bannerLink.mouseenter(function () {
         $(this).animate({
             borderWidth: 10,
             opacity:     0
@@ -454,7 +454,7 @@ $(document).ready(function () {
         });
     });
 
-    $('.banner').on('mouseenter', function () {
+    $('.banner').mouseenter(function () {
         $(this).children('a').animate({
             borderWidth: 10,
             opacity:     0
@@ -463,7 +463,7 @@ $(document).ready(function () {
         });
     });
 
-    $('.banner > a[href=""]').on('click', function () {
+    $('.banner > a[href=""]').click(function () {
         return false;
     });
 
@@ -473,7 +473,7 @@ $(document).ready(function () {
     (function($, document, window, viewport){ 
         var $body = $('body');
 
-        $(window).on('resize',
+        $(window).resize(
             viewport.changed(function() {
                 $body.attr('data-viewport', viewport.current());
             })

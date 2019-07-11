@@ -22,7 +22,7 @@
                 </div>
             </form>
             <script type="text/javascript">
-                $('#formSprachwechselSelect').on('change', function (e) {
+                $('#formSprachwechselSelect').change(function (e) {
                     $('#formSprachwechselTab').val($('.tab-content .tab-pane.active').attr('id'));
                     this.form.submit();
                 });

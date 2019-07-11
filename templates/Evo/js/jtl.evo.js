@@ -148,13 +148,13 @@
                     //    box.parent().find('.overlay-img').remove();
                     //} else {
                         $(img).lazy(padding, function() {
-                            $(this).on('load', function() {
+                            $(this).load(function() {
                                 img.css('max-height', square);
                                 box.css('line-height', square)
                                     .css('max-height', square)
                                     .removeClass('loading')
                                     .addClass('loaded');
-                            }).on('error', function() {
+                            }).error(function() {
                                 box.removeClass('loading')
                                     .addClass('error');
                             });
@@ -301,7 +301,7 @@
             var that = this;
 
             this.smoothScrollToAnchor(location.hash, false);
-            $(document).on('click', 'a[href^="#"]', function(e) {
+            $(document).delegate('a[href^="#"]', 'click', function(e) {
                 var elem = e.target;
                 if (!e.isDefaultPrevented()) {
                     // only runs if no other click event is fired
@@ -313,7 +313,7 @@
         },
 
         preventDropdownToggle: function() {
-            $('a.dropdown-toggle').on('click', function(e){
+            $('a.dropdown-toggle').click(function(e){
                 var elem = e.target;
                 if (elem.getAttribute('aria-expanded') == 'true' && elem.getAttribute('href') != '#') {
                     window.location.href = elem.getAttribute('href');
@@ -330,7 +330,7 @@
             $submits.addClass('hidden');
             $submits.first().removeClass('hidden');
 
-            $('input[name="Versandart"]', '#checkout-shipping-payment').on('change', function() {
+            $('input[name="Versandart"]', '#checkout-shipping-payment').change(function() {
                 var id    = parseInt($(this).val());
                 var $form = $(this).closest('form');
 

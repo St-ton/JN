@@ -11,13 +11,13 @@
                .resizable()
                .draggable();
 
-            $(options.editor).find('#remove').on('click', function() {
+            $(options.editor).find('#remove').click(function() {
                var id = $(options.editor).find('#id').val();
                removeArea(id);
                return false;
             });
 
-            $(options.save).on('click', function() {
+            $(options.save).click(function() {
                saveEditor();
                var data = JSON.stringify(options.data);
                ioCall('saveBannerAreas', [data]);
@@ -25,7 +25,7 @@
                return false;
             });
 
-            $(options.add).on('click', function() {
+            $(options.add).click(function() {
                addArea();
                return false;
             });
@@ -40,7 +40,7 @@
             } else
                 loadImage();
 
-            $(options.id).on('click', function() {
+            $(options.id).click(function() {
                releaseAreas();
             });
          };
@@ -247,7 +247,7 @@
             // fix
             area.css('position', 'absolute');
 
-            area.on('click', function(event) {
+            area.click(function(event) {
                event.stopPropagation();
                if (isSelectedArea(this)) {
                   if (!bResize)

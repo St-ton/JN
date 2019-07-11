@@ -67,9 +67,8 @@ get_latest_patch()
 {
     MAJOR=$1;
     MINOR=$2;
-    GREATEST_LATEST_PATCH=0;
+    export GREATEST_LATEST_PATCH=0;
     TAGS=$(git ls-remote --refs --tags)
-    echo "${TAGS}";
     VCS_REG_TAGS="refs\\/tags\\/v?([0-9]{1,})\\.([0-9]{1,})\\.([0-9]{1,})(-(alpha|beta|rc)(\\.([0-9]{1,}))?)?";
     for tag in ${TAGS}; do
         if [[ ${tag} =~ ${VCS_REG_TAGS} ]]; then

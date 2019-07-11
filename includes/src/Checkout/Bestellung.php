@@ -744,7 +744,7 @@ class Bestellung
                             $orderItem->nAusgeliefert        = $lineItem->getAnzahl();
                             $orderItem->nAusgeliefertGesamt += $orderItem->nAusgeliefert;
                             $orderItem->nOffenGesamt        -= $orderItem->nAusgeliefert;
-                            $note->oPosition_arr[]       = &$orderItem;
+                            $note->oPosition_arr[]           = &$orderItem;
                             if (!isset($lineItem->oPosition) || !\is_object($lineItem->oPosition)) {
                                 $lineItem->oPosition = &$orderItem;
                             }

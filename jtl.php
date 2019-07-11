@@ -420,7 +420,7 @@ if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
         $step = 'passwort aendern';
     }
     // Kundendaten speichern
-    if (isset($_POST['edit']) && (int)$_POST['edit'] === 1) {
+    if (isset($_POST['edit']) && (int)$_POST['edit'] === 1 && validateToken()) {
         $cPost_arr = StringHandler::filterXSS($_POST);
         $smarty->assign('cPost_arr', $cPost_arr);
 

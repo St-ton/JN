@@ -210,8 +210,8 @@ class Newsletter
         $customer->cNachname    = 'Mustermann';
         $recipient              = new stdClass();
         $recipient->cEmail      = $this->config['newsletter']['newsletter_emailtest'];
-        $recipient->cLoeschCode = '78rev6gj8er6we87gw6er8';
-        $recipient->cLoeschURL  = Shop::getURL() . '/newsletter.php?lang=ger' . '&lc=' . $recipient->cLoeschCode;
+        $recipient->cLoeschCode = 'dc1338521613c3cfeb1988261029fe3058';
+        $recipient->cLoeschURL  = Shop::getURL() . '/?oc=' . $recipient->cLoeschCode;
 
         $this->smarty->assign('NewsletterEmpfaenger', $recipient)
             ->assign('Emailempfaenger', $recipient)

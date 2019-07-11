@@ -443,10 +443,8 @@ if (Form::validateToken()) {
                 // Emailempfaenger dummy bauen
                 $oEmailempfaenger              = new stdClass();
                 $oEmailempfaenger->cEmail      = $conf['newsletter']['newsletter_emailtest'];
-                $oEmailempfaenger->cLoeschCode = '78rev6gj8er6we87gw6er8';
-                $oEmailempfaenger->cLoeschURL  = Shop::getURL() .
-                    '/newsletter.php?lang=ger&lc=' .
-                    $oEmailempfaenger->cLoeschCode;
+                $oEmailempfaenger->cLoeschCode = 'dc1338521613c3cfeb1988261029fe3058';
+                $oEmailempfaenger->cLoeschURL  = Shop::getURL() . '/?oc=' . $oEmailempfaenger->cLoeschCode;
 
                 $mailSmarty = $instance->initSmarty();
                 // Baue Anzahl Newsletterempfaenger
@@ -543,10 +541,8 @@ if (Form::validateToken()) {
             // dummy recipient
             $oEmailempfaenger              = new stdClass();
             $oEmailempfaenger->cEmail      = $conf['newsletter']['newsletter_emailtest'];
-            $oEmailempfaenger->cLoeschCode = '78rev6gj8er6we87gw6er8';
-            $oEmailempfaenger->cLoeschURL  = Shop::getURL() .
-                '/newsletter.php?lang=ger&lc=' .
-                $oEmailempfaenger->cLoeschCode;
+            $oEmailempfaenger->cLoeschCode = 'dc1338521613c3cfeb1988261029fe3058';
+            $oEmailempfaenger->cLoeschURL  = Shop::getURL() . '/?oc=' . $oEmailempfaenger->cLoeschCode;
             if (empty($oEmailempfaenger->cEmail)) {
                 $result = __('errorTestTemplateEmpty');
             } else {

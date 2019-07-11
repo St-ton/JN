@@ -117,15 +117,13 @@ final class Newsletter extends Job
         if (\count($recipients) > 0) {
             $shopURL = Shop::getURL();
             foreach ($recipients as $recipient) {
-                $recipient->cLoeschURL = $shopURL . '/newsletter.php?lang=' .
-                    $recipient->cISO . '&lc=' . $recipient->cLoeschCode;
+                $recipient->cLoeschURL = $shopURL . '/?oc=' . $recipient->cLoeschCode;
                 $customer              = $recipient->kKunde > 0
                     ? new Kunde($recipient->kKunde)
                     : null;
                 $cgID                  = (int)$recipient->kKundengruppe > 0
                     ? (int)$recipient->kKundengruppe
                     : 0;
-
                 $instance->send(
                     $oNewsletter,
                     $recipient,

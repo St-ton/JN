@@ -1,4 +1,4 @@
-<div class="content-header well">
+<div class="content-header">
     <div class="row">
         <div class="col">
             <h1 class="content-header-headline {if isset($cBeschreibung) && $cBeschreibung|@strlen == 0}nospacing{/if}">{if $cTitel|@strlen > 0}{$cTitel}{else}{__('unknown')}{/if}</h1>

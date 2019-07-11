@@ -18,7 +18,7 @@
                 <input type="hidden" name="einstellungen" value="1" />
                 <div class="settings card">
                     <div class="card-header">
-                        <div class"card-title">{__('settings')}</div>
+                        <div class="subheading1">{__('settings')}</div>
                     </div>
                     <div class="card-body">
                         {foreach $Conf as $cnf}
@@ -55,7 +55,7 @@
             <div class="alert alert-info">{__('contanctformSubjectDesc')}</div>
             <div class="card">
                 <div class="card-header">
-                    <div class"card-title">{__('subjects')}</div>
+                    <div class="subheading1">{__('subjects')}</div>
                 </div>
                 <div class="table-responsive">
                     <table class="list table">
@@ -99,7 +99,7 @@
                 <input type="hidden" name="content" value="1" />
                 <div class="card">
                     <div class="card-header">
-                        <div class"card-title">{__('contents')}</div>
+                        <div class="subheading1">{__('contents')}</div>
                     </div>
                     <div class="card-body">
                         <div class="settings">

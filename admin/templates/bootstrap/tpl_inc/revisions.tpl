@@ -1,7 +1,8 @@
 <hr>
 <div class="card">
     <div class="card-header">
-        <div class="card-title">{__('revisions')}</div>
+        <div class="subheading1">{__('revisions')}</div>
+        <hr class="mb-n3">
     </div>
     <div class="card-body">
         {if $revisions|count > 0}
@@ -9,22 +10,23 @@
                 {if $secondary === true}
                     {foreach $data as $foreignKey => $localized}
                         {foreach $show as $attribute}
-                            <div class="hidden" id="original-{$attribute|escape}-{$foreignKey}">{if isset($localized->$attribute)}{$localized->$attribute|escape}{elseif is_string($localized)}{$localized|escape}{/if}</div>
+                            <div class="d-none" id="original-{$attribute|escape}-{$foreignKey}">{if isset($localized->$attribute)}{$localized->$attribute|escape}{elseif is_string($localized)}{$localized|escape}{/if}</div>
                         {/foreach}
                     {/foreach}
                 {else}
                     {foreach $show as $attribute}
-                        <div class="hidden original" id="original-{$attribute|escape}" data-references="{$attribute|escape}">{$data->$attribute|escape}</div>
+                        <div class="d-none original" id="original-{$attribute|escape}" data-references="{$attribute|escape}">{$data->$attribute|escape}</div>
                     {/foreach}
                 {/if}
             {/if}
-            <div class="card-group" id="accordion" role="tablist" aria-multiselectable="true">
+            <div id="accordion" role="tablist" aria-multiselectable="true">
                 {foreach $revisions as $revision}
                     <div class="card">
                         <div class="card-header" role="tab" data-idx="{$revision@iteration}" id="heading-revision-{$revision@iteration}">
-                            <div class="card-title">
-                                <a data-toggle="collapse" data-parent="#accordion" href="#revision-{$revision@iteration}" aria-expanded="true" aria-controls="profile-{$revision@iteration}">
-                                    <span class="badge left">{$revision->timestamp}</span> {$revision->author}
+                            <div class="">
+                                <a class="align-items-center" data-toggle="collapse" data-parent="#accordion" href="#revision-{$revision@iteration}" aria-expanded="true" aria-controls="profile-{$revision@iteration}">
+                                    <span class="badge">{$revision->timestamp}</span>
+                                    <span> | {$revision->author}</span>
                                 </a>
                             </div>
                         </div>
@@ -35,7 +37,7 @@
                                         {foreach $revision->content->references as $secondaryKey => $ref}
                                             {foreach $show as $attribute}
                                                 {if isset($ref->$attribute)}
-                                                    <h4>{$attribute|escape} ({$secondaryKey}):</h4>
+                                                    <div class="h4">{$attribute|escape} ({$secondaryKey}):</div>
                                                     <div id="diff-{$revision@iteration}-{$attribute|escape}-{$secondaryKey}"></div>
                                                     <div class="hidden" data-references="{$attribute|escape}" data-references-secondary="{$secondaryKey}">{$ref->$attribute|escape}</div>
                                                 {/if}
@@ -44,7 +46,7 @@
                                     {else}
                                         {foreach $show as $attribute}
                                             {if isset($revision->content->$attribute)}
-                                                <h4>{$attribute|escape}</h4>
+                                                <div class="h4">{$attribute|escape}</div>
                                                 <div id="diff-{$revision@iteration}-{$attribute|escape}"></div>
                                                 <div class="hidden" data-references="{$attribute|escape}" data-references-secondary="">{$revision->content->$attribute|escape}</div>
                                             {/if}

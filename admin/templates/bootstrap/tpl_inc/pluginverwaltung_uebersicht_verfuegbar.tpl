@@ -47,7 +47,7 @@
             <input type="hidden" name="pluginverwaltung_uebersicht" value="1" />
             <div class="card">
                 <div class="card-header">
-                    <div class"card-title">{__('pluginListNotInstalled')}</div>
+                    <div class="subheading1">{__('pluginListNotInstalled')}</div>
                 </div>
                 <div class="table-responsive">
 

@@ -32,7 +32,7 @@
             <form action="dbcheck.php" method="post">
                 <div id="contentCheck" class="card">
                     <div class="card-header">
-                        <div class"card-title">{__('databaseStructure')}</div>
+                        <div class="subheading1">{__('databaseStructure')}</div>
                     </div>
                     <table class="table req">
                         <thead>

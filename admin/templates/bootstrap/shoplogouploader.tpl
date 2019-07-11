@@ -6,7 +6,7 @@
         {$jtl_token}
         <div class="card">
             <div class="card-header">
-                <div class="card-title">{__('yourLogo')}</div>
+                <span class="subheading1">{__('yourLogo')}</span>
             </div>
             <div class="card-body">
                 <input type="hidden" name="upload" value="1" />

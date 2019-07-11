@@ -10,7 +10,7 @@
         <input type="hidden" name="tab" value="group_view" />
         <div class="card">
             <div class="card-header">
-                <div class"card-title">{__('general')}</div>
+                <div class="subheading1">{__('general')}</div>
             </div>
             <div class="card-body">
                 <div class="input-group{if isset($cError_arr.cGruppe)} error{/if}">
@@ -28,13 +28,13 @@
 
         <div class="card">
             <div class="card-header">
-                <div class"card-title">{__('permissions')}</div>
+                <div class="subheading1">{__('permissions')}</div>
             </div>
             <div class="card-body">
                 {foreach $oAdminDefPermission_arr as $oGroup}
                     <div id="settings-{$oGroup@iteration}" class=" col-md-4">
                         <div class="card">
-                            <div class="card-header"><div class"card-title">{$oGroup->cName}</div></div>
+                            <div class="card-header"><div class="subheading1">{$oGroup->cName}</div></div>
                             <div class="perm_list card-body">
                                 {foreach $oGroup->oPermission_arr as $oPerm}
                                     <div class="input">

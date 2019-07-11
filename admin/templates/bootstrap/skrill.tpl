@@ -41,7 +41,7 @@
     {else}
         <div class="card">
             <div class="card-header">
-                <div class"card-title">{__('mbHeaderEmail')}</div>
+                <div class="subheading1">{__('mbHeaderEmail')}</div>
             </div>
             <div class="card-body">
                 <p>{{__('mbEmailValidationSuccess')}|sprintf:{$email}:{$customerId}}</p>
@@ -55,7 +55,7 @@
         </div>
         {*<div class="card">*}
             {*<div class="card-header">*}
-                {*<div class"card-title">{__('mbHeaderActivation')}</div>*}
+                {*<div class="subheading1">{__('mbHeaderActivation')}</div>*}
             {*</div>*}
             {*{if $showActivationButton}*}
                 {*<div class="card-body">*}
@@ -75,7 +75,7 @@
         {*</div>*}
         <div class="card">
             <div class="card-header">
-                <div class"card-title">{__('mbSecretWord')}</div>
+                <div class="subheading1">{__('mbSecretWord')}</div>
             </div>
             {if $showSecretWordValidation}
                 <div class="card-body">
@@ -108,7 +108,7 @@
 
     <div class="card">
         <div class="card-header">
-            <div class"card-title">{__('mbHeaderSupport')}</div>
+            <div class="subheading1">{__('mbHeaderSupport')}</div>
         </div>
         <div class="card-body">
             {__('mbSupportText')}

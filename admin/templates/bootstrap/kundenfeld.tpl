@@ -155,7 +155,7 @@
                 {/if}
                 <div class="card">
                     <div class="card-header">
-                        <div class"card-title">{if isset($oKundenfeld->kKundenfeld) && $oKundenfeld->kKundenfeld > 0}{__('headingKundenfeldEdit')}{else}{__('headingKundenfeldCreate')}{/if}</div>
+                        <div class="subheading1">{if isset($oKundenfeld->kKundenfeld) && $oKundenfeld->kKundenfeld > 0}{__('headingKundenfeldEdit')}{else}{__('headingKundenfeldCreate')}{/if}</div>
                     </div>
                     <div class="table-responsive">
                         <table class="table list table-bordered" id="formtable">
@@ -289,7 +289,7 @@
 
             <div class="card">
                 <div class="card-header">
-                    <div class"card-title">{__('kundenfeldExistingDesc')}</div>
+                    <div class="subheading1">{__('kundenfeldExistingDesc')}</div>
                 </div>
                 {if isset($oKundenfeld_arr) && $oKundenfeld_arr|@count > 0}
                     <form method="post" action="kundenfeld.php">

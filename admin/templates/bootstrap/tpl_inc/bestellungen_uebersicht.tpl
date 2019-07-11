@@ -27,7 +27,7 @@
             {/if}
             <div class="card">
                 <div class="card-header">
-                    <div class"card-title">{__('order')}</div>
+                    <div class="subheading1">{__('order')}</div>
                 </div>
                 <div class="table-responsive">
                     <table class="list table table-striped">

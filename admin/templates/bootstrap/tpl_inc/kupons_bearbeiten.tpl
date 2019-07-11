@@ -45,7 +45,7 @@
         <input type="hidden" name="cKuponTyp" value="{$oKupon->cKuponTyp}">
         <div class="card settings">
             <div class="card-header">
-                <div class"card-title">{__('names')}</div>
+                <div class="subheading1">{__('names')}</div>
             </div>
             <div class="card-body">
                 <div class="input-group">

@@ -95,11 +95,11 @@
                             {/literal}
                         {else}
                             <div class="input-group">
-                                <span class="input-group-addon"><i class="fa fa-user"></i></span>
+                                <div class="input-group-prepend"><span class="input-group-text"><i class="fa fa-user"></i></span></div>
                                 <input class="form-control" type="text" placeholder="{__('username')}" name="benutzer" id="user_login" value="" size="20" tabindex="10" />
                             </div>
                             <div class="input-group">
-                                <span class="input-group-addon"><i class="fa fa-lock"></i></span>
+                                <div class="input-group-prepend"><span class="input-group-text"><i class="fa fa-lock"></i></span></div>
                                 <input class="form-control" type="password" placeholder="{__('password')}" name="passwort" id="user_pass" value="" size="20" tabindex="20" />
                             </div>
                             {if isset($code_adminlogin) && $code_adminlogin}

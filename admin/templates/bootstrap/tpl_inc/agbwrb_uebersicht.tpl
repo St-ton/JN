@@ -11,28 +11,30 @@
     </div>
     <div class="card">
         <div class="card-header">
-            <div class"card-title">{__('available')} {__('agbwrb')}</div>
+            <div class="subheading1">{__('available')} {__('agbwrb')}</div>
         </div>
-        <table class="table table-striped">
-            <thead>
-            <tr>
-                <th class="tleft">{__('customerGroup')}</th>
-                <th>{__('action')}</th>
-            </tr>
-            </thead>
-            <tbody>
-            {foreach $oKundengruppe_arr as $oKundengruppe}
+        <div class="card-body">
+            <table class="table table-striped">
+                <thead>
                 <tr>
-                    <td class="">{$oKundengruppe->cName}</td>
-                    <td class="tcenter">
-                        <a href="agbwrb.php?agbwrb=1&agbwrb_edit=1&kKundengruppe={$oKundengruppe->kKundengruppe}&token={$smarty.session.jtl_token}"
-                           class="btn btn-default" title="{__('modify')}">
-                            <i class="fa fa-edit"></i>
-                        </a>
-                    </td>
+                    <th class="tleft">{__('customerGroup')}</th>
+                    <th>{__('action')}</th>
                 </tr>
-            {/foreach}
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                {foreach $oKundengruppe_arr as $oKundengruppe}
+                    <tr>
+                        <td class="">{$oKundengruppe->cName}</td>
+                        <td class="tcenter">
+                            <a href="agbwrb.php?agbwrb=1&agbwrb_edit=1&kKundengruppe={$oKundengruppe->kKundengruppe}&token={$smarty.session.jtl_token}"
+                               class="btn btn-default" title="{__('modify')}">
+                                <i class="fa fa-edit"></i>
+                            </a>
+                        </td>
+                    </tr>
+                {/foreach}
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>

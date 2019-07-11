@@ -38,7 +38,7 @@
         {$jtl_token}
         <div class="card settings">
             <div class="card-header">
-                <div class"card-title">{if isset($cPostVar_arr.cName)}{$cPostVar_arr.cName}{elseif isset($oNewslettervorlageStd->cName)}{$oNewslettervorlageStd->cName}{/if} {__('edit')}</div>
+                <div class="subheading1">{if isset($cPostVar_arr.cName)}{$cPostVar_arr.cName}{elseif isset($oNewslettervorlageStd->cName)}{$oNewslettervorlageStd->cName}{/if} {__('edit')}</div>
             </div>
             <div class="card-body">
                 {$jtl_token}

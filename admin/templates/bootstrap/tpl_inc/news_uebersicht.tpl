@@ -316,19 +316,17 @@
                     <div class="card-body">
                         {foreach $oConfig_arr as $oConfig}
                             {if $oConfig->cConf === 'Y'}
-                                <div class="input-group">
-                                    <span class="input-group-addon">
-                                        <label for="{$oConfig->cWertName}">{$oConfig->cName}</label>
-                                    </span>
-                                    <span class="input-group-wrap">
+                                <div class="form-group form-row align-items-center mb-5 mb-md-3">
+                                    <label class="col col-sm-4 col-form-label text-sm-right" for="{$oConfig->cWertName}">{$oConfig->cName}</label>
+                                    <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                         {if $oConfig->cInputTyp === 'selectbox'}
-                                            <select name="{$oConfig->cWertName}" id="{$oConfig->cWertName}" class="form-control combo">
+                                            <select name="{$oConfig->cWertName}" id="{$oConfig->cWertName}" class="custom-select combo">
                                                 {foreach $oConfig->ConfWerte as $wert}
                                                     <option value="{$wert->cWert}" {if $oConfig->gesetzterWert == $wert->cWert}selected{/if}>{$wert->cName}</option>
                                                 {/foreach}
                                             </select>
                                         {elseif $oConfig->cInputTyp === 'listbox'}
-                                            <select name="{$oConfig->cWertName}[]" id="{$oConfig->cWertName}" multiple="multiple" class="form-control combo">
+                                            <select name="{$oConfig->cWertName}[]" id="{$oConfig->cWertName}" multiple="multiple" class="custom-select combo">
                                                 {foreach $oConfig->ConfWerte as $wert}
                                                     <option value="{$wert->kKundengruppe}" {foreach $oConfig->gesetzterWert as $gesetzterWert}{if $gesetzterWert->cWert == $wert->kKundengruppe}selected{/if}{/foreach}>{$wert->cName}</option>
                                                 {/foreach}
@@ -338,20 +336,20 @@
                                         {else}
                                             <input class="form-control" type="text" name="{$oConfig->cWertName}" id="{$oConfig->cWertName}" value="{if isset($oConfig->gesetzterWert)}{$oConfig->gesetzterWert}{/if}" tabindex="1" />
                                         {/if}
-                                    </span>
+                                    </div>
                                     {if $oConfig->cBeschreibung}
-                                        <span class="input-group-addon">{getHelpDesc cDesc=$oConfig->cBeschreibung} <span class="sid badge">{$oConfig->kEinstellungenConf}</span></span>
+                                        <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=$oConfig->cBeschreibung cID=$oConfig->kEinstellungenConf}</div>
                                     {/if}
                                 </div>
                             {/if}
                         {/foreach}
 
                         {foreach $oNewsMonatsPraefix_arr as $oNewsMonatsPraefix}
-                            <div class="input-group">
-                                <span class="input-group-addon">
-                                    <label for="praefix_{$oNewsMonatsPraefix->cISOSprache}">{__('newsPraefix')} ({$oNewsMonatsPraefix->name})</label>
-                                </span>
-                                <input type="text" class="form-control" id="praefix_{$oNewsMonatsPraefix->cISOSprache}" name="praefix_{$oNewsMonatsPraefix->cISOSprache}" value="{$oNewsMonatsPraefix->cPraefix}" tabindex="1" />
+                            <div class="form-group form-row align-items-center mb-5 mb-md-3">
+                                <label class="col col-sm-4 col-form-label text-sm-right" for="praefix_{$oNewsMonatsPraefix->cISOSprache}">{__('newsPraefix')} ({$oNewsMonatsPraefix->name})</label>
+                                <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                    <input type="text" class="form-control" id="praefix_{$oNewsMonatsPraefix->cISOSprache}" name="praefix_{$oNewsMonatsPraefix->cISOSprache}" value="{$oNewsMonatsPraefix->cPraefix}" tabindex="1" />
+                                </div>
                             </div>
                         {/foreach}
                     </div>

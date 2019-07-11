@@ -83,7 +83,7 @@
 
             <div class="card">
                 <div class="card-header">
-                    <div class"card-title">{__('general')}</div>
+                    <div class="subheading1">{__('general')}</div>
                 </div>
                 <div class="card-body">
                     <div class="input-group">
@@ -140,7 +140,7 @@
 
             <div class="card">
                 <div class="card-header">
-                    <div class"card-title">{__('viewingOptions')}</div>
+                    <div class="subheading1">{__('viewingOptions')}</div>
                 </div>
                 <div class="card-body">
                     <div class="input-group">
@@ -354,7 +354,7 @@
     <div id="area_container">
         <div id="area_editor" class="card">
             <div class="category first card-header">
-                <div class"card-title">{__('settings')}</div>
+                <div class="subheading1">{__('settings')}</div>
             </div>
             <div id="settings" class="card-body">
                 <div class="input-group">
@@ -418,7 +418,7 @@
         <div id="settings">
             <div class="card">
                 <div class="card-header">
-                    <div class"card-title">{__('availableBanner')}</div>
+                    <div class="subheading1">{__('availableBanner')}</div>
                 </div>
                 <table class="list table">
                     <thead>

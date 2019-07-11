@@ -42,7 +42,7 @@
                 {foreach $Conf as $cnf}
                     {if $cnf->cConf === 'Y'}
                         <div class="form-group form-row align-items-center {if isset($cSuche) && $cnf->kEinstellungenConf == $cSuche} highlight{/if}">
-                            <label class="col col-sm-4 col-form-label text-sm-right order-1" for="{$cnf->cWertName}">{$cnf->cName}</label>
+                            <label class="col col-sm-4 col-form-label text-sm-right order-1" for="{$cnf->cWertName}">{$cnf->cName}:</label>
                             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                 {if $cnf->cInputTyp === 'selectbox'}
                                     <select class="custom-select" name="{$cnf->cWertName}" id="{$cnf->cWertName}">
@@ -51,7 +51,7 @@
                                         {/foreach}
                                     </select>
                                 {elseif $cnf->cInputTyp === 'listbox'}
-                                    <select name="{$cnf->cWertName}[]" id="{$cnf->cWertName}" multiple="multiple" class="fcustom-select combo">
+                                    <select name="{$cnf->cWertName}[]" id="{$cnf->cWertName}" multiple="multiple" class="custom-select combo">
                                         {foreach $cnf->ConfWerte as $wert}
                                             <option value="{$wert->cWert}" {foreach $cnf->gesetzterWert as $gesetzterWert}{if $gesetzterWert->cWert == $wert->cWert}selected{/if}{/foreach}>{$wert->cName}</option>
                                         {/foreach}
@@ -64,11 +64,11 @@
                                     <input class="form-control" type="text" name="{$cnf->cWertName}" id="{$cnf->cWertName}" value="{if isset($cnf->gesetzterWert)}{$cnf->gesetzterWert}{/if}" tabindex="1" />
                                 {/if}
                             </div>
-                            <div class="col-auto ml-sm-n4 order-2 order-sm-3">
-                                {if $cnf->cBeschreibung}
+                            {if $cnf->cBeschreibung}
+                                <div class="col-auto ml-sm-n4 order-2 order-sm-3">
                                     {getHelpDesc cDesc=$cnf->cBeschreibung cID=$cnf->kEinstellungenConf}
-                                {/if}
-                            </div>
+                                </div>
+                            {/if}
                             {if isset($oSections[$kEinstellungenSektion]) && $oSections[$kEinstellungenSektion]->hasValueMarkup}
                                 {*{$oSections[$kEinstellungenSektion]->getValueMarkup($cnf)}*}
                             {/if}
@@ -80,7 +80,7 @@
                         {/if}
                         <div class="card">
                             <div class="card-header">
-                                <div class="card-title">
+                                <span class="subheading1">
                                     {$cnf->cName}
                                     <span class="pull-right">{getHelpDesc cID=$cnf->kEinstellungenConf}</span>
                                     {if !empty($cnf->cSektionsPfad)}
@@ -88,11 +88,12 @@
                                             <strong>{__('settingspath')}:</strong> {$cnf->cSektionsPfad}
                                         </span>
                                     {/if}
-                                </div>
+                                </span>
                                 {if isset($oSections[$cnf->kEinstellungenSektion])
                                     && $oSections[$cnf->kEinstellungenSektion]->hasSectionMarkup}
                                         {$oSections[$cnf->kEinstellungenSektion]->getSectionMarkup()}
                                 {/if}
+                                <hr class="mb-n3">
                             </div>
                             <div class="card-body">
                     {/if}

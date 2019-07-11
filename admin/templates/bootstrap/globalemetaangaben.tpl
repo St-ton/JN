@@ -17,7 +17,7 @@
         <input type="hidden" name="einstellungen" value="1" />
         <div class="settings">
             <div class="card">
-                <div class="card-header"><div class"card-title">{$currentLanguage}</div></div>
+                <div class="card-header"><div class="subheading1">{$currentLanguage}</div></div>
                 <div class="card-body">
                     <div class="input-group">
                         <span class="input-group-addon">
@@ -83,7 +83,7 @@
                     {if $open}</div></div>{/if}
                     <div class="card">
                         {if $oConfig->cName}
-                            <div class="card-header"><div class"card-title">{__('settings')}</div></div>
+                            <div class="card-header"><div class="subheading1">{__('settings')}</div></div>
                         {/if}
                         <div class="card-body">
                         {assign var=open value=true}

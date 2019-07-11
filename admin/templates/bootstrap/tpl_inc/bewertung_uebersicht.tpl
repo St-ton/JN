@@ -258,26 +258,25 @@
                 <input type="hidden" name="tab" value="einstellungen" />
                 <div class="settings card">
                     <div class="card-header">
-                        <div class="card-title">{__('settings')}</div>
+                        <span class="subheading1">{__('settings')}</span>
+                        <hr class="mb-n3">
                     </div>
                     <div class="card-body">
                         {foreach $oConfig_arr as $oConfig}
                             {if $oConfig->cConf === 'Y'}
-                                <div class="input-group">
-                                    <span class="input-group-addon">
-                                        <label for="{$oConfig->cWertName}">{$oConfig->cName}
-                                            {if $oConfig->cWertName|strpos:'_guthaben'} <span id="EinstellungAjax_{$oConfig->cWertName}"></span>{/if}
-                                        </label>
-                                    </span>
-                                    <span class="input-group-wrap">
+                                <div class="form-group form-row align-items-center">
+                                    <label class="col col-sm-4 col-form-label text-sm-right" for="{$oConfig->cWertName}">{$oConfig->cName}
+                                        {if $oConfig->cWertName|strpos:'_guthaben'} <span id="EinstellungAjax_{$oConfig->cWertName}"></span>{/if}
+                                    </label>
+                                    <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                         {if $oConfig->cInputTyp === 'selectbox'}
-                                            <select name="{$oConfig->cWertName}" id="{$oConfig->cWertName}" class="form-control combo">
+                                            <select name="{$oConfig->cWertName}" id="{$oConfig->cWertName}" class="custom-select combo">
                                                 {foreach $oConfig->ConfWerte as $wert}
                                                     <option value="{$wert->cWert}" {if $oConfig->gesetzterWert == $wert->cWert}selected{/if}>{$wert->cName}</option>
                                                 {/foreach}
                                             </select>
                                         {elseif $oConfig->cInputTyp === 'listbox'}
-                                            <select name="{$oConfig->cWertName}[]" id="{$oConfig->cWertName}" multiple="multiple" class="form-control combo">
+                                            <select name="{$oConfig->cWertName}[]" id="{$oConfig->cWertName}" multiple="multiple" class="custom-select combo">
                                                 {foreach $oConfig->ConfWerte as $wert}
                                                     <option value="{$wert->kKundengruppe}" {foreach $oConfig->gesetzterWert as $gesetzterWert}{if $gesetzterWert->cWert == $wert->kKundengruppe}selected{/if}{/foreach}>{$wert->cName}</option>
                                                 {/foreach}
@@ -287,14 +286,16 @@
                                         {else}
                                             <input class="form-control" type="text" name="{$oConfig->cWertName}" id="{$oConfig->cWertName}"  value="{if isset($oConfig->gesetzterWert)}{$oConfig->gesetzterWert}{/if}" tabindex="1"{if $oConfig->cWertName|strpos:"_guthaben"} onKeyUp="setzePreisAjax(false, 'EinstellungAjax_{$oConfig->cWertName}', this);"{/if} />
                                         {/if}
-                                    </span>
+                                    </div>
                                     {if $oConfig->cBeschreibung}
-                                        <span class="input-group-addon">{getHelpDesc cDesc=$oConfig->cBeschreibung cID=$oConfig->kEinstellungenConf}</span>
+                                        <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=$oConfig->cBeschreibung cID=$oConfig->kEinstellungenConf}</div>
                                     {/if}
                                 </div>
                             {else}
                                 {if $oConfig->cBeschreibung}
-                                    {getHelpDesc cDesc=$oConfig->cBeschreibung cID=$oConfig->kEinstellungenConf}
+                                    <div class="col-auto ml-sm-n4 order-2 order-sm-3">
+                                        {getHelpDesc cDesc=$oConfig->cBeschreibung cID=$oConfig->kEinstellungenConf}
+                                    </div>
                                 {/if}
                             {/if}
                         {/foreach}

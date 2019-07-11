@@ -17,7 +17,7 @@
         <input type="hidden" name="kNewsKommentar" value="{$oNewsKommentar->getID()}" />
         <div class="card">
             <div class="card-header">
-                <div class"card-title">{$oNewsKommentar->getName()} - {__('newsCommentEdit')}</div>
+                <div class="subheading1">{$oNewsKommentar->getName()} - {__('newsCommentEdit')}</div>
             </div>
             <div class="table-responsive">
                 <table class="list table" id="formtable">

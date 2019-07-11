@@ -65,7 +65,8 @@
             <input type="hidden" name="kPlugin" value="{if $Link->getPluginID() > 0}{$Link->getPluginID()}{/if}" />
             <div class="card">
                 <div class="card-header">
-                    <div class="card-title">{__('general')}</div>
+                    <div class="subheading1">{__('general')}</div>
+                    <hr class="mb-n3">
                 </div>
                 <div class="card-body">
                     <div class="input-group{if isset($xPlausiVar_arr.cName)} error{/if}">
@@ -243,7 +244,8 @@
                 <div id="iso_{$cISO}" class="iso_wrapper{if !$language->isShopDefault()} hidden-soft{/if}">
                     <div class="card">
                         <div class="card-header">
-                            <div class="card-title">{__('metaSeo')} ({$language->getLocalizedName()})</div>
+                            <div class="subheading1">{__('metaSeo')} ({$language->getLocalizedName()})</div>
+                            <hr class="mb-n3">
                         </div>
                         <div class="card-body">
                             <div class="input-group">

@@ -50,7 +50,7 @@
                 <tr>
                     <td><label for="kSteuerklasse">{__('zusatzverpackungTaxClass')}</label></td>
                     <td>
-                        <select id="kSteuerklasse" name="kSteuerklasse" class="form-control combo">
+                        <select id="kSteuerklasse" name="kSteuerklasse" class="custom-select combo">
                             <option value="-1">{__('zusatzverpackungAutoTax')}</option>
                             {foreach $oSteuerklasse_arr as $oSteuerklasse}
                                 <option value="{$oSteuerklasse->kSteuerklasse}" {if isset($oVerpackungEdit) && (int)$oSteuerklasse->kSteuerklasse === (int)$oVerpackungEdit->kSteuerklasse} selected{/if}>{$oSteuerklasse->cName}</option>
@@ -61,7 +61,7 @@
                 <tr>
                     <td><label for="kKundengruppe">{__('customerGroup')}</label></td>
                     <td>
-                        <select id="kKundengruppe" name="kKundengruppe[]" multiple="multiple" class="form-control combo" required>
+                        <select id="kKundengruppe" name="kKundengruppe[]" multiple="multiple" class="custom-select combo" required>
                             <option value="-1"{if isset($oVerpackungEdit) && $oVerpackungEdit->cKundengruppe == '-1'} selected{/if}>{__('all')}</option>
                             {foreach $oKundengruppe_arr as $oKundengruppe}
                                 {if (isset($oVerpackungEdit->cKundengruppe) && $oVerpackungEdit->cKundengruppe == '-1') || !isset($oVerpackungEdit) || !$oVerpackungEdit}
@@ -81,7 +81,7 @@
                 <tr>
                     <td><label for="nAktiv">{__('active')}</label></td>
                     <td>
-                        <select id="nAktiv" name="nAktiv" class="form-control combo">
+                        <select id="nAktiv" name="nAktiv" class="custom-select combo">
                             <option value="1"{if isset($oVerpackungEdit) && (int)$oVerpackungEdit->nAktiv === 1} selected{/if}>{__('yes')}</option>
                             <option value="0"{if isset($oVerpackungEdit) && (int)$oVerpackungEdit->nAktiv === 0} selected{/if}>{__('no')}</option>
                         </select>

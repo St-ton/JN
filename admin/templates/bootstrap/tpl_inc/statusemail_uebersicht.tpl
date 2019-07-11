@@ -6,7 +6,7 @@
         <div id="settings">
             <div class="card">
                 <div class="card-header">
-                    <div class"card-title">{__('settings')}</div>
+                    <div class="subheading1">{__('settings')}</div>
                 </div>
                 <div class="card-body">
                     <div class="item input-group">

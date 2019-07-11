@@ -8,7 +8,7 @@
     {foreach $Zuschlaege as $zuschlag}
         <div class="card">
             <div class="card-header">
-                <div class"card-title">{__('isleList')}: {$zuschlag->cName}</div>
+                <div class="subheading1">{__('isleList')}: {$zuschlag->cName}</div>
             </div>
             <div class="table-responsive">
                 <table class="list table">
@@ -93,7 +93,7 @@
             {/if}
             <div class="card">
                 <div class="card-header">
-                    <div class"card-title">{if isset($oVersandzuschlag->kVersandzuschlag) && $oVersandzuschlag->kVersandzuschlag > 0}{__('additionalFeeEdit')}{else}{__('createNewList')}{/if}</div>
+                    <div class="subheading1">{if isset($oVersandzuschlag->kVersandzuschlag) && $oVersandzuschlag->kVersandzuschlag > 0}{__('additionalFeeEdit')}{else}{__('createNewList')}{/if}</div>
                 </div>
                 <div class="card-body">
                     <div class="input-group">

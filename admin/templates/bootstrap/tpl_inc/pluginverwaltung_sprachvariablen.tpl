@@ -18,7 +18,7 @@
             <input type="hidden" name="kPlugin" value="{$kPlugin}" />
             <div class="card">
                 <div class="card-header">
-                    <div class"card-title">{__('pluginverwaltungLocales')}</div>
+                    <div class="subheading1">{__('pluginverwaltungLocales')}</div>
                 </div>
                 <div class="table-responsive">
                     <table class="list table">

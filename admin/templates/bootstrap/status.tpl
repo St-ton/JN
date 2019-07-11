@@ -179,7 +179,7 @@
             <div class="grid-item">
                 <div class="card">
                     <div class="card-header">
-                        <div class"card-title">{__('paymentTypes')}</div>
+                        <div class="subheading1">{__('paymentTypes')}</div>
                     </div>
                     <div class="card-body">
                         <div class="alert alert-info">
@@ -212,7 +212,7 @@
             <div class="grid-item">
                 <div class="card">
                     <div class="card-header">
-                        <div class"card-title">{__('plugin')}</div>
+                        <div class="subheading1">{__('plugin')}</div>
                     </div>
                     <div class="card-body">
                         <div class="alert alert-info">
@@ -248,7 +248,7 @@
 
             <div class="card">
                 <div class="card-header">
-                    <div class="heading-body"><div class"card-title">{__('server')}</div></div>
+                    <div class="heading-body"><div class="subheading1">{__('server')}</div></div>
                     <div class="heading-right">
                         <a href="systemcheck.php" class="btn btn-primary btn-xs text-uppercase">{__('details')}</a>
                     </div>

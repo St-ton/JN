@@ -11,8 +11,8 @@
                 <span class="input-group-addon">
                     <label for="{__('brandingActive')}">{__('brandingPictureKat')}:</label>
                 </span>
-                <span class="input-group-wrap">
-                    <select name="kBranding" class="form-control selectBox" id="{__('brandingActive')}" onchange="document.branding.submit();">
+                <span class="label-wrap">
+                    <select name="kBranding" class="custom-select selectBox" id="{__('brandingActive')}" onchange="document.branding.submit();">
                         {foreach $oBranding_arr as $oBrandingTMP}
                             <option value="{$oBrandingTMP->kBranding}" {if $oBrandingTMP->kBranding == $oBranding->kBrandingTMP}selected{/if}>{__($oBrandingTMP->cBildKategorie)}</option>
                         {/foreach}
@@ -31,7 +31,8 @@
                 <input type="hidden" name="speicher_einstellung" value="1" />
                 <div class="card">
                     <div class="card-header">
-                        <div class="card-title">{{__('headingEditBrandingForProduct')}|sprintf:{$oBranding->cBildKategorie}}</div>
+                        <div class="subheading1">{{__('headingEditBrandingForProduct')}|sprintf:{$oBranding->cBildKategorie}}</div>
+                        <hr class="mb-n3">
                     </div>
                     <div class="card-body">
                         {if $oBranding->cBrandingBild|strlen > 0}
@@ -39,24 +40,20 @@
                                 <img src="{$shopURL}/{$PFAD_BRANDINGBILDER}{$oBranding->cBrandingBild}?rnd={$cRnd}" alt="" />
                             </div>
                         {/if}
-                        <div class="input-group">
-                            <span class="input-group-addon">
-                                <label for="nAktiv">{__('brandingActive')}</label>
-                            </span>
-                            <span class="input-group-wrap">
-                                <select name="nAktiv" id="nAktiv" class="form-control combo">
+                        <div class="form-group form-row align-items-center">
+                            <label class="col col-sm-4 col-form-label text-sm-right" for="nAktiv">{__('brandingActive')}:</label>
+                            <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                <select name="nAktiv" id="nAktiv" class="custom-select combo">
                                     <option value="1"{if $oBranding->nAktiv == 1} selected{/if}>{__('yes')}</option>
                                     <option value="0"{if $oBranding->nAktiv == 0} selected{/if}>{__('no')}</option>
                                 </select>
-                            </span>
-                            <span class="input-group-addon">{getHelpDesc cDesc=__('brandingActiveDesc')}</span>
+                            </div>
+                            <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=__('brandingActiveDesc')}</div>
                         </div>
-                        <div class="input-group">
-                            <span class="input-group-addon">
-                                <label for="cPosition">{__('position')}</label>
-                            </span>
-                            <span class="input-group-wrap">
-                                <select name="cPosition" id="cPosition" class="form-control combo">
+                        <div class="form-group form-row align-items-center">
+                            <label class="col col-sm-4 col-form-label text-sm-right" for="cPosition">{__('position')}:</label>
+                            <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                <select name="cPosition" id="cPosition" class="custom-select combo">
                                     <option value="oben"{if $oBranding->cPosition === 'oben'} selected{/if}>
                                         {__('top')}
                                     </option>
@@ -85,35 +82,29 @@
                                         {__('centered')}
                                     </option>
                                 </select>
-                            </span>
-                            <span class="input-group-addon">{getHelpDesc cDesc=__('brandingPositionDesc')}</span>
+                            </div>
+                            <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=__('brandingPositionDesc')}</div>
                         </div>
-                        <div class="input-group">
-                            <span class="input-group-addon">
-                                <label for="dTransparenz">{__('transparency')}</label>
-                            </span>
-                            <span class="input-group-wrap">
+                        <div class="form-group form-row align-items-center">
+                            <label class="col col-sm-4 col-form-label text-sm-right" for="dTransparenz">{__('transparency')}:</label>
+                            <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                 <input class="form-control" type="text" name="dTransparenz" id="dTransparenz" value="{$oBranding->dTransparenz}" tabindex="1" />
-                            </span>
-                            <span class="input-group-addon">{getHelpDesc cDesc=__('brandingTransparencyDesc')}</span>
+                            </div>
+                            <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=__('brandingTransparencyDesc')}</div>
                         </div>
-                        <div class="input-group">
-                            <span class="input-group-addon">
-                                <label for="dGroesse">{__('size')}</label>
-                            </span>
-                            <span class="input-group-wrap">
+                        <div class="form-group form-row align-items-center">
+                            <label class="col col-sm-4 col-form-label text-sm-right" for="dGroesse">{__('size')}:</label>
+                            <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                 <input class="form-control" type="text" name="dGroesse" id="dGroesse" value="{$oBranding->dGroesse}" tabindex="1" />
-                            </span>
-                            <span class="input-group-addon">{getHelpDesc cDesc=__('brandingSizeDesc')}</span>
+                            </div>
+                            <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=__('brandingSizeDesc')}</div>
                         </div>
-                        <div class="input-group">
-                            <span class="input-group-addon">
-                                <label for="cBrandingBild">{__('brandingFileName')}</label>
-                            </span>
-                            <span class="input-group-wrap">
+                        <div class="form-group form-row align-items-center">
+                            <label class="col col-sm-4 col-form-label text-sm-right" for="cBrandingBild">{__('brandingFileName')}:</label>
+                            <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                 <input class="form-control" type="file" name="cBrandingBild" maxlength="2097152" accept="image/jpeg,image/gif,image/png,image/bmp" id="cBrandingBild" value="" tabindex="1" {if !$oBranding->cBrandingBild|strlen > 0}required{/if}/>
-                            </span>
-                            <span class="input-group-addon">{getHelpDesc cDesc=__('brandingFileNameDesc')}</span>
+                            </div>
+                            <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=__('brandingFileNameDesc')}</div>
                         </div>
                     </div>
                     <div class="card-footer">

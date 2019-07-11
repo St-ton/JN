@@ -21,50 +21,53 @@
             <input name="a" type="hidden" value="update" />
             <div class="card">
                 <div class="card-header">
-                    <div class="card-title">{__('warenlager')}</div>
+                    <span class="subheading1">{__('warenlager')}</span>
+                    <hr class="mb-n3">
                 </div>
-                <div class="table-responsive">
-                    <table class="list table">
-                        <thead>
-                        <tr>
-                            <th class="checkext">{__('warenlagerActive')}</th>
-                            <th>{__('warenlagerIntern')}</th>
-                            <th>{__('description')}</th>
-                            <th>{__('options')}</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {foreach $oWarenlager_arr as $oWarenlager}
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="list table">
+                            <thead>
                             <tr>
-                                <td class="checkext">
-                                    <input name="kWarenlager[]" type="checkbox" value="{$oWarenlager->kWarenlager}"{if $oWarenlager->nAktiv == 1} checked{/if} />
-                                </td>
-                                <td class="tcenter large">{$oWarenlager->cName}</td>
-                                <td class="tcenter">{$oWarenlager->cBeschreibung}</td>
-                                <td class="tcenter">
-                                    <a class="btn btn-default" data-toggle="collapse" href="#collapse-{$oWarenlager->kWarenlager}" title="{__('edit')}"><i class="fa fa-edit"></i></a>
-                                </td>
+                                <th class="checkext">{__('warenlagerActive')}</th>
+                                <th>{__('warenlagerIntern')}</th>
+                                <th>{__('description')}</th>
+                                <th>{__('options')}</th>
                             </tr>
-                            <tr class="collapse" id="collapse-{$oWarenlager->kWarenlager}">
-                                <td colspan="4">
-                                {foreach $sprachen as $language}
-                                    {assign var=kSprache value=$language->getId()}
-                                    <div class="input-group">
-                                        <span class="input-group-addon">
-                                            <label for="cNameSprache[{$oWarenlager->kWarenlager}][{$kSprache}]">{$language->getLocalizedName()}</label>
-                                        </span>
-                                        <input id="cNameSprache[{$oWarenlager->kWarenlager}][{$kSprache}]"
-                                               name="cNameSprache[{$oWarenlager->kWarenlager}][{$kSprache}]"
-                                               type="text"
-                                               value="{if isset($oWarenlager->cSpracheAssoc_arr[$kSprache])}{$oWarenlager->cSpracheAssoc_arr[$kSprache]}{/if}"
-                                               class="form-control large" />
-                                    </div>
-                                {/foreach}
-                                </td>
-                            </tr>
-                        {/foreach}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                            {foreach $oWarenlager_arr as $oWarenlager}
+                                <tr>
+                                    <td class="checkext">
+                                        <input name="kWarenlager[]" type="checkbox" value="{$oWarenlager->kWarenlager}"{if $oWarenlager->nAktiv == 1} checked{/if} />
+                                    </td>
+                                    <td class="tcenter large">{$oWarenlager->cName}</td>
+                                    <td class="tcenter">{$oWarenlager->cBeschreibung}</td>
+                                    <td class="tcenter">
+                                        <a class="btn btn-default" data-toggle="collapse" href="#collapse-{$oWarenlager->kWarenlager}" title="{__('edit')}"><i class="fa fa-edit"></i></a>
+                                    </td>
+                                </tr>
+                                <tr class="collapse" id="collapse-{$oWarenlager->kWarenlager}">
+                                    <td colspan="4">
+                                    {foreach $sprachen as $language}
+                                        {assign var=kSprache value=$language->getId()}
+                                        <div class="form-group form-row align-items-center mb-5 mb-md-3">
+                                            <label class="col col-sm-4 col-form-label text-sm-right order-1" for="cNameSprache[{$oWarenlager->kWarenlager}][{$kSprache}]">{$language->getLocalizedName()}</label>
+                                            <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                                <input id="cNameSprache[{$oWarenlager->kWarenlager}][{$kSprache}]"
+                                                       name="cNameSprache[{$oWarenlager->kWarenlager}][{$kSprache}]"
+                                                       type="text"
+                                                       value="{if isset($oWarenlager->cSpracheAssoc_arr[$kSprache])}{$oWarenlager->cSpracheAssoc_arr[$kSprache]}{/if}"
+                                                       class="form-control large" />
+                                            </div>
+                                        </div>
+                                    {/foreach}
+                                    </td>
+                                </tr>
+                            {/foreach}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
                 <div class="card-footer">
                     <button name="update" type="submit" title="{__('update')}" class="btn btn-primary"><i class="fa fa-refresh"></i> {__('update')}</button>

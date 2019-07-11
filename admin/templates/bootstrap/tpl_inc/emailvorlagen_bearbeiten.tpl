@@ -15,7 +15,7 @@
             {if $mailTemplate->getModuleID() !== 'core_jtl_anbieterkennzeichnung'}
                 <div class="settings card">
                     <div class="card-header">
-                        <div class"card-title">{__('settings')}</div>
+                        <div class="subheading1">{__('settings')}</div>
                     </div>
                     <div class="card-body">
                         <div class="input-group">
@@ -129,7 +129,7 @@
             {/if}
             <div class="box_info card">
                 <div class="card-header">
-                    <div class"card-title">{__('placeholder')} ({__('example')})</div>
+                    <div class="subheading1">{__('placeholder')} ({__('example')})</div>
                 </div>
                 <div class="card-body">
                     <code>
@@ -160,7 +160,7 @@
                 <div class="box_info card">
                     {assign var=kSprache value=$language->getId()}
                     <div class="card-header">
-                        <div class"card-title">{__('content')} {$language->getLocalizedName()}</div>
+                        <div class="subheading1">{__('content')} {$language->getLocalizedName()}</div>
                     </div>
                     <div class="card-body">
                         {if $mailTemplate->getModuleID() !== 'core_jtl_anbieterkennzeichnung'}

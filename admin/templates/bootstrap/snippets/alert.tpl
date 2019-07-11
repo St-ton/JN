@@ -3,7 +3,7 @@
  * @license https://jtl-url.de/jtlshoplicense
  *}
 <div
-    class="row alert alert-{$alert->getCssType()}"
+    class="row alert alert-{$alert->getCssType()} align-items-center"
     data-fade-out="{$alert->getFadeOut()}"
     data-key="{$alert->getKey()}"
     {if $alert->getId()}id="{$alert->getId()}"{/if}

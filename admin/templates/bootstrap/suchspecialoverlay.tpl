@@ -14,11 +14,11 @@
             {$jtl_token}
             <div class="p25 input-group">
                 <span class="input-group-addon">
-                    <label for="{__('suchspecial')}">{__('suchspecial')}</label>
+                    <label for="{__('suchspecial')}">{__('suchspecial')}:</label>
                 </span>
                 <input type="hidden" name="suchspecialoverlay" value="1" />
-                <span class="input-group-wrap last">
-                    <select name="kSuchspecialOverlay" class="form-control selectBox" id="{__('suchspecial')}" onchange="document.suchspecialoverlay.submit();">
+                <span class="label-wrap last">
+                    <select name="kSuchspecialOverlay" class="custom-select selectBox" id="{__('suchspecial')}" onchange="document.suchspecialoverlay.submit();">
                         {foreach $oSuchspecialOverlay_arr as $oSuchspecialOverlayTMP}
                             <option value="{$oSuchspecialOverlayTMP->getType()}" {if $oSuchspecialOverlayTMP->getType() == $oSuchspecialOverlay->getType()}selected{/if}>{$oSuchspecialOverlayTMP->getName()}</option>
                         {/foreach}
@@ -39,82 +39,70 @@
                 <div class="no_overflow card" id="settings">
                     <div class="card-body">
                         <img src="{$oSuchspecialOverlay->getURL($smarty.const.IMAGE_SIZE_SM)}?rnd={$cRnd}" style="margin-bottom: 15px;" />
-                        <div class="input-group">
-                            <span class="input-group-addon">
-                                <label for="nAktiv">{__('suchspecialoverlayActive')}</label>
-                            </span>
-                            <span class="input-group-wrap">
-                                <select name="nAktiv" id="nAktiv" class="form-control combo">
+                        <div class="form-group form-row align-items-center">
+                            <label class="col col-sm-4 col-form-label text-sm-right" for="nAktiv">{__('suchspecialoverlayActive')}:</label>
+                            <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                <select name="nAktiv" id="nAktiv" class="custom-select combo">
                                     <option value="1"{if $oSuchspecialOverlay->getActive() == 1} selected{/if}>{__('yes')}
                                     </option>
                                     <option value="0"{if $oSuchspecialOverlay->getActive() == 0} selected{/if}>{__('no')}
                                     </option>
                                 </select>
-                            </span>
-                            <span class="input-group-addon">
+                            </div>
+                            <div class="col-auto ml-sm-n4 order-2 order-sm-3">
                                 {getHelpDesc cDesc=__('suchspecialoverlayActiveDesc')}
-                            </span>
+                            </div>
                         </div>
 
-                        <div class="input-group file-input">
-                            <span class="input-group-addon">
-                                <label for="cSuchspecialOverlayBild">{__('suchspecialoverlayFileName')}</label>
-                            </span>
-                            <span class="input-group-wrap">
+                        <div class="form-group form-row align-items-center file-input">
+                            <label class="col col-sm-4 col-form-label text-sm-right" for="cSuchspecialOverlayBild">{__('suchspecialoverlayFileName')}:</label>
+                            <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                 <input class="form-control" type="file" name="cSuchspecialOverlayBild" accept="image/jpeg,image/gif,image/png,image/bmp" id="cSuchspecialOverlayBild" value="" tabindex="1" />
-                            </span>
-                            <span class="input-group-addon">
+                            </div>
+                            <div class="col-auto ml-sm-n4 order-2 order-sm-3">
                                 {getHelpDesc cDesc=__('suchspecialoverlayFileNameDesc')}
-                            </span>
+                            </div>
                         </div>
-                        <div class="input-group">
-                            <span class="input-group-addon">
-                                <label for="nPrio">{__('suchspecialoverlayPrio')}</label>
-                            </span>
-                            <span class="input-group-wrap">
-                                <select id="nPrio" name="nPrio" class="form-control combo">
+                        <div class="form-group form-row align-items-center">
+                            <label class="col col-sm-4 col-form-label text-sm-right" for="nPrio">{__('suchspecialoverlayPrio')}:</label>
+                            <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                <select id="nPrio" name="nPrio" class="custom-select combo">
                                     <option value="-1"></option>
                                     {section name=prios loop=$nSuchspecialOverlayAnzahl start=1 step=1}
                                         <option value="{$smarty.section.prios.index}"{if $smarty.section.prios.index == $oSuchspecialOverlay->getPriority()} selected{/if}>{$smarty.section.prios.index}</option>
                                     {/section}
                                 </select>
-                            </span>
-                            <span class="input-group-addon">
+                            </div>
+                            <div class="col-auto ml-sm-n4 order-2 order-sm-3">
                                 {getHelpDesc cDesc=__('suchspecialoverlayPrioDesc')}
-                            </span>
+                            </div>
                         </div>
-                        <div class="input-group">
-                            <span class="input-group-addon">
-                                <label for="nTransparenz">{__('transparency')}</label>
-                            </span>
-                            <span class="input-group-wrap">
-                                <select name="nTransparenz" class="form-control combo" id="nTransparenz">
+                        <div class="form-group form-row align-items-center">
+                            <label class="col col-sm-4 col-form-label text-sm-right" for="nTransparenz">{__('transparency')}:</label>
+                            <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                <select name="nTransparenz" class="custom-select combo" id="nTransparenz">
                                     {section name=transparenz loop=101 start=0 step=1}
                                         <option value="{$smarty.section.transparenz.index}"{if $smarty.section.transparenz.index == $oSuchspecialOverlay->getTransparance()} selected{/if}>{$smarty.section.transparenz.index}</option>
                                     {/section}
                                 </select>
-                            </span>
-                            <span class="input-group-addon">
+                            </div>
+                            <div class="col-auto ml-sm-n4 order-2 order-sm-3">
                                 {getHelpDesc cDesc=__('suchspecialoverlayClarityDesc')}
-                            </span>
+                            </div>
                         </div>
-                        <div class="input-group">
-                            <span class="input-group-addon">
-                                <label for="nGroesse">{__('suchspecialoverlaySize')}</label>
-                            </span>
-                            <span class="input-group-wrap">
+                        <div class="form-group form-row align-items-center">
+                            <label class="col col-sm-4 col-form-label text-sm-right" for="nGroesse">{__('suchspecialoverlaySize')}:</label>
+                            <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                 <input id="nGroesse" class="form-control" name="nGroesse" type="number" value="{$oSuchspecialOverlay->getSize()}" />
-                            </span>
-                            <span class="input-group-addon">
+                            </div>
+                            <div class="col-auto ml-sm-n4 order-2 order-sm-3">
                                 {getHelpDesc cDesc=__('suchspecialoverlaySizeDesc')}
-                            </span>
+                            </div>
                         </div>
-                        <div class="input-group">
-                            <span class="input-group-addon">
-                                <label for="nPosition">{__('position')}</label>
-                            </span>
-                            <span class="input-group-wrap">
-                                <select name="nPosition" id="nPosition" class="combo form-control"{if !empty($isDeprecated)} disabled="disabled"{/if}>
+                        <div class="form-group form-row align-items-center">
+                            <label class="col col-sm-4 col-form-label text-sm-right" for="nPosition">{__('position')}:</label>
+                            <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                <select name="nPosition" id="nPosition" class="combo custom-select {if !empty($isDeprecated)} disabled="disabled"{/if}>
                                     <option value="1"{if $oSuchspecialOverlay->getPosition() === 1} selected{/if}>
                                         {__('topLeft')}
                                     </option>
@@ -143,10 +131,10 @@
                                         {__('centered')}
                                     </option>
                                 </select>
-                            </span>
-                            <span class="input-group-addon">
+                            </div>
+                            <div class="col-auto ml-sm-n4 order-2 order-sm-3">
                                 {getHelpDesc cDesc=__('suchspecialoverlayPositionDesc')}
-                            </span>
+                            </div>
                         </div>
                     </div>
                     <div class="card-footer">

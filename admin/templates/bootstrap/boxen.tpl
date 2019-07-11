@@ -105,7 +105,7 @@
             {$jtl_token}
             <div class="card editorInner">
                 <div class="card-header">
-                    <div class="card-title">{__('invisibleBoxes')}</div>
+                    <div class="subheading1">{__('invisibleBoxes')}</div>
                 </div>
                 <div class="table-responsive">
                     <table class="table">
@@ -168,22 +168,23 @@
                     {$jtl_token}
                     <div class="card editorInner">
                         <div class="card-header">
-                            <div class="card-title">{__('boxEdit')}</div>
+                            <div class="subheading1">{__('boxEdit')}</div>
+                            <hr class="mb-n3">
                         </div>
                         <div class="card-body">
-                            <div class="input-group">
-                                <span class="input-group-addon">
-                                    <label for="boxtitle">{__('boxTitle')}:</label>
-                                </span>
-                                <input class="form-control" id="boxtitle" type="text" name="boxtitle" value="{$oEditBox->cTitel}" />
+                            <div class="form-group form-row align-items-center">
+                                <label class="col col-sm-4 col-form-label text-sm-right"for="boxtitle">{__('boxTitle')}:</label>
+                                <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                    <input class="form-control" id="boxtitle" type="text" name="boxtitle" value="{$oEditBox->cTitel}" />
+                                </div>
                             </div>
                             {if $oEditBox->eTyp === 'text'}
                                 {foreach $oSprachen_arr as $language}
-                                    <div class="input-group">
-                                        <span class="input-group-addon">
-                                            <label for="title-{$language->getIso()}">{__('boxTitle')} {$language->getLocalizedName()}</label>
-                                        </span>
-                                        <input class="form-control" id="title-{$language->getIso()}" type="text" name="title[{$language->getIso()}]" value="{foreach $oEditBox->oSprache_arr  as $oBoxSprache}{if $language->getIso() === $oBoxSprache->cISO}{$oBoxSprache->cTitel}{/if}{/foreach}" />
+                                    <div class="form-group form-row align-items-center">
+                                        <label class="col col-sm-4 col-form-label text-sm-right"for="title-{$language->getIso()}">{__('boxTitle')} {$language->getLocalizedName()}</label>
+                                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                            <input class="form-control" id="title-{$language->getIso()}" type="text" name="title[{$language->getIso()}]" value="{foreach $oEditBox->oSprache_arr  as $oBoxSprache}{if $language->getIso() === $oBoxSprache->cISO}{$oBoxSprache->cTitel}{/if}{/foreach}" />
+                                        </div>
                                     </div>
                                     <textarea id="text-{$language->getIso()}" name="text[{$language->getIso()}]" class="form-control ckeditor" rows="15" cols="60">
                                         {foreach $oEditBox->oSprache_arr as $oBoxSprache}{if $language->getIso() === $oBoxSprache->cISO}{$oBoxSprache->cInhalt}{/if}{/foreach}
@@ -191,36 +192,30 @@
                                     <hr>
                                 {/foreach}
                             {elseif $oEditBox->eTyp === 'catbox'}
-                                <div class="input-group">
-                                    <span class="input-group-addon">
-                                        <label for="linkID">{__('catBoxNum')}</label>
-                                    </span>
-                                    <input class="form-control" id="linkID" type="text" name="linkID" value="{$oEditBox->kCustomID}" size="3">
-                                    <span class="input-group-addon">
-                                        <button type="button" class="btn-tooltip btn btn-info btn-heading"
-                                                data-html="true" data-toggle="tooltip" data-placement="left" title=""
-                                                data-original-title="{__('catBoxNumTooltip')}">
-                                            <i class="fa fa-question"></i>
-                                        </button>
-                                    </span>
+                                <div class="form-group form-row align-items-center">
+                                    <label class="col col-sm-4 col-form-label text-sm-right"for="linkID">{__('catBoxNum')}:</label>
+                                    <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                        <input class="form-control" id="linkID" type="text" name="linkID" value="{$oEditBox->kCustomID}">
+                                    </div>
+                                    <div class="col-auto ml-sm-n4 order-2 order-sm-3">
+                                        {getHelpDesc cDesc=__('catBoxNumTooltip')}
+                                    </div>
                                 </div>
                                 {foreach $oSprachen_arr as $language}
-                                    <div class="input-group">
-                                        <span class="input-group-addon">
-                                            <label for="title-{$language->getIso()}">{__('boxTitle')} {$language->getLocalizedName()}:</label>
-                                        </span>
-                                        <input class="form-control" id="title-{$language->getIso()}" type="text"
-                                               name="title[{$language->getIso()}]"
-                                               value="{foreach $oEditBox->oSprache_arr as $oBoxSprache}{if $language->getIso() === $oBoxSprache->cISO}{$oBoxSprache->cTitel}{/if}{/foreach}">
+                                    <div class="form-group form-row align-items-center">
+                                        <label class="col col-sm-4 col-form-label text-sm-right"for="title-{$language->getIso()}">{__('boxTitle')} {$language->getLocalizedName()}:</label>
+                                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                            <input class="form-control" id="title-{$language->getIso()}" type="text"
+                                                   name="title[{$language->getIso()}]"
+                                                   value="{foreach $oEditBox->oSprache_arr as $oBoxSprache}{if $language->getIso() === $oBoxSprache->cISO}{$oBoxSprache->cTitel}{/if}{/foreach}">
+                                        </div>
                                     </div>
                                 {/foreach}
                             {elseif $oEditBox->eTyp === 'link'}
-                                <div class="input-group">
-                                    <span class="input-group-addon">
-                                        <label for="linkID">{__('linkgroup')}</label>
-                                    </span>
-                                    <span class="input-group-wrap">
-                                        <select class="form-control" id="linkID" name="linkID" required>
+                                <div class="form-group form-row align-items-center">
+                                    <label class="col col-sm-4 col-form-label text-sm-right"for="linkID">{__('linkgroup')}</label>
+                                    <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                        <select class="custom-select" id="linkID" name="linkID" required>
                                             <option value="" {if $oEditBox->kCustomID == 0}selected="selected"{/if}>{__('FillOut')}</option>
                                             {foreach $oLink_arr as $link}
                                                 <option value="{$link->getID()}" {if $link->getID() == $oEditBox->kCustomID}selected="selected"{/if}>
@@ -228,14 +223,14 @@
                                                 </option>
                                             {/foreach}
                                         </select>
-                                    </span>
+                                    </div>
                                 </div>
                                 {foreach $oSprachen_arr as $language}
-                                    <div class="input-group">
-                                        <span class="input-group-addon">
-                                            <label for="title-{$language->getIso()}">{__('boxTitle')} {$language->getLocalizedName()}</label>
-                                        </span>
-                                        <input class="form-control" id="title-{$language->getIso()}" type="text" name="title[{$language->getIso()}]" value="{foreach $oEditBox->oSprache_arr as $oBoxSprache}{if $language->getIso() === $oBoxSprache->cISO}{$oBoxSprache->cTitel}{/if}{/foreach}" />
+                                    <div class="form-group form-row align-items-center">
+                                        <label class="col col-sm-4 col-form-label text-sm-right"for="title-{$language->getIso()}">{__('boxTitle')} {$language->getLocalizedName()}</label>
+                                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                            <input class="form-control" id="title-{$language->getIso()}" type="text" name="title[{$language->getIso()}]" value="{foreach $oEditBox->oSprache_arr as $oBoxSprache}{if $language->getIso() === $oBoxSprache->cISO}{$oBoxSprache->cTitel}{/if}{/foreach}" />
+                                        </div>
                                     </div>
                                 {/foreach}
                             {/if}
@@ -257,18 +252,18 @@
                 </form>
             </div>
         {else}
-            <div class="">
-                {if $nPage === 0}
-                    <div class="alert alert-info">{__('warningChangesForAllPages')}</div>
-                {/if}
+            {if $nPage === 0}
+                <div class="alert alert-info">{__('warningChangesForAllPages')}</div>
+            {/if}
+            <div class="block">
                 <form name="boxen" method="post" action="boxen.php">
                     {$jtl_token}
-                    <div class="input-group p25 left">
+                    <div class="input-group left">
                         <span class="input-group-addon">
                             <label for="{__('page')}">{__('page')}:</label>
                         </span>
-                        <span class="input-group-wrap last">
-                            <select name="page" class="selectBox form-control" id="{__('page')}" onchange="document.boxen.submit();">
+                        <span class="label-wrap last">
+                            <select name="page" class="selectBox custom-select" id="{__('page')}" onchange="document.boxen.submit();">
                                 {include file='tpl_inc/seiten_liste.tpl'}
                             </select>
                         </span>

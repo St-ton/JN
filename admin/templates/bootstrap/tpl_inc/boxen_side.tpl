@@ -4,8 +4,8 @@
             <form action="boxen.php" method="post">
                 {$jtl_token}
                 <div class="card-header">
-                    <h3>{$directionName}</h3>
-                    <hr>
+                    <div class="subheading1">{$directionName}</div>
+                    <hr class="mb-n3">
                 </div>
                 <div class="card-header">
                     <input type="checkbox" name="box_show" id="box_{$direction}_show" value="1"
@@ -62,7 +62,7 @@
                             <label class="control-label" for="newBox_{$direction}">{__('new')}:</label>
                         </div>
                         <div class="col-sm-10">
-                            <select id="newBox_{$direction}" name="item" class="form-control" onchange="document.newBox_{$direction}.submit();">
+                            <select id="newBox_{$direction}" name="item" class="custom-select" onchange="document.newBox_{$direction}.submit();">
                                 <option value="0">{__('pleaseSelect')}</option>
                                 {foreach $oVorlagen_arr as $oVorlagen}
                                     <optgroup label="{$oVorlagen->cName}">

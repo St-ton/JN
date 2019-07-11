@@ -478,11 +478,11 @@ class TestHydrator extends DefaultsHydrator
         $deliveryNote = new Lieferschein();
         $deliveryNote->setEmailVerschickt(false);
         $deliveryNote->oVersand_arr = [];
-        $oVersand                   = new Versand();
-        $oVersand->setLogistikURL('http://nolp.dhl.de/nextt-online-public/' .
+        $shipping                   = new Versand();
+        $shipping->setLogistikURL('http://nolp.dhl.de/nextt-online-public/' .
             'report_popup.jsp?lang=de&zip=#PLZ#&idc=#IdentCode#');
-        $oVersand->setIdentCode('123456');
-        $deliveryNote->oVersand_arr[]  = $oVersand;
+        $shipping->setIdentCode('123456');
+        $deliveryNote->oVersand_arr[]  = $shipping;
         $deliveryNote->oPosition_arr   = [];
         $deliveryNote->oPosition_arr[] = $item;
         $deliveryNote->oPosition_arr[] = $item;
@@ -555,13 +555,13 @@ class TestHydrator extends DefaultsHydrator
      */
     private function getBonus(): stdClass
     {
-        $customerBonus                          = new stdClass();
-        $customerBonus->kKunde                  = 1379;
-        $customerBonus->fGuthaben               = '2,00 &euro';
-        $customerBonus->nBonuspunkte            = 0;
-        $customerBonus->dErhalten               = 'NOW()';
-        $customerBonus->fGuthabenBonusLocalized = Preise::getLocalizedPriceString(2.00);
+        $bonus                          = new stdClass();
+        $bonus->kKunde                  = 1379;
+        $bonus->fGuthaben               = '2,00 &euro';
+        $bonus->nBonuspunkte            = 0;
+        $bonus->dErhalten               = 'NOW()';
+        $bonus->fGuthabenBonusLocalized = Preise::getLocalizedPriceString(2.00);
 
-        return $customerBonus;
+        return $bonus;
     }
 }

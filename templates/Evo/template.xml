@@ -286,6 +286,7 @@
             <File Path="themes/yeti/custom.css"/>
         </CSS>
         <JS Name="jtl3.js">
+            <File Path="js/jquery.touch.min.js"/>
             <File Path="js/jquery.backstretch.min.js"/>
             <File Path="js/jquery.dimension.js"/>
             <File Path="js/jquery.offcanvas.js"/>

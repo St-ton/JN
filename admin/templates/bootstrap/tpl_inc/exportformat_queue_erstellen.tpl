@@ -2,7 +2,7 @@
 {literal}
     <script type="text/javascript">
         $(document).ready(function () {
-            $('#nAlleXStunden').on('change', function () {
+            $('#nAlleXStunden').change(function () {
                 var val = $(this).val(),
                     customField = $('#custom-freq-input');
                 if (val === 'custom') {

@@ -122,7 +122,7 @@
                                                     </td>
                                                 </tr>
                                                 <script>
-                                                    $("#btn_toggle_{$oAuswahlAssistentGruppe->kAuswahlAssistentGruppe}").on('click', function () {
+                                                    $("#btn_toggle_{$oAuswahlAssistentGruppe->kAuswahlAssistentGruppe}").click(function () {
                                                         $("#row_toggle_{$oAuswahlAssistentGruppe->kAuswahlAssistentGruppe}").slideToggle(100, 'linear');
                                                         $("#rowdiv_toggle_{$oAuswahlAssistentGruppe->kAuswahlAssistentGruppe}").slideToggle(100, 'linear');
                                                     });

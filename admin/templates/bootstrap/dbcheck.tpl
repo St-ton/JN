@@ -93,7 +93,7 @@
 <script>
     {literal}
     $(document).ready(function () {
-        $('#viewAll').on('click', function () {
+        $('#viewAll').click(function () {
             $('#viewAll').hide();
             $('#viewModified').show().removeClass('hide');
             $('.unmodified').show();
@@ -101,7 +101,7 @@
             colorLines();
         });
 
-        $('#viewModified').on('click', function () {
+        $('#viewModified').click(function () {
             $('#viewAll').show().removeClass('hide');
             $('#viewModified').hide();
             $('.unmodified').hide();

@@ -13,16 +13,13 @@ use JTL\Catalog\Product\Artikel;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
 use JTL\Kampagne;
-use JTL\Language\LanguageModel;
 use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
-use JTL\Model\DataModel;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Smarty\ContextType;
 use JTL\Smarty\JTLSmarty;
 use JTL\Smarty\SmartyResourceNiceDB;
-use JTL\Sprache;
 use stdClass;
 
 /**
@@ -223,8 +220,8 @@ class Newsletter
             ->assign('Kampagne', $campaign);
 
         try {
-            $this->smarty->fetch('db:VL_' . $template->kNewsletterVorlage . '_html');
-            $this->smarty->fetch('db:VL_' . $template->kNewsletterVorlage . '_text');
+            $template->cInhaltHTML = $this->smarty->fetch('db:VL_' . $template->kNewsletterVorlage . '_html');
+            $template->cInhaltText = $this->smarty->fetch('db:VL_' . $template->kNewsletterVorlage . '_text');
         } catch (Exception $e) {
             return $e->getMessage();
         }

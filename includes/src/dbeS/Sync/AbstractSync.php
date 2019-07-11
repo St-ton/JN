@@ -492,7 +492,6 @@ abstract class AbstractSync
         }
 
         $prices = isset($xml['tpreis']) ? $this->mapper->mapArray($xml, 'tpreis', 'mPreis') : [];
-
         // Delete prices and price details from not existing customer groups
         $this->db->queryPrepared(
             'DELETE tpreis, tpreisdetail
@@ -513,9 +512,7 @@ abstract class AbstractSync
                     INNER JOIN tpreisdetail ON tpreisdetail.kPreis = tpreis.kPreis
                 WHERE tpreis.kArtikel = :productID
                     AND tpreisdetail.nAnzahlAb > 0',
-            [
-                'productID' => $productID,
-            ],
+            ['productID' => $productID],
             ReturnType::DEFAULT
         );
         // Insert price record for each customer group - ignore existing
@@ -523,9 +520,7 @@ abstract class AbstractSync
             'INSERT IGNORE INTO tpreis (kArtikel, kKundengruppe, kKunde)
                 SELECT :productID, kKundengruppe, 0
                 FROM tkundengruppe',
-            [
-                'productID' => $productID,
-            ],
+            ['productID' => $productID],
             ReturnType::DEFAULT
         );
         // Insert base price for each price record - update existing
@@ -607,34 +602,31 @@ abstract class AbstractSync
      */
     protected function getSeoFromDB(int $keyValue, string $keyName, int $langID = null, $assoc = null)
     {
-        if (!($keyValue > 0 && \strlen($keyName) > 0)) {
+        if ($keyValue <= 0 || \strlen($keyName) === 0) {
             return null;
         }
-        if ($langID !== null && $langID > 0) {
-            $oSeo = $this->db->select('tseo', 'kKey', $keyValue, 'cKey', $keyName, 'kSprache', $langID);
-            if (isset($oSeo->kKey) && (int)$oSeo->kKey > 0) {
-                return $oSeo;
-            }
-        } else {
-            $seo = $this->db->selectAll('tseo', ['kKey', 'cKey'], [$keyValue, $keyName]);
-            if (\count($seo) > 0) {
-                if ($assoc !== null && \strlen($assoc) > 0) {
-                    $seoData = [];
-                    foreach ($seo as $oSeo) {
-                        if (isset($oSeo->{$assoc})) {
-                            $seoData[$oSeo->{$assoc}] = $oSeo;
-                        }
-                    }
-                    if (\count($seoData) > 0) {
-                        $seo = $seoData;
-                    }
-                }
+        if ($langID > 0) {
+            $seo = $this->db->select('tseo', 'kKey', $keyValue, 'cKey', $keyName, 'kSprache', $langID);
 
-                return $seo;
+            return isset($seo->kKey) && (int)$seo->kKey > 0 ? $seo : null;
+        }
+        $seo = $this->db->selectAll('tseo', ['kKey', 'cKey'], [$keyValue, $keyName]);
+        if (\count($seo) === 0) {
+            return null;
+        }
+        if ($assoc !== null && \strlen($assoc) > 0) {
+            $seoData = [];
+            foreach ($seo as $oSeo) {
+                if (isset($oSeo->{$assoc})) {
+                    $seoData[$oSeo->{$assoc}] = $oSeo;
+                }
+            }
+            if (\count($seoData) > 0) {
+                $seo = $seoData;
             }
         }
 
-        return null;
+        return $seo;
     }
 
     /**

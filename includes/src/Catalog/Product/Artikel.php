@@ -6074,6 +6074,13 @@ class Artikel
         $mwst     = $this->mwstFormat(Tax::getSalesTax($this->kSteuerklasse));
         $ust      = '';
         $versand  = '';
+        $langCode = Shop::getLanguageCode();
+        if ($langCode === '') {
+            $langCode = 'ger';
+        }
+        if (!isset($_SESSION['Link_Versandseite'][$langCode])) {
+            return '';
+        }
         if ($this->conf['global']['global_versandhinweis'] === 'zzgl') {
             $versand   = ', ';
             $countries = $this->gibMwStVersandLaenderString();
@@ -6089,26 +6096,26 @@ class Artikel
                         Shop::Lang()->get('noShippingCostsAtExtended', 'basket', '') .
                          \trim($countryString) . ', ' . Shop::Lang()->get('else') . ' ' .
                         Shop::Lang()->get('plus', 'basket') .
-                        ' <a href="' . $_SESSION['Link_Versandseite'][Shop::getLanguageCode()] .
+                        ' <a href="' . $_SESSION['Link_Versandseite'][$langCode] .
                         '" rel="nofollow" class="shipment">' .
                         Shop::Lang()->get('shipping', 'basket') . '</a>';
                 } else {
                     $versand .= '<a href="' .
-                        $_SESSION['Link_Versandseite'][Shop::getLanguageCode()] .
+                        $_SESSION['Link_Versandseite'][$langCode] .
                         '" rel="nofollow" class="shipment" data-toggle="tooltip" data-placement="left" title="' .
                         $countries . ', ' . Shop::Lang()->get('else') . ' ' .
                         Shop::Lang()->get('plus', 'basket') . ' ' . Shop::Lang()->get('shipping', 'basket') . '">' .
                         Shop::Lang()->get('noShippingcostsTo') . '</a>';
                 }
-            } elseif (isset($_SESSION['Link_Versandseite'][Shop::getLanguageCode()])) {
+            } elseif (isset($_SESSION['Link_Versandseite'][$langCode])) {
                 $versand .= Shop::Lang()->get('plus', 'basket') .
-                    ' <a href="' . $_SESSION['Link_Versandseite'][Shop::getLanguageCode()] .
+                    ' <a href="' . $_SESSION['Link_Versandseite'][$langCode] .
                     '" rel="nofollow" class="shipment">' .
                     Shop::Lang()->get('shipping', 'basket') . '</a>';
             }
         } elseif ($this->conf['global']['global_versandhinweis'] === 'inkl') {
             $versand = ', ' . Shop::Lang()->get('incl', 'productDetails')
-                . ' <a href="' . $_SESSION['Link_Versandseite'][Shop::getLanguageCode()] .
+                . ' <a href="' . $_SESSION['Link_Versandseite'][$langCode] .
                 '" rel="nofollow" class="shipment">'
                 . Shop::Lang()->get('shipping', 'basket') . '</a>';
         }

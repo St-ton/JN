@@ -475,19 +475,19 @@ class TestHydrator extends DefaultsHydrator
         $order->fWaehrungsFaktor  = 1;
         $order->oLieferschein_arr = [];
 
-        $deliverySlip = new Lieferschein();
-        $deliverySlip->setEmailVerschickt(false);
-        $deliverySlip->oVersand_arr = [];
+        $deliveryNote = new Lieferschein();
+        $deliveryNote->setEmailVerschickt(false);
+        $deliveryNote->oVersand_arr = [];
         $oVersand                   = new Versand();
         $oVersand->setLogistikURL('http://nolp.dhl.de/nextt-online-public/' .
             'report_popup.jsp?lang=de&zip=#PLZ#&idc=#IdentCode#');
         $oVersand->setIdentCode('123456');
-        $deliverySlip->oVersand_arr[]  = $oVersand;
-        $deliverySlip->oPosition_arr   = [];
-        $deliverySlip->oPosition_arr[] = $item;
-        $deliverySlip->oPosition_arr[] = $item;
+        $deliveryNote->oVersand_arr[]  = $oVersand;
+        $deliveryNote->oPosition_arr   = [];
+        $deliveryNote->oPosition_arr[] = $item;
+        $deliveryNote->oPosition_arr[] = $item;
 
-        $order->oLieferschein_arr[] = $deliverySlip;
+        $order->oLieferschein_arr[] = $deliveryNote;
 
         $order->oEstimatedDelivery->localized = ShippingMethod::getDeliverytimeEstimationText(
             $order->oEstimatedDelivery->longestMin,

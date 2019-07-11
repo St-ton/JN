@@ -6,6 +6,7 @@
 
 namespace JTL\dbeS\Sync;
 
+use function Functional\filter;
 use JTL\DB\ReturnType;
 use JTL\dbeS\Starter;
 use JTL\Shop;
@@ -340,7 +341,7 @@ final class Images extends AbstractSync
                 continue;
             }
             $attrValImage->cPfad .= '.' . $format;
-            $attrValImage->cPfad  = $this->getNewFilename($attrValImage->cPfad);
+            $attrValImage->cPfad = $this->getNewFilename($attrValImage->cPfad);
             $this->createThumbnail(
                 $this->brandingConfig['Merkmalwerte'],
                 $this->unzipPath . $imgFilename,
@@ -395,7 +396,7 @@ final class Images extends AbstractSync
                 continue;
             }
             $attributeImage->cPfad .= '.' . $format;
-            $attributeImage->cPfad  = $this->getNewFilename($attributeImage->cPfad);
+            $attributeImage->cPfad = $this->getNewFilename($attributeImage->cPfad);
             $this->createThumbnail(
                 $this->brandingConfig['Merkmale'],
                 $this->unzipPath . $imgFilename,
@@ -424,6 +425,7 @@ final class Images extends AbstractSync
             \unlink($this->unzipPath . $imgFilename);
         }
     }
+
     /**
      * @param array $manufacturerImages
      */
@@ -657,10 +659,10 @@ final class Images extends AbstractSync
 
     /**
      * @param stdClass $img
-     * @param string    $format
-     * @param string    $unzipPath
-     * @param string    $imgFilename
-     * @param string    $sql
+     * @param string   $format
+     * @param string   $unzipPath
+     * @param string   $imgFilename
+     * @param string   $sql
      */
     private function createProductImage($img, $format, $unzipPath, $imgFilename, $sql): void
     {
@@ -993,10 +995,11 @@ final class Images extends AbstractSync
         $targetheight,
         int $quality = 80,
         $container = 'N'
-    ): int {
-        $enlarge          = $this->config['bilder']['bilder_skalieren'] === 'Y';
-        $ret              = 0;
-        $format           = $this->config['bilder']['bilder_dateiformat'];//$this->getExtension($imgFilename);
+    ): int
+    {
+        $enlarge = $this->config['bilder']['bilder_skalieren'] === 'Y';
+        $ret     = 0;
+        $format  = $this->config['bilder']['bilder_dateiformat'];//$this->getExtension($imgFilename);
         [$width, $height] = \getimagesize($imgFilename);
         if ($width > 0 && $height > 0) {
             if (!$enlarge && $width < $targetWidth && $height < $targetheight) {
@@ -1055,7 +1058,8 @@ final class Images extends AbstractSync
         $quality = 80,
         $brand = 0,
         $container = 'N'
-    ): int {
+    ): int
+    {
         $enlarge = $this->config['bilder']['bilder_skalieren'] === 'Y';
         $ret     = 0;
         $format  = $this->config['bilder']['bilder_dateiformat'];//$this->getExtension($imgFilename);
@@ -1123,27 +1127,55 @@ final class Images extends AbstractSync
             }
         }
         // Kategoriebilder löschen Wawi > .99923
-        $source = $xml['del_bilder']['kKategorie'] ?? [];
-        if (\is_numeric($source)) {
-            $source = [$source];
-        }
-        foreach (\array_filter(\array_map('\intval', $source)) as $id) {
-            $this->deleteCategoryImage(null, $id);
-        }
+        $this->deleteCategoryImages($xml);
         // Variationsbilder löschen Wawi > .99923
+        $this->deleteVariationImages($xml);
+        // Herstellerbilder löschen
+        $this->deleteManufacturerImages($xml);
+        // Merkmalbilder löschen
+        $this->deleteCharacteristicImages($xml);
+        // Merkmalwertbilder löschen
+        $this->deleteCharacteristicValueImages($xml);
+    }
+
+    /**
+     * @param array $xml
+     */
+    private function deleteVariationImages(array $xml): void
+    {
         $source = $xml['del_bilder']['kEigenschaftWert'] ?? [];
         if (\is_numeric($source)) {
             $source = [$source];
         }
         foreach (\array_filter(\array_map('\intval', $source)) as $id) {
-            $this->deleteAttributeValueImage(null, $id);
+            $this->db->delete('teigenschaftwertpict', 'kEigenschaftWert', $id);
         }
-        // Herstellerbilder löschen
-        $source = $xml['del_bilder']['kHersteller'] ?? [];
+    }
+
+    /**
+     * @param array $xml
+     */
+    private function deleteCategoryImages(array $xml): void
+    {
+        $source = $xml['del_bilder']['kKategorie'] ?? [];
         if (\is_numeric($source)) {
             $source = [$source];
         }
+        foreach (\array_filter(\array_map('\intval', $source)) as $id) {
+            $this->db->delete('tkategoriepict', 'kKategorie', $id);
+        }
+    }
+
+    /**
+     * @param array $xml
+     */
+    private function deleteManufacturerImages(array $xml): void
+    {
         $cacheTags = [];
+        $source    = $xml['del_bilder']['kHersteller'] ?? [];
+        if (\is_numeric($source)) {
+            $source = [$source];
+        }
         foreach (\array_filter(\array_map('\intval', $source)) as $manufacturerID) {
             $this->db->update(
                 'thersteller',
@@ -1157,16 +1189,17 @@ final class Images extends AbstractSync
                 (int)$manufacturerID,
                 'kArtikel'
             ) as $product) {
-                $cacheTags[] = $product->kArtikel;
+                $cacheTags[] = \CACHING_GROUP_ARTICLE . '_' . (int)$product->kArtikel;
             }
         }
-        if (\count($cacheTags) > 0) {
-            \array_walk($cacheTags, function (&$i) {
-                $i = \CACHING_GROUP_ARTICLE . '_' . $i;
-            });
-            $this->cache->flushTags($cacheTags);
-        }
-        // Merkmalbilder löschen
+        $this->cache->flushTags($cacheTags);
+    }
+
+    /**
+     * @param array $xml
+     */
+    private function deleteCharacteristicImages(array $xml): void
+    {
         $source = $xml['del_bilder']['kMerkmal'] ?? [];
         if (\is_numeric($source)) {
             $source = [$source];
@@ -1179,7 +1212,13 @@ final class Images extends AbstractSync
                 (object)['cBildpfad' => '']
             );
         }
-        // Merkmalwertbilder löschen
+    }
+
+    /**
+     * @param array $xml
+     */
+    private function deleteCharacteristicValueImages(array $xml): void
+    {
         $source = $xml['del_bilder']['kMerkmalWert'] ?? [];
         if (\is_numeric($source)) {
             $source = [$source];
@@ -1196,7 +1235,7 @@ final class Images extends AbstractSync
     }
 
     /**
-     * @param int      $productID
+     * @param int $productID
      * @param int $no
      */
     private function deleteProductImageByProductID(int $productID, int $no): void
@@ -1210,9 +1249,8 @@ final class Images extends AbstractSync
 
     /**
      * @param int $imageID
-     * @return int
      */
-    protected function deleteProductImage(int $imageID): void
+    private function deleteProductImage(int $imageID): void
     {
         if ($imageID < 1) {
             return;
@@ -1305,62 +1343,34 @@ final class Images extends AbstractSync
             \PFAD_ROOT . \PFAD_PRODUKTBILDER_GROSS . $path,
             \PFAD_ROOT . \PFAD_MEDIA_IMAGE_STORAGE . $path
         ];
-        foreach ($files as $file) {
-            if (\file_exists($file)) {
-                @\unlink($file);
-            }
-        }
-    }
 
-    /**
-     * @param int|null $categoryImageID
-     * @param int|null $categoryID
-     */
-    private function deleteCategoryImage(int $categoryImageID = null, int $categoryID = null): void
-    {
-        if ($categoryImageID !== null && $categoryImageID > 0) {
-            $this->db->delete('tkategoriepict', 'kKategoriePict', $categoryImageID);
-        } elseif ($categoryID !== null && $categoryID > 0) {
-            $this->db->delete('tkategoriepict', 'kKategorie', $categoryID);
-        }
-    }
-
-    /**
-     * @param int|null $imageID
-     * @param int|null $attrValID
-     */
-    private function deleteAttributeValueImage(int $imageID = null, int $attrValID = null): void
-    {
-        if ($attrValID !== null && $attrValID > 0) {
-            $this->db->delete('teigenschaftwertpict', 'kEigenschaftWert', $attrValID);
-        }
-        if ($imageID !== null && $imageID > 0) {
-            $this->db->delete('teigenschaftwertpict', 'kEigenschaftwertPict', $imageID);
+        foreach (\array_filter($files, '\file_exists') as $file) {
+            @\unlink($file);
         }
     }
 
     /**
      * @param resource $im
      * @param resource $brand
-     * @param object   $oBranding
+     * @param object   $brandData
      * @return mixed
      */
-    private function brandImage($im, $brand, $oBranding)
+    private function brandImage($im, $brand, $brandData)
     {
         if (!$brand
-            || (isset($oBranding->oBrandingEinstellung->nAktiv) && (int)$oBranding->oBrandingEinstellung->nAktiv === 0)
-            || !isset($oBranding->oBrandingEinstellung->cBrandingBild)
+            || (isset($brandData->oBrandingEinstellung->nAktiv) && (int)$brandData->oBrandingEinstellung->nAktiv === 0)
+            || !isset($brandData->oBrandingEinstellung->cBrandingBild)
         ) {
             return $im;
         }
-        $brandingImage = \PFAD_ROOT . \PFAD_BRANDINGBILDER . $oBranding->oBrandingEinstellung->cBrandingBild;
+        $brandingImage = \PFAD_ROOT . \PFAD_BRANDINGBILDER . $brandData->oBrandingEinstellung->cBrandingBild;
         if (!\file_exists($brandingImage)) {
             return $im;
         }
-        $position     = $oBranding->oBrandingEinstellung->cPosition;
-        $transparency = $oBranding->oBrandingEinstellung->dTransparenz;
-        $brandingSize = $oBranding->oBrandingEinstellung->dGroesse;
-        $randabstand  = $oBranding->oBrandingEinstellung->dRandabstand / 100;
+        $position     = $brandData->oBrandingEinstellung->cPosition;
+        $transparency = $brandData->oBrandingEinstellung->dTransparenz;
+        $brandingSize = $brandData->oBrandingEinstellung->dGroesse;
+        $randabstand  = $brandData->oBrandingEinstellung->dRandabstand / 100;
         $branding     = $this->imageloadAlpha($brandingImage, 0, 0, true);
         if (!$im || !$branding) {
             return $im;
@@ -1566,8 +1576,8 @@ final class Images extends AbstractSync
         if ($width === 0 && $height === 0) {
             [$width, $height] = $imgInfo;
         }
-        $width  = \round($width);
-        $height = \round($height);
+        $width  = (int)\round($width);
+        $height = (int)\round($height);
         $newImg = \imagecreatetruecolor($containerWidth, $containerHeight);
         // hintergrundfarbe
         $format = \strtolower($this->config['bilder']['bilder_dateiformat']);
@@ -1622,8 +1632,8 @@ final class Images extends AbstractSync
             [$width, $height] = $imgInfo;
         }
 
-        $width  = \round($width);
-        $height = \round($height);
+        $width  = (int)\round($width);
+        $height = (int)\round($height);
         $newImg = \imagecreatetruecolor($width, $height);
 
         if (!$newImg) {

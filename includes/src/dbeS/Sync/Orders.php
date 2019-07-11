@@ -34,6 +34,7 @@ final class Orders extends AbstractSync
     {
         foreach ($starter->getXML() as $i => $item) {
             [$file, $xml] = [\key($item), \reset($item)];
+            error_log('file: ' . $file);
             if (\strpos($file, 'ack_bestellung.xml') !== false) {
                 $this->handleACK($xml);
             } elseif (\strpos($file, 'del_bestellung.xml') !== false) {
@@ -678,9 +679,9 @@ final class Orders extends AbstractSync
     private function sendStatusMail(Bestellung $updatedOrder, stdClass $shopOrder, int $state, $customer): void
     {
         $doSend = false;
-        foreach ($updatedOrder->oLieferschein_arr as $slip) {
-            /** @var Lieferschein $slip */
-            if ($slip->getEmailVerschickt() === false) {
+        foreach ($updatedOrder->oLieferschein_arr as $note) {
+            /** @var Lieferschein $note */
+            if ($note->getEmailVerschickt() === false) {
                 $doSend = true;
                 break;
             }
@@ -707,9 +708,9 @@ final class Orders extends AbstractSync
                     $mailer->send($mail->createFromTemplateID($mailType, $data));
                 }
             }
-            /** @var Lieferschein $slip */
-            foreach ($updatedOrder->oLieferschein_arr as $slip) {
-                $slip->setEmailVerschickt(true)->update();
+            /** @var Lieferschein $note */
+            foreach ($updatedOrder->oLieferschein_arr as $note) {
+                $note->setEmailVerschickt(true)->update();
             }
             // Guthaben an Bestandskunden verbuchen, Email rausschicken:
             $oKwK = new KundenwerbenKunden();

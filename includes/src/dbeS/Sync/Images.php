@@ -341,7 +341,7 @@ final class Images extends AbstractSync
                 continue;
             }
             $attrValImage->cPfad .= '.' . $format;
-            $attrValImage->cPfad = $this->getNewFilename($attrValImage->cPfad);
+            $attrValImage->cPfad  = $this->getNewFilename($attrValImage->cPfad);
             $this->createThumbnail(
                 $this->brandingConfig['Merkmalwerte'],
                 $this->unzipPath . $imgFilename,
@@ -396,7 +396,7 @@ final class Images extends AbstractSync
                 continue;
             }
             $attributeImage->cPfad .= '.' . $format;
-            $attributeImage->cPfad = $this->getNewFilename($attributeImage->cPfad);
+            $attributeImage->cPfad  = $this->getNewFilename($attributeImage->cPfad);
             $this->createThumbnail(
                 $this->brandingConfig['Merkmale'],
                 $this->unzipPath . $imgFilename,
@@ -995,11 +995,10 @@ final class Images extends AbstractSync
         $targetheight,
         int $quality = 80,
         $container = 'N'
-    ): int
-    {
-        $enlarge = $this->config['bilder']['bilder_skalieren'] === 'Y';
-        $ret     = 0;
-        $format  = $this->config['bilder']['bilder_dateiformat'];//$this->getExtension($imgFilename);
+    ): int {
+        $enlarge          = $this->config['bilder']['bilder_skalieren'] === 'Y';
+        $ret              = 0;
+        $format           = $this->config['bilder']['bilder_dateiformat'];//$this->getExtension($imgFilename);
         [$width, $height] = \getimagesize($imgFilename);
         if ($width > 0 && $height > 0) {
             if (!$enlarge && $width < $targetWidth && $height < $targetheight) {
@@ -1058,8 +1057,7 @@ final class Images extends AbstractSync
         $quality = 80,
         $brand = 0,
         $container = 'N'
-    ): int
-    {
+    ): int {
         $enlarge = $this->config['bilder']['bilder_skalieren'] === 'Y';
         $ret     = 0;
         $format  = $this->config['bilder']['bilder_dateiformat'];//$this->getExtension($imgFilename);

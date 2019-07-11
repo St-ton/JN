@@ -55,9 +55,18 @@ final class QuickSync extends AbstractSync
                 $this->handlePriceHistory((int)$products[$i]->kArtikel, $xml['quicksync']['tartikel'][$i]);
             }
         }
+        $this->insertProducts($products);
+    }
+
+    /**
+     * @param array $products
+     */
+    private function insertProducts(array $products): void
+    {
         $clearTags = [];
         $conf      = Shop::getSettings([\CONF_ARTIKELDETAILS]);
         foreach ($products as $product) {
+            $id = (int)$product->kArtikel;
             if (isset($product->fLagerbestand) && $product->fLagerbestand > 0) {
                 $delta = $this->db->query(
                     "SELECT SUM(pos.nAnzahl) AS totalquantity
@@ -65,7 +74,7 @@ final class QuickSync extends AbstractSync
                     JOIN twarenkorbpos pos
                     ON pos.kWarenkorb = b.kWarenkorb
                     WHERE b.cAbgeholt = 'N'
-                        AND pos.kArtikel = " . (int)$product->kArtikel,
+                        AND pos.kArtikel = " . $id,
                     ReturnType::SINGLE_OBJECT
                 );
                 if ($delta->totalquantity > 0) {
@@ -81,13 +90,12 @@ final class QuickSync extends AbstractSync
             $upd->fLagerbestand         = $product->fLagerbestand;
             $upd->fStandardpreisNetto   = $product->fStandardpreisNetto;
             $upd->dLetzteAktualisierung = 'NOW()';
-            $this->db->update('tartikel', 'kArtikel', (int)$product->kArtikel, $upd);
+            $this->db->update('tartikel', 'kArtikel', $id, $upd);
             \executeHook(\HOOK_QUICKSYNC_XML_BEARBEITEINSERT, ['oArtikel' => $product]);
-            // clear object cache for this product and its parent if there is any
             $parentProduct = $this->db->select(
                 'tartikel',
                 'kArtikel',
-                $product->kArtikel,
+                $id,
                 null,
                 null,
                 null,
@@ -98,7 +106,7 @@ final class QuickSync extends AbstractSync
             if (!empty($parentProduct->kVaterArtikel)) {
                 $clearTags[] = (int)$parentProduct->kVaterArtikel;
             }
-            $clearTags[] = (int)$product->kArtikel;
+            $clearTags[] = $id;
             $this->sendAvailabilityMails($product, $conf);
         }
         $clearTags = \array_unique($clearTags);

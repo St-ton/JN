@@ -18,6 +18,7 @@ use JTL\Helpers\Text;
 use JTL\Language\LanguageHelper;
 use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
+use JTL\Services\JTL\CryptoServiceInterface;
 use JTL\Shop;
 use JTL\SimpleMail;
 use JTL\XML;
@@ -117,13 +118,14 @@ final class Customer extends AbstractSync
      */
     private function handleDeletes(array $xml): void
     {
-        if (!isset($xml['del_kunden']['kKunde'])) {
+        $source = $xml['del_kunden']['kKunde'] ?? null;
+        if ($source === null) {
             return;
         }
-        if (!\is_array($xml['del_kunden']['kKunde'])) {
-            $xml['del_kunden']['kKunde'] = [$xml['del_kunden']['kKunde']];
+        if (!\is_array($source)) {
+            $source = [$source];
         }
-        foreach ($xml['del_kunden']['kKunde'] as $customerID) {
+        foreach (\array_filter($source, '\is_numeric') as $customerID) {
             (new Kunde((int)$customerID))->deleteAccount(Journal::ISSUER_TYPE_DBES, 0, true);
         }
     }
@@ -133,18 +135,15 @@ final class Customer extends AbstractSync
      */
     private function handleACK(array $xml): void
     {
-        if (!isset($xml['ack_kunden']['kKunde'])) {
+        $source = $xml['ack_kunden']['kKunde'] ?? null;
+        if ($source === null) {
             return;
         }
-        if (!\is_array($xml['ack_kunden']['kKunde']) && (int)$xml['ack_kunden']['kKunde'] > 0) {
-            $xml['ack_kunden']['kKunde'] = [$xml['ack_kunden']['kKunde']];
+        if (!\is_array($source)) {
+            $source = [$source];
         }
-        if (\is_array($xml['ack_kunden']['kKunde'])) {
-            foreach ($xml['ack_kunden']['kKunde'] as $customerID) {
-                if ($customerID > 0) {
-                    $this->db->update('tkunde', 'kKunde', (int)$customerID, (object)['cAbgeholt' => 'Y']);
-                }
-            }
+        foreach (\array_filter($source, '\is_numeric') as $customerID) {
+            $this->db->update('tkunde', 'kKunde', (int)$customerID, (object)['cAbgeholt' => 'Y']);
         }
     }
 
@@ -200,18 +199,12 @@ final class Customer extends AbstractSync
      */
     private function handleInserts(array $xml): array
     {
-        $res                     = [];
-        $customer                = new Kunde();
-        $customer->kKundengruppe = 0;
-
-        if (\is_array($xml['tkunde attr'])) {
-            $customer->kKundengruppe = (int)$xml['tkunde attr']['kKundengruppe'];
-            $customer->kSprache      = (int)$xml['tkunde attr']['kSprache'];
-        }
-        if (!isset($xml['tkunde']) || !\is_array($xml['tkunde'])) {
+        $source = $xml['tkunde'] ?? null;
+        $res    = [];
+        if (!\is_array($source)) {
             return $res;
         }
-        $source = $xml['tkunde'];
+        $customer = $this->getCustomerObject($xml);
         $this->mapper->mapObject($customer, $source, 'mKunde');
         $customerAttributes = $this->getCustomerAttributes($source);
         $customer->cAnrede  = $this->mapSalutation($customer->cAnrede);
@@ -221,11 +214,11 @@ final class Customer extends AbstractSync
             $lang               = $this->db->select('tsprache', 'cShopStandard', 'Y');
             $customer->kSprache = $lang->kSprache;
         }
-        $kInetKunde  = (int)$xml['tkunde attr']['kKunde'];
-        $oldCustomer = $kInetKunde > 0 ? new Kunde($kInetKunde) : new stdClass();
+        $kInetKunde  = (int)($xml['tkunde attr']['kKunde'] ?? 0);
+        $oldCustomer = new Kunde($kInetKunde);
         // Kunde existiert mit dieser kInetKunde
         // Kunde wird aktualisiert bzw. seine KdGrp wird geändert
-        if (isset($oldCustomer->kKunde) && $oldCustomer->kKunde > 0) {
+        if ($oldCustomer->kKunde > 0) {
             $res = $this->merge($customer, $oldCustomer, $kInetKunde, $customerAttributes, $res);
         } else {
             // Kunde existiert mit dieser kInetKunde im Shop nicht. Gib diese Info zurück an Wawi
@@ -263,6 +256,22 @@ final class Customer extends AbstractSync
         }
 
         return $kInetKunde > 0 ? $this->addAddressData($kInetKunde, $res, $source) : $res;
+    }
+
+    /**
+     * @param array $xml
+     * @return Kunde
+     */
+    private function getCustomerObject(array $xml): Kunde
+    {
+        $customer                = new Kunde();
+        $customer->kKundengruppe = 0;
+        if (isset($xml['tkunde attr']) && \is_array($xml['tkunde attr'])) {
+            $customer->kKundengruppe = (int)$xml['tkunde attr']['kKundengruppe'];
+            $customer->kSprache      = (int)$xml['tkunde attr']['kSprache'];
+        }
+
+        return $customer;
     }
 
     /**
@@ -304,8 +313,7 @@ final class Customer extends AbstractSync
         );
         $attributeCount              = \count($cstmr[0]['tkundenattribut']);
         for ($o = 0; $o < $attributeCount; $o++) {
-            $cstmr[0]['tkundenattribut'][$o . ' attr'] =
-                $this->buildAttributes($cstmr[0]['tkundenattribut'][$o]);
+            $cstmr[0]['tkundenattribut'][$o . ' attr'] = $this->buildAttributes($cstmr[0]['tkundenattribut'][$o]);
         }
         $xml['kunden attr']['anzahl'] = 1;
         $xml['kunden']['tkunde']      = $cstmr;
@@ -448,53 +456,34 @@ final class Customer extends AbstractSync
     private function addAddressData(int $kInetKunde, array $res, array $source): array
     {
         // kunde akt. bzw. neu inserted
-        $crypto = Shop::Container()->getCryptoService();
+        $service = Shop::Container()->getCryptoService();
         if (GeneralObject::hasCount('tadresse', $source)
             && (!isset($source['tadresse attr']) || !\is_array($source['tadresse attr']))
         ) {
             // mehrere adressen
-            $nr                = 0;
-            $cntLieferadressen = \count($source['tadresse']) / 2;
-            for ($i = 0; $i < $cntLieferadressen; $i++) {
-                $deliveryAddress = new stdClass();
+            $nr           = 0;
+            $addressCount = \count($source['tadresse']) / 2;
+            for ($i = 0; $i < $addressCount; $i++) {
+                $deliveryAddress         = new stdClass();
+                $deliveryAddress->kKunde = $kInetKunde;
                 if ($source['tadresse'][$i . ' attr']['kInetAdresse'] > 0) {
-                    //update
                     $deliveryAddress->kLieferadresse = $source['tadresse'][$i . ' attr']['kInetAdresse'];
-                    $deliveryAddress->kKunde         = $kInetKunde;
                     $this->mapper->mapObject($deliveryAddress, $source['tadresse'][$i], 'mLieferadresse');
-                    // Hausnummer extrahieren
-                    $this->extractStreet($deliveryAddress);
-                    // verschlüsseln: Nachname, Firma, Strasse
-                    $deliveryAddress->cNachname = $crypto->encryptXTEA(\trim($deliveryAddress->cNachname));
-                    $deliveryAddress->cFirma    = $crypto->encryptXTEA(\trim($deliveryAddress->cFirma));
-                    $deliveryAddress->cZusatz   = $crypto->encryptXTEA(\trim($deliveryAddress->cZusatz));
-                    $deliveryAddress->cStrasse  = $crypto->encryptXTEA(\trim($deliveryAddress->cStrasse));
-                    $deliveryAddress->cAnrede   = $this->mapSalutation($deliveryAddress->cAnrede);
+                    $deliveryAddress = $this->getDeliveryAddress($deliveryAddress, $service);
                     $this->upsert('tlieferadresse', [$deliveryAddress], 'kLieferadresse');
                 } else {
-                    $deliveryAddress->kKunde = $kInetKunde;
                     $this->mapper->mapObject($deliveryAddress, $source['tadresse'][$i], 'mLieferadresse');
-                    // Hausnummer extrahieren
-                    $this->extractStreet($deliveryAddress);
-                    // verschlüsseln: Nachname, Firma, Strasse
-                    $deliveryAddress->cNachname = $crypto->encryptXTEA(\trim($deliveryAddress->cNachname));
-                    $deliveryAddress->cFirma    = $crypto->encryptXTEA(\trim($deliveryAddress->cFirma));
-                    $deliveryAddress->cZusatz   = $crypto->encryptXTEA(\trim($deliveryAddress->cZusatz));
-                    $deliveryAddress->cStrasse  = $crypto->encryptXTEA(\trim($deliveryAddress->cStrasse));
-                    $deliveryAddress->cAnrede   = $this->mapSalutation($deliveryAddress->cAnrede);
-                    $kInetLieferadresse         = $this->db->insert('tlieferadresse', $deliveryAddress);
+                    $deliveryAddress    = $this->getDeliveryAddress($deliveryAddress, $service);
+                    $kInetLieferadresse = $this->db->insert('tlieferadresse', $deliveryAddress);
                     if ($kInetLieferadresse > 0) {
                         if (!\is_array($res['keys']['tkunde'])) {
-                            $res['keys']['tkunde'] = [
-                                'tadresse' => []
-                            ];
+                            $res['keys']['tkunde'] = ['tadresse' => []];
                         }
                         $res['keys']['tkunde']['tadresse'][$nr . ' attr'] = [
                             'kAdresse'     => $source['tadresse'][$i . ' attr']['kAdresse'],
                             'kInetAdresse' => $kInetLieferadresse,
                         ];
                         $res['keys']['tkunde']['tadresse'][$nr]           = '';
-
                         $nr++;
                     }
                 }
@@ -504,34 +493,17 @@ final class Customer extends AbstractSync
         }
         if (GeneralObject::isCountable('tadresse attr', $source)) {
             // nur eine lieferadresse
+            $deliveryAddress         = new stdClass();
+            $deliveryAddress->kKunde = $kInetKunde;
             if ($source['tadresse attr']['kInetAdresse'] > 0) {
-                //update
-                $deliveryAddress                 = new stdClass();
                 $deliveryAddress->kLieferadresse = $source['tadresse attr']['kInetAdresse'];
-                $deliveryAddress->kKunde         = $kInetKunde;
                 $this->mapper->mapObject($deliveryAddress, $source['tadresse'], 'mLieferadresse');
-                // Hausnummer extrahieren
-                $this->extractStreet($deliveryAddress);
-                // verschlüsseln: Nachname, Firma, Strasse
-                $deliveryAddress->cNachname = $crypto->encryptXTEA(\trim($deliveryAddress->cNachname));
-                $deliveryAddress->cFirma    = $crypto->encryptXTEA(\trim($deliveryAddress->cFirma));
-                $deliveryAddress->cZusatz   = $crypto->encryptXTEA(\trim($deliveryAddress->cZusatz));
-                $deliveryAddress->cStrasse  = $crypto->encryptXTEA(\trim($deliveryAddress->cStrasse));
-                $deliveryAddress->cAnrede   = $this->mapSalutation($deliveryAddress->cAnrede);
+                $deliveryAddress = $this->getDeliveryAddress($deliveryAddress, $service);
                 $this->upsert('tlieferadresse', [$deliveryAddress], 'kLieferadresse');
             } else {
-                $deliveryAddress         = new stdClass();
-                $deliveryAddress->kKunde = $kInetKunde;
                 $this->mapper->mapObject($deliveryAddress, $source['tadresse'], 'mLieferadresse');
-                // Hausnummer extrahieren
-                $this->extractStreet($deliveryAddress);
-                // verschlüsseln: Nachname, Firma, Strasse
-                $deliveryAddress->cNachname = $crypto->encryptXTEA(\trim($deliveryAddress->cNachname));
-                $deliveryAddress->cFirma    = $crypto->encryptXTEA(\trim($deliveryAddress->cFirma));
-                $deliveryAddress->cZusatz   = $crypto->encryptXTEA(\trim($deliveryAddress->cZusatz));
-                $deliveryAddress->cStrasse  = $crypto->encryptXTEA(\trim($deliveryAddress->cStrasse));
-                $deliveryAddress->cAnrede   = $this->mapSalutation($deliveryAddress->cAnrede);
-                $kInetLieferadresse         = $this->db->insert('tlieferadresse', $deliveryAddress);
+                $deliveryAddress    = $this->getDeliveryAddress($deliveryAddress, $service);
+                $kInetLieferadresse = $this->db->insert('tlieferadresse', $deliveryAddress);
                 if ($kInetLieferadresse > 0) {
                     $res['keys']['tkunde'] = [
                         'tadresse attr' => [
@@ -545,6 +517,23 @@ final class Customer extends AbstractSync
         }
 
         return $res;
+    }
+
+    /**
+     * @param object                 $address
+     * @param CryptoServiceInterface $crypto
+     * @return object
+     */
+    private function getDeliveryAddress($address, CryptoServiceInterface $crypto)
+    {
+        $this->extractStreet($address);
+        $address->cNachname = $crypto->encryptXTEA(\trim($address->cNachname));
+        $address->cFirma    = $crypto->encryptXTEA(\trim($address->cFirma));
+        $address->cZusatz   = $crypto->encryptXTEA(\trim($address->cZusatz));
+        $address->cStrasse  = $crypto->encryptXTEA(\trim($address->cStrasse));
+        $address->cAnrede   = $this->mapSalutation($address->cAnrede);
+
+        return $address;
     }
 
     /**

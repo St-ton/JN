@@ -8,6 +8,7 @@ namespace JTL\dbeS\Push;
 
 use JTL\DB\ReturnType;
 use PaymentMethod;
+use stdClass;
 
 /**
  * Class Invoice
@@ -53,9 +54,9 @@ final class Invoice extends AbstractPush
 
     /**
      * @param int $id
-     * @return array|int|object
+     * @return stdClass|null
      */
-    private function getOrder(int $id)
+    private function getOrder(int $id): ?stdClass
     {
         return $this->db->queryPrepared(
             'SELECT tbestellung.kBestellung, tbestellung.fGesamtsumme, tzahlungsart.cModulId
@@ -92,7 +93,7 @@ final class Invoice extends AbstractPush
     }
 
     /**
-     * @param $message
+     * @param string $message
      * @return array
      */
     private function pushError(string $message): array

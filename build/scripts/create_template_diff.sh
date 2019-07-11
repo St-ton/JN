@@ -25,7 +25,7 @@ create_tpl_diff()
         DIFF_FILE_NAME=${BASE_PATH}/${TPL_TYPE}-${DIFF_START_TAG}-to-${DIFF_END_TAG}-tpl.diff;
         DIFF_CLEAN_FILE_NAME=${BASE_PATH}/${TPL_TYPE}-${DIFF_START_TAG}-to-${DIFF_END_TAG}-tplclean.diff;
 
-        git diff --ignore-all-space --ignore-blank-lines --minimal --unified=2 ${DIFF_START_TAG} ${DIFF_END_TAG} -- ${DIFF_PATH} > ${DIFF_FILE_NAME};
+        git diff --ignore-all-space --ignore-blank-lines --minimal --unified=2 tags/${DIFF_START_TAG} tags/${DIFF_END_TAG} -- ${DIFF_PATH} > ${DIFF_FILE_NAME};
         filterdiff --exclude='*.css' --exclude='*.txt' --exclude='*.ttf' --exclude='*.md' ${DIFF_FILE_NAME} > ${DIFF_CLEAN_FILE_NAME};
 
         mv -u ${DIFF_CLEAN_FILE_NAME} ${DIFF_FILE_NAME};

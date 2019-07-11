@@ -19,13 +19,13 @@
 **PHP**
 * PHP 7.2 or greater
 * PHP-Modules: 
-	* [SimpleXML](http://php.net/manual/en/book.simplexml.php)
-	* [ImageMagick + Imagick](http://php.net/manual/en/book.imagick.php)
-	* [Curl](http://php.net/manual/en/book.curl.php)
-	* [Iconv](http://php.net/manual/en/book.iconv.php)
-	* [MBString](http://php.net/manual/en/book.mbstring.php)
-	* [Tokenizer](http://php.net/manual/en/book.tokenizer.php)
-	* [PDO (MySQL)](http://php.net/manual/en/book.pdo.php)
+	* [SimpleXML](https://php.net/manual/en/book.simplexml.php)
+	* [ImageMagick + Imagick](https://php.net/manual/en/book.imagick.php)
+	* [Curl](https://php.net/manual/en/book.curl.php)
+	* [Iconv](https://php.net/manual/en/book.iconv.php)
+	* [MBString](https://php.net/manual/en/book.mbstring.php)
+	* [Tokenizer](https://php.net/manual/en/book.tokenizer.php)
+	* [PDO (MySQL)](https://php.net/manual/en/book.pdo.php)
 	* Optional: [IonCube Loader](https://www.ioncube.com/loaders.php) for some third-party plug-ins
 * PHP Settings
 	* `max_execution_time` >= 120s
@@ -35,7 +35,7 @@
 	* `magic_quotes_runtime` deactivated (removed since php v7.0)
 
 ## Software boundaries
-* See [Software boundaries and limits](http://jtl-url.de/limits) for details
+* See [Software boundaries and limits](https://jtl-url.de/limits) for details
 
 ## License 
 * Proprietary, see [LICENSE.md](LICENSE.md) for further details
@@ -44,7 +44,7 @@
 * See [issues.jtl-software.de](https://issues.jtl-software.de/issues?project=JTL-Shop) or review commits in [Gitlab](https://gitlab.jtl-software.de/jtlshop/shop4/) for the latest changes
 
 ## Third party libraries
-* [Smarty](http://www.smarty.net/) - LGPL
+* [Smarty](https://www.smarty.net/) - LGPL
 * Guzzle - MIT
 * Intervention Image - MIT
 * CKEditor - LGPL

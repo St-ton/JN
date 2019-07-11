@@ -719,41 +719,41 @@ class Bestellung
         $sData->cPLZ             = $this->oRechnungsadresse->cPLZ ?? ($this->Lieferadresse->cPLZ ?? '');
         $this->oLieferschein_arr = [];
         if ((int)$this->kBestellung > 0) {
-            $notes = $db->selectAll(
+            $deliveryNotes = $db->selectAll(
                 'tlieferschein',
                 'kInetBestellung',
                 (int)$this->kBestellung,
                 'kLieferschein'
             );
-            foreach ($notes as $lineItem) {
-                $lineItem                = new Lieferschein($lineItem->kLieferschein, $sData);
-                $lineItem->oPosition_arr = [];
+            foreach ($deliveryNotes as $note) {
+                $note                = new Lieferschein($note->kLieferschein, $sData);
+                $note->oPosition_arr = [];
                 /** @var Lieferscheinpos $lineItem */
-                foreach ($lineItem->oLieferscheinPos_arr as &$lineItem) {
-                    foreach ($this->Positionen as &$sItem) {
-                        $sItem->nPosTyp     = (int)$sItem->nPosTyp;
-                        $sItem->kBestellpos = (int)$sItem->kBestellpos;
+                foreach ($note->oLieferscheinPos_arr as &$lineItem) {
+                    foreach ($this->Positionen as &$orderItem) {
+                        $orderItem->nPosTyp     = (int)$orderItem->nPosTyp;
+                        $orderItem->kBestellpos = (int)$orderItem->kBestellpos;
                         if (\in_array(
-                            $sItem->nPosTyp,
+                            $orderItem->nPosTyp,
                             [\C_WARENKORBPOS_TYP_ARTIKEL, \C_WARENKORBPOS_TYP_GRATISGESCHENK],
                             true
                         )
-                            && $lineItem->getBestellPos() === $sItem->kBestellpos
+                            && $lineItem->getBestellPos() === $orderItem->kBestellpos
                         ) {
-                            $sItem->kLieferschein_arr[]  = $lineItem->getLieferschein();
-                            $sItem->nAusgeliefert        = $lineItem->getAnzahl();
-                            $sItem->nAusgeliefertGesamt += $sItem->nAusgeliefert;
-                            $sItem->nOffenGesamt        -= $sItem->nAusgeliefert;
-                            $lineItem->oPosition_arr[]       = &$sItem;
+                            $orderItem->kLieferschein_arr[]  = $note->getLieferschein();
+                            $orderItem->nAusgeliefert        = $lineItem->getAnzahl();
+                            $orderItem->nAusgeliefertGesamt += $orderItem->nAusgeliefert;
+                            $orderItem->nOffenGesamt        -= $orderItem->nAusgeliefert;
+                            $note->oPosition_arr[]       = &$orderItem;
                             if (!isset($lineItem->oPosition) || !\is_object($lineItem->oPosition)) {
-                                $lineItem->oPosition = &$sItem;
+                                $lineItem->oPosition = &$orderItem;
                             }
-                            if ((int)$sItem->nOffenGesamt === 0) {
-                                $sItem->bAusgeliefert = true;
+                            if ((int)$orderItem->nOffenGesamt === 0) {
+                                $orderItem->bAusgeliefert = true;
                             }
                         }
                     }
-                    unset($sItem);
+                    unset($orderItem);
                     // Charge, MDH & Seriennummern
                     if (isset($lineItem->oPosition) && \is_object($lineItem->oPosition)) {
                         /** @var Lieferscheinposinfo $_lieferscheinPosInfo */
@@ -775,25 +775,25 @@ class Bestellung
                     }
                 }
                 unset($lineItem);
-                $this->oLieferschein_arr[] = $lineItem;
+                $this->oLieferschein_arr[] = $note;
             }
             // Wenn Konfig-Vater, alle Kinder ueberpruefen
             foreach ($this->oLieferschein_arr as &$deliveryNote) {
-                foreach ($deliveryNote->oPosition_arr as &$deliveryPosition) {
-                    if ($deliveryPosition->kKonfigitem == 0 && !empty($deliveryPosition->cUnique)) {
+                foreach ($deliveryNote->oPosition_arr as &$deliveryItem) {
+                    if ($deliveryItem->kKonfigitem == 0 && !empty($deliveryItem->cUnique)) {
                         $bAlleAusgeliefert = true;
                         foreach ($this->Positionen as $child) {
-                            if ($child->cUnique === $deliveryPosition->cUnique
+                            if ($child->cUnique === $deliveryItem->cUnique
                                 && $child->kKonfigitem > 0
                                 && !$child->bAusgeliefert
                             ) {
                                 $bAlleAusgeliefert = false;
                             }
                         }
-                        $deliveryPosition->bAusgeliefert = $bAlleAusgeliefert;
+                        $deliveryItem->bAusgeliefert = $bAlleAusgeliefert;
                     }
                 }
-                unset($deliveryPosition);
+                unset($deliveryItem);
             }
             unset($deliveryNote);
         }
@@ -825,6 +825,7 @@ class Bestellung
      */
     public function machGoogleAnalyticsReady(): self
     {
+        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
         foreach ($this->Positionen as $item) {
             $item->nPosTyp = (int)$item->nPosTyp;
             if ($item->nPosTyp === \C_WARENKORBPOS_TYP_ARTIKEL && $item->kArtikel > 0) {

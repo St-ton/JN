@@ -622,7 +622,7 @@ final class Admin
             }
             // hole zu den kArtikeln die passende cArtNr
             foreach ($productData->kArtikel_arr as $kArtikel) {
-                $cArtNr = $this->getProductNo($kArtikel);
+                $cArtNr = $this->getProductNo((int)$kArtikel);
                 if (mb_strlen($cArtNr) > 0) {
                     $productData->cArtNr_arr[] = $cArtNr;
                 }

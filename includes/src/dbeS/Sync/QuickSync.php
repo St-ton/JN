@@ -41,18 +41,19 @@ final class QuickSync extends AbstractSync
      */
     private function handleInserts(array $xml): void
     {
-        if (!\is_array($xml['quicksync']['tartikel'])) {
+        $source = $xml['quicksync']['tartikel'] ?? null;
+        if (!\is_array($source)) {
             return;
         }
         $products = $this->mapper->mapArray($xml['quicksync'], 'tartikel', 'mArtikelQuickSync');
         $count    = \count($products);
         if ($count < 2) {
-            $this->handleNewPriceFormat((int)$products[0]->kArtikel, $xml['quicksync']['tartikel']);
-            $this->handlePriceHistory((int)$products[0]->kArtikel, $xml['quicksync']['tartikel']);
+            $this->handleNewPriceFormat((int)$products[0]->kArtikel, $source);
+            $this->handlePriceHistory((int)$products[0]->kArtikel, $source);
         } else {
             for ($i = 0; $i < $count; ++$i) {
-                $this->handleNewPriceFormat((int)$products[$i]->kArtikel, $xml['quicksync']['tartikel'][$i]);
-                $this->handlePriceHistory((int)$products[$i]->kArtikel, $xml['quicksync']['tartikel'][$i]);
+                $this->handleNewPriceFormat((int)$products[$i]->kArtikel, $source[$i]);
+                $this->handlePriceHistory((int)$products[$i]->kArtikel, $source[$i]);
             }
         }
         $this->insertProducts($products);

@@ -54,21 +54,19 @@ final class Categories extends AbstractSync
      */
     private function handleDeletes(array $xml): void
     {
-        if (!isset($xml['del_kategorien']['kKategorie'])) {
+        $source = $xml['del_kategorien']['kKategorie'] ?? null;
+        if ($source === null) {
             return;
         }
-        if (!\is_array($xml['del_kategorien']['kKategorie']) && (int)$xml['del_kategorien']['kKategorie'] > 0) {
-            $xml['del_kategorien']['kKategorie'] = [$xml['del_kategorien']['kKategorie']];
+        if (!\is_array($source) && \is_numeric($source)) {
+            $source = [$source];
         }
-        if (!\is_array($xml['del_kategorien']['kKategorie'])) {
+        if (!\is_array($source)) {
             return;
         }
-        foreach ($xml['del_kategorien']['kKategorie'] as $categoryID) {
-            $categoryID = (int)$categoryID;
-            if ($categoryID > 0) {
-                $this->deleteCategory($categoryID);
-                \executeHook(\HOOK_KATEGORIE_XML_BEARBEITEDELETES, ['kKategorie' => $categoryID]);
-            }
+        foreach (\array_filter(\array_map('\intval', $source)) as $categoryID) {
+            $this->deleteCategory($categoryID);
+            \executeHook(\HOOK_KATEGORIE_XML_BEARBEITEDELETES, ['kKategorie' => $categoryID]);
         }
     }
 

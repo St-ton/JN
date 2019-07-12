@@ -82,7 +82,7 @@ abstract class AbstractSync
      * @param string     $pk1
      * @param int|string $pk2
      */
-    protected function updateXMLinDB($xml, $table, $toMap, $pk1, $pk2 = 0): void
+    protected function upsertXML($xml, $table, $toMap, $pk1, $pk2 = 0): void
     {
         $idx = $table . ' attr';
         if (GeneralObject::isCountable($table, $xml) || GeneralObject::isCountable($idx, $xml)) {

@@ -518,7 +518,7 @@ final class Images extends AbstractSync
                 );
                 continue;
             }
-            $propertyImage->cPfad = $this->getAttributeImageName($propertyImage, $format, $sql);
+            $propertyImage->cPfad = $this->getPropertiesImageName($propertyImage, $format, $sql);
             $propertyImage->cPfad = $this->getNewFilename($propertyImage->cPfad);
             $this->createThumbnail(
                 $this->brandingConfig['Variationen'],
@@ -596,6 +596,9 @@ final class Images extends AbstractSync
      */
     private function handleProductImages(array $productImages, string $sql): void
     {
+        if (\count($productImages) === 0) {
+            return;
+        }
         foreach ($productImages as $image) {
             if (\strlen($image->cPfad) <= 0) {
                 continue;
@@ -646,18 +649,16 @@ final class Images extends AbstractSync
                 $this->createProductImage($image, $format, $this->unzipPath, $imgFilename, $sql);
             }
         }
-        if (\count($productImages) > 0) {
-            $handle = \opendir($this->unzipPath);
-            while (($file = \readdir($handle)) !== false) {
-                if ($file === '.' || $file === '..' || $file === 'bilder_a.xml') {
-                    continue;
-                }
-                if (\file_exists($this->unzipPath . $file) && !\unlink($this->unzipPath . $file)) {
-                    $this->logger->error('Artikelbild konnte nicht geloescht werden: ' . $file);
-                }
+        $handle = \opendir($this->unzipPath);
+        while (($file = \readdir($handle)) !== false) {
+            if ($file === '.' || $file === '..' || $file === 'bilder_a.xml') {
+                continue;
             }
-            \closedir($handle);
+            if (\file_exists($this->unzipPath . $file) && !\unlink($this->unzipPath . $file)) {
+                $this->logger->error('Artikelbild konnte nicht geloescht werden: ' . $file);
+            }
         }
+        \closedir($handle);
     }
 
     /**
@@ -719,31 +720,31 @@ final class Images extends AbstractSync
      * @param string $sql
      * @return string
      */
-    private function getAttributeImageName($image, $format, $sql): string
+    private function getPropertiesImageName($image, $format, $sql): string
     {
         if (!$image->kEigenschaftWert || !$this->config['bilder']['bilder_variation_namen']) {
             return (\stripos(\strrev($image->cPfad), \strrev($format)) === 0)
                 ? $image->cPfad
                 : $image->cPfad . '.' . $format;
         }
-        $attributeValue = $this->db->query(
+        $propValue = $this->db->query(
             'SELECT kEigenschaftWert, cArtNr, cName, kEigenschaft
                 FROM teigenschaftwert
                 WHERE kEigenschaftWert = ' . (int)$image->kEigenschaftWert,
             ReturnType::SINGLE_OBJECT
         );
-        if ($attributeValue === false) {
+        if ($propValue === false) {
             $this->logger->warning(
                 'Eigenschaftswertbild fuer nicht existierenden Eigenschaftswert ' . (int)$image->kEigenschaftWert
             );
             return $image->cPfad;
         }
-        $imageName = $attributeValue->kEigenschaftWert;
-        if ($attributeValue->cName) {
+        $imageName = $propValue->kEigenschaftWert;
+        if ($propValue->cName) {
             switch ($this->config['bilder']['bilder_variation_namen']) {
                 case 1:
-                    if (!empty($attributeValue->cArtNr)) {
-                        $imageName = 'var' . $this->convertUmlauts($attributeValue->cArtNr);
+                    if (!empty($propValue->cArtNr)) {
+                        $imageName = 'var' . $this->convertUmlauts($propValue->cArtNr);
                     }
                     break;
 
@@ -760,10 +761,10 @@ final class Images extends AbstractSync
                                 AND teigenschaftwert.kEigenschaftWert = ' . (int)$image->kEigenschaftWert,
                         ReturnType::SINGLE_OBJECT
                     );
-                    if (!empty($product->cArtNr) && !empty($attributeValue->cArtNr)) {
+                    if (!empty($product->cArtNr) && !empty($propValue->cArtNr)) {
                         $imageName = $this->convertUmlauts($product->cArtNr) .
                             '_' .
-                            $this->convertUmlauts($attributeValue->cArtNr);
+                            $this->convertUmlauts($propValue->cArtNr);
                     }
                     break;
 
@@ -782,21 +783,21 @@ final class Images extends AbstractSync
                     );
 
                     $attribute = $this->db->query(
-                        'SELECT cName FROM teigenschaft WHERE kEigenschaft = ' . $attributeValue->kEigenschaft,
+                        'SELECT cName FROM teigenschaft WHERE kEigenschaft = ' . $propValue->kEigenschaft,
                         ReturnType::SINGLE_OBJECT
                     );
                     if ((!empty($product->cSeo) || !empty($product->cName))
                         && !empty($attribute->cName)
-                        && !empty($attributeValue->cName)
+                        && !empty($propValue->cName)
                     ) {
                         if ($product->cSeo) {
                             $imageName = $product->cSeo . '_' .
                                 $this->convertUmlauts($attribute->cName) . '_' .
-                                $this->convertUmlauts($attributeValue->cName);
+                                $this->convertUmlauts($propValue->cName);
                         } else {
                             $imageName = $this->convertUmlauts($product->cName) . '_' .
                                 $this->convertUmlauts($attribute->cName) . '_' .
-                                $this->convertUmlauts($attributeValue->cName);
+                                $this->convertUmlauts($propValue->cName);
                         }
                     }
                     break;
@@ -907,44 +908,42 @@ final class Images extends AbstractSync
             ReturnType::SINGLE_OBJECT
         );
         $imageName = $image->cPfad;
-        if ($product->cName) {
-            switch ($this->config['bilder']['bilder_artikel_namen']) {
-                case 1:
-                    if ($product->cArtNr) {
-                        $imageName = $this->convertUmlauts($product->cArtNr);
-                    }
-                    break;
-
-                case 2:
-                    if ($product->cSeo) {
-                        $imageName = $product->cSeo;
-                    } else {
-                        $imageName = $this->convertUmlauts($product->cName);
-                    }
-                    break;
-
-                case 3:
-                    if ($product->cArtNr) {
-                        $imageName = $this->convertUmlauts($product->cArtNr) . '_';
-                    }
-                    if ($product->cSeo) {
-                        $imageName .= $product->cSeo;
-                    } else {
-                        $imageName .= $this->convertUmlauts($product->cName);
-                    }
-                    break;
-
-                case 4:
-                    if ($product->cBarcode) {
-                        $imageName = $this->convertUmlauts($product->cBarcode);
-                    }
-                    break;
-                default:
-                    return $image->cPfad . '.' . $format;
-                    break;
-            }
-        } else {
+        if (empty($product->cName)) {
             return $image->cPfad . '.' . $format;
+        }
+        switch ($this->config['bilder']['bilder_artikel_namen']) {
+            case 1:
+                if ($product->cArtNr) {
+                    $imageName = $this->convertUmlauts($product->cArtNr);
+                }
+                break;
+
+            case 2:
+                if ($product->cSeo) {
+                    $imageName = $product->cSeo;
+                } else {
+                    $imageName = $this->convertUmlauts($product->cName);
+                }
+                break;
+
+            case 3:
+                if ($product->cArtNr) {
+                    $imageName = $this->convertUmlauts($product->cArtNr) . '_';
+                }
+                if ($product->cSeo) {
+                    $imageName .= $product->cSeo;
+                } else {
+                    $imageName .= $this->convertUmlauts($product->cName);
+                }
+                break;
+
+            case 4:
+                if ($product->cBarcode) {
+                    $imageName = $this->convertUmlauts($product->cBarcode);
+                }
+                break;
+            default:
+                return $image->cPfad . '.' . $format;
         }
 
         if ($image->nNr > 1 && $imageName !== $image->cPfad) {

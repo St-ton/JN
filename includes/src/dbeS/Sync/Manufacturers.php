@@ -112,7 +112,7 @@ final class Manufacturers extends AbstractSync
             $this->updateSeo($id, $languages, $xmlLanguage, $manufacturers[$i]->cSeo);
             $this->db->delete('therstellersprache', 'kHersteller', $id);
 
-            $this->updateXMLinDB(
+            $this->upsertXML(
                 $xmlLanguage,
                 'therstellersprache',
                 'mHerstellerSprache',

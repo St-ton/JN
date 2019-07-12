@@ -178,7 +178,7 @@ final class Customer extends AbstractSync
                     SET fGuthaben = 0 
                     WHERE kKunde = ' . (int)$voucher->kKunde . ' 
                         AND fGuthaben < 0',
-                    ReturnType::AFFECTED_ROWS
+                    ReturnType::DEFAULT
                 );
                 $customer        = new Kunde((int)$voucher->kKunde);
                 $obj             = new stdClass();

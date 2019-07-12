@@ -34,7 +34,6 @@ final class Orders extends AbstractSync
     {
         foreach ($starter->getXML() as $i => $item) {
             [$file, $xml] = [\key($item), \reset($item)];
-            error_log('file: ' . $file);
             if (\strpos($file, 'ack_bestellung.xml') !== false) {
                 $this->handleACK($xml);
             } elseif (\strpos($file, 'del_bestellung.xml') !== false) {

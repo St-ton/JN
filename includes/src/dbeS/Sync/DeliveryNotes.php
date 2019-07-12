@@ -76,7 +76,7 @@ final class DeliveryNotes extends AbstractSync
         if (!\is_array($items)) {
             $items = (array)$items;
         }
-        foreach (\array_map('\intval', $items) as $id) {
+        foreach (\array_filter(\array_map('\intval', $items)) as $id) {
             $this->db->delete('tversand', 'kLieferschein', $id);
             $this->db->delete('tlieferschein', 'kLieferschein', $id);
             foreach ($this->db->selectAll(

@@ -107,7 +107,7 @@ final class Characteristics extends AbstractSync
                 } else {
                     $this->deleteCharacteristicOnly($xml['merkmale']['tmerkmal attr']['kMerkmal']);
                 }
-                $this->updateXMLinDB(
+                $this->upsertXML(
                     $xml['merkmale']['tmerkmal'],
                     'tmerkmalsprache',
                     'mMerkmalSprache',
@@ -244,7 +244,7 @@ final class Characteristics extends AbstractSync
                     $this->deleteCharacteristicOnly($xml['merkmale']['tmerkmal'][$i . ' attr']['kMerkmal']);
                 }
 
-                $this->updateXMLinDB(
+                $this->upsertXML(
                     $xml['merkmale']['tmerkmal'][$i],
                     'tmerkmalsprache',
                     'mMerkmalSprache',
@@ -373,7 +373,7 @@ final class Characteristics extends AbstractSync
             }
         }
         $this->upsert('tmerkmal', $attributes, 'kMerkmal');
-        $this->fuelleFehlendeMMWInSeo($attributeValues);
+        $this->addMissingCharacteristicValueSeo($attributeValues);
         $this->cache->flushTags([\CACHING_GROUP_ATTRIBUTE]);
 
         return $attributeValues;
@@ -448,9 +448,7 @@ final class Characteristics extends AbstractSync
                     $item->kSprache_arr[] = $localized[$j]->kSprache;
                 }
 
-                if (isset($localized[$j]->kSprache, $defaultLangID)
-                    && $localized[$j]->kSprache === $defaultLangID
-                ) {
+                if (isset($localized[$j]->kSprache, $defaultLangID) && $localized[$j]->kSprache === $defaultLangID) {
                     $item->cNameSTD            = $localized[$j]->cWert;
                     $item->cSeoSTD             = $localized[$j]->cSeo;
                     $item->cMetaTitleSTD       = $localized[$j]->cMetaTitle;
@@ -465,7 +463,7 @@ final class Characteristics extends AbstractSync
             $this->upsert('tmerkmalwert', [$mapped[$o]], 'kMerkmalWert');
             $charValues[$i]->oMMW_arr[$o] = $item;
         }
-        $this->fuelleFehlendeMMWInSeo($charValues);
+        $this->addMissingCharacteristicValueSeo($charValues);
 
         return $charValues;
     }
@@ -474,18 +472,15 @@ final class Characteristics extends AbstractSync
      * Geht $oMMW_arr durch welches vorher mit den mitgeschickten Merkmalwerten gefüllt wurde
      * und füllt die Seo Tabelle in den Sprachen, die nicht von der Wawi mitgeschickt wurden
      *
-     * @param array $attributes
+     * @param array $characteristics
      */
-    private function fuelleFehlendeMMWInSeo($attributes): void
+    private function addMissingCharacteristicValueSeo(array $characteristics): void
     {
-        if (!\is_array($attributes)) {
-            return;
-        }
         $languages = $this->db->query(
             'SELECT kSprache FROM tsprache ORDER BY kSprache',
             ReturnType::ARRAY_OF_OBJECTS
         );
-        foreach ($attributes as $attribute) {
+        foreach ($characteristics as $attribute) {
             foreach ($attribute->oMMW_arr as $attributeValue) {
                 $attributeValue->kMerkmalWert = (int)$attributeValue->kMerkmalWert;
                 foreach ($languages as $language) {

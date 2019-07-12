@@ -6,7 +6,6 @@
 
 use JTL\Alert\Alert;
 use JTL\Cron\Admin\NewsletterDefault;
-use JTL\Cron\Type;
 use JTL\Customer\Kunde;
 use JTL\Customer\Kundengruppe;
 use JTL\DB\ReturnType;
@@ -19,7 +18,6 @@ use JTL\Newsletter\Newsletter;
 use JTL\Pagination\Pagination;
 use JTL\Session\Frontend;
 use JTL\Shop;
-use JTL\Sprache;
 
 require_once __DIR__ . '/includes/admininclude.php';
 

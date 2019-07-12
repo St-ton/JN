@@ -27,7 +27,8 @@
                 <div id="settings">
                     <div class="settings card">
                         <div class="card-header">
-                            <div class="card-title">{__('suchspecials')}</div>
+                            <div class="subheading1">{__('suchspecials')}</div>
+                            <hr class="mb-n3">
                         </div>
                         <div class="card-body">
                             <input type="hidden" name="suchspecials" value="1" />

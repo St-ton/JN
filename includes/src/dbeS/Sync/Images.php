@@ -233,6 +233,9 @@ final class Images extends AbstractSync
      */
     private function handleInserts($xml, string $unzipPath, string $sql): void
     {
+        if (!\is_array($xml['bilder'])) {
+            return;
+        }
         $productImages      = $this->mapper->mapArray($xml['bilder'], 'tartikelpict', 'mArtikelPict');
         $categoryImages     = $this->mapper->mapArray($xml['bilder'], 'tkategoriepict', 'mKategoriePict');
         $propertyImages     = $this->mapper->mapArray($xml['bilder'], 'teigenschaftwertpict', 'mEigenschaftWertPict');

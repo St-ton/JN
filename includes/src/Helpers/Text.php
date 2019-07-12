@@ -231,7 +231,7 @@ class Text
         int $flags = \ENT_COMPAT,
         string $enc = \JTL_CHARSET
     ): string {
-        return htmlentities($input, $flags, $enc, false);
+        return \htmlentities($input, $flags, $enc, false);
     }
 
     /**
@@ -249,7 +249,7 @@ class Text
                 $input = \preg_replace($regex, \chr(27), $input);
             }
             $input = \mb_substr($input, 0, $length);
-            if (count($hits[0]) > 0) {
+            if (\count($hits[0]) > 0) {
                 // reset placeholder to preserved html entities
                 $input = \vsprintf(\str_replace(['%', \chr(27)], ['%%', '%s'], $input), $hits[0]);
             }

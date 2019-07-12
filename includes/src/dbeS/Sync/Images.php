@@ -282,7 +282,7 @@ final class Images extends AbstractSync
                 continue;
             }
             $image->cPfad .= '.' . $format;
-            $image->cPfad = $this->getNewFilename($image->cPfad);
+            $image->cPfad  = $this->getNewFilename($image->cPfad);
             $this->createThumbnail(
                 $this->brandingConfig['Merkmalwerte'],
                 $this->unzipPath . $fileName,
@@ -337,7 +337,7 @@ final class Images extends AbstractSync
                 continue;
             }
             $image->cPfad .= '.' . $format;
-            $image->cPfad = $this->getNewFilename($image->cPfad);
+            $image->cPfad  = $this->getNewFilename($image->cPfad);
             $this->createThumbnail(
                 $this->brandingConfig['Merkmale'],
                 $this->unzipPath . $imgFilename,
@@ -943,11 +943,10 @@ final class Images extends AbstractSync
         $targetheight,
         int $quality = 80,
         $container = 'N'
-    ): int
-    {
-        $enlarge = $this->config['bilder']['bilder_skalieren'] === 'Y';
-        $ret     = 0;
-        $format  = $this->config['bilder']['bilder_dateiformat'];//$this->getExtension($imgFilename);
+    ): int {
+        $enlarge          = $this->config['bilder']['bilder_skalieren'] === 'Y';
+        $ret              = 0;
+        $format           = $this->config['bilder']['bilder_dateiformat'];//$this->getExtension($imgFilename);
         [$width, $height] = \getimagesize($imgFilename);
         if ($width > 0 && $height > 0) {
             if (!$enlarge && $width < $targetWidth && $height < $targetheight) {
@@ -1006,8 +1005,7 @@ final class Images extends AbstractSync
         $quality = 80,
         $brand = 0,
         $container = 'N'
-    ): int
-    {
+    ): int {
         $enlarge = $this->config['bilder']['bilder_skalieren'] === 'Y';
         $ret     = 0;
         $format  = $this->config['bilder']['bilder_dateiformat'];//$this->getExtension($imgFilename);

@@ -719,7 +719,7 @@ final class Mapper
      * @param array  $xml
      * @param string $name
      * @param string $toMap
-     * @return array
+     * @return stdClass[]
      */
     public function mapArray(array $xml, string $name, string $toMap): array
     {

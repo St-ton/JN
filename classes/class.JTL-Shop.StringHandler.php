@@ -21,6 +21,41 @@ class StringHandler
     }
 
     /**
+     * @param string $cString
+     * @param int    $cFlag
+     * @param string $cEncoding
+     * @return string
+     */
+    public static function htmlentitiesOnce($cString, $cFlag = ENT_COMPAT, $cEncoding = JTL_CHARSET)
+    {
+        return htmlentities($cString, $cFlag, $cEncoding, false);
+    }
+
+    /**
+     * @param string $cString
+     * @param int    $length
+     * @return string
+     */
+    public static function htmlentitiesSubstr($cString, $length)
+    {
+        $length = (int)$length;
+        if ($length > 0 && strlen($cString) > $length) {
+            $regex = '/(&#x?[0-9a-f]+;)|(&\w{2,8};)|(\e)/i';
+            if (preg_match_all($regex, $cString, $hits)) {
+                // set escape-sequence as placeholder for html entities
+                $cString = preg_replace($regex, chr(27), $cString);
+            }
+            $cString = substr($cString, 0, $length);
+            if (count($hits[0]) > 0) {
+                // reset placeholder to preserved html entities
+                $cString = vsprintf(str_replace(['%', chr(27)], ['%%', '%s'], $cString), $hits[0]);
+            }
+        }
+
+        return $cString;
+    }
+
+    /**
      * @param string $string
      * @return string
      */

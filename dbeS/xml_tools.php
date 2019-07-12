@@ -90,6 +90,7 @@ class XML
     public $stack;    #a stack of the most recent parent at each nesting level
     public $last_opened_tag; #keeps track of the last tag opened.
     public $data;
+    private $encoding;
 
     /**
      * XML constructor.
@@ -98,9 +99,10 @@ class XML
     public function __construct($cEncoding)
     {
         //$this->parser = &xml_parser_create("UTF-8");
-        $this->parser = xml_parser_create($cEncoding);
+        $this->encoding = $cEncoding;
+        $this->parser   = xml_parser_create($cEncoding);
         xml_parser_set_option($this->parser, XML_OPTION_CASE_FOLDING, false);
-        xml_parser_set_option($this->parser, XML_OPTION_TARGET_ENCODING, JTL_CHARSET);
+        xml_parser_set_option($this->parser, XML_OPTION_TARGET_ENCODING, $cEncoding);
 
         xml_set_object($this->parser, $this);
         xml_set_element_handler($this->parser, 'open', 'close');
@@ -183,7 +185,19 @@ class XML
     public function close(&$parser, $tag)
     {
         if ($this->last_opened_tag == $tag) {
-            $this->parent          = $this->data;
+            if ($this->encoding !== JTL_CHARSET) {
+                $this->parent = html_entity_decode(
+                    htmlentities(
+                        $this->data,
+                        ENT_COMPAT | ENT_HTML401,
+                        $this->encoding
+                    ),
+                    ENT_COMPAT | ENT_HTML401,
+                    JTL_CHARSET
+                );
+            } else {
+                $this->parent = $this->data;
+            }
             $this->last_opened_tag = null;
         }
         array_pop($this->stack);

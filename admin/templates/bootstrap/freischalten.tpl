@@ -9,16 +9,7 @@
                 <input type="hidden" name="sprachwechsel" value="1" />
                 <input id="formSprachwechselTab" type="hidden" name="tab" value="{if isset($cTab)}{$cTab}{else}bewertungen{/if}" />
                 <div class="input-group">
-                    <span class="input-group-addon">
-                        <label for="formSprachwechselSelect">{__('changeLanguage')}</label>
-                    </span>
-                    <span class="input-group-wrap">
-                        <select class="form-control" id="formSprachwechselSelect" name="kSprache" >
-                            {foreach $sprachen as $language}
-                                <option value="{$language->getId()}" {if $language->getId() === $smarty.session.kSprache}selected{/if}>{$language->getLocalizedName()}</option>
-                            {/foreach}
-                        </select>
-                    </span>
+                    {include file='tpl_inc/language_switcher.tpl' id='formSprachwechselSelect'}
                 </div>
             </form>
             <script type="text/javascript">
@@ -28,37 +19,41 @@
                 });
             </script>
         </div>
-        <form name="suche" method="post" action="freischalten.php">
-            {$jtl_token}
-            <div class="col-md-5">
-                <div class="input-group">
-                    <span class="input-group-addon">
-                        <label for="search_type">{__('freischaltenSearchType')}</label>
-                    </span>
-                    <span class="input-group-wrap">
-                        <select class="form-control" name="cSuchTyp" id="search_type">
-                            <option value="Bewertung"{if isset($cSuchTyp) && $cSuchTyp === 'Bewertung'} selected{/if}>{__('reviews')}</option>
-                            <option value="Livesuche"{if isset($cSuchTyp) && $cSuchTyp === 'Livesuche'} selected{/if}>{__('freischaltenLivesearch')}</option>
-                            <option value="Newskommentar"{if isset($cSuchTyp) && $cSuchTyp === 'Newskommentar'} selected{/if}>{__('freischaltenNewsComments')}</option>
-                            <option value="Newsletterempfaenger"{if isset($cSuchTyp) && $cSuchTyp === 'Newsletterempfaenger'} selected{/if}>{__('freischaltenNewsletterReceiver')}</option>
-                        </select>
-                    </span>
+        <div class="col-md-9 col-sm-8">
+            <form name="suche" method="post" action="freischalten.php">
+                <div class="row">
+                    {$jtl_token}
+                    <div class="col-md-7">
+                        <div class="input-group">
+                            <span class="input-group-addon">
+                                <label for="search_type">{__('freischaltenSearchType')}:</label>
+                            </span>
+                            <span class="label-wrap">
+                                <select class="custom-select" name="cSuchTyp" id="search_type">
+                                    <option value="Bewertung"{if isset($cSuchTyp) && $cSuchTyp === 'Bewertung'} selected{/if}>{__('reviews')}</option>
+                                    <option value="Livesuche"{if isset($cSuchTyp) && $cSuchTyp === 'Livesuche'} selected{/if}>{__('freischaltenLivesearch')}</option>
+                                    <option value="Newskommentar"{if isset($cSuchTyp) && $cSuchTyp === 'Newskommentar'} selected{/if}>{__('freischaltenNewsComments')}</option>
+                                    <option value="Newsletterempfaenger"{if isset($cSuchTyp) && $cSuchTyp === 'Newsletterempfaenger'} selected{/if}>{__('freischaltenNewsletterReceiver')}</option>
+                                </select>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-md-5">
+                        <input type="hidden" name="Suche" value="1" />
+                        <div class="input-group">
+                            <label for="search_key" class="sr-only">{__('freischaltenSearchItem')}</label>
+                            <span class="label-wrap">
+                                <input class="form-control" name="cSuche" type="text" value="{if isset($cSuche)}{$cSuche}{/if}"
+                                       id="search_key" placeholder="{__('freischaltenSearchItem')}">
+                            </span>
+                            <span class="input-group-btn">
+                                <button name="submitSuche" type="submit" class="btn btn-primary"><i class="fa fa-search"></i></button>
+                            </span>
+                        </div>
+                    </div>
                 </div>
-            </div>
-            <div class="col-md-4">
-                <input type="hidden" name="Suche" value="1" />
-                <div class="input-group">
-                    <label for="search_key" class="sr-only">{__('freischaltenSearchItem')}</label>
-                    <span class="input-group-wrap">
-                        <input class="form-control" name="cSuche" type="text" value="{if isset($cSuche)}{$cSuche}{/if}"
-                               id="search_key" placeholder="{__('freischaltenSearchItem')}">
-                    </span>
-                    <span class="input-group-btn">
-                        <button name="submitSuche" type="submit" class="btn btn-primary"><i class="fa fa-search"></i></button>
-                    </span>
-                </div>
-            </div>
-        </form>
+            </form>
+        </div>
     </div>
     <ul class="nav nav-tabs" role="tablist">
         <li class="tab{if !isset($cTab) || empty($cTab) || $cTab === 'bewertungen'} active{/if}">

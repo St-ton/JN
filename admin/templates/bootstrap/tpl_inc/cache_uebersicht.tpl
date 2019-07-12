@@ -47,7 +47,8 @@
                 {$jtl_token}
                 <div class="card">
                     <div class="card-header">
-                        <div class="card-title">{__('management')}</div>
+                        <div class="subheading1">{__('management')}</div>
+                        <hr class="mb-n3">
                     </div>
                     <div class="table-responsive">
                     <table id="cache-type-status" class="table list">
@@ -128,7 +129,7 @@
             {if is_array($stats) && $stats|@count > 0}
                 <div class="card">
                     <div class="card-header">
-                        <div class="card-title">{__('objectcache')}</div>
+                        <div class="subheading1">{__('objectcache')}</div>
                     </div>
                     <table class="table">
                         {if isset($stats.uptime_h) && $stats.uptime_h !== null}
@@ -180,7 +181,7 @@
                 {if isset($stats.slow) && is_array($stats.slow)}
                     <div class="card">
                         <div class="card-header">
-                            <div class="card-title">{__('slowlog')}</div>
+                            <div class="subheading1">{__('slowlog')}</div>
                         </div>
                         {if $stats.slow|@count > 0}
                             <table class="table">
@@ -204,7 +205,7 @@
             {if $opcache_stats !== null}
                 <div class="card">
                     <div class="card-header">
-                        <div class="card-title">OpCache</div>
+                        <div class="subheading1">OpCache</div>
                     </div>
                     <table class="table cache-stats" id="opcache-stats">
                         <tr class="cache-row">
@@ -259,7 +260,7 @@
             {if $tplcacheStats !== null}
                 <div class="card">
                     <div class="card-header">
-                        <div class="card-title">{__('templateCache')}</div>
+                        <div class="subheading1">{__('templateCache')}</div>
                     </div>
                     <table class="table cache-stats" id="tplcache-stats">
                         <tr class="cache-row collapsed clickable" data-toggle="collapse" data-target="#cachefilesFrontendDetail" style="cursor: pointer">
@@ -308,44 +309,43 @@
             {if !empty($all_methods) && $all_methods|@count > 0}
                 <div class="card settings">
                     <div class="card-header">
-                        <div class="card-title">{__('settings')}</div>
+                        <div class="subheading1">{__('settings')}</div>
+                        <hr class="mb-n3">
                     </div>
                     <form method="post" action="cache.php">
                         {$jtl_token}
                         <div class="card-body">
-                            <div class="input-group">
-                                <span class="input-group-addon">
-                                    <label for="runcount">{__('runs')}</label>
-                                </span>
-                                <input class="form-control" type="number" name="runcount" id="runcount" value="{if isset($smarty.post.runcount) && is_numeric($smarty.post.runcount)}{$smarty.post.runcount}{else}1000{/if}" size="5" />
+                            <div class="form-group form-row align-items-center">
+                                <label class="col col-sm-4 col-form-label text-sm-right" for="runcount">{__('runs')}:</label>
+                                <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                    <input class="form-control" type="number" name="runcount" id="runcount" value="{if isset($smarty.post.runcount) && is_numeric($smarty.post.runcount)}{$smarty.post.runcount}{else}1000{/if}" size="5" />
+                                </div>
                             </div>
-                            <div class="input-group">
-                                <span class="input-group-addon">
-                                    <label for="repeat">{__('repeats')}</label>
-                                </span>
-                                <input class="form-control" type="number" name="repeat" id="repeat" value="{if isset($smarty.post.repeat) && is_numeric($smarty.post.repeat)}{$smarty.post.repeat}{else}1{/if}" size="5" />
+                            <div class="form-group form-row align-items-center">
+                                <label class="col col-sm-4 col-form-label text-sm-right" for="repeat">{__('repeats')}:</label>
+                                <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                    <input class="form-control" type="number" name="repeat" id="repeat" value="{if isset($smarty.post.repeat) && is_numeric($smarty.post.repeat)}{$smarty.post.repeat}{else}1{/if}" size="5" />
+                                </div>
                             </div>
-                            <div class="input-group">
-                                <span class="input-group-addon">
-                                    <label for="testdata">{__('testData')}</label>
-                                </span>
-                                <span class="input-group-wrap">
-                                    <select class="form-control" name="testdata" id="testdata">
+                            <div class="form-group form-row align-items-center">
+                                <label class="col col-sm-4 col-form-label text-sm-right" for="testdata">{__('testData')}:</label>
+                                <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                    <select class="custom-select" name="testdata" id="testdata">
                                         <option value="array"{if isset($smarty.post.testdata) && $smarty.post.testdata === 'array'} selected{/if}>{__('typeArray')}</option>
                                         <option value="object"{if isset($smarty.post.testdata) && $smarty.post.testdata === 'object'} selected{/if}>{__('typeObject')}</option>
                                         <option value="string"{if isset($smarty.post.testdata) && $smarty.post.testdata === 'string'} selected{/if}>{__('typeString')}</option>
                                     </select>
-                                </span>
+                                </div>
                             </div>
-                            <div class="input-group">
-                                <span class="input-group-addon">
-                                    <label for="methods">{__('methods')}</label>
-                                </span>
-                                <select class="form-control" name="methods[]" id="methods" multiple>
-                                    {foreach $all_methods as $method}
-                                        <option value="{$method}"{if !empty($smarty.post.methods) && $method|in_array:$smarty.post.methods}selected{/if}>{$method}</option>
-                                    {/foreach}
-                                </select>
+                            <div class="form-group form-row align-items-center">
+                                <label class="col col-sm-4 col-form-label text-sm-right" for="methods">{__('methods')}:</label>
+                                <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                    <select class="custom-select" name="methods[]" id="methods" multiple>
+                                        {foreach $all_methods as $method}
+                                            <option value="{$method}"{if !empty($smarty.post.methods) && $method|in_array:$smarty.post.methods}selected{/if}>{$method}</option>
+                                        {/foreach}
+                                    </select>
+                                </div>
                             </div>
                             <input name="a" type="hidden" value="benchmark" />
                         </div>
@@ -360,7 +360,8 @@
                             {if isset($result.method)}
                                 <div class="bench-result card" style="margin-top: 20px;">
                                     <div class="card-header">
-                                        <div class="card-title">{$result.method}</div>
+                                        <div class="subheading1">{$result.method}</div>
+                                        <hr class="mb-n3">
                                     </div>
                                     <div class="card-body">
                                     <p><span class="opt">{__('status')}: </span> <span class="label {if $result.status === 'ok'}label-success{else}label-danger{/if}">{$result.status}</span></p>
@@ -401,18 +402,17 @@
 
                 <div class="card">
                     <div class="card-header">
-                        <div class="card-title">{__('general')}</div>
+                        <div class="subheading1">{__('general')}</div>
+                        <hr class="mb-n3">
                     </div>
                     <div class="card-body">
                         {foreach $settings as $setting}
                             {if $setting->cConf === 'Y'}
-                                <div class="input-group">
-                                    <span class="input-group-addon">
-                                        <label for="{$setting->cWertName}">{$setting->cName}</label>
-                                    </span>
-                                    <span class="input-group-wrap">
+                                <div class="form-group form-row align-items-center">
+                                    <label class="col col-sm-4 col-form-label text-sm-right" for="{$setting->cWertName}">{$setting->cName}:</label>
+                                    <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                         {if $setting->cInputTyp === 'selectbox'}
-                                            <select name="{$setting->cWertName}" id="{$setting->cWertName}" class="form-control">
+                                            <select name="{$setting->cWertName}" id="{$setting->cWertName}" class="custom-select">
                                                 {foreach $setting->ConfWerte as $wert}
                                                     <option value="{$wert->cWert}" {if isset($setting->gesetzterWert) && $setting->gesetzterWert == $wert->cWert}selected{/if}>{$wert->cName}</option>
                                                 {/foreach}
@@ -422,12 +422,12 @@
                                         {else}
                                             <input class="form-control" type="text" name="{$setting->cWertName}" id="{$setting->cWertName}" value="{if isset($setting->gesetzterWert)}{$setting->gesetzterWert}{/if}" tabindex="1" />
                                         {/if}
-                                    </span>
-                                    <span class="input-group-addon">
-                                        {if $setting->cBeschreibung}
+                                    </div>
+                                    {if $setting->cBeschreibung}
+                                        <div class="col-auto ml-sm-n4 order-2 order-sm-3">
                                             {getHelpDesc cDesc=$setting->cBeschreibung}
-                                        {/if}
-                                    </span>
+                                        </div>
+                                    {/if}
                                 </div>
                             {/if}
                         {/foreach}
@@ -438,18 +438,17 @@
                 <div id="row_toggle_cache" style="display: none;">
                     <div class="card">
                         <div class="card-header">
-                            <div class="card-title">{__('extended')}</div>
+                            <div class="subheading1">{__('extended')}</div>
+                            <hr class="mb-n3">
                         </div>
                         <div class="card-body">
                             {foreach $advanced_settings as $setting}
                                 {if $setting->cConf === 'Y'}
-                                    <div class="input-group">
-                                        <span class="input-group-addon">
-                                            <label for="{$setting->cWertName}">{$setting->cName}</label>
-                                        </span>
-                                        <span class="input-group-wrap">
+                                    <div class="form-group form-row align-items-center">
+                                        <label class="col col-sm-4 col-form-label text-sm-right" for="{$setting->cWertName}">{$setting->cName}</label>
+                                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                             {if $setting->cInputTyp === 'selectbox'}
-                                                <select name="{$setting->cWertName}" id="{$setting->cWertName}" class="form-control">
+                                                <select name="{$setting->cWertName}" id="{$setting->cWertName}" class="custom-select">
                                                     {foreach $setting->ConfWerte as $wert}
                                                         <option value="{$wert->cWert}" {if isset($setting->gesetzterWert) && $setting->gesetzterWert == $wert->cWert}selected{/if}>{$wert->cName}</option>
                                                     {/foreach}
@@ -461,9 +460,11 @@
                                             {else}
                                                 <input class="form-control" type="text" name="{$setting->cWertName}" id="{$setting->cWertName}" value="{if isset($setting->gesetzterWert)}{$setting->gesetzterWert}{/if}" tabindex="1" />
                                             {/if}
-                                        </span>
+                                        </div>
                                         {if $setting->cBeschreibung}
-                                            <span class="input-group-addon">{getHelpDesc cDesc=$setting->cBeschreibung}</span>
+                                            <div class="col-auto ml-sm-n4 order-2 order-sm-3">
+                                                {getHelpDesc cDesc=$setting->cBeschreibung}
+                                            </div>
                                         {/if}
                                     </div>
                                 {/if}

@@ -87,15 +87,14 @@
         <form class="card settings" action="systemlog.php" method="post">
             {$jtl_token}
             <div class="card-header">
-                <div class="card-title">{__('systemlogLevel')}</div>
+                <div class="subheading1">{__('systemlogLevel')}</div>
+                <hr class="mb-n3">
             </div>
             <div class="card-body">
-                <div class="input-group">
-                    <span class="input-group-addon">
-                        <label for="minLogLevel">{__('minLogLevel')}</label>
-                    </span>
-                    <span class="input-group-wrap">
-                        <select name="minLogLevel" id="minLogLevel" class="form-control combo">
+                <div class="form-group form-row align-items-center">
+                    <label class="col col-sm-4 col-form-label text-sm-right" for="minLogLevel">{__('minLogLevel')}:</label>
+                    <span class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                        <select name="minLogLevel" id="minLogLevel" class="custom-select combo">
                             <option{if $minLogLevel === $smarty.const.JTLLOG_LEVEL_ERROR} selected{/if} value="{$smarty.const.JTLLOG_LEVEL_ERROR}">{__('logLevelError')}</option>
                             <option{if $minLogLevel === $smarty.const.JTLLOG_LEVEL_WARNING} selected{/if} value="{$smarty.const.JTLLOG_LEVEL_WARNING}">{__('logLevelWarning')}</option>
                             <option{if $minLogLevel === $smarty.const.JTLLOG_LEVEL_NOTICE} selected{/if} value="{$smarty.const.JTLLOG_LEVEL_NOTICE}">{__('logLevelNotice')}</option>

@@ -117,25 +117,22 @@
             {assign var=open value=false}
             {foreach $oConfig_arr as $oConfig}
                 {if $oConfig->cConf === 'Y'}
-                    <div class="item input-group">
-                        <span class="input-group-addon">
-                            <label for="{$oConfig->cWertName}">{$oConfig->cName}</label>
-                        </span>
+                    <div class="item form-group form-row align-items-center">
+                        <label class="col col-sm-4 col-form-label text-sm-right" for="{$oConfig->cWertName}">{$oConfig->cName}:</label>
+                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                         {if $oConfig->cInputTyp === 'selectbox'}
-                            <span class="input-group-wrap">
-                                <select id="{$oConfig->cWertName}" name="{$oConfig->cWertName}"
-                                        class="form-control combo"
-                                        {if $oConfig->cWertName === 'preisspannenfilter_anzeige_berechnung'}
-                                            onChange="selectCheck(this);"
-                                        {/if}>
-                                    {foreach $oConfig->ConfWerte as $wert}
-                                        <option value="{$wert->cWert}"
-                                                {if $oConfig->gesetzterWert == $wert->cWert}selected{/if}>
-                                            {$wert->cName}
-                                        </option>
-                                    {/foreach}
-                                </select>
-                            </span>
+                            <select id="{$oConfig->cWertName}" name="{$oConfig->cWertName}"
+                                    class="custom-select combo"
+                                    {if $oConfig->cWertName === 'preisspannenfilter_anzeige_berechnung'}
+                                        onChange="selectCheck(this);"
+                                    {/if}>
+                                {foreach $oConfig->ConfWerte as $wert}
+                                    <option value="{$wert->cWert}"
+                                            {if $oConfig->gesetzterWert == $wert->cWert}selected{/if}>
+                                        {$wert->cName}
+                                    </option>
+                                {/foreach}
+                            </select>
                         {elseif $oConfig->cInputTyp === 'number'}
                             <input class="form-control" type="number" name="{$oConfig->cWertName}"
                                    id="{$oConfig->cWertName}"
@@ -147,11 +144,12 @@
                                    value="{if isset($oConfig->gesetzterWert)}{$oConfig->gesetzterWert}{/if}"
                                    tabindex="1">
                         {/if}
-                        <span class="input-group-addon">
-                            {if $oConfig->cBeschreibung}
+                        </div>
+                        {if $oConfig->cBeschreibung}
+                            <span class="col-auto ml-sm-n4 order-2 order-sm-3">
                                 {getHelpDesc cDesc=$oConfig->cBeschreibung cID=$oConfig->kEinstellungenConf}
-                            {/if}
-                        </span>
+                            </span>
+                        {/if}
                         {if $oConfig->cWertName === 'preisspannenfilter_anzeige_berechnung'}
                     </div>
                     <div id="Werte" style="display: {if $oConfig->gesetzterWert === 'M'}block{else}none{/if};"
@@ -173,10 +171,11 @@
                         {/if}
                 <div class="card">
                     <div class="card-header">
-                        <div class="card-title">
+                        <div class="subheading1">
                             {$oConfig->cName}
                             <span class="pull-right">{getHelpDesc cID=$oConfig->kEinstellungenConf}</span>
                         </div>
+                        <hr class="mb-n3">
                     </div>
                     <div class="card-body">
                         {assign var=open value=true}

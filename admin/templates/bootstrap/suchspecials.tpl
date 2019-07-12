@@ -32,41 +32,41 @@
                         </div>
                         <div class="card-body">
                             <input type="hidden" name="suchspecials" value="1" />
-                            <div class="item input-group">
-                                <span class="input-group-addon">
-                                    <label for="bestseller">{__('bestseller')}</label>
-                                </span>
-                                <input class="form-control" name="bestseller" id="bestseller" type="text" value="{if isset($oSuchSpecials_arr[1])}{$oSuchSpecials_arr[1]}{/if}" />
+                            <div class="item form-group form-row align-items-center">
+                                <label class="col col-sm-4 col-form-label text-sm-right" for="bestseller">{__('bestseller')}:</label>
+                                <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                    <input class="form-control" name="bestseller" id="bestseller" type="text" value="{if isset($oSuchSpecials_arr[1])}{$oSuchSpecials_arr[1]}{/if}" />
+                                </div>
                             </div>
-                            <div class="item input-group">
-                                <span class="input-group-addon">
-                                    <label for="sonderangebote">{__('specialOffers')}</label>
-                                </span>
-                                <input class="form-control" id="sonderangebote" name="sonderangebote" type="text" value="{if isset($oSuchSpecials_arr[2])}{$oSuchSpecials_arr[2]}{/if}" />
+                            <div class="item form-group form-row align-items-center">
+                                <label class="col col-sm-4 col-form-label text-sm-right" for="sonderangebote">{__('specialOffers')}:</label>
+                                <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                    <input class="form-control" id="sonderangebote" name="sonderangebote" type="text" value="{if isset($oSuchSpecials_arr[2])}{$oSuchSpecials_arr[2]}{/if}" />
+                                </div>
                             </div>
-                            <div class="item input-group">
-                                <span class="input-group-addon">
-                                    <label for="neu_im_sortiment">{__('newInAssortment')}</label>
-                                </span>
-                                <input class="form-control" id="neu_im_sortiment" name="neu_im_sortiment" type="text" value="{if isset($oSuchSpecials_arr[3])}{$oSuchSpecials_arr[3]}{/if}" />
+                            <div class="item form-group form-row align-items-center">
+                                <label class="col col-sm-4 col-form-label text-sm-right" for="neu_im_sortiment">{__('newInAssortment')}:</label>
+                                <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                    <input class="form-control" id="neu_im_sortiment" name="neu_im_sortiment" type="text" value="{if isset($oSuchSpecials_arr[3])}{$oSuchSpecials_arr[3]}{/if}" />
+                                </div>
                             </div>
-                            <div class="item input-group">
-                                <span class="input-group-addon">
-                                    <label for="top_angebote">{__('topOffers')}</label>
-                                </span>
-                                <input class="form-control" id="top_angebote" name="top_angebote" type="text" value="{if isset($oSuchSpecials_arr[4])}{$oSuchSpecials_arr[4]}{/if}" />
+                            <div class="item form-group form-row align-items-center">
+                                <label class="col col-sm-4 col-form-label text-sm-right" for="top_angebote">{__('topOffers')}:</label>
+                                <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                    <input class="form-control" id="top_angebote" name="top_angebote" type="text" value="{if isset($oSuchSpecials_arr[4])}{$oSuchSpecials_arr[4]}{/if}" />
+                                </div>
                             </div>
-                            <div class="item input-group">
-                                <span class="input-group-addon">
-                                    <label for="in_kuerze_verfuegbar">{__('shortTermAvailable')}</label>
-                                </span>
-                                <input class="form-control" id="in_kuerze_verfuegbar" name="in_kuerze_verfuegbar" type="text" value="{if isset($oSuchSpecials_arr[5])}{$oSuchSpecials_arr[5]}{/if}" />
+                            <div class="item form-group form-row align-items-center">
+                                <label class="col col-sm-4 col-form-label text-sm-right" for="in_kuerze_verfuegbar">{__('shortTermAvailable')}:</label>
+                                <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                    <input class="form-control" id="in_kuerze_verfuegbar" name="in_kuerze_verfuegbar" type="text" value="{if isset($oSuchSpecials_arr[5])}{$oSuchSpecials_arr[5]}{/if}" />
+                                </div>
                             </div>
-                            <div class="item input-group">
-                                <span class="input-group-addon">
-                                    <label for="top_bewertet">{__('topreviews')}</label>
-                                </span>
-                                <input class="form-control" id="top_bewertet" name="top_bewertet" type="text" value="{if isset($oSuchSpecials_arr[6])}{$oSuchSpecials_arr[6]}{/if}" />
+                            <div class="item form-group form-row align-items-center">
+                                <label class="col col-sm-4 col-form-label text-sm-right" for="top_bewertet">{__('topreviews')}:</label>
+                                <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                    <input class="form-control" id="top_bewertet" name="top_bewertet" type="text" value="{if isset($oSuchSpecials_arr[6])}{$oSuchSpecials_arr[6]}{/if}" />
+                                </div>
                             </div>
                         </div>
                         <div class="card-footer">

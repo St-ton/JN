@@ -50,7 +50,8 @@
 
         <div class="card">
             <div class="card-header">
-                <div class="card-title">{__('shopContent')}</div>
+                <div class="subheading1">{__('shopContent')}</div>
+                <hr class="mb-n3">
             </div>
             <div class="card-body">
                 <div class="item">
@@ -90,7 +91,8 @@
 
         <div class="card">
             <div class="card-header">
-                <div class="card-title">{__('userGeneratedContent')}</div>
+                <div class="subheading1">{__('userGeneratedContent')}</div>
+                <hr class="mb-n3">
             </div>
             <div class="card-body">
                 <div class="item">
@@ -110,7 +112,8 @@
         
         <div class="card">
             <div class="card-header">
-                <div class="card-title">{__('customersOrdersCoupons')}</div>
+                <div class="subheading1">{__('customersOrdersCoupons')}</div>
+                <hr class="mb-n3">
             </div>
             <div class="card-body">
                 <div class="item">

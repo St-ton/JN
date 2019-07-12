@@ -262,31 +262,32 @@
             {$jtl_token}
             <div class="card settings">
                 <div class="card-header">
-                    <div class="card-title">{__('redirectNew')}</div>
+                    <div class="subheading1">{__('redirectNew')}</div>
+                    <hr class="mb-n3">
                 </div>
                 <div class="card-body">
-                    <div class="input-group">
-                        <span class="input-group-addon">
-                            <label for="cFromUrl">{__('redirectFrom')}:</label>
-                        </span>
-                        <input class="form-control" id="cFromUrl" name="cFromUrl" required
-                               {if !empty($cFromUrl)}value="{$cFromUrl}"{/if}>
+                    <div class="form-group form-row align-items-center">
+                        <label class="col col-sm-4 col-form-label text-sm-right" for="cFromUrl">{__('redirectFrom')}:</label>
+                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                            <input class="form-control" id="cFromUrl" name="cFromUrl" required
+                                   {if !empty($cFromUrl)}value="{$cFromUrl}"{/if}>
+                        </div>
                     </div>
-                    <div class="input-group" id="input-group-0">
-                        <span class="input-group-addon">
-                            <label for="cToUrl">{__('redirectTo')}:</label>
-                        </span>
-                        <span class="input-group-addon alert-info state-checking" style="display:none;">
-                            <i class="fa fa-spinner fa-pulse"></i>
-                        </span>
-                        <span class="input-group-addon alert-success state-available" style="display:none;">
-                            <i class="fa fa-check"></i>
-                        </span>
-                        <span class="input-group-addon alert-danger state-unavailable">
-                            <i class="fa fa-warning"></i>
-                        </span>
-                        <input class="form-control" id="cToUrl-0" name="cToUrl" required
-                               onblur="checkUrl(0)" {if !empty($cToUrl)}value="{$cToUrl}"{/if}>
+                    <div class="form-group form-row align-items-center" id="input-group-0">
+                        <label class="col col-sm-4 col-form-label text-sm-right" for="cToUrl-0">{__('redirectTo')}:</label>
+                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                            <input class="form-control" id="cToUrl-0" name="cToUrl" required
+                                   onblur="checkUrl(0)" {if !empty($cToUrl)}value="{$cToUrl}"{/if}>
+                        </div>
+                        <div class="col-auto ml-sm-n4 order-2 order-sm-3" style="display:none;">
+                            <i class="fa fa-spinner fa-pulse text-info state-checking"></i>
+                        </div>
+                        <div class="col-auto ml-sm-n4 order-2 order-sm-3" style="display:none;">
+                            <i class="fa fa-check text-success state-available"></i>
+                        </div>
+                        <div class="col-auto ml-sm-n4 order-2 order-sm-3">
+                            <i class="fa fa-warning text-danger state-unavailable"></i>
+                        </div>
                         <script>
                             enableTypeahead(
                                 '#cToUrl-0', 'getSeos', redirectTypeahedDisplay, redirectTypeahedSuggestion,
@@ -306,14 +307,15 @@
             {$jtl_token}
             <div class="card settings">
                 <div class="card-header">
-                    <div class="card-title">{__('redirectCsvImport')}</div>
+                    <div class="subheading1">{__('redirectCsvImport')}</div>
+                    <hr class="mb-n3">
                 </div>
                 <div class="card-body">
-                    <div class="input-group">
-                        <span class="input-group-addon">
-                            <label for="cFile">{__('file')}:</label>
-                        </span>
-                        <input class="form-control" name="cFile" type="file" required>
+                    <div class="form-group form-row align-items-center">
+                        <label class="col col-sm-4 col-form-label text-sm-right" for="cFile">{__('file')}:</label>
+                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                            <input class="form-control" name="cFile" type="file" required>
+                        </div>
                     </div>
                 </div>
                 <div class="card-footer">

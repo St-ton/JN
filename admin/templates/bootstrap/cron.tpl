@@ -24,7 +24,8 @@
         {if $jobs|count > 0}
             <div class="card">
                 <div class="card-header">
-                    <div class="card-title">{__('queueEntries')}</div>
+                    <div class="subheading1">{__('queueEntries')}</div>
+                    <hr class="mb-n3">
                 </div>
                 <div class="card-body">
                     <form method="post">
@@ -73,49 +74,42 @@
     <div id="add-cron" class="settings tab-pane fade{if $tab === 'add-cron'} active show{/if}">
         <div class="card">
             <div class="card-header">
-                <div class="card-title">{__('createQueueEntry')}</div>
+                <div class="subheading1">{__('createQueueEntry')}</div>
+                <hr class="mb-n3">
             </div>
             <div class="card-body">
                 <form method="post">
                     {$jtl_token}
-                    <div class="input-group">
-                        <span class="input-group-addon">
-                            <label for="cron-type">{__('headingType')}</label>
-                        </span>
-                        <span class="input-group-wrap">
+                    <div class="form-group form-row align-items-center">
+                        <label class="col col-sm-4 col-form-label text-sm-right" for="cron-type">{__('headingType')}</label>
+                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                             <select name="type" class="form-control" id="cron-type" required>
                                 {foreach $available as $type}
                                     <option value="{$type}">{__($type)}</option>
                                 {/foreach}
                             </select>
-                        </span>
+                        </div>
                     </div>
-                    <div class="input-group">
-                        <span class="input-group-addon">
-                            <label for="cron-freq">{__('headingFrequency')}</label>
-                        </span>
-                        <span class="input-group-wrap">
+                    <div class="form-group form-row align-items-center">
+                        <label class="col col-sm-4 col-form-label text-sm-right" for="cron-freq">{__('headingFrequency')}</label>
+                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                             <input id="cron-freq" type="number" min="1" value="24" name="frequency" class="form-control" required>
-                        </span>
-                        <span class="input-group-addon">
+                        </div>
+                        <div class="col-auto ml-sm-n4 order-2 order-sm-3">
                             <label for="cron-type">h</label>
-                        </span>
+                        </div>
                     </div>
-                    <div class="input-group">
-                        <span class="input-group-addon">
-                            <label for="cron-start">{__('headingStartTime')}</label>
-                        </span>
-                        <span class="input-group-wrap">
+                    <div class="form-group form-row align-items-center">
+                        <label class="col col-sm-4 col-form-label text-sm-right" for="cron-start">{__('headingStartTime')}</label>
+                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                             <input id="cron-start" type="time" name="time" value="00:00" class="form-control" required>
-                        </span>
+                        </div>
                     </div>
-                    <div class="input-group">
-                        <span class="input-group-addon">
-                            <label for="cron-start-date">{__('headingStartDate')}</label>
-                        </span>
-                        <span class="input-group-wrap">
+                    <div class="form-group form-row align-items-center">
+                        <label class="col col-sm-4 col-form-label text-sm-right" for="cron-start-date">{__('headingStartDate')}</label>
+                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                             <input id="cron-start-date" type="date" name="date" class="form-control" value="{$smarty.now|date_format:'%Y-%m-%d'}" required>
-                        </span>
+                        </div>
                     </div>
                     <button type="submit" class="btn btn-primary" name="add-cron" value="1">
                         <i class="fa fa-save"></i> {__('create')}
@@ -127,7 +121,7 @@
 
     <div id="config" class="settings tab-pane fade{if $tab === 'settings'} active show{/if}">
         {include file='tpl_inc/config_section.tpl' config=$oConfig_arr name='einstellen' a='saveSettings'
-        action='cron.php' buttonCaption=__('save') tab='einstellungen'}
+        action='cron.php' buttonCaption=__('save') tab='einstellungen' title=__('settings')}
     </div>
 </div>
 

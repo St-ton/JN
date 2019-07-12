@@ -18,7 +18,7 @@
                     {/if}
                     <div class="card panel-idx-{$confItem@index}{if $confItem@index === 0} first{/if}">
                     <div class="card-header">
-                        <div class="card-title">{$confItem->niceName}
+                        <div class="subheading1">{$confItem->niceName}
                             {if $confItem->description|strlen > 0}
                                 <span class="card-title-addon">{getHelpDesc cDesc=$confItem->description}</span>
                             {/if}
@@ -31,17 +31,18 @@
                 {else}
                     {if $open === 0 && $confItem@index === 0}
                         <div class="card first">
-                        <div class="card-header"><div class="card-title">{__('settings')}</div></div>
+                        <div class="card-header">
+                            <div class="subheading1">{__('settings')}</div>
+                            <hr class="mb-n3">
+                        </div>
                         <div class="card-body">
                         {assign var=open value=1}
                     {/if}
-                    <div class="input-group">
-                        <span class="input-group-addon">
-                            <label for="{$confItem->valueID}">{__($confItem->niceName)}</label>
-                        </span>
-                        <span class="input-group-wrap">
+                    <div class="form-group form-row align-items-center">
+                        <label class="col col-sm-4 col-form-label text-sm-right" for="{$confItem->valueID}">{__($confItem->niceName)}:</label>
+                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                         {if $confItem->inputType === JTL\Plugin\Admin\InputType::SELECT}
-                            <select id="{$confItem->valueID}" name="{$confItem->valueID}{if $confItem->confType === JTL\Plugin\Data\Config::TYPE_DYNAMIC}[]{/if}" class="form-control combo"{if $confItem->confType === JTL\Plugin\Data\Config::TYPE_DYNAMIC} multiple{/if}>
+                            <select id="{$confItem->valueID}" name="{$confItem->valueID}{if $confItem->confType === JTL\Plugin\Data\Config::TYPE_DYNAMIC}[]{/if}" class="custom-select combo"{if $confItem->confType === JTL\Plugin\Data\Config::TYPE_DYNAMIC} multiple{/if}>
                                 {foreach $confItem->options as $option}
                                     {if $confItem->confType === JTL\Plugin\Data\Config::TYPE_DYNAMIC && $confItem->value|is_array}
                                         {assign var=selected value=($option->value|in_array:$confItem->value)}
@@ -97,9 +98,9 @@
                         {else}
                             <input class="form-control" id="{$confItem->valueID}" name="{$confItem->valueID}" type="text" value="{$confItem->value|escape:'html'}" />
                         {/if}
-                        </span>
+                        </div>
                         {if $confItem->description|strlen > 0}
-                            <span class="input-group-addon">{getHelpDesc cDesc=__($confItem->description)}</span>
+                            <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=__($confItem->description)}</div>
                         {/if}
                     </div>
                 {/if}

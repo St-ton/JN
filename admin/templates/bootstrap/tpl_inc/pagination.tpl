@@ -67,7 +67,7 @@
 
 {function itemsPerPageOptions}
     <label for="{$pagination->getId()}_nItemsPerPage">{__('entriesPerPage')}</label>
-    <select class="form-control" name="{$pagination->getId()}_nItemsPerPage" id="{$pagination->getId()}_nItemsPerPage"
+    <select class="custom-select" name="{$pagination->getId()}_nItemsPerPage" id="{$pagination->getId()}_nItemsPerPage"
             onchange="this.form.submit()">
         {foreach $pagination->getItemsPerPageOptions() as $nItemsPerPageOption}
             <option value="{$nItemsPerPageOption}"{if $pagination->getItemsPerPage() == $nItemsPerPageOption} selected="selected"{/if}>
@@ -83,7 +83,7 @@
 
 {function sortByDirOptions}
     <label for="{$pagination->getId()}_nSortByDir">{__('sorting')}</label>
-    <select class="form-control" name="{$pagination->getId()}_nSortByDir" id="{$pagination->getId()}_nSortByDir"
+    <select class="custom-select" name="{$pagination->getId()}_nSortByDir" id="{$pagination->getId()}_nSortByDir"
             onchange="this.form.submit()">
         {foreach $pagination->getSortByOptions() as $i => $cSortByOption}
             <option value="{$i * 2}"

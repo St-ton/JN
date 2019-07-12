@@ -12,6 +12,7 @@
                            {if isset($bBoxenAnzeigen.$direction) && $bBoxenAnzeigen.$direction}checked{/if}>
                     <label for="box_{$direction}_show">{__('showContainer')}</label>
                 </div>
+                <div class="card-body">
                 {if $oBox_arr|@count > 0}
                     <ul class="list-group">
                         <li class="list-group-item boxRow">
@@ -53,15 +54,14 @@
                         {__('noBoxesAvailableFor')|replace:'%s':$directionName}
                     </div>
                 {/if}
+                </div>
             </form>
             <div class="card-footer">
                 <form name="newBox_{$direction}" action="boxen.php" method="post" class="form-horizontal">
                     {$jtl_token}
-                    <div class="form-group row" style="margin-bottom: 0;">
-                        <div class="col-sm-2">
-                            <label class="control-label" for="newBox_{$direction}">{__('new')}:</label>
-                        </div>
-                        <div class="col-sm-10">
+                    <div class="form-group form-row align-items-center">
+                        <label class="col col-sm-4 col-form-label text-sm-right" for="newBox_{$direction}">{__('new')}:</label>
+                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                             <select id="newBox_{$direction}" name="item" class="custom-select" onchange="document.newBox_{$direction}.submit();">
                                 <option value="0">{__('pleaseSelect')}</option>
                                 {foreach $oVorlagen_arr as $oVorlagen}

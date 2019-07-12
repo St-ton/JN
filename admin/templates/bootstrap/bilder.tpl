@@ -9,9 +9,10 @@
         <div id="settings">
             <div class="card">
                 <div class="card-header">
-                    <div class="card-title">{__('imageSizes')}</div>
+                    <div class="subheading1">{__('imageSizes')}</div>
+                    <hr class="mb-n3">
                 </div>
-                <div class="table-responsive">
+                <div class="table-responsive card-body">
                     <table class="list table table-border-light table-images">
                         <thead>
                         <tr>
@@ -148,7 +149,7 @@
             {if $cnf->kEinstellungenConf == 267 || $cnf->kEinstellungenConf == 268 || $cnf->kEinstellungenConf == 269 || $cnf->kEinstellungenConf == 1135 || $cnf->kEinstellungenConf == 1421 || $cnf->kEinstellungenConf == 172 || $cnf->kEinstellungenConf == 161  || $cnf->kEinstellungenConf == 1483  || $cnf->kEinstellungenConf == 1484 || $cnf->kEinstellungenConf == 1485}
                 {if $cnf->cConf === 'Y'}
                     <div class="form-group form-row align-items-center{if isset($cSuche) && $cnf->kEinstellungenConf == $cSuche} highlight{/if}">
-                        <label class="col col-sm-4 col-form-label text-sm-right order-1" for="{$cnf->cWertName}">{$cnf->cName}</label>
+                        <label class="col col-sm-4 col-form-label text-sm-right order-1" for="{$cnf->cWertName}">{$cnf->cName}:</label>
                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                         {if $cnf->cInputTyp === 'selectbox'}
                             <select class="custom-select" name="{$cnf->cWertName}" id="{$cnf->cWertName}">
@@ -188,22 +189,23 @@
                             <input class="form-control" type="text" name="{$cnf->cWertName}" id="{$cnf->cWertName}" value="{$cnf->gesetzterWert}" tabindex="1" />
                         {/if}
                         </div>
-                        <div class="col-auto ml-sm-n4 order-2 order-sm-3">
-                            {if $cnf->cBeschreibung}
+                        {if $cnf->cBeschreibung}
+                            <div class="col-auto ml-sm-n4 order-2 order-sm-3">
                                 {getHelpDesc cDesc=$cnf->cBeschreibung cID=$cnf->kEinstellungenConf}
-                            {/if}
-                        </div>
+                            </div>
+                        {/if}
                     </div>
                 {else}
                     {if $open}</div></div>{/if}
                     <div class="card">
                         <div class="card-header">
-                            <h3 class="card-title">{$cnf->cName}
+                            <div class="subheading1">{$cnf->cName}
                             <span class="float-right">{getHelpDesc cID=$cnf->kEinstellungenConf}</span>
                             {if isset($cnf->cSektionsPfad) && $cnf->cSektionsPfad|strlen > 0}
                                 <span class="path"><strong>{__('settingspath')}:</strong> {$cnf->cSektionsPfad}</span>
                             {/if}
-                            </h3>
+                            </div>
+                            <hr class="mb-n3">
                         </div>
                         <div class="card-body">
                         {assign var=open value=true}

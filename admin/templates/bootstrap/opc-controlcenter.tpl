@@ -25,7 +25,7 @@
                     $pagesPagi->getPageItemCount()
                 )}
                 {include file='tpl_inc/pagination.tpl' pagination=$pagesPagi cParam_arr=['tab'=>'pages']}
-                <div class="table-responsive">
+                <div class="table-responsive card-body">
                     <table class="list table">
                         <thead>
                         <tr>
@@ -140,7 +140,7 @@
     </div>
     <div class="tab-pane fade" id="portlets">
         <div class="card">
-            <div class="table-responsive">
+            <div class="table-responsive card-body">
                 <table class="list table">
                     <thead>
                     <tr>
@@ -172,7 +172,7 @@
         <div class="card">
             {assign var=blueprints value=$opc->getBlueprints()}
             {if $blueprints|@count > 0}
-                <div class="table-responsive">
+                <div class="table-responsive card-body">
                     <table class="list table">
                         <thead>
                         <tr>

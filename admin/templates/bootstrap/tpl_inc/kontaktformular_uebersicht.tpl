@@ -129,7 +129,7 @@
                             {/foreach}
                         </div>
                     </div>
-                    <div class="card-footer">
+                    <div class="card-footer save_wrapper">
                         <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
                     </div>
                 </div>

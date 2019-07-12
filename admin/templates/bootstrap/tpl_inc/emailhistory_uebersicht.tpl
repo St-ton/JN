@@ -42,7 +42,8 @@
             <input name="a" type="hidden" value="delete" />
             <div class="card">
                 <div class="card-header">
-                    <div class="card-title">{__('emailhistory')}</div>
+                    <div class="subheading1">{__('emailhistory')}</div>
+                    <hr class="mb-n3">
                 </div>
                 <div class="card-body table-responsive">
                     <table class="list table table-striped">

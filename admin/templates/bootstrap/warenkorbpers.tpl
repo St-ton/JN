@@ -40,9 +40,10 @@
                     {include file='tpl_inc/pagination.tpl' pagination=$oPagiKunden cParam_arr=$cParam_arr cAnchor='massaction'}
                     <div class="card">
                         <div class="card-header">
-                            <div class="card-title">{__('warenkorbpers')}</div>
+                            <div class="subheading1">{__('warenkorbpers')}</div>
+                            <hr class="mb-n3">
                         </div>
-                        <div class="table-responsive">
+                        <div class="table-responsive card-body">
                             <table class="table table-striped">
                                 <thead>
                                 <tr>
@@ -85,9 +86,10 @@
         {include file='tpl_inc/pagination.tpl' pagination=$oPagiWarenkorb cParam_arr=['a'=>$kKunde]}
         <div class="card">
             <div class="card-header">
-                <div class="card-title">{__('warenkorbpersClient')} {$oWarenkorbPersPos_arr[0]->cVorname} {$oWarenkorbPersPos_arr[0]->cNachname}</div>
+                <div class="subheading1">{__('warenkorbpersClient')} {$oWarenkorbPersPos_arr[0]->cVorname} {$oWarenkorbPersPos_arr[0]->cNachname}</div>
+                <hr class="mb-n3">
             </div>
-            <div class="table-responsive">
+            <div class="table-responsive card-body">
                 <table class="table table-striped">
                     <thead>
                     <tr>

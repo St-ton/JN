@@ -52,7 +52,7 @@
                                     {foreach $sprachen as $language}
                                         {assign var=kSprache value=$language->getId()}
                                         <div class="form-group form-row align-items-center mb-5 mb-md-3">
-                                            <label class="col col-sm-4 col-form-label text-sm-right order-1" for="cNameSprache[{$oWarenlager->kWarenlager}][{$kSprache}]">{$language->getLocalizedName()}</label>
+                                            <label class="col col-sm-4 col-form-label text-sm-right order-1" for="cNameSprache[{$oWarenlager->kWarenlager}][{$kSprache}]">{$language->getLocalizedName()}:</label>
                                             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                                 <input id="cNameSprache[{$oWarenlager->kWarenlager}][{$kSprache}]"
                                                        name="cNameSprache[{$oWarenlager->kWarenlager}][{$kSprache}]"

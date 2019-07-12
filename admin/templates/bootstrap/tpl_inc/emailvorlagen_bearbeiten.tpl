@@ -20,7 +20,7 @@
                     </div>
                     <div class="card-body">
                         <div class="form-group form-row align-items-center">
-                            <label class="col col-sm-4 col-form-label text-sm-right" for="cAktiv">{__('emailActive')}</label>
+                            <label class="col col-sm-4 col-form-label text-sm-right" for="cAktiv">{__('emailActive')}:</label>
                             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                 <select name="cAktiv" id="cAktiv" class="custom-select">
                                     <option value="Y"{if $mailTemplate->getActive()} selected{/if}>
@@ -33,26 +33,26 @@
                             </div>
                         </div>
                         <div class="form-group form-row align-items-center">
-                            <label class="col col-sm-4 col-form-label text-sm-right" for="cEmailOut">{__('emailOut')}</label>
+                            <label class="col col-sm-4 col-form-label text-sm-right" for="cEmailOut">{__('emailOut')}:</label>
                             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                 <input class="form-control" id="cEmailOut" name="cEmailOut" type="text" value="{if isset($mailConfig.cEmailOut)}{$mailConfig.cEmailOut|escape}{/if}" />
                             </div>
                         </div>
                         <div class="form-group form-row align-items-center">
-                            <label class="col col-sm-4 col-form-label text-sm-right" for="cEmailSenderName">{__('emailSenderName')}</label>
+                            <label class="col col-sm-4 col-form-label text-sm-right" for="cEmailSenderName">{__('emailSenderName')}:</label>
                             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                 <input class="form-control" id="cEmailSenderName" name="cEmailSenderName" type="text" value="{if isset($mailConfig.cEmailSenderName)}{$mailConfig.cEmailSenderName|escape}{/if}" />
                             </div>
                         </div>
                         <div class="form-group form-row align-items-center">
-                            <label class="col col-sm-4 col-form-label text-sm-right" for="cEmailCopyTo">{__('emailCopyTo')} </label>
+                            <label class="col col-sm-4 col-form-label text-sm-right" for="cEmailCopyTo">{__('emailCopyTo')} :</label>
                             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                 <input class="form-control" id="cEmailCopyTo" name="cEmailCopyTo" type="text" value="{if isset($mailConfig.cEmailCopyTo)}{$mailConfig.cEmailCopyTo|escape}{/if}" />
                             </div>
                             <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=__('multipleDividedColon')}</div>
                         </div>
                         <div class="form-group form-row align-items-center">
-                            <label class="col col-sm-4 col-form-label text-sm-right" for="cMailTyp">{__('mailType')}</label>
+                            <label class="col col-sm-4 col-form-label text-sm-right" for="cMailTyp">{__('mailType')}:</label>
                             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                 <select name="cMailTyp" id="cMailTyp" class="custom-select">
                                     <option value="text/html" {if $mailTemplate->getType() === 'text/html'}selected{/if}>
@@ -64,7 +64,7 @@
                             </div>
                         </div>
                         <div class="form-group form-row align-items-center">
-                            <label class="col col-sm-4 col-form-label text-sm-right" for="nAKZ">{__('emailAddAKZ')}</label>
+                            <label class="col col-sm-4 col-form-label text-sm-right" for="nAKZ">{__('emailAddAKZ')}:</label>
                             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                 <select id="nAKZ" name="nAKZ" class="custom-select">
                                     <option value="0"{if $mailTemplate->getShowAKZ() === false} selected{/if}>{__('no')}</option>
@@ -73,7 +73,7 @@
                             </div>
                         </div>
                         <div class="form-group form-row align-items-center">
-                            <label class="col col-sm-4 col-form-label text-sm-right" for="nAFK">{__('emailAddAGB')}</label>
+                            <label class="col col-sm-4 col-form-label text-sm-right" for="nAFK">{__('emailAddAGB')}:</label>
                             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                 <select id="nAFK" name="nAGB" class="custom-select">
                                     <option value="0"{if $mailTemplate->getShowAGB() === false} selected{/if}>{__('no')}</option>
@@ -82,7 +82,7 @@
                             </div>
                         </div>
                         <div class="form-group form-row align-items-center">
-                            <label class="col col-sm-4 col-form-label text-sm-right" for="nWRB">{__('emailAddWRB')}</label>
+                            <label class="col col-sm-4 col-form-label text-sm-right" for="nWRB">{__('emailAddWRB')}:</label>
                             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                 <select id="nWRB" name="nWRB" class="custom-select">
                                     <option value="0"{if $mailTemplate->getShowWRB() === false} selected{/if}>{__('no')}</option>
@@ -91,7 +91,7 @@
                             </div>
                         </div>
                         <div class="form-group form-row align-items-center">
-                            <label class="col col-sm-4 col-form-label text-sm-right" for="nWRBForm">{__('emailAddWRBForm')}</label>
+                            <label class="col col-sm-4 col-form-label text-sm-right" for="nWRBForm">{__('emailAddWRBForm')}:</label>
                             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                 <select id="nWRBForm" name="nWRBForm" class="custom-select">
                                     <option value="0"{if $mailTemplate->getShowWRBForm() === false} selected{/if}>{__('no')}</option>
@@ -100,7 +100,7 @@
                             </div>
                         </div>
                         <div class="form-group form-row align-items-center">
-                            <label class="col col-sm-4 col-form-label text-sm-right" for="nDSE">{__('emailAddDSE')}</label>
+                            <label class="col col-sm-4 col-form-label text-sm-right" for="nDSE">{__('emailAddDSE')}:</label>
                             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                 <select id="nDSE" name="nDSE" class="custom-select">
                                     <option value="0"{if $mailTemplate->getShowDSE() === false} selected{/if}>{__('no')}</option>
@@ -153,7 +153,7 @@
                     <div class="card-body">
                         {if $mailTemplate->getModuleID() !== 'core_jtl_anbieterkennzeichnung'}
                             <div class="item well">
-                                <div class="name"><label for="cBetreff_{$kSprache}">{__('subject')}</label></div>
+                                <div class="name"><label for="cBetreff_{$kSprache}">{__('subject')}:</label></div>
                                 <div class="for">
                                     <input class="form-control" style="width:400px" type="text" name="cBetreff_{$kSprache}" id="cBetreff_{$kSprache}"
                                            value="{$mailTemplate->getSubject($kSprache)}" tabindex="1" />
@@ -161,14 +161,14 @@
                             </div>
                         {/if}
                         <div class="item well">
-                            <div class="name"><label for="cContentHtml_{$kSprache}">{__('mailHtml')}</label></div>
+                            <div class="name"><label for="cContentHtml_{$kSprache}">{__('mailHtml')}:</label></div>
                             <div class="for">
                                 <textarea class="codemirror smarty" id="cContentHtml_{$kSprache}" name="cContentHtml_{$kSprache}"
                                           style="width:99%" rows="20">{$mailTemplate->getHTML($kSprache)}</textarea>
                             </div>
                         </div>
                         <div class="item well">
-                            <div class="name"><label for="cContentText_{$kSprache}">{__('mailText')}</label></div>
+                            <div class="name"><label for="cContentText_{$kSprache}">{__('mailText')}:</label></div>
                             <div class="for">
                                 <textarea class="codemirror smarty" id="cContentText_{$kSprache}" name="cContentText_{$kSprache}"
                                           style="width:99%" rows="20">{$mailTemplate->getText($kSprache)}</textarea>
@@ -195,11 +195,11 @@
                             {section name=anhaenge loop=4 start=1 step=1}
                                 <div class="item well">
                                     <div class="name">
-                                        <label for="cPDFS_{$smarty.section.anhaenge.index}_{$kSprache}">{__('pdf')} {$smarty.section.anhaenge.index}</label>
+                                        <label for="cPDFS_{$smarty.section.anhaenge.index}_{$kSprache}">{__('pdf')} {$smarty.section.anhaenge.index}:</label>
                                     </div>
                                     <div class="for">
                                         {math equation="x-y" x=$smarty.section.anhaenge.index y=1 assign=loopdekr}
-                                        <label for="cPDFNames_{$smarty.section.anhaenge.index}_{$kSprache}">{__('filename')}</label>
+                                        <label for="cPDFNames_{$smarty.section.anhaenge.index}_{$kSprache}">{__('filename')}:</label>
                                         <input id="cPDFNames_{$smarty.section.anhaenge.index}_{$kSprache}"
                                            name="cPDFNames_{$kSprache}[]"
                                            type="text"
@@ -213,7 +213,7 @@
                         </div>
                     </div>
             {/foreach}
-            <div class="btn-group">
+            <div class="card-footer save_wrapper btn-group">
                 <button type="submit" name="continue" value="0" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
                 <button type="submit" name="continue" value="1" class="btn btn-default">{__('saveAndContinue')}</button>
                 <a href="emailvorlagen.php" title="{__('cancel')}" class="btn btn-danger"><i class="fa fa-exclamation"></i> {__('cancel')}</a>

@@ -11,7 +11,7 @@
             {foreach $oConfig_arr as $oConfig}
                 {if $oConfig->cConf === 'Y'}
                     <div class="item form-group form-row align-items-center">
-                        <label class="col col-sm-4 col-form-label text-sm-right" for="{$oConfig->cWertName}">{$oConfig->cName}</label>
+                        <label class="col col-sm-4 col-form-label text-sm-right" for="{$oConfig->cWertName}">{$oConfig->cName}:</label>
                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                             {if $oConfig->cInputTyp === 'selectbox'}
                                 <select name="{$oConfig->cWertName}" id="{$oConfig->cWertName}" class="custom-select combo">

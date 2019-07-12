@@ -71,9 +71,10 @@
                     <input type="hidden" name="tab" value="inaktiv" />
                     <div class="card">
                         <div class="card-header">
-                            <div class="card-title">{__('newsCommentActivate')}</div>
+                            <div class="subheading1">{__('newsCommentActivate')}</div>
+                            <hr class="mb-n3">
                         </div>
-                        <div class="table-responsive">
+                        <div class="table-responsive card-body">
                             <table class="list table table-striped">
                                 <thead>
                                 <tr>
@@ -142,9 +143,10 @@
                 <input type="hidden" name="tab" value="aktiv" />
                 <div class="card">
                     <div class="card-header">
-                        <div class="card-title">{__('newsOverview')}</div>
+                        <div class="subheading1">{__('newsOverview')}</div>
+                        <hr class="mb-n3">
                     </div>
-                    <div class="table-responsive">
+                    <div class="table-responsive card-body">
                         <table class="sortable list table table-striped">
                             <thead>
                             <tr>
@@ -239,9 +241,10 @@
                 <input type="hidden" name="tab" value="kategorien" />
                 <div class="card">
                     <div class="card-header">
-                        <div class="card-title">{__('newsCatOverview')}</div>
+                        <div class="subheading1">{__('newsCatOverview')}</div>
+                        <hr class="mb-n3">
                     </div>
-                    <div class="table-responsive">
+                    <div class="table-responsive card-body">
                         <table id="category-list" class="list table table-striped">
                             <thead>
                             <tr>
@@ -313,11 +316,17 @@
                 <input type="hidden" name="news" value="1" />
 
                 <div class="card settings">
+                    <div class="card-header">
+                        <div class="subheading1">
+                            {__('settings')}
+                            <hr class="mb-n3">
+                        </div>
+                    </div>
                     <div class="card-body">
                         {foreach $oConfig_arr as $oConfig}
                             {if $oConfig->cConf === 'Y'}
                                 <div class="form-group form-row align-items-center mb-5 mb-md-3">
-                                    <label class="col col-sm-4 col-form-label text-sm-right" for="{$oConfig->cWertName}">{$oConfig->cName}</label>
+                                    <label class="col col-sm-4 col-form-label text-sm-right" for="{$oConfig->cWertName}">{$oConfig->cName}:</label>
                                     <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                         {if $oConfig->cInputTyp === 'selectbox'}
                                             <select name="{$oConfig->cWertName}" id="{$oConfig->cWertName}" class="custom-select combo">
@@ -353,7 +362,7 @@
                             </div>
                         {/foreach}
                     </div>
-                    <div class="card-footer">
+                    <div class="card-footer save_wrapper">
                         <button type="submit" value="{__('save')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
                     </div>
                 </div>

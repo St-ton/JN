@@ -12,7 +12,7 @@
             <button class="btn btn-primary add" name="action" value="create-linkgroup"><i class="fa fa-share"></i> {__('newLinkGroup')}</button>
         </form>
     </div>
-    <div class="card-group accordion" id="accordion2" role="tablist" aria-multiselectable="true">
+    <div class="accordion" id="accordion2" role="tablist" aria-multiselectable="true">
         {foreach $linkgruppen as $linkgruppe}
             {if $linkgruppe->getID() < 0 && $linkgruppe->getLinks()->count() === 0}
                 {continue}
@@ -20,8 +20,8 @@
             {assign var=lgName value='linkgroup-'|cat:$linkgruppe->getID()}
             {assign var=missingTranslations value=$linkAdmin->getMissingLinkGroupTranslations($linkgruppe->getID())}
             <div class="card panel-{if $linkgruppe->getID() > 0}default{else}danger{/if}">
-                <div class="card-header accordion-heading">
-                    <div class="card-title" id="heading-{$lgName}">
+                <div class="card-header row accordion-heading">
+                    <div class="subheading1 col-md-6" id="heading-{$lgName}">
                         <span class="pull-left">
                             <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapse{$lgName}"{if $missingTranslations|count > 0} title="{__('missingTranslations')}: {$missingTranslations|count}"{/if}>
                                 <span class="accordion-toggle-icon"><i class="fa fa-plus"></i></span>
@@ -30,29 +30,33 @@
                                 {else}
                                     {__('linksWithoutLinkGroup')}
                                 {/if}
-                                {if $missingTranslations|count > 0}<i class="fa fa-warning"></i>{/if}
+                                {if $missingTranslations|count > 0}<i class="fa fa-warning text-warning"></i>{/if}
                             </a>
                         </span>
                     </div>
-                    <form method="post" action="links.php">
-                        {$jtl_token}
-                        <span class="btn-group pull-right">
+                    <div class="col-md-6">
+                        <form method="post" action="links.php">
+                            {$jtl_token}
                             {if $linkgruppe->getID() > 0}
                                 <input type="hidden" name="kLinkgruppe" value="{$linkgruppe->getID()}">
-                                <button name="action" value="edit-linkgroup" class="btn btn-primary" title="{__('modify')}">
-                                    <i class="fa fa-edit"></i>
-                                </button>
-                                <button name="action" value="add-link-to-linkgroup" class="btn btn-default add" title="{__('addLink')}">
-                                    {__('addLink')}
-                                </button>
-                                <button name="action" value="delete-linkgroup" class="btn btn-danger" title="{__('linkGroup')} {__('delete')}">
-                                    <i class="fa fa-trash"></i>
-                                </button>
                             {/if}
-                        </span>
-                    </form>
+                            <span class="btn-group pull-right">
+                                {if $linkgruppe->getID() > 0}
+                                    <button name="action" value="edit-linkgroup" class="btn btn-primary" title="{__('modify')}">
+                                        <i class="fa fa-edit"></i>
+                                    </button>
+                                    <button name="action" value="add-link-to-linkgroup" class="btn btn-default add" title="{__('addLink')}">
+                                        {__('addLink')}
+                                    </button>
+                                    <button name="action" value="delete-linkgroup" class="btn btn-danger" title="{__('linkGroup')} {__('delete')}">
+                                        <i class="fa fa-trash"></i>
+                                    </button>
+                                {/if}
+                            </span>
+                        </form>
+                    </div>
                 </div>
-                <div id="collapse{$lgName}" class=" collapse" role="tabpanel" aria-labelledby="heading-{$lgName}">
+                <div id="collapse{$lgName}" class="card-body collapse" role="tabpanel" aria-labelledby="heading-{$lgName}">
                     {*{if $missingTranslations|count > 0}*}
                         {*<div class="help-block container">*}
                             {*<p>Achtung: Übersetzungen fehlen!</p>*}

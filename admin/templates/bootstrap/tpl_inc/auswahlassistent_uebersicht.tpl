@@ -27,7 +27,7 @@
                     <input type="hidden" name="tab" value="uebersicht" />
                     <div class="card">
                         {if isset($oAuswahlAssistentGruppe_arr) && $oAuswahlAssistentGruppe_arr|@count > 0}
-                            <div class="table-responsive">
+                            <div class="table-responsive card-body">
                                 <table class="list table">
                                     <thead>
                                         <tr>
@@ -156,7 +156,7 @@
             <!-- #overview -->
             <div id="config" class="tab-pane fade{if isset($cTab) && $cTab === 'einstellungen'} active show{/if}">
                 {include file='tpl_inc/config_section.tpl' config=$oConfig_arr name='einstellen' a='saveSettings'
-                         action='auswahlassistent.php' buttonCaption=__('save') tab='einstellungen'}
+                         action='auswahlassistent.php' buttonCaption=__('save') tab='einstellungen' title=__('settings')}
             </div>
             <!-- #config -->
         </div>

@@ -33,9 +33,10 @@
                     <input type="hidden" name="tab" value="freischalten" />
                     <div class="card">
                         <div class="card-header">
-                            <div class="card-title">{__('ratingsInaktive')}</div>
+                            <div class="subheading1">{__('ratingsInaktive')}</div>
+                            <hr class="mb-n3">
                         </div>
-                        <div class="table-responsive">
+                        <div class="table-responsive card-body">
                             <table  class="table table-striped">
                                 <thead>
                                 <tr>
@@ -101,9 +102,10 @@
                     <input type="hidden" name="tab" value="letzten50" />
                     <div class="card">
                         <div class="card-header">
-                            <div class="card-title">{__('ratingLast50')}</div>
+                            <div class="subheading1">{__('ratingLast50')}</div>
+                            <hr class="mb-n3">
                         </div>
-                        <div class="table-responsive">
+                        <div class="table-responsive card-body">
                             <table class="table table-striped">
                                 <thead>
                                 <tr>
@@ -170,34 +172,41 @@
                         </div>
                     </div>
                 </form>
-
             {else}
                 <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
             {/if}
         </div>
         <div id="artikelbewertung" class="tab-pane fade {if isset($cTab) && $cTab === 'artikelbewertung'} active show{/if}">
             <form name="artikelbewertung" method="post" action="bewertung.php">
-                {$jtl_token}
-                <div class="input-group col-xs-6" style="float: none;">
-                    <span class="input-group-addon">
-                        <label for="content">{__('ratingcArtNr')}</label>
-                    </span>
-                    <input type="hidden" name="bewertung_aktiv" value="1" />
-                    <input type="hidden" name="tab" value="artikelbewertung" />
-                    <input class="form-control" name="cArtNr" type="text" value="{$cArtNr|default:''}" />
-                    <span class="input-group-btn">
-                        <button name="submitSearch" type="submit" value="{__('search')}" class="btn btn-info"><i class="fa fa-search"></i> {__('search')}</button>
-                    </span>
+                <div class="card">
+                    <div class="card-body">
+                    {$jtl_token}
+                    <div class="input-group col-xs-6" style="float: none;">
+                        <span class="input-group-addon">
+                            <label for="content">{__('ratingcArtNr')}:</label>
+                        </span>
+                        <input type="hidden" name="bewertung_aktiv" value="1" />
+                        <input type="hidden" name="tab" value="artikelbewertung" />
+                        <input class="form-control" name="cArtNr" type="text" value="{$cArtNr|default:''}" />
+                        <span class="input-group-prepend">
+                            <button name="submitSearch" type="submit" value="{__('search')}" class="btn btn-info"><i class="fa fa-search"></i> {__('search')}</button>
+                        </span>
+                    </div>
+                    {if isset($cArtNr) && $cArtNr|strlen > 0}
+                        <div class="alert alert-info">{__('ratingSearchedFor')}: {$cArtNr}</div>
+                    {/if}
+                    {if !(isset($filteredReviews) && $filteredReviews|@count > 0)}
+                        <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
+                    {/if}
+                    </div>
                 </div>
-                {if isset($cArtNr) && $cArtNr|strlen > 0}
-                    <div class="alert alert-info">{__('ratingSearchedFor')}: {$cArtNr}</div>
-                {/if}
                 {if isset($filteredReviews) && $filteredReviews|@count > 0}
                     <div class="card">
                         <div class="card-header">
-                            <div class="card-title">{$cArtNr}</div>
+                            <div class="subheading1">{$cArtNr}</div>
+                            <hr class="mb-n3">
                         </div>
-                        <div class="table-responsive">
+                        <div class="table-responsive card-body">
                             <table class="table table-striped">
                                 <thead>
                                 <tr>
@@ -246,8 +255,6 @@
                             <button name="loeschen" type="submit" class="btn btn-danger"><i class="fa fa-trash"></i> {__('delete')}</button>
                         </div>
                     </div>
-                {else}
-                    <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                 {/if}
             </form>
         </div>
@@ -266,7 +273,7 @@
                             {if $oConfig->cConf === 'Y'}
                                 <div class="form-group form-row align-items-center">
                                     <label class="col col-sm-4 col-form-label text-sm-right" for="{$oConfig->cWertName}">{$oConfig->cName}
-                                        {if $oConfig->cWertName|strpos:'_guthaben'} <span id="EinstellungAjax_{$oConfig->cWertName}"></span>{/if}
+                                        {if $oConfig->cWertName|strpos:'_guthaben'} <span id="EinstellungAjax_{$oConfig->cWertName}"></span>{/if}:
                                     </label>
                                     <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                         {if $oConfig->cInputTyp === 'selectbox'}

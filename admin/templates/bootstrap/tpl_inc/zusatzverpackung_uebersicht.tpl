@@ -6,7 +6,7 @@
     {$jtl_token}
     {if isset($oVerpackung_arr) && $oVerpackung_arr|@count > 0}
     <div class="card">
-        <div class="table-responsive">
+        <div class="table-responsive card-body">
             <table class="list table table-striped">
                 <thead>
                 <tr>

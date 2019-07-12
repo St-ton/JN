@@ -341,7 +341,7 @@
                             {/if}
                         </div>
                     </div>
-                    <div class="card-footer">
+                    <div class="card-footer save_wrapper">
                         <button name="speichern" type="submit" value="{__('save')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
                     </div>
                 </form>

@@ -92,58 +92,47 @@
         <div class="settings">
             <div class="card">
                 <div class="card-header">
-                    <div class="card-title">{if $oNews->getID() > 0}{__('edit')} (ID {$oNews->getID()}){else}{__('newAdd')}{/if}</div>
+                    <div class="subheading1">{if $oNews->getID() > 0}{__('edit')} (ID {$oNews->getID()}){else}{__('newAdd')}{/if}</div>
+                    <hr class="mb-n3">
                 </div>
                 <div class="table-responsive">
                     <div id="formtable" class="card-body">
-                        <div class="input-group">
-                            <span class="input-group-addon">
-                                <label for="kkundengruppe">{__('customerGroup')} *</label>
-                            </span>
-                            <select id="kkundengruppe" name="kKundengruppe[]" multiple="multiple" class="form-control{if !empty($cPlausiValue_arr.kKundengruppe_arr)} error{/if}">
-                                <option value="-1"
-                                    {if isset($cPostVar_arr.kKundengruppe)}
-                                        {foreach $cPostVar_arr.kKundengruppe as $kKundengruppe}
-                                            {if $kKundengruppe == '-1'}selected{/if}
-                                        {/foreach}
-                                    {else}
-                                        {foreach $oNews->getCustomerGroups() as $kKundengruppe}
-                                            {if $kKundengruppe === -1}selected{/if}
-                                        {/foreach}
-                                    {/if}>
-                                    Alle
-                                </option>
-                                {foreach $oKundengruppe_arr as $oKundengruppe}
-                                    <option value="{$oKundengruppe->kKundengruppe}"
+                        <div class="form-group form-row align-items-center">
+                            <label class="col col-sm-4 col-form-label text-sm-right" for="kkundengruppe">{__('customerGroup')} *:</label>
+                            <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                <select id="kkundengruppe" name="kKundengruppe[]" multiple="multiple" class="custom-select{if !empty($cPlausiValue_arr.kKundengruppe_arr)} error{/if}">
+                                    <option value="-1"
                                         {if isset($cPostVar_arr.kKundengruppe)}
                                             {foreach $cPostVar_arr.kKundengruppe as $kKundengruppe}
-                                                {if $oKundengruppe->kKundengruppe == $kKundengruppe}selected{/if}
+                                                {if $kKundengruppe == '-1'}selected{/if}
                                             {/foreach}
                                         {else}
                                             {foreach $oNews->getCustomerGroups() as $kKundengruppe}
-                                                {if $oKundengruppe->kKundengruppe === $kKundengruppe}selected{/if}
+                                                {if $kKundengruppe === -1}selected{/if}
                                             {/foreach}
-                                        {/if}>{$oKundengruppe->cName}</option>
-                                {/foreach}
-                            </select>
+                                        {/if}>
+                                        Alle
+                                    </option>
+                                    {foreach $oKundengruppe_arr as $oKundengruppe}
+                                        <option value="{$oKundengruppe->kKundengruppe}"
+                                            {if isset($cPostVar_arr.kKundengruppe)}
+                                                {foreach $cPostVar_arr.kKundengruppe as $kKundengruppe}
+                                                    {if $oKundengruppe->kKundengruppe == $kKundengruppe}selected{/if}
+                                                {/foreach}
+                                            {else}
+                                                {foreach $oNews->getCustomerGroups() as $kKundengruppe}
+                                                    {if $oKundengruppe->kKundengruppe === $kKundengruppe}selected{/if}
+                                                {/foreach}
+                                            {/if}>{$oKundengruppe->cName}</option>
+                                    {/foreach}
+                                </select>
+                            </div>
                         </div>
-                        <div class="input-group">
-                            <span class="input-group-addon">
-                                <label for="kNewsKategorie">{__('category')} *</label>
-                            </span>
-                            <select id="kNewsKategorie" class="form-control{if !empty($cPlausiValue_arr.kNewsKategorie_arr)} error{/if}" name="kNewsKategorie[]" multiple="multiple">
-                                {foreach $oNewsKategorie_arr as $category}
-                                    <option value="{$category->getID()}"
-                                        {if isset($cPostVar_arr.kNewsKategorie)}
-                                            {foreach $cPostVar_arr.kNewsKategorie as $kNewsKategorieNews}
-                                                {if $category->getID() == $kNewsKategorieNews}selected{/if}
-                                            {/foreach}
-                                        {else}
-                                            {foreach $oNews->getCategoryIDs() as $categoryID}
-                                                {if $category->getID() === $categoryID}selected{/if}
-                                            {/foreach}
-                                        {/if}>{$category->getName()}</option>
-                                    {foreach $category->getChildren() as $category}
+                        <div class="form-group form-row align-items-center">
+                            <label class="col col-sm-4 col-form-label text-sm-right" for="kNewsKategorie">{__('category')} *:</label>
+                            <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                <select id="kNewsKategorie" class="custom-select{if !empty($cPlausiValue_arr.kNewsKategorie_arr)} error{/if}" name="kNewsKategorie[]" multiple="multiple">
+                                    {foreach $oNewsKategorie_arr as $category}
                                         <option value="{$category->getID()}"
                                             {if isset($cPostVar_arr.kNewsKategorie)}
                                                 {foreach $cPostVar_arr.kNewsKategorie as $kNewsKategorieNews}
@@ -153,45 +142,55 @@
                                                 {foreach $oNews->getCategoryIDs() as $categoryID}
                                                     {if $category->getID() === $categoryID}selected{/if}
                                                 {/foreach}
-                                            {/if}>&nbsp;&nbsp;&nbsp;{$category->getName()}</option>
+                                            {/if}>{$category->getName()}</option>
+                                        {foreach $category->getChildren() as $category}
+                                            <option value="{$category->getID()}"
+                                                {if isset($cPostVar_arr.kNewsKategorie)}
+                                                    {foreach $cPostVar_arr.kNewsKategorie as $kNewsKategorieNews}
+                                                        {if $category->getID() == $kNewsKategorieNews}selected{/if}
+                                                    {/foreach}
+                                                {else}
+                                                    {foreach $oNews->getCategoryIDs() as $categoryID}
+                                                        {if $category->getID() === $categoryID}selected{/if}
+                                                    {/foreach}
+                                                {/if}>&nbsp;&nbsp;&nbsp;{$category->getName()}</option>
+                                        {/foreach}
                                     {/foreach}
-                                {/foreach}
-                            </select>
+                                </select>
+                            </div>
                         </div>
-                        <div class="input-group">
-                            <span class="input-group-addon">
-                                <label for="dGueltigVon">{__('newsValidation')} *</label>
-                            </span>
-                            <input class="form-control" id="dGueltigVon" name="dGueltigVon" type="text" value="{if isset($cPostVar_arr.dGueltigVon) && $cPostVar_arr.dGueltigVon}{$cPostVar_arr.dGueltigVon}{else}{$oNews->getDateValidFrom()->format('d.m.Y H:i')}{/if}" />
+                        <div class="form-group form-row align-items-center">
+                            <label class="col col-sm-4 col-form-label text-sm-right" for="dGueltigVon">{__('newsValidation')} *:</label>
+                            <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                <input class="form-control" id="dGueltigVon" name="dGueltigVon" type="text" value="{if isset($cPostVar_arr.dGueltigVon) && $cPostVar_arr.dGueltigVon}{$cPostVar_arr.dGueltigVon}{else}{$oNews->getDateValidFrom()->format('d.m.Y H:i')}{/if}" />
+                            </div>
                         </div>
-                        <div class="input-group">
-                            <span class="input-group-addon">
-                                <label for="nAktiv">{__('active')} *</label>
-                            </span>
-                            <select class="form-control" id="nAktiv" name="nAktiv">
-                                <option value="1"{if isset($cPostVar_arr.nAktiv)}{if $cPostVar_arr.nAktiv == 1} selected{/if}{elseif $oNews->getIsActive() === true} selected{/if}>{__('yes')}</option>
-                                <option value="0"{if isset($cPostVar_arr.nAktiv)}{if $cPostVar_arr.nAktiv == 0} selected{/if}{elseif $oNews->getIsActive() === false} selected{/if}>{__('no')}
-                                </option>
-                            </select>
+                        <div class="form-group form-row align-items-center">
+                            <label class="col col-sm-4 col-form-label text-sm-right" for="nAktiv">{__('active')} *:</label>
+                            <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                <select class="custom-select" id="nAktiv" name="nAktiv">
+                                    <option value="1"{if isset($cPostVar_arr.nAktiv)}{if $cPostVar_arr.nAktiv == 1} selected{/if}{elseif $oNews->getIsActive() === true} selected{/if}>{__('yes')}</option>
+                                    <option value="0"{if isset($cPostVar_arr.nAktiv)}{if $cPostVar_arr.nAktiv == 0} selected{/if}{elseif $oNews->getIsActive() === false} selected{/if}>{__('no')}
+                                    </option>
+                                </select>
+                            </div>
                         </div>
                         {if $oPossibleAuthors_arr|count > 0}
-                        <div class="input-group">
-                            <span class="input-group-addon">
-                                <label for="kAuthor">{__('newsAuthor')}</label>
-                            </span>
-                                <select class="form-control" id="kAuthor" name="kAuthor">
+                        <div class="form-group form-row align-items-center">
+                            <label class="col col-sm-4 col-form-label text-sm-right"for="kAuthor">{__('newsAuthor')}:</label>
+                            <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                <select class="custom-select" id="kAuthor" name="kAuthor">
                                     <option value="0">Autor auswählen</option>
                                     {foreach $oPossibleAuthors_arr as $oPossibleAuthor}
                                         <option value="{$oPossibleAuthor->kAdminlogin}"{if isset($cPostVar_arr.nAuthor)}{if isset($cPostVar_arr.nAuthor) && $cPostVar_arr.nAuthor == $oPossibleAuthor->kAdminlogin} selected="selected"{/if}{elseif isset($oAuthor->kAdminlogin) && $oAuthor->kAdminlogin == $oPossibleAuthor->kAdminlogin} selected="selected"{/if}>{$oPossibleAuthor->cName}</option>
                                     {/foreach}
                                 </select>
+                            </div>
                         </div>
                         {/if}
-                        <div class="input-group">
-                            <span class="input-group-addon">
-                                <label for="previewImage">{__('preview')}</label>
-                            </span>
-                            <div class="input-group-wrap">
+                        <div class="form-group form-row align-items-center">
+                            <label class="col col-sm-4 col-form-label text-sm-right"for="previewImage">{__('preview')}:</label>
+                            <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                 {if !empty($oNews->getPreviewImage())}
                                     <img src="{$shopURL}/{$oNews->getPreviewImage()}" alt="" height="20" width="20" class="preview-image left" style="margin: 0 10px;" />
                                 {/if}
@@ -200,15 +199,13 @@
                             </div>
                         </div>
                         {if isset($oDatei_arr) && $oDatei_arr|@count > 0}
-                        <div class="input-group">
-                            <span class="input-group-addon">
-                                <label>{__('newsPics')}</label>
-                            </span>
-                            <div class="input-group-wrap">
+                        <div class="form-group form-row align-items-center">
+                            <label class="col col-sm-4 col-form-label text-sm-right">{__('newsPics')}:</label>
+                            <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                 {foreach $oDatei_arr as $oDatei}
                                     <div class="well col-xs-3">
                                         <div class="thumbnail"><img src="{$oDatei->cURLFull}" alt=""></div>
-                                        <label>Link: </label>
+                                        <label>Link: :</label>
                                         <div class="input-group">
                                             <input class="form-control" type="text" disabled="disabled" value="$#{$oDatei->cName}#$">
                                             <div class="input-group-addon">
@@ -220,17 +217,15 @@
                             </div>
                         </div>
                         {/if}
-                        <div class="input-group">
-                            <span class="input-group-addon">
-                                <label for="lang">{__('language')}</label>
-                            </span>
-                            <span class="input-group-wrap">
-                                <select class="form-control" name="cISO" id="lang">
+                        <div class="form-group form-row align-items-center">
+                            <label class="col col-sm-4 col-form-label text-sm-right" for="lang">{__('language')}:</label>
+                            <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                <select class="custom-select" name="cISO" id="lang">
                                     {foreach $sprachen as $language}
                                         <option value="{$language->getIso()}" {if $language->getShopDefault() === 'Y'}selected="selected"{/if}>{$language->getLocalizedName()} {if $language->getShopDefault() === 'Y'}({__('standard')}){/if}</option>
                                     {/foreach}
                                 </select>
-                            </span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -242,62 +237,65 @@
                 <div id="iso_{$cISO}" class="iso_wrapper{if !$language->isShopDefault()} hidden-soft{/if}">
                     <div class="card">
                         <div class="card-header">
-                            <div class="card-title">{__('metaSeo')} ({$language->getLocalizedName()})</div>
+                            <div class="subheading1">{__('metaSeo')} ({$language->getLocalizedName()})</div>
+                            <hr class="mb-n3">
                         </div>
                         <div class="card-body">
-                            <div class="input-group">
-                                <span class="input-group-addon">
-                                    <label for="cName_{$cISO}">{__('headline')} *</label>
-                                </span>
-                                <input class="form-control{if !empty($cPlausiValue_arr.cBetreff)} error{/if}" id="cName_{$cISO}" type="text" name="cName_{$cISO}" value="{if isset($cPostVar_arr.betreff) && $cPostVar_arr.betreff}{$cPostVar_arr.betreff}{else}{$oNews->getTitle($langID)}{/if}" />
+                            <div class="form-group form-row align-items-center">
+                                <label class="col col-sm-4 col-form-label text-sm-right" for="cName_{$cISO}">{__('headline')} *:</label>
+                                <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                    <input class="form-control{if !empty($cPlausiValue_arr.cBetreff)} error{/if}" id="cName_{$cISO}" type="text" name="cName_{$cISO}" value="{if isset($cPostVar_arr.betreff) && $cPostVar_arr.betreff}{$cPostVar_arr.betreff}{else}{$oNews->getTitle($langID)}{/if}" />
+                                </div>
                             </div>
-                            <div class="input-group">
-                                <span class="input-group-addon">
-                                    <label for="cSeo_{$cISO}">{__('newsSeo')}</label>
-                                </span>
-                                <input id="cSeo_{$cISO}" name="cSeo_{$cISO}" class="form-control" type="text" value="{if isset($cPostVar_arr.seo) && $cPostVar_arr.seo}{$cPostVar_arr.seo}{else}{$oNews->getSEO($langID)}{/if}" />
+                            <div class="form-group form-row align-items-center">
+                                <label class="col col-sm-4 col-form-label text-sm-right" for="cSeo_{$cISO}">{__('newsSeo')}:</label>
+                                <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                    <input id="cSeo_{$cISO}" name="cSeo_{$cISO}" class="form-control" type="text" value="{if isset($cPostVar_arr.seo) && $cPostVar_arr.seo}{$cPostVar_arr.seo}{else}{$oNews->getSEO($langID)}{/if}" />
+                                </div>
                             </div>
-                            <div class="input-group">
-                                <span class="input-group-addon">
-                                    <label for="cMetaTitle_{$cISO}">{__('newsMetaTitle')}</label>
-                                </span>
-                                <input class="form-control" id="cMetaTitle_{$cISO}" name="cMetaTitle_{$cISO}" type="text" value="{if isset($cPostVar_arr.cMetaTitle) && $cPostVar_arr.cMetaTitle}{$cPostVar_arr.cMetaTitle}{else}{$oNews->getMetaTitle($langID)}{/if}" />
+                            <div class="form-group form-row align-items-center">
+                                <label class="col col-sm-4 col-form-label text-sm-right" for="cMetaTitle_{$cISO}">{__('newsMetaTitle')}:</label>
+                                <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                    <input class="form-control" id="cMetaTitle_{$cISO}" name="cMetaTitle_{$cISO}" type="text" value="{if isset($cPostVar_arr.cMetaTitle) && $cPostVar_arr.cMetaTitle}{$cPostVar_arr.cMetaTitle}{else}{$oNews->getMetaTitle($langID)}{/if}" />
+                                </div>
                             </div>
-                            <div class="input-group">
-                                <span class="input-group-addon">
-                                    <label for="cMetaDescription_{$cISO}">{__('newsMetaDescription')}</label>
-                                </span>
-                                <input id="cMetaDescription_{$cISO}" class="form-control" name="cMetaDescription_{$cISO}" type="text" value="{if isset($cPostVar_arr.cMetaDescription) && $cPostVar_arr.cMetaDescription}{$cPostVar_arr.cMetaDescription}{else}{$oNews->getMetaDescription($langID)}{/if}" />
+                            <div class="form-group form-row align-items-center">
+                                <label class="col col-sm-4 col-form-label text-sm-right" for="cMetaDescription_{$cISO}">{__('newsMetaDescription')}:</label>
+                                <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                    <input id="cMetaDescription_{$cISO}" class="form-control" name="cMetaDescription_{$cISO}" type="text" value="{if isset($cPostVar_arr.cMetaDescription) && $cPostVar_arr.cMetaDescription}{$cPostVar_arr.cMetaDescription}{else}{$oNews->getMetaDescription($langID)}{/if}" />
+                                </div>
                             </div>
-                            <div class="input-group">
-                                <span class="input-group-addon">
-                                    <label for="cMetaKeywords_{$cISO}">{__('newsMetaKeywords')}</label>
-                                </span>
-                                <input class="form-control" id="cMetaKeywords_{$cISO}" name="cMetaKeywords_{$cISO}" type="text" value="{if isset($cPostVar_arr.cMetaKeywords) && $cPostVar_arr.cMetaKeywords}{$cPostVar_arr.cMetaKeywords}{else}{$oNews->getMetaKeyword($langID)}{/if}" />
+                            <div class="form-group form-row align-items-center">
+                                <label class="col col-sm-4 col-form-label text-sm-right" for="cMetaKeywords_{$cISO}">{__('newsMetaKeywords')}:</label>
+                                <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                    <input class="form-control" id="cMetaKeywords_{$cISO}" name="cMetaKeywords_{$cISO}" type="text" value="{if isset($cPostVar_arr.cMetaKeywords) && $cPostVar_arr.cMetaKeywords}{$cPostVar_arr.cMetaKeywords}{else}{$oNews->getMetaKeyword($langID)}{/if}" />
+                                </div>
                             </div>
-                            <div class="input-group">
-                                <span class="input-group-addon">
-                                    <label for="newstext_{$cISO}">{__('text')} *</label>
-                                </span>
-                                <textarea id="newstext_{$cISO}" class="ckeditor" name="text_{$cISO}" rows="15" cols="60">{if isset($cPostVar_arr.text) && $cPostVar_arr.text}{$cPostVar_arr.text}{else}{$oNews->getContent($langID)}{/if}</textarea>
+                            <div class="form-group form-row align-items-center">
+                                <label class="col col-sm-4 col-form-label text-sm-right" for="newstext_{$cISO}">{__('text')} *:</label>
+                                <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                    <textarea id="newstext_{$cISO}" class="ckeditor" name="text_{$cISO}" rows="15" cols="60">{if isset($cPostVar_arr.text) && $cPostVar_arr.text}{$cPostVar_arr.text}{else}{$oNews->getContent($langID)}{/if}</textarea>
+                                </div>
                             </div>
-                            <div class="input-group">
-                                <span class="input-group-addon">
-                                    <label for="previewtext_{$cISO}">{__('newsPreviewText')}</label>
-                                </span>
-                                <textarea id="previewtext_{$cISO}" class="ckeditor" name="cVorschauText_{$cISO}" rows="15" cols="60">{if isset($cPostVar_arr.cVorschauText) && $cPostVar_arr.cVorschauText}{$cPostVar_arr.cVorschauText}{else}{$oNews->getPreview($langID)}{/if}</textarea>
+                            <div class="form-group form-row align-items-center">
+                                <label class="col col-sm-4 col-form-label text-sm-right" for="previewtext_{$cISO}">{__('newsPreviewText')}:</label>
+                                <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                    <textarea id="previewtext_{$cISO}" class="ckeditor" name="cVorschauText_{$cISO}" rows="15" cols="60">{if isset($cPostVar_arr.cVorschauText) && $cPostVar_arr.cVorschauText}{$cPostVar_arr.cVorschauText}{else}{$oNews->getPreview($langID)}{/if}</textarea>
+                                </div>
                             </div>
                         </div>
                         <div class="alert alert-info">{__('newsMandatoryFields')}</div>
                     </div>
                 </div>
             {/foreach}
-            <div class="btn-group">
-                <button name="speichern" type="button" value="{__('save')}" onclick="checkfile(event);" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
-                {if $oNews->getID() > 0}
-                    <button type="submit" name="continue" value="1" class="btn btn-default" id="save-and-continue">{__('save')} {__('goOnEdit')}</button>
-                {/if}
-                <a class="btn btn-danger" href="news.php{if isset($cBackPage)}?{$cBackPage}{elseif isset($cTab)}?tab={$cTab}{/if}"><i class="fa fa-exclamation"></i> {__('Cancel')}</a>
+            <div class="card-footer save_wrapper">
+                <div class="btn-group">
+                    <button name="speichern" type="button" value="{__('save')}" onclick="checkfile(event);" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
+                    {if $oNews->getID() > 0}
+                        <button type="submit" name="continue" value="1" class="btn btn-default" id="save-and-continue">{__('save')} {__('goOnEdit')}</button>
+                    {/if}
+                    <a class="btn btn-danger" href="news.php{if isset($cBackPage)}?{$cBackPage}{elseif isset($cTab)}?tab={$cTab}{/if}"><i class="fa fa-exclamation"></i> {__('Cancel')}</a>
+                </div>
             </div>
         </div>
     </form>

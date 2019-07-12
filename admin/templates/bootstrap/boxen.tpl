@@ -107,7 +107,7 @@
                 <div class="card-header">
                     <div class="subheading1">{__('invisibleBoxes')}</div>
                 </div>
-                <div class="table-responsive">
+                <div class="table-responsive card-body">
                     <table class="table">
                         <tr class="boxRow">
                             <th class="check">&nbsp;</th>
@@ -213,7 +213,7 @@
                                 {/foreach}
                             {elseif $oEditBox->eTyp === 'link'}
                                 <div class="form-group form-row align-items-center">
-                                    <label class="col col-sm-4 col-form-label text-sm-right"for="linkID">{__('linkgroup')}</label>
+                                    <label class="col col-sm-4 col-form-label text-sm-right"for="linkID">{__('linkgroup')}:</label>
                                     <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                         <select class="custom-select" id="linkID" name="linkID" required>
                                             <option value="" {if $oEditBox->kCustomID == 0}selected="selected"{/if}>{__('FillOut')}</option>
@@ -227,7 +227,7 @@
                                 </div>
                                 {foreach $oSprachen_arr as $language}
                                     <div class="form-group form-row align-items-center">
-                                        <label class="col col-sm-4 col-form-label text-sm-right"for="title-{$language->getIso()}">{__('boxTitle')} {$language->getLocalizedName()}</label>
+                                        <label class="col col-sm-4 col-form-label text-sm-right"for="title-{$language->getIso()}">{__('boxTitle')} ({$language->getLocalizedName()}):</label>
                                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                             <input class="form-control" id="title-{$language->getIso()}" type="text" name="title[{$language->getIso()}]" value="{foreach $oEditBox->oSprache_arr as $oBoxSprache}{if $language->getIso() === $oBoxSprache->cISO}{$oBoxSprache->cTitel}{/if}{/foreach}" />
                                         </div>

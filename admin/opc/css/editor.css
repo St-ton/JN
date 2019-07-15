@@ -301,6 +301,9 @@
   color: #435A6B;
 }
 
+#portlets hr {
+  margin-top: 0;
+}
 #portlets .portletGroupBtn {
   display: block;
   font-weight: 600;

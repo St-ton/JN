@@ -32,6 +32,7 @@ class OPC
             .then(() => this.page.loadDraft())
             .then(() => this.iframe.init(this.pagetree))
             .then(() => {
+                this.gui.updateRevisionList();
                 this.gui.hideLoader();
                 this.pagetree.render();
 

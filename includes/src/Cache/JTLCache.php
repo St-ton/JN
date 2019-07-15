@@ -29,6 +29,7 @@ use JTL\Shopsetting;
 \define('CACHING_GROUP_ATTRIBUTE', 'attr');
 \define('CACHING_GROUP_MANUFACTURER', 'mnf');
 \define('CACHING_GROUP_FILTER', 'fltr');
+\define('CACHING_GROUP_FILTER_CHARACTERISTIC', 'fltrchr');
 
 /**
  * Class JTLCache

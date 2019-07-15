@@ -566,6 +566,7 @@ class GUI
         e.preventDefault();
 
         this.page.name = this.draftName.val();
+        $('#footerDraftName span').text(this.page.name);
 
         if (this.checkPublishNot.prop('checked')) {
             this.page.publishFrom = null;

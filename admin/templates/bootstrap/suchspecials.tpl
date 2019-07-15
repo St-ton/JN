@@ -3,15 +3,8 @@
 {include file='tpl_inc/seite_header.tpl' cTitel=__('suchspecials') cBeschreibung=__('suchspecialsDesc') cDokuURL=__('suchspecialURL')}
 <div id="content" class="container-fluid">
     <div class="block">
-        <form name="sprache" method="post" action="suchspecials.php">
-            {$jtl_token}
-            <input type="hidden" name="sprachwechsel" value="1" />
-            <div class="input-group p25 left">
-                {include file='tpl_inc/language_switcher.tpl'}
-            </div>
-        </form>
+        {include file='tpl_inc/language_switcher.tpl' action='suchspecials.php'}
     </div>
-
     <ul class="nav nav-tabs" role="tablist">
         <li class="tab{if !isset($cTab) || $cTab === 'suchspecials'} active{/if}">
             <a data-toggle="tab" role="tab" href="#suchspecials">{__('suchspecials')}</a>

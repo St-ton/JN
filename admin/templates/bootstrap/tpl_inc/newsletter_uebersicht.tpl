@@ -1,13 +1,7 @@
 {include file='tpl_inc/seite_header.tpl' cTitel=__('newsletteroverview') cBeschreibung=__('newsletterdesc') cDokuURL=__('newsletterURL')}
 <div id="content" class="container-fluid">
     <div class="block">
-        <form name="sprache" method="post" action="newsletter.php">
-            {$jtl_token}
-            <input type="hidden" name="sprachwechsel" value="1" />
-            <div class="input-group p25 left">
-                {include file='tpl_inc/language_switcher.tpl'}
-            </div>
-        </form>
+        {include file='tpl_inc/language_switcher.tpl' action='newsletter.php'}
     </div>
     <ul class="nav nav-tabs" role="tablist">
         <li class="tab{if !isset($cTab) || $cTab === 'inaktiveabonnenten'} active{/if}">

@@ -1,13 +1,7 @@
 {include file='tpl_inc/seite_header.tpl' cTitel=__('agbwrb') cDokuURL=__('agbwrbURL')}
 <div id="content" class="container-fluid">
     <div class="block">
-        <form name="sprache" method="post" action="agbwrb.php">
-            {$jtl_token}
-            <input type="hidden" name="sprachwechsel" value="1" />
-            <div class="p25 input-group left">
-                {include file='tpl_inc/language_switcher.tpl'}
-            </div>
-        </form>
+        {include file='tpl_inc/language_switcher.tpl'}
     </div>
     <div class="card">
         <div class="card-header">

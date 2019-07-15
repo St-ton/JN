@@ -4,20 +4,7 @@
 <div id="content" class="container-fluid">
     <div class="row">
         <div class="col-md-3 col-sm-4">
-            <form id="formSprachwechsel" name="sprache" method="post" action="freischalten.php">
-                {$jtl_token}
-                <input type="hidden" name="sprachwechsel" value="1" />
-                <input id="formSprachwechselTab" type="hidden" name="tab" value="{if isset($cTab)}{$cTab}{else}bewertungen{/if}" />
-                <div class="input-group">
-                    {include file='tpl_inc/language_switcher.tpl' id='formSprachwechselSelect'}
-                </div>
-            </form>
-            <script type="text/javascript">
-                $('#formSprachwechselSelect').on('change', function (e) {
-                    $('#formSprachwechselTab').val($('.tab-content .tab-pane.active').attr('id'));
-                    this.form.submit();
-                });
-            </script>
+            {include file='tpl_inc/language_switcher.tpl' id='formSprachwechselSelect' action='freischalten.php"'}
         </div>
         <div class="col-md-9 col-sm-8">
             <form name="suche" method="post" action="freischalten.php">

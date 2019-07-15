@@ -1,14 +1,8 @@
 <div id="content" class="container-fluid">
     {if !isset($noModule) || !$noModule}
-        <form name="sprache" method="post" action="umfrage.php">
-            {$jtl_token}
-            <input type="hidden" name="sprachwechsel" value="1" />
-            <div class="block">
-                <div class="input-group p25 left">
-                    {include file='tpl_inc/language_switcher.tpl'}
-                </div>
-            </div>
-        </form>
+        <div class="block">
+            {include file='tpl_inc/language_switcher.tpl' action='umfrage.php'}
+        </div>
         <ul class="nav nav-tabs" role="tablist">
             <li class="tab{if !isset($cTab) || $cTab === 'umfrage'} active{/if}">
                 <a data-toggle="tab" role="tab" href="#umfrage">{__('umfrageOverview')}</a>

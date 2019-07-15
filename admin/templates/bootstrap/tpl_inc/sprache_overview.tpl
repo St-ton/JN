@@ -34,13 +34,7 @@
 </script>
 <div id="content" class="container-fluid">
     <div class="block">
-        <form method="post" name="sprache" action="sprache.php">
-            {$jtl_token}
-            <input type="hidden" name="sprachwechsel" value="1">
-            <div class="input-group">
-                {include file='tpl_inc/language_switcher.tpl' id='kSprache'}
-            </div>
-        </form>
+        {include file='tpl_inc/language_switcher.tpl' id='kSprache' action='sprache.php'}
     </div>
     <ul class="nav nav-tabs" role="tablist">
         <li class="tab {if $tab === 'variables'}active{/if}">

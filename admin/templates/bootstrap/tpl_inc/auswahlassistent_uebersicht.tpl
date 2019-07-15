@@ -4,13 +4,7 @@
 <div id="content">
     {if !isset($noModule) || !$noModule}
         <div class="block">
-            <form name="sprache" method="post" action="auswahlassistent.php">
-                {$jtl_token}
-                <input id="{__('changeLanguage')}" type="hidden" name="sprachwechsel" value="1" />
-                <div class="input-group p25 left">
-                    {include file='tpl_inc/language_switcher.tpl'}
-                </div>
-            </form>
+            {include file='tpl_inc/language_switcher.tpl' action='auswahlassistent.php'}
         </div>
         <ul class="nav nav-tabs" role="tablist">
             <li class="tab{if !isset($cTab) || $cTab === 'uebersicht'} active{/if}">

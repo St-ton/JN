@@ -2,15 +2,9 @@
 {config_load file="$lang.conf" section='livesuche'}
 {include file='tpl_inc/seite_header.tpl' cTitel=__('livesearch') cBeschreibung=__('livesucheDesc') cDokuURL=__('livesucheURL')}
 <div id="content" class="container-fluid">
-    <form name="sprache" method="post" action="livesuche.php">
-        {$jtl_token}
-        <input type="hidden" name="sprachwechsel" value="1" />
-        <div class="block">
-            <div class="input-group p25 left">
-                {include file='tpl_inc/language_switcher.tpl'}
-            </div>
-        </div>
-    </form>
+    <div class="block">
+        {include file='tpl_inc/language_switcher.tpl' action='livesuche.php'}
+    </div>
     <ul class="nav nav-tabs" role="tablist">
         <li class="tab{if !isset($tab) || $tab === 'suchanfrage'} active{/if}">
             <a data-toggle="tab" role="tab" href="#suchanfrage">{__('searchrequest')}</a>

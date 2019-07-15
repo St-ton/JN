@@ -112,13 +112,7 @@
 {include file='tpl_inc/seite_header.tpl' cTitel=__('kundenfeld') cBeschreibung=__('kundenfeldDesc') cDokuURL=__('kundenfeldURL')}
 <div id="content" class="container-fluid">
     <div class="block">
-        <form name="sprache" method="post" action="kundenfeld.php">
-            {$jtl_token}
-            <input id="{__('changeLanguage')}" type="hidden" name="sprachwechsel" value="1" />
-            <div class="p25 left input-group">
-                {include file='tpl_inc/language_switcher.tpl' id='kSprache'}
-            </div>
-        </form>
+        {include file='tpl_inc/language_switcher.tpl' id='kSprache' action='kundenfeld.php'}
     </div>
 
     <ul class="nav nav-tabs" role="tablist">

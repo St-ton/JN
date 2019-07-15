@@ -4,13 +4,7 @@
 {assign var=currentLanguage value=''}
 <div id="content" class="container-fluid">
     <div class="block">
-        <form name="sprache" method="post" action="globalemetaangaben.php">
-            {$jtl_token}
-            <input type="hidden" name="sprachwechsel" value="1" />
-            <div class="input-group p25 left">
-                {include file='tpl_inc/language_switcher.tpl'}
-            </div>
-        </form>
+        {include file='tpl_inc/language_switcher.tpl' action='globalemetaangaben.php"'}
     </div>
     <form method="post" action="globalemetaangaben.php">
         {$jtl_token}

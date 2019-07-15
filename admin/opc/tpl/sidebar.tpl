@@ -59,6 +59,9 @@
                             </button>
                         {/foreach}
                     </div>
+                    {if !$group@last}
+                        <hr>
+                    {/if}
                 {/foreach}
             </div>
             <div class="tab-pane" id="blueprints">

@@ -477,6 +477,9 @@ html, body {
   overflow: visible;
   height: 100%;
 }
+#opc #opcSidebar #sidebarInnerPanel #portlets hr {
+  margin-top: 0;
+}
 #opc #opcSidebar #sidebarInnerPanel #portlets .portletGroupBtn {
   display: block;
   font-weight: 600;

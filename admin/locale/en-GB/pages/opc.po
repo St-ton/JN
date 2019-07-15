@@ -47,7 +47,7 @@ msgid "Unsaved revision"
 msgstr "Unsaved version"
 
 msgid "Current revision"
-msgstr "Current version"
+msgstr "Current revision"
 
 msgid "Please wait..."
 msgstr "Please wait…"

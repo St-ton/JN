@@ -72,7 +72,11 @@
                     <i>{__('Unsaved revision')}</i>
                 </a>
                 <a class="revisionBtn" href="#" data-revision-id="0">
-                    {__('Current revision')}
+                    <div>
+                        <span id="currentDraftName"></span>
+                        <span class="opc-status-draft">({__('Current revision')})</span>
+                    </div>
+                    <div id="currentLastModified"></div>
                 </a>
                 <div id="revisionList"></div>
             </div>

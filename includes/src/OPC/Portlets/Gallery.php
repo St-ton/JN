@@ -22,20 +22,20 @@ class Gallery extends Portlet
     {
         return [
             'galleryStyle' => [
-                'type' => InputType::SELECT,
-                'label' => 'Layout',
+                'type'    => InputType::SELECT,
+                'label'   => 'Layout',
                 'default' => 'grid',
-                'width' => 50,
+                'width'   => 50,
                 'options' => [
-                    'grid' => 'Gitter',
+                    'grid'      => 'Gitter',
                     'alternate' => 'Alternierend',
-                    'masonry' => 'Mauerwerk',
+                    'columns'   => 'Spalten',
                 ],
             ],
             'images' => [
-                'type'       => InputType::IMAGE_SET,
-                'label'      => __('imageList'),
-                'default'    => [],
+                'type'    => InputType::IMAGE_SET,
+                'label'   => __('imageList'),
+                'default' => [],
             ],
         ];
     }

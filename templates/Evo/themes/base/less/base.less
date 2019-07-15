@@ -3591,9 +3591,52 @@ header.fixed-navbar {
   }
 }
 
+.img-gallery-btn {
+  position: relative;
+
+  &:after {
+    content: " ";
+    opacity: 0;
+    background-color: rgba(0, 0, 0, 0.75);
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    transition: all 0.5s ease-in-out 0s;
+  }
+
+  &:hover:after {
+    opacity: 0.75;
+  }
+
+  .img-gallery-zoom {
+    opacity: 0;
+    color: #fff;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    transition: all 0.5s ease-in-out 0s;
+  }
+
+  &:hover .img-gallery-zoom {
+    opacity: 1;
+  }
+}
+
 .img-gallery {
   margin-left: -4px;
   margin-right: -4px;
+
+  &.img-gallery-grid {
+    .img-gallery-item {
+      .img-gallery-btn {
+        height: 0;
+        padding-top: 100%;
+      }
+    }
+  }
 
   .img-gallery-item {
     overflow: hidden;
@@ -3603,40 +3646,12 @@ header.fixed-navbar {
 
     .img-gallery-btn {
       display: block;
-      position: relative;
-
-      &:after {
-        content: " ";
-        opacity: 0;
-        background-color: rgba(0, 0, 0, 0.75);
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        transition: all 0.5s ease-in-out 0s;
-      }
-
-      &:hover:after {
-        opacity: 0.75;
-      }
-
-      .img-gallery-zoom {
-        opacity: 0;
-        color: #fff;
-        position: absolute;
-        left: 50%;
-        top: 50%;
-        transform: translate(-50%, -50%);
-        transition: all 0.5s ease-in-out 0s;
-      }
-
-      &:hover .img-gallery-zoom {
-        opacity: 1;
-      }
+      width: 100%;
+      height: 220px;
     }
 
     .img-gallery-img {
+      display: block;
       height: 100%;
       width: 100%;
       object-fit: cover;
@@ -3649,10 +3664,43 @@ header.fixed-navbar {
   }
 }
 
+.gallery-columns {
+  columns: 1;
+  column-gap: 8px;
+
+  .img-gallery-btn {
+    width: 100%;
+    display: block;
+    margin-bottom: 8px;
+  }
+  .img-gallery-img {
+    width: 100%;
+    display: block;
+  }
+}
+
+@media (min-width: 576px) {
+  .gallery-columns {
+    columns: 2;
+  }
+}
+
+@media (min-width: 768px) {
+  .gallery-columns {
+    columns: 3;
+  }
+}
+
+@media (min-width: 1200px) {
+  .gallery-columns {
+    columns: 4;
+  }
+}
+
 .img-gallery-modal {
   .modal-dialog {
     transform: scale(0.1);
-    top: 100px;
+    top: 50px;
     opacity: 0;
     transition: all 0.3s;
   }

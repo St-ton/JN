@@ -24,7 +24,7 @@ msgid "bewertungsText3"
 msgstr "Kommentiert werden darf grundsätzlich nur von eingeloggten Benutzern, egal was unter \"Benutzung nur mit Login\" eingetragen wird.<br/>Wenn angemeldete Benutzer eine Bewertung vornehmen, werden sie auch nicht nach einem Tag zurückgesetzt und können erneut bewerten.<br/>Dies ist nur bei nicht eingeloggten Benutzern so."
 
 msgid "popup"
-msgstr "als Pop-up"
+msgstr "als Dialogfenster"
 
 msgid "clearVotes"
 msgstr "Alle Bewertungen zurücksetzen"

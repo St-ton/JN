@@ -3,19 +3,19 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "redirect"
-msgstr "Redirections"
+msgstr "Forwarding"
 
 msgid "redirectDesc"
-msgstr "Manage the redirection from orphaned URLs whose target pages are reachable under a new path. JTL-Shop automatically records all URLs that could not be found and lists them here. Only create a redirection if the content of an old page was moved and is now available under a new path."
+msgstr "Manage the forwarding from orphaned URLs whose target pages are reachable under a new path. JTL-Shop automatically records all URLs that could not be found and lists them here. Only create a forwarding if the content of an old page was moved and is now available under a new path."
 
 msgid "redirectURL"
 msgstr "https://jtl-url.de/yaxo4"
 
 msgid "redirectDelUnassigned"
-msgstr "Delete all without redirections"
+msgstr "Delete all without forwarding"
 
 msgid "redirectNew"
-msgstr "New redirection"
+msgstr "New forwarding"
 
 msgid "redirectFrom"
 msgstr "Source URL"
@@ -39,10 +39,10 @@ msgid "errorURLNotReachable"
 msgstr "Could not save changes. The URL to be redirected is not available."
 
 msgid "successRedirectSave"
-msgstr "Redirection saved successfully."
+msgstr "Forwarding saved successfully."
 
 msgid "errorImport"
-msgstr "Could not carry out import. Please review the CSV file."
+msgstr "Could not carry out import. Please check the CSV file."
 
 msgid "successImport"
 msgstr "Import carried out successfully."

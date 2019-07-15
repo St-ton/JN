@@ -18,7 +18,7 @@ msgid "newInAssortment"
 msgstr "New in product range"
 
 msgid "topOffers"
-msgstr "Top offers"
+msgstr "Top items"
 
 msgid "shortTermAvailable"
 msgstr "Available soon"
@@ -36,7 +36,7 @@ msgid "errorNewExistRename"
 msgstr "The New in product range page %s already existed and was renamed %s."
 
 msgid "errorTopProductsExistRename"
-msgstr "The Top offer page %s already existed and was renamed %s."
+msgstr "The Top item page %s already existed and was renamed %s."
 
 msgid "errorSoonExistRename"
 msgstr "The Available soon page %s already existed and was renamed %s."

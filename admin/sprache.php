@@ -214,7 +214,7 @@ if ($step === 'newvar') {
         ->assign('oSprache_arr', $availableLanguages);
 } elseif ($step === 'overview') {
     $filter                      = new Filter('langvars');
-    $selectField                 = $filter->addSelectfield('Sektion', 'sw.kSprachsektion');
+    $selectField                 = $filter->addSelectfield(__('section'), 'sw.kSprachsektion');
     $selectField->reloadOnChange = true;
     $selectField->addSelectOption('(' . __('all') . ')', '');
 
@@ -223,7 +223,7 @@ if ($step === 'newvar') {
     }
 
     $filter->addTextfield(
-        ['Suche', __('searchInContentAndVarName')],
+        [__('search'), __('searchInContentAndVarName')],
         ['sw.cName', 'sw.cWert'],
         Operation::CONTAINS
     );

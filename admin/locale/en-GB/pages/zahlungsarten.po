@@ -114,10 +114,10 @@ msgid "installedPaymentTypes"
 msgstr "Installed payment methods"
 
 msgid "successPaymentMethodSave"
-msgstr "Payment method saved."
+msgstr "Payment method saved successfully."
 
 msgid "errorPaymentMethodNotFound"
-msgstr "Payment method not found."
+msgstr "Could not find payment method."
 
 msgid "feeNameHint"
-msgstr "Here you can enter the name of a potentially applicable fee for this payment method. The name will be displayed with the payment method during checkout. You can individually adjust the fee for each shipping method for which the payment method is available."
+msgstr "Enter a name for a potential charge for the payment method. The name of the charge will be displayed during checkout. The amount of the charge is specified individually for each shipping method for which the shipping method is available."

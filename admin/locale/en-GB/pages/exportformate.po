@@ -48,7 +48,7 @@ msgid "template"
 msgstr "Export template"
 
 msgid "smartyRules"
-msgstr "Smarty is active. Warning: PHP tags and contents are forbidden."
+msgstr "Smarty is used Attention: PHP tags and contents are forbidden."
 
 msgid "download"
 msgstr "Download file"
@@ -108,4 +108,4 @@ msgid "sureDeleteFormat"
 msgstr "Delete export format?"
 
 msgid "useCache"
-msgstr "Use Cache?"
+msgstr "Use cache?"

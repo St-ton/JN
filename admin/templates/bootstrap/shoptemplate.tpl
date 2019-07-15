@@ -2,7 +2,7 @@
 {config_load file="$lang.conf" section='shoptemplate'}
 {assign var=cBeschreibung value=__('shoptemplatesDesc')}
 {if isset($oEinstellungenXML) && $oEinstellungenXML}
-    {assign var=cTitel value='Einstellungen: '|cat:$oTemplate->cName}
+    {assign var=cTitel value={__('settings')}|cat:': '|cat:$oTemplate->cName}
     {if !empty($oTemplate->cDokuURL)}
         {assign var=cDokuURL value=$oTemplate->cDokuURL}
     {else}

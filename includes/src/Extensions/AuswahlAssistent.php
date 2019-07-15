@@ -203,11 +203,11 @@ class AuswahlAssistent
                 $params['MerkmalFilter_arr'] = \array_slice($this->selections, 1);
             }
         }
-        $productFilter    = Shop::buildProductFilter($params);
-        $currentCategory  = isset($params['kKategorie'])
+        $productFilter   = Shop::buildProductFilter($params);
+        $currentCategory = isset($params['kKategorie'])
             ? new Kategorie($params['kKategorie'])
             : null;
-        $filterOptions = (new SearchResults())->setFilterOptions(
+        $filterOptions   = (new SearchResults())->setFilterOptions(
             $productFilter,
             $currentCategory,
             true

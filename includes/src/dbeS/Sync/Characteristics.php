@@ -32,6 +32,7 @@ final class Characteristics extends AbstractSync
                 $this->handleInserts($xml);
             }
         }
+        $this->cache->flushTags([\CACHING_GROUP_ATTRIBUTE, \CACHING_GROUP_FILTER_CHARACTERISTIC]);
 
         return null;
     }
@@ -57,7 +58,6 @@ final class Characteristics extends AbstractSync
         foreach (\array_filter($characteristicValues, '\is_numeric') as $id) {
             $this->deleteCharacteristicValue((int)$id);
         }
-        $this->cache->flushTags([\CACHING_GROUP_ATTRIBUTE]);
     }
 
     /**

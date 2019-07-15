@@ -201,6 +201,9 @@ final class Images extends AbstractSync
         $this->handleCharacteristicImages($charImages);
         $this->handleCharacteristicValueImages($charValImages);
         $this->handleConfigGroupImages($configGroupImages);
+        if (\count($charImages) > 0 || \count($charValImages) > 0) {
+            $this->cache->flushTags([\CACHING_GROUP_ATTRIBUTE, \CACHING_GROUP_FILTER_CHARACTERISTIC]);
+        }
 
         \executeHook(\HOOK_BILDER_XML_BEARBEITE_ENDE, [
             'Artikel'          => &$productImages,

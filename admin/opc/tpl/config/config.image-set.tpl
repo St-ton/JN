@@ -64,7 +64,7 @@
 
 <label>{$propdesc.label}</label>
 
-<div class="slides-container">
+<div class="slides-container" id="{$propname}-slides-container">
     <div id="{$propname}-slides">
         {foreach $propval as $slideData}
             {slideEntry slideData=$slideData}
@@ -100,6 +100,8 @@
         $('#{$propname}-slides').append(
             $('#{$propname}-slide-blueprint').children().clone()
         );
+        let slideContainer = $('#{$propname}-slides-container');
+        slideContainer[0].scrollTo(0, slideContainer[0].scrollHeight);
     }
 
     function removeSlide_{$propname}()

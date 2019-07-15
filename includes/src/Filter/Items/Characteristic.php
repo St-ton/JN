@@ -151,7 +151,7 @@ class Characteristic extends BaseCharacteristic
                 ->setId($value->kMerkmal)
                 ->setIsMultiSelect($value->nMehrfachauswahl === 1);
 
-            return $this->setType($this->isMultiSelect() ? Type::or : Type::and)
+            return $this->setType($this->isMultiSelect() ? Type::OR : Type::AND)
                 ->setSeo($this->getAvailableLanguages());
         }
 
@@ -337,7 +337,7 @@ class Characteristic extends BaseCharacteristic
                 } else {
                     $activeValues[] = $values;
                 }
-                if ($filter->getType() === Type::or) {
+                if ($filter->getType() === Type::OR) {
                     if (\is_array($values)) {
                         $activeOrFilterIDs = $values;
                     } else {
@@ -503,7 +503,7 @@ class Characteristic extends BaseCharacteristic
                 ->setData('cBildURLKlein', $imageBaseURL . $baseSrcSmall)
                 ->setData('cBildURLNormal', $imageBaseURL . $baseSrcNormal);
             $option->setParam($this->getUrlParam());
-            $option->setType($filter->nMehrfachauswahl === 1 ? Type::or : Type::and);
+            $option->setType($filter->nMehrfachauswahl === 1 ? Type::OR : Type::AND);
             $option->setType($this->getType());
             $option->setClassName($this->getClassName());
             $option->setName($filter->cName);
@@ -531,7 +531,7 @@ class Characteristic extends BaseCharacteristic
                     ->setData('cBildpfadNormal', $baseSrcNormal)
                     ->setData('cBildURLKlein', $imageBaseURL . $baseSrcSmall)
                     ->setData('cBildURLNormal', $imageBaseURL . $baseSrcNormal);
-                $characteristicOption->setType($filter->nMehrfachauswahl === 1 ? Type::or : Type::and);
+                $characteristicOption->setType($filter->nMehrfachauswahl === 1 ? Type::OR : Type::AND);
                 $characteristicOption->setClassName($this->getClassName());
                 $characteristicOption->setParam($this->getUrlParam());
                 $characteristicOption->setName(\htmlentities($filterValue->cWert));
@@ -565,7 +565,11 @@ class Characteristic extends BaseCharacteristic
             $this->applyOptionLimit($af, $valueLimit);
         }
         $this->options = $characteristicFilters;
-        $this->productFilter->getCache()->set($cacheID, $characteristicFilters, [\CACHING_GROUP_FILTER]);
+        $this->productFilter->getCache()->set(
+            $cacheID,
+            $characteristicFilters,
+            [\CACHING_GROUP_FILTER, \CACHING_GROUP_FILTER_CHARACTERISTIC]
+        );
 
         return $characteristicFilters;
     }

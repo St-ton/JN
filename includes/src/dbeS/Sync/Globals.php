@@ -93,23 +93,9 @@ final class Globals extends AbstractSync
         $this->db->query('TRUNCATE TABLE tkundengruppenattribut', ReturnType::DEFAULT);
         $cgCount = \count($customerGroups);
         for ($i = 0; $i < $cgCount; $i++) {
-            if ($cgCount < 2) {
-                $this->xml2db($source['tkundengruppe'], 'tkundengruppensprache', 'mKundengruppensprache', 0);
-                $this->xml2db($source['tkundengruppe'], 'tkundengruppenattribut', 'mKundengruppenattribut', 0);
-            } else {
-                $this->xml2db(
-                    $source['tkundengruppe'][$i],
-                    'tkundengruppensprache',
-                    'mKundengruppensprache',
-                    0
-                );
-                $this->xml2db(
-                    $source['tkundengruppe'][$i],
-                    'tkundengruppenattribut',
-                    'mKundengruppenattribut',
-                    0
-                );
-            }
+            $item = $cgCount < 2 ? $source['tkundengruppe'] : $source['tkundengruppe'][$i];
+            $this->xml2db($item, 'tkundengruppensprache', 'mKundengruppensprache', 0);
+            $this->xml2db($item, 'tkundengruppenattribut', 'mKundengruppenattribut', 0);
         }
         $this->cache->flushTags([\CACHING_GROUP_ARTICLE, \CACHING_GROUP_CATEGORY]);
     }
@@ -157,11 +143,8 @@ final class Globals extends AbstractSync
         $this->db->query('DELETE FROM tsteuerzoneland', ReturnType::DEFAULT);
         $taxCount = \count($taxZones);
         for ($i = 0; $i < $taxCount; $i++) {
-            if ($taxCount < 2) {
-                $this->xml2db($source['tsteuerzone'], 'tsteuerzoneland', 'mSteuerzoneland', 0);
-            } else {
-                $this->xml2db($source['tsteuerzone'][$i], 'tsteuerzoneland', 'mSteuerzoneland', 0);
-            }
+            $item = $taxCount < 2 ? $source['tsteuerzone'] : $source['tsteuerzone'][$i];
+            $this->xml2db($item, 'tsteuerzoneland', 'mSteuerzoneland', 0);
         }
     }
 
@@ -204,11 +187,8 @@ final class Globals extends AbstractSync
         $this->db->query('TRUNCATE TABLE tmasseinheitsprache', ReturnType::DEFAULT);
         $meCount = \count($units);
         for ($i = 0; $i < $meCount; $i++) {
-            if ($meCount < 2) {
-                $this->xml2db($source['tmasseinheit'], 'tmasseinheitsprache', 'mMasseinheitsprache', 0);
-            } else {
-                $this->xml2db($source['tmasseinheit'][$i], 'tmasseinheitsprache', 'mMasseinheitsprache', 0);
-            }
+            $item = $meCount < 2 ? $source['tmasseinheit'] : $source['tmasseinheit'][$i];
+            $this->xml2db($item, 'tmasseinheitsprache', 'mMasseinheitsprache', 0);
         }
     }
 

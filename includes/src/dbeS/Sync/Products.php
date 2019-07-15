@@ -164,13 +164,13 @@ final class Products extends AbstractSync
     }
 
     /**
-     * @param stdClass|null $currentStatus
+     * @param stdClass|bool $currentStatus
      * @param array         $xml
      * @return bool
      */
-    private function checkStock(?stdClass $currentStatus, array $xml): bool
+    private function checkStock($currentStatus, array $xml): bool
     {
-        return $currentStatus !== null
+        return $currentStatus !== false
             && (($currentStatus->fLagerbestand <= 0 && $xml['tartikel']['fLagerbestand'] > 0)
                 // product was not in stock before but is now - check if flush is necessary
                 || ($currentStatus->fLagerbestand > 0 && $xml['tartikel']['fLagerbestand'] <= 0)

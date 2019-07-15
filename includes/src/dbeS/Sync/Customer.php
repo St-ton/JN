@@ -311,9 +311,8 @@ final class Customer extends AbstractSync
                  WHERE kKunde = ' . (int)$cstmr['0 attr']['kKunde'],
             ReturnType::ARRAY_OF_ASSOC_ARRAYS
         );
-        $attributeCount              = \count($cstmr[0]['tkundenattribut']);
-        for ($o = 0; $o < $attributeCount; $o++) {
-            $cstmr[0]['tkundenattribut'][$o . ' attr'] = $this->buildAttributes($cstmr[0]['tkundenattribut'][$o]);
+        foreach ($cstmr[0]['tkundenattribut'] as $o => $attr) {
+            $cstmr[0]['tkundenattribut'][$o . ' attr'] = $this->buildAttributes($attr);
         }
         $xml['kunden attr']['anzahl'] = 1;
         $xml['kunden']['tkunde']      = $cstmr;

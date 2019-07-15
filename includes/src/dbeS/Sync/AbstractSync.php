@@ -179,7 +179,8 @@ abstract class AbstractSync
         array $pks,
         string $excludeKey = '',
         array $excludeValues = []
-    ): void {
+    ): void
+    {
         $whereKeys = [];
         $params    = [];
         foreach ($pks as $name => $value) {
@@ -236,7 +237,7 @@ abstract class AbstractSync
         }
         $campaign = new Kampagne(\KAMPAGNE_INTERN_VERFUEGBARKEIT);
         if ($campaign->kKampagne > 0) {
-            $cSep           = \strpos($product->cURL, '.php') === false ? '?' : '&';
+            $cSep          = \strpos($product->cURL, '.php') === false ? '?' : '&';
             $product->cURL .= $cSep . $campaign->cParameter . '=' . $campaign->cWert;
         }
         foreach ($subscriptions as $msg) {
@@ -641,7 +642,7 @@ abstract class AbstractSync
             $keys     = \array_keys($arr);
             $keyCount = \count($keys);
             for ($i = 0; $i < $keyCount; $i++) {
-                if (!\in_array($keys[$i], $excludes) && $keys[$i]{0} === 'k') {
+                if (!\in_array($keys[$i], $excludes, true) && $keys[$i]{0} === 'k') {
                     $attributes[$keys[$i]] = $arr[$keys[$i]];
                     unset($arr[$keys[$i]]);
                 }
@@ -678,11 +679,7 @@ abstract class AbstractSync
         }
         $redirect = new Redirect();
         $parsed   = \parse_url(Shop::getURL());
-        if (isset($parsed['path'])) {
-            $source = $parsed['path'] . '/' . $oldSeo;
-        } else {
-            $source = '/' . $oldSeo;
-        }
+        $source   = isset($parsed['path']) ? ($parsed['path'] . '/' . $oldSeo) : ('/' . $oldSeo);
 
         return $redirect->saveExt($source, $newSeo, true);
     }
@@ -692,11 +689,11 @@ abstract class AbstractSync
      */
     protected function handlePriceRange(array $productIDs): void
     {
+        $idString = \implode(',', $productIDs);
         $this->db->executeQuery(
-            'DELETE FROM tpricerange WHERE kArtikel IN (' . \implode(',', $productIDs) . ')',
+            'DELETE FROM tpricerange WHERE kArtikel IN (' . $idString . ')',
             ReturnType::DEFAULT
         );
-        $idString = \implode(',', $productIDs);
         $this->db->executeQuery(
             'INSERT INTO tpricerange
             (kArtikel, kKundengruppe, kKunde, nRangeType, fVKNettoMin, fVKNettoMax, nLagerAnzahlMax, dStart, dEnde)

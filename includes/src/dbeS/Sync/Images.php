@@ -819,7 +819,7 @@ final class Images extends AbstractSync
      */
     private function getProductImageName($image, $format, $sql): string
     {
-        if ($image->kArtikel) {
+        if (!empty($image->kArtikel)) {
             $attr = $this->db->select(
                 'tkategorieattribut',
                 'kArtikel',

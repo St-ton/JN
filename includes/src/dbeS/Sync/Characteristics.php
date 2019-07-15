@@ -77,14 +77,14 @@ final class Characteristics extends AbstractSync
      */
     private function insertCharacteristics(array $xml, int $defaultLangID): array
     {
-        $attributeValues = []; // Merkt sich alle MerkmalWerte die von der Wawi geschickt werden
+        $charValues = []; // Merkt sich alle MerkmalWerte die von der Wawi geschickt werden
         if (!isset($xml['merkmale']['tmerkmal']) || !\is_array($xml['merkmale']['tmerkmal'])) {
-            return $attributeValues;
+            return $charValues;
         }
         $attributes = $this->mapper->mapArray($xml['merkmale'], 'tmerkmal', 'mMerkmal');
         $mmCount    = \count($attributes);
         for ($i = 0; $i < $mmCount; $i++) {
-            $attributeValues[$i] = new stdClass();
+            $charValues[$i] = new stdClass();
             if (isset($attributes[$i]->nMehrfachauswahl)) {
                 if ($attributes[$i]->nMehrfachauswahl > 1) {
                     $attributes[$i]->nMehrfachauswahl = 1;
@@ -92,291 +92,99 @@ final class Characteristics extends AbstractSync
             } else {
                 $attributes[$i]->nMehrfachauswahl = 0;
             }
-            $attribute                     = $this->saveImagePath($attributes[$i]->kMerkmal);
-            $attributes[$i]->cBildpfad     = $attribute->cBildpfad ?? '';
-            $attributeValues[$i]->oMMW_arr = [];
+            $attribute                 = $this->saveImagePath($attributes[$i]->kMerkmal);
+            $attributes[$i]->cBildpfad = $attribute->cBildpfad ?? '';
+            $charValues[$i]->oMMW_arr  = [];
 
             if ($mmCount < 2) {
-                $attrValues = $this->mapper->mapArray(
-                    $xml['merkmale']['tmerkmal'],
-                    'tmerkmalwert',
-                    'mMerkmalWert'
-                );
-                if (\count($attrValues) > 0) {
-                    $this->delete($xml['merkmale']['tmerkmal attr']['kMerkmal'], 0);
-                } else {
-                    $this->deleteCharacteristicOnly($xml['merkmale']['tmerkmal attr']['kMerkmal']);
-                }
-                $this->upsertXML(
-                    $xml['merkmale']['tmerkmal'],
-                    'tmerkmalsprache',
-                    'mMerkmalSprache',
-                    'kMerkmal',
-                    'kSprache'
-                );
-                if (\count($attrValues) > 0) {
-                    $mmwCountO = \count($attrValues);
-                    for ($o = 0; $o < $mmwCountO; $o++) {
-                        $item               = $attributeValues[$i]->oMMW_arr[$o];
-                        $item->kMerkmalWert = $attrValues[$o]->kMerkmalWert;
-                        $item->kSprache_arr = [];
-
-                        if (\count($attrValues) < 2) {
-                            $localized = $this->mapper->mapArray(
-                                $xml['merkmale']['tmerkmal']['tmerkmalwert'],
-                                'tmerkmalwertsprache',
-                                'mMerkmalWertSprache'
-                            );
-                            $mmwsCount = \count($localized);
-                            for ($j = 0; $j < $mmwsCount; ++$j) {
-                                $localized[$j]->kSprache = (int)$localized[$j]->kSprache;
-                                $this->db->delete(
-                                    'tseo',
-                                    ['kKey', 'cKey', 'kSprache'],
-                                    [
-                                        (int)$localized[$j]->kMerkmalWert,
-                                        'kMerkmalWert',
-                                        (int)$localized[$j]->kSprache
-                                    ]
-                                );
-                                if (\trim($localized[$j]->cSeo)) {
-                                    $seo = Seo::getFlatSeoPath($localized[$j]->cSeo);
-                                } else {
-                                    $seo = Seo::getFlatSeoPath($localized[$j]->cWert);
-                                }
-                                $localized[$j]->cSeo = Seo::getSeo($seo);
-                                $localized[$j]->cSeo = Seo::checkSeo($localized[$j]->cSeo);
-                                $this->upsert(
-                                    'tmerkmalwertsprache',
-                                    [$localized[$j]],
-                                    'kMerkmalWert',
-                                    'kSprache'
-                                );
-                                $ins           = new stdClass();
-                                $ins->cSeo     = $localized[$j]->cSeo;
-                                $ins->cKey     = 'kMerkmalWert';
-                                $ins->kKey     = $localized[$j]->kMerkmalWert;
-                                $ins->kSprache = $localized[$j]->kSprache;
-                                $this->db->insert('tseo', $ins);
-
-                                if (!\in_array($localized[$j]->kSprache, $item->kSprache_arr, true)) {
-                                    $item->kSprache_arr[] = $localized[$j]->kSprache;
-                                }
-
-                                if ($localized[$j]->kSprache === $defaultLangID) {
-                                    $item->cNameSTD            = $localized[$j]->cWert;
-                                    $item->cSeoSTD             = $localized[$j]->cSeo;
-                                    $item->cMetaTitleSTD       = $localized[$j]->cMetaTitle;
-                                    $item->cMetaKeywordsSTD    = $localized[$j]->cMetaKeywords;
-                                    $item->cMetaDescriptionSTD = $localized[$j]->cMetaDescription;
-                                    $item->cBeschreibungSTD    = $localized[$j]->cBeschreibung;
-                                }
-                            }
-                            $attrValues[$o]->cBildpfad = $attribute->oMerkmalWert_arr[$attrValues[$o]->kMerkmalWert];
-                            $this->upsert('tmerkmalwert', [$attrValues[$o]], 'kMerkmalWert');
-                        } else {
-                            $localized  = $this->mapper->mapArray(
-                                $xml['merkmale']['tmerkmal']['tmerkmalwert'][$o],
-                                'tmerkmalwertsprache',
-                                'mMerkmalWertSprache'
-                            );
-                            $mmwsaCount = \count($localized);
-                            for ($j = 0; $j < $mmwsaCount; $j++) {
-                                $localized[$j]->kSprache = (int)$localized[$j]->kSprache;
-                                $this->db->delete(
-                                    'tseo',
-                                    ['kKey', 'cKey', 'kSprache'],
-                                    [
-                                        (int)$localized[$j]->kMerkmalWert,
-                                        'kMerkmalWert',
-                                        (int)$localized[$j]->kSprache
-                                    ]
-                                );
-                                if (\trim($localized[$j]->cSeo)) {
-                                    $seo = Seo::getFlatSeoPath($localized[$j]->cSeo);
-                                } else {
-                                    $seo = Seo::getFlatSeoPath($localized[$j]->cWert);
-                                }
-                                $localized[$j]->cSeo = Seo::getSeo($seo);
-                                $localized[$j]->cSeo = Seo::checkSeo($localized[$j]->cSeo);
-                                $this->upsert(
-                                    'tmerkmalwertsprache',
-                                    [$localized[$j]],
-                                    'kMerkmalWert',
-                                    'kSprache'
-                                );
-                                $ins           = new stdClass();
-                                $ins->cSeo     = $localized[$j]->cSeo;
-                                $ins->cKey     = 'kMerkmalWert';
-                                $ins->kKey     = (int)$localized[$j]->kMerkmalWert;
-                                $ins->kSprache = (int)$localized[$j]->kSprache;
-                                $this->db->insert('tseo', $ins);
-
-                                if (!\in_array($localized[$j]->kSprache, $item->kSprache_arr, true)) {
-                                    $item->kSprache_arr[] = $localized[$j]->kSprache;
-                                }
-
-                                if ($localized[$j]->kSprache === $defaultLangID) {
-                                    $item->cNameSTD            = $localized[$j]->cWert;
-                                    $item->cSeoSTD             = $localized[$j]->cSeo;
-                                    $item->cMetaTitleSTD       = $localized[$j]->cMetaTitle;
-                                    $item->cMetaKeywordsSTD    = $localized[$j]->cMetaKeywords;
-                                    $item->cMetaDescriptionSTD = $localized[$j]->cMetaDescription;
-                                    $item->cBeschreibungSTD    = $localized[$j]->cBeschreibung;
-                                }
-                            }
-                            //alten Bildpfad nehmen
-                            $attrValues[$o]->cBildpfad = $attribute->oMerkmalWert_arr[$attrValues[$o]->kMerkmalWert];
-                            $this->upsert('tmerkmalwert', [$attrValues[$o]], 'kMerkmalWert');
-                        }
-                        $attributeValues[$i]->oMMW_arr[$o] = $item;
-                    }
-                }
+                $charData      = $xml['merkmale']['tmerkmal'];
+                $charAttribute = $xml['merkmale']['tmerkmal attr'];
             } else {
-                $attrValues = $this->mapper->mapArray(
-                    $xml['merkmale']['tmerkmal'][$i],
-                    'tmerkmalwert',
-                    'mMerkmalWert'
-                );
-                if (\count($attrValues) > 0) {
-                    $this->delete($xml['merkmale']['tmerkmal'][$i . ' attr']['kMerkmal'], 0);
-                } else {
-                    $this->deleteCharacteristicOnly($xml['merkmale']['tmerkmal'][$i . ' attr']['kMerkmal']);
-                }
+                $charData      = $xml['merkmale']['tmerkmal'][$i];
+                $charAttribute = $xml['merkmale']['tmerkmal'][$i . ' attr'];
+            }
 
-                $this->upsertXML(
-                    $xml['merkmale']['tmerkmal'][$i],
-                    'tmerkmalsprache',
-                    'mMerkmalSprache',
-                    'kMerkmal',
-                    'kSprache'
-                );
-                $mmwCount = \is_array($attrValues) ? \count($attrValues) : 0;
-                if ($mmwCount > 0) {
-                    for ($o = 0; $o < $mmwCount; $o++) {
-                        $item               = $attributeValues[$i]->oMMW_arr[$o];
-                        $item->kMerkmalWert = (int)$attrValues[$o]->kMerkmalWert;
-                        $item->kSprache_arr = [];
+            $values = $this->mapper->mapArray(
+                $charData,
+                'tmerkmalwert',
+                'mMerkmalWert'
+            );
+            if (\count($values) > 0) {
+                $this->delete($charAttribute['kMerkmal'], 0);
+            } else {
+                $this->deleteCharacteristicOnly($charAttribute['kMerkmal']);
+            }
+            $this->upsertXML(
+                $charData,
+                'tmerkmalsprache',
+                'mMerkmalSprache',
+                'kMerkmal',
+                'kSprache'
+            );
+            if (\count($values) > 0) {
+                $mmwCountO = \count($values);
+                for ($o = 0; $o < $mmwCountO; $o++) {
+                    $item               = $charValues[$i]->oMMW_arr[$o];
+                    $item->kMerkmalWert = $values[$o]->kMerkmalWert;
+                    $item->kSprache_arr = [];
 
-                        if (\count($attrValues) < 2) {
-                            $localized = $this->mapper->mapArray(
-                                $xml['merkmale']['tmerkmal'][$i]['tmerkmalwert'],
-                                'tmerkmalwertsprache',
-                                'mMerkmalWertSprache'
-                            );
-                            $cnt       = \count($localized);
-                            for ($j = 0; $j < $cnt; $j++) {
-                                $localized[$j]->kSprache = (int)$localized[$j]->kSprache;
-                                $this->db->delete(
-                                    'tseo',
-                                    ['kKey', 'cKey', 'kSprache'],
-                                    [
-                                        (int)$localized[$j]->kMerkmalWert,
-                                        'kMerkmalWert',
-                                        (int)$localized[$j]->kSprache
-                                    ]
-                                );
-                                $seo = \trim($localized[$j]->cSeo)
-                                    ? Seo::getFlatSeoPath($localized[$j]->cSeo)
-                                    : Seo::getFlatSeoPath($localized[$j]->cWert);
+                    $source    = \count($values) < 2
+                        ? $charData['tmerkmalwert']
+                        : $charData['tmerkmalwert'][$o];
+                    $localized = $this->mapper->mapArray($source, 'tmerkmalwertsprache', 'mMerkmalWertSprache');
+                    foreach ($localized as $loc) {
+                        $loc->kSprache     = (int)$loc->kSprache;
+                        $loc->kMerkmalWert = (int)$loc->kMerkmalWert;
+                        $this->db->delete(
+                            'tseo',
+                            ['kKey', 'cKey', 'kSprache'],
+                            [
+                                $loc->kMerkmalWert,
+                                'kMerkmalWert',
+                                $loc->kSprache
+                            ]
+                        );
+                        $seo       = \trim($loc->cSeo)
+                            ? Seo::getFlatSeoPath($loc->cSeo)
+                            : Seo::getFlatSeoPath($loc->cWert);
+                        $loc->cSeo = Seo::checkSeo(Seo::getSeo($seo));
+                        $this->upsert(
+                            'tmerkmalwertsprache',
+                            [$loc],
+                            'kMerkmalWert',
+                            'kSprache'
+                        );
+                        $ins           = new stdClass();
+                        $ins->cSeo     = $loc->cSeo;
+                        $ins->cKey     = 'kMerkmalWert';
+                        $ins->kKey     = $loc->kMerkmalWert;
+                        $ins->kSprache = $loc->kSprache;
+                        $this->db->insert('tseo', $ins);
 
-                                $localized[$j]->cSeo = Seo::getSeo($seo);
-                                $localized[$j]->cSeo = Seo::checkSeo($localized[$j]->cSeo);
-                                $this->upsert(
-                                    'tmerkmalwertsprache',
-                                    [$localized[$j]],
-                                    'kMerkmalWert',
-                                    'kSprache'
-                                );
-                                $ins           = new stdClass();
-                                $ins->cSeo     = $localized[$j]->cSeo;
-                                $ins->cKey     = 'kMerkmalWert';
-                                $ins->kKey     = (int)$localized[$j]->kMerkmalWert;
-                                $ins->kSprache = (int)$localized[$j]->kSprache;
-                                $this->db->insert('tseo', $ins);
-
-                                if (!\in_array($localized[$j]->kSprache, $item->kSprache_arr, true)) {
-                                    $item->kSprache_arr[] = $localized[$j]->kSprache;
-                                }
-
-                                if ($localized[$j]->kSprache === $defaultLangID) {
-                                    $item->cNameSTD            = $localized[$j]->cWert;
-                                    $item->cSeoSTD             = $localized[$j]->cSeo;
-                                    $item->cMetaTitleSTD       = $localized[$j]->cMetaTitle;
-                                    $item->cMetaKeywordsSTD    = $localized[$j]->cMetaKeywords;
-                                    $item->cMetaDescriptionSTD = $localized[$j]->cMetaDescription;
-                                    $item->cBeschreibungSTD    = $localized[$j]->cBeschreibung;
-                                }
-                            }
-                            //alten Bildpfad nehmen
-                            $attrValues[$o]->cBildpfad = $attribute->oMerkmalWert_arr[$attrValues[$o]->kMerkmalWert];
-                            $this->upsert('tmerkmalwert', [$attrValues[$o]], 'kMerkmalWert');
-                        } else {
-                            $localized  = $this->mapper->mapArray(
-                                $xml['merkmale']['tmerkmal'][$i]['tmerkmalwert'][$o],
-                                'tmerkmalwertsprache',
-                                'mMerkmalWertSprache'
-                            );
-                            $mmwsaCount = \count($localized);
-                            for ($j = 0; $j < $mmwsaCount; ++$j) {
-                                $localized[$j]->kSprache = (int)$localized[$j]->kSprache;
-                                $this->db->delete(
-                                    'tseo',
-                                    ['kKey', 'cKey', 'kSprache'],
-                                    [
-                                        (int)$localized[$j]->kMerkmalWert,
-                                        'kMerkmalWert',
-                                        (int)$localized[$j]->kSprache
-                                    ]
-                                );
-                                if (\trim($localized[$j]->cSeo)) {
-                                    $seo = Seo::getFlatSeoPath($localized[$j]->cSeo);
-                                } else {
-                                    $seo = Seo::getFlatSeoPath($localized[$j]->cWert);
-                                }
-
-                                $localized[$j]->cSeo = Seo::getSeo($seo);
-                                $localized[$j]->cSeo = Seo::checkSeo($localized[$j]->cSeo);
-                                $this->upsert(
-                                    'tmerkmalwertsprache',
-                                    [$localized[$j]],
-                                    'kMerkmalWert',
-                                    'kSprache'
-                                );
-                                $ins           = new stdClass();
-                                $ins->cSeo     = $localized[$j]->cSeo;
-                                $ins->cKey     = 'kMerkmalWert';
-                                $ins->kKey     = $localized[$j]->kMerkmalWert;
-                                $ins->kSprache = $localized[$j]->kSprache;
-                                $this->db->insert('tseo', $ins);
-
-                                if (!\in_array($localized[$j]->kSprache, $item->kSprache_arr, true)) {
-                                    $item->kSprache_arr[] = $localized[$j]->kSprache;
-                                }
-
-                                if ($localized[$j]->kSprache === $defaultLangID) {
-                                    $item->cNameSTD            = $localized[$j]->cWert;
-                                    $item->cSeoSTD             = $localized[$j]->cSeo;
-                                    $item->cMetaTitleSTD       = $localized[$j]->cMetaTitle;
-                                    $item->cMetaKeywordsSTD    = $localized[$j]->cMetaKeywords;
-                                    $item->cMetaDescriptionSTD = $localized[$j]->cMetaDescription;
-                                    $item->cBeschreibungSTD    = $localized[$j]->cBeschreibung;
-                                }
-                            }
-                            // alten Bildpfad nehmen
-                            $attrValues[$o]->cBildpfad = $attribute->oMerkmalWert_arr[$attrValues[$o]->kMerkmalWert];
-                            $this->upsert('tmerkmalwert', [$attrValues[$o]], 'kMerkmalWert');
+                        if (!\in_array($loc->kSprache, $item->kSprache_arr, true)) {
+                            $item->kSprache_arr[] = $loc->kSprache;
                         }
-                        $attributeValues[$i]->oMMW_arr[$o] = $item;
+
+                        if ($loc->kSprache === $defaultLangID) {
+                            $item->cNameSTD            = $loc->cWert;
+                            $item->cSeoSTD             = $loc->cSeo;
+                            $item->cMetaTitleSTD       = $loc->cMetaTitle;
+                            $item->cMetaKeywordsSTD    = $loc->cMetaKeywords;
+                            $item->cMetaDescriptionSTD = $loc->cMetaDescription;
+                            $item->cBeschreibungSTD    = $loc->cBeschreibung;
+                        }
                     }
+                    $values[$o]->cBildpfad = $attribute->oMerkmalWert_arr[$values[$o]->kMerkmalWert];
+                    $this->upsert('tmerkmalwert', [$values[$o]], 'kMerkmalWert');
+                    $charValues[$i]->oMMW_arr[$o] = $item;
                 }
             }
         }
         $this->upsert('tmerkmal', $attributes, 'kMerkmal');
-        $this->addMissingCharacteristicValueSeo($attributeValues);
+        $this->addMissingCharacteristicValueSeo($charValues);
         $this->cache->flushTags([\CACHING_GROUP_ATTRIBUTE]);
 
-        return $attributeValues;
+        return $charValues;
     }
 
     /**
@@ -406,55 +214,51 @@ final class Characteristics extends AbstractSync
             $item->kSprache_arr = [];
 
             if (\count($mapped) < 2) {
-                $localized = $this->mapper->mapArray(
-                    $xml['merkmale']['tmerkmalwert'],
-                    'tmerkmalwertsprache',
-                    'mMerkmalWertSprache'
-                );
+                $source = $xml['merkmale']['tmerkmalwert'];
             } else {
-                $localized = $this->mapper->mapArray(
-                    $xml['merkmale']['tmerkmalwert'][$o],
-                    'tmerkmalwertsprache',
-                    'mMerkmalWertSprache'
-                );
+                $source = $xml['merkmale']['tmerkmalwert'][$o];
             }
-            $mmwsaCount = \count($localized);
-            for ($j = 0; $j < $mmwsaCount; $j++) {
-                $localized[$j]->kSprache     = (int)$localized[$j]->kSprache;
-                $localized[$j]->kMerkmalWert = (int)$localized[$j]->kMerkmalWert;
+            $localized = $this->mapper->mapArray(
+                $source,
+                'tmerkmalwertsprache',
+                'mMerkmalWertSprache'
+            );
+            foreach ($localized as $loc) {
+                $loc->kSprache     = (int)$loc->kSprache;
+                $loc->kMerkmalWert = (int)$loc->kMerkmalWert;
                 $this->db->delete(
                     'tseo',
                     ['kKey', 'cKey', 'kSprache'],
                     [
-                        $localized[$j]->kMerkmalWert,
+                        $loc->kMerkmalWert,
                         'kMerkmalWert',
-                        $localized[$j]->kSprache
+                        $loc->kSprache
                     ]
                 );
-                $seo = \trim($localized[$j]->cSeo)
-                    ? Seo::getFlatSeoPath($localized[$j]->cSeo)
-                    : Seo::getFlatSeoPath($localized[$j]->cWert);
+                $seo = \trim($loc->cSeo)
+                    ? Seo::getFlatSeoPath($loc->cSeo)
+                    : Seo::getFlatSeoPath($loc->cWert);
 
-                $localized[$j]->cSeo = Seo::checkSeo(Seo::getSeo($seo));
-                $this->upsert('tmerkmalwertsprache', [$localized[$j]], 'kMerkmalWert', 'kSprache');
+                $loc->cSeo = Seo::checkSeo(Seo::getSeo($seo));
+                $this->upsert('tmerkmalwertsprache', [$loc], 'kMerkmalWert', 'kSprache');
                 $ins           = new stdClass();
-                $ins->cSeo     = $localized[$j]->cSeo;
+                $ins->cSeo     = $loc->cSeo;
                 $ins->cKey     = 'kMerkmalWert';
-                $ins->kKey     = $localized[$j]->kMerkmalWert;
-                $ins->kSprache = $localized[$j]->kSprache;
+                $ins->kKey     = $loc->kMerkmalWert;
+                $ins->kSprache = $loc->kSprache;
                 $this->db->insert('tseo', $ins);
 
-                if (!\in_array($localized[$j]->kSprache, $item->kSprache_arr, true)) {
-                    $item->kSprache_arr[] = $localized[$j]->kSprache;
+                if (!\in_array($loc->kSprache, $item->kSprache_arr, true)) {
+                    $item->kSprache_arr[] = $loc->kSprache;
                 }
 
-                if (isset($localized[$j]->kSprache, $defaultLangID) && $localized[$j]->kSprache === $defaultLangID) {
-                    $item->cNameSTD            = $localized[$j]->cWert;
-                    $item->cSeoSTD             = $localized[$j]->cSeo;
-                    $item->cMetaTitleSTD       = $localized[$j]->cMetaTitle;
-                    $item->cMetaKeywordsSTD    = $localized[$j]->cMetaKeywords;
-                    $item->cMetaDescriptionSTD = $localized[$j]->cMetaDescription;
-                    $item->cBeschreibungSTD    = $localized[$j]->cBeschreibung;
+                if (isset($loc->kSprache, $defaultLangID) && $loc->kSprache === $defaultLangID) {
+                    $item->cNameSTD            = $loc->cWert;
+                    $item->cSeoSTD             = $loc->cSeo;
+                    $item->cMetaTitleSTD       = $loc->cMetaTitle;
+                    $item->cMetaKeywordsSTD    = $loc->cMetaKeywords;
+                    $item->cMetaDescriptionSTD = $loc->cMetaDescription;
+                    $item->cBeschreibungSTD    = $loc->cBeschreibung;
                 }
             }
             $image = $this->db->select('tmerkmalwertbild', 'kMerkmalWert', (int)$mapped[$o]->kMerkmalWert);

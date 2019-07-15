@@ -59,13 +59,8 @@ final class Orders extends AbstractPush
                 );
                 unset($itemAttribute['kWarenkorb']);
                 $itemAttributes[] = $itemAttribute;
-
-                $confCount = \count($item['twarenkorbposeigenschaft']);
-                for ($j = 0; $j < $confCount; $j++) {
-                    $idx                                    = $j . ' attr';
-                    $item['twarenkorbposeigenschaft'][$idx] = $this->buildAttributes(
-                        $item['twarenkorbposeigenschaft'][$j]
-                    );
+                foreach ($item['twarenkorbposeigenschaft'] as $j => $prop) {
+                    $item['twarenkorbposeigenschaft'][$j . ' attr'] = $this->buildAttributes($prop);
                 }
             }
             unset($item);
@@ -242,6 +237,10 @@ final class Orders extends AbstractPush
         );
     }
 
+    /**
+     * @param int $orderID
+     * @return array|null
+     */
     private function getTrackingInfo(int $orderID): ?array
     {
         return $this->db->queryPrepared(

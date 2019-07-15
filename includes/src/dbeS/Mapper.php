@@ -758,11 +758,7 @@ final class Mapper
             $obj = new stdClass();
         }
 
-        if (!$this->isAssoc($map)) {
-            foreach ($map as $key) {
-                $obj->$key = $xml[$key] ?? null;
-            }
-        } else {
+        if ($this->isAssoc($map)) {
             foreach ($map as $key => $value) {
                 $val = null;
                 if (isset($value) && empty($xml[$key])) {
@@ -771,6 +767,10 @@ final class Mapper
                     $val = $xml[$key];
                 }
                 $obj->$key = $val;
+            }
+        } else {
+            foreach ($map as $key) {
+                $obj->$key = $xml[$key] ?? null;
             }
         }
     }

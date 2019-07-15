@@ -16,10 +16,10 @@ use JTL\MagicCompatibilityTrait;
 use JTL\Shop;
 
 /**
- * Class BaseAttribute
+ * Class BaseCharacteristic
  * @package JTL\Filter\States
  */
-class BaseAttribute extends AbstractFilter
+class BaseCharacteristic extends AbstractFilter
 {
     use MagicCompatibilityTrait;
 
@@ -27,14 +27,13 @@ class BaseAttribute extends AbstractFilter
      * @var array
      */
     public static $mapping = [
-        'kMerkmal'     => 'AttributeIDCompat',
+        'kMerkmal'     => 'CharacteristicIDCompat',
         'kMerkmalWert' => 'ValueCompat',
         'cName'        => 'Name'
     ];
 
     /**
-     * BaseAttribute constructor.
-     *
+     * BaseCharacteristic constructor.
      * @param ProductFilter $productFilter
      */
     public function __construct(ProductFilter $productFilter)
@@ -85,7 +84,7 @@ class BaseAttribute extends AbstractFilter
                              ON tmerkmalsprache.kMerkmal = tmerkmal.kMerkmal
                              AND tmerkmalsprache.kSprache = ' . Shop::getLanguage();
         }
-        $attributeValues = $this->productFilter->getDB()->query(
+        $characteristicValues = $this->productFilter->getDB()->query(
             'SELECT tmerkmalwertsprache.cWert, ' . $select . '
                 FROM tmerkmalwert
                 JOIN tmerkmalwertsprache 
@@ -96,19 +95,19 @@ class BaseAttribute extends AbstractFilter
                 WHERE tmerkmalwert.kMerkmalWert = ' . $this->getValue(),
             ReturnType::ARRAY_OF_OBJECTS
         );
-        if (\count($attributeValues) > 0) {
-            $attributeValue = $attributeValues[0];
-            unset($attributeValues[0]);
-            if (\mb_strlen($attributeValue->cWert) > 0) {
+        if (\count($characteristicValues) > 0) {
+            $characteristicValue = $characteristicValues[0];
+            unset($characteristicValues[0]);
+            if (\mb_strlen($characteristicValue->cWert) > 0) {
                 if (!empty($this->getName())) {
-                    $this->setName($attributeValue->cName . ': ' . $attributeValue->cWert);
-                } elseif (!empty($attributeValue->cMMName)) {
-                    $this->setName($attributeValue->cMMName . ': ' . $attributeValue->cWert);
-                } elseif (!empty($attributeValue->cName)) {
-                    $this->setName($attributeValue->cName . ': ' . $attributeValue->cWert);
+                    $this->setName($characteristicValue->cName . ': ' . $characteristicValue->cWert);
+                } elseif (!empty($characteristicValue->cMMName)) {
+                    $this->setName($characteristicValue->cMMName . ': ' . $characteristicValue->cWert);
+                } elseif (!empty($characteristicValue->cName)) {
+                    $this->setName($characteristicValue->cName . ': ' . $characteristicValue->cWert);
                 }
-                if (\count($attributeValues) > 0) {
-                    foreach ($attributeValues as $attr) {
+                if (\count($characteristicValues) > 0) {
+                    foreach ($characteristicValues as $attr) {
                         if (isset($attr->cName) && \mb_strlen($attr->cName) > 0) {
                             $this->setName($this->getName() . ', ' . $attr->cName . ': ' . $attr->cWert);
                         } elseif (isset($attr->cMMName) && \mb_strlen($attr->cMMName) > 0) {

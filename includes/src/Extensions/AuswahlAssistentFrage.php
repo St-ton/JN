@@ -202,11 +202,11 @@ class AuswahlAssistentFrage
     public static function deleteQuestion(array $params): bool
     {
         if (GeneralObject::hasCount('kAuswahlAssistentFrage_arr', $params)) {
-            foreach ($params['kAuswahlAssistentFrage_arr'] as $kAuswahlAssistentFrage) {
+            foreach ($params['kAuswahlAssistentFrage_arr'] as $questionID) {
                 Shop::Container()->getDB()->delete(
                     'tauswahlassistentfrage',
                     'kAuswahlAssistentFrage',
-                    (int)$kAuswahlAssistentFrage
+                    (int)$questionID
                 );
             }
 
@@ -249,36 +249,36 @@ class AuswahlAssistentFrage
     }
 
     /**
-     * @param int $kMerkmal
-     * @param int $kAuswahlAssistentGruppe
+     * @param int $characteristicID
+     * @param int $groupID
      * @return bool
      */
-    private function isMerkmalTaken(int $kMerkmal, int $kAuswahlAssistentGruppe): bool
+    private function isMerkmalTaken(int $characteristicID, int $groupID): bool
     {
-        if ($kMerkmal > 0 && $kAuswahlAssistentGruppe > 0) {
-            $oFrage = Shop::Container()->getDB()->select(
+        if ($characteristicID > 0 && $groupID > 0) {
+            $question = Shop::Container()->getDB()->select(
                 'tauswahlassistentfrage',
                 'kMerkmal',
-                $kMerkmal,
+                $characteristicID,
                 'kAuswahlAssistentGruppe',
-                $kAuswahlAssistentGruppe
+                $groupID
             );
 
-            return isset($oFrage->kAuswahlAssistentFrage) && $oFrage->kAuswahlAssistentFrage > 0;
+            return isset($question->kAuswahlAssistentFrage) && $question->kAuswahlAssistentFrage > 0;
         }
 
         return false;
     }
 
     /**
-     * @param int  $kMerkmal
-     * @param bool $bMMW
+     * @param int  $characteristicID
+     * @param bool $value
      * @return Merkmal|stdClass
      */
-    public static function getMerkmal(int $kMerkmal, bool $bMMW = false)
+    public static function getMerkmal(int $characteristicID, bool $value = false)
     {
-        return $kMerkmal > 0
-            ? new Merkmal($kMerkmal, $bMMW)
+        return $characteristicID > 0
+            ? new Merkmal($characteristicID, $value)
             : new stdClass();
     }
 }

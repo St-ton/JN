@@ -3210,19 +3210,18 @@ class Artikel
         }
         $productFilter = Shop::getProductFilter();
         // Merkmalfilter gesetzt?
-        if ($productFilter->hasAttributeFilter()) {
+        if ($productFilter->hasCharacteristicFilter()) {
             $sql .= ' JOIN tartikelmerkmal ON tartikelmerkmal.kArtikel = tartikel.kArtikel
                        AND tartikelmerkmal.kMerkmalWert IN(';
 
             $attrValues = [];
-            foreach ($productFilter->getAttributeFilter() as $i => $oMerkmal) {
-                $attrValue = $oMerkmal->getValue();
-                if (!\in_array($attrValue, $attrValues, true)) {
-                    $attrValues[] = $attrValue;
+            foreach ($productFilter->getCharacteristicFilter() as $i => $characteristic) {
+                $value = $characteristic->getValue();
+                if (!\in_array($value, $attrValues, true)) {
+                    $attrValues[] = $value;
                 }
             }
-            $sql .= \implode(',', $attrValues);
-            $sql .= ') ';
+            $sql .= \implode(',', $attrValues) . ') ';
         }
         $previews = Shop::Container()->getDB()->query(
             'SELECT tartikel.kArtikel, tartikelpict.cPfad, tartikel.cName, tartikel.cSeo, tartikel.cArtNr,

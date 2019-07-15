@@ -179,8 +179,7 @@ abstract class AbstractSync
         array $pks,
         string $excludeKey = '',
         array $excludeValues = []
-    ): void
-    {
+    ): void {
         $whereKeys = [];
         $params    = [];
         foreach ($pks as $name => $value) {
@@ -237,8 +236,8 @@ abstract class AbstractSync
         }
         $campaign = new Kampagne(\KAMPAGNE_INTERN_VERFUEGBARKEIT);
         if ($campaign->kKampagne > 0) {
-            $cSep          = \strpos($product->cURL, '.php') === false ? '?' : '&';
-            $product->cURL .= $cSep . $campaign->cParameter . '=' . $campaign->cWert;
+            $sep            = \strpos($product->cURL, '.php') === false ? '?' : '&';
+            $product->cURL .= $sep . $campaign->cParameter . '=' . $campaign->cWert;
         }
         foreach ($subscriptions as $msg) {
             $availAgainOptin = (new Optin(OptinAvailAgain::class))->setEmail($msg->cMail);

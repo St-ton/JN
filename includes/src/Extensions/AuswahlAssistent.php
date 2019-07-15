@@ -7,7 +7,7 @@
 namespace JTL\Extensions;
 
 use JTL\DB\ReturnType;
-use JTL\Filter\Items\Attribute;
+use JTL\Filter\Items\Characteristic;
 use JTL\Filter\Option;
 use JTL\Filter\ProductFilter;
 use JTL\Filter\SearchResults;
@@ -207,19 +207,18 @@ class AuswahlAssistent
         $currentCategory  = isset($params['kKategorie'])
             ? new Kategorie($params['kKategorie'])
             : null;
-        $attributeFilters = (new SearchResults())->setFilterOptions(
+        $filterOptions = (new SearchResults())->setFilterOptions(
             $productFilter,
             $currentCategory,
             true
-        )->getAttributeFilterOptions();
-
-        foreach ($attributeFilters as $attributeFilter) {
-            /** @var Attribute $attributeFilter */
-            if (\array_key_exists($attributeFilter->getValue(), $this->questionsAssoc)) {
-                $question                    = $this->questionsAssoc[$attributeFilter->getValue()];
-                $question->oWert_arr         = $attributeFilter->getOptions();
+        )->getCharacteristicFilterOptions();
+        foreach ($filterOptions as $option) {
+            /** @var Characteristic $option */
+            if (\array_key_exists($option->getValue(), $this->questionsAssoc)) {
+                $question                    = $this->questionsAssoc[$option->getValue()];
+                $question->oWert_arr         = $option->getOptions();
                 $question->nTotalResultCount = 0;
-                foreach ($attributeFilter->getOptions() as $oWert) {
+                foreach ($option->getOptions() as $oWert) {
                     $question->nTotalResultCount                           += $oWert->getCount();
                     $question->oWert_assoc[$oWert->getData('kMerkmalWert')] = $oWert;
                 }

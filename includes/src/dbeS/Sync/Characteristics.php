@@ -42,20 +42,20 @@ final class Characteristics extends AbstractSync
     private function handleDeletes(array $xml): void
     {
         // Merkmal
-        $attributes      = $xml['del_merkmale']['kMerkmal'] ?? [];
-        $attributeValues = $xml['del_merkmalwerte']['kMerkmalWert'] ?? [];
-        if (!\is_array($attributes)) {
-            $attributes = [$attributes];
+        $characteristics      = $xml['del_merkmale']['kMerkmal'] ?? [];
+        $characteristicValues = $xml['del_merkmalwerte']['kMerkmalWert'] ?? [];
+        if (!\is_array($characteristics)) {
+            $characteristics = [$characteristics];
         }
-        foreach (\array_filter($attributes, '\is_numeric') as $attributeID) {
-            $this->delete((int)$attributeID);
+        foreach (\array_filter($characteristics, '\is_numeric') as $id) {
+            $this->delete((int)$id);
         }
         // MerkmalWert - WIRD ZURZEIT NOCH NICHT GENUTZT WEGEN MOEGLICHER INKONSISTENZ
-        if (!\is_array($attributeValues)) {
-            $attributeValues = [$attributeValues];
+        if (!\is_array($characteristicValues)) {
+            $characteristicValues = [$characteristicValues];
         }
-        foreach (\array_filter($attributeValues, '\is_numeric') as $attributeValueID) {
-            $this->deleteCharacteristicValue((int)$attributeValueID);
+        foreach (\array_filter($characteristicValues, '\is_numeric') as $id) {
+            $this->deleteCharacteristicValue((int)$id);
         }
         $this->cache->flushTags([\CACHING_GROUP_ATTRIBUTE]);
     }
@@ -81,22 +81,22 @@ final class Characteristics extends AbstractSync
         if (!isset($xml['merkmale']['tmerkmal']) || !\is_array($xml['merkmale']['tmerkmal'])) {
             return $charValues;
         }
-        $attributes = $this->mapper->mapArray($xml['merkmale'], 'tmerkmal', 'mMerkmal');
-        $mmCount    = \count($attributes);
-        for ($i = 0; $i < $mmCount; $i++) {
+        $characteristics = $this->mapper->mapArray($xml['merkmale'], 'tmerkmal', 'mMerkmal');
+        $charCount       = \count($characteristics);
+        for ($i = 0; $i < $charCount; $i++) {
             $charValues[$i] = new stdClass();
-            if (isset($attributes[$i]->nMehrfachauswahl)) {
-                if ($attributes[$i]->nMehrfachauswahl > 1) {
-                    $attributes[$i]->nMehrfachauswahl = 1;
+            if (isset($characteristics[$i]->nMehrfachauswahl)) {
+                if ($characteristics[$i]->nMehrfachauswahl > 1) {
+                    $characteristics[$i]->nMehrfachauswahl = 1;
                 }
             } else {
-                $attributes[$i]->nMehrfachauswahl = 0;
+                $characteristics[$i]->nMehrfachauswahl = 0;
             }
-            $attribute                 = $this->saveImagePath($attributes[$i]->kMerkmal);
-            $attributes[$i]->cBildpfad = $attribute->cBildpfad ?? '';
-            $charValues[$i]->oMMW_arr  = [];
+            $characteristic                 = $this->saveImagePath($characteristics[$i]->kMerkmal);
+            $characteristics[$i]->cBildpfad = $characteristic->cBildpfad ?? '';
+            $charValues[$i]->oMMW_arr       = [];
 
-            if ($mmCount < 2) {
+            if ($charCount < 2) {
                 $charData      = $xml['merkmale']['tmerkmal'];
                 $charAttribute = $xml['merkmale']['tmerkmal attr'];
             } else {
@@ -122,8 +122,8 @@ final class Characteristics extends AbstractSync
                 'kSprache'
             );
             if (\count($values) > 0) {
-                $mmwCountO = \count($values);
-                for ($o = 0; $o < $mmwCountO; $o++) {
+                $valueCount = \count($values);
+                for ($o = 0; $o < $valueCount; $o++) {
                     $item               = $charValues[$i]->oMMW_arr[$o];
                     $item->kMerkmalWert = $values[$o]->kMerkmalWert;
                     $item->kSprache_arr = [];
@@ -174,13 +174,13 @@ final class Characteristics extends AbstractSync
                             $item->cBeschreibungSTD    = $loc->cBeschreibung;
                         }
                     }
-                    $values[$o]->cBildpfad = $attribute->oMerkmalWert_arr[$values[$o]->kMerkmalWert];
+                    $values[$o]->cBildpfad = $characteristic->oMerkmalWert_arr[$values[$o]->kMerkmalWert];
                     $this->upsert('tmerkmalwert', [$values[$o]], 'kMerkmalWert');
                     $charValues[$i]->oMMW_arr[$o] = $item;
                 }
             }
         }
-        $this->upsert('tmerkmal', $attributes, 'kMerkmal');
+        $this->upsert('tmerkmal', $characteristics, 'kMerkmal');
         $this->addMissingCharacteristicValueSeo($charValues);
         $this->cache->flushTags([\CACHING_GROUP_ATTRIBUTE]);
 
@@ -284,12 +284,12 @@ final class Characteristics extends AbstractSync
             'SELECT kSprache FROM tsprache ORDER BY kSprache',
             ReturnType::ARRAY_OF_OBJECTS
         );
-        foreach ($characteristics as $attribute) {
-            foreach ($attribute->oMMW_arr as $attributeValue) {
-                $attributeValue->kMerkmalWert = (int)$attributeValue->kMerkmalWert;
+        foreach ($characteristics as $characteristic) {
+            foreach ($characteristic->oMMW_arr as $characteristicValue) {
+                $characteristicValue->kMerkmalWert = (int)$characteristicValue->kMerkmalWert;
                 foreach ($languages as $language) {
                     $language->kSprache = (int)$language->kSprache;
-                    foreach ($attributeValue->kSprache_arr as $languageID) {
+                    foreach ($characteristicValue->kSprache_arr as $languageID) {
                         $languageID = (int)$languageID;
                         // Laufe alle gefüllten Sprachen durch
                         if ($languageID === $language->kSprache) {
@@ -297,14 +297,14 @@ final class Characteristics extends AbstractSync
                         }
                     }
                     // Sprache vom Shop wurde nicht von der Wawi mitgeschickt und muss somit in tseo nachgefüllt werden
-                    $slug = Seo::checkSeo(Seo::getSeo($attributeValue->cNameSTD ?? ''));
+                    $slug = Seo::checkSeo(Seo::getSeo($characteristicValue->cNameSTD ?? ''));
                     $this->db->query(
                         "DELETE tmerkmalwertsprache, tseo FROM tmerkmalwertsprache
                         LEFT JOIN tseo
                             ON tseo.cKey = 'kMerkmalWert'
-                                AND tseo.kKey = " . $attributeValue->kMerkmalWert . '
+                                AND tseo.kKey = " . $characteristicValue->kMerkmalWert . '
                                 AND tseo.kSprache = ' . (int)$language->kSprache . '
-                        WHERE tmerkmalwertsprache.kMerkmalWert = ' . $attributeValue->kMerkmalWert . '
+                        WHERE tmerkmalwertsprache.kMerkmalWert = ' . $characteristicValue->kMerkmalWert . '
                             AND tmerkmalwertsprache.kSprache = ' . $language->kSprache,
                         ReturnType::DEFAULT
                     );
@@ -313,18 +313,18 @@ final class Characteristics extends AbstractSync
                         $seo           = new stdClass();
                         $seo->cSeo     = $slug;
                         $seo->cKey     = 'kMerkmalWert';
-                        $seo->kKey     = (int)$attributeValue->kMerkmalWert;
+                        $seo->kKey     = (int)$characteristicValue->kMerkmalWert;
                         $seo->kSprache = $language->kSprache;
                         $this->db->insert('tseo', $seo);
                         $localized                   = new stdClass();
-                        $localized->kMerkmalWert     = $attributeValue->kMerkmalWert;
+                        $localized->kMerkmalWert     = $characteristicValue->kMerkmalWert;
                         $localized->kSprache         = $language->kSprache;
-                        $localized->cWert            = $attributeValue->cNameSTD ?? '';
+                        $localized->cWert            = $characteristicValue->cNameSTD ?? '';
                         $localized->cSeo             = $seo->cSeo ?? '';
-                        $localized->cMetaTitle       = $attributeValue->cMetaTitleSTD ?? '';
-                        $localized->cMetaKeywords    = $attributeValue->cMetaKeywordsSTD ?? '';
-                        $localized->cMetaDescription = $attributeValue->cMetaDescriptionSTD ?? '';
-                        $localized->cBeschreibung    = $attributeValue->cBeschreibungSTD ?? '';
+                        $localized->cMetaTitle       = $characteristicValue->cMetaTitleSTD ?? '';
+                        $localized->cMetaKeywords    = $characteristicValue->cMetaKeywordsSTD ?? '';
+                        $localized->cMetaDescription = $characteristicValue->cMetaDescriptionSTD ?? '';
+                        $localized->cBeschreibung    = $characteristicValue->cBeschreibungSTD ?? '';
                         $this->db->insert('tmerkmalwertsprache', $localized);
                     }
                 }
@@ -390,15 +390,15 @@ final class Characteristics extends AbstractSync
     }
 
     /**
-     * @param int  $attributeValueID
+     * @param int  $id
      * @param bool $isInsert
      */
-    private function deleteCharacteristicValue(int $attributeValueID, $isInsert = false): void
+    private function deleteCharacteristicValue(int $id, $isInsert = false): void
     {
-        if ($attributeValueID < 1) {
+        if ($id < 1) {
             return;
         }
-        $this->db->delete('tseo', ['cKey', 'kKey'], ['kMerkmalWert', $attributeValueID]);
+        $this->db->delete('tseo', ['cKey', 'kKey'], ['kMerkmalWert', $id]);
         // Hat das Merkmal vor dem Loeschen noch mehr als einen Wert?
         // Wenn nein => nach dem Loeschen auch das Merkmal loeschen
         $count = $this->db->query(
@@ -407,7 +407,7 @@ final class Characteristics extends AbstractSync
             WHERE kMerkmal = (
                 SELECT kMerkmal
                     FROM tmerkmalwert
-                    WHERE kMerkmalWert = ' . $attributeValueID . ')',
+                    WHERE kMerkmalWert = ' . $id . ')',
             ReturnType::SINGLE_OBJECT
         );
 
@@ -416,7 +416,7 @@ final class Characteristics extends AbstractSync
             FROM tmerkmalwert
             JOIN tmerkmalwertsprache
                 ON tmerkmalwertsprache.kMerkmalWert = tmerkmalwert.kMerkmalWert
-            WHERE tmerkmalwert.kMerkmalWert = ' . $attributeValueID,
+            WHERE tmerkmalwert.kMerkmalWert = ' . $id,
             ReturnType::DEFAULT
         );
         // Das Merkmal hat keine MerkmalWerte mehr => auch loeschen
@@ -426,30 +426,30 @@ final class Characteristics extends AbstractSync
     }
 
     /**
-     * @param int $attributeID
+     * @param int $characteristicValueID
      * @return stdClass
      */
-    private function saveImagePath(int $attributeID): stdClass
+    private function saveImagePath(int $characteristicValueID): stdClass
     {
-        $attribute                   = new stdClass();
-        $attribute->oMerkmalWert_arr = [];
-        if ($attributeID > 0) {
-            $tmp = $this->db->select('tmerkmal', 'kMerkmal', $attributeID);
+        $characteristic                   = new stdClass();
+        $characteristic->oMerkmalWert_arr = [];
+        if ($characteristicValueID > 0) {
+            $tmp = $this->db->select('tmerkmal', 'kMerkmal', $characteristicValueID);
             if (isset($tmp->kMerkmal) && $tmp->kMerkmal > 0) {
-                $attribute->kMerkmal  = $tmp->kMerkmal;
-                $attribute->cBildpfad = $tmp->cBildpfad;
+                $characteristic->kMerkmal  = $tmp->kMerkmal;
+                $characteristic->cBildpfad = $tmp->cBildpfad;
             }
-            $attributeValues = $this->db->selectAll(
+            $characteristicValues = $this->db->selectAll(
                 'tmerkmalwert',
                 'kMerkmal',
-                $attributeID,
+                $characteristicValueID,
                 'kMerkmalWert, cBildpfad'
             );
-            foreach ($attributeValues as $oMerkmalWert) {
-                $attribute->oMerkmalWert_arr[$oMerkmalWert->kMerkmalWert] = $oMerkmalWert->cBildpfad;
+            foreach ($characteristicValues as $value) {
+                $characteristic->oMerkmalWert_arr[$value->kMerkmalWert] = $value->cBildpfad;
             }
         }
 
-        return $attribute;
+        return $characteristic;
     }
 }

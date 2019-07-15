@@ -205,12 +205,12 @@ class MerkmalWert
     }
 
     /**
-     * @param int $attributeID
+     * @param int $characteristicValueID
      * @return array
      */
-    public function holeAlleMerkmalWerte(int $attributeID): array
+    public function holeAlleMerkmalWerte(int $characteristicValueID): array
     {
-        if ($attributeID <= 0) {
+        if ($characteristicValueID <= 0) {
             return [];
         }
         $languageID      = Shop::getLanguage();
@@ -244,7 +244,7 @@ class MerkmalWert
             "SELECT tmerkmalwert.*, {$selectSQL}
                 FROM tmerkmalwert
                 {$joinSQL}
-                WHERE tmerkmalwert.kMerkmal = " . $attributeID . '
+                WHERE tmerkmalwert.kMerkmal = " . $characteristicValueID . '
                 ORDER BY tmerkmalwert.nSort',
             ReturnType::ARRAY_OF_OBJECTS
         );

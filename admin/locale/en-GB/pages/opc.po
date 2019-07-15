@@ -47,7 +47,7 @@ msgid "Unsaved revision"
 msgstr "Unsaved version"
 
 msgid "Current revision"
-msgstr "Current version"
+msgstr "Current revision"
 
 msgid "Please wait..."
 msgstr "Please wait…"
@@ -258,6 +258,9 @@ msgstr "PAST"
 
 msgid "publicSince"
 msgstr "public since"
+
+msgid "publicUntil"
+msgstr "public until"
 
 msgid "publicFrom"
 msgstr "Public from:"

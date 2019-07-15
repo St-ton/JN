@@ -300,6 +300,10 @@ html, body {
       }
 
       #portlets {
+        hr {
+          margin-top: 0;
+        }
+
         .portletGroupBtn {
           display: block;
           font-weight: 600;

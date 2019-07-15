@@ -193,10 +193,16 @@ class GUI
                     .attr('data-revision-id', rev.id)
                     .html(
                         '<div>' + rev.content.cName + '</div>' +
-                        '<div>' + moment(rev.timestamp, internalDateFormat).format(localDateFormat) + '</div>'
+                        '<div>' + moment(rev.content.dLastModified, internalDateFormat).format(localDateFormat) + '</div>'
                     )
                     .appendTo(this.revisionList);
             });
+
+            $('#currentLastModified').text(
+                moment(this.page.lastModified, internalDateFormat).format(localDateFormat)
+            );
+
+            $('#currentDraftName').text(this.page.name);
 
             this.updateDynamicGui();
         });
@@ -560,6 +566,7 @@ class GUI
         e.preventDefault();
 
         this.page.name = this.draftName.val();
+        $('#footerDraftName span').text(this.page.name);
 
         if (this.checkPublishNot.prop('checked')) {
             this.page.publishFrom = null;

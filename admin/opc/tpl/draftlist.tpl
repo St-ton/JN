@@ -31,7 +31,7 @@
                         <span class="opc-public">{__('publicSince')}</span>
                         {$draft->getPublishFrom()|date_format:'%d.%m.%Y - %H:%M'}
                     {else}
-                        <span class="opc-public">{__('publicUntill')}</span>
+                        <span class="opc-public">{__('publicUntil')}</span>
                         {$draft->getPublishTo()|date_format:'%d.%m.%Y - %H:%M'}
                     {/if}
                 {elseif $draftStatus === 1}
@@ -60,10 +60,19 @@
                 </button>
                 <div class="opc-dropdown">
                     <button type="button"
-                            data-toggle="dropdown" title="{__('useForOtherLang')}"
-                            data-placement="bottom" data-container="#opc">
-                        <img src="{$ShopURL}/admin/opc/gfx/icon-copysprache.svg">
+                            data-toggle="dropdown" title="{__('useForOtherLang')}" data-container="#opc">
+                        <img src="{$ShopURL}/admin/opc/gfx/icon-copysprache.svg" alt="{__('useForOtherLang')}">
                     </button>
+                    <script>
+                        $(function() {
+                            $('#opc-draft-{$draft->getKey()} .opc-draft-actions [data-toggle="dropdown"]').tooltip({
+                                placement: 'bottom',
+                                trigger: 'hover',
+                            }).on('click', function() {
+                                $(this).tooltip('hide');
+                            });
+                        });
+                    </script>
                     <div class="dropdown-menu opc-dropdown-menu">
                         {foreach $languages as $lang}
                             {if $lang->id !== $currentLanguage->id}

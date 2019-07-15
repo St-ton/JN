@@ -64,6 +64,7 @@ class Page
                 this.publishFrom = pageData.publishFrom ? this.decodeDate(pageData.publishFrom) : null;
                 this.publishTo   = pageData.publishTo ? this.decodeDate(pageData.publishTo) : null;
                 this.url         = pageData.url;
+                this.lastModified= pageData.lastModified;
                 this.fullUrl     = this.shopUrl + this.url;
             });
     }
@@ -166,7 +167,9 @@ class Page
 
     save()
     {
-        return this.io.saveDraft(this.toJSON());
+        return this.io.saveDraft(this.toJSON()).then(() => {
+            this.lastModified = moment().format(internalDateFormat);
+        });
     }
 
     savePageToWebStorage()

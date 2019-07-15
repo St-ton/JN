@@ -4,7 +4,7 @@
         <span class="opc-public">{__('publicSince')}</span>
         {$page->getPublishFrom()|date_format:'%d.%m.%Y - %H:%M'}
     {else}
-        <span class="opc-public">{__('publicUntill')}</span>
+        <span class="opc-public">{__('publicUntil')}</span>
         {$page->getPublishTo()|date_format:'%d.%m.%Y - %H:%M'}
     {/if}
 {elseif $draftStatus === 1}

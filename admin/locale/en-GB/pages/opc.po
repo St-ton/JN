@@ -259,6 +259,9 @@ msgstr "PAST"
 msgid "publicSince"
 msgstr "public since"
 
+msgid "publicUntil"
+msgstr "public until"
+
 msgid "publicFrom"
 msgstr "Public from:"
 

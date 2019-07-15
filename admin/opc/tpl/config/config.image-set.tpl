@@ -42,10 +42,10 @@
                 <input type="text" class="form-control" placeholder="{__('title')}"
                        name="{$propname}[#SORT#][title]" value="{$slideData.title|default:''}">
             {/if}
-            <input type="text" class="form-control" placeholder="{__('alternativeText')}"
-                   name="{$propname}[#SORT#][alt]" value="{$slideData.alt|default:''}">
             <input type="text" class="form-control" placeholder="{__('description')}"
                    name="{$propname}[#SORT#][desc]" value="{$slideData.desc|default:''}">
+            <input type="text" class="form-control" placeholder="{__('alternativeText')}"
+                   name="{$propname}[#SORT#][alt]" value="{$slideData.alt|default:''}">
             {if $useLinks}
                 <input type="text" class="form-control" placeholder="{__('link')}"
                        name="{$propname}[#SORT#][link]" value="{$slideData.link|default:''}">

@@ -103,7 +103,6 @@ class AuswahlAssistent
     public function __construct($keyName, int $id, int $languageID = 0, bool $activeOnly = true)
     {
         $this->config = Shop::getSettings(\CONF_AUSWAHLASSISTENT)['auswahlassistent'];
-
         if ($languageID === 0) {
             $languageID = Shop::getLanguageID();
         }
@@ -204,25 +203,25 @@ class AuswahlAssistent
                 $params['MerkmalFilter_arr'] = \array_slice($this->selections, 1);
             }
         }
-        $productFilter     = Shop::buildProductFilter($params);
-        $AktuelleKategorie = isset($params['kKategorie'])
+        $productFilter    = Shop::buildProductFilter($params);
+        $currentCategory  = isset($params['kKategorie'])
             ? new Kategorie($params['kKategorie'])
             : null;
-        $attributeFilters  = (new SearchResults())->setFilterOptions(
+        $attributeFilters = (new SearchResults())->setFilterOptions(
             $productFilter,
-            $AktuelleKategorie,
+            $currentCategory,
             true
         )->getAttributeFilterOptions();
 
         foreach ($attributeFilters as $attributeFilter) {
             /** @var Attribute $attributeFilter */
             if (\array_key_exists($attributeFilter->getValue(), $this->questionsAssoc)) {
-                $oFrage                    = $this->questionsAssoc[$attributeFilter->getValue()];
-                $oFrage->oWert_arr         = $attributeFilter->getOptions();
-                $oFrage->nTotalResultCount = 0;
+                $question                    = $this->questionsAssoc[$attributeFilter->getValue()];
+                $question->oWert_arr         = $attributeFilter->getOptions();
+                $question->nTotalResultCount = 0;
                 foreach ($attributeFilter->getOptions() as $oWert) {
-                    $oFrage->nTotalResultCount                           += $oWert->getCount();
-                    $oFrage->oWert_assoc[$oWert->getData('kMerkmalWert')] = $oWert;
+                    $question->nTotalResultCount                           += $oWert->getCount();
+                    $question->oWert_assoc[$oWert->getData('kMerkmalWert')] = $oWert;
                 }
             }
         }
@@ -340,15 +339,15 @@ class AuswahlAssistent
     }
 
     /**
-     * @param int $nFrage
+     * @param int $questionID
      * @return array|null
      */
-    public function getSelectedValue(int $nFrage)
+    public function getSelectedValue(int $questionID)
     {
-        $oFrage         = $this->questions[$nFrage];
-        $kSelectedValue = $this->selections[$nFrage];
+        $question      = $this->questions[$questionID];
+        $selectedValue = $this->selections[$questionID];
 
-        return $oFrage->oWert_assoc[$kSelectedValue];
+        return $question->oWert_assoc[$selectedValue];
     }
 
     /**

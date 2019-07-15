@@ -9,14 +9,14 @@
                 <input type="hidden" name="{$cParamName}" value="{$cParamValue}">
             {/foreach}
             <div class="row">
-                <div class="col-md-11 col">
+                <div class="col-md-10 col">
                     <div class="row">
                         {foreach $oFilter->getFields() as $oField}
                             {if $oField->getType() === 'text'}
                                 {if $oField->isCustomTestOp()}
-                                    <div class="col-md-2 toolbar-col">
+                                    <div class="col-md-2">
                                         <label for="{$oFilter->getId()}_{$oField->getId()}">{$oField->getTitle()}</label>
-                                        <select class="form-control"
+                                        <select class="custom-select"
                                                 name="{$oFilter->getId()}_{$oField->getId()}_op"
                                                 id="{$oFilter->getId()}_{$oField->getId()}_op">
                                             {if $oField->getDataType() == 0}
@@ -51,7 +51,7 @@
                             {elseif $oField->getType() === 'select'}
                                 <div class="col-md-2">
                                     <label for="{$oFilter->getId()}_{$oField->getId()}">{$oField->getTitle()}</label>
-                                    <select class="form-control"
+                                    <select class="custom-select"
                                             name="{$oFilter->getId()}_{$oField->getId()}"
                                             id="{$oFilter->getId()}_{$oField->getId()}"
                                             {if $oField->getTitleLong() !== ''}data-toggle="tooltip"

@@ -5,9 +5,10 @@
             <input type="hidden" name="pluginverwaltung_uebersicht" value="1" />
             <div class="card">
                 <div class="card-header">
-                    <div class="card-title">{__('pluginListNotActivated')}</div>
+                    <div class="subheading1">{__('pluginListNotActivated')}</div>
+                    <hr class="mb-n3">
                 </div>
-                <div class="table-responsive">
+                <div class="table-responsive card-body">
                     <table class="list table">
                         <thead>
                         <tr>
@@ -83,10 +84,10 @@
                         {/foreach}
                         </tbody>
                         <tfoot>
-                        <tr>
-                            <td class="check"><input name="ALLMSGS" id="ALLMSGS2" type="checkbox" onclick="AllMessages(this.form);" /></td>
-                            <td colspan="10"><label for="ALLMSGS2">{__('selectAll')}</label></td>
-                        </tr>
+                            <tr>
+                                <td class="check"><input name="ALLMSGS" id="ALLMSGS2" type="checkbox" onclick="AllMessages(this.form);" /></td>
+                                <td colspan="10"><label for="ALLMSGS2">{__('selectAll')}</label></td>
+                            </tr>
                         </tfoot>
                     </table>
                 </div>

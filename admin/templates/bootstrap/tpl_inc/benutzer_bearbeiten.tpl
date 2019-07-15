@@ -89,7 +89,7 @@ $(document).ready(function() {
                 <div class="card-body">
                     <div class="item">
                         <div class="form-group form-row align-items-center{if isset($cError_arr.cName)} error{/if}">
-                            <label class="col col-sm-4 col-form-label text-sm-right" for="cName">{__('preSurName')}</label>
+                            <label class="col col-sm-4 col-form-label text-sm-right" for="cName">{__('preSurName')}:</label>
                             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                 <input id="cName" class="form-control" type="text" name="cName" value="{if isset($oAccount->cName)}{$oAccount->cName}{/if}" />
                             </div>
@@ -98,7 +98,7 @@ $(document).ready(function() {
                     </div>
                     <div class="item">
                         <div class="form-group form-row align-items-center{if isset($cError_arr.cMail)} error{/if}">
-                            <label class="col col-sm-4 col-form-label text-sm-right" for="cMail">{__('emailAddress')}</label>
+                            <label class="col col-sm-4 col-form-label text-sm-right" for="cMail">{__('emailAddress')}:</label>
                             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                 <input id="cMail" class="form-control" type="text" name="cMail" value="{if isset($oAccount->cMail)}{$oAccount->cMail}{/if}" />
                             </div>
@@ -107,7 +107,7 @@ $(document).ready(function() {
                     </div>
                     <div class="item">
                         <div class="form-group form-row align-items-center{if isset($cError_arr.kSprache)} error{/if}">
-                            <label class="col col-sm-4 col-form-label text-sm-right" for="language">{__('language')}</label>
+                            <label class="col col-sm-4 col-form-label text-sm-right" for="language">{__('language')}:</label>
                             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                 <select id="language" class="custom-select" name="language">
                                     {foreach $languages as $langTag => $langName}
@@ -133,7 +133,7 @@ $(document).ready(function() {
                 <div class="card-body">
                     <div class="item">
                         <div class="form-group form-row align-items-center{if isset($cError_arr.cLogin)} error{/if}">
-                            <label class="col col-sm-4 col-form-label text-sm-right" for="cLogin">{__('username')}</label>
+                            <label class="col col-sm-4 col-form-label text-sm-right" for="cLogin">{__('username')}:</label>
                             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                 <input id="cLogin" class="form-control" type="text" name="cLogin" value="{if isset($oAccount->cLogin)}{$oAccount->cLogin}{/if}">
                             </div>
@@ -148,7 +148,7 @@ $(document).ready(function() {
 
                     <div class="item">
                         <div class="form-group form-row align-items-center{if isset($cError_arr.cPass)} error{/if}">
-                            <label class="col col-sm-4 col-form-label text-sm-right" for="cPass">{__('password')}</label>
+                            <label class="col col-sm-4 col-form-label text-sm-right" for="cPass">{__('password')}:</label>
                             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                 <input id="cPass" class="form-control" type="text" name="cPass" autocomplete="off" />
                             </div>
@@ -165,7 +165,7 @@ $(document).ready(function() {
                     {if isset($oAccount->kAdminlogingruppe) && $oAccount->kAdminlogingruppe > 1}
                         <div class="item">
                             <div class="form-group form-row align-items-center">
-                                <label class="col col-sm-4 col-form-label text-sm-right" for="tmp_check">{__('temporaryAccess')}</label>
+                                <label class="col col-sm-4 col-form-label text-sm-right" for="tmp_check">{__('temporaryAccess')}:</label>
                                 <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                     <span class="input-group-checkbox-wrap">
                                         <input class="" type="checkbox" id="tmp_check" name="dGueltigBisAktiv" value="1"{if (isset($oAccount->dGueltigBis) && $oAccount->dGueltigBis !== null)} checked="checked"{/if} />
@@ -194,7 +194,7 @@ $(document).ready(function() {
                 <div class="card-body">
                     <div class="item">
                         <div class="form-group form-row align-items-center">
-                            <label class="col col-sm-4 col-form-label text-sm-right" for="b2FAauth">{__('activate')}</label>
+                            <label class="col col-sm-4 col-form-label text-sm-right" for="b2FAauth">{__('activate')}:</label>
                             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                 <select id="b2FAauth" class="custom-select" name="b2FAauth">
                                     <option value="0"{if !isset($oAccount->b2FAauth) || (isset($oAccount->b2FAauth) && (bool)$oAccount->b2FAauth === false)} selected="selected"{/if}>{__('no')}</option>
@@ -268,8 +268,8 @@ $(document).ready(function() {
                                 <div class="modal-dialog">
                                     <div class="modal-content">
                                         <div class="modal-header">
-                                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                                             <h4 class="modal-title">{__('emergencyCode')}</h4>
+                                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                                         </div>
                                         <div class="modal-body">
                                             <div id="EmergencyCodes">
@@ -309,7 +309,7 @@ $(document).ready(function() {
                     <div class="card-body">
                         <div class="item">
                             <div class="form-group form-row align-items-center">
-                                <label class="col col-sm-4 col-form-label text-sm-right" for="kAdminlogingruppe">{__('userGroup')}</label>
+                                <label class="col col-sm-4 col-form-label text-sm-right" for="kAdminlogingruppe">{__('userGroup')}:</label>
                                 <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                     <select id="kAdminlogingruppe" class="custom-select" name="kAdminlogingruppe">
                                         {foreach $oAdminGroup_arr as $oGroup}

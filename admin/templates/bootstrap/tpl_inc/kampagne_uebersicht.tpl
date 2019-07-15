@@ -18,19 +18,24 @@
     <div class="tab-content">
         <div id="uebersicht" class="tab-pane fade {if !isset($cTab) || $cTab === 'uebersicht'} active show{/if}">
             <div class="card">
-                <div class="card-header"><div class="card-title">{__('kampagneIntern')}</div></div>
+                <div class="card-header">
+                    <div class="subheading1">{__('kampagneIntern')}</div>
+                    <hr class="mb-n3">
+                </div>
                 {if $oKampagne_arr|count > 0}
-                    <div class="table-responsive">
+                    <div class="table-responsive card-body">
                         <table class="table table-striped">
-                            <tr>
-                                <th class="tleft">{__('kampagneName')}</th>
-                                <th class="tleft">{__('kampagneParam')}</th>
-                                <th class="tleft">{__('kampagneValue')}</th>
-                                <th class="th-4">{__('activated')}</th>
-                                <th class="th-5">{__('kampagnenDate')}</th>
-                                <th class="th-6"></th>
-                            </tr>
-
+                            <thead>
+                                <tr>
+                                    <th class="tleft">{__('kampagneName')}</th>
+                                    <th class="tleft">{__('kampagneParam')}</th>
+                                    <th class="tleft">{__('kampagneValue')}</th>
+                                    <th class="th-4">{__('activated')}</th>
+                                    <th class="th-5">{__('kampagnenDate')}</th>
+                                    <th class="th-6"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
                             {foreach $oKampagne_arr as $oKampagne}
                                 {if isset($oKampagne->kKampagne) && $oKampagne->kKampagne < 1000}
                                     <tr>
@@ -56,6 +61,7 @@
                                     </tr>
                                 {/if}
                             {/foreach}
+                            </tbody>
                         </table>
                     </div>
                 {else}
@@ -63,24 +69,29 @@
                 {/if}
             </div>
             <div class="card">
-                <div class="card-header"><div class="card-title">{__('kampagneExtern')}</div></div>
+                <div class="card-header">
+                    <div class="subheading1">{__('kampagneExtern')}</div>
+                    <hr class="mb-n3">
+                </div>
                 <form name="kampagnen" method="post" action="kampagne.php">
                     {if isset($nGroessterKey) && $nGroessterKey >= 1000}
                         {$jtl_token}
                         <input type="hidden" name="tab" value="uebersicht" />
                         <input type="hidden" name="delete" value="1" />
-                        <div class="table-responsive">
+                        <div class="table-responsive card-body">
                             <table class="table table-striped">
-                                <tr>
-                                    <th class="check"></th>
-                                    <th class="tleft">{__('kampagneName')}</th>
-                                    <th class="tleft">{__('kampagneParam')}</th>
-                                    <th class="tleft">{__('kampagneValue')}</th>
-                                    <th class="th-4">{__('activated')}</th>
-                                    <th class="th-5">{__('kampagnenDate')}</th>
-                                    <th class="th-6"></th>
-                                </tr>
-
+                                <thead>
+                                    <tr>
+                                        <th class="check"></th>
+                                        <th class="tleft">{__('kampagneName')}</th>
+                                        <th class="tleft">{__('kampagneParam')}</th>
+                                        <th class="tleft">{__('kampagneValue')}</th>
+                                        <th class="th-4">{__('activated')}</th>
+                                        <th class="th-5">{__('kampagnenDate')}</th>
+                                        <th class="th-6"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
                                 {foreach $oKampagne_arr as $oKampagne}
                                     {if $oKampagne->kKampagne >= 1000}
                                         <tr>
@@ -112,12 +123,15 @@
                                         </tr>
                                     {/if}
                                 {/foreach}
-                                <tr>
-                                    <td class="check">
-                                        <input name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);" />
-                                    </td>
-                                    <td colspan="6"><label for="ALLMSGS">{__('globalSelectAll')}</label></td>
-                                </tr>
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td class="check">
+                                            <input name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);" />
+                                        </td>
+                                        <td colspan="6"><label for="ALLMSGS">{__('globalSelectAll')}</label></td>
+                                    </tr>
+                                </tfoot>
                             </table>
                         </div>
                     {else}
@@ -135,25 +149,27 @@
             </div>
         </div>
         <div id="globalestats" class="tab-pane fade {if isset($cTab) && $cTab === 'globalestats'} active show{/if}">
-            <div class="block">
-                <div class="input-group p25" style="min-width: 435px;">
-                        <span class="input-group-addon">
-                            <label for="nAnsicht">{__('kampagneView')}:</label>
-                        </span>
-                    <select id="nAnsicht" name="nAnsicht" class="form-control combo" onchange="changeZeitSelect(this);">
-                        <option value="-1"></option>
-                        <option value="1"{if $smarty.session.Kampagne->nAnsicht == 1} selected{/if}>{__('monthly')}</option>
-                        <option value="2"{if $smarty.session.Kampagne->nAnsicht == 2} selected{/if}>{__('weekly')}</option>
-                        <option value="3"{if $smarty.session.Kampagne->nAnsicht == 3} selected{/if}>{__('daily')}</option>
-                    </select>
-                    <span class="input-group-addon">
+            <div class="card">
+                <div class="card-body">
+                    <div class="form-group form-row align-items-center">
+                        <label class="col col-sm-3 col-lg-1 col-form-label text-sm-right" for="nAnsicht">{__('kampagneView')}:</label>
+                        <div class="col-sm-4 col-lg-2">
+                            <select id="nAnsicht" name="nAnsicht" class="custom-select combo" onchange="changeZeitSelect(this);">
+                                <option value="-1"></option>
+                                <option value="1"{if $smarty.session.Kampagne->nAnsicht == 1} selected{/if}>{__('monthly')}</option>
+                                <option value="2"{if $smarty.session.Kampagne->nAnsicht == 2} selected{/if}>{__('weekly')}</option>
+                                <option value="3"{if $smarty.session.Kampagne->nAnsicht == 3} selected{/if}>{__('daily')}</option>
+                            </select>
+                        </div>
+                        <div class="col-auto">
                             <strong>{__('kampagnePeriod')}:</strong> {$cZeitraum}
-                        </span>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="card">
                 {if isset($oKampagne_arr) && $oKampagne_arr|@count > 0 && isset($oKampagneDef_arr) && $oKampagneDef_arr|@count > 0}
-                    <div class="table-responsive">
+                    <div class="table-responsive card-body">
                         <table class="table table-striped">
                             <thead>
                                 <tr>
@@ -162,18 +178,13 @@
                                         <th class="th-2">
                                             <a href="kampagne.php?tab=globalestats&nSort={$oKampagneDef->kKampagneDef}&token={$smarty.session.jtl_token}">{__($oKampagneDef->cName)}</a>
                                             {if $oKampagneDef->cName === 'Angeschaute Newsletter'}
-                                                <label type="button" class="label label-default label-sm"
-                                                       data-toggle="tooltip"
-                                                       data-placement="left"
-                                                       title="{__('kampagnenNLInfo')}">
-                                                    ?
-                                                </label>
+                                                {getHelpDesc cDesc=__('kampagnenNLInfo')}
                                             {/if}
                                         </th>
                                     {/foreach}
                                 </tr>
                             </thead>
-
+                            <tbody>
                             {foreach name='kampagnenstats' from=$oKampagneStat_arr key=kKampagne item=oKampagneStatDef_arr}
                                 {if $kKampagne !== 'Gesamt'}
                                     <tr>
@@ -188,6 +199,7 @@
                                     </tr>
                                 {/if}
                             {/foreach}
+                            </tbody>
                             <tfoot>
                                 <tr>
                                     <td>{__('kampagneOverall')}</td>

@@ -5,9 +5,10 @@
             <input type="hidden" name="pluginverwaltung_uebersicht" value="1" />
             <div class="card">
                 <div class="card-header">
-                    <div class="card-title">{__('pluginListNotInstalledAndError')}</div>
+                    <div class="subheading1">{__('pluginListNotInstalledAndError')}</div>
+                    <hr class="mb-n3">
                 </div>
-                <div class="table-responsive">
+                <div class="table-responsive card-body">
                     <table class="list table">
                         <thead>
                         <tr>

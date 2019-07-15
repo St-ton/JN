@@ -52,7 +52,9 @@
         <div class="grid-item">
             <div class="card">
                 <div class="card-header">
-                    <div class="heading-body"><h4 class="card-title">{__('cache')}</h4></div>
+                    <div class="heading-body">
+                        <div class="subheading1">{__('cache')}</div>
+                    </div>
                     <div class="heading-right">
                         <div class="btn-group btn-group-xs">
                             <button class="btn btn-primary dropdown-toggle text-uppercase" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -64,6 +66,7 @@
                             </ul>
                         </div>
                     </div>
+                    <hr class="mb-n3">
                 </div>
                 <div class="card-body">
                     <div class="row">
@@ -100,7 +103,8 @@
         <div class="grid-item">
             <div class="card">
                 <div class="card-header">
-                    <div class="card-title">{__('general')}</div>
+                    <div class="subheading1">{__('general')}</div>
+                    <hr class="mb-n3">
                 </div>
                 <div class="card-body">
                     <table class="table table-hover table-striped table-blank text-x1 last-child">
@@ -123,7 +127,8 @@
         <div class="grid-item">
             <div class="card">
                 <div class="card-header">
-                    <div class="card-title">{__('subscription')}</div>
+                    <div class="subheading1">{__('subscription')}</div>
+                    <hr class="mb-n3">
                 </div>
                 <div class="card-body">
                     {if $sub === null}
@@ -131,25 +136,23 @@
                             <p><i class="fa fa-exclamation-circle"></i> {__('atmNoInfo')}</p>
                         </div>
                     {else}
-                        <div class="row vertical-align">
-                            <div class="col-md-3">
-                                <div class="text-center">
-                                    {if intval($sub->bUpdate) === 0}
-                                        <i class="fa fa-check-circle text-four-times text-success"></i>
-                                        <h3 style="margin-top:10px;margin-bottom:0">{__('valid')}</h3>
-                                    {else}
-                                        {if $sub->nDayDiff <= 0}
-                                            <i class="fa fa-exclamation-circle text-four-times text-danger"></i>
-                                            <h3 style="margin-top:10px;margin-bottom:0">{__('expired')}</h3>
-                                        {else}
-                                            <i class="fa fa-exclamation-circle text-four-times text-info"></i>
-                                            <h3 style="margin-top:10px;margin-bottom:0">{{__('expiresInXDays')}|sprintf:{$sub->nDayDiff}}</h3>
-                                        {/if}
-                                    {/if}
-                                </div>
-                            </div>
-                            <div class="col-md-9">
+                        <div class="row">
+                            <div class="col {if intval($sub->bUpdate) === 0}col-md-3{/if} text-center">
                                 {if intval($sub->bUpdate) === 0}
+                                    <i class="fa fa-check-circle text-four-times text-success"></i>
+                                    <h3 style="margin-top:10px;margin-bottom:0">{__('valid')}</h3>
+                                {else}
+                                    {if $sub->nDayDiff <= 0}
+                                        <i class="fa fa-exclamation-circle text-four-times text-danger"></i>
+                                        <h3 style="margin-top:10px;margin-bottom:0">{__('expired')}</h3>
+                                    {else}
+                                        <i class="fa fa-exclamation-circle text-four-times text-info"></i>
+                                        <h3 style="margin-top:10px;margin-bottom:0">{{__('expiresInXDays')}|sprintf:{$sub->nDayDiff}}</h3>
+                                    {/if}
+                                {/if}
+                            </div>
+                            {if intval($sub->bUpdate) === 0}
+                                <div class="col-md-9">
                                     <table class="table table-hover table-striped table-blank text-x1 last-child">
                                         <tbody>
                                             <tr>
@@ -166,8 +169,8 @@
                                             </tr>
                                         </tbody>
                                     </table>
-                                {/if}
-                            </div>
+                                </div>
+                            {/if}
                         </div>
                     {/if}
                 </div>
@@ -248,10 +251,13 @@
 
             <div class="card">
                 <div class="card-header">
-                    <div class="heading-body"><div class="subheading1">{__('server')}</div></div>
+                    <div class="heading-body">
+                        <div class="subheading1">{__('server')}</div>
+                    </div>
                     <div class="heading-right">
                         <a href="systemcheck.php" class="btn btn-primary btn-xs text-uppercase">{__('details')}</a>
                     </div>
+                    <hr class="mb-n3">
                 </div>
                 <div class="card-body">
                     {if $tests.recommendations|count > 0}

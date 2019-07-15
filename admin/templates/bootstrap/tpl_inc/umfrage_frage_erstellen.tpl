@@ -563,22 +563,26 @@ function checkSelect(selectBox) {ldelim}
             {*<h2 class="title"><span>{__('umfrageEnterQ')}</span></h2>*}
         {*</div>*}
         {if isset($oUmfrageFrage_arr) && $oUmfrageFrage_arr|@count > 0}
-        <div id="payment">
-            <div id="tabellenLivesuche">
-            <table class="table table-striped">
-                <tr>
-                    <th class="th-1">{__('umfrageQ')}</th>
-                    <th class="th-2">{__('umfrageQType')}</th>
-                    <th class="th-3">{__('sorting')}</th>
-                </tr>
-            {foreach $oUmfrageFrage_arr as $oUmfrageFrageTMP}
-                <tr>
-                    <td>{$oUmfrageFrageTMP->cName}</td>
-                    <td>{$oUmfrageFrageTMP->cTyp}</td>
-                    <td>{$oUmfrageFrageTMP->nSort}</td>
-                </tr>
-            {/foreach}
-            </table>
+        <div id="payment" class="card">
+            <div id="tabellenLivesuche" class="card-body">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>{__('umfrageQ')}</th>
+                            <th>{__('umfrageQType')}</th>
+                            <th>{__('sorting')}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {foreach $oUmfrageFrage_arr as $oUmfrageFrageTMP}
+                    <tr>
+                        <td>{$oUmfrageFrageTMP->cName}</td>
+                        <td>{$oUmfrageFrageTMP->cTyp}</td>
+                        <td>{$oUmfrageFrageTMP->nSort}</td>
+                    </tr>
+                    {/foreach}
+                    </tbody>
+                </table>
             </div>
         </div>
         <br />
@@ -598,15 +602,16 @@ function checkSelect(selectBox) {ldelim}
                     <div class="card-header">
                         <div class="subheading1">{__('umfrageEnterQ')}</div>
                     </div>
+                    <div class="card-body">
                     <table class="kundenfeld table">
                         <tr>
-                            <td><label for="cName">{__('umfrageQ')}</label></td>
+                            <td><label for="cName">{__('umfrageQ')}:</label></td>
                             <td><input class="form-control" id="cName" name="cName" type="text"  value="{if isset($oUmfrageFrage->cName)}{$oUmfrageFrage->cName}{/if}" /></td>
                         </tr>
 
 
                         <tr>
-                            <td><label for="cTypSelect">{__('umfrageType')}</label></td>
+                            <td><label for="cTypSelect">{__('umfrageType')}:</label></td>
                             <td>
                                 <span class="label-wrap">
                                     <select name="cTyp" id="cTypSelect" class="custom-select combo" onchange="checkSelect(this);">
@@ -627,7 +632,7 @@ function checkSelect(selectBox) {ldelim}
                         </tr>
 
                         <tr>
-                            <td><label for="nSort">{__('sorting')}</label></td>
+                            <td><label for="nSort">{__('sorting')}:</label></td>
                             <td>
                                 <div class="input-group">
                                     <input class="form-control" id="nSort" name="nSort" type="text"  value="{if isset($oUmfrageFrage->nSort)}{$oUmfrageFrage->nSort}{/if}" />
@@ -637,7 +642,7 @@ function checkSelect(selectBox) {ldelim}
                         </tr>
 
                         <tr>
-                            <td><label for="nFreifeld">{__('umfrageQFreeField')}</label></td>
+                            <td><label for="nFreifeld">{__('umfrageQFreeField')}:</label></td>
                             <td>
                                 <select id="nFreifeld" name="nFreifeld" class="custom-select combo">
                                     <option value="1"{if isset($oUmfrageFrage->nFreifeld) && $oUmfrageFrage->nFreifeld == 1}selected{/if}>{__('yes')}</option>
@@ -647,7 +652,7 @@ function checkSelect(selectBox) {ldelim}
                         </tr>
 
                         <tr>
-                            <td><label for="nNotwendig">{__('umfrageQEssential')}</label></td>
+                            <td><label for="nNotwendig">{__('umfrageQEssential')}:</label></td>
                             <td>
                                 <select id="nNotwendig" name="nNotwendig" class="custom-select combo">
                                     <option value="1"{if isset($oUmfrageFrage->nNotwendig) && $oUmfrageFrage->nNotwendig == 1}selected{/if}>{__('yes')}</option>
@@ -657,11 +662,11 @@ function checkSelect(selectBox) {ldelim}
                         </tr>
 
                         <tr>
-                            <td><label for="cBeschreibung">{__('description')}</label></td>
+                            <td><label for="cBeschreibung">{__('description')}:</label></td>
                             <td><textarea id="cBeschreibung" class="ckeditor" name="cBeschreibung" rows="15" cols="60">{if isset($oUmfrageFrage->cBeschreibung)}{$oUmfrageFrage->cBeschreibung}{/if}</textarea></td>
                         </tr>
                     </table>
-
+                    </div>
                     <div id="question-options">
                         <table id="formtableOption" class="kundenfeld">
                             <tr>
@@ -687,7 +692,7 @@ function checkSelect(selectBox) {ldelim}
                             <tr>
                                 <td id="buttons">
                                     {if isset($oUmfrageFrage->oUmfrageFrageAntwort_arr) && $oUmfrageFrage->oUmfrageFrageAntwort_arr|@count > 0}
-                                        <button class="btn btn-succcess" name="button" value="Antwort hinzufügen" type="button" onclick="addInputRow();"><i class="fa fa-share"></i> {__('addAnswer')}</button>
+                                        <button class="btn btn-default" name="button" value="Antwort hinzufügen" type="button" onclick="addInputRow();"><i class="fa fa-share"></i> {__('addAnswer')}</button>
                                     {/if}
                                 </td>
                             </tr>
@@ -697,9 +702,9 @@ function checkSelect(selectBox) {ldelim}
                                     <td>
                                         <p class="form-inline">
                                             <input name="kUmfrageFrageAntwort[]" type="hidden" value="{$oUmfrageFrageAntwort->kUmfrageFrageAntwort}" />
-                                            <label for="cNameAntwort-{$oUmfrageFrageAntwort@index}">Antwort {$oUmfrageFrageAntwort@iteration}</label>
+                                            <label for="cNameAntwort-{$oUmfrageFrageAntwort@index}">{__('umfrageQASing')} {$oUmfrageFrageAntwort@iteration}:</label>
                                             <input class="form-control" id="cNameAntwort-{$oUmfrageFrageAntwort@index}" name="cNameAntwort[]"  type="text" value="{$oUmfrageFrageAntwort->cName}" />
-                                            <label for="nSortAntwort-{$oUmfrageFrageAntwort@index}">{__('umfrageQSort')}</label>
+                                            <label for="nSortAntwort-{$oUmfrageFrageAntwort@index}">{__('umfrageQSort')}:</label>
                                             <input id="nSortAntwort-{$oUmfrageFrageAntwort@index}" name="nSortAntwort[]"  type="text" class="form-control" value="{$oUmfrageFrageAntwort->nSort}" style="width: 40px;" />
                                         </p>
                                     </td>

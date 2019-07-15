@@ -11,13 +11,13 @@
             </div>
             <div class="card-body">
                 <div class="form-group form-row align-items-center">
-                    <label class="col col-sm-4 col-form-label text-sm-right" for="wawi-user">{__('user')}</label>
+                    <label class="col col-sm-4 col-form-label text-sm-right" for="wawi-user">{__('user')}:</label>
                     <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                         <input id="wawi-user" name="wawi-user" class="form-control" type="text" value="{$wawiuser}" />
                     </div>
                 </div>
                 <div class="form-group form-row align-items-center">
-                    <label class="col col-sm-4 col-form-label text-sm-right" for="wawi-pass">{__('password')}</label>
+                    <label class="col col-sm-4 col-form-label text-sm-right" for="wawi-pass">{__('password')}:</label>
                     <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                         <input id="wawi-pass" name="wawi-pass" class="form-control" type="password" value="{$wawipass}" />
                     </div>

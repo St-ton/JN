@@ -442,60 +442,60 @@
                 <div class="card-header">
                     <div class="subheading1">{__('availableBanner')}</div>
                 </div>
-                <table class="list table">
-                    <thead>
-                    <tr>
-                        <th class="tleft" width="25%">{__('name')}</th>
-                        <th width="20%">{__('status')}</th>
-                        <th class="tleft" width="25%">{__('runTime')}</th>
-                        <th width="30%">{__('action')}</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {foreach $oBanner_arr as $oBanner}
+                <div class="card-body">
+                    <table class="list table">
+                        <thead>
                         <tr>
-                            <td class="tleft">
-                                {$oBanner->cTitel}
-                            </td>
-                            <td class="tcenter">
-                                <h4 class="label-wrap">
-                                    {if (int)$oBanner->active === 1}
-                                        <span class="label success label-success">{__('active')}</span>
-                                    {else}
-                                        <span class="label success label-{if $oBanner->vDatum|date_format:'%d.%m.%Y' > {$smarty.now|date_format:'%d.%m.%Y'}}warning{else}danger{/if}">{__('inactive')}</span>
-                                    {/if}
-                                </h4>
-                            </td>
-                            <td>
-                                {if $oBanner->vDatum !== null}
-                                    {$oBanner->vDatum|date_format:'%d.%m.%Y'}
-                                {/if} -
-                                {if $oBanner->bDatum !== null}
-                                    {$oBanner->bDatum|date_format:'%d.%m.%Y'}
-                                {/if}
-                            </td>
-                            <td class="tcenter">
-                                <form action="banner.php" method="post">
-                                    {$jtl_token}
-                                    <input type="hidden" name="id" value="{$oBanner->kImageMap}" />
-                                    <div class="btn-group">
-                                        <button class="btn btn-default" name="action" value="area" title="{__('actionLink')}"><i class="fa fa-link"></i></button>
-                                        <button class="btn btn-default" name="action" value="edit" title="{__('edit')}"><i class="fa fa-edit"></i></button>
-                                        <button class="btn btn-danger" name="action" value="delete" title="{__('delete')}"><i class="fa fa-trash"></i></button>
-                                    </div>
-                                </form>
-                            </td>
+                            <th class="tleft" width="25%">{__('name')}</th>
+                            <th width="20%">{__('status')}</th>
+                            <th class="tleft" width="25%">{__('runTime')}</th>
+                            <th width="30%">{__('action')}</th>
                         </tr>
-                    {/foreach}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                        {foreach $oBanner_arr as $oBanner}
+                            <tr>
+                                <td class="tleft">
+                                    {$oBanner->cTitel}
+                                </td>
+                                <td class="tcenter">
+                                    <h4 class="label-wrap">
+                                        {if (int)$oBanner->active === 1}
+                                            <span class="label success label-success">{__('active')}</span>
+                                        {else}
+                                            <span class="label success label-{if $oBanner->vDatum|date_format:'%d.%m.%Y' > {$smarty.now|date_format:'%d.%m.%Y'}}warning{else}danger{/if}">{__('inactive')}</span>
+                                        {/if}
+                                    </h4>
+                                </td>
+                                <td>
+                                    {if $oBanner->vDatum !== null}
+                                        {$oBanner->vDatum|date_format:'%d.%m.%Y'}
+                                    {/if} -
+                                    {if $oBanner->bDatum !== null}
+                                        {$oBanner->bDatum|date_format:'%d.%m.%Y'}
+                                    {/if}
+                                </td>
+                                <td class="tcenter">
+                                    <form action="banner.php" method="post">
+                                        {$jtl_token}
+                                        <input type="hidden" name="id" value="{$oBanner->kImageMap}" />
+                                        <div class="btn-group">
+                                            <button class="btn btn-default" name="action" value="area" title="{__('actionLink')}"><i class="fa fa-link"></i></button>
+                                            <button class="btn btn-default" name="action" value="edit" title="{__('edit')}"><i class="fa fa-edit"></i></button>
+                                            <button class="btn btn-danger" name="action" value="delete" title="{__('delete')}"><i class="fa fa-trash"></i></button>
+                                        </div>
+                                    </form>
+                                </td>
+                            </tr>
+                        {/foreach}
+                        </tbody>
+                    </table>
 
                 {if $oBanner_arr|@count === 0}
-                   <div class="card-body">
-                       <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
-                   </div>
+                    <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                 {/if}
-                <div class="card-footer">
+                </div>
+                <div class="card-footer save_wrapper">
                     <a class="btn btn-primary" href="banner.php?action=new&token={$smarty.session.jtl_token}"><i class="fa fa-share"></i> {__('addBanner')}</a>
                 </div>
             </div>

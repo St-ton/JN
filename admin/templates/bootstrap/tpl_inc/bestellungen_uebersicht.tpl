@@ -28,8 +28,9 @@
             <div class="card">
                 <div class="card-header">
                     <div class="subheading1">{__('order')}</div>
+                    <hr class="mb-n3">
                 </div>
-                <div class="table-responsive">
+                <div class="table-responsive card-body">
                     <table class="list table table-striped">
                         <thead>
                         <tr>

@@ -67,8 +67,8 @@
                             <input type="hidden" name="action" value="">
                             <input type="hidden" name="tab" value="downloads">
                             <input type="hidden" name="SitemapDownload_nPage" value="0">
-                            <label for="nYear">{__('year')}</label>
-                            <select id="nYear" name="nYear_downloads">
+                            <label for="nYear">{__('year')}:</label>
+                            <select id="nYear" name="nYear_downloads" class="custom-select">
                                 {foreach $oSitemapDownloadYears_arr as $oSitemapDownloadYear}
                                     <option value="{$oSitemapDownloadYear->year}"{if isset($nSitemapDownloadYear) && $nSitemapDownloadYear == $oSitemapDownloadYear->year} selected="selected"{/if}>{$oSitemapDownloadYear->year}</option>
                                 {/foreach}
@@ -91,14 +91,17 @@
                         <input type="hidden" name="tab" value="downloads" />
                         <input type="hidden" name="nYear_downloads" value="{$nSitemapDownloadYear}" />
                         <div id="payment">
-                            <div id="tabellenBewertung" class="table-responsive">
+                            <div id="tabellenBewertung" class="table-responsive card-body">
                                 <table class="table table-striped">
-                                    <tr>
-                                        <th>&nbsp;</th>
-                                        <th>{__('sitemapName')}</th>
-                                        <th>{__('sitemapBot')}</th>
-                                        <th class="text-right">{__('sitemapDate')}</th>
-                                    </tr>
+                                    <thead>
+                                        <tr>
+                                            <th>&nbsp;</th>
+                                            <th>{__('sitemapName')}</th>
+                                            <th>{__('sitemapBot')}</th>
+                                            <th class="text-right">{__('sitemapDate')}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbod>
                                     {foreach $oSitemapDownload_arr as $oSitemapDownload}
                                         <tr>
                                             <td width="20">
@@ -116,12 +119,15 @@
                                             <td class="text-right" width="130">{$oSitemapDownload->dErstellt_DE}</td>
                                         </tr>
                                     {/foreach}
-                                    <tr>
-                                        <td>
-                                            <input name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);">
-                                        </td>
-                                        <td colspan="6"><label for="ALLMSGS">{__('sitemapSelectAll')}</label></td>
-                                    </tr>
+                                    </tbod>
+                                    <tfoot>
+                                        <tr>
+                                            <td>
+                                                <input name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);">
+                                            </td>
+                                            <td colspan="6"><label for="ALLMSGS">{__('sitemapSelectAll')}</label></td>
+                                        </tr>
+                                    </tfoot>
                                 </table>
                             </div>
                             <div class="card-footer">
@@ -146,7 +152,7 @@
                             <input type="hidden" name="tab" value="report">
                             <input type="hidden" name="SitemapReport_nPage" value="0">
                             <label for="nYear">{__('year')}</label>
-                            <select id="nYear" name="nYear_reports">
+                            <select id="nYear" name="nYear_reports" class="custom-select">
                                 {foreach $oSitemapReportYears_arr as $oSitemapReportYear}
                                     <option value="{$oSitemapReportYear->year}"{if isset($nSitemapReportYear) && $nSitemapReportYear == $oSitemapReportYear->year} selected="selected"{/if}>{$oSitemapReportYear->year}</option>
                                 {/foreach}
@@ -168,15 +174,18 @@
                         <input type="hidden" name="report_edit" value="1">
                         <input type="hidden" name="tab" value="report">
                         <input type="hidden" name="nYear_reports" value="{$nSitemapReportYear}" />
-                        <div class="table-responsive">
-                            <table class="table table-striped">
-                                <tr>
-                                    <th class="check"></th>
-                                    <th class="th-1"></th>
-                                    <th class="tleft">{__('sitemapProcessTime')}</th>
-                                    <th class="th-3">{__('sitemapTotalURL')}</th>
-                                    <th class="th-5">{__('sitemapDate')}</th>
-                                </tr>
+                        <div class="table-responsive card-body">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th class="check"></th>
+                                        <th class="th-1"></th>
+                                        <th class="tleft">{__('sitemapProcessTime')}</th>
+                                        <th class="th-3">{__('sitemapTotalURL')}</th>
+                                        <th class="th-5">{__('sitemapDate')}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
                                 {foreach $oSitemapReport_arr as $oSitemapReport}
                                     <tr>
                                         <td class="check">
@@ -199,31 +208,37 @@
                                             <td colspan="4">
 
                                                 <table class="table-striped" border="0" cellspacing="1" cellpadding="0" width="100%">
-                                                    <tr>
-                                                        <th class="tleft">{__('sitemapName')}</th>
-                                                        <th class="th-2">{__('sitemapCountURL')}</th>
-                                                        <th class="th-3">{__('sitemapSize')}</th>
-                                                    </tr>
-
-                                                    {foreach $oSitemapReport->oSitemapReportFile_arr as $oSitemapReportFile}
+                                                    <thead>
                                                         <tr>
-                                                            <td>{$oSitemapReportFile->cDatei}</td>
-                                                            <td class="tcenter">{$oSitemapReportFile->nAnzahlURL}</td>
-                                                            <td class="tcenter">{$oSitemapReportFile->fGroesse} KB</td>
+                                                            <th class="tleft">{__('sitemapName')}</th>
+                                                            <th class="th-2">{__('sitemapCountURL')}</th>
+                                                            <th class="th-3">{__('sitemapSize')}</th>
                                                         </tr>
-                                                    {/foreach}
+                                                    </thead>
+                                                    <tbody>
+                                                        {foreach $oSitemapReport->oSitemapReportFile_arr as $oSitemapReportFile}
+                                                            <tr>
+                                                                <td>{$oSitemapReportFile->cDatei}</td>
+                                                                <td class="tcenter">{$oSitemapReportFile->nAnzahlURL}</td>
+                                                                <td class="tcenter">{$oSitemapReportFile->fGroesse} KB</td>
+                                                            </tr>
+                                                        {/foreach}
+                                                    </tbody>
                                                 </table>
 
                                             </td>
                                         </tr>
                                     {/if}
                                 {/foreach}
-                                <tr>
-                                    <td class="check">
-                                        <input name="ALLMSGS" id="ALLMSGS2" type="checkbox" onclick="AllMessages(this.form);">
-                                    </td>
-                                    <td colspan="4"><label for="ALLMSGS2">{__('sitemapSelectAll')}</label></td>
-                                </tr>
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td class="check">
+                                            <input name="ALLMSGS" id="ALLMSGS2" type="checkbox" onclick="AllMessages(this.form);">
+                                        </td>
+                                        <td colspan="4"><label for="ALLMSGS2">{__('sitemapSelectAll')}</label></td>
+                                    </tr>
+                                </tfoot>
                             </table>
                         </div>
                         <div class="card-footer">

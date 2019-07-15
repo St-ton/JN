@@ -2636,9 +2636,6 @@ td.nowrap {
 .top40 {
   margin-top: 40px;
 }
-.logtext {
-  max-height: 32em;
-}
 .word-break-all {
   word-break: break-all;
 }

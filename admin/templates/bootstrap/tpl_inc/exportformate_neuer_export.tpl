@@ -15,6 +15,16 @@
             <input type="hidden" name="kPlugin" value="{$Exportformat->kPlugin}" />
         {/if}
         <div class="card settings">
+            <div class="card-header">
+                <div class="subheading1">
+                    {if !isset($Exportformat->kExportformat)}
+                        {__('newExportformat')}
+                    {else}
+                        {__('modifyExportformat')} - {if isset($cPostVar_arr.cName)}{$cPostVar_arr.cName}{elseif isset($Exportformat->cName)}{$Exportformat->cName}{/if}
+                    {/if}
+                </div>
+                <hr class="mb-n3">
+            </div>
             <div class="card-body">
                 <div class="form-group form-row align-items-center{if isset($cPlausiValue_arr.cName)} error{/if}">
                     <label class="col col-sm-4 col-form-label text-sm-right" for="cName">{__('name')}{if isset($cPlausiValue_arr.cName)} <span class="fillout">{__('FillOut')}</span>{/if}:</label>

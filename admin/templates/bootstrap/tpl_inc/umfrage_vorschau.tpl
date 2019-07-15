@@ -1,46 +1,53 @@
 <div id="page">
     <div id="content" class="container-fluid">
-        <h2 class="txtBlack">{$oUmfrage->cName}</h2>
-        <div class="row">
-            <div class="col-md-3">
-                <strong>{__('umfrageValidation')}:</strong><br/>
-                {$oUmfrage->dGueltigVon_de}<br/>
-                -{if $oUmfrage->dGueltigBis === null}{__('umfrageInfinite')}{else}{$oUmfrage->dGueltigBis_de}{/if}
+        <div class="card">
+            <div class="card-header">
+                <div class="subheading1">{$oUmfrage->cName}</div>
+                <hr class="mb-n4">
             </div>
-            <div class="col-md-3">
-                <strong>{__('customerGroup')}:</strong><br/>
-                {$oUmfrage->cKundengruppe_arr|implode:','}
-            </div>
-            <div class="col-md-3">
-                <strong>{__('active')}:</strong><br/>
-                {$oUmfrage->nAktiv}
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-12">
-                <strong>{__('description')}:</strong><br/>
-                {$oUmfrage->cBeschreibung}
-            </div>
-        </div>
-        <div class="btn-group">
-            <br/>
-            <form method="post" action="umfrage.php" class="left">
-                {$jtl_token}
-                <input type="hidden" name="umfrage" value="1" />
-                <input type="hidden" name="kUmfrage" value="{$oUmfrage->kUmfrage}" />
-                <input type="hidden" name="umfrage_frage_hinzufuegen" value="1" />
-                <button class="btn btn-primary" name="umfragefragehinzufuegen" type="submit" value="{__('umfrageQAdd')}"><i class="fa fa-share"></i> {__('umfrageQAdd')}</button>
-            </form>
+            <div class="card-body">
+                <div class="row mb-2">
+                    <div class="col-md-3">
+                        <strong>{__('umfrageValidation')}:</strong><br/>
+                        {$oUmfrage->dGueltigVon_de}
+                        - {if $oUmfrage->dGueltigBis === null}{__('umfrageInfinite')}{else}{$oUmfrage->dGueltigBis_de}{/if}
+                    </div>
+                    <div class="col-md-3">
+                        <strong>{__('customerGroup')}:</strong><br/>
+                        {$oUmfrage->cKundengruppe_arr|implode:','}
+                    </div>
+                    <div class="col-md-3">
+                        <strong>{__('active')}:</strong><br/>
+                        {$oUmfrage->nAktiv}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12">
+                        <strong>{__('description')}:</strong><br/>
+                        {$oUmfrage->cBeschreibung}
+                    </div>
+                </div>
+                <hr class="mb-4">
+                <div class="btn-group">
+                    <br/>
+                    <form method="post" action="umfrage.php" class="left">
+                        {$jtl_token}
+                        <input type="hidden" name="umfrage" value="1" />
+                        <input type="hidden" name="kUmfrage" value="{$oUmfrage->kUmfrage}" />
+                        <input type="hidden" name="umfrage_frage_hinzufuegen" value="1" />
+                        <button class="btn btn-primary" name="umfragefragehinzufuegen" type="submit" value="{__('umfrageQAdd')}"><i class="fa fa-share"></i> {__('umfrageQAdd')}</button>
+                    </form>
 
-            <form method="post" action="umfrage.php" class="left">
-                {$jtl_token}
-                <input type="hidden" name="umfrage" value="1" />
-                <input type="hidden" name="kUmfrage" value="{$oUmfrage->kUmfrage}" />
-                <input type="hidden" name="umfrage_statistik" value="1" />
-                <button class="btn btn-default" name="umfragestatistik" type="submit" value="{__('umfrageStatsView')}"><i class="fa fa-bar-chart"></i> {__('umfrageStatsView')}</button>
-            </form>
+                    <form method="post" action="umfrage.php" class="left">
+                        {$jtl_token}
+                        <input type="hidden" name="umfrage" value="1" />
+                        <input type="hidden" name="kUmfrage" value="{$oUmfrage->kUmfrage}" />
+                        <input type="hidden" name="umfrage_statistik" value="1" />
+                        <button class="btn btn-default" name="umfragestatistik" type="submit" value="{__('umfrageStatsView')}"><i class="fa fa-bar-chart"></i> {__('umfrageStatsView')}</button>
+                    </form>
+                </div>
+            </div>
         </div>
-
         {if $oUmfrage->oUmfrageFrage_arr|@count > 0 && $oUmfrage->oUmfrageFrage_arr}
         <form method="post" action="umfrage.php">
             {$jtl_token}
@@ -91,10 +98,12 @@
                     </div>
                 </div>
             {/foreach}
-                <p class="btn-group">
-                    <a class="btn btn-default" href="umfrage.php"><i class="fa fa-angle-double-left"></i> {__('back')}</a>
-                    <button class="btn btn-danger" name="umfragefrageloeschen" type="submit" value="{__('delete')}"><i class="fa fa-trash"></i> {__('delete')}</button>
-                </p>
+                <div class="card-footer save_wrapper">
+                    <div class="btn-group">
+                        <a class="btn btn-default" href="umfrage.php"><i class="fa fa-angle-double-left"></i> {__('back')}</a>
+                        <button class="btn btn-danger" name="umfragefrageloeschen" type="submit" value="{__('delete')}"><i class="fa fa-trash"></i> {__('delete')}</button>
+                    </div>
+                </div>
             </form>
         {else}
             <a class="btn btn-default" href="umfrage.php"><i class="fa fa-angle-double-left"></i> {__('back')}</a>

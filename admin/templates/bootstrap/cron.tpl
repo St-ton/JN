@@ -32,12 +32,14 @@
                         {$jtl_token}
                         <table class="table table-striped">
                             <thead>
-                            <th>{__('headingType')}</th>
-                            <th>{__('headingStartTime')}</th>
-                            <th>{__('headingLastStarted')}</th>
-                            <th>{__('headingFrequency')}</th>
-                            <th>{__('headingRunning')}</th>
-                            <th>{__('action')}</th>
+                                <tr>
+                                    <th>{__('headingType')}</th>
+                                    <th>{__('headingStartTime')}</th>
+                                    <th>{__('headingLastStarted')}</th>
+                                    <th>{__('headingFrequency')}</th>
+                                    <th>{__('headingRunning')}</th>
+                                    <th>{__('action')}</th>
+                                </tr>
                             </thead>
                             <tbody>
                                 {foreach $jobs as $job}
@@ -81,9 +83,9 @@
                 <form method="post">
                     {$jtl_token}
                     <div class="form-group form-row align-items-center">
-                        <label class="col col-sm-4 col-form-label text-sm-right" for="cron-type">{__('headingType')}</label>
+                        <label class="col col-sm-4 col-form-label text-sm-right" for="cron-type">{__('headingType')}:</label>
                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                            <select name="type" class="form-control" id="cron-type" required>
+                            <select name="type" class="custom-select" id="cron-type" required>
                                 {foreach $available as $type}
                                     <option value="{$type}">{__($type)}</option>
                                 {/foreach}
@@ -91,7 +93,7 @@
                         </div>
                     </div>
                     <div class="form-group form-row align-items-center">
-                        <label class="col col-sm-4 col-form-label text-sm-right" for="cron-freq">{__('headingFrequency')}</label>
+                        <label class="col col-sm-4 col-form-label text-sm-right" for="cron-freq">{__('headingFrequency')}:</label>
                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                             <input id="cron-freq" type="number" min="1" value="24" name="frequency" class="form-control" required>
                         </div>
@@ -100,13 +102,13 @@
                         </div>
                     </div>
                     <div class="form-group form-row align-items-center">
-                        <label class="col col-sm-4 col-form-label text-sm-right" for="cron-start">{__('headingStartTime')}</label>
+                        <label class="col col-sm-4 col-form-label text-sm-right" for="cron-start">{__('headingStartTime')}:</label>
                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                             <input id="cron-start" type="time" name="time" value="00:00" class="form-control" required>
                         </div>
                     </div>
                     <div class="form-group form-row align-items-center">
-                        <label class="col col-sm-4 col-form-label text-sm-right" for="cron-start-date">{__('headingStartDate')}</label>
+                        <label class="col col-sm-4 col-form-label text-sm-right" for="cron-start-date">{__('headingStartDate')}:</label>
                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                             <input id="cron-start-date" type="date" name="date" class="form-control" value="{$smarty.now|date_format:'%Y-%m-%d'}" required>
                         </div>

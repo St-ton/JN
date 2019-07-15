@@ -29,48 +29,48 @@
     {/if}
     <div class="card settings">
         <div class="card-body">
-            <div class="input-group">
-                <span class="input-group-addon"><label for="cName">{__('kampagneName')}</label></span>
-                <span class="input-group-wrap">
+            <div class="form-group form-row align-items-center">
+                <label class="col col-sm-4 col-form-label text-sm-right" for="cName">{__('kampagneName')}:</label>
+                <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                     <input id="cName" class="form-control" name="cName" type="text"
                            value="{if isset($oKampagne->cName)}{$oKampagne->cName}{/if}"
                             {if isset($oKampagne->kKampagne) && $oKampagne->kKampagne < 1000} disabled{/if}>
-                </span>
+                </div>
             </div>
-            <div class="input-group">
-                <span class="input-group-addon"><label for="cParameter">{__('kampagneParam')}</label></span>
-                <span class="input-group-wrap">
+            <div class="form-group form-row align-items-center">
+                <label class="col col-sm-4 col-form-label text-sm-right" for="cParameter">{__('kampagneParam')}:</label>
+                <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                     <input id="cParameter" class="form-control" name="cParameter" type="text"
                            value="{if isset($oKampagne->cParameter)}{$oKampagne->cParameter}{/if}">
-                </span>
+                </div>
             </div>
-            <div class="input-group">
-                <span class="input-group-addon"><label for="cWertSelect">{__('kampagneValueType')}</label></span>
-                <span class="input-group-wrap">
-                    <select name="nDynamisch" class="form-control combo" id="cWertSelect"
+            <div class="form-group form-row align-items-center">
+                <label class="col col-sm-4 col-form-label text-sm-right" for="cWertSelect">{__('kampagneValueType')}:</label>
+                <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                    <select name="nDynamisch" class="custom-select combo" id="cWertSelect"
                             onChange="changeWertSelect(this);"
                             {if isset($oKampagne->kKampagne) && $oKampagne->kKampagne < 1000} disabled{/if}>
                         <option value="0"{if isset($oKampagne->nDynamisch) && $oKampagne->nDynamisch == 0} selected{/if}>{__('fixedValue')}</option>
                         <option value="1"{if isset($oKampagne->nDynamisch) && $oKampagne->nDynamisch == 1} selected{/if}>{__('dynamic')}</option>
                     </select>
-                </span>
+                </div>
             </div>
-            <div class="input-group" id="static-value-input-group">
-                <span class="input-group-addon"><label for="cWert">{__('kampagneValueStatic')}</label></span>
-                <span class="input-group-wrap">
+            <div class="form-group form-row align-items-center" id="static-value-input-group">
+                <label class="col col-sm-4 col-form-label text-sm-right" for="cWert">{__('kampagneValueStatic')}:</label>
+                <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                     <input id="cWert" class="form-control" name="cWert" type="text"
                            value="{if isset($oKampagne->cWert)}{$oKampagne->cWert}{/if}"
                            {if isset($oKampagne->kKampagne) && $oKampagne->kKampagne < 1000} disabled{/if} />
-                </span>
+                </div>
             </div>
-            <div class="input-group">
-                <span class="input-group-addon"><label for="nAktiv">{__('activated')}</label></span>
-                <span class="input-group-wrap">
-                    <select id="nAktiv" name="nAktiv" class="combo form-control">
+            <div class="form-group form-row align-items-center">
+                <label class="col col-sm-4 col-form-label text-sm-right" for="nAktiv">{__('activated')}:</label>
+                <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                    <select id="nAktiv" name="nAktiv" class="combo custom-select">
                         <option value="0"{if isset($oKampagne->nAktiv) && $oKampagne->nAktiv == 0} selected{/if}>{__('no')}</option>
                         <option value="1"{if isset($oKampagne->nAktiv) && $oKampagne->nAktiv == 1} selected{/if}>{__('yes')}</option>
                     </select>
-                </span>
+                </div>
             </div>
         </div>
         <div class="card-footer">

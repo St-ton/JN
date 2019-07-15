@@ -12,9 +12,10 @@
         <div id="account_view" class="tab-pane fade{if empty($cTab) || $cTab === 'account_view'} active show{/if}">
             <div class="card">
                 <div class="card-header">
-                    <div class="card-title">{__('benutzerKategorie')}</div>
+                    <div class="subheading1">{__('benutzerKategorie')}</div>
+                    <hr class="mb-n3">
                 </div>
-                <div class="table-responsive">
+                <div class="table-responsive card-body">
                     <table class="list table">
                         <thead>
                         <tr>
@@ -82,9 +83,10 @@
         <div id="group_view" class="tab-pane fade{if isset($cTab) && $cTab === 'group_view'} active show{/if}">
             <div class="card">
                 <div class="card-header">
-                    <div class="card-title">{__('gruppenKategorie')}</div>
+                    <div class="subheading1">{__('gruppenKategorie')}</div>
+                    <hr class="mb-n3">
                 </div>
-                <div class="table-responsive">
+                <div class="table-responsive card-body">
                     <table class="list table">
                         <thead>
                         <tr>

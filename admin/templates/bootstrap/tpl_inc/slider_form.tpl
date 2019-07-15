@@ -370,15 +370,16 @@
                                        value="{if (isset($cKey) &&  $cKey === 'cSuche') || (isset($oExtension->cKey) && $oExtension->cKey === 'cSuche')}{if isset($keycSuche) && $keycSuche !== ''}{$keycSuche}{else}{$oExtension->cValue}{/if}{/if}">
                                 <span class="input-group-addon">{getHelpDesc cDesc=__('enterSearchTerm')}</span>
                             </div>
-                            </div>
+                        </div>
                     </li>
                 </ul>
             </div>
         </div>
-
-        <div class="save_wrapper btn-group">
-            <button type="submit" class="btn btn-primary" value="{__('save')}"><i class="fa fa-save"></i> {__('save')}</button>
-            <button type="button" class="btn btn-default" onclick="window.location.href = 'slider.php';" value="zurück"><i class="fa fa-angle-double-left"></i> {__('back')}</button>
+        <div class="card-footer save_wrapper">
+            <div class="btn-group">
+                <button type="submit" class="btn btn-primary" value="{__('save')}"><i class="fa fa-save"></i> {__('save')}</button>
+                <button type="button" class="btn btn-default" onclick="window.location.href = 'slider.php';" value="zurück"><i class="fa fa-angle-double-left"></i> {__('back')}</button>
+            </div>
         </div>
     </form>
 </div>

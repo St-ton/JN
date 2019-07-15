@@ -73,9 +73,10 @@
 
     <div class="card">
         <div class="card-header">
-            <div class="card-title">{__('availableFormats')}</div>
+            <div class="subheading1">{__('availableFormats')}</div>
+            <hr class="mb-n3">
         </div>
-        <div class="table-responsive">
+        <div class="table-responsive card-body">
             <table class="table">
                 <thead>
                 <tr>

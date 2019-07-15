@@ -50,7 +50,7 @@
                         <div class="subheading1">{__('management')}</div>
                         <hr class="mb-n3">
                     </div>
-                    <div class="table-responsive">
+                    <div class="table-responsive card-body">
                     <table id="cache-type-status" class="table list">
                         <thead>
                         <tr>
@@ -98,8 +98,8 @@
                                 <span class="input-group-addon">
                                     <label for="cache-action">{__('action')}</label>
                                 </span>
-                                <span class="input-group-wrap">
-                                    <select class="form-control" name="cache-action" id="cache-action">
+                                <span class="label-wrap">
+                                    <select class="custom-select" name="cache-action" id="cache-action">
                                         <option name="flush" value="flush">{__('empty')}</option>
                                         <option name="deaktivieren" value="deactivate">{__('deactivate')}</option>
                                         <option name="aktivieren" value="activate">{__('activate')}</option>
@@ -131,58 +131,61 @@
                     <div class="card-header">
                         <div class="subheading1">{__('objectcache')}</div>
                     </div>
-                    <table class="table">
-                        {if isset($stats.uptime_h) && $stats.uptime_h !== null}
-                            <tr class="cache-row">
-                                <td>{__('uptime')}:</td>
-                                <td>{$stats.uptime_h}</td>
-                            </tr>
-                        {/if}
-                        {if isset($stats.mem) && $stats.mem !== null}
-                            <tr class="cache-row">
-                                <td>{__('fullSize')}:</td>
-                                <td>{$stats.mem} Bytes{if $stats.mem|strpos:'/' === false} ({($stats.mem/1024/1024)|string_format:'%.2f'} MB){/if}</td>
-                            </tr>
-                        {/if}
-                        {if isset($stats.entries) && $stats.entries !== null}
-                            <tr class="cache-row">
-                                <td>{__('entriesCount')}:</td>
-                                <td>{$stats.entries}</td>
-                            </tr>
-                        {/if}
-                        {if isset($stats.misses) && $stats.misses !== null}
-                            <tr class="cache-row">
-                                <td>{__('misses')}:</td>
-                                <td>{$stats.misses}
-                                    {if isset($stats.mps) && $stats.mps !== null && $stats.mps|strpos:'/' === false}
-                                        <span class="inline"> ({$stats.mps|string_format:'%.2f'} {__('misses')}/s)</span>
-                                    {/if}
-                                </td>
-                            </tr>
-                        {/if}
-                        {if isset($stats.hits) && $stats.hits !== null}
-                            <tr class="cache-row">
-                                <td>Hits:</td>
-                                <td>{$stats.hits}
-                                    {if isset($stats.hps) && $stats.hps !== null && $stats.hps|strpos:'/' === false}
-                                        <span class="inline"> ({$stats.hps|string_format:'%.2f'} {__('hits')}/s)</span>
-                                    {/if}
-                                </td>
-                            </tr>
-                        {/if}
-                        {if isset($stats.inserts) && $stats.inserts !== null}
-                            <tr class="cache-row">
-                                <td>{__('inserts')}:</td>
-                                <td>{$stats.inserts}</td>
-                            </tr>
-                        {/if}
-                    </table>
+                    <div class="card-body">
+                        <table class="table">
+                            {if isset($stats.uptime_h) && $stats.uptime_h !== null}
+                                <tr class="cache-row">
+                                    <td>{__('uptime')}:</td>
+                                    <td>{$stats.uptime_h}</td>
+                                </tr>
+                            {/if}
+                            {if isset($stats.mem) && $stats.mem !== null}
+                                <tr class="cache-row">
+                                    <td>{__('fullSize')}:</td>
+                                    <td>{$stats.mem} Bytes{if $stats.mem|strpos:'/' === false} ({($stats.mem/1024/1024)|string_format:'%.2f'} MB){/if}</td>
+                                </tr>
+                            {/if}
+                            {if isset($stats.entries) && $stats.entries !== null}
+                                <tr class="cache-row">
+                                    <td>{__('entriesCount')}:</td>
+                                    <td>{$stats.entries}</td>
+                                </tr>
+                            {/if}
+                            {if isset($stats.misses) && $stats.misses !== null}
+                                <tr class="cache-row">
+                                    <td>{__('misses')}:</td>
+                                    <td>{$stats.misses}
+                                        {if isset($stats.mps) && $stats.mps !== null && $stats.mps|strpos:'/' === false}
+                                            <span class="inline"> ({$stats.mps|string_format:'%.2f'} {__('misses')}/s)</span>
+                                        {/if}
+                                    </td>
+                                </tr>
+                            {/if}
+                            {if isset($stats.hits) && $stats.hits !== null}
+                                <tr class="cache-row">
+                                    <td>Hits:</td>
+                                    <td>{$stats.hits}
+                                        {if isset($stats.hps) && $stats.hps !== null && $stats.hps|strpos:'/' === false}
+                                            <span class="inline"> ({$stats.hps|string_format:'%.2f'} {__('hits')}/s)</span>
+                                        {/if}
+                                    </td>
+                                </tr>
+                            {/if}
+                            {if isset($stats.inserts) && $stats.inserts !== null}
+                                <tr class="cache-row">
+                                    <td>{__('inserts')}:</td>
+                                    <td>{$stats.inserts}</td>
+                                </tr>
+                            {/if}
+                        </table>
+                    </div>
                 </div>
                 {if isset($stats.slow) && is_array($stats.slow)}
                     <div class="card">
                         <div class="card-header">
                             <div class="subheading1">{__('slowlog')}</div>
                         </div>
+                        <div class="card-body">
                         {if $stats.slow|@count > 0}
                             <table class="table">
                                 {foreach $stats.slow as $slow}
@@ -193,10 +196,9 @@
                                 {/foreach}
                             </table>
                         {else}
-                            <div class="card-body">
-                                <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
-                            </div>
+                            <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                         {/if}
+                        </div>
                     </div>
                 {/if}
             {else}
@@ -207,54 +209,56 @@
                     <div class="card-header">
                         <div class="subheading1">OpCache</div>
                     </div>
-                    <table class="table cache-stats" id="opcache-stats">
-                        <tr class="cache-row">
-                            <td>{__('activated')}:</td>
-                            <td class="value">{if $opcache_stats->enabled === true}ja{else}nein{/if}</td>
-                        </tr>
-                        <tr class="cache-row">
-                            <td>{__('busySpace')}:</td>
-                            <td class="value">{$opcache_stats->memoryUsed} MB</td>
-                        </tr>
-                        <tr class="cache-row">
-                            <td>{__('emptySpace')}:</td>
-                            <td class="value">{$opcache_stats->memoryFree} MB</td>
-                        </tr>
-                        <tr class="cache-row">
-                            <td>{__('scriptCountInCache')}:</td>
-                            <td class="value">{$opcache_stats->numberScrips}</td>
-                        </tr>
-                        <tr class="cache-row">
-                            <td>{__('keyCountInCache')}:</td>
-                            <td class="value">{$opcache_stats->numberKeys}</td>
-                        </tr>
-                        <tr class="cache-row">
-                            <td>{__('hits')}:</td>
-                            <td class="value">{$opcache_stats->hits}</td>
-                        </tr>
-                        <tr class="cache-row">
-                            <td>{__('misses')}:</td>
-                            <td class="value">{$opcache_stats->misses}</td>
-                        </tr>
-                        <tr class="cache-row collapsed clickable" data-toggle="collapse" data-target="#hitRateDetail" style="cursor: pointer">
-                            <td>{__('hitRate')}:</td>
-                            <td class="value">{$opcache_stats->hitRate}%&nbsp;<i class="fa fa-info-circle right"></i></td>
-                        </tr>
-                        <tr class="cache-row">
-                            <td colspan="2" style="padding: 0">
-                                <div id="hitRateDetail" class=" collapse">
-                                    <table class="table cache-stats">
-                                        {foreach $opcache_stats->scripts as $script}
-                                            <tr class="cache-row">
-                                                <td class="file-path">{$script.full_path}</td>
-                                                <td class="value">{$script.hits} Hits</td>
-                                            </tr>
-                                        {/foreach}
-                                    </table>
-                                </div>
-                            </td>
-                        </tr>
-                    </table>
+                    <div class="card-body">
+                        <table class="table cache-stats" id="opcache-stats">
+                            <tr class="cache-row">
+                                <td>{__('activated')}:</td>
+                                <td class="value">{if $opcache_stats->enabled === true}ja{else}nein{/if}</td>
+                            </tr>
+                            <tr class="cache-row">
+                                <td>{__('busySpace')}:</td>
+                                <td class="value">{$opcache_stats->memoryUsed} MB</td>
+                            </tr>
+                            <tr class="cache-row">
+                                <td>{__('emptySpace')}:</td>
+                                <td class="value">{$opcache_stats->memoryFree} MB</td>
+                            </tr>
+                            <tr class="cache-row">
+                                <td>{__('scriptCountInCache')}:</td>
+                                <td class="value">{$opcache_stats->numberScrips}</td>
+                            </tr>
+                            <tr class="cache-row">
+                                <td>{__('keyCountInCache')}:</td>
+                                <td class="value">{$opcache_stats->numberKeys}</td>
+                            </tr>
+                            <tr class="cache-row">
+                                <td>{__('hits')}:</td>
+                                <td class="value">{$opcache_stats->hits}</td>
+                            </tr>
+                            <tr class="cache-row">
+                                <td>{__('misses')}:</td>
+                                <td class="value">{$opcache_stats->misses}</td>
+                            </tr>
+                            <tr class="cache-row collapsed clickable" data-toggle="collapse" data-target="#hitRateDetail" style="cursor: pointer">
+                                <td>{__('hitRate')}:</td>
+                                <td class="value">{$opcache_stats->hitRate}%&nbsp;<i class="fa fa-info-circle right"></i></td>
+                            </tr>
+                            <tr class="cache-row">
+                                <td colspan="2" style="padding: 0">
+                                    <div id="hitRateDetail" class=" collapse">
+                                        <table class="table cache-stats">
+                                            {foreach $opcache_stats->scripts as $script}
+                                                <tr class="cache-row">
+                                                    <td class="file-path">{$script.full_path}</td>
+                                                    <td class="value">{$script.hits} Hits</td>
+                                                </tr>
+                                            {/foreach}
+                                        </table>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
                 </div>
             {/if}
             {if $tplcacheStats !== null}
@@ -262,46 +266,48 @@
                     <div class="card-header">
                         <div class="subheading1">{__('templateCache')}</div>
                     </div>
-                    <table class="table cache-stats" id="tplcache-stats">
-                        <tr class="cache-row collapsed clickable" data-toggle="collapse" data-target="#cachefilesFrontendDetail" style="cursor: pointer">
-                            <td>{__('files')} {__('frontend')}</td>
-                            <td class="value">{$tplcacheStats->frontend|count}&nbsp;<i class="fa fa-info-circle right"></i></td>
-                        </tr>
-                        {if $tplcacheStats->frontend|count > 0}
-                        <tr class="cache-row">
-                            <td colspan="2" style="padding: 0">
-                                <div id="cachefilesFrontendDetail" class=" collapse">
-                                    <table class="table cache-stats">
-                                        {foreach $tplcacheStats->frontend as $file}
-                                            <tr class="cache-row">
-                                                <td class="file-path">{$file->fullname}</td>
-                                            </tr>
-                                        {/foreach}
-                                    </table>
-                                </div>
-                            </td>
-                        </tr>
-                        {/if}
-                        <tr class="cache-row collapsed clickable" data-toggle="collapse" data-target="#cachefilesBackendDetail" style="cursor: pointer">
-                            <td>{__('files')} {__('backend')}</td>
-                            <td class="value">{$tplcacheStats->backend|count}&nbsp;<i class="fa fa-info-circle right"></i></td>
-                        </tr>
-                        {if $tplcacheStats->backend|count > 0}
-                        <tr class="cache-row">
-                            <td colspan="2" style="padding: 0">
-                                <div id="cachefilesBackendDetail" class=" collapse">
-                                    <table class="table cache-stats">
-                                        {foreach $tplcacheStats->backend as $file}
-                                            <tr class="cache-row">
-                                                <td class="file-path">{$file->fullname}</td>
-                                            </tr>
-                                        {/foreach}
-                                    </table>
-                                </div>
-                            </td>
-                        </tr>
-                        {/if}
-                    </table>
+                    <div class="card-body">
+                        <table class="table cache-stats" id="tplcache-stats">
+                            <tr class="cache-row collapsed clickable" data-toggle="collapse" data-target="#cachefilesFrontendDetail" style="cursor: pointer">
+                                <td>{__('files')} {__('frontend')}</td>
+                                <td class="value">{$tplcacheStats->frontend|count}&nbsp;<i class="fa fa-info-circle right"></i></td>
+                            </tr>
+                            {if $tplcacheStats->frontend|count > 0}
+                            <tr class="cache-row">
+                                <td colspan="2" style="padding: 0">
+                                    <div id="cachefilesFrontendDetail" class=" collapse">
+                                        <table class="table cache-stats">
+                                            {foreach $tplcacheStats->frontend as $file}
+                                                <tr class="cache-row">
+                                                    <td class="file-path">{$file->fullname}</td>
+                                                </tr>
+                                            {/foreach}
+                                        </table>
+                                    </div>
+                                </td>
+                            </tr>
+                            {/if}
+                            <tr class="cache-row collapsed clickable" data-toggle="collapse" data-target="#cachefilesBackendDetail" style="cursor: pointer">
+                                <td>{__('files')} {__('backend')}</td>
+                                <td class="value">{$tplcacheStats->backend|count}&nbsp;<i class="fa fa-info-circle right"></i></td>
+                            </tr>
+                            {if $tplcacheStats->backend|count > 0}
+                            <tr class="cache-row">
+                                <td colspan="2" style="padding: 0">
+                                    <div id="cachefilesBackendDetail" class=" collapse">
+                                        <table class="table cache-stats">
+                                            {foreach $tplcacheStats->backend as $file}
+                                                <tr class="cache-row">
+                                                    <td class="file-path">{$file->fullname}</td>
+                                                </tr>
+                                            {/foreach}
+                                        </table>
+                                    </div>
+                                </td>
+                            </tr>
+                            {/if}
+                        </table>
+                    </div>
                 </div>
             {/if}
         </div>
@@ -364,24 +370,24 @@
                                         <hr class="mb-n3">
                                     </div>
                                     <div class="card-body">
-                                    <p><span class="opt">{__('status')}: </span> <span class="label {if $result.status === 'ok'}label-success{else}label-danger{/if}">{$result.status}</span></p>
-                                    <p><span class="opt">{__('time')} get: </span>
-                                        {if $result.status !== 'failed' && $result.status !== 'invalid'}
-                                            <span class="text">{$result.timings.get}s</span>
-                                            <span class="text">({$result.rps.get} {__('entries')}/s)</span>
-                                        {else}
-                                            <span class="text">-</span>
-                                        {/if}
-                                    </p>
+                                        <p><span class="opt">{__('status')}: </span> <span class="label {if $result.status === 'ok'}label-success{else}label-danger{/if}">{$result.status}</span></p>
+                                        <p><span class="opt">{__('time')} get: </span>
+                                            {if $result.status !== 'failed' && $result.status !== 'invalid'}
+                                                <span class="text">{$result.timings.get}s</span>
+                                                <span class="text">({$result.rps.get} {__('entries')}/s)</span>
+                                            {else}
+                                                <span class="text">-</span>
+                                            {/if}
+                                        </p>
 
-                                    <p><span class="opt">{__('time')} set: </span>
-                                        {if $result.status !== 'failed' && $result.status !== 'invalid'}
-                                            <span class="text">{$result.timings.set}s</span>
-                                            <span class="text">({$result.rps.set} {__('entries')}/s)</span>
-                                        {else}
-                                            <span class="text">-</span>
-                                        {/if}
-                                    </p>
+                                        <p><span class="opt">{__('time')} set: </span>
+                                            {if $result.status !== 'failed' && $result.status !== 'invalid'}
+                                                <span class="text">{$result.timings.set}s</span>
+                                                <span class="text">({$result.rps.set} {__('entries')}/s)</span>
+                                            {else}
+                                                <span class="text">-</span>
+                                            {/if}
+                                        </p>
                                     </div>
                                 </div>
                             {/if}
@@ -445,7 +451,7 @@
                             {foreach $advanced_settings as $setting}
                                 {if $setting->cConf === 'Y'}
                                     <div class="form-group form-row align-items-center">
-                                        <label class="col col-sm-4 col-form-label text-sm-right" for="{$setting->cWertName}">{$setting->cName}</label>
+                                        <label class="col col-sm-4 col-form-label text-sm-right" for="{$setting->cWertName}">{$setting->cName}:</label>
                                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                             {if $setting->cInputTyp === 'selectbox'}
                                                 <select name="{$setting->cWertName}" id="{$setting->cWertName}" class="custom-select">

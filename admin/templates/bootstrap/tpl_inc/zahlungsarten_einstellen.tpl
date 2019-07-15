@@ -7,7 +7,8 @@
 
         <div class="card">
             <div class="card-header">
-                <div class="card-title">{__('settings')}: {__('general')}</div>
+                <div class="subheading1">{__('settings')}: {__('general')}</div>
+                <hr class="mb-n3">
             </div>
             <div class="card-body">
                 {foreach $sprachen as $language}
@@ -157,7 +158,8 @@
                 </div>
                 {else}
                     <div class="card-header">
-                        <div class="card-title">{__('settings')}: {$cnf->cName}</div>
+                        <div class="subheading1">{__('settings')}: {$cnf->cName}</div>
+                        <hr class="mb-n3">
                     </div>
                     <div class="card-body">
                         {assign var=hasBody value=true}

@@ -80,9 +80,10 @@
                     <input type="hidden" name="tab" value="bewertungen" />
                     <div class="card">
                         <div class="card-header">
-                            <div class="card-title">{__('reviews')}</div>
+                            <div class="subheading1">{__('reviews')}</div>
+                            <hr class="mb-n3">
                         </div>
-                        <div class="table-responsive">
+                        <div class="table-responsive card-body">
                             <table class="list table">
                                 <thead>
                                 <tr>
@@ -160,7 +161,7 @@
                             {assign var=cSuchStr value=''}
                         {/if}
 
-                        <div class="table-responsive">
+                        <div class="table-responsive card-body">
                             <table class="list table table-striped">
                                 <thead>
                                 <tr>
@@ -222,7 +223,7 @@
                         <input type="hidden" name="freischalten" value="1" />
                         <input type="hidden" name="newskommentare" value="1" />
                         <input type="hidden" name="tab" value="newscomments" />
-                        <div class="table-responsive">
+                        <div class="table-responsive card-body">
                             <table class="list table table-striped">
                                 <thead>
                                     <tr>
@@ -291,7 +292,7 @@
                         {if isset($nSort)}
                             <input type="hidden" name="nSort" value="{$nSort}" />
                         {/if}
-                        <div class="table-responsive">
+                        <div class="table-responsive card-body">
                             <table class="list table">
                                 <thead>
                                     <tr>

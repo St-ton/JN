@@ -1,58 +1,63 @@
 {include file='tpl_inc/seite_header.tpl' cTitel=__('couponStatistic') cDokuURL=__('couponstatisticsURL')}
 <div id="content">
-    <div class="form-group">
-        <form method="post" action="kuponstatistik.php" class="form-inline">
-            {$jtl_token}
+    <div class="card">
+        <div class="card-body">
             <div class="form-group">
-                <input type="hidden" name="formFilter" value="1" class="form-control"/>
-                <label for="SelectFromDay">{__('fromUntilDate')}:</label>
-                <input type="text" size="21" name="daterange" class="form-control"/>
-                {include
-                    file="snippets/daterange_picker.tpl"
-                    datepickerID='input[name="daterange"]'
-                    currentDate="{$startDate} - {$endDate}"
-                    format="YYYY-MM-DD"
-                    separator=" - "
-                }
+                <form method="post" action="kuponstatistik.php" class="form-inline">
+                    {$jtl_token}
+                    <div class="form-group">
+                        <input type="hidden" name="formFilter" value="1" class="form-control"/>
+                        <label for="SelectFromDay">{__('fromUntilDate')}:</label>
+                        <input type="text" size="21" name="daterange" class="form-control"/>
+                        {include
+                            file="snippets/daterange_picker.tpl"
+                            datepickerID='input[name="daterange"]'
+                            currentDate="{$startDate} - {$endDate}"
+                            format="YYYY-MM-DD"
+                            separator=" - "
+                        }
+                    </div>
+                    <div class="form-group">
+                        <select id="kKupon" name="kKupon" class="combo custom-select">
+                            <option value="-1">{__('all')}</option>
+                            {foreach $coupons_arr as $coupon_arr}
+                                <option value="{$coupon_arr.kKupon}"{if isset($coupon_arr.aktiv) && $coupon_arr.aktiv} selected{/if}>{$coupon_arr.cName}</option>
+                            {/foreach}
+                        </select>
+                    </div>
+                    <button name="btnSubmit" type="submit" value="Filtern" class="btn btn-primary">{__('filtering')}</button>
+                </form>
             </div>
-            <div class="form-group">
-                <select id="kKupon" name="kKupon" class="combo form-control">
-                    <option value="-1">{__('all')}</option>
-                    {foreach $coupons_arr as $coupon_arr}
-                        <option value="{$coupon_arr.kKupon}"{if isset($coupon_arr.aktiv) && $coupon_arr.aktiv} selected{/if}>{$coupon_arr.cName}</option>
-                    {/foreach}
-                </select>
-            </div>
-            <button name="btnSubmit" type="submit" value="Filtern" class="btn btn-primary">{__('filtering')}</button>
-        </form>
-    </div>
 
-    <div class="table-responsive">
-        <table class="table">
-            <tr>
-                <td>{__('countUsedCoupons')}:</td>
-                <td><strong>{$overview_arr.nCountUsedCouponsOrder} ({$overview_arr.nPercentCountUsedCoupons}%)</strong></td>
-            </tr>
-            <tr>
-                <td>{__('countOrders')}:</td>
-                <td><strong>{$overview_arr.nCountOrder}</strong></td>
-            </tr>
-            <tr>
-                <td>{__('countCustomers')}:</td>
-                <td><strong>{$overview_arr.nCountCustomers}</strong></td>
-            </tr>
-            <tr>
-                <td>{__('couponAmountAll')}:</td>
-                <td><strong>{$overview_arr.nCouponAmountAll}</strong></td>
-            </tr>
-            <tr>
-                <td>{__('shoppingCartAmountAll')}:</td>
-                <td><strong>{$overview_arr.nShoppingCartAmountAll}</strong></td>
-            </tr>
-        </table>
+            <div class="table-responsive">
+                <table class="table">
+                    <tr>
+                        <td>{__('countUsedCoupons')}:</td>
+                        <td><strong>{$overview_arr.nCountUsedCouponsOrder} ({$overview_arr.nPercentCountUsedCoupons}%)</strong></td>
+                    </tr>
+                    <tr>
+                        <td>{__('countOrders')}:</td>
+                        <td><strong>{$overview_arr.nCountOrder}</strong></td>
+                    </tr>
+                    <tr>
+                        <td>{__('countCustomers')}:</td>
+                        <td><strong>{$overview_arr.nCountCustomers}</strong></td>
+                    </tr>
+                    <tr>
+                        <td>{__('couponAmountAll')}:</td>
+                        <td><strong>{$overview_arr.nCouponAmountAll}</strong></td>
+                    </tr>
+                    <tr>
+                        <td>{__('shoppingCartAmountAll')}:</td>
+                        <td><strong>{$overview_arr.nShoppingCartAmountAll}</strong></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
     </div>
     {if $usedCouponsOrder|@count > 0}
-        <div class="table-responsive">
+    <div class="card">
+        <div class="table-responsive card-body">
             <table class="table table-striped">
                 <thead>
                     <tr>
@@ -129,6 +134,7 @@
                 </tbody>
             </table>
         </div>
+    </div>
     {else}
         <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
     {/if}

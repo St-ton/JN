@@ -6,23 +6,24 @@
             <input type="hidden" name="pluginverwaltung_uebersicht" value="1" />
             <div class="card">
                 <div class="card-header">
-                    <div class="card-title">{__('pluginListInstalled')}</div>
+                    <div class="subheading1">{__('pluginListInstalled')}</div>
+                    <hr class="mb-n3">
                 </div>
-                <div class="table-responsive">
+                <div class="table-responsive card-body">
                     <table class="list table">
                         <thead>
-                        <tr>
-                            <th></th>
-                            <th class="tleft">{__('pluginName')}</th>
-                            <th>{__('status')}</th>
-                            <th>{__('pluginVersion')}</th>
-                            <th>{__('pluginInstalled')}</th>
-                            <th>{__('pluginFolder')}</th>
-                            <th>{__('pluginEditLocales')}</th>
-                            <th>{__('pluginEditLinkgrps')}</th>
-                            <th>{__('pluginBtnLicence')}</th>
-                            <th>{__('actions')}</th>
-                        </tr>
+                            <tr>
+                                <th></th>
+                                <th class="tleft">{__('pluginName')}</th>
+                                <th>{__('status')}</th>
+                                <th>{__('pluginVersion')}</th>
+                                <th>{__('pluginInstalled')}</th>
+                                <th>{__('pluginFolder')}</th>
+                                <th>{__('pluginEditLocales')}</th>
+                                <th>{__('pluginEditLinkgrps')}</th>
+                                <th>{__('pluginBtnLicence')}</th>
+                                <th>{__('actions')}</th>
+                            </tr>
                         </thead>
                         <tbody>
                         {foreach $pluginsByState.status_2 as $plugin}
@@ -104,10 +105,10 @@
                         {/foreach}
                         </tbody>
                         <tfoot>
-                        <tr>
-                            <td class="check"><input name="ALLMSGS" id="ALLMSGS1" type="checkbox" onclick="AllMessages(this.form);" /></td>
-                            <td colspan="10"><label for="ALLMSGS1">{__('selectAll')}</label></td>
-                        </tr>
+                            <tr>
+                                <td class="check"><input name="ALLMSGS" id="ALLMSGS1" type="checkbox" onclick="AllMessages(this.form);" /></td>
+                                <td colspan="10"><label for="ALLMSGS1">{__('selectAll')}</label></td>
+                            </tr>
                         </tfoot>
                     </table>
                 </div>

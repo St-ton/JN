@@ -19,7 +19,7 @@
             <div class="card-header">
                 <div class="subheading1">{$oNewsKommentar->getName()} - {__('newsCommentEdit')}</div>
             </div>
-            <div class="table-responsive">
+            <div class="table-responsive card-body">
                 <table class="list table" id="formtable">
                     <tr>
                         <td><label for="cName">{__('visitors')}</label></td>

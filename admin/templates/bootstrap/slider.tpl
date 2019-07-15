@@ -18,42 +18,44 @@
                 {else}
                     {include file='tpl_inc/pagination.tpl' pagination=$pagination}
                     <div class="card-header">
-                        <div class="heading">{__('slider')}</div>
+                        <div class="subheading1">{__('slider')}</div>
                     </div>
-                    <table class="table">
-                        <thead>
-                        <tr>
-                            <th class="tleft" width="50%">{__('name')}</th>
-                            <th width="20%">{__('status')}</th>
-                            <th width="30%">{__('options')}</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {foreach $oSlider_arr as $oSlider}
+                    <div class="card-body">
+                        <table class="table">
+                            <thead>
                             <tr>
-                                <td class="tleft">{$oSlider->cName}</td>
-                                <td class="tcenter">
-                                    <h4 class="label-wrap">
-                                    {if $oSlider->bAktiv == 1}
-                                        <span class="label label-success">{__('active')}</span>
-                                    {else}
-                                        <span class="label label-danger">{__('inactive')}</span>
-                                    {/if}
-                                    </h4>
-                                </td>
-                                <td>
-                                    <div class="btn-group">
-                                        <a class="btn btn-default add" href="slider.php?action=slides&id={$oSlider->kSlider}&token={$smarty.session.jtl_token}" title="{__('slides')}"><i class="fa fa-image"></i></a>
-                                        <a class="btn btn-default" href="slider.php?action=edit&id={$oSlider->kSlider}&token={$smarty.session.jtl_token}" title="{__('modify')}"><i class="fa fa-edit"></i></a>
-                                        <a class="btn btn-danger" href="slider.php?action=delete&id={$oSlider->kSlider}&token={$smarty.session.jtl_token}" title="{__('delete')}"><i class="fa fa-trash"></i></a>
-                                    </div>
-                                </td>
+                                <th class="tleft" width="50%">{__('name')}</th>
+                                <th width="20%">{__('status')}</th>
+                                <th width="30%">{__('options')}</th>
                             </tr>
-                        {/foreach}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                            {foreach $oSlider_arr as $oSlider}
+                                <tr>
+                                    <td class="tleft">{$oSlider->cName}</td>
+                                    <td class="tcenter">
+                                        <h4 class="label-wrap">
+                                        {if $oSlider->bAktiv == 1}
+                                            <span class="label label-success">{__('active')}</span>
+                                        {else}
+                                            <span class="label label-danger">{__('inactive')}</span>
+                                        {/if}
+                                        </h4>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group">
+                                            <a class="btn btn-default add" href="slider.php?action=slides&id={$oSlider->kSlider}&token={$smarty.session.jtl_token}" title="{__('slides')}"><i class="fa fa-image"></i></a>
+                                            <a class="btn btn-default" href="slider.php?action=edit&id={$oSlider->kSlider}&token={$smarty.session.jtl_token}" title="{__('modify')}"><i class="fa fa-edit"></i></a>
+                                            <a class="btn btn-danger" href="slider.php?action=delete&id={$oSlider->kSlider}&token={$smarty.session.jtl_token}" title="{__('delete')}"><i class="fa fa-trash"></i></a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {/foreach}
+                            </tbody>
+                        </table>
+                    </div>
                 {/if}
-                <div class="card-footer">
+                <div class="card-footer save_wrapper">
                     <a class="btn btn-primary" href="slider.php?action=new&token={$smarty.session.jtl_token}"><i class="fa fa-share"></i> {__('sliderCreate')}</a>
                 </div>
             </div>

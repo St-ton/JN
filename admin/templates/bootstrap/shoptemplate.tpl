@@ -25,18 +25,17 @@
             {else}
                 <div class="card">
                     <div class="card-header">
-                        <div class="card-title">{__('mobile')}</div>
+                        <div class="subheading1">{__('mobile')}</div>
+                        <hr class="mb-n3">
                     </div>
                     <div class="card-body">
                         {if $oTemplate->eTyp === 'mobil' && $oTemplate->bResponsive}
                             <div class="alert alert-warning">{__('warning_responsive_mobile')}</div>
                         {/if}
-                        <div class="item input-group">
-                            <span class="input-group-addon">
-                                <label for="eTyp">{__('standardTemplateMobil')}</label>
-                            </span>
-                            <span class="input-group-wrap">
-                                <select class="form-control" name="eTyp" id="eTyp">
+                        <div class="item form-group form-row align-items-center">
+                            <label class="col col-sm-4 col-form-label text-sm-right" for="eTyp">{__('standardTemplateMobil')}</label>
+                            <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                <select class="custom-select" name="eTyp" id="eTyp">
                                     <option value="standard" {if $oTemplate->eTyp === 'standard'}selected="selected"{/if}>
                                         {__('optimizeBrowser')}
                                     </option>
@@ -44,7 +43,7 @@
                                         {__('optimizeMobile')}
                                     </option>
                                 </select>
-                            </span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -53,14 +52,15 @@
             {foreach $oEinstellungenXML as $oSection}
                 <div class="card">
                     <div class="card-header">
-                        <div class="card-title">{$oSection->cName}</div>
+                        <div class="subheading1">{$oSection->cName}</div>
+                        <hr class="mb-n3">
                     </div>
                     <div class="card-body">
                         <div class="row">
                             {foreach $oSection->oSettings_arr as $oSetting}
                                 {if $oSetting->cKey === 'theme_default' && isset($themePreviews) && $themePreviews !== null}
                                     <div class="col-xs-12">
-                                        <div class="item input-group" id="theme-preview-wrap" style="display: none;">
+                                        <div class="item form-group form-row align-items-center" id="theme-preview-wrap" style="display: none;">
                                             <span class="input-group-addon"><strong>{__('preview')}</strong></span>
                                             <img id="theme-preview" alt="" />
                                         </div>
@@ -91,20 +91,18 @@
                                 <div class="col-xs-12 col-md-12">
                                     <input type="hidden" name="cSektion[]" value="{$oSection->cKey}" />
                                     <input type="hidden" name="cName[]" value="{$oSetting->cKey}" />
-                                    <div class="item input-group">
+                                    <div class="item form-group form-row align-items-center">
                                         {if $oSetting->bEditable}
-                                            <span class="input-group-addon">
-                                                <label for="{$oSection->cKey}-{$oSetting->cKey}">{$oSetting->cName}</label>
-                                            </span>
-                                            <span class="input-group-wrap">
+                                            <label class="col col-sm-4 col-form-label text-sm-right" for="{$oSection->cKey}-{$oSetting->cKey}">{$oSetting->cName}:</label>
+                                            <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                                 {if $oSetting->cType === 'select'}
-                                                    <select class="form-control" name="cWert[]" id="{$oSection->cKey}-{$oSetting->cKey}">
+                                                    <select class="custom-select" name="cWert[]" id="{$oSection->cKey}-{$oSetting->cKey}">
                                                         {foreach $oSetting->oOptions_arr as $oOption}
                                                             <option value="{$oOption->cValue}" {if $oOption->cValue == $oSetting->cValue}selected="selected"{/if}>{$oOption->cName}</option>
                                                         {/foreach}
                                                     </select>
                                                 {elseif $oSetting->cType === 'optgroup'}
-                                                    <select class="form-control" name="cWert[]" id="{$oSection->cKey}-{$oSetting->cKey}">
+                                                    <select class="custom-select" name="cWert[]" id="{$oSection->cKey}-{$oSetting->cKey}">
                                                         {foreach $oSetting->oOptgroup_arr as $oOptgroup}
                                                             <optgroup label="{$oOptgroup->cName}">
                                                             {foreach $oOptgroup->oValues_arr as $oOption}
@@ -198,7 +196,7 @@
                                                         {rdelim});
                                                     </script>
                                                 {/if}
-                                            </span>
+                                            </div>
                                         {else}
                                             <input type="hidden" name="cWert[]" value="{$oSetting->cValue|escape:'html'}" />
                                         {/if}

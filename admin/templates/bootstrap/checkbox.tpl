@@ -57,19 +57,22 @@
                             <div class="card-body">
                                 <div class="table-responsive">
                                     <table class="table table-striped">
-                                        <tr>
-                                            <th class="th-1">&nbsp;</th>
-                                            <th class="th-1">{__('name')}</th>
-                                            <th class="th-2">{__('checkboxLink')}</th>
-                                            <th class="th-3">{__('checkboxLocation')}</th>
-                                            <th class="th-4">{__('checkboxFunction')}</th>
-                                            <th class="th-4">{__('requiredEntry')}</th>
-                                            <th class="th-5">{__('active')}</th>
-                                            <th class="th-5">{__('checkboxLogging')}</th>
-                                            <th class="th-6">{__('sorting')}</th>
-                                            <th class="th-7">{__('customerGroup')}</th>
-                                            <th class="th-8" colspan="2">{__('checkboxDate')}</th>
-                                        </tr>
+                                        <thead>
+                                            <tr>
+                                                <th class="th-1">&nbsp;</th>
+                                                <th class="th-1">{__('name')}</th>
+                                                <th class="th-2">{__('checkboxLink')}</th>
+                                                <th class="th-3">{__('checkboxLocation')}</th>
+                                                <th class="th-4">{__('checkboxFunction')}</th>
+                                                <th class="th-4">{__('requiredEntry')}</th>
+                                                <th class="th-5">{__('active')}</th>
+                                                <th class="th-5">{__('checkboxLogging')}</th>
+                                                <th class="th-6">{__('sorting')}</th>
+                                                <th class="th-7">{__('customerGroup')}</th>
+                                                <th class="th-8" colspan="2">{__('checkboxDate')}</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
                                         {foreach $oCheckBox_arr as $oCheckBoxUebersicht}
                                             <tr>
                                                 <td>
@@ -102,12 +105,15 @@
                                                 </td>
                                             </tr>
                                         {/foreach}
-                                        <tr>
-                                            <td>
-                                                <input name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);">
-                                            </td>
-                                            <td colspan="11"><label for="ALLMSGS">{__('globalSelectAll')}</label></td>
-                                        </tr>
+                                        </tbody>
+                                        <tfoot>
+                                            <tr>
+                                                <td>
+                                                    <input name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);">
+                                                </td>
+                                                <td colspan="11"><label for="ALLMSGS">{__('globalSelectAll')}</label></td>
+                                            </tr>
+                                        </tfoot>
                                     </table>
                                 </div>
                             </div>

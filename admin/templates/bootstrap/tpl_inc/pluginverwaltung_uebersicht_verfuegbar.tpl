@@ -48,9 +48,9 @@
             <div class="card">
                 <div class="card-header">
                     <div class="subheading1">{__('pluginListNotInstalled')}</div>
+                    <hr class="mb-n3">
                 </div>
-                <div class="table-responsive">
-
+                <div class="table-responsive card-body">
                     <!-- license-modal definition -->
                     <div id="licenseModal" class="modal fade" role="dialog">
                         <div class="modal-dialog modal-lg">
@@ -76,12 +76,12 @@
 
                     <table class="list table">
                         <thead>
-                        <tr>
-                            <th></th>
-                            <th class="tleft">{__('pluginName')}</th>
-                            <th>{__('pluginVersion')}</th>
-                            <th>{__('pluginFolder')}</th>
-                        </tr>
+                            <tr>
+                                <th></th>
+                                <th class="tleft">{__('pluginName')}</th>
+                                <th>{__('pluginVersion')}</th>
+                                <th>{__('pluginFolder')}</th>
+                            </tr>
                         </thead>
                         <tbody>
                         {foreach $pluginsAvailable->toArray() as $listingItem}
@@ -109,10 +109,10 @@
                         {/foreach}
                         </tbody>
                         <tfoot>
-                        <tr>
-                            <td class="check"><input name="ALLMSGS" id="ALLMSGS4" type="checkbox" onclick="AllMessagesExcept(this.form, vLicenses);" /></td>
-                            <td colspan="5"><label for="ALLMSGS4">{__('selectAll')}</label></td>
-                        </tr>
+                            <tr>
+                                <td class="check"><input name="ALLMSGS" id="ALLMSGS4" type="checkbox" onclick="AllMessagesExcept(this.form, vLicenses);" /></td>
+                                <td colspan="5"><label for="ALLMSGS4">{__('selectAll')}</label></td>
+                            </tr>
                         </tfoot>
                     </table>
                 </div>

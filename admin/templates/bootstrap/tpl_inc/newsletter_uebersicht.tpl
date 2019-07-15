@@ -67,16 +67,22 @@
                             <input type="hidden" name="cSucheInaktiv" value="{$cSucheInaktiv}" />
                         {/if}
                         <div class="card">
-                            <div class="table-responsive">
+                            <div class="card-header">
+                                <div class="subheading1">{__('newsletterSubscripterNotActive')}</div>
+                            </div>
+                            <div class="table-responsive card-body">
                                 <table class="table table-striped">
-                                    <tr>
-                                        <th class="th-1">&nbsp;</th>
-                                        <th class="tleft">{__('firstName')}</th>
-                                        <th class="tleft">{__('lastName')}</th>
-                                        <th class="tleft">{__('customerGroup')}</th>
-                                        <th class="tleft">{__('email')}</th>
-                                        <th class="tcenter">{__('newslettersubscriberdate')}</th>
-                                    </tr>
+                                    <thead>
+                                        <tr>
+                                            <th class="th-1">&nbsp;</th>
+                                            <th class="tleft">{__('firstName')}</th>
+                                            <th class="tleft">{__('lastName')}</th>
+                                            <th class="tleft">{__('customerGroup')}</th>
+                                            <th class="tleft">{__('email')}</th>
+                                            <th class="tcenter">{__('newslettersubscriberdate')}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
                                     {foreach $oNewsletterEmpfaenger_arr as $oNewsletterEmpfaenger}
                                         <tr>
                                             <td class="tleft">
@@ -89,12 +95,15 @@
                                             <td class="tcenter">{$oNewsletterEmpfaenger->Datum}</td>
                                         </tr>
                                     {/foreach}
-                                    <tr>
-                                        <td>
-                                            <input name="ALLMSGS" id="ALLMSGS2" type="checkbox" onclick="AllMessages(this.form);">
-                                        </td>
-                                        <td colspan="6"><label for="ALLMSGS2">{__('globalSelectAll')}</label></td>
-                                    </tr>
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <td>
+                                                <input name="ALLMSGS" id="ALLMSGS2" type="checkbox" onclick="AllMessages(this.form);">
+                                            </td>
+                                            <td colspan="6"><label for="ALLMSGS2">{__('globalSelectAll')}</label></td>
+                                        </tr>
+                                    </tfoot>
                                 </table>
                             </div>
                             <div class="card-footer">
@@ -144,18 +153,21 @@
                             <div class="card-header">
                                 <div class="subheading1">{__('newsletterAllSubscriber')}</div>
                             </div>
-                            <div class="table-responsive">
+                            <div class="table-responsive card-body">
                                 <table class="table table-striped">
-                                    <tr>
-                                        <th class="th-1">&nbsp;</th>
-                                        <th class="tleft">{__('newslettersubscribername')}</th>
-                                        <th class="tleft">{__('customerGroup')}</th>
-                                        <th class="tleft">{__('email')}</th>
-                                        <th class="tcenter">{__('newslettersubscriberdate')}</th>
-                                        <th class="tcenter">{__('newslettersubscriberLastNewsletter')}</th>
-                                        <th class="tleft">{__('newsletterOptInIp')}</th>
-                                        <th class="tcenter">{__('newsletterOptInDate')}</th>
-                                    </tr>
+                                    <thead>
+                                        <tr>
+                                            <th class="th-1">&nbsp;</th>
+                                            <th class="tleft">{__('newslettersubscribername')}</th>
+                                            <th class="tleft">{__('customerGroup')}</th>
+                                            <th class="tleft">{__('email')}</th>
+                                            <th class="tcenter">{__('newslettersubscriberdate')}</th>
+                                            <th class="tcenter">{__('newslettersubscriberLastNewsletter')}</th>
+                                            <th class="tleft">{__('newsletterOptInIp')}</th>
+                                            <th class="tcenter">{__('newsletterOptInDate')}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
                                     {foreach $oAbonnenten_arr as $oAbonnenten}
                                         <tr>
                                             <td class="tleft">
@@ -170,12 +182,15 @@
                                             <td class="tcenter">{$oAbonnenten->optInDate}</td>
                                         </tr>
                                     {/foreach}
-                                    <tr>
-                                        <td>
-                                            <input name="ALLMSGS" id="ALLMSGS3" type="checkbox" onclick="AllMessages(this.form);">
-                                        </td>
-                                        <td colspan="7"><label for="ALLMSGS3">{__('globalSelectAll')}</label></td>
-                                    </tr>
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <td>
+                                                <input name="ALLMSGS" id="ALLMSGS3" type="checkbox" onclick="AllMessages(this.form);">
+                                            </td>
+                                            <td colspan="7"><label for="ALLMSGS3">{__('globalSelectAll')}</label></td>
+                                        </tr>
+                                    </tfoot>
                                 </table>
                             </div>
                             <div class="card-footer">
@@ -256,16 +271,19 @@
                             <div class="card-header">
                                 <div class="subheading1">{__('newsletterqueue')}</div>
                             </div>
-                            <div class="table-responsive">
+                            <div class="table-responsive card-body">
                                 <table class="table table-striped">
-                                    <tr>
-                                        <th class="th-1" style="width: 4%;">&nbsp;</th>
-                                        <th class="th-2" style="width: 40%;">{__('subject')}</th>
-                                        <th class="th-3" style="width: 30%;">{__('newsletterqueuedate')}</th>
-                                        <th class="th-4" style="width: 26%;">{__('newsletterqueueimprovement')}</th>
-                                        <th class="th-5" style="width: 26%;">{__('newsletterqueuecount')}</th>
-                                        <th class="th-6" style="width: 26%;">{__('newsletterqueuecustomergrp')}</th>
-                                    </tr>
+                                    <thead>
+                                        <tr>
+                                            <th class="th-1" style="width: 4%;">&nbsp;</th>
+                                            <th class="th-2" style="width: 40%;">{__('subject')}</th>
+                                            <th class="th-3" style="width: 30%;">{__('newsletterqueuedate')}</th>
+                                            <th class="th-4" style="width: 26%;">{__('newsletterqueueimprovement')}</th>
+                                            <th class="th-5" style="width: 26%;">{__('newsletterqueuecount')}</th>
+                                            <th class="th-6" style="width: 26%;">{__('newsletterqueuecustomergrp')}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
                                     {foreach $oNewsletterQueue_arr as $oNewsletterQueue}
                                         {if isset($oNewsletterQueue->nAnzahlEmpfaenger) && $oNewsletterQueue->nAnzahlEmpfaenger > 0}
                                             <tr>
@@ -287,12 +305,15 @@
                                             </tr>
                                         {/if}
                                     {/foreach}
-                                    <tr>
-                                        <td>
-                                            <input name="ALLMSGS" id="ALLMSGS4" type="checkbox" onclick="AllMessages(this.form);">
-                                        </td>
-                                        <td colspan="6"><label for="ALLMSGS4">{__('globalSelectAll')}</label></td>
-                                    </tr>
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <td>
+                                                <input name="ALLMSGS" id="ALLMSGS4" type="checkbox" onclick="AllMessages(this.form);">
+                                            </td>
+                                            <td colspan="6"><label for="ALLMSGS4">{__('globalSelectAll')}</label></td>
+                                        </tr>
+                                    </tfoot>
                                 </table>
                             </div>
                             <div class="card-footer">
@@ -317,15 +338,18 @@
                             <div class="card-header">
                                 <div class="subheading1">{__('marked')}</div>
                             </div>
-                            <div class="table-responsive">
+                            <div class="table-responsive card-body">
                                 <table class="table table-striped">
-                                    <tr>
-                                        <th class="th-1">&nbsp;</th>
-                                        <th class="th-2">{__('newsletterdraftname')}</th>
-                                        <th class="th-3">{__('subject')}</th>
-                                        <th class="th-4">{__('newsletterdraftStdShort')}</th>
-                                        <th class="th-5" style="width: 385px;">{__('options')}</th>
-                                    </tr>
+                                    <thead>
+                                        <tr>
+                                            <th class="th-1">&nbsp;</th>
+                                            <th class="th-2">{__('newsletterdraftname')}</th>
+                                            <th class="th-3">{__('subject')}</th>
+                                            <th class="th-4">{__('newsletterdraftStdShort')}</th>
+                                            <th class="th-5" style="width: 385px;">{__('options')}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
                                     {foreach $oNewsletterVorlage_arr as $oNewsletterVorlage}
                                         <tr>
                                             <td>
@@ -361,12 +385,15 @@
                                             </td>
                                         </tr>
                                     {/foreach}
-                                    <tr>
-                                        <td>
-                                            <input name="ALLMSGS" id="ALLMSGS5" type="checkbox" onclick="AllMessages(this.form);">
-                                        </td>
-                                        <td colspan="6"><label for="ALLMSGS5">{__('globalSelectAll')}</label></td>
-                                    </tr>
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <td>
+                                                <input name="ALLMSGS" id="ALLMSGS5" type="checkbox" onclick="AllMessages(this.form);">
+                                            </td>
+                                            <td colspan="6"><label for="ALLMSGS5">{__('globalSelectAll')}</label></td>
+                                        </tr>
+                                    </tfoot>
                                 </table>
                             </div>
                             <div class="card-footer">
@@ -408,12 +435,15 @@
                             <div class="card-header">
                                 <div class="subheading1">{__('newsletterdraftStd')}</div>
                             </div>
-                            <div class="table-responsive">
+                            <div class="table-responsive card-body">
                                 <table class="table table-striped">
-                                    <tr>
-                                        <th class="th-1">{__('newsletterdraftname')}</th>
-                                        <th class="th-2">{__('preview')}</th>
-                                    </tr>
+                                    <thead>
+                                        <tr>
+                                            <th class="th-1">{__('newsletterdraftname')}</th>
+                                            <th class="th-2">{__('preview')}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
                                     {foreach $oNewslettervorlageStd_arr as $oNewslettervorlageStd}
                                         <tr>
                                             <td>
@@ -422,6 +452,7 @@
                                             <td valign="top">{$oNewslettervorlageStd->cBild}</td>
                                         </tr>
                                     {/foreach}
+                                    </tbody>
                                 </table>
                             </div>
                             <div class="card-footer">
@@ -446,15 +477,18 @@
                             <div class="card-header">
                                 <div class="subheading1">{__('newsletterhistory')}</div>
                             </div>
-                            <div class="table-responsive">
+                            <div class="table-responsive card-body">
                                 <table class="table table-striped">
-                                    <tr>
-                                        <th class="th-1">&nbsp;</th>
-                                        <th class="tleft">{__('newsletterhistorysubject')}</th>
-                                        <th class="tleft">{__('newsletterhistorycount')}</th>
-                                        <th class="tleft">{__('newsletterqueuecustomergrp')}</th>
-                                        <th class="tcenter">{__('newsletterhistorydate')}</th>
-                                    </tr>
+                                    <thead>
+                                        <tr>
+                                            <th class="th-1">&nbsp;</th>
+                                            <th class="tleft">{__('newsletterhistorysubject')}</th>
+                                            <th class="tleft">{__('newsletterhistorycount')}</th>
+                                            <th class="tleft">{__('newsletterqueuecustomergrp')}</th>
+                                            <th class="tcenter">{__('newsletterhistorydate')}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
                                     {foreach $oNewsletterHistory_arr as $oNewsletterHistory}
                                         <tr>
                                             <td class="tleft">
@@ -468,12 +502,15 @@
                                             <td class="tcenter">{$oNewsletterHistory->Datum}</td>
                                         </tr>
                                     {/foreach}
-                                    <tr>
-                                        <td>
-                                            <input name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);">
-                                        </td>
-                                        <td colspan="6"><label for="ALLMSGS">{__('globalSelectAll')}</label></td>
-                                    </tr>
+                                    </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <td>
+                                                <input name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);">
+                                            </td>
+                                            <td colspan="6"><label for="ALLMSGS">{__('globalSelectAll')}</label></td>
+                                        </tr>
+                                    </tfoot>
                                 </table>
                             </div>
                             <div class="card-footer">

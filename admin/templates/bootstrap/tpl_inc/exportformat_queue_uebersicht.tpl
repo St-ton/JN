@@ -15,12 +15,13 @@
                 {$jtl_token}
                 <div class="card">
                     <div class="card-header">
-                        <div class="card-title">{__('exportformatQueue')}</div>
+                        <div class="subheading1">{__('exportformatQueue')}</div>
+                        <hr class="mb-n3">
                     </div>
                     {if $oExportformatCron_arr && $oExportformatCron_arr|@count > 0}
-                        <div id="payment">
-                            <div id="tabellenLivesuche" class="table-responsive">
-                                <table class="table table-striped">
+                        <div id="tabellenLivesuche" class="table-responsive card-body">
+                            <table class="table table-striped">
+                                <thead>
                                     <tr>
                                         <th class="tleft" style="width: 10px;">&nbsp;</th>
                                         <th class="tleft">{__('exportformat')}</th>
@@ -32,35 +33,39 @@
                                         <th class="tcenter">{__('exportformatNextStart')}</th>
                                         <th class="tcenter">&nbsp;</th>
                                     </tr>
-                                    {foreach $oExportformatCron_arr as $oExportformatCron}
-                                        <tr>
-                                            <td class="tleft">
-                                                <input name="kCron[]" type="checkbox" value="{$oExportformatCron->cronID}" id="kCron-{$oExportformatCron->cronID}" />
-                                            </td>
-                                            <td class="tleft"><label for="kCron-{$oExportformatCron->cronID}">{$oExportformatCron->cName}</label></td>
-                                            <td class="tleft">{$oExportformatCron->Sprache->getLocalizedName()}/{$oExportformatCron->Waehrung->cName}/{$oExportformatCron->Kundengruppe->cName}</td>
-                                            <td class="tcenter">{$oExportformatCron->dStart_de}</td>
-                                            <td class="tcenter">{$oExportformatCron->cAlleXStdToDays}</td>
-                                            <td class="tcenter">
-                                                {$oExportformatCron->oJobQueue->tasksExecuted|default:0}/{$oExportformatCron->nAnzahlArtikel->nAnzahl}
-                                            </td>
-                                            <td class="tcenter">{if $oExportformatCron->dLetzterStart_de === '00.00.0000 00:00'}-{else}{$oExportformatCron->dLetzterStart_de}{/if}</td>
-                                            <td class="tcenter">{if $oExportformatCron->dNaechsterStart_de === null}sofort{else}{$oExportformatCron->dNaechsterStart_de}{/if}</td>
-                                            <td class="tcenter">
-                                                <a href="exportformat_queue.php?action=editieren&kCron={$oExportformatCron->cronID}&token={$smarty.session.jtl_token}"
-                                                   class="btn btn-default" title="{__('modify')}"><i class="fa fa-edit"></i>
-                                                </a>
-                                            </td>
-                                        </tr>
-                                    {/foreach}
+                                </thead>
+                                <tbody>
+                                {foreach $oExportformatCron_arr as $oExportformatCron}
+                                    <tr>
+                                        <td class="tleft">
+                                            <input name="kCron[]" type="checkbox" value="{$oExportformatCron->cronID}" id="kCron-{$oExportformatCron->cronID}" />
+                                        </td>
+                                        <td class="tleft"><label for="kCron-{$oExportformatCron->cronID}">{$oExportformatCron->cName}</label></td>
+                                        <td class="tleft">{$oExportformatCron->Sprache->getLocalizedName()}/{$oExportformatCron->Waehrung->cName}/{$oExportformatCron->Kundengruppe->cName}</td>
+                                        <td class="tcenter">{$oExportformatCron->dStart_de}</td>
+                                        <td class="tcenter">{$oExportformatCron->cAlleXStdToDays}</td>
+                                        <td class="tcenter">
+                                            {$oExportformatCron->oJobQueue->tasksExecuted|default:0}/{$oExportformatCron->nAnzahlArtikel->nAnzahl}
+                                        </td>
+                                        <td class="tcenter">{if $oExportformatCron->dLetzterStart_de === '00.00.0000 00:00'}-{else}{$oExportformatCron->dLetzterStart_de}{/if}</td>
+                                        <td class="tcenter">{if $oExportformatCron->dNaechsterStart_de === null}sofort{else}{$oExportformatCron->dNaechsterStart_de}{/if}</td>
+                                        <td class="tcenter">
+                                            <a href="exportformat_queue.php?action=editieren&kCron={$oExportformatCron->cronID}&token={$smarty.session.jtl_token}"
+                                               class="btn btn-default" title="{__('modify')}"><i class="fa fa-edit"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                {/foreach}
+                                </tbody>
+                                <tfoot>
                                     <tr>
                                         <td>
                                             <input name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);">
                                         </td>
                                         <td colspan="8"><label for="ALLMSGS">{__('globalSelectAll')}</label></td>
                                     </tr>
-                                </table>
-                            </div>
+                                </tfoot>
+                            </table>
                         </div>
                         <div class="card-footer">
                             <div class="btn-group">
@@ -100,12 +105,14 @@
             </div>
             <div class="card">
                 <div class="card-header">
-                    <div class="card-title">{__('exportformatTodaysWork')}</div>
+                    <div class="subheading1">{__('exportformatTodaysWork')}</div>
+                    <hr class="mb-n3">
                 </div>
+                <div class="card-body">
                 {if $oExportformatQueueBearbeitet_arr && $oExportformatQueueBearbeitet_arr|@count > 0}
-                    <div id="payment">
-                        <div id="tabellenLivesuche" class="table-responsive">
-                            <table class="table table-striped">
+                    <div id="tabellenLivesuche" class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
                                 <tr>
                                     <th class="th-1">{__('exportformat')}</th>
                                     <th class="th-2">{__('filename')}</th>
@@ -113,25 +120,26 @@
                                     <th class="th-4">{__('exportformatExported')}</th>
                                     <th class="th-5">{__('exportformatLastStart')}</th>
                                 </tr>
-                                {foreach $oExportformatQueueBearbeitet_arr as $oExportformatQueueBearbeitet}
-                                    <tr>
-                                        <td>{$oExportformatQueueBearbeitet->cName}</td>
-                                        <td>{$oExportformatQueueBearbeitet->cDateiname}</td>
-                                        <td>
-                                            {$oExportformatQueueBearbeitet->name}/{$oExportformatQueueBearbeitet->cNameWaehrung}/{$oExportformatQueueBearbeitet->cNameKundengruppe}
-                                        </td>
-                                        <td>{$oExportformatQueueBearbeitet->nLimitN}</td>
-                                        <td>{$oExportformatQueueBearbeitet->dZuletztGelaufen_DE}</td>
-                                    </tr>
-                                {/foreach}
-                            </table>
-                        </div>
+                            </thead>
+                            <tbody>
+                            {foreach $oExportformatQueueBearbeitet_arr as $oExportformatQueueBearbeitet}
+                                <tr>
+                                    <td>{$oExportformatQueueBearbeitet->cName}</td>
+                                    <td>{$oExportformatQueueBearbeitet->cDateiname}</td>
+                                    <td>
+                                        {$oExportformatQueueBearbeitet->name}/{$oExportformatQueueBearbeitet->cNameWaehrung}/{$oExportformatQueueBearbeitet->cNameKundengruppe}
+                                    </td>
+                                    <td>{$oExportformatQueueBearbeitet->nLimitN}</td>
+                                    <td>{$oExportformatQueueBearbeitet->dZuletztGelaufen_DE}</td>
+                                </tr>
+                            {/foreach}
+                            </tbody>
+                        </table>
                     </div>
                 {else}
-                    <div class="card-body">
-                        <div class="alert alert-info">{__('exportformatNoTodaysWork')}</div>
-                    </div>
+                    <div class="alert alert-info">{__('exportformatNoTodaysWork')}</div>
                 {/if}
+                </div>
             </div>
         </div>
     </div>

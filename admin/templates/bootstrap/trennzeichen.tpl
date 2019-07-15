@@ -16,7 +16,10 @@
         <input type="hidden" name="save" value="1" />
         <div id="settings">
             <div class="card">
-                <div class="card-header"><div class="subheading1">{__('divider')}</div></div>
+                <div class="card-header">
+                    <div class="subheading1">{__('divider')}</div>
+                    <hr class="mb-n3">
+                </div>
                 <div class="card-body table-responsive">
                     <table class="list table">
                     <thead>

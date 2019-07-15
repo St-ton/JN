@@ -34,24 +34,11 @@
 </script>
 <div id="content" class="container-fluid">
     <div class="block">
-        <form method="post" action="sprache.php">
+        <form method="post" name="sprache" action="sprache.php">
             {$jtl_token}
             <input type="hidden" name="sprachwechsel" value="1">
-            <div class="input-group p25">
-                <div class="input-group-addon">
-                    <label for="kSprache">{__('language')}:</label>
-                </div>
-                <span class="input-group-wrap last">
-                    <select id="kSprache" name="kSprache" class="form-control" onchange="this.form.submit();">
-                        {foreach $oSprache_arr as $language}
-                            <option value="{$language->getId()}"
-                                    {if (int)$smarty.session.kSprache === $language->getId()}selected{/if}>
-                                {$language->getLocalizedName()}
-                                {if $language->isShopDefault()}({__('standard')}){/if}
-                            </option>
-                        {/foreach}
-                    </select>
-                </span>
+            <div class="input-group">
+                {include file='tpl_inc/language_switcher.tpl' id='kSprache'}
             </div>
         </form>
     </div>
@@ -65,13 +52,14 @@
     </ul>
     <div class="tab-content">
         <div id="variables" class="tab-pane fade {if $tab === 'variables'}active show{/if}">
+            {if $bSpracheAktiv}
+                {include file='tpl_inc/filtertools.tpl' oFilter=$oFilter}
+                {include file='tpl_inc/pagination.tpl' pagination=$pagination}
+            {/if}
             <div class="card">
-                {if $bSpracheAktiv}
-                    {include file='tpl_inc/filtertools.tpl' oFilter=$oFilter}
-                    {include file='tpl_inc/pagination.tpl' pagination=$pagination}
-                {/if}
                 <form action="sprache.php" method="post">
                     {$jtl_token}
+                    <div class="card-body">
                     {if $oWert_arr|@count > 0}
                         <div class="table-responsive">
                             <table class="list table">
@@ -140,6 +128,7 @@
                     {else}
                         <div class="alert alert-info" role="alert">{__('notImportedYet')}</div>
                     {/if}
+                    </div>
                     <div class="card-footer">
                         {sprache_buttons}
                     </div>
@@ -148,35 +137,37 @@
         </div>
         <div id="notfound" class="tab-pane fade {if $tab === 'notfound'}active show{/if}">
             <div class="card">
-                {if $oNotFound_arr|@count > 0}
-                    <table class="list table">
-                        <thead>
-                            <tr>
-                                <th>{__('section')}</th>
-                                <th>{__('variableName')}</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {foreach $oNotFound_arr as $oWert}
+                <div class="card-body">
+                    {if $oNotFound_arr|@count > 0}
+                        <table class="list table">
+                            <thead>
                                 <tr>
-                                    <td>{$oWert->cSektion}</td>
-                                    <td>{$oWert->cName}</td>
-                                    <td>
-                                        <div class="btn-group right">
-                                            <a href="sprache.php?token={$smarty.session.jtl_token}&action=newvar&kSprachsektion={$oWert->kSprachsektion}&cName={$oWert->cName}&tab=notfound"
-                                               class="btn btn-default" title="{__('create')}">
-                                                <i class="fa fa-plus"></i>
-                                            </a>
-                                        </div>
-                                    </td>
+                                    <th>{__('section')}</th>
+                                    <th>{__('variableName')}</th>
+                                    <th></th>
                                 </tr>
-                            {/foreach}
-                        </tbody>
-                    </table>
-                {else}
-                    <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
-                {/if}
+                            </thead>
+                            <tbody>
+                                {foreach $oNotFound_arr as $oWert}
+                                    <tr>
+                                        <td>{$oWert->cSektion}</td>
+                                        <td>{$oWert->cName}</td>
+                                        <td>
+                                            <div class="btn-group right">
+                                                <a href="sprache.php?token={$smarty.session.jtl_token}&action=newvar&kSprachsektion={$oWert->kSprachsektion}&cName={$oWert->cName}&tab=notfound"
+                                                   class="btn btn-default" title="{__('create')}">
+                                                    <i class="fa fa-plus"></i>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {/foreach}
+                            </tbody>
+                        </table>
+                    {else}
+                        <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
+                    {/if}
+                </div>
                 <div class="card-footer">
                     <div class="btn-group">
                         <a href="sprache.php?token={$smarty.session.jtl_token}&action=clearlog&tab=notfound" class="btn btn-danger">

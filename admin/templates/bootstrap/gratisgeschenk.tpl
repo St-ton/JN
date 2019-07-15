@@ -24,26 +24,28 @@
             {if isset($oAktiveGeschenk_arr) && $oAktiveGeschenk_arr|@count > 0}
                 {include file='tpl_inc/pagination.tpl' pagination=$oPagiAktiv cAnchor='aktivegeschenke'}
                 <div class="settings card table-responsive">
-                    <table class="table table-striped">
-                        <thead>
-                        <tr>
-                            <th class="tleft">{__('productName')}</th>
-                            <th class="th-2">{__('ggOrderValueMin')}</th>
-                            <th class="th-3">{__('ggDate')}</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {foreach $oAktiveGeschenk_arr as $oAktiveGeschenk}
+                    <div class="card-body">
+                        <table class="table table-striped">
+                            <thead>
                             <tr>
-                                <td>
-                                    <a href="{$oAktiveGeschenk->cURLFull}" target="_blank">{$oAktiveGeschenk->cName}</a>
-                                </td>
-                                <td class="tcenter">{getCurrencyConversionSmarty fPreisBrutto=$oAktiveGeschenk->FunktionsAttribute[$cFunAttrib]}</td>
-                                <td class="tcenter">{$oAktiveGeschenk->dErstellt_de}</td>
+                                <th class="tleft">{__('productName')}</th>
+                                <th class="th-2">{__('ggOrderValueMin')}</th>
+                                <th class="th-3">{__('ggDate')}</th>
                             </tr>
-                        {/foreach}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                            {foreach $oAktiveGeschenk_arr as $oAktiveGeschenk}
+                                <tr>
+                                    <td>
+                                        <a href="{$oAktiveGeschenk->cURLFull}" target="_blank">{$oAktiveGeschenk->cName}</a>
+                                    </td>
+                                    <td class="tcenter">{getCurrencyConversionSmarty fPreisBrutto=$oAktiveGeschenk->FunktionsAttribute[$cFunAttrib]}</td>
+                                    <td class="tcenter">{$oAktiveGeschenk->dErstellt_de}</td>
+                                </tr>
+                            {/foreach}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             {else}
                 <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
@@ -53,30 +55,32 @@
             {if isset($oHaeufigGeschenk_arr) && $oHaeufigGeschenk_arr|@count > 0}
                 {include file='tpl_inc/pagination.tpl' pagination=$oPagiHaeufig cAnchor='haeufigegeschenke'}
                 <div class="settings card table-responsive">
-                    <table class="table table-striped">
-                        <thead>
-                        <tr>
-                            <th class="tleft">{__('productName')}</th>
-                            <th class="th-2">{__('ggOrderValueMin')}</th>
-                            <th class="th-3">{__('ggCount')}</th>
-                            <th class="th-3">{__('ggOrderValueAverage')}</th>
-                            <th class="th-4">{__('gglastOrdered')}</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {foreach $oHaeufigGeschenk_arr as $oHaeufigGeschenk}
+                    <div class="card-body">
+                        <table class="table table-striped">
+                            <thead>
                             <tr>
-                                <td>
-                                    <a href="{$oAktiveGeschenk->cURLFull}" target="_blank">{$oHaeufigGeschenk->artikel->cName}</a>
-                                </td>
-                                <td class="tcenter">{getCurrencyConversionSmarty fPreisBrutto=$oHaeufigGeschenk->artikel->FunktionsAttribute[$cFunAttrib]}</td>
-                                <td class="tcenter">{$oHaeufigGeschenk->artikel->nGGAnzahl} x</td>
-                                <td class="tcenter">{getCurrencyConversionSmarty fPreisBrutto=$oHaeufigGeschenk->avgOrderValue}</td>
-                                <td class="tcenter">{$oHaeufigGeschenk->lastOrdered}</td>
+                                <th class="tleft">{__('productName')}</th>
+                                <th class="th-2">{__('ggOrderValueMin')}</th>
+                                <th class="th-3">{__('ggCount')}</th>
+                                <th class="th-3">{__('ggOrderValueAverage')}</th>
+                                <th class="th-4">{__('gglastOrdered')}</th>
                             </tr>
-                        {/foreach}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                            {foreach $oHaeufigGeschenk_arr as $oHaeufigGeschenk}
+                                <tr>
+                                    <td>
+                                        <a href="{$oAktiveGeschenk->cURLFull}" target="_blank">{$oHaeufigGeschenk->artikel->cName}</a>
+                                    </td>
+                                    <td class="tcenter">{getCurrencyConversionSmarty fPreisBrutto=$oHaeufigGeschenk->artikel->FunktionsAttribute[$cFunAttrib]}</td>
+                                    <td class="tcenter">{$oHaeufigGeschenk->artikel->nGGAnzahl} x</td>
+                                    <td class="tcenter">{getCurrencyConversionSmarty fPreisBrutto=$oHaeufigGeschenk->avgOrderValue}</td>
+                                    <td class="tcenter">{$oHaeufigGeschenk->lastOrdered}</td>
+                                </tr>
+                            {/foreach}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             {else}
                 <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
@@ -86,28 +90,30 @@
             {if isset($oLetzten100Geschenk_arr) && $oLetzten100Geschenk_arr|@count > 0}
                 {include file='tpl_inc/pagination.tpl' pagination=$oPagiLetzte100 cAnchor='letzten100geschenke'}
                 <div class="settings card table-responsive">
-                    <table class="table table-striped">
-                        <thead>
-                        <tr>
-                            <th class="tleft">{__('productName')}</th>
-                            <th class="th-2">{__('ggOrderValueMin')}</th>
-                            <th class="th-4">{__('ggOrderValue')}</th>
-                            <th class="th-4">{__('ggOrdered')}</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {foreach $oLetzten100Geschenk_arr as $oLetzten100Geschenk}
+                    <div class="card-body">
+                        <table class="table table-striped">
+                            <thead>
                             <tr>
-                                <td>
-                                    <a href="{$oAktiveGeschenk->cURLFull}" target="_blank">{$oLetzten100Geschenk->artikel->cName}</a>
-                                </td>
-                                <td class="tcenter">{getCurrencyConversionSmarty fPreisBrutto=$oLetzten100Geschenk->artikel->FunktionsAttribute[$cFunAttrib]}</td>
-                                <td class="tcenter">{getCurrencyConversionSmarty fPreisBrutto=$oLetzten100Geschenk->orderValue}</td>
-                                <td class="tcenter">{$oLetzten100Geschenk->orderCreated}</td>
+                                <th class="tleft">{__('productName')}</th>
+                                <th class="th-2">{__('ggOrderValueMin')}</th>
+                                <th class="th-4">{__('ggOrderValue')}</th>
+                                <th class="th-4">{__('ggOrdered')}</th>
                             </tr>
-                        {/foreach}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                            {foreach $oLetzten100Geschenk_arr as $oLetzten100Geschenk}
+                                <tr>
+                                    <td>
+                                        <a href="{$oAktiveGeschenk->cURLFull}" target="_blank">{$oLetzten100Geschenk->artikel->cName}</a>
+                                    </td>
+                                    <td class="tcenter">{getCurrencyConversionSmarty fPreisBrutto=$oLetzten100Geschenk->artikel->FunktionsAttribute[$cFunAttrib]}</td>
+                                    <td class="tcenter">{getCurrencyConversionSmarty fPreisBrutto=$oLetzten100Geschenk->orderValue}</td>
+                                    <td class="tcenter">{$oLetzten100Geschenk->orderCreated}</td>
+                                </tr>
+                            {/foreach}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             {else}
                 <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>

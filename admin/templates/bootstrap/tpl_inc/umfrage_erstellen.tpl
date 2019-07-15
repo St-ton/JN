@@ -61,15 +61,15 @@ function clearInput(inputField) {ldelim}
                     {/if}
                     <table class="kundenfeld table" id="formtable">
                         <tr>
-                            <td><label for="cName">{__('name')}</label></td>
+                            <td><label for="cName">{__('name')}:</label></td>
                             <td><input class="form-control" id="cName" name="cName" type="text"  value="{if isset($oUmfrage->cName)}{$oUmfrage->cName}{/if}" /></td>
                         </tr>
                         <tr>
-                            <td><label for="cSeo">{__('seo')}</label></td>
+                            <td><label for="cSeo">{__('seo')}:</label></td>
                             <td><input class="form-control" id="cSeo" name="cSeo" type="text"  value="{if isset($oUmfrage->cSeo)}{$oUmfrage->cSeo}{/if}" /></td>
                         </tr>
                         <tr>
-                            <td><label for="kKundengruppe">{__('customerGroup')}</label></td>
+                            <td><label for="kKundengruppe">{__('customerGroup')}:</label></td>
                             <td>
                                 <select id="kKundengruppe" name="kKundengruppe[]" multiple="multiple" class="combo custom-select">
                                     <option value="-1" {if isset($oUmfrage->kKundengruppe_arr)}{foreach $oUmfrage->kKundengruppe_arr as $kKundengruppe}{if $kKundengruppe == '-1'}selected{/if}{/foreach}{/if}>{__('all')}</option>
@@ -80,7 +80,7 @@ function clearInput(inputField) {ldelim}
                             </td>
                         </tr>
                         <tr>
-                            <td><label for="dGueltigVon">{__('umfrageValidation')}</label></td>
+                            <td><label for="dGueltigVon">{__('umfrageValidation')}:</label></td>
                             <td>
                                 <input class="form-control" id="dGueltigVon" name="dGueltigVon" type="text"  value="{if isset($oUmfrage->dGueltigVon_de) && $oUmfrage->dGueltigVon_de|strlen > 0}{$oUmfrage->dGueltigVon_de}{else}{$smarty.now|date_format:'%d.%m.%Y %H:%M'}{/if}" style="width: 150px;" />
                                 <label for="dGueltigBis">{__('to')}</label>

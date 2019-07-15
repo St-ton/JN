@@ -441,8 +441,10 @@
                 {/if}
             </div>
         </div>
-        <button type="submit" class="btn btn-primary" name="action" value="speichern">
-            <i class="fa fa-share"></i> {__('save')}
-        </button>
+        <div class="card-footer save_wrapper">
+            <button type="submit" class="btn btn-primary" name="action" value="speichern">
+                <i class="fa fa-share"></i> {__('save')}
+            </button>
+        </div>
     </form>
 </div>

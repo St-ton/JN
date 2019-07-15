@@ -23,7 +23,9 @@ function ackCheck(kPlugin, hash)
 <div id="content" class="container-fluid" style="padding-top: 10px;">
     <div class="card">
         <div class="card-header">
-            <div class="heading-body"><div class="subheading1">{__('pluginverwaltung')}</div></div>
+            <div class="heading-body">
+                <div class="subheading1">{__('pluginverwaltung')}</div>
+            </div>
             <div class="heading-right">
                 {if $hasAuth}
                     <a href="store.php" class="btn btn-xs btn-danger"><i class="fa fa-link"></i> {__('storeRevoke')}</a>
@@ -31,6 +33,7 @@ function ackCheck(kPlugin, hash)
                     <a href="store.php" class="btn btn-xs btn-default"><i class="fa fa-link"></i> {__('storeLink')}</a>
                 {/if}
             </div>
+            <hr class="mb-n3">
         </div>
         <div class="card-body">
             <div class="row">

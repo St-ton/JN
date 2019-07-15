@@ -19,68 +19,70 @@
         {/if}
 
         <div class="card">
-            <form method="post" action="systemlog.php">
-                {$jtl_token}
-                {if $nTotalLogCount === 0}
-                    <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
-                {elseif $oLog_arr|@count === 0}
-                    <div class="alert alert-info" role="alert">{__('noFilterResults')}</div>
-                {else}
-                    <div class="listgroup">
-                        <div class="list-group-item">
-                            <label>
-                                <input type="checkbox" name="aaa" value="bbb"
-                                       onchange="selectAllItems(this, $(this).prop('checked'))">
-                                {__('selectAllShown')}
-                            </label>
-                        </div>
-                        {foreach $oLog_arr as $oLog}
+            <div class="card-body">
+                <form method="post" action="systemlog.php">
+                    {$jtl_token}
+                    {if $nTotalLogCount === 0}
+                        <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
+                    {elseif $oLog_arr|@count === 0}
+                        <div class="alert alert-info" role="alert">{__('noFilterResults')}</div>
+                    {else}
+                        <div class="listgroup">
                             <div class="list-group-item">
-                                <div class="row">
-                                    <div class="col-md-3 col-xs-12">
-                                        <label>
-                                            <input type="checkbox" name="selected[]" value="{$oLog->kLog}">
-                                            {if $oLog->nLevel >= $smarty.const.JTLLOG_LEVEL_ERROR}
-                                                <span class="label label-danger">{__('systemlogError')}</span>
-                                            {elseif $oLog->nLevel >= $smarty.const.JTLLOG_LEVEL_WARNING}
-                                                <span class="label label-warning">{__('systemlogWarning')}</span>
-                                            {elseif $oLog->nLevel > $smarty.const.JTLLOG_LEVEL_DEBUG}
-                                                <span class="label label-success">{__('systemlogNotice')}</span>
-                                            {else}
-                                                <span class="label label-info info">{__('systemlogDebug')}</span>
-                                            {/if}
-                                            {$oLog->dErstellt|date_format:'d.m.Y - H:i:s'}
-                                        </label>
-                                    </div>
-                                    <div class="col-md-9 col-xs-12">
-                                        <pre class="logtext
-                                            {if $oLog->nLevel >= $smarty.const.JTLLOG_LEVEL_WARNING}bg-danger
-                                            {elseif $oLog->nLevel > $smarty.const.JTLLOG_LEVEL_DEBUG}bg-success
-                                            {else}bg-info{/if}">{$oLog->cLog}</pre>
+                                <label>
+                                    <input type="checkbox" name="aaa" value="bbb"
+                                           onchange="selectAllItems(this, $(this).prop('checked'))">
+                                    {__('selectAllShown')}
+                                </label>
+                            </div>
+                            {foreach $oLog_arr as $oLog}
+                                <div class="list-group-item">
+                                    <div class="row">
+                                        <div class="col-md-3 col-xs-12">
+                                            <label>
+                                                <input type="checkbox" name="selected[]" value="{$oLog->kLog}">
+                                                {if $oLog->nLevel >= $smarty.const.JTLLOG_LEVEL_ERROR}
+                                                    <span class="badge badge-danger">{__('systemlogError')}</span>
+                                                {elseif $oLog->nLevel >= $smarty.const.JTLLOG_LEVEL_WARNING}
+                                                    <span class="badge badge-warning">{__('systemlogWarning')}</span>
+                                                {elseif $oLog->nLevel > $smarty.const.JTLLOG_LEVEL_DEBUG}
+                                                    <span class="badge badge-success">{__('systemlogNotice')}</span>
+                                                {else}
+                                                    <span class="badge badge-info info">{__('systemlogDebug')}</span>
+                                                {/if}
+                                                {$oLog->dErstellt|date_format:'d.m.Y - H:i:s'}
+                                            </label>
+                                        </div>
+                                        <div class="col-md-9 col-xs-12">
+                                            <pre class="logtext p-1
+                                                {if $oLog->nLevel >= $smarty.const.JTLLOG_LEVEL_WARNING}bg-danger
+                                                {elseif $oLog->nLevel > $smarty.const.JTLLOG_LEVEL_DEBUG}bg-success
+                                                {else}bg-info{/if}">{$oLog->cLog}</pre>
+                                        </div>
                                     </div>
                                 </div>
+                            {/foreach}
+                            <div class="list-group-item">
+                                <label>
+                                    <input type="checkbox" name="aaa" value="bbb"
+                                           onchange="selectAllItems(this, $(this).prop('checked'))">
+                                    {__('selectAllShown')}
+                                </label>
                             </div>
-                        {/foreach}
-                        <div class="list-group-item">
-                            <label>
-                                <input type="checkbox" name="aaa" value="bbb"
-                                       onchange="selectAllItems(this, $(this).prop('checked'))">
-                                {__('selectAllShown')}
-                            </label>
+                        </div>
+                    {/if}
+                    <div class="card-footer">
+                        <div class="btn-group">
+                            <button name="action" value="clearsyslog" class="btn btn-danger">
+                                <i class="fa fa-trash"></i> {__('systemlogReset')}
+                            </button>
+                            <button name="action" value="delselected" class="btn btn-warning">
+                                <i class="fa fa-trash"></i> {__('deleteSelected')}
+                            </button>
                         </div>
                     </div>
-                {/if}
-                <div class="card-footer">
-                    <div class="btn-group">
-                        <button name="action" value="clearsyslog" class="btn btn-danger">
-                            <i class="fa fa-trash"></i> {__('systemlogReset')}
-                        </button>
-                        <button name="action" value="delselected" class="btn btn-warning">
-                            <i class="fa fa-trash"></i> {__('deleteSelected')}
-                        </button>
-                    </div>
-                </div>
-            </form>
+                </form>
+            </div>
         </div>
     </div>
     <div role="tabpanel" class="tab-pane fade{if $cTab === 'config'} active show{/if}" id="config">

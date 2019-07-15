@@ -70,24 +70,27 @@
                     {/if}
                     <div class="card">
                         <div class="card-header">
-                            <div class="card-title">{__('searchrequest')}</div>
+                            <div class="subheading1">{__('searchrequest')}</div>
+                            <hr class="mb-n3">
                         </div>
-                        <div class="table-responsive">
+                        <div class="table-responsive card-body">
                             <table class="table table-striped">
-                                <tr>
-                                    <th class="th-1"></th>
-                                    <th class="tleft">
-                                        (<a href="livesuche.php?{$cSuchStr}nSort=1{if $nSort == 1}1{/if}&tab=suchanfrage">{if $nSort == 1}Z...A{else}A...Z{/if}</a>) {__('search')}
-                                    </th>
-                                    <th class="tleft">
-                                        (<a href="livesuche.php?{$cSuchStr}nSort=2{if $nSort == 2 || $nSort == -1}2{/if}&tab=suchanfrage">{if $nSort == 2 || $nSort == -1}1...9{else}9...1{/if}</a>) {__('searchcount')}
-                                    </th>
-                                    <th class="th-4">
-                                        (<a href="livesuche.php?{$cSuchStr}nSort=3{if $nSort == 3 || $nSort == -1}3{/if}&tab=suchanfrage">{if $nSort == 3 || $nSort == -1}0...1{else}1...0{/if}</a>) {__('active')}
-                                    </th>
-                                    <th class="th-5">{__('mapping')}</th>
-                                </tr>
-
+                                <thead>
+                                    <tr>
+                                        <th class="th-1"></th>
+                                        <th class="tleft">
+                                            (<a href="livesuche.php?{$cSuchStr}nSort=1{if $nSort == 1}1{/if}&tab=suchanfrage">{if $nSort == 1}Z...A{else}A...Z{/if}</a>) {__('search')}
+                                        </th>
+                                        <th class="tleft">
+                                            (<a href="livesuche.php?{$cSuchStr}nSort=2{if $nSort == 2 || $nSort == -1}2{/if}&tab=suchanfrage">{if $nSort == 2 || $nSort == -1}1...9{else}9...1{/if}</a>) {__('searchcount')}
+                                        </th>
+                                        <th class="th-4">
+                                            (<a href="livesuche.php?{$cSuchStr}nSort=3{if $nSort == 3 || $nSort == -1}3{/if}&tab=suchanfrage">{if $nSort == 3 || $nSort == -1}0...1{else}1...0{/if}</a>) {__('active')}
+                                        </th>
+                                        <th class="th-5">{__('mapping')}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
                                 {foreach $Suchanfragen as $suchanfrage}
                                     <input name="kSuchanfrageAll[]" type="hidden" value="{$suchanfrage->kSuchanfrage}" />
                                     <tr>
@@ -106,12 +109,15 @@
                                         </td>
                                     </tr>
                                 {/foreach}
-                                <tr>
-                                    <td>
-                                        <input name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessagesExcept(this.form, 'nAktiv_');" />
-                                    </td>
-                                    <td colspan="5"><label for="ALLMSGS">{__('livesucheSelectAll')}</label></td>
-                                </tr>
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td>
+                                            <input name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessagesExcept(this.form, 'nAktiv_');" />
+                                        </td>
+                                        <td colspan="5"><label for="ALLMSGS">{__('livesucheSelectAll')}</label></td>
+                                    </tr>
+                                </tfoot>
                             </table>
                         </div>
                         <div class="card-footer">
@@ -145,17 +151,21 @@
                     <input type="hidden" name="nErfolglosEditieren" value="{if isset($nErfolglosEditieren)}{$nErfolglosEditieren}{/if}">
                     <div class="card settings">
                         <div class="card-header">
-                            <div class="card-title">{__('searchmiss')}</div>
+                            <div class="subheading1">{__('searchmiss')}</div>
+                            <hr class="mb-n3">
                         </div>
-                        <div class="table-responsive">
+                        <div class="table-responsive card-body">
                             <table class="table table-striped">
-                                <tr>
-                                    <th class="th-1" style="width: 40px;">&nbsp;</th>
-                                    <th class="th-1" align="left">{__('search')}</th>
-                                    <th class="th-2" align="left">{__('searchcount')}</th>
-                                    <th class="th-3" align="left">{__('lastsearch')}</th>
-                                    <th class="th-4" align="left">{__('mapping')}</th>
-                                </tr>
+                                <thead>
+                                    <tr>
+                                        <th class="th-1" style="width: 40px;">&nbsp;</th>
+                                        <th class="th-1" align="left">{__('search')}</th>
+                                        <th class="th-2" align="left">{__('searchcount')}</th>
+                                        <th class="th-3" align="left">{__('lastsearch')}</th>
+                                        <th class="th-4" align="left">{__('mapping')}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
                                 {foreach $Suchanfragenerfolglos as $Suchanfrageerfolglos}
                                     <tr>
                                         <td>
@@ -176,13 +186,16 @@
                                             {/if}
                                         </td>
                                     </tr>
+                                </tbody>
                                 {/foreach}
-                                <tr>
-                                    <td>
-                                        <input name="ALLMSGS" id="ALLMSGS2" type="checkbox" onclick="AllMessagesExcept(this.form, 'nAktiv_');" />
-                                    </td>
-                                    <td colspan="4"><label for="ALLMSGS2">{__('livesucheSelectAll')}</label></td>
-                                </tr>
+                                <tfoot>
+                                    <tr>
+                                        <td>
+                                            <input name="ALLMSGS" id="ALLMSGS2" type="checkbox" onclick="AllMessagesExcept(this.form, 'nAktiv_');" />
+                                        </td>
+                                        <td colspan="4"><label for="ALLMSGS2">{__('livesucheSelectAll')}</label></td>
+                                    </tr>
+                                </tfoot>
                             </table>
                         </div>
                         <div class="card-footer">
@@ -207,16 +220,20 @@
                     <input type="hidden" name="tab" value="mapping" />
                     <div class="card settings">
                         <div class="card-header">
-                            <div class="card-title">{__('mapping')}</div>
+                            <div class="subheading1">{__('mapping')}</div>
+                            <hr class="mb-n3">
                         </div>
-                        <div class="table-responsive">
+                        <div class="table-responsive card-body">
                             <table class="table table-striped">
-                                <tr>
-                                    <th class="th-1"></th>
-                                    <th class="th-2">{__('search')}</th>
-                                    <th class="th-3">{__('searchnew')}</th>
-                                    <th class="th-4">{__('searchcount')}</th>
-                                </tr>
+                                <thead>
+                                    <tr>
+                                        <th class="th-1"></th>
+                                        <th class="th-2">{__('search')}</th>
+                                        <th class="th-3">{__('searchnew')}</th>
+                                        <th class="th-4">{__('searchcount')}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
                                 {foreach $Suchanfragenmapping as $sfm}
                                     <tr>
                                         <td>
@@ -227,6 +244,7 @@
                                         <td>{$sfm->nAnzahlGesuche}</td>
                                     </tr>
                                 {/foreach}
+                                </tbody>
                             </table>
                         </div>
                         <div class="card-footer">
@@ -246,18 +264,23 @@
 
                 <div class="card settings">
                     <div class="card-header">
-                        <div class="card-title">{__('blacklist')}</div>
+                        <div class="subheading1">{__('blacklist')}</div>
+                        <hr class="mb-n3">
                     </div>
-                    <div class="table-responsive">
+                    <div class="table-responsive card-body">
                         <table class="table">
-                            <tr>
-                                <th class="th-1">{__('blacklistDescription')}</th>
-                            </tr>
-                            <tr class="tab-1_bg">
-                                <td>
-                                    <textarea class="form-control" name="suchanfrageblacklist" style="width:100%;min-height:400px;">{foreach $Suchanfragenblacklist as $Suchanfrageblacklist}{$Suchanfrageblacklist->cSuche};{/foreach}</textarea>
-                                </td>
-                            </tr>
+                            <thead>
+                                <tr>
+                                    <th class="th-1">{__('blacklistDescription')}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="tab-1_bg">
+                                    <td>
+                                        <textarea class="form-control" name="suchanfrageblacklist" style="width:100%;min-height:400px;">{foreach $Suchanfragenblacklist as $Suchanfrageblacklist}{$Suchanfrageblacklist->cSuche};{/foreach}</textarea>
+                                    </td>
+                                </tr>
+                            </tbody>
                         </table>
                     </div>
                     <div class="card-footer">

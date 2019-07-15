@@ -1,59 +1,84 @@
 <div id="page">
     <div id="content" class="container-fluid">
-        <h2 class="txtBlack">{$oUmfrageStats->cName}</h2>
-        <div class="row">
-            <div class="col-md-3">
-                <strong>{__('umfrageValidation')}:</strong><br/>
-                {$oUmfrageStats->dGueltigVon_de}<br/>
-                -{if $oUmfrageStats->dGueltigBis === null}{__('umfrageInfinite')}{else}{$oUmfrageStats->dGueltigBis_de}{/if}
+        <div class="card">
+            <div class="card-header">
+                <div class="subheading1">{$oUmfrageStats->cName}</div>
+                <hr class="mb-n3">
             </div>
-            <div class="col-md-3">
-                <strong>{__('customerGroup')}:</strong><br/>
-                {foreach $oUmfrageStats->cKundengruppe_arr as $cKundengruppe}
-                    {$cKundengruppe}{if !$cKundengruppe@last},{/if}
-                {/foreach}
-            </div>
-            <div class="col-md-3">
-                <strong>{__('active')}:</strong><br/>
-                {$oUmfrageStats->nAktiv}
-            </div>
-            <div class="col-md-3">
-                <strong>{__('umfrageTryCount')}:</strong><br/>
-                {$oUmfrageStats->nAnzahlDurchfuehrung}
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-3 text-right">
+                        <strong>{__('umfrageValidation')}:</strong>
+                    </div>
+                    <div class="col-auto">
+                        {$oUmfrageStats->dGueltigVon_de} - {if $oUmfrageStats->dGueltigBis === null}{__('umfrageInfinite')}{else}{$oUmfrageStats->dGueltigBis_de}{/if}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-3 text-right">
+                        <strong>{__('customerGroup')}:</strong>
+                    </div>
+                    <div class="col-auto">
+                        {foreach $oUmfrageStats->cKundengruppe_arr as $cKundengruppe}
+                            {$cKundengruppe}{if !$cKundengruppe@last},{/if}
+                        {/foreach}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-3 text-right">
+                        <strong>{__('active')}:</strong>
+                    </div>
+                    <div class="col-auto">
+                        {$oUmfrageStats->nAktiv}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-3 text-right">
+                        <strong>{__('umfrageTryCount')}:</strong>
+                    </div>
+                    <div class="col-auto">
+                        {$oUmfrageStats->nAnzahlDurchfuehrung}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-3 text-right">
+                        <strong>{__('description')}:</strong>
+                    </div>
+                    <div class="col-auto">
+                        {$oUmfrageStats->cBeschreibung}
+                    </div>
+                </div>
             </div>
         </div>
-        <div class="row">
-            <div class="col-md-12">
-                <strong>{__('description')}:</strong><br/>
-                {$oUmfrageStats->cBeschreibung}
-            </div>
-        </div>
-
         {if isset($oUmfrageStats->oUmfrageFrage_arr) && $oUmfrageStats->oUmfrageFrage_arr|@count > 0}
             <div>
-                <h3>{__('umfrageQ')}:</h3>
                 {foreach $oUmfrageStats->oUmfrageFrage_arr as $oUmfrageFrage}
                     {if isset($oUmfrageFrage->oUmfrageFrageAntwort_arr) && $oUmfrageFrage->oUmfrageFrageAntwort_arr|@count > 0}
                         {if $oUmfrageFrage->cTyp === \JTL\Survey\QuestionType::MATRIX_SINGLE
                         || $oUmfrageFrage->cTyp === \JTL\Survey\QuestionType::MATRIX_MULTI}
                             <div class="card">
                                 <div class="card-header">
-                                    <strong>{$oUmfrageFrage->cName}</strong> - {$oUmfrageFrage->cTypMapped}
+                                    <div class="subheading1">
+                                        <strong>{$oUmfrageFrage->cName}</strong> - {$oUmfrageFrage->cTypMapped}
+                                    </div>
                                 </div>
                                 <div class="card-body">
                                     <div id="payment">
                                         <div id="tabellenLivesuche" class="table-responsive">
                                             <table class="table table-striped">
-                                                <tr>
-                                                    <th class="th-1" style="width: 5%;">{__('umfrageQASing')}</th>
-                                                    {foreach $oUmfrageFrage->oUmfrageMatrixOption_arr as $oUmfrageMatrixOption}
-                                                        {assign var=maxbreite value=95}
-                                                        {assign var=anzahloption value=$oUmfrageFrage->oUmfrageMatrixOption_arr|@count}
-                                                        {math equation="x/y" x=$maxbreite y=$anzahloption assign=breite}
-                                                        <th class="th-1" style="width: {$breite}%;">{$oUmfrageMatrixOption->cName}</th>
-                                                    {/foreach}
-                                                </tr>
+                                                <thead>
+                                                    <tr>
+                                                        <th class="th-1" style="width: 5%;">{__('umfrageQASing')}</th>
+                                                        {foreach $oUmfrageFrage->oUmfrageMatrixOption_arr as $oUmfrageMatrixOption}
+                                                            {assign var=maxbreite value=95}
+                                                            {assign var=anzahloption value=$oUmfrageFrage->oUmfrageMatrixOption_arr|@count}
+                                                            {math equation="x/y" x=$maxbreite y=$anzahloption assign=breite}
+                                                            <th class="th-1 text-center" style="width: {$breite}%;">{$oUmfrageMatrixOption->cName}</th>
+                                                        {/foreach}
+                                                    </tr>
+                                                </thead>
                                                 {if isset($oUmfrageFrage->oUmfrageFrageAntwort_arr)}
+                                                    <tbody>
                                                     {foreach $oUmfrageFrage->oUmfrageFrageAntwort_arr as $oUmfrageFrageAntwort}
                                                         {assign var=kUmfrageFrageAntwort value=$oUmfrageFrageAntwort->kUmfrageFrageAntwort}
                                                         <tr>
@@ -72,6 +97,7 @@
                                                             {/foreach}
                                                         </tr>
                                                     {/foreach}
+                                                    </tbody>
                                                 {/if}
                                             </table>
                                         </div>
@@ -81,18 +107,23 @@
                         {else}
                             <div class="card">
                                 <div class="card-header">
-                                    <strong>{$oUmfrageFrage->cName}</strong> - {$oUmfrageFrage->cTypMapped}
+                                    <div class="subheading1">
+                                        <strong>{$oUmfrageFrage->cName}</strong> - {$oUmfrageFrage->cTypMapped}
+                                    </div>
                                 </div>
                                 <div class="card-body">
                                     <div id="payment">
                                         <div id="tabellenLivesuche">
                                             <table class="table table-responsive table-striped">
-                                                <tr>
-                                                    <th class="th-1" style="width: 20%;">{__('umfrageQASing')}</th>
-                                                    <th class="th-2" style="width: 60%;"></th>
-                                                    <th class="th-3" style="width: 10%;">{__('umfrageQResPercent')}</th>
-                                                    <th class="th-4" style="width: 10%;">{__('umfrageQResCount')}</th>
-                                                </tr>
+                                                <thead>
+                                                    <tr>
+                                                        <th class="th-1" style="width: 20%;">{__('umfrageQASing')}</th>
+                                                        <th class="th-2" style="width: 60%;"></th>
+                                                        <th class="th-3" style="width: 10%;">{__('umfrageQResPercent')}</th>
+                                                        <th class="th-4" style="width: 10%;">{__('umfrageQResCount')}</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
                                                 {foreach $oUmfrageFrage->oUmfrageFrageAntwort_arr as $oUmfrageFrageAntwort}
                                                     <tr>
                                                         <td style="width: 20%;">{$oUmfrageFrageAntwort->cName}</td>
@@ -110,14 +141,16 @@
                                                         </td>
                                                         <td style="width: 10%;">{$oUmfrageFrageAntwort->nAnzahlAntwort}</td>
                                                     </tr>
-                                                    {if $oUmfrageFrageAntwort@last}
-                                                        <tr>
-                                                            <td></td>
-                                                            <td colspan="2" align="right">{__('umfrageQMax')}</td>
-                                                            <td align="center">{$oUmfrageFrage->nAnzahlAntworten}</td>
-                                                        </tr>
-                                                    {/if}
                                                 {/foreach}
+                                                </tbody>
+                                                <tfoot>
+                                                    <tr>
+                                                        <td style="width: 20%;"></td>
+                                                        <td style="width: 60%;"></td>
+                                                        <td style="width: 10%;">{__('umfrageQMax')}</td>
+                                                        <td style="width: 10%;">{$oUmfrageFrage->nAnzahlAntworten}</td>
+                                                    </tr>
+                                                </tfoot>
                                             </table>
                                         </div>
                                     </div>

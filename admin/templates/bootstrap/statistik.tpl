@@ -13,34 +13,38 @@
 {/if}
 {include file='tpl_inc/pagination.tpl' pagination=$pagination cParam_arr=['s' => $nTyp]}
 {if isset($oStat_arr) && $oStat_arr|@count > 0}
-    <table class="list table">
-        <thead>
-        <tr>
-            {foreach $cMember_arr[0] as $cMember}
-                <th>{$cMember[1]}</th>
-            {/foreach}
-        </tr>
-        </thead>
-        <tbody>
-        {foreach name=stats key=i from=$oStat_arr item=oStat}
-            {if $i >= $nPosAb && $i < $nPosBis}
+    <div class="card">
+        <div class="card-body">
+            <table class="list table">
+                <thead>
                 <tr>
-                    {foreach name=member from=$cMember_arr[$i] key=j item=cMember}
-                        {assign var=cMemberVar value=$cMember[0]}
-                        <td class="tcenter">
-                            {if $cMemberVar === 'nCount' && $nTyp == $STATS_ADMIN_TYPE_UMSATZ}
-                                {$oStat->$cMemberVar|number_format:2:',':'.'} &euro;
-                            {elseif $cMemberVar === 'nCount'}
-                                {$oStat->$cMemberVar|number_format:0:',':'.'}
-                            {else}
-                                {$oStat->$cMemberVar}
-                            {/if}
-                        </td>
+                    {foreach $cMember_arr[0] as $cMember}
+                        <th>{$cMember[1]}</th>
                     {/foreach}
                 </tr>
-            {/if}
-        {/foreach}
-        </tbody>
-    </table>
+                </thead>
+                <tbody>
+                {foreach name=stats key=i from=$oStat_arr item=oStat}
+                    {if $i >= $nPosAb && $i < $nPosBis}
+                        <tr>
+                            {foreach name=member from=$cMember_arr[$i] key=j item=cMember}
+                                {assign var=cMemberVar value=$cMember[0]}
+                                <td class="tcenter">
+                                    {if $cMemberVar === 'nCount' && $nTyp == $STATS_ADMIN_TYPE_UMSATZ}
+                                        {$oStat->$cMemberVar|number_format:2:',':'.'} &euro;
+                                    {elseif $cMemberVar === 'nCount'}
+                                        {$oStat->$cMemberVar|number_format:0:',':'.'}
+                                    {else}
+                                        {$oStat->$cMemberVar}
+                                    {/if}
+                                </td>
+                            {/foreach}
+                        </tr>
+                    {/if}
+                {/foreach}
+                </tbody>
+            </table>
+        </div>
+    </div>
 {/if}
 {include file='tpl_inc/footer.tpl'}

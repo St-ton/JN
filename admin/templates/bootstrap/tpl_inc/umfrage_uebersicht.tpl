@@ -43,16 +43,19 @@
                                     </div>
                                     <div class="card-body table-responsive">
                                         <table class="table table-striped">
-                                            <tr>
-                                                <th class="th-1"></th>
-                                                <th class="th-2">{__('name')}</th>
-                                                <th class="th-3">{__('customerGroup')}</th>
-                                                <th class="th-4">{__('umfrageValidation')}</th>
-                                                <th class="th-5">{__('active')}</th>
-                                                <th class="th-6">{__('umfrageQCount')}</th>
-                                                <th class="th-7">{__('umfrageDate')}</th>
-                                                <th class="th-8">{__('actions')}</th>
-                                            </tr>
+                                            <thead>
+                                                <tr>
+                                                    <th class="th-1"></th>
+                                                    <th class="th-2">{__('name')}</th>
+                                                    <th class="th-3">{__('customerGroup')}</th>
+                                                    <th class="th-4">{__('umfrageValidation')}</th>
+                                                    <th class="th-5">{__('active')}</th>
+                                                    <th class="th-6">{__('umfrageQCount')}</th>
+                                                    <th class="th-7">{__('umfrageDate')}</th>
+                                                    <th class="th-8">{__('actions')}</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
                                             {foreach $oUmfrage_arr as $oUmfrage}
                                                 <tr>
                                                     <td><input type="checkbox" name="kUmfrage[]" value="{$oUmfrage->kUmfrage}" /></td>
@@ -68,7 +71,7 @@
                                                     <td>{$oUmfrage->dErstellt_de}</td>
                                                     <td>
                                                         <div class="btn-group">
-                                                            <a href="umfrage.php?umfrage=1&token={$smarty.session.jtl_token}&umfrage_editieren=1&kUmfrage={$oUmfrage->kUmfrage}&tab=umfrage" class="btn btn-default" title="{__('modify')}">
+                                                            <a href="umfrage.php?umfrage=1&token={$smarty.session.jtl_token}&umfrage_editieren=1&kUmfrage={$oUmfrage->kUmfrage}&tab=umfrage" class="btn btn-primary" title="{__('modify')}">
                                                                 <i class="fa fa-edit"></i>
                                                             </a>
                                                             <a href="umfrage.php?umfrage=1&token={$smarty.session.jtl_token}&kUmfrage={$oUmfrage->kUmfrage}&umfrage_statistik=1" class="btn btn-default" title="{__('umfrageStats')}"><i class="fa fa-bar-chart"></i></a>
@@ -76,6 +79,7 @@
                                                     </td>
                                                 </tr>
                                             {/foreach}
+                                            </tbody>
                                         </table>
                                     </div>
                                     <div class="card-footer">

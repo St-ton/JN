@@ -306,9 +306,11 @@
                     </div>
                 </div>
             {/foreach}
-            <div class="{if isset($Link->getID())} btn-group{/if}">
-                <button type="submit" value="{__('newLinksSave')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('newLinksSave')}</button>
-                <button type="submit" name="continue" value="1" class="btn btn-default" id="save-and-continue">{__('newLinksSaveContinueEdit')}</button>
+            <div class="card-footer save_wrapper">
+                <div class="{if isset($Link->getID())} btn-group{/if}">
+                    <button type="submit" value="{__('newLinksSave')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('newLinksSave')}</button>
+                    <button type="submit" name="continue" value="1" class="btn btn-default" id="save-and-continue">{__('newLinksSaveContinueEdit')}</button>
+                </div>
             </div>
         </form>
         {if isset($Link->getID())}

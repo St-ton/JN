@@ -86,7 +86,7 @@ class AuswahlAssistentFrage
      */
     private function loadFromDB(int $questionID, bool $activeOnly = true): void
     {
-        $oDbResult = Shop::Container()->getDB()->query(
+        $data = Shop::Container()->getDB()->query(
             'SELECT af.*, m.cBildpfad, COALESCE(ms.cName, m.cName) AS cName, m.cBildpfad
                 FROM tauswahlassistentfrage AS af
                     JOIN tauswahlassistentgruppe as ag
@@ -100,8 +100,8 @@ class AuswahlAssistentFrage
                     ($activeOnly ? ' AND af.nAktiv = 1' : ''),
             ReturnType::SINGLE_OBJECT
         );
-        if ($oDbResult !== null && $oDbResult !== false) {
-            foreach (\get_object_vars($oDbResult) as $name => $value) {
+        if ($data !== null && $data !== false) {
+            foreach (\get_object_vars($data) as $name => $value) {
                 $this->$name = $value;
             }
             $this->kAuswahlAssistentFrage  = (int)$this->kAuswahlAssistentFrage;

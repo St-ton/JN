@@ -234,11 +234,13 @@ class ArtikelListe
             }
             Shop::Container()->getCache()->set($cacheID, $items, $cacheTags);
         }
-        $defaultOptions = Artikel::getDefaultOptions();
-        foreach ($items as $obj) {
-            $product = new Artikel();
-            $product->fuelleArtikel((int)$obj->kArtikel, $defaultOptions);
-            $this->elemente[] = $product;
+        if (\is_array($items)) {
+            $defaultOptions = Artikel::getDefaultOptions();
+            foreach ($items as $obj) {
+                $product = new Artikel();
+                $product->fuelleArtikel((int)$obj->kArtikel, $defaultOptions);
+                $this->elemente[] = $product;
+            }
         }
 
         return $this->elemente;

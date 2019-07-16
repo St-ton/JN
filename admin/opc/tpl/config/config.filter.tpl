@@ -7,7 +7,6 @@
     </div>
 
     <div>
-        {*<input type="search" class="form-control">*}
         <div class="available-filters"></div>
     </div>
 

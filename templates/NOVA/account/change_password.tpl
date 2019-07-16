@@ -22,14 +22,13 @@
                                 ]
                             }
                             <div class="form-group d-flex flex-column" role="group">
-                                <input type="password"
+                                {input type="password"
                                        class="form-control"
                                        placeholder="{lang key='newPassword' section='login'}"
                                        id="newPassword"
-                                       required=""
                                        value=""
-                                       name="neuesPasswort1"
-                                       autocomplete="">
+                                       required=true
+                                       name="neuesPasswort1"}
                                 <label for="newPassword" class="col-form-label pt-0">
                                     {lang key='newPassword' section='login'}
                                 </label>

@@ -29,16 +29,16 @@
                     {block name='register-form-customer-account-password-first'}
                         {col cols=12 md=4}
                             <div class="form-group d-flex flex-column {if isset($fehlendeAngaben.pass_zu_kurz) || isset($fehlendeAngaben.pass_ungleich)} has-error{/if}" role="group">
-                                <input type="password"
-                                       class="form-control"
+                                {input type="password"
                                        placeholder="{lang key='password' section='account data'}"
                                        id="password"
-                                       required=""
+                                       required=true
                                        value=""
                                        name="pass"
                                        aria-autocomplete="none"
                                        autocomplete="off"
-                                       disabled={$unregForm === 1}>
+                                       disabled=($unregForm === 1)
+                                }
                                 <label for="pass" class="col-form-label pt-0">
                                     {lang key='password' section='account data'}
                                 </label>

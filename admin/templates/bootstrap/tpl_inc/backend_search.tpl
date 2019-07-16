@@ -1,5 +1,5 @@
 <div class="backend-search">
-    <i class="fa fa-search"></i>
+    <span class="fal fa-search fa-fw" data-fa-transform="grow-4"></span>
     <input id="backend-search-input" placeholder="{__('searchTerm')}" name="cSuche" type="search"
            value="" autocomplete="off">
     <div class="dropdown-menu" id="backend-search-dropdown"></div>

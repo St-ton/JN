@@ -48,6 +48,7 @@ $rootKey            = 0;
 foreach ($adminMenu as $rootName => $rootEntry) {
     $mainGroup = (object)[
         'cName'           => $rootName,
+        'icon'            => $rootEntry->icon,
         'oLink_arr'       => [],
         'oLinkGruppe_arr' => [],
         'key'             => (string)$rootKey,
@@ -55,7 +56,7 @@ foreach ($adminMenu as $rootName => $rootEntry) {
 
     $secondKey = 0;
 
-    foreach ($rootEntry as $secondName => $secondEntry) {
+    foreach ($rootEntry->items as $secondName => $secondEntry) {
         $linkGruppe = (object)[
             'cName'     => $secondName,
             'oLink_arr' => [],

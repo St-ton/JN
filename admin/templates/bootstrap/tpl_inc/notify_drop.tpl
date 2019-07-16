@@ -1,8 +1,10 @@
 {if $notifications->count() > 0}
     {$notifyTypes = [0 => 'info', 1 => 'warning', 2 => 'danger']}
     <a href="#" class="dropdown-toggle parent" data-toggle="dropdown">
-        <span class="badge-notify btn-{$notifyTypes[$notifications->getHighestType()]}">{$notifications->count()}</span>
-        <i class="fa fa-bell"></i>
+        <span class="fa-layers fa-fw">
+            <span class="fas fa-bell"></span>
+            {if $notifications->count() > 0}<span class="fas fa-circle text-{$notifyTypes[$notifications->getHighestType()]}" data-fa-transform="shrink-8 right-9 up-6"></span>{/if}
+        </span>
     </a>
     <div class="dropdown-menu dropdown-menu-right dropdown-menu-lg" role="main">
         <span class="dropdown-header">Mitteilungen</span>

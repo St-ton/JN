@@ -10,7 +10,7 @@
         </a>
         <button type="button" class="backend-sidebar-toggle"
                 onclick="return toggleSidebar()">
-            <i class="fa fa-2x"></i>
+            <span class="fal fa-angle-double-left" data-fa-transform="grow-5"></span>
         </button>
     </div>
     <div class="backend-navigation">
@@ -34,8 +34,8 @@
                         <div class="backend-root-label">
                             <a href="#" class="parent"
                                onclick="return expandRootItem($('#root-menu-entry-{$rootEntryName}'))">
-                                <i class="fa fa-2x fa-fw backend-root-menu-icon-{$oLinkOberGruppe->key}"></i>
-                                <span>{$oLinkOberGruppe->cName}</span>
+                                <span class="category-icon mr-2">{include file="img/icons/{$oLinkOberGruppe->icon}.svg"}</span>
+                                <span class="category-title">{$oLinkOberGruppe->cName}</span>
                             </a>
                         </div>
                         <ul class="backend-menu secondlevel" id="group-{$rootEntryName}">

@@ -5,12 +5,12 @@
         </div>
         <div class="col-auto ml-auto">
             <a href="favs.php" class="btn btn-link btn-lg" data-toggle="tooltip" data-container="body" data-placement="left" title="{__('addToFavourites')}" id="fav-add">
-                <i class="fa fa-star" aria-hidden="true"></i>
+                <span class="fal fa-star"></span>
             </a>
             {if isset($cDokuURL) && $cDokuURL|@strlen > 0}
                 <a href="{$cDokuURL}" target="_blank" class="btn btn-link btn-lg" data-toggle="tooltip"
                    data-container="body" data-placement="left" title="{__('goToDocu')}">
-                    <i class="fa fa-medkit" aria-hidden="true"></i>
+                    <span class="fal fa-map-signs"></span>
                 </a>
             {/if}
         </div>

@@ -55,7 +55,7 @@
                     </li>
                     <li class="nav-item dropdown">
                         <a href="#" class="nav-link dropdown-toggle parent" data-toggle="dropdown" title="{__('help')}">
-                            <i class="fa fa-question"></i>
+                            <span class="fal fa-map-marker-question fa-fw"></span>
                         </a>
                         <div class="dropdown-menu dropdown-menu-right">
                             <span class="dropdown-header">Hilfecenter</span>
@@ -80,7 +80,6 @@
                     <li class="nav-item dropdown" id="notify-drop">{include file="tpl_inc/notify_drop.tpl"}</li>
                     <li class="nav-item dropdown">
                         <a href="#" class="dropdown-toggle parent btn-toggle" data-toggle="dropdown">
-                            <i class="fa fa-language"></i>
                             {$languageName}
                         </a>
                         <div class="dropdown-menu dropdown-menu-right">

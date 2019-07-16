@@ -297,7 +297,7 @@ class Page implements \JsonSerializable
         $end   = $this->getPublishTo();
 
         if (!empty($start) && $now >= $start && (empty($end) || $now < $end)) {
-            if ($this->getKey() === $publicDraftKey) {
+            if ($this->getKey() === $publicDraftKey || $publicDraftKey === 0) {
                 return 0; // public
             }
             return 1; // planned

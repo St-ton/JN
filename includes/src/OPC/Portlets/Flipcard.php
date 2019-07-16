@@ -16,14 +16,6 @@ use JTL\OPC\Portlet;
 class Flipcard extends Portlet
 {
     /**
-     * @return string
-     */
-    public function getButtonHtml(): string
-    {
-        return $this->getFontAwesomeButtonHtml('clone');
-    }
-
-    /**
      * @return array
      */
     public function getPropertyDesc(): array
@@ -31,10 +23,10 @@ class Flipcard extends Portlet
         return [
             'flip-dir' => [
                 'type'    => InputType::RADIO,
-                'label'   => 'Richtung',
+                'label'   => __('flipcardOrientation'),
                 'options' => [
-                    'flipcard-v' => 'vertikal',
-                    'flipcard-h' => 'horizontal',
+                    'flipcard-v' => __('vertical'),
+                    'flipcard-h' => __('horizontal'),
                 ],
                 'default' => 'flipcard-v',
             ],
@@ -47,8 +39,8 @@ class Flipcard extends Portlet
     public function getPropertyTabs(): array
     {
         return [
-            'Styles'    => 'styles',
-            'Animation' => 'animations',
+            __('Styles')    => 'styles',
+            __('Animation') => 'animations',
         ];
     }
 }

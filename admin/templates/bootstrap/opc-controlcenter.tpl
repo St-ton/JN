@@ -105,7 +105,7 @@
                                                     <td>
                                                         <div class="btn-group pull-right">
                                                             <a class="btn btn-primary" title="{__('edit')}" target="_blank"
-                                                               href="{strip}./onpage-composer.php?
+                                                               href="{strip}./opc.php?
                                                                     token={$smarty.session.jtl_token}&
                                                                     pageKey={$draft->getKey()}&
                                                                     action=edit{/strip}">

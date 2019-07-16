@@ -15201,7 +15201,7 @@ ul.partlist-items {
   text-align: center;
 }
 .slick-slide img {
-  display: inherit;
+  display: block;
   margin: 0 auto;
 }
 

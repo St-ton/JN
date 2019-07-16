@@ -9,13 +9,13 @@
     <div class="gallery-columns" {$dataStr|default:''}
          id="{$instance->getUid()}">
         {foreach $instance->getProperty('images') as $key => $image}
-            {$imgAttribs = $instance->getImageAttributes($image.url, '', '')}
-            <a href="{$imgAttribs.src}" class="img-gallery-btn">
+            {$imgAttribs = $instance->getImageAttributes($image.url, $image.alt, '')}
+            <a {if $isPreview === false}href="{$imgAttribs.src}"{/if} class="img-gallery-btn img-gallery-active-btn"
+               data-caption="{$image.desc}">
                 {image class='img-gallery-img'
                        srcset=$imgAttribs.srcset
                        sizes=$imgAttribs.srcsizes
                        src=$imgAttribs.src
-                       data=['index' => $key, 'desc' => $image.desc]
                        alt=$imgAttribs.alt
                        title=$imgAttribs.title}
                 <i class="img-gallery-zoom fa fa-search fa-2x"></i>
@@ -34,7 +34,7 @@
         {$mdSum = 0}
         {$xlSum = 0}
         {foreach $instance->getProperty('images') as $key => $image}
-            {$imgAttribs = $instance->getImageAttributes($image.url, '', '')}
+            {$imgAttribs = $instance->getImageAttributes($image.url, $image.alt, '')}
 
             {if $galleryStyle === 'alternate'}
                 {if $image@last}
@@ -78,12 +78,13 @@
             {$image.lg = $image.md}
 
             {col cols=$image.xs sm=$image.sm md=$image.md lg=$image.lg xl=$image.xl class="img-gallery-item"}
-                <a href="{$imgAttribs.src}" class="img-gallery-btn img-gallery-active-btn">
+                <a {if $isPreview === false}href="{$imgAttribs.src}"{/if}
+                   class="img-gallery-btn img-gallery-active-btn"
+                   data-caption="{$image.desc}">
                     {image class='img-gallery-img'
                            srcset=$imgAttribs.srcset
                            sizes=$imgAttribs.srcsizes
                            src=$imgAttribs.src
-                           data=['index' => $key, 'desc' => $image.desc]
                            alt=$imgAttribs.alt
                            title=$imgAttribs.title}
                     <i class="img-gallery-zoom fa fa-search fa-2x"></i>
@@ -97,7 +98,9 @@
     <script>
         $(function() {
             $('#{$instance->getUid()}').slickLightbox({
-                itemSelector: '.img-gallery-active-btn'
+                itemSelector: '.img-gallery-active-btn',
+                caption: 'caption',
+                lazy: true,
             });
         });
     </script>

@@ -19,7 +19,7 @@
         <div class="slide-btns">
             <span class="btn-slide-mover"
                  title="{__('entryMove')}" style="cursor: move">
-                <i class="fas fa-arrows-alt-v fa-fw"></i>
+                <i class="fas fa-arrows-alt fa-fw"></i>
             </span>
             <button type="button" onclick="" title="Copy">
                 <i class="far fa-clone fa-fw"></i>
@@ -30,7 +30,7 @@
             </button>
         </div>
         <div class="slide-image-col">
-            {$imgUrl = $slideData.url|default:'templates/bootstrap/gfx/layout/upload.png'}
+            {$imgUrl = $slideData.url|default:'opc/gfx/upload-stub.png'}
             <div style="background-image: url('{$imgUrl}')" class="slide-image-btn"
                  onclick="opc.gui.openElFinder(elfinderCallback_{$propname}.bind(this), 'Bilder')">
 
@@ -43,7 +43,8 @@
                        name="{$propname}[#SORT#][title]" value="{$slideData.title|default:''}">
             {/if}
             <input type="text" class="form-control" placeholder="{__('description')}"
-                   name="{$propname}[#SORT#][desc]" value="{$slideData.desc|default:''}">
+                   name="{$propname}[#SORT#][desc]" value="{$slideData.desc|default:''}"
+                   maxlength="256">
             <input type="text" class="form-control" placeholder="{__('alternativeText')}"
                    name="{$propname}[#SORT#][alt]" value="{$slideData.alt|default:''}">
             {if $useLinks}

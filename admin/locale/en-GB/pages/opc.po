@@ -336,3 +336,12 @@ msgstr "vertical"
 
 msgid "horizontal"
 msgstr "horizontal"
+
+msgid "grid"
+msgstr "Gitter"
+
+msgid "alternate"
+msgstr "Abwechselnd"
+
+msgid "columns"
+msgstr "Spalten"

@@ -87,7 +87,7 @@
 
 #opc .slides-container {
   padding-right: 8px;
-  max-height: calc(100vh - 440px);
+  max-height: calc(100vh - 464px);
   overflow-y: auto;
 }
 
@@ -114,7 +114,7 @@
     }
 
     i {
-      font-size: 18px;
+      font-size: 16px;
     }
   }
 
@@ -153,5 +153,120 @@
 
   i {
     font-size: 18px;
+  }
+}
+
+#opc .conf-gallery-layout {
+  margin-bottom: 16px;
+
+  &:after {
+    content: "";
+    display: block;
+    clear: both;
+  }
+
+  label {
+    display: block;
+    float: left;
+    text-align: center;
+    margin: 0 12px;
+
+    input {
+      display: block;
+      -webkit-appearance: none;
+      width: 90px;
+      height: 90px;
+      border: 2px solid $light-bg;
+      background-color: $light-bg;
+      position: relative;
+      color: $muted-text;
+      cursor: pointer;
+      margin: auto;
+      margin-bottom: 4px;
+
+      &:before,
+      &:after {
+        content: "";
+        display: block;
+        background-color: currentColor;
+        color: $muted-text;
+        position: absolute;
+      }
+
+      &:checked {
+        color: $primary-color;
+        border: 2px solid $primary-color;
+
+        &:before,
+        &:after {
+          color: $primary-color;
+        }
+      }
+
+      $wa: 24px;
+      $wb: $wa * 2;
+
+      &.gallery-layout-option-grid {
+        &:before {
+          width: 20px;
+          height: 20px;
+          left: 9px;
+          top: 9px;
+          box-shadow:
+                  $wa 0   currentColor,
+                  $wb 0   currentColor,
+                  0   $wa currentColor,
+                  $wa $wa currentColor,
+                  $wb $wa currentColor,
+                  0   $wb currentColor,
+                  $wa $wb currentColor,
+                  $wb $wb currentColor;
+        }
+      }
+
+      &.gallery-layout-option-alternate {
+        &:before {
+          width: 44px;
+          height: 20px;
+          left: 9px;
+          top: 9px;
+          box-shadow:
+                  24px $wa currentColor,
+                  0    $wb currentColor;
+        }
+
+        &:after {
+          width: 20px;
+          height: 20px;
+          left: 57px;
+          top: 9px;
+          box-shadow:
+                  -48px $wa currentColor,
+                  0     $wb currentColor;
+        }
+      }
+
+      &.gallery-layout-option-columns {
+        &:before {
+          width: 20px;
+          height: 20px;
+          left: 9px;
+          top: 9px;
+          box-shadow:
+                  $wa 48px currentColor,
+                  $wb 0    currentColor;
+        }
+
+        &:after {
+          width: 20px;
+          height: 44px;
+          left: 9px;
+          top: 33px;
+          box-shadow:
+                  $wa (-24px) currentColor,
+                  $wb 0     currentColor;
+        }
+      }
+    }
   }
 }

@@ -22,15 +22,8 @@ class Gallery extends Portlet
     {
         return [
             'galleryStyle' => [
-                'type'    => InputType::SELECT,
+                'type'    => InputType::GALLERY_LAYOUT,
                 'label'   => 'Layout',
-                'default' => 'grid',
-                'width'   => 50,
-                'options' => [
-                    'grid'      => 'Gitter',
-                    'alternate' => 'Alternierend',
-                    'columns'   => 'Spalten',
-                ],
             ],
             'images' => [
                 'type'    => InputType::IMAGE_SET,

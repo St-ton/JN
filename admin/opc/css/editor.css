@@ -552,7 +552,7 @@
 
 #opc .slides-container {
   padding-right: 8px;
-  max-height: calc(100vh - 440px);
+  max-height: calc(100vh - 464px);
   overflow-y: auto;
 }
 
@@ -576,7 +576,7 @@
   margin-bottom: 0;
 }
 #opc .slide-entry .slide-btns i {
-  font-size: 18px;
+  font-size: 16px;
 }
 #opc .slide-entry .slide-image-col .slide-image-btn {
   width: 96px;
@@ -607,6 +607,83 @@
 }
 #opc button.add-slide-btn i {
   font-size: 18px;
+}
+
+#opc .conf-gallery-layout {
+  margin-bottom: 16px;
+}
+#opc .conf-gallery-layout:after {
+  content: "";
+  display: block;
+  clear: both;
+}
+#opc .conf-gallery-layout label {
+  display: block;
+  float: left;
+  text-align: center;
+  margin: 0 12px;
+}
+#opc .conf-gallery-layout label input {
+  display: block;
+  -webkit-appearance: none;
+  width: 90px;
+  height: 90px;
+  border: 2px solid #F5F7FA;
+  background-color: #F5F7FA;
+  position: relative;
+  color: #BDBDBD;
+  cursor: pointer;
+  margin: auto;
+  margin-bottom: 4px;
+}
+#opc .conf-gallery-layout label input:before, #opc .conf-gallery-layout label input:after {
+  content: "";
+  display: block;
+  background-color: currentColor;
+  color: #BDBDBD;
+  position: absolute;
+}
+#opc .conf-gallery-layout label input:checked {
+  color: #5cbcf6;
+  border: 2px solid #5cbcf6;
+}
+#opc .conf-gallery-layout label input:checked:before, #opc .conf-gallery-layout label input:checked:after {
+  color: #5cbcf6;
+}
+#opc .conf-gallery-layout label input.gallery-layout-option-grid:before {
+  width: 20px;
+  height: 20px;
+  left: 9px;
+  top: 9px;
+  box-shadow: 24px 0 currentColor, 48px 0 currentColor, 0 24px currentColor, 24px 24px currentColor, 48px 24px currentColor, 0 48px currentColor, 24px 48px currentColor, 48px 48px currentColor;
+}
+#opc .conf-gallery-layout label input.gallery-layout-option-alternate:before {
+  width: 44px;
+  height: 20px;
+  left: 9px;
+  top: 9px;
+  box-shadow: 24px 24px currentColor, 0 48px currentColor;
+}
+#opc .conf-gallery-layout label input.gallery-layout-option-alternate:after {
+  width: 20px;
+  height: 20px;
+  left: 57px;
+  top: 9px;
+  box-shadow: -48px 24px currentColor, 0 48px currentColor;
+}
+#opc .conf-gallery-layout label input.gallery-layout-option-columns:before {
+  width: 20px;
+  height: 20px;
+  left: 9px;
+  top: 9px;
+  box-shadow: 24px 48px currentColor, 48px 0 currentColor;
+}
+#opc .conf-gallery-layout label input.gallery-layout-option-columns:after {
+  width: 20px;
+  height: 44px;
+  left: 9px;
+  top: 33px;
+  box-shadow: 24px -24px currentColor, 48px 0 currentColor;
 }
 
 html, body {

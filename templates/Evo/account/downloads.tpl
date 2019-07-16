@@ -28,7 +28,7 @@
                             <dd class="bottom17">{if isset($oDownload->dGueltigBis)}{$oDownload->dGueltigBis}{else}{lang key='unlimited'}{/if}</dd>
                             <dt>{lang key='download'}</dt>
                             <dd class="bottom17">
-                                {if $Bestellung->cStatus == $BESTELLUNG_STATUS_BEZAHLT || $Bestellung->cStatus == $BESTELLUNG_STATUS_VERSANDT}
+                                {if $Bestellung->cStatus == $smarty.const.BESTELLUNG_STATUS_BEZAHLT || $Bestellung->cStatus == $smarty.const.BESTELLUNG_STATUS_VERSANDT}
                                     <form method="post" action="{get_static_route id='jtl.php'}">
                                         {$jtl_token}
                                         <input name="a" type="hidden" value="getdl" />
@@ -78,13 +78,13 @@
                                     {$jtl_token}
                                     <input name="kBestellung" type="hidden" value="{$oDownload->kBestellung}"/>
                                     <input name="kKunde" type="hidden" value="{$smarty.session.Kunde->kKunde}"/>
-                                    {assign var=cStatus value=$BESTELLUNG_STATUS_OFFEN}
+                                    {assign var=cStatus value=$smarty.const.BESTELLUNG_STATUS_OFFEN}
                                     {foreach $Bestellungen as $Bestellung}
                                         {if $Bestellung->kBestellung == $oDownload->kBestellung}
                                             {assign var=cStatus value=$Bestellung->cStatus}
                                         {/if}
                                     {/foreach}
-                                    {if $cStatus == $BESTELLUNG_STATUS_BEZAHLT || $cStatus == $BESTELLUNG_STATUS_VERSANDT}
+                                    {if $cStatus == $smarty.const.BESTELLUNG_STATUS_BEZAHLT || $cStatus == $smarty.const.BESTELLUNG_STATUS_VERSANDT}
                                         <input name="dl" type="hidden" value="{$oDownload->getDownload()}"/>
                                         <button class="btn btn-default btn-xs" type="submit">
                                             <i class="fa fa-download"></i> {lang key='download'}

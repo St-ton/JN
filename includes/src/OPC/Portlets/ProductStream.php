@@ -32,7 +32,7 @@ class ProductStream extends Portlet
             'search' => [
                 'type'  => InputType::SEARCH,
                 'label' => 'Suche',
-                'placeholder' => 'Suche',
+                'placeholder' => __('search'),
                 'width' => 67,
                 'order' => 2,
             ],

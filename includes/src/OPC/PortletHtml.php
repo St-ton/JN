@@ -50,16 +50,18 @@ trait PortletHtml
      */
     public function getButtonHtml(): string
     {
-        return '<img alt="" class="fa" src="' . $this->getDefaultIconSvgUrl() . '"><br>' . $this->getTitle();
+        return '<img alt="Portlet Button" draggable="false" src="' . $this->getDefaultIconSvgUrl() . '">'
+            . '<span>' . $this->getTitle() . '</span>';
     }
 
     /**
      * @param string $faType
      * @return string
      */
-    public function getFontAwesomeButtonHtml(string $faType): string
+    public function getFontAwesomeButtonHtml(string $faClasses): string
     {
-        return '<i class="fa fa-' . $faType . '"></i><br>' . $this->getTitle();
+        return '<i class="' . $faClasses . '"></i>'
+            . '<span>' . $this->getTitle() . '</span>';
     }
 
     /**
@@ -129,7 +131,7 @@ trait PortletHtml
         $tplPath = $this->getTemplatePath() . $this->getClass() . '.tpl';
 
         if (\file_exists($tplPath) === false) {
-            $tplPath = \PFAD_ROOT . \PFAD_INCLUDES . 'src/OPC/templates/OPC/GenericPortlet.tpl';
+            $tplPath = \PFAD_ROOT . \PFAD_INCLUDES . 'src/OPC/templates/GenericPortlet/GenericPortlet.tpl';
         }
 
         return $smarty
@@ -170,7 +172,7 @@ trait PortletHtml
         return $smarty
             ->assign('portlet', $this)
             ->assign('instance', $instance)
-            ->fetch(\PFAD_ROOT . \PFAD_INCLUDES . 'src/OPC/templates/OPC/config.' . $id . '.tpl');
+            ->fetch(\PFAD_ROOT . \PFAD_INCLUDES . 'src/OPC/templates/GenericPortlet/config.' . $id . '.tpl');
     }
 
     /**
@@ -206,7 +208,7 @@ trait PortletHtml
             ->assign('portlet', $this)
             ->assign('instance', $instance)
             ->assign('tabs', $tabs)
-            ->fetch(\PFAD_ROOT . \PFAD_INCLUDES . 'src/OPC/templates/OPC/autoconfig-panel.tpl');
+            ->fetch(\PFAD_ROOT . \PFAD_ADMIN . 'opc/tpl/config/autoconfig-panel.tpl');
     }
 
     /**
@@ -251,7 +253,7 @@ trait PortletHtml
         $url  = $this->getTemplateUrl() . 'icon.svg';
 
         if (\file_exists($path) === false) {
-            return Shop::getURL() . '/' . \PFAD_INCLUDES . 'src/OPC/templates/OPC/generic.icon.svg';
+            return Shop::getURL() . '/' . \PFAD_INCLUDES . 'src/OPC/templates/GenericPortlet/generic.icon.svg';
         }
 
         return $url;

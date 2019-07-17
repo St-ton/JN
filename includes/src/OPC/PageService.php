@@ -8,6 +8,7 @@ namespace JTL\OPC;
 
 use JTL\Backend\AdminIO;
 use JTL\Helpers\Request;
+use JTL\IO\IOResponse;
 use JTL\Shop;
 
 /**
@@ -72,6 +73,8 @@ class PageService
             'saveDraft',
             'createPagePreview',
             'deleteDraft',
+            'changeDraftName',
+            'getDraftStatusHtml',
         ];
     }
 
@@ -413,5 +416,35 @@ class PageService
     public function getPreviewPageData()
     {
         return \json_decode(Request::verifyGPDataString('pageData'), true);
+    }
+
+    /**
+     * @param int $draftKey
+     * @param string $draftName
+     * @throws \Exception
+     */
+    public function changeDraftName(int $draftKey, string $draftName)
+    {
+        $this->pageDB->saveDraftName($draftKey, $draftName);
+    }
+
+    /**
+     * @param int $draftKey
+     * @return IOResponse
+     * @throws \SmartyException
+     */
+    public function getDraftStatusHtml(int $draftKey): IOResponse
+    {
+        $draft    = $this->getDraft($draftKey);
+        $smarty   = Shop::Smarty();
+        $response = new IOResponse();
+
+        $draftStatusHtml = $smarty
+            ->assign('page', $draft)
+            ->fetch(PFAD_ROOT . PFAD_ADMIN . 'opc/tpl/draftstatus.tpl');
+
+        $response->assign('opcDraftStatus', 'innerHTML', $draftStatusHtml);
+
+        return $response;
     }
 }

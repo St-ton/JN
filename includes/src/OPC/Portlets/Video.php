@@ -20,7 +20,7 @@ class Video extends Portlet
      */
     public function getButtonHtml(): string
     {
-        return $this->getFontAwesomeButtonHtml('film');
+        return $this->getFontAwesomeButtonHtml('fas fa-film');
     }
 
     /**
@@ -31,164 +31,158 @@ class Video extends Portlet
         return [
             // general
             'video-title'       => [
-                'label'      => 'Titel',
+                'label'      => __('title'),
                 'width'      => 50,
             ],
             'video-class'       => [
-                'label'      => 'CSS Klasse',
+                'label'      => __('cssClass'),
                 'width'      => 50,
             ],
             'video-responsive'  => [
                 'type'    => InputType::RADIO,
-                'label'   => 'responsive einbetten?',
+                'label'   => __('embedResponsive'),
                 'default' => true,
                 'options' => [
-                    false => 'nein',
-                    true  => 'ja',
+                    false => __('no'),
+                    true  => __('yes'),
                 ],
             ],
             'video-width'       => [
                 'type'       => InputType::NUMBER,
-                'label'      => 'Breite',
+                'label'      => __('width'),
                 'default'    => 600,
                 'width'      => 50,
             ],
             'video-height'      => [
                 'type'       => InputType::NUMBER,
-                'label'      => 'Höhe',
+                'label'      => __('height'),
                 'default'    => 338,
                 'width'      => 50,
             ],
             'video-vendor'      => [
-                'label'   => 'Quelle',
+                'label'   => __('source'),
                 'type'    => InputType::SELECT,
                 'default' => 'youtube',
                 'options' => [
                     'youtube' => 'YouTube',
                     'vimeo'   => 'Vimeo',
-                    'local'   => 'lokales Video',
+                    'local'   => __('localVideo'),
                 ],
                 'childrenFor' => [
                     'youtube' => [
                         'video-yt-hint'     => [
-                            'label'                => 'Hinweis',
+                            'label'                => __('note'),
                             'type'                 => InputType::HINT,
                             'class'                => 'danger',
-                            'text'                 => 'In ihren Datenschutzerklärungen sollten sie darauf hinweisen, ' .
-                            'dass YouTube-Videos im „erweiterten Datenschutzmodus“ in ihren Seiten eingebettet sind. ' .
-                            'Die Nutzer sollten erfahren, dass der Aufruf der Seiten zu einer Verbindungsaufnahme mit '.
-                            'YouTube und dem DoubleClick-Netzwerk führt. Man sollte ihnen auch nicht verschweigen, ' .
-                            'dass schon ein Klick auf das Video weitere Datenverarbeitungsvorgänge auslösen kann, ' .
-                            'auf die der Website-Betreiber keinen Einfluss mehr hat.',
+                            'text'                 => __('youtubeNote'),
                         ],
                         'video-yt-id'       => [
-                            'label'   => 'Video ID',
+                            'label'   => __('videoID'),
                             'default' => 'xITQHgJ3RRo',
-                            'help'    => 'Bitte nur die ID des Videos eingeben. Bsp.: xITQHgJ3RRo',
+                            'help'    => __('videoIDHelpYoutube'),
                         ],
                         'video-yt-start'    => [
-                            'label'      => 'Start',
+                            'label'      => __('start'),
                             'type'       => InputType::NUMBER,
                             'width'      => 50,
                         ],
                         'video-yt-end'      => [
-                            'label'      => 'Ende',
+                            'label'      => __('end'),
                             'type'       => InputType::NUMBER,
                             'width'      => 50,
                         ],
                         'video-yt-controls' => [
-                            'label'      => 'Steuerelemente anzeigen?',
+                            'label'      => __('showControls'),
                             'type'       => InputType::RADIO,
                             'inline'     => true,
                             'options'    => [
-                                '1' => 'ja',
-                                '0' => 'nein',
+                                '1' => __('yes'),
+                                '0' => __('no'),
                             ],
                             'default'    => '1',
                             'width'      => 50,
                         ],
                         'video-yt-rel'      => [
-                            'label'      => 'ähnliche Videos anzeigen?',
+                            'label'      => __('showSimilarVideos'),
                             'type'       => InputType::RADIO,
                             'inline'     => true,
                             'options'    => [
-                                '1' => 'ja',
-                                '0' => 'nein',
+                                '1' => __('yes'),
+                                '0' => __('no'),
                             ],
                             'default'    => '0',
                             'width'      => 50,
                         ],
                         'video-yt-color'    => [
-                            'label'        => 'Farbe',
+                            'label'        => __('color'),
                             'type'         => InputType::RADIO,
                             'inline'       => true,
                             'options'      => [
-                                'white' => 'weiß',
-                                'red'   => 'rot',
+                                'white' => __('white'),
+                                'red'   => __('red'),
                             ],
                             'default'      => 'white',
                             'width'        => 50,
                             'color-format' => '#',
                         ],
                         'video-yt-playlist' => [
-                            'label'              => 'Playlist',
-                            'help'               => 'Geben Sie die Video-IDs durch Komma getrennt ein. ' .
-                                'Bsp.: xITQHgJ3RRo,sNYv0JgrUlw',
+                            'label'              => __('playlist'),
+                            'help'               => __('playlistHelp'),
                         ],
                     ],
                     'vimeo'   => [
                         'video-vim-id'      => [
-                            'label'                => 'Video ID',
+                            'label'                => __('videoID'),
                             'default'              => '141374353',
                             'nonempty'             => true,
-                            'help'                 => 'Bitte nur die ID des Videos eingeben. Bsp.: 141374353',
+                            'help'                 => __('videoIDHelpVimeo'),
                         ],
                         'video-vim-loop'    => [
-                            'label'      => 'Video nach Ablauf wiederholen?',
+                            'label'      => __('repeatVideo'),
                             'type'       => InputType::RADIO,
                             'inline'     => true,
                             'options'    => [
-                                '1' => 'ja',
-                                '0' => 'nein',
+                                '1' => __('yes'),
+                                '0' => __('no'),
                             ],
                             'default'    => '0',
                             'width'      => 50,
                         ],
                         'video-vim-img'     => [
-                            'label'      => 'Bild anzeigen?',
+                            'label'      => __('showImage'),
                             'type'       => InputType::RADIO,
                             'inline'     => true,
                             'options'    => [
-                                '1' => 'ja',
-                                '0' => 'nein',
+                                '1' => __('yes'),
+                                '0' => __('no'),
                             ],
                             'default'    => '0',
                             'width'      => 50,
                         ],
                         'video-vim-title'   => [
-                            'label'      => 'Titel anzeigen?',
+                            'label'      => __('showTitle'),
                             'type'       => InputType::RADIO,
                             'inline'     => true,
                             'options'    => [
-                                '1' => 'ja',
-                                '0' => 'nein',
+                                '1' => __('yes'),
+                                '0' => __('no'),
                             ],
                             'default'    => '1',
                             'width'      => 50,
                         ],
                         'video-vim-byline'  => [
-                            'label'      => 'Verfasserangabe anzeigen?',
+                            'label'      => __('showAuthorInformation'),
                             'type'       => InputType::RADIO,
                             'inline'     => true,
                             'options'    => [
-                                '1' => 'ja',
-                                '0' => 'nein',
+                                '1' => __('yes'),
+                                '0' => __('no'),
                             ],
                             'default'    => '0',
                             'width'      => 50,
                         ],
                         'video-vim-color'   => [
-                            'label'              => 'Farbe',
+                            'label'              => __('color'),
                             'type'               => InputType::COLOR,
                             'default'            => '#ffffff',
                             'width'              => 50,
@@ -196,7 +190,7 @@ class Video extends Portlet
                     ],
                     'local'   => [
                         'video-local-url'   => [
-                            'label'                => 'Video URL',
+                            'label'                => __('videoURL'),
                             'type'                 => InputType::VIDEO,
                             'width'                => 50,
                         ],
@@ -212,8 +206,8 @@ class Video extends Portlet
     public function getPropertyTabs(): array
     {
         return [
-            'Styles'    => 'styles',
-            'Animation' => 'animations',
+            __('Styles')    => 'styles',
+            __('Animation') => 'animations',
         ];
     }
 }

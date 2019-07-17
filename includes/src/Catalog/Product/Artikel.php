@@ -4061,10 +4061,9 @@ class Artikel
         $this->fUVP                              = $tmpProduct->fUVP;
         $this->fUVPBrutto                        = $tmpProduct->fUVP;
         $this->fVPEWert                          = $tmpProduct->fVPEWert;
-        $this->cName                             = \htmlspecialchars(
+        $this->cName                             = Text::htmlentitiesOnce(
             $tmpProduct->cName,
-            \ENT_COMPAT | \ENT_HTML401,
-            \JTL_CHARSET
+            \ENT_COMPAT | \ENT_HTML401
         );
         $this->cSeo                              = $tmpProduct->cSeo;
         $this->cBeschreibung                     = Text::parseNewsText($tmpProduct->cBeschreibung);
@@ -5086,7 +5085,7 @@ class Artikel
         );
         if ($localized !== false) {
             if (\trim($localized->cName)) {
-                $this->cName = $localized->cName;
+                $this->cName = Text::htmlentitiesOnce($localized->cName, \ENT_COMPAT | \ENT_HTML401);
             }
             if (\trim($localized->cKurzBeschreibung)) {
                 $this->cKurzBeschreibung = Text::parseNewsText($localized->cKurzBeschreibung);

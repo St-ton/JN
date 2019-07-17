@@ -68,12 +68,6 @@ msgstr "Mouseover shows countries"
 msgid "global_versandkostenfrei_darstellung_value(D)"
 msgstr "Countries directly visible"
 
-msgid "global_artikelname_htmlentities_value(Y)"
-msgstr "Yes"
-
-msgid "global_artikelname_htmlentities_value(N)"
-msgstr "No"
-
 msgid "kategorien_anzeigefilter_value(1)"
 msgstr "Show all categories"
 

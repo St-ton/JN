@@ -1,5 +1,6 @@
 FROM php:7.1-cli-alpine
-WORKDIR '/build'
+RUN mkdir /creation
+WORKDIR '/creation'
 RUN apk update \
     && apk add --no-cache bash curl freetype-dev g++ git gnupg icu-dev libjpeg-turbo-dev libpng-dev libxml2-dev libzip-dev \
         php7-bcmath php7-gd php7-intl php7-soap php7-zip patchutils rsync wget unzip zip zlib-dev \

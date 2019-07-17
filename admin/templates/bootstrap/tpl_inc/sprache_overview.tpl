@@ -33,141 +33,147 @@
     }
 </script>
 <div id="content" class="container-fluid">
-    <div class="block">
-        {include file='tpl_inc/language_switcher.tpl' id='kSprache' action='sprache.php'}
+    <div class="card">
+        <div class="card-body">
+            {include file='tpl_inc/language_switcher.tpl' id='kSprache' action='sprache.php'}
+        </div>
     </div>
-    <ul class="nav nav-tabs" role="tablist">
-        <li class="tab {if $tab === 'variables'}active{/if}">
-            <a data-toggle="tab" href="#variables">{__('langVars')}</a>
-        </li>
-        <li class="tab {if $tab === 'notfound'}active{/if}">
-            <a data-toggle="tab" href="#notfound">{__('notFoundVars')}</a>
-        </li>
-    </ul>
-    <div class="tab-content">
-        <div id="variables" class="tab-pane fade {if $tab === 'variables'}active show{/if}">
-            {if $bSpracheAktiv}
-                {include file='tpl_inc/filtertools.tpl' oFilter=$oFilter}
-                {include file='tpl_inc/pagination.tpl' pagination=$pagination}
-            {/if}
-            <div class="card">
-                <form action="sprache.php" method="post">
-                    {$jtl_token}
+    <div class="tabs">
+        <nav class="tabs-nav" role="tablist">
+            <ul class="nav nav-tabs">
+                <li class="nav-item">
+                    <a class="nav-link {if $tab === 'variables'}active{/if}" data-toggle="tab" href="#variables">{__('langVars')}</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {if $tab === 'notfound'}active{/if}" data-toggle="tab" href="#notfound">{__('notFoundVars')}</a>
+                </li>
+            </ul>
+        </nav>
+        <div class="tab-content">
+            <div id="variables" class="tab-pane fade {if $tab === 'variables'}active show{/if}">
+                {if $bSpracheAktiv}
+                    {include file='tpl_inc/filtertools.tpl' oFilter=$oFilter}
+                    {include file='tpl_inc/pagination.tpl' pagination=$pagination}
+                {/if}
+                <div class="card">
+                    <form action="sprache.php" method="post">
+                        {$jtl_token}
+                        <div class="card-body">
+                        {if $oWert_arr|@count > 0}
+                            <div class="table-responsive">
+                                <table class="list table">
+                                    <thead>
+                                        <tr>
+                                            {if $bAllSections}<th>{__('section')}</th>{/if}
+                                            <th>{__('variableName')}</th>
+                                            <th>{__('content')}</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {foreach $oWert_arr as $oWert}
+                                            <tr>
+                                                {if $bAllSections}<td>{$oWert->cSektionName}</td>{/if}
+                                                <td onclick="toggleTextarea({$oWert->kSprachsektion}, '{$oWert->cName}');"
+                                                    style="cursor:pointer;">
+                                                    <label for="cWert_{$oWert->kSprachsektion}_{$oWert->cName}">
+                                                        {if $cSearchString !== ''}
+                                                            {$oWert->cName|regex_replace:"/($cSearchString)/i":"<mark>\$1</mark>"}
+                                                        {else}
+                                                            {$oWert->cName}
+                                                        {/if}
+                                                    </label>
+                                                </td>
+                                                <td onclick="toggleTextarea({$oWert->kSprachsektion}, '{$oWert->cName}');"
+                                                    style="cursor:pointer;">
+                                                    <span id="cWert_caption_{$oWert->kSprachsektion}_{$oWert->cName}">
+                                                        {if $cSearchString !== ''}
+                                                            {$oWert->cWert|escape|regex_replace:"/($cSearchString)/i":"<mark>\$1</mark>"}
+                                                        {else}
+                                                            {$oWert->cWert|escape}
+                                                        {/if}
+                                                    </span>
+                                                    <textarea id="cWert_{$oWert->kSprachsektion}_{$oWert->cName}" class="form-control"
+                                                              name="cWert_arr[{$oWert->kSprachsektion}][{$oWert->cName}]"
+                                                              style="display:none;">{$oWert->cWert|escape}</textarea>
+                                                    <input type="hidden" id="bChanged_{$oWert->kSprachsektion}_{$oWert->cName}"
+                                                           name="bChanged_arr[{$oWert->kSprachsektion}][{$oWert->cName}]"
+                                                           value="0">
+                                                    <span style="display:none;"
+                                                          id="cStandard_{$oWert->kSprachsektion}_{$oWert->cName}">{$oWert->cStandard|escape}</span>
+                                                </td>
+                                                <td style="width:6em;">
+                                                    <div class="btn-group right">
+                                                        <button type="button" class="btn btn-default"
+                                                                onclick="resetVarText({$oWert->kSprachsektion},
+                                                                                      '{$oWert->cName}');">
+                                                            <i class="fa fa-refresh"></i>
+                                                        </button>
+                                                        {if $oWert->bSystem === '0'}
+                                                            <a href="sprache.php?token={$smarty.session.jtl_token}&action=delvar&kSprachsektion={$oWert->kSprachsektion}&cName={$oWert->cName}"
+                                                               class="btn btn-danger">
+                                                                <i class="fas fa-trash-alt"></i>
+                                                            </a>
+                                                        {/if}
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        {/foreach}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {elseif $bSpracheAktiv}
+                            <div class="alert alert-info" role="alert">{__('noFilterResults')}</div>
+                        {else}
+                            <div class="alert alert-info" role="alert">{__('notImportedYet')}</div>
+                        {/if}
+                        </div>
+                        <div class="card-footer">
+                            {sprache_buttons}
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div id="notfound" class="tab-pane fade {if $tab === 'notfound'}active show{/if}">
+                <div class="card">
                     <div class="card-body">
-                    {if $oWert_arr|@count > 0}
-                        <div class="table-responsive">
+                        {if $oNotFound_arr|@count > 0}
                             <table class="list table">
                                 <thead>
                                     <tr>
-                                        {if $bAllSections}<th>{__('section')}</th>{/if}
+                                        <th>{__('section')}</th>
                                         <th>{__('variableName')}</th>
-                                        <th>{__('content')}</th>
                                         <th></th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {foreach $oWert_arr as $oWert}
+                                    {foreach $oNotFound_arr as $oWert}
                                         <tr>
-                                            {if $bAllSections}<td>{$oWert->cSektionName}</td>{/if}
-                                            <td onclick="toggleTextarea({$oWert->kSprachsektion}, '{$oWert->cName}');"
-                                                style="cursor:pointer;">
-                                                <label for="cWert_{$oWert->kSprachsektion}_{$oWert->cName}">
-                                                    {if $cSearchString !== ''}
-                                                        {$oWert->cName|regex_replace:"/($cSearchString)/i":"<mark>\$1</mark>"}
-                                                    {else}
-                                                        {$oWert->cName}
-                                                    {/if}
-                                                </label>
-                                            </td>
-                                            <td onclick="toggleTextarea({$oWert->kSprachsektion}, '{$oWert->cName}');"
-                                                style="cursor:pointer;">
-                                                <span id="cWert_caption_{$oWert->kSprachsektion}_{$oWert->cName}">
-                                                    {if $cSearchString !== ''}
-                                                        {$oWert->cWert|escape|regex_replace:"/($cSearchString)/i":"<mark>\$1</mark>"}
-                                                    {else}
-                                                        {$oWert->cWert|escape}
-                                                    {/if}
-                                                </span>
-                                                <textarea id="cWert_{$oWert->kSprachsektion}_{$oWert->cName}" class="form-control"
-                                                          name="cWert_arr[{$oWert->kSprachsektion}][{$oWert->cName}]"
-                                                          style="display:none;">{$oWert->cWert|escape}</textarea>
-                                                <input type="hidden" id="bChanged_{$oWert->kSprachsektion}_{$oWert->cName}"
-                                                       name="bChanged_arr[{$oWert->kSprachsektion}][{$oWert->cName}]"
-                                                       value="0">
-                                                <span style="display:none;"
-                                                      id="cStandard_{$oWert->kSprachsektion}_{$oWert->cName}">{$oWert->cStandard|escape}</span>
-                                            </td>
-                                            <td style="width:6em;">
+                                            <td>{$oWert->cSektion}</td>
+                                            <td>{$oWert->cName}</td>
+                                            <td>
                                                 <div class="btn-group right">
-                                                    <button type="button" class="btn btn-default"
-                                                            onclick="resetVarText({$oWert->kSprachsektion},
-                                                                                  '{$oWert->cName}');">
-                                                        <i class="fa fa-refresh"></i>
-                                                    </button>
-                                                    {if $oWert->bSystem === '0'}
-                                                        <a href="sprache.php?token={$smarty.session.jtl_token}&action=delvar&kSprachsektion={$oWert->kSprachsektion}&cName={$oWert->cName}"
-                                                           class="btn btn-danger">
-                                                            <i class="fas fa-trash-alt"></i>
-                                                        </a>
-                                                    {/if}
+                                                    <a href="sprache.php?token={$smarty.session.jtl_token}&action=newvar&kSprachsektion={$oWert->kSprachsektion}&cName={$oWert->cName}&tab=notfound"
+                                                       class="btn btn-default" title="{__('create')}">
+                                                        <i class="fal fa-plus"></i>
+                                                    </a>
                                                 </div>
                                             </td>
                                         </tr>
                                     {/foreach}
                                 </tbody>
                             </table>
-                        </div>
-                    {elseif $bSpracheAktiv}
-                        <div class="alert alert-info" role="alert">{__('noFilterResults')}</div>
-                    {else}
-                        <div class="alert alert-info" role="alert">{__('notImportedYet')}</div>
-                    {/if}
+                        {else}
+                            <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
+                        {/if}
                     </div>
                     <div class="card-footer">
-                        {sprache_buttons}
-                    </div>
-                </form>
-            </div>
-        </div>
-        <div id="notfound" class="tab-pane fade {if $tab === 'notfound'}active show{/if}">
-            <div class="card">
-                <div class="card-body">
-                    {if $oNotFound_arr|@count > 0}
-                        <table class="list table">
-                            <thead>
-                                <tr>
-                                    <th>{__('section')}</th>
-                                    <th>{__('variableName')}</th>
-                                    <th></th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {foreach $oNotFound_arr as $oWert}
-                                    <tr>
-                                        <td>{$oWert->cSektion}</td>
-                                        <td>{$oWert->cName}</td>
-                                        <td>
-                                            <div class="btn-group right">
-                                                <a href="sprache.php?token={$smarty.session.jtl_token}&action=newvar&kSprachsektion={$oWert->kSprachsektion}&cName={$oWert->cName}&tab=notfound"
-                                                   class="btn btn-default" title="{__('create')}">
-                                                    <i class="fal fa-plus"></i>
-                                                </a>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                {/foreach}
-                            </tbody>
-                        </table>
-                    {else}
-                        <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
-                    {/if}
-                </div>
-                <div class="card-footer">
-                    <div class="btn-group">
-                        <a href="sprache.php?token={$smarty.session.jtl_token}&action=clearlog&tab=notfound" class="btn btn-danger">
-                            <i class="fa fa-refresh"></i>
-                            {__('btnResetLog')}
-                        </a>
+                        <div class="btn-group">
+                            <a href="sprache.php?token={$smarty.session.jtl_token}&action=clearlog&tab=notfound" class="btn btn-danger">
+                                <i class="fa fa-refresh"></i>
+                                {__('btnResetLog')}
+                            </a>
+                        </div>
                     </div>
                 </div>
             </div>

@@ -1,7 +1,9 @@
 {include file='tpl_inc/seite_header.tpl' cTitel=__('agbwrb') cDokuURL=__('agbwrbURL')}
 <div id="content" class="container-fluid">
-    <div class="block">
-        {include file='tpl_inc/language_switcher.tpl'}
+    <div class="card">
+        <div class="card-body">
+            {include file='tpl_inc/language_switcher.tpl'}
+        </div>
     </div>
     <div class="card">
         <div class="card-header">

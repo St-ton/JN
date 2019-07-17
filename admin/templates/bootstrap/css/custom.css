@@ -410,15 +410,6 @@
   padding-left: 15px;
   padding-right: 15px;
 }
-/*
-* Brand-Primary: #5cbcf6;
-* Hover: #88cef8;
-*/
-body {
-  font-family: 'Source Sans Pro', Helvetica, Arial, sans-serif;
-  font-size: 16px;
-  position: relative;
-}
 .h1,
 .h2,
 .h3,
@@ -455,28 +446,6 @@ h6 {
 .jtl-list-group .input-group:last-child,
 .jtl-list-group .list-group-item2:last-child {
   margin-bottom: 0;
-}
-.form-control {
-  padding: 5px 10px;
-}
-.input-group-wrap .form-control {
-  height: 32px;
-}
-.input-group-wrap span.success {
-  color: #5CB85D;
-}
-.input-group-wrap .form-control[multiple] {
-  height: auto;
-}
-.input-group-wrap input[type="checkbox"] {
-  margin: 0 0 0 8px;
-}
-.input-group-wrap .multi_input {
-  margin-left: 8px;
-  margin-right: 10px;
-}
-.input-group-select select.form-control {
-  width: auto;
 }
 .input-group.error .input-group-addon,
 .input-group.error .form-control,
@@ -548,11 +517,6 @@ h4.label-wrap,
 h5.label-wrap {
   margin: 0 0 6px;
 }
-.form-control::-moz-placeholder,
-.form-control:-ms-input-placeholder,
-.form-control::-webkit-input-placeholder {
-  opacity: 0.5;
-}
 .input-group-wrap {
   display: table-cell;
   vertical-align: middle;
@@ -591,11 +555,6 @@ h5.label-wrap {
   width: 52px;
   text-align: right;
 }
-#settings .input-group-wrap .form-control,
-.settings .input-group-wrap .form-control {
-  border: 0 none;
-  width: 100%;
-}
 .settings-content .input-group-wrap textarea {
   min-height: 90px;
 }
@@ -632,10 +591,6 @@ tr.highlight {
 .save-wrapper {
   margin-bottom: 20px;
 }
-#content .block,
-#content .container {
-  margin-bottom: 20px;
-}
 label {
   cursor: pointer;
 }
@@ -662,17 +617,11 @@ label .fillout {
 .block .input-group.p25 {
   min-width: 300px;
 }
-.block .pagination {
-  margin: 0;
-}
 .block .pages .pageinfo {
   margin-top: 5px;
 }
 .pages {
   overflow: hidden;
-}
-.tab-content {
-  margin-top: 10px;
 }
 .p50 {
   width: 50%;
@@ -706,9 +655,6 @@ label .fillout {
 p.submit {
   margin-top: 15px;
 }
-#content.container-fluid {
-  padding: 0;
-}
 ol.affacted-tables {
   list-style-type: decimal-leading-zero;
 }
@@ -736,9 +682,6 @@ pre {
   float: left;
   margin-right: 10px;
 }
-ul li {
-  list-style: none outside none;
-}
 ul.default li {
   list-style: inherit;
 }
@@ -754,9 +697,6 @@ ul.hlist li {
 }
 ul.hlist li.right {
   float: right;
-}
-#content .ocontainer {
-  margin: 1em 0;
 }
 .well h1 {
   margin-top: 0;
@@ -1055,9 +995,6 @@ img.slide-image {
 }
 .highlight .input-group-addon:first-child {
   background: #5CBCF6;
-}
-.input-group-wrap.last {
-  border-radius: 0 5px 5px 0;
 }
 legend {
   font-size: 16px;
@@ -1603,12 +1540,6 @@ p#clock_time {
 p#clock_date {
   font-size: 18px;
 }
-.form-control {
-  font-size: 16px;
-}
-.input-group .form-control {
-  box-shadow: none;
-}
 .documentation {
   padding-left: 10px;
 }
@@ -1617,9 +1548,6 @@ p#clock_date {
 .nav-tabs > li.active > a:hover {
   border: 1px solid #ddd;
   border-bottom-color: transparent;
-}
-.input-group-wrap select.form-control {
-  border: 0 none;
 }
 li.navbar-fright {
   float: right;
@@ -1639,10 +1567,6 @@ li.navbar-fright {
 }
 .input-group-checkbox-wrap input[type=radio] {
   margin: 2px 0 2px 5px;
-}
-#settings .input-group-wrap input[type=checkbox].form-control,
-.settings .input-group-wrap input[type=checkbox].form-control {
-  width: auto;
 }
 .yamm .nav,
 .yamm .collapse,
@@ -1724,10 +1648,6 @@ input[type="number"][size="2"] {
 }
 input[type="number"][size="3"] {
   width: 60px;
-}
-select.form-control {
-  padding-left: 4px;
-  text-indent: 0;
 }
 .accordion-heading {
   overflow: hidden;
@@ -2428,13 +2348,6 @@ td.nowrap {
   margin: 0 5px;
   vertical-align: middle;
 }
-.pagination-static {
-  position: fixed;
-  bottom: -5px;
-}
-.pagination-static .pagination {
-  margin: 0;
-}
 .query {
   margin: 20px 0;
 }
@@ -2573,10 +2486,6 @@ td.nowrap {
 .toolbar-container {
   padding: 0;
   margin: 0;
-}
-.toolbar .pagination {
-  margin: 0;
-  display: block;
 }
 .toolbar label {
   margin: 0;

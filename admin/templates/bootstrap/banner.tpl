@@ -435,14 +435,13 @@
         <a class="btn btn-danger" href="banner.php" id="cancel"><i class="fa fa-angle-double-left"></i> {__('back')}</a>
     </div>
     {else}
-        {include file='tpl_inc/pagination.tpl' pagination=$pagination}
-
         <div id="settings">
             <div class="card">
                 <div class="card-header">
                     <div class="subheading1">{__('availableBanner')}</div>
                 </div>
                 <div class="card-body">
+                    {include file='tpl_inc/pagination.tpl' pagination=$pagination}
                     <table class="list table">
                         <thead>
                         <tr>

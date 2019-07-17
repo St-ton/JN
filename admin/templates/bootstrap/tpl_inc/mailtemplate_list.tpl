@@ -36,17 +36,15 @@
 									<input type="hidden" name="kPlugin" value="{$template->getPluginID()}" />
 								{/if}
 								{$jtl_token}
-								<div class="btn-group">
-									<button type="submit" name="preview" value="{$template->getID()}" class="btn btn-default mail">
-										<i class="fa fa-envelope"></i> {__('testmail')}
-									</button>
-									<button type="submit" name="kEmailvorlage" value="{$template->getID()}" class="btn btn-primary" title="{__('modify')}">
-										<i class="fal fa-edit"></i>
-									</button>
-									<button type="submit" name="resetConfirm" value="{$template->getID()}" class="btn btn-danger reset" title="{__('reset')}">
-										<i class="fa fa-refresh"></i>
-									</button>
-								</div>
+								<button type="submit" name="resetConfirm" value="{$template->getID()}" class="btn btn-danger btn-circle reset" title="{__('reset')}">
+									<i class="fal fa-refresh"></i>
+								</button>
+								<button type="submit" name="preview" value="{$template->getID()}" title="{__('testmail')}" class="btn btn-default btn-circle mail">
+									<i class="fal fa-envelope"></i>
+								</button>
+								<button type="submit" name="kEmailvorlage" value="{$template->getID()}" class="btn btn-primary btn-circle" title="{__('modify')}">
+									<i class="fal fa-edit"></i>
+								</button>
 							</form>
 						</td>
 					</tr>

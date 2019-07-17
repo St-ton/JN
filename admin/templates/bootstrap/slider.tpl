@@ -16,11 +16,11 @@
                         <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                     </div>
                 {else}
-                    {include file='tpl_inc/pagination.tpl' pagination=$pagination}
                     <div class="card-header">
                         <div class="subheading1">{__('slider')}</div>
                     </div>
                     <div class="card-body">
+                        {include file='tpl_inc/pagination.tpl' pagination=$pagination}
                         <table class="table">
                             <thead>
                             <tr>

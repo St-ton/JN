@@ -135,41 +135,51 @@
 {/function}
 
 <div id="content" class="container-fluid">
-    <ul class="nav nav-tabs" role="tablist">
-        <li class="tab{if $tab === $couponTypes.standard} active{/if}">
-            <a data-toggle="tab" role="tab" href="#{$couponTypes.standard}" aria-expanded="false">{__('standardCoupon')}s</a>
-        </li>
-        <li class="tab{if $tab === $couponTypes.shipping} active{/if}">
-            <a data-toggle="tab" role="tab" href="#{$couponTypes.shipping}" aria-expanded="false">{__('shippingCoupon')}s</a>
-        </li>
-        <li class="tab{if $tab === $couponTypes.newCustomer} active{/if}">
-            <a data-toggle="tab" role="tab" href="#{$couponTypes.newCustomer}" aria-expanded="false">{__('newCustomerCoupon')}s</a>
-        </li>
-    </ul>
-    <div class="tab-content">
-        {kupons_uebersicht_tab
-            cKuponTyp=$couponTypes.standard
-            cKuponTypName=__('standardCoupon')
-            oKupon_arr=$oKuponStandard_arr
-            nKuponCount=$nKuponStandardCount
-            pagination=$oPaginationStandard
-            oFilter=$oFilterStandard
-        }
-        {kupons_uebersicht_tab
-            cKuponTyp=$couponTypes.shipping
-            cKuponTypName=__('shippingCoupon')
-            oKupon_arr=$oKuponVersandkupon_arr
-            nKuponCount=$nKuponVersandCount
-            pagination=$oPaginationVersandkupon
-            oFilter=$oFilterVersand
-        }
-        {kupons_uebersicht_tab
-            cKuponTyp=$couponTypes.newCustomer
-            cKuponTypName=__('newCustomerCoupon')
-            oKupon_arr=$oKuponNeukundenkupon_arr
-            nKuponCount=$nKuponNeukundenCount
-            pagination=$oPaginationNeukundenkupon
-            oFilter=$oFilterNeukunden
-        }
+    <div class="tabs">
+        <nav class="tabs-nav">
+            <ul class="nav nav-tabs" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link {if $tab === $couponTypes.standard} active{/if}" data-toggle="tab" role="tab" href="#{$couponTypes.standard}" aria-expanded="false">
+                        {__('standardCoupon')}
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {if $tab === $couponTypes.shipping} active{/if}" data-toggle="tab" role="tab" href="#{$couponTypes.shipping}" aria-expanded="false">
+                        {__('shippingCoupon')}
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {if $tab === $couponTypes.newCustomer} active{/if}" data-toggle="tab" role="tab" href="#{$couponTypes.newCustomer}" aria-expanded="false">
+                        {__('newCustomerCoupon')}
+                    </a>
+                </li>
+            </ul>
+        </nav>
+        <div class="tab-content">
+            {kupons_uebersicht_tab
+                cKuponTyp=$couponTypes.standard
+                cKuponTypName=__('standardCoupon')
+                oKupon_arr=$oKuponStandard_arr
+                nKuponCount=$nKuponStandardCount
+                pagination=$oPaginationStandard
+                oFilter=$oFilterStandard
+            }
+            {kupons_uebersicht_tab
+                cKuponTyp=$couponTypes.shipping
+                cKuponTypName=__('shippingCoupon')
+                oKupon_arr=$oKuponVersandkupon_arr
+                nKuponCount=$nKuponVersandCount
+                pagination=$oPaginationVersandkupon
+                oFilter=$oFilterVersand
+            }
+            {kupons_uebersicht_tab
+                cKuponTyp=$couponTypes.newCustomer
+                cKuponTypName=__('newCustomerCoupon')
+                oKupon_arr=$oKuponNeukundenkupon_arr
+                nKuponCount=$nKuponNeukundenCount
+                pagination=$oPaginationNeukundenkupon
+                oFilter=$oFilterNeukunden
+            }
+        </div>
     </div>
 </div>

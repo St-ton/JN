@@ -1,7 +1,6 @@
 {include file='tpl_inc/seite_header.tpl' cTitel=__('emailhistory') cBeschreibung=__('emailhistoryDesc') cDokuURL=__('emailhistoryURL')}
 <div id="content" class="container-fluid">
     {if $oEmailhistory_arr|@count > 0 && $oEmailhistory_arr}
-        {include file='tpl_inc/pagination.tpl' pagination=$pagination}
         <form name="emailhistory" method="post" action="emailhistory.php">
             {$jtl_token}
             <script>
@@ -46,6 +45,7 @@
                     <hr class="mb-n3">
                 </div>
                 <div class="card-body table-responsive">
+                    {include file='tpl_inc/pagination.tpl' pagination=$pagination}
                     <table class="list table table-striped">
                         <thead>
                         <tr>

@@ -56,12 +56,18 @@ stages:
 
     echo "Building projekt in PHP 5.6 and mysql server 5.5 docker image..."
     docker run \
+      -d -it \
       -w '/creation' \
       --volume $CI_PROJECT_DIR.tmp/CI_SERVER_TLS_CA_FILE:$CI_PROJECT_DIR.tmp/CI_SERVER_TLS_CA_FILE \
       --volume $(pwd):/dockerBuild \
       --name="$CI_CONTAINER_NAME" \
       --network="mysql-php-network" \
       $CI_REGISTRY_IMAGE/build-deploy-php5.6 \
+      bash
+
+    docker exec \
+      -w '/creation' \
+      $CI_CONTAINER_NAME \
       sh -c "cp -r /dockerBuild/. /creation; bash $BUILD_SCRIPT_PATH '/creation' $CI_COMMIT_REF_NAME '$DB_HOST' 'root' '$DOCKER_MARIADB_PASSWORD' 'build_$DB_NAME'"
 
     echo "Build finished"

@@ -65,7 +65,7 @@
                                 </div>
                                 <div class="modal-footer">
                                     <div class="btn-group">
-                                        <button type="button" class="btn btn-success" name="ok" data-dismiss="modal"><i class="fa fa-check"></i>&nbsp;{__('ok')}</button>
+                                        <button type="button" class="btn btn-success" name="ok" data-dismiss="modal"><i class="fal fa-check text-success"></i>&nbsp;{__('ok')}</button>
                                         <button type="button" class="btn btn-danger" name="cancel" data-dismiss="modal"><i class="fa fa-close"></i>&nbsp;{__('Cancel')}</button>
                                     </div>
                                 </div>
@@ -90,9 +90,9 @@
                                     <input type="checkbox" name="cVerzeichnis[]" id="plugin-check-{$listingItem->getDir()}" value="{$listingItem->getDir()}" />
                                     {if $listingItem->isShop5Compatible() === false}
                                         {if $listingItem->isShop4Compatible() === false}
-                                            <span title="{__('dangerPluginNotCompatibleShop4')}" class="label warning label-danger"><i class="fa fa-warning"></i></span>
+                                            <span title="{__('dangerPluginNotCompatibleShop4')}" class="label warning label-danger"><i class="fal fa-exclamation-triangle"></i></span>
                                         {else}
-                                            <span title="{__('dangerPluginNotCompatibleShop5')}" class="label warning label-warning"><i class="fa fa-warning"></i></span>
+                                            <span title="{__('dangerPluginNotCompatibleShop5')}" class="label warning label-warning"><i class="fal fa-exclamation-triangle"></i></span>
                                         {/if}
                                     {/if}
                                 </td>

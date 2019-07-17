@@ -22,7 +22,7 @@
 
     function enableFilter(doPostUpdate, filter)
     {
-        $('<button class="btn btn-xs btn-danger" type="button">')
+        $('<button class="btn btn-sm btn-danger" type="button">')
             .data('filter', filter)
             .html(filter.name)
             .click(disableFilter)
@@ -91,7 +91,7 @@
 
     function addFilterAvailableButton(filter, target)
     {
-        $('<button class="btn btn-xs btn-primary" type="button">')
+        $('<button class="btn btn-sm btn-primary" type="button">')
             .data('filter', filter)
             .html(filter.name + ' (' + filter.count + ')')
             .click(enableFilter.bind(this, true, filter))

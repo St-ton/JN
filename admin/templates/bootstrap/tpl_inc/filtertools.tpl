@@ -87,7 +87,7 @@
                     <div class="btn-group">
                         <button type="submit" class="btn btn-primary" name="action" value="{$oFilter->getId()}_filter"
                                 title="{__('useFilter')}" id="{$oFilter->getId()}_btn_filter">
-                            <i class="fa fa-search"></i>
+                            <i class="fal fa-search"></i>
                         </button>
                         <button type="submit" class="btn btn-default" name="action" value="{$oFilter->getId()}_resetfilter"
                                 title="{__('resetFilter')}" id="{$oFilter->getId()}_btn_resetfilter">

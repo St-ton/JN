@@ -60,8 +60,8 @@
                                             <td class="tcenter">{$review->Datum}</td>
                                             <td class="tcenter">
                                                 <a href="bewertung.php?a=editieren&kBewertung={$review->kBewertung}&tab=freischalten&token={$smarty.session.jtl_token}"
-                                                   class="btn btn-default" title="{__('modify')}">
-                                                    <i class="fa fa-edit"></i>
+                                                   class="btn btn-default btn-circle" title="{__('modify')}">
+                                                    <i class="fal fa-edit"></i>
                                                 </a>
                                             </td>
                                         </tr>
@@ -75,11 +75,9 @@
                                 </tfoot>
                             </table>
                         </div>
-                        <div class="card-footer">
-                            <div class="btn-group">
-                                <button name="aktivieren" type="submit" value="{__('activate')}" class="btn btn-primary"><i class="fa fa-thumbs-up"></i> {__('activate')}</button>
-                                <button name="loeschen" type="submit" value="{__('delete')}" class="btn btn-danger"><i class="fa fa-trash"></i> {__('delete')}</button>
-                            </div>
+                        <div class="card-footer save-wrapper">
+                            <button name="loeschen" type="submit" value="{__('delete')}" class="btn btn-danger"><i class="fas fa-trash-alt"></i> {__('delete')}</button>
+                            <button name="aktivieren" type="submit" value="{__('activate')}" class="btn btn-primary"><i class="fa fa-thumbs-up"></i> {__('activate')}</button>
                         </div>
                     </div>
                 </form>
@@ -136,19 +134,17 @@
                                         </td>
                                         <td class="tcenter">{$review->nSterne}</td>
                                         <td class="tcenter">{$review->Datum}</td>
-                                        <td class="tcenter7 tright" style="min-width: 100px;">
-                                            <div class="btn-group">
-                                                {if !empty($review->cAntwort)}
-                                                    <a href="bewertung.php?a=delreply&kBewertung={$review->kBewertung}&tab=letzten50&token={$smarty.session.jtl_token}"
-                                                       class="btn btn-danger" title="{__('removeReply')}">
-                                                        <i class="fa fa-times-circle-o"></i>
-                                                    </a>
-                                                {/if}
-                                                <a href="bewertung.php?a=editieren&kBewertung={$review->kBewertung}&tab=letzten50&token={$smarty.session.jtl_token}"
-                                                   class="btn btn-default" title="{__('modify')}">
-                                                    <i class="fa fa-edit"></i>
+                                        <td class="tcenter tright" style="min-width: 130px;">
+                                            {if !empty($review->cAntwort)}
+                                                <a href="bewertung.php?a=delreply&kBewertung={$review->kBewertung}&tab=letzten50&token={$smarty.session.jtl_token}"
+                                                   class="btn btn-danger btn-circle" title="{__('removeReply')}">
+                                                    <i class="fal fa-trash-alt"></i>
                                                 </a>
-                                            </div>
+                                            {/if}
+                                            <a href="bewertung.php?a=editieren&kBewertung={$review->kBewertung}&tab=letzten50&token={$smarty.session.jtl_token}"
+                                               class="btn btn-primary btn-circle" title="{__('modify')}">
+                                                <i class="fal fa-edit"></i>
+                                            </a>
                                         </td>
                                     </tr>
                                 {/foreach}
@@ -161,8 +157,8 @@
                                 </tfoot>
                             </table>
                         </div>
-                        <div class="card-footer">
-                            <button name="loeschen" type="submit" value="{__('delete')}" class="btn btn-danger"><i class="fa fa-trash"></i> {__('deleteSelected')}</button>
+                        <div class="card-footer save-wrapper">
+                            <button name="loeschen" type="submit" value="{__('delete')}" class="btn btn-danger"><i class="fas fa-trash-alt"></i> {__('deleteSelected')}</button>
                         </div>
                     </div>
                 </form>
@@ -183,7 +179,7 @@
                         <input type="hidden" name="tab" value="artikelbewertung" />
                         <input class="form-control" name="cArtNr" type="text" value="{$cArtNr|default:''}" />
                         <span class="input-group-prepend">
-                            <button name="submitSearch" type="submit" value="{__('search')}" class="btn btn-info"><i class="fa fa-search"></i> {__('search')}</button>
+                            <button name="submitSearch" type="submit" value="{__('search')}" class="btn btn-info"><i class="fal fa-search"></i> {__('search')}</button>
                         </span>
                     </div>
                     {if isset($cArtNr) && $cArtNr|strlen > 0}
@@ -230,8 +226,8 @@
                                         <td class="tcenter">{$review->Datum}</td>
                                         <td class="tcenter">
                                             <a href="bewertung.php?a=editieren&kBewertung={$review->kBewertung}&tab=artikelbewertung"
-                                               class="btn btn-default" title="{__('modify')}">
-                                                <i class="fa fa-edit"></i>
+                                               class="btn btn-default btn-circle" title="{__('modify')}">
+                                                <i class="fal fa-edit"></i>
                                             </a>
                                         </td>
                                     </tr>
@@ -245,8 +241,8 @@
                                 </tfoot>
                             </table>
                         </div>
-                        <div class="card-footer">
-                            <button name="loeschen" type="submit" class="btn btn-danger"><i class="fa fa-trash"></i> {__('delete')}</button>
+                        <div class="card-footer save-wrapper">
+                            <button name="loeschen" type="submit" class="btn btn-danger"><i class="fas fa-trash-alt"></i> {__('delete')}</button>
                         </div>
                     </div>
                 {/if}
@@ -301,7 +297,7 @@
                             {/if}
                         {/foreach}
                     </div>
-                    <div class="card-footer">
+                    <div class="card-footer save-wrapper">
                         <button type="submit" value="{__('save')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
                     </div>
                 </div>

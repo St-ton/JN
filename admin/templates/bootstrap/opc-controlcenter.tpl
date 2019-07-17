@@ -46,19 +46,19 @@
                                         <a href="#page-{$pageIdHash}" data-toggle="collapse">{$page->cPageId}</a>
                                     </td>
                                     <td>
-                                        <div class="btn-group pull-right">
-                                            <button class="btn btn-default" title="{__('preview')}"
+                                        <div class="float-right">
+                                            <a class="btn btn-danger btn-circle" title="{__('deleteDraftAll')}"
+                                               href="{strip}?token={$smarty.session.jtl_token}&
+                                                     action=restore&pageId={$page->cPageId}{/strip}"
+                                               onclick="return confirm('{__('sureDeleteAll')}');">
+                                                <i class="fas fa-trash-alt"></i>
+                                            </a>
+                                            <button class="btn btn-default btn-circle" title="{__('preview')}"
                                                     data-src="{$URL_SHOP}{$page->cPageUrl}"
                                                     data-toggle="modal"
                                                     data-target="#previewModal">
                                                 <i class="fa fa-eye"></i>
                                             </button>
-                                            <a class="btn btn-danger" title="{__('deleteDraftAll')}"
-                                               href="{strip}?token={$smarty.session.jtl_token}&
-                                                     action=restore&pageId={$page->cPageId}{/strip}"
-                                               onclick="return confirm('{__('sureDeleteAll')}');">
-                                                <i class="fa fa-trash"></i>
-                                            </a>
                                         </div>
                                     </td>
                                 </tr>
@@ -103,20 +103,20 @@
                                                         {if empty($draft->getLockedBy())}{else}{$draft->getLockedBy()}{/if}
                                                     </td>
                                                     <td>
-                                                        <div class="btn-group pull-right">
-                                                            <a class="btn btn-primary" title="{__('edit')}" target="_blank"
-                                                               href="{strip}./opc.php?
-                                                                    token={$smarty.session.jtl_token}&
-                                                                    pageKey={$draft->getKey()}&
-                                                                    action=edit{/strip}">
-                                                                <i class="fa fa-pencil"></i>
-                                                            </a>
-                                                            <a class="btn btn-danger" title="{__('deleteDraft')}"
+                                                        <div class="float-right">
+                                                            <a class="btn btn-danger btn-circle" title="{__('deleteDraft')}"
                                                                href="{strip}?token={$smarty.session.jtl_token}&
                                                                      action=discard&
                                                                      pageKey={$draft->getKey()}{/strip}"
                                                                onclick="return confirm('{__('sureDelete')}');">
-                                                                <i class="fa fa-trash"></i>
+                                                                <i class="fas fa-trash-alt"></i>
+                                                            </a>
+                                                            <a class="btn btn-primary btn-circle" title="{__('edit')}" target="_blank"
+                                                               href="{strip}./opc.php?
+                                                                    token={$smarty.session.jtl_token}&
+                                                                    pageKey={$draft->getKey()}&
+                                                                    action=edit{/strip}">
+                                                                <i class="fal fa-edit"></i>
                                                             </a>
                                                         </div>
                                                     </td>

@@ -28,9 +28,9 @@ function ackCheck(kPlugin, hash)
             </div>
             <div class="heading-right">
                 {if $hasAuth}
-                    <a href="store.php" class="btn btn-xs btn-danger"><i class="fa fa-link"></i> {__('storeRevoke')}</a>
+                    <a href="store.php" class="btn btn-sm btn-danger"><i class="fa fa-link"></i> {__('storeRevoke')}</a>
                 {else}
-                    <a href="store.php" class="btn btn-xs btn-default"><i class="fa fa-link"></i> {__('storeLink')}</a>
+                    <a href="store.php" class="btn btn-sm btn-default"><i class="fa fa-link"></i> {__('storeLink')}</a>
                 {/if}
             </div>
             <hr class="mb-n3">
@@ -42,21 +42,21 @@ function ackCheck(kPlugin, hash)
                         <div class="text-center">
                             <h2 style="margin-bottom: 0px;margin-top: 0;">2</h2>
                             <p style="color:#666;">{__('storeUpdatesAvailable')}</p>
-                            <a class="btn btn-xs btn-default" href="#">{__('storeListUpdates')}</a>
+                            <a class="btn btn-sm btn-default" href="#">{__('storeListUpdates')}</a>
                         </div>
                     </div>
                     <div class="col-md-4 border-right">
                         <div class="text-center">
                             <h2 style="margin-bottom: 0px;margin-top: 0;">3</h2>
                             <p style="color:#666;">{__('storePlugins')}</p>
-                            <a class="btn btn-xs btn-default" href="#">{__('storeListAll')}</a>
+                            <a class="btn btn-sm btn-default" href="#">{__('storeListAll')}</a>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="text-center">
                             <h2 style="margin-bottom: 0px;margin-top: 0;">{$smarty.now|date_format}</h2>
                             <p style="color:#666;">{__('storeLastUpdate')}</p>
-                            <a class="btn btn-xs btn-default" href="#">{__('storeUpdateNow')}</a>
+                            <a class="btn btn-sm btn-default" href="#">{__('storeUpdateNow')}</a>
                         </div>
                     </div>
                 {else}

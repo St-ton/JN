@@ -174,7 +174,7 @@
                 {/foreach}
             </div>
         </div>
-        <div class="save_wrapper">
+        <div class="save-wrapper">
             <button type="submit" class="btn btn-primary" value="{if !isset($Exportformat->kExportformat) || !$Exportformat->kExportformat}{__('newExportformatSave')}{else}{__('modifyExportformatSave')}{/if}">
                 <i class="fa fa-save"></i> {if !isset($Exportformat->kExportformat) || !$Exportformat->kExportformat}{__('newExportformatSave')}{else}{__('modifyExportformatSave')}{/if}
             </button>

@@ -526,7 +526,7 @@
                             </table>
                             <div class="btn-group">
                                 <button name="addRow" type="button" value="{__('addPriceScale')}" onclick="addInputRow();" class="btn btn-primary"><i class="fa fa-share"></i> {__('addPriceScale')}</button>
-                                <button name="delRow" type="button" value="{__('delPriceScale')}" onclick="delInputRow();" class="btn btn-danger"><i class="fa fa-trash"></i> {__('delPriceScale')}</button>
+                                <button name="delRow" type="button" value="{__('delPriceScale')}" onclick="delInputRow();" class="btn btn-danger"><i class="fas fa-trash-alt"></i> {__('delPriceScale')}</button>
                             </div>
                         </li>
                     </ul>
@@ -676,13 +676,13 @@
                     </table>
                 </div>
             </div>
-            <div class="save_wrapper btn-group">
+            <div class="save-wrapper btn-group">
                 <button type="submit" value="{if !isset($Versandart->kVersandart) || !$Versandart->kVersandart}{__('createShippingType')}{else}{__('modifyedShippingType')}{/if}"
                         class="btn btn-primary">
                     {if !isset($Versandart->kVersandart) || !$Versandart->kVersandart}
                         <i class="fa fa-share"></i> {__('createShippingType')}
                     {else}
-                        <i class="fa fa-edit"></i> {__('modifyedShippingType')}
+                        <i class="fal fa-edit"></i> {__('modifyedShippingType')}
                     {/if}
                 </button>
                 <a href="versandarten.php" title="{__('cancel')}" class="btn btn-danger"><i class="fa fa-exclamation"></i> {__('cancel')}</a>

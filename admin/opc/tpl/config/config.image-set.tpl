@@ -24,7 +24,7 @@
                 </div>
                 <button type="button" class="btn btn-danger btn-sm" onclick="removeSlide_{$propname}()"
                         title="{__('entryDelete')}">
-                    <i class="fa fa-trash"></i>
+                    <i class="fas fa-trash-alt"></i>
                 </button>
             </div>
         </div>
@@ -72,7 +72,7 @@
     <div class="panel-footer">
         <div class="btn-group">
             <button type="button" class="btn btn-primary" onclick="addSlide_{$propname}()">
-                <i class="fa fa-plus"></i> {__('imageAdd')}
+                <i class="fal fa-plus"></i> {__('imageAdd')}
             </button>
         </div>
     </div>

@@ -100,7 +100,7 @@
                 {/foreach}
                     </div>
                 </div>
-                <div class="save_wrapper">
+                <div class="save-wrapper">
                     <button type="submit" value="{__('savePreferences')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('savePreferences')}</button>
                 </div>
             {else}

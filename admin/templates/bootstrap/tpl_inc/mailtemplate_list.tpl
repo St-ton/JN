@@ -41,7 +41,7 @@
 										<i class="fa fa-envelope"></i> {__('testmail')}
 									</button>
 									<button type="submit" name="kEmailvorlage" value="{$template->getID()}" class="btn btn-primary" title="{__('modify')}">
-										<i class="fa fa-edit"></i>
+										<i class="fal fa-edit"></i>
 									</button>
 									<button type="submit" name="resetConfirm" value="{$template->getID()}" class="btn btn-danger reset" title="{__('reset')}">
 										<i class="fa fa-refresh"></i>

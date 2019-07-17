@@ -27,7 +27,7 @@
                         </span>
                         <input class="form-control" id="cSuche" name="cSuche" type="text" value="{if isset($cSuche) && $cSuche|strlen > 0}{$cSuche}{/if}" />
                         <span class="input-group-btn">
-                            <button name="submitSuche" type="submit" value="{__('warenkorbpersSearchBTN')}" class="btn btn-primary"><i class="fa fa-search"></i> {__('warenkorbpersSearchBTN')}</button>
+                            <button name="submitSuche" type="submit" value="{__('warenkorbpersSearchBTN')}" class="btn btn-primary"><i class="fal fa-search"></i> {__('warenkorbpersSearchBTN')}</button>
                         </span>
                     </div>
                 </form>
@@ -64,7 +64,7 @@
                                         <td class="tcenter">
                                             <div class="btn-group">
                                                 <a href="warenkorbpers.php?a={$oKunde->kKunde}&token={$smarty.session.jtl_token}" class="btn btn-default">{__('warenkorbpersShow')}</a>
-                                                <a href="warenkorbpers.php?l={$oKunde->kKunde}&token={$smarty.session.jtl_token}" class="btn btn-danger"><i class="fa fa-trash"></i></a>
+                                                <a href="warenkorbpers.php?l={$oKunde->kKunde}&token={$smarty.session.jtl_token}" class="btn btn-danger"><i class="fas fa-trash-alt"></i></a>
                                             </div>
                                         </td>
                                     </tr>

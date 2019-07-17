@@ -4,7 +4,7 @@
         <label class="sr-only" for="{$propname}-{$i}"></label>
         <div class="input-group">
             <div class="input-group-addon">
-                <button type="button" class="btn btn-xs btn-danger"
+                <button type="button" class="btn btn-sm btn-danger"
                         onclick="removeLine_{$propname}(this);">
                     <i class="fa fa-remove fa-fw"></i>
                 </button>
@@ -15,7 +15,7 @@
     <label class="sr-only" for="{$propname}-new"></label>
     <div class="input-group" id="new-input-group-{$propname}">
         <div class="input-group-addon">
-            <button type="button" class="btn btn-xs btn-primary"
+            <button type="button" class="btn btn-sm btn-primary"
                     onclick="addNewLine_{$propname}()">
                 <i class="fa fa-asterisk fa-fw"></i>
             </button>

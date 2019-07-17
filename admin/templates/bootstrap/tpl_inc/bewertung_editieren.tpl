@@ -39,7 +39,7 @@
                     </tr>
                 </table>
                 </div>
-                <div class="save_wrapper card-footer">
+                <div class="save-wrapper card-footer">
                     <button name="bewertungsubmit" type="submit" value="{__('save')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
                 </div>
             </form>

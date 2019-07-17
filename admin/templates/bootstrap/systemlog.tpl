@@ -74,10 +74,10 @@
                     <div class="card-footer">
                         <div class="btn-group">
                             <button name="action" value="clearsyslog" class="btn btn-danger">
-                                <i class="fa fa-trash"></i> {__('systemlogReset')}
+                                <i class="fas fa-trash-alt"></i> {__('systemlogReset')}
                             </button>
                             <button name="action" value="delselected" class="btn btn-warning">
-                                <i class="fa fa-trash"></i> {__('deleteSelected')}
+                                <i class="fas fa-trash-alt"></i> {__('deleteSelected')}
                             </button>
                         </div>
                     </div>

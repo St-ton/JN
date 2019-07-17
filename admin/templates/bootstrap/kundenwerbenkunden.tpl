@@ -56,7 +56,7 @@
                         </div>
                     </div>
                     <p class="submit">
-                        <button name="loeschen" type="submit" value="{__('delete')}" class="btn btn-danger"><i class="fa fa-trash"></i> {__('delete')}</button>
+                        <button name="loeschen" type="submit" value="{__('delete')}" class="btn btn-danger"><i class="fas fa-trash-alt"></i> {__('delete')}</button>
                     </p>
                 </form>
             {else}

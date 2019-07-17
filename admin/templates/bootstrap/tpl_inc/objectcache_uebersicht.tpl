@@ -10,7 +10,7 @@
             <form method="post" action="objectcache.php">
                 {$jtl_token}
                 <input name="a" type="hidden" value="clearAll" />
-                <button name="submit" type="submit" value="Kompletten Cache löschen" class="btn btn-primary"><i class="fa fa-trash"></i> Kompletten Cache löschen</button>
+                <button name="submit" type="submit" value="Kompletten Cache löschen" class="btn btn-primary"><i class="fas fa-trash-alt"></i> Kompletten Cache löschen</button>
             </form>
         </div>
 

@@ -24,13 +24,13 @@
                     <div class="subheading1 col-md-6" id="heading-{$lgName}">
                         <span class="pull-left">
                             <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapse{$lgName}"{if $missingTranslations|count > 0} title="{__('missingTranslations')}: {$missingTranslations|count}"{/if}>
-                                <span class="accordion-toggle-icon"><i class="fa fa-plus"></i></span>
+                                <span class="accordion-toggle-icon"><i class="fal fa-plus"></i></span>
                                 {if $linkgruppe->getID() > 0}
                                     {$linkgruppe->getName()} ({__('linkGroupTemplatename')}: {$linkgruppe->getTemplate()})
                                 {else}
                                     {__('linksWithoutLinkGroup')}
                                 {/if}
-                                {if $missingTranslations|count > 0}<i class="fa fa-warning text-warning"></i>{/if}
+                                {if $missingTranslations|count > 0}<i class="fal fa-exclamation-triangle text-warning"></i>{/if}
                             </a>
                         </span>
                     </div>
@@ -40,19 +40,19 @@
                             {if $linkgruppe->getID() > 0}
                                 <input type="hidden" name="kLinkgruppe" value="{$linkgruppe->getID()}">
                             {/if}
-                            <span class="btn-group pull-right">
+                            <div class="float-right">
                                 {if $linkgruppe->getID() > 0}
-                                    <button name="action" value="edit-linkgroup" class="btn btn-primary" title="{__('modify')}">
-                                        <i class="fa fa-edit"></i>
+                                    <button name="action" value="delete-linkgroup" class="btn btn-danger btn-circle" title="{__('linkGroup')} {__('delete')}">
+                                        <i class="fas fa-trash-alt"></i>
                                     </button>
-                                    <button name="action" value="add-link-to-linkgroup" class="btn btn-default add" title="{__('addLink')}">
-                                        {__('addLink')}
+                                    <button name="action" value="add-link-to-linkgroup" class="btn btn-default  btn-circle add" title="{__('addLink')}">
+                                        <i class="fal fa-plus"></i>
                                     </button>
-                                    <button name="action" value="delete-linkgroup" class="btn btn-danger" title="{__('linkGroup')} {__('delete')}">
-                                        <i class="fa fa-trash"></i>
+                                    <button name="action" value="edit-linkgroup" class="btn btn-primary btn-circle" title="{__('modify')}">
+                                        <i class="fal fa-edit"></i>
                                     </button>
                                 {/if}
-                            </span>
+                            </div>
                         </form>
                     </div>
                 </div>
@@ -72,7 +72,7 @@
                             {include file='tpl_inc/links_uebersicht_item.tpl' list=$linkgruppe->getLinks() id=$linkgruppe->getID()}
                         </table>
                     {else}
-                        <p class="alert alert-info" style="margin:10px;"><i class="fa fa-info-circle"></i> {__('noData')}</p>
+                        <p class="alert alert-info" style="margin:10px;"><i class="fal fa-info-circle"></i> {__('noData')}</p>
                     {/if}
                 </div>
             </div>

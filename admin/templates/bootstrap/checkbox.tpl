@@ -99,8 +99,8 @@
                                                 <td>{$oCheckBoxUebersicht->dErstellt_DE}</td>
                                                 <td>
                                                     <a href="checkbox.php?edit={$oCheckBoxUebersicht->kCheckBox}&token={$smarty.session.jtl_token}"
-                                                       class="btn btn-default" title="{__('modify')}">
-                                                        <i class="fa fa-edit"></i>
+                                                       class="btn btn-default btn-circle" title="{__('modify')}">
+                                                        <i class="fal fa-edit"></i>
                                                     </a>
                                                 </td>
                                             </tr>
@@ -117,12 +117,12 @@
                                     </table>
                                 </div>
                             </div>
-                            <div class="card-footer">
-                                <div class="btn-group submit">
-                                    <button name="erstellenShowButton" type="submit" class="btn btn-primary" value="neue Checkbox erstellen"><i class="fa fa-share"></i> {__('checkboxCreate')}</button>
-                                    <button name="checkboxAktivierenSubmit" type="submit" class="btn btn-default" value="{__('activate')}"><i class="fa fa-check"></i> {__('activate')}</button>
+                            <div class="card-footer save-wrapper">
+                                <div class="submit">
+                                    <button name="checkboxLoeschenSubmit" class="btn btn-danger" type="submit" value="{__('delete')}"><i class="fas fa-trash-alt"></i> {__('delete')}</button>
                                     <button name="checkboxDeaktivierenSubmit" class="btn btn-warning" type="submit" value="{__('deactivate')}"><i class="fa fa-close"></i> {__('deactivate')}</button>
-                                    <button name="checkboxLoeschenSubmit" class="btn btn-danger" type="submit" value="{__('delete')}"><i class="fa fa-trash"></i> {__('delete')}</button>
+                                    <button name="checkboxAktivierenSubmit" type="submit" class="btn btn-default" value="{__('activate')}"><i class="fal fa-check text-success"></i> {__('activate')}</button>
+                                    <button name="erstellenShowButton" type="submit" class="btn btn-primary" value="neue Checkbox erstellen"><i class="fa fa-share"></i> {__('checkboxCreate')}</button>
                                 </div>
                             </div>
                         </div>
@@ -347,7 +347,7 @@
                             {/if}
                         </div>
                     </div>
-                    <div class="card-footer save_wrapper">
+                    <div class="card-footer save-wrapper">
                         <button name="speichern" type="submit" value="{__('save')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
                     </div>
                 </form>

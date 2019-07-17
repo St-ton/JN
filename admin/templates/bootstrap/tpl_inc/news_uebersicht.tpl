@@ -106,8 +106,8 @@
                                         <td class="tcenter">{$oNewsKommentar->getDateCreatedCompat()}</td>
                                         <td class="tcenter">
                                             <a href="news.php?news=1&kNews={$oNewsKommentar->getNewsID()}&kNewsKommentar={$oNewsKommentar->getID()}&nkedit=1&tab=inaktiv&token={$smarty.session.jtl_token}"
-                                               class="btn btn-primary" title="{__('modify')}">
-                                                <i class="fa fa-edit"></i>
+                                               class="btn btn-primary btn-circle" title="{__('modify')}">
+                                                <i class="fal fa-edit"></i>
                                             </a>
                                         </td>
                                     </tr>
@@ -121,12 +121,10 @@
                                 </tfoot>
                             </table>
                         </div>
-                        <div class="card-footer">
-                            <div class="btn-group">
-                                <button name="freischalten" type="submit" value="{__('newsActivate')}" class="btn btn-primary"><i class="fa fa-thumbs-up"></i> {__('newsActivate')}</button>
-                                <input name="kommentareloeschenSubmit" type="submit" data-id="loeschen" value="{__('delete')}" class="hidden-soft">
-                                <button name="kommentareloeschenSubmit" type="button" data-toggle="modal" data-target=".delete-modal" value="{__('delete')}" class="btn btn-danger"><i class="fa fa-trash"></i> {__('delete')}</button>
-                            </div>
+                        <div class="card-footer save-wrapper">
+                            <input name="kommentareloeschenSubmit" type="submit" data-id="loeschen" value="{__('delete')}" class="hidden-soft">
+                            <button name="kommentareloeschenSubmit" type="button" data-toggle="modal" data-target=".delete-modal" value="{__('delete')}" class="btn btn-danger"><i class="fas fa-trash-alt"></i> {__('delete')}</button>
+                            <button name="freischalten" type="submit" value="{__('newsActivate')}" class="btn btn-primary"><i class="fa fa-thumbs-up"></i> {__('newsActivate')}</button>
                         </div>
                     </div>
                 </form>
@@ -174,7 +172,7 @@
                                             {/foreach}
                                         </td>
                                         <td class="TD5">{$oNews->getDateValidFromLocalizedCompat()}</td>
-                                        <td class="tcenter"><i class="fa fa-{if $oNews->getIsActive()}check{else}close{/if}"></i></td>
+                                        <td class="tcenter"><i class="fal fa-{if $oNews->getIsActive()}check text-success{else}times text-danger{/if}"></i></td>
                                         <td class="tcenter">
                                             {if $oNews->getCommentCount() > 0}
                                                 <a href="news.php?news=1&nd=1&kNews={$oNews->getID()}&tab=aktiv&token={$smarty.session.jtl_token}">{$oNews->getCommentCount()}</a>
@@ -184,16 +182,14 @@
                                         </td>
                                         <td class="tcenter">{$oNews->getDateCompat()}</td>
                                         <td class="tcenter">
-                                            <div class="btn-group">
-                                                <a href="news.php?news=1&news_editieren=1&kNews={$oNews->getID()}&tab=aktiv&token={$smarty.session.jtl_token}"
-                                                   class="btn btn-primary" title="{__('modify')}">
-                                                    <i class="fa fa-edit"></i>
-                                                </a>
-                                                <a href="news.php?news=1&nd=1&kNews={$oNews->getID()}&tab=aktiv&token={$smarty.session.jtl_token}"
-                                                   class="btn btn-default" title="{__('preview')}">
-                                                    <i class="fa fa-eye"></i>
-                                                </a>
-                                            </div>
+                                            <a href="news.php?news=1&nd=1&kNews={$oNews->getID()}&tab=aktiv&token={$smarty.session.jtl_token}"
+                                               class="btn btn-default btn-circle" title="{__('preview')}">
+                                                <i class="fa fa-eye"></i>
+                                            </a>
+                                            <a href="news.php?news=1&news_editieren=1&kNews={$oNews->getID()}&tab=aktiv&token={$smarty.session.jtl_token}"
+                                               class="btn btn-primary btn-circle" title="{__('modify')}">
+                                                <i class="fal fa-edit"></i>
+                                            </a>
                                         </td>
                                     </tr>
                                 {/foreach}
@@ -216,12 +212,10 @@
                     <input type="hidden" name="news" value="1" />
                     <input type="hidden" name="erstellen" value="1" />
                     <input type="hidden" name="tab" value="aktiv" />
-                    <div class="card-footer">
-                        <div class="btn-group">
-                            <button name="news_erstellen" type="submit" value="{__('newAdd')}" class="btn btn-primary"><i class="fa fa-share"></i> {__('newAdd')}</button>
-                            <input name="loeschen" type="submit" data-id="loeschen" value="{__('delete')}" class="hidden-soft">
-                            <button name="loeschen" type="button" data-toggle="modal" data-target=".delete-modal" value="{__('delete')}" class="btn btn-danger"><i class="fa fa-trash"></i> {__('delete')}</button>
-                        </div>
+                    <div class="card-footer save-wrapper">
+                        <input name="loeschen" type="submit" data-id="loeschen" value="{__('delete')}" class="hidden-soft">
+                        <button name="loeschen" type="button" data-toggle="modal" data-target=".delete-modal" value="{__('delete')}" class="btn btn-danger"><i class="fas fa-trash-alt"></i> {__('delete')}</button>
+                        <button name="news_erstellen" type="submit" value="{__('newAdd')}" class="btn btn-primary"><i class="fa fa-share"></i> {__('newAdd')}</button>
                     </div>
                 </div>
             </form>
@@ -268,12 +262,12 @@
                                             <label for="newscat-{$oNewsKategorie->getID()}">{$oNewsKategorie->getName()|default:'???'}</label>
                                         </td>
                                         <td class="tcenter">{$oNewsKategorie->getSort()}</td>
-                                        <td class="tcenter"><i class="fa fa-{if $oNewsKategorie->getIsActive()}check{else}close{/if}"></i></td>
+                                        <td class="tcenter"><i class="fal fa-{if $oNewsKategorie->getIsActive()}check text-success{else}times text-danger{/if}"></i></td>
                                         <td class="tcenter">{$oNewsKategorie->getDateLastModified()->format('d.m.Y H:i')}</td>
                                         <td class="tcenter">
                                             <a href="news.php?news=1&newskategorie_editieren=1&kNewsKategorie={$oNewsKategorie->getID()}&tab=kategorien&token={$smarty.session.jtl_token}"
-                                               class="btn btn-primary" title="{__('modify')}">
-                                                <i class="fa fa-edit"></i>
+                                               class="btn btn-primary btn-circle" title="{__('modify')}">
+                                                <i class="fal fa-edit"></i>
                                             </a>
                                         </td>
                                     </tr>
@@ -298,12 +292,10 @@
                     <input type="hidden" name="news" value="1" />
                     <input type="hidden" name="erstellen" value="1" />
                     <input type="hidden" name="tab" value="kategorien" />
-                    <div class="card-footer">
-                        <div class="btn-group">
-                            <button name="news_kategorie_erstellen" type="submit" value="{__('newsCatCreate')}" class="btn btn-primary"><i class="fa fa-share"></i> {__('newsCatCreate')}</button>
-                            <input name="loeschen" type="submit" data-id="loeschen" value="{__('delete')}" class="hidden-soft">
-                            <button name="loeschen" type="button" data-toggle="modal" data-target=".delete-modal" value="{__('delete')}" class="btn btn-danger"><i class="fa fa-trash"></i> {__('delete')}</button>
-                        </div>
+                    <div class="card-footer save-wrapper">
+                        <input name="loeschen" type="submit" data-id="loeschen" value="{__('delete')}" class="hidden-soft">
+                        <button name="loeschen" type="button" data-toggle="modal" data-target=".delete-modal" value="{__('delete')}" class="btn btn-danger"><i class="fas fa-trash-alt"></i> {__('delete')}</button>
+                        <button name="news_kategorie_erstellen" type="submit" value="{__('newsCatCreate')}" class="btn btn-primary"><i class="fa fa-share"></i> {__('newsCatCreate')}</button>
                     </div>
                 </div>
             </form>
@@ -362,7 +354,7 @@
                             </div>
                         {/foreach}
                     </div>
-                    <div class="card-footer save_wrapper">
+                    <div class="card-footer save-wrapper">
                         <button type="submit" value="{__('save')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
                     </div>
                 </div>

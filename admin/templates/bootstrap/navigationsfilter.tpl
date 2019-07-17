@@ -29,7 +29,7 @@
         $('#price-rows').append(
             '<div class="price-row">' +
                 '<button type="button" class="btn-remove-range btn btn-danger btn-sm">' +
-                    '<i class="fa fa-trash"></i></button> ' +
+                    '<i class="fas fa-trash-alt"></i></button> ' +
                 '<label for="nVon_' + n + '">{__('from')}:</label> ' +
                 '<input id="nVon_' + n + '" class="form-control" name="nVon[]" type="text" value="' + nVon + '"> ' +
                 '<label for="nBis_' + n + '">{__('to')}:</label> ' +
@@ -157,7 +157,7 @@
                         <div id="ranges-error-alert" class="alert alert-danger" style="display: none;"></div>
                         <div id="price-rows"></div>
                         <button type="button" class="btn btn-info btn-sm" id="btn-add-range">
-                            <i class="fa fa-plus"></i>
+                            <i class="fal fa-plus"></i>
                         </button>
                     </div>
                     <div class="item input-group">

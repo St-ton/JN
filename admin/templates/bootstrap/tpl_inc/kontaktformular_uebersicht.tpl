@@ -44,7 +44,7 @@
                             {/if}
                         {/foreach}
                     </div>
-                    <div class="card-footer">
+                    <div class="card-footer save-wrapper">
                         <button type="submit" value="{__('save')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
                     </div>
                 </div>
@@ -77,12 +77,10 @@
                                     <td>{$Betreff->cMail}</td>
                                     <td class="tcenter">{$Betreff->Kundengruppen}</td>
                                     <td class="tcenter">
-                                        <span class="btn-group">
-                                            <a href="kontaktformular.php?kKontaktBetreff={$Betreff->kKontaktBetreff}&token={$smarty.session.jtl_token}"
-                                               class="btn btn-default" title="{__('modify')}"><i class="fa fa-edit"></i>
-                                            </a>
-                                            <a href="kontaktformular.php?del={$Betreff->kKontaktBetreff}&token={$smarty.session.jtl_token}" class="btn btn-danger" title="{__('delete')}"><i class="fa fa-trash"></i></a>
-                                        </span>
+                                        <a href="kontaktformular.php?del={$Betreff->kKontaktBetreff}&token={$smarty.session.jtl_token}" class="btn btn-danger btn-circle" title="{__('delete')}"><i class="fas fa-trash-alt"></i></a>
+                                        <a href="kontaktformular.php?kKontaktBetreff={$Betreff->kKontaktBetreff}&token={$smarty.session.jtl_token}"
+                                           class="btn btn-primary btn-circle" title="{__('modify')}"><i class="fal fa-edit"></i>
+                                        </a>
                                     </td>
                                 </tr>
                             {/foreach}
@@ -90,7 +88,7 @@
                         </table>
                     </div>
                 </div>
-                <div class="card-footer">
+                <div class="card-footer save-wrapper">
                     <a class="btn btn-primary" href="kontaktformular.php?neu=1&token={$smarty.session.jtl_token}"><i class="fa fa-share"></i> {__('newSubject')}</a>
                 </div>
             </div>
@@ -129,7 +127,7 @@
                             {/foreach}
                         </div>
                     </div>
-                    <div class="card-footer save_wrapper">
+                    <div class="card-footer save-wrapper">
                         <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
                     </div>
                 </div>

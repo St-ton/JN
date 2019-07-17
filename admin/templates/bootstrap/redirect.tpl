@@ -145,10 +145,10 @@
                                                     <i class="fa fa-spinner fa-pulse"></i>
                                                 </span>
                                                 <span class="input-group-addon alert-success state-available" style="display:none;">
-                                                    <i class="fa fa-check"></i>
+                                                    <i class="fal fa-check"></i>
                                                 </span>
                                                 <span class="input-group-addon alert-danger state-unavailable" style="display:none;">
-                                                    <i class="fa fa-warning"></i>
+                                                    <i class="fal fa-exclamation-triangle"></i>
                                                 </span>
                                                 <input class="form-control" name="redirects[{$oRedirect->kRedirect}][cToUrl]"
                                                        value="{$oRedirect->cToUrl}" id="cToUrl-{$oRedirect->kRedirect}"
@@ -245,7 +245,7 @@
                                     <i class="fa fa-save"></i> {__('save')}
                                 </button>
                                 <button name="action" value="delete" class="btn btn-danger">
-                                    <i class="fa fa-trash"></i> {__('deleteSelected')}
+                                    <i class="fas fa-trash-alt"></i> {__('deleteSelected')}
                                 </button>
                                 <button name="action" value="delete_all" class="btn btn-warning">
                                     {__('redirectDelUnassigned')}
@@ -285,10 +285,10 @@
                             <i class="fa fa-spinner fa-pulse text-info state-checking"></i>
                         </div>
                         <div class="col-auto ml-sm-n4 order-2 order-sm-3" style="display:none;">
-                            <i class="fa fa-check text-success state-available"></i>
+                            <i class="fal fa-check text-success text-success state-available"></i>
                         </div>
                         <div class="col-auto ml-sm-n4 order-2 order-sm-3">
-                            <i class="fa fa-warning text-danger state-unavailable"></i>
+                            <i class="fal fa-exclamation-triangle text-danger state-unavailable"></i>
                         </div>
                         <script>
                             enableTypeahead(

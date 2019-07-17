@@ -48,14 +48,14 @@
                                         <td>{$job->getStartTime()->format('H:i')}</td>
                                         <td>{if $job->getDateLastStarted() === null}&dash;{else}{$job->getDateLastStarted()->format('d.m.Y H:i')}{/if}</td>
                                         <td>{$job->getFrequency()}h</td>
-                                        <td>{if $job->isRunning()}<i class="fa fa-check"></i>{else}<i class="fa fa-times"></i>{/if}</td>
+                                        <td>{if $job->isRunning()}<i class="fal fa-check text-success"></i>{else}<i class="fal fa-times"></i>{/if}</td>
                                         <td>
                                             <span class="btn-group">
-                                                <button class="btn btn-danger btn-xs" type="submit" name="delete" value="{$job->getCronID()}">
-                                                    <i class="fa fa-trash"></i> {__('delete')}
+                                                <button class="btn btn-danger btn-sm" type="submit" name="delete" value="{$job->getCronID()}">
+                                                    <i class="fas fa-trash-alt"></i> {__('delete')}
                                                 </button>
                                                 {if $job->isRunning()}
-                                                    <button class="btn btn-default btn-xs" type="submit" name="reset" value="{$job->getQueueID()}">
+                                                    <button class="btn btn-default btn-sm" type="submit" name="reset" value="{$job->getQueueID()}">
                                                         <i class="fa fa-refresh"></i> {__('reset')}
                                                     </button>
                                                 {/if}

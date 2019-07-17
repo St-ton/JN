@@ -16,7 +16,7 @@
         <td class="tcenter">
             <a href="news.php?news=1&newskategorie_editieren=1&kNewsKategorie={$childCat->getID()}&tab=kategorien&token={$smarty.session.jtl_token}"
                class="btn btn-primary" title="{__('modify')}">
-                <i class="fa fa-edit"></i>
+                <i class="fal fa-edit"></i>
             </a>
         </td>
     </tr>

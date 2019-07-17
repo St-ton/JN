@@ -110,11 +110,9 @@ cDokuURL=__('auswahlassistentURL')}
                         </div>
                     </div>
                 </div>
-                <div class="card-footer">
-                    <div class="btn-group">
-                        <button name="speichernSubmit" type="submit" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
-                        <a href="auswahlassistent.php" class="btn btn-danger">{__('goBack')}</a>
-                    </div>
+                <div class="card-footer save-wrapper">
+                    <a href="auswahlassistent.php" class="btn btn-default">{__('goBack')}</a>
+                    <button name="speichernSubmit" type="submit" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
                 </div>
             </div>
         </form>

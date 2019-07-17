@@ -24,7 +24,7 @@
                 {if $cDBError_arr|@count > 0}
                     <p>
                         <button id="viewAll" name="viewAll" type="button" class="btn btn-primary hide" value="Alle anzeigen"><i class="fa fa-share"></i> {__('showAll')}</button>
-                        <button id="viewModified" name="viewModified" type="button" class="btn btn-danger viewModified" value="Modifizierte anzeigen"><i class="fa fa-warning"></i> {__('showModified')}</button>
+                        <button id="viewModified" name="viewModified" type="button" class="btn btn-danger viewModified" value="Modifizierte anzeigen"><i class="fal fa-exclamation-triangle"></i> {__('showModified')}</button>
                     </p>
                     <br />
                 {/if}

@@ -45,9 +45,9 @@
                                         {foreach $allPluginItems as $p}
                                             {if $p->getID() === $plugin->getPluginID()}
                                                 {if $p->isShop5Compatible() === false}
-                                                    <span title="{__('dangerPluginNotCompatibleShop5')}" class="label warning label-warning"><i class="fa fa-warning"></i></span>
+                                                    <span title="{__('dangerPluginNotCompatibleShop5')}" class="label warning label-warning"><i class="fal fa-exclamation-triangle"></i></span>
                                                 {elseif $p->isShop5Compatible() === false && $p->isShop4Compatible() === false}
-                                                    <span title="{__('dangerPluginNotCompatibleShop4')}" class="label warning label-warning"><i class="fa fa-warning"></i></span>
+                                                    <span title="{__('dangerPluginNotCompatibleShop4')}" class="label warning label-warning"><i class="fal fa-exclamation-triangle"></i></span>
                                                 {/if}
                                                 {break}
                                             {/if}
@@ -62,20 +62,20 @@
                                 <td class="tcenter plugin-lang-vars">
                                     {if $plugin->getLocalization()->getLangVars()->count() > 0}
                                         <a href="pluginverwaltung.php?pluginverwaltung_uebersicht=1&sprachvariablen=1&kPlugin={$plugin->getID()}&token={$smarty.session.jtl_token}"
-                                           class="btn btn-default btn-sm" title="{__('modify')}"><i class="fa fa-edit"></i></a>
+                                           class="btn btn-default btn-sm" title="{__('modify')}"><i class="fal fa-edit"></i></a>
                                     {/if}
                                 </td>
                                 <td class="tcenter plugin-frontend-links">
                                     {if $plugin->getLinks()->getLinks()->count() > 0}
                                         <a href="links.php?kPlugin={$plugin->getID()}"
-                                           class="btn btn-default btn-sm" title="{__('modify')}"><i class="fa fa-edit"></i></a>
+                                           class="btn btn-default btn-sm" title="{__('modify')}"><i class="fal fa-edit"></i></a>
                                     {/if}
                                 </td>
                                 <td class="tcenter plugin-license">
                                     {if $plugin->getLicense()->hasLicenseCheck()}
                                         <button name="lizenzkey" type="submit" title="{__('modify')}"
                                                 class="btn {if $plugin->getLicense()->hasLicense()}btn-default{else}btn-primary{/if} btn-sm" value="{$plugin->getID()}">
-                                        <i class="fa fa-edit"></i></button>
+                                        <i class="fal fa-edit"></i></button>
                                     {/if}
                                 </td>
                                 <td class="tcenter plugin-config">
@@ -115,7 +115,7 @@
                 <div class="card-footer">
                     <div class="save btn-group">
                         <button name="deaktivieren" type="submit" class="btn btn-warning"><i class="fa fa-close"></i> {__('deactivate')}</button>
-                        <button name="deinstallieren" type="submit" class="btn btn-danger"><i class="fa fa-trash"></i> {__('pluginBtnDeInstall')}</button>
+                        <button name="deinstallieren" type="submit" class="btn btn-danger"><i class="fas fa-trash-alt"></i> {__('pluginBtnDeInstall')}</button>
                     </div>
                 </div>
             </div>

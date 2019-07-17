@@ -46,7 +46,7 @@
                         <input class="form-control" id="cSucheInaktiv" name="cSucheInaktiv" type="text" value="{if isset($cSucheInaktiv) && $cSucheInaktiv|strlen > 0}{$cSucheInaktiv}{/if}" />
                         <span class="input-group-btn">
                             <button name="submitInaktiveAbonnentenSuche" type="submit" class="btn btn-primary" value="{__('newsletterSearchBTN')}">
-                                <i class="fa fa-search"></i> {__('newsletterSearchBTN')}
+                                <i class="fal fa-search"></i> {__('newsletterSearchBTN')}
                             </button>
                         </span>
                     </div>
@@ -103,7 +103,7 @@
                             <div class="card-footer">
                                 <div class="btn-group">
                                     <button name="abonnentfreischaltenSubmit" type="submit" value="{__('newsletterUnlock')}" class="btn btn-primary"><i class="fa fa-thumbs-up"></i> {__('newsletterUnlock')}</button>
-                                    <button class="btn btn-danger" name="abonnentloeschenSubmit" type="submit" value="{__('delete')}"><i class="fa fa-trash"></i> {__('marked')} {__('delete')}</button>
+                                    <button class="btn btn-danger" name="abonnentloeschenSubmit" type="submit" value="{__('delete')}"><i class="fas fa-trash-alt"></i> {__('marked')} {__('delete')}</button>
                                 </div>
                             </div>
                         </div>
@@ -130,7 +130,7 @@
                             <input id="cSucheAktiv" name="cSucheAktiv" class="form-control" type="text" value="{if isset($cSucheAktiv) && $cSucheAktiv|strlen > 0}{$cSucheAktiv}{/if}" />
                             <span class="input-group-btn">
                                 <button name="submitSuche" type="submit" value="{__('newsletterSearchBTN')}" class="btn btn-primary">
-                                    <i class="fa fa-search"></i> {__('newsletterSearchBTN')}
+                                    <i class="fal fa-search"></i> {__('newsletterSearchBTN')}
                                 </button>
                             </span>
                         </div>
@@ -188,7 +188,7 @@
                                 </table>
                             </div>
                             <div class="card-footer">
-                                <button name="loeschen" type="submit" class="btn btn-danger"><i class="fa fa-trash"></i> {__('deleteSelected')}</button>
+                                <button name="loeschen" type="submit" class="btn btn-danger"><i class="fas fa-trash-alt"></i> {__('deleteSelected')}</button>
                             </div>
                         </div>
                     </div>
@@ -311,7 +311,7 @@
                                 </table>
                             </div>
                             <div class="card-footer">
-                                <button name="loeschen" type="submit" value="{__('delete')}" class="btn btn-danger"><i class="fa fa-trash"></i> {__('delete')}</button>
+                                <button name="loeschen" type="submit" value="{__('delete')}" class="btn btn-danger"><i class="fas fa-trash-alt"></i> {__('delete')}</button>
                             </div>
                         </div>
                     </div>
@@ -366,11 +366,11 @@
                                                     {if $oNewsletterVorlage->kNewslettervorlageStd > 0}
                                                         <a class="btn btn-default"
                                                            href="newsletter.php?newslettervorlagenstd=1&editieren={$oNewsletterVorlage->kNewsletterVorlage}&tab=newslettervorlagen&token={$smarty.session.jtl_token}"
-                                                           title="{__('modify')}"><i class="fa fa-edit"></i></a>
+                                                           title="{__('modify')}"><i class="fal fa-edit"></i></a>
                                                     {else}
                                                         <a class="btn btn-default"
                                                            href="newsletter.php?newslettervorlagen=1&editieren={$oNewsletterVorlage->kNewsletterVorlage}&tab=newslettervorlagen&token={$smarty.session.jtl_token}"
-                                                           title="{__('modify')}"><i class="fa fa-edit"></i></a>
+                                                           title="{__('modify')}"><i class="fal fa-edit"></i></a>
                                                     {/if}
                                                     <a class="btn btn-default"
                                                        href="newsletter.php?newslettervorlagen=1&vorbereiten={$oNewsletterVorlage->kNewsletterVorlage}&tab=newslettervorlagen&token={$smarty.session.jtl_token}"
@@ -394,7 +394,7 @@
                                 <div class="{if isset($oNewsletterVorlage_arr) && $oNewsletterVorlage_arr|@count > 0}btn-group{/if}">
                                     <button name="vorlage_erstellen" class="btn btn-primary" type="submit">{__('newsletterdraftcreate')}</button>
                                     {if isset($oNewsletterVorlage_arr) && $oNewsletterVorlage_arr|@count > 0}
-                                        <button class="btn btn-danger" name="loeschen" type="submit" value="{__('delete')}"><i class="fa fa-trash"></i> {__('delete')}</button>
+                                        <button class="btn btn-danger" name="loeschen" type="submit" value="{__('delete')}"><i class="fas fa-trash-alt"></i> {__('delete')}</button>
                                     {/if}
                                 </div>
                             </div>
@@ -410,7 +410,7 @@
                         <div class="submit {if isset($oNewsletterVorlage_arr) && $oNewsletterVorlage_arr|@count > 0}btn-group{/if}">
                             <button name="vorlage_erstellen" class="btn btn-primary" type="submit">{__('newsletterdraftcreate')}</button>
                             {if isset($oNewsletterVorlage_arr) && $oNewsletterVorlage_arr|@count > 0}
-                                <button class="btn btn-danger" name="loeschen" type="submit" value="{__('delete')}"><i class="fa fa-trash"></i> {__('delete')}</button>
+                                <button class="btn btn-danger" name="loeschen" type="submit" value="{__('delete')}"><i class="fas fa-trash-alt"></i> {__('delete')}</button>
                             {/if}
                         </div>
                 </form>
@@ -508,7 +508,7 @@
                                 </table>
                             </div>
                             <div class="card-footer">
-                                <button name="loeschen" type="submit" class="btn btn-danger" value="{__('delete')}"><i class="fa fa-trash"></i> {__('delete')}</button>
+                                <button name="loeschen" type="submit" class="btn btn-danger" value="{__('delete')}"><i class="fas fa-trash-alt"></i> {__('delete')}</button>
                             </div>
                         </div>
                     </div>

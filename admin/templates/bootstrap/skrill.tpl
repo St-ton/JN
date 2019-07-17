@@ -49,7 +49,7 @@
             <div class="card-footer">
                 <form method="post" action="">
                     {$jtl_token}
-                    <button class="btn btn-danger" type="submit" name="actionDelete" value="{__('mbDelete')}"><i class="fa fa-trash"></i> {__('mbDelete')}</button>
+                    <button class="btn btn-danger" type="submit" name="actionDelete" value="{__('mbDelete')}"><i class="fas fa-trash-alt"></i> {__('mbDelete')}</button>
                 </form>
             </div>
         </div>
@@ -99,7 +99,7 @@
                 <div class="card-footer">
                     <form method="post" action="">
                         {$jtl_token}
-                        <button class="btn btn-danger" type="submit" name="actionDeleteSecretWord" value="{__('mbDelete')}"><i class="fa fa-trash"></i> {__('mbDelete')}</button>
+                        <button class="btn btn-danger" type="submit" name="actionDeleteSecretWord" value="{__('mbDelete')}"><i class="fas fa-trash-alt"></i> {__('mbDelete')}</button>
                     </form>
                 </div>
             {/if}

@@ -34,7 +34,7 @@
                                        id="search_key" placeholder="{__('freischaltenSearchItem')}">
                             </span>
                             <span class="input-group-btn">
-                                <button name="submitSuche" type="submit" class="btn btn-primary"><i class="fa fa-search"></i></button>
+                                <button name="submitSuche" type="submit" class="btn btn-primary"><i class="fal fa-search"></i></button>
                             </span>
                         </div>
                     </div>
@@ -97,7 +97,7 @@
                                         <td class="tcenter">
                                             <a class="btn btn-default btn-sm" title="{__('modify')}"
                                                href="bewertung.php?a=editieren&kBewertung={$oBewertung->kBewertung}&nFZ=1&token={$smarty.session.jtl_token}">
-                                                <i class="fa fa-edit"></i>
+                                                <i class="fal fa-edit"></i>
                                             </a>
                                         </td>
                                     </tr>
@@ -121,7 +121,7 @@
                         <div class="card-footer">
                             <div class="btn-group">
                                 <button name="freischaltensubmit" type="submit" class="btn btn-primary"><i class="fa fa-thumbs-up"></i> {__('unlockMarked')}</button>
-                                <button name="freischaltenleoschen" type="submit" class="btn btn-danger"><i class="fa fa-trash"></i> {__('deleteSelected')}</button>
+                                <button name="freischaltenleoschen" type="submit" class="btn btn-danger"><i class="fas fa-trash-alt"></i> {__('deleteSelected')}</button>
                             </div>
                         </div>
                     </div>
@@ -182,7 +182,7 @@
                             <div class="btn-group p50">
                                 <button name="freischaltensubmit" type="submit" value="Markierte freischalten" class="btn btn-primary"><i class="fa fa-thumbs-up"></i> {__('unlockMarked')}</button>
                                 <button name="freischaltenleoschen" type="submit" value="Markierte löschen" class="btn btn-danger">
-                                    <i class="fa fa-trash"></i> {__('deleteSelected')}
+                                    <i class="fas fa-trash-alt"></i> {__('deleteSelected')}
                                 </button>
                             </div>
                             <div class="input-group right p50" data-toggle="tooltip" data-placement="bottom" title='{__('freischaltenMappingDesc')}'>
@@ -239,7 +239,7 @@
                                             <td class="tcenter">
                                                 <a class="btn btn-default btn-sm" title="{__('modify')}"
                                                    href="news.php?news=1&kNews={$oNewsKommentar->kNews}&kNewsKommentar={$oNewsKommentar->kNewsKommentar}&nkedit=1&nFZ=1&token={$smarty.session.jtl_token}">
-                                                    <i class="fa fa-edit"></i>
+                                                    <i class="fal fa-edit"></i>
                                                 </a>
                                             </td>
                                         </tr>
@@ -257,7 +257,7 @@
                             <div class="btn-group">
                                 <button name="freischaltensubmit" type="submit" value="Markierte freischalten" class="btn btn-primary"><i class="fa fa-thumbs-up"></i> {__('unlockMarked')}</button>
                                 <button name="freischaltenleoschen" type="submit" value="Markierte löschen" class="btn btn-danger">
-                                    <i class="fa fa-trash"></i> {__('deleteSelected')}
+                                    <i class="fas fa-trash-alt"></i> {__('deleteSelected')}
                                 </button>
                             </div>
                         </div>
@@ -313,7 +313,7 @@
                             <div class="btn-group">
                                 <button name="freischaltensubmit" type="submit" value="Markierte freischalten" class="btn btn-primary"><i class="fa fa-thumbs-up"></i> {__('unlockMarked')}</button>
                                 <button name="freischaltenleoschen" type="submit" value="Markierte löschen" class="btn btn-danger">
-                                    <i class="fa fa-trash"></i> {__('deleteSelected')}
+                                    <i class="fas fa-trash-alt"></i> {__('deleteSelected')}
                                 </button>
                             </div>
                         </div>

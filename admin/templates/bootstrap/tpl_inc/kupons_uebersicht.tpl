@@ -36,7 +36,7 @@
                                 <tbody>
                                     {foreach $oKupon_arr as $oKupon}
                                         <tr{if $oKupon->cAktiv === 'N'} class="text-danger"{/if}>
-                                            <td>{if $oKupon->cAktiv === 'N'}<i class="fa fa-times"></i>{/if}</td>
+                                            <td>{if $oKupon->cAktiv === 'N'}<i class="fal fa-times"></i>{/if}</td>
                                             <td><input type="checkbox" name="kKupon_arr[]" id="kupon-{$oKupon->kKupon}" value="{$oKupon->kKupon}"></td>
                                             <td>
                                                 <label for="kupon-{$oKupon->kKupon}">
@@ -91,7 +91,7 @@
                                             <td>
                                                 <a href="kupons.php?kKupon={$oKupon->kKupon}&token={$smarty.session.jtl_token}"
                                                    class="btn btn-default" title="{__('modify')}">
-                                                    <i class="fa fa-edit"></i>
+                                                    <i class="fal fa-edit"></i>
                                                 </a>
                                             </td>
                                         </tr>
@@ -121,7 +121,7 @@
                             </a>
                             {if $oKupon_arr|@count > 0}
                                 <button type="submit" class="btn btn-danger" name="action" value="loeschen">
-                                    <i class="fa fa-trash"></i> {__('delete')}
+                                    <i class="fas fa-trash-alt"></i> {__('delete')}
                                 </button>
                                 {include file='tpl_inc/csv_export_btn.tpl' exporterId=$cKuponTyp}
                             {/if}

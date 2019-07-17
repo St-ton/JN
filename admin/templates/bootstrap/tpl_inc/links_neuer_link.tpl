@@ -105,7 +105,7 @@
                                         <option value="{$specialPage->nLinkart}" {if isset($xPostVar_arr.nSpezialseite) && $xPostVar_arr.nSpezialseite === $specialPage->nLinkart}selected{elseif $Link->getLinkType() === $specialPage->nLinkart}selected{/if}>{__($specialPage->cName)}</option>
                                     {/foreach}
                                 </select>
-                                <span id="specialLinkType-error" class="hidden-soft error"> <i title="{__('isDuplicateSpecialLink')}" class="fa fa-warning error"></i></span>
+                                <span id="specialLinkType-error" class="hidden-soft error"> <i title="{__('isDuplicateSpecialLink')}" class="fal fa-exclamation-triangle error"></i></span>
                             </p>
                         {/if}
                         </div>
@@ -192,7 +192,7 @@
                         <div class="input-group-btn col-auto ml-sm-n4 order-2 order-sm-3">
                             <button type="button" title="{__('linkPicAdd')}" name="hinzufuegen" value="{__('linkPicAdd')}"
                                     onclick="return append_file_selector();" class="btn btn-info">
-                                <i class="fa fa-plus"></i>
+                                <i class="fal fa-plus"></i>
                             </button>
                         </div>
 
@@ -306,11 +306,9 @@
                     </div>
                 </div>
             {/foreach}
-            <div class="card-footer save_wrapper">
-                <div class="{if isset($Link->getID())} btn-group{/if}">
-                    <button type="submit" value="{__('newLinksSave')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('newLinksSave')}</button>
-                    <button type="submit" name="continue" value="1" class="btn btn-default" id="save-and-continue">{__('newLinksSaveContinueEdit')}</button>
-                </div>
+            <div class="card-footer save-wrapper">
+                <button type="submit" name="continue" value="1" class="btn btn-default" id="save-and-continue">{__('newLinksSaveContinueEdit')}</button>
+                <button type="submit" value="{__('newLinksSave')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('newLinksSave')}</button>
             </div>
         </form>
         {if isset($Link->getID())}

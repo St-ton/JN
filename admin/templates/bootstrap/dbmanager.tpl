@@ -570,7 +570,7 @@ $(function() {
                         <fieldset>
                             <legend>{__('action')}</legend>
                             <div class="fieldset-body">
-                                <button type="submit" class="btn btn-xs btn-primary">{__('showData')}</button>
+                                <button type="submit" class="btn btn-sm btn-primary">{__('showData')}</button>
                             </div>
                         </fieldset>
                     </form>

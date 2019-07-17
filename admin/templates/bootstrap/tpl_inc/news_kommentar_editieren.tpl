@@ -38,11 +38,9 @@
                     </tr>
                 </table>
             </div>
-            <div class="card-footer">
-                <span class="btn-group">
-                    <button name="newskommentarsavesubmit" type="submit" value="{__('save')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
-                    <a class="btn btn-danger" href="news.php{if isset($cBackPage)}?{$cBackPage}{elseif isset($cTab)}?tab={$cTab}{/if}"><i class="fa fa-exclamation"></i> {__('Cancel')}</a>
-                </span>
+            <div class="card-footer save-wrapper">
+                <a class="btn btn-default" href="news.php{if isset($cBackPage)}?{$cBackPage}{elseif isset($cTab)}?tab={$cTab}{/if}"><i class="fal fa-exclamation-triangle"></i> {__('Cancel')}</a>
+                <button name="newskommentarsavesubmit" type="submit" value="{__('save')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
             </div>
         </div>
     </form>

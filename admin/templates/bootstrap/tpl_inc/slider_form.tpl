@@ -72,7 +72,7 @@
                                 <option value="1"{if $oSlider->getUseKB() === true} selected="selected"{/if}>{__('activated')}</option>
                             </select>
                         </div>
-                        <p><i class="fa fa-warning"></i> {__('overrideDescription')}</p>
+                        <p><i class="fal fa-exclamation-triangle"></i> {__('overrideDescription')}</p>
                     </li>
                     <li class="list-group-item item">
                         <div class="name">
@@ -375,7 +375,7 @@
                 </ul>
             </div>
         </div>
-        <div class="card-footer save_wrapper">
+        <div class="card-footer save-wrapper">
             <div class="btn-group">
                 <button type="submit" class="btn btn-primary" value="{__('save')}"><i class="fa fa-save"></i> {__('save')}</button>
                 <button type="button" class="btn btn-default" onclick="window.location.href = 'slider.php';" value="zurück"><i class="fa fa-angle-double-left"></i> {__('back')}</button>

@@ -108,9 +108,9 @@
                 <form method="post" action="versandarten.php">
                     {$jtl_token}
                     <div class="btn-group">
-                        <button name="edit" value="{$versandart->kVersandart}" class="btn btn-primary"><i class="fa fa-edit"></i> {__('edit')}</button>
+                        <button name="edit" value="{$versandart->kVersandart}" class="btn btn-primary"><i class="fal fa-edit"></i> {__('edit')}</button>
                         <button name="clone" value="{$versandart->kVersandart}" class="btn btn-default clone">{__('duplicate')}</button>
-                        <button name="del" value="{$versandart->kVersandart}" class="btn btn-danger" onclick="return confirmDelete('{$versandart->cName}');"><i class="fa fa-trash"></i> {__('delete')}</button>
+                        <button name="del" value="{$versandart->kVersandart}" class="btn btn-danger" onclick="return confirmDelete('{$versandart->cName}');"><i class="fas fa-trash-alt"></i> {__('delete')}</button>
                     </div>
                 </form>
             </div>

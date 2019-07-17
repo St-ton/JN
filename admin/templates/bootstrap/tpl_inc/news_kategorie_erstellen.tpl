@@ -16,7 +16,7 @@
             var maxsize = {$nMaxFileSize};
             {literal}
             if (filesize >= maxsize) {
-                $(this).after('<div class="alert alert-danger"><i class="fa fa-warning"></i> {/literal}{__('errorUploadSizeLimit')}{literal}</div>').slideDown();
+                $(this).after('<div class="alert alert-danger"><i class="fal fa-exclamation-triangle"></i> {/literal}{__('errorUploadSizeLimit')}{literal}</div>').slideDown();
                 file2large = true;
             } else {
                 $(this).closest('div.alert').slideUp();
@@ -111,7 +111,7 @@
                                             <div class="input-group">
                                                 <input class="form-control" type="text" disabled="disabled" value="$#{$oDatei->cName}#$">
                                                 <div class="input-group-addon">
-                                                    <a href="news.php?news=1&newskategorie_editieren=1&kNewsKategorie={$oNewsKategorie->getID()}&delpic={$oDatei->cName}&token={$smarty.session.jtl_token}" title="{__('delete')}"><i class="fa fa-trash"></i></a>
+                                                    <a href="news.php?news=1&newskategorie_editieren=1&kNewsKategorie={$oNewsKategorie->getID()}&delpic={$oDatei->cName}&token={$smarty.session.jtl_token}" title="{__('delete')}"><i class="fas fa-trash-alt"></i></a>
                                                 </div>
                                             </div>
                                         </div>
@@ -176,7 +176,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="card-footer save_wrapper">
+                        <div class="card-footer save-wrapper">
                             <span class="btn-group">
                                 <button name="speichern" type="button" value="{__('save')}" onclick="document.news.submit();" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
                                 <a class="btn btn-danger" href="news.php{if isset($cBackPage)}?{$cBackPage}{elseif isset($cTab)}?tab={$cTab}{/if}"><i class="fa fa-exclamation"></i> {__('Cancel')}</a>

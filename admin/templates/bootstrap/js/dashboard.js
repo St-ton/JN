@@ -46,7 +46,7 @@ $(function () {
             .appendTo($('.options', widget));
 
         // add click handler for widgets close button
-        $('<a href="#" class="ml-2 btn-sm"><i class="fa fa-times"></li></a>')
+        $('<a href="#" class="ml-2 btn-sm"><i class="fal fa-times"></li></a>')
             .on('click', function (e) {
                 ioCall('closeWidget', [widgetId]);
                 $widget.slideUp('fast');

@@ -31,14 +31,14 @@
                         {/if}
                         <small class="text-muted"><i class="fa fa-file-code-o" aria-hidden="true"></i> {$m->getName()}</small>
                       </td>
-                      <td class="text-center"><span class="migration-created">{if $executed}<i class="fa fa-check text-success" aria-hidden="true"></i> {/if}{if $m->getExecuted()}{$m->getExecuted()|date_format:"d.m.Y - H:i:s"}{/if}</span></td>
+                      <td class="text-center"><span class="migration-created">{if $executed}<i class="fal fa-check text-success" aria-hidden="true"></i> {/if}{if $m->getExecuted()}{$m->getExecuted()|date_format:"d.m.Y - H:i:s"}{/if}</span></td>
                       <td class="text-center">
                           <a {if $executed}style="display:none"{/if} href="{$url}?action=migration"
                              data-callback="migration"
                              data-dir="up"
                              data-id="{$m->getId()}"
                              data-plugin="{if $plugin !== null}{$plugin}{else}null{/if}"
-                             class="btn btn-success btn-xs" {if $executed}disabled="disabled"{/if}>
+                             class="btn btn-success btn-sm" {if $executed}disabled="disabled"{/if}>
                               <i class="fa fa-arrow-up"></i>
                           </a>
                           <a {if !$executed}style="display:none"{/if}
@@ -47,7 +47,7 @@
                              data-dir="down"
                              data-id="{$m->getId()}"
                              data-plugin="{if $plugin !== null}{$plugin}{else}null{/if}"
-                             class="btn btn-warning btn-xs" {if !$executed}disabled="disabled"{/if}>
+                             class="btn btn-warning btn-sm" {if !$executed}disabled="disabled"{/if}>
                               <i class="fa fa-arrow-down"></i>
                           </a>
                       </td>
@@ -67,7 +67,7 @@
         <input type="hidden" name="update" value="1" />
         {if $updatesAvailable}
             <div class="alert alert-warning">
-                <h4><i class="fa fa-warning"></i> {__('dbUpdate')} {if $hasDifferentVersions}{__('fromVersion')} {$currentDatabaseVersion} {__('toVersion')} {$currentFileVersion}{/if} {__('required')}.</h4>
+                <h4><i class="fal fa-exclamation-triangle"></i> {__('dbUpdate')} {if $hasDifferentVersions}{__('fromVersion')} {$currentDatabaseVersion} {__('toVersion')} {$currentFileVersion}{/if} {__('required')}.</h4>
                 {__('infoUpdateNow')}
             </div>
             <div class="btn-group btn-group-md" id="btn-update-group" role="group">

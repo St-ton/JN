@@ -144,7 +144,7 @@
                                     <input type="hidden" name="pluginverwaltung_uebersicht" value="1"/>
                                     <input type="hidden" name="cVerzeichnis[]" value="{$pp->getPluginID()}"/>
                                     <button type="submit" class="btn btn-primary">
-                                        <i class="fa fa-plus"></i> Jetzt dieses Plugin installieren
+                                        <i class="fal fa-plus"></i> Jetzt dieses Plugin installieren
                                     </button>
                                 </form>
                             {elseif !$pp->getIsActivated()}
@@ -154,7 +154,7 @@
                                     <input type="hidden" name="pluginverwaltung_uebersicht" value="1"/>
                                     <input type="hidden" name="kPlugin[]" value="{$pp->getKPlugin()}"/>
                                     <button type="submit" class="btn btn-primary">
-                                        <i class="fa fa-plus"></i> Jetzt dieses Plugin aktivieren
+                                        <i class="fal fa-plus"></i> Jetzt dieses Plugin aktivieren
                                     </button>
                                 </form>
                             {else}
@@ -260,7 +260,7 @@
                     <div class="card-body">
                         <ul class="advantages list-unstyled">
                             {foreach $pp->getAdvantages() as $advantage}
-                                <li class="advantage"><i class="fa fa-check fake-list-style-image"></i> {$advantage}</li>
+                                <li class="advantage"><i class="fal fa-check text-success fake-list-style-image"></i> {$advantage}</li>
                             {/foreach}
                         </ul>
                     </div>
@@ -274,7 +274,7 @@
                     <div class="card-body">
                         <ul class="howtos list-unstyled">
                             {foreach $pp->getHowTos() as $howTo}
-                                <li class="howto"><i class="fa fa-check fake-list-style-image"></i> {$howTo}
+                                <li class="howto"><i class="fal fa-check text-success fake-list-style-image"></i> {$howTo}
                                 </li>
                             {/foreach}
                         </ul>
@@ -288,7 +288,7 @@
                                         <input type="hidden" name="installieren" value="1"/>
                                         <input type="hidden" name="pluginverwaltung_uebersicht" value="1"/>
                                         <input type="hidden" name="cVerzeichnis[]" value="{$pp->getPluginID()}"/>
-                                        <button type="submit" class="btn btn-primary"><i class="fa fa-plus"></i> Plugin installieren</button>
+                                        <button type="submit" class="btn btn-primary"><i class="fal fa-plus"></i> Plugin installieren</button>
                                     </form>
                                 {elseif !$pp->getIsActivated()}
                                     <form method="post" action="pluginverwaltung.php" class="form-inline">
@@ -296,7 +296,7 @@
                                         <input type="hidden" name="aktivieren" value="1"/>
                                         <input type="hidden" name="pluginverwaltung_uebersicht" value="1"/>
                                         <input type="hidden" name="kPlugin[]" value="{$pp->getKPlugin()}"/>
-                                        <button type="submit" class="btn btn-primary"><i class="fa fa-plus"></i> Plugin aktivieren</button>
+                                        <button type="submit" class="btn btn-primary"><i class="fal fa-plus"></i> Plugin aktivieren</button>
                                     </form>
                                 {else}
                                     <button class="btn btn-default disabled">bereits aktiviert</button>

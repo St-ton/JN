@@ -12,14 +12,14 @@
                 {if $oStat->nCountInValid > 0}
                     <p>
                         <button id="viewAll" name="viewAll" type="button" class="btn btn-primary hide" value="{__('showAll')}"><i class="fa fa-"></i> {__('showAll')}</button>
-                        <button id="viewModified" name="viewModified" type="button" class="btn btn-default viewModified" value="{__('showModified')}"><i class="fa fa-warning"></i> {__('showModified')}</button>
+                        <button id="viewModified" name="viewModified" type="button" class="btn btn-default viewModified" value="{__('showModified')}"><i class="fal fa-exclamation-triangle"></i> {__('showModified')}</button>
                     </p>
                     <br />
                 {/if}
                 <ul class="list-group">
                     {foreach name=dirs from=$cDirAssoc_arr key=cDir item=isValid}
                         <li class="filestate list-group-item mod{$smarty.foreach.dirs.iteration%2} {if $isValid}unmodified{else}modified{/if}">
-                        {if $isValid}<i class="fa fa-check-circle success"></i>{else}<i class="fa fa-exclamation-circle error"></i>{/if}
+                        {if $isValid}<i class="fal fa-check-circle text-success"></i>{else}<i class="fa fa-exclamation-circle error"></i>{/if}
                         <span class="dir-check">{$cDir}</span>
                         </li>
                     {/foreach}

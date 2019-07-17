@@ -27,7 +27,7 @@
                 var errorMaxSize = "{__('errorUploadSizeLimit')}";
                 if (filesize >= maxsize) {
                     $('.input-group.file-input')
-                        .after('<div class="alert alert-danger"><i class="fa fa-warning"></i> ' + errorMaxSize + '</div>')
+                        .after('<div class="alert alert-danger"><i class="fal fa-exclamation-triangle"></i> ' + errorMaxSize + '</div>')
                         .slideDown();
                     file2large = true;
                 } else {
@@ -336,7 +336,7 @@
                 </div>
             </div>
 
-            <div class="save_wrapper">
+            <div class="save-wrapper">
                 <button type="submit" class="btn btn-primary" value="Banner speichern"><i class="fa fa-save"></i> {__('saveBanner')}</button>
             </div>
 
@@ -418,10 +418,10 @@
                     </script>
                 </div>
                 <input type="hidden" name="id" id="id" />
-                <div class="save_wrapper btn-group">
+                <div class="save-wrapper btn-group">
                     <a href="#" class="btn btn-default" id="article_browser">{__('chooseProduct')}</a>
                     <a href="#" class="btn btn-default" id="article_unlink">{__('deleteProduct')}</a>
-                    <button type="button" class="btn btn-danger" id="remove"><i class="fa fa-trash"></i> {__('zone')} {__('delete')}</button>
+                    <button type="button" class="btn btn-danger" id="remove"><i class="fas fa-trash-alt"></i> {__('zone')} {__('delete')}</button>
                 </div>
             </div>
         </div>
@@ -429,7 +429,7 @@
             <img src="{$oBanner->cBildPfad}" title="" id="clickarea" />
         </div>
     </div>
-    <div class="save_wrapper btn-group">
+    <div class="save-wrapper btn-group">
         <a class="btn btn-default" href="#" id="area_new"><i class="fa fa-share"></i> {__('new')} {__('zone')}</a>
         <a class="btn btn-primary" href="#" id="area_save"><i class="fa fa-save"></i> {__('zones')} {__('save')}</a>
         <a class="btn btn-danger" href="banner.php" id="cancel"><i class="fa fa-angle-double-left"></i> {__('back')}</a>
@@ -481,8 +481,8 @@
                                         <input type="hidden" name="id" value="{$oBanner->kImageMap}" />
                                         <div class="btn-group">
                                             <button class="btn btn-default" name="action" value="area" title="{__('actionLink')}"><i class="fa fa-link"></i></button>
-                                            <button class="btn btn-default" name="action" value="edit" title="{__('edit')}"><i class="fa fa-edit"></i></button>
-                                            <button class="btn btn-danger" name="action" value="delete" title="{__('delete')}"><i class="fa fa-trash"></i></button>
+                                            <button class="btn btn-default" name="action" value="edit" title="{__('edit')}"><i class="fal fa-edit"></i></button>
+                                            <button class="btn btn-danger" name="action" value="delete" title="{__('delete')}"><i class="fas fa-trash-alt"></i></button>
                                         </div>
                                     </form>
                                 </td>
@@ -495,7 +495,7 @@
                     <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                 {/if}
                 </div>
-                <div class="card-footer save_wrapper">
+                <div class="card-footer save-wrapper">
                     <a class="btn btn-primary" href="banner.php?action=new&token={$smarty.session.jtl_token}"><i class="fa fa-share"></i> {__('addBanner')}</a>
                 </div>
             </div>

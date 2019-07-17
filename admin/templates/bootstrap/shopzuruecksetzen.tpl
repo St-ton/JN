@@ -134,7 +134,7 @@
                 </div>
             </div>
         </div>
-        <div class="save_wrapper">
+        <div class="save-wrapper">
             <div class="checkbox hide">
                 <label><input id="backupDone" type="checkbox" value="" />{__('yesBackupDone')}</label>
             </div>

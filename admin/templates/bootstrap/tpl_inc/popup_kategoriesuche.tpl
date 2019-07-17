@@ -16,6 +16,6 @@
     </div>
     <div class="tcenter btn-group">
         <a href="#" class="btn btn-primary" id="categories_list_save"><i class="fa fa-save"></i> {__('save')}</a>
-        <a href="#" class="btn btn-danger" id="categories_list_cancel"><i class="fa fa-warning"></i> {__('cancel')}</a>
+        <a href="#" class="btn btn-danger" id="categories_list_cancel"><i class="fal fa-exclamation-triangle"></i> {__('cancel')}</a>
     </div>
 </fieldset>

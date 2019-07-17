@@ -115,8 +115,8 @@
                             <form method="post" action="cache.php" class="submit-form">
                                 {$jtl_token}
                                 <span class="submit_wrap btn-group">
-                                    <button name="a" type="submit" value="flush_object_cache" class="btn btn-default delete"{if !$cache_enabled} disabled="disabled"{/if}><i class="fa fa-trash"></i>&nbsp;{__('clearObjectCache')}</button>
-                                    <button name="a" type="submit" value="flush_template_cache" class="btn btn-default delete"><i class="fa fa-trash"></i>&nbsp;{__('clearTemplateCache')}</button>
+                                    <button name="a" type="submit" value="flush_object_cache" class="btn btn-default delete"{if !$cache_enabled} disabled="disabled"{/if}><i class="fas fa-trash-alt"></i>&nbsp;{__('clearObjectCache')}</button>
+                                    <button name="a" type="submit" value="flush_template_cache" class="btn btn-default delete"><i class="fas fa-trash-alt"></i>&nbsp;{__('clearTemplateCache')}</button>
                                 </span>
                             </form>
                         </div>
@@ -241,7 +241,7 @@
                             </tr>
                             <tr class="cache-row collapsed clickable" data-toggle="collapse" data-target="#hitRateDetail" style="cursor: pointer">
                                 <td>{__('hitRate')}:</td>
-                                <td class="value">{$opcache_stats->hitRate}%&nbsp;<i class="fa fa-info-circle right"></i></td>
+                                <td class="value">{$opcache_stats->hitRate}%&nbsp;<i class="fal fa-info-circle right"></i></td>
                             </tr>
                             <tr class="cache-row">
                                 <td colspan="2" style="padding: 0">
@@ -270,7 +270,7 @@
                         <table class="table cache-stats" id="tplcache-stats">
                             <tr class="cache-row collapsed clickable" data-toggle="collapse" data-target="#cachefilesFrontendDetail" style="cursor: pointer">
                                 <td>{__('files')} {__('frontend')}</td>
-                                <td class="value">{$tplcacheStats->frontend|count}&nbsp;<i class="fa fa-info-circle right"></i></td>
+                                <td class="value">{$tplcacheStats->frontend|count}&nbsp;<i class="fal fa-info-circle right"></i></td>
                             </tr>
                             {if $tplcacheStats->frontend|count > 0}
                             <tr class="cache-row">
@@ -289,7 +289,7 @@
                             {/if}
                             <tr class="cache-row collapsed clickable" data-toggle="collapse" data-target="#cachefilesBackendDetail" style="cursor: pointer">
                                 <td>{__('files')} {__('backend')}</td>
-                                <td class="value">{$tplcacheStats->backend|count}&nbsp;<i class="fa fa-info-circle right"></i></td>
+                                <td class="value">{$tplcacheStats->backend|count}&nbsp;<i class="fal fa-info-circle right"></i></td>
                             </tr>
                             {if $tplcacheStats->backend|count > 0}
                             <tr class="cache-row">

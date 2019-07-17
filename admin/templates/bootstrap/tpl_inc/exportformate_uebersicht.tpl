@@ -115,13 +115,13 @@
                                     {$jtl_token}
                                     <input type="hidden" name="kExportformat" value="{$exportformat->kExportformat}" />
                                     <div class="btn-group">
-                                        <button name="action" value="export" class="btn btn-default btn-sm extract notext" title="{__('createExportFile')}"><i class="fa fa-plus"></i></button>
+                                        <button name="action" value="export" class="btn btn-default btn-sm extract notext" title="{__('createExportFile')}"><i class="fal fa-plus"></i></button>
                                         {if !$exportformat->bPluginContentExtern}
-                                            <a href="#" onclick="return init_export('{$exportformat->kExportformat}');" class="btn btn-primary btn-sm extract_async notext" title="{__('createExportFileAsync')}"><i class="fa fa-plus-square"></i></a>
+                                            <a href="#" onclick="return init_export('{$exportformat->kExportformat}');" class="btn btn-primary btn-sm extract_async notext" title="{__('createExportFileAsync')}"><i class="fal fa-plus-square"></i></a>
                                         {/if}
                                         <button name="action" value="download" class="btn btn-default btn-sm download notext" title="{__('download')}"><i class="fa fa-download"></i></button>
-                                        <button name="action" value="edit" class="btn btn-default btn-sm edit notext" title="{__('edit')}"><i class="fa fa-edit"></i></button>
-                                        <button name="action" value="delete" class="btn btn-danger btn-sm remove notext" title="{__('delete')}" onclick="return confirm('{__('sureDeleteFormat')}');"><i class="fa fa-trash"></i></button>
+                                        <button name="action" value="edit" class="btn btn-default btn-sm edit notext" title="{__('edit')}"><i class="fal fa-edit"></i></button>
+                                        <button name="action" value="delete" class="btn btn-danger btn-sm remove notext" title="{__('delete')}" onclick="return confirm('{__('sureDeleteFormat')}');"><i class="fas fa-trash-alt"></i></button>
                                     </div>
                                 </form>
                             </td>

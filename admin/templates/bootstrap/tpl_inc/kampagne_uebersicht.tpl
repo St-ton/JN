@@ -56,7 +56,7 @@
                                         <td class="tcenter">{if isset($oKampagne->nAktiv) && $oKampagne->nAktiv == 1}{__('yes')}{else}{__('no')}{/if}</td>
                                         <td class="tcenter">{$oKampagne->dErstellt_DE}</td>
                                         <td class="tcenter">
-                                            <a href="kampagne.php?kKampagne={$oKampagne->kKampagne}&editieren=1&token={$smarty.session.jtl_token}" title="{__('modify')}" class="btn btn-default"><i class="fa fa-edit"></i></a>
+                                            <a href="kampagne.php?kKampagne={$oKampagne->kKampagne}&editieren=1&token={$smarty.session.jtl_token}" title="{__('modify')}" class="btn btn-default"><i class="fal fa-edit"></i></a>
                                         </td>
                                     </tr>
                                 {/if}
@@ -117,7 +117,7 @@
                                             <td class="tcenter">
                                                 <a href="kampagne.php?kKampagne={$oKampagne->kKampagne}&editieren=1&token={$smarty.session.jtl_token}"
                                                    class="btn btn-default" title="{__('modify')}">
-                                                    <i class="fa fa-edit"></i>
+                                                    <i class="fal fa-edit"></i>
                                                 </a>
                                             </td>
                                         </tr>
@@ -140,7 +140,7 @@
                     <div class="card-footer">
                         <div class="btn-group">
                             {if isset($nGroessterKey) && $nGroessterKey >= 1000}
-                                <button name="submitDelete" type="submit" value="{__('delete')}" class="btn btn-danger"><i class="fa fa-trash"></i> {__('deleteSelected')}</button>
+                                <button name="submitDelete" type="submit" value="{__('delete')}" class="btn btn-danger"><i class="fas fa-trash-alt"></i> {__('deleteSelected')}</button>
                             {/if}
                             <a href="kampagne.php?neu=1&token={$smarty.session.jtl_token}" class="btn btn-primary">{__('kampagneNewBTN')}</a>
                         </div>

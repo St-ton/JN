@@ -81,10 +81,10 @@
                                    value="{if isset($cPost_arr.cKategorie)}{$cPost_arr.cKategorie}{elseif isset($oGruppe->cKategorie)}{$oGruppe->cKategorie}{/if}">
                         </div>
                         <div class="col-auto ml-sm-n4 order-2 order-sm-3">
-                            <button type="button" class="btn btn-info btn-xs" data-toggle="modal"
+                            <button type="button" class="btn btn-default btn-sm" data-toggle="modal"
                                     data-target="#categoryPicker-modal"
                                     title="{__('questionCatInGroup')}">
-                                <i class="fa fa-edit"></i>
+                                <i class="fal fa-edit"></i>
                             </button>
                         </div>
                     </div>
@@ -157,11 +157,9 @@
                         </div>
                     </div>
                 </div>
-                <div class="card-footer">
-                    <div class="btn-group">
-                        <button name="speicherGruppe" type="submit" value="save" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
-                        <a href="auswahlassistent.php" class="btn btn-danger">{__('goBack')}</a>
-                    </div>
+                <div class="card-footer save-wrapper">
+                    <a href="auswahlassistent.php" class="btn btn-default">{__('goBack')}</a>
+                    <button name="speicherGruppe" type="submit" value="save" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
                 </div>
             </div>
             <div id="ajax_list_picker" class="ajax_list_picker categories">{include file='tpl_inc/popup_kategoriesuche.tpl'}</div>

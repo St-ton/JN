@@ -41,7 +41,7 @@
                         </td>
                         <td>
                             <a href="zusatzverpackung.php?kVerpackung={$oVerpackung->kVerpackung}&token={$smarty.session.jtl_token}"
-                               class="btn btn-default" title="{__('modify')}"><i class="fa fa-edit"></i></a>
+                               class="btn btn-default" title="{__('modify')}"><i class="fal fa-edit"></i></a>
                         </td>
                     </tr>
                 {/foreach}
@@ -58,7 +58,7 @@
                     <i class="fa fa-share"></i> {__('zusatzverpackungCreate')}
                 </a>
                 {if isset($oVerpackung_arr) && $oVerpackung_arr|@count > 0}
-                    <button type="submit" name="action" value="delete" class="btn btn-danger"><i class="fa fa-trash"></i> {__('delete')}</button>
+                    <button type="submit" name="action" value="delete" class="btn btn-danger"><i class="fas fa-trash-alt"></i> {__('delete')}</button>
                     <button name="action" type="submit" value="refresh" class="btn btn-default"><i class="fa fa-refresh"></i> {__('update')}</button>
                 {/if}
             </div>

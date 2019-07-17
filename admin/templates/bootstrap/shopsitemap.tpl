@@ -38,7 +38,7 @@
                         {/if}
                     {/foreach}
                 </div>
-                <div class="save_wrapper card-footer">
+                <div class="save-wrapper card-footer">
                     <button name="speichern" type="submit" value="{__('save')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
                 </div>
             </div>

@@ -13,7 +13,7 @@
             <input class="form-control margin2" id="cLink{$kSlide}" type="text" name="aSlide[{$kSlide}][cLink]" value="{if isset($oSlide)}{$oSlide->getLink()}{/if}" placeholder="{__('link')}" />
         </td>
         <td><textarea class="form-control vheight" id="cText{$kSlide}" name="aSlide[{$kSlide}][cText]" maxlength="255" placeholder="{__('text')}">{if isset($oSlide)}{$oSlide->getText()}{/if}</textarea></td>
-        <td class="vcenter"><button type="button" onclick="$(this).parent().parent().find('input[name*=\'delete\']').val('1'); $(this).parent().parent().css({ 'display':'none'});sortSlide();" class="slide_delete btn btn-danger btn-block fa fa-trash" title="{__('delete')}"></button></td>
+        <td class="vcenter"><button type="button" onclick="$(this).parent().parent().find('input[name*=\'delete\']').val('1'); $(this).parent().parent().css({ 'display':'none'});sortSlide();" class="slide_delete btn btn-danger btn-block fas fa-trash-alt" title="{__('delete')}"></button></td>
     </tr>
 {/function}
 

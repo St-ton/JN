@@ -15,7 +15,7 @@
                         <tr class="text-vcenter">
                             <td>
                                 {if $zahlungsart->nActive == 1}
-                                    <span class="text-success" title="{__('active')}"><i class="fa fa-check"></i></span>
+                                    <span class="text-success" title="{__('active')}"><i class="fal fa-check text-success"></i></span>
                                 {else}
                                     <span class="text-danger" title="{__('inactive')}">
                                         <i class="fa fa-exclamation-triangle"></i>
@@ -49,7 +49,7 @@
                                     </a>
                                     <a href="zahlungsarten.php?kZahlungsart={$zahlungsart->kZahlungsart}&token={$smarty.session.jtl_token}"
                                        class="btn btn-default btn-sm" title="{__('edit')}">
-                                        <i class="fa fa-edit"></i>
+                                        <i class="fal fa-edit"></i>
                                     </a>
                                 </div>
                             </td>

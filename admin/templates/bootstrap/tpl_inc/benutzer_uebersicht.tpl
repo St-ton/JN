@@ -56,13 +56,13 @@
                                         {$jtl_token}
                                         <input type="hidden" name="id" value="{$oAdmin->kAdminlogin}" />
                                         <div class="btn-group">
-                                            <button class="notext btn btn-default" name="action" value="account_edit" title="{__('modify')}"><i class="fa fa-edit"></i></button>
+                                            <button class="notext btn btn-default" name="action" value="account_edit" title="{__('modify')}"><i class="fal fa-edit"></i></button>
                                             {if $oAdmin->bAktiv}
                                                 <button class="notext btn btn-warning" name="action" value="account_lock" title="{__('sperrenLabel')}"><i class="fa fa-lock"></i></button>
                                             {else}
                                                 <button class="notext btn btn-warning" name="action" value="account_unlock" title="{__('entsperrenLabel')}"><i class="fa fa-unlock"></i></button>
                                             {/if}
-                                            <button class="notext btn btn-danger" name="action" value="account_delete" onclick="return confirm('{__('sureDeleteGroup')}');" title="{__('delete')}"><i class="fa fa-trash"></i></button>
+                                            <button class="notext btn btn-danger" name="action" value="account_delete" onclick="return confirm('{__('sureDeleteGroup')}');" title="{__('delete')}"><i class="fas fa-trash-alt"></i></button>
                                         </div>
                                     </form>
                                 </td>
@@ -110,8 +110,8 @@
                                             {$jtl_token}
                                             <input type="hidden" value="{$oGroup->kAdminlogingruppe}" name="id" />
                                             <div class="btn-group">
-                                                <button type="submit" class="edit btn btn-default" name="action" value="group_edit" title="{__('modify')}"><i class="fa fa-edit"></i></button>
-                                                <button type="submit" class="delete btn btn-danger" name="action" value="group_delete" onclick="return confirm('{__('sureDeleteGroup')}');" {if 0 < (int)$oGroup->nCount}title="{__('loeschenLabelDeaktiviert')}" disabled="disabled"{else}title="{__('loeschenLabel')}"{/if}><i class="fa fa-trash"></i></button>
+                                                <button type="submit" class="edit btn btn-default" name="action" value="group_edit" title="{__('modify')}"><i class="fal fa-edit"></i></button>
+                                                <button type="submit" class="delete btn btn-danger" name="action" value="group_delete" onclick="return confirm('{__('sureDeleteGroup')}');" {if 0 < (int)$oGroup->nCount}title="{__('loeschenLabelDeaktiviert')}" disabled="disabled"{else}title="{__('loeschenLabel')}"{/if}><i class="fas fa-trash-alt"></i></button>
                                             </div>
                                         </form>
                                     {/if}

@@ -14,7 +14,7 @@
         </div>
         <div class="btn-group">
             <button name="resetConfirmJaSubmit" type="submit" value="{__('yes')}" class="btn btn-danger">
-                <i class="fa fa-check"></i> {__('yes')}
+                <i class="fal fa-check text-success"></i> {__('yes')}
             </button>
             <button name="resetConfirmNeinSubmit" type="submit" value="{__('no')}" class="btn btn-info">
                 <i class="fa fa-close"></i> {__('no')}

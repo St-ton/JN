@@ -14,7 +14,7 @@ var pies = [];
         <form class="delete-run" action="profiler.php" method="post">
             {$jtl_token}
             <input type="hidden" value="y" name="delete-all" />
-            <button type="submit" class="btn btn-danger" name="delete-run-submit"><i class="fa fa-trash"></i> {__('deleteAll')}</button>
+            <button type="submit" class="btn btn-danger" name="delete-run-submit"><i class="fas fa-trash-alt"></i> {__('deleteAll')}</button>
         </form>
     </div>
     <ul class="nav nav-tabs" role="tablist">
@@ -56,7 +56,7 @@ var pies = [];
                                 <form class="delete-run" action="profiler.php" method="post">
                                     {$jtl_token}
                                     <input type="hidden" value="{$profile->runID}" name="run-id" />
-                                    <button type="submit" class="btn btn-default" name="delete-run-submit"><i class="fa fa-trash"></i> {__('deleteEntry')}</button>
+                                    <button type="submit" class="btn btn-default" name="delete-run-submit"><i class="fas fa-trash-alt"></i> {__('deleteEntry')}</button>
                                 </form>
                             </div>
                         </div>
@@ -64,7 +64,7 @@ var pies = [];
                     {/foreach}
                 </div>
             {else}
-                <div class="alert alert-info"><i class="fa fa-info-circle"></i> {__('noDataAvailable')}</div>
+                <div class="alert alert-info"><i class="fal fa-info-circle"></i> {__('noDataAvailable')}</div>
             {/if}
         </div>
         <div id="sqlprofiler" class="tab-pane fade{if isset($tab) && $tab === 'sqlprofiler'} active show{/if}">
@@ -120,7 +120,7 @@ var pies = [];
                     {/foreach}
                 </div>
             {else}
-                <div class="alert alert-info"><i class="fa fa-info-circle"></i> {__('noDataAvailable')}</div>
+                <div class="alert alert-info"><i class="fal fa-info-circle"></i> {__('noDataAvailable')}</div>
             {/if}
         </div>
     </div>

@@ -91,7 +91,7 @@
                 </tr>
             </table>
         </div>
-        <div class="card-footer save_wrapper">
+        <div class="card-footer save-wrapper">
             <button class="btn btn-primary" name="speichern" type="submit">
                 <i class="fa fa-save"></i> {__('save')}
             </button>

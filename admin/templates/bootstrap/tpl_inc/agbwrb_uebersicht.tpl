@@ -21,8 +21,8 @@
                         <td class="">{$oKundengruppe->cName}</td>
                         <td class="tcenter">
                             <a href="agbwrb.php?agbwrb=1&agbwrb_edit=1&kKundengruppe={$oKundengruppe->kKundengruppe}&token={$smarty.session.jtl_token}"
-                               class="btn btn-default" title="{__('modify')}">
-                                <i class="fa fa-edit"></i>
+                               class="btn btn-default btn-circle" title="{__('modify')}">
+                                <i class="fal fa-edit"></i>
                             </a>
                         </td>
                     </tr>

@@ -324,9 +324,9 @@
                         <input type="hidden" id="cArtikel" name="cArtikel" value="{$oKupon->cArtikel}">
                     </div>
                     <div class="col-auto ml-sm-n4 order-2 order-sm-3">
-                        <button type="button" class="btn btn-info btn-xs" data-toggle="modal"
+                        <button type="button" class="btn btn-info btn-sm" data-toggle="modal"
                                 data-target="#articlePicker-modal">
-                            <i class="fa fa-edit"></i>
+                            <i class="fal fa-edit"></i>
                         </button>
                     </div>
                 </div>
@@ -426,9 +426,9 @@
                             <input type="hidden" id="cKunden" name="cKunden" value="{$oKupon->cKunden}">
                         </span>
                         <div class="col-auto ml-sm-n4 order-2 order-sm-3">
-                            <button type="button" class="btn btn-info btn-xs" data-toggle="modal"
+                            <button type="button" class="btn btn-info btn-sm" data-toggle="modal"
                                     data-target="#customerPicker-modal">
-                                <i class="fa fa-edit"></i>
+                                <i class="fal fa-edit"></i>
                             </button>
                         </div>
                     </div>
@@ -441,7 +441,7 @@
                 {/if}
             </div>
         </div>
-        <div class="card-footer save_wrapper">
+        <div class="card-footer save-wrapper">
             <button type="submit" class="btn btn-primary" name="action" value="speichern">
                 <i class="fa fa-share"></i> {__('save')}
             </button>

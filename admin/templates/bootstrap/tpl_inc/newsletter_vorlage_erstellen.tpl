@@ -207,9 +207,9 @@ function checkNewsletterSend() {ldelim}
                                    value="{if isset($cPostVar_arr.cArtikel) && $cPostVar_arr.cArtikel|strlen > 0}{$cPostVar_arr.cArtikel}{elseif isset($oNewsletterVorlage->cArtikel)}{$oNewsletterVorlage->cArtikel}{/if}">
                         </span>
                         <span class="input-group-addon">
-                            <button type="button" class="btn btn-info btn-xs" data-toggle="modal"
+                            <button type="button" class="btn btn-info btn-sm" data-toggle="modal"
                                     data-target="#articlePicker-modal">
-                                <i class="fa fa-edit"></i>
+                                <i class="fal fa-edit"></i>
                             </button>
                         </span>
                     </div>
@@ -248,9 +248,9 @@ function checkNewsletterSend() {ldelim}
                                    value="{if isset($cPostVar_arr.cHersteller) && $cPostVar_arr.cHersteller|strlen > 0}{$cPostVar_arr.cHersteller}{elseif isset($oNewsletterVorlage->cHersteller)}{$oNewsletterVorlage->cHersteller}{/if}">
                         </span>
                         <span class="input-group-addon">
-                            <button type="button" class="btn btn-info btn-xs" data-toggle="modal"
+                            <button type="button" class="btn btn-info btn-sm" data-toggle="modal"
                                     data-target="#manufacturerPicker-modal">
-                                <i class="fa fa-edit"></i>
+                                <i class="fal fa-edit"></i>
                             </button>
                         </span>
                     </div>
@@ -289,9 +289,9 @@ function checkNewsletterSend() {ldelim}
                                    value="{if isset($cPostVar_arr.cKategorie) && $cPostVar_arr.cKategorie|strlen > 0}{$cPostVar_arr.cKategorie}{elseif isset($oNewsletterVorlage->cKategorie)}{$oNewsletterVorlage->cKategorie}{/if}">
                         </span>
                         <span class="input-group-addon">
-                            <button type="button" class="btn btn-info btn-xs" data-toggle="modal"
+                            <button type="button" class="btn btn-info btn-sm" data-toggle="modal"
                                     data-target="#categoryPicker-modal">
-                                <i class="fa fa-edit"></i>
+                                <i class="fal fa-edit"></i>
                             </button>
                         </span>
                     </div>

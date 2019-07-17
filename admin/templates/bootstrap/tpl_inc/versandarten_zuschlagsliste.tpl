@@ -64,10 +64,10 @@
                         <td colspan="2">
                             <div class="btn-group">
                                 <a href="versandarten.php?delzus={$zuschlag->kVersandzuschlag}&token={$smarty.session.jtl_token}&kVersandart={$Versandart->kVersandart}&cISO={$Land->cISO}" class="btn btn-danger">
-                                    <i class="fa fa-trash"></i> {__('additionalFeeDelete')}
+                                    <i class="fas fa-trash-alt"></i> {__('additionalFeeDelete')}
                                 </a>
                                 <a href="versandarten.php?editzus={$zuschlag->kVersandzuschlag}&token={$smarty.session.jtl_token}&kVersandart={$Versandart->kVersandart}&cISO={$Land->cISO}" class="btn btn-default">
-                                    <i class="fa fa-edit"></i> {__('additionalFeeEdit')}
+                                    <i class="fal fa-edit"></i> {__('additionalFeeEdit')}
                                 </a>
                             </div>
                         </td>

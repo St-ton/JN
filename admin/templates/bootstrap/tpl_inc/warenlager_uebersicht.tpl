@@ -44,7 +44,7 @@
                                     <td class="tcenter large">{$oWarenlager->cName}</td>
                                     <td class="tcenter">{$oWarenlager->cBeschreibung}</td>
                                     <td class="tcenter">
-                                        <a class="btn btn-default" data-toggle="collapse" href="#collapse-{$oWarenlager->kWarenlager}" title="{__('edit')}"><i class="fa fa-edit"></i></a>
+                                        <a class="btn btn-default btn-circle" data-toggle="collapse" href="#collapse-{$oWarenlager->kWarenlager}" title="{__('edit')}"><i class="fal fa-edit"></i></a>
                                     </td>
                                 </tr>
                                 <tr class="collapse" id="collapse-{$oWarenlager->kWarenlager}">
@@ -69,8 +69,8 @@
                         </table>
                     </div>
                 </div>
-                <div class="card-footer">
-                    <button name="update" type="submit" title="{__('update')}" class="btn btn-primary"><i class="fa fa-refresh"></i> {__('update')}</button>
+                <div class="card-footer save-wrapper">
+                    <button name="update" type="submit" title="{__('update')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
                 </div>
             </div>
         </form>

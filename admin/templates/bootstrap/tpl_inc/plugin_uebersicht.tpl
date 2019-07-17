@@ -28,7 +28,7 @@
             </div>
         {else}
             <div class="alert alert-info" role="alert">
-                <i class="fa fa-info-circle"></i> {__('noPluginDataAvailable')}
+                <i class="fal fa-info-circle"></i> {__('noPluginDataAvailable')}
             </div>
         {/if}
     </div>

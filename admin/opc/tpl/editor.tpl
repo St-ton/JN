@@ -86,7 +86,7 @@
                 {__('portletLabel')}
             </button>
             <button type="button" class="btn btn-default btn-sm" id="btnConfig" title="{__('editSettings')}">
-                <i class="fa fa-edit"></i>
+                <i class="fal fa-edit"></i>
             </button>
             <button type="button" class="btn btn-default btn-sm" id="btnClone" title="{__('copySelect')}">
                 <i class="fa fa-clone"></i>
@@ -98,7 +98,7 @@
                 <i class="fa fa-level-up fas fa-level-up-alt"></i>
             </button>
             <button type="button" class="btn btn-default btn-sm" id="btnTrash" title="{__('deleteSelect')}">
-                <i class="fa fa-trash"></i>
+                <i class="fas fa-trash-alt"></i>
             </button>
         </div>
 

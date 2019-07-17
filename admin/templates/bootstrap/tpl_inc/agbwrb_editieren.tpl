@@ -66,7 +66,7 @@
                         </tr>
                     </table>
                 </div>
-                <div class="card-footer save_wrapper">
+                <div class="card-footer save-wrapper">
                     <button name="agbwrbsubmit" type="submit" value="{__('save')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
                 </div>
             </div>

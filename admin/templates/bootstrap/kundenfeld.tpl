@@ -14,7 +14,7 @@
                 .on('click', function() {
                     addKundenfeldWert();
                 })
-                .append('<i class="fa fa-plus-square-o"></i>&nbsp;' + '{/literal}{__('addValue')}{literal}'))
+                .append('<i class="fal fa-plus-square-o"></i>&nbsp;' + '{/literal}{__('addValue')}{literal}'))
         );
         addKundenfeldWert();
     }
@@ -77,7 +77,7 @@
                             .on('click', function() {
                                 delKundenfeldWert(this);
                             })
-                            .append('<i class="fa fa-trash"></i>&nbsp;'  + '{/literal}{__('remove')}{literal}')
+                            .append('<i class="fas fa-trash-alt"></i>&nbsp;'  + '{/literal}{__('remove')}{literal}')
                         )
                     )
                 )
@@ -213,7 +213,7 @@
                                         </select>
                                         {if (isset($xPostVar_arr.cTyp) && $xPostVar_arr.cTyp === 'auswahl') || (isset($oKundenfeld->cTyp) && $oKundenfeld->cTyp === 'auswahl')}
                                             <div class="kundenfeld_wert">
-                                                <button name="button" type="button" class="btn btn-primary add" value="Wert hinzufügen" onclick="addKundenfeldWert()"><i class="fa fa-plus-square-o"></i> {__('addValue')}</button>
+                                                <button name="button" type="button" class="btn btn-primary add" value="Wert hinzufügen" onclick="addKundenfeldWert()"><i class="fal fa-plus-square-o"></i> {__('addValue')}</button>
                                             </div>
                                         {/if}
                                     </td>
@@ -235,7 +235,7 @@
                                                     </div>
                                                 </div>
                                                 <div class="btn-group">
-                                                    <button name="delete" type="button" class="btn btn-danger" value="Entfernen" onclick="delKundenfeldWert(this)"><i class="fa fa-trash"></i> {__('remove')}</button>
+                                                    <button name="delete" type="button" class="btn btn-danger" value="Entfernen" onclick="delKundenfeldWert(this)"><i class="fas fa-trash-alt"></i> {__('remove')}</button>
                                                 </div>
                                             </td>
                                         </tr>
@@ -257,7 +257,7 @@
                                                     </div>
                                                 </div>
                                                 <div class="btn-group">
-                                                    <button name="delete" type="button" class="btn btn-danger" value="Entfernen" onclick="delKundenfeldWert(this)"><i class="fa fa-trash"></i> {__('remove')}</button>
+                                                    <button name="delete" type="button" class="btn btn-danger" value="Entfernen" onclick="delKundenfeldWert(this)"><i class="fas fa-trash-alt"></i> {__('remove')}</button>
                                                 </div>
                                             </td>
                                         </tr>
@@ -266,7 +266,7 @@
                             </table>
                         </div>
                     </div>
-                    <div class="card-footer">
+                    <div class="card-footer text-right">
                         <button name="speichern" type="submit" class="btn btn-primary" value="{__('save')}"><i class="fa fa-save"></i> {__('save')}</button>
                     </div>
                 </div>
@@ -320,8 +320,8 @@
                                         </td>
                                         <td class="tcenter">
                                             <a href="kundenfeld.php?a=edit&kKundenfeld={$oKundenfeld->kKundenfeld}&tab=uebersicht&token={$smarty.session.jtl_token}"
-                                               class="btn btn-default btn-sm" title="{__('modify')}">
-                                                <i class="fa fa-edit"></i>
+                                               class="btn btn-default btn-circle" title="{__('modify')}">
+                                                <i class="fal fa-edit"></i>
                                             </a>
                                         </td>
                                     </tr>
@@ -332,17 +332,15 @@
                         <div class="card-body">
                             <div class="alert alert-info">{__('kundenfeldPflichtDesc')}</div>
                         </div>
-                        <div class="card-footer">
-                            <div class="btn-group">
-                                <button name="aktualisieren" type="submit" value="{__('update')}" class="btn btn-primary"><i class="fa fa-refresh"></i> {__('update')}</button>
-                                <button name="loeschen" type="submit" value="{__('delete')}" class="btn btn-danger">
-                                    <i class="fa fa-trash"></i> {__('deleteSelected')}
-                                </button>
-                            </div>
+                        <div class="card-footer text-right">
+                            <button name="loeschen" type="submit" value="{__('delete')}" class="btn btn-danger">
+                                <i class="fas fa-trash-alt"></i> {__('deleteSelected')}
+                            </button>
+                            <button name="aktualisieren" type="submit" value="{__('update')}" class="btn btn-primary"><i class="fa fa-refresh"></i> {__('update')}</button>
                         </div>
                     </form>
                 {else}
-                    <div class="alert alert-info"><i class="fa fa-info-circle"></i> {__('noDataAvailable')}</div>
+                    <div class="alert alert-info"><i class="fal fa-info-circle"></i> {__('noDataAvailable')}</div>
                 {/if}
                 </div>
             </div>

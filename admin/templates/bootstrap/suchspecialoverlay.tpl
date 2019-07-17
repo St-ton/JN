@@ -135,7 +135,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="card-footer">
+                    <div class="card-footer save-wrapper">
                         <button type="submit" value="{__('save')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
                     </div>
                 </div>
@@ -162,7 +162,7 @@
             var maxsize = {$nMaxFileSize};
             {literal}
             if (filesize >= maxsize) {
-                $('.input-group.file-input').after('<div class="alert alert-danger"><i class="fa fa-warning"></i>{/literal}{__('errorUploadSizeLimit')}{literal}</div>').slideDown();
+                $('.input-group.file-input').after('<div class="alert alert-danger"><i class="fal fa-exclamation-triangle"></i>{/literal}{__('errorUploadSizeLimit')}{literal}</div>').slideDown();
                 file2large = true;
             } else {
                 $('form div.alert').slideUp();

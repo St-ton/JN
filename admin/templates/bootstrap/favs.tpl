@@ -55,7 +55,7 @@
             <i class="fa fa-arrows-v" aria-hidden="true"></i>
         </th>
         <td class="text-center">
-            <button type="button" class="btn btn-xs btn-danger btn-remove"><i class="fa fa-times"></i></button>
+            <button type="button" class="btn btn-sm btn-danger btn-remove"><i class="fal fa-times"></i></button>
         </td>
     </tr>
 {/function}

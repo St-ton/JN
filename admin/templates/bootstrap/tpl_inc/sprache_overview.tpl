@@ -107,7 +107,7 @@
                                                     {if $oWert->bSystem === '0'}
                                                         <a href="sprache.php?token={$smarty.session.jtl_token}&action=delvar&kSprachsektion={$oWert->kSprachsektion}&cName={$oWert->cName}"
                                                            class="btn btn-danger">
-                                                            <i class="fa fa-trash"></i>
+                                                            <i class="fas fa-trash-alt"></i>
                                                         </a>
                                                     {/if}
                                                 </div>
@@ -150,7 +150,7 @@
                                             <div class="btn-group right">
                                                 <a href="sprache.php?token={$smarty.session.jtl_token}&action=newvar&kSprachsektion={$oWert->kSprachsektion}&cName={$oWert->cName}&tab=notfound"
                                                    class="btn btn-default" title="{__('create')}">
-                                                    <i class="fa fa-plus"></i>
+                                                    <i class="fal fa-plus"></i>
                                                 </a>
                                             </div>
                                         </td>

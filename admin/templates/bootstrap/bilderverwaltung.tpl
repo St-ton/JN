@@ -7,7 +7,7 @@
     <div class="card">
         <div class="card-body">
             {if isset($success)}
-                <div class="alert alert-success"><i class="fa fa-info-circle"></i> {$success}</div>
+                <div class="alert alert-success"><i class="fal fa-info-circle"></i> {$success}</div>
             {/if}
             <div class="table-responsive">
                 <table class="list table" id="cache-items">
@@ -48,10 +48,8 @@
                                 <i class="fa fa-spinner fa-spin"></i>
                             </td>
                             <td class="text-center action-buttons">
-                                <div class="btn-group btn-group-xs" role="group">
-                                    <a class="btn btn-default" href="#" data-callback="flush" data-type="{$item->type}"><i class="fa fa-trash-o"></i>{__('deleteCachedPics')}</a>
-                                    <a class="btn btn-default" href="#" data-callback="generate"><i class="fa fa-cog"></i>{__('generatePics')}</a>
-                                </div>
+                                <a class="btn btn-default btn-sm" href="#" data-callback="flush" data-type="{$item->type}"><i class="fas fa-trash-alt-o"></i>{__('deleteCachedPics')}</a>
+                                <a class="btn btn-primary btn-sm" href="#" data-callback="generate"><i class="fa fa-cog"></i>{__('generatePics')}</a>
                             </td>
                         </tr>
                     {/foreach}
@@ -104,7 +102,7 @@
                                     {/if}
                                 {/foreach}
                                 {if $moreCorruptedImages}
-                                    <a class="btn btn-default btn-xs" data-toggle="collapse"
+                                    <a class="btn btn-default btn-sm" data-toggle="collapse"
                                         href="#dropdownCorruptedImages-{$moreCorruptedImage}"
                                         aria-controls="dropdownCorruptedImages-{$moreCorruptedImage}">
                                         {__('more')} <span class="caret"></span>

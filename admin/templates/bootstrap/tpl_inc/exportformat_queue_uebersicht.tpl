@@ -51,7 +51,7 @@
                                         <td class="tcenter">{if $oExportformatCron->dNaechsterStart_de === null}sofort{else}{$oExportformatCron->dNaechsterStart_de}{/if}</td>
                                         <td class="tcenter">
                                             <a href="exportformat_queue.php?action=editieren&kCron={$oExportformatCron->cronID}&token={$smarty.session.jtl_token}"
-                                               class="btn btn-default" title="{__('modify')}"><i class="fa fa-edit"></i>
+                                               class="btn btn-default" title="{__('modify')}"><i class="fal fa-edit"></i>
                                             </a>
                                         </td>
                                     </tr>
@@ -70,7 +70,7 @@
                         <div class="card-footer">
                             <div class="btn-group">
                                 <button name="action[erstellen]" type="submit" value="1" class="btn btn-primary add"><i class="fa fa-share"></i> {__('exportformatAdd')}</button>
-                                <button name="action[loeschen]" type="submit" value="1" class="btn btn-danger"><i class="fa fa-trash"></i> {__('exportformatDelete')}</button>
+                                <button name="action[loeschen]" type="submit" value="1" class="btn btn-danger"><i class="fas fa-trash-alt"></i> {__('exportformatDelete')}</button>
                                 <button name="action[triggern]" type="submit" value="1" class="btn btn-default"><i class="fa fa-play-circle-o"></i> {__('exportformatTriggerCron')}</button>
                                 <button name="action[uebersicht]" type="submit" value="1" class="btn btn-default"><i class="fa fa-refresh"></i> {__('refresh')}</button>
                             </div>
@@ -99,7 +99,7 @@
                         <label>{__('hours')}</label>
                     </div>
                     <div class="btn-group">
-                        <button name="action[fertiggestellt]" type="submit" value="1" class="btn btn-info"><i class="fa fa-search"></i> {__('show')}</button>
+                        <button name="action[fertiggestellt]" type="submit" value="1" class="btn btn-info"><i class="fal fa-search"></i> {__('show')}</button>
                     </div>
                 </form>
             </div>

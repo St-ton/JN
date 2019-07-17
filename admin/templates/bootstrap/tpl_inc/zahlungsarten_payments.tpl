@@ -49,9 +49,9 @@
                                     <td>{$oZahlungseingang->cISO}</td>
                                     <td>
                                         {if $oZahlungseingang->cAbgeholt === 'Y'}
-                                            <span class="label label-success" title="Aktiv"><i class="fa fa-check fa-fw"></i></span>
+                                            <span class="label label-success" title="Aktiv"><i class="fal fa-check text-success fa-fw"></i></span>
                                         {elseif $oZahlungseingang->cAbgeholt === 'N'}
-                                            <span class="label label-danger" title="Inaktiv"><i class="fa fa-times fa-fw"></i></span>
+                                            <span class="label label-danger" title="Inaktiv"><i class="fal fa-times fa-fw"></i></span>
                                         {/if}
                                     </td>
                                 </tr>

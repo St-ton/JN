@@ -15,7 +15,7 @@
                 <div class="modal-footer">
                     <div class="btn-group">
                         <button type="button" class="btn btn-info" name="cancel" data-dismiss="modal"><i class="fa fa-close"></i>&nbsp;{__('cancel')}</button>
-                        <button id="formSubmit" type="button" class="btn btn-danger" name="delete" ><i class="fa fa-trash"></i>&nbsp;{__('delete')}</button>
+                        <button id="formSubmit" type="button" class="btn btn-danger" name="delete" ><i class="fas fa-trash-alt"></i>&nbsp;{__('delete')}</button>
                     </div>
                 </div>
             </div>
@@ -75,9 +75,9 @@
                             </select>
                         </div>
                         <div class="btn-group">
-                            <button name="action[year_downloads]" type="submit" value="1" class="btn btn-info"><i class="fa fa-search"></i>&nbsp;{__('show')}</button>
+                            <button name="action[year_downloads]" type="submit" value="1" class="btn btn-info"><i class="fal fa-search"></i>&nbsp;{__('show')}</button>
                             <button type="button" class="btn btn-danger"
-                                    data-form="#formDeleteSitemapExport" data-action="year_downloads_delete" data-target="#confirmModal" data-toggle="modal" data-title="{__('sitemapDownload')} löschen"><i class="fa fa-trash"></i>&nbsp;{__('delete')}</button>
+                                    data-form="#formDeleteSitemapExport" data-action="year_downloads_delete" data-target="#confirmModal" data-toggle="modal" data-title="{__('sitemapDownload')} löschen"><i class="fas fa-trash-alt"></i>&nbsp;{__('delete')}</button>
                         </div>
                     </form>
                 </div>
@@ -132,7 +132,7 @@
                             </div>
                             <div class="card-footer">
                                 <div class="button-group">
-                                    <button class="btn btn-danger" name="loeschen" type="submit" value="{__('delete')}"><i class="fa fa-trash"></i> {__('deleteSelected')}</button>
+                                    <button class="btn btn-danger" name="loeschen" type="submit" value="{__('delete')}"><i class="fas fa-trash-alt"></i> {__('deleteSelected')}</button>
                                 </div>
                             </div>
                         </div>
@@ -159,9 +159,9 @@
                             </select>
                         </div>
                         <div class="btn-group">
-                            <button name="action[year_reports]" type="submit" value="1" class="btn btn-info"><i class="fa fa-search"></i>&nbsp;{__('show')}</button>
+                            <button name="action[year_reports]" type="submit" value="1" class="btn btn-info"><i class="fal fa-search"></i>&nbsp;{__('show')}</button>
                             <button type="button" class="btn btn-danger"
-                                    data-form="#formDeleteSitemapReport" data-action="year_reports_delete" data-target="#confirmModal" data-toggle="modal" data-title="{__('sitemapReport')} löschen"><i class="fa fa-trash"></i>&nbsp;{__('delete')}</button>
+                                    data-form="#formDeleteSitemapReport" data-action="year_reports_delete" data-target="#confirmModal" data-toggle="modal" data-title="{__('sitemapReport')} löschen"><i class="fas fa-trash-alt"></i>&nbsp;{__('delete')}</button>
                         </div>
                     </form>
                 </div>
@@ -193,7 +193,7 @@
                                         </td>
                                         {if isset($oSitemapReport->oSitemapReportFile_arr) && $oSitemapReport->oSitemapReportFile_arr|@count > 0}
                                             <td>
-                                                <a href="#" onclick="$('#info_{$oSitemapReport->kSitemapReport}').toggle();return false;"><i class="fa fa-plus-circle"></i></a>
+                                                <a href="#" onclick="$('#info_{$oSitemapReport->kSitemapReport}').toggle();return false;"><i class="fal fa-plus-circle"></i></a>
                                             </td>
                                         {else}
                                             <td>&nbsp;</td>
@@ -243,7 +243,7 @@
                         </div>
                         <div class="card-footer">
                             <div class="button-group">
-                                <button name="loeschen" type="submit" value="{__('delete')}" class="btn btn-danger"><i class="fa fa-trash"></i> {__('deleteSelected')}</button>
+                                <button name="loeschen" type="submit" value="{__('delete')}" class="btn btn-danger"><i class="fas fa-trash-alt"></i> {__('deleteSelected')}</button>
                             </div>
                         </div>
                     </form>

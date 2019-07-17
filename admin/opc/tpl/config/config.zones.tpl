@@ -56,7 +56,7 @@
                 <input type="text" class="form-control" id="zone-product-{$propname}">
                 <span class="input-group-btn">
                     <button type="button" class="btn btn-sm btn-danger" id="banner-del-product">
-                        <i class="fa fa-times"></i>
+                        <i class="fal fa-times"></i>
                     </button>
                 </span>
             </div>

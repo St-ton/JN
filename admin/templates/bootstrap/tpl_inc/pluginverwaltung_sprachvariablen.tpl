@@ -49,7 +49,7 @@
                             {/foreach}
                             <tr>
                                 <td>&nbsp;</td>
-                                <td><a onclick="ackCheck({$var->id}, {$kPlugin}); return false;" class="btn btn-danger button reset"><i class="fa fa-warning"></i> {__('pluginLocalesStd')}</a></td>
+                                <td><a onclick="ackCheck({$var->id}, {$kPlugin}); return false;" class="btn btn-danger button reset"><i class="fal fa-exclamation-triangle"></i> {__('pluginLocalesStd')}</a></td>
                             </tr>
                         {/foreach}
                         </tbody>

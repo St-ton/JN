@@ -207,7 +207,7 @@
                     </div>
                 </div>
             {/foreach}
-            <div class="save_wrapper">
+            <div class="save-wrapper">
                 {if isset($smarty.get.activate)}<input type="hidden" name="activate" value="1" />{/if}
                 <input type="hidden" name="type" value="settings" />
                 <input type="hidden" name="ordner" value="{$oTemplate->cOrdner}" />
@@ -250,7 +250,7 @@
 
                                 {if isset($oStoredTemplate_arr[$oTemplate->cOrdner])}
                                     {foreach $oStoredTemplate_arr[$oTemplate->cOrdner] as $oStored}
-                                        <span class="label label-warning"><i class="fa fa-info-circle" aria-hidden="true"></i> <abbr title="{__('originalExists')} ({$oStored->cVersion})">{$oStored->cVersion}</abbr></span>
+                                        <span class="label label-warning"><i class="fal fa-info-circle" aria-hidden="true"></i> <abbr title="{__('originalExists')} ({$oStored->cVersion})">{$oStored->cVersion}</abbr></span>
                                     {/foreach}
                                 {/if}
                                 <!--
@@ -282,13 +282,13 @@
                         {else}
                             {if !$oTemplate->bAktiv}
                                 {if $oTemplate->bEinstellungen}
-                                    <a class="btn btn-primary" href="shoptemplate.php?settings={$oTemplate->cOrdner}&activate=1&token={$smarty.session.jtl_token}"><i class="fa fa-share"></i> {__('activate')}</a>
+                                    <a class="btn btn-primary" href="shoptemplate.php?settings={$oTemplate->cOrdner}&activate=1&token={$smarty.session.jtl_token}"><i class="fal fa-share"></i> {__('activate')}</a>
                                 {else}
-                                    <a class="btn btn-primary" href="shoptemplate.php?switch={$oTemplate->cOrdner}&token={$smarty.session.jtl_token}"><i class="fa fa-share"></i> {__('activate')}</a>
+                                    <a class="btn btn-primary" href="shoptemplate.php?switch={$oTemplate->cOrdner}&token={$smarty.session.jtl_token}"><i class="fal fa-share"></i> {__('activate')}</a>
                                 {/if}
                             {else}
                                 {if $oTemplate->bEinstellungen}
-                                    <a class="btn btn-default" href="shoptemplate.php?settings={$oTemplate->cOrdner}&token={$smarty.session.jtl_token}"><i class="fa fa-edit"></i> {__('settings')}</a>
+                                    <a class="btn btn-default" href="shoptemplate.php?settings={$oTemplate->cOrdner}&token={$smarty.session.jtl_token}"><i class="fal fa-edit"></i> {__('settings')}</a>
                                 {/if}
                             {/if}
                         {/if}

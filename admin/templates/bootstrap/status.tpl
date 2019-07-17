@@ -29,7 +29,7 @@
     <tr class="text-vcenter"{if $more} data-href="{$more}"{/if}>
         <td {if !$more}colspan="2"{/if}>
             {if $val}
-                <i class="fa fa-check-circle text-success fa-fw" aria-hidden="true"></i>
+                <i class="fal fa-check-circle text-success fa-fw" aria-hidden="true"></i>
             {else}
                 <i class="fa fa-exclamation-circle text-danger fa-fw" aria-hidden="true"></i>
             {/if}
@@ -38,7 +38,7 @@
         </td>
         {if $more}
             <td class="text-right">
-                <a href="{$more}" class="btn btn-default btn-xs text-uppercase">{__('details')}</a>
+                <a href="{$more}" class="btn btn-default btn-sm text-uppercase">{__('details')}</a>
             </td>
         {/if}
     </tr>
@@ -74,7 +74,7 @@
                             <div class="text-center">
                                 {if $status->getObjectCache()->getResultCode() === 1}
                                     {$cacheOptions = $status->getObjectCache()->getOptions()}
-                                    <i class="fa fa-check-circle text-four-times text-success"></i>
+                                    <i class="fal fa-check-circle text-four-times text-success"></i>
                                     <h3 style="margin-top:10px;margin-bottom:0">{__('activated')}</h3>
                                     <span style="color:#c7c7c7">{$cacheOptions.method|ucfirst}</span>
                                 {else}
@@ -139,7 +139,7 @@
                         <div class="row">
                             <div class="col {if intval($sub->bUpdate) === 0}col-md-3{/if} text-center">
                                 {if intval($sub->bUpdate) === 0}
-                                    <i class="fa fa-check-circle text-four-times text-success"></i>
+                                    <i class="fal fa-check-circle text-four-times text-success"></i>
                                     <h3 style="margin-top:10px;margin-bottom:0">{__('valid')}</h3>
                                 {else}
                                     {if $sub->nDayDiff <= 0}
@@ -198,7 +198,7 @@
                                     </td>
                                     <td class="text-muted"><strong>{$s->cName}</strong></td>
                                     <td class="text-right">
-                                        <a class="btn btn-default btn-xs text-uppercase" href="zahlungsarten.php?a=log&kZahlungsart={$s->kZahlungsart}">{__('details')}</a>
+                                        <a class="btn btn-default btn-sm text-uppercase" href="zahlungsarten.php?a=log&kZahlungsart={$s->kZahlungsart}">{__('details')}</a>
                                     </td>
                                 </tr>
                             {/foreach}
@@ -255,7 +255,7 @@
                         <div class="subheading1">{__('server')}</div>
                     </div>
                     <div class="heading-right">
-                        <a href="systemcheck.php" class="btn btn-primary btn-xs text-uppercase">{__('details')}</a>
+                        <a href="systemcheck.php" class="btn btn-primary btn-sm text-uppercase">{__('details')}</a>
                     </div>
                     <hr class="mb-n3">
                 </div>

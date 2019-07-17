@@ -629,7 +629,7 @@ tr.highlight {
   background: #d9534f;
   color: #fff;
 }
-.save_wrapper {
+.save-wrapper {
   margin-bottom: 20px;
 }
 #content .block,
@@ -645,13 +645,14 @@ label .fillout {
 .label a {
   color: inherit;
 }
-.save_wrapper {
+.save-wrapper {
   bottom: 0;
   width: 100%;
   position: sticky;
   padding: 15px 15px;
   background: #fff;
   border: 1px solid #eee;
+  text-align: right;
 }
 .pages .pageinfo {
   float: left;
@@ -1172,7 +1173,7 @@ li.filestate {
   select {
     height: auto;
   }
-  .save_wrapper .btn {
+  .save-wrapper .btn {
     padding: 6px 12px;
   }
 }
@@ -2701,6 +2702,12 @@ div.markdown thead tr td {
 .btn-default:hover {
   box-shadow: none;
   color: #5CBCF6;
+}
+.btn-circle {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  padding: 0;
 }
 .content-header {
   margin-top: 0;

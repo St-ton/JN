@@ -11,8 +11,8 @@
                 {if $isReference === true}<i>{/if}
                 {$link->getDisplayName()}
                 {if $isReference === true} ({__('Referenz')})</i>{/if}
-                {if $missingLinkTranslations|count > 0} <i title="{__('missingTranslations')}: {$missingLinkTranslations|count}" class="fa fa-warning text-warning"></i>{/if}
-                {if $link->hasDuplicateSpecialLink()} <i title="{sprintf(__('hasDuplicateSpecialLink'), '')}" class="fa fa-warning text-danger"></i>{/if}
+                {if $missingLinkTranslations|count > 0} <i title="{__('missingTranslations')}: {$missingLinkTranslations|count}" class="fal fa-exclamation-triangle text-warning"></i>{/if}
+                {if $link->hasDuplicateSpecialLink()} <i title="{sprintf(__('hasDuplicateSpecialLink'), '')}" class="fal fa-exclamation-triangle text-danger"></i>{/if}
             </div>
         </td>
         <td class="tcenter floatforms" style="width: 60%">
@@ -82,23 +82,23 @@
                 {/if}
                 <input type="hidden" name="kLinkgruppe" value="{$id}" />
                 <input type="hidden" name="kLink" value="{$link->getID()}" />
-                <div class="btn-group">
-                    {if $id > 0}
-                        <button name="action" value="edit-link" class="btn btn-primary" title="{__('modify')}">
-                            <i class="fa fa-edit"></i>
-                        </button>
-                        <button name="action" value="remove-linklfrom-linkgroup" class="btn btn-warning" title="{__('linkGroupRemove')}">
-                            <i class="fa fa-unlink"></i>
-                        </button>
-                    {/if}
+                <div>
                     {assign var=deleteCount value=$linkGroupCountByLinkID[$link->getID()]|default:1}
                     <button name="action"
                             value="delete-link"
-                            class="btn btn-danger{if $link->getPluginID() > 0} disabled{/if}"
+                            class="btn btn-danger btn-circle{if $link->getPluginID() > 0} disabled{/if}"
                             {if $link->getPluginID() === 0} onclick="return confirmDelete();"{/if}
                             title="{if $deleteCount > 1}{{__('dangerLinkWillGetDeleted')}|sprintf:{$deleteCount}}{else}{__('delete')}{/if}">
-                        <i class="fa fa-trash"></i>{if $deleteCount > 1} ({$deleteCount}){/if}
+                        <i class="fas fa-trash-alt"></i>{if $deleteCount > 1} ({$deleteCount}){/if}
                     </button>
+                    {if $id > 0}
+                        <button name="action" value="remove-linklfrom-linkgroup" class="btn btn-default btn-circle" title="{__('linkGroupRemove')}">
+                            <i class="fa fa-unlink"></i>
+                        </button>
+                        <button name="action" value="edit-link" class="btn btn-primary btn-circle" title="{__('modify')}">
+                            <i class="fal fa-edit"></i>
+                        </button>
+                    {/if}
                 </div>
             </form>
         </td>

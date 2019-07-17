@@ -216,9 +216,11 @@
                 </div><!-- /.panel-body -->
             </div><!-- /.panel -->
             {/if}
-            <p class="submit">
-                <button name="speichern" type="submit" value="{__('save')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
-            </p>
+            <div class="card-footer save-wrapper">
+                <p class="submit">
+                    <button name="speichern" type="submit" value="{__('save')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
+                </p>
+            </div>
         </div>
     </form>
 </div>

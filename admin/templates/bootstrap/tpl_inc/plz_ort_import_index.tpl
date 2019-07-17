@@ -33,14 +33,14 @@
         <div class="modal-content">
             <div class="modal-header alert-warning">
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4><i class="fa fa-warning"></i> {__('plz_ort_import')}</h4>
+                <h4><i class="fal fa-exclamation-triangle"></i> {__('plz_ort_import')}</h4>
             </div>
             <div class="modal-body">
                 {__('plz_ort_import_tmp_exists')}
             </div>
             <div class="modal-footer">
                 <a href="#" class="btn btn-default" data-dismiss="modal"><i class="fa fa-exclamation"></i> {__('plz_ort_import_delete_no')}</a>
-                <a href="#" class="btn btn-primary" data-callback="plz_ort_import_delete_temp" data-dismiss="modal"><i class="fa fa-trash"></i> {__('plz_ort_import_delete_yes')}</a>
+                <a href="#" class="btn btn-primary" data-callback="plz_ort_import_delete_temp" data-dismiss="modal"><i class="fas fa-trash-alt"></i> {__('plz_ort_import_delete_yes')}</a>
             </div>
         </div>
     </div>
@@ -56,7 +56,7 @@
                 {{__('plz_ort_import_help')}|sprintf:{$smarty.const.PLZIMPORT_URL}}
             </div>
             <div class="modal-footer">
-                <a href="#" class="btn btn-primary" data-dismiss="modal"><i class="fa fa-check"></i> {__('ok')}</a>
+                <a href="#" class="btn btn-primary" data-dismiss="modal"><i class="fal fa-check text-success"></i> {__('ok')}</a>
             </div>
         </div>
     </div>

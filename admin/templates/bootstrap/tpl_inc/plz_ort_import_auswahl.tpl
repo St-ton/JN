@@ -31,7 +31,7 @@
                     </tbody>
                 </table>
                 {else}
-                <div class="alert alert-warning"><i class="fa fa-warning"></i> {__('plz_ort_import_select_failed')}</div>
+                <div class="alert alert-warning"><i class="fal fa-exclamation-triangle"></i> {__('plz_ort_import_select_failed')}</div>
                 {/if}
             </div>
             <div class="modal-footer">

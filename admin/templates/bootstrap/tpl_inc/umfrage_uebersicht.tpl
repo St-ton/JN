@@ -66,7 +66,7 @@
                                                     <td>
                                                         <div class="btn-group">
                                                             <a href="umfrage.php?umfrage=1&token={$smarty.session.jtl_token}&umfrage_editieren=1&kUmfrage={$oUmfrage->kUmfrage}&tab=umfrage" class="btn btn-primary" title="{__('modify')}">
-                                                                <i class="fa fa-edit"></i>
+                                                                <i class="fal fa-edit"></i>
                                                             </a>
                                                             <a href="umfrage.php?umfrage=1&token={$smarty.session.jtl_token}&kUmfrage={$oUmfrage->kUmfrage}&umfrage_statistik=1" class="btn btn-default" title="{__('umfrageStats')}"><i class="fa fa-bar-chart"></i></a>
                                                         </div>
@@ -77,7 +77,7 @@
                                         </table>
                                     </div>
                                     <div class="card-footer">
-                                        <button name="loeschen" type="submit" class="btn btn-danger"><i class="fa fa-trash"></i> {__('deleteSelected')}</button>
+                                        <button name="loeschen" type="submit" class="btn btn-danger"><i class="fas fa-trash-alt"></i> {__('deleteSelected')}</button>
                                     </div>
                                 </div>
                             </div>

@@ -27,7 +27,7 @@
                             {/literal}
                         </script>
                     {elseif isset($pw_updated) && $pw_updated === true}
-                        <div class="alert alert-success" role="alert"><i class="fa fa-info-circle"></i> {__('successPasswordChange')}</div>
+                        <div class="alert alert-success" role="alert"><i class="fal fa-info-circle"></i> {__('successPasswordChange')}</div>
                     {else}
                         {if !isset($smarty.session.AdminAccount->TwoFA_active) || false === $smarty.session.AdminAccount->TwoFA_active }  {* added for 2FA *}
                             <p class="text-muted">{__('loginLong')}</p>

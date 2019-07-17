@@ -12,7 +12,7 @@
                     </span>
                     <input class="form-control" name="cSuche" type="text" value="{if isset($cSuche)}{$cSuche}{/if}" id="orderSearch" />
                     <span class="input-group-btn">
-                        <button name="submitSuche" type="submit" class="btn btn-primary"><i class="fa fa-search"></i> {__('confSearch')}</button>
+                        <button name="submitSuche" type="submit" class="btn btn-primary"><i class="fal fa-search"></i> {__('confSearch')}</button>
                     </span>
                 </div>
             </form>
@@ -105,6 +105,6 @@
             </div>
         </form>
     {else}
-        <div class="alert alert-info"><i class="fa fa-info-circle"></i> {__('noDataAvailable')}</div>
+        <div class="alert alert-info"><i class="fal fa-info-circle"></i> {__('noDataAvailable')}</div>
     {/if}
 </div>

@@ -152,7 +152,7 @@
                     </table>
                 </div>
                 <div class="card-footer">
-                    <button name="action" type="submit" class="btn btn-danger" value="delete-invisible"><i class="fa fa-trash"></i> {__('deleteSelected')}</button>
+                    <button name="action" type="submit" class="btn btn-danger" value="delete-invisible"><i class="fas fa-trash-alt"></i> {__('deleteSelected')}</button>
                 </div>
             </div>
         </form>
@@ -242,11 +242,9 @@
                                 {getRevisions type='box' key=$oEditBox->kBox show=['cTitel', 'cInhalt'] secondary=true data=$revisionData}
                             {/if}
                         </div>
-                        <div class="card-footer">
-                            <div class="btn-group">
-                                <button type="submit" value="{__('save')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
-                                <button type="button" onclick="window.location.href='boxen.php'" class="btn btn-default"><i class="fa fa-angle-double-left"></i> {__('cancel')}</button>
-                            </div>
+                        <div class="card-footer save-wrapper">
+                            <button type="button" onclick="window.location.href='boxen.php'" class="btn btn-default"><i class="fa fa-angle-double-left"></i> {__('cancel')}</button>
+                            <button type="submit" value="{__('save')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
                         </div>
                     </div>
                 </form>

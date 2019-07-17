@@ -75,7 +75,7 @@
                 <div class="modal-footer">
                     <div class="btn-group">
                         <button type="button" class="btn btn-danger" onclick="onModalCancel_{$importerId}();">
-                            <i class="fa fa-times"></i> {__('cancel')}
+                            <i class="fal fa-times"></i> {__('cancel')}
                         </button>
                         <button type="button" class="btn btn-primary" onclick="onModalSubmit_{$importerId}();">
                             <i class="fa fa-upload"></i> {__('importCsv')}

@@ -41,7 +41,7 @@
                             </span>
                             <input class="form-control" id="cSuche" name="cSuche" type="text" value="{if isset($cSuche) && $cSuche|strlen > 0}{$cSuche}{/if}" />
                             <span class="input-group-btn">
-                                <button name="submitSuche" type="submit" value="{__('search')}" class="btn btn-primary"><i class="fa fa-search"></i> {__('search')}</button>
+                                <button name="submitSuche" type="submit" value="{__('search')}" class="btn btn-primary"><i class="fal fa-search"></i> {__('search')}</button>
                             </span>
                         </div>
                     </div>
@@ -117,7 +117,7 @@
                         <div class="card-footer">
                             <div class="btn-group p50">
                                 <button name="suchanfragenUpdate" type="submit" value="{__('update')}" class="btn btn-default reset"><i class="fa fa-refresh"></i> {__('update')}</button>
-                                <button name="delete" type="submit" value="{__('delete')}" class="btn btn-danger"><i class="fa fa-trash"></i> {__('deleteSelected')}</button>
+                                <button name="delete" type="submit" value="{__('delete')}" class="btn btn-danger"><i class="fas fa-trash-alt"></i> {__('deleteSelected')}</button>
                             </div>
                             <div class="input-group right p50">
                                 <span class="input-group-addon">
@@ -195,8 +195,8 @@
                         <div class="card-footer">
                             <div class="btn-group">
                                 <button class="btn btn-primary" name="erfolglosUpdate" type="submit"><i class="fa fa-refresh"></i> {__('update')}</button>
-                                <button class="btn btn-default" name="erfolglosEdit" type="submit"><i class="fa fa-edit"></i> {__('livesucheEdit')}</button>
-                                <button class="btn btn-danger" name="erfolglosDelete" type="submit"><i class="fa fa-trash"></i> {__('delete')}</button>
+                                <button class="btn btn-default" name="erfolglosEdit" type="submit"><i class="fal fa-edit"></i> {__('livesucheEdit')}</button>
+                                <button class="btn btn-danger" name="erfolglosDelete" type="submit"><i class="fas fa-trash-alt"></i> {__('delete')}</button>
                             </div>
                         </div>
                     </div>
@@ -242,7 +242,7 @@
                             </table>
                         </div>
                         <div class="card-footer">
-                            <button name="delete" type="submit" class="btn btn-danger"><i class="fa fa-trash"></i> {__('mappingDelete')}</button>
+                            <button name="delete" type="submit" class="btn btn-danger"><i class="fas fa-trash-alt"></i> {__('mappingDelete')}</button>
                         </div>
                     </div>
                 </form>

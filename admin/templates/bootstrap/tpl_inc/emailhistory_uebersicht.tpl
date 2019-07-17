@@ -30,7 +30,7 @@
                         </div>
                         <div class="modal-footer">
                             <div class="btn-group">
-                                <button type="button" class="btn btn-success" name="ok" id="submitForm"><i class="fa fa-check"></i>&nbsp;{__('ok')}</button>
+                                <button type="button" class="btn btn-success" name="ok" id="submitForm"><i class="fal fa-check text-success"></i>&nbsp;{__('ok')}</button>
                                 <button type="button" class="btn btn-danger" name="cancel" data-dismiss="modal"><i class="fa fa-close"></i>&nbsp;{__('cancel')}</button>
                             </div>
                             </div>
@@ -84,8 +84,8 @@
                 </div>
                 <div class="card-footer">
                     <div class="btn-group">
-                        <button name="zuruecksetzenBTN" type="submit" class="btn btn-warning"><i class="fa fa-trash"></i> {__('deleteSelected')}</button>
-                        <button name="remove_all" type="button" class="btn btn-danger" data-target="#confirmModal" data-toggle="modal"><i class="fa fa-trash"></i> {__('deleteAll')}</button>
+                        <button name="zuruecksetzenBTN" type="submit" class="btn btn-warning"><i class="fas fa-trash-alt"></i> {__('deleteSelected')}</button>
+                        <button name="remove_all" type="button" class="btn btn-danger" data-target="#confirmModal" data-toggle="modal"><i class="fas fa-trash-alt"></i> {__('deleteAll')}</button>
                     </div>
                 </div>
             </div>

@@ -32,8 +32,8 @@
                             <div class="form-check">
                                 <input class="form-check-input" name="kNewsKommentar[]" type="checkbox" value="{$oNewsKommentar->getID()}" id="nk-{$oNewsKommentar->getID()}" />
                                 <label class="form-check-label" for="nk-{$oNewsKommentar->getID()}">{$oNewsKommentar->getName()}, {$oNewsKommentar->getDateCreated()->format('d.m.Y H:i')}</label>
-                                <a href="news.php?news=1&kNews={$oNews->getID()}&kNewsKommentar={$oNewsKommentar->getID()}{if isset($cBackPage)}&{$cBackPage}{elseif isset($cTab)}&tab={$cTab}{/if}&nkedit=1&token={$smarty.session.jtl_token}" class="btn btn-default" title="{__('modify')}">
-                                    <i class="fa fa-edit"></i>
+                                <a href="news.php?news=1&kNews={$oNews->getID()}&kNewsKommentar={$oNewsKommentar->getID()}{if isset($cBackPage)}&{$cBackPage}{elseif isset($cTab)}&tab={$cTab}{/if}&nkedit=1&token={$smarty.session.jtl_token}" class="btn btn-default btn-circle" title="{__('modify')}">
+                                    <i class="fal fa-edit"></i>
                                 </a>
                             </div>
                             <hr class="mb-n3">
@@ -43,9 +43,9 @@
                         </div>
                     </div>
                 {/foreach}
-                <div class="btn-group">
+                <div class="card-footer save-wrapper">
+                    <button name="kommentar_loeschen" type="submit" value="{__('delete')}" class="btn btn-danger"><i class="fas fa-trash-alt"></i> {__('delete')}</button>
                     <a class="btn btn-primary" href="news.php{if isset($cBackPage)}?{$cBackPage}{elseif isset($cTab)}?tab={$cTab}{/if}"><i class="fa fa-angle-double-left"></i> {__('back')}</a>
-                    <button name="kommentar_loeschen" type="submit" value="{__('delete')}" class="btn btn-danger"><i class="fa fa-trash"></i> {__('delete')}</button>
                 </div>
             </form>
         {else}

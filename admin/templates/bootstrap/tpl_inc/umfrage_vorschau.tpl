@@ -98,10 +98,10 @@
                     </div>
                 </div>
             {/foreach}
-                <div class="card-footer save_wrapper">
+                <div class="card-footer save-wrapper">
                     <div class="btn-group">
                         <a class="btn btn-default" href="umfrage.php"><i class="fa fa-angle-double-left"></i> {__('back')}</a>
-                        <button class="btn btn-danger" name="umfragefrageloeschen" type="submit" value="{__('delete')}"><i class="fa fa-trash"></i> {__('delete')}</button>
+                        <button class="btn btn-danger" name="umfragefrageloeschen" type="submit" value="{__('delete')}"><i class="fas fa-trash-alt"></i> {__('delete')}</button>
                     </div>
                 </div>
             </form>

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 echo "Execute composer install...";
-composer install --dev -o -q -d includes;
+composer install --dev -o -d includes;
 
 echo "Check composer packages vulnerabilities.";
 includes/vendor/bin/security-checker security:check "includes/composer.lock"

@@ -1234,8 +1234,8 @@ class Artikel
             } elseif ($item > 0) {
                 $propValueID = (int)$item;
             }
-            $propValue          = new EigenschaftWert($propValueID);
-            $extraCharge    = $propValue->fAufpreisNetto;
+            $propValue       = new EigenschaftWert($propValueID);
+            $extraCharge     = $propValue->fAufpreisNetto;
             $propExtraCharge = $db->select(
                 'teigenschaftwertaufpreis',
                 'kEigenschaftWert',
@@ -1251,8 +1251,8 @@ class Artikel
                 );
             }
             if ($propExtraCharge !== null) {
-                $fMaxRabatt = $this->getDiscount($customerGroupID, $this->kArtikel);
-                $extraCharge   = $propExtraCharge->fAufpreisNetto * ((100 - $fMaxRabatt) / 100);
+                $fMaxRabatt  = $this->getDiscount($customerGroupID, $this->kArtikel);
+                $extraCharge = $propExtraCharge->fAufpreisNetto * ((100 - $fMaxRabatt) / 100);
             }
             // Ticket #1247
             $extraCharge = $net
@@ -1532,7 +1532,7 @@ class Artikel
     public function holeMerkmale(): self
     {
         $this->oMerkmale_arr = [];
-        $characteristics          = Shop::Container()->getDB()->queryPrepared(
+        $characteristics     = Shop::Container()->getDB()->queryPrepared(
             'SELECT tartikelmerkmal.kMerkmal, tartikelmerkmal.kMerkmalWert
                 FROM tartikelmerkmal
                 JOIN tmerkmal 
@@ -1550,8 +1550,8 @@ class Artikel
         foreach ($characteristics as $item) {
             $item->kMerkmal     = (int)$item->kMerkmal;
             $item->kMerkmalWert = (int)$item->kMerkmalWert;
-            $charValue            = new MerkmalWert($item->kMerkmalWert, $this->kSprache);
-            $characteristic               = new Merkmal($item->kMerkmal, false, $this->kSprache);
+            $charValue          = new MerkmalWert($item->kMerkmalWert, $this->kSprache);
+            $characteristic     = new Merkmal($item->kMerkmal, false, $this->kSprache);
             if (!isset($this->oMerkmale_arr[$characteristic->kMerkmal])) {
                 $this->oMerkmale_arr[$characteristic->kMerkmal]                   = $characteristic;
                 $this->oMerkmale_arr[$characteristic->kMerkmal]->oMerkmalWert_arr = [];
@@ -1562,7 +1562,7 @@ class Artikel
         foreach ($this->oMerkmale_arr as $item) {
             $name = \preg_replace('/[^öäüÖÄÜßa-zA-Z0-9\.\-_]/u', '', $item->cName);
             if (\mb_strlen($item->cName) > 0) {
-                $values                                 = \array_filter(\array_map(function ($e) {
+                $values                         = \array_filter(\array_map(function ($e) {
                     return $e->cWert ?? null;
                 }, $item->oMerkmalWert_arr));
                 $this->cMerkmalAssoc_arr[$name] = \implode(', ', $values);
@@ -1652,7 +1652,7 @@ class Artikel
             );
             foreach ($bundles as $bundle) {
                 $options->nKeineSichtbarkeitBeachten = 0;
-                $product                            = new self();
+                $product                             = new self();
                 $product->fuelleArtikel((int)$bundle->kArtikel, $options);
 
                 $this->oProduktBundle_arr[]           = $product;
@@ -4686,7 +4686,7 @@ class Artikel
      */
     public function holWarenlager(): self
     {
-        $options    = [
+        $options = [
             'cLagerBeachten'                => $this->cLagerBeachten,
             'cEinheit'                      => $this->cEinheit,
             'cLagerKleinerNull'             => $this->cLagerKleinerNull,
@@ -5881,13 +5881,13 @@ class Artikel
         $inklexkl = Shop::Lang()->get($net === true ? 'excl' : 'incl', 'productDetails');
         $mwst     = $this->mwstFormat(Tax::getSalesTax($this->kSteuerklasse));
         $ust      = '';
-        $markup  = '';
+        $markup   = '';
         $langCode = Shop::getLanguageCode();
         if (!isset($_SESSION['Link_Versandseite'][$langCode])) {
             return '';
         }
         if ($this->conf['global']['global_versandhinweis'] === 'zzgl') {
-            $markup   = ', ';
+            $markup    = ', ';
             $countries = $this->gibMwStVersandLaenderString();
             if ($countries && $this->conf['global']['global_versandfrei_anzeigen'] === 'Y') {
                 if ($this->conf['global']['global_versandkostenfrei_darstellung'] === 'D') {

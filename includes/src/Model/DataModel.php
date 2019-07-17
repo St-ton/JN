@@ -390,6 +390,10 @@ abstract class DataModel implements DataModelInterface, Iterator
                     $result = $value;
                 } elseif (\is_numeric($value) || \is_bool($value)) {
                     $result = (bool)$value === true ? 'Y' : 'N';
+                } elseif ($value === 'true') {
+                    $result = 'Y';
+                } elseif ($value === 'false') {
+                    $result = 'N';
                 }
                 break;
 

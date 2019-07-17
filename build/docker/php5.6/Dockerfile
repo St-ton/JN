@@ -1,5 +1,6 @@
 FROM php:5.6-cli
-WORKDIR '/build'
+RUN mkdir /creation
+WORKDIR '/creation'
 RUN apt-get update && apt-get install apt-transport-https curl git gnupg lsb-release patchutils software-properties-common wget unzip zip -y
 RUN cd /root \
     && wget https://composer.github.io/installer.sig -O - -q | tr -d '\n' > installer.sig \

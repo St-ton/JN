@@ -1,6 +1,7 @@
 FROM mariadb:10.0
-WORKDIR '/build'
+RUN mkdir /creation
 RUN mkdir /archive
+WORKDIR '/creation'
 RUN echo "[GLOBAL]" > /root/.my.cnf
 RUN echo "max_allowed_packet=64M" >> /root/.my.cnf
 RUN apt-get update \

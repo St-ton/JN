@@ -90,12 +90,18 @@ stages:
 
     echo "Building projekt in PHP 7.1 and mariadb server 10.2 docker image..."
     docker run \
+      -d -it \
       -w '/creation' \
       --volume $CI_PROJECT_DIR.tmp/CI_SERVER_TLS_CA_FILE:$CI_PROJECT_DIR.tmp/CI_SERVER_TLS_CA_FILE \
       --volume $(pwd):/dockerBuild \
       --name="$CI_CONTAINER_NAME" \
       --network mysql-php-network \
       $CI_REGISTRY_IMAGE/build-deploy \
+      bash
+
+    docker exec \
+      -w '/creation' \
+      $CI_CONTAINER_NAME \
       sh -c "cp -r /dockerBuild/. /creation; bash $BUILD_SCRIPT_PATH '/creation' $CI_COMMIT_REF_NAME $CI_COMMIT_SHA '$DB_HOST' 'root' '$DOCKER_MARIADB_PASSWORD' 'build_$DB_NAME'"
 
     echo "Build finished"

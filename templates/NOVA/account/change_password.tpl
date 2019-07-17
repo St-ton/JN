@@ -21,12 +21,21 @@
                                     {lang key='currentPassword' section='login'}, true
                                 ]
                             }
-                            {include file='snippets/form_group_simple.tpl'
-                                options=[
-                                    'password', 'newPassword', 'neuesPasswort1', null,
-                                    {lang key='newPassword' section='login'}, true
-                                ]
-                            }
+                            <div class="form-group d-flex flex-column" role="group">
+                                {input type="password"
+                                       class="form-control"
+                                       placeholder="{lang key='newPassword' section='login'}"
+                                       id="newPassword"
+                                       value=""
+                                       required=true
+                                       name="neuesPasswort1"}
+                                <label for="newPassword" class="col-form-label pt-0">
+                                    {lang key='newPassword' section='login'}
+                                </label>
+                            </div>
+                            {block name='account-change-password-include-password-check'}
+                                {include file='snippets/password_check.tpl' id='#newPassword'}
+                            {/block}
                             {include file='snippets/form_group_simple.tpl'
                                 options=[
                                     'password', 'newPasswordRpt', 'neuesPasswort2', null,

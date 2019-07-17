@@ -80,12 +80,6 @@ msgstr "Anzeige versandkostenfreie Länder"
 msgid "global_versandkostenfrei_darstellung_desc"
 msgstr "Hier legen Sie fest, wie die Länder angezeigt werden, in die der Versand kostenfrei ist."
 
-msgid "global_artikelname_htmlentities_name"
-msgstr "HTML-Umwandlung von Sonderzeichen in Artikelnamen"
-
-msgid "global_artikelname_htmlentities_desc"
-msgstr "Hier legen Sie fest, ob Sonderzeichen in Artikelnamen in die entsprechende HTML-Umschreibung umgewandelt werden sollen."
-
 msgid "global_bestseller_minanzahl_name"
 msgstr "Mindestanzahl Verkäufe für Bestseller"
 

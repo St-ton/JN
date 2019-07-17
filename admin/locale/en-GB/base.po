@@ -911,12 +911,6 @@ msgstr "Templates"
 msgid "draft"
 msgstr "Draft"
 
-msgid "publicFrom"
-msgstr "Public from:"
-
-msgid "publicTill"
-msgstr "Public until:"
-
 msgid "replaced"
 msgstr "Replaced"
 
@@ -1772,6 +1766,27 @@ msgstr "Period"
 
 msgid "directEntry"
 msgstr "Direct entry"
+
+msgid "width"
+msgstr "Width"
+
+msgid "height"
+msgstr "Height"
+
+msgid "start"
+msgstr "Start"
+
+msgid "end"
+msgstr "End"
+
+msgid "color"
+msgstr "Color"
+
+msgid "white"
+msgstr "white"
+
+msgid "red"
+msgstr "red"
 
 msgid "goToDocu"
 msgstr "Go to help pages"

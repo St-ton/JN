@@ -1303,7 +1303,8 @@ class IOMethods
             ->assign('currentLanguage', (object)$currentLanguage)
             ->assign('opcPageService', $opcPageService)
             ->assign('publicDraftKey', $publicDraftkey)
-            ->fetch(PFAD_ROOT . PFAD_ADMIN . '/opc/draftlist.tpl');
+            ->assign('opcStartUrl', Shop::getURL() . '/admin/opc.php')
+            ->fetch(PFAD_ROOT . PFAD_ADMIN . 'opc/tpl/draftlist.tpl');
 
         $response->assign('opc-draft-list', 'innerHTML', $newDraftListHtml);
 

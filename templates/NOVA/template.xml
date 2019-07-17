@@ -187,6 +187,7 @@
             <File Path="themes/base/fontawesome/css/all.min.css"/>
             <File Path="themes/base/nouislider.min.css"/>
             <File Path="themes/base/slick/slick-lightbox.css"/>
+            <File Path="js/password/password.min.css"/>
             <File Path="themes/clear/clear.css"/>
         </CSS>
         <JS Name="jtl3.js">
@@ -216,6 +217,7 @@
             <File Path="js/jqcloud.js"/>
             <File Path="js/bs4-input-spinner.js"/>
             <File Path="js/nouislider.min.js"/>
+            <File Path="js/password/password.min.js"/>
         </JS>
     </Minify>
     <Boxes>

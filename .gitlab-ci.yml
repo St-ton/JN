@@ -41,10 +41,11 @@ stages:
     echo "Testing projekt in PHP $PHP_VERSION_TEST_STEP docker image..."
 
     docker run \
+      -w '/creation'
       --volume $(pwd):/dockerBuild \
       --name="$CI_CONTAINER_NAME" \
       $CI_REGISTRY_IMAGE/testing-php$PHP_VERSION_TEST_STEP \
-      sh -c "cp -r /dockerBuild/. /build; bash build/scripts/tests.sh"
+      sh -c "cp -r /dockerBuild/. /creation; bash build/scripts/tests.sh"
 
     docker stop "$CI_CONTAINER_NAME"
     docker rm -fv "$CI_CONTAINER_NAME" >/dev/null
@@ -89,12 +90,13 @@ stages:
 
     echo "Building projekt in PHP 7.1 and mariadb server 10.2 docker image..."
     docker run \
+      -w '/creation'
       --volume $CI_PROJECT_DIR.tmp/CI_SERVER_TLS_CA_FILE:$CI_PROJECT_DIR.tmp/CI_SERVER_TLS_CA_FILE \
       --volume $(pwd):/dockerBuild \
       --name="$CI_CONTAINER_NAME" \
       --network mysql-php-network \
       $CI_REGISTRY_IMAGE/build-deploy \
-      sh -c "cp -r /dockerBuild/. /build; bash $BUILD_SCRIPT_PATH '/build' $CI_COMMIT_REF_NAME $CI_COMMIT_SHA '$DB_HOST' 'root' '$DOCKER_MARIADB_PASSWORD' 'build_$DB_NAME'"
+      sh -c "cp -r /dockerBuild/. /creation; bash $BUILD_SCRIPT_PATH '/creation' $CI_COMMIT_REF_NAME $CI_COMMIT_SHA '$DB_HOST' 'root' '$DOCKER_MARIADB_PASSWORD' 'build_$DB_NAME'"
 
     echo "Build finished"
   }
@@ -103,6 +105,7 @@ stages:
     docker start $CI_CONTAINER_NAME
 
     docker exec \
+      -w '/creation'
       $CI_CONTAINER_NAME \
       /bin/bash -c "bash $DEPLOY_SCRIPT_PATH $CI_PROJECT_NAME $CI_COMMIT_REF_NAME /archive"
 

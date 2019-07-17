@@ -194,14 +194,13 @@ class ReviewController extends BaseController
         }
         if ($product->Bewertungen === null) {
             $product->holeBewertung(
-                Shop::getLanguageID(),
                 $this->config['bewertung']['bewertung_anzahlseite'],
                 0,
                 -1,
                 $this->config['bewertung']['bewertung_freischalten'],
                 $params['nSortierung']
             );
-            $product->holehilfreichsteBewertung(Shop::getLanguageID());
+            $product->holehilfreichsteBewertung();
         }
         if ($this->checkProductWasPurchased($product->kArtikel, Frontend::getCustomer()) === false) {
             $this->alertService->addAlert(

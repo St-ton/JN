@@ -6,6 +6,7 @@
 
 use JTL\Catalog\Product\Artikel;
 use JTL\DB\ReturnType;
+use JTL\Language\LanguageHelper;
 use JTL\Shop;
 use JTL\Smarty\ContextType;
 use JTL\Smarty\JTLSmarty;
@@ -18,6 +19,7 @@ use JTL\Smarty\MailSmarty;
  */
 function bereiteNewsletterVor($conf)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $db         = Shop::Container()->getDB();
     $mailSmarty = new MailSmarty($db, ContextType::NEWSLETTER);
 
@@ -54,6 +56,7 @@ function versendeNewsletter(
     $campaign = '',
     $oKunde = ''
 ) {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
     $mailSmarty->assign('oNewsletter', $newsletter)
                ->assign('Emailempfaenger', $recipients)
@@ -145,60 +148,42 @@ function versendeNewsletter(
 }
 
 /**
- * @param JTLSmarty       $mailSmarty
- * @param object          $newsletter
- * @param array           $products
- * @param array           $manufacturers
- * @param array           $categories
- * @param string          $campaign
- * @param stdClass|string $recipient
- * @param stdClass|string $customer
  * @return string
  * @deprecated since 5.0.0
  */
-function gibStaticHtml(
-    $mailSmarty,
-    $newsletter,
-    $products = [],
-    $manufacturers = [],
-    $categories = [],
-    $campaign = '',
-    $recipient = '',
-    $customer = ''
-) {
+function gibStaticHtml()
+{
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return '';
 }
 
 /**
- * @param array $post
  * @return array|null|stdClass
  * @deprecated since 5.0.0
  */
-function speicherVorlage($post)
+function speicherVorlage()
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return null;
 }
 
 /**
- * @param object $defaultTpl
- * @param int    $kNewslettervorlageStd
- * @param array  $post
- * @param int    $templateID
  * @return array
  * @deprecated since 5.0.0
  */
-function speicherVorlageStd($defaultTpl, int $kNewslettervorlageStd, $post, int $templateID): array
+function speicherVorlageStd(): array
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return [];
 }
 
 /**
- * @param string $type
  * @return string
  * @deprecated since 5.0.0
  */
-function mappeFileTyp(string  $type): string
+function mappeFileTyp(): string
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return '.jpg';
 }
 
@@ -209,71 +194,57 @@ function mappeFileTyp(string  $type): string
  */
 function br2nl(string $text): string
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return str_replace(['<br>', '<br />', '<br/>'], "\n", $text);
 }
 
 /**
- * @param string $text
- * @param array  $stdVars
- * @param bool   $noHTML
  * @return mixed|string
  * @deprecated since 5.0.0
  */
-function mappeVorlageStdVar($text, $stdVars, $noHTML = false)
+function mappeVorlageStdVar()
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return '';
 }
 
 /**
- * @param string $name
- * @param array  $customerGroups
- * @param string $subject
- * @param string $type
  * @return array
  * @deprecated since 5.0.0
  */
-function pruefeVorlageStd($name, $customerGroups, $subject, $type): array
+function pruefeVorlageStd(): array
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return [];
 }
 
 /**
- * @param string $name
- * @param array  $customerGroups
- * @param string $subject
- * @param string $type
- * @param string $html
- * @param string $text
  * @return array
  * @deprecated since 5.0.0
  */
-function pruefeVorlage($name, $customerGroups, $subject, $type, $html, $text): array
+function pruefeVorlage(): array
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return [];
 }
 
 /**
- * Baut eine Vorlage zusammen
- * Falls kNewsletterVorlage angegeben wurde und kNewsletterVorlageStd = 0 ist
- * wurde eine Vorlage editiert, die von einer Std Vorlage stammt.
- *
- * @param int $defaultTemplateID
- * @param int $templateID
- * @return stdClass|null
+ * @return null
  * @deprecated since 5.0.0
  */
-function holeNewslettervorlageStd(int $defaultTemplateID, int $templateID = 0)
+function holeNewslettervorlageStd()
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return null;
 }
 
 /**
- * @param string $productString
  * @return stdClass
  * @deprecated since 5.0.0
  */
-function explodecArtikel($productString): stdClass
+function explodecArtikel(): stdClass
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $productData               = new stdClass();
     $productData->kArtikel_arr = [];
     $productData->cArtNr_arr   = [];
@@ -282,32 +253,32 @@ function explodecArtikel($productString): stdClass
 }
 
 /**
- * @param string $customerGroup
  * @return array
  * @deprecated since 5.0.0
  */
-function explodecKundengruppe($customerGroup): array
+function explodecKundengruppe(): array
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return [];
 }
 
 /**
- * @param int $productID
  * @return string
  * @deprecated since 5.0.0
  */
-function holeArtikelnummer(int $productID)
+function holeArtikelnummer(): string
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return '';
 }
 
 /**
- * @param int $newsletterID
  * @return stdClass
  * @deprecated since 5.0.0
  */
-function getNewsletterEmpfaenger(int $newsletterID)
+function getNewsletterEmpfaenger(): stdClass
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return new stdClass();
 }
 
@@ -318,88 +289,88 @@ function getNewsletterEmpfaenger(int $newsletterID)
  */
 function baueZeitAusDB($time)
 {
-    $oZeit = new stdClass();
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
+    $res = new stdClass();
 
     if (mb_strlen($time) > 0) {
-        [$dDatum, $dUhrzeit]            = explode(' ', $time);
-        [$dJahr, $dMonat, $dTag]        = explode('-', $dDatum);
-        [$dStunde, $dMinute, $dSekunde] = explode(':', $dUhrzeit);
+        [$dDatum, $dUhrzeit]     = explode(' ', $time);
+        [$dJahr, $dMonat, $dTag] = explode('-', $dDatum);
+        [$dStunde, $dMinute]     = explode(':', $dUhrzeit);
 
-        $oZeit->dZeit     = $dTag . '.' . $dMonat . '.' . $dJahr . ' ' . $dStunde . ':' . $dMinute;
-        $oZeit->cZeit_arr = [$dTag, $dMonat, $dJahr, $dStunde, $dMinute];
+        $res->dZeit     = $dTag . '.' . $dMonat . '.' . $dJahr . ' ' . $dStunde . ':' . $dMinute;
+        $res->cZeit_arr = [$dTag, $dMonat, $dJahr, $dStunde, $dMinute];
     }
 
-    return $oZeit;
+    return $res;
 }
 
 /**
- * @param stdClass $activeSearchSQL
  * @return int
  * @deprecated since 5.0.0
  */
-function holeAbonnentenAnzahl($activeSearchSQL): int
+function holeAbonnentenAnzahl(): int
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return 0;
 }
 
 /**
- * @param string   $sql
- * @param stdClass $activeSearchSQL
  * @return array
  * @deprecated since 5.0.0
  */
-function holeAbonnenten($sql, $activeSearchSQL): array
+function holeAbonnenten(): array
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return [];
 }
 
 /**
- * @param int[] $recipientIDs
  * @return bool
  * @deprecated since 5.0.0
  */
-function loescheAbonnenten($recipientIDs): bool
+function loescheAbonnenten(): bool
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return false;
 }
 
 /**
- * @param int[] $recipientIDs
  * @return bool
  * @deprecated since 5.0.0
  */
-function aktiviereAbonnenten($recipientIDs): bool
+function aktiviereAbonnenten(): bool
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return false;
 }
 
 /**
- * @param array $post
- * @return int|stdClass
+ * @return int
  * @deprecated since 5.0.0
  */
-function gibAbonnent(array $post)
+function gibAbonnent(): int
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return 0;
 }
 
 /**
- * @param int $recipientID
  * @return bool
  * @deprecated since 5.0.0
  */
-function loescheAbonnent(int $recipientID)
+function loescheAbonnent(): bool
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return false;
 }
 
 /**
- * @param object $template
- * @return string|bool
+ * @return bool
  * @deprecated since 5.0.0
  */
-function baueNewsletterVorschau($template)
+function baueNewsletterVorschau(): bool
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return false;
 }
 
@@ -409,20 +380,21 @@ function baueNewsletterVorschau($template)
  *
  * @param string $keyName
  * @param bool   $productNo
- * @return array
+ * @return array|mixed
  * @deprecated since 5.0.0
  */
 function gibAHKKeys($keyName, $productNo = false)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $res  = [];
-    $keys = explode(';', $cKey);
+    $keys = explode(';', $keyName);
     if (!is_array($keys) || count($keys) === 0) {
         return $res;
     }
     $res = array_filter($keys, function ($e) {
         return mb_strlen($e) > 0;
     });
-    if ($bArtikelnummer) {
+    if ($productNo) {
         $res = array_map(function ($e) {
             return "'" . $e . "'";
         }, $res);
@@ -446,42 +418,30 @@ function gibAHKKeys($keyName, $productNo = false)
 }
 
 /**
- * Benoetigt ein Array von kArtikel und gibt ein Array mit Artikelobjekten zurueck
- *
- * @param array         $productIDs
- * @param string|object $campaign
- * @param int           $customerGroupID
- * @param int           $langID
  * @return Artikel[]
  * @deprecated since 5.0.0
  */
-function gibArtikelObjekte($productIDs, $campaign = '', int $customerGroupID = 0, int $langID = 0): array
+function gibArtikelObjekte(): array
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return [];
 }
 
 /**
- * Benoetigt ein Array von kHersteller und gibt ein Array mit Herstellerobjekten zurueck
- *
- * @param array      $manufacturerIDs
- * @param int|object $campaign
- * @param int|object $langID
  * @return array
  */
-function gibHerstellerObjekte($manufacturerIDs, $campaign = 0, int $langID = 0)
+function gibHerstellerObjekte()
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return [];
 }
 
 /**
- * Benoetigt ein Array von kKategorie und gibt ein Array mit Kategorieobjekten zurueck
- *
- * @param array      $categoryIDs
- * @param int|object $campaign
  * @return array
  * @deprecated since 5.0.0
  */
-function gibKategorieObjekte($categoryIDs, $campaign = 0)
+function gibKategorieObjekte()
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return [];
 }

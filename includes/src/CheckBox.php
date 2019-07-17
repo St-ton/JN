@@ -7,6 +7,7 @@
 namespace JTL;
 
 use InvalidArgumentException;
+use JTL\Customer\Kunde;
 use JTL\Customer\Kundengruppe;
 use JTL\DB\ReturnType;
 use JTL\Helpers\GeneralObject;
@@ -119,11 +120,17 @@ class CheckBox
     public $oLink;
 
     /**
+     * @var DB\DbInterface
+     */
+    private $db;
+
+    /**
      * @param int $id
      */
     public function __construct(int $id = 0)
     {
-        $this->oLink = new Link(Shop::Container()->getDB());
+        $this->db    = Shop::Container()->getDB();
+        $this->oLink = new Link($this->db);
         $this->loadFromDB($id);
     }
 
@@ -139,13 +146,15 @@ class CheckBox
         $cacheID = 'chkbx_' . $id;
         if (($checkbox = Shop::Container()->getCache()->get($cacheID)) !== false) {
             foreach (\array_keys(\get_object_vars($checkbox)) as $member) {
+                if ($member === 'db') {
+                    continue;
+                }
                 $this->$member = $checkbox->$member;
             }
 
             return $this;
         }
-        $db       = Shop::Container()->getDB();
-        $checkbox = $db->queryPrepared(
+        $checkbox = $this->db->queryPrepared(
             "SELECT *, DATE_FORMAT(dErstellt, '%d.%m.%Y %H:%i:%s') AS dErstellt_DE
                 FROM tcheckbox
                 WHERE kCheckBox = :cbid",
@@ -167,12 +176,12 @@ class CheckBox
         $this->nLogging          = (int)$this->nLogging;
         $this->nSort             = (int)$this->nSort;
         $this->cID               = 'CheckBox_' . $this->kCheckBox;
-        $this->kKundengruppe_arr = Text::parseSSK($checkbox->cKundengruppe);
-        $this->kAnzeigeOrt_arr   = Text::parseSSK($checkbox->cAnzeigeOrt);
+        $this->kKundengruppe_arr = \array_map('\intval', Text::parseSSK($checkbox->cKundengruppe));
+        $this->kAnzeigeOrt_arr   = \array_map('\intval', Text::parseSSK($checkbox->cAnzeigeOrt));
         // Falls kCheckBoxFunktion gesetzt war aber diese Funktion nicht mehr existiert (deinstallation vom Plugin)
         // wird kCheckBoxFunktion auf 0 gesetzt
         if ($this->kCheckBoxFunktion > 0) {
-            $func = $db->select(
+            $func = $this->db->select(
                 'tcheckboxfunktion',
                 'kCheckBoxFunktion',
                 (int)$this->kCheckBoxFunktion
@@ -182,13 +191,11 @@ class CheckBox
                 $this->oCheckBoxFunktion = $func;
             } else {
                 $this->kCheckBoxFunktion = 0;
-                $upd                     = new stdClass();
-                $upd->kCheckBoxFunktion  = 0;
-                $db->update('tcheckbox', 'kCheckBox', (int)$this->kCheckBox, $upd);
+                $this->db->update('tcheckbox', 'kCheckBox', (int)$this->kCheckBox, (object)['kCheckBoxFunktion' => 0]);
             }
         }
         if ($this->kLink > 0) {
-            $this->oLink = new Link($db);
+            $this->oLink = new Link($this->db);
             try {
                 $this->oLink->load($this->kLink);
             } catch (InvalidArgumentException $e) {
@@ -198,7 +205,7 @@ class CheckBox
         } else {
             $this->cLink = 'kein interner Link';
         }
-        $localized = $db->selectAll(
+        $localized = $this->db->selectAll(
             'tcheckboxsprache',
             'kCheckBox',
             (int)$this->kCheckBox
@@ -239,8 +246,7 @@ class CheckBox
                 $customerGroupID = Kundengruppe::getDefaultGroupID();
             }
         }
-        $checkboxes = [];
-        $sql        = '';
+        $sql = '';
         if ($active) {
             $sql .= ' AND nAktiv = 1';
         }
@@ -250,17 +256,21 @@ class CheckBox
         if ($logging) {
             $sql .= ' AND nLogging = 1';
         }
-        $checkBoxIDs = Shop::Container()->getDB()->query(
-            "SELECT kCheckBox FROM tcheckbox
+        $checkboxes = $this->db->query(
+            "SELECT kCheckBox AS id
+                FROM tcheckbox
                 WHERE FIND_IN_SET('" . $location . "', REPLACE(cAnzeigeOrt, ';', ',')) > 0
                     AND FIND_IN_SET('" . $customerGroupID . "', REPLACE(cKundengruppe, ';', ',')) > 0
                     " . $sql . '
                 ORDER BY nSort',
-            ReturnType::ARRAY_OF_OBJECTS
-        );
-        foreach ($checkBoxIDs as $item) {
-            $checkboxes[] = new self((int)$item->kCheckBox);
-        }
+            ReturnType::COLLECTION
+        )
+            ->pluck('id')
+            ->map(function ($e) {
+                return (int)$e;
+            })
+            ->mapInto(self::class)
+            ->all();
         \executeHook(\HOOK_CHECKBOX_CLASS_GETCHECKBOXFRONTEND, [
             'oCheckBox_arr' => &$checkboxes,
             'nAnzeigeOrt'   => $location,
@@ -349,26 +359,42 @@ class CheckBox
     public function checkLogging(int $location, int $customerGroupID, array $post, bool $active = false): self
     {
         $checkboxes = $this->getCheckBoxFrontend($location, $customerGroupID, $active, false, false, true);
-        $db         = Shop::Container()->getDB();
-        foreach ($checkboxes as $checkBox) {
-            //@todo: casting to bool does not seem to be a good idea.
-            //$post looks like this: array ( [CheckBox_31] => Y, [CheckBox_24] => Y, [abschluss] => 1)
-            $checked          = isset($post[$checkBox->cID])
-                ? (bool)$post[$checkBox->cID]
-                : false;
-            $checked          = ($checked === true) ? 1 : 0;
+        foreach ($checkboxes as $checkbox) {
+            $checked          = $this->checkboxWasChecked($checkbox->cID, $post);
             $log              = new stdClass();
-            $log->kCheckBox   = $checkBox->kCheckBox;
+            $log->kCheckBox   = $checkbox->kCheckBox;
             $log->kBesucher   = (int)$_SESSION['oBesucher']->kBesucher;
             $log->kBestellung = isset($_SESSION['kBestellung'])
                 ? (int)$_SESSION['kBestellung']
                 : 0;
-            $log->bChecked    = $checked;
+            $log->bChecked    = (int)$checked;
             $log->dErstellt   = 'NOW()';
-            $db->insert('tcheckboxlogging', $log);
+            $this->db->insert('tcheckboxlogging', $log);
         }
 
         return $this;
+    }
+
+    /**
+     * @param string $idx
+     * @param array  $post
+     * @return bool
+     */
+    private function checkboxWasChecked(string $idx, array $post): bool
+    {
+        $value = $post[$idx] ?? null;
+        if ($value === null) {
+            return false;
+        }
+        if ($value === 'on' || $value === 'Y' || $value === 'y') {
+            $value = true;
+        } elseif ($value === 'N' || $value === 'n' || $value === '') {
+            $value = false;
+        } else {
+            $value = (bool)$value;
+        }
+
+        return $value;
     }
 
     /**
@@ -378,18 +404,17 @@ class CheckBox
      */
     public function getAllCheckBox(string $limitSQL = '', bool $active = false): array
     {
-        $checkBoxes = [];
-        $ids        = Shop::Container()->getDB()->query(
-            'SELECT kCheckBox
+        return $this->db->query(
+            'SELECT kCheckBox AS id
                 FROM tcheckbox' . ($active ? ' WHERE nAktiv = 1' : '') . '
                 ORDER BY nSort ' . $limitSQL,
-            ReturnType::ARRAY_OF_OBJECTS
-        );
-        foreach ($ids as $i => $item) {
-            $checkBoxes[$i] = new self((int)$item->kCheckBox);
-        }
-
-        return $checkBoxes;
+            ReturnType::COLLECTION
+        )
+            ->pluck('id')
+            ->map(function ($e) {
+                return (int)$e;
+            })
+            ->mapInto(self::class)->all();
     }
 
     /**
@@ -398,7 +423,7 @@ class CheckBox
      */
     public function getAllCheckBoxCount(bool $active = false): int
     {
-        return (int)Shop::Container()->getDB()->query(
+        return (int)$this->db->query(
             'SELECT COUNT(*) AS nAnzahl
                 FROM tcheckbox' . ($active ? ' WHERE nAktiv = 1' : ''),
             ReturnType::SINGLE_OBJECT
@@ -409,12 +434,12 @@ class CheckBox
      * @param int[] $checkboxIDs
      * @return bool
      */
-    public function aktivateCheckBox($checkboxIDs): bool
+    public function aktivateCheckBox(array $checkboxIDs): bool
     {
-        if (!\is_array($checkboxIDs) || \count($checkboxIDs) === 0) {
+        if (\count($checkboxIDs) === 0) {
             return false;
         }
-        Shop::Container()->getDB()->query(
+        $this->db->query(
             'UPDATE tcheckbox
                 SET nAktiv = 1
                 WHERE kCheckBox IN (' . \implode(',', \array_map('\intval', $checkboxIDs)) . ');',
@@ -429,12 +454,12 @@ class CheckBox
      * @param int[] $checkboxIDs
      * @return bool
      */
-    public function deaktivateCheckBox($checkboxIDs): bool
+    public function deaktivateCheckBox(array $checkboxIDs): bool
     {
-        if (!\is_array($checkboxIDs) || \count($checkboxIDs) === 0) {
+        if (\count($checkboxIDs) === 0) {
             return false;
         }
-        Shop::Container()->getDB()->query(
+        $this->db->query(
             'UPDATE tcheckbox
                 SET nAktiv = 0
                 WHERE kCheckBox IN (' . \implode(',', \array_map('\intval', $checkboxIDs)) . ');',
@@ -449,18 +474,18 @@ class CheckBox
      * @param int[] $checkboxIDs
      * @return bool
      */
-    public function deleteCheckBox($checkboxIDs): bool
+    public function deleteCheckBox(array $checkboxIDs): bool
     {
-        if (!\is_array($checkboxIDs) || \count($checkboxIDs) === 0) {
+        if (\count($checkboxIDs) === 0) {
             return false;
         }
-        Shop::Container()->getDB()->query(
+        $this->db->query(
             'DELETE tcheckbox, tcheckboxsprache
                 FROM tcheckbox
                 LEFT JOIN tcheckboxsprache
                     ON tcheckboxsprache.kCheckBox = tcheckbox.kCheckBox
                 WHERE tcheckbox.kCheckBox IN (' . \implode(',', \array_map('\intval', $checkboxIDs)) . ')',
-            ReturnType::AFFECTED_ROWS
+            ReturnType::DEFAULT
         );
         Shop::Container()->getCache()->flushTags(['checkbox']);
 
@@ -472,7 +497,7 @@ class CheckBox
      */
     public function getCheckBoxFunctions(): array
     {
-        return Shop::Container()->getDB()->query(
+        return $this->db->query(
             'SELECT *
                 FROM tcheckboxfunktion
                 ORDER BY cName',
@@ -480,7 +505,7 @@ class CheckBox
         )->each(function ($e) {
             $e->kCheckBoxFunktion = (int)$e->kCheckBoxFunktion;
             $e->cName             = __($e->cName);
-        })->toArray();
+        })->all();
     }
 
     /**
@@ -488,9 +513,9 @@ class CheckBox
      * @param array $descriptions
      * @return $this
      */
-    public function insertDB($texts, $descriptions): self
+    public function insertDB(array $texts, array $descriptions): self
     {
-        if (\is_array($texts) && \count($texts) > 0) {
+        if (\count($texts) > 0) {
             $checkbox = GeneralObject::copyMembers($this);
             unset(
                 $checkbox->kCheckBox,
@@ -503,8 +528,8 @@ class CheckBox
                 $checkbox->oCheckBoxSprache_arr,
                 $checkbox->cLink
             );
-            $kCheckBox       = Shop::Container()->getDB()->insert('tcheckbox', $checkbox);
-            $this->kCheckBox = !empty($checkbox->kCheckBox) ? (int)$checkbox->kCheckBox : $kCheckBox;
+            $id              = $this->db->insert('tcheckbox', $checkbox);
+            $this->kCheckBox = !empty($checkbox->kCheckBox) ? (int)$checkbox->kCheckBox : $id;
             $this->insertDBSprache($texts, $descriptions);
         }
 
@@ -532,7 +557,7 @@ class CheckBox
             if (isset($descriptions[$iso]) && \mb_strlen($descriptions[$iso]) > 0) {
                 $this->oCheckBoxSprache_arr[$iso]->cBeschreibung = $descriptions[$iso];
             }
-            $this->oCheckBoxSprache_arr[$iso]->kCheckBoxSprache = Shop::Container()->getDB()->insert(
+            $this->oCheckBoxSprache_arr[$iso]->kCheckBoxSprache = $this->db->insert(
                 'tcheckboxsprache',
                 $this->oCheckBoxSprache_arr[$iso]
             );
@@ -553,7 +578,7 @@ class CheckBox
     }
 
     /**
-     * @param $customer
+     * @param Kunde|object $customer
      * @return bool
      * @throws Exceptions\CircularReferenceException
      * @throws Exceptions\ServiceNotFoundException

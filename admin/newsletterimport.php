@@ -8,8 +8,8 @@ use JTL\Alert\Alert;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\Text;
-use JTL\Shop;
 use JTL\Newsletter\Newsletter;
+use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
@@ -51,71 +51,50 @@ $smarty->assign('kundengruppen', Shop::Container()->getDB()->query(
     'SELECT * FROM tkundengruppe ORDER BY cName',
     ReturnType::ARRAY_OF_OBJECTS
 ))
-       ->display('newsletterimport.tpl');
+    ->display('newsletterimport.tpl');
 
 /**
- * @param int $length
- * @param int $myseed
- * @return string
- */
-function generatePW($length = 8, $myseed = 1)
-{
-    $dummy = array_merge(range('0', '9'), range('a', 'z'), range('A', 'Z'));
-    mt_srand((double)microtime() * 1000000 * $myseed);
-    for ($i = 1; $i <= (count($dummy) * 2); $i++) {
-        $swap         = mt_rand(0, count($dummy) - 1);
-        $tmp          = $dummy[$swap];
-        $dummy[$swap] = $dummy[0];
-        $dummy[0]     = $tmp;
-    }
-
-    return mb_substr(implode('', $dummy), 0, $length);
-}
-
-/**
- * @param $cMail
+ * @param string $email
  * @return bool
  */
-function pruefeNLEBlacklist($cMail)
+function checkBlacklist(string $email): bool
 {
-    $oNEB = Shop::Container()->getDB()->select(
+    $blacklist = Shop::Container()->getDB()->select(
         'tnewsletterempfaengerblacklist',
         'cMail',
-        Text::filterXSS(strip_tags($cMail))
+        $email
     );
 
-    return !empty($oNEB->cMail);
+    return !empty($blacklist->cMail);
 }
 
 /**
  * @param array $data
- * @param array $format
+ * @param array $formats
  * @return array|int
  */
-function checkformat($data, $format)
+function checkformat(array $data, array $formats)
 {
     $fmt = [];
     $cnt = count($data);
     for ($i = 0; $i < $cnt; $i++) {
-        if (!empty($data[$i]) && in_array($data[$i], $format, true)) {
+        if (!empty($data[$i]) && in_array($data[$i], $formats, true)) {
             $fmt[$i] = $data[$i];
         }
     }
-    if (!in_array('cEmail', $fmt, true)) {
-        return -1;
-    }
 
-    return $fmt;
+    return in_array('cEmail', $fmt, true) ? $fmt : -1;
 }
 
 /**
- * @param $fmt
- * @param $data
+ * @param array $fmt
+ * @param array $data
  * @return string
  */
-function processImport($fmt, $data)
+function processImport(array $fmt, array $data): string
 {
-    $recipient = new class {
+    $recipient = new class
+    {
         public $cAnrede;
         public $cEmail;
         public $cVorname;
@@ -137,7 +116,7 @@ function processImport($fmt, $data)
     if (Text::filterEmailAddress($recipient->cEmail) === false) {
         return sprintf(__('errorEmailInvalid'), $recipient->cEmail);
     }
-    if (pruefeNLEBlacklist($recipient->cEmail)) {
+    if (checkBlacklist($recipient->cEmail)) {
         return __('errorEmailInvalidBlacklist');
     }
     if (!$recipient->cNachname) {

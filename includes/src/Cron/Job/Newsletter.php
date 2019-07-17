@@ -6,13 +6,16 @@
 
 namespace JTL\Cron\Job;
 
+use DateInterval;
+use DateTime;
 use JTL\Cron\Job;
 use JTL\Cron\JobInterface;
 use JTL\Cron\QueueEntry;
+use JTL\Customer\Kunde;
 use JTL\DB\ReturnType;
 use JTL\Kampagne;
-use JTL\Customer\Kunde;
 use JTL\Shop;
+use stdClass;
 
 /**
  * Class Newsletter
@@ -39,7 +42,6 @@ final class Newsletter extends Job
     public function start(QueueEntry $queueEntry): JobInterface
     {
         parent::start($queueEntry);
-
         $configuredDelay = (Shop::getConfigValue(\CONF_NEWSLETTER, 'newsletter_send_delay') > 0) ?: 0;
         $lastSending     = $this->db->select(
             'tnewsletter',
@@ -52,37 +54,26 @@ final class Newsletter extends Job
             false,
             'dLastSendings'
         )->dLastSendings;
-        // the first call allways send mails.
-        // each following call only sends mails depending on the lastSending-time
+        // the first call always sends mails. each following call only sends mails depending on the lastSending-time
         if (empty($lastSending)) {
             $downStep    = $configuredDelay + 1;
-            $lastSending = (new \DateTime())
-                ->add(\DateInterval::createFromDateString('-' . $downStep . ' hour'));
+            $lastSending = (new DateTime())->add(DateInterval::createFromDateString('-' . $downStep . ' hour'));
         } else {
-            $lastSending = \DateTime::createFromFormat('Y-m-d H:i:s', $lastSending);
+            $lastSending = DateTime::createFromFormat('Y-m-d H:i:s', $lastSending);
         }
-        if ((new \DateTime())->sub(new \DateInterval('PT' . $configuredDelay . 'H')) < $lastSending) {
+        if ((new DateTime())->sub(new DateInterval('PT' . $configuredDelay . 'H')) < $lastSending) {
             return $this;
         }
-
-        $oNewsletter = $this->getJobData();
-        if ($oNewsletter === null) {
+        if (($jobData = $this->getJobData()) === null) {
             return $this;
         }
-        $oNewsletter->kNewsletter = (int)$oNewsletter->kNewsletter;
-        $oNewsletter->kSprache    = (int)$oNewsletter->kSprache;
-        $oNewsletter->kKampagne   = (int)$oNewsletter->kKampagne;
-
-        $conf = Shop::getSettings([\CONF_NEWSLETTER]);
-
-        $instance = new \JTL\Newsletter\Newsletter($this->db, $conf);
+        $instance = new \JTL\Newsletter\Newsletter($this->db, Shop::getSettings([\CONF_NEWSLETTER]));
         $instance->initSmarty();
-
-        $productIDs      = $instance->getKeys($oNewsletter->cArtikel, true);
-        $manufacturerIDs = $instance->getKeys($oNewsletter->cHersteller);
-        $categoryIDs     = $instance->getKeys($oNewsletter->cKategorie);
-        $customerGroups  = $instance->getKeys($oNewsletter->cKundengruppe);
-        $campaign        = new Kampagne($oNewsletter->kKampagne);
+        $productIDs      = $instance->getKeys($jobData->cArtikel, true);
+        $manufacturerIDs = $instance->getKeys($jobData->cHersteller);
+        $categoryIDs     = $instance->getKeys($jobData->cKategorie);
+        $customerGroups  = $instance->getKeys($jobData->cKundengruppe);
+        $campaign        = new Kampagne((int)$jobData->kKampagne);
         if (\count($customerGroups) === 0) {
             $this->setFinished(true);
 
@@ -91,48 +82,24 @@ final class Newsletter extends Job
         $products   = [];
         $categories = [];
         foreach ($customerGroups as $groupID) {
-            $products[$groupID]   = $instance->getProducts($productIDs, $campaign, $groupID, (int)$oNewsletter->kSprache);
+            $products[$groupID]   = $instance->getProducts($productIDs, $campaign, $groupID, (int)$jobData->kSprache);
             $categories[$groupID] = $instance->getCategories($categoryIDs, $campaign);
         }
-        $cgSQL = 'AND (tkunde.kKundengruppe IN (' . \implode(',', $customerGroups) . ') ';
-        if (\in_array(0, $customerGroups, true)) {
-            $cgSQL .= ' OR tkunde.kKundengruppe IS NULL';
-        }
-        $cgSQL        .= ')';
-        $manufacturers = $instance->getManufacturers($manufacturerIDs, $campaign, $oNewsletter->kSprache);
-        $recipients    = $this->db->query(
-            'SELECT tkunde.kKundengruppe, tkunde.kKunde, tsprache.cISO, tnewsletterempfaenger.kNewsletterEmpfaenger,
-            tnewsletterempfaenger.cAnrede, tnewsletterempfaenger.cVorname, tnewsletterempfaenger.cNachname,
-            tnewsletterempfaenger.cEmail, tnewsletterempfaenger.cLoeschCode
-                FROM tnewsletterempfaenger
-                LEFT JOIN tsprache
-                    ON tsprache.kSprache = tnewsletterempfaenger.kSprache
-                LEFT JOIN tkunde
-                    ON tkunde.kKunde = tnewsletterempfaenger.kKunde
-                WHERE tnewsletterempfaenger.kSprache = ' . (int)$oNewsletter->kSprache . '
-                    AND tnewsletterempfaenger.nAktiv = 1 ' . $cgSQL . '
-                ORDER BY tnewsletterempfaenger.kKunde
-                LIMIT ' . $queueEntry->tasksExecuted . ', ' . $queueEntry->taskLimit,
-            ReturnType::ARRAY_OF_OBJECTS
-        );
+        $manufacturers = $instance->getManufacturers($manufacturerIDs, $campaign, (int)$jobData->kSprache);
+        $recipients    = $this->getRecipients($jobData, $queueEntry, $customerGroups);
         if (\count($recipients) > 0) {
             $shopURL = Shop::getURL();
             foreach ($recipients as $recipient) {
                 $recipient->cLoeschURL = $shopURL . '/?oc=' . $recipient->cLoeschCode;
-                $customer              = $recipient->kKunde > 0
-                    ? new Kunde($recipient->kKunde)
-                    : null;
-                $cgID                  = (int)$recipient->kKundengruppe > 0
-                    ? (int)$recipient->kKundengruppe
-                    : 0;
+                $cgID                  = (int)$recipient->kKundengruppe > 0 ? (int)$recipient->kKundengruppe : 0;
                 $instance->send(
-                    $oNewsletter,
+                    $jobData,
                     $recipient,
                     $products[$cgID],
                     $manufacturers,
                     $categories[$cgID],
                     $campaign,
-                    $customer ?? null
+                    $recipient->kKunde > 0 ? new Kunde($recipient->kKunde) : null
                 );
                 $this->db->update(
                     'tnewsletterempfaenger',
@@ -142,17 +109,46 @@ final class Newsletter extends Job
                 );
                 ++$queueEntry->tasksExecuted;
             }
-            // record the real sending work
-            $rowUpdate                = new \stdClass();
-            $rowUpdate->dLastSendings = (new \DateTime())->format('Y-m-d H:i:s');
+            $rowUpdate                = new stdClass();
+            $rowUpdate->dLastSendings = (new DateTime())->format('Y-m-d H:i:s');
             $this->db->update('tnewsletter', 'kNewsletter', $this->getForeignKeyID(), $rowUpdate);
             $this->setFinished(false);
         } else {
             $this->setFinished(true);
-            // reset the cron job
             $this->db->delete('tcron', 'cronID', $this->getCronID());
         }
 
         return $this;
+    }
+
+    /**
+     * @param stdClass   $jobData
+     * @param QueueEntry $queueEntry
+     * @param array      $customerGroups
+     * @return array
+     */
+    private function getRecipients($jobData, $queueEntry, array $customerGroups): array
+    {
+        $cgSQL = 'AND (tkunde.kKundengruppe IN (' . \implode(',', $customerGroups) . ') ';
+        if (\in_array(0, $customerGroups, true)) {
+            $cgSQL .= ' OR tkunde.kKundengruppe IS NULL';
+        }
+        $cgSQL .= ')';
+
+        return $this->db->query(
+            'SELECT tkunde.kKundengruppe, tkunde.kKunde, tsprache.cISO, tnewsletterempfaenger.kNewsletterEmpfaenger,
+            tnewsletterempfaenger.cAnrede, tnewsletterempfaenger.cVorname, tnewsletterempfaenger.cNachname,
+            tnewsletterempfaenger.cEmail, tnewsletterempfaenger.cLoeschCode
+                FROM tnewsletterempfaenger
+                LEFT JOIN tsprache
+                    ON tsprache.kSprache = tnewsletterempfaenger.kSprache
+                LEFT JOIN tkunde
+                    ON tkunde.kKunde = tnewsletterempfaenger.kKunde
+                WHERE tnewsletterempfaenger.kSprache = ' . (int)$jobData->kSprache . '
+                    AND tnewsletterempfaenger.nAktiv = 1 ' . $cgSQL . '
+                ORDER BY tnewsletterempfaenger.kKunde
+                LIMIT ' . $queueEntry->tasksExecuted . ', ' . $queueEntry->taskLimit,
+            ReturnType::ARRAY_OF_OBJECTS
+        );
     }
 }

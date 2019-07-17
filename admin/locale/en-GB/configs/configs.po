@@ -80,12 +80,6 @@ msgstr "Show countries free of shipping costs"
 msgid "global_versandkostenfrei_darstellung_desc"
 msgstr "Specify how to display the destination countries for which no shipping costs apply."
 
-msgid "global_artikelname_htmlentities_name"
-msgstr "HTML conversion of special characters in item names"
-
-msgid "global_artikelname_htmlentities_desc"
-msgstr "Specify whether to convert special characters in item names into the corresponding HTML transcription."
-
 msgid "global_bestseller_minanzahl_name"
 msgstr "Minimum number of sales for bestsellers"
 

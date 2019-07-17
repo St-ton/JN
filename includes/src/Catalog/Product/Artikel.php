@@ -915,7 +915,7 @@ class Artikel
     /**
      * @var array
      */
-    public $cSprachURL_arr;
+    public $cSprachURL_arr = [];
 
     /**
      * @var string
@@ -1088,48 +1088,44 @@ class Artikel
      */
     public function gibKategorie(): int
     {
-        $categoryProducts = null;
-        if ($this->kArtikel > 0) {
-            $id = (int)$this->kArtikel;
-            // Ist der Artikel in Variationskombi Kind? Falls ja, hol den Vater und die Kategorie von ihm
-            if ($this->kEigenschaftKombi > 0) {
-                $id = (int)$this->kVaterArtikel;
-            } elseif (!empty($this->oKategorie_arr)) {
-                //oKategorie_arr already has all categories for this article in it
-                if (isset($_SESSION['LetzteKategorie'])) {
-                    $lastCategoryID = (int)$_SESSION['LetzteKategorie'];
-                    foreach ($this->oKategorie_arr as $categoryID) {
-                        if ($categoryID === $lastCategoryID) {
-                            return $categoryID;
-                        }
-                    }
-                }
-
-                return (int)$this->oKategorie_arr[0];
-            }
-            $categoryFilter   = isset($_SESSION['LetzteKategorie'])
-                ? ' AND tkategorieartikel.kKategorie = ' . (int)$_SESSION['LetzteKategorie']
-                : '';
-            $categoryProducts = Shop::Container()->getDB()->query(
-                'SELECT tkategorieartikel.kKategorie
-                    FROM tkategorieartikel
-                    LEFT JOIN tkategoriesichtbarkeit 
-                        ON tkategoriesichtbarkeit.kKategorie = tkategorieartikel.kKategorie
-                        AND tkategoriesichtbarkeit.kKundengruppe = ' .
-                            Frontend::getCustomerGroup()->getID() . '
-                    JOIN tkategorie 
-                        ON tkategorie.kKategorie = tkategorieartikel.kKategorie
-                    WHERE tkategoriesichtbarkeit.kKategorie IS NULL
-                        AND kArtikel = ' . $id . $categoryFilter . '
-                    ORDER BY tkategorie.nSort
-                    LIMIT 1',
-                ReturnType::SINGLE_OBJECT
-            );
+        if ($this->kArtikel <= 0) {
+            return 0;
         }
+        $id = (int)$this->kArtikel;
+        // Ist der Artikel in Variationskombi Kind? Falls ja, hol den Vater und die Kategorie von ihm
+        if ($this->kEigenschaftKombi > 0) {
+            $id = (int)$this->kVaterArtikel;
+        } elseif (!empty($this->oKategorie_arr)) {
+            // oKategorie_arr already has all categories for this article in it
+            if (isset($_SESSION['LetzteKategorie'])) {
+                $lastCategoryID = (int)$_SESSION['LetzteKategorie'];
+                if (\in_array($lastCategoryID, $this->oKategorie_arr, true)) {
+                    return $lastCategoryID;
+                }
+            }
 
-        return (isset($categoryProducts->kKategorie) && $categoryProducts->kKategorie > 0)
-            ? (int)$categoryProducts->kKategorie
-            : 0;
+            return (int)$this->oKategorie_arr[0];
+        }
+        $categoryFilter   = isset($_SESSION['LetzteKategorie'])
+            ? ' AND tkategorieartikel.kKategorie = ' . (int)$_SESSION['LetzteKategorie']
+            : '';
+        $categoryProducts = Shop::Container()->getDB()->query(
+            'SELECT tkategorieartikel.kKategorie
+                FROM tkategorieartikel
+                LEFT JOIN tkategoriesichtbarkeit 
+                    ON tkategoriesichtbarkeit.kKategorie = tkategorieartikel.kKategorie
+                    AND tkategoriesichtbarkeit.kKundengruppe = ' .
+                        Frontend::getCustomerGroup()->getID() . '
+                JOIN tkategorie 
+                    ON tkategorie.kKategorie = tkategorieartikel.kKategorie
+                WHERE tkategoriesichtbarkeit.kKategorie IS NULL
+                    AND kArtikel = ' . $id . $categoryFilter . '
+                ORDER BY tkategorie.nSort
+                LIMIT 1',
+            ReturnType::SINGLE_OBJECT
+        );
+
+        return (int)($categoryProducts->kKategorie ?? 0);
     }
 
     /**
@@ -1139,14 +1135,10 @@ class Artikel
      */
     public function holPreise(int $customerGroupID, $tmpProduct): self
     {
-        if (!$customerGroupID) {
-            $customerGroupID = Frontend::getCustomerGroup()->getID();
-        }
-        $customerID   = isset($_SESSION['Kunde']) ? (int)$_SESSION['Kunde']->kKunde : 0;
         $this->Preise = new Preise(
             $customerGroupID,
             (int)$tmpProduct->kArtikel,
-            $customerID,
+            Frontend::getCustomer()->getID(),
             (int)$tmpProduct->kSteuerklasse
         );
         if ($this->getOption('nHidePrices', 0) === 1 || !Frontend::getCustomerGroup()->mayViewPrices()) {
@@ -1161,12 +1153,9 @@ class Artikel
      * @param int $customerGroupID
      * @return $this
      */
-    private function rabattierePreise(int $customerGroupID = 0): self
+    private function rabattierePreise(int $customerGroupID): self
     {
         if ($this->Preise !== null && \method_exists($this->Preise, 'rabbatierePreise')) {
-            if (!$customerGroupID) {
-                $customerGroupID = Frontend::getCustomerGroup()->getID();
-            }
             $discount = $this->getDiscount($customerGroupID, $this->kArtikel);
             if ($discount !== 0) {
                 $this->Preise->rabbatierePreise($discount)->localizePreise();
@@ -1235,48 +1224,46 @@ class Artikel
             return $price;
         }
         $db = Shop::Container()->getDB();
-        foreach ($attributes as $EigenschaftWert) {
-            if (isset($EigenschaftWert->cTyp)
-                && ($EigenschaftWert->cTyp === 'FREIFELD' || $EigenschaftWert->cTyp === 'PFLICHT-FREIFELD')
-            ) {
+        foreach ($attributes as $item) {
+            if (isset($item->cTyp) && ($item->cTyp === 'FREIFELD' || $item->cTyp === 'PFLICHT-FREIFELD')) {
                 continue;
             }
-            $kEigenschaftWert = 0;
-            if (isset($EigenschaftWert->kEigenschaftWert) && $EigenschaftWert->kEigenschaftWert > 0) {
-                $kEigenschaftWert = (int)$EigenschaftWert->kEigenschaftWert;
-            } elseif ($EigenschaftWert > 0) {
-                $kEigenschaftWert = (int)$EigenschaftWert;
+            $propValueID = 0;
+            if (isset($item->kEigenschaftWert) && $item->kEigenschaftWert > 0) {
+                $propValueID = (int)$item->kEigenschaftWert;
+            } elseif ($item > 0) {
+                $propValueID = (int)$item;
             }
-            $EW          = new EigenschaftWert($kEigenschaftWert);
-            $aufpreis    = $EW->fAufpreisNetto;
-            $EW_aufpreis = $db->select(
+            $propValue          = new EigenschaftWert($propValueID);
+            $extraCharge    = $propValue->fAufpreisNetto;
+            $propExtraCharge = $db->select(
                 'teigenschaftwertaufpreis',
                 'kEigenschaftWert',
-                $kEigenschaftWert,
+                $propValueID,
                 'kKundengruppe',
                 $customerGroupID
             );
-            if (!\is_object($EW_aufpreis) && $this->Preise->isDiscountable()) {
-                $EW_aufpreis = $db->select(
+            if (!\is_object($propExtraCharge) && $this->Preise->isDiscountable()) {
+                $propExtraCharge = $db->select(
                     'teigenschaftwert',
                     'kEigenschaftWert',
-                    $kEigenschaftWert
+                    $propValueID
                 );
             }
-            if ($EW_aufpreis !== null) {
+            if ($propExtraCharge !== null) {
                 $fMaxRabatt = $this->getDiscount($customerGroupID, $this->kArtikel);
-                $aufpreis   = $EW_aufpreis->fAufpreisNetto * ((100 - $fMaxRabatt) / 100);
+                $extraCharge   = $propExtraCharge->fAufpreisNetto * ((100 - $fMaxRabatt) / 100);
             }
             // Ticket #1247
-            $aufpreis = $net
-                ? \round($aufpreis, 4)
+            $extraCharge = $net
+                ? \round($extraCharge, 4)
                 : Tax::getGross(
-                    $aufpreis,
+                    $extraCharge,
                     Tax::getSalesTax($this->kSteuerklasse),
                     4
                 ) / ((100 + Tax::getSalesTax($this->kSteuerklasse)) / 100);
 
-            $price += $aufpreis;
+            $price += $extraCharge;
         }
 
         return $price;
@@ -1378,13 +1365,12 @@ class Artikel
      */
     private function prepareImageDetails($image, $json = true)
     {
-        $result = [
+        $result = (object)[
             'xs' => $this->getProductImageSize($image, 'xs'),
             'sm' => $this->getProductImageSize($image, 'sm'),
             'md' => $this->getProductImageSize($image, 'md'),
             'lg' => $this->getProductImageSize($image, 'lg')
         ];
-        $result = (object)$result;
 
         return $json === true ? \json_encode($result, \JSON_FORCE_OBJECT) : $result;
     }
@@ -1489,15 +1475,13 @@ class Artikel
     }
 
     /**
-     * @param int $languageID
      * @return $this
      */
-    public function holAttribute(int $languageID = 0): self
+    public function holAttribute(): self
     {
         $this->Attribute      = [];
         $this->AttributeAssoc = [];
         $db                   = Shop::Container()->getDB();
-        $languageID           = !$languageID ? Shop::getLanguageID() : $languageID;
         $attributes           = $db->selectAll(
             'tattribut',
             'kArtikel',
@@ -1513,13 +1497,13 @@ class Artikel
             $attribute->kAttribut = (int)$att->kAttribut;
             $attribute->cName     = $att->cName;
             $attribute->cWert     = $att->cTextWert ?: $att->cStringWert;
-            if ($att->kAttribut > 0 && $languageID > 0 && !$isDefaultLanguage) {
+            if ($att->kAttribut > 0 && $this->kSprache > 0 && !$isDefaultLanguage) {
                 $attributsprache = $db->select(
                     'tattributsprache',
                     'kAttribut',
                     (int)$att->kAttribut,
                     'kSprache',
-                    $languageID
+                    $this->kSprache
                 );
                 if (!empty($attributsprache->cName)) {
                     $attribute->cName = $attributsprache->cName;
@@ -1548,7 +1532,7 @@ class Artikel
     public function holeMerkmale(): self
     {
         $this->oMerkmale_arr = [];
-        $attributes          = Shop::Container()->getDB()->queryPrepared(
+        $characteristics          = Shop::Container()->getDB()->queryPrepared(
             'SELECT tartikelmerkmal.kMerkmal, tartikelmerkmal.kMerkmalWert
                 FROM tartikelmerkmal
                 JOIN tmerkmal 
@@ -1560,29 +1544,28 @@ class Artikel
             ['kArtikel' => $this->kArtikel],
             ReturnType::ARRAY_OF_OBJECTS
         );
-        if (\count($attributes) > 0) {
-            $attributeIDs = [];
-            foreach ($attributes as $attribute) {
-                $attribute->kMerkmal     = (int)$attribute->kMerkmal;
-                $attribute->kMerkmalWert = (int)$attribute->kMerkmalWert;
-                $oMerkmalWert            = new MerkmalWert($attribute->kMerkmalWert, $this->kSprache);
-                $attribute               = new Merkmal($attribute->kMerkmal, false, $this->kSprache);
-                if (!isset($attributeIDs[$attribute->kMerkmal])) {
-                    $attributeIDs[$attribute->kMerkmal]                   = $attribute;
-                    $attributeIDs[$attribute->kMerkmal]->oMerkmalWert_arr = [];
-                }
-                $attributeIDs[$attribute->kMerkmal]->oMerkmalWert_arr[] = $oMerkmalWert;
+        if (\count($characteristics) === 0) {
+            return $this;
+        }
+        foreach ($characteristics as $item) {
+            $item->kMerkmal     = (int)$item->kMerkmal;
+            $item->kMerkmalWert = (int)$item->kMerkmalWert;
+            $charValue            = new MerkmalWert($item->kMerkmalWert, $this->kSprache);
+            $characteristic               = new Merkmal($item->kMerkmal, false, $this->kSprache);
+            if (!isset($this->oMerkmale_arr[$characteristic->kMerkmal])) {
+                $this->oMerkmale_arr[$characteristic->kMerkmal]                   = $characteristic;
+                $this->oMerkmale_arr[$characteristic->kMerkmal]->oMerkmalWert_arr = [];
             }
-            $this->oMerkmale_arr     = $attributeIDs;
-            $this->cMerkmalAssoc_arr = [];
-            foreach ($this->oMerkmale_arr as $attribute) {
-                $cMerkmalname = \preg_replace('/[^öäüÖÄÜßa-zA-Z0-9\.\-_]/u', '', $attribute->cName);
-                if (\mb_strlen($attribute->cName) > 0) {
-                    $values                                 = \array_filter(\array_map(function ($e) {
-                        return $e->cWert ?? null;
-                    }, $attribute->oMerkmalWert_arr));
-                    $this->cMerkmalAssoc_arr[$cMerkmalname] = \implode(', ', $values);
-                }
+            $this->oMerkmale_arr[$characteristic->kMerkmal]->oMerkmalWert_arr[] = $charValue;
+        }
+        $this->cMerkmalAssoc_arr = [];
+        foreach ($this->oMerkmale_arr as $item) {
+            $name = \preg_replace('/[^öäüÖÄÜßa-zA-Z0-9\.\-_]/u', '', $item->cName);
+            if (\mb_strlen($item->cName) > 0) {
+                $values                                 = \array_filter(\array_map(function ($e) {
+                    return $e->cWert ?? null;
+                }, $item->oMerkmalWert_arr));
+                $this->cMerkmalAssoc_arr[$name] = \implode(', ', $values);
             }
         }
 
@@ -1669,11 +1652,11 @@ class Artikel
             );
             foreach ($bundles as $bundle) {
                 $options->nKeineSichtbarkeitBeachten = 0;
-                $oProduct                            = new self();
-                $oProduct->fuelleArtikel((int)$bundle->kArtikel, $options);
+                $product                            = new self();
+                $product->fuelleArtikel((int)$bundle->kArtikel, $options);
 
-                $this->oProduktBundle_arr[]           = $oProduct;
-                $this->oProduktBundlePrice->fVKNetto += $oProduct->Preise->fVKNetto * $bundle->fAnzahl;
+                $this->oProduktBundle_arr[]           = $product;
+                $this->oProduktBundlePrice->fVKNetto += $product->Preise->fVKNetto * $bundle->fAnzahl;
             }
 
             $this->oProduktBundlePrice->fPriceDiff         = $this->oProduktBundlePrice->fVKNetto -
@@ -1710,14 +1693,10 @@ class Artikel
     }
 
     /**
-     * @param int $languageID
      * @return $this
      */
-    public function holeMedienDatei(int $languageID = 0): self
+    public function holeMedienDatei(): self
     {
-        if (!$languageID) {
-            $languageID = Shop::getLanguageID();
-        }
         $db                     = Shop::Container()->getDB();
         $kDefaultLanguage       = LanguageHelper::getDefaultLanguage()->kSprache;
         $this->oMedienDatei_arr = [];
@@ -1730,11 +1709,11 @@ class Artikel
                 $this->cMedienDateiAnzeige = 'beschreibung';
             }
         }
-        if ($languageID === $kDefaultLanguage) {
+        if ($this->kSprache === $kDefaultLanguage) {
             $conditionalFields   = 'lang.cName, lang.cBeschreibung, lang.kSprache';
             $conditionalLeftJoin = 'LEFT JOIN tmediendateisprache AS lang 
                                     ON lang.kMedienDatei = tmediendatei.kMedienDatei 
-                                    AND lang.kSprache = ' . $languageID;
+                                    AND lang.kSprache = ' . $this->kSprache;
         } else {
             $conditionalFields   = "IF(TRIM(IFNULL(lang.cName, '')) != '', lang.cName, deflang.cName) cName,
                                         IF(TRIM(IFNULL(lang.cBeschreibung, '')) != '', 
@@ -1745,7 +1724,8 @@ class Artikel
                                         ON deflang.kMedienDatei = tmediendatei.kMedienDatei 
                                     AND deflang.kSprache = ' . $kDefaultLanguage . '
                                     LEFT JOIN tmediendateisprache AS lang 
-                                        ON deflang.kMedienDatei = lang.kMedienDatei AND lang.kSprache = ' . $languageID;
+                                        ON deflang.kMedienDatei = lang.kMedienDatei 
+                                        AND lang.kSprache = ' . $this->kSprache;
         }
         $sql = 'SELECT tmediendatei.kMedienDatei, tmediendatei.cPfad, tmediendatei.cURL, tmediendatei.cTyp, 
                         tmediendatei.nSort, ' . $conditionalFields . '
@@ -1762,9 +1742,9 @@ class Artikel
             $mediaFile->nErreichbar              = 1; // Beschreibt, ob eine Datei vorhanden ist
             $mediaFile->cMedienTyp               = ''; // Wird zum Aufbau der Reiter gebraucht
             if (\mb_strlen($mediaFile->cTyp) > 0) {
-                $oMappedTyp            = $this->mappeMedienTyp($mediaFile->cTyp);
-                $mediaFile->cMedienTyp = $oMappedTyp->cName;
-                $mediaFile->nMedienTyp = $oMappedTyp->nTyp;
+                $mapped                = $this->mappeMedienTyp($mediaFile->cTyp);
+                $mediaFile->cMedienTyp = $mapped->cName;
+                $mediaFile->nMedienTyp = $mapped->nTyp;
             }
             if ($mediaFile->cPfad !== '' && $mediaFile->cPfad[0] === '/') {
                 //remove double slashes
@@ -1774,7 +1754,7 @@ class Artikel
             $mediaFile->oMedienDateiAttribut_arr = $db->selectAll(
                 'tmediendateiattribut',
                 ['kMedienDatei', 'kSprache'],
-                [(int)$mediaFile->kMedienDatei, $languageID]
+                [(int)$mediaFile->kMedienDatei, $this->kSprache]
             );
             // pruefen, ob ein Attribut mit "tab" gesetzt wurde => falls ja, den Reiter anlegen
             $mediaFile->cAttributTab = '';
@@ -1944,7 +1924,6 @@ class Artikel
     }
 
     /**
-     * @param int    $lang
      * @param int    $perPage
      * @param int    $page
      * @param int    $stars
@@ -1953,17 +1932,13 @@ class Artikel
      * @return $this
      */
     public function holeBewertung(
-        int $lang = 0,
         int $perPage = 10,
         int $page = 1,
         int $stars = 0,
         $unlock = 'N',
         $opt = 0
     ): self {
-        if (!$lang) {
-            $lang = Shop::getLanguageID();
-        }
-        $this->Bewertungen = new Bewertung($this->kArtikel, $lang, $perPage, $page, $stars, $unlock, $opt);
+        $this->Bewertungen = new Bewertung($this->kArtikel, $this->kSprache, $perPage, $page, $stars, $unlock, $opt);
 
         return $this;
     }
@@ -2011,29 +1986,24 @@ class Artikel
     }
 
     /**
-     * @param int    $languageID
      * @param string $unlock
      * @return $this
      */
-    public function holehilfreichsteBewertung($languageID, $unlock = 'N'): self
+    public function holehilfreichsteBewertung($unlock = 'N'): self
     {
-        if (!$languageID) {
-            $languageID = Shop::getLanguageID();
-        }
-        $this->HilfreichsteBewertung = new Bewertung($this->kArtikel, $languageID, 0, 0, 0, $unlock, 1);
+        $this->HilfreichsteBewertung = new Bewertung($this->kArtikel, $this->kSprache, 0, 0, 0, $unlock, 1);
 
         return $this;
     }
 
     /**
-     * @param int  $languageID
      * @param int  $customerGroupID
      * @param bool $exportWorkaround
      * @return array|int|object
      */
-    protected function execVariationSQL(int $languageID, int $customerGroupID, bool $exportWorkaround = false)
+    protected function execVariationSQL(int $customerGroupID, bool $exportWorkaround = false)
     {
-        $isDefaultLang = LanguageHelper::isDefaultLanguageActive();
+        $isDefaultLang = LanguageHelper::isDefaultLanguageActive(false, $this->kSprache);
         // Nicht Standardsprache?
         $sqlEigenschaft              = new stdClass();
         $sqlEigenschaftWert          = new stdClass();
@@ -2041,16 +2011,16 @@ class Artikel
         $sqlEigenschaft->cJOIN       = '';
         $sqlEigenschaftWert->cSELECT = '';
         $sqlEigenschaftWert->cJOIN   = '';
-        if ($languageID > 0 && !$isDefaultLang) {
+        if ($this->kSprache > 0 && !$isDefaultLang) {
             $sqlEigenschaft->cSELECT = 'teigenschaftsprache.cName AS cName_teigenschaftsprache, ';
             $sqlEigenschaft->cJOIN   = ' LEFT JOIN teigenschaftsprache 
                                             ON teigenschaftsprache.kEigenschaft = teigenschaft.kEigenschaft
-                                            AND teigenschaftsprache.kSprache = ' . $languageID;
+                                            AND teigenschaftsprache.kSprache = ' . $this->kSprache;
 
             $sqlEigenschaftWert->cSELECT = 'teigenschaftwertsprache.cName AS cName_teigenschaftwertsprache, ';
             $sqlEigenschaftWert->cJOIN   = ' LEFT JOIN teigenschaftwertsprache 
                                     ON teigenschaftwertsprache.kEigenschaftWert = teigenschaftwert.kEigenschaftWert
-                                    AND teigenschaftwertsprache.kSprache = ' . $languageID;
+                                    AND teigenschaftwertsprache.kSprache = ' . $this->kSprache;
         }
         // Vater?
         if ($this->nIstVater === 1) {
@@ -2327,14 +2297,12 @@ class Artikel
 
     /**
      * @param int  $customerGroupID
-     * @param int  $languageID
      * @param int  $nVariationKombi
      * @param bool $exportWorkaround
      * @return $this
      */
     public function holVariationen(
         int $customerGroupID = 0,
-        int $languageID = 0,
         int $nVariationKombi = 0,
         bool $exportWorkaround = false
     ): self {
@@ -2343,9 +2311,6 @@ class Artikel
         }
         if (!$customerGroupID) {
             $customerGroupID = Frontend::getCustomerGroup()->getID();
-        }
-        if (!$languageID) {
-            $languageID = Shop::getLanguageID();
         }
         $this->nVariationsAufpreisVorhanden = 0;
         $this->Variationen                  = [];
@@ -2358,7 +2323,7 @@ class Artikel
         $isDefaultLang  = LanguageHelper::isDefaultLanguageActive();
         $mayViewPrices  = Frontend::getCustomerGroup()->mayViewPrices();
 
-        $variations = $this->execVariationSQL($languageID, $customerGroupID, $exportWorkaround);
+        $variations = $this->execVariationSQL($customerGroupID, $exportWorkaround);
 
         if (!\is_array($variations) || \count($variations) === 0) {
             return $this;
@@ -2374,7 +2339,9 @@ class Artikel
         $per              = ' ' . Shop::Lang()->get('vpePer') . ' ' . $this->cVPEEinheit;
         $taxRate          = $_SESSION['Steuersatz'][$this->kSteuerklasse];
 
-        if (!$exportWorkaround) {
+        if ($exportWorkaround) {
+            $cntVariationen = (object)['nCount' => 0];
+        } else {
             $cntVariationen = Shop::Container()->getDB()->query(
                 'SELECT COUNT(teigenschaft.kEigenschaft) AS nCount
                     FROM teigenschaft
@@ -2386,8 +2353,6 @@ class Artikel
                         AND teigenschaftsichtbarkeit.kEigenschaft IS NULL',
                 ReturnType::SINGLE_OBJECT
             );
-        } else {
-            $cntVariationen = (object)['nCount' => 0];
         }
 
         foreach ($variations as $i => $tmpVariation) {
@@ -2403,7 +2368,7 @@ class Artikel
                 $variation->nSort                      = (int)$tmpVariation->nSort;
                 $variation->cName                      = $tmpVariation->cName;
                 $variation->nLieferbareVariationswerte = 0;
-                if ($languageID > 0
+                if ($this->kSprache > 0
                     && !$isDefaultLang
                     && \mb_strlen($tmpVariation->cName_teigenschaftsprache) > 0
                 ) {
@@ -2468,7 +2433,7 @@ class Artikel
 
                 $value->oVariationsKombi = $varCombi;
             }
-            if ($languageID > 0 && !$isDefaultLang && \mb_strlen($tmpVariation->cName_teigenschaftwertsprache) > 0) {
+            if ($this->kSprache > 0 && !$isDefaultLang && \mb_strlen($tmpVariation->cName_teigenschaftwertsprache) > 0) {
                 $value->cName = $tmpVariation->cName_teigenschaftwertsprache;
             }
             //kundengrp spezif. Aufpreis?
@@ -3018,18 +2983,17 @@ class Artikel
      * [$kEigenschaft0:$kEigenschaftWert0_$kEigenschaft1:$kEigenschaftWert1]
      *
      * @param int $customerGroupID
-     * @param int $languageID
      * @return array
      * @throws CircularReferenceException
      * @throws ServiceNotFoundException
      */
-    public function holeVariationKombiKinderAssoc(int $customerGroupID, int $languageID): array
+    public function holeVariationKombiKinderAssoc(int $customerGroupID): array
     {
         $varCombChildren = [];
-        if (!($customerGroupID > 0 && $languageID > 0 && $this->nIstVater)) {
+        if (!($customerGroupID > 0 && $this->kSprache > 0 && $this->nIstVater)) {
             return [];
         }
-        $oVariationsKombiKinder_arr = Shop::Container()->getDB()->query(
+        $childProperties = Shop::Container()->getDB()->queryPrepared(
             'SELECT tartikel.kArtikel, teigenschaft.kEigenschaft, teigenschaftwert.kEigenschaftWert
                 FROM tartikel
                 JOIN teigenschaftkombiwert 
@@ -3040,20 +3004,21 @@ class Artikel
                     ON teigenschaftwert.kEigenschaftWert = teigenschaftkombiwert.kEigenschaftWert 
                 LEFT JOIN tartikelsichtbarkeit 
                     ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                    AND tartikelsichtbarkeit.kKundengruppe = ' . $customerGroupID . '
-                WHERE tartikel.kVaterArtikel = ' . (int)$this->kArtikel . ' 
+                    AND tartikelsichtbarkeit.kKundengruppe = :cgid
+                WHERE tartikel.kVaterArtikel = :pid 
                 AND tartikelsichtbarkeit.kArtikel IS NULL
                 ORDER BY tartikel.kArtikel ASC, teigenschaft.nSort ASC, 
                          teigenschaft.cName, teigenschaftwert.nSort ASC, teigenschaftwert.cName',
+            ['cgid' => $customerGroupID, 'pid' => $this->kArtikel],
             ReturnType::ARRAY_OF_OBJECTS
         );
-        if (\count($oVariationsKombiKinder_arr) === 0) {
+        if (\count($childProperties) === 0) {
             return [];
         }
         // generate identifiers, build new assoc-arr
         $identifier  = '';
         $lastProduct = 0;
-        foreach ($oVariationsKombiKinder_arr as $varkombi) {
+        foreach ($childProperties as $varkombi) {
             $varkombi->kArtikel         = (int)$varkombi->kArtikel;
             $varkombi->kEigenschaft     = (int)$varkombi->kEigenschaft;
             $varkombi->kEigenschaftWert = (int)$varkombi->kEigenschaftWert;
@@ -3076,7 +3041,9 @@ class Artikel
             $taxRate  = $_SESSION['Steuersatz'][$this->kSteuerklasse];
             $currency = Frontend::getCurrency();
             foreach ($varCombChildren as $i => $productID) {
-                if (!isset($tmp[$productID])) {
+                if (isset($tmp[$productID])) {
+                    $varCombChildren[$i] = $tmp[$productID];
+                } else {
                     $options                            = new stdClass();
                     $options->nKeinLagerbestandBeachten = 1;
                     $options->nArtikelAttribute         = 1;
@@ -3086,8 +3053,6 @@ class Artikel
 
                     $tmp[$productID]     = $product;
                     $varCombChildren[$i] = $product;
-                } else {
-                    $varCombChildren[$i] = $tmp[$productID];
                 }
                 // GrundPreis nicht vom Vater => Ticket #1228
                 if ($varCombChildren[$i]->fVPEWert > 0) {
@@ -3131,16 +3096,6 @@ class Artikel
 
     /**
      * Sort an array of objects.
-     * Requires PHP 5.3+
-     * You can pass in one or more properties on which to sort.
-     * If a string is supplied as the sole property, or if you specify a
-     * property without a sort order then the sorting will be ascending.
-     * If the key of an array is an array, then it will sorted down to that
-     * level of node.
-     * Example usages:
-     * sortVarCombinationArray($items, 'size');
-     * sortVarCombinationArray($items, array('size', array('time' => SORT_DESC, 'user' => SORT_ASC));
-     * sortVarCombinationArray($items, array('size', array('user', 'forname'))
      *
      * @param array        $array
      * @param string|array $properties
@@ -3184,11 +3139,10 @@ class Artikel
      * Baut eine Vorschau auf die Variationskinder beim Vater zusammen
      *
      * @param int $customerGroupID
-     * @param int $languageID
      * @return $this
      * @throws \Exception
      */
-    public function holeVariationKombiKinder(int $customerGroupID, int $languageID): self
+    public function holeVariationKombiKinder(int $customerGroupID): self
     {
         $sql                               = '';
         $limit                             = 0;
@@ -3262,14 +3216,14 @@ class Artikel
         $cVorschauSQL = ' IN (' . \implode(',', $checked) . ') ';
         if ($this->conf['artikeldetails']['artikeldetails_varikombi_vorschautext'] === 'S') {
             $oEigenschaft = null;
-            if ($languageID > 0 && !LanguageHelper::isDefaultLanguageActive()) {
+            if ($this->kSprache > 0 && !LanguageHelper::isDefaultLanguageActive()) {
                 $oEigenschaft = Shop::Container()->getDB()->query(
                     'SELECT teigenschaftsprache.cName
                         FROM teigenschaftsprache
                         JOIN teigenschaft 
                             ON teigenschaft.kEigenschaft = teigenschaftsprache.kEigenschaft
                         WHERE teigenschaftsprache.kEigenschaft ' . $cVorschauSQL . '
-                            AND teigenschaftsprache.kSprache = ' . $languageID . '
+                            AND teigenschaftsprache.kSprache = ' . $this->kSprache . '
                         ORDER BY teigenschaft.nSort LIMIT 1',
                     ReturnType::SINGLE_OBJECT
                 );
@@ -3536,39 +3490,29 @@ class Artikel
 
     /**
      * @param int $productID
-     * @param int $languageID
      * @return stdClass
      */
-    public function baueArtikelSprache(int $productID, int $languageID): stdClass
+    public function baueArtikelSprache(int $productID): stdClass
     {
         $lang          = new stdClass();
         $lang->cSELECT = '';
         $lang->cJOIN   = '';
-        if ($languageID > 0 && !LanguageHelper::isDefaultLanguageActive()) {
+        if ($this->kSprache > 0 && !LanguageHelper::isDefaultLanguageActive()) {
             $lang->cSELECT = 'tartikelsprache.cName AS cName_spr, tartikelsprache.cBeschreibung AS cBeschreibung_spr,
                               tartikelsprache.cKurzBeschreibung AS cKurzBeschreibung_spr, ';
             $lang->cJOIN   = ' LEFT JOIN tartikelsprache
                                    ON tartikelsprache.kArtikel = ' . $productID . ' 
-                                   AND tartikelsprache.kSprache = ' . $languageID;
+                                   AND tartikelsprache.kSprache = ' . $this->kSprache;
         }
 
         return $lang;
     }
 
     /**
-     * @param bool $seo
      * @return $this
      */
-    public function baueArtikelSprachURL($seo = true): self
+    public function baueArtikelSprachURL(): self
     {
-        foreach (Frontend::getLanguages() as $language) {
-            $language->kSprache                    = (int)$language->kSprache;
-            $this->cSprachURL_arr[$language->cISO] = '?a=' . $this->kArtikel .
-                '&amp;lang=' . $language->cISO;
-        }
-        if (!$seo) {
-            return $this;
-        }
         $seoData = Shop::Container()->getDB()->queryPrepared(
             'SELECT cSeo, kSprache
                 FROM tseo
@@ -3578,24 +3522,16 @@ class Artikel
             ['kArtikel' => $this->kArtikel],
             ReturnType::ARRAY_OF_OBJECTS
         );
-
-        $langSeo  = true;
-        $assocSeo = [];
         foreach (Frontend::getLanguages() as $language) {
-            foreach ($seoData as $oSeo) {
-                $oSeo->kSprache = (int)$oSeo->kSprache;
-                if ($language->kSprache === $oSeo->kSprache) {
-                    if ($oSeo->cSeo === '') {
-                        $langSeo = false;
-                        break;
+            $this->cSprachURL_arr[$language->cISO] = '?a=' . $this->kArtikel . '&amp;lang=' . $language->cISO;
+            foreach ($seoData as $item) {
+                $item->kSprache = (int)$item->kSprache;
+                if ($language->kSprache === $item->kSprache) {
+                    if ($item->cSeo !== '') {
+                        $this->cSprachURL_arr[$language->cISO] = $item->cSeo;
                     }
-                    if (\mb_strlen($oSeo->cSeo) > 0) {
-                        $assocSeo[$oSeo->kSprache] = $oSeo;
-                    }
+                    break;
                 }
-            }
-            if ($langSeo && isset($assocSeo[$language->kSprache])) {
-                $this->cSprachURL_arr[$language->cISO] = $assocSeo[$language->kSprache]->cSeo;
             }
         }
 
@@ -3821,10 +3757,7 @@ class Artikel
                             && (int)$this->FunktionsAttribute[\FKT_ATTRIBUT_WARENKORBMATRIX] === 1
                             && $options->nMain === 1)
                     ) {
-                        $this->oVariationKombiKinderAssoc_arr = $this->holeVariationKombiKinderAssoc(
-                            $customerGroupID,
-                            $langID
-                        );
+                        $this->oVariationKombiKinderAssoc_arr = $this->holeVariationKombiKinderAssoc($customerGroupID);
                     }
                     \executeHook(\HOOK_ARTIKEL_CLASS_FUELLEARTIKEL, [
                         'oArtikel'  => &$this,
@@ -4043,105 +3976,7 @@ class Artikel
         if (!isset($tmpProduct->kArtikel)) {
             return $this;
         }
-        $this->kArtikel                          = (int)$tmpProduct->kArtikel;
-        $this->kHersteller                       = (int)$tmpProduct->kHersteller;
-        $this->kLieferstatus                     = (int)$tmpProduct->kLieferstatus;
-        $this->kSteuerklasse                     = (int)$tmpProduct->kSteuerklasse;
-        $this->kEinheit                          = (int)$tmpProduct->kEinheit;
-        $this->kVersandklasse                    = (int)$tmpProduct->kVersandklasse;
-        $this->kWarengruppe                      = (int)$tmpProduct->kWarengruppe;
-        $this->kVPEEinheit                       = (int)$tmpProduct->kVPEEinheit;
-        $this->fLagerbestand                     = $tmpProduct->fLagerbestand;
-        $this->fMindestbestellmenge              = $tmpProduct->fMindestbestellmenge;
-        $this->fPackeinheit                      = $tmpProduct->fPackeinheit;
-        $this->fAbnahmeintervall                 = $tmpProduct->fAbnahmeintervall;
-        $this->fZulauf                           = $tmpProduct->fZulauf;
-        $this->fGewicht                          = $tmpProduct->fGewicht;
-        $this->fArtikelgewicht                   = $tmpProduct->fArtikelgewicht;
-        $this->fUVP                              = $tmpProduct->fUVP;
-        $this->fUVPBrutto                        = $tmpProduct->fUVP;
-        $this->fVPEWert                          = $tmpProduct->fVPEWert;
-        $this->cName                             = \htmlspecialchars(
-            $tmpProduct->cName,
-            \ENT_COMPAT | \ENT_HTML401,
-            \JTL_CHARSET
-        );
-        $this->cSeo                              = $tmpProduct->cSeo;
-        $this->cBeschreibung                     = Text::parseNewsText($tmpProduct->cBeschreibung);
-        $this->cAnmerkung                        = $tmpProduct->cAnmerkung;
-        $this->cArtNr                            = $tmpProduct->cArtNr;
-        $this->cVPE                              = $tmpProduct->cVPE;
-        $this->cVPEEinheit                       = $tmpProduct->cVPEEinheit;
-        $this->cSuchbegriffe                     = $tmpProduct->cSuchbegriffe;
-        $this->cEinheit                          = $tmpProduct->teinheitcName;
-        $this->cTeilbar                          = $tmpProduct->cTeilbar;
-        $this->cBarcode                          = $tmpProduct->cBarcode;
-        $this->cLagerBeachten                    = $tmpProduct->cLagerBeachten;
-        $this->cLagerKleinerNull                 = $tmpProduct->cLagerKleinerNull;
-        $this->cLagerVariation                   = $tmpProduct->cLagerVariation;
-        $this->cKurzBeschreibung                 = Text::parseNewsText($tmpProduct->cKurzBeschreibung);
-        $this->cLieferstatus                     = $tmpProduct->cName_tlieferstatus;
-        $this->cTopArtikel                       = $tmpProduct->cTopArtikel;
-        $this->cNeu                              = $tmpProduct->cNeu;
-        $this->fMwSt                             = $tmpProduct->fMwSt;
-        $this->dErscheinungsdatum                = $tmpProduct->dErscheinungsdatum;
-        $this->Erscheinungsdatum_de              = $tmpProduct->Erscheinungsdatum_de;
-        $this->fDurchschnittsBewertung           = \round($tmpProduct->fDurchschnittsBewertung * 2) / 2;
-        $this->cVersandklasse                    = $tmpProduct->cVersandklasse;
-        $this->cSerie                            = $tmpProduct->cSerie;
-        $this->cISBN                             = $tmpProduct->cISBN;
-        $this->cASIN                             = $tmpProduct->cASIN;
-        $this->cHAN                              = $tmpProduct->cHAN;
-        $this->cUNNummer                         = $tmpProduct->cUNNummer;
-        $this->cGefahrnr                         = $tmpProduct->cGefahrnr;
-        $this->nIstVater                         = (int)$tmpProduct->nIstVater;
-        $this->kEigenschaftKombi                 = (int)$tmpProduct->kEigenschaftKombi;
-        $this->kVaterArtikel                     = (int)$tmpProduct->kVaterArtikel;
-        $this->kStueckliste                      = (int)$tmpProduct->kStueckliste;
-        $this->dErstellt                         = $tmpProduct->dErstellt;
-        $this->nSort                             = (int)$tmpProduct->nSort;
-        $this->fNettoPreis                       = $tmpProduct->fNettoPreis;
-        $this->bIsBestseller                     = (int)$tmpProduct->bIsBestseller;
-        $this->bIsTopBewertet                    = (int)$tmpProduct->bIsTopBewertet;
-        $this->cTaric                            = $tmpProduct->cTaric;
-        $this->cUPC                              = $tmpProduct->cUPC;
-        $this->cHerkunftsland                    = $tmpProduct->cHerkunftsland;
-        $this->cEPID                             = $tmpProduct->cEPID;
-        $this->fLieferantenlagerbestand          = $tmpProduct->fLieferantenlagerbestand;
-        $this->fLieferzeit                       = $tmpProduct->fLieferzeit;
-        $this->cAktivSonderpreis                 = $tmpProduct->cAktivSonderpreis;
-        $this->dSonderpreisStart_en              = $tmpProduct->dStart_en;
-        $this->dSonderpreisEnde_en               = $tmpProduct->dEnde_en;
-        $this->dSonderpreisStart_de              = $tmpProduct->dStart_de;
-        $this->dSonderpreisEnde_de               = $tmpProduct->dEnde_de;
-        $this->dZulaufDatum                      = $tmpProduct->dZulaufDatum;
-        $this->dZulaufDatum_de                   = $tmpProduct->dZulaufDatum_de;
-        $this->dMHD                              = $tmpProduct->dMHD;
-        $this->dMHD_de                           = $tmpProduct->dMHD_de;
-        $this->kMassEinheit                      = (int)$tmpProduct->kMassEinheit;
-        $this->kGrundpreisEinheit                = (int)$tmpProduct->kGrundPreisEinheit;
-        $this->fMassMenge                        = (float)$tmpProduct->fMassMenge;
-        $this->fGrundpreisMenge                  = (float)$tmpProduct->fGrundpreisMenge;
-        $this->fBreite                           = (float)$tmpProduct->fBreite;
-        $this->fHoehe                            = (float)$tmpProduct->fHoehe;
-        $this->fLaenge                           = (float)$tmpProduct->fLaenge;
-        $this->nLiefertageWennAusverkauft        = (int)$tmpProduct->nLiefertageWennAusverkauft;
-        $this->nAutomatischeLiefertageberechnung = (int)$tmpProduct->nAutomatischeLiefertageberechnung;
-        $this->nBearbeitungszeit                 = (int)$tmpProduct->nBearbeitungszeit;
-        $this->cMasseinheitCode                  = $tmpProduct->cMasseinheitCode;
-        $this->cMasseinheitName                  = $tmpProduct->cMasseinheitName;
-        $this->cGrundpreisEinheitCode            = $tmpProduct->cGrundpreisEinheitCode;
-        $this->cGrundpreisEinheitName            = $tmpProduct->cGrundpreisEinheitName;
-        //short baseprice measurement unit e.g. "ml"
-        $_abbr = UnitsOfMeasure::getPrintAbbreviation($this->cGrundpreisEinheitCode);
-        if (!empty($_abbr)) {
-            $this->cGrundpreisEinheitName = UnitsOfMeasure::getPrintAbbreviation($this->cGrundpreisEinheitCode);
-        }
-        //short measurement unit e.g. "ml"
-        $_abbr = UnitsOfMeasure::getPrintAbbreviation($this->cMasseinheitCode);
-        if (!empty($_abbr)) {
-            $this->cMasseinheitName = $_abbr;
-        }
+        $this->sanitizeProductData($tmpProduct, $langID);
         if ((int)$this->conf['artikeldetails']['artikeldetails_aehnlicheartikel_anzahl'] > 0
             && $this->getOption('bSimilar', false) === true
         ) {
@@ -4165,31 +4000,6 @@ class Artikel
             $this->cBildpfad_thersteller = Shop::getImageBaseURL() .
                 \PFAD_HERSTELLERBILDER_KLEIN . $tmpProduct->cBildpfad_thersteller;
         }
-        // Lokalisieren
-        if ($langID > 0 && !LanguageHelper::isDefaultLanguageActive()) {
-            //VPE-Einheit
-            $oVPEEinheitRes = $db->query(
-                'SELECT cName
-                    FROM teinheit
-                    WHERE kEinheit = (SELECT kEinheit
-                                        FROM teinheit
-                                        WHERE cName = \'' . $this->cVPEEinheit . '\' LIMIT 0, 1)
-                                            AND kSprache = ' . $langID . ' LIMIT 0, 1',
-                ReturnType::SINGLE_OBJECT
-            );
-            if (isset($oVPEEinheitRes->cName) && \mb_strlen($oVPEEinheitRes->cName) > 0) {
-                $this->cVPEEinheit = $oVPEEinheitRes->cName;
-            }
-        }
-        $this->cGewicht        = Trennzeichen::getUnit(\JTL_SEPARATOR_WEIGHT, $langID, $this->fGewicht);
-        $this->cArtikelgewicht = Trennzeichen::getUnit(\JTL_SEPARATOR_WEIGHT, $langID, $this->fArtikelgewicht);
-
-        if ($this->fMassMenge != 0) {
-            $this->cMassMenge = Trennzeichen::getUnit(\JTL_SEPARATOR_AMOUNT, $langID, $this->fMassMenge);
-        }
-        if ($this->fPackeinheit == 0) {
-            $this->fPackeinheit = 1;
-        }
         $this->holPreise($customerGroupID, $tmpProduct);
         //globale Einstellung
         $this->setzeSprache($langID);
@@ -4204,13 +4014,13 @@ class Artikel
         }
         $this->holBilder();
         if ($this->getOption('nWarenlager', 0) === 1) {
-            $this->holWarenlager($langID);
+            $this->holWarenlager();
         }
         if ($this->getOption('nMerkmale', 0) === 1) {
             $this->holeMerkmale();
         }
         if ($this->getOption('nMedienDatei', 0) === 1) {
-            $this->holeMedienDatei($langID);
+            $this->holeMedienDatei();
         }
         if ($this->nIstVater === 1
             && $this->getOption('nVariationKombiKinder', 0) === 1
@@ -4243,7 +4053,7 @@ class Artikel
         /* Sobald ein KindArtikel teurer ist als der Vaterartikel, muss nVariationsAufpreisVorhanden auf 1
            gesetzt werden damit in der Artikelvorschau ein "Preis ab ..." erscheint
            aber nur wenn auch Preise angezeigt werden, this->Preise also auch vorhanden ist */
-        if (\is_object($this->Preise) && $this->kVaterArtikel === 0 && $this->nIstVater === 1) {
+        if ($this->kVaterArtikel === 0 && $this->nIstVater === 1 && \is_object($this->Preise)) {
             $fVKNetto         = $this->Preise->fVKNetto ?? 0.0;
             $oKindSonderpreis = $db->query(
                 'SELECT COUNT(a.kArtikel) AS nVariationsAufpreisVorhanden
@@ -4274,17 +4084,14 @@ class Artikel
                 && (int)$this->FunktionsAttribute[\FKT_ATTRIBUT_WARENKORBMATRIX] === 1
                 && $this->getOption('nMain', 0) === 1)
         ) {
-            $this->oVariationKombiKinderAssoc_arr = $this->holeVariationKombiKinderAssoc($customerGroupID, $langID);
+            $this->oVariationKombiKinderAssoc_arr = $this->holeVariationKombiKinderAssoc($customerGroupID);
         }
         $this->cMwstVersandText = $this->gibMwStVersandString(
             isset($_SESSION['Kundengruppe']->nNettoPreise) ? Frontend::getCustomerGroup()->isMerchant() : false
         );
-        $this->oDownload_arr    = [];
         if ($this->getOption('nDownload', 0) === 1) {
             $this->oDownload_arr = Download::getDownloads(['kArtikel' => $this->kArtikel], $langID);
         }
-        $this->bHasKonfig  = false;
-        $this->oKonfig_arr = [];
         if (Konfigurator::checkLicense()) {
             $this->bHasKonfig = Konfigurator::hasKonfig($this->kArtikel);
             if ($this->bHasKonfig && $this->getOption('nKonfig', 0) === 1) {
@@ -4300,11 +4107,11 @@ class Artikel
         }
         //hersteller holen
         if ($tmpProduct->kHersteller > 0) {
-            $oHersteller = new Hersteller((int)$tmpProduct->kHersteller, Shop::getLanguageID());
+            $manufacturer = new Hersteller((int)$tmpProduct->kHersteller, $langID);
 
             $this->cHersteller         = $tmpProduct->cName_thersteller;
-            $this->cHerstellerSeo      = $oHersteller->cSeo;
-            $this->cHerstellerURL      = URL::buildURL($oHersteller, \URLART_HERSTELLER);
+            $this->cHerstellerSeo      = $manufacturer->cSeo;
+            $this->cHerstellerURL      = URL::buildURL($manufacturer, \URLART_HERSTELLER);
             $this->cHerstellerHomepage = $tmpProduct->cHomepage;
             if (\filter_var($this->cHerstellerHomepage, \FILTER_VALIDATE_URL) === false) {
                 $this->cHerstellerHomepage = 'http://' . $tmpProduct->cHomepage;
@@ -4359,7 +4166,7 @@ class Artikel
         if ($this->inWarenkorbLegbar >= 1 && $this->nIstVater !== 1) {
             $this->cEstimatedDelivery = $this->getDeliveryTime($_SESSION['cLieferlandISO']);
         }
-        $this->baueSuchspecialBildoverlay($langID);
+        $this->baueSuchspecialBildoverlay();
         $this->isSimpleVariation = false;
         if ($this->Variationen !== null && \count($this->Variationen) > 0) {
             $this->isSimpleVariation = $this->kVaterArtikel === 0 && $this->nIstVater === 0;
@@ -4369,15 +4176,10 @@ class Artikel
         $this->metaDescription = $this->setMetaDescription();
         $this->taxData         = $this->getShippingAndTaxData();
         if ($this->conf['bewertung']['bewertung_anzeigen'] === 'Y' && $this->getOption('nRatings', 0) === 1) {
-            $this->holehilfreichsteBewertung($langID)
-                 ->holeBewertung($langID, -1, 1, 0, $this->conf['bewertung']['bewertung_freischalten']);
+            $this->holehilfreichsteBewertung()
+                 ->holeBewertung(-1, 1, 0, $this->conf['bewertung']['bewertung_freischalten']);
         }
-        if (isset($_SESSION['Sprachen'])
-            && \count($_SESSION['Sprachen']) > 0
-            && $this->getOption('nLanguageURLs', 0) === 1
-        ) {
-            $this->baueArtikelSprachURL();
-        }
+        $this->baueArtikelSprachURL();
         $this->cKurzbezeichnung = !empty($this->AttributeAssoc[\ART_ATTRIBUT_SHORTNAME])
             ? $this->AttributeAssoc[\ART_ATTRIBUT_SHORTNAME]
             : $this->cName;
@@ -4417,11 +4219,146 @@ class Artikel
     }
 
     /**
+     * @param object $data
+     * @param int    $langID
+     */
+    private function sanitizeProductData($data, int $langID): void
+    {
+        $this->kArtikel                          = (int)$data->kArtikel;
+        $this->kHersteller                       = (int)$data->kHersteller;
+        $this->kLieferstatus                     = (int)$data->kLieferstatus;
+        $this->kSteuerklasse                     = (int)$data->kSteuerklasse;
+        $this->kEinheit                          = (int)$data->kEinheit;
+        $this->kVersandklasse                    = (int)$data->kVersandklasse;
+        $this->kWarengruppe                      = (int)$data->kWarengruppe;
+        $this->kVPEEinheit                       = (int)$data->kVPEEinheit;
+        $this->fLagerbestand                     = $data->fLagerbestand;
+        $this->fMindestbestellmenge              = $data->fMindestbestellmenge;
+        $this->fPackeinheit                      = $data->fPackeinheit;
+        $this->fAbnahmeintervall                 = $data->fAbnahmeintervall;
+        $this->fZulauf                           = $data->fZulauf;
+        $this->fGewicht                          = $data->fGewicht;
+        $this->fArtikelgewicht                   = $data->fArtikelgewicht;
+        $this->fUVP                              = $data->fUVP;
+        $this->fUVPBrutto                        = $data->fUVP;
+        $this->fVPEWert                          = $data->fVPEWert;
+        $this->cName                             = \htmlspecialchars(
+            $data->cName,
+            \ENT_COMPAT | \ENT_HTML401,
+            \JTL_CHARSET
+        );
+        $this->cSeo                              = $data->cSeo;
+        $this->cBeschreibung                     = Text::parseNewsText($data->cBeschreibung);
+        $this->cAnmerkung                        = $data->cAnmerkung;
+        $this->cArtNr                            = $data->cArtNr;
+        $this->cVPE                              = $data->cVPE;
+        $this->cVPEEinheit                       = $data->cVPEEinheit;
+        $this->cSuchbegriffe                     = $data->cSuchbegriffe;
+        $this->cEinheit                          = $data->teinheitcName;
+        $this->cTeilbar                          = $data->cTeilbar;
+        $this->cBarcode                          = $data->cBarcode;
+        $this->cLagerBeachten                    = $data->cLagerBeachten;
+        $this->cLagerKleinerNull                 = $data->cLagerKleinerNull;
+        $this->cLagerVariation                   = $data->cLagerVariation;
+        $this->cKurzBeschreibung                 = Text::parseNewsText($data->cKurzBeschreibung);
+        $this->cLieferstatus                     = $data->cName_tlieferstatus;
+        $this->cTopArtikel                       = $data->cTopArtikel;
+        $this->cNeu                              = $data->cNeu;
+        $this->fMwSt                             = $data->fMwSt;
+        $this->dErscheinungsdatum                = $data->dErscheinungsdatum;
+        $this->Erscheinungsdatum_de              = $data->Erscheinungsdatum_de;
+        $this->fDurchschnittsBewertung           = \round($data->fDurchschnittsBewertung * 2) / 2;
+        $this->cVersandklasse                    = $data->cVersandklasse;
+        $this->cSerie                            = $data->cSerie;
+        $this->cISBN                             = $data->cISBN;
+        $this->cASIN                             = $data->cASIN;
+        $this->cHAN                              = $data->cHAN;
+        $this->cUNNummer                         = $data->cUNNummer;
+        $this->cGefahrnr                         = $data->cGefahrnr;
+        $this->nIstVater                         = (int)$data->nIstVater;
+        $this->kEigenschaftKombi                 = (int)$data->kEigenschaftKombi;
+        $this->kVaterArtikel                     = (int)$data->kVaterArtikel;
+        $this->kStueckliste                      = (int)$data->kStueckliste;
+        $this->dErstellt                         = $data->dErstellt;
+        $this->nSort                             = (int)$data->nSort;
+        $this->fNettoPreis                       = $data->fNettoPreis;
+        $this->bIsBestseller                     = (int)$data->bIsBestseller;
+        $this->bIsTopBewertet                    = (int)$data->bIsTopBewertet;
+        $this->cTaric                            = $data->cTaric;
+        $this->cUPC                              = $data->cUPC;
+        $this->cHerkunftsland                    = $data->cHerkunftsland;
+        $this->cEPID                             = $data->cEPID;
+        $this->fLieferantenlagerbestand          = $data->fLieferantenlagerbestand;
+        $this->fLieferzeit                       = $data->fLieferzeit;
+        $this->cAktivSonderpreis                 = $data->cAktivSonderpreis;
+        $this->dSonderpreisStart_en              = $data->dStart_en;
+        $this->dSonderpreisEnde_en               = $data->dEnde_en;
+        $this->dSonderpreisStart_de              = $data->dStart_de;
+        $this->dSonderpreisEnde_de               = $data->dEnde_de;
+        $this->dZulaufDatum                      = $data->dZulaufDatum;
+        $this->dZulaufDatum_de                   = $data->dZulaufDatum_de;
+        $this->dMHD                              = $data->dMHD;
+        $this->dMHD_de                           = $data->dMHD_de;
+        $this->kMassEinheit                      = (int)$data->kMassEinheit;
+        $this->kGrundpreisEinheit                = (int)$data->kGrundPreisEinheit;
+        $this->fMassMenge                        = (float)$data->fMassMenge;
+        $this->fGrundpreisMenge                  = (float)$data->fGrundpreisMenge;
+        $this->fBreite                           = (float)$data->fBreite;
+        $this->fHoehe                            = (float)$data->fHoehe;
+        $this->fLaenge                           = (float)$data->fLaenge;
+        $this->nLiefertageWennAusverkauft        = (int)$data->nLiefertageWennAusverkauft;
+        $this->nAutomatischeLiefertageberechnung = (int)$data->nAutomatischeLiefertageberechnung;
+        $this->nBearbeitungszeit                 = (int)$data->nBearbeitungszeit;
+        $this->cMasseinheitCode                  = $data->cMasseinheitCode;
+        $this->cMasseinheitName                  = $data->cMasseinheitName;
+        $this->cGrundpreisEinheitCode            = $data->cGrundpreisEinheitCode;
+        $this->cGrundpreisEinheitName            = $data->cGrundpreisEinheitName;
+        $this->oDownload_arr                     = [];
+        $this->bHasKonfig                        = false;
+        $this->oKonfig_arr                       = [];
+        // short baseprice measurement unit e.g. "ml"
+        $abbr = UnitsOfMeasure::getPrintAbbreviation($this->cGrundpreisEinheitCode);
+        if (!empty($abbr)) {
+            $this->cGrundpreisEinheitName = UnitsOfMeasure::getPrintAbbreviation($this->cGrundpreisEinheitCode);
+        }
+        // short measurement unit e.g. "ml"
+        $abbr = UnitsOfMeasure::getPrintAbbreviation($this->cMasseinheitCode);
+        if (!empty($abbr)) {
+            $this->cMasseinheitName = $abbr;
+        }
+        // Lokalisieren
+        if ($langID > 0 && !LanguageHelper::isDefaultLanguageActive()) {
+            $unit = Shop::Container()->getDB()->queryPrepared(
+                'SELECT cName
+                    FROM teinheit
+                    WHERE kEinheit = (SELECT kEinheit
+                                        FROM teinheit
+                                        WHERE cName = :vpe LIMIT 0, 1)
+                                            AND kSprache = :lid LIMIT 0, 1',
+                ['vpe' => $this->cVPEEinheit, 'lid' => $langID],
+                ReturnType::SINGLE_OBJECT
+            );
+            if (isset($unit->cName) && \mb_strlen($unit->cName) > 0) {
+                $this->cVPEEinheit = $unit->cName;
+            }
+        }
+        $this->cGewicht        = Trennzeichen::getUnit(\JTL_SEPARATOR_WEIGHT, $langID, $this->fGewicht);
+        $this->cArtikelgewicht = Trennzeichen::getUnit(\JTL_SEPARATOR_WEIGHT, $langID, $this->fArtikelgewicht);
+
+        if ($this->fMassMenge != 0) {
+            $this->cMassMenge = Trennzeichen::getUnit(\JTL_SEPARATOR_AMOUNT, $langID, $this->fMassMenge);
+        }
+        if ($this->fPackeinheit == 0) {
+            $this->fPackeinheit = 1;
+        }
+    }
+
+    /**
      * @param int $productID
      * @param int $customerGroupID
-     * @return array|int|object
+     * @return $this
      */
-    public function getPriceData($productID, $customerGroupID)
+    public function getPriceData(int $productID, int $customerGroupID): self
     {
         $tmp = Shop::Container()->getDB()->queryPrepared(
             'SELECT tartikel.kArtikel, tartikel.kEinheit, tartikel.kVPEEinheit, tartikel.kSteuerklasse,
@@ -4429,10 +4366,10 @@ class Artikel
                 FROM tartikel
                 LEFT JOIN tartikelsichtbarkeit
                     ON tartikel.kArtikel = tartikelsichtbarkeit.kArtikel
-                    AND tartikelsichtbarkeit.kKundengruppe = :kKundengruppe
+                    AND tartikelsichtbarkeit.kKundengruppe = :cgid
                 WHERE tartikelsichtbarkeit.kArtikel IS NULL
-                    AND tartikel.kArtikel = :kArtikel',
-            ['kArtikel' => $productID, 'kKundengruppe' => $customerGroupID],
+                    AND tartikel.kArtikel = :pid',
+            ['pid' => $productID, 'cgid' => $customerGroupID],
             ReturnType::SINGLE_OBJECT
         );
 
@@ -4447,9 +4384,9 @@ class Artikel
     }
 
     /**
-     * @return array|null
+     * @return array
      */
-    public function getLanguageURLs(): ?array
+    public function getLanguageURLs(): array
     {
         return $this->cSprachURL_arr;
     }
@@ -4457,119 +4394,118 @@ class Artikel
     /**
      * @param int $productID
      * @param int $customerGroupID
-     * @return array
+     * @return int[]
      */
     private function getCategories(int $productID = 0, int $customerGroupID = 0): array
     {
         $productID       = $productID > 0 ? $productID : (int)$this->kArtikel;
         $customerGroupID = $customerGroupID > 0 ? $customerGroupID : Frontend::getCustomerGroup()->getID();
-        $categories      = Shop::Container()->getDB()->query(
+
+        return \array_map(function ($e) {
+            return (int)$e->kKategorie;
+        }, Shop::Container()->getDB()->queryPrepared(
             'SELECT tkategorieartikel.kKategorie
                 FROM tkategorieartikel
                 LEFT JOIN tkategoriesichtbarkeit
                     ON tkategoriesichtbarkeit.kKategorie = tkategorieartikel.kKategorie
-                    AND tkategoriesichtbarkeit.kKundengruppe = ' . $customerGroupID . '
+                    AND tkategoriesichtbarkeit.kKundengruppe = :cgid
                 JOIN tkategorie
                     ON tkategorie.kKategorie = tkategorieartikel.kKategorie
                 WHERE tkategoriesichtbarkeit.kKategorie IS NULL
                     AND tkategorieartikel.kKategorie > 0
-                    AND tkategorieartikel.kArtikel = ' . $productID,
+                    AND tkategorieartikel.kArtikel = :pid',
+            ['cgid' => $customerGroupID, 'pid' => $productID],
             ReturnType::ARRAY_OF_OBJECTS
-        );
-
-        return \array_map(function ($e) {
-            return (int)$e->kKategorie;
-        }, $categories);
+        ));
     }
 
     /**
-     * @param int $languageID
      * @return $this
      * @throws \Exception
      */
-    public function baueSuchspecialBildoverlay(int $languageID = 0): self
+    public function baueSuchspecialBildoverlay(): self
     {
-        $languageID     = $languageID > 0 ? $languageID : Shop::getLanguageID();
-        $searchSpecials = SearchSpecial::getAll($languageID);
+        $searchSpecials = SearchSpecial::getAll($this->kSprache);
         // Suchspecialbildoverlay
         // Kleinste Prio und somit die Wichtigste, steht immer im Element 0 vom Array (nPrio ASC)
-        if (!empty($searchSpecials)) {
-            $specials = [
-                \SEARCHSPECIALS_BESTSELLER       => $this->istBestseller(),
-                \SEARCHSPECIALS_SPECIALOFFERS    => $this->Preise !== null && $this->Preise->Sonderpreis_aktiv === 1,
-                \SEARCHSPECIALS_NEWPRODUCTS      => false,
-                \SEARCHSPECIALS_TOPOFFERS        => $this->cTopArtikel === 'Y',
-                \SEARCHSPECIALS_UPCOMINGPRODUCTS => false,
-                \SEARCHSPECIALS_TOPREVIEWS       => false,
-                \SEARCHSPECIALS_OUTOFSTOCK       => false,
-                \SEARCHSPECIALS_ONSTOCK          => false,
-                \SEARCHSPECIALS_PREORDER         => false
-            ];
+        if (empty($searchSpecials)) {
+            return $this;
+        }
+        $specials = [
+            \SEARCHSPECIALS_BESTSELLER       => $this->istBestseller(),
+            \SEARCHSPECIALS_SPECIALOFFERS    => $this->Preise !== null && $this->Preise->Sonderpreis_aktiv === 1,
+            \SEARCHSPECIALS_NEWPRODUCTS      => false,
+            \SEARCHSPECIALS_TOPOFFERS        => $this->cTopArtikel === 'Y',
+            \SEARCHSPECIALS_UPCOMINGPRODUCTS => false,
+            \SEARCHSPECIALS_TOPREVIEWS       => false,
+            \SEARCHSPECIALS_OUTOFSTOCK       => false,
+            \SEARCHSPECIALS_ONSTOCK          => false,
+            \SEARCHSPECIALS_PREORDER         => false
+        ];
 
-            $now = new DateTime();
-            // Neu im Sortiment
-            if (!empty($this->cNeu) && $this->cNeu === 'Y') {
-                $nAlterTage  = (isset($this->conf['boxen']['box_neuimsortiment_alter_tage'])
-                    && (int)$this->conf['boxen']['box_neuimsortiment_alter_tage'] > 0)
-                    ? (int)$this->conf['boxen']['box_neuimsortiment_alter_tage']
-                    : 30;
-                $dateCreated = new DateTime($this->dErstellt);
-                $dateCreated->modify('+' . $nAlterTage . ' day');
-                $specials[\SEARCHSPECIALS_NEWPRODUCTS] = $now < $dateCreated;
-            }
-            // In kürze Verfügbar
-            $specials[\SEARCHSPECIALS_UPCOMINGPRODUCTS] = $this->dErscheinungsdatum !== null
-                && $now < new DateTime($this->dErscheinungsdatum);
-            // Top bewertet
-            // No need to check with custom function.. this value is set in fuelleArtikel()?
-            $specials[\SEARCHSPECIALS_TOPREVIEWS] = $this->bIsTopBewertet === '1';
-            // Variationen Lagerbestand 0
-            if ($this->cLagerBeachten === 'Y'
-                && $this->cLagerKleinerNull === 'N'
-                && $this->cLagerVariation === 'Y'
-                && \is_array($this->Variationen)
-                && \count($this->Variationen) > 0
-            ) {
-                $specials[\SEARCHSPECIALS_OUTOFSTOCK] = $this->nVariationenVerfuegbar === 0;
-            }
-            // VariationskombiKinder Lagerbestand 0
-            if ($this->kVaterArtikel > 0) {
-                $variChildren = Shop::Container()->getDB()->selectAll(
-                    'tartikel',
-                    'kVaterArtikel',
-                    (int)$this->kVaterArtikel,
-                    'fLagerbestand, cLagerBeachten, cLagerKleinerNull'
-                );
-                $bLieferbar   = \array_reduce($variChildren, function ($carry, $item) {
-                    return $carry
-                        || $item->fLagerbestand > 0
-                        || $item->cLagerBeachten === 'N'
-                        || $item->cLagerKleinerNull === 'Y';
-                }, false);
+        $now = new DateTime();
+        // Neu im Sortiment
+        if (!empty($this->cNeu) && $this->cNeu === 'Y') {
+            $nAlterTage  = (isset($this->conf['boxen']['box_neuimsortiment_alter_tage'])
+                && (int)$this->conf['boxen']['box_neuimsortiment_alter_tage'] > 0)
+                ? (int)$this->conf['boxen']['box_neuimsortiment_alter_tage']
+                : 30;
+            $dateCreated = new DateTime($this->dErstellt);
+            $dateCreated->modify('+' . $nAlterTage . ' day');
+            $specials[\SEARCHSPECIALS_NEWPRODUCTS] = $now < $dateCreated;
+        }
+        // In kürze Verfügbar
+        $specials[\SEARCHSPECIALS_UPCOMINGPRODUCTS] = $this->dErscheinungsdatum !== null
+            && $now < new DateTime($this->dErscheinungsdatum);
+        // Top bewertet
+        // No need to check with custom function.. this value is set in fuelleArtikel()?
+        $specials[\SEARCHSPECIALS_TOPREVIEWS] = $this->bIsTopBewertet === '1';
+        // Variationen Lagerbestand 0
+        if ($this->cLagerBeachten === 'Y'
+            && $this->cLagerKleinerNull === 'N'
+            && $this->cLagerVariation === 'Y'
+            && \is_array($this->Variationen)
+            && \count($this->Variationen) > 0
+        ) {
+            $specials[\SEARCHSPECIALS_OUTOFSTOCK] = $this->nVariationenVerfuegbar === 0;
+        }
+        // VariationskombiKinder Lagerbestand 0
+        if ($this->kVaterArtikel > 0) {
+            $variChildren = Shop::Container()->getDB()->selectAll(
+                'tartikel',
+                'kVaterArtikel',
+                (int)$this->kVaterArtikel,
+                'fLagerbestand, cLagerBeachten, cLagerKleinerNull'
+            );
+            $bLieferbar   = \array_reduce($variChildren, function ($carry, $item) {
+                return $carry
+                    || $item->fLagerbestand > 0
+                    || $item->cLagerBeachten === 'N'
+                    || $item->cLagerKleinerNull === 'Y';
+            }, false);
 
-                $specials[\SEARCHSPECIALS_OUTOFSTOCK] = !$bLieferbar;
-            } else {
-                // Normal Lagerbestand 0
-                $specials[\SEARCHSPECIALS_OUTOFSTOCK] = ($this->fLagerbestand <= 0
-                    && $this->cLagerBeachten === 'Y'
-                    && $this->cLagerKleinerNull !== 'Y');
+            $specials[\SEARCHSPECIALS_OUTOFSTOCK] = !$bLieferbar;
+        } else {
+            // Normal Lagerbestand 0
+            $specials[\SEARCHSPECIALS_OUTOFSTOCK] = ($this->fLagerbestand <= 0
+                && $this->cLagerBeachten === 'Y'
+                && $this->cLagerKleinerNull !== 'Y');
+        }
+        // Auf Lager
+        $specials[\SEARCHSPECIALS_ONSTOCK] = ($this->fLagerbestand > 0 && $this->cLagerBeachten === 'Y');
+        // Vorbestellbar
+        if ($specials[\SEARCHSPECIALS_UPCOMINGPRODUCTS]
+            && $this->conf['global']['global_erscheinende_kaeuflich'] === 'Y'
+        ) {
+            $specials[\SEARCHSPECIALS_PREORDER] = true;
+        }
+        $this->bSuchspecial_arr = $specials;
+        // SuchspecialBild anhand der höchsten Prio und des gesetzten Suchspecials festlegen
+        foreach ($searchSpecials as $overlay) {
+            if (empty($this->bSuchspecial_arr[$overlay->getType()])) {
+                continue;
             }
-            // Auf Lager
-            $specials[\SEARCHSPECIALS_ONSTOCK] = ($this->fLagerbestand > 0 && $this->cLagerBeachten === 'Y');
-            // Vorbestellbar
-            if ($specials[\SEARCHSPECIALS_UPCOMINGPRODUCTS]
-                && $this->conf['global']['global_erscheinende_kaeuflich'] === 'Y'
-            ) {
-                $specials[\SEARCHSPECIALS_PREORDER] = true;
-            }
-            $this->bSuchspecial_arr = $specials;
-            // SuchspecialBild anhand der höchsten Prio und des gesetzten Suchspecials festlegen
-            foreach ($searchSpecials as $overlay) {
-                if (empty($this->bSuchspecial_arr[$overlay->getType()])) {
-                    continue;
-                }
-                $this->oSuchspecialBild = $overlay;
-            }
+            $this->oSuchspecialBild = $overlay;
         }
 
         return $this;
@@ -4607,12 +4543,12 @@ class Artikel
     }
 
     /**
-     * check if current article was rated before
+     * check if current product was rated before
      *
-     * @param array $oBoxenEinstellung_arr
+     * @param array $config
      * @return bool
      */
-    public function istTopBewertet(array $oBoxenEinstellung_arr): bool
+    public function istTopBewertet(array $config): bool
     {
         if ($this->bIsTopBewertet !== null) {
             return (bool)$this->bIsTopBewertet;
@@ -4620,14 +4556,14 @@ class Artikel
         if ($this->kArtikel <= 0) {
             return false;
         }
-        $minStars = isset($oBoxenEinstellung_arr['boxen']['boxen_topbewertet_minsterne'])
-            ? (int)$oBoxenEinstellung_arr['boxen']['boxen_topbewertet_minsterne']
+        $minStars = isset($config['boxen']['boxen_topbewertet_minsterne'])
+            ? (int)$config['boxen']['boxen_topbewertet_minsterne']
             : 4;
         $rating   = Shop::Container()->getDB()->queryPrepared(
             'SELECT ROUND(fDurchschnittsBewertung) >= :threshold AS bIsTopBewertet
                 FROM tartikelext
-                WHERE kArtikel = :kArtikel',
-            ['threshold' => $minStars, 'kArtikel' => $this->kArtikel],
+                WHERE kArtikel = :pid',
+            ['threshold' => $minStars, 'pid' => $this->kArtikel],
             ReturnType::SINGLE_OBJECT
         );
 
@@ -4635,12 +4571,12 @@ class Artikel
     }
 
     /**
-     * check if current article is a bestseller
+     * check if current product is a bestseller
      *
-     * @param array $globalConfig
+     * @param array $config
      * @return bool
      */
-    public function istBestseller(array $globalConfig = null): bool
+    public function istBestseller(array $config = null): bool
     {
         if ($this->bIsBestseller !== null) {
             return (bool)$this->bIsBestseller;
@@ -4648,14 +4584,14 @@ class Artikel
         if ($this->kArtikel <= 0) {
             return false;
         }
-        $minSales   = isset($globalConfig['global']['global_bestseller_minanzahl'])
+        $minSales   = isset($config['global']['global_bestseller_minanzahl'])
             ? (float)$this->conf['global']['global_bestseller_minanzahl']
             : 10;
         $bestseller = Shop::Container()->getDB()->queryPrepared(
             'SELECT ROUND(fAnzahl) >= :threshold AS bIsBestseller
                 FROM tbestseller
-                WHERE kArtikel = :kArtikel',
-            ['threshold' => $minSales, 'kArtikel' => $this->kArtikel],
+                WHERE kArtikel = :pid',
+            ['threshold' => $minSales, 'pid' => $this->kArtikel],
             ReturnType::SINGLE_OBJECT
         );
 
@@ -4747,12 +4683,10 @@ class Artikel
     }
 
     /**
-     * @param int $languageID
      * @return $this
      */
-    public function holWarenlager(int $languageID = 0): self
+    public function holWarenlager(): self
     {
-        $languageID = $languageID > 0 ? $languageID : Shop::getLanguageID();
         $options    = [
             'cLagerBeachten'                => $this->cLagerBeachten,
             'cEinheit'                      => $this->cEinheit,
@@ -4772,7 +4706,7 @@ class Artikel
                 : Shop::Lang()->get('ampelRot')
         ];
 
-        $this->oWarenlager_arr = Warenlager::getByProduct($this->kArtikel, $languageID, $options);
+        $this->oWarenlager_arr = Warenlager::getByProduct($this->kArtikel, $this->kSprache, $options);
 
         return $this;
     }
@@ -5073,15 +5007,16 @@ class Artikel
             return $this;
         }
         //auf aktuelle Sprache setzen
-        $localized = Shop::Container()->getDB()->query(
+        $localized = Shop::Container()->getDB()->queryPrepared(
             'SELECT tartikelsprache.cName, tseo.cSeo, tartikelsprache.cKurzBeschreibung, tartikelsprache.cBeschreibung
                 FROM tartikelsprache
                 LEFT JOIN tseo
                     ON tseo.cKey = \'kArtikel\'
                     AND tseo.kKey = tartikelsprache.kArtikel
                     AND tseo.kSprache = tartikelsprache.kSprache
-                WHERE kArtikel = ' . (int)$this->kArtikel . '
-                    AND tartikelsprache.kSprache = ' . $languageID,
+                WHERE kArtikel = :pid
+                    AND tartikelsprache.kSprache = :lid',
+            ['lid' => $languageID, 'pid' => $this->kArtikel],
             ReturnType::SINGLE_OBJECT
         );
         if ($localized !== false) {
@@ -5183,31 +5118,21 @@ class Artikel
 
     /**
      * @param string $name
-     * @param int    $languageID
      * @return bool|string
      */
-    public function gibAttributWertNachName($name, $languageID = 0)
+    public function gibAttributWertNachName(string $name)
     {
         if ($this->kArtikel === null || $this->kArtikel <= 0 || LanguageHelper::isDefaultLanguageActive()) {
             return false;
         }
-        if (!$languageID) {
-            if (isset($_SESSION['kSprache'])) {
-                $languageID = $_SESSION['kSprache'];
-            } else {
-                $defaultLanguage = LanguageHelper::getDefaultLanguage();
-                $languageID      = $defaultLanguage->kSprache;
-            }
-        }
-        $languageID = (int)$languageID;
-        $att        = Shop::Container()->getDB()->select('tattribut', 'kArtikel', (int)$this->kArtikel, 'cName', $name);
-        if ($languageID > 0 && isset($att->kAttribut) && $att->kAttribut > 0) {
+        $att = Shop::Container()->getDB()->select('tattribut', 'kArtikel', (int)$this->kArtikel, 'cName', $name);
+        if ($this->kSprache > 0 && isset($att->kAttribut) && $att->kAttribut > 0) {
             $att   = Shop::Container()->getDB()->select(
                 'tattributsprache',
                 'kAttribut',
                 $att->kAttribut,
                 'kSprache',
-                $languageID
+                $this->kSprache
             );
             $value = $att->cStringWert;
             if ($att->cTextWert) {
@@ -5244,65 +5169,7 @@ class Artikel
     public function insertInDB(): int
     {
         \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-        $obj                           = new stdClass();
-        $obj->kArtikel                 = $this->kArtikel;
-        $obj->kHersteller              = $this->kHersteller;
-        $obj->kLieferstatus            = $this->kLieferstatus;
-        $obj->kSteuerklasse            = $this->kSteuerklasse;
-        $obj->kEinheit                 = $this->kEinheit;
-        $obj->kVersandklasse           = $this->kVersandklasse;
-        $obj->kEigenschaftKombi        = $this->kEigenschaftKombi;
-        $obj->kVaterArtikel            = $this->kVaterArtikel;
-        $obj->kStueckliste             = $this->kStueckliste;
-        $obj->kWarengruppe             = $this->kWarengruppe;
-        $obj->kVPEEinheit              = $this->kVPEEinheit;
-        $obj->cSeo                     = $this->cSeo;
-        $obj->cArtNr                   = $this->cArtNr;
-        $obj->cName                    = $this->cName;
-        $obj->cBeschreibung            = $this->cBeschreibung;
-        $obj->cAnmerkung               = $this->cAnmerkung;
-        $obj->fLagerbestand            = $this->fLagerbestand;
-        $obj->fMwSt                    = $this->fMwSt;
-        $obj->fMindestbestellmenge     = $this->fMindestbestellmenge;
-        $obj->fLieferantenlagerbestand = $this->fLieferantenlagerbestand;
-        $obj->fLieferzeit              = $this->fLieferzeit;
-        $obj->cBarcode                 = $this->cBarcode;
-        $obj->cTopArtikel              = $this->cTopArtikel;
-        $obj->fGewicht                 = $this->fGewicht;
-        $obj->fArtikelgewicht          = $this->fArtikelgewicht;
-        $obj->cNeu                     = $this->cNeu;
-        $obj->cKurzBeschreibung        = $this->cKurzBeschreibung;
-        $obj->fUVP                     = $this->fUVP;
-        $obj->cLagerBeachten           = $this->cLagerBeachten;
-        $obj->cLagerKleinerNull        = $this->cLagerKleinerNull;
-        $obj->cLagerVariation          = $this->cLagerVariation;
-        $obj->cTeilbar                 = $this->cTeilbar;
-        $obj->fPackeinheit             = $this->fPackeinheit;
-        $obj->fAbnahmeintervall        = $this->fAbnahmeintervall;
-        $obj->fZulauf                  = $this->fZulauf;
-        $obj->cVPE                     = $this->cVPE;
-        $obj->fVPEWert                 = $this->fVPEWert;
-        $obj->cVPEEinheit              = $this->cVPEEinheit;
-        $obj->cSuchbegriffe            = $this->cSuchbegriffe;
-        $obj->nSort                    = $this->nSort;
-        $obj->dErscheinungsdatum       = $this->dErscheinungsdatum;
-        $obj->dErstellt                = $this->dErstellt;
-        $obj->dLetzteAktualisierung    = $this->dLetzteAktualisierung;
-        $obj->dZulaufDatum             = $this->dZulaufDatum;
-        $obj->dMHD                     = $this->dMHD;
-        $obj->cSerie                   = $this->cSerie;
-        $obj->cISBN                    = $this->cISBN;
-        $obj->cASIN                    = $this->cASIN;
-        $obj->cHAN                     = $this->cHAN;
-        $obj->cUNNummer                = $this->cUNNummer;
-        $obj->cGefahrnr                = $this->cGefahrnr;
-        $obj->cTaric                   = $this->cTaric;
-        $obj->cUPC                     = $this->cUPC;
-        $obj->cHerkunftsland           = $this->cHerkunftsland;
-        $obj->cEPID                    = $this->cEPID;
-        $obj->nIstVater                = $this->nIstVater;
-
-        return Shop::Container()->getDB()->insert('tartikel', $obj);
+        return 0;
     }
 
     /**
@@ -5312,66 +5179,6 @@ class Artikel
     public function updateInDB(): self
     {
         \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-        $obj                           = new stdClass();
-        $obj->kArtikel                 = $this->kArtikel;
-        $obj->kHersteller              = $this->kHersteller;
-        $obj->kLieferstatus            = $this->kLieferstatus;
-        $obj->kSteuerklasse            = $this->kSteuerklasse;
-        $obj->kEinheit                 = $this->kEinheit;
-        $obj->kVersandklasse           = $this->kVersandklasse;
-        $obj->kEigenschaftKombi        = $this->kEigenschaftKombi;
-        $obj->kVaterArtikel            = $this->kVaterArtikel;
-        $obj->kStueckliste             = $this->kStueckliste;
-        $obj->kWarengruppe             = $this->kWarengruppe;
-        $obj->kVPEEinheit              = $this->kVPEEinheit;
-        $obj->cSeo                     = $this->cSeo;
-        $obj->cArtNr                   = $this->cArtNr;
-        $obj->cName                    = $this->cName;
-        $obj->cBeschreibung            = $this->cBeschreibung;
-        $obj->cAnmerkung               = $this->cAnmerkung;
-        $obj->fLagerbestand            = $this->fLagerbestand;
-        $obj->fMwSt                    = $this->fMwSt;
-        $obj->fMindestbestellmenge     = $this->fMindestbestellmenge;
-        $obj->fLieferantenlagerbestand = $this->fLieferantenlagerbestand;
-        $obj->fLieferzeit              = $this->fLieferzeit;
-        $obj->cBarcode                 = $this->cBarcode;
-        $obj->cTopArtikel              = $this->cTopArtikel;
-        $obj->fGewicht                 = $this->fGewicht;
-        $obj->fArtikelgewicht          = $this->fArtikelgewicht;
-        $obj->cNeu                     = $this->cNeu;
-        $obj->cKurzBeschreibung        = $this->cKurzBeschreibung;
-        $obj->fUVP                     = $this->fUVP;
-        $obj->cLagerBeachten           = $this->cLagerBeachten;
-        $obj->cLagerKleinerNull        = $this->cLagerKleinerNull;
-        $obj->cLagerVariation          = $this->cLagerVariation;
-        $obj->cTeilbar                 = $this->cTeilbar;
-        $obj->fPackeinheit             = $this->fPackeinheit;
-        $obj->fAbnahmeintervall        = $this->fAbnahmeintervall;
-        $obj->fZulauf                  = $this->fZulauf;
-        $obj->cVPE                     = $this->cVPE;
-        $obj->fVPEWert                 = $this->fVPEWert;
-        $obj->cVPEEinheit              = $this->cVPEEinheit;
-        $obj->cSuchbegriffe            = $this->cSuchbegriffe;
-        $obj->nSort                    = $this->nSort;
-        $obj->dErscheinungsdatum       = $this->dErscheinungsdatum;
-        $obj->dErstellt                = $this->dErstellt;
-        $obj->dLetzteAktualisierung    = $this->dLetzteAktualisierung;
-        $obj->dZulaufDatum             = $this->dZulaufDatum;
-        $obj->dMHD                     = $this->dMHD;
-        $obj->cSerie                   = $this->cSerie;
-        $obj->cISBN                    = $this->cISBN;
-        $obj->cASIN                    = $this->cASIN;
-        $obj->cHAN                     = $this->cHAN;
-        $obj->cUNNummer                = $this->cUNNummer;
-        $obj->cGefahrnr                = $this->cGefahrnr;
-        $obj->cTaric                   = $this->cTaric;
-        $obj->cUPC                     = $this->cUPC;
-        $obj->cHerkunftsland           = $this->cHerkunftsland;
-        $obj->cEPID                    = $this->cEPID;
-        $obj->nIstVater                = $this->nIstVater;
-
-        Shop::Container()->getDB()->update('tartikel', 'kArtikel', $obj->kArtikel, $obj);
-
         return $this;
     }
 
@@ -5435,7 +5242,7 @@ class Artikel
      * @param int    $shippingID  special shippingID, if null will select cheapest
      * @return Versandart|object|null - cheapest shipping except shippings that offer cash payment or that are excluded
      */
-    public function getFavourableShipping($countryCode, $shippingID = null)
+    public function getFavourableShipping(string $countryCode = null, int $shippingID = null)
     {
         if (!empty($_SESSION['Versandart']->kVersandart)
             && isset($_SESSION['Versandart']->nMinLiefertage)
@@ -5454,38 +5261,44 @@ class Artikel
             return $this->oFavourableShipping;
         }
         if ($countryCode === null && isset($_SESSION['cLieferlandISO'])) {
-            $countryCode = $_SESSION['cLieferlandISO'];
+            $countryCode = (string)$_SESSION['cLieferlandISO'];
         }
         if ($this->fGewicht === null) {
             $this->fGewicht = 0;
         }
-        $customerGroupID = Frontend::getCustomerGroup()->getID();
         // cheapest shipping except shippings that offer cash payment
-        $shipping = Shop::Container()->getDB()->query(
+        $shipping = Shop::Container()->getDB()->queryPrepared(
             'SELECT va.kVersandart, IF(vas.fPreis IS NOT NULL, vas.fPreis, va.fPreis) AS minPrice, va.nSort
                 FROM tversandart va
                 LEFT JOIN tversandartstaffel vas
                     ON vas.kVersandart = va.kVersandart
                 WHERE cIgnoreShippingProposal != \'Y\'
-                AND va.cLaender LIKE \'%' . $countryCode . '%\'
+                AND va.cLaender LIKE :ccode
                 AND (va.cVersandklassen = \'-1\'
-                    OR va.cVersandklassen RLIKE \'^([0-9 -]* )?' . $this->kVersandklasse . ' \')
+                    OR va.cVersandklassen RLIKE :sclass)
                 AND (va.cKundengruppen = \'-1\'
-                    OR FIND_IN_SET(\'' . $customerGroupID . '\', REPLACE(va.cKundengruppen, \';\', \',\')) > 0)
+                    OR FIND_IN_SET(:cgid, REPLACE(va.cKundengruppen, \';\', \',\')) > 0)
                 AND va.kVersandart NOT IN (
                     SELECT vaza.kVersandart
                         FROM tversandartzahlungsart vaza
                         WHERE kZahlungsart = 6)
                 AND (
                     va.kVersandberechnung = 1 OR va.kVersandberechnung = 4
-                    OR ( va.kVersandberechnung = 2 AND vas.fBis > 0 AND ' . $this->fGewicht . ' <= vas.fBis )
-                    OR ( va.kVersandberechnung = 3 AND vas.fBis > 0 AND ' . $this->Preise->fVKNetto . ' <= vas.fBis )
+                    OR ( va.kVersandberechnung = 2 AND vas.fBis > 0 AND :wght <= vas.fBis )
+                    OR ( va.kVersandberechnung = 3 AND vas.fBis > 0 AND :net <= vas.fBis )
                     )
                 ORDER BY minPrice, nSort ASC LIMIT 1',
+            [
+                'ccode'  => '%' . $countryCode . '%',
+                'cgid'   => Frontend::getCustomerGroup()->getID(),
+                'sclass' => '^([0-9 -]* )?' . $this->kVersandklasse,
+                'wght'   => $this->fGewicht,
+                'net'    => $this->Preise->fVKNetto
+            ],
             ReturnType::SINGLE_OBJECT
         );
         if (isset($shipping->kVersandart)) {
-            $this->oFavourableShipping = new Versandart($shipping->kVersandart);
+            $this->oFavourableShipping = new Versandart((int)$shipping->kVersandart);
 
             return $this->oFavourableShipping;
         }
@@ -5597,7 +5410,7 @@ class Artikel
                 /** @var Konfigitem $piece */
                 foreach ($gruppe->oItem_arr as $piece) {
                     $konfigItemProduct = $piece->getArtikel();
-                    if (!empty($konfigItemProduct)) {
+                    if ($konfigItemProduct !== null) {
                         $konfigItemProduct->getDeliveryTime(
                             $countryCode,
                             $purchaseQuantity * (float)$piece->getInitial(),
@@ -5709,60 +5522,56 @@ class Artikel
      */
     public function mappeMedienTyp($type)
     {
-        if (\mb_strlen($type) > 0) {
-            $mapping = new stdClass();
-            switch ($type) {
-                case '.bmp':
-                case '.gif':
-                case '.ico':
-                case '.jpg':
-                case '.png':
-                case '.tga':
-                    $mapping->cName = Shop::Lang()->get('tabPicture', 'media');
-                    $mapping->nTyp  = 1;
-                    break;
-                case '.wav':
-                case '.mp3':
-                case '.wma':
-                case '.m4a':
-                case '.aac':
-                case '.ra':
-                    $mapping->cName = Shop::Lang()->get('tabMusic', 'media');
-                    $mapping->nTyp  = 2;
-                    break;
-                case '.ogg':
-                case '.ac3':
-                case '.fla':
-                case '.swf':
-                case '.avi':
-                case '.mov':
-                case '.h264':
-                case '.mp4':
-                case '.flv':
-                case '.3gp':
-                    $mapping->cName = Shop::Lang()->get('tabVideo', 'media');
-                    $mapping->nTyp  = 3;
-                    break;
-                case '.pdf':
-                    $mapping->cName = Shop::Lang()->get('tabPdf', 'media');
-                    $mapping->nTyp  = 5;
-                    break;
-                case '.zip':
-                case '.rar':
-                case '.tar':
-                case '.gz':
-                case '.tar.gz':
-                case '':
-                default:
-                    $mapping->cName = Shop::Lang()->get('tabMisc', 'media');
-                    $mapping->nTyp  = 4;
-                    break;
-            }
-
-            return $mapping;
+        $mapping = new stdClass();
+        switch ($type) {
+            case '.bmp':
+            case '.gif':
+            case '.ico':
+            case '.jpg':
+            case '.png':
+            case '.tga':
+                $mapping->cName = Shop::Lang()->get('tabPicture', 'media');
+                $mapping->nTyp  = 1;
+                break;
+            case '.wav':
+            case '.mp3':
+            case '.wma':
+            case '.m4a':
+            case '.aac':
+            case '.ra':
+                $mapping->cName = Shop::Lang()->get('tabMusic', 'media');
+                $mapping->nTyp  = 2;
+                break;
+            case '.ogg':
+            case '.ac3':
+            case '.fla':
+            case '.swf':
+            case '.avi':
+            case '.mov':
+            case '.h264':
+            case '.mp4':
+            case '.flv':
+            case '.3gp':
+                $mapping->cName = Shop::Lang()->get('tabVideo', 'media');
+                $mapping->nTyp  = 3;
+                break;
+            case '.pdf':
+                $mapping->cName = Shop::Lang()->get('tabPdf', 'media');
+                $mapping->nTyp  = 5;
+                break;
+            case '.zip':
+            case '.rar':
+            case '.tar':
+            case '.gz':
+            case '.tar.gz':
+            case '':
+            default:
+                $mapping->cName = Shop::Lang()->get('tabMisc', 'media');
+                $mapping->nTyp  = 4;
+                break;
         }
 
-        return 0;
+        return $mapping;
     }
 
     /**
@@ -5826,7 +5635,6 @@ class Artikel
      */
     public function getSimilarProducts(): array
     {
-        require_once \PFAD_ROOT . \PFAD_INCLUDES . 'artikel_inc.php';
         $productID = (int)$this->kArtikel;
         $return    = ['kArtikelXSellerKey_arr', 'oArtikelArr'];
         $limitSQL  = ' LIMIT 3';
@@ -5854,7 +5662,7 @@ class Artikel
         if ((int)$this->conf['artikeldetails']['artikeldetails_aehnlicheartikel_anzahl'] > 0) {
             $limitSQL = ' LIMIT ' . (int)$this->conf['artikeldetails']['artikeldetails_aehnlicheartikel_anzahl'];
         }
-        $lagerFilter           = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
+        $stockFilterSQL        = Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL();
         $return['oArtikelArr'] = Shop::Container()->getDB()->queryPrepared(
             'SELECT tartikelmerkmal.kArtikel, tartikel.kVaterArtikel
                 FROM tartikelmerkmal
@@ -5871,7 +5679,7 @@ class Artikel
                         AND tartikelsichtbarkeit.kKundengruppe = :customerGroupID
                 WHERE tartikelsichtbarkeit.kArtikel IS NULL
                     AND tartikelmerkmal.kArtikel != :kArtikel
-                    ' . $lagerFilter . '
+                    ' . $stockFilterSQL . '
                     ' . $xSellSQL . '
                 GROUP BY tartikelmerkmal.kArtikel
                 ORDER BY COUNT(tartikelmerkmal.kMerkmal) DESC ' .
@@ -5903,7 +5711,7 @@ class Artikel
                         ON tartikel.kArtikel = tsuchcachetreffer.kArtikel
                         AND tartikel.kVaterArtikel != ' . $productID . '
                     WHERE tartikelsichtbarkeit.kArtikel IS NULL
-                        ' . Shop::getProductFilter()->getFilterSQL()->getStockFilterSQL() . '
+                        ' . $stockFilterSQL . '
                         ' . $xSellSQL . '
                     GROUP BY tsuchcachetreffer.kArtikel
                     ORDER BY COUNT(*) DESC ' .
@@ -5953,6 +5761,7 @@ class Artikel
      */
     public function gibRabatt4Artikel(int $customerGroupID = 0, int $productID = 0)
     {
+        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
         return $this->getDiscount($customerGroupID, $productID);
     }
 
@@ -6073,9 +5882,10 @@ class Artikel
         $inklexkl = Shop::Lang()->get($net === true ? 'excl' : 'incl', 'productDetails');
         $mwst     = $this->mwstFormat(Tax::getSalesTax($this->kSteuerklasse));
         $ust      = '';
-        $versand  = '';
+        $markup  = '';
+        $langCode = Shop::getLanguageCode();
         if ($this->conf['global']['global_versandhinweis'] === 'zzgl') {
-            $versand   = ', ';
+            $markup   = ', ';
             $countries = $this->gibMwStVersandLaenderString();
             if ($countries && $this->conf['global']['global_versandfrei_anzeigen'] === 'Y') {
                 if ($this->conf['global']['global_versandkostenfrei_darstellung'] === 'D') {
@@ -6085,30 +5895,30 @@ class Artikel
                         $countryString .= '<abbr title="' . $countryName . '">' . $cISO . '</abbr> ';
                     }
 
-                    $versand .= Shop::Lang()->get('noShippingcostsTo') . ' ' .
+                    $markup .= Shop::Lang()->get('noShippingcostsTo') . ' ' .
                         Shop::Lang()->get('noShippingCostsAtExtended', 'basket', '') .
                          \trim($countryString) . ', ' . Shop::Lang()->get('else') . ' ' .
                         Shop::Lang()->get('plus', 'basket') .
-                        ' <a href="' . $_SESSION['Link_Versandseite'][Shop::getLanguageCode()] .
+                        ' <a href="' . $_SESSION['Link_Versandseite'][$langCode] .
                         '" rel="nofollow" class="shipment">' .
                         Shop::Lang()->get('shipping', 'basket') . '</a>';
                 } else {
-                    $versand .= '<a href="' .
-                        $_SESSION['Link_Versandseite'][Shop::getLanguageCode()] .
+                    $markup .= '<a href="' .
+                        $_SESSION['Link_Versandseite'][$langCode] .
                         '" rel="nofollow" class="shipment" data-toggle="tooltip" data-placement="left" title="' .
                         $countries . ', ' . Shop::Lang()->get('else') . ' ' .
                         Shop::Lang()->get('plus', 'basket') . ' ' . Shop::Lang()->get('shipping', 'basket') . '">' .
                         Shop::Lang()->get('noShippingcostsTo') . '</a>';
                 }
-            } elseif (isset($_SESSION['Link_Versandseite'][Shop::getLanguageCode()])) {
-                $versand .= Shop::Lang()->get('plus', 'basket') .
-                    ' <a href="' . $_SESSION['Link_Versandseite'][Shop::getLanguageCode()] .
+            } elseif (isset($_SESSION['Link_Versandseite'][$langCode])) {
+                $markup .= Shop::Lang()->get('plus', 'basket') .
+                    ' <a href="' . $_SESSION['Link_Versandseite'][$langCode] .
                     '" rel="nofollow" class="shipment">' .
                     Shop::Lang()->get('shipping', 'basket') . '</a>';
             }
         } elseif ($this->conf['global']['global_versandhinweis'] === 'inkl') {
-            $versand = ', ' . Shop::Lang()->get('incl', 'productDetails')
-                . ' <a href="' . $_SESSION['Link_Versandseite'][Shop::getLanguageCode()] .
+            $markup = ', ' . Shop::Lang()->get('incl', 'productDetails')
+                . ' <a href="' . $_SESSION['Link_Versandseite'][$langCode] .
                 '" rel="nofollow" class="shipment">'
                 . Shop::Lang()->get('shipping', 'basket') . '</a>';
         }
@@ -6117,7 +5927,7 @@ class Artikel
             && $this->cVersandklasse !== 'standard'
             && $this->conf['global']['global_versandklasse_anzeigen'] === 'Y'
         ) {
-            $versand .= ' (' . $this->cVersandklasse . ')';
+            $markup .= ' (' . $this->cVersandklasse . ')';
         }
         if ($this->conf['global']['global_ust_auszeichnung'] === 'auto') {
             $ust = $inklexkl . ' ' . $mwst . '% ' . Shop::Lang()->get('vat', 'productDetails');
@@ -6131,7 +5941,7 @@ class Artikel
         if ($taxText) {
             $ust = $taxText;
         }
-        $ret = $ust . $versand;
+        $ret = $ust . $markup;
         \executeHook(\HOOK_TOOLSGLOBAL_INC_MWSTVERSANDSTRING, ['cVersandhinweis' => &$ret, 'oArtikel' => $this]);
 
         return $ret;
@@ -6293,8 +6103,8 @@ class Artikel
         // append global meta title
         if ($this->conf['metaangaben']['global_meta_title_anhaengen'] === 'Y') {
             $globalMetaData = Metadata::getGlobalMetaData();
-            if (!empty($globalMetaData[Shop::getLanguageID()]->Title)) {
-                $globalMetaTitle = ' - ' . $globalMetaData[Shop::getLanguageID()]->Title;
+            if (!empty($globalMetaData[$this->kSprache]->Title)) {
+                $globalMetaTitle = ' - ' . $globalMetaData[$this->kSprache]->Title;
             }
         }
         $idx = Frontend::getCustomerGroup()->getIsMerchant();
@@ -6349,9 +6159,9 @@ class Artikel
         }
 
         $globalMeta = Metadata::getGlobalMetaData();
-        $prefix     = (isset($globalMeta[Shop::getLanguageID()]->Meta_Description_Praefix)
-            && \mb_strlen($globalMeta[Shop::getLanguageID()]->Meta_Description_Praefix) > 0)
-            ? $globalMeta[Shop::getLanguageID()]->Meta_Description_Praefix . ' '
+        $prefix     = (isset($globalMeta[$this->kSprache]->Meta_Description_Praefix)
+            && \mb_strlen($globalMeta[$this->kSprache]->Meta_Description_Praefix) > 0)
+            ? $globalMeta[$this->kSprache]->Meta_Description_Praefix . ' '
             : '';
         // Hat der Artikel per Attribut eine MetaDescription gesetzt?
         if (!empty($this->AttributeAssoc[\ART_ATTRIBUT_METADESCRIPTION])) {
@@ -6392,9 +6202,9 @@ class Artikel
             return $description;
         }
         $globalMeta  = Metadata::getGlobalMetaData();
-        $prefix      = (isset($globalMeta[Shop::getLanguageID()]->Meta_Description_Praefix)
-            && \mb_strlen($globalMeta[Shop::getLanguageID()]->Meta_Description_Praefix) > 0)
-            ? $globalMeta[Shop::getLanguageID()]->Meta_Description_Praefix . ' '
+        $prefix      = (isset($globalMeta[$this->kSprache]->Meta_Description_Praefix)
+            && \mb_strlen($globalMeta[$this->kSprache]->Meta_Description_Praefix) > 0)
+            ? $globalMeta[$this->kSprache]->Meta_Description_Praefix . ' '
             : '';
         $description = ($this->cName !== null && \mb_strlen($this->cName) > 0)
             ? ($prefix . $this->cName . ' in ')
@@ -6413,18 +6223,14 @@ class Artikel
     }
 
     /**
-     * get article tags - this once was holeProduktTagging()
-     * invalidation in admin/tagging_inc.php
-     *
-     * @param int $languageID
      * @return array
      * @deprecated since 5.0.0
      */
-    public function getTags(int $languageID = 0): array
+    public function getTags(): array
     {
-        trigger_error(
-            __FUNCTION__ . ' is deprecated. Functionalitiy of product tags was removed in 5.0.0',
-            E_USER_DEPRECATED
+        \trigger_error(
+            __FUNCTION__ . ' is deprecated. Functionality of product tags was removed in 5.0.0',
+            \E_USER_DEPRECATED
         );
         return [];
     }
@@ -6626,36 +6432,36 @@ class Artikel
     }
 
     /**
-     * @param array $kGesetzteEigeschaftWert_arr
-     * @param bool  $bInvert
+     * @param array $setProperties
+     * @param bool  $invert
      * @return array
      */
-    public function getVariationsBySelection(array $kGesetzteEigeschaftWert_arr, bool $bInvert = false): array
+    public function getVariationsBySelection(array $setProperties, bool $invert = false): array
     {
-        $keyValueVariations              = $this->keyValueVariations($this->VariationenOhneFreifeld);
-        $nPossibleVariationsForSelection = $this->getPossibleVariationsBySelection(
+        $keyValueVariations             = $this->keyValueVariations($this->VariationenOhneFreifeld);
+        $possibleVariationsForSelection = $this->getPossibleVariationsBySelection(
             $keyValueVariations,
-            $kGesetzteEigeschaftWert_arr
+            $setProperties
         );
 
-        if (!$bInvert) {
-            return $nPossibleVariationsForSelection;
+        if (!$invert) {
+            return $possibleVariationsForSelection;
         }
 
-        $nInvalidVariations = [];
-        foreach ($keyValueVariations as $kEigenschaft => $attributeValues) {
-            foreach ($attributeValues as $attrValID) {
-                $attrValID = (int)$attrValID;
-                if (!\in_array($attrValID, (array)$nPossibleVariationsForSelection[$kEigenschaft], true)) {
-                    if (!\is_array($nInvalidVariations[$kEigenschaft])) {
-                        $nInvalidVariations[$kEigenschaft] = [];
+        $invalidVariations = [];
+        foreach ($keyValueVariations as $propID => $propValues) {
+            foreach ($propValues as $propValueID) {
+                $propValueID = (int)$propValueID;
+                if (!\in_array($propValueID, (array)$possibleVariationsForSelection[$propID], true)) {
+                    if (!\is_array($invalidVariations[$propID])) {
+                        $invalidVariations[$propID] = [];
                     }
-                    $nInvalidVariations[$kEigenschaft][] = $attrValID;
+                    $invalidVariations[$propID][] = $propValueID;
                 }
             }
         }
 
-        return $nInvalidVariations;
+        return $invalidVariations;
     }
 
     /**
@@ -6686,14 +6492,15 @@ class Artikel
     public function getDimensionLocalized(): array
     {
         $values = [];
-        if (($dimensions = $this->getDimension()) !== null) {
-            $languageID = Shop::getLanguageID();
-            foreach ($dimensions as $key => $val) {
-                if (!empty($val)) {
-                    $values[Shop::Lang()->get('dimension_' . $key, 'productDetails')] =
-                        Trennzeichen::getUnit(\JTL_SEPARATOR_LENGTH, $languageID, $val);
-                }
+        if (($dimensions = $this->getDimension()) === null) {
+            return $values;
+        }
+        foreach ($dimensions as $key => $val) {
+            if (empty($val)) {
+                continue;
             }
+            $idx          = Shop::Lang()->get('dimension_' . $key, 'productDetails');
+            $values[$idx] = Trennzeichen::getUnit(\JTL_SEPARATOR_LENGTH, $this->kSprache, $val);
         }
 
         return $values;

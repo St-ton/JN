@@ -911,12 +911,6 @@ msgstr "Vorlagen"
 msgid "draft"
 msgstr "Entwurf"
 
-msgid "publicFrom"
-msgstr "Veröffentlichen ab"
-
-msgid "publicTill"
-msgstr "Veröffentlichen bis"
-
 msgid "replaced"
 msgstr "Ersetzt"
 
@@ -1772,6 +1766,27 @@ msgstr "Zeitraum"
 
 msgid "directEntry"
 msgstr "Direkter Einstieg"
+
+msgid "width"
+msgstr "Breite"
+
+msgid "height"
+msgstr "Höhe"
+
+msgid "start"
+msgstr "Start"
+
+msgid "end"
+msgstr "Ende"
+
+msgid "color"
+msgstr "Farbe"
+
+msgid "white"
+msgstr "weiß"
+
+msgid "red"
+msgstr "rot"
 
 msgid "goToDocu"
 msgstr "Zur Dokumentation"

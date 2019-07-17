@@ -143,8 +143,16 @@ final class Globals extends AbstractSync
         $this->db->query('DELETE FROM tsteuerzoneland', ReturnType::DEFAULT);
         $taxCount = \count($taxZones);
         for ($i = 0; $i < $taxCount; $i++) {
-            $item = $taxCount < 2 ? $source['tsteuerzone'] : $source['tsteuerzone'][$i];
-            $this->xml2db($item, 'tsteuerzoneland', 'mSteuerzoneland', 0);
+            $this->upsert(
+                'tsteuerzoneland',
+                $this->mapper->mapArray(
+                    $taxCount < 2 ? $source['tsteuerzone'] : $source['tsteuerzone'][$i],
+                    'tsteuerzoneland',
+                    'mSteuerzoneland'
+                ),
+                'kSteuerzone',
+                'cISO'
+            );
         }
     }
 

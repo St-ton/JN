@@ -47,7 +47,7 @@ class Heading extends Portlet
      */
     public function getButtonHtml(): string
     {
-        return $this->getFontAwesomeButtonHtml('header');
+        return $this->getFontAwesomeButtonHtml('fas fa-heading');
     }
 
     /**

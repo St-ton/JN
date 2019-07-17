@@ -47,6 +47,8 @@ class Service
     public function __construct(DB $db)
     {
         $this->db = $db;
+
+        Shop::Container()->getGetText()->loadAdminLocale("pages/opc");
     }
 
     /**

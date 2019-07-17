@@ -62,10 +62,10 @@
     {/block}
 </div>
 {/block}
-{if isset($smarty.get.editLieferadresse)}
+{if isset($smarty.get.editLieferadresse) || $step === 'Lieferadresse'}
 {literal}
     <script type="text/javascript">
-        $(document).ready(function () {
+        $(window).on('load', function () {
             $('#checkout_register_shipping_address').prop('checked', false);
             $('#select_shipping_address').addClass('in');
             $.evo.extended().smoothScrollToAnchor('#checkout_register_shipping_address');

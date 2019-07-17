@@ -116,7 +116,14 @@ if (isset($_SESSION['Kunde']) && $_SESSION['Kunde']) {
     $step = 'Lieferadresse';
 
     if (!isset($_SESSION['Lieferadresse'])) {
-        pruefeLieferdaten(['kLieferadresse' => 0]);
+        $lastOrder = BestellungHelper::getLastOrderRefIDs($_SESSION['Kunde']->kKunde);
+        pruefeLieferdaten([
+            'kLieferadresse' => $lastOrder->kLieferadresse
+        ]);
+        if (isset($_SESSION['Lieferadresse']) && $_SESSION['Lieferadresse']->kLieferadresse > 0) {
+            $_GET['editLieferadresse']    = 1;
+            $_GET['editRechnungsadresse'] = 1;
+        }
     }
 
     if (!isset($_SESSION['Versandart']) || !is_object($_SESSION['Versandart'])) {

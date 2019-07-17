@@ -218,4 +218,30 @@ class BestellungHelper extends WarenkorbHelper
     {
         return (int)$this->object->kBestellung;
     }
+
+    /**
+     * @param int $customerID
+     * @return object
+     */
+    public static function getLastOrderRefIDs($customerID)
+    {
+        $order = Shop::DB()->queryPrepared(
+            'SELECT kBestellung, kWarenkorb, kLieferadresse, kRechnungsadresse, kZahlungsart, kVersandart
+                FROM tbestellung
+                WHERE kKunde = :customerID
+                ORDER BY dErstellt DESC
+                LIMIT 1',
+            ['customerID' => (int)$customerID],
+            1
+        );
+
+        return is_object($order) ? $order : (object)[
+            'kBestellung'       => 0,
+            'kWarenkorb'        => 0,
+            'kLieferadresse'    => 0,
+            'kRechnungsadresse' => 0,
+            'kZahlungsart'      => 0,
+            'kVersandart'       => 0,
+        ];
+    }
 }

@@ -247,16 +247,16 @@
         },
         {
             "name": "gettext/gettext",
-            "version": "v4.6.2",
+            "version": "v4.6.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/oscarotero/Gettext.git",
-                "reference": "93176b272d61fb58a9767be71c50d19149cb1e48"
+                "reference": "70c6ff2fecd275e6ef9cdd542f55939a3d1904d6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/oscarotero/Gettext/zipball/93176b272d61fb58a9767be71c50d19149cb1e48",
-                "reference": "93176b272d61fb58a9767be71c50d19149cb1e48",
+                "url": "https://api.github.com/repos/oscarotero/Gettext/zipball/70c6ff2fecd275e6ef9cdd542f55939a3d1904d6",
+                "reference": "70c6ff2fecd275e6ef9cdd542f55939a3d1904d6",
                 "shasum": ""
             },
             "require": {
@@ -305,7 +305,7 @@
                 "po",
                 "translation"
             ],
-            "time": "2019-01-12T18:40:56+00:00"
+            "time": "2019-07-15T12:56:31+00:00"
         },
         {
             "name": "gettext/languages",
@@ -664,16 +664,16 @@
         },
         {
             "name": "illuminate/container",
-            "version": "v5.8.27",
+            "version": "v5.8.29",
             "source": {
                 "type": "git",
                 "url": "https://github.com/illuminate/container.git",
-                "reference": "9405989993a48c2cd50ad1e5b2b08a33383c3807"
+                "reference": "7afee1ef2cb53190a98d727ea77096b6a610c05e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/illuminate/container/zipball/9405989993a48c2cd50ad1e5b2b08a33383c3807",
-                "reference": "9405989993a48c2cd50ad1e5b2b08a33383c3807",
+                "url": "https://api.github.com/repos/illuminate/container/zipball/7afee1ef2cb53190a98d727ea77096b6a610c05e",
+                "reference": "7afee1ef2cb53190a98d727ea77096b6a610c05e",
                 "shasum": ""
             },
             "require": {
@@ -705,11 +705,11 @@
             ],
             "description": "The Illuminate Container package.",
             "homepage": "https://laravel.com",
-            "time": "2019-04-22T13:12:35+00:00"
+            "time": "2019-07-16T13:14:16+00:00"
         },
         {
             "name": "illuminate/contracts",
-            "version": "v5.8.27",
+            "version": "v5.8.29",
             "source": {
                 "type": "git",
                 "url": "https://github.com/illuminate/contracts.git",
@@ -753,16 +753,16 @@
         },
         {
             "name": "illuminate/support",
-            "version": "v5.8.27",
+            "version": "v5.8.29",
             "source": {
                 "type": "git",
                 "url": "https://github.com/illuminate/support.git",
-                "reference": "5d32b3079433ee85db7b33825a1648553a09d410"
+                "reference": "b60e70c9bd3c6d61cbb4343459755470fd5ad818"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/illuminate/support/zipball/5d32b3079433ee85db7b33825a1648553a09d410",
-                "reference": "5d32b3079433ee85db7b33825a1648553a09d410",
+                "url": "https://api.github.com/repos/illuminate/support/zipball/b60e70c9bd3c6d61cbb4343459755470fd5ad818",
+                "reference": "b60e70c9bd3c6d61cbb4343459755470fd5ad818",
                 "shasum": ""
             },
             "require": {
@@ -810,7 +810,7 @@
             ],
             "description": "The Illuminate Support package.",
             "homepage": "https://laravel.com",
-            "time": "2019-06-30T07:30:42+00:00"
+            "time": "2019-07-05T17:41:14+00:00"
         },
         {
             "name": "intervention/httpauth",
@@ -1840,16 +1840,16 @@
         },
         {
             "name": "nesbot/carbon",
-            "version": "2.20.0",
+            "version": "2.21.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/briannesbitt/Carbon.git",
-                "reference": "bc671b896c276795fad8426b0aa24e8ade0f2498"
+                "reference": "da6410b77f74eecd98d24ffb6dfecefccf3ca17f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/briannesbitt/Carbon/zipball/bc671b896c276795fad8426b0aa24e8ade0f2498",
-                "reference": "bc671b896c276795fad8426b0aa24e8ade0f2498",
+                "url": "https://api.github.com/repos/briannesbitt/Carbon/zipball/da6410b77f74eecd98d24ffb6dfecefccf3ca17f",
+                "reference": "da6410b77f74eecd98d24ffb6dfecefccf3ca17f",
                 "shasum": ""
             },
             "require": {
@@ -1865,6 +1865,9 @@
                 "phpunit/phpunit": "^7.5 || ^8.0",
                 "squizlabs/php_codesniffer": "^3.4"
             },
+            "bin": [
+                "bin/carbon"
+            ],
             "type": "library",
             "extra": {
                 "laravel": {
@@ -1887,6 +1890,10 @@
                     "name": "Brian Nesbitt",
                     "email": "brian@nesbot.com",
                     "homepage": "http://nesbot.com"
+                },
+                {
+                    "name": "kylekatarnls",
+                    "homepage": "http://github.com/kylekatarnls"
                 }
             ],
             "description": "A simple API extension for DateTime.",
@@ -1896,7 +1903,7 @@
                 "datetime",
                 "time"
             ],
-            "time": "2019-06-25T10:00:57+00:00"
+            "time": "2019-07-14T17:06:46+00:00"
         },
         {
             "name": "paragonie/random_compat",
@@ -3676,16 +3683,16 @@
         },
         {
             "name": "phpmd/phpmd",
-            "version": "2.6.0",
+            "version": "2.6.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpmd/phpmd.git",
-                "reference": "4e9924b2c157a3eb64395460fcf56b31badc8374"
+                "reference": "7425e155cf22cdd2b4dd3458a7da4cf6c0201562"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpmd/phpmd/zipball/4e9924b2c157a3eb64395460fcf56b31badc8374",
-                "reference": "4e9924b2c157a3eb64395460fcf56b31badc8374",
+                "url": "https://api.github.com/repos/phpmd/phpmd/zipball/7425e155cf22cdd2b4dd3458a7da4cf6c0201562",
+                "reference": "7425e155cf22cdd2b4dd3458a7da4cf6c0201562",
                 "shasum": ""
             },
             "require": {
@@ -3738,7 +3745,7 @@
                 "phpmd",
                 "pmd"
             ],
-            "time": "2017-01-20T14:41:10+00:00"
+            "time": "2019-07-05T23:07:02+00:00"
         },
         {
             "name": "phpspec/prophecy",
@@ -4057,16 +4064,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "7.5.13",
+            "version": "7.5.14",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "b9278591caa8630127f96c63b598712b699e671c"
+                "reference": "2834789aeb9ac182ad69bfdf9ae91856a59945ff"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/b9278591caa8630127f96c63b598712b699e671c",
-                "reference": "b9278591caa8630127f96c63b598712b699e671c",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/2834789aeb9ac182ad69bfdf9ae91856a59945ff",
+                "reference": "2834789aeb9ac182ad69bfdf9ae91856a59945ff",
                 "shasum": ""
             },
             "require": {
@@ -4137,7 +4144,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2019-06-19T12:01:51+00:00"
+            "time": "2019-07-15T06:24:08+00:00"
         },
         {
             "name": "sebastian/code-unit-reverse-lookup",

@@ -3591,10 +3591,11 @@ header.fixed-navbar {
   }
 }
 
+
 .img-gallery-btn {
   position: relative;
 
-  &:after {
+  &.img-gallery-active-btn:after {
     content: " ";
     opacity: 0;
     background-color: rgba(0, 0, 0, 0.75);
@@ -3606,7 +3607,7 @@ header.fixed-navbar {
     transition: all 0.5s ease-in-out 0s;
   }
 
-  &:hover:after {
+  &.img-gallery-active-btn:hover:after {
     opacity: 0.75;
   }
 
@@ -3620,7 +3621,7 @@ header.fixed-navbar {
     transition: all 0.5s ease-in-out 0s;
   }
 
-  &:hover .img-gallery-zoom {
+  &.img-gallery-active-btn:hover .img-gallery-zoom {
     opacity: 1;
   }
 }

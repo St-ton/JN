@@ -20,7 +20,7 @@ class Row extends Portlet
      */
     public function getButtonHtml(): string
     {
-        return $this->getFontAwesomeButtonHtml('columns');
+        return $this->getFontAwesomeButtonHtml('fas fa-columns');
     }
 
     /**
@@ -30,20 +30,20 @@ class Row extends Portlet
     {
         return [
             'layout-xs' => [
-                'label'   => '<i class="fa fa-mobile"></i> Layout XS',
+                'label'   => '<i class="fa fa-mobile"></i>' . __('layoutXS'),
                 'default' => '6+6',
                 'width'   => 25,
             ],
             'layout-sm' => [
-                'label' => '<i class="fa fa-tablet"></i> Layout S',
+                'label' => '<i class="fa fa-tablet"></i>' . __('layoutS'),
                 'width' => 25,
             ],
             'layout-md' => [
-                'label' => '<i class="fa fa-laptop"></i> Layout M',
+                'label' => '<i class="fa fa-laptop"></i>' . __('layoutM'),
                 'width' => 25,
             ],
             'layout-lg' => [
-                'label' => '<i class="fa fa-desktop"></i> Layout L',
+                'label' => '<i class="fa fa-desktop"></i>' . __('layoutL'),
                 'width' => 25,
             ],
         ];
@@ -55,8 +55,8 @@ class Row extends Portlet
     public function getPropertyTabs(): array
     {
         return [
-            'Styles'    => 'styles',
-            'Animation' => 'animations',
+            __('Styles')    => 'styles',
+            __('Animation') => 'animations',
         ];
     }
 

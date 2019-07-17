@@ -19,6 +19,8 @@ class Banner extends Portlet
     /**
      * @param int $productID
      * @return Artikel
+     * @throws \JTL\Exceptions\CircularReferenceException
+     * @throws \JTL\Exceptions\ServiceNotFoundException
      */
     public function getProduct(int $productID)
     {
@@ -49,12 +51,12 @@ class Banner extends Portlet
             ],
             'zones' => [
                 'type'    => InputType::ZONES,
-                'label'   => 'Banner-Zonen',
+                'label'   => __('bannerAreas'),
                 'srcProp' => 'src',
                 'default' => [],
             ],
             'alt'   => [
-                'label' => __('Alternativ text'),
+                'label' => __('Alternative text'),
             ],
         ];
     }

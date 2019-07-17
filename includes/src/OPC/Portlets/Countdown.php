@@ -20,7 +20,7 @@ class Countdown extends Portlet
      */
     public function getButtonHtml(): string
     {
-        return $this->getFontAwesomeButtonHtml('bell');
+        return $this->getFontAwesomeButtonHtml('far fa-calendar-alt');
     }
 
     /**
@@ -30,18 +30,18 @@ class Countdown extends Portlet
     {
         return [
             'date'         => [
-                'label'    => 'Zieldatum',
+                'label'    => __('countdownDate'),
                 'type'     => InputType::DATE,
                 'width'    => 50,
                 'required' => true,
             ],
             'time'         => [
-                'label' => 'Zielzeit',
+                'label' => __('countdownTime'),
                 'type'  => InputType::TIME,
                 'width' => 50,
             ],
             'expired-text' => [
-                'label' => 'Text nach Ablauf',
+                'label' => __('textAfterCountdownFinished'),
                 'type'  => InputType::RICHTEXT,
             ]
         ];
@@ -53,8 +53,8 @@ class Countdown extends Portlet
     public function getPropertyTabs(): array
     {
         return [
-            'Styles'    => 'styles',
-            'Animation' => 'animations',
+            __('Styles')    => 'styles',
+            __('Animation') => 'animations',
         ];
     }
 }

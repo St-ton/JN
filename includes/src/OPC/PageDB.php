@@ -312,6 +312,25 @@ class PageDB
     }
 
     /**
+     * @param int $draftKey
+     * @param string $draftName
+     * @return PageDB
+     * @throws Exception
+     */
+    public function saveDraftName(int $draftKey, string $draftName): self
+    {
+        $pageDB = (object)[
+            'cName' => $draftName,
+        ];
+
+        if ($this->shopDB->update('topcpage', 'kPage', $draftKey, $pageDB) === -1) {
+            throw new Exception('The OPC draft name could not be updated in the DB.');
+        }
+
+        return $this;
+    }
+
+    /**
      * @param string $id
      * @return $this
      */

@@ -1,0 +1,55 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "Video"
+msgstr "Video"
+
+msgid "embedResponsive"
+msgstr "responsive einbetten?"
+
+msgid "source"
+msgstr "Quelle"
+
+msgid "localVideo"
+msgstr "Lokales Video"
+
+msgid "youtubeNote"
+msgstr "In ihren Datenschutzerklärungen sollten sie darauf hinweisen, dass YouTube-Videos im „erweiterten Datenschutzmodus“ in ihren Seiten eingebettet sind. Die Nutzer sollten erfahren, dass der Aufruf der Seiten zu einer Verbindungsaufnahme mit YouTube und dem DoubleClick-Netzwerk führt. Man sollte ihnen auch nicht verschweigen, dass schon ein Klick auf das Video weitere Datenverarbeitungsvorgänge auslösen kann, auf die der Website-Betreiber keinen Einfluss mehr hat."
+
+msgid "videoID"
+msgstr "Video ID"
+
+msgid "videoIDHelpYoutube"
+msgstr "Bitte nur die ID des Videos eingeben. Bsp.: xITQHgJ3RRo"
+
+msgid "showControls"
+msgstr "Steuerelemente anzeigen?"
+
+msgid "showSimilarVideos"
+msgstr "Ähnliche Videos anzeigen?"
+
+msgid "playlist"
+msgstr "Playlist"
+
+msgid "playlistHelp"
+msgstr "Geben Sie die Video-IDs durch Komma getrennt ein. Bsp.: xITQHgJ3RRo,sNYv0JgrUlw"
+
+msgid "videoIDHelpVimeo"
+msgstr "Bitte nur die ID des Videos eingeben. Bsp.: 141374353"
+
+msgid "repeatVideo"
+msgstr "Video nach Ablauf wiederholen?"
+
+msgid "showImage"
+msgstr "Bild anzeigen?"
+
+msgid "showTitle"
+msgstr "Titel anzeigen?"
+
+msgid "showAuthorInformation"
+msgstr "Verfasserangabe anzeigen?"
+
+msgid "videoURL"
+msgstr "Video URL"
+

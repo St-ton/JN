@@ -41,7 +41,7 @@ stages:
     echo "Testing projekt in PHP $PHP_VERSION_TEST_STEP docker image..."
 
     docker run \
-      -w '/creation'
+      -w '/creation' \
       --volume $(pwd):/dockerBuild \
       --name="$CI_CONTAINER_NAME" \
       $CI_REGISTRY_IMAGE/testing-php$PHP_VERSION_TEST_STEP \
@@ -90,7 +90,7 @@ stages:
 
     echo "Building projekt in PHP 7.1 and mariadb server 10.2 docker image..."
     docker run \
-      -w '/creation'
+      -w '/creation' \
       --volume $CI_PROJECT_DIR.tmp/CI_SERVER_TLS_CA_FILE:$CI_PROJECT_DIR.tmp/CI_SERVER_TLS_CA_FILE \
       --volume $(pwd):/dockerBuild \
       --name="$CI_CONTAINER_NAME" \
@@ -105,7 +105,7 @@ stages:
     docker start $CI_CONTAINER_NAME
 
     docker exec \
-      -w '/creation'
+      -w '/creation' \
       $CI_CONTAINER_NAME \
       /bin/bash -c "bash $DEPLOY_SCRIPT_PATH $CI_PROJECT_NAME $CI_COMMIT_REF_NAME /archive"
 

@@ -16,7 +16,7 @@
                     {elseif $image.action === 'lightbox'}
                         href="{$imgAttribs.src}"
                     {/if}
-               {/if} class="img-gallery-btn img-gallery-active-btn"
+               {/if} class="img-gallery-btn {if $image.action === 'lightbox'}img-gallery-active-btn{/if}"
                data-caption="{$image.desc}">
                 {image class='img-gallery-img'
                        srcset=$imgAttribs.srcset

@@ -238,12 +238,10 @@ class ArtikelListe
             return $this->elemente;
         }
         $defaultOptions = Artikel::getDefaultOptions();
-        if ($items !== false) {
-            foreach ($items as $obj) {
-                $product = new Artikel();
-                $product->fuelleArtikel((int)$obj->kArtikel, $defaultOptions);
-                $this->elemente[] = $product;
-            }
+        foreach ($items as $obj) {
+            $product = new Artikel();
+            $product->fuelleArtikel((int)$obj->kArtikel, $defaultOptions);
+            $this->elemente[] = $product;
         }
 
         return $this->elemente;

@@ -87,7 +87,7 @@
 
 #opc .slides-container {
   padding-right: 8px;
-  max-height: calc(100vh - 464px);
+  max-height: calc(100vh - 494px);
   overflow-y: auto;
 }
 
@@ -132,14 +132,34 @@
   .slide-props {
     flex: auto;
 
+    .row {
+      margin: 0 -8px;
+      margin-bottom: -16px;
+
+      .col-4, .col-8 {
+        padding: 0 8px;
+      }
+    }
+
     .form-control {
       height: 32px;
+      padding: 4px 8px;
       margin-bottom: 16px;
+    }
+
+    .select-wrapper {
+      margin: 0;
+      display: block;
+
+      &:after {
+        top: 6px;
+      }
     }
   }
 }
 
 #opc button.add-slide-btn {
+  position: relative;
   margin: auto;
   display: block;
   margin-top: -16px;

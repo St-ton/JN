@@ -26,9 +26,10 @@ class Gallery extends Portlet
                 'label'   => 'Layout',
             ],
             'images' => [
-                'type'    => InputType::IMAGE_SET,
-                'label'   => __('imageList'),
-                'default' => [],
+                'type'     => InputType::IMAGE_SET,
+                'label'    => __('imageList'),
+                'default'  => [],
+                'useLinks' => true,
             ],
         ];
     }

@@ -16813,7 +16813,7 @@ table caption {
 .img-gallery-btn {
   position: relative;
 }
-.img-gallery-btn:after {
+.img-gallery-btn.img-gallery-active-btn:after {
   content: " ";
   opacity: 0;
   background-color: rgba(0, 0, 0, 0.75);
@@ -16824,7 +16824,7 @@ table caption {
   height: 100%;
   transition: all 0.5s ease-in-out 0s;
 }
-.img-gallery-btn:hover:after {
+.img-gallery-btn.img-gallery-active-btn:hover:after {
   opacity: 0.75;
 }
 .img-gallery-btn .img-gallery-zoom {
@@ -16836,7 +16836,7 @@ table caption {
   transform: translate(-50%, -50%);
   transition: all 0.5s ease-in-out 0s;
 }
-.img-gallery-btn:hover .img-gallery-zoom {
+.img-gallery-btn.img-gallery-active-btn:hover .img-gallery-zoom {
   opacity: 1;
 }
 

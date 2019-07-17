@@ -10,7 +10,13 @@
          id="{$instance->getUid()}">
         {foreach $instance->getProperty('images') as $key => $image}
             {$imgAttribs = $instance->getImageAttributes($image.url, $image.alt, '')}
-            <a {if $isPreview === false}href="{$imgAttribs.src}"{/if} class="img-gallery-btn img-gallery-active-btn"
+            <a {if $isPreview === false}
+                    {if $image.action === 'link'}
+                        href="{$image.link}"
+                    {elseif $image.action === 'lightbox'}
+                        href="{$imgAttribs.src}"
+                    {/if}
+               {/if} class="img-gallery-btn img-gallery-active-btn"
                data-caption="{$image.desc}">
                 {image class='img-gallery-img'
                        srcset=$imgAttribs.srcset
@@ -18,7 +24,9 @@
                        src=$imgAttribs.src
                        alt=$imgAttribs.alt
                        title=$imgAttribs.title}
-                <i class="img-gallery-zoom fa fa-search fa-2x"></i>
+                {if $image.action === 'lightbox'}
+                    <i class="img-gallery-zoom fa fa-search fa-2x"></i>
+                {/if}
             </a>
         {/foreach}
     </div>
@@ -78,8 +86,14 @@
             {$image.lg = $image.md}
 
             {col cols=$image.xs sm=$image.sm md=$image.md lg=$image.lg xl=$image.xl class="img-gallery-item"}
-                <a {if $isPreview === false}href="{$imgAttribs.src}"{/if}
-                   class="img-gallery-btn img-gallery-active-btn"
+                <a {if $isPreview === false}
+                        {if $image.action === 'link'}
+                            href="{$image.link}"
+                        {elseif $image.action === 'lightbox'}
+                            href="{$imgAttribs.src}"
+                        {/if}
+                    {/if}
+                   class="img-gallery-btn {if $image.action === 'lightbox'}img-gallery-active-btn{/if}"
                    data-caption="{$image.desc}">
                     {image class='img-gallery-img'
                            srcset=$imgAttribs.srcset
@@ -87,7 +101,9 @@
                            src=$imgAttribs.src
                            alt=$imgAttribs.alt
                            title=$imgAttribs.title}
-                    <i class="img-gallery-zoom fa fa-search fa-2x"></i>
+                    {if $image.action === 'lightbox'}
+                        <i class="img-gallery-zoom fa fa-search fa-2x"></i>
+                    {/if}
                 </a>
             {/col}
         {/foreach}

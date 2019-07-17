@@ -1,19 +1,9 @@
-{$useColumns = $propdesc.useColumns|default:false}
 {$useLinks   = $propdesc.useLinks|default:false}
 {$useTitles  = $propdesc.useTitles|default:false}
 
-{function slideSize size='xs' fa='mobile'}
-    <div class="input-group" style="width: 24%">
-        <div class="input-group-addon" style="min-width:auto; padding: 0">
-            <i class="fa fa-{$fa} fa-fw"></i>
-        </div>
-        <input type="text" class="form-control" placeholder="{$size}" style="width: 100%"
-               name="{$propname}[#SORT#][{$size}]" value="{$slideData.$size}">
-    </div>
-{/function}
-
 {function slideEntry
-    slideData=['xs' => '', 'sm' => '', 'md' => '', 'lg' => '', 'desc' => '', 'url' => '', 'link' => '', 'title' => '']
+    slideData=['xs' => '', 'sm' => '', 'md' => '', 'lg' => '', 'desc' => '', 'url' => '', 'link' => '', 'title' => '',
+        action => 'ligthbox']
 }
     <div class="slide-entry">
         <div class="slide-btns">
@@ -48,15 +38,25 @@
             <input type="text" class="form-control" placeholder="{__('alternativeText')}"
                    name="{$propname}[#SORT#][alt]" value="{$slideData.alt|default:''}">
             {if $useLinks}
-                <input type="text" class="form-control" placeholder="{__('link')}"
-                       name="{$propname}[#SORT#][link]" value="{$slideData.link|default:''}">
-            {/if}
-            {if $useColumns}
-                <div class="form-inline">
-                    {slideSize size='xs' fa='mobile'}
-                    {slideSize size='sm' fa='tablet'}
-                    {slideSize size='md' fa='laptop'}
-                    {slideSize size='lg' fa='desktop'}
+                <div class="row">
+                    <div class="col-4">
+                        <label class="select-wrapper">
+                            <input type="hidden" name="{$propname}[#SORT#][action]" value="">
+                            <select class="form-control" onchange="onActionChange_{$propname}(this)">
+                                <option value="none" {if $slideData.action === 'none'}selected{/if}>
+                                    Keine Aktion</option>
+                                <option value="lightbox" {if $slideData.action === 'lightbox'}selected{/if}>
+                                    Lightbox</option>
+                                <option value="link" {if $slideData.action === 'link'}selected{/if}>
+                                    Verlinkung</option>
+                            </select>
+                        </label>
+                    </div>
+                    <div class="col-8">
+                        <input type="text" class="form-control" placeholder="{__('link')}"
+                               name="{$propname}[#SORT#][link]" value="{$slideData.link|default:''}"
+                               {if $slideData.action !== 'link'}disabled{/if}>
+                    </div>
                 </div>
             {/if}
         </div>
@@ -68,17 +68,21 @@
 <div class="slides-container" id="{$propname}-slides-container">
     <div id="{$propname}-slides">
         {foreach $propval as $slideData}
+            {if empty($slideData.action)}
+                {$slideData.action = 'lightbox'}
+            {/if}
             {slideEntry slideData=$slideData}
         {/foreach}
     </div>
-    <button type="button" class="opc-btn-primary opc-small-btn add-slide-btn" onclick="addSlide_{$propname}()"
-            title="{__('imageAdd')}">
-        <i class="fas fa-plus fa-fw"></i>
-    </button>
     <div style="display: none" id="{$propname}-slide-blueprint">
         {slideEntry}
     </div>
 </div>
+
+<button type="button" class="opc-btn-primary opc-small-btn add-slide-btn" onclick="addSlide_{$propname}()"
+        title="{__('imageAdd')}">
+    <i class="fas fa-plus fa-fw"></i>
+</button>
 
 <script>
     opc.setConfigSaveCallback(saveImageSet_{$propname});
@@ -112,11 +116,16 @@
 
     function saveImageSet_{$propname}()
     {
-        $('#{$propname}-slides').children().each(function(i, slide)
-        {
+        $('#{$propname}-slides').children().each((i, slide) => {
             slide = $(slide);
-            slide.find('input').each(function(j, input)
-            {
+
+            slide.find('select').each((j, select) => {
+                $(select).siblings('input').attr('value',
+                    select.options[select.selectedIndex].value
+                );
+            });
+
+            slide.find('input').each((j, input) => {
                 input = $(input);
                 var name = input.attr('name');
                 if (name === '{$propname}[#SORT#][url]') {
@@ -131,5 +140,16 @@
             });
         });
         $('#{$propname}-slide-blueprint').remove();
+    }
+
+    function onActionChange_{$propname}(elm)
+    {
+        elm = $(elm);
+
+        if(elm.val() === 'link') {
+            elm.closest('.row').find('input[type=text]').prop('disabled', false);
+        } else {
+            elm.closest('.row').find('input[type=text]').prop('disabled', true);
+        }
     }
 </script>

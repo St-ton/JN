@@ -981,24 +981,20 @@ class LanguageHelper
      */
     public static function isDefaultLanguageActive(bool $shop = false, int $languageID = null): bool
     {
-        if ($languageID === null && !isset($_SESSION['kSprache'])) {
+        $langToCheckAgainst = $languageID !== null ? (int)$languageID : Shop::getLanguageID();
+        if ($langToCheckAgainst <= 0) {
             return true;
         }
-        $langToCheckAgainst = $languageID !== null ? (int)$languageID : Shop::getLanguageID();
-        if ($langToCheckAgainst > 0) {
-            foreach (Frontend::getLanguages() as $language) {
-                if ($language->cStandard === 'Y' && (int)$language->kSprache === $langToCheckAgainst && !$shop) {
-                    return true;
-                }
-                if ($language->cShopStandard === 'Y' && (int)$language->kSprache === $langToCheckAgainst && $shop) {
-                    return true;
-                }
+        foreach (Frontend::getLanguages() as $language) {
+            if ($language->cStandard === 'Y' && $language->kSprache === $langToCheckAgainst && !$shop) {
+                return true;
             }
-
-            return false;
+            if ($language->cShopStandard === 'Y' && $language->kSprache === $langToCheckAgainst && $shop) {
+                return true;
+            }
         }
 
-        return true;
+        return false;
     }
 
     /**
@@ -1051,12 +1047,6 @@ class LanguageHelper
         $page        = $linkID > 0 ? $ls->getPageLink($linkID) : null;
         if (\count(Frontend::getLanguages()) > 1) {
             /** @var Artikel $AktuellerArtikel */
-            if ($AktuellerArtikel !== null
-                && $AktuellerArtikel->kArtikel > 0
-                && empty($AktuellerArtikel->cSprachURL_arr)
-            ) {
-                $AktuellerArtikel->baueArtikelSprachURL();
-            }
             foreach (Frontend::getLanguages() as $lang) {
                 $langID  = $lang->getId();
                 $langISO = $lang->getIso();
@@ -1113,12 +1103,6 @@ class LanguageHelper
             }
         }
         if (\count(Frontend::getCurrencies()) > 1) {
-            if ($AktuellerArtikel !== null
-                && $AktuellerArtikel->kArtikel > 0
-                && empty($AktuellerArtikel->cSprachURL_arr)
-            ) {
-                $AktuellerArtikel->baueArtikelSprachURL(false);
-            }
             $currentCurrencyCode = Frontend::getCurrency()->getID();
             $currentLangCode     = Shop::getLanguageCode();
             foreach (Frontend::getCurrencies() as $currency) {

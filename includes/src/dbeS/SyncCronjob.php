@@ -15,7 +15,7 @@ class SyncCronjob extends NetSyncHandler
     /**
      * @param int $request
      */
-    protected function request($request)
+    protected function request($request): void
     {
         require_once \PFAD_ROOT . \PFAD_ADMIN . \PFAD_INCLUDES . 'smartyinclude.php';
         require_once \PFAD_ROOT . \PFAD_ADMIN . \PFAD_INCLUDES . 'exportformat_inc.php';

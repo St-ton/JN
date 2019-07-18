@@ -6,6 +6,7 @@
 
 namespace JTL\Extensions;
 
+use Illuminate\Support\Collection;
 use JTL\DB\ReturnType;
 use JTL\Nice;
 use JTL\Shop;
@@ -43,12 +44,12 @@ class DownloadHistory
     protected $dErstellt;
 
     /**
-     * @param int $kDownloadHistory
+     * @param int $id
      */
-    public function __construct(int $kDownloadHistory = 0)
+    public function __construct(int $id = 0)
     {
-        if ($kDownloadHistory > 0) {
-            $this->loadFromDB($kDownloadHistory);
+        if ($id > 0) {
+            $this->loadFromDB($id);
         }
     }
 
@@ -61,14 +62,14 @@ class DownloadHistory
     }
 
     /**
-     * @param int $kDownloadHistory
+     * @param int $id
      */
-    private function loadFromDB(int $kDownloadHistory): void
+    private function loadFromDB(int $id): void
     {
         $history = Shop::Container()->getDB()->select(
             'tdownloadhistory',
             'kDownloadHistory',
-            $kDownloadHistory
+            $id
         );
         if ($history !== null && (int)$history->kDownloadHistory > 0) {
             $members = \array_keys(\get_object_vars($history));
@@ -85,38 +86,33 @@ class DownloadHistory
     }
 
     /**
-     * @param int $kDownload
+     * @param int $downloadID
      * @return array
      * @deprecated since 5.0.0
      */
-    public static function getHistorys(int $kDownload): array
+    public static function getHistorys(int $downloadID): array
     {
         \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
 
-        return self::getHistory($kDownload);
+        return self::getHistory($downloadID);
     }
 
     /**
-     * @param int $kDownload
+     * @param int $downloadID
      * @return array
      */
-    public static function getHistory(int $kDownload): array
+    public static function getHistory(int $downloadID): array
     {
-        $history = [];
-        if ($kDownload > 0) {
-            $data = Shop::Container()->getDB()->selectAll(
-                'tdownloadhistory',
-                'kDownload',
-                $kDownload,
-                'kDownloadHistory',
-                'dErstellt DESC'
-            );
-            foreach ($data as $item) {
-                $history[] = new self((int)$item->kDownloadHistory);
-            }
-        }
-
-        return $history;
+            return Shop::Container()->getDB()->queryPrepared(
+                'SELECT kDownloadHistory AS id 
+                    FROM tdownloadhistory
+                    WHERE kDownload = :dlid
+                    ORDER BY dErstellt DESC',
+                ['dlid' => $downloadID],
+                ReturnType::COLLECTION
+            )->pluck('id')->transform(function ($e) {
+                return (int)$e;
+            })->mapInto(self::class)->toArray();
     }
 
     /**
@@ -152,17 +148,17 @@ class DownloadHistory
     }
 
     /**
-     * @param bool $bPrimary
+     * @param bool $primary
      * @return bool|int
      */
-    public function save(bool $bPrimary = false)
+    public function save(bool $primary = false)
     {
         $ins = $this->kopiereMembers();
         unset($ins->kDownloadHistory);
 
         $historyID = Shop::Container()->getDB()->insert('tdownloadhistory', $ins);
         if ($historyID > 0) {
-            return $bPrimary ? $historyID : true;
+            return $primary ? $historyID : true;
         }
 
         return false;

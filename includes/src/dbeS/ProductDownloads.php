@@ -15,7 +15,7 @@ class ProductDownloads extends NetSyncHandler
     /**
      * @param int $request
      */
-    protected function request($request)
+    protected function request($request): void
     {
         switch ($request) {
             case NetSyncRequest::DOWNLOADFOLDERS:

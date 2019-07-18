@@ -9,6 +9,7 @@ namespace JTL\dbeS\Push;
 use JTL\Checkout\Lieferadresse;
 use JTL\Checkout\Rechnungsadresse;
 use JTL\DB\ReturnType;
+use JTL\Services\JTL\CryptoServiceInterface;
 use JTL\Shop;
 
 /**
@@ -25,63 +26,17 @@ final class Orders extends AbstractPush
     public function getData()
     {
         $xml    = [];
-        $orders = $this->db->query(
-            "SELECT tbestellung.kBestellung, tbestellung.kWarenkorb, tbestellung.kKunde, tbestellung.kLieferadresse,
-            tbestellung.kRechnungsadresse, tbestellung.kZahlungsart, tbestellung.kVersandart, tbestellung.kSprache, 
-            tbestellung.kWaehrung, '0' AS nZahlungsTyp, tbestellung.fGuthaben, tbestellung.cSession, 
-            tbestellung.cZahlungsartName, tbestellung.cBestellNr, tbestellung.cVersandInfo, tbestellung.dVersandDatum, 
-            tbestellung.cTracking, tbestellung.cKommentar, tbestellung.cAbgeholt, tbestellung.cStatus, 
-            date_format(tbestellung.dErstellt, \"%d.%m.%Y\") AS dErstellt_formatted, tbestellung.dErstellt, 
-            tzahlungsart.cModulId, tbestellung.cPUIZahlungsdaten, tbestellung.nLongestMinDelivery, 
-            tbestellung.nLongestMaxDelivery, tbestellung.fWaehrungsFaktor
-            FROM tbestellung
-            LEFT JOIN tzahlungsart
-                ON tzahlungsart.kZahlungsart = tbestellung.kZahlungsart
-            WHERE cAbgeholt = 'N'
-            ORDER BY tbestellung.kBestellung
-            LIMIT " . self::LIMIT_ORDERS,
-            ReturnType::ARRAY_OF_ASSOC_ARRAYS
-        );
+        $orders = $this->getLastOrders();
         if (\count($orders) === 0) {
             return $xml;
         }
-        foreach ($orders as $i => $order) {
-            if (\strlen($order['cPUIZahlungsdaten']) > 0
-                && \preg_match('/^kPlugin_(\d+)_paypalexpress$/', $order['cModulId'], $matches)
-            ) {
-                $orders[$i]['cModulId'] = 'za_paypal_pui_jtl';
-            }
-        }
-
         $crypto          = Shop::Container()->getCryptoService();
         $orderAttributes = [];
-
         foreach ($orders as &$order) {
-            $orderAttribute     = $this->buildAttributes($order);
-            $orderID            = (int)$orderAttribute['kBestellung'];
-            $order['tkampagne'] = $this->db->queryPrepared(
-                "SELECT tkampagne.cName, tkampagne.cParameter cIdentifier,
-                COALESCE(tkampagnevorgang.cParamWert, '') cWert
-                FROM tkampagnevorgang
-                INNER JOIN tkampagne 
-                    ON tkampagne.kKampagne = tkampagnevorgang.kKampagne
-                INNER JOIN tkampagnedef 
-                    ON tkampagnedef.kKampagneDef = tkampagnevorgang.kKampagneDef
-                WHERE tkampagnedef.cKey = 'kBestellung'
-                    AND tkampagnevorgang.kKey = :oid
-                ORDER BY tkampagnevorgang.kKampagneDef DESC LIMIT 1",
-                ['oid' => $orderID],
-                ReturnType::SINGLE_ASSOC_ARRAY
-            );
-
-            $order['ttrackinginfo'] = $this->db->queryPrepared(
-                'SELECT cUserAgent, cReferer
-                FROM tbesucher
-                WHERE kBestellung = :oid
-                LIMIT 1',
-                ['oid' => $orderID],
-                ReturnType::SINGLE_ASSOC_ARRAY
-            );
+            $orderAttribute         = $this->buildAttributes($order);
+            $orderID                = (int)$orderAttribute['kBestellung'];
+            $order['tkampagne']     = $this->getCampaignInfo($orderID);
+            $order['ttrackinginfo'] = $this->getTrackingInfo($orderID);
 
             $items          = $this->db->queryPrepared(
                 'SELECT *
@@ -104,13 +59,8 @@ final class Orders extends AbstractPush
                 );
                 unset($itemAttribute['kWarenkorb']);
                 $itemAttributes[] = $itemAttribute;
-
-                $confCount = \count($item['twarenkorbposeigenschaft']);
-                for ($j = 0; $j < $confCount; $j++) {
-                    $idx                                    = $j . ' attr';
-                    $item['twarenkorbposeigenschaft'][$idx] = $this->buildAttributes(
-                        $item['twarenkorbposeigenschaft'][$j]
-                    );
+                foreach ($item['twarenkorbposeigenschaft'] as $j => $prop) {
+                    $item['twarenkorbposeigenschaft'][$j . ' attr'] = $this->buildAttributes($prop);
                 }
             }
             unset($item);
@@ -118,89 +68,27 @@ final class Orders extends AbstractPush
             foreach ($itemAttributes as $i => $attribute) {
                 $order['twarenkorbpos'][$i . ' attr'] = $attribute;
             }
-
-            $deliveryAddress        = new Lieferadresse((int)$orderAttribute['kLieferadresse']);
-            $country                = $this->db->select(
-                'tland',
-                'cISO',
-                $deliveryAddress->cLand,
-                null,
-                null,
-                null,
-                null,
-                false,
-                'cDeutsch'
-            );
-            $iso                    = $deliveryAddress->cLand;
-            $deliveryAddress->cLand = isset($country) ? $country->cDeutsch : $deliveryAddress->angezeigtesLand;
-            unset($deliveryAddress->angezeigtesLand);
-            $address = $deliveryAddress->gibLieferadresseAssoc();
-            if (\count($address) > 0) {
-                // Work Around um der Wawi die ausgeschriebene Anrede mitzugeben
-                $address['cAnrede'] = $address['cAnredeLocalized'] ?? null;
-                // Am Ende zusätzlich Ländercode cISO mitgeben
-                $address['cISO'] = $iso;
-            }
-            $attr = $this->buildAttributes($address);
+            $shippingAddress = $this->getShippingAddress((int)$orderAttribute['kLieferadresse']);
+            $attr            = $this->buildAttributes($shippingAddress);
             // Strasse und Hausnummer zusammenführen
-            if (isset($address['cHausnummer'])) {
-                $address['cStrasse'] .= ' ' . \trim($address['cHausnummer']);
+            if (isset($shippingAddress['cHausnummer'])) {
+                $shippingAddress['cStrasse'] .= ' ' . \trim($shippingAddress['cHausnummer']);
             }
-            $address['cStrasse'] = \trim($address['cStrasse'] ?? '');
-            unset($address['cHausnummer']);
-            $order['tlieferadresse']      = $address;
+            $shippingAddress['cStrasse'] = \trim($shippingAddress['cStrasse'] ?? '');
+            unset($shippingAddress['cHausnummer']);
+            $order['tlieferadresse']      = $shippingAddress;
             $order['tlieferadresse attr'] = $attr;
 
-            $billingAddress        = new Rechnungsadresse((int)$orderAttribute['kRechnungsadresse']);
-            $country               = $this->db->select(
-                'tland',
-                'cISO',
-                $billingAddress->cLand,
-                null,
-                null,
-                null,
-                null,
-                false,
-                'cDeutsch'
-            );
-            $iso                   = $billingAddress->cLand;
-            $billingAddress->cLand = isset($country) ? $country->cDeutsch : $billingAddress->angezeigtesLand;
-            unset($billingAddress->angezeigtesLand);
-            $address = $billingAddress->gibRechnungsadresseAssoc();
-
-            if (\count($address) > 0) {
-                // Work Around um der Wawi die ausgeschriebene Anrede mitzugeben
-                $address['cAnrede'] = $address['cAnredeLocalized'] ?? null;
-                // Am Ende zusätzlich Ländercode cISO mitgeben
-                $address['cISO'] = $iso;
-            }
-            $attr = $this->buildAttributes($address);
+            $billingAddress = $this->getBillingAddress((int)$orderAttribute['kRechnungsadresse']);
+            $attr           = $this->buildAttributes($billingAddress);
             // Strasse und Hausnummer zusammenführen
-            $address['cStrasse'] .= ' ' . \trim($address['cHausnummer'] ?? '');
-            $address['cStrasse']  = \trim($address['cStrasse'] ?? '');
-            unset($address['cHausnummer']);
-            $order['trechnungsadresse']      = $address;
+            $billingAddress['cStrasse'] .= ' ' . \trim($billingAddress['cHausnummer'] ?? '');
+            $billingAddress['cStrasse']  = \trim($billingAddress['cStrasse'] ?? '');
+            unset($billingAddress['cHausnummer']);
+            $order['trechnungsadresse']      = $billingAddress;
             $order['trechnungsadresse attr'] = $attr;
 
-            $payment              = $this->db->queryPrepared(
-                "SELECT *
-                FROM tzahlungsinfo
-                WHERE kBestellung = :oid AND cAbgeholt = 'N'
-                ORDER BY kZahlungsInfo DESC LIMIT 1",
-                ['oid' => $orderID],
-                ReturnType::SINGLE_ASSOC_ARRAY
-            );
-            $payment['cBankName'] = isset($payment['cBankName']) ? $crypto->decryptXTEA($payment['cBankName']) : null;
-            $payment['cBLZ']      = isset($payment['cBLZ']) ? $crypto->decryptXTEA($payment['cBLZ']) : null;
-            $payment['cInhaber']  = isset($payment['cInhaber']) ? $crypto->decryptXTEA($payment['cInhaber']) : null;
-            $payment['cKontoNr']  = isset($payment['cKontoNr']) ? $crypto->decryptXTEA($payment['cKontoNr']) : null;
-            $payment['cIBAN']     = isset($payment['cIBAN']) ? $crypto->decryptXTEA($payment['cIBAN']) : null;
-            $payment['cBIC']      = isset($payment['cBIC']) ? $crypto->decryptXTEA($payment['cBIC']) : null;
-            $payment['cKartenNr'] = isset($payment['cKartenNr']) ? $crypto->decryptXTEA($payment['cKartenNr']) : null;
-            $payment['cCVV']      = isset($payment['cCVV']) ? \trim($crypto->decryptXTEA($payment['cCVV'])) : null;
-            if ($payment['cCVV'] !== null && \strlen($payment['cCVV']) > 4) {
-                $payment['cCVV'] = \substr($payment['cCVV'], 0, 4);
-            }
+            $payment                     = $this->getPaymentData($orderID, $crypto);
             $attr                        = $this->buildAttributes($payment);
             $order['tzahlungsinfo']      = $payment;
             $order['tzahlungsinfo attr'] = $attr;
@@ -227,5 +115,177 @@ final class Orders extends AbstractPush
         $xml['bestellungen attr']['anzahl'] = $orderCount;
 
         return $xml;
+    }
+
+    /**
+     * @return array
+     */
+    private function getLastOrders(): array
+    {
+        $orders = $this->db->query(
+            "SELECT tbestellung.kBestellung, tbestellung.kWarenkorb, tbestellung.kKunde, tbestellung.kLieferadresse,
+            tbestellung.kRechnungsadresse, tbestellung.kZahlungsart, tbestellung.kVersandart, tbestellung.kSprache, 
+            tbestellung.kWaehrung, '0' AS nZahlungsTyp, tbestellung.fGuthaben, tbestellung.cSession, 
+            tbestellung.cZahlungsartName, tbestellung.cBestellNr, tbestellung.cVersandInfo, tbestellung.dVersandDatum, 
+            tbestellung.cTracking, tbestellung.cKommentar, tbestellung.cAbgeholt, tbestellung.cStatus, 
+            date_format(tbestellung.dErstellt, \"%d.%m.%Y\") AS dErstellt_formatted, tbestellung.dErstellt, 
+            tzahlungsart.cModulId, tbestellung.cPUIZahlungsdaten, tbestellung.nLongestMinDelivery, 
+            tbestellung.nLongestMaxDelivery, tbestellung.fWaehrungsFaktor
+            FROM tbestellung
+            LEFT JOIN tzahlungsart
+                ON tzahlungsart.kZahlungsart = tbestellung.kZahlungsart
+            WHERE cAbgeholt = 'N'
+            ORDER BY tbestellung.kBestellung
+            LIMIT " . self::LIMIT_ORDERS,
+            ReturnType::ARRAY_OF_ASSOC_ARRAYS
+        );
+        foreach ($orders as $i => $order) {
+            if (\strlen($order['cPUIZahlungsdaten']) > 0
+                && \preg_match('/^kPlugin_(\d+)_paypalexpress$/', $order['cModulId'], $matches)
+            ) {
+                $orders[$i]['cModulId'] = 'za_paypal_pui_jtl';
+            }
+        }
+
+        return $orders;
+    }
+
+    /**
+     * @param int $id
+     * @return array
+     */
+    private function getBillingAddress(int $id): array
+    {
+        $billingAddress        = new Rechnungsadresse($id);
+        $country               = $this->db->select(
+            'tland',
+            'cISO',
+            $billingAddress->cLand,
+            null,
+            null,
+            null,
+            null,
+            false,
+            'cDeutsch'
+        );
+        $iso                   = $billingAddress->cLand;
+        $billingAddress->cLand = isset($country) ? $country->cDeutsch : $billingAddress->angezeigtesLand;
+        unset($billingAddress->angezeigtesLand);
+        $address = $billingAddress->gibRechnungsadresseAssoc();
+
+        if (\count($address) > 0) {
+            // Work Around um der Wawi die ausgeschriebene Anrede mitzugeben
+            $address['cAnrede'] = $address['cAnredeLocalized'] ?? null;
+            // Am Ende zusätzlich Ländercode cISO mitgeben
+            $address['cISO'] = $iso;
+        }
+
+        return $address;
+    }
+
+    /**
+     * @param int $id
+     * @return array
+     */
+    private function getShippingAddress(int $id): array
+    {
+        $deliveryAddress        = new Lieferadresse($id);
+        $country                = $this->db->select(
+            'tland',
+            'cISO',
+            $deliveryAddress->cLand,
+            null,
+            null,
+            null,
+            null,
+            false,
+            'cDeutsch'
+        );
+        $iso                    = $deliveryAddress->cLand;
+        $deliveryAddress->cLand = isset($country) ? $country->cDeutsch : $deliveryAddress->angezeigtesLand;
+        unset($deliveryAddress->angezeigtesLand);
+        $address = $deliveryAddress->gibLieferadresseAssoc();
+        if (\count($address) > 0) {
+            // Work Around um der Wawi die ausgeschriebene Anrede mitzugeben
+            $address['cAnrede'] = $address['cAnredeLocalized'] ?? null;
+            // Am Ende zusätzlich Ländercode cISO mitgeben
+            $address['cISO'] = $iso;
+        }
+
+        return $address;
+    }
+
+    /**
+     * @param int $orderID
+     * @return array|null
+     */
+    private function getCampaignInfo(int $orderID): ?array
+    {
+        return $this->db->queryPrepared(
+            "SELECT tkampagne.cName, tkampagne.cParameter cIdentifier,
+                COALESCE(tkampagnevorgang.cParamWert, '') cWert
+                FROM tkampagnevorgang
+                INNER JOIN tkampagne 
+                    ON tkampagne.kKampagne = tkampagnevorgang.kKampagne
+                INNER JOIN tkampagnedef 
+                    ON tkampagnedef.kKampagneDef = tkampagnevorgang.kKampagneDef
+                WHERE tkampagnedef.cKey = 'kBestellung'
+                    AND tkampagnevorgang.kKey = :oid
+                ORDER BY tkampagnevorgang.kKampagneDef DESC LIMIT 1",
+            ['oid' => $orderID],
+            ReturnType::SINGLE_ASSOC_ARRAY
+        );
+    }
+
+    /**
+     * @param int $orderID
+     * @return array|null
+     */
+    private function getTrackingInfo(int $orderID): ?array
+    {
+        return $this->db->queryPrepared(
+            'SELECT cUserAgent, cReferer
+                FROM tbesucher
+                WHERE kBestellung = :oid
+                LIMIT 1',
+            ['oid' => $orderID],
+            ReturnType::SINGLE_ASSOC_ARRAY
+        );
+    }
+
+    /**
+     * @param int                    $orderID
+     * @param CryptoServiceInterface $crypto
+     * @return array
+     */
+    private function getPaymentData(int $orderID, CryptoServiceInterface $crypto): array
+    {
+        $payment = $this->db->queryPrepared(
+            "SELECT *
+                FROM tzahlungsinfo
+                WHERE kBestellung = :oid AND cAbgeholt = 'N'
+                ORDER BY kZahlungsInfo DESC LIMIT 1",
+            ['oid' => $orderID],
+            ReturnType::SINGLE_ASSOC_ARRAY
+        );
+        $keys    = ['cBankName', 'cBLZ', 'cInhaber', 'cKontoNr', 'cIBAN', 'cBIC', 'cKartenNr', 'cCVV'];
+        if ($payment === null) {
+            $payment = [];
+            foreach ($keys as $key) {
+                $payment[$key] = null;
+            }
+        } else {
+            foreach ($payment as $key => $value) {
+                if ($value !== null && \in_array($key, $keys, true)) {
+                    $payment[$key] = \trim($crypto->decryptXTEA($value));
+                }
+            }
+            if ($payment['cCVV'] !== null && \strlen($payment['cCVV']) > 4) {
+                $payment['cCVV'] = \substr($payment['cCVV'], 0, 4);
+            }
+        }
+
+
+        return $payment;
     }
 }

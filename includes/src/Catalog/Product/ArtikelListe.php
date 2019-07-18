@@ -234,6 +234,9 @@ class ArtikelListe
             }
             Shop::Container()->getCache()->set($cacheID, $items, $cacheTags);
         }
+        if ($items === false) {
+            return $this->elemente;
+        }
         $defaultOptions = Artikel::getDefaultOptions();
         foreach ($items as $obj) {
             $product = new Artikel();

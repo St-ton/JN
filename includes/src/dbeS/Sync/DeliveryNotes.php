@@ -9,11 +9,10 @@ namespace JTL\dbeS\Sync;
 use JTL\dbeS\Starter;
 
 /**
- * Class DeliverySlips
- *
+ * Class DeliveryNotes
  * @package JTL\dbeS\Sync
  */
-final class DeliverySlips extends AbstractSync
+final class DeliveryNotes extends AbstractSync
 {
     /**
      * @param Starter $starter
@@ -40,16 +39,16 @@ final class DeliverySlips extends AbstractSync
     private function handleInserts($xml): void
     {
         foreach ($xml->tlieferschein as $item) {
-            $deliverySlip = $this->mapper->map($item, 'mLieferschein');
-            if ((int)$deliverySlip->kInetBestellung <= 0) {
+            $deliveryNote = $this->mapper->map($item, 'mLieferschein');
+            if ((int)$deliveryNote->kInetBestellung <= 0) {
                 continue;
             }
-            $deliverySlip->dErstellt = \date_format(\date_create($deliverySlip->dErstellt), 'U');
-            $this->upsert('tlieferschein', [$deliverySlip], 'kLieferschein');
+            $deliveryNote->dErstellt = \date_format(\date_create($deliveryNote->dErstellt), 'U');
+            $this->upsert('tlieferschein', [$deliveryNote], 'kLieferschein');
 
             foreach ($item->tlieferscheinpos as $xmlItem) {
                 $sItem                = $this->mapper->map($xmlItem, 'mLieferscheinpos');
-                $sItem->kLieferschein = $deliverySlip->kLieferschein;
+                $sItem->kLieferschein = $deliveryNote->kLieferschein;
                 $this->upsert('tlieferscheinpos', [$sItem], 'kLieferscheinPos');
 
                 foreach ($xmlItem->tlieferscheinposInfo as $info) {
@@ -61,7 +60,7 @@ final class DeliverySlips extends AbstractSync
 
             foreach ($item->tversand as $shipping) {
                 $shipping                = $this->mapper->map($shipping, 'mVersand');
-                $shipping->kLieferschein = $deliverySlip->kLieferschein;
+                $shipping->kLieferschein = $deliveryNote->kLieferschein;
                 $shipping->dErstellt     = \date_format(\date_create($shipping->dErstellt), 'U');
                 $this->upsert('tversand', [$shipping], 'kVersand');
             }
@@ -77,7 +76,7 @@ final class DeliverySlips extends AbstractSync
         if (!\is_array($items)) {
             $items = (array)$items;
         }
-        foreach (\array_map('\intval', $items) as $id) {
+        foreach (\array_filter(\array_map('\intval', $items)) as $id) {
             $this->db->delete('tversand', 'kLieferschein', $id);
             $this->db->delete('tlieferschein', 'kLieferschein', $id);
             foreach ($this->db->selectAll(

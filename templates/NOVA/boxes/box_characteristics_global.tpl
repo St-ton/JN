@@ -34,7 +34,7 @@
                             {foreach $oMerkmal->oMerkmalWert_arr as $oMerkmalWert}
                                 {navitem}
                                     {link href=$oMerkmalWert->cURL
-                                        class="{if $NaviFilter->hasAttributeValue() && isset($oMerkmalWert->kMerkmalWert) && $NaviFilter->getAttributeValue()->getValue() == $oMerkmalWert->kMerkmalWert}active{/if}"
+                                        class="{if $NaviFilter->hasCharacteristicValue() && isset($oMerkmalWert->kMerkmalWert) && $NaviFilter->getCharacteristicValue()->getValue() == $oMerkmalWert->kMerkmalWert}active{/if}"
                                     }
                                         {if ($oMerkmal->cTyp === 'BILD' || $oMerkmal->cTyp === 'BILD-TEXT') && $oMerkmalWert->nBildKleinVorhanden === 1}
                                            {image src=$oMerkmalWert->cBildURLKlein alt=$oMerkmalWert->cWert|escape:'quotes'}

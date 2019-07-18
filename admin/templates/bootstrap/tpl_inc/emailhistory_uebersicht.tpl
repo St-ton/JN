@@ -1,5 +1,5 @@
 {include file='tpl_inc/seite_header.tpl' cTitel=__('emailhistory') cBeschreibung=__('emailhistoryDesc') cDokuURL=__('emailhistoryURL')}
-<div id="content" class="container-fluid">
+<div id="content">
     {if $oEmailhistory_arr|@count > 0 && $oEmailhistory_arr}
         <form name="emailhistory" method="post" action="emailhistory.php">
             {$jtl_token}

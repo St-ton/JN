@@ -558,7 +558,7 @@ function checkSelect(selectBox) {ldelim}
 </script>
 
 <div id="page">
-    <div id="content" class="container-fluid">
+    <div id="content">
         {*<div id="welcome" class="post">*}
             {*<h2 class="title"><span>{__('umfrageEnterQ')}</span></h2>*}
         {*</div>*}

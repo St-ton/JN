@@ -2,7 +2,7 @@
 
 {include file='tpl_inc/seite_header.tpl' cTitel=__('ftp') cBeschreibung=__('ftpDesc') cDokuURL=__('ftpUrl')}
 
-<div id="content" class="container-fluid">
+<div id="content">
     <div id="settings">
         <form method="post" action="ftp.php">
             {$jtl_token}

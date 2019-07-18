@@ -1,5 +1,5 @@
 {include file='tpl_inc/seite_header.tpl' cTitel=__('preview') cBeschreibung=__('newsletterdesc')}
-<div id="content" class="container-fluid">
+<div id="content">
     <form method="post" action="newsletter.php">
         {$jtl_token}
         <input name="tab" type="hidden" value="newslettervorlagen" />

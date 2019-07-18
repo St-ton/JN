@@ -1,7 +1,7 @@
 {include file='tpl_inc/header.tpl'}
 {config_load file="$lang.conf" section='kundenimport'}
 {include file='tpl_inc/seite_header.tpl' cTitel=__('newsletterMail') cBeschreibung=__('newsletterMailDesc') cDokuURL=__('newsletterURL')}
-<div id="content" class="container-fluid">
+<div id="content">
     <div class="card">
         <form name="kundenimporter" method="post" action="newsletterimport.php" enctype="multipart/form-data">
             <div class="card-body">

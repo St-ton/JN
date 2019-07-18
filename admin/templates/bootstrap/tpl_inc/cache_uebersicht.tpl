@@ -26,7 +26,7 @@
         {rdelim});
     {rdelim});
 </script>
-<div id="content" class="container-fluid">
+<div id="content">
     <div class="tabs">
         <nav class="tabs-nav">
             <ul class="nav nav-tabs" role="tablist">

@@ -28,7 +28,7 @@ function checkNewsletterSend() {ldelim}
 
 <div id="page">
    {include file='tpl_inc/seite_header.tpl' cTitel=__('newsletterdraft') cBeschreibung=__('newsletterdraftdesc')}
-    <div id="content" class="container-fluid">
+    <div id="content">
         <form name="formnewslettervorlage" id="formnewslettervorlage" method="post" action="newsletter.php">
             {$jtl_token}
             <input name="newslettervorlagen" type="hidden" value="1">

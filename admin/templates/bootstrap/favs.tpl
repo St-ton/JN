@@ -60,7 +60,7 @@
     </tr>
 {/function}
 
-<div id="content" class="container-fluid">
+<div id="content">
     <form method="post">
         {$jtl_token}
         <div class="card">

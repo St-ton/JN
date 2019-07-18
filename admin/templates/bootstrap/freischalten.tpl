@@ -1,7 +1,7 @@
 {config_load file="$lang.conf" section='freischalten'}
 {include file='tpl_inc/header.tpl'}
 {include file='tpl_inc/seite_header.tpl' cTitel=__('freischalten') cBeschreibung=__('freischaltenDesc') cDokuURL=__('freischaltenURL')}
-<div id="content" class="container-fluid">
+<div id="content">
     <div class="card">
         <div class="card-body">
             <div class="row">

@@ -77,7 +77,7 @@ $(document).ready(function() {
 {/if}
 
 {include file='tpl_inc/seite_header.tpl' cTitel=$cTitel cBeschreibung=__('benutzerDesc')}
-<div id="content" class="container-fluid">
+<div id="content">
     <form class="navbar-form" action="benutzerverwaltung.php" method="post">
         {$jtl_token}
         <div id="settings" class="settings">

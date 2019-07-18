@@ -4,7 +4,7 @@
 
 {assign var=preferences value=__('preferences')}
 {include file='tpl_inc/seite_header.tpl' cTitel="Skrill "|cat:$preferences}
-<div id="content" class="container-fluid">
+<div id="content">
     {if $actionError != null}
         <div class="alert alert-danger">
             {if $actionError == 1}{__('mbEmailValidationError')}

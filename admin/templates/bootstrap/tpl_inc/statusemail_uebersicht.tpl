@@ -1,5 +1,5 @@
 {include file='tpl_inc/seite_header.tpl' cTitel=__('statusemail') cBeschreibung=__('statusemailDesc') cDokuURL=__('statusemailURL')}
-<div id="content" class="container-fluid">
+<div id="content">
     <form name="einstellen" method="post" action="statusemail.php">
         {$jtl_token}
         <input type="hidden" name="einstellungen" value="1" />

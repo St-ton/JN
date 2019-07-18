@@ -46,7 +46,7 @@
 
 {include file='tpl_inc/systemcheck.tpl'}
 
-<div id="content" class="container-fluid" style="padding-top: 10px;">
+<div id="content">
     <div class="grid">
 
         <div class="grid-item">

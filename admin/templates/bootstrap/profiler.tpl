@@ -9,7 +9,7 @@ var pies = [];
 {/foreach}
 </script>
 
-<div id="content" class="container-fluid">
+<div id="content">
     <div class="card">
         <div class="card-body">
             <form class="delete-run" action="profiler.php" method="post">

@@ -1,5 +1,5 @@
 {include file='tpl_inc/seite_header.tpl' cTitel=__('exportformats') cBeschreibung=__('exportformatsDesc') cDokuURL=__('exportformatsURL')}
-<div id="content" class="container-fluid">
+<div id="content">
     <script type="text/javascript" src="{$currentTemplateDir}js/jquery.progressbar.js"></script>
     <script type="text/javascript">
         var url = "{$shopURL}/{$PFAD_ADMIN}exportformate.php",

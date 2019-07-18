@@ -1,5 +1,5 @@
 {include file='tpl_inc/seite_header.tpl' cTitel=__('emailTemplates')}
-<div id="content" class="container-fluid">
+<div id="content">
     <form method="post" action="emailvorlagen.php">
         {$jtl_token}
         <input type="hidden" name="resetEmailvorlage" value="1" />

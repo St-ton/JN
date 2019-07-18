@@ -5,7 +5,7 @@
 </script>
 
 {include file='tpl_inc/seite_header.tpl' cTitel=__('links') cBeschreibung=__('linksDesc') cDokuURL=__('linksUrl')}
-<div id="content" class="container-fluid">
+<div id="content">
     <div class="block container2">
         <form action="links.php" method="post">
             {$jtl_token}

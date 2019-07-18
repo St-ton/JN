@@ -379,7 +379,7 @@ $(function() {
 */
 </script>
 
-<div id="content" class="container-fluid">
+<div id="content">
     <div class="row">
 
         <div class="col-md-2">

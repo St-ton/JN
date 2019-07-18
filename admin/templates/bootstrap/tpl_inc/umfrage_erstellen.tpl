@@ -43,7 +43,7 @@ function clearInput(inputField) {ldelim}
 </script>
 
 <div id="page">
-    <div id="content" class="container-fluid">
+    <div id="content">
         <div id="welcome" class="card post">
             <div class="card-header">
                 <div class="subheading1">{__('umfrageEnter')}</div>

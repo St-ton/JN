@@ -1,5 +1,5 @@
 <div id="page">
-    <div id="content" class="container-fluid">
+    <div id="content">
         <div class="card">
             <div class="card-header">
                 <div class="subheading1">{$oUmfrage->cName}</div>

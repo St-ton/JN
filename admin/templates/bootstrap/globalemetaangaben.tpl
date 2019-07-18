@@ -2,7 +2,7 @@
 {include file='tpl_inc/header.tpl'}
 {include file='tpl_inc/seite_header.tpl' cTitel=__('globalemetaangaben') cBeschreibung=__('globalemetaangabenDesc') cDokuURL=__('globalemetaangabenUrl')}
 {assign var=currentLanguage value=''}
-<div id="content" class="container-fluid">
+<div id="content">
     <div class="card">
         <div class="card-body">
             {include file='tpl_inc/language_switcher.tpl' action='globalemetaangaben.php"'}

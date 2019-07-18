@@ -3,7 +3,7 @@
 {include file='tpl_inc/seite_header.tpl' cTitel=__('slider') cBeschreibung=__('sliderDesc') cDokuURL=__('sliderURL')}
 
 <script src="{$currentTemplateDir}js/slider.js" type="text/javascript"></script>
-<div id="content" class="container-fluid">
+<div id="content">
     {if $action === 'new' || $action === 'edit' }
         {include file='tpl_inc/slider_form.tpl'}
     {elseif $action === 'slides'}

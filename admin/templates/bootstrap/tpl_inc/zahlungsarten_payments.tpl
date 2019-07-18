@@ -1,5 +1,5 @@
 {include file='tpl_inc/seite_header.tpl' cTitel=__('payments')|cat:$oZahlungsart->cName cBeschreibung=__('paymentsDesc') cDokuURL=__('paymentsURL')}
-<div id="content" class="container-fluid">
+<div id="content">
     {include file='tpl_inc/filtertools.tpl' oFilter=$oFilter cParam_arr=['a'=>'payments',
         'token'=>$smarty.session.jtl_token, 'kZahlungsart'=>$oZahlungsart->kZahlungsart]}
     {include file='tpl_inc/pagination.tpl' pagination=$pagination cParam_arr=['a'=>'payments',

@@ -38,7 +38,7 @@
     }
 </script>
 
-<div id="content" class="container-fluid">
+<div id="content">
     <form method="post" action="kupons.php">
         {$jtl_token}
         <input type="hidden" name="kKuponBearbeiten" value="{$oKupon->kKupon}">

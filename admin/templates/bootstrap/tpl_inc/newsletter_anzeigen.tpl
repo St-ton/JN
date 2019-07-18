@@ -1,5 +1,5 @@
 <div id="page">
-    <div id="content" class="container-fluid">
+    <div id="content">
         <form method="post" action="newsletter.php">
             {$jtl_token}
             <div id="welcome" class="post">

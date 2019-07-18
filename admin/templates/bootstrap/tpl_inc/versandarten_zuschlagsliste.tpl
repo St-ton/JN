@@ -4,7 +4,7 @@
 {assign var=cLandISO value=$Land->cISO}
 
 {include file='tpl_inc/seite_header.tpl' cTitel=$isleListFor|cat: ' '|cat:$cVersandartName|cat:', '|cat:$cLandName|cat:'('|cat:$cLandISO|cat:')' cBeschreibung=__('isleListsDesc')}
-<div id="content" class="container-fluid">
+<div id="content">
     {foreach $Zuschlaege as $zuschlag}
         <div class="card">
             <div class="card-header">

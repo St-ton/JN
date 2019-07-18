@@ -109,7 +109,7 @@
     }
 </script>
 
-<div id="content" class="container-fluid">
+<div id="content">
     <form name="einstellen" method="post" id="einstellen">
         {$jtl_token}
         <input type="hidden" name="speichern" value="1"/>

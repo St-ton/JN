@@ -4,7 +4,7 @@
 {assign var=cFunAttrib value=$ART_ATTRIBUT_GRATISGESCHENKAB}
 
 {include file='tpl_inc/seite_header.tpl' cTitel=__('ggHeader') cDokuURL=__('ggURL')}
-<div id="content" class="container-fluid">
+<div id="content">
     <div class="tabs">
         <nav class="tabs-nav">
             <ul class="nav nav-tabs" role="tablist">

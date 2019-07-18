@@ -10,7 +10,7 @@
     }
 </script>
 {include file='tpl_inc/seite_header.tpl' cTitel=__('pluginverwaltung') cBeschreibung=__('pluginverwaltungDesc')}
-<div id="content" class="container-fluid">
+<div id="content">
     {if $plugin->getLocalization()->getLangVars()->count() > 0}
         <form name="pluginverwaltung" method="post" action="pluginverwaltung.php">
             {$jtl_token}

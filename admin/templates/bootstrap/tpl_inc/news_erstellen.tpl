@@ -76,7 +76,7 @@
     {/literal}
 </script>
 {include file='tpl_inc/seite_header.tpl' cTitel=__('news') cBeschreibung=__('newsDesc')}
-<div id="content" class="container-fluid">
+<div id="content">
     <form name="news" method="post" action="news.php" enctype="multipart/form-data">
         {$jtl_token}
         <input type="hidden" name="news" value="1" />

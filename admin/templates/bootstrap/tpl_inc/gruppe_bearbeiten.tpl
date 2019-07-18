@@ -4,7 +4,7 @@
 {/if}
 
 {include file='tpl_inc/seite_header.tpl' cTitel=$cTitel cBeschreibung=__('benutzerDesc')}
-<div id="content" class="container-fluid">
+<div id="content">
     <form class="settings navbar-form" action="benutzerverwaltung.php" method="post">
         {$jtl_token}
         <input type="hidden" name="tab" value="group_view" />

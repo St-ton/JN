@@ -20,7 +20,7 @@ function ackCheck(kPlugin, hash)
 
 {*include file='tpl_inc/seite_header.tpl' cTitel=__('pluginverwaltung') cBeschreibung=__('pluginverwaltungDesc') cDokuURL=__('pluginverwaltungURL')*}
 
-<div id="content" class="container-fluid" style="padding-top: 10px;">
+<div id="content">
     <div class="card">
         <div class="card-header">
             <div class="heading-body">
@@ -70,7 +70,7 @@ function ackCheck(kPlugin, hash)
     </div>
 </div>
 
-<div id="content" class="container-fluid">
+<div id="content">
     <div id="settings">
         {if $pluginsByState|@count > 0}
             <div class="tabs">

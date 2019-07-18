@@ -30,7 +30,7 @@
         toggleTextarea(kSektion, cWertName);
     }
 </script>
-<div id="content" class="container-fluid">
+<div id="content">
     <div class="card">
         <div class="card-body">
             {include file='tpl_inc/language_switcher.tpl' id='kSprache' action='sprache.php'}

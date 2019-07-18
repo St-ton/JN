@@ -1,4 +1,4 @@
-<div id="content" class="container-fluid">
+<div id="content">
     {if !isset($noModule) || !$noModule}
         <div class="card">
             <div class="card-body">

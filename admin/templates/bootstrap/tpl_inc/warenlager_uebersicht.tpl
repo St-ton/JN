@@ -14,7 +14,7 @@
 </script>
 {/literal}
 
-<div id="content" class="container-fluid">
+<div id="content">
     {if $oWarenlager_arr|@count > 0}
         <form method="post" action="warenlager.php">
             {$jtl_token}

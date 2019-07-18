@@ -7,7 +7,7 @@
 </script>
 
 {include file='tpl_inc/seite_header.tpl' cTitel=__('shippingmethods') cBeschreibung=__('isleListsHint') cDokuURL=__('shippingmethodsURL')}
-<div id="content" class="container-fluid">
+<div id="content">
     {foreach $versandarten as $versandart}
         <div class="card">
             <div class="card-header">

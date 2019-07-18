@@ -1,7 +1,7 @@
 {include file='tpl_inc/header.tpl'}
 {config_load file="$lang.conf" section='warenkorbpers'}
 {include file='tpl_inc/seite_header.tpl' cTitel=__('warenkorbpers') cBeschreibung=__('warenkorbpersDesc') cDokuURL=__('warenkorbpersURL')}
-<div id="content" class="container-fluid">
+<div id="content">
     {if $step === 'uebersicht'}
         <div class="tabs">
             <nav class="tabs-nav">

@@ -1,5 +1,5 @@
 {include file='tpl_inc/seite_header.tpl' cTitel=__('news') cBeschreibung=__('newsDesc')}
-<div id="content" class="container-fluid">
+<div id="content">
     <div class="card">
         <div class="card-header category first clearall">
             <div class="subheading1">{$oNews->getTitle()} - {$oNews->getDate()->format('d.m.Y H:i')}</div>

@@ -1,5 +1,5 @@
 {include file='tpl_inc/seite_header.tpl' cTitel=__('votesystem') cBeschreibung=__('votesystemDesc') cDokuURL=__('votesystemURL')}
-<div id="content" class="container-fluid">
+<div id="content">
     <div class="card">
         <div class="card-body">
             {include file='tpl_inc/language_switcher.tpl' action='bewertung.php'}

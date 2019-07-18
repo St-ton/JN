@@ -32,7 +32,7 @@
 </script>
 
 {include file='tpl_inc/seite_header.tpl' cTitel=__('checkbox') cBeschreibung=__('checkboxDesc') cDokuURL=__('checkboxURL')}
-<div id="content" class="container-fluid">
+<div id="content">
     <div class="tabs">
         <nav class="tabs-nav">
             <ul class="nav nav-tabs" role="tablist">

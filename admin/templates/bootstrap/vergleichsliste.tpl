@@ -2,7 +2,7 @@
 {config_load file="$lang.conf" section='vergleichsliste'}
 
 {include file='tpl_inc/seite_header.tpl' cTitel=__('configureComparelist') cBeschreibung=__('configureComparelistDesc') cDokuURL=__('configureComparelistURL')}
-<div id="content" class="container-fluid">
+<div id="content">
     <div class="tabs">
         <nav class="tabs-nav">
             <ul class="nav nav-tabs" role="tablist">

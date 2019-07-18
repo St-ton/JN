@@ -25,7 +25,7 @@
 {/if}
 
 {include file='tpl_inc/seite_header.tpl' cTitel=$cTitel cBeschreibung=__('statisticDesc') cDokuURL=$cURL}
-<div id="content" class="container-fluid">
+<div id="content">
     <div class="card">
         <div class="card-body">
             <div class="input-group">

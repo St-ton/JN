@@ -3,7 +3,7 @@
     {include file='tpl_inc/seite_header.tpl' cTitel=$cPlugin|cat:': '|cat:$oPlugin->getMeta()->getName()
         pluginMeta=$oPlugin->getMeta()}
 {/if}
-<div id="content" class="container-fluid">
+<div id="content">
     <div class="container2">
         <div id="update-status">
             {include file='tpl_inc/dbupdater_status.tpl' migrationURL='plugin.php' pluginID=$oPlugin->getID()}

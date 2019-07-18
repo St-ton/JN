@@ -1,6 +1,6 @@
 {include file='tpl_inc/seite_header.tpl' cTitel=__('objectcache') cBeschreibung=__('objectcacheDesc') cDokuURL=__('objectcacheURL')}
 
-<div id="content" class="container-fluid">
+<div id="content">
     <div class="tabber">
         <div class="tabbertab{if $tab === 'clearall'} tabbertabdefault{/if}">
             <h2>Cache leeren</h2>

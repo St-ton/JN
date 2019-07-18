@@ -2,7 +2,7 @@
 {include file='tpl_inc/header.tpl'}
 
 {include file='tpl_inc/seite_header.tpl' cTitel=__('branding') cBeschreibung=__('brandingDesc') cDokuURL=__('brandingUrl')}
-<div id="content" class="container-fluid">
+<div id="content">
     <div class="card">
         <div class="card-body">
             <form name="branding" method="post" action="branding.php">

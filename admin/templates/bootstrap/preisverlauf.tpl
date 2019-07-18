@@ -4,7 +4,7 @@
         cTitel=__('configurePriceFlow')
         cBeschreibung=__('configurePriceFlowDesc')
         cDokuURL=__('configurePriceFlowURL')}
-<div id="content" class="container-fluid">
+<div id="content">
     <div class="card">
         <div class="card-body">
             {include file='tpl_inc/config_section.tpl'

@@ -28,7 +28,7 @@
     </script>
 {/if}
 
-<div id="content" class="container-fluid">
+<div id="content">
     <div id="settings">
         <form name="einstellen" method="post" action="{$action}" class="settings navbar-form">
             {$jtl_token}

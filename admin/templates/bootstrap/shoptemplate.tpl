@@ -15,7 +15,7 @@
 {include file='tpl_inc/seite_header.tpl' cTitel=$cTitel cBeschreibung=$cBeschreibung cDokuURL=$cDokuURL}
 {*workaround: no async uploads (the fileinput option uploadAsync does not work correctly... *}
 <style>.fileinput-upload-button, .kv-file-upload{ldelim}display:none!important;{rdelim}</style>
-<div id="content" class="container-fluid">
+<div id="content">
 {if isset($oEinstellungenXML) && $oEinstellungenXML}
     <form action="shoptemplate.php" method="post" enctype="multipart/form-data" id="form_settings">
         {$jtl_token}

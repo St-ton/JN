@@ -3,7 +3,7 @@
 {include file='tpl_inc/seite_header.tpl'
     cTitel=$template|cat: ' - '|cat:{__('name_'|cat:$mailTemplate->getModuleID())}|cat: ' - '|cat:$modify
     cBeschreibung=__('emailTemplateModifyHint')}
-<div id="content" class="container-fluid">
+<div id="content">
     <form name="vorlagen_aendern" method="post" action="emailvorlagen.php" enctype="multipart/form-data">
         {$jtl_token}
         <input type="hidden" name="Aendern" value="1" />

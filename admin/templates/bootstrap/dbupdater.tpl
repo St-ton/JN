@@ -3,7 +3,7 @@
 {include file='tpl_inc/header.tpl'}
 
 {include file='tpl_inc/seite_header.tpl' cTitel=__('dbupdater') cBeschreibung=__('dbupdaterDesc') cDokuURL=__('dbupdaterURL')}
-<div id="content" class="container-fluid">
+<div id="content">
     <div class="container-fluid2">
         <div id="resultLog" {if !$updatesAvailable}style="display: none;"{/if}>
             <h4>{__('eventProtocol')}</h4>

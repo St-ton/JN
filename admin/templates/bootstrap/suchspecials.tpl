@@ -1,7 +1,7 @@
 {config_load file="$lang.conf" section='suchspecials'}
 {include file='tpl_inc/header.tpl'}
 {include file='tpl_inc/seite_header.tpl' cTitel=__('suchspecials') cBeschreibung=__('suchspecialsDesc') cDokuURL=__('suchspecialURL')}
-<div id="content" class="container-fluid">
+<div id="content">
     <div class="card">
         <div class="card-body">
             {include file='tpl_inc/language_switcher.tpl' action='suchspecials.php'}

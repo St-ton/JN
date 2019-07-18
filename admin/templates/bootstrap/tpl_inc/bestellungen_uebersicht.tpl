@@ -1,5 +1,5 @@
 {include file='tpl_inc/seite_header.tpl' cTitel=__('order') cBeschreibung=__('orderDesc') cDokuURL=__('orderURL')}
-<div id="content" class="container-fluid">
+<div id="content">
     {if $oBestellung_arr|@count > 0 && $oBestellung_arr}
         <form name="bestellungen" method="post" action="bestellungen.php">
             {$jtl_token}

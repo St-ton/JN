@@ -78,7 +78,7 @@
 {/if}
 
 {include file='tpl_inc/seite_header.tpl' cTitel=$cTitel cBeschreibung=$cBeschreibung}
-<div id="content" class="container-fluid">
+<div id="content">
     <form name="versandart_neu" method="post" action="versandarten.php">
         {$jtl_token}
         <input type="hidden" name="neueVersandart" value="1" />

@@ -55,7 +55,7 @@
     {assign var=description value=''}
 {/if}
 {include file='tpl_inc/seite_header.tpl' cTitel=__('newLinks') cBeschreibung=$description}
-<div id="content" class="container-fluid">
+<div id="content">
     <div id="settings">
         <form id="create_link" name="link_erstellen" method="post" action="links.php" enctype="multipart/form-data">
             {$jtl_token}

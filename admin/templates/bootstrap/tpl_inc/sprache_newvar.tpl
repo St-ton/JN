@@ -1,5 +1,5 @@
 {include file='tpl_inc/seite_header.tpl' cTitel=__('lang') cBeschreibung=__('langDesc') cDokuURL=__('langURL')}
-<div id="content" class="container-fluid">
+<div id="content">
     <div class="card settings">
         <div class="card-header">
             <div class="subheading1">{__('newLangVar')}</div>

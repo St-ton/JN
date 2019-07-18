@@ -43,7 +43,7 @@
     });
 </script>
 {include file='tpl_inc/seite_header.tpl' cTitel=__('news') cBeschreibung=__('newsDesc') cDokuURL=__('newsURL')}
-<div id="content" class="container-fluid">
+<div id="content">
     <div class="tabs">
         <nav class="tabs-nav">
             <ul class="nav nav-tabs" role="tablist">

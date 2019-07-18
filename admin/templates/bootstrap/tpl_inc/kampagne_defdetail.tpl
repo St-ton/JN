@@ -1,5 +1,5 @@
 {include file='tpl_inc/seite_header.tpl' cTitel=__('kampagneDetailStatsDef')}
-<div id="content" class="container-fluid">
+<div id="content">
     <div id="tabellenLivesuche" class="table-responsive">
         <table class="table">
             <tr>

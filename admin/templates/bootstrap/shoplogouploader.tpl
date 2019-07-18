@@ -1,7 +1,7 @@
 {config_load file="$lang.conf" section='shoplogouploader'}
 {include file='tpl_inc/header.tpl'}
 {include file='tpl_inc/seite_header.tpl' cTitel=__('shoplogouploader') cBeschreibung=__('shoplogouploaderDesc') cDokuURL=__('shoplogouploaderURL')}
-<div id="content" class="container-fluid">
+<div id="content">
     <form name="uploader" method="post" action="shoplogouploader.php" enctype="multipart/form-data">
         {$jtl_token}
         <div class="card">

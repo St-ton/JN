@@ -1,5 +1,5 @@
 {include file='tpl_inc/seite_header.tpl' cBeschreibung=__('configurePaymentmethod') cTitel=$zahlungsart->cName}
-<div id="content" class="container-fluid">
+<div id="content">
     <form name="einstellen" method="post" action="zahlungsarten.php" class="settings">
         {$jtl_token}
         <input type="hidden" name="einstellungen_bearbeiten" value="1" />

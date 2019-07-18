@@ -173,7 +173,7 @@
                 {/if}
             {/if}
             {foreach $NaviFilter->getCharacteristicFilter() as $filter}
-                <input type="hidden" name="mf{$filter@iteration}" value="{$$filter->getValue()}" />
+                <input type="hidden" name="mf{$filter@iteration}" value="{$filter->getValue()}" />
             {/foreach}
             {/block}
         </div>

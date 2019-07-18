@@ -1590,7 +1590,7 @@ final class Shop
                 self::Container()->getAlertService()->addAlert(
                     Alert::TYPE_ERROR,
                     self::Lang()->get('optinCodeUnknown', 'errorMessages'),
-                    'optinUnknown'
+                    'optinCodeUnknown'
                 );
             } catch (Exceptions\InvalidInputException $e) {
                 self::Container()->getAlertService()->addAlert(

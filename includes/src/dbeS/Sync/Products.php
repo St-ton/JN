@@ -287,8 +287,8 @@ final class Products extends AbstractSync
             "INSERT INTO tseo
             SELECT tartikel.cSeo, 'kArtikel', tartikel.kArtikel, tsprache.kSprache
             FROM tartikel, tsprache
-            WHERE tartikel.kArtikel = :pid 
-                AND tsprache.cStandard = 'Y' 
+            WHERE tartikel.kArtikel = :pid
+                AND tsprache.cStandard = 'Y'
                 AND tartikel.cSeo != ''",
             ['pid' => $productID],
             ReturnType::AFFECTED_ROWS
@@ -855,8 +855,8 @@ final class Products extends AbstractSync
             $this->db->query(
                 'UPDATE tartikel SET fLagerbestand =
                 (SELECT * FROM
-                    (SELECT SUM(fLagerbestand) 
-                        FROM tartikel 
+                    (SELECT SUM(fLagerbestand)
+                        FROM tartikel
                         WHERE kVaterartikel = ' . (int)$product->kArtikel . '
                      ) AS x
                  )
@@ -871,8 +871,8 @@ final class Products extends AbstractSync
             $this->db->query(
                 'UPDATE tartikel SET fLagerbestand =
                 (SELECT * FROM
-                    (SELECT SUM(fLagerbestand) 
-                        FROM tartikel 
+                    (SELECT SUM(fLagerbestand)
+                        FROM tartikel
                         WHERE kVaterartikel = ' . (int)$product->kVaterArtikel . '
                     ) AS x
                 )
@@ -1002,7 +1002,7 @@ final class Products extends AbstractSync
             $this->db->queryPrepared(
                 'DELETE teigenschaftkombiwert
                     FROM teigenschaftkombiwert
-                    JOIN tartikel 
+                    JOIN tartikel
                         ON tartikel.kArtikel = :pid
                         AND tartikel.kEigenschaftKombi = teigenschaftkombiwert.kEigenschaftKombi',
                 ['pid' => $productID],
@@ -1334,7 +1334,7 @@ final class Products extends AbstractSync
             $maxDiscount = $this->db->queryPrepared(
                 'SELECT tkategoriekundengruppe.fRabatt, tkategoriekundengruppe.kKategorie
                 FROM tkategoriekundengruppe
-                JOIN tkategorieartikel 
+                JOIN tkategorieartikel
                     ON tkategorieartikel.kKategorie = tkategoriekundengruppe.kKategorie
                     AND tkategorieartikel.kArtikel = :kArtikel
                 LEFT JOIN tkategoriesichtbarkeit
@@ -1387,7 +1387,7 @@ final class Products extends AbstractSync
         return map(
             $this->db->query(
                 'SELECT kArtikel AS id
-                    FROM tartikelkonfiggruppe 
+                    FROM tartikelkonfiggruppe
                     WHERE kKonfiggruppe IN (' . \implode(',', $configGroupIDs) . ')',
                 ReturnType::ARRAY_OF_OBJECTS
             ),
@@ -1442,8 +1442,8 @@ final class Products extends AbstractSync
             // flush cache tags associated with the product's manufacturer ID
             $cacheTags = $cacheTags->concat(map($this->db->query(
                 'SELECT DISTINCT kHersteller AS id
-                FROM tartikel 
-                WHERE kArtikel IN (' . $whereIn . ') 
+                FROM tartikel
+                WHERE kArtikel IN (' . $whereIn . ')
                     AND kHersteller > 0',
                 ReturnType::ARRAY_OF_OBJECTS
             ), function ($item) {

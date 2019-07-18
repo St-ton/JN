@@ -67,16 +67,17 @@ function getCouponNames(int $id)
  */
 function getManufacturers($selectedManufacturers = '')
 {
-    $selected = Text::parseSSK($selectedManufacturers);
+    $selected = Text::parseSSKint($selectedManufacturers);
     $items    = Shop::Container()->getDB()->query(
         'SELECT kHersteller, cName FROM thersteller',
         ReturnType::ARRAY_OF_OBJECTS
     );
 
     foreach ($items as $item) {
-        $manufacturer   = new Hersteller($item->kHersteller);
-        $item->cName    = $manufacturer->cName;
-        $item->selected = in_array($item->kHersteller, $selected) ? 1 : 0;
+        $item->kHersteller = (int)$item->kHersteller;
+        $manufacturer      = new Hersteller($item->kHersteller);
+        $item->cName       = $manufacturer->cName;
+        $item->selected    = (int)in_array($item->kHersteller, $selected, true);
         unset($manufacturer);
     }
 
@@ -89,27 +90,27 @@ function getManufacturers($selectedManufacturers = '')
  * @param int    $depth
  * @return array
  */
-function getCategories($selectedCategories = '', $categoryID = 0, $depth = 0)
+function getCategories($selectedCategories = '', int $categoryID = 0, int $depth = 0)
 {
-    $selected = Text::parseSSK($selectedCategories);
+    $selected = Text::parseSSKint($selectedCategories);
     $arr      = [];
     $items    = Shop::Container()->getDB()->selectAll(
         'tkategorie',
         'kOberKategorie',
-        (int)$categoryID,
+        $categoryID,
         'kKategorie, cName'
     );
-    $count    = count($items);
-    for ($o = 0; $o < $count; $o++) {
+    foreach ($items as $item) {
+        $item->kKategorie = (int)$item->kKategorie;
         for ($i = 0; $i < $depth; $i++) {
-            $items[$o]->cName = '--' . $items[$o]->cName;
+            $item->cName = '--' . $item->cName;
         }
-        $items[$o]->selected = 0;
-        if (in_array($items[$o]->kKategorie, $selected)) {
-            $items[$o]->selected = 1;
+        $item->selected = 0;
+        if (in_array($item->kKategorie, $selected, true)) {
+            $item->selected = 1;
         }
-        $arr[] = $items[$o];
-        $arr   = array_merge($arr, getCategories($selectedCategories, $items[$o]->kKategorie, $depth + 1));
+        $arr[] = $item;
+        $arr   = array_merge($arr, getCategories($selectedCategories, $item->kKategorie, $depth + 1));
     }
 
     return $arr;
@@ -258,10 +259,10 @@ function augmentCoupon($coupon)
         $coupon->cKundengruppe = $customerGroup->cName;
     }
 
-    $artNos       = Text::parseSSK($coupon->cArtikel);
-    $manufactuers = Text::parseSSK($coupon->cHersteller);
-    $categories   = Text::parseSSK($coupon->cKategorien);
-    $customers    = Text::parseSSK($coupon->cKunden);
+    $artNos       = Text::parseSSKint($coupon->cArtikel);
+    $manufactuers = Text::parseSSKint($coupon->cHersteller);
+    $categories   = Text::parseSSKint($coupon->cKategorien);
+    $customers    = Text::parseSSKint($coupon->cKunden);
 
     $coupon->cArtikelInfo    = ($coupon->cArtikel === '')
         ? ''
@@ -623,7 +624,7 @@ function informCouponCustomers($coupon)
         : $coupon->fWert . ' %';
     $coupon->cLocalizedMBW  = Preise::getLocalizedPriceString($coupon->fMindestbestellwert, $defaultCurrency, false);
     // kKunde-Array aller auserwaehlten Kunden
-    $customerIDs  = Text::parseSSK($coupon->cKunden);
+    $customerIDs  = Text::parseSSKint($coupon->cKunden);
     $customerData = $db->query(
         'SELECT kKunde
             FROM tkunde
@@ -665,12 +666,13 @@ function informCouponCustomers($coupon)
         );
         $categories = [];
         if ($coupon->cKategorien !== '-1') {
-            foreach (array_map('\intval', Text::parseSSK($coupon->cKategorien)) as $categoryID) {
-                if ($categoryID > 0) {
-                    $category       = new Kategorie($categoryID, $customer->kSprache, $customer->kKundengruppe);
-                    $category->cURL = $category->cURLFull;
-                    $categories[]   = $category;
+            foreach (Text::parseSSKint($coupon->cKategorien) as $categoryID) {
+                if ($categoryID <= 0) {
+                    continue;
                 }
+                $category       = new Kategorie($categoryID, $customer->kSprache, $customer->kKundengruppe);
+                $category->cURL = $category->cURLFull;
+                $categories[]   = $category;
             }
         }
         $products = [];

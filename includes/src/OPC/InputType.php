@@ -59,4 +59,6 @@ class InputType extends Enum
     public const ZONES = 'zones';
 
     public const GALLERY_LAYOUT = 'gallery-layout';
+
+    public const BOX_STYLES = 'box-styles';
 }

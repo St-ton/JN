@@ -47,106 +47,22 @@ trait PortletStyles
                 'type'    => InputType::COLOR,
                 'label'   => __('Font color'),
                 'default' => '',
-                'width'   => 42,
+                'width'   => 34,
             ],
             'background-color' => [
                 'label'   => __('Background color'),
                 'type'    => InputType::COLOR,
                 'default' => '',
-                'width'   => 42,
+                'width'   => 34,
             ],
             'font-size'        => [
                 'label'   => __('Font size'),
                 'default' => '',
-                'width'   => 17,
+                'width'   => 34,
             ],
-            'margin-top'       => [
-                'label'      => 'margin-top',
-                'type'       => InputType::NUMBER,
-                'default'    => '',
-                'class'      => 'css-input-grid',
-                'width'      => 25
+            'box-styles'  => [
+                'type'    => InputType::BOX_STYLES,
             ],
-            'margin-right'     => [
-                'label'      => 'margin-right',
-                'type'       => InputType::NUMBER,
-                'default'    => '',
-                'class'      => 'css-input-grid',
-                'width'      => 25
-            ],
-            'margin-bottom'    => [
-                'label'      => 'margin-bottom',
-                'type'       => InputType::NUMBER,
-                'default'    => '',
-                'class'      => 'css-input-grid',
-                'width'      => 25
-            ],
-            'margin-left'      => [
-                'label'      => 'margin-left',
-                'type'       => InputType::NUMBER,
-                'default'    => '',
-                'class'      => 'css-input-grid',
-                'width'      => 25
-            ],
-            'padding-top'      => [
-                'label'      => 'padding-top',
-                'type'       => InputType::NUMBER,
-                'default'    => '',
-                'class'      => 'css-input-grid',
-                'width'      => 25
-            ],
-            'padding-right'    => [
-                'label'      => 'padding-right',
-                'type'       => InputType::NUMBER,
-                'default'    => '',
-                'class'      => 'css-input-grid',
-                'width'      => 25
-            ],
-            'padding-bottom'   => [
-                'label'      => 'padding-bottom',
-                'type'       => InputType::NUMBER,
-                'default'    => '',
-                'class'      => 'css-input-grid',
-                'width'      => 25
-            ],
-            'padding-left'     => [
-                'label'      => 'padding-left',
-                'type'       => InputType::NUMBER,
-                'default'    => '',
-                'class'      => 'css-input-grid',
-                'width'      => 25
-            ],
-            'border-width'     => [
-                'label'      => 'border-width',
-                'type'       => InputType::NUMBER,
-                'default'    => '',
-                'class'      => 'css-input-grid',
-                'width'      => 50
-            ],
-            'border-style'     => [
-                'label'      => 'border-style',
-                'type'       => InputType::SELECT,
-                'options'    => [
-                    '',
-                    'hidden'  => 'hidden',
-                    'dotted'  => 'dotted',
-                    'dashed'  => 'dashed',
-                    'solid'   => 'solid',
-                    'double'  => 'double',
-                    'groove'  => 'groove',
-                    'ridge'   => 'ridge',
-                    'inset'   => 'inset',
-                    'outset'  => 'outset',
-                    'initial' => 'initial',
-                    'inherit' => 'inherit',
-                ],
-                'width' => 50
-            ],
-            'border-color'     => [
-                'label' => 'border-color',
-                'type'  => InputType::COLOR,
-                'width' => 100,
-            ]
         ];
     }
 }

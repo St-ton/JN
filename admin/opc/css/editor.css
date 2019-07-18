@@ -741,6 +741,68 @@
   padding: 0 8px;
 }
 
+#opc .modal .box-config {
+  font-size: 12px;
+}
+#opc .modal .box-config .form-control {
+  width: 36px;
+  display: inline;
+  margin: 0;
+  padding: 0;
+  height: 22px;
+  text-align: center;
+  font-size: 12px;
+}
+#opc .modal .box-config label {
+  display: block;
+  margin-bottom: 0;
+}
+#opc .modal .box-config .top-row:after {
+  content: "";
+  display: block;
+  clear: both;
+}
+#opc .modal .box-config .top-row > * {
+  float: left;
+  display: block;
+  width: 33.33%;
+}
+#opc .modal .box-config .top-row > .mid-top-col {
+  text-align: center;
+}
+#opc .modal .box-config .mid-row {
+  display: flex;
+  align-items: center;
+}
+#opc .modal .box-config .mid-row > label {
+  flex: none;
+}
+#opc .modal .box-config .mid-row > div {
+  flex: auto;
+}
+#opc .modal .box-config .bottom-row {
+  text-align: center;
+}
+#opc .modal .box-config .outer-box,
+#opc .modal .box-config .padding-box,
+#opc .modal .box-config .border-box,
+#opc .modal .box-config .content-box {
+  padding: 5px;
+  margin: 5px;
+}
+#opc .modal .box-config .outer-box,
+#opc .modal .box-config .padding-box {
+  border: 1px dashed #BDBDBD;
+  background-color: #F5F7FA;
+}
+#opc .modal .box-config .border-box,
+#opc .modal .box-config .content-box {
+  background-color: #e3e3e3;
+}
+#opc .modal .box-config .content-box {
+  height: 64px;
+}
+
 html, body {
   margin: 0;
   padding: 0;

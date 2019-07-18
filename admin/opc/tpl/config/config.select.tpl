@@ -1,7 +1,10 @@
+{if !isset($propid)}
+    {$propid = $propname}
+{/if}
 <div class='form-group'>
     <label for="config-{$propname}">{$propdesc.label}</label>
     <div class="select-wrapper">
-        <select class="form-control" id="config-{$propname}" name="{$propname}" {if $required === true}required{/if}>
+        <select class="form-control" id="config-{$propid}" name="{$propname}" {if $required === true}required{/if}>
             {foreach $propdesc.options as $value => $label}
                 {if is_string($label)}
                     <option value="{$value}" {if $value == $propval}selected{/if}>
@@ -25,18 +28,18 @@
 
 {if isset($propdesc.childrenFor)}
     <script>
-        var selectElm = $('#config-{$propname}');
+        var selectElm = $('#config-{$propid}');
         var option = selectElm.find(':selected').val();
 
         selectElm.on('change', function() {
             var option = selectElm.find(':selected').val();
 
-            $('.childrenFor-{$propname}').collapse('hide');
-            $('#childrenFor-' + option + '-{$propname}').collapse('show');
+            $('.childrenFor-{$propid}').collapse('hide');
+            $('#childrenFor-' + option + '-{$propid}').collapse('show');
         });
 
         $(function() {
-            $('#childrenFor-' + option + '-{$propname}').collapse('show');
+            $('#childrenFor-' + option + '-{$propid}').collapse('show');
         });
     </script>
 {/if}

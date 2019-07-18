@@ -284,6 +284,11 @@ class GUI
         }
     }
 
+    isPageUnsaved()
+    {
+        return this.unsavedState.css('display') !== 'none';
+    }
+
     onBtnClose(e)
     {
         this.page.unlock().then(() => {
@@ -490,7 +495,7 @@ class GUI
                 this.setInfiniteSchedule();
             }
         } else {
-            this.setUnpublished();
+            this.setPublishNow();
         }
 
         this.draftName.val(this.page.name);
@@ -598,6 +603,10 @@ class GUI
         this.page.publicate()
             .catch(er => this.showError(er.error.message))
             .then(() => this.io.getDraftStatusHtml(this.page.key));
+
+        if (this.isPageUnsaved()) {
+            this.savePage();
+        }
 
         this.publishModal.modal('hide');
     }

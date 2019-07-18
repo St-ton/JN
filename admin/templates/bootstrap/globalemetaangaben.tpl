@@ -3,8 +3,10 @@
 {include file='tpl_inc/seite_header.tpl' cTitel=__('globalemetaangaben') cBeschreibung=__('globalemetaangabenDesc') cDokuURL=__('globalemetaangabenUrl')}
 {assign var=currentLanguage value=''}
 <div id="content" class="container-fluid">
-    <div class="block">
-        {include file='tpl_inc/language_switcher.tpl' action='globalemetaangaben.php"'}
+    <div class="card">
+        <div class="card-body">
+            {include file='tpl_inc/language_switcher.tpl' action='globalemetaangaben.php"'}
+        </div>
     </div>
     <form method="post" action="globalemetaangaben.php">
         {$jtl_token}
@@ -77,7 +79,10 @@
                     {if $open}</div></div>{/if}
                     <div class="card">
                         {if $oConfig->cName}
-                            <div class="card-header"><div class="subheading1">{__('settings')}</div></div>
+                            <div class="card-header">
+                                <div class="subheading1">{__('settings')}</div>
+                                <hr class="mb-n3">
+                            </div>
                         {/if}
                         <div class="card-body">
                         {assign var=open value=true}

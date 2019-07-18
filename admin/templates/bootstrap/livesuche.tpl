@@ -2,26 +2,40 @@
 {config_load file="$lang.conf" section='livesuche'}
 {include file='tpl_inc/seite_header.tpl' cTitel=__('livesearch') cBeschreibung=__('livesucheDesc') cDokuURL=__('livesucheURL')}
 <div id="content" class="container-fluid">
-    <div class="block">
-        {include file='tpl_inc/language_switcher.tpl' action='livesuche.php'}
+    <div class="card">
+        <div class="card-body">
+            {include file='tpl_inc/language_switcher.tpl' action='livesuche.php'}
+        </div>
     </div>
-    <ul class="nav nav-tabs" role="tablist">
-        <li class="tab{if !isset($tab) || $tab === 'suchanfrage'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#suchanfrage">{__('searchrequest')}</a>
-        </li>
-        <li class="tab{if isset($tab) && $tab === 'erfolglos'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#erfolglos">{__('searchmiss')}</a>
-        </li>
-        <li class="tab{if isset($tab) && $tab === 'mapping'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#mapping">{__('mapping')}</a>
-        </li>
-        <li class="tab{if isset($tab) && $tab === 'blacklist'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#blacklist">{__('blacklist')}</a>
-        </li>
-        <li class="tab{if isset($tab) && $tab === 'einstellungen'} active{/if}">
-            <a data-toggle="tab" role="tab" href="#einstellungen">{__('settings')}</a>
-        </li>
-    </ul>
+    <nav class="tabs-nav">
+        <ul class="nav nav-tabs" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link {if !isset($tab) || $tab === 'suchanfrage'} active{/if}" data-toggle="tab" role="tab" href="#suchanfrage">
+                    {__('searchrequest')}
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {if isset($tab) && $tab === 'erfolglos'} active{/if}" data-toggle="tab" role="tab" href="#erfolglos">
+                    {__('searchmiss')}
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {if isset($tab) && $tab === 'mapping'} active{/if}" data-toggle="tab" role="tab" href="#mapping">
+                    {__('mapping')}
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {if isset($tab) && $tab === 'blacklist'} active{/if}" data-toggle="tab" role="tab" href="#blacklist">
+                    {__('blacklist')}
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link {if isset($tab) && $tab === 'einstellungen'} active{/if}" data-toggle="tab" role="tab" href="#einstellungen">
+                    {__('settings')}
+                </a>
+            </li>
+        </ul>
+    </nav>
     <div class="tab-content">
         <div id="suchanfrage" class="tab-pane fade {if !isset($tab) || $tab === 'suchanfrage'} active show{/if}">
             {if isset($Suchanfragen) && $Suchanfragen|@count > 0}
@@ -41,7 +55,7 @@
                             </span>
                             <input class="form-control" id="cSuche" name="cSuche" type="text" value="{if isset($cSuche) && $cSuche|strlen > 0}{$cSuche}{/if}" />
                             <span class="input-group-btn">
-                                <button name="submitSuche" type="submit" value="{__('search')}" class="btn btn-primary"><i class="fal fa-search"></i> {__('search')}</button>
+                                <button name="submitSuche" type="submit" value="{__('search')}" class="btn btn-primary ml-1"><i class="fal fa-search"></i></button>
                             </span>
                         </div>
                     </div>

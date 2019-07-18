@@ -19,8 +19,9 @@
             <div class="card">
                 <div class="card-header">
                     <div class="subheading1">{__('pluginverwaltungLocales')}</div>
+                    <hr class="mb-n3">
                 </div>
-                <div class="table-responsive">
+                <div class="table-responsive card-body">
                     <table class="list table">
                         <thead>
                         <tr>
@@ -55,7 +56,7 @@
                         </tbody>
                     </table>
                 </div>
-                <div class="card-footer">
+                <div class="card-footer save-wrapper">
                     <button name="speichern" type="submit" value="{__('save')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
                 </div>
             </div>

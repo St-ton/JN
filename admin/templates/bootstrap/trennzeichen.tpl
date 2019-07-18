@@ -2,8 +2,10 @@
 {config_load file="$lang.conf" section='trennzeichen'}
 {include file='tpl_inc/seite_header.tpl' cTitel=__('Trennzeichen') cBeschreibung=__('trennzeichenDesc') cDokuURL=__('trennzeichenURL')}
 <div id="content" class="container-fluid">
-    <div class="block">
-        {include file='tpl_inc/language_switcher.tpl' action='trennzeichen.php'}
+    <div class="card">
+        <div class="card-body">
+            {include file='tpl_inc/language_switcher.tpl' action='trennzeichen.php'}
+        </div>
     </div>
     <form method="post" action="trennzeichen.php">
         {$jtl_token}

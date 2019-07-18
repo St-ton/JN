@@ -20,6 +20,8 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
  * @param string $dbfeld
  * @param string $email
  * @return string
+ * @throws Exception
+ * @deprecated since 5.0.0
  */
 function create_NewsletterCode($dbfeld, $email): string
 {
@@ -35,6 +37,7 @@ function create_NewsletterCode($dbfeld, $email): string
  * @param string     $dbfeld
  * @param string|int $code
  * @return bool
+ * @deprecated since 5.0.0
  */
 function unique_NewsletterCode($dbfeld, $code): bool
 {
@@ -64,12 +67,12 @@ function pruefeObBereitsAbonnent(int $customerID): bool
  */
 function pruefeNLHistoryKundengruppe(int $groupID, string $groupKeys): bool
 {
-    if (mb_strlen($groupKeys) === 0) {
+    if ($groupKeys === '') {
         return false;
     }
     $groupIDs = [];
     foreach (explode(';', $groupKeys) as $id) {
-        if ((int)$id > 0 || (mb_strlen($id) > 0 && (int)$id === 0)) {
+        if ((int)$id > 0 || ($id !== '' && (int)$id === 0)) {
             $groupIDs[] = (int)$id;
         }
     }

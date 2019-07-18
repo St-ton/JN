@@ -31,7 +31,7 @@ class OptinAvailAgain extends OptinBase implements OptinInterface
 
     /**
      * OptinAvailAgain constructor.
-     * @param $inheritData
+     * @param parent $inheritData
      */
     public function __construct($inheritData)
     {

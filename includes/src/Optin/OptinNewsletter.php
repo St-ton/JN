@@ -49,7 +49,7 @@ class OptinNewsletter extends OptinBase implements OptinInterface
 
     /**
      * OptinNewsletter constructor.
-     * @param $inheritData
+     * @param parent $inheritData
      */
     public function __construct($inheritData)
     {

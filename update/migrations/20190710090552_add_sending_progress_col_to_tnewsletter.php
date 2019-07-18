@@ -24,7 +24,7 @@ class Migration_20190710090552 extends Migration implements IMigration
                 ADD COLUMN `dLastSendings`
                     DATETIME
                     DEFAULT NULL
-                    COMMENT 'finish time of last sendings of this NL'
+                    COMMENT 'finish time of last sending of this NL'
                     AFTER `dStartZeit`
         ");
     }

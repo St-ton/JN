@@ -1,9 +1,9 @@
-{$useLinks   = $propdesc.useLinks|default:false}
-{$useTitles  = $propdesc.useTitles|default:false}
+{$useLinks    = $propdesc.useLinks|default:false}
+{$useLightbox = $propdesc.useLightbox|default:false}
+{$useTitles   = $propdesc.useTitles|default:false}
 
 {function slideEntry
-    slideData=['xs' => '', 'sm' => '', 'md' => '', 'lg' => '', 'desc' => '', 'url' => '', 'link' => '', 'title' => '',
-        action => 'ligthbox']
+    slideData=['desc' => '', 'url' => '', 'link' => '', 'title' => '', 'action' => 'lightbox']
 }
     <div class="slide-entry">
         <div class="slide-btns">
@@ -44,11 +44,16 @@
                             <input type="hidden" name="{$propname}[#SORT#][action]" value="">
                             <select class="form-control" onchange="onActionChange_{$propname}(this)">
                                 <option value="none" {if $slideData.action === 'none'}selected{/if}>
-                                    Keine Aktion</option>
-                                <option value="lightbox" {if $slideData.action === 'lightbox'}selected{/if}>
-                                    Lightbox</option>
+                                    Keine Aktion
+                                </option>
+                                {if $useLightbox}
+                                    <option value="lightbox" {if $slideData.action === 'lightbox'}selected{/if}>
+                                        Lightbox
+                                    </option>
+                                {/if}
                                 <option value="link" {if $slideData.action === 'link'}selected{/if}>
-                                    Verlinkung</option>
+                                    Verlinkung
+                                </option>
                             </select>
                         </label>
                     </div>

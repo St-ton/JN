@@ -4,7 +4,7 @@
   }
 
   .modal-dialog {
-    width: 700px;
+    width: 786px;
     max-width: none;
 
     .checkbox-standalone {
@@ -120,9 +120,10 @@
 
   .slide-image-col {
     .slide-image-btn {
-      width: 96px;
-      height: 96px;
+      width: 128px;
+      height: 128px;
       margin: 0 16px;
+      border-radius: 5px;
       background-size: cover;
       background-position: center;
       cursor: pointer;
@@ -166,6 +167,7 @@
   width: 48px;
   height: 48px;
   background-color: $text-color;
+  border-color: $text-color;
 
   &:hover {
     background-color: $text-lighter;

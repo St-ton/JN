@@ -25,7 +25,8 @@
             <File Path="js/jquery-3.3.1.min.js"/>
             <File Path="js/jquery-ui.min.js"/>
             <File Path="js/popper.min.js"/>
-            <File Path="js/bootstrap.js"/>
+            <!--<File Path="js/bootstrap.js"/>-->
+            <File Path="js/button.js"/>
             <File Path="js/app.js"/>
             <File Path="js/manifest.js"/>
             <File Path="js/vendor.js"/>

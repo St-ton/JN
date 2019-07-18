@@ -55,7 +55,7 @@
             <i class="fa fa-arrows-v" aria-hidden="true"></i>
         </th>
         <td class="text-center">
-            <button type="button" class="btn btn-sm btn-danger btn-remove"><i class="fal fa-times"></i></button>
+            <button type="button" class="btn btn-sm btn-danger btn-remove btn-circle"><i class="fal fa-times"></i></button>
         </td>
     </tr>
 {/function}
@@ -64,7 +64,7 @@
     <form method="post">
         {$jtl_token}
         <div class="card">
-            <div class="table-responsive">
+            <div class="table-responsive card-body">
                 <table class="list table table-hover" id="favs">
                     <thead>
                     <tr>
@@ -83,12 +83,10 @@
                     </tbody>
                 </table>
             </div>
-            <div class="card-footer">
-                <div class="save btn-group">
-                    <button type="submit" name="action" value="save" class="btn btn-primary">
-                        <i class="fa fa-save"></i> {__('save')}
-                    </button>
-                </div>
+            <div class="card-footer save-wrapper">
+                <button type="submit" name="action" value="save" class="btn btn-primary">
+                    <i class="fa fa-save"></i> {__('save')}
+                </button>
             </div>
         </div>
     </form>

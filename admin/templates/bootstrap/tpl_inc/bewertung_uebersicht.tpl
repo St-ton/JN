@@ -187,9 +187,9 @@
                             <input type="hidden" name="bewertung_aktiv" value="1" />
                             <input type="hidden" name="tab" value="artikelbewertung" />
                             <input class="form-control" name="cArtNr" type="text" value="{$cArtNr|default:''}" />
-                            <span class="input-group-prepend">
-                                <button name="submitSearch" type="submit" value="{__('search')}" class="btn btn-info"><i class="fal fa-search"></i> {__('search')}</button>
-                            </span>
+                            <button name="submitSearch" type="submit" value="{__('search')}" class="btn btn-primary btn-circle ml-1">
+                                <i class="fal fa-search"></i>
+                            </button>
                         </div>
                         {if isset($cArtNr) && $cArtNr|strlen > 0}
                             <div class="alert alert-info">{__('ratingSearchedFor')}: {$cArtNr}</div>

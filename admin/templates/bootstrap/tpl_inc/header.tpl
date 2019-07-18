@@ -54,7 +54,7 @@
                         {include file="tpl_inc/favs_drop.tpl"}
                     </li>
                     <li class="nav-item dropdown">
-                        <a href="#" class="nav-link dropdown-toggle parent" data-toggle="dropdown" title="{__('help')}">
+                        <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">
                             <span class="fal fa-map-marker-question fa-fw"></span>
                         </a>
                         <div class="dropdown-menu dropdown-menu-right">
@@ -97,7 +97,7 @@
                     </li>
                     <li class="nav-item dropdown avatar border-left">
                         <a href="#" class="dropdown-toggle parent" data-toggle="dropdown">
-                            <img src="{gravatarImage email=$account->cMail}" title="{$account->cMail}" class="img-circle">
+                            <img src="{gravatarImage email=$account->cMail}" class="img-circle">
                         </a>
                         <div class="dropdown-menu dropdown-menu-right">
                                 <a class="dropdown-item link-shop" href="{$URL_SHOP}" title="Zum Shop">

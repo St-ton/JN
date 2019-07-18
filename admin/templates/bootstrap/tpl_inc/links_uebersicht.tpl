@@ -6,7 +6,7 @@
 
 {include file='tpl_inc/seite_header.tpl' cTitel=__('links') cBeschreibung=__('linksDesc') cDokuURL=__('linksUrl')}
 <div id="content">
-    <div class="block container2">
+    <div class="block pb-4">
         <form action="links.php" method="post">
             {$jtl_token}
             <button class="btn btn-primary add" name="action" value="create-linkgroup"><i class="fa fa-share"></i> {__('newLinkGroup')}</button>
@@ -78,7 +78,7 @@
             </div>
         {/foreach}
     </div>{* /accordion *}
-    <div class="block container2">
+    <div class="block">
         <form action="links.php" method="post">
             {$jtl_token}
             <button class="btn btn-primary add" name="action" value="create-linkgroup"><i class="fa fa-share"></i> {__('newLinkGroup')}</button>

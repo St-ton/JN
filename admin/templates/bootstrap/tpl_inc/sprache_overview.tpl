@@ -51,6 +51,7 @@
             <div id="variables" class="tab-pane fade {if $tab === 'variables'}active show{/if}">
                 {if $bSpracheAktiv}
                     {include file='tpl_inc/filtertools.tpl' oFilter=$oFilter}
+                    <hr>
                     {include file='tpl_inc/pagination.tpl' pagination=$pagination}
                 {/if}
                 <div>

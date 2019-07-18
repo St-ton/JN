@@ -14,6 +14,7 @@
             <button type="button" onclick="cloneSlide_{$propname}()" title="Copy">
                 <i class="far fa-clone fa-fw"></i>
             </button>
+            <hr>
             <button type="button" onclick="removeSlide_{$propname}()"
                     title="{__('entryDelete')}">
                 <i class="far fa-trash-alt fa-fw"></i>

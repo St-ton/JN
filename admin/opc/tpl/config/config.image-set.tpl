@@ -11,7 +11,7 @@
                  title="{__('entryMove')}" style="cursor: move">
                 <i class="fas fa-arrows-alt fa-fw"></i>
             </span>
-            <button type="button" onclick="" title="Copy">
+            <button type="button" onclick="cloneSlide_{$propname}()" title="Copy">
                 <i class="far fa-clone fa-fw"></i>
             </button>
             <button type="button" onclick="removeSlide_{$propname}()"
@@ -117,6 +117,14 @@
     function removeSlide_{$propname}()
     {
         $(event.target).closest('.slide-entry').remove();
+    }
+
+    function cloneSlide_{$propname}()
+    {
+        let slideEntry = $(event.target).closest('.slide-entry');
+        let copy = slideEntry.clone();
+
+        copy.insertAfter(slideEntry);
     }
 
     function saveImageSet_{$propname}()

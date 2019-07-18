@@ -5,7 +5,7 @@
  */
 
 use JTL\Alert\Alert;
-use JTL\Cron\Admin\NewsletterDefault;
+use JTL\Newsletter\NewsletterCronDAO;
 use JTL\Customer\Kunde;
 use JTL\Customer\Kundengruppe;
 use JTL\DB\ReturnType;
@@ -422,7 +422,7 @@ if (Form::validateToken()) {
                 $newsletter->dStartZeit    = $newsletterTPL->dStartZeit;
                 $newsletter->kNewsletter   = $db->insert('tnewsletter', $newsletter);
                 // create a crontab entry
-                $db->insert('tcron', (new NewsletterDefault())->setForeignKeyID($newsletter->kNewsletter));
+                $db->insert('tcron', (new NewsletterCronDAO())->setForeignKeyID($newsletter->kNewsletter));
                 // Baue Arrays mit kKeys
                 $productIDs      = $instance->getKeys($newsletterTPL->cArtikel, true);
                 $manufacturerIDs = $instance->getKeys($newsletterTPL->cHersteller);

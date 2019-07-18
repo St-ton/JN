@@ -4,83 +4,84 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace JTL\Cron\Admin;
+namespace JTL\Newsletter;
 
 use JTL\Shop;
 
 /**
- * Class NewsletterDefault
- * @package JTL\Cron\Job
+ * Class NewsletterCronDAO
+ * reflects all columns of the table `tcron`, except the auto_increment column
+ * @package JTL\Newsletter
  */
-class NewsletterDefault
+class NewsletterCronDAO
 {
-
     /**
-     * @var null
+     * @var int
      */
-    public $cronID = null;
-
-    /**
-     * @var null
-     */
-    public $foreignKeyID = 0;
+    private $foreignKeyID;
 
     /**
      * @var string
      */
-    public $foreignKey = 'kNewsletter';
+    private $foreignKey;
 
     /**
      * @var string
      */
-    public $tableName = 'tnewsletter';
+    private $tableName;
 
     /**
      * @var string
      */
-    public $name = 'Newsletter';
+    private $name;
 
     /**
      * @var string
      */
-    public $jobType = 'newsletter';
+    private $jobType;
 
     /**
      * @var int
      */
-    public $frequency = 2;
+    private $frequency;
 
     /**
-     * @var null
+     * @var string
      */
-    public $startDate = null;
+    private $startDate;
 
     /**
-     * @var null
+     * @var string
      */
-    public $startTime = null;
+    private $startTime;
 
     /**
-     * @var null
+     * @var string
      */
-    public $lastStart = null;
+    private $lastStart;
 
     /**
-     * @var null
+     * @var string
      */
-    public $lastFinish = null;
+    private $lastFinish;
 
     /**
-     * NewsletterDefault constructor.
+     * NewsletterCronDAO constructor.
+     * pre-define all table columns here, for inserting or updating them later
      * @throws \Exception
      */
     public function __construct()
     {
-        $this->startDate  = (new \DateTime())->format('Y-m-d H:i:s');
-        $this->startTime  = (new \DateTime())->format('H:i:s');
-        $this->lastStart  = '_DBNULL_';
-        $this->lastFinish = '_DBNULL_';
-        $this->frequency  = Shop::getConfigValue(\CONF_NEWSLETTER, 'newsletter_send_delay');
+        $this->foreignKeyID = 0;
+        $this->foreignKey   = 'kNewsletter';
+        $this->tableName    = 'tnewsletter';
+        $this->name         = 'Newsletter';
+        $this->jobType      = 'newsletter';
+        $this->startDate    = (new \DateTime())->format('Y-m-d H:i:s');
+        $this->startTime    = (new \DateTime())->format('H:i:s');
+        $this->lastStart    = '_DBNULL_';
+        $this->lastFinish   = '_DBNULL_';
+        $this->frequency    = Shop::getConfigValue(\CONF_NEWSLETTER, 'newsletter_send_delay');
     }
 
     /**
@@ -93,7 +94,7 @@ class NewsletterDefault
 
     /**
      * @param null $foreignKeyID
-     * @return NewsletterDefault
+     * @return NewsletterCronDAO
      */
     public function setForeignKeyID($foreignKeyID): self
     {
@@ -112,7 +113,7 @@ class NewsletterDefault
 
     /**
      * @param string $foreignKey
-     * @return NewsletterDefault
+     * @return NewsletterCronDAO
      */
     public function setForeignKey(string $foreignKey): self
     {
@@ -131,7 +132,7 @@ class NewsletterDefault
 
     /**
      * @param string $tableName
-     * @return NewsletterDefault
+     * @return NewsletterCronDAO
      */
     public function setTableName(string $tableName): self
     {
@@ -150,7 +151,7 @@ class NewsletterDefault
 
     /**
      * @param int $frequency
-     * @return NewsletterDefault
+     * @return NewsletterCronDAO
      */
     public function setFrequency(int $frequency): self
     {
@@ -169,7 +170,7 @@ class NewsletterDefault
 
     /**
      * @param null $startDate
-     * @return NewsletterDefault
+     * @return NewsletterCronDAO
      */
     public function setStartDate($startDate): self
     {
@@ -188,7 +189,7 @@ class NewsletterDefault
 
     /**
      * @param null $startTime
-     * @return NewsletterDefault
+     * @return NewsletterCronDAO
      */
     public function setStartTime($startTime): self
     {
@@ -207,7 +208,7 @@ class NewsletterDefault
 
     /**
      * @param null $lastStart
-     * @return NewsletterDefault
+     * @return NewsletterCronDAO
      */
     public function setLastStart($lastStart): self
     {
@@ -226,7 +227,7 @@ class NewsletterDefault
 
     /**
      * @param null $lastFinish
-     * @return NewsletterDefault
+     * @return NewsletterCronDAO
      */
     public function setLastFinish($lastFinish): self
     {

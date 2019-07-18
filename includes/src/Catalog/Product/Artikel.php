@@ -2388,10 +2388,9 @@ class Artikel
             $value                   = new stdClass();
             $value->kEigenschaftWert = (int)$tmpVariation->kEigenschaftWert;
             $value->kEigenschaft     = (int)$tmpVariation->kEigenschaft;
-            $value->cName            = \htmlspecialchars(
+            $value->cName            = Text::htmlentitiesOnce(
                 $tmpVariation->cName_teigenschaftwert ?? '',
-                \ENT_COMPAT | \ENT_HTML401,
-                \JTL_CHARSET
+                \ENT_COMPAT | \ENT_HTML401
             );
             $value->fAufpreisNetto   = $tmpVariation->fAufpreisNetto;
             $value->fGewichtDiff     = $tmpVariation->fGewichtDiff;
@@ -4241,11 +4240,7 @@ class Artikel
         $this->fUVP                              = $data->fUVP;
         $this->fUVPBrutto                        = $data->fUVP;
         $this->fVPEWert                          = $data->fVPEWert;
-        $this->cName                             = \htmlspecialchars(
-            $data->cName,
-            \ENT_COMPAT | \ENT_HTML401,
-            \JTL_CHARSET
-        );
+        $this->cName                             = Text::htmlentitiesOnce($data->cName, \ENT_COMPAT | \ENT_HTML401);
         $this->cSeo                              = $data->cSeo;
         $this->cBeschreibung                     = Text::parseNewsText($data->cBeschreibung);
         $this->cAnmerkung                        = $data->cAnmerkung;
@@ -5020,7 +5015,7 @@ class Artikel
         );
         if ($localized !== false) {
             if (\trim($localized->cName)) {
-                $this->cName = $localized->cName;
+                $this->cName = Text::htmlentitiesOnce($localized->cName, \ENT_COMPAT | \ENT_HTML401);
             }
             if (\trim($localized->cKurzBeschreibung)) {
                 $this->cKurzBeschreibung = Text::parseNewsText($localized->cKurzBeschreibung);

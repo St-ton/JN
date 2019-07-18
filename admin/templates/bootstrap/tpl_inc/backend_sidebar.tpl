@@ -1,4 +1,4 @@
-<nav class="backend-sidebar">
+<nav class="backend-sidebar" id="sidebar">
     <script>
         if (window.sessionStorage.sidebarState === 'collapsed') {
             $('.backend-sidebar').addClass('collapsed');

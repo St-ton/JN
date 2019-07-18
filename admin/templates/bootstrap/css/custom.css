@@ -76,13 +76,6 @@
 .backend-wrapper .input-group .form-control {
   z-index: 0;
 }
-.backend-wrapper > .backend-sidebar {
-  flex: none;
-  width: 256px;
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-}
 .backend-wrapper > .backend-sidebar > .backend-brandbar {
   background-color: #fff;
   flex: none;

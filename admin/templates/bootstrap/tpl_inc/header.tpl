@@ -40,10 +40,10 @@
 <body>
 {if $account !== false && isset($smarty.session.loginIsValid) && $smarty.session.loginIsValid === true}
     {getCurrentPage assign='currentPage'}
-    <div class="backend-wrapper container-fluid{if $currentPage === 'index' || $currentPage === 'status'} dashboard{/if}">
+    <div class="backend-wrapper {if $currentPage === 'index' || $currentPage === 'status'} dashboard{/if}">
         {include file='tpl_inc/backend_sidebar.tpl'}
-        <div class="backend-main">
-            <nav class="backend-navbar">
+        <div class="backend-main sidebar-offset">
+            <nav class="backend-navbar topbar" id="topbar">
                 <ul class="backend-navbar-left">
                     <li class="dropdown">
                         {include file='tpl_inc/backend_search.tpl'}

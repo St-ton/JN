@@ -345,10 +345,11 @@ class WarenkorbPers
      */
     public function ueberpruefePositionen(bool $forceDelete = false): string
     {
-        $productNames = [];
-        $productIDs   = [];
-        $msg          = '';
-        $db           = Shop::Container()->getDB();
+        $productNames   = [];
+        $productIDs     = [];
+        $productUniques = [];
+        $msg            = '';
+        $db             = Shop::Container()->getDB();
         foreach ($this->oWarenkorbPersPos_arr as $item) {
             // Hat die Position einen Artikel
             if ($item->kArtikel > 0) {
@@ -412,6 +413,9 @@ class WarenkorbPers
                             }
                         }
                         $productIDs[] = (int)$productExists->kArtikel;
+                        if (!empty($item->cUnique) && (int)$item->kKonfigitem === 0) {
+                            $productUniques[] = $item->cUnique;
+                        }
                     }
                 }
                 // Konfigitem ohne Artikelbezug?
@@ -421,7 +425,9 @@ class WarenkorbPers
         }
         if ($forceDelete) {
             foreach ($this->oWarenkorbPersPos_arr as $i => $item) {
-                if (!\in_array((int)$item->kArtikel, $productIDs, true)) {
+                if (!\in_array((int)$item->kArtikel, $productIDs, true)
+                    && !((int)$item->kKonfigitem > 0 && \in_array($item->cUnique, $productUniques, true))
+                ) {
                     $this->entfernePos($item->kWarenkorbPersPos);
                     unset($this->oWarenkorbPersPos_arr[$i]);
                 }

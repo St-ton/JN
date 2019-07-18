@@ -521,17 +521,22 @@ class WarenkorbPers
             // Falls Artikel vorhanden
             if ($existing !== null) {
                 // Sichtbarkeit pruefen
-                $visibility = Shop::Container()->getDB()->select(
-                    'tartikelsichtbarkeit',
-                    'kArtikel',
-                    $productID,
-                    'kKundengruppe',
-                    Frontend::getCustomerGroup()->getID(),
-                    null,
-                    null,
-                    false,
-                    'kArtikel'
-                );
+                if (!empty($unique) && $configItemID > 0) {
+                    // config items are always visible in cart...
+                    $visibility = null;
+                } else {
+                    $visibility = Shop::Container()->getDB()->select(
+                        'tartikelsichtbarkeit',
+                        'kArtikel',
+                        $productID,
+                        'kKundengruppe',
+                        Frontend::getCustomerGroup()->getID(),
+                        null,
+                        null,
+                        false,
+                        'kArtikel'
+                    );
+                }
                 if ($visibility === null || !isset($visibility->kArtikel) || !$visibility->kArtikel) {
                     $persCart = new WarenkorbPers(Frontend::getCustomer()->getID());
                     if ($type === \C_WARENKORBPOS_TYP_GRATISGESCHENK) {

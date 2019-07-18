@@ -46,8 +46,8 @@
     &.opc-btn-primary,
     &.opc-btn-secondary {
       border-radius: 1000px;
-      border: none;
       background-color: $primary-color;
+      border: 1px solid $primary-color;
       color: $bg-color;
       text-align: center;
       padding: 12px;
@@ -76,6 +76,11 @@
 
     &.opc-small-btn {
       padding: 8px 10px;
+    }
+
+    &.opc-medium-btn {
+      padding: 8px 18px;
+      margin-right: 8px;
     }
 
     &.opc-btn-link {

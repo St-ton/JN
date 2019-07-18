@@ -43,8 +43,21 @@ html, body {
       margin-bottom: 8px;
     }
 
-    .form-control {
+    .form-control,
+    .input-group-append {
       margin-bottom: 16px;
+
+      button {
+        border: 1px solid $text-color;
+        padding: 4px 12px;
+        height: 38px;
+
+        &.primary {
+          border: 1px solid $primary-color;
+          background-color: $primary-color;
+          color: $light-bg;
+        }
+      }
     }
 
     .input-group {
@@ -52,6 +65,11 @@ html, body {
         border-bottom-right-radius: 0;
         border-top-right-radius: 0;
         border-right: none;
+      }
+
+      .twitter-typeahead {
+        flex: 1 1 auto;
+        width: 1%;
       }
 
       .input-group-text {

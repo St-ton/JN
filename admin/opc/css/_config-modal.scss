@@ -309,3 +309,17 @@
     }
   }
 }
+
+#opc .zone-props {
+  textarea {
+    height: 60px;
+  }
+
+  .row {
+    margin: 0 -8px;
+
+    .col-6 {
+      padding: 0 8px;
+    }
+  }
+}

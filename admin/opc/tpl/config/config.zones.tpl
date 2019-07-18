@@ -14,27 +14,37 @@
     </div>
 
     <div class="form-group">
-        <button type="button" class="opc-btn-primary opc-small-btn" id="banner-add-zone">{__('zoneNew')}</button>
-        <button type="button" class="opc-btn-secondary opc-small-btn" id="banner-del-zone" style="display: none">
+        <button type="button" class="opc-btn-primary opc-medium-btn" id="banner-add-zone">{__('zoneNew')}</button>
+        <button type="button" class="opc-btn-secondary opc-medium-btn" id="banner-del-zone" style="display: none">
             {__('zoneDelete')}
         </button>
     </div>
 
-    <div id="zone-props-{$propname}" style="display: none">
-        <input type="text" class="form-control" id="zone-title-{$propname}" placeholder="{__('title')}">
-        <textarea class="form-control" id="zone-desc-{$propname}" placeholder="{__('description')}"></textarea>
-        <input type="text" class="form-control" id="zone-url-{$propname}" placeholder="{__('url')}">
-        <input type="text" class="form-control" id="zone-class-{$propname}" placeholder="{__('cssClass')}">
-        <div class="input-group">
-            <input type="text" class="form-control" id="zone-product-{$propname}" placeholder="{__('products')}">
-            <div class="input-group-append">
-                <span class="input-group-text">
-                    <button type="button" class="btn btn-sm btn-danger" id="banner-del-product">
-                        <i class="fa fa-times"></i>
-                    </button>
-                </span>
+    <div id="zone-props-{$propname}" style="display: none" class="zone-props">
+        <div class="row">
+            <div class="col-6">
+                <input type="text" class="form-control" id="zone-title-{$propname}" placeholder="{__('title')}">
+            </div>
+            <div class="col-6">
+                <input type="text" class="form-control" id="zone-url-{$propname}" placeholder="{__('url')}">
             </div>
         </div>
+        <div class="row">
+            <div class="col-6">
+                <input type="text" class="form-control" id="zone-class-{$propname}" placeholder="{__('cssClass')}">
+            </div>
+            <div class="col-6">
+                <div class="input-group">
+                    <input type="text" class="form-control" id="zone-product-{$propname}" placeholder="{__('products')}">
+                    <div class="input-group-append">
+                        <button type="button" class="btn primary" id="banner-del-product">
+                            <i class="fa fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <textarea class="form-control" id="zone-desc-{$propname}" placeholder="{__('description')}"></textarea>
     </div>
 </div>
 

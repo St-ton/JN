@@ -34,7 +34,7 @@
                             </span>
                             <input class="form-control" id="cSuche" name="cSuche" type="text" value="{if isset($cSuche) && $cSuche|strlen > 0}{$cSuche}{/if}" />
                             <span class="input-group-btn">
-                                <button name="submitSuche" type="submit" value="{__('warenkorbpersSearchBTN')}" class="btn btn-primary"><i class="fal fa-search"></i> {__('warenkorbpersSearchBTN')}</button>
+                                <button name="submitSuche" type="submit" value="{__('warenkorbpersSearchBTN')}" class="btn btn-primary ml-1"><i class="fal fa-search"></i></button>
                             </span>
                         </div>
                     </form>
@@ -45,12 +45,10 @@
                             {append var=cParam_arr index='cSuche' value=$cSuche}
                         {/if}
                         {include file='tpl_inc/pagination.tpl' pagination=$oPagiKunden cParam_arr=$cParam_arr cAnchor='massaction'}
-                        <div class="card">
-                            <div class="card-header">
-                                <div class="subheading1">{__('warenkorbpers')}</div>
-                                <hr class="mb-n3">
-                            </div>
-                            <div class="table-responsive card-body">
+                        <div>
+                            <div class="subheading1">{__('warenkorbpers')}</div>
+                            <hr class="mb-3">
+                            <div class="table-responsive">
                                 <table class="table table-striped">
                                     <thead>
                                     <tr>
@@ -91,13 +89,13 @@
         </div>
     {elseif $step === 'anzeigen'}
         {assign var=pAdditional value="&a="|cat:$kKunde}
-        {include file='tpl_inc/pagination.tpl' pagination=$oPagiWarenkorb cParam_arr=['a'=>$kKunde]}
         <div class="card">
             <div class="card-header">
                 <div class="subheading1">{__('warenkorbpersClient')} {$oWarenkorbPersPos_arr[0]->cVorname} {$oWarenkorbPersPos_arr[0]->cNachname}</div>
                 <hr class="mb-n3">
             </div>
             <div class="table-responsive card-body">
+                {include file='tpl_inc/pagination.tpl' pagination=$oPagiWarenkorb cParam_arr=['a'=>$kKunde]}
                 <table class="table table-striped">
                     <thead>
                     <tr>

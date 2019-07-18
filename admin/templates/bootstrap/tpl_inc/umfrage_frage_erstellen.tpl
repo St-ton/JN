@@ -713,14 +713,12 @@ function checkSelect(selectBox) {ldelim}
                             {/if}
                         </table>
                     </div>
-                    <div class="card-footer">
+                    <div class="card-footer save-wrapper">
                         {if isset($oUmfrageFrage->kUmfrageFrage) && $oUmfrageFrage->kUmfrageFrage > 0}
                             <button class="btn btn-primary" name="speichern" type="submit" value="{__('save')}"><i class="fa fa-save"></i> {__('save')}</button>
                         {else}
-                            <div class="btn-group">
-                                <button class="btn btn-success" name="nocheinefrage" type="submit" value="{__('umfrageAnotherQ')}"><i class="fa fa-share"></i> {__('umfrageAnotherQ')}</button>
-                                <button class="btn btn-primary" name="speichern" type="submit" value="{__('umfrageSaveQ')}"><i class="fa fa-save"></i> {__('umfrageSaveQ')}</button>
-                            </div>
+                            <button class="btn btn-default" name="nocheinefrage" type="submit" value="{__('umfrageAnotherQ')}"><i class="fa fa-share"></i> {__('umfrageAnotherQ')}</button>
+                            <button class="btn btn-primary" name="speichern" type="submit" value="{__('umfrageSaveQ')}"><i class="fa fa-save"></i> {__('umfrageSaveQ')}</button>
                         {/if}
                     </div>
                 </div>

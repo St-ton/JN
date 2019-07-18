@@ -48,7 +48,7 @@
                     </span>
                 </div>
             </div>
-            <div class="card-footer">
+            <div class="card-footer save-wrapper">
                 <button type="submit" value="{__('import')}" class="btn btn-primary">{__('import')}</button>
             </div>
         </div>

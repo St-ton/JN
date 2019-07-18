@@ -26,54 +26,50 @@
             <div id="suchspecials" class="tab-pane fade {if !isset($cTab) || $cTab === 'suchspecials'} active show{/if}">
                 <form name="suchspecials" method="post" action="suchspecials.php">
                     {$jtl_token}
-                    <div id="settings">
-                        <div class="settings card">
-                            <div class="card-header">
-                                <div class="subheading1">{__('suchspecials')}</div>
-                                <hr class="mb-n3">
-                            </div>
-                            <div class="card-body">
-                                <input type="hidden" name="suchspecials" value="1" />
-                                <div class="item form-group form-row align-items-center">
-                                    <label class="col col-sm-4 col-form-label text-sm-right" for="bestseller">{__('bestseller')}:</label>
-                                    <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                        <input class="form-control" name="bestseller" id="bestseller" type="text" value="{if isset($oSuchSpecials_arr[1])}{$oSuchSpecials_arr[1]}{/if}" />
-                                    </div>
-                                </div>
-                                <div class="item form-group form-row align-items-center">
-                                    <label class="col col-sm-4 col-form-label text-sm-right" for="sonderangebote">{__('specialOffers')}:</label>
-                                    <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                        <input class="form-control" id="sonderangebote" name="sonderangebote" type="text" value="{if isset($oSuchSpecials_arr[2])}{$oSuchSpecials_arr[2]}{/if}" />
-                                    </div>
-                                </div>
-                                <div class="item form-group form-row align-items-center">
-                                    <label class="col col-sm-4 col-form-label text-sm-right" for="neu_im_sortiment">{__('newInAssortment')}:</label>
-                                    <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                        <input class="form-control" id="neu_im_sortiment" name="neu_im_sortiment" type="text" value="{if isset($oSuchSpecials_arr[3])}{$oSuchSpecials_arr[3]}{/if}" />
-                                    </div>
-                                </div>
-                                <div class="item form-group form-row align-items-center">
-                                    <label class="col col-sm-4 col-form-label text-sm-right" for="top_angebote">{__('topOffers')}:</label>
-                                    <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                        <input class="form-control" id="top_angebote" name="top_angebote" type="text" value="{if isset($oSuchSpecials_arr[4])}{$oSuchSpecials_arr[4]}{/if}" />
-                                    </div>
-                                </div>
-                                <div class="item form-group form-row align-items-center">
-                                    <label class="col col-sm-4 col-form-label text-sm-right" for="in_kuerze_verfuegbar">{__('shortTermAvailable')}:</label>
-                                    <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                        <input class="form-control" id="in_kuerze_verfuegbar" name="in_kuerze_verfuegbar" type="text" value="{if isset($oSuchSpecials_arr[5])}{$oSuchSpecials_arr[5]}{/if}" />
-                                    </div>
-                                </div>
-                                <div class="item form-group form-row align-items-center">
-                                    <label class="col col-sm-4 col-form-label text-sm-right" for="top_bewertet">{__('topreviews')}:</label>
-                                    <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                        <input class="form-control" id="top_bewertet" name="top_bewertet" type="text" value="{if isset($oSuchSpecials_arr[6])}{$oSuchSpecials_arr[6]}{/if}" />
-                                    </div>
+                    <div id="settings" class="settings">
+                        <div class="subheading1">{__('suchspecials')}</div>
+                        <hr class="mb-3">
+                        <div>
+                            <input type="hidden" name="suchspecials" value="1" />
+                            <div class="item form-group form-row align-items-center">
+                                <label class="col col-sm-4 col-form-label text-sm-right" for="bestseller">{__('bestseller')}:</label>
+                                <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                    <input class="form-control" name="bestseller" id="bestseller" type="text" value="{if isset($oSuchSpecials_arr[1])}{$oSuchSpecials_arr[1]}{/if}" />
                                 </div>
                             </div>
-                            <div class="card-footer">
-                                <button type="submit" value="{__('save')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
+                            <div class="item form-group form-row align-items-center">
+                                <label class="col col-sm-4 col-form-label text-sm-right" for="sonderangebote">{__('specialOffers')}:</label>
+                                <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                    <input class="form-control" id="sonderangebote" name="sonderangebote" type="text" value="{if isset($oSuchSpecials_arr[2])}{$oSuchSpecials_arr[2]}{/if}" />
+                                </div>
                             </div>
+                            <div class="item form-group form-row align-items-center">
+                                <label class="col col-sm-4 col-form-label text-sm-right" for="neu_im_sortiment">{__('newInAssortment')}:</label>
+                                <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                    <input class="form-control" id="neu_im_sortiment" name="neu_im_sortiment" type="text" value="{if isset($oSuchSpecials_arr[3])}{$oSuchSpecials_arr[3]}{/if}" />
+                                </div>
+                            </div>
+                            <div class="item form-group form-row align-items-center">
+                                <label class="col col-sm-4 col-form-label text-sm-right" for="top_angebote">{__('topOffers')}:</label>
+                                <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                    <input class="form-control" id="top_angebote" name="top_angebote" type="text" value="{if isset($oSuchSpecials_arr[4])}{$oSuchSpecials_arr[4]}{/if}" />
+                                </div>
+                            </div>
+                            <div class="item form-group form-row align-items-center">
+                                <label class="col col-sm-4 col-form-label text-sm-right" for="in_kuerze_verfuegbar">{__('shortTermAvailable')}:</label>
+                                <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                    <input class="form-control" id="in_kuerze_verfuegbar" name="in_kuerze_verfuegbar" type="text" value="{if isset($oSuchSpecials_arr[5])}{$oSuchSpecials_arr[5]}{/if}" />
+                                </div>
+                            </div>
+                            <div class="item form-group form-row align-items-center">
+                                <label class="col col-sm-4 col-form-label text-sm-right" for="top_bewertet">{__('topreviews')}:</label>
+                                <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                    <input class="form-control" id="top_bewertet" name="top_bewertet" type="text" value="{if isset($oSuchSpecials_arr[6])}{$oSuchSpecials_arr[6]}{/if}" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-footer save-wrapper">
+                            <button type="submit" value="{__('save')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
                         </div>
                     </div>
                 </form>

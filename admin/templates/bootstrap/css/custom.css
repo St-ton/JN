@@ -623,9 +623,6 @@ label .fillout {
 .pages {
   overflow: hidden;
 }
-.p50 {
-  width: 50%;
-}
 .p33 {
   width: 33.33333333%;
 }
@@ -642,9 +639,6 @@ label .fillout {
 .container.left {
   float: none;
   margin-left: 0;
-}
-.right {
-  float: right;
 }
 .tright {
   text-align: right;

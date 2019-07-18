@@ -57,11 +57,10 @@
                             {$jtl_token}
                             <input type="hidden" name="uebersicht" value="1" />
                             <input type="hidden" name="tab" value="uebersicht" />
-                            <div class="card">
-                                <div class="card-header">
-                                    <div class="subheading1">{__('availableCheckboxes')}</div>
-                                </div>
-                                <div class="card-body">
+                            <div>
+                                <div class="subheading1">{__('availableCheckboxes')}</div>
+                                <hr class="mb-3">
+                                <div>
                                     <div class="table-responsive">
                                         <table class="table table-striped">
                                             <thead>
@@ -145,12 +144,10 @@
                 {/if}
             </div>
             <div id="erstellen" class="tab-pane fade {if isset($cTab) && $cTab === 'erstellen'} active show{/if}">
-                <div class="card">
-                    <div class="card-header">
-                        <div class="subheading1">{if isset($oCheckBox->kCheckBox) && $oCheckBox->kCheckBox > 0}{__('edit')}{else}{__('create')}{/if}</div>
-                        <hr class="mb-n3">
-                    </div>
-                    <div class="card-body">
+                <div>
+                    <div class="subheading1">{if isset($oCheckBox->kCheckBox) && $oCheckBox->kCheckBox > 0}{__('edit')}{else}{__('create')}{/if}</div>
+                        <hr class="mb-3">
+                    <div>
                         <form method="post" action="checkbox.php" >
                             {$jtl_token}
                             <input name="erstellen" type="hidden" value="1" />

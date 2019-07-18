@@ -376,10 +376,8 @@
             </div>
         </div>
         <div class="card-footer save-wrapper">
-            <div class="btn-group">
-                <button type="submit" class="btn btn-primary" value="{__('save')}"><i class="fa fa-save"></i> {__('save')}</button>
-                <button type="button" class="btn btn-default" onclick="window.location.href = 'slider.php';" value="zurück"><i class="fa fa-angle-double-left"></i> {__('back')}</button>
-            </div>
+            <button type="button" class="btn btn-default" onclick="window.location.href = 'slider.php';" value="zurück">{__('goBack')}</button>
+            <button type="submit" class="btn btn-primary" value="{__('save')}"><i class="fa fa-save"></i> {__('save')}</button>
         </div>
     </form>
 </div>

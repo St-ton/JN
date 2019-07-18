@@ -87,5 +87,5 @@
     </div>
 {/if}
 <button type="button" class="btn btn-default" onclick="onClickCsvImport_{$importerId}()">
-    <i class="fa fa-upload"></i> {__('importCsv')}
+    <i class="fal fa-upload"></i> {__('importCsv')}
 </button>

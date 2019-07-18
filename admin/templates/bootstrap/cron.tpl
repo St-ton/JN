@@ -31,12 +31,10 @@
     <div class="tab-content">
         <div id="overview" class="settings tab-pane fade{if $tab === 'overview'} active show{/if}">
             {if $jobs|count > 0}
-                <div class="card">
-                    <div class="card-header">
-                        <div class="subheading1">{__('queueEntries')}</div>
-                        <hr class="mb-n3">
-                    </div>
-                    <div class="card-body">
+                <div>
+                    <div class="subheading1">{__('queueEntries')}</div>
+                    <hr class="mb-3">
+                    <div>
                         <form method="post">
                             {$jtl_token}
                             <table class="table table-striped">
@@ -59,16 +57,14 @@
                                             <td>{$job->getFrequency()}h</td>
                                             <td>{if $job->isRunning()}<i class="fal fa-check text-success"></i>{else}<i class="fal fa-times"></i>{/if}</td>
                                             <td>
-                                                <span class="btn-group">
-                                                    <button class="btn btn-danger btn-sm" type="submit" name="delete" value="{$job->getCronID()}">
-                                                        <i class="fas fa-trash-alt"></i> {__('delete')}
+                                                {if $job->isRunning()}
+                                                    <button class="btn btn-default btn-sm btn-circle" type="submit" name="reset" value="{$job->getQueueID()}">
+                                                        <i class="fa fa-refresh"></i>
                                                     </button>
-                                                    {if $job->isRunning()}
-                                                        <button class="btn btn-default btn-sm" type="submit" name="reset" value="{$job->getQueueID()}">
-                                                            <i class="fa fa-refresh"></i> {__('reset')}
-                                                        </button>
-                                                    {/if}
-                                                </span>
+                                                {/if}
+                                                <button class="btn btn-danger btn-sm btn-circle" type="submit" name="delete" value="{$job->getCronID()}">
+                                                    <i class="fas fa-trash-alt"></i>
+                                                </button>
                                             </td>
                                         </tr>
                                     {/foreach}
@@ -83,12 +79,10 @@
         </div>
 
         <div id="add-cron" class="settings tab-pane fade{if $tab === 'add-cron'} active show{/if}">
-            <div class="card">
-                <div class="card-header">
-                    <div class="subheading1">{__('createQueueEntry')}</div>
-                    <hr class="mb-n3">
-                </div>
-                <div class="card-body">
+            <div>
+                <div class="subheading1">{__('createQueueEntry')}</div>
+                <hr class="mb-3">
+                <div>
                     <form method="post">
                         {$jtl_token}
                         <div class="form-group form-row align-items-center">
@@ -122,9 +116,11 @@
                                 <input id="cron-start-date" type="date" name="date" class="form-control" value="{$smarty.now|date_format:'%Y-%m-%d'}" required>
                             </div>
                         </div>
-                        <button type="submit" class="btn btn-primary" name="add-cron" value="1">
-                            <i class="fa fa-save"></i> {__('create')}
-                        </button>
+                        <div class="save-wrapper">
+                            <button type="submit" class="btn btn-primary" name="add-cron" value="1">
+                                <i class="fa fa-save"></i> {__('create')}
+                            </button>
+                        </div>
                     </form>
                 </div>
             </div>

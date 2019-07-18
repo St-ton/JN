@@ -34,7 +34,7 @@
         <div class="card">
             <div class="card-header">
                 <div class="subheading1">{__('permissions')}</div>
-                <hr class="mb-n3">
+                <hr class="mb-3">
             </div>
             <div class="card-body row">
                 {foreach $oAdminDefPermission_arr as $oGroup}
@@ -61,20 +61,17 @@
                     </div>
                 {/foreach}
             </div>
-            <div class="card-footer">
-                <input type="checkbox" onclick="AllMessages(this.form);" id="ALLMSGS" name="ALLMSGS" /> <label for="ALLMSGS">{__('globalSelectAll')}</label>
-            </div>
-        </div>
-
-        <div class="card-footer">
-            <div class="btn-group">
+            <div class="card-footer save-wrapper">
+                <div class="float-left">
+                    <input type="checkbox" onclick="AllMessages(this.form);" id="ALLMSGS" name="ALLMSGS" /> <label for="ALLMSGS">{__('globalSelectAll')}</label>
+                </div>
                 <input type="hidden" name="action" value="group_edit" />
                 {if isset($oAdminGroup) && $oAdminGroup->kAdminlogingruppe > 0}
                     <input type="hidden" name="kAdminlogingruppe" value="{$oAdminGroup->kAdminlogingruppe}" />
                 {/if}
                 <input type="hidden" name="save" value="1" />
-                <button type="submit" value="{$cTitel}" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
                 <a class="btn btn-danger" href="benutzerverwaltung.php?tab=group_view"><i class="fa fa-exclamation"></i> {__('cancel')}</a>
+                <button type="submit" value="{$cTitel}" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
             </div>
         </div>
     </form>

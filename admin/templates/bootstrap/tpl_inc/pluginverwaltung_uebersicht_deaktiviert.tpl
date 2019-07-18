@@ -3,12 +3,10 @@
         <form name="pluginverwaltung" method="post" action="pluginverwaltung.php">
             {$jtl_token}
             <input type="hidden" name="pluginverwaltung_uebersicht" value="1" />
-            <div class="card">
-                <div class="card-header">
-                    <div class="subheading1">{__('pluginListNotActivated')}</div>
-                    <hr class="mb-n3">
-                </div>
-                <div class="table-responsive card-body">
+            <div>
+                <div class="subheading1">{__('pluginListNotActivated')}</div>
+                <hr class="mb-3">
+                <div class="table-responsive">
                     <table class="list table">
                         <thead>
                         <tr>

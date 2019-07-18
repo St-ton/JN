@@ -58,20 +58,19 @@
                     <p>{__('searchEnginesHint')}</p>
                     <p>{__('download')} <a href="{$URL}">{__('xml')}</a></p>
                 </div>
+                <div class="save-wrapper">
+                    <form action="sitemap.php" method="post">
+                        {$jtl_token}
+                        <input type="hidden" name="update" value="1" />
+                        <input type="hidden" name="tab" value="export" />
 
-                <form action="sitemap.php" method="post">
-                    {$jtl_token}
-                    <input type="hidden" name="update" value="1" />
-                    <input type="hidden" name="tab" value="export" />
-
-                    <p class="submit">
                         <button type="submit" value="{__('sitemapExportSubmit')}" class="btn btn-primary"><i class="fa fa-share"></i> {__('sitemapExportSubmit')}</button>
-                    </p>
-                </form>
+                    </form>
+                </div>
             </div>
             <div id="downloads" class="tab-pane fade {if isset($cTab) && $cTab === 'downloads'} active show{/if}">
-                <div class="card-header well well-sm">
-                    <div class="toolbar well well-sm">
+                <div class="card-header">
+                    <div class="toolbar">
                         <form id="formDeleteSitemapExport" method="post" action="sitemapexport.php" class="form-inline">
                             <div class="form-group">
                                 {$jtl_token}
@@ -85,24 +84,22 @@
                                     {/foreach}
                                 </select>
                             </div>
-                            <div class="btn-group">
-                                <button name="action[year_downloads]" type="submit" value="1" class="btn btn-info"><i class="fal fa-search"></i>&nbsp;{__('show')}</button>
-                                <button type="button" class="btn btn-danger"
-                                        data-form="#formDeleteSitemapExport" data-action="year_downloads_delete" data-target="#confirmModal" data-toggle="modal" data-title="{__('sitemapDownload')} löschen"><i class="fas fa-trash-alt"></i>&nbsp;{__('delete')}</button>
-                            </div>
+                            <button name="action[year_downloads]" type="submit" value="1" class="btn btn-primary"><i class="fal fa-search"></i>&nbsp;{__('show')}</button>
+                            <button type="button" class="btn btn-danger"
+                                    data-form="#formDeleteSitemapExport" data-action="year_downloads_delete" data-target="#confirmModal" data-toggle="modal" data-title="{__('sitemapDownload')} löschen"><i class="fas fa-trash-alt"></i>&nbsp;{__('delete')}</button>
                         </form>
                     </div>
                     {include file='tpl_inc/pagination.tpl' pagination=$oSitemapDownloadPagination cParam_arr=['tab' => 'downloads', 'nYear_downloads' => {$nSitemapDownloadYear}]}
                 </div>
                 {if isset($oSitemapDownload_arr) && $oSitemapDownload_arr|@count > 0}
-                    <div class="card">
+                    <div>
                         <form name="sitemapdownload" method="post" action="sitemapexport.php">
                             {$jtl_token}
                             <input type="hidden" name="download_edit" value="1" />
                             <input type="hidden" name="tab" value="downloads" />
                             <input type="hidden" name="nYear_downloads" value="{$nSitemapDownloadYear}" />
                             <div id="payment">
-                                <div id="tabellenBewertung" class="table-responsive card-body">
+                                <div id="tabellenBewertung" class="table-responsive">
                                     <table class="table table-striped">
                                         <thead>
                                             <tr>
@@ -112,7 +109,7 @@
                                                 <th class="text-right">{__('sitemapDate')}</th>
                                             </tr>
                                         </thead>
-                                        <tbod>
+                                        <tbody>
                                         {foreach $oSitemapDownload_arr as $oSitemapDownload}
                                             <tr>
                                                 <td width="20">
@@ -130,7 +127,7 @@
                                                 <td class="text-right" width="130">{$oSitemapDownload->dErstellt_DE}</td>
                                             </tr>
                                         {/foreach}
-                                        </tbod>
+                                        </tbody>
                                         <tfoot>
                                             <tr>
                                                 <td>
@@ -141,10 +138,8 @@
                                         </tfoot>
                                     </table>
                                 </div>
-                                <div class="card-footer">
-                                    <div class="button-group">
-                                        <button class="btn btn-danger" name="loeschen" type="submit" value="{__('delete')}"><i class="fas fa-trash-alt"></i> {__('deleteSelected')}</button>
-                                    </div>
+                                <div class="card-footer save-wrapper">
+                                    <button class="btn btn-danger" name="loeschen" type="submit" value="{__('delete')}"><i class="fas fa-trash-alt"></i> {__('deleteSelected')}</button>
                                 </div>
                             </div>
                         </form>
@@ -154,8 +149,8 @@
                 {/if}
             </div>
             <div id="report" class="tab-pane fade {if isset($cTab) && $cTab === 'report'} active show{/if}">
-                <div class="card-header well well-sm">
-                    <div class="toolbar well well-sm">
+                <div class="card-header">
+                    <div class="toolbar">
                         <form id="formDeleteSitemapReport" method="post" action="sitemapexport.php" class="form-inline">
                             <div class="form-group">
                                 {$jtl_token}
@@ -169,23 +164,21 @@
                                     {/foreach}
                                 </select>
                             </div>
-                            <div class="btn-group">
-                                <button name="action[year_reports]" type="submit" value="1" class="btn btn-info"><i class="fal fa-search"></i>&nbsp;{__('show')}</button>
-                                <button type="button" class="btn btn-danger"
-                                        data-form="#formDeleteSitemapReport" data-action="year_reports_delete" data-target="#confirmModal" data-toggle="modal" data-title="{__('sitemapReport')} löschen"><i class="fas fa-trash-alt"></i>&nbsp;{__('delete')}</button>
-                            </div>
+                            <button name="action[year_reports]" type="submit" value="1" class="btn btn-primary"><i class="fal fa-search"></i>&nbsp;{__('show')}</button>
+                            <button type="button" class="btn btn-danger"
+                                    data-form="#formDeleteSitemapReport" data-action="year_reports_delete" data-target="#confirmModal" data-toggle="modal" data-title="{__('sitemapReport')} löschen"><i class="fas fa-trash-alt"></i>&nbsp;{__('delete')}</button>
                         </form>
                     </div>
                     {include file='tpl_inc/pagination.tpl' pagination=$oSitemapReportPagination cParam_arr=['tab' => 'report', 'nYear_reports' => {$nSitemapReportYear}]}
                 </div>
                 {if isset($oSitemapReport_arr) && $oSitemapReport_arr|@count > 0}
-                    <div class="card">
+                    <div>
                         <form name="sitemapreport" method="post" action="sitemapexport.php">
                             {$jtl_token}
                             <input type="hidden" name="report_edit" value="1">
                             <input type="hidden" name="tab" value="report">
                             <input type="hidden" name="nYear_reports" value="{$nSitemapReportYear}" />
-                            <div class="table-responsive card-body">
+                            <div class="table-responsive">
                                 <table class="table">
                                     <thead>
                                         <tr>
@@ -252,10 +245,8 @@
                                     </tfoot>
                                 </table>
                             </div>
-                            <div class="card-footer">
-                                <div class="button-group">
-                                    <button name="loeschen" type="submit" value="{__('delete')}" class="btn btn-danger"><i class="fas fa-trash-alt"></i> {__('deleteSelected')}</button>
-                                </div>
+                            <div class="card-footer save-wrapper">
+                                <button name="loeschen" type="submit" value="{__('delete')}" class="btn btn-danger"><i class="fas fa-trash-alt"></i> {__('deleteSelected')}</button>
                             </div>
                         </form>
                     </div>

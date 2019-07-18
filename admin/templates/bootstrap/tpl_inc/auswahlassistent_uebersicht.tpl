@@ -28,9 +28,9 @@
                     <form name="uebersichtForm" method="post" action="auswahlassistent.php">
                         {$jtl_token}
                         <input type="hidden" name="tab" value="uebersicht" />
-                        <div class="card">
+                        <div>
                             {if isset($oAuswahlAssistentGruppe_arr) && $oAuswahlAssistentGruppe_arr|@count > 0}
-                                <div class="table-responsive card-body">
+                                <div class="table-responsive">
                                     <table class="list table">
                                         <thead>
                                             <tr>

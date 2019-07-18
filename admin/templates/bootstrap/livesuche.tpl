@@ -76,12 +76,10 @@
                     {else}
                         {assign var=cSuchStr value=''}
                     {/if}
-                    <div class="card">
-                        <div class="card-header">
-                            <div class="subheading1">{__('searchrequest')}</div>
-                            <hr class="mb-n3">
-                        </div>
-                        <div class="table-responsive card-body">
+                    <div>
+                        <div class="subheading1">{__('searchrequest')}</div>
+                        <hr class="mb-3">
+                        <div class="table-responsive">
                             <table class="table table-striped">
                                 <thead>
                                     <tr>
@@ -128,19 +126,23 @@
                                 </tfoot>
                             </table>
                         </div>
-                        <div class="card-footer">
-                            <div class="btn-group p50">
-                                <button name="suchanfragenUpdate" type="submit" value="{__('update')}" class="btn btn-default reset"><i class="fa fa-refresh"></i> {__('update')}</button>
-                                <button name="delete" type="submit" value="{__('delete')}" class="btn btn-danger"><i class="fas fa-trash-alt"></i> {__('deleteSelected')}</button>
-                            </div>
-                            <div class="input-group right p50">
-                                <span class="input-group-addon">
-                                    <label for="cMapping">{__('livesucheMappingOn')}</label>
-                                </span>
-                                <input class="form-control" name="cMapping" type="text">
-                                <span class="input-group-btn">
-                                    <button name="submitMapping" type="submit" value="{__('livesucheMappingOnBTN')}" class="btn btn-primary">{__('livesucheMappingOnBTN')}</button>
-                                </span>
+                        <div class="save-wrapper">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="input-group">
+                                        <span class="input-group-addon">
+                                            <label for="cMapping">{__('livesucheMappingOn')}:</label>
+                                        </span>
+                                        <input class="form-control" name="cMapping" type="text">
+                                        <span class="input-group-btn ml-1">
+                                            <button name="submitMapping" type="submit" value="{__('livesucheMappingOnBTN')}" class="btn btn-primary">{__('livesucheMappingOnBTN')}</button>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <button name="delete" type="submit" value="{__('delete')}" class="btn btn-danger"><i class="fas fa-trash-alt"></i> {__('deleteSelected')}</button>
+                                    <button name="suchanfragenUpdate" type="submit" value="{__('update')}" class="btn btn-primary reset"><i class="fa fa-refresh"></i> {__('update')}</button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -157,12 +159,10 @@
                     <input type="hidden" name="livesuche" value="2">
                     <input type="hidden" name="tab" value="erfolglos">
                     <input type="hidden" name="nErfolglosEditieren" value="{if isset($nErfolglosEditieren)}{$nErfolglosEditieren}{/if}">
-                    <div class="card settings">
-                        <div class="card-header">
-                            <div class="subheading1">{__('searchmiss')}</div>
-                            <hr class="mb-n3">
-                        </div>
-                        <div class="table-responsive card-body">
+                    <div class="settings">
+                        <div class="subheading1">{__('searchmiss')}</div>
+                        <hr class="mb-3">
+                        <div class="table-responsive">
                             <table class="table table-striped">
                                 <thead>
                                     <tr>
@@ -206,12 +206,10 @@
                                 </tfoot>
                             </table>
                         </div>
-                        <div class="card-footer">
-                            <div class="btn-group">
-                                <button class="btn btn-primary" name="erfolglosUpdate" type="submit"><i class="fa fa-refresh"></i> {__('update')}</button>
-                                <button class="btn btn-default" name="erfolglosEdit" type="submit"><i class="fal fa-edit"></i> {__('livesucheEdit')}</button>
-                                <button class="btn btn-danger" name="erfolglosDelete" type="submit"><i class="fas fa-trash-alt"></i> {__('delete')}</button>
-                            </div>
+                        <div class="save-wrapper">
+                            <button class="btn btn-danger" name="erfolglosDelete" type="submit"><i class="fas fa-trash-alt"></i> {__('delete')}</button>
+                            <button class="btn btn-default" name="erfolglosEdit" type="submit"><i class="fal fa-edit"></i> {__('livesucheEdit')}</button>
+                            <button class="btn btn-primary" name="erfolglosUpdate" type="submit"><i class="fa fa-refresh"></i> {__('update')}</button>
                         </div>
                     </div>
                 </form>
@@ -226,12 +224,10 @@
                     {$jtl_token}
                     <input type="hidden" name="livesuche" value="4" />
                     <input type="hidden" name="tab" value="mapping" />
-                    <div class="card settings">
-                        <div class="card-header">
-                            <div class="subheading1">{__('mapping')}</div>
-                            <hr class="mb-n3">
-                        </div>
-                        <div class="table-responsive card-body">
+                    <div class="settings">
+                        <div class="subheading1">{__('mapping')}</div>
+                        <hr class="mb-3">
+                        <div class="table-responsive">
                             <table class="table table-striped">
                                 <thead>
                                     <tr>
@@ -255,7 +251,7 @@
                                 </tbody>
                             </table>
                         </div>
-                        <div class="card-footer">
+                        <div class="save-wrapper">
                             <button name="delete" type="submit" class="btn btn-danger"><i class="fas fa-trash-alt"></i> {__('mappingDelete')}</button>
                         </div>
                     </div>
@@ -270,12 +266,10 @@
                 <input type="hidden" name="livesuche" value="3" />
                 <input type="hidden" name="tab" value="blacklist" />
 
-                <div class="card settings">
-                    <div class="card-header">
-                        <div class="subheading1">{__('blacklist')}</div>
-                        <hr class="mb-n3">
-                    </div>
-                    <div class="table-responsive card-body">
+                <div class="settings">
+                    <div class="subheading1">{__('blacklist')}</div>
+                    <hr class="mb-3">
+                    <div class="table-responsive">
                         <table class="table">
                             <thead>
                                 <tr>
@@ -291,7 +285,7 @@
                             </tbody>
                         </table>
                     </div>
-                    <div class="card-footer">
+                    <div class="save-wrapper">
                         <button type="submit" class="btn btn-primary"><i class="fa fa-refresh"></i> {__('update')}</button>
                     </div>
                 </div>

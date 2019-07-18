@@ -27,39 +27,37 @@
             <div id="letztenvergleiche" class="tab-pane fade {if !isset($cTab) || $cTab === 'letztenvergleiche'} active show{/if}">
                 {if $Letzten20Vergleiche && $Letzten20Vergleiche|@count > 0}
                     {include file='tpl_inc/pagination.tpl' pagination=$pagination cAnchor='letztenvergleiche'}
-                    <div class="settings card table-responsive">
-                        <div class="card-body">
-                            <table  class="table table-striped">
-                                <thead>
-                                    <tr>
-                                        <th class="th-1">{__('compareID')}</th>
-                                        <th class="tleft">{__('compareProducts')}</th>
-                                        <th class="th-3">{__('compareDate')}</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                {foreach $Letzten20Vergleiche as $oVergleichsliste20}
-                                    <tr>
-                                        <td class="tcenter">{$oVergleichsliste20->kVergleichsliste}</td>
-                                        <td class="">
-                                            {foreach $oVergleichsliste20->oLetzten20VergleichslistePos_arr as $oVergleichslistePos20}
-                                                <a href="{$shopURL}/index.php?a={$oVergleichslistePos20->kArtikel}" target="_blank">{$oVergleichslistePos20->cArtikelName}</a>{if !$oVergleichslistePos20@last}{/if}
-                                                <br />
-                                            {/foreach}
-                                        </td>
-                                        <td class="tcenter">{$oVergleichsliste20->Datum}</td>
-                                    </tr>
-                                {/foreach}
-                                </tbody>
-                            </table>
-                        </div>
+                    <div class="settings table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th class="th-1">{__('compareID')}</th>
+                                    <th class="tleft">{__('compareProducts')}</th>
+                                    <th class="th-3">{__('compareDate')}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {foreach $Letzten20Vergleiche as $oVergleichsliste20}
+                                <tr>
+                                    <td class="tcenter">{$oVergleichsliste20->kVergleichsliste}</td>
+                                    <td class="">
+                                        {foreach $oVergleichsliste20->oLetzten20VergleichslistePos_arr as $oVergleichslistePos20}
+                                            <a href="{$shopURL}/index.php?a={$oVergleichslistePos20->kArtikel}" target="_blank">{$oVergleichslistePos20->cArtikelName}</a>{if !$oVergleichslistePos20@last}{/if}
+                                            <br />
+                                        {/foreach}
+                                    </td>
+                                    <td class="tcenter">{$oVergleichsliste20->Datum}</td>
+                                </tr>
+                            {/foreach}
+                            </tbody>
+                        </table>
                     </div>
                 {else}
                     <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                 {/if}
             </div>
-            <div id="topartikel" class="tab-pane fade card {if isset($cTab) && $cTab === 'topartikel'} active show{/if}">
-                <div class="card-header">
+            <div id="topartikel" class="tab-pane fade {if isset($cTab) && $cTab === 'topartikel'} active show{/if}">
+                <div>
                     <form id="postzeitfilter" name="postzeitfilter" method="post" action="vergleichsliste.php">
                         {$jtl_token}
                         <input type="hidden" name="zeitfilter" value="1" />
@@ -113,9 +111,9 @@
                             </div>
                         </div>
                     </form>
-                    <hr class="mb-n3">
+                    <hr class="mb-3">
                 </div>
-                <div class="card-body">
+                <div>
                     {if isset($TopVergleiche) && $TopVergleiche|@count > 0}
                         <div class="settings table-responsive">
                             <table class="bottom table table-striped">

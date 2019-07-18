@@ -187,11 +187,11 @@
                 </div>
             {/if}
         </div>
-        <p class="submit">
+        <div class="submit card-footer save-wrapper">
             <button name="speichern" class="btn btn-primary" type="submit" value="{__('save')}">
                 <i class="fa fa-save"></i> {__('save')}
             </button>
-        </p>
+        </div>
     </form>
 </div>
 {include file='tpl_inc/footer.tpl'}

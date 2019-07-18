@@ -82,11 +82,9 @@
                         </tfoot>
                     </table>
                 </div>
-                <div class="card-footer">
-                    <div class="btn-group">
-                        <button name="zuruecksetzenBTN" type="submit" class="btn btn-warning"><i class="fas fa-trash-alt"></i> {__('deleteSelected')}</button>
-                        <button name="remove_all" type="button" class="btn btn-danger" data-target="#confirmModal" data-toggle="modal"><i class="fas fa-trash-alt"></i> {__('deleteAll')}</button>
-                    </div>
+                <div class="card-footer save-wrapper">
+                    <button name="zuruecksetzenBTN" type="submit" class="btn btn-warning"><i class="fas fa-trash-alt"></i> {__('deleteSelected')}</button>
+                    <button name="remove_all" type="button" class="btn btn-danger" data-target="#confirmModal" data-toggle="modal"><i class="fas fa-trash-alt"></i> {__('deleteAll')}</button>
                 </div>
             </div>
         </form>

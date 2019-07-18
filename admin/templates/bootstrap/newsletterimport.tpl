@@ -3,8 +3,8 @@
 {include file='tpl_inc/seite_header.tpl' cTitel=__('newsletterMail') cBeschreibung=__('newsletterMailDesc') cDokuURL=__('newsletterURL')}
 <div id="content" class="container-fluid">
     <div class="card">
-        <div class="card-body">
-            <form name="kundenimporter" method="post" action="newsletterimport.php" enctype="multipart/form-data">
+        <form name="kundenimporter" method="post" action="newsletterimport.php" enctype="multipart/form-data">
+            <div class="card-body">
                 {$jtl_token}
                 <input type="hidden" name="newsletterimport" value="1" />
                 <div class="settings">
@@ -24,12 +24,12 @@
                             <input class="form-control" type="file" name="csv" id="csv"  tabindex="1" />
                         </span>
                     </div>
-                    <p class="submit">
-                        <button type="submit" value="{__('import')}" class="btn btn-primary">{__('import')}</button>
-                    </p>
                 </div>
-            </form>
-        </div>
+            </div>
+            <div class="card-footer save-wrapper">
+                <button type="submit" value="{__('import')}" class="btn btn-primary">{__('import')}</button>
+            </div>
+        </form>
     </div>
 </div>
 {include file='tpl_inc/footer.tpl'}

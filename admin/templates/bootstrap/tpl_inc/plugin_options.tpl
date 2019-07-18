@@ -16,26 +16,22 @@
                         </div><!-- .panel-body -->
                         </div><!-- .panel -->
                     {/if}
-                    <div class="card panel-idx-{$confItem@index}{if $confItem@index === 0} first{/if}">
-                    <div class="card-header">
-                        <div class="subheading1">{$confItem->niceName}
-                            {if $confItem->description|strlen > 0}
-                                <span class="card-title-addon">{getHelpDesc cDesc=$confItem->description}</span>
-                            {/if}
-                        </div>
+                    <div class="panel-idx-{$confItem@index}{if $confItem@index === 0} first{/if}">
+                    <div class="subheading1">{$confItem->niceName}
+                        {if $confItem->description|strlen > 0}
+                            <span class="card-title-addon">{getHelpDesc cDesc=$confItem->description}</span>
+                        {/if}
                     </div>
-                    <div class="card-body">
+                    <div class="">
                     {assign var=open value=1}
                 {elseif $confItem->inputType === JTL\Plugin\Admin\InputType::NONE}
                     <!-- not showing {$confItem->valueID} -->
                 {else}
                     {if $open === 0 && $confItem@index === 0}
-                        <div class="card first">
-                        <div class="card-header">
-                            <div class="subheading1">{__('settings')}</div>
-                            <hr class="mb-n3">
-                        </div>
-                        <div class="card-body">
+                        <div class="first">
+                        <div class="subheading1">{__('settings')}</div>
+                        <hr class="mb-3">
+                        <div>
                         {assign var=open value=1}
                     {/if}
                     <div class="form-group form-row align-items-center">

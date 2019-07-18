@@ -18,6 +18,7 @@
                 {else}
                     <div class="card-header">
                         <div class="subheading1">{__('slider')}</div>
+                        <hr class="mb-n3">
                     </div>
                     <div class="card-body">
                         {include file='tpl_inc/pagination.tpl' pagination=$pagination}
@@ -43,11 +44,9 @@
                                         </h4>
                                     </td>
                                     <td>
-                                        <div class="btn-group">
-                                            <a class="btn btn-default add" href="slider.php?action=slides&id={$oSlider->kSlider}&token={$smarty.session.jtl_token}" title="{__('slides')}"><i class="fa fa-image"></i></a>
-                                            <a class="btn btn-default" href="slider.php?action=edit&id={$oSlider->kSlider}&token={$smarty.session.jtl_token}" title="{__('modify')}"><i class="fal fa-edit"></i></a>
-                                            <a class="btn btn-danger" href="slider.php?action=delete&id={$oSlider->kSlider}&token={$smarty.session.jtl_token}" title="{__('delete')}"><i class="fas fa-trash-alt"></i></a>
-                                        </div>
+                                        <a class="btn btn-danger btn-circle" href="slider.php?action=delete&id={$oSlider->kSlider}&token={$smarty.session.jtl_token}" title="{__('delete')}"><i class="fas fa-trash-alt"></i></a>
+                                        <a class="btn btn-default btn-circle add" href="slider.php?action=slides&id={$oSlider->kSlider}&token={$smarty.session.jtl_token}" title="{__('slides')}"><i class="fa fa-image"></i></a>
+                                        <a class="btn btn-primary btn-circle" href="slider.php?action=edit&id={$oSlider->kSlider}&token={$smarty.session.jtl_token}" title="{__('modify')}"><i class="fal fa-edit"></i></a>
                                     </td>
                                 </tr>
                             {/foreach}

@@ -1,22 +1,19 @@
 {include file='tpl_inc/seite_header.tpl' cTitel=__('plz_ort_import') cBeschreibung=__('plz_ort_importDesc')}
 <div id="content">
-    <div class="boxWrapper row">
-        <div class="boxLeft col-md-12">
-            <div class="card">
-                <form id="importForm" action="/plz_ort_import.php">
-                    {$jtl_token}
-                    <div class="card-header">
-                        <h3>{__('plz_ort_available')}</h3>
-                    </div>
-                    <div class="card-body">
-                        {include file='tpl_inc/plz_ort_import_index_list.tpl'}
-                    </div>
-                    <div class="boxOptionRow card-footer">
-                        <a href="#" class="btn btn-primary" data-callback="plz_ort_import_new"><i class="fa fa-download"></i> {__('plz_ort_import_new')}</a>
-                    </div>
-                </form>
+    <div class="card">
+        <form id="importForm" action="/plz_ort_import.php">
+            {$jtl_token}
+            <div class="card-header">
+                <div class="subheading1">{__('plz_ort_available')}</div>
+                <hr class="mb-n3">
             </div>
-        </div>
+            <div class="card-body">
+                {include file='tpl_inc/plz_ort_import_index_list.tpl'}
+            </div>
+            <div class="card-footer save-wrapper">
+                <a href="#" class="btn btn-primary" data-callback="plz_ort_import_new"><i class="fa fa-download"></i> {__('plz_ort_import_new')}</a>
+            </div>
+        </form>
     </div>
 </div>
 <div id="modalWait" class="modal fade" role="dialog">

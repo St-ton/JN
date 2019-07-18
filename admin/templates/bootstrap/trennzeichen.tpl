@@ -85,7 +85,7 @@
                     </tbody>
                 </table>
                 </div>
-                <div class="card-footer">
+                <div class="card-footer save-wrapper">
                     <button name="speichern" type="submit" value="{__('save')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
                 </div>
             </div>

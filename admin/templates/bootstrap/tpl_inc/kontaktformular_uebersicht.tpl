@@ -25,12 +25,10 @@
                 <form name="einstellen" method="post" action="kontaktformular.php">
                     {$jtl_token}
                     <input type="hidden" name="einstellungen" value="1" />
-                    <div class="settings card">
-                        <div class="card-header">
-                            <div class="subheading1">{__('settings')}</div>
-                            <hr class="mb-n3">
-                        </div>
-                        <div class="card-body">
+                    <div class="settings">
+                        <div class="subheading1">{__('settings')}</div>
+                        <hr class="mb-3">
+                        <div>
                             {foreach $Conf as $cnf}
                                 {if $cnf->cConf === 'Y'}
                                     <div class="form-group form-row align-items-center">
@@ -61,12 +59,10 @@
             </div>
             <div id="subjects" class="tab-pane fade {if isset($cTab) && $cTab === 'subjects'} active show{/if}">
                 <div class="alert alert-info">{__('contanctformSubjectDesc')}</div>
-                <div class="card">
-                    <div class="card-header">
-                        <div class="subheading1">{__('subjects')}</div>
-                        <hr class="mb-n3">
-                    </div>
-                    <div class="card-body">
+                <div>
+                    <div class="subheading1">{__('subjects')}</div>
+                    <hr class="mb-3">
+                    <div>
                         <div class="table-responsive">
                             <table class="list table">
                                 <thead>
@@ -106,11 +102,10 @@
                 <form name="einstellen" method="post" action="kontaktformular.php">
                     {$jtl_token}
                     <input type="hidden" name="content" value="1" />
-                    <div class="card">
-                        <div class="card-header">
-                            <div class="subheading1">{__('contents')}</div>
-                        </div>
-                        <div class="card-body">
+                    <div>
+                        <div class="subheading1">{__('contents')}</div>
+                        <hr class="mb-3">
+                        <div>
                             <div class="settings">
                                 {foreach $sprachen as $language}
                                     {assign var=cISO value=$language->getIso()}

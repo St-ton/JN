@@ -41,10 +41,11 @@ var pies = [];
                         {foreach $pluginProfilerData as $profile}
                         <div class="card">
                             <div class="card-header" role="tab" data-idx="{$profile@index}" id="heading-profile-{$profile@index}">
-                                <div class="card-title">
+                                <div class="subheading1">
                                     <a data-toggle="collapse" data-parent="#accordion" href="#profile-{$profile@index}" aria-expanded="true" aria-controls="profile-{$profile@index}">
                                         <span class="badge left">{$profile->runID}</span> {$profile->url} - {$profile->timestamp} - {$profile->total_time}s
                                     </a>
+                                    <hr class="mb-n3">
                                 </div>
                             </div>
                             <div id="profile-{$profile@index}" class="collapse collapse" role="tabpanel" aria-labelledby="heading-profile-{$profile@index}">
@@ -82,10 +83,11 @@ var pies = [];
                         {foreach $sqlProfilerData as $run}
                             <div class="card">
                                 <div class="card-header" role="tab" data-idx="{$run@index}" id="heading-sql-profile-{$run@index}">
-                                    <div class="card-title">
+                                    <div class="subheading1">
                                         <a data-toggle="collapse" data-parent="#accordion2" href="#sql-profile-{$run@index}" aria-expanded="true" aria-controls="profile-{$run@index}">
                                             <span class="badge left">{$run->runID}</span> {$run->url} - {$run->timestamp} - {$run->total_time}s
                                         </a>
+                                        <hr class="mb-n3">
                                     </div>
                                 </div>
                                 <div id="sql-profile-{$run@index}" class="collapse collapse" role="tabpanel" aria-labelledby="heading-sql-profile-{$run@index}">

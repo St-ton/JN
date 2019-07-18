@@ -18,7 +18,7 @@
     </nav>
     <div class="tab-content">
         <div class="tab-pane fade active show" id="pages">
-            <div class="card">
+            <div>
                 {assign var=allPages value=$opcPageDB->getPages()}
                 {if $allPages|@count > 0}
                     {assign var=pages value=array_slice(
@@ -27,7 +27,7 @@
                         $pagesPagi->getPageItemCount()
                     )}
                     {include file='tpl_inc/pagination.tpl' pagination=$pagesPagi cParam_arr=['tab'=>'pages']}
-                    <div class="table-responsive card-body">
+                    <div class="table-responsive">
                         <table class="list table">
                             <thead>
                             <tr>
@@ -141,8 +141,8 @@
             </div>
         </div>
         <div class="tab-pane fade" id="portlets">
-            <div class="card">
-                <div class="table-responsive card-body">
+            <div>
+                <div class="table-responsive">
                     <table class="list table">
                         <thead>
                         <tr>
@@ -171,10 +171,10 @@
             </div>
         </div>
         <div class="tab-pane fade" id="blueprints">
-            <div class="card">
+            <div>
                 {assign var=blueprints value=$opc->getBlueprints()}
                 {if $blueprints|@count > 0}
-                    <div class="table-responsive card-body">
+                    <div class="table-responsive">
                         <table class="list table">
                             <thead>
                             <tr>

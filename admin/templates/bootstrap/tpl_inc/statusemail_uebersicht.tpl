@@ -71,12 +71,11 @@
                         </div>
                     </div>
                 </div>
-                <div class="card-footer">
-                    <div class="btn-group">
-                        <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
+                <div class="card-footer save-wrapper">
                         <button type="submit" class="btn btn-default" name="action" value="sendnow">
-                            <i class="fa fa-envelope-o"></i> {__('sendEmail')}</button>
-                    </div>
+                            <i class="fa fa-envelope-o"></i> {__('sendEmail')}
+                        </button>
+                    <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
                 </div>
             </div>
         </div>

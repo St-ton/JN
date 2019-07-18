@@ -253,21 +253,23 @@
             {if $nPage === 0}
                 <div class="alert alert-info">{__('warningChangesForAllPages')}</div>
             {/if}
-            <div class="block">
-                <form name="boxen" method="post" action="boxen.php">
-                    {$jtl_token}
-                    <div class="input-group left">
-                        <span class="input-group-addon">
-                            <label for="{__('page')}">{__('page')}:</label>
-                        </span>
-                        <span class="label-wrap last">
-                            <select name="page" class="selectBox custom-select" id="{__('page')}" onchange="document.boxen.submit();">
-                                {include file='tpl_inc/seiten_liste.tpl'}
-                            </select>
-                        </span>
-                        <input type="hidden" name="boxen" value="1" />
-                    </div>
-                </form>
+            <div class="card">
+                <div class="card-body">
+                    <form name="boxen" method="post" action="boxen.php">
+                        {$jtl_token}
+                        <div class="input-group left">
+                            <span class="input-group-addon">
+                                <label for="{__('page')}">{__('page')}:</label>
+                            </span>
+                            <span class="label-wrap last">
+                                <select name="page" class="selectBox custom-select" id="{__('page')}" onchange="document.boxen.submit();">
+                                    {include file='tpl_inc/seiten_liste.tpl'}
+                                </select>
+                            </span>
+                            <input type="hidden" name="boxen" value="1" />
+                        </div>
+                    </form>
+                </div>
             </div>
 
             <div class="boxWrapper row">

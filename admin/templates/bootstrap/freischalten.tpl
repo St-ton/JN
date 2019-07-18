@@ -78,12 +78,10 @@
                         <input type="hidden" name="freischalten" value="1" />
                         <input type="hidden" name="bewertungen" value="1" />
                         <input type="hidden" name="tab" value="bewertungen" />
-                        <div class="card">
-                            <div class="card-header">
-                                <div class="subheading1">{__('reviews')}</div>
-                                <hr class="mb-n3">
-                            </div>
-                            <div class="table-responsive card-body">
+                        <div>
+                            <div class="subheading1">{__('reviews')}</div>
+                            <hr class="mb-3">
+                            <div class="table-responsive">
                                 <table class="list table">
                                     <thead>
                                     <tr>
@@ -131,11 +129,9 @@
                                     </tfoot>
                                 </table>
                             </div>
-                            <div class="card-footer">
-                                <div class="btn-group">
-                                    <button name="freischaltensubmit" type="submit" class="btn btn-primary"><i class="fa fa-thumbs-up"></i> {__('unlockMarked')}</button>
-                                    <button name="freischaltenleoschen" type="submit" class="btn btn-danger"><i class="fas fa-trash-alt"></i> {__('deleteSelected')}</button>
-                                </div>
+                            <div class="save-wrapper">
+                                <button name="freischaltenleoschen" type="submit" class="btn btn-danger"><i class="fas fa-trash-alt"></i> {__('deleteSelected')}</button>
+                                <button name="freischaltensubmit" type="submit" class="btn btn-primary"><i class="fa fa-thumbs-up"></i> {__('unlockMarked')}</button>
                             </div>
                         </div>
                     </form>
@@ -146,7 +142,7 @@
             <div id="livesearch" class="tab-pane fade {if isset($cTab) && $cTab === 'livesearch'} active show{/if}">
                 {if $oSuchanfrage_arr|@count > 0 && $oSuchanfrage_arr}
                     {include file='tpl_inc/pagination.tpl' pagination=$oPagiSuchanfragen cAnchor='livesearch'}
-                    <div class="card">
+                    <div>
                         <form method="post" action="freischalten.php">
                             {$jtl_token}
                             <input type="hidden" name="freischalten" value="1" />
@@ -160,8 +156,7 @@
                             {else}
                                 {assign var=cSuchStr value=''}
                             {/if}
-
-                            <div class="table-responsive card-body">
+                            <div class="table-responsive">
                                 <table class="list table table-striped">
                                     <thead>
                                     <tr>
@@ -191,21 +186,23 @@
                                     </tfoot>
                                 </table>
                             </div>
-                            <div class="card-footer">
-                                <div class="btn-group p50">
-                                    <button name="freischaltensubmit" type="submit" value="Markierte freischalten" class="btn btn-primary"><i class="fa fa-thumbs-up"></i> {__('unlockMarked')}</button>
-                                    <button name="freischaltenleoschen" type="submit" value="Markierte löschen" class="btn btn-danger">
-                                        <i class="fas fa-trash-alt"></i> {__('deleteSelected')}
-                                    </button>
-                                </div>
-                                <div class="input-group right p50" data-toggle="tooltip" data-placement="bottom" title='{__('freischaltenMappingDesc')}'>
-                                    <span class="input-group-addon">
-                                        <label for="cMapping">{__('linkMarked')}</label>
-                                    </span>
-                                    <input class="form-control" name="cMapping" id="cMapping" type="text" value="" />
-                                    <span class="input-group-btn">
-                                        <button name="submitMapping" type="submit" value="Verknüpfen" class="btn btn-primary">{__('linkVerb')}</button>
-                                    </span>
+                            <div class="save-wrapper">
+                                <div class="row">
+                                    <div class="input-group col-md-6" data-toggle="tooltip" data-placement="bottom" title='{__('freischaltenMappingDesc')}'>
+                                        <span class="input-group-addon">
+                                            <label for="cMapping">{__('linkMarked')}:</label>
+                                        </span>
+                                        <input class="form-control" name="cMapping" id="cMapping" type="text" value="" />
+                                        <span class="input-group-btn ml-1">
+                                            <button name="submitMapping" type="submit" value="Verknüpfen" class="btn btn-primary">{__('linkVerb')}</button>
+                                        </span>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <button name="freischaltenleoschen" type="submit" value="Markierte löschen" class="btn btn-danger">
+                                            <i class="fas fa-trash-alt"></i> {__('deleteSelected')}
+                                        </button>
+                                        <button name="freischaltensubmit" type="submit" value="Markierte freischalten" class="btn btn-primary"><i class="fa fa-thumbs-up"></i> {__('unlockMarked')}</button>
+                                    </div>
                                 </div>
                             </div>
                         </form>
@@ -217,13 +214,13 @@
             <div id="newscomments" class="tab-pane fade {if isset($cTab) && $cTab === 'newscomments'} active show{/if}">
                 {if $oNewsKommentar_arr|@count > 0 && $oNewsKommentar_arr}
                     {include file='tpl_inc/pagination.tpl' pagination=$oPagiNewskommentare cAnchor='newscomments'}
-                    <div class="card">
+                    <div>
                         <form method="post" action="freischalten.php">
                             {$jtl_token}
                             <input type="hidden" name="freischalten" value="1" />
                             <input type="hidden" name="newskommentare" value="1" />
                             <input type="hidden" name="tab" value="newscomments" />
-                            <div class="table-responsive card-body">
+                            <div class="table-responsive">
                                 <table class="list table table-striped">
                                     <thead>
                                         <tr>
@@ -266,13 +263,11 @@
                                     </tfoot>
                                 </table>
                             </div>
-                            <div class="card-footer">
-                                <div class="btn-group">
-                                    <button name="freischaltensubmit" type="submit" value="Markierte freischalten" class="btn btn-primary"><i class="fa fa-thumbs-up"></i> {__('unlockMarked')}</button>
-                                    <button name="freischaltenleoschen" type="submit" value="Markierte löschen" class="btn btn-danger">
-                                        <i class="fas fa-trash-alt"></i> {__('deleteSelected')}
-                                    </button>
-                                </div>
+                            <div class="save-wrapper">
+                                <button name="freischaltenleoschen" type="submit" value="Markierte löschen" class="btn btn-danger">
+                                    <i class="fas fa-trash-alt"></i> {__('deleteSelected')}
+                                </button>
+                                <button name="freischaltensubmit" type="submit" value="Markierte freischalten" class="btn btn-primary"><i class="fa fa-thumbs-up"></i> {__('unlockMarked')}</button>
                             </div>
                         </form>
                     </div>
@@ -283,7 +278,7 @@
             <div id="newsletter" class="tab-pane fade {if isset($cTab) && $cTab === 'newsletter'} active show{/if}">
                 {if $oNewsletterEmpfaenger_arr|@count > 0 && $oNewsletterEmpfaenger_arr}
                     {include file='tpl_inc/pagination.tpl' pagination=$oPagiNewsletterEmpfaenger cAnchor='newsletter'}
-                    <div class="card">
+                    <div>
                         <form method="post" action="freischalten.php">
                             {$jtl_token}
                             <input type="hidden" name="freischalten" value="1" />
@@ -292,7 +287,7 @@
                             {if isset($nSort)}
                                 <input type="hidden" name="nSort" value="{$nSort}" />
                             {/if}
-                            <div class="table-responsive card-body">
+                            <div class="table-responsive">
                                 <table class="list table">
                                     <thead>
                                         <tr>
@@ -322,13 +317,11 @@
                                     </tfoot>
                                 </table>
                             </div>
-                            <div class="card-footer">
-                                <div class="btn-group">
-                                    <button name="freischaltensubmit" type="submit" value="Markierte freischalten" class="btn btn-primary"><i class="fa fa-thumbs-up"></i> {__('unlockMarked')}</button>
-                                    <button name="freischaltenleoschen" type="submit" value="Markierte löschen" class="btn btn-danger">
-                                        <i class="fas fa-trash-alt"></i> {__('deleteSelected')}
-                                    </button>
-                                </div>
+                            <div class="save-wrapper">
+                                <button name="freischaltenleoschen" type="submit" value="Markierte löschen" class="btn btn-danger">
+                                    <i class="fas fa-trash-alt"></i> {__('deleteSelected')}
+                                </button>
+                                <button name="freischaltensubmit" type="submit" value="Markierte freischalten" class="btn btn-primary"><i class="fa fa-thumbs-up"></i> {__('unlockMarked')}</button>
                             </div>
                         </form>
                     </div>

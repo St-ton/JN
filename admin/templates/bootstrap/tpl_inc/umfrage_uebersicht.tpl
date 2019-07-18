@@ -22,15 +22,6 @@
             </nav>
             <div class="tab-content">
                 <div id="umfrage" class="tab-pane fade{if !isset($cTab) || $cTab === 'umfrage'} active show{/if}">
-                    <form name="erstellen" method="post" action="umfrage.php">
-                        {$jtl_token}
-                        <input type="hidden" name="umfrage" value="1" />
-                        <input type="hidden" name="umfrage_erstellen" value="1" />
-                        <input type="hidden" name="tab" value="umfrage" />
-                        <p class="tcenter">
-                            <button name="umfrageerstellen" type="submit" value="{__('umfrageAdd')}" class="btn btn-primary"><i class="fa fa-share"></i> {__('umfrageAdd')}</button>
-                        </p>
-                    </form>
                     {if $oUmfrage_arr|@count > 0 && $oUmfrage_arr}
                         {include file='tpl_inc/pagination.tpl' pagination=$pagination cAnchor='umfrage'}
                         <form name="umfrage" method="post" action="umfrage.php">
@@ -40,11 +31,10 @@
                             <input type="hidden" name="tab" value="umfrage" />
                             <div id="payment">
                                 <div id="tabellenLivesuche">
-                                    <div class="card">
-                                        <div class="card-header">
-                                            <div class="subheading1">{__('activePolls')}</div>
-                                        </div>
-                                        <div class="card-body table-responsive">
+                                    <div>
+                                        <div class="subheading1">{__('activePolls')}</div>
+                                        <hr class="mb-3">
+                                        <div class="table-responsive">
                                             <table class="table table-striped">
                                                 <thead>
                                                     <tr>
@@ -73,20 +63,27 @@
                                                         <td>{$oUmfrage->nAnzahlFragen}</td>
                                                         <td>{$oUmfrage->dErstellt_de}</td>
                                                         <td>
-                                                            <div class="btn-group">
-                                                                <a href="umfrage.php?umfrage=1&token={$smarty.session.jtl_token}&umfrage_editieren=1&kUmfrage={$oUmfrage->kUmfrage}&tab=umfrage" class="btn btn-primary" title="{__('modify')}">
-                                                                    <i class="fal fa-edit"></i>
-                                                                </a>
-                                                                <a href="umfrage.php?umfrage=1&token={$smarty.session.jtl_token}&kUmfrage={$oUmfrage->kUmfrage}&umfrage_statistik=1" class="btn btn-default" title="{__('umfrageStats')}"><i class="fa fa-bar-chart"></i></a>
-                                                            </div>
+                                                            <a href="umfrage.php?umfrage=1&token={$smarty.session.jtl_token}&kUmfrage={$oUmfrage->kUmfrage}&umfrage_statistik=1" class="btn btn-default btn-circle" title="{__('umfrageStats')}">
+                                                                <i class="fa fa-bar-chart"></i>
+                                                            </a>
+                                                            <a href="umfrage.php?umfrage=1&token={$smarty.session.jtl_token}&umfrage_editieren=1&kUmfrage={$oUmfrage->kUmfrage}&tab=umfrage" class="btn btn-primary btn-circle" title="{__('modify')}">
+                                                                <i class="fal fa-edit"></i>
+                                                            </a>
                                                         </td>
                                                     </tr>
                                                 {/foreach}
                                                 </tbody>
                                             </table>
                                         </div>
-                                        <div class="card-footer">
+                                        <div class="card-footer save-wrapper">
                                             <button name="loeschen" type="submit" class="btn btn-danger"><i class="fas fa-trash-alt"></i> {__('deleteSelected')}</button>
+                                            <form name="erstellen" method="post" action="umfrage.php">
+                                                {$jtl_token}
+                                                <input type="hidden" name="umfrage" value="1" />
+                                                <input type="hidden" name="umfrage_erstellen" value="1" />
+                                                <input type="hidden" name="tab" value="umfrage" />
+                                                <button name="umfrageerstellen" type="submit" value="{__('umfrageAdd')}" class="btn btn-primary"><i class="fa fa-share"></i> {__('umfrageAdd')}</button>
+                                            </form>
                                         </div>
                                     </div>
                                 </div>

@@ -19,13 +19,11 @@
             <div id="aktiv" class="tab-pane fade{if !isset($cTab) || empty($cTab) || $cTab === 'aktiv'} active show{/if}">
                 <form method="post" action="exportformat_queue.php">
                     {$jtl_token}
-                    <div class="card">
-                        <div class="card-header">
-                            <div class="subheading1">{__('exportformatQueue')}</div>
-                            <hr class="mb-n3">
-                        </div>
+                    <div>
+                        <div class="subheading1">{__('exportformatQueue')}</div>
+                        <hr class="mb-3">
                         {if $oExportformatCron_arr && $oExportformatCron_arr|@count > 0}
-                            <div id="tabellenLivesuche" class="table-responsive card-body">
+                            <div id="tabellenLivesuche" class="table-responsive">
                                 <table class="table table-striped">
                                     <thead>
                                         <tr>
@@ -73,30 +71,24 @@
                                     </tfoot>
                                 </table>
                             </div>
-                            <div class="card-footer">
-                                <div class="btn-group">
-                                    <button name="action[erstellen]" type="submit" value="1" class="btn btn-primary add"><i class="fa fa-share"></i> {__('exportformatAdd')}</button>
-                                    <button name="action[loeschen]" type="submit" value="1" class="btn btn-danger"><i class="fas fa-trash-alt"></i> {__('exportformatDelete')}</button>
-                                    <button name="action[triggern]" type="submit" value="1" class="btn btn-default"><i class="fa fa-play-circle-o"></i> {__('exportformatTriggerCron')}</button>
-                                    <button name="action[uebersicht]" type="submit" value="1" class="btn btn-default"><i class="fa fa-refresh"></i> {__('refresh')}</button>
-                                </div>
+                            <div class="card-footer save-wrapper">
+                                <button name="action[loeschen]" type="submit" value="1" class="btn btn-danger"><i class="fas fa-trash-alt"></i> {__('exportformatDelete')}</button>
+                                <button name="action[triggern]" type="submit" value="1" class="btn btn-default"><i class="fa fa-play-circle-o"></i> {__('exportformatTriggerCron')}</button>
+                                <button name="action[uebersicht]" type="submit" value="1" class="btn btn-default"><i class="fa fa-refresh"></i> {__('refresh')}</button>
+                                <button name="action[erstellen]" type="submit" value="1" class="btn btn-primary add"><i class="fa fa-share"></i> {__('exportformatAdd')}</button>
                             </div>
                         {else}
-                            <div class="card-body">
-                                <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
-                            </div>
-                            <div class="card-footer">
-                                <div class="btn-group">
-                                    <button name="action[erstellen]" type="submit" value="1" class="btn btn-primary add"><i class="fa fa-share"></i> {__('exportformatAdd')}</button>
-                                    <button name="action[triggern]" type="submit" value="1" class="btn btn-default"><i class="fa fa-play-circle-o"></i> {__('exportformatTriggerCron')}</button>
-                                </div>
+                            <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
+                            <div class="card-footer save-wrapper">
+                                <button name="action[triggern]" type="submit" value="1" class="btn btn-default"><i class="fa fa-play-circle-o"></i> {__('exportformatTriggerCron')}</button>
+                                <button name="action[erstellen]" type="submit" value="1" class="btn btn-primary add"><i class="fa fa-share"></i> {__('exportformatAdd')}</button>
                             </div>
                         {/if}
                     </div>
                 </form>
             </div>
             <div id="fertig" class="tab-pane fade{if isset($cTab) && $cTab === 'fertig'} active show{/if}">
-                <div class="block well well-sm">
+                <div class="mb-5">
                     <form method="post" action="exportformat_queue.php" class="form-inline">
                         {$jtl_token}
                         <div class="form-group">
@@ -105,16 +97,14 @@
                             <label>{__('hours')}</label>
                         </div>
                         <div class="btn-group">
-                            <button name="action[fertiggestellt]" type="submit" value="1" class="btn btn-info"><i class="fal fa-search"></i> {__('show')}</button>
+                            <button name="action[fertiggestellt]" type="submit" value="1" class="btn btn-primary"><i class="fal fa-search"></i></button>
                         </div>
                     </form>
                 </div>
-                <div class="card">
-                    <div class="card-header">
-                        <div class="subheading1">{__('exportformatTodaysWork')}</div>
-                        <hr class="mb-n3">
-                    </div>
-                    <div class="card-body">
+                <div>
+                    <div class="subheading1">{__('exportformatTodaysWork')}</div>
+                    <hr class="mb-3">
+                    <div>
                     {if $oExportformatQueueBearbeitet_arr && $oExportformatQueueBearbeitet_arr|@count > 0}
                         <div id="tabellenLivesuche" class="table-responsive">
                             <table class="table table-striped">

@@ -213,10 +213,10 @@
                         </div>
                     </div>
             {/foreach}
-            <div class="card-footer save-wrapper btn-group">
-                <button type="submit" name="continue" value="0" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
-                <button type="submit" name="continue" value="1" class="btn btn-default">{__('saveAndContinue')}</button>
+            <div class="card-footer save-wrapper">
                 <a href="emailvorlagen.php" title="{__('cancel')}" class="btn btn-danger"><i class="fa fa-exclamation"></i> {__('cancel')}</a>
+                <button type="submit" name="continue" value="1" class="btn btn-default">{__('saveAndContinue')}</button>
+                <button type="submit" name="continue" value="0" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
             </div>
         </div>
     </form>

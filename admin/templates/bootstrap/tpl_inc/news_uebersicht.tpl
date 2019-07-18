@@ -79,12 +79,10 @@
                         <input type="hidden" name="newskommentar_freischalten" value="1" />
                         <input type="hidden" name="nd" value="1" />
                         <input type="hidden" name="tab" value="inaktiv" />
-                        <div class="card">
-                            <div class="card-header">
-                                <div class="subheading1">{__('newsCommentActivate')}</div>
-                                <hr class="mb-n3">
-                            </div>
-                            <div class="table-responsive card-body">
+                        <div>
+                            <div class="subheading1">{__('newsCommentActivate')}</div>
+                            <hr class="mb-3">
+                            <div class="table-responsive">
                                 <table class="list table table-striped">
                                     <thead>
                                     <tr>
@@ -149,12 +147,10 @@
                     <input type="hidden" name="news" value="1" />
                     <input type="hidden" name="news_loeschen" value="1" />
                     <input type="hidden" name="tab" value="aktiv" />
-                    <div class="card">
-                        <div class="card-header">
-                            <div class="subheading1">{__('newsOverview')}</div>
-                            <hr class="mb-n3">
-                        </div>
-                        <div class="table-responsive card-body">
+                    <div>
+                        <div class="subheading1">{__('newsOverview')}</div>
+                        <hr class="mb-3">
+                        <div class="table-responsive">
                             <table class="sortable list table table-striped">
                                 <thead>
                                 <tr>
@@ -243,12 +239,10 @@
                     <input type="hidden" name="news" value="1" />
                     <input type="hidden" name="news_kategorie_loeschen" value="1" />
                     <input type="hidden" name="tab" value="kategorien" />
-                    <div class="card">
-                        <div class="card-header">
-                            <div class="subheading1">{__('newsCatOverview')}</div>
-                            <hr class="mb-n3">
-                        </div>
-                        <div class="table-responsive card-body">
+                    <div>
+                        <div class="subheading1">{__('newsCatOverview')}</div>
+                        <hr class="mb-3">
+                        <div class="table-responsive">
                             <table id="category-list" class="list table table-striped">
                                 <thead>
                                 <tr>
@@ -317,14 +311,12 @@
                     <input type="hidden" name="tab" value="einstellungen" />
                     <input type="hidden" name="news" value="1" />
 
-                    <div class="card settings">
-                        <div class="card-header">
-                            <div class="subheading1">
-                                {__('settings')}
-                                <hr class="mb-n3">
-                            </div>
+                    <div class="settings">
+                        <div class="subheading1">
+                            {__('settings')}
+                            <hr class="mb-3">
                         </div>
-                        <div class="card-body">
+                        <div>
                             {foreach $oConfig_arr as $oConfig}
                                 {if $oConfig->cConf === 'Y'}
                                     <div class="form-group form-row align-items-center mb-5 mb-md-3">

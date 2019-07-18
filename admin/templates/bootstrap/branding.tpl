@@ -3,23 +3,25 @@
 
 {include file='tpl_inc/seite_header.tpl' cTitel=__('branding') cBeschreibung=__('brandingDesc') cDokuURL=__('brandingUrl')}
 <div id="content" class="container-fluid">
-    <div class="block">
-        <form name="branding" method="post" action="branding.php">
-            {$jtl_token}
-            <input type="hidden" name="branding" value="1" />
-            <div class="input-group p25 left">
-                <span class="input-group-addon">
-                    <label for="{__('brandingActive')}">{__('brandingPictureKat')}:</label>
-                </span>
-                <span class="label-wrap">
-                    <select name="kBranding" class="custom-select selectBox" id="{__('brandingActive')}" onchange="document.branding.submit();">
-                        {foreach $oBranding_arr as $oBrandingTMP}
-                            <option value="{$oBrandingTMP->kBranding}" {if $oBrandingTMP->kBranding == $oBranding->kBrandingTMP}selected{/if}>{__($oBrandingTMP->cBildKategorie)}</option>
-                        {/foreach}
-                    </select>
-                </span>
-            </div>
-        </form>
+    <div class="card">
+        <div class="card-body">
+            <form name="branding" method="post" action="branding.php">
+                {$jtl_token}
+                <input type="hidden" name="branding" value="1" />
+                <div class="input-group p25 left">
+                    <span class="input-group-addon">
+                        <label for="{__('brandingActive')}">{__('brandingPictureKat')}:</label>
+                    </span>
+                    <span class="label-wrap">
+                        <select name="kBranding" class="custom-select selectBox" id="{__('brandingActive')}" onchange="document.branding.submit();">
+                            {foreach $oBranding_arr as $oBrandingTMP}
+                                <option value="{$oBrandingTMP->kBranding}" {if $oBrandingTMP->kBranding == $oBranding->kBrandingTMP}selected{/if}>{__($oBrandingTMP->cBildKategorie)}</option>
+                            {/foreach}
+                        </select>
+                    </span>
+                </div>
+            </form>
+        </div>
     </div>
 
     {if $oBranding->kBrandingTMP > 0}

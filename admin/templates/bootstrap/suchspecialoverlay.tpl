@@ -2,27 +2,31 @@
 {include file='tpl_inc/header.tpl'}
 {include file='tpl_inc/seite_header.tpl' cTitel=__('suchspecialoverlay') cBeschreibung=__('suchspecialoverlayDesc') cDokuURL=__('suchspecialoverlayUrl')}
 <div id="content" class="container-fluid">
-    <div class="row">
-        <div class="col-md-4">
-            {include file='tpl_inc/language_switcher.tpl' action='suchspecialoverlay.php'}
-        </div>
-        <div class="col-md-4">
-            <form name="suchspecialoverlay" method="post" action="suchspecialoverlay.php" class="inline_block">
-                {$jtl_token}
-                <div class="input-group">
-                    <span class="input-group-addon">
-                        <label for="{__('suchspecial')}">{__('suchspecial')}:</label>
-                    </span>
-                    <input type="hidden" name="suchspecialoverlay" value="1" />
-                    <span class="label-wrap last">
-                        <select name="kSuchspecialOverlay" class="custom-select selectBox" id="{__('suchspecial')}" onchange="document.suchspecialoverlay.submit();">
-                            {foreach $oSuchspecialOverlay_arr as $oSuchspecialOverlayTMP}
-                                <option value="{$oSuchspecialOverlayTMP->getType()}" {if $oSuchspecialOverlayTMP->getType() == $oSuchspecialOverlay->getType()}selected{/if}>{$oSuchspecialOverlayTMP->getName()}</option>
-                            {/foreach}
-                        </select>
-                    </span>
+    <div class="card">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4">
+                    {include file='tpl_inc/language_switcher.tpl' action='suchspecialoverlay.php'}
                 </div>
-            </form>
+                <div class="col-md-4">
+                    <form name="suchspecialoverlay" method="post" action="suchspecialoverlay.php" class="inline_block">
+                        {$jtl_token}
+                        <div class="input-group">
+                            <span class="input-group-addon">
+                                <label for="{__('suchspecial')}">{__('suchspecial')}:</label>
+                            </span>
+                            <input type="hidden" name="suchspecialoverlay" value="1" />
+                            <span class="label-wrap last">
+                                <select name="kSuchspecialOverlay" class="custom-select selectBox" id="{__('suchspecial')}" onchange="document.suchspecialoverlay.submit();">
+                                    {foreach $oSuchspecialOverlay_arr as $oSuchspecialOverlayTMP}
+                                        <option value="{$oSuchspecialOverlayTMP->getType()}" {if $oSuchspecialOverlayTMP->getType() == $oSuchspecialOverlay->getType()}selected{/if}>{$oSuchspecialOverlayTMP->getName()}</option>
+                                    {/foreach}
+                                </select>
+                            </span>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
 

@@ -23,7 +23,7 @@
                     </div>
                 </div>
             </div>
-            <div class="card-footer">
+            <div class="card-footer save-wrapper">
                 <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
             </div>
         </div>

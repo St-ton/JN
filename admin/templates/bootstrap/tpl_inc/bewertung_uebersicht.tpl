@@ -38,12 +38,10 @@
                         {$jtl_token}
                         <input type="hidden" name="bewertung_nicht_aktiv" value="1" />
                         <input type="hidden" name="tab" value="freischalten" />
-                        <div class="card">
-                            <div class="card-header">
-                                <div class="subheading1">{__('ratingsInaktive')}</div>
-                                <hr class="mb-n3">
-                            </div>
-                            <div class="table-responsive card-body">
+                        <div>
+                            <div class="subheading1">{__('ratingsInaktive')}</div>
+                            <hr class="mb-3">
+                            <div class="table-responsive">
                                 <table  class="table table-striped">
                                     <thead>
                                     <tr>
@@ -105,12 +103,10 @@
                         {$jtl_token}
                         <input type="hidden" name="bewertung_aktiv" value="1" />
                         <input type="hidden" name="tab" value="letzten50" />
-                        <div class="card">
-                            <div class="card-header">
-                                <div class="subheading1">{__('ratingLast50')}</div>
-                                <hr class="mb-n3">
-                            </div>
-                            <div class="table-responsive card-body">
+                        <div>
+                            <div class="subheading1">{__('ratingLast50')}</div>
+                            <hr class="mb-3">
+                            <div class="table-responsive">
                                 <table class="table table-striped">
                                     <thead>
                                     <tr>
@@ -181,8 +177,8 @@
             </div>
             <div id="artikelbewertung" class="tab-pane fade {if isset($cTab) && $cTab === 'artikelbewertung'} active show{/if}">
                 <form name="artikelbewertung" method="post" action="bewertung.php">
-                    <div class="card">
-                        <div class="card-body">
+                    <div>
+                        <div>
                         {$jtl_token}
                         <div class="input-group col-xs-6" style="float: none;">
                             <span class="input-group-addon">
@@ -204,12 +200,10 @@
                         </div>
                     </div>
                     {if isset($filteredReviews) && $filteredReviews|@count > 0}
-                        <div class="card">
-                            <div class="card-header">
-                                <div class="subheading1">{$cArtNr}</div>
-                                <hr class="mb-n3">
-                            </div>
-                            <div class="table-responsive card-body">
+                        <div>
+                            <div class="subheading1">{$cArtNr}</div>
+                            <hr class="mb-3">
+                            <div class="table-responsive">
                                 <table class="table table-striped">
                                     <thead>
                                     <tr>
@@ -266,12 +260,10 @@
                     {$jtl_token}
                     <input type="hidden" name="einstellungen" value="1" />
                     <input type="hidden" name="tab" value="einstellungen" />
-                    <div class="settings card">
-                        <div class="card-header">
-                            <span class="subheading1">{__('settings')}</span>
-                            <hr class="mb-n3">
-                        </div>
-                        <div class="card-body">
+                    <div class="settings">
+                        <span class="subheading1">{__('settings')}</span>
+                        <hr class="mb-3">
+                        <div>
                             {foreach $oConfig_arr as $oConfig}
                                 {if $oConfig->cConf === 'Y'}
                                     <div class="form-group form-row align-items-center">

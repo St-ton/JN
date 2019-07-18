@@ -87,18 +87,14 @@
                             </tr>
                         {/foreach}
                         </tbody>
-                        <tfoot>
-                        <tr>
-                            <td class="check">
-                                <input name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);" />
-                            </td>
-                            <td colspan="8"><label for="ALLMSGS">{__('globalSelectAll')}</label></td>
-                        </tr>
-                        </tfoot>
                     </table>
                 </div>
-                <div class="card-footer">
-                    <button name="zuruecksetzenBTN" type="submit" class="btn btn-danger"><i class="fa fa-refresh"></i> {__('orderPickedUpResetBTN')}</button>
+                <div class="card-footer save-wrapper">
+                    <div class="float-left">
+                        <input name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);" />
+                        <label for="ALLMSGS">{__('globalSelectAll')}</label>
+                    </div>
+                    <button name="zuruecksetzenBTN" type="submit" class="btn btn-primary"><i class="fa fa-refresh"></i> {__('orderPickedUpResetBTN')}</button>
                 </div>
             </div>
         </form>

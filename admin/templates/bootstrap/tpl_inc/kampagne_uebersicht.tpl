@@ -24,13 +24,11 @@
         </nav>
         <div class="tab-content">
             <div id="uebersicht" class="tab-pane fade {if !isset($cTab) || $cTab === 'uebersicht'} active show{/if}">
-                <div class="card">
-                    <div class="card-header">
-                        <div class="subheading1">{__('kampagneIntern')}</div>
-                        <hr class="mb-n3">
-                    </div>
+                <div>
+                    <div class="subheading1">{__('kampagneIntern')}</div>
+                    <hr class="mb-3">
                     {if $oKampagne_arr|count > 0}
-                        <div class="table-responsive card-body">
+                        <div class="table-responsive">
                             <table class="table table-striped">
                                 <thead>
                                     <tr>
@@ -63,7 +61,9 @@
                                             <td class="tcenter">{if isset($oKampagne->nAktiv) && $oKampagne->nAktiv == 1}{__('yes')}{else}{__('no')}{/if}</td>
                                             <td class="tcenter">{$oKampagne->dErstellt_DE}</td>
                                             <td class="tcenter">
-                                                <a href="kampagne.php?kKampagne={$oKampagne->kKampagne}&editieren=1&token={$smarty.session.jtl_token}" title="{__('modify')}" class="btn btn-default"><i class="fal fa-edit"></i></a>
+                                                <a href="kampagne.php?kKampagne={$oKampagne->kKampagne}&editieren=1&token={$smarty.session.jtl_token}" title="{__('modify')}" class="btn btn-default btn-circle">
+                                                    <i class="fal fa-edit"></i>
+                                                </a>
                                             </td>
                                         </tr>
                                     {/if}
@@ -75,17 +75,15 @@
                         <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                     {/if}
                 </div>
-                <div class="card">
-                    <div class="card-header">
-                        <div class="subheading1">{__('kampagneExtern')}</div>
-                        <hr class="mb-n3">
-                    </div>
+                <div>
+                    <div class="subheading1">{__('kampagneExtern')}</div>
+                    <hr class="mb-3">
                     <form name="kampagnen" method="post" action="kampagne.php">
                         {if isset($nGroessterKey) && $nGroessterKey >= 1000}
                             {$jtl_token}
                             <input type="hidden" name="tab" value="uebersicht" />
                             <input type="hidden" name="delete" value="1" />
-                            <div class="table-responsive card-body">
+                            <div class="table-responsive">
                                 <table class="table table-striped">
                                     <thead>
                                         <tr>
@@ -123,7 +121,7 @@
                                                 <td class="tcenter">{$oKampagne->dErstellt_DE}</td>
                                                 <td class="tcenter">
                                                     <a href="kampagne.php?kKampagne={$oKampagne->kKampagne}&editieren=1&token={$smarty.session.jtl_token}"
-                                                       class="btn btn-default" title="{__('modify')}">
+                                                       class="btn btn-default btn-circle" title="{__('modify')}">
                                                         <i class="fal fa-edit"></i>
                                                     </a>
                                                 </td>
@@ -144,93 +142,85 @@
                         {else}
                             <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                         {/if}
-                        <div class="card-footer">
-                            <div class="btn-group">
-                                {if isset($nGroessterKey) && $nGroessterKey >= 1000}
-                                    <button name="submitDelete" type="submit" value="{__('delete')}" class="btn btn-danger"><i class="fas fa-trash-alt"></i> {__('deleteSelected')}</button>
-                                {/if}
-                                <a href="kampagne.php?neu=1&token={$smarty.session.jtl_token}" class="btn btn-primary">{__('kampagneNewBTN')}</a>
-                            </div>
+                        <div class="card-footer save-wrapper">
+                            {if isset($nGroessterKey) && $nGroessterKey >= 1000}
+                                <button name="submitDelete" type="submit" value="{__('delete')}" class="btn btn-danger"><i class="fas fa-trash-alt"></i> {__('deleteSelected')}</button>
+                            {/if}
+                            <a href="kampagne.php?neu=1&token={$smarty.session.jtl_token}" class="btn btn-primary">{__('kampagneNewBTN')}</a>
                         </div>
                     </form>
                 </div>
             </div>
             <div id="globalestats" class="tab-pane fade {if isset($cTab) && $cTab === 'globalestats'} active show{/if}">
-                <div class="card">
-                    <div class="card-body">
-                        <div class="form-group form-row align-items-center">
-                            <label class="col col-sm-3 col-lg-1 col-form-label text-sm-right" for="nAnsicht">{__('kampagneView')}:</label>
-                            <div class="col-sm-4 col-lg-2">
-                                <select id="nAnsicht" name="nAnsicht" class="custom-select combo" onchange="changeZeitSelect(this);">
-                                    <option value="-1"></option>
-                                    <option value="1"{if $smarty.session.Kampagne->nAnsicht == 1} selected{/if}>{__('monthly')}</option>
-                                    <option value="2"{if $smarty.session.Kampagne->nAnsicht == 2} selected{/if}>{__('weekly')}</option>
-                                    <option value="3"{if $smarty.session.Kampagne->nAnsicht == 3} selected{/if}>{__('daily')}</option>
-                                </select>
-                            </div>
-                            <div class="col-auto">
-                                <strong>{__('kampagnePeriod')}:</strong> {$cZeitraum}
-                            </div>
+                <div>
+                    <div class="form-group form-row align-items-center">
+                        <label class="col col-sm-3 col-lg-1 col-form-label text-sm-right" for="nAnsicht">{__('kampagneView')}:</label>
+                        <div class="col-sm-4 col-lg-2">
+                            <select id="nAnsicht" name="nAnsicht" class="custom-select combo" onchange="changeZeitSelect(this);">
+                                <option value="-1"></option>
+                                <option value="1"{if $smarty.session.Kampagne->nAnsicht == 1} selected{/if}>{__('monthly')}</option>
+                                <option value="2"{if $smarty.session.Kampagne->nAnsicht == 2} selected{/if}>{__('weekly')}</option>
+                                <option value="3"{if $smarty.session.Kampagne->nAnsicht == 3} selected{/if}>{__('daily')}</option>
+                            </select>
+                        </div>
+                        <div class="col-auto">
+                            <strong>{__('kampagnePeriod')}:</strong> {$cZeitraum}
                         </div>
                     </div>
                 </div>
-                <div class="card">
-                    {if isset($oKampagne_arr) && $oKampagne_arr|@count > 0 && isset($oKampagneDef_arr) && $oKampagneDef_arr|@count > 0}
-                        <div class="table-responsive card-body">
-                            <table class="table table-striped">
-                                <thead>
+                {if isset($oKampagne_arr) && $oKampagne_arr|@count > 0 && isset($oKampagneDef_arr) && $oKampagneDef_arr|@count > 0}
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th class="th-1"></th>
+                                    {foreach $oKampagneDef_arr as $oKampagneDef}
+                                        <th class="th-2">
+                                            <a href="kampagne.php?tab=globalestats&nSort={$oKampagneDef->kKampagneDef}&token={$smarty.session.jtl_token}">{__($oKampagneDef->cName)}</a>
+                                            {if $oKampagneDef->cName === 'Angeschaute Newsletter'}
+                                                {getHelpDesc cDesc=__('kampagnenNLInfo')}
+                                            {/if}
+                                        </th>
+                                    {/foreach}
+                                </tr>
+                            </thead>
+                            <tbody>
+                            {foreach name='kampagnenstats' from=$oKampagneStat_arr key=kKampagne item=oKampagneStatDef_arr}
+                                {if $kKampagne !== 'Gesamt'}
                                     <tr>
-                                        <th class="th-1"></th>
-                                        {foreach $oKampagneDef_arr as $oKampagneDef}
-                                            <th class="th-2">
-                                                <a href="kampagne.php?tab=globalestats&nSort={$oKampagneDef->kKampagneDef}&token={$smarty.session.jtl_token}">{__($oKampagneDef->cName)}</a>
-                                                {if $oKampagneDef->cName === 'Angeschaute Newsletter'}
-                                                    {getHelpDesc cDesc=__('kampagnenNLInfo')}
-                                                {/if}
-                                            </th>
-                                        {/foreach}
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                {foreach name='kampagnenstats' from=$oKampagneStat_arr key=kKampagne item=oKampagneStatDef_arr}
-                                    {if $kKampagne !== 'Gesamt'}
-                                        <tr>
+                                        <td>
+                                            <a href="kampagne.php?detail=1&kKampagne={$oKampagne_arr[$kKampagne]->kKampagne}&cZeitParam={$cZeitraumParam}&token={$smarty.session.jtl_token}">{$oKampagne_arr[$kKampagne]->cName}</a>
+                                        </td>
+                                        {foreach name='kampagnendefs' from=$oKampagneStatDef_arr key=kKampagneDef item=oKampagneStatDef}
                                             <td>
-                                                <a href="kampagne.php?detail=1&kKampagne={$oKampagne_arr[$kKampagne]->kKampagne}&cZeitParam={$cZeitraumParam}&token={$smarty.session.jtl_token}">{$oKampagne_arr[$kKampagne]->cName}</a>
-                                            </td>
-                                            {foreach name='kampagnendefs' from=$oKampagneStatDef_arr key=kKampagneDef item=oKampagneStatDef}
-                                                <td>
-                                                    <a href="kampagne.php?kKampagne={$kKampagne}&defdetail=1&kKampagneDef={$kKampagneDef}&cZeitParam={$cZeitraumParam}&token={$smarty.session.jtl_token}">{$oKampagneStat_arr[$kKampagne][$kKampagneDef]}</a>
-                                                </td>
-                                            {/foreach}
-                                        </tr>
-                                    {/if}
-                                {/foreach}
-                                </tbody>
-                                <tfoot>
-                                    <tr>
-                                        <td>{__('kampagneOverall')}</td>
-                                        {foreach name='kampagnendefs' from=$oKampagneDef_arr key=kKampagneDef item=oKampagneDef}
-                                            <td>
-                                                {$oKampagneStat_arr.Gesamt[$kKampagneDef]}
+                                                <a href="kampagne.php?kKampagne={$kKampagne}&defdetail=1&kKampagneDef={$kKampagneDef}&cZeitParam={$cZeitraumParam}&token={$smarty.session.jtl_token}">{$oKampagneStat_arr[$kKampagne][$kKampagneDef]}</a>
                                             </td>
                                         {/foreach}
                                     </tr>
-                                </tfoot>
-                            </table>
-                        </div>
-                        <div class="card-footer">
-                            <div class="btn-group">
-                                <a href="kampagne.php?tab=globalestats&nStamp=-1&token={$smarty.session.jtl_token}" class="btn btn-default"><i class="fa fa-angle-double-left"></i> {__('earlier')}</a>
-                                {if isset($bGreaterNow) && !$bGreaterNow}
-                                    <a href="kampagne.php?tab=globalestats&nStamp=1&token={$smarty.session.jtl_token}" class="btn btn-default"><i class="fa fa-angle-double-right"></i> {__('later')}</a>
                                 {/if}
-                            </div>
-                        </div>
-                    {else}
-                        <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
-                    {/if}
-                </div>
+                            {/foreach}
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td>{__('kampagneOverall')}</td>
+                                    {foreach name='kampagnendefs' from=$oKampagneDef_arr key=kKampagneDef item=oKampagneDef}
+                                        <td>
+                                            {$oKampagneStat_arr.Gesamt[$kKampagneDef]}
+                                        </td>
+                                    {/foreach}
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                    <div class="card-footer save-wrapper">
+                        <a href="kampagne.php?tab=globalestats&nStamp=-1&token={$smarty.session.jtl_token}" class="btn btn-default"><i class="fa fa-angle-double-left"></i> {__('earlier')}</a>
+                        {if isset($bGreaterNow) && !$bGreaterNow}
+                            <a href="kampagne.php?tab=globalestats&nStamp=1&token={$smarty.session.jtl_token}" class="btn btn-default"><i class="fa fa-angle-double-right"></i> {__('later')}</a>
+                        {/if}
+                    </div>
+                {else}
+                    <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
+                {/if}
             </div>
         </div>
     </div>

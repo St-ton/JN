@@ -7,14 +7,12 @@
     {if !empty($tab)}
         <input type="hidden" name="tab" value="{$tab}" />
     {/if}
-    <div class="card settings">
+    <div class="settings">
         {if !empty($title)}
-            <div class="card-header">
-                <span class="subheading1">{$title}</span>
-                <hr class="mb-n3">
-            </div>
+            <span class="subheading1">{$title}</span>
+            <hr class="mb-3">
         {/if}
-        <div class="card-body">
+        <div>
             {foreach $config as $configItem}
                 {if $configItem->cConf === 'Y'}
                     <div class="form-group form-row align-items-center">

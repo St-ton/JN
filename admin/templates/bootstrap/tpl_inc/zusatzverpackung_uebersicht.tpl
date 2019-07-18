@@ -1,12 +1,12 @@
-{if $oVerpackung_arr|@count > 0}
-    {include file='tpl_inc/pagination.tpl' pagination=$pagination}
-{/if}
-
 <form method="post" action="zusatzverpackung.php">
     {$jtl_token}
     {if isset($oVerpackung_arr) && $oVerpackung_arr|@count > 0}
     <div class="card">
         <div class="table-responsive card-body">
+            {if $oVerpackung_arr|@count > 0}
+                {include file='tpl_inc/pagination.tpl' pagination=$pagination}
+            {/if}
+
             <table class="list table table-striped">
                 <thead>
                 <tr>
@@ -41,7 +41,7 @@
                         </td>
                         <td>
                             <a href="zusatzverpackung.php?kVerpackung={$oVerpackung->kVerpackung}&token={$smarty.session.jtl_token}"
-                               class="btn btn-default" title="{__('modify')}"><i class="fal fa-edit"></i></a>
+                               class="btn btn-default btn-circle" title="{__('modify')}"><i class="fal fa-edit"></i></a>
                         </td>
                     </tr>
                 {/foreach}
@@ -51,17 +51,15 @@
         {else}
         <div class="alert alert-info">{__('zusatzverpackungAddedNone')}</div>
         {/if}
-        <div class="card-footer">
-            <div class="btn-group">
-                <a href="zusatzverpackung.php?kVerpackung=0&token={$smarty.session.jtl_token}"
-                   class="btn btn-primary" title="{__('modify')}">
-                    <i class="fa fa-share"></i> {__('zusatzverpackungCreate')}
-                </a>
-                {if isset($oVerpackung_arr) && $oVerpackung_arr|@count > 0}
-                    <button type="submit" name="action" value="delete" class="btn btn-danger"><i class="fas fa-trash-alt"></i> {__('delete')}</button>
-                    <button name="action" type="submit" value="refresh" class="btn btn-default"><i class="fa fa-refresh"></i> {__('update')}</button>
-                {/if}
-            </div>
+        <div class="card-footer save-wrapper">
+            {if isset($oVerpackung_arr) && $oVerpackung_arr|@count > 0}
+                <button type="submit" name="action" value="delete" class="btn btn-danger"><i class="fas fa-trash-alt"></i> {__('delete')}</button>
+                <button name="action" type="submit" value="refresh" class="btn btn-default"><i class="fa fa-refresh"></i> {__('update')}</button>
+            {/if}
+            <a href="zusatzverpackung.php?kVerpackung=0&token={$smarty.session.jtl_token}"
+               class="btn btn-primary" title="{__('modify')}">
+                <i class="fa fa-share"></i> {__('zusatzverpackungCreate')}
+            </a>
         </div>
     </div>
 </form>

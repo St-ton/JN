@@ -56,12 +56,10 @@
             <div id="massaction" class="tab-pane fade {if !isset($tab) || $tab === 'massaction' || $tab === 'uebersicht'} active show{/if}">
                 <form method="post" action="cache.php">
                     {$jtl_token}
-                    <div class="card">
-                        <div class="card-header">
-                            <div class="subheading1">{__('management')}</div>
-                            <hr class="mb-n3">
-                        </div>
-                        <div class="table-responsive card-body">
+                    <div>
+                        <div class="subheading1">{__('management')}</div>
+                        <hr class="mb-3">
+                        <div class="table-responsive">
                         <table id="cache-type-status" class="table list">
                             <thead>
                             <tr>
@@ -103,46 +101,43 @@
                             </tbody>
                         </table>
                         </div>
-                        <div class="card-footer">
-                            <div class="input-container" style="max-width: 50%;">
-                                <div class="input-group">
-                                    <span class="input-group-addon">
-                                        <label for="cache-action">{__('action')}</label>
-                                    </span>
-                                    <span class="label-wrap">
-                                        <select class="custom-select" name="cache-action" id="cache-action">
-                                            <option name="flush" value="flush">{__('empty')}</option>
-                                            <option name="deaktivieren" value="deactivate">{__('deactivate')}</option>
-                                            <option name="aktivieren" value="activate">{__('activate')}</option>
-                                        </select>
-                                    </span>
-                                    <span class="input-group-btn">
-                                        <button type="submit" value="{__('submit')}" class="btn btn-primary">{__('submit')}</button>
-                                    </span>
+                        <div class="card-footer save-wrapper">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="input-group">
+                                        <span class="input-group-addon">
+                                            <label for="cache-action">{__('action')}:</label>
+                                        </span>
+                                        <span class="label-wrap">
+                                            <select class="custom-select" name="cache-action" id="cache-action">
+                                                <option name="flush" value="flush">{__('empty')}</option>
+                                                <option name="deaktivieren" value="deactivate">{__('deactivate')}</option>
+                                                <option name="aktivieren" value="activate">{__('activate')}</option>
+                                            </select>
+                                        </span>
+                                        <span class="input-group-btn ml-1">
+                                            <button type="submit" value="{__('submit')}" class="btn btn-primary">{__('submit')}</button>
+                                        </span>
+                                    </div>
+                                    <input name="a" type="hidden" value="cacheMassAction" />
                                 </div>
-                                <input name="a" type="hidden" value="cacheMassAction" />
-                            </div>
-                            <div class="input-container">
-                                <form method="post" action="cache.php" class="submit-form">
-                                    {$jtl_token}
-                                    <span class="submit_wrap btn-group">
+                                <div class="col-md-6">
+                                    <form method="post" action="cache.php" class="submit-form">
+                                        {$jtl_token}
                                         <button name="a" type="submit" value="flush_object_cache" class="btn btn-default delete"{if !$cache_enabled} disabled="disabled"{/if}><i class="fas fa-trash-alt"></i>&nbsp;{__('clearObjectCache')}</button>
                                         <button name="a" type="submit" value="flush_template_cache" class="btn btn-default delete"><i class="fas fa-trash-alt"></i>&nbsp;{__('clearTemplateCache')}</button>
-                                    </span>
-                                </form>
+                                    </form>
+                                </div>
                             </div>
-                            <div class="clear"></div>
                         </div>
                     </div>
                 </form>
             </div>
             <div id="stats" class="tab-pane fade {if isset($tab) && $tab === 'stats'} active show{/if}">
                 {if is_array($stats) && $stats|@count > 0}
-                    <div class="card">
-                        <div class="card-header">
-                            <div class="subheading1">{__('objectcache')}</div>
-                        </div>
-                        <div class="card-body">
+                    <div>
+                        <div class="subheading1 mb-3">{__('objectcache')}</div>
+                        <div>
                             <table class="table">
                                 {if isset($stats.uptime_h) && $stats.uptime_h !== null}
                                     <tr class="cache-row">
@@ -192,11 +187,9 @@
                         </div>
                     </div>
                     {if isset($stats.slow) && is_array($stats.slow)}
-                        <div class="card">
-                            <div class="card-header">
-                                <div class="subheading1">{__('slowlog')}</div>
-                            </div>
-                            <div class="card-body">
+                        <div>
+                            <div class="subheading1 mt-5 mb-3">{__('slowlog')}</div>
+                            <div>
                             {if $stats.slow|@count > 0}
                                 <table class="table">
                                     {foreach $stats.slow as $slow}
@@ -216,11 +209,9 @@
                     <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                 {/if}
                 {if $opcache_stats !== null}
-                    <div class="card">
-                        <div class="card-header">
-                            <div class="subheading1">OpCache</div>
-                        </div>
-                        <div class="card-body">
+                    <div>
+                        <div class="subheading1 mt-5 mb-3">OpCache</div>
+                        <div>
                             <table class="table cache-stats" id="opcache-stats">
                                 <tr class="cache-row">
                                     <td>{__('activated')}:</td>
@@ -273,11 +264,9 @@
                     </div>
                 {/if}
                 {if $tplcacheStats !== null}
-                    <div class="card">
-                        <div class="card-header">
-                            <div class="subheading1">{__('templateCache')}</div>
-                        </div>
-                        <div class="card-body">
+                    <div>
+                        <div class="subheading1 mt-5 mb-3">{__('templateCache')}</div>
+                        <div>
                             <table class="table cache-stats" id="tplcache-stats">
                                 <tr class="cache-row collapsed clickable" data-toggle="collapse" data-target="#cachefilesFrontendDetail" style="cursor: pointer">
                                     <td>{__('files')} {__('frontend')}</td>
@@ -324,14 +313,12 @@
             </div>
             <div id="benchmark" class="tab-pane fade {if isset($tab) && $tab === 'benchmark'} active show{/if}">
                 {if !empty($all_methods) && $all_methods|@count > 0}
-                    <div class="card settings">
-                        <div class="card-header">
-                            <div class="subheading1">{__('settings')}</div>
-                            <hr class="mb-n3">
-                        </div>
+                    <div class="settings">
+                        <div class="subheading1">{__('settings')}</div>
+                        <hr class="mb-3">
                         <form method="post" action="cache.php">
                             {$jtl_token}
-                            <div class="card-body">
+                            <div>
                                 <div class="form-group form-row align-items-center">
                                     <label class="col col-sm-4 col-form-label text-sm-right" for="runcount">{__('runs')}:</label>
                                     <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
@@ -366,7 +353,7 @@
                                 </div>
                                 <input name="a" type="hidden" value="benchmark" />
                             </div>
-                            <div class="card-footer">
+                            <div class="save-wrapper">
                                 <button name="submit" type="submit" value="Benchmark starten" class="btn btn-primary">{__('startBenchmark')}</button>
                             </div>
                         </form>
@@ -375,12 +362,10 @@
                         {if is_array($bench_results)}
                             {foreach from=$bench_results key=resultsKey item=result}
                                 {if isset($result.method)}
-                                    <div class="bench-result card" style="margin-top: 20px;">
-                                        <div class="card-header">
-                                            <div class="subheading1">{$result.method}</div>
-                                            <hr class="mb-n3">
-                                        </div>
-                                        <div class="card-body">
+                                    <div class="bench-result">
+                                        <div class="subheading1">{$result.method}</div>
+                                        <hr class="mb-3">
+                                        <div>
                                             <p><span class="opt">{__('status')}: </span> <span class="label {if $result.status === 'ok'}label-success{else}label-danger{/if}">{$result.status}</span></p>
                                             <p><span class="opt">{__('time')} get: </span>
                                                 {if $result.status !== 'failed' && $result.status !== 'invalid'}
@@ -417,12 +402,10 @@
                     <input type="hidden" name="a" value="settings" />
                     <input name="tab" type="hidden" value="settings" />
 
-                    <div class="card">
-                        <div class="card-header">
-                            <div class="subheading1">{__('general')}</div>
-                            <hr class="mb-n3">
-                        </div>
-                        <div class="card-body">
+                    <div>
+                        <div class="subheading1">{__('general')}</div>
+                        <hr class="mb-3">
+                        <div>
                             {foreach $settings as $setting}
                                 {if $setting->cConf === 'Y'}
                                     <div class="form-group form-row align-items-center">
@@ -450,15 +433,12 @@
                             {/foreach}
                         </div>
                     </div>
-                    <a id="btn_toggle_cache" class="btn btn-default down" style="margin: 10px 0;">{__('showAdvanced')}</a>
 
                     <div id="row_toggle_cache" style="display: none;">
-                        <div class="card">
-                            <div class="card-header">
-                                <div class="subheading1">{__('extended')}</div>
-                                <hr class="mb-n3">
-                            </div>
-                            <div class="card-body">
+                        <div>
+                            <div class="subheading1">{__('extended')}</div>
+                            <hr class="mb-3">
+                            <div>
                                 {foreach $advanced_settings as $setting}
                                     {if $setting->cConf === 'Y'}
                                         <div class="form-group form-row align-items-center">
@@ -489,9 +469,12 @@
                             </div>
                         </div>
                     </div>
-                    <p class="submit">
+                    <div class="save-wrapper submit">
+                        <div class="float-left">
+                            <a id="btn_toggle_cache" class="btn btn-default down" style="margin: 10px 0;">{__('showAdvanced')}</a>
+                        </div>
                         <button name="speichern" type="submit" value="{__('save')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
-                    </p>
+                    </div>
                 </form>
             </div>
         </div>

@@ -439,6 +439,7 @@
             <div class="card">
                 <div class="card-header">
                     <div class="subheading1">{__('availableBanner')}</div>
+                    <hr class="mb-n3">
                 </div>
                 <div class="card-body">
                     {include file='tpl_inc/pagination.tpl' pagination=$pagination}
@@ -478,11 +479,9 @@
                                     <form action="banner.php" method="post">
                                         {$jtl_token}
                                         <input type="hidden" name="id" value="{$oBanner->kImageMap}" />
-                                        <div class="btn-group">
-                                            <button class="btn btn-default" name="action" value="area" title="{__('actionLink')}"><i class="fa fa-link"></i></button>
-                                            <button class="btn btn-default" name="action" value="edit" title="{__('edit')}"><i class="fal fa-edit"></i></button>
-                                            <button class="btn btn-danger" name="action" value="delete" title="{__('delete')}"><i class="fas fa-trash-alt"></i></button>
-                                        </div>
+                                        <button class="btn btn-danger btn-circle" name="action" value="delete" title="{__('delete')}"><i class="fas fa-trash-alt"></i></button>
+                                        <button class="btn btn-default btn-circle" name="action" value="area" title="{__('actionLink')}"><i class="fa fa-link"></i></button>
+                                        <button class="btn btn-primary btn-circle" name="action" value="edit" title="{__('edit')}"><i class="fal fa-edit"></i></button>
                                     </form>
                                 </td>
                             </tr>

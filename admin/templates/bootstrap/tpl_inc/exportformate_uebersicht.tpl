@@ -105,24 +105,22 @@
                             <td class="tcenter">{if !empty($exportformat->dZuletztErstellt)}{$exportformat->dZuletztErstellt}{else}-{/if}</td>
                             <td class="tcenter">
                                 {if (int)$exportformat->nFehlerhaft === 1}
-                                    <span class="label label-danger">{__('faulty')}</span>
+                                    <i class="fal fa-times text-danger"></i>
                                 {else}
-                                    <span class="label label-success">{__('ok')}</span>
+                                    <i class="fal fa-check text-success"></i>
                                 {/if}
                             </td>
                             <td class="tcenter">
                                 <form method="post" action="exportformate.php">
                                     {$jtl_token}
                                     <input type="hidden" name="kExportformat" value="{$exportformat->kExportformat}" />
-                                    <div class="btn-group">
-                                        <button name="action" value="export" class="btn btn-default btn-sm extract notext" title="{__('createExportFile')}"><i class="fal fa-plus"></i></button>
-                                        {if !$exportformat->bPluginContentExtern}
-                                            <a href="#" onclick="return init_export('{$exportformat->kExportformat}');" class="btn btn-primary btn-sm extract_async notext" title="{__('createExportFileAsync')}"><i class="fal fa-plus-square"></i></a>
-                                        {/if}
-                                        <button name="action" value="download" class="btn btn-default btn-sm download notext" title="{__('download')}"><i class="fa fa-download"></i></button>
-                                        <button name="action" value="edit" class="btn btn-default btn-sm edit notext" title="{__('edit')}"><i class="fal fa-edit"></i></button>
-                                        <button name="action" value="delete" class="btn btn-danger btn-sm remove notext" title="{__('delete')}" onclick="return confirm('{__('sureDeleteFormat')}');"><i class="fas fa-trash-alt"></i></button>
-                                    </div>
+                                    <button name="action" value="delete" class="btn btn-danger btn-circle remove notext" title="{__('delete')}" onclick="return confirm('{__('sureDeleteFormat')}');"><i class="fas fa-trash-alt"></i></button>
+                                    <button name="action" value="export" class="btn btn-default btn-circle extract notext" title="{__('createExportFile')}"><i class="fal fa-plus"></i></button>
+                                    <button name="action" value="download" class="btn btn-default btn-circle download notext" title="{__('download')}"><i class="fa fa-download"></i></button>
+                                    {if !$exportformat->bPluginContentExtern}
+                                        <a href="#" onclick="return init_export('{$exportformat->kExportformat}');" class="btn btn-default btn-circle extract_async notext" title="{__('createExportFileAsync')}"><i class="fal fa-plus-square"></i></a>
+                                    {/if}
+                                    <button name="action" value="edit" class="btn btn-primary btn-circle edit notext" title="{__('edit')}"><i class="fal fa-edit"></i></button>
                                 </form>
                             </td>
                         </tr>
@@ -131,11 +129,13 @@
                 </tbody>
             </table>
         </div>
-        <div class="card-footer">
-            <div class="submit-wrap btn-group">
-                <a class="btn btn-primary" href="exportformate.php?neuerExport=1&token={$smarty.session.jtl_token}"><i class="fa fa-share"></i> {__('newExportformat')}</a>
-                <a class="btn btn-default" href="#" id="exportall">{__('exportAll')}</a>
-            </div>
+        <div class="card-footer save-wrapper">
+            <a class="btn btn-default" href="#" id="exportall">
+                {__('exportAll')}
+            </a>
+            <a class="btn btn-primary" href="exportformate.php?neuerExport=1&token={$smarty.session.jtl_token}">
+                <i class="fa fa-share"></i> {__('newExportformat')}
+            </a>
         </div>
     </div>
 </div>

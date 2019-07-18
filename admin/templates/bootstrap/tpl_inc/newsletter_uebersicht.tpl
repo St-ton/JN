@@ -81,11 +81,10 @@
                             {if isset($cSucheInaktiv) && $cSucheInaktiv|strlen > 0}
                                 <input type="hidden" name="cSucheInaktiv" value="{$cSucheInaktiv}" />
                             {/if}
-                            <div class="card">
-                                <div class="card-header">
-                                    <div class="subheading1">{__('newsletterSubscripterNotActive')}</div>
-                                </div>
-                                <div class="table-responsive card-body">
+                            <div>
+                                <div class="subheading1">{__('newsletterSubscripterNotActive')}</div>
+                                <hr class="mb-3">
+                                <div class="table-responsive">
                                     <table class="table table-striped">
                                         <thead>
                                             <tr>
@@ -121,11 +120,9 @@
                                         </tfoot>
                                     </table>
                                 </div>
-                                <div class="card-footer">
-                                    <div class="btn-group">
-                                        <button name="abonnentfreischaltenSubmit" type="submit" value="{__('newsletterUnlock')}" class="btn btn-primary"><i class="fa fa-thumbs-up"></i> {__('newsletterUnlock')}</button>
-                                        <button class="btn btn-danger" name="abonnentloeschenSubmit" type="submit" value="{__('delete')}"><i class="fas fa-trash-alt"></i> {__('marked')} {__('delete')}</button>
-                                    </div>
+                                <div class="card-footer save-wrapper">
+                                    <button class="btn btn-danger" name="abonnentloeschenSubmit" type="submit" value="{__('delete')}"><i class="fas fa-trash-alt"></i> {__('marked')} {__('delete')}</button>
+                                    <button name="abonnentfreischaltenSubmit" type="submit" value="{__('newsletterUnlock')}" class="btn btn-primary"><i class="fa fa-thumbs-up"></i> {__('newsletterUnlock')}</button>
                                 </div>
                             </div>
                         </form>
@@ -164,11 +161,10 @@
                         <input name="newsletterabonnent_loeschen" type="hidden" value="1">
                         <input type="hidden" name="tab" value="alleabonnenten">
                         <div id="newsletter-all-content">
-                            <div class="card">
-                                <div class="card-header">
-                                    <div class="subheading1">{__('newsletterAllSubscriber')}</div>
-                                </div>
-                                <div class="table-responsive card-body">
+                            <div>
+                                <div class="subheading1">{__('newsletterAllSubscriber')}</div>
+                                <hr class="mb-3">
+                                <div class="table-responsive">
                                     <table class="table table-striped">
                                         <thead>
                                             <tr>
@@ -208,7 +204,7 @@
                                         </tfoot>
                                     </table>
                                 </div>
-                                <div class="card-footer">
+                                <div class="card-footer save-wrapper">
                                     <button name="loeschen" type="submit" class="btn btn-danger"><i class="fas fa-trash-alt"></i> {__('deleteSelected')}</button>
                                 </div>
                             </div>
@@ -230,12 +226,10 @@
                     {$jtl_token}
                     <input type="hidden" name="newsletterabonnent_neu" value="1">
                     <input name="tab" type="hidden" value="neuerabonnenten">
-                    <div class="card settings">
-                        <div class="card-header">
-                            <div class="subheading1">{__('newsletterNewSubscriber')}</div>
-                            <hr class="mb-n3">
-                        </div>
-                        <div class="card-body">
+                    <div class="settings">
+                        <div class="subheading1">{__('newsletterNewSubscriber')}</div>
+                        <hr class="mb-3">
+                        <div>
                             <div class="form-group form-row align-items-center">
                                 <label class="col col-sm-4 col-form-label text-sm-right" for="cVorname">{__('firstName')}:</label>
                                 <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
@@ -268,7 +262,7 @@
                                 </span>
                             </div>
                         </div>
-                        <div class="card-footer">
+                        <div class="card-footer save-wrapper">
                             <button name="speichern" type="submit" value="{__('save')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
                         </div>
                     </div>
@@ -282,11 +276,10 @@
                         <input name="newsletterqueue" type="hidden" value="1">
                         <input name="tab" type="hidden" value="newsletterqueue">
                         <div id="newsletter-queue-content">
-                            <div class="card">
-                                <div class="card-header">
-                                    <div class="subheading1">{__('newsletterqueue')}</div>
-                                </div>
-                                <div class="table-responsive card-body">
+                            <div>
+                                <div class="subheading1">{__('newsletterqueue')}</div>
+                                <hr class="mb-3">
+                                <div class="table-responsive">
                                     <table class="table table-striped">
                                         <thead>
                                             <tr>
@@ -331,7 +324,7 @@
                                         </tfoot>
                                     </table>
                                 </div>
-                                <div class="card-footer">
+                                <div class="card-footer save-wrapper">
                                     <button name="loeschen" type="submit" value="{__('delete')}" class="btn btn-danger"><i class="fas fa-trash-alt"></i> {__('delete')}</button>
                                 </div>
                             </div>
@@ -349,11 +342,10 @@
                         <input name="newslettervorlagen" type="hidden" value="1">
                         <input name="tab" type="hidden" value="newslettervorlagen">
                         <div id="newsletter-vorlagen-content">
-                            <div class="card">
-                                <div class="card-header">
-                                    <div class="subheading1">{__('marked')}</div>
-                                </div>
-                                <div class="table-responsive card-body">
+                            <div>
+                                <div class="subheading1">{__('marked')}</div>
+                                <hr class="mb-3">
+                                <div class="table-responsive">
                                     <table class="table table-striped">
                                         <thead>
                                             <tr>
@@ -411,13 +403,11 @@
                                         </tfoot>
                                     </table>
                                 </div>
-                                <div class="card-footer">
-                                    <div class="{if isset($oNewsletterVorlage_arr) && $oNewsletterVorlage_arr|@count > 0}btn-group{/if}">
-                                        <button name="vorlage_erstellen" class="btn btn-primary" type="submit">{__('newsletterdraftcreate')}</button>
-                                        {if isset($oNewsletterVorlage_arr) && $oNewsletterVorlage_arr|@count > 0}
-                                            <button class="btn btn-danger" name="loeschen" type="submit" value="{__('delete')}"><i class="fas fa-trash-alt"></i> {__('delete')}</button>
-                                        {/if}
-                                    </div>
+                                <div class="card-footer save-wrapper">
+                                    {if isset($oNewsletterVorlage_arr) && $oNewsletterVorlage_arr|@count > 0}
+                                        <button class="btn btn-danger" name="loeschen" type="submit" value="{__('delete')}"><i class="fas fa-trash-alt"></i> {__('delete')}</button>
+                                    {/if}
+                                    <button name="vorlage_erstellen" class="btn btn-primary" type="submit">{__('newsletterdraftcreate')}</button>
                                 </div>
                             </div>
                         </div>
@@ -446,11 +436,10 @@
                         <input name="tab" type="hidden" value="newslettervorlagenstd" />
 
                         <div id="newsletter-vorlage-std-content">
-                            <div class="card">
-                                <div class="card-header">
-                                    <div class="subheading1">{__('newsletterdraftStd')}</div>
-                                </div>
-                                <div class="table-responsive card-body">
+                            <div>
+                                <div class="subheading1">{__('newsletterdraftStd')}</div>
+                                <hr class="mb-3">
+                                <div class="table-responsive">
                                     <table class="table table-striped">
                                         <thead>
                                             <tr>
@@ -470,7 +459,7 @@
                                         </tbody>
                                     </table>
                                 </div>
-                                <div class="card-footer">
+                                <div class="card-footer save-wrapper">
                                     <button name="submitVorlageStd" type="submit" value="{__('newsletterdraftStdUse')}" class="btn btn-primary"><i class="fa fa-share"></i> {__('newsletterdraftStdUse')}</button>
                                 </div>
                             </div>
@@ -488,11 +477,10 @@
                         <input name="newsletterhistory" type="hidden" value="1">
                         <input name="tab" type="hidden" value="newsletterhistory">
                         <div id="newsletter-history-content">
-                            <div class="card">
-                                <div class="card-header">
-                                    <div class="subheading1">{__('newsletterhistory')}</div>
-                                </div>
-                                <div class="table-responsive card-body">
+                            <div>
+                                <div class="subheading1">{__('newsletterhistory')}</div>
+                                <hr class="mb-3">
+                                <div class="table-responsive">
                                     <table class="table table-striped">
                                         <thead>
                                             <tr>
@@ -528,7 +516,7 @@
                                         </tfoot>
                                     </table>
                                 </div>
-                                <div class="card-footer">
+                                <div class="card-footer save-wrapper">
                                     <button name="loeschen" type="submit" class="btn btn-danger" value="{__('delete')}"><i class="fas fa-trash-alt"></i> {__('delete')}</button>
                                 </div>
                             </div>

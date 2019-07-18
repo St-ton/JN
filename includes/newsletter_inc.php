@@ -11,6 +11,7 @@ use JTL\Helpers\Form;
 use JTL\Helpers\Text;
 use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
+use JTL\Newsletter\Helper;
 use JTL\Session\Frontend;
 use JTL\Shop;
 
@@ -25,6 +26,7 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
  */
 function create_NewsletterCode($dbfeld, $email): string
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $code = md5($email . time() . random_int(123, 456));
     while (!unique_NewsletterCode($dbfeld, $code)) {
         $code = md5($email . time() . random_int(123, 456));
@@ -41,6 +43,7 @@ function create_NewsletterCode($dbfeld, $email): string
  */
 function unique_NewsletterCode($dbfeld, $code): bool
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $res = Shop::Container()->getDB()->select('tnewsletterempfaenger', $dbfeld, $code);
 
     return !(isset($res->kNewsletterEmpfaenger) && $res->kNewsletterEmpfaenger > 0);
@@ -49,24 +52,23 @@ function unique_NewsletterCode($dbfeld, $code): bool
 /**
  * @param int $customerID
  * @return bool
+ * @deprecated since 5.0.0
  */
 function pruefeObBereitsAbonnent(int $customerID): bool
 {
-    if ($customerID <= 0) {
-        return false;
-    }
-    $recipient = Shop::Container()->getDB()->select('tnewsletterempfaenger', 'kKunde', $customerID);
-
-    return isset($recipient->kKunde) && $recipient->kKunde > 0;
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
+    return Helper::customerIsSubscriber($customerID);
 }
 
 /**
  * @param int    $groupID
  * @param string $groupKeys
  * @return bool
+ * @deprecated since 5.0.0
  */
 function pruefeNLHistoryKundengruppe(int $groupID, string $groupKeys): bool
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     if ($groupKeys === '') {
         return false;
     }

@@ -46,7 +46,7 @@ final class Admin
     {
         $res = new stdClass();
 
-        if (mb_strlen($input) > 0) {
+        if (\mb_strlen($input) > 0) {
             [$date, $time]        = \explode(' ', $input);
             [$year, $month, $day] = \explode('-', $date);
             [$hour, $minute]      = \explode(':', $time);
@@ -141,11 +141,11 @@ final class Admin
                     ));
                 } else {
                     $cAltTag = '';
-                    if (isset($stdVar->cAltTag) && mb_strlen($stdVar->cAltTag) > 0) {
+                    if (isset($stdVar->cAltTag) && \mb_strlen($stdVar->cAltTag) > 0) {
                         $cAltTag = $stdVar->cAltTag;
                     }
 
-                    if (isset($stdVar->cLinkURL) && mb_strlen($stdVar->cLinkURL) > 0) {
+                    if (isset($stdVar->cLinkURL) && \mb_strlen($stdVar->cLinkURL) > 0) {
                         $text = \str_replace(
                             '$#' . $stdVar->cName . '#$',
                             '<a href="' .
@@ -220,10 +220,10 @@ final class Admin
                 $defaultTpl->cName              = $tpl->cName;
                 $defaultTpl->cBetreff           = $tpl->cBetreff;
                 $defaultTpl->cArt               = $tpl->cArt;
-                $defaultTpl->cArtikel           = mb_substr(mb_substr($tpl->cArtikel, 1), 0, -1);
-                $defaultTpl->cHersteller        = mb_substr(mb_substr($tpl->cHersteller, 1), 0, -1);
-                $defaultTpl->cKategorie         = mb_substr(mb_substr($tpl->cKategorie, 1), 0, -1);
-                $defaultTpl->cKundengruppe      = $tpl->cKundengruppe;
+                $defaultTpl->cArtikel           = \mb_substr($tpl->cArtikel, 1, -1);
+                $defaultTpl->cHersteller        = \mb_substr($tpl->cHersteller, 1, -1);
+                $defaultTpl->cKategorie         = \mb_substr($tpl->cKategorie, 1, -1);
+                $defaultTpl->cKundengruppe      = \mb_substr($tpl->cKundengruppe, 1, -1);
                 $defaultTpl->dStartZeit         = $tpl->dStartZeit;
             }
 
@@ -273,16 +273,16 @@ final class Admin
 
     /**
      * @param object $defaultTpl
-     * @param int    $kNewslettervorlageStd
+     * @param int    $defaultTplID
      * @param array  $post
      * @param int    $templateID
      * @return array
      * @throws \Exception
      */
-    public function saveDefaultTemplate($defaultTpl, int $kNewslettervorlageStd, $post, int $templateID): array
+    public function saveDefaultTemplate($defaultTpl, int $defaultTplID, $post, int $templateID): array
     {
         $checks = [];
-        if ($kNewslettervorlageStd <= 0) {
+        if ($defaultTplID <= 0) {
             return $checks;
         }
         if (!isset($post['kKundengruppe'])) {
@@ -298,18 +298,18 @@ final class Admin
         if (!\is_array($checks) || count($checks) !== 0) {
             return $checks;
         }
-        $dTag    = $post['dTag'];
-        $dMonat  = $post['dMonat'];
-        $dJahr   = $post['dJahr'];
-        $dStunde = $post['dStunde'];
-        $dMinute = $post['dMinute'];
-        $dZeitDB = $dJahr . '-' . $dMonat . '-' . $dTag . ' ' . $dStunde . ':' . $dMinute . ':00';
-        $oZeit   = $this->getDateData($dZeitDB);
+        $day         = $post['dTag'];
+        $month       = $post['dMonat'];
+        $year        = $post['dJahr'];
+        $hour        = $post['dStunde'];
+        $minute      = $post['dMinute'];
+        $dbFormatted = $year . '-' . $month . '-' . $day . ' ' . $hour . ':' . $minute . ':00';
+        $timeData    = $this->getDateData($dbFormatted);
 
-        $cArtikel      = ';' . $post['cArtikel'] . ';';
-        $cHersteller   = ';' . $post['cHersteller'] . ';';
-        $cKategorie    = ';' . $post['cKategorie'] . ';';
-        $cKundengruppe = ';' . \implode(';', $post['kKundengruppe']) . ';';
+        $productIDs       = ';' . $post['cArtikel'] . ';';
+        $manufacturerIDs  = ';' . $post['cHersteller'] . ';';
+        $categoryIDs      = ';' . $post['cKategorie'] . ';';
+        $customerGroupIDs = ';' . \implode(';', $post['kKundengruppe']) . ';';
         if (isset($defaultTpl->oNewslettervorlageStdVar_arr)
             && \is_array($defaultTpl->oNewslettervorlageStdVar_arr)
             && count($defaultTpl->oNewslettervorlageStdVar_arr) > 0
@@ -327,16 +327,16 @@ final class Admin
         }
 
         $tpl                        = new stdClass();
-        $tpl->kNewslettervorlageStd = $kNewslettervorlageStd;
+        $tpl->kNewslettervorlageStd = $defaultTplID;
         $tpl->kKampagne             = (int)$post['kKampagne'];
         $tpl->kSprache              = $_SESSION['kSprache'];
         $tpl->cName                 = $post['cName'];
         $tpl->cBetreff              = $post['cBetreff'];
         $tpl->cArt                  = $post['cArt'];
-        $tpl->cArtikel              = $cArtikel;
-        $tpl->cHersteller           = $cHersteller;
-        $tpl->cKategorie            = $cKategorie;
-        $tpl->cKundengruppe         = $cKundengruppe;
+        $tpl->cArtikel              = $productIDs;
+        $tpl->cHersteller           = $manufacturerIDs;
+        $tpl->cKategorie            = $categoryIDs;
+        $tpl->cKundengruppe         = $customerGroupIDs;
         $tpl->cInhaltHTML           = $this->mapDefaultTemplate(
             $defaultTpl->cInhaltHTML,
             $defaultTpl->oNewslettervorlageStdVar_arr
@@ -347,7 +347,7 @@ final class Admin
             true
         );
 
-        $dt  = new DateTime($oZeit->dZeit);
+        $dt  = new DateTime($timeData->dZeit);
         $now = new DateTime();
 
         $tpl->dStartZeit = ($dt > $now)
@@ -493,49 +493,49 @@ final class Admin
         );
 
         if (\is_array($checks) && count($checks) === 0) {
-            $dTag    = $post['dTag'];
-            $dMonat  = $post['dMonat'];
-            $dJahr   = $post['dJahr'];
-            $dStunde = $post['dStunde'];
-            $dMinute = $post['dMinute'];
-            $dZeitDB = $dJahr . '-' . $dMonat . '-' . $dTag . ' ' . $dStunde . ':' . $dMinute . ':00';
-            $oZeit   = $this->getDateData($dZeitDB);
+            $day         = $post['dTag'];
+            $month       = $post['dMonat'];
+            $year        = $post['dJahr'];
+            $hour        = $post['dStunde'];
+            $minute      = $post['dMinute'];
+            $dbFromatted = $year . '-' . $month . '-' . $day . ' ' . $hour . ':' . $minute . ':00';
+            $timeData    = $this->getDateData($dbFromatted);
 
-            $kNewsletterVorlage = isset($post['kNewsletterVorlage'])
+            $templateID       = isset($post['kNewsletterVorlage'])
                 ? (int)$post['kNewsletterVorlage']
                 : null;
-            $kKampagne          = (int)$post['kKampagne'];
-            $cArtikel           = $post['cArtikel'];
-            $cHersteller        = $post['cHersteller'];
-            $cKategorie         = $post['cKategorie'];
-            $cKundengruppe      = ';' . \implode(';', $post['kKundengruppe']) . ';';
-            $cArtikel           = ';' . $cArtikel . ';';
-            $cHersteller        = ';' . $cHersteller . ';';
-            $cKategorie         = ';' . $cKategorie . ';';
-            $tpl                = new stdClass();
-            if ($kNewsletterVorlage !== null) {
-                $tpl->kNewsletterVorlage = $kNewsletterVorlage;
+            $campaignID       = (int)$post['kKampagne'];
+            $productIDs       = $post['cArtikel'];
+            $manufacturerIDs  = $post['cHersteller'];
+            $categoryIDs      = $post['cKategorie'];
+            $customerGroupIDs = ';' . \implode(';', $post['kKundengruppe']) . ';';
+            $productIDs       = ';' . $productIDs . ';';
+            $manufacturerIDs  = ';' . $manufacturerIDs . ';';
+            $categoryIDs      = ';' . $categoryIDs . ';';
+            $tpl              = new stdClass();
+            if ($templateID !== null) {
+                $tpl->kNewsletterVorlage = $templateID;
             }
             $tpl->kSprache      = (int)$_SESSION['kSprache'];
-            $tpl->kKampagne     = $kKampagne;
+            $tpl->kKampagne     = $campaignID;
             $tpl->cName         = $post['cName'];
             $tpl->cBetreff      = $post['cBetreff'];
             $tpl->cArt          = $post['cArt'];
-            $tpl->cArtikel      = $cArtikel;
-            $tpl->cHersteller   = $cHersteller;
-            $tpl->cKategorie    = $cKategorie;
-            $tpl->cKundengruppe = $cKundengruppe;
+            $tpl->cArtikel      = $productIDs;
+            $tpl->cHersteller   = $manufacturerIDs;
+            $tpl->cKategorie    = $categoryIDs;
+            $tpl->cKundengruppe = $customerGroupIDs;
             $tpl->cInhaltHTML   = $post['cHtml'];
             $tpl->cInhaltText   = $post['cText'];
 
-            $dt              = new DateTime($oZeit->dZeit);
+            $dt              = new DateTime($timeData->dZeit);
             $now             = new DateTime();
             $tpl->dStartZeit = ($dt > $now)
                 ? $dt->format('Y-m-d H:i:s')
                 : $now->format('Y-m-d H:i:s');
             if (isset($post['kNewsletterVorlage']) && (int)$post['kNewsletterVorlage'] > 0) {
                 $revision = new Revision(Shop::Container()->getDB());
-                $revision->addRevision('newsletter', $kNewsletterVorlage, true);
+                $revision->addRevision('newsletter', $templateID, true);
                 $upd                = new stdClass();
                 $upd->cName         = $tpl->cName;
                 $upd->kKampagne     = $tpl->kKampagne;
@@ -548,21 +548,21 @@ final class Admin
                 $upd->cInhaltHTML   = $tpl->cInhaltHTML;
                 $upd->cInhaltText   = $tpl->cInhaltText;
                 $upd->dStartZeit    = $tpl->dStartZeit;
-                $this->db->update('tnewslettervorlage', 'kNewsletterVorlage', $kNewsletterVorlage, $upd);
+                $this->db->update('tnewslettervorlage', 'kNewsletterVorlage', $templateID, $upd);
                 $alertHelper->addAlert(
                     Alert::TYPE_SUCCESS,
                     \sprintf(__('successNewsletterTemplateEdit'), $tpl->cName),
                     'successNewsletterTemplateEdit'
                 );
             } else {
-                $kNewsletterVorlage = $this->db->insert('tnewslettervorlage', $tpl);
+                $templateID = $this->db->insert('tnewslettervorlage', $tpl);
                 $alertHelper->addAlert(
                     Alert::TYPE_SUCCESS,
                     \sprintf(__('successNewsletterTemplateSave'), $tpl->cName),
                     'successNewsletterTemplateSave'
                 );
             }
-            $tpl->kNewsletterVorlage = $kNewsletterVorlage;
+            $tpl->kNewsletterVorlage = $templateID;
 
             return $tpl;
         }
@@ -769,25 +769,25 @@ final class Admin
     }
 
     /**
-     * @param stdClass $cAktiveSucheSQL
+     * @param stdClass $searchSQL
      * @return int
      */
-    public function getSubscriberCount($cAktiveSucheSQL): int
+    public function getSubscriberCount($searchSQL): int
     {
         return (int)Shop::Container()->getDB()->query(
             'SELECT COUNT(*) AS nAnzahl
                 FROM tnewsletterempfaenger
-                WHERE kSprache = ' . (int)$_SESSION['kSprache'] . $cAktiveSucheSQL->cWHERE,
+                WHERE kSprache = ' . (int)$_SESSION['kSprache'] . $searchSQL->cWHERE,
             ReturnType::SINGLE_OBJECT
         )->nAnzahl;
     }
 
     /**
-     * @param string   $cSQL
-     * @param stdClass $cAktiveSucheSQL
+     * @param string   $limitSQL
+     * @param stdClass $searchSQL
      * @return array
      */
-    public function getSubscribers($cSQL, $cAktiveSucheSQL): array
+    public function getSubscribers($limitSQL, $searchSQL): array
     {
         return $this->db->query(
             "SELECT tnewsletterempfaenger.*,
@@ -804,8 +804,8 @@ final class Admin
                     ON tnewsletterempfaengerhistory.cEmail = tnewsletterempfaenger.cEmail
                       AND tnewsletterempfaengerhistory.cAktion = 'Eingetragen'
                 WHERE tnewsletterempfaenger.kSprache = " . (int)$_SESSION['kSprache'] .
-            $cAktiveSucheSQL->cWHERE . '
-                ORDER BY tnewsletterempfaenger.dEingetragen DESC' . $cSQL,
+            $searchSQL->cWHERE . '
+                ORDER BY tnewsletterempfaenger.dEingetragen DESC' . $limitSQL,
             ReturnType::ARRAY_OF_OBJECTS
         );
     }

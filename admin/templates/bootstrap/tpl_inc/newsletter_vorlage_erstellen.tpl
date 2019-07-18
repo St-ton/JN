@@ -192,7 +192,7 @@ function checkNewsletterSend() {ldelim}
                         function onApplySelectedArticles(selected)
                         {
                             $('#articleSelectionInfo')
-                                .val(selected.length > 0 ? selected.length + '{__('product')}' : '');
+                                .val(selected.length > 0 ? selected.length + ' {__('product')}' : '');
                             $('#cArtikel')
                                 .val(selected.length > 0 ? selected.join(';') + ';' : '');
                         }
@@ -233,7 +233,7 @@ function checkNewsletterSend() {ldelim}
                         function onApplySelectedManufacturers(selected)
                         {
                             $('#manufacturerSelectionInfo')
-                                .val(selected.length > 0 ? selected.length + '{__('manufacturer')}' : '');
+                                .val(selected.length > 0 ? selected.length + ' {__('manufacturer')}' : '');
                             $('#cHersteller')
                                 .val(selected.length > 0 ? selected.join(';') + ';' : '');
                         }
@@ -274,7 +274,7 @@ function checkNewsletterSend() {ldelim}
                         function onApplySelectedCategories(selected)
                         {
                             $('#categorySelectionInfo')
-                                .val(selected.length > 0 ? selected.length + '{__('category')}' : '');
+                                .val(selected.length > 0 ? selected.length + ' {__('category')}' : '');
                             $('#cKategorie')
                                 .val(selected.length > 0 ? selected.join(';') + ';' : '');
                         }

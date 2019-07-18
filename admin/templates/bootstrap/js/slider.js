@@ -112,7 +112,7 @@ $(document).ready(function() {
             ); 
     });
     
-    $('#nAnimationSpeed, #nPauseTime').on('change', function() {
+    $('#nAnimationSpeed, #nPauseTime').change(function() {
         var nAnimationSpeed = parseInt($('#nAnimationSpeed').val()),
             nPauseTime = parseInt($('#nPauseTime').val());
         if(nAnimationSpeed > nPauseTime) {
@@ -126,7 +126,7 @@ $(document).ready(function() {
         }
     });
     
-    $('#append_slide').on('click', function() {
+    $('#append_slide').click(function() {
         if($('form#slide0 input[name=cBild]').val() != '') {
             $('li#0 p.ajax_preloader').show();
             var callback = xajax.callback.create(),
@@ -156,7 +156,7 @@ $(document).ready(function() {
         }
     });
     
-    $('.random_effects').on('click', function() {
+    $('.random_effects').click(function() {
         if($('#cRandomEffects').prop('checked')){
             $('select[name=cSelectedEffects]').attr('disabled',true);
             $('select[name=cAvaibleEffects]').attr('disabled',true);
@@ -183,7 +183,7 @@ $(document).ready(function() {
         }
     });
     
-    $('button.select_add').on('click', function() {
+    $('button.select_add').click(function() {
         $.each($('select[name=cAvaibleEffects]').val(), function(index,value) {
             var exists = false,
                 html;
@@ -202,14 +202,14 @@ $(document).ready(function() {
         });
     });
     
-    $('button.select_remove').on('click', function() {
+    $('button.select_remove').click(function() {
         $.each($('select[name=cSelectedEffects] option:selected'), function(index,value) {
             $(this).remove();
         });
     });
 
-    $('#nSeitenTyp').on('change', filterConfigUpdate);
-    $('#cKey').on('change', filterConfigUpdate);
+    $('#nSeitenTyp').change(filterConfigUpdate);
+    $('#cKey').change(filterConfigUpdate);
 
     filterConfigUpdate();
 

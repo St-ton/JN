@@ -9,7 +9,7 @@
     function startKundenfeldwertEdit() {ldelim}
         $('#cTyp').after($('<div class="kundenfeld_wert"></div>').append(
                 $('<button name="button" type="button" class="btn btn-primary add" value="Wert hinzuf&uuml;gen"></button>')
-                .on('click', function() {ldelim}
+                .click(function() {ldelim}
                     addKundenfeldWert();
                 {rdelim})
                 .append('<i class="fa fa-plus-square-o"></i>&nbsp;Wert hinzuf&uuml;gen'))
@@ -25,7 +25,7 @@
                         '<input name="cWert[]" type="text" class="field form-control" value="" />'),
                     $('<div class="btn-group"></div>').append(
                         $('<button name="delete" type="button" class="btn btn-danger" value="Entfernen"></button>')
-                            .on('click', function() {ldelim}
+                            .click(function() {ldelim}
                                 delKundenfeldWert(this);
                             {rdelim})
                             .append('<i class="fa fa-trash"></i>&nbsp;Entfernen')

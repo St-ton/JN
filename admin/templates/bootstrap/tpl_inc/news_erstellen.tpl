@@ -35,7 +35,7 @@
 
     $(document).ready(function () {
 
-        $('form input[type=file]').on('change', function(e){
+        $('form input[type=file]').change(function(e){
             $('form div.alert').slideUp();
             var filesize= this.files[0].size;
             {/literal}

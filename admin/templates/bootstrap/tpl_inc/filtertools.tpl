@@ -56,7 +56,7 @@
                                             id="{$oFilter->getId()}_{$oField->getId()}"
                                             {if $oField->getTitleLong() !== ''}data-toggle="tooltip"
                                             data-placement="bottom" title="{$oField->getTitleLong()}"{/if}
-                                            {if $oField->bReloadOnChange}onchange="$('#{$oFilter->getId()}_btn_filter').trigger('click')"{/if}>
+                                            {if $oField->bReloadOnChange}onchange="$('#{$oFilter->getId()}_btn_filter').click()"{/if}>
                                         {foreach $oField->getOptions() as $i => $oOption}
                                             <option value="{$i}"{if $i == (int)$oField->getValue()} selected{/if}>
                                                 {$oOption->getTitle()}
@@ -75,10 +75,10 @@
                                             var $datepicker = $('#{$oFilter->getId()}_{$oField->getId()}');
                                             $datepicker.daterangepicker({
                                                 locale: {
-                                                    format: 'DD.MM.YYYY', separator: ' - ', applyLabel: 'ï¿½bernehmen',
+                                                    format: 'DD.MM.YYYY', separator: ' - ', applyLabel: 'Übernehmen',
                                                     cancelLabel: 'Abbrechen', customRangeLabel: 'Benutzerdefiniert',
                                                     daysOfWeek: ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'],
-                                                    monthNames: ['Januar', 'Februar', 'Mï¿½rz', 'April', 'Mai', 'Juni',
+                                                    monthNames: ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni',
                                                         'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'],
                                                     firstDay: 1
                                                 },

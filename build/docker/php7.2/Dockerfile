@@ -1,5 +1,6 @@
 FROM php:7.2-cli
-WORKDIR '/build'
+RUN mkdir /creation
+WORKDIR '/creation'
 RUN apt-get update && apt-get install apt-transport-https curl git gnupg lsb-release patchutils software-properties-common wget unzip zip -y
 RUN curl -sL https://deb.nodesource.com/setup_11.x | bash -
 RUN apt-get install -y nodejs

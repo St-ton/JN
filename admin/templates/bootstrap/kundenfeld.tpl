@@ -304,7 +304,10 @@
                                     {foreach $oKundenfeld_arr as $oKundenfeld}
                                         <tr>
                                             <td class="check">
-                                                <input name="kKundenfeld[]" type="checkbox" value="{$oKundenfeld->kKundenfeld}" id="check-{$oKundenfeld->kKundenfeld}" />
+                                                <div class="custom-control custom-checkbox">
+                                                    <input class="custom-control-input" name="kKundenfeld[]" type="checkbox" value="{$oKundenfeld->kKundenfeld}" id="check-{$oKundenfeld->kKundenfeld}" />
+                                                    <label class="custom-control-label" for="check-{$oKundenfeld->kKundenfeld}"></label>
+                                                </div>
                                             </td>
                                             <td><label for="check-{$oKundenfeld->kKundenfeld}">{$oKundenfeld->cName}{if $oKundenfeld->nPflicht == 1} *{/if}</label></td>
                                             <td>{$oKundenfeld->cWawi}</td>

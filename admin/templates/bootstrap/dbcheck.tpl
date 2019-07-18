@@ -88,7 +88,10 @@
                                         {elseif (($cDBStruct_arr.$cTable->Migration & DBMigrationHelper::MIGRATE_COLUMN) !== DBMigrationHelper::MIGRATE_NONE) && $DB_Version->collation_utf8 && $DB_Version->innodb->support}
                                             <a href="#" class="btn btn-default" data-action="migrate" data-table="{$cTable}" data-step="2"><i class="fa fa-cogs"></i></a>
                                         {elseif !$hasError}
-                                            <input id="check-{$smarty.foreach.datei.iteration}" type="checkbox" name="check[]" value="{$cTable}" />
+                                        <div class="custom-control custom-checkbox">
+                                            <input class="custom-control-input" id="check-{$smarty.foreach.datei.iteration}" type="checkbox" name="check[]" value="{$cTable}" />
+                                            <label class="custom-control-label" for="check-{$smarty.foreach.datei.iteration}"></label>
+                                        </div>
                                         {/if}
                                     {/if}
                                 </td>
@@ -98,7 +101,10 @@
                     <div class="card-footer">
                         <div class="input-group">
                             <span class="input-group-addon">
-                                <input type="checkbox" name="ALL_MSG" id="ALLMSGS" onclick="AllMessages(this.form);"/> <label for="ALLMSGS">{__('markAll')}</label>
+                                <div class="custom-control custom-checkbox">
+                                    <input class="custom-control-input" type="checkbox" name="ALL_MSG" id="ALLMSGS" onclick="AllMessages(this.form);"/> <label for="ALLMSGS">{__('markAll')}</label>
+                                    <label class="custom-control-label" for="ALLMSGS"></label>
+                                </div>
                             </span>
                             <select name="action" class="form-control">
                                 <option value="">{__('action')}</option>

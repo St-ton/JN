@@ -8,9 +8,11 @@
                     <hr class="mb-n3">
                 </div>
                 <div class="card-header">
-                    <input type="checkbox" name="box_show" id="box_{$direction}_show" value="1"
-                           {if isset($bBoxenAnzeigen.$direction) && $bBoxenAnzeigen.$direction}checked{/if}>
-                    <label for="box_{$direction}_show">{__('showContainer')}</label>
+                    <div class="custom-control custom-checkbox">
+                        <input class="custom-control-input" type="checkbox" name="box_show" id="box_{$direction}_show" value="1"
+                               {if isset($bBoxenAnzeigen.$direction) && $bBoxenAnzeigen.$direction}checked{/if}>
+                        <label class="custom-control-label" for="box_{$direction}_show">{__('showContainer')}</label>
+                    </div>
                 </div>
                 <div class="card-body">
                 {if $oBox_arr|@count > 0}

@@ -132,8 +132,11 @@
                                 {foreach $oRedirect_arr as $oRedirect}
                                     <tr>
                                         <td>
-                                            <input type="checkbox" name="redirects[{$oRedirect->kRedirect}][enabled]" value="1"
+                                            <div class="custom-control custom-checkbox">
+                                                <input class="custom-control-input" type="checkbox" name="redirects[{$oRedirect->kRedirect}][enabled]" value="1"
                                                    id="check-{$oRedirect->kRedirect}">
+                                                <label class="custom-control-label" for="check-{$oRedirect->kRedirect}"></label>
+                                            </div>
                                         </td>
                                         <td>
                                             <label for="check-{$oRedirect->kRedirect}">
@@ -230,7 +233,10 @@
                             <tfoot>
                                 <tr>
                                     <td>
-                                        <input type="checkbox" name="ALLMSGS" id="ALLMSGS" onclick="AllMessages(this.form);">
+                                        <div class="custom-control custom-checkbox">
+                                            <input class="custom-control-input" type="checkbox" name="ALLMSGS" id="ALLMSGS" onclick="AllMessages(this.form);">
+                                            <label class="custom-control-label" for="ALLMSGS"></label>
+                                        </div>
                                     </td>
                                     <td colspan="4">
                                         <label for="ALLMSGS">{__('globalSelectAll')}</label>

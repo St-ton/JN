@@ -34,18 +34,19 @@
                     {else}
                         <div class="listgroup">
                             <div class="list-group-item">
-                                <label>
-                                    <input type="checkbox" name="aaa" value="bbb"
-                                           onchange="selectAllItems(this, $(this).prop('checked'))">
-                                    {__('selectAllShown')}
-                                </label>
+                                <div class="custom-control custom-checkbox">
+                                    <input class="custom-control-input" type="checkbox" id="select-all-1" name="aaa" value="bbb"
+                                       onchange="selectAllItems(this, $(this).prop('checked'))">
+                                    <label class="custom-control-label" for="select-all-1">{__('selectAllShown')}</label>
+                                </div>
                             </div>
                             {foreach $oLog_arr as $oLog}
                                 <div class="list-group-item">
                                     <div class="row">
                                         <div class="col-md-3 col-xs-12">
-                                            <label>
-                                                <input type="checkbox" name="selected[]" value="{$oLog->kLog}">
+                                            <label class="custom-control custom-checkbox">
+                                                <input class="custom-control-input" type="checkbox" name="selected[]" id="log-id-{$oLog->kLog}" value="{$oLog->kLog}">
+                                                <label class="custom-control-label" for="log-id-{$oLog->kLog}"></label>
                                                 {if $oLog->nLevel >= $smarty.const.JTLLOG_LEVEL_ERROR}
                                                     <span class="badge badge-danger">{__('systemlogError')}</span>
                                                 {elseif $oLog->nLevel >= $smarty.const.JTLLOG_LEVEL_WARNING}
@@ -68,11 +69,11 @@
                                 </div>
                             {/foreach}
                             <div class="list-group-item">
-                                <label>
-                                    <input type="checkbox" name="aaa" value="bbb"
-                                           onchange="selectAllItems(this, $(this).prop('checked'))">
-                                    {__('selectAllShown')}
-                                </label>
+                                <div class="custom-control custom-checkbox">
+                                    <input class="custom-control-input" type="checkbox" id="select-all-2" name="aaa" value="bbb"
+                                       onchange="selectAllItems(this, $(this).prop('checked'))">
+                                    <label class="custom-control-label" for="select-all-2">{__('selectAllShown')}</label>
+                                </div>
                             </div>
                         </div>
                     {/if}

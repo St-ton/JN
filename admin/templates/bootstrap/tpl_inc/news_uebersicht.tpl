@@ -98,7 +98,10 @@
                                     {foreach $oNewsKommentar_arr as $oNewsKommentar}
                                         <tr>
                                             <td class="check">
-                                                <input type="checkbox" name="kNewsKommentar[]" value="{$oNewsKommentar->getID()}" id="comment-{$oNewsKommentar->getID()}" />
+                                                <div class="custom-control custom-checkbox">
+                                                    <input class="custom-control-input" type="checkbox" name="kNewsKommentar[]" value="{$oNewsKommentar->getID()}" id="comment-{$oNewsKommentar->getID()}" />
+                                                    <label class="custom-control-label" for="comment-{$oNewsKommentar->getID()}"></label>
+                                                </div>
                                             </td>
                                             <td class="TD2">
                                                 <label for="comment-{$oNewsKommentar->getID()}">
@@ -123,7 +126,12 @@
                                     </tbody>
                                     <tfoot>
                                         <tr>
-                                            <td class="check"><input name="ALLMSGS" id="ALLMSGS1" type="checkbox" onclick="AllMessages(this.form);" /></td>
+                                            <td class="check">
+                                                <div class="custom-control custom-checkbox">
+                                                    <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS1" type="checkbox" onclick="AllMessages(this.form);" />
+                                                    <label class="custom-control-label" for="ALLMSGS1"></label>
+                                                </div>
+                                            </td>
                                             <td colspan="5"><label for="ALLMSGS1">{__('globalSelectAll')}</label></td>
                                         </tr>
                                     </tfoot>
@@ -169,7 +177,12 @@
                                 {if $oNews_arr|@count > 0 && $oNews_arr}
                                     {foreach $oNews_arr as $oNews}
                                         <tr class="tab_bg{$oNews@iteration%2}">
-                                            <td class="check"><input type="checkbox" name="kNews[]" value="{$oNews->getID()}" id="news-cb-{$oNews->getID()}" /></td>
+                                            <td class="check">
+                                                <div class="custom-control custom-checkbox">
+                                                    <input class="custom-control-input" type="checkbox" name="kNews[]" value="{$oNews->getID()}" id="news-cb-{$oNews->getID()}" />
+                                                    <label class="custom-control-label" for="news-cb-{$oNews->getID()}"></label>
+                                                </div>
+                                            </td>
                                             <td class="TD2"><label for="news-cb-{$oNews->getID()}">{$oNews->getTitle()}</label></td>
                                             {*<td class="TD3">{$oNews->KategorieAusgabe}</td>*}
                                             <td class="TD4">
@@ -209,7 +222,12 @@
                                 </tbody>
                                 <tfoot>
                                 <tr>
-                                    <td class="check"><input name="ALLMSGS" id="ALLMSGS2" type="checkbox" onclick="AllMessages(this.form);" /></td>
+                                    <td class="check">
+                                        <div class="custom-control custom-checkbox">
+                                            <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS2" type="checkbox" onclick="AllMessages(this.form);" />
+                                            <label class="custom-control-label" for="ALLMSGS2"></label>
+                                        </div>
+                                    </td>
                                     <td colspan="8"><label for="ALLMSGS2">{__('globalSelectAll')}</label></td>
                                 </tr>
                                 </tfoot>
@@ -259,7 +277,10 @@
                                     {foreach $oNewsKategorie_arr as $oNewsKategorie}
                                         <tr scope="row" class="tab_bg{$oNewsKategorie@iteration % 2}{if $oNewsKategorie->getLevel() > 1} hidden-soft{/if}" data-level="{$oNewsKategorie->getLevel()}">
                                             <th class="check">
-                                                <input type="checkbox" name="kNewsKategorie[]" data-name="{$oNewsKategorie->getName()}" value="{$oNewsKategorie->getID()}" id="newscat-{$oNewsKategorie->getID()}" />
+                                                <div class="custom-control custom-checkbox">
+                                                    <input class="custom-control-input" type="checkbox" name="kNewsKategorie[]" data-name="{$oNewsKategorie->getName()}" value="{$oNewsKategorie->getID()}" id="newscat-{$oNewsKategorie->getID()}" />
+                                                    <label class="custom-control-label" for="newscat-{$oNewsKategorie->getID()}"></label>
+                                                </div>
                                             </th>
                                             <td class="TD2{if $oNewsKategorie->getLevel() === 1} hide-toggle-on{/if}" data-name="category">
                                                 <i class="fa fa-caret-right nav-toggle{if $oNewsKategorie->getChildren()->count() === 0} hidden{/if}" style="cursor:pointer"></i>
@@ -287,7 +308,12 @@
                                 </tbody>
                                 <tfoot>
                                 <tr>
-                                    <td class="check"><input name="ALLMSGS" id="ALLMSGS3" type="checkbox" onclick="AllMessages(this.form);" /></td>
+                                    <td class="check">
+                                        <div class="custom-control custom-checkbox">
+                                            <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS3" type="checkbox" onclick="AllMessages(this.form);" />
+                                            <label class="custom-control-label" for="ALLMSGS3"></label>
+                                        </div>
+                                    </td>
                                     <td colspan="5"><label for="ALLMSGS3">{__('globalSelectAll')}</label></td>
                                 </tr>
                                 </tfoot>

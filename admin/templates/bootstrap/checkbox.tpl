@@ -82,7 +82,10 @@
                                             {foreach $oCheckBox_arr as $oCheckBoxUebersicht}
                                                 <tr>
                                                     <td>
-                                                        <input name="kCheckBox[]" id="cb-check-{$oCheckBoxUebersicht@index}" type="checkbox" value="{$oCheckBoxUebersicht->kCheckBox}" />
+                                                        <div class="custom-control custom-checkbox">
+                                                            <input class="custom-control-input" name="kCheckBox[]" id="cb-check-{$oCheckBoxUebersicht@index}" type="checkbox" value="{$oCheckBoxUebersicht->kCheckBox}" />
+                                                            <label class="custom-control-label" for="cb-check-{$oCheckBoxUebersicht@index}"></label>
+                                                        </div>
                                                     </td>
                                                     <td><label for="cb-check-{$oCheckBoxUebersicht@index}">{$oCheckBoxUebersicht->cName}</label></td>
                                                     <td>{if $oCheckBoxUebersicht->oLink !== null}{$oCheckBoxUebersicht->oLink->getName()}{/if}</td>
@@ -115,7 +118,10 @@
                                             <tfoot>
                                                 <tr>
                                                     <td>
-                                                        <input name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);">
+                                                        <div class="custom-control custom-checkbox">
+                                                            <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);">
+                                                            <label class="custom-control-label" for="ALLMSGS"></label>
+                                                        </div>
                                                     </td>
                                                     <td colspan="11"><label for="ALLMSGS">{__('globalSelectAll')}</label></td>
                                                 </tr>

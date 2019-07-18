@@ -101,14 +101,20 @@
                                     <input name="kSuchanfrageAll[]" type="hidden" value="{$suchanfrage->kSuchanfrage}" />
                                     <tr>
                                         <td>
-                                            <input type="checkbox" name="kSuchanfrage[]" value="{$suchanfrage->kSuchanfrage}" />
+                                            <div class="custom-control custom-checkbox">
+                                                <input class="custom-control-input" type="checkbox" name="kSuchanfrage[]" value="{$suchanfrage->kSuchanfrage}" />
+                                                <label class="custom-control-label"></label>
+                                            </div>
                                         </td>
                                         <td>{$suchanfrage->cSuche}</td>
                                         <td>
                                             <input class="form-control fieldOther" name="nAnzahlGesuche_{$suchanfrage->kSuchanfrage}" type="text" value="{$suchanfrage->nAnzahlGesuche}" style="width:50px;" />
                                         </td>
                                         <td class="tcenter">
-                                            <input type="checkbox" name="nAktiv[]" id="nAktiv_{$suchanfrage->kSuchanfrage}" value="{$suchanfrage->kSuchanfrage}" {if $suchanfrage->nAktiv==1}checked="checked"{/if} />
+                                            <div class="custom-control custom-checkbox">
+                                                <input class="custom-control-input" type="checkbox" name="nAktiv[]" id="nAktiv_{$suchanfrage->kSuchanfrage}" value="{$suchanfrage->kSuchanfrage}" {if $suchanfrage->nAktiv==1}checked="checked"{/if} />
+                                                <label class="custom-control-label" for="nAktiv_{$suchanfrage->kSuchanfrage}"></label>
+                                            </div>
                                         </td>
                                         <td class="tcenter">
                                             <input class="form-control fieldOther" type="text" name="mapping_{$suchanfrage->kSuchanfrage}" />
@@ -119,7 +125,10 @@
                                 <tfoot>
                                     <tr>
                                         <td>
-                                            <input name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessagesExcept(this.form, 'nAktiv_');" />
+                                            <div class="custom-control custom-checkbox">
+                                                <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessagesExcept(this.form, 'nAktiv_');" />
+                                                <label class="custom-control-label" for="ALLMSGS"></label>
+                                            </div>
                                         </td>
                                         <td colspan="5"><label for="ALLMSGS">{__('livesucheSelectAll')}</label></td>
                                     </tr>
@@ -177,7 +186,10 @@
                                 {foreach $Suchanfragenerfolglos as $Suchanfrageerfolglos}
                                     <tr>
                                         <td>
-                                            <input name="kSuchanfrageErfolglos[]" type="checkbox" value="{$Suchanfrageerfolglos->kSuchanfrageErfolglos}" />
+                                            <div class="custom-control custom-checkbox">
+                                                <input class="custom-control-input" name="kSuchanfrageErfolglos[]" type="checkbox" value="{$Suchanfrageerfolglos->kSuchanfrageErfolglos}" />
+                                                <label class="custom-control-label"></label>
+                                            </div>
                                         </td>
                                         <td>
                                             {if isset($nErfolglosEditieren) && $nErfolglosEditieren == 1}
@@ -199,7 +211,10 @@
                                 <tfoot>
                                     <tr>
                                         <td>
-                                            <input name="ALLMSGS" id="ALLMSGS2" type="checkbox" onclick="AllMessagesExcept(this.form, 'nAktiv_');" />
+                                            <div class="custom-control custom-checkbox">
+                                                <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS2" type="checkbox" onclick="AllMessagesExcept(this.form, 'nAktiv_');" />
+                                                <label class="custom-control-label" for="ALLMSGS2"></label>
+                                            </div>
                                         </td>
                                         <td colspan="4"><label for="ALLMSGS2">{__('livesucheSelectAll')}</label></td>
                                     </tr>
@@ -241,7 +256,10 @@
                                 {foreach $Suchanfragenmapping as $sfm}
                                     <tr>
                                         <td>
-                                            <input name="kSuchanfrageMapping[]" type="checkbox" value="{$sfm->kSuchanfrageMapping}">
+                                            <div class="custom-control custom-checkbox">
+                                                <input class="custom-control-input" name="kSuchanfrageMapping[]" type="checkbox" value="{$sfm->kSuchanfrageMapping}">
+                                                <label class="custom-control-label"></label>
+                                            </div>
                                         </td>
                                         <td>{$sfm->cSuche}</td>
                                         <td>{$sfm->cSucheNeu}</td>

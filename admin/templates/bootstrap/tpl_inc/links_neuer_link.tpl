@@ -155,7 +155,10 @@
                     <div class="form-group form-row align-items-center">
                         <label class="col col-sm-4 col-form-label text-sm-right" for="cSichtbarNachLogin">{__('visibleAfterLogin')}:</label>
                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                            <input class="form-control2" type="checkbox" name="cSichtbarNachLogin" id="cSichtbarNachLogin" value="Y" {if $Link->getVisibleLoggedInOnly() === true || (isset($xPostVar_arr.cSichtbarNachLogin) && $xPostVar_arr.cSichtbarNachLogin)}checked{/if} />
+                            <div class="custom-control custom-checkbox">
+                                <input class="custom-control-input" class="form-control2" type="checkbox" name="cSichtbarNachLogin" id="cSichtbarNachLogin" value="Y" {if $Link->getVisibleLoggedInOnly() === true || (isset($xPostVar_arr.cSichtbarNachLogin) && $xPostVar_arr.cSichtbarNachLogin)}checked{/if} />
+                                <label class="custom-control-label" for="cSichtbarNachLogin"></label>
+                            </div>
                         </div>
                     </div>
                     {/if}
@@ -171,7 +174,10 @@
                     <div class="form-group form-row align-items-center">
                         <label class="col col-sm-4 col-form-label text-sm-right" for="cNoFollow">{__('noFollow')}:</label>
                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                            <input class="form-control2" type="checkbox" name="cNoFollow" id="cNoFollow" value="Y" {if $Link->getNoFollow() === true || (isset($xPostVar_arr.cNoFollow) && $xPostVar_arr.cNoFollow)}checked{/if} />
+                            <div class="custom-control custom-checkbox">
+                                <input class="custom-control-input" class="form-control2" type="checkbox" name="cNoFollow" id="cNoFollow" value="Y" {if $Link->getNoFollow() === true || (isset($xPostVar_arr.cNoFollow) && $xPostVar_arr.cNoFollow)}checked{/if} />
+                                <label class="custom-control-label" for="cNoFollow"></label>
+                            </div>
                         </div>
                     </div>
                     <div class="form-group form-row align-items-center">
@@ -216,7 +222,10 @@
                     <div class="form-group form-row align-items-center">
                         <label class="col col-sm-4 col-form-label text-sm-right" for="bIsFluid">{__('bIsFluidText')}:</label>
                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                            <input class="form-control2" type="checkbox" name="bIsFluid" id="bIsFluid" value="1" {if $Link->getIsFluid() === true || (isset($xPostVar_arr.bIsFluid) && $xPostVar_arr.bIsFluid === '1')}checked{/if} />
+                            <div class="custom-control custom-checkbox">
+                                <input class="custom-control-input" class="form-control2" type="checkbox" name="bIsFluid" id="bIsFluid" value="1" {if $Link->getIsFluid() === true || (isset($xPostVar_arr.bIsFluid) && $xPostVar_arr.bIsFluid === '1')}checked{/if} />
+                                <label class="custom-control-label" for="bIsFluid"></label>
+                            </div>
                         </div>
                     </div>
                     <div class="form-group form-row align-items-center">

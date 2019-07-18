@@ -168,7 +168,10 @@ $(document).ready(function() {
                                 <label class="col col-sm-4 col-form-label text-sm-right" for="tmp_check">{__('temporaryAccess')}:</label>
                                 <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                     <span class="input-group-checkbox-wrap">
-                                        <input class="" type="checkbox" id="tmp_check" name="dGueltigBisAktiv" value="1"{if (isset($oAccount->dGueltigBis) && $oAccount->dGueltigBis !== null)} checked="checked"{/if} />
+                                        <div class="custom-control custom-checkbox">
+                                            <input class="custom-control-input" class="" type="checkbox" id="tmp_check" name="dGueltigBisAktiv" value="1"{if (isset($oAccount->dGueltigBis) && $oAccount->dGueltigBis !== null)} checked="checked"{/if} />
+                                            <label class="custom-control-label" for="tmp_check"></label>
+                                        </div>
                                     </span>
                                 </div>
                             </div>

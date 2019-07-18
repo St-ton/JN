@@ -97,7 +97,10 @@
                                     {foreach $oBewertung_arr as $oBewertung}
                                         <tr>
                                             <td class="check">
-                                                <input name="kBewertung[]" type="checkbox" value="{$oBewertung->kBewertung}" />
+                                                <div class="custom-control custom-checkbox">
+                                                    <input class="custom-control-input" name="kBewertung[]" type="checkbox" value="{$oBewertung->kBewertung}" />
+                                                    <label class="custom-control-label"></label>
+                                                </div>
                                                 <input type="hidden" name="kArtikel[]" value="{$oBewertung->kArtikel}" />
                                                 <input type="hidden" name="kBewertungAll[]" value="{$oBewertung->kBewertung}" />
                                             </td>
@@ -123,7 +126,12 @@
                                     </tbody>
                                     <tfoot>
                                     <tr>
-                                        <td class="check"><input name="ALLMSGS" id="ALLMSGS1" type="checkbox" onclick="AllMessages(this.form);" /></td>
+                                        <td class="check">
+                                            <div class="custom-control custom-checkbox">
+                                                <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS1" type="checkbox" onclick="AllMessages(this.form);" />
+                                                <label class="custom-control-label" for="ALLSMSGS1"></label>
+                                            </div>
+                                        </td>
                                         <td colspan="5"><label for="ALLMSGS1">{__('globalSelectAll')}</label></td>
                                     </tr>
                                     </tfoot>
@@ -170,7 +178,12 @@
                                     <tbody>
                                     {foreach $oSuchanfrage_arr as $oSuchanfrage}
                                         <tr>
-                                            <td class="check"><input name="kSuchanfrage[]" type="checkbox" value="{$oSuchanfrage->kSuchanfrage}" /></td>
+                                            <td class="check">
+                                                <div class="custom-control custom-checkbox">
+                                                    <input class="custom-control-input" name="kSuchanfrage[]" type="checkbox" value="{$oSuchanfrage->kSuchanfrage}" />
+                                                    <label class="custom-control-label"></label>
+                                                </div>
+                                            </td>
                                             <td class="tleft">{$oSuchanfrage->cSuche}</td>
                                             <td class="tcenter">{$oSuchanfrage->nAnzahlGesuche}</td>
                                             <td class="tcenter">{$oSuchanfrage->nAnzahlTreffer}</td>
@@ -180,7 +193,12 @@
                                     </tbody>
                                     <tfoot>
                                     <tr>
-                                        <td class="check"><input name="ALLMSGS" id="ALLMSGS2" type="checkbox" onclick="AllMessages(this.form);" /></td>
+                                        <td class="check">
+                                            <div class="custom-control custom-checkbox">
+                                                <input class="custom-control-input"  name="ALLMSGS" id="ALLMSGS2" type="checkbox" onclick="AllMessages(this.form);" />
+                                                <label class="custom-control-label" for="ALLMSGS2"></label>
+                                            </div>
+                                        </td>
                                         <td colspan="5"><label for="ALLMSGS2">{__('globalSelectAll')}</label></td>
                                     </tr>
                                     </tfoot>
@@ -234,7 +252,12 @@
                                     <tbody>
                                         {foreach $oNewsKommentar_arr as $oNewsKommentar}
                                             <tr>
-                                                <td class="check"><input type="checkbox" name="kNewsKommentar[]" id="ncid-{$oNewsKommentar->kNewsKommentar}" value="{$oNewsKommentar->kNewsKommentar}" /></td>
+                                                <td class="check">
+                                                    <div class="custom-control custom-checkbox">
+                                                        <input class="custom-control-input" type="checkbox" name="kNewsKommentar[]" id="ncid-{$oNewsKommentar->kNewsKommentar}" value="{$oNewsKommentar->kNewsKommentar}" />
+                                                        <label class="custom-control-label" for="ncid-{$oNewsKommentar->kNewsKommentar}"></label>
+                                                    </div>
+                                                </td>
                                                 <td>
                                                     <label for="ncid-{$oNewsKommentar->kNewsKommentar}">
                                                         {if $oNewsKommentar->cVorname|strlen > 0}
@@ -257,7 +280,12 @@
                                     </tbody>
                                     <tfoot>
                                         <tr>
-                                            <td class="check"><input name="ALLMSGS" id="ALLMSGS4" type="checkbox" onclick="AllMessages(this.form);" /></td>
+                                            <td class="check">
+                                                <div class="custom-control custom-checkbox">
+                                                    <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS4" type="checkbox" onclick="AllMessages(this.form);" />
+                                                    <label class="custom-control-label" for="ALLMSGS4"></label>
+                                                </div>
+                                            </td>
                                             <td colspan="5"><label for="ALLMSGS4">{__('globalSelectAll')}</label></td>
                                         </tr>
                                     </tfoot>
@@ -301,7 +329,12 @@
                                     <tbody>
                                         {foreach $oNewsletterEmpfaenger_arr as $oNewsletterEmpfaenger}
                                             <tr>
-                                                <td class="check"><input type="checkbox" name="kNewsletterEmpfaenger[]" value="{$oNewsletterEmpfaenger->kNewsletterEmpfaenger}" /></td>
+                                                <td class="check">
+                                                    <div class="custom-control custom-checkbox">
+                                                        <input class="custom-control-input" type="checkbox" name="kNewsletterEmpfaenger[]" value="{$oNewsletterEmpfaenger->kNewsletterEmpfaenger}" />
+                                                        <label class="custom-control-label"></label>
+                                                    </div>
+                                                </td>
                                                 <td>{$oNewsletterEmpfaenger->cEmail}</td>
                                                 <td>{$oNewsletterEmpfaenger->cVorname}</td>
                                                 <td>{$oNewsletterEmpfaenger->cNachname}</td>
@@ -311,7 +344,12 @@
                                     </tbody>
                                     <tfoot>
                                         <tr>
-                                            <td class="check"><input name="ALLMSGS" id="ALLMSGS5" type="checkbox" onclick="AllMessages(this.form);" /></td>
+                                            <td class="check">
+                                                <div class="custom-control custom-checkbox">
+                                                    <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS5" type="checkbox" onclick="AllMessages(this.form);" />
+                                                    <label class="custom-control-label" for="ALLMSGS5"></label>
+                                                </div>
+                                            </td>
                                             <td colspan="5"><label for="ALLMSGS5">{__('globalSelectAll')}</label></td>
                                         </tr>
                                     </tfoot>

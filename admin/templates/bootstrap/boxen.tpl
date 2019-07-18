@@ -127,7 +127,10 @@
                         {foreach $invisibleBoxes as $invisibleBox}
                             <tr>
                                 <td class="check">
-                                    <input name="kInvisibleBox[]" type="checkbox" value="{$invisibleBox->kBox}" id="kInvisibleBox-{$invisibleBox@index}">
+                                    <div class="custom-control custom-checkbox">
+                                        <input class="custom-control-input" name="kInvisibleBox[]" type="checkbox" value="{$invisibleBox->kBox}" id="kInvisibleBox-{$invisibleBox@index}">
+                                        <label class="custom-control-label" for="kInvisibleBox-{$invisibleBox@index}"></label>
+                                    </div>
                                 </td>
                                 <td>
                                     <label for="kInvisibleBox-{$invisibleBox@index}">{$invisibleBox->cTitel}</label>
@@ -145,7 +148,10 @@
                         {/foreach}
                         <tr>
                             <td class="check">
-                                <input name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);">
+                                <div class="custom-control custom-checkbox">
+                                    <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);">
+                                    <label class="custom-control-label" for="ALLMSGS"></label>
+                                </div>
                             </td>
                             <td colspan="4" class="tleft"><label for="ALLMSGS">{__('globalSelectAll')}</label></td>
                         </tr>

@@ -113,7 +113,10 @@
                                         {foreach $oSitemapDownload_arr as $oSitemapDownload}
                                             <tr>
                                                 <td width="20">
-                                                    <input name="kSitemapTracker[]" type="checkbox" value="{$oSitemapDownload->kSitemapTracker}">
+                                                    <div class="custom-control custom-checkbox">
+                                                        <input class="custom-control-input" name="kSitemapTracker[]" type="checkbox" value="{$oSitemapDownload->kSitemapTracker}">
+                                                        <label class="custom-control-label"></label>
+                                                    </div>
                                                 </td>
                                                 <td><a href="{\JTL\Shop::getURL()}/{$oSitemapDownload->cSitemap}" target="_blank">{$oSitemapDownload->cSitemap}</a></td>
                                                 <td>
@@ -131,7 +134,10 @@
                                         <tfoot>
                                             <tr>
                                                 <td>
-                                                    <input name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);">
+                                                    <div class="custom-control custom-checkbox">
+                                                        <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);">
+                                                        <label class="custom-control-label" for="ALLMSGS"></label>
+                                                    </div>
                                                 </td>
                                                 <td colspan="6"><label for="ALLMSGS">{__('sitemapSelectAll')}</label></td>
                                             </tr>
@@ -193,7 +199,10 @@
                                     {foreach $oSitemapReport_arr as $oSitemapReport}
                                         <tr>
                                             <td class="check">
-                                                <input name="kSitemapReport[]" type="checkbox" value="{$oSitemapReport->kSitemapReport}">
+                                                <div class="custom-control custom-checkbox">
+                                                    <input class="custom-control-input" name="kSitemapReport[]" type="checkbox" value="{$oSitemapReport->kSitemapReport}">
+                                                    <label class="custom-control-label"></label>
+                                                </div>
                                             </td>
                                             {if isset($oSitemapReport->oSitemapReportFile_arr) && $oSitemapReport->oSitemapReportFile_arr|@count > 0}
                                                 <td>
@@ -238,7 +247,10 @@
                                     <tfoot>
                                         <tr>
                                             <td class="check">
-                                                <input name="ALLMSGS" id="ALLMSGS2" type="checkbox" onclick="AllMessages(this.form);">
+                                                <div class="custom-control custom-checkbox">
+                                                    <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS2" type="checkbox" onclick="AllMessages(this.form);">
+                                                    <label class="custom-control-label" for="ALLMSGS2"></label>
+                                                </div>
                                             </td>
                                             <td colspan="4"><label for="ALLMSGS2">{__('sitemapSelectAll')}</label></td>
                                         </tr>

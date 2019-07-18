@@ -46,16 +46,19 @@
                             </div>
                             <div class="perm_list card-body">
                                 {foreach $oGroup->oPermission_arr as $oPerm}
-                                    <div class="input">
-                                    <input type="checkbox" name="perm[]" value="{$oPerm->cRecht}" id="{$oPerm->cRecht}" {if isset($cAdminGroupPermission_arr) && is_array($cAdminGroupPermission_arr)}{if $oPerm->cRecht|in_array:$cAdminGroupPermission_arr}checked="checked"{/if}{/if} />
-                                    <label for="{$oPerm->cRecht}" class="perm">
-                                        {if $oPerm->cBeschreibung|strlen > 0}{$oPerm->cBeschreibung}{if isset($bDebug) && $bDebug} - {$oPerm->cRecht}{/if}{else}{$oPerm->cRecht}{/if}
-                                    </label>
+                                    <div class="custom-control custom-checkbox">
+                                        <input class="custom-control-input" type="checkbox" name="perm[]" value="{$oPerm->cRecht}" id="{$oPerm->cRecht}" {if isset($cAdminGroupPermission_arr) && is_array($cAdminGroupPermission_arr)}{if $oPerm->cRecht|in_array:$cAdminGroupPermission_arr}checked="checked"{/if}{/if} />
+                                        <label class="custom-control-label" for="{$oPerm->cRecht}" class="perm">
+                                            {if $oPerm->cBeschreibung|strlen > 0}{$oPerm->cBeschreibung}{if isset($bDebug) && $bDebug} - {$oPerm->cRecht}{/if}{else}{$oPerm->cRecht}{/if}
+                                        </label>
                                     </div>
                                 {/foreach}
                             </div>
                             <div class="card-footer">
-                                <input type="checkbox" onclick="checkToggle('#settings-{$oGroup@iteration}');" id="cbtoggle-{$oGroup@iteration}" /> <label for="cbtoggle-{$oGroup@iteration}">{__('globalSelectAll')}</label>
+                                <div class="custom-control custom-checkbox">
+                                    <input class="custom-control-input" type="checkbox" onclick="checkToggle('#settings-{$oGroup@iteration}');" id="cbtoggle-{$oGroup@iteration}" />
+                                    <label class="custom-control-label" for="cbtoggle-{$oGroup@iteration}">{__('globalSelectAll')}</label>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -63,7 +66,10 @@
             </div>
             <div class="card-footer save-wrapper">
                 <div class="float-left">
-                    <input type="checkbox" onclick="AllMessages(this.form);" id="ALLMSGS" name="ALLMSGS" /> <label for="ALLMSGS">{__('globalSelectAll')}</label>
+                    <div class="custom-control custom-checkbox">
+                        <input class="custom-control-input" type="checkbox" onclick="AllMessages(this.form);" id="ALLMSGS" name="ALLMSGS" />
+                        <label class="custom-control-label" for="ALLMSGS">{__('globalSelectAll')}</label>
+                    </div>
                 </div>
                 <input type="hidden" name="action" value="group_edit" />
                 {if isset($oAdminGroup) && $oAdminGroup->kAdminlogingruppe > 0}

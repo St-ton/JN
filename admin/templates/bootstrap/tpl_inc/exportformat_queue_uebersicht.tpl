@@ -42,7 +42,10 @@
                                     {foreach $oExportformatCron_arr as $oExportformatCron}
                                         <tr>
                                             <td class="tleft">
-                                                <input name="kCron[]" type="checkbox" value="{$oExportformatCron->cronID}" id="kCron-{$oExportformatCron->cronID}" />
+                                                <div class="custom-control custom-checkbox">
+                                                    <input class="custom-control-input" name="kCron[]" type="checkbox" value="{$oExportformatCron->cronID}" id="kCron-{$oExportformatCron->cronID}" />
+                                                    <label class="custom-control-label" for="kCron-{$oExportformatCron->cronID}"></label>
+                                                </div>
                                             </td>
                                             <td class="tleft"><label for="kCron-{$oExportformatCron->cronID}">{$oExportformatCron->cName}</label></td>
                                             <td class="tleft">{$oExportformatCron->Sprache->getLocalizedName()}/{$oExportformatCron->Waehrung->cName}/{$oExportformatCron->Kundengruppe->cName}</td>
@@ -64,7 +67,10 @@
                                     <tfoot>
                                         <tr>
                                             <td>
-                                                <input name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);">
+                                                <div class="custom-control custom-checkbox">
+                                                    <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);">
+                                                    <label class="custom-control-label" for="ALLMSGS"></label>
+                                                </div>
                                             </td>
                                             <td colspan="8"><label for="ALLMSGS">{__('globalSelectAll')}</label></td>
                                         </tr>

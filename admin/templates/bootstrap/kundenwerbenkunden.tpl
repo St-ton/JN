@@ -50,7 +50,10 @@
                                     {foreach $oKwKNichtReg_arr as $oKwKNichtReg}
                                         <tr>
                                             <td class="check">
-                                                <input type="checkbox" name="kKundenWerbenKunden[]" value="{$oKwKNichtReg->kKundenWerbenKunden}">
+                                                <div class="custom-control custom-checkbox">
+                                                    <input class="custom-control-input" type="checkbox" name="kKundenWerbenKunden[]" value="{$oKwKNichtReg->kKundenWerbenKunden}">
+                                                    <label class="custom-control-label"></label>
+                                                </div>
                                             </td>
                                             <td class="tleft">
                                                 <b>{$oKwKNichtReg->cVorname} {$oKwKNichtReg->cNachname}</b><br />{$oKwKNichtReg->cEmail}

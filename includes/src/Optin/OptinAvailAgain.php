@@ -63,7 +63,7 @@ class OptinAvailAgain extends OptinBase implements OptinInterface
      */
     public function sendActivationMail(): void
     {
-        $customerId = !empty(Frontend::getCustomer()->getID()) ? Frontend::getCustomer()->getID() : 0;
+        $customerId = Frontend::getCustomer()->getID();
 
         $recipient               = new stdClass();
         $recipient->kSprache     = Shop::getLanguage();

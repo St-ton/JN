@@ -4,42 +4,28 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use JTL\Helpers\Request;
 use JTL\Alert\Alert;
 use JTL\Customer\Kunde;
-use JTL\Shop;
+use JTL\Helpers\Request;
 use JTL\Helpers\Text;
-use JTL\DB\ReturnType;
-use JTL\Session\Frontend;
+use JTL\Newsletter\Helper;
+use JTL\Optin\Optin;
 use JTL\Optin\OptinNewsletter;
 use JTL\Optin\OptinRefData;
-use JTL\Optin\Optin;
+use JTL\Session\Frontend;
+use JTL\Shop;
 
 require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'newsletter_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'seite_inc.php';
 
 Shop::setPageType(PAGE_NEWSLETTER);
-$db           = Shop::Container()->getDB();
-$smarty       = Shop::Smarty();
-$alertHelper  = Shop::Container()->getAlertService();
-$links        = $db->selectAll('tlink', 'nLinkart', LINKTYP_NEWSLETTER);
-$oLink        = new stdClass();
-$oLink->kLink = 0;
-foreach ($links as $l) {
-    $customerGroupIDs = Text::parseSSK($l->cKundengruppen);
-    $ok               = array_reduce($customerGroupIDs, function ($c, $p) {
-        return $c === true || $p === 'NULL' || (int)$p === Frontend::getCustomerGroup()->getID();
-    }, false);
-    if ($ok === true) {
-        $oLink = $l;
-        break;
-    }
-}
-$linkHelper = Shop::Container()->getLinkService();
-if (isset($oLink->kLink) && $oLink->kLink > 0) {
-    $link = $linkHelper->getLinkByID($oLink->kLink);
-} else {
+$db          = Shop::Container()->getDB();
+$smarty      = Shop::Smarty();
+$alertHelper = Shop::Container()->getAlertService();
+$linkHelper  = Shop::Container()->getLinkService();
+$kLink       = $linkHelper->getSpecialPageLinkKey(LINKTYP_NEWSLETTER);
+if ($kLink === false) {
     $oLink               = $db->select('tlink', 'nLinkart', LINKTYP_404);
     $bFileNotFound       = true;
     Shop::$kLink         = (int)$oLink->kLink;
@@ -48,24 +34,17 @@ if (isset($oLink->kLink) && $oLink->kLink > 0) {
 
     return;
 }
-
+$link          = $linkHelper->getPageLink($kLink);
 $cCanonicalURL = '';
 $option        = 'eintragen';
 if (Request::verifyGPCDataInt('abonnieren') > 0) {
-    if (Text::filterEmailAddress($_POST['cEmail']) !== false) {
+    $post = Text::filterXSS($_POST);
+    if (Text::filterEmailAddress($post['cEmail']) !== false) {
         $refData = (new OptinRefData())
-            ->setSalutation(
-                isset($_POST['cAnrede']) ? Text::filterXSS($db->escape(strip_tags($_POST['cAnrede']))) : ''
-            )
-            ->setFirstName(
-                isset($_POST['cVorname']) ? Text::filterXSS($db->escape(strip_tags($_POST['cVorname']))) : ''
-            )
-            ->setLastName(
-                isset($_POST['cNachname']) ? Text::filterXSS($db->escape(strip_tags($_POST['cNachname']))) : ''
-            )
-            ->setEmail(
-                isset($_POST['cEmail']) ? Text::filterXSS($db->escape(strip_tags($_POST['cEmail']))) : ''
-            )
+            ->setSalutation($post['cAnrede'] ?? '')
+            ->setFirstName($post['cVorname'] ?? '')
+            ->setLastName($post['cNachname'] ?? '')
+            ->setEmail($post['cEmail'] ?? '')
             ->setLanguageID(Shop::getLanguage())
             ->setRealIP(Request::getRealIP());
         try {
@@ -83,12 +62,12 @@ if (Request::verifyGPCDataInt('abonnieren') > 0) {
             'newsletterWrongemail'
         );
     }
-    $smarty->assign('cPost_arr', Text::filterXSS($_POST));
+    $smarty->assign('cPost_arr', $post);
 } elseif (Request::verifyGPCDataInt('abmelden') === 1) {
     if (Text::filterEmailAddress($_POST['cEmail']) !== false) {
         try {
             (new Optin(OptinNewsletter::class))
-                ->setEmail(Text::htmlentities(Text::filterXSS($db->escape($_POST['cEmail']))))
+                ->setEmail(Text::htmlentities($_POST['cEmail']))
                 ->setAction(Optin::DELETE_CODE)
                 ->handleOptin();
         } catch (Exception $e) {
@@ -107,35 +86,26 @@ if (Request::verifyGPCDataInt('abonnieren') > 0) {
         $smarty->assign('oFehlendeAngaben', (object)['cUnsubscribeEmail' => 1]);
     }
 } elseif (isset($_GET['show']) && (int)$_GET['show'] > 0) {
-    $customerGroupID = Frontend::getCustomer()->getID();
-    $option          = 'anzeigen';
-    $history         = $db->query(
-        "SELECT kNewsletterHistory, nAnzahl, cBetreff, cHTMLStatic, cKundengruppeKey,
-            DATE_FORMAT(dStart, '%d.%m.%Y %H:%i') AS Datum
-            FROM tnewsletterhistory
-            WHERE kNewsletterHistory = " . (int)$_GET['show'],
-        ReturnType::SINGLE_OBJECT
-    );
-    if ($history->kNewsletterHistory > 0 && pruefeNLHistoryKundengruppe($customerGroupID, $history->cKundengruppeKey)) {
+    $option = 'anzeigen';
+    if (Helper::customerGroupHasHistory((int)$_GET['show'], Frontend::getCustomer()->getID())) {
         $smarty->assign('oNewsletterHistory', $history);
     }
 }
-if (Frontend::getCustomer()->getID() > 0) {
-    $customer = new Kunde(Frontend::getCustomer()->getID());
-    $smarty->assign('bBereitsAbonnent', pruefeObBereitsAbonnent($customer->kKunde))
-           ->assign('oKunde', $customer);
+if (($customerID = Frontend::getCustomer()->getID()) > 0) {
+    $customer = new Kunde($customerID);
+    $smarty->assign('bBereitsAbonnent', Helper::customerIsSubscriber($customer->kKunde))
+        ->assign('oKunde', $customer);
 }
 $cCanonicalURL = $linkHelper->getStaticRoute('newsletter.php');
 
 $smarty->assign('cOption', $option)
-       ->assign('Link', $link)
-       ->assign('nAnzeigeOrt', CHECKBOX_ORT_NEWSLETTERANMELDUNG)
-       ->assign('code_newsletter', false);
+    ->assign('Link', $link)
+    ->assign('nAnzeigeOrt', CHECKBOX_ORT_NEWSLETTERANMELDUNG)
+    ->assign('code_newsletter', false);
 
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
 
 executeHook(HOOK_NEWSLETTER_PAGE);
-
 $smarty->display('newsletter/index.tpl');
 
 require PFAD_ROOT . PFAD_INCLUDES . 'profiler_inc.php';

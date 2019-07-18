@@ -176,8 +176,8 @@ class CheckBox
         $this->nLogging          = (int)$this->nLogging;
         $this->nSort             = (int)$this->nSort;
         $this->cID               = 'CheckBox_' . $this->kCheckBox;
-        $this->kKundengruppe_arr = \array_map('\intval', Text::parseSSK($checkbox->cKundengruppe));
-        $this->kAnzeigeOrt_arr   = \array_map('\intval', Text::parseSSK($checkbox->cAnzeigeOrt));
+        $this->kKundengruppe_arr = Text::parseSSKint($checkbox->cKundengruppe);
+        $this->kAnzeigeOrt_arr   = Text::parseSSKint($checkbox->cAnzeigeOrt);
         // Falls kCheckBoxFunktion gesetzt war aber diese Funktion nicht mehr existiert (deinstallation vom Plugin)
         // wird kCheckBoxFunktion auf 0 gesetzt
         if ($this->kCheckBoxFunktion > 0) {

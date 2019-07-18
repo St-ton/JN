@@ -104,10 +104,10 @@ class OptinNewsletter extends OptinBase implements OptinInterface
                     $checks->nPlausi_arr,
                     $checkBox->validateCheckBox(\CHECKBOX_ORT_NEWSLETTERANMELDUNG, $kKundengruppe, $_POST, true)
                 );
-                $checks->cPost_arr['cAnrede']   = $this->refData->getSalutation();
-                $checks->cPost_arr['cVorname']  = $this->refData->getFirstName();
-                $checks->cPost_arr['cNachname'] = $this->refData->getLastName();
-                $checks->cPost_arr['cEmail']    = $this->refData->getEmail();
+                $checks->cPost_arr['cAnrede']   = Text::filterXSS($this->refData->getSalutation());
+                $checks->cPost_arr['cVorname']  = Text::filterXSS($this->refData->getFirstName());
+                $checks->cPost_arr['cNachname'] = Text::filterXSS($this->refData->getLastName());
+                $checks->cPost_arr['cEmail']    = Text::filterXSS($this->refData->getEmail());
                 $checks->cPost_arr['captcha']   = isset($_POST['captcha'])
                     ? Text::htmlentities(Text::filterXSS($_POST['captcha']))
                     : null;

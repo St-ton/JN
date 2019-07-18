@@ -44,7 +44,8 @@ html, body {
     }
 
     .form-control,
-    .input-group-append {
+    .input-group-append,
+    .input-group-prepend {
       margin-bottom: 16px;
 
       button {
@@ -62,9 +63,18 @@ html, body {
 
     .input-group {
       .form-control {
-        border-bottom-right-radius: 0;
-        border-top-right-radius: 0;
-        border-right: none;
+        &:not(:last-child) {
+          border-bottom-right-radius: 0;
+          border-top-right-radius: 0;
+          border-right: none;
+        }
+        &:not(:first-child) {
+          &:not(.tt-input) {
+            border-bottom-left-radius: 0;
+            border-top-left-radius: 0;
+            border-left: none;
+          }
+        }
       }
 
       .twitter-typeahead {

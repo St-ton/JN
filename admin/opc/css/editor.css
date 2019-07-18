@@ -770,25 +770,33 @@ html, body {
   margin-bottom: 8px;
 }
 #opc .modal .form-control,
-#opc .modal .input-group-append {
+#opc .modal .input-group-append,
+#opc .modal .input-group-prepend {
   margin-bottom: 16px;
 }
 #opc .modal .form-control button,
-#opc .modal .input-group-append button {
+#opc .modal .input-group-append button,
+#opc .modal .input-group-prepend button {
   border: 1px solid #435A6B;
   padding: 4px 12px;
   height: 38px;
 }
 #opc .modal .form-control button.primary,
-#opc .modal .input-group-append button.primary {
+#opc .modal .input-group-append button.primary,
+#opc .modal .input-group-prepend button.primary {
   border: 1px solid #5cbcf6;
   background-color: #5cbcf6;
   color: #F5F7FA;
 }
-#opc .modal .input-group .form-control {
+#opc .modal .input-group .form-control:not(:last-child) {
   border-bottom-right-radius: 0;
   border-top-right-radius: 0;
   border-right: none;
+}
+#opc .modal .input-group .form-control:not(:first-child):not(.tt-input) {
+  border-bottom-left-radius: 0;
+  border-top-left-radius: 0;
+  border-left: none;
 }
 #opc .modal .input-group .twitter-typeahead {
   flex: 1 1 auto;

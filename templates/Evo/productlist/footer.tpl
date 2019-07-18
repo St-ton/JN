@@ -56,7 +56,7 @@
                 {if $NaviFilter->hasSearchQuery()}
                     <input type="hidden" name="l" value="{$NaviFilter->getSearchQuery()->getValue()}" />
                 {/if}
-                {if $NaviFilter->hasAttributeValue()}
+                {if $NaviFilter->hasCharacteristicValue()}
                     <input type="hidden" name="m" value="{$NaviFilter->getCharacteristicValue()->getValue()}" />
                 {/if}
                 {if $NaviFilter->hasCategoryFilter()}

@@ -18,10 +18,10 @@ msgid "errorAmountDecimals"
 msgstr "The quantity must not have more than 2 decimal places."
 
 msgid "countDecimals"
-msgstr "Number of decimal digits"
+msgstr "Number of decimal places"
 
 msgid "thousandDivider"
 msgstr "Thousands separator"
 
 msgid "decimalsDivider"
-msgstr "Dezimaltrennzeichen"
+msgstr "Decimal separator"

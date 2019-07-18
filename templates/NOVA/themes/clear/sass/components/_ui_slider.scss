@@ -1,19 +1,28 @@
-.ui-slider-horizontal {
+.noUi-horizontal {
   height: 0.3em;
-  .ui-widget-header{
+  .noUi-connect {
+    //height: 0.3em;
     background: $primary;
   }
-  &.ui-widget-content {
-    border: 0;
-    background: $sand;
-  }
-  .ui-slider-handle {
+  .noUi-handle {
     top: -0.2em;
     border-radius: 50%;
     background: $primary;
     border: 0;
     width: 0.7em;
     height: 0.7em;
-    box-shadow: 0px 0px 0px 5px rgba(248,191,0,0.5);
+    box-shadow: 0px 0px 0px 5px rgba(248, 191, 0, 0.5);
+    &::after,
+    &::before {
+      content: none;
+    }
   }
+}
+.noUi-target {
+  background: $sand;
+  box-shadow: none;
+  border: 0;
+}
+html:not([dir=rtl]) .noUi-horizontal .noUi-handle {
+  right: -0.35em;
 }

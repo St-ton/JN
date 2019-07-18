@@ -10,8 +10,9 @@
     {/block}
 
     {block name='checkout-index-content'}
-        {container}
-            <div id="result-wrapper">
+
+        <div id="result-wrapper">
+            {container}
                 <div id="checkout">
                     {block name='checkout-index-include-inc-steps'}
                         {include file='checkout/inc_steps.tpl'}
@@ -31,37 +32,37 @@
                         {include file='checkout/step5_confirmation.tpl'}{*bestellvorgang_bestaetigung*}
                     {/if}
                 </div>
-            </div>
+            {/container}
+        </div>
 
-            {if (isset($nWarenkorb2PersMerge) && $nWarenkorb2PersMerge === 1)}
-                {block name='checkout-index-script-basket-merge'}
-                    <script type="text/javascript">
-                        $(window).on('load', function() {
-                            $(function() {
-                                eModal.addLabel('{lang key='yes' section='global'}', '{lang key='no' section='global'}');
-                                var options = {
-                                    message: '{lang key='basket2PersMerge' section='login'}',
-                                    label: '{lang key='yes' section='global'}',
-                                    title: '{lang key='basket' section='global'}'
-                                };
-                                eModal.confirm(options).then(
-                                    function() {
-                                        window.location = "{get_static_route id='bestellvorgang.php'}?basket2Pers=1"
-                                    }
-                                );
-                            });
-                        });
-                    </script>
-                {/block}
-            {/if}
-            {block name='checkout-index-script-location'}
+        {if (isset($nWarenkorb2PersMerge) && $nWarenkorb2PersMerge === 1)}
+            {block name='checkout-index-script-basket-merge'}
                 <script type="text/javascript">
-                    if (top.location !== self.location) {ldelim}
-                        top.location = self.location.href;
-                    {rdelim}
+                    $(window).on('load', function() {
+                        $(function() {
+                            eModal.addLabel('{lang key='yes' section='global'}', '{lang key='no' section='global'}');
+                            var options = {
+                                message: '{lang key='basket2PersMerge' section='login'}',
+                                label: '{lang key='yes' section='global'}',
+                                title: '{lang key='basket' section='global'}'
+                            };
+                            eModal.confirm(options).then(
+                                function() {
+                                    window.location = "{get_static_route id='bestellvorgang.php'}?basket2Pers=1"
+                                }
+                            );
+                        });
+                    });
                 </script>
             {/block}
-        {/container}
+        {/if}
+        {block name='checkout-index-script-location'}
+            <script type="text/javascript">
+                if (top.location !== self.location) {ldelim}
+                    top.location = self.location.href;
+                {rdelim}
+            </script>
+        {/block}
     {/block}
 
     {block name='checkout-index-include-footer'}

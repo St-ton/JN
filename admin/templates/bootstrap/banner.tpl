@@ -111,11 +111,27 @@
                     </div>
                     <div class="input-group">
                         <span class="input-group-addon"><label for="vDatum">{__('activeFrom')}</label></span>
-                        <input class="form-control" type="text" name="vDatum" id="vDatum" value="{if isset($vDatum) && $vDatum > 0}{$vDatum|date_format:'%d.%m.%Y'}{elseif isset($oBanner->vDatum) && $oBanner->vDatum > 0}{$oBanner->vDatum|date_format:'%d.%m.%Y'}{/if}" />
+                        <input class="form-control" type="text" name="vDatum" id="vDatum"/>
+                        {include
+                            file="snippets/daterange_picker.tpl"
+                            datepickerID="#vDatum"
+                            currentDate="{if isset($vDatum) && $vDatum > 0}{$vDatum|date_format:'%d.%m.%Y'}{elseif isset($oBanner->vDatum) && $oBanner->vDatum > 0}{$oBanner->vDatum|date_format:'%d.%m.%Y'}{/if}"
+                            format="DD.MM.YYYY"
+                            separator="{__('datepickerSeparator')}"
+                            single=true
+                        }
                     </div>
                     <div class="input-group">
                         <span class="input-group-addon"><label for="bDatum">{__('activeTo')}</label></span>
-                        <input class="form-control" type="text" name="bDatum" id="bDatum" value="{if isset($bDatum) && $bDatum > 0}{$bDatum|date_format:'%d.%m.%Y'}{elseif isset($oBanner->bDatum) && $oBanner->bDatum > 0}{$oBanner->bDatum|date_format:'%d.%m.%Y'}{/if}" />
+                        <input class="form-control" type="text" name="bDatum" id="bDatum"  />
+                        {include
+                            file="snippets/daterange_picker.tpl"
+                            datepickerID="#bDatum"
+                            currentDate="{if isset($bDatum) && $bDatum > 0}{$bDatum|date_format:'%d.%m.%Y'}{elseif isset($oBanner->bDatum) && $oBanner->bDatum > 0}{$oBanner->bDatum|date_format:'%d.%m.%Y'}{/if}"
+                            format="DD.MM.YYYY"
+                            separator="{__('datepickerSeparator')}"
+                            single=true
+                        }
                     </div>
                 </div><!-- /.panel-body -->
             </div><!-- /.panel -->
@@ -441,9 +457,9 @@
                                     {$jtl_token}
                                     <input type="hidden" name="id" value="{$oBanner->kImageMap}" />
                                     <div class="btn-group">
-                                        <button class="btn btn-default" name="action" value="area" title="verlinken"><i class="fa fa-link"></i></button>
-                                        <button class="btn btn-default" name="action" value="edit" title="bearbeiten"><i class="fa fa-edit"></i></button>
-                                        <button class="btn btn-danger" name="action" value="delete" title="entfernen"><i class="fa fa-trash"></i></button>
+                                        <button class="btn btn-default" name="action" value="area" title="{__('actionLink')}"><i class="fa fa-link"></i></button>
+                                        <button class="btn btn-default" name="action" value="edit" title="{__('edit')}"><i class="fa fa-edit"></i></button>
+                                        <button class="btn btn-danger" name="action" value="delete" title="{__('delete')}"><i class="fa fa-trash"></i></button>
                                     </div>
                                 </form>
                             </td>

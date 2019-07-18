@@ -31,23 +31,23 @@ class ProductStream extends Portlet
         return [
             'listStyle'    => [
                 'type'    => InputType::SELECT,
-                'label'   => 'Darstellung',
+                'label'   => __('presentation'),
                 'options' => [
-                    'gallery'    => 'Galerie',
-                    'list'       => 'Liste',
-                    'slider'     => 'Slider',
-                    'vertSlider' => 'vertikaler Slider'
+                    'gallery'    => __('presentationGallery'),
+                    'list'       => __('presentationList'),
+                    'slider'     => __('presentationSlider'),
+                    'vertSlider' => __('presentationSliderVertical'),
                 ],
                 'default' => 'gallery',
                 'childrenFor' => [
                     'slider' => [
                         'sliderTitle'  => [
-                            'label' => 'Slidertitel',
+                            'label' => __('sliderTitle'),
                             'width' => 50,
                         ],
                         'productCount' => [
                             'type'    => InputType::NUMBER,
-                            'label'   => 'Anzahl sichtbare Artikel',
+                            'label'   => __('numberVisibleItems'),
                             'width'   => 50,
                             'default' => 3,
                         ],
@@ -56,7 +56,7 @@ class ProductStream extends Portlet
             ],
             'filters'      => [
                 'type'    => InputType::FILTER,
-                'label'   => 'Artikelfilter',
+                'label'   => __('itemFilter'),
                 'default' => [],
             ],
         ];
@@ -68,7 +68,7 @@ class ProductStream extends Portlet
     public function getPropertyTabs(): array
     {
         return [
-            'Styles' => 'styles',
+            __('Styles') => 'styles',
         ];
     }
 

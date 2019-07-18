@@ -18,7 +18,7 @@ msgid "countUsedCoupons"
 msgstr "All used coupons (% of orders)"
 
 msgid "countOrders"
-msgstr "Total purchase orders"
+msgstr "All orders"
 
 msgid "countCustomers"
 msgstr "Number of customers"

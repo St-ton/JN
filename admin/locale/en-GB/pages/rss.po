@@ -18,7 +18,7 @@ msgid "errorRSSCreate"
 msgstr "Could not create RSS feed."
 
 msgid "errorRSSCreatePermissions"
-msgstr "Cannot write file %s. The file does not have sufficient write access to create an XML file for the RSS feed. Please review the write access."
+msgstr "Cannot write file %s. The file does not have sufficient write access to create an XML file for the RSS feed. Please check write access."
 
 msgid "xmlCreate"
 msgstr "Create XML file for RSS feed"

@@ -11,12 +11,11 @@
         {block name='snippets-filter-genericFilterItem-content'}
             {foreach $filter->getOptions() as $filterOption}
                 {assign var=filterIsActive value=$filterOption->isActive() || $NaviFilter->getFilterValue($filter->getClassName()) === $filterOption->getValue()}
-                {dropdownitem class="filter-item"
+                {dropdownitem class="filter-item py-1"
                     active=$filterIsActive
                     href="{if $filterOption->isActive()}{$filter->getUnsetFilterURL($filterOption->getValue())}{else}{$filterOption->getURL()}{/if}"
                     rel='nofollow'}
-                    ({$filterOption->getCount()})
-                    <span class="value mr-5">
+                    <span class="value">
                         {if $filter->getIcon() !== null}
                             <i class="fa {$filter->getIcon()}"></i>
                         {else}
@@ -27,7 +26,7 @@
                                 {include file='productdetails/rating.tpl' stars=$filterOption->getValue()}
                             {/block}
                         {/if}
-                        <span class="word-break">{$filterOption->getName()}</span>
+                        <span class="word-break">{$filterOption->getName()}</span><span class="ml-2">({$filterOption->getCount()})</span>
                     </span>
                 {/dropdownitem}
             {/foreach}

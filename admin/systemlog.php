@@ -49,13 +49,13 @@ if (Form::validateToken()) {
 }
 
 $filter      = new Filter('syslog');
-$levelSelect = $filter->addSelectfield('Loglevel', 'nLevel');
-$levelSelect->addSelectOption('alle', Operation::CUSTOM);
-$levelSelect->addSelectOption('Debug', \Monolog\Logger::DEBUG, Operation::EQUALS);
-$levelSelect->addSelectOption('Hinweis', \Monolog\Logger::INFO, Operation::EQUALS);
-$levelSelect->addSelectOption('Fehler', \Monolog\Logger::ERROR, Operation::GREATER_THAN_EQUAL);
-$filter->addDaterangefield('Zeitraum', 'dErstellt');
-$searchfield = $filter->addTextfield('Suchtext', 'cLog', Operation::CONTAINS);
+$levelSelect = $filter->addSelectfield(__('systemlogLevel'), 'nLevel');
+$levelSelect->addSelectOption(__('all'), Operation::CUSTOM);
+$levelSelect->addSelectOption(__('systemlogDebug'), \Monolog\Logger::DEBUG, Operation::EQUALS);
+$levelSelect->addSelectOption(__('systemlogNotice'), \Monolog\Logger::INFO, Operation::EQUALS);
+$levelSelect->addSelectOption(__('systemlogError'), \Monolog\Logger::ERROR, Operation::GREATER_THAN_EQUAL);
+$filter->addDaterangefield(__('Zeitraum'), 'dErstellt');
+$searchfield = $filter->addTextfield(__('systemlogSearch'), 'cLog', Operation::CONTAINS);
 $filter->assemble();
 
 $searchString     = $searchfield->getValue();

@@ -1,7 +1,7 @@
 <script type="text/javascript">
     function append_file_selector() {ldelim}
         var file_input = $('<input type="file" name="Bilder[]" maxlength="2097152" accept="image/*" />'),
-            container = $('<p class="multi_input vmiddle"><a href="#" title="Entfernen"><img src="{$currentTemplateDir}/gfx/layout/delete.png" class="vmiddle" /></a></p>').prepend(file_input);
+            container = $('<p class="multi_input vmiddle"><a href="#" title="{__("delete")}"><img src="{$currentTemplateDir}/gfx/layout/delete.png" class="vmiddle" /></a></p>').prepend(file_input);
         $('#file_input_wrapper').append(container);
         $(container).find('img').bind('click', function () {ldelim}
             $(file_input).parent().remove();

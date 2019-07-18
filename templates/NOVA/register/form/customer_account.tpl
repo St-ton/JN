@@ -27,31 +27,29 @@
             {block name='register-form-customer-account-password'}
                 {row id="create_account_data" class="collapse collapse-non-validate {if $unregForm === 1}hidden{else}show{/if}" aria-expanded="true"}
                     {block name='register-form-customer-account-password-first'}
-                        {col cols=12 md=5 offset-md=2}
-                            {formgroup
-                                class="{if isset($fehlendeAngaben.pass_zu_kurz) || isset($fehlendeAngaben.pass_ungleich)} has-error{/if}"
-                                label="{lang key='password' section='account data'}"
-                                label-for="password"
-                            }
-                                {input
-                                    type="password"
-                                    name="pass"
-                                    maxlength="20"
-                                    id="password"
-                                    placeholder="{lang key='password' section='account data'}"
-                                    required=true
-                                    autocomplete="off"
-                                    aria-autocomplete="none"
-                                    disabled=($unregForm === 1)
+                        {col cols=12 md=4}
+                            <div class="form-group d-flex flex-column {if isset($fehlendeAngaben.pass_zu_kurz) || isset($fehlendeAngaben.pass_ungleich)} has-error{/if}" role="group">
+                                {input type="password"
+                                       placeholder="{lang key='password' section='account data'}"
+                                       id="password"
+                                       required=true
+                                       value=""
+                                       name="pass"
+                                       aria-autocomplete="none"
+                                       autocomplete="off"
+                                       disabled=($unregForm === 1)
                                 }
-                                {if isset($fehlendeAngaben.pass_zu_kurz)}
-                                    <div class="form-error-msg text-danger"><i class="fa fa-exclamation-triangle"></i> {$warning_passwortlaenge}</div>
-                                {/if}
-                            {/formgroup}
+                                <label for="pass" class="col-form-label pt-0">
+                                    {lang key='password' section='account data'}
+                                </label>
+                            </div>
+                            {block name='account-change-password-include-password-check'}
+                                {include file='snippets/password_check.tpl' id='#password'}
+                            {/block}
                         {/col}
                     {/block}
                     {block name='register-form-customer-account-password-repeat'}
-                        {col cols=12 md=5}
+                        {col cols=12 md=4}
                             {formgroup
                                 class="{if isset($fehlendeAngaben.pass_zu_kurz) || isset($fehlendeAngaben.pass_ungleich)} has-error{/if}"
                                 label="{lang key='passwordRepeat' section='account data'}"
@@ -69,6 +67,7 @@
                                     autocomplete="off"
                                     aria-autocomplete="none"
                                     disabled=($unregForm === 1)
+                                    value=""
                                 }
                                 {if isset($fehlendeAngaben.pass_ungleich)}
                                     <div class="form-error-msg text-danger"><i class="fa fa-exclamation-triangle"></i>

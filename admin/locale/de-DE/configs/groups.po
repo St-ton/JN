@@ -105,13 +105,13 @@ msgid "configgroup_8_box_new_products"
 msgstr "Box: Neu im Sortiment"
 
 msgid "configgroup_8_box_top_products"
-msgstr "Box: Top-Angebot"
+msgstr "Box: Top-Artikel"
 
 msgid "configgroup_8_box_last_viewed"
 msgstr "Box: Zuletzt angesehen"
 
 msgid "configgroup_8_box_upcoming_products"
-msgstr "Box: Bald erscheinende Produkte"
+msgstr "Box: Bald erscheinende Artikel"
 
 msgid "configgroup_8_box_searchcloud"
 msgstr "Suchwolke"
@@ -123,7 +123,7 @@ msgid "configgroup_8_box_comparelist"
 msgstr "Vergleichsliste"
 
 msgid "configgroup_8_box_top_rated"
-msgstr "Box: Top Bewertet"
+msgstr "Box: Top bewertet"
 
 msgid "configgroup_8_box_priceradar"
 msgstr "Box: Preisradar"
@@ -132,7 +132,7 @@ msgid "configgroup_9_image_settings"
 msgstr "Bildeinstellungen"
 
 msgid "configgroup_10_livesearch_overview"
-msgstr "Livesuche-Übersicht"
+msgstr "Live-Suche-Übersicht"
 
 msgid "configgroup_10_gifts"
 msgstr "Gratisgeschenk"
@@ -234,7 +234,7 @@ msgid "rma_receiver_head"
 msgstr "Empfängeranschrift für die Warenrücksendung"
 
 msgid "ftp_header"
-msgstr "FTP Verbindung"
+msgstr "FTP-Verbindung"
 
 msgid "configgroup_110_manufacturer_filter"
 msgstr "Herstellerfilter"

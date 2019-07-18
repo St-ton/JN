@@ -256,7 +256,7 @@
                     </span>
                     <span class="input-group-addon">
                         <button type="button" class="btn btn-info btn-xs" data-toggle="modal"
-                                data-target="#articlePicker-modal" title="Artikel verwalten">
+                                data-target="#articlePicker-modal" title="{__('labelSearchProduct')}">
                             <i class="fa fa-edit"></i>
                         </button>
                     </span>
@@ -297,7 +297,7 @@
                     </span>
                     <span class="input-group-addon">
                         <button type="button" class="btn btn-info btn-xs" data-toggle="modal"
-                                data-target="#manufacturerPicker-modal" title="Hersteller verwalten">
+                                data-target="#manufacturerPicker-modal" title="{__('labelSearchManufacturer')}">
                             <i class="fa fa-edit"></i>
                         </button>
                     </span>
@@ -338,7 +338,7 @@
                     </span>
                     <span class="input-group-addon">
                         <button type="button" class="btn btn-info btn-xs" data-toggle="modal"
-                                data-target="#categoryPicker-modal" title="Kategorien verwalten">
+                                data-target="#categoryPicker-modal" title="{__('labelSearchCategory')}">
                             <i class="fa fa-edit"></i>
                         </button>
                     </span>

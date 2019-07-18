@@ -9,7 +9,7 @@ msgid "boxenURL"
 msgstr "https://jtl-url.de/2uknw"
 
 msgid "boxenDesc"
-msgstr "Hier können Sie verschiedenen Boxen-Containern Boxen hinzufügen bzw. Boxen entfernen. Für jeden Container können Sie festlegen, auf welchen Seiten er sichtbar sein soll. Ob ein spezieller Container verfügbar ist oder nicht, wird durch das Template bestimmt. Sie können eigene Boxen, z. B. Linkgruppen oder Boxen mit eigenem xHTML-Inhalt, in einem Boxen-Container anlegen. Einige Boxen können Sie über die Bearbeiten-Schaltfläche weiter konfigurieren."
+msgstr "Hier können Sie verschiedenen Boxen-Containern Boxen hinzufügen bzw. Boxen entfernen. Für jeden Container können Sie festlegen, auf welchen Seiten er sichtbar sein soll. Ob ein spezieller Container verfügbar ist oder nicht, wird durch das Template bestimmt. Sie können eigene Boxen, z. B. Linkgruppen oder Boxen mit eigenem xHTML-Inhalt, in einem Boxen-Container anlegen. Einige Boxen können Sie über die Bearbeiten-Schaltfläche weiter konfigurieren."
 
 msgid "showContainer"
 msgstr "Container anzeigen"
@@ -51,7 +51,7 @@ msgid "new"
 msgstr "Neue Box"
 
 msgid "inContainer"
-msgstr "in Container"
+msgstr "In Container"
 
 msgid "newContainer"
 msgstr "Neuer Container"
@@ -75,7 +75,7 @@ msgid "warningInvisibleBoxes"
 msgstr "Es existieren Boxen, die aktuell nicht angezeigt werden können."
 
 msgid "noBoxesAvailableFor"
-msgstr "Momentan sind noch keine Boxen vorhanden für „%s“."
+msgstr "Momentan sind noch keine Boxen für „%s“ vorhanden."
 
 msgid "showBoxOnlyFor"
 msgstr "Box „%s“ nur anzeigen für:"
@@ -197,7 +197,7 @@ msgstr "Sonderangebot"
 
 #box name
 msgid "Top Angebot"
-msgstr "Top-Angebot"
+msgstr "Top-Artikel"
 
 #box name
 msgid "Top bewertet"

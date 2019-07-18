@@ -15,7 +15,7 @@ msgid "shopResetDesc"
 msgstr "Here you can delete data from individual areas of your online shop and reset all settings to the factory settings. Please note that all personal data will be deleted from these areas and that the data can afterwards only be restored using a backup."
 
 msgid "successShopReturn"
-msgstr "The Shop has been reset with your selected Options."
+msgstr "Selected options reset successfully."
 
 msgid "dangerStrong"
 msgstr "CAUTION"

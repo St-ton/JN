@@ -114,7 +114,7 @@
                 </div>
             </div>
             <p class="forgot-pw-wrap">
-                <a href="pass.php" title="Passwort vergessen"><i class="fa fa-lock"></i> {__('forgotPassword')}</a>
+                <a href="pass.php" title="{__('forgotPassword')}"><i class="fa fa-lock"></i> {__('forgotPassword')}</a>
             </p>
         </div>
     </div>

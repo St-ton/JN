@@ -4,14 +4,14 @@
  *}
 {block name='layout-header-nav-icons'}
     {block name='layout-header-nav-icons-search'}
-        {navitem tag="div" class="d-flex d-md-none mr-2" aria=['expanded' => 'false'] role='button'
+        {navitem tag="div" class="d-flex d-md-none mr-1" aria=['expanded' => 'false'] role='button'
             data=['toggle' => 'collapse', 'target' => '#nav-search-collapse'] router-tag='div'}
             <i class="fas fa-search"></i>
         {/navitem}
     {/block}
     {block name='layout-header-nav-icons-login'}
-        {navitem tag="div" aria=['expanded' => 'false'] data=['toggle' => 'collapse', 'target' => '#nav-account-collapse']}
-            <span class="fas fa-user mr-md-3"></span>
+        {navitem tag="div" class="mr-1" aria=['expanded' => 'false'] data=['toggle' => 'collapse', 'target' => '#nav-account-collapse']}
+            <span class="fas fa-user"></span>
         {/navitem}
     {/block}
     {block name='layout-header-nav-icons-include-header-shop-nav-compare'}

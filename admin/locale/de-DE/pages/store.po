@@ -2,7 +2,7 @@ msgid "store"
 msgstr "JTL-Store"
 
 msgid "storeDesc"
-msgstr "Um auf JTL-Store Inhalte zugreifen zu k&ouml;nnen, müssen Sie zun&auml;chst Ihr JTL-Konto verkn&uuml;pfen."
+msgstr "Um auf Inhalte von JTL-Store zugreifen zu können, müssen Sie zunächst Ihr JTL-Konto verknüpfen."
 
 msgid "storeURL"
 msgstr ""

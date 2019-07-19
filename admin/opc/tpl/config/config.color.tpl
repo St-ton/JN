@@ -1,8 +1,8 @@
 {if !isset($propid)}
     {$propid = $propname}
 {/if}
-<div class="form-group">
-    <label for="config-{$propname}">{$propdesc.label}</label>
+<div class="form-group no-pb">
+    <label for="config-{$propid}">{$propdesc.label}</label>
     <div class="input-group" id="config-{$propid}-group">
         <input type="text" class="form-control" name="{$propname}" value="{$propval}" {if $required}required{/if}
                id="config-{$propid}" autocomplete="off">

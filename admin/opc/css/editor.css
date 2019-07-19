@@ -922,6 +922,9 @@ html, body {
   padding: 0;
   margin-bottom: 16px;
 }
+#opc .modal .modal-body .form-group.no-pb {
+  margin-bottom: 0;
+}
 #opc .modal .modal-footer {
   border: none;
   padding: 24px;

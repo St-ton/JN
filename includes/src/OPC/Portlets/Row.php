@@ -6,6 +6,7 @@
 
 namespace JTL\OPC\Portlets;
 
+use JTL\OPC\InputType;
 use JTL\OPC\Portlet;
 use JTL\OPC\PortletInstance;
 
@@ -29,6 +30,10 @@ class Row extends Portlet
     public function getPropertyDesc(): array
     {
         return [
+            'layout' => [
+                'type'  => InputType::ROW_LAYOUT,
+                'label' => 'Aufteilung',
+            ],
             'layout-xs' => [
                 'label'   => '<i class="fa fa-mobile"></i>' . __('layoutXS'),
                 'default' => '6+6',

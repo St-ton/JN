@@ -1,0 +1,1 @@
+<label>{$propdesc.label}</label>

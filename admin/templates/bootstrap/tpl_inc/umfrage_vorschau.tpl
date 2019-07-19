@@ -58,8 +58,10 @@
                 <div class="card">
                     <div class="card-header">
                         <strong>{$oUmfrageFrage@iteration}.</strong>
-                        <input id="question-{$oUmfrageFrage@iteration}" name="kUmfrageFrage[]" type="checkbox" value="{$oUmfrageFrage->kUmfrageFrage}">
-                        <label for="question-{$oUmfrageFrage@iteration}">{$oUmfrageFrage->cName}</label> [<a href="umfrage.php?umfrage=1&kUmfrage={$oUmfrage->kUmfrage}&kUmfrageFrage={$oUmfrageFrage->kUmfrageFrage}&fe=1&token={$smarty.session.jtl_token}">{__('edit')}</a>]
+                        <div class="custom-control custom-checkbox">
+                            <input class="custom-control-input" id="question-{$oUmfrageFrage@iteration}" name="kUmfrageFrage[]" type="checkbox" value="{$oUmfrageFrage->kUmfrageFrage}">
+                            <label class="custom-control-label" for="question-{$oUmfrageFrage@iteration}">{$oUmfrageFrage->cName}</label> [<a href="umfrage.php?umfrage=1&kUmfrage={$oUmfrage->kUmfrage}&kUmfrageFrage={$oUmfrageFrage->kUmfrageFrage}&fe=1&token={$smarty.session.jtl_token}">{__('edit')}</a>]
+                        </div>
                     </div>
                     <div class="card-body">
                         <strong>{$oUmfrageFrage->cTypMapped}: </strong>
@@ -73,7 +75,12 @@
                                     <table  class="table">
                                         {foreach $oUmfrageFrage->oUmfrageFrageAntwort_arr as $oUmfrageFrageAntwort}
                                             <tr>
-                                                <td style="width: 10px;"><input name="kUmfrageFrageAntwort[]" type="checkbox" value="{$oUmfrageFrageAntwort->kUmfrageFrageAntwort}"></td>
+                                                <td style="width: 10px;">
+                                                    <div class="custom-control custom-checkbox">
+                                                        <input class="custom-control-input" name="kUmfrageFrageAntwort[]" type="checkbox" id="survey-question-id-{$oUmfrageFrageAntwort->kUmfrageFrageAntwort}" value="{$oUmfrageFrageAntwort->kUmfrageFrageAntwort}">
+                                                        <label class="custom-control-label" for="survey-question-id-{$oUmfrageFrageAntwort->kUmfrageFrageAntwort}"></label>
+                                                    </div>
+                                                </td>
                                                 <td>{$oUmfrageFrageAntwort->cName}</td>
                                             </tr>
                                         {/foreach}
@@ -84,7 +91,12 @@
                                         <table  class="table">
                                             {foreach $oUmfrageFrage->oUmfrageMatrixOption_arr as $oUmfrageMatrixOption}
                                                 <tr>
-                                                    <td style="width: 10px;"><input id="answ-{$oUmfrageMatrixOption@index}" name="kUmfrageMatrixOption[]" type="checkbox" value="{$oUmfrageMatrixOption->kUmfrageMatrixOption}"></td>
+                                                    <td style="width: 10px;">
+                                                        <div class="custom-control custom-checkbox">
+                                                            <input class="custom-control-input" id="answ-{$oUmfrageMatrixOption@index}" name="kUmfrageMatrixOption[]" type="checkbox" value="{$oUmfrageMatrixOption->kUmfrageMatrixOption}">
+                                                            <label class="custom-control-label" for="answ-{$oUmfrageMatrixOption@index}"></label>
+                                                        </div>
+                                                    </td>
                                                     <td>{$oUmfrageMatrixOption->cName}</td>
                                                 </tr>
                                             {/foreach}

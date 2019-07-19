@@ -101,7 +101,10 @@
                                         {if $oKampagne->kKampagne >= 1000}
                                             <tr>
                                                 <td class="check">
-                                                    <input name="kKampagne[]" type="checkbox" value="{$oKampagne->kKampagne}">
+                                                    <div class="custom-control custom-checkbox">
+                                                        <input class="custom-control-input" name="kKampagne[]" type="checkbox" id="campaign-id-{$oKampagne->kKampagne}" value="{$oKampagne->kKampagne}">
+                                                        <label class="custom-control-label" for="campaign-id-{$oKampagne->kKampagne}"></label>
+                                                    </div>
                                                 </td>
                                                 <td>
                                                     <strong><a href="kampagne.php?kKampagne={$oKampagne->kKampagne}&detail=1&token={$smarty.session.jtl_token}">{$oKampagne->cName}</a></strong>
@@ -132,7 +135,10 @@
                                     <tfoot>
                                         <tr>
                                             <td class="check">
-                                                <input name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);" />
+                                                <div class="custom-control custom-checkbox">
+                                                    <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);" />
+                                                    <label class="custom-control-label" for="ALLMSGS"></label>
+                                                </div>
                                             </td>
                                             <td colspan="6"><label for="ALLMSGS">{__('globalSelectAll')}</label></td>
                                         </tr>

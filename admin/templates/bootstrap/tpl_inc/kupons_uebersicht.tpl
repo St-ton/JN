@@ -36,7 +36,12 @@
                                 {foreach $oKupon_arr as $oKupon}
                                     <tr{if $oKupon->cAktiv === 'N'} class="text-danger"{/if}>
                                         <td>{if $oKupon->cAktiv === 'N'}<i class="fal fa-times"></i>{/if}</td>
-                                        <td><input type="checkbox" name="kKupon_arr[]" id="kupon-{$oKupon->kKupon}" value="{$oKupon->kKupon}"></td>
+                                        <td>
+                                            <div class="custom-control custom-checkbox">
+                                                <input class="custom-control-input" type="checkbox" name="kKupon_arr[]" id="kupon-{$oKupon->kKupon}" value="{$oKupon->kKupon}">
+                                                <label class="custom-control-label" for="kupon-{$oKupon->kKupon}"></label>
+                                            </div>
+                                        </td>
                                         <td>
                                             <label for="kupon-{$oKupon->kKupon}">
                                                 {$oKupon->cName}
@@ -99,7 +104,12 @@
                             <tfoot>
                                 <tr>
                                     <td></td>
-                                    <td><input type="checkbox" name="ALLMSGS" id="ALLMSGS_{$cKuponTyp}" onclick="AllMessages(this.form);"></td>
+                                    <td>
+                                        <div class="custom-control custom-checkbox">
+                                            <input class="custom-control-input" type="checkbox" name="ALLMSGS" id="ALLMSGS_{$cKuponTyp}" onclick="AllMessages(this.form);">
+                                            <label class="custom-control-label" for="ALLMSGS_{$cKuponTyp}"></label>
+                                        </div>
+                                    </td>
                                     <td colspan="9"><label for="ALLMSGS_{$cKuponTyp}">{__('globalSelectAll')}</label></td>
                                 </tr>
                             </tfoot>

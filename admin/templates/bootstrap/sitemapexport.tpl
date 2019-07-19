@@ -114,8 +114,8 @@
                                             <tr>
                                                 <td width="20">
                                                     <div class="custom-control custom-checkbox">
-                                                        <input class="custom-control-input" name="kSitemapTracker[]" type="checkbox" value="{$oSitemapDownload->kSitemapTracker}">
-                                                        <label class="custom-control-label"></label>
+                                                        <input class="custom-control-input" name="kSitemapTracker[]" type="checkbox" id="sitemap-tracker-id-{$oSitemapDownload->kSitemapTracker}" value="{$oSitemapDownload->kSitemapTracker}">
+                                                        <label class="custom-control-label" for="sitemap-tracker-id-{$oSitemapDownload->kSitemapTracker}"></label>
                                                     </div>
                                                 </td>
                                                 <td><a href="{\JTL\Shop::getURL()}/{$oSitemapDownload->cSitemap}" target="_blank">{$oSitemapDownload->cSitemap}</a></td>
@@ -200,8 +200,8 @@
                                         <tr>
                                             <td class="check">
                                                 <div class="custom-control custom-checkbox">
-                                                    <input class="custom-control-input" name="kSitemapReport[]" type="checkbox" value="{$oSitemapReport->kSitemapReport}">
-                                                    <label class="custom-control-label"></label>
+                                                    <input class="custom-control-input" name="kSitemapReport[]" type="checkbox" id="sitemap-report-id-{$oSitemapReport->kSitemapReport}" value="{$oSitemapReport->kSitemapReport}">
+                                                    <label class="custom-control-label" for="sitemap-report-id-{$oSitemapReport->kSitemapReport}"></label>
                                                 </div>
                                             </td>
                                             {if isset($oSitemapReport->oSitemapReportFile_arr) && $oSitemapReport->oSitemapReportFile_arr|@count > 0}

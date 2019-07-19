@@ -18,7 +18,6 @@
             </script>
             <div id="confirmModal" class="modal fade" role="dialog">
                 <div class="modal-dialog">
-
                     <div class="modal-content">
                         <div class="modal-header">
                             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
@@ -32,10 +31,8 @@
                                 <button type="button" class="btn btn-success" name="ok" id="submitForm"><i class="fal fa-check text-success"></i>&nbsp;{__('ok')}</button>
                                 <button type="button" class="btn btn-danger" name="cancel" data-dismiss="modal"><i class="fa fa-close"></i>&nbsp;{__('cancel')}</button>
                             </div>
-                            </div>
                         </div>
                     </div>
-
                 </div>
             </div>
             <input name="a" type="hidden" value="delete" />
@@ -62,7 +59,10 @@
                         {foreach $oEmailhistory_arr as $oEmailhistory}
                             <tr>
                                 <td class="check">
-                                    <input type="checkbox" name="kEmailhistory[]" value="{$oEmailhistory->getEmailhistory()}" />
+                                    <div class="custom-control custom-checkbox">
+                                        <input class="custom-control-input" type="checkbox" name="kEmailhistory[]" id="email-history-id-{$oEmailhistory->getEmailhistory()}" value="{$oEmailhistory->getEmailhistory()}" />
+                                        <label class="custom-control-label" for="email-history-id-{$oEmailhistory->getEmailhistory()}"></label>
+                                    </div>
                                 </td>
                                 <td>{$oEmailhistory->getSubject()}</td>
                                 <td>{$oEmailhistory->getFromName()}</td>
@@ -76,7 +76,11 @@
                         <tfoot>
                         <tr>
                             <td class="check">
-                                <input name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);" /></td>
+                                <div class="custom-control custom-checkbox">
+                                    <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);" />
+                                    <label class="custom-control-label" for="ALLMSGS"></label>
+                                </div>
+                            </td>
                             <td colspan="8"><label for="ALLMSGS">{__('globalSelectAll')}</label></td>
                         </tr>
                         </tfoot>

@@ -78,7 +78,10 @@
                             <input class="form-control" type="number" name="{$confItem->valueID}" id="{$confItem->valueID}" value="{$confItem->value}" />
                         {elseif $confItem->inputType === JTL\Plugin\Admin\InputType::CHECKBOX}
                             <div class="input-group-checkbox-wrap">
-                                <input class="form-control" id="{$confItem->valueID}" type="checkbox" name="{$confItem->valueID}"{if $confItem->value === 'on'} checked="checked"{/if}>
+                                <div class="custom-control custom-checkbox">
+                                    <input class="custom-control-input form-control" id="{$confItem->valueID}" type="checkbox" name="{$confItem->valueID}"{if $confItem->value === 'on'} checked="checked"{/if}>
+                                    <label class="custom-control-label" for="{$confItem->valueID}"></label>
+                                </div>
                             </div>
                         {elseif $confItem->inputType === JTL\Plugin\Admin\InputType::RADIO}
                             <div class="input-group-checkbox-wrap">

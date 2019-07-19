@@ -39,7 +39,10 @@
                             {foreach $oWarenlager_arr as $oWarenlager}
                                 <tr>
                                     <td class="checkext">
-                                        <input name="kWarenlager[]" type="checkbox" value="{$oWarenlager->kWarenlager}"{if $oWarenlager->nAktiv == 1} checked{/if} />
+                                        <div class="custom-control custom-checkbox">
+                                            <input class="custom-control-input" name="kWarenlager[]" type="checkbox" id="store-id-{$oWarenlager->kWarenlager}" value="{$oWarenlager->kWarenlager}"{if $oWarenlager->nAktiv == 1} checked{/if} />
+                                            <label class="custom-control-label" for="store-id-{$oWarenlager->kWarenlager}"></label>
+                                        </div>
                                     </td>
                                     <td class="tcenter large">{$oWarenlager->cName}</td>
                                     <td class="tcenter">{$oWarenlager->cBeschreibung}</td>

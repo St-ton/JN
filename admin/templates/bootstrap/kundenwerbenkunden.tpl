@@ -51,8 +51,8 @@
                                         <tr>
                                             <td class="check">
                                                 <div class="custom-control custom-checkbox">
-                                                    <input class="custom-control-input" type="checkbox" name="kKundenWerbenKunden[]" value="{$oKwKNichtReg->kKundenWerbenKunden}">
-                                                    <label class="custom-control-label"></label>
+                                                    <input class="custom-control-input" type="checkbox" name="kKundenWerbenKunden[]" id="customer-recruit-{$oKwKNichtReg->kKundenWerbenKunden}" value="{$oKwKNichtReg->kKundenWerbenKunden}">
+                                                    <label class="custom-control-label" for="customer-recruit-{$oKwKNichtReg->kKundenWerbenKunden}"></label>
                                                 </div>
                                             </td>
                                             <td class="tleft">

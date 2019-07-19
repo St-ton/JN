@@ -28,9 +28,12 @@
                             {foreach $oZahlunseingang_arr as $oZahlungseingang}
                                 <tr>
                                     <td>
-                                        <input type="checkbox" name="kEingang_arr[]"
+                                        <div class="custom-control custom-checkbox">
+                                            <input class="custom-control-input" type="checkbox" name="kEingang_arr[]"
                                                id="eingang-{$oZahlungseingang->kZahlungseingang}"
                                                value="{$oZahlungseingang->kZahlungseingang}">
+                                            <label class="custom-control-label" for="eingang-{$oZahlungseingang->kZahlungseingang}"></label>
+                                        </div>
                                     </td>
                                     <td>
                                         <label for="eingang-{$oZahlungseingang->kZahlungseingang}">{$oZahlungseingang->dZeit}</label>
@@ -59,7 +62,12 @@
                         </tbody>
                         <tfoot>
                             <tr>
-                                <td><input type="checkbox" name="ALLMSGS" id="ALLMSGS" onclick="AllMessages(this.form);"></td>
+                                <td>
+                                    <div class="custom-control custom-checkbox">
+                                        <input class="custom-control-input" type="checkbox" name="ALLMSGS" id="ALLMSGS" onclick="AllMessages(this.form);">
+                                        <label class="custom-control-label" for="ALLMSGS"></label>
+                                    </div>
+                                </td>
                                 <td colspan="7"><label for="ALLMSGS">{__('selectAllShown')}</label></td>
                             </tr>
                         </tfoot>

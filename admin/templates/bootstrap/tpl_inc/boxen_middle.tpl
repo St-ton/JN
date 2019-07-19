@@ -6,9 +6,11 @@
                 <div class="card-header">
                     <div class="subheading1">{$directionName}</div>
                     <hr class="mb-3">
-                    <input type="checkbox" name="box_show" id="box_{$direction}_show" value="1"
+                    <div class="custom-control custom-checkbox">
+                        <input class="custom-control-input" type="checkbox" name="box_show" id="box_{$direction}_show" value="1"
                            {if isset($bBoxenAnzeigen.$direction) && $bBoxenAnzeigen.$direction}checked{/if}>
-                    <label for="box_{$direction}_show">{__('showContainer')}</label>
+                        <label class="custom-control-label" for="box_{$direction}_show">{__('showContainer')}</label>
+                    </div>
                 </div>
                 <div class="card-body">
                 {if $oBox_arr|@count > 0}

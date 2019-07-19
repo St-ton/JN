@@ -114,8 +114,10 @@
                             <strong>{__('effects')}</strong>
                         </div>
                         <div class="for">
-                            <input id="cRandomEffects" type="checkbox" value="random" class="random_effects" {if isset($checked)}{$checked} {/if}name="cEffects" />
-                            <label for="cRandomEffects">{__('randomEffects')}</label>
+                            <div class="custom-control custom-checkbox">
+                                <input id="cRandomEffects" type="checkbox" value="random" class="custom-control-input random_effects" {if isset($checked)}{$checked} {/if}name="cEffects" />
+                                <label class="custom-control-label" for="cRandomEffects">{__('randomEffects')}</label>
+                            </div>
                             <div class="select_container row">
                                 <div class="col-xs-12 col-md-6 select_box">
                                     <label for="cSelectedEffects">{__('selectedEffects')}</label>

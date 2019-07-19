@@ -98,8 +98,8 @@
                                         <tr>
                                             <td class="check">
                                                 <div class="custom-control custom-checkbox">
-                                                    <input class="custom-control-input" name="kBewertung[]" type="checkbox" value="{$oBewertung->kBewertung}" />
-                                                    <label class="custom-control-label"></label>
+                                                    <input class="custom-control-input" name="kBewertung[]" type="checkbox" id="review-id-{$oBewertung->kBewertung}" value="{$oBewertung->kBewertung}" />
+                                                    <label class="custom-control-label" for="review-id-{$oBewertung->kBewertung}"></label>
                                                 </div>
                                                 <input type="hidden" name="kArtikel[]" value="{$oBewertung->kArtikel}" />
                                                 <input type="hidden" name="kBewertungAll[]" value="{$oBewertung->kBewertung}" />
@@ -129,7 +129,7 @@
                                         <td class="check">
                                             <div class="custom-control custom-checkbox">
                                                 <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS1" type="checkbox" onclick="AllMessages(this.form);" />
-                                                <label class="custom-control-label" for="ALLSMSGS1"></label>
+                                                <label class="custom-control-label" for="ALLMSGS1"></label>
                                             </div>
                                         </td>
                                         <td colspan="5"><label for="ALLMSGS1">{__('globalSelectAll')}</label></td>
@@ -180,8 +180,8 @@
                                         <tr>
                                             <td class="check">
                                                 <div class="custom-control custom-checkbox">
-                                                    <input class="custom-control-input" name="kSuchanfrage[]" type="checkbox" value="{$oSuchanfrage->kSuchanfrage}" />
-                                                    <label class="custom-control-label"></label>
+                                                    <input class="custom-control-input" name="kSuchanfrage[]" type="checkbox" id="search-request-id-{$oSuchanfrage->kSuchanfrage}" value="{$oSuchanfrage->kSuchanfrage}" />
+                                                    <label class="custom-control-label" for="search-request-id-{$oSuchanfrage->kSuchanfrage}"></label>
                                                 </div>
                                             </td>
                                             <td class="tleft">{$oSuchanfrage->cSuche}</td>
@@ -331,8 +331,8 @@
                                             <tr>
                                                 <td class="check">
                                                     <div class="custom-control custom-checkbox">
-                                                        <input class="custom-control-input" type="checkbox" name="kNewsletterEmpfaenger[]" value="{$oNewsletterEmpfaenger->kNewsletterEmpfaenger}" />
-                                                        <label class="custom-control-label"></label>
+                                                        <input class="custom-control-input" type="checkbox" name="kNewsletterEmpfaenger[]" id="newsletter-recipient-id-{$oNewsletterEmpfaenger->kNewsletterEmpfaenger}" value="{$oNewsletterEmpfaenger->kNewsletterEmpfaenger}" />
+                                                        <label class="custom-control-label" for="newsletter-recipient-id-{$oNewsletterEmpfaenger->kNewsletterEmpfaenger}"></label>
                                                     </div>
                                                 </td>
                                                 <td>{$oNewsletterEmpfaenger->cEmail}</td>

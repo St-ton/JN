@@ -51,7 +51,12 @@
                                                 <tbody>
                                                 {foreach $oUmfrage_arr as $oUmfrage}
                                                     <tr>
-                                                        <td><input type="checkbox" name="kUmfrage[]" value="{$oUmfrage->kUmfrage}" /></td>
+                                                        <td>
+                                                            <div class="custom-control custom-checkbox">
+                                                                <input class="custom-control-input" type="checkbox" name="kUmfrage[]" id="survey-id-{$oUmfrage->kUmfrage}" value="{$oUmfrage->kUmfrage}" />
+                                                                <label class="custom-control-label" for="survey-id-{$oUmfrage->kUmfrage}"></label>
+                                                            </div>
+                                                        </td>
                                                         <td>
                                                             <a href="umfrage.php?umfrage=1&token={$smarty.session.jtl_token}&ud=1&kUmfrage={$oUmfrage->kUmfrage}&tab=umfrage">{$oUmfrage->cName}</a>
                                                         </td>

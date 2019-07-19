@@ -64,7 +64,10 @@
                             <thead>
                             <tr>
                                 <th class="tleft">
-                                    <input type="checkbox" class="massaction-checkbox" id="massaction-main-switch" />
+                                    <div class="custom-control custom-checkbox">
+                                        <input type="checkbox" class="massaction-checkbox custom-control-input" id="massaction-main-switch" />
+                                        <label class="custom-control-label" for="massaction-main-switch"></label>
+                                    </div>
                                 </th>
                                 <th class="tleft"><label style="margin-bottom:0;" for="massaction-main-switch">{__('type')}</label></th>
                                 <th class="tleft">{__('description')}</th>
@@ -76,7 +79,10 @@
                             {foreach $caching_groups as $cg}
                                 <tr class="{if ($cg@index % 2) === 0}even{else}odd{/if}">
                                     <td>
-                                        <input type="checkbox" class="massaction-checkbox" value="{$cg.value}" name="cache-types[]" id="group-cb-{$cg@index}">
+                                        <div class="custom-control custom-checkbox">
+                                            <input type="checkbox" class="custom-control-input massaction-checkbox" value="{$cg.value}" name="cache-types[]" id="group-cb-{$cg@index}">
+                                            <label class="custom-control-label" for="group-cb-{$cg@index}"></label>
+                                        </div>
                                     </td>
                                     <td>
                                         {assign var=nicename value=$cg.nicename}

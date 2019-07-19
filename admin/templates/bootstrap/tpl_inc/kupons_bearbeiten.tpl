@@ -74,7 +74,10 @@
                 <div class="card-header">
                     <div class="subheading1">
                         <label>
-                            <input type="checkbox" name="couponCreation" id="couponCreation" class="checkfield"{if isset($oKupon->massCreationCoupon->cActiv) && $oKupon->massCreationCoupon->cActiv == 1} checked{/if} value="1" />{__('couponsCreation')}
+                            <div class="custom-control custom-checkbox">
+                                <input class="custom-control-input" type="checkbox" name="couponCreation" id="couponCreation" class="checkfield"{if isset($oKupon->massCreationCoupon->cActiv) && $oKupon->massCreationCoupon->cActiv == 1} checked{/if} value="1" />{__('couponsCreation')}
+                                <label class="custom-control-label" for="couponCreation"></label>
+                            </div>
                         </label>
                     </div>
                     <hr class="mb-n3">
@@ -89,19 +92,28 @@
                     <div class="form-group form-row align-items-center">
                         <label class="col col-sm-4 col-form-label text-sm-right" for="lowerCase">{__('lowerCaseDesc')}:</label>
                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                            <input type="checkbox" name="lowerCase" id="lowerCase" class="checkfield" {if isset($oKupon->massCreationCoupon->lowerCase) && $oKupon->massCreationCoupon->lowerCase == true}checked{elseif isset($oKupon->massCreationCoupon->lowerCase) && $oKupon->massCreationCoupon->lowerCase == false}unchecked{else}checked{/if} />
+                            <div class="custom-control custom-checkbox">
+                                <input class="custom-control-input" type="checkbox" name="lowerCase" id="lowerCase" class="checkfield" {if isset($oKupon->massCreationCoupon->lowerCase) && $oKupon->massCreationCoupon->lowerCase == true}checked{elseif isset($oKupon->massCreationCoupon->lowerCase) && $oKupon->massCreationCoupon->lowerCase == false}unchecked{else}checked{/if} />
+                                <label class="custom-control-label" for="lowerCase"></label>
+                            </div>
                         </div>
                     </div>
                     <div class="form-group form-row align-items-center">
                         <label class="col col-sm-4 col-form-label text-sm-right" for="upperCase">{__('upperCaseDesc')}:</label>
                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                            <input type="checkbox" name="upperCase" id="upperCase" class="checkfield" {if isset($oKupon->massCreationCoupon->upperCase) && $oKupon->massCreationCoupon->upperCase == true}checked{elseif isset($oKupon->massCreationCoupon->upperCase) && $oKupon->massCreationCoupon->upperCase == false}unchecked{else}checked{/if} />
+                            <div class="custom-control custom-checkbox">
+                                <input class="custom-control-input" type="checkbox" name="upperCase" id="upperCase" class="checkfield" {if isset($oKupon->massCreationCoupon->upperCase) && $oKupon->massCreationCoupon->upperCase == true}checked{elseif isset($oKupon->massCreationCoupon->upperCase) && $oKupon->massCreationCoupon->upperCase == false}unchecked{else}checked{/if} />
+                                <label class="custom-control-label" for="upperCase"></label>
+                            </div>
                         </div>
                     </div>
                     <div class="form-group form-row align-items-center">
                         <label class="col col-sm-4 col-form-label text-sm-right" for="numbersHash">{__('numbersHashDesc')}:</label>
                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                            <input type="checkbox" name="numbersHash" id="numbersHash" class="checkfield" {if isset($oKupon->massCreationCoupon->numbersHash) && $oKupon->massCreationCoupon->numbersHash == true}checked{elseif isset($oKupon->massCreationCoupon->numbersHash) && $oKupon->massCreationCoupon->numbersHash == false}unchecked{else}checked{/if} />
+                            <div class="custom-control custom-checkbox">
+                                <input class="custom-control-input" type="checkbox" name="numbersHash" id="numbersHash" class="checkfield" {if isset($oKupon->massCreationCoupon->numbersHash) && $oKupon->massCreationCoupon->numbersHash == true}checked{elseif isset($oKupon->massCreationCoupon->numbersHash) && $oKupon->massCreationCoupon->numbersHash == false}unchecked{else}checked{/if} />
+                                <label class="custom-control-label" for="numbersHash"></label>
+                            </div>
                         </div>
                     </div>
                     <div class="form-group form-row align-items-center">
@@ -182,7 +194,10 @@
                     <div class="form-group form-row align-items-center">
                         <label class="col col-sm-4 col-form-label text-sm-right" for="cZusatzgebuehren">{__('additionalShippingCosts')}:</label>
                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                            <input type="checkbox" class="checkfield" name="cZusatzgebuehren" id="cZusatzgebuehren" value="Y"{if $oKupon->cZusatzgebuehren === 'Y'} checked{/if}>
+                            <div class="custom-control custom-checkbox">
+                                <input class="custom-control-input" type="checkbox" class="checkfield" name="cZusatzgebuehren" id="cZusatzgebuehren" value="Y"{if $oKupon->cZusatzgebuehren === 'Y'} checked{/if}>
+                                <label class="custom-control-label" for="cZusatzgebuehren"></label>
+                            </div>
                         </div>
                         <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=__('additionalShippingCostsHint')}</div>
                     </div>
@@ -276,7 +291,10 @@
                 <div class="form-group form-row align-items-center">
                     <label class="col col-sm-4 col-form-label text-sm-right" for="bOpenEnd">{__('openEnd')}:</label>
                     <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                        <input type="checkbox" class="checkfield" name="bOpenEnd" id="bOpenEnd" value="Y"{if $oKupon->bOpenEnd} checked{/if}>
+                        <div class="custom-control custom-checkbox">
+                            <input class="custom-control-input" type="checkbox" class="checkfield" name="bOpenEnd" id="bOpenEnd" value="Y"{if $oKupon->bOpenEnd} checked{/if}>
+                            <label class="custom-control-label" for="bOpenEnd"></label>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -364,7 +382,10 @@
                 <div class="form-group form-row align-items-center">
                     <label class="col col-sm-4 col-form-label text-sm-right" for="cAktiv">{__('active')}:</label>
                     <span class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                        <input type="checkbox" class="checkfield" name="cAktiv" id="cAktiv" value="Y"{if $oKupon->cAktiv === 'Y'} checked{/if}>
+                        <div class="custom-control custom-checkbox">
+                            <input class="custom-control-input" type="checkbox" class="checkfield" name="cAktiv" id="cAktiv" value="Y"{if $oKupon->cAktiv === 'Y'} checked{/if}>
+                            <label class="custom-control-label" for="cAktiv"></label>
+                        </div>
                     </span>
                 </div>
                 <div class="form-group form-row align-items-center">
@@ -435,7 +456,10 @@
                     <div class="form-group form-row align-items-center{if isset($oKupon->massCreationCoupon)} hidden{/if}" id="informCustomers">
                         <label class="col col-sm-4 col-form-label text-sm-right" for="informieren">{__('informCustomers')}:</label>
                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                            <input type="checkbox" class="checkfield" name="informieren" id="informieren" value="Y">
+                            <div class="custom-control custom-checkbox">
+                                <input type="checkbox" class="checkfield custom-control-input" name="informieren" id="informieren" value="Y">
+                                <label class="custom-control-label" for="informieren"></label>
+                            </div>
                         </div>
                     </div>
                 {/if}

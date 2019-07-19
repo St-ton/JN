@@ -36,11 +36,15 @@
             {/if}
         </div>
         <div class="col-sm-2 col-xs-6{if $oBox->getContainerID() > 0} boxSubName{/if}">
-            <input class="left{if ($nPage !== 0 && is_array($oBox->getFilter($nPage))) || ($nPage === 0 && !\Functional\true($oBox->getFilter()) && !\Functional\false($oBox->getFilter()))} tristate{/if}"
-                   style="margin-right: 5px;"
-                   type="checkbox"
-                   name="aktiv[]"
-                   {if ($nPage !== 0 && $oBox->isVisibleOnPage($nPage)) || ($nPage === 0 && \Functional\true($oBox->getFilter()))}checked="checked"{/if} value="{$oBox->getID()}">
+            <div class="custom-control custom-checkbox">
+                <input class="custom-control-input" class="left{if ($nPage !== 0 && is_array($oBox->getFilter($nPage))) || ($nPage === 0 && !\Functional\true($oBox->getFilter()) && !\Functional\false($oBox->getFilter()))} tristate{/if}"
+               style="margin-right: 5px;"
+               type="checkbox"
+               name="aktiv[]"
+               id="box-id-{$oBox->getID()}"
+               {if ($nPage !== 0 && $oBox->isVisibleOnPage($nPage)) || ($nPage === 0 && \Functional\true($oBox->getFilter()))}checked="checked"{/if} value="{$oBox->getID()}">
+                <label class="custom-control-label" for="box-id-{$oBox->getID()}"></label>
+            </div>
             <input type="hidden" name="box[]" value="{$oBox->getID()}">
             {*prevents overwriting specific visibility when indeterminate checkbox is set on 'all pages' view*}
             {if $nPage === 0 && !\Functional\true($oBox->getFilter()) && !\Functional\false($oBox->getFilter())}

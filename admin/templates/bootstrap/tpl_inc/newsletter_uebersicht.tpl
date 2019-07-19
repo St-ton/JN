@@ -100,7 +100,10 @@
                                         {foreach $oNewsletterEmpfaenger_arr as $oNewsletterEmpfaenger}
                                             <tr>
                                                 <td class="tleft">
-                                                    <input name="kNewsletterEmpfaenger[]" type="checkbox" value="{$oNewsletterEmpfaenger->kNewsletterEmpfaenger}">
+                                                    <div class="custom-control custom-checkbox">
+                                                        <input class="custom-control-input" name="kNewsletterEmpfaenger[]" type="checkbox" id="newsletter-recipient-id-{$oNewsletterEmpfaenger->kNewsletterEmpfaenger}" value="{$oNewsletterEmpfaenger->kNewsletterEmpfaenger}">
+                                                        <label class="custom-control-label" for="newsletter-recipient-id-{$oNewsletterEmpfaenger->kNewsletterEmpfaenger}"></label>
+                                                    </div>
                                                 </td>
                                                 <td class="tleft">{if $oNewsletterEmpfaenger->cVorname != ""}{$oNewsletterEmpfaenger->cVorname}{else}{$oNewsletterEmpfaenger->newsVorname}{/if}</td>
                                                 <td class="tleft">{if $oNewsletterEmpfaenger->cNachname != ""}{$oNewsletterEmpfaenger->cNachname}{else}{$oNewsletterEmpfaenger->newsNachname}{/if}</td>
@@ -113,7 +116,10 @@
                                         <tfoot>
                                             <tr>
                                                 <td>
-                                                    <input name="ALLMSGS" id="ALLMSGS2" type="checkbox" onclick="AllMessages(this.form);">
+                                                    <div class="custom-control custom-checkbox">
+                                                        <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS2" type="checkbox" onclick="AllMessages(this.form);">
+                                                        <label class="custom-control-label" for="ALLMSGS2"></label>
+                                                    </div>
                                                 </td>
                                                 <td colspan="6"><label for="ALLMSGS2">{__('globalSelectAll')}</label></td>
                                             </tr>
@@ -182,7 +188,10 @@
                                         {foreach $oAbonnenten_arr as $oAbonnenten}
                                             <tr>
                                                 <td class="tleft">
-                                                    <input name="kNewsletterEmpfaenger[]" type="checkbox" value="{$oAbonnenten->kNewsletterEmpfaenger}" />
+                                                    <div class="custom-control custom-checkbox">
+                                                        <input class="custom-control-input" name="kNewsletterEmpfaenger[]" type="checkbox" id="newsletter-abo-id-{$oAbonnenten->kNewsletterEmpfaenger}" value="{$oAbonnenten->kNewsletterEmpfaenger}" />
+                                                        <label class="custom-control-label" for="newsletter-abo-id-{$oAbonnenten->kNewsletterEmpfaenger}"></label>
+                                                    </div>
                                                 </td>
                                                 <td class="tleft">{$oAbonnenten->cVorname} {$oAbonnenten->cNachname}</td>
                                                 <td class="tleft">{$oAbonnenten->cName}</td>
@@ -197,7 +206,10 @@
                                         <tfoot>
                                             <tr>
                                                 <td>
-                                                    <input name="ALLMSGS" id="ALLMSGS3" type="checkbox" onclick="AllMessages(this.form);">
+                                                    <div class="custom-control custom-checkbox">
+                                                        <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS3" type="checkbox" onclick="AllMessages(this.form);">
+                                                        <label class="custom-control-label" for="ALLMSGS3"></label>
+                                                    </div>
                                                 </td>
                                                 <td colspan="7"><label for="ALLMSGS3">{__('globalSelectAll')}</label></td>
                                             </tr>
@@ -296,7 +308,10 @@
                                             {if isset($oNewsletterQueue->nAnzahlEmpfaenger) && $oNewsletterQueue->nAnzahlEmpfaenger > 0}
                                                 <tr>
                                                     <td>
-                                                        <input name="kNewsletterQueue[]" type="checkbox" value="{$oNewsletterQueue->kNewsletterQueue}">
+                                                        <div class="custom-control custom-checkbox">
+                                                            <input class="custom-control-input" name="kNewsletterQueue[]" type="checkbox" id="newsletter-queue-id-{$oNewsletterQueue->kNewsletterQueue}" value="{$oNewsletterQueue->kNewsletterQueue}">
+                                                            <label class="custom-control-label" for="newsletter-queue-id-{$oNewsletterQueue->kNewsletterQueue}"></label>
+                                                        </div>
                                                     </td>
                                                     <td>{$oNewsletterQueue->cBetreff}</td>
                                                     <td>{$oNewsletterQueue->Datum}</td>
@@ -317,7 +332,10 @@
                                         <tfoot>
                                             <tr>
                                                 <td>
-                                                    <input name="ALLMSGS" id="ALLMSGS4" type="checkbox" onclick="AllMessages(this.form);">
+                                                    <div class="custom-control custom-checkbox">
+                                                        <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS4" type="checkbox" onclick="AllMessages(this.form);">
+                                                        <label class="custom-control-label" for="ALLMSGS4"></label>
+                                                    </div>
                                                 </td>
                                                 <td colspan="6"><label for="ALLMSGS4">{__('globalSelectAll')}</label></td>
                                             </tr>
@@ -360,7 +378,10 @@
                                         {foreach $oNewsletterVorlage_arr as $oNewsletterVorlage}
                                             <tr>
                                                 <td>
-                                                    <input name="kNewsletterVorlage[]" type="checkbox" value="{$oNewsletterVorlage->kNewsletterVorlage}">
+                                                    <div class="custom-control custom-checkbox">
+                                                        <input class="custom-control-input" name="kNewsletterVorlage[]" type="checkbox" id="newsletter-template-id-{$oNewsletterVorlage->kNewsletterVorlage}" value="{$oNewsletterVorlage->kNewsletterVorlage}">
+                                                        <label class="custom-control-label" for="newsletter-template-id-{$oNewsletterVorlage->kNewsletterVorlage}"></label>
+                                                    </div>
                                                 </td>
                                                 <td>{$oNewsletterVorlage->cName}</td>
                                                 <td>{$oNewsletterVorlage->cBetreff}</td>
@@ -396,7 +417,10 @@
                                         <tfoot>
                                             <tr>
                                                 <td>
-                                                    <input name="ALLMSGS" id="ALLMSGS5" type="checkbox" onclick="AllMessages(this.form);">
+                                                    <div class="custom-control custom-checkbox">
+                                                        <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS5" type="checkbox" onclick="AllMessages(this.form);">
+                                                        <label class="custom-control-label" for="ALLMSGS5"></label>
+                                                    </div>
                                                 </td>
                                                 <td colspan="6"><label for="ALLMSGS5">{__('globalSelectAll')}</label></td>
                                             </tr>
@@ -495,7 +519,10 @@
                                         {foreach $oNewsletterHistory_arr as $oNewsletterHistory}
                                             <tr>
                                                 <td class="tleft">
-                                                    <input name="kNewsletterHistory[]" type="checkbox" value="{$oNewsletterHistory->kNewsletterHistory}">
+                                                    <div class="custom-control custom-checkbox">
+                                                        <input class="custom-control-input" name="kNewsletterHistory[]" type="checkbox" id="newsletter-history-id-{$oNewsletterHistory->kNewsletterHistory}" value="{$oNewsletterHistory->kNewsletterHistory}">
+                                                        <label class="custom-control-label" for="newsletter-history-id-{$oNewsletterHistory->kNewsletterHistory}"></label>
+                                                    </div>
                                                 </td>
                                                 <td class="tleft">
                                                     <a href="newsletter.php?newsletterhistory=1&anzeigen={$oNewsletterHistory->kNewsletterHistory}&tab=newsletterhistory&token={$smarty.session.jtl_token}">{$oNewsletterHistory->cBetreff}</a>
@@ -509,7 +536,10 @@
                                         <tfoot>
                                             <tr>
                                                 <td>
-                                                    <input name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);">
+                                                    <div class="custom-control custom-checkbox">
+                                                        <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);">
+                                                        <label class="custom-control-label" for="ALLMSGS"></label>
+                                                    </div>
                                                 </td>
                                                 <td colspan="6"><label for="ALLMSGS">{__('globalSelectAll')}</label></td>
                                             </tr>

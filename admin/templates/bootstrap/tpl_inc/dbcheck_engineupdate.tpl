@@ -83,7 +83,10 @@
                                         <label for="update_auto_backup">{__('yesBackup')}</label>
                                     </span>
                                     <span class="input-group-wrap">
-                                        <input id="update_auto_backup" class="form-control" type="checkbox" name="update_auto_backup" value="1" required>
+                                        <div class="custom-control custom-checkbox">
+                                            <input id="update_auto_backup" class="custom-control-input form-control" type="checkbox" name="update_auto_backup" value="1" required>
+                                            <label class="custom-control-label" for="update_auto_backup"></label>
+                                        </div>
                                     </span>
                                 </div>
                                 {if isset($Einstellungen.global.wartungsmodus_aktiviert) && $Einstellungen.global.wartungsmodus_aktiviert === 'Y'}
@@ -97,7 +100,10 @@
                                         <label for="update_auto_wartungsmodus_reject">{__('noMaintenance')}</label>
                                     </span>
                                     <span class="input-group-wrap">
-                                        <input id="update_auto_wartungsmodus_reject" class="form-control" type="checkbox" name="update_auto_wartungsmodus_reject" value="1" required>
+                                        <div class="custom-control custom-checkbox">
+                                            <input id="update_auto_wartungsmodus_reject" class="custom-control-input form-control" type="checkbox" name="update_auto_wartungsmodus_reject" value="1" required>
+                                            <label class="custom-control-label" for="update_auto_wartungsmodus_reject"></label>
+                                        </div>
                                     </span>
                                 </div>
                                 {/if}
@@ -106,8 +112,11 @@
                                     <span class="input-group-addon">
                                         <label for="update_auto_size_skip">{__('yesEnoughSpace')}</label>
                                     </span>
-                                        <span class="input-group-wrap">
-                                        <input id="update_auto_size_skip" class="form-control" type="checkbox" name="update_auto_size_skip" value="1" required>
+                                    <span class="input-group-wrap">
+                                        <div class="custom-control custom-checkbox">
+                                            <input id="update_auto_size_skip" class="custom-control-input form-control" type="checkbox" name="update_auto_size_skip" value="1" required>
+                                            <label class="custom-control-label" for="update_auto_size_skip"></label>
+                                        </div>
                                     </span>
                                 </div>
                                 {else}

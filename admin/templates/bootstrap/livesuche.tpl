@@ -102,8 +102,8 @@
                                     <tr>
                                         <td>
                                             <div class="custom-control custom-checkbox">
-                                                <input class="custom-control-input" type="checkbox" name="kSuchanfrage[]" value="{$suchanfrage->kSuchanfrage}" />
-                                                <label class="custom-control-label"></label>
+                                                <input class="custom-control-input" type="checkbox" name="kSuchanfrage[]" id="search-request-id-{$suchanfrage->kSuchanfrage}" value="{$suchanfrage->kSuchanfrage}" />
+                                                <label class="custom-control-label" for="search-request-id-{$suchanfrage->kSuchanfrage}"></label>
                                             </div>
                                         </td>
                                         <td>{$suchanfrage->cSuche}</td>
@@ -187,8 +187,8 @@
                                     <tr>
                                         <td>
                                             <div class="custom-control custom-checkbox">
-                                                <input class="custom-control-input" name="kSuchanfrageErfolglos[]" type="checkbox" value="{$Suchanfrageerfolglos->kSuchanfrageErfolglos}" />
-                                                <label class="custom-control-label"></label>
+                                                <input class="custom-control-input" name="kSuchanfrageErfolglos[]" type="checkbox" id="search-request-unsuccessful-id-{$Suchanfrageerfolglos->kSuchanfrageErfolglos}" value="{$Suchanfrageerfolglos->kSuchanfrageErfolglos}" />
+                                                <label class="custom-control-label" for="search-request-unsuccessful-id-{$Suchanfrageerfolglos->kSuchanfrageErfolglos}"></label>
                                             </div>
                                         </td>
                                         <td>
@@ -257,8 +257,8 @@
                                     <tr>
                                         <td>
                                             <div class="custom-control custom-checkbox">
-                                                <input class="custom-control-input" name="kSuchanfrageMapping[]" type="checkbox" value="{$sfm->kSuchanfrageMapping}">
-                                                <label class="custom-control-label"></label>
+                                                <input class="custom-control-input" name="kSuchanfrageMapping[]" type="checkbox" id="search-mapping-id-{$sfm->kSuchanfrageMapping}" value="{$sfm->kSuchanfrageMapping}">
+                                                <label class="custom-control-label" for="search-mapping-id-{$sfm->kSuchanfrageMapping}"></label>
                                             </div>
                                         </td>
                                         <td>{$sfm->cSuche}</td>

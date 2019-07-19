@@ -1,8 +1,10 @@
 {foreach $children as $childCat}
     <tr class="tab_bg{$childCat@iteration % 2}{if $childCat->getLevel() > 1} hidden-soft{/if}" data-level="{$childCat->getLevel()}">
         <td class="check">
-
-            <input type="checkbox" name="kNewsKategorie[]" data-name="{$childCat->getName()}" value="{$childCat->getID()}" id="newscat-{$childCat->getID()}" />
+            <div class="custom-control custom-checkbox">
+                <input class="custom-control-input" type="checkbox" name="kNewsKategorie[]" data-name="{$childCat->getName()}" value="{$childCat->getID()}" id="newscat-{$childCat->getID()}" />
+                <label class="custom-control-label" for="newscat-{$childCat->getID()}"></label>
+            </div>
         </td>
         <td class="TD2{if $childCat->getLevel() === 1} hide-toggle-on{/if}" data-name="category">
             <i class="fa fa-caret-down nav-toggle{if $childCat->getChildren()->count() === 0} invisible{/if}"></i>

@@ -59,7 +59,10 @@
                                             <tr>
                                                 <td class="check">
                                                     <input type="hidden" name="kArtikel[{$review@index}]" value="{$review->kArtikel}"/>
-                                                    <input name="kBewertung[{$review@index}]" type="checkbox" value="{$review->kBewertung}" id="inactive-{$review->kBewertung}" />
+                                                    <div class="custom-control custom-checkbox">
+                                                        <input class="custom-control-input" name="kBewertung[{$review@index}]" type="checkbox" value="{$review->kBewertung}" id="inactive-{$review->kBewertung}" />
+                                                        <label class="custom-control-label" for="inactive-{$review->kBewertung}"></label>
+                                                    </div>
                                                 </td>
                                                 <td>
                                                     <label for="inactive-{$review->kBewertung}">{$review->ArtikelName}</label>
@@ -80,7 +83,12 @@
                                     </tbody>
                                     <tfoot>
                                         <tr>
-                                            <td class="check"><input name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);"></td>
+                                            <td class="check">
+                                                <div class="custom-control custom-checkbox">
+                                                    <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);">
+                                                    <label class="custom-control-label" for="ALLMSGS"></label>
+                                                </div>
+                                            </td>
                                             <td colspan="6"><label for="ALLMSGS">{__('globalSelectAll')}</label></td>
                                         </tr>
                                     </tfoot>
@@ -123,7 +131,10 @@
                                     {foreach $activeReviews as $review}
                                         <tr>
                                             <td class="check">
-                                                <input name="kBewertung[]" type="checkbox" value="{$review->kBewertung}" id="l50-{$review->kBewertung}">
+                                                <div class="custom-control custom-checkbox">
+                                                    <input class="custom-control-input" name="kBewertung[]" type="checkbox" value="{$review->kBewertung}" id="l50-{$review->kBewertung}">
+                                                    <label class="custom-control-label" for="l50-{$review->kBewertung}"></label>
+                                                </div>
                                                 <input type="hidden" name="kArtikel[]" value="{$review->kArtikel}">
                                             </td>
                                             <td>
@@ -160,7 +171,12 @@
                                     </tbody>
                                     <tfoot>
                                     <tr>
-                                        <td class="check"><input name="ALLMSGS" id="ALLMSGS3" type="checkbox" onclick="AllMessages(this.form);"></td>
+                                        <td class="check">
+                                            <div class="custom-control custom-checkbox">
+                                                <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS3" type="checkbox" onclick="AllMessages(this.form);">
+                                                <label class="custom-control-label" for="ALLMSGS3"></label>
+                                            </div>
+                                        </td>
                                         <td colspan="6"><label for="ALLMSGS3">{__('globalSelectAll')}</label></td>
                                     </tr>
                                     </tfoot>
@@ -220,7 +236,10 @@
                                     {foreach $filteredReviews as $review}
                                         <tr>
                                             <td>
-                                                <input name="kBewertung[]" type="checkbox" value="{$review->kBewertung}" id="filtered-{$review->kBewertung}">
+                                                <div class="custom-control custom-checkbox">
+                                                    <input class="custom-control-input" name="kBewertung[]" type="checkbox" value="{$review->kBewertung}" id="filtered-{$review->kBewertung}">
+                                                    <label class="custom-control-label" for="filtered-{$review->kBewertung}"></label>
+                                                </div>
                                                 <input type="hidden" name="kArtikel[]" value="{$review->kArtikel}">
                                             </td>
                                             <td>
@@ -242,7 +261,12 @@
                                     </tbody>
                                     <tfoot>
                                     <tr>
-                                        <td><input name="ALLMSGS" id="ALLMSGS2" type="checkbox" onclick="AllMessages(this.form);"></td>
+                                        <td>
+                                            <div class="custom-control custom-checkbox">
+                                                <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS2" type="checkbox" onclick="AllMessages(this.form);">
+                                                <label class="custom-control-label" for="ALLMSGS2"></label>
+                                            </div>
+                                        </td>
                                         <td colspan="6"><label for="ALLMSGS2">{__('globalSelectAll')}</label></td>
                                     </tr>
                                     </tfoot>

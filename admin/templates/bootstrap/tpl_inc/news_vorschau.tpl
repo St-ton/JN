@@ -30,8 +30,10 @@
                     <div class="card ">
                         <div class="card-header">
                             <div class="form-check">
-                                <input class="form-check-input" name="kNewsKommentar[]" type="checkbox" value="{$oNewsKommentar->getID()}" id="nk-{$oNewsKommentar->getID()}" />
-                                <label class="form-check-label" for="nk-{$oNewsKommentar->getID()}">{$oNewsKommentar->getName()}, {$oNewsKommentar->getDateCreated()->format('d.m.Y H:i')}</label>
+                                <div class="custom-control custom-checkbox">
+                                    <input class="custom-control-input form-check-input" name="kNewsKommentar[]" type="checkbox" value="{$oNewsKommentar->getID()}" id="nk-{$oNewsKommentar->getID()}" />
+                                    <label class="custom-control-label form-check-label" for="nk-{$oNewsKommentar->getID()}">{$oNewsKommentar->getName()}, {$oNewsKommentar->getDateCreated()->format('d.m.Y H:i')}</label>
+                                </div>
                                 <a href="news.php?news=1&kNews={$oNews->getID()}&kNewsKommentar={$oNewsKommentar->getID()}{if isset($cBackPage)}&{$cBackPage}{elseif isset($cTab)}&tab={$cTab}{/if}&nkedit=1&token={$smarty.session.jtl_token}" class="btn btn-default btn-circle" title="{__('modify')}">
                                     <i class="fal fa-edit"></i>
                                 </a>

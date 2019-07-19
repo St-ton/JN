@@ -26,7 +26,10 @@
                         {foreach $pluginsByState.status_1 as $plugin}
                             <tr {if $plugin->getMeta()->isUpdateAvailable()}class="highlight"{/if}>
                                 <td class="check">
-                                    <input type="checkbox" name="kPlugin[]" id="plugin-check-{$plugin->getID()}" value="{$plugin->getID()}" />
+                                    <div class="custom-control custom-checkbox">
+                                        <input class="custom-control-input" type="checkbox" name="kPlugin[]" id="plugin-check-{$plugin->getID()}" value="{$plugin->getID()}" />
+                                        <label class="custom-control-label" for="plugin-check-{$plugin->getID()}"></label>
+                                    </div>
                                 </td>
                                 <td>
                                     <label for="plugin-check-{$plugin->getID()}">{$plugin->getMeta()->getName()}</label>
@@ -83,7 +86,12 @@
                         </tbody>
                         <tfoot>
                             <tr>
-                                <td class="check"><input name="ALLMSGS" id="ALLMSGS2" type="checkbox" onclick="AllMessages(this.form);" /></td>
+                                <td class="check">
+                                    <div class="custom-control custom-checkbox">
+                                        <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS2" type="checkbox" onclick="AllMessages(this.form);" />
+                                        <label class="custom-control-label" for="ALLMSGS2"></label>
+                                    </div>
+                                </td>
                                 <td colspan="10"><label for="ALLMSGS2">{__('selectAll')}</label></td>
                             </tr>
                         </tfoot>

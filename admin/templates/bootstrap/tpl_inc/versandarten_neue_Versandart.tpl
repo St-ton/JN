@@ -384,7 +384,10 @@
                                     {assign var=kZahlungsart value=$zahlungsart->kZahlungsart}
                                     <tr>
                                         <td class="check">
-                                            <input type="checkbox" id="kZahlungsart{$zahlungsart@index}" name="kZahlungsart[]" class="boxen" value="{$kZahlungsart}" {if isset($VersandartZahlungsarten[$kZahlungsart]->checked)}{$VersandartZahlungsarten[$kZahlungsart]->checked}{/if} />
+                                            <div class="custom-control custom-checkbox">
+                                                <input class="custom-control-input" type="checkbox" id="kZahlungsart{$zahlungsart@index}" name="kZahlungsart[]" class="boxen" value="{$kZahlungsart}" {if isset($VersandartZahlungsarten[$kZahlungsart]->checked)}{$VersandartZahlungsarten[$kZahlungsart]->checked}{/if} />
+                                                <label class="custom-control-label" for="kZahlungsart{$zahlungsart@index}"></label>
+                                            </div>
                                         </td>
                                         <td>
                                             <label for="kZahlungsart{$zahlungsart@index}">
@@ -454,7 +457,10 @@
                                 <tbody>
                                 <tr>
                                     <td class="check">
-                                        <input type="checkbox" id="versanddeckelungAktiv" name="versanddeckelungAktiv" class="boxen" value="1" {if isset($Versandart->fDeckelung) && $Versandart->fDeckelung > 0}checked{/if} />
+                                        <div class="custom-control custom-checkbox">
+                                            <input class="custom-control-input boxen" type="checkbox" id="versanddeckelungAktiv" name="versanddeckelungAktiv" value="1" {if isset($Versandart->fDeckelung) && $Versandart->fDeckelung > 0}checked{/if} />
+                                            <label class="custom-control-label" for="versanddeckelungAktiv"></label>
+                                        </div>
                                     </td>
                                     <td><label for="versanddeckelungAktiv">{__('activate')}</label></td>
                                     <td class="tcenter">
@@ -667,8 +673,10 @@
                         <tr>
                             {/if}
                             <td>
-                                <input type="checkbox" name="land[]" id="country_{$versandland->getISO()}" value="{$versandland->getISO()}" {if isset($gewaehlteLaender) && is_array($gewaehlteLaender) && in_array($versandland->getISO(),$gewaehlteLaender)} checked="checked"{/if} />
-                                <label for="country_{$versandland->getISO()}">{$versandland->getName()}</label>
+                                <div class="custom-control custom-checkbox">
+                                    <input class="custom-control-input" type="checkbox" name="land[]" id="country_{$versandland->getISO()}" value="{$versandland->getISO()}" {if isset($gewaehlteLaender) && is_array($gewaehlteLaender) && in_array($versandland->getISO(),$gewaehlteLaender)} checked="checked"{/if} />
+                                    <label class="custom-control-label" for="country_{$versandland->getISO()}">{$versandland->getName()}</label>
+                                </div>
                             </td>
                             {/foreach}
                         </tr>

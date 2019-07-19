@@ -85,7 +85,10 @@
                         {foreach $pluginsAvailable->toArray() as $listingItem}
                             <tr class="plugin">
                                 <td class="check">
-                                    <input type="checkbox" name="cVerzeichnis[]" id="plugin-check-{$listingItem->getDir()}" value="{$listingItem->getDir()}" />
+                                    <div class="custom-control custom-checkbox">
+                                        <input class="custom-control-input" type="checkbox" name="cVerzeichnis[]" id="plugin-check-{$listingItem->getDir()}" value="{$listingItem->getDir()}" />
+                                        <label class="custom-control-label" for="plugin-check-{$listingItem->getDir()}"></label>
+                                    </div>
                                     {if $listingItem->isShop5Compatible() === false}
                                         {if $listingItem->isShop4Compatible() === false}
                                             <span title="{__('dangerPluginNotCompatibleShop4')}" class="label warning label-danger"><i class="fal fa-exclamation-triangle"></i></span>
@@ -108,7 +111,12 @@
                         </tbody>
                         <tfoot>
                             <tr>
-                                <td class="check"><input name="ALLMSGS" id="ALLMSGS4" type="checkbox" onclick="AllMessagesExcept(this.form, vLicenses);" /></td>
+                                <td class="check">
+                                    <div class="custom-control custom-checkbox">
+                                        <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS4" type="checkbox" onclick="AllMessagesExcept(this.form, vLicenses);" />
+                                        <label class="custom-control-label" for="ALLMSGS4"></label>
+                                    </div>
+                                </td>
                                 <td colspan="5"><label for="ALLMSGS4">{__('selectAll')}</label></td>
                             </tr>
                         </tfoot>

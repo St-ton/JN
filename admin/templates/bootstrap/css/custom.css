@@ -510,10 +510,6 @@ h5.label-wrap {
   line-height: 1;
   border-radius: 0 4px 4px 0;
 }
-.input-group-checkbox-wrap input[type="checkbox"],
-.input-group-checkbox-wrap input[type="radio"] {
-  margin: 0 0 0 10px;
-}
 #settings .input-group-addon:first-child,
 .settings .input-group-addon:first-child {
   width: 30%;
@@ -1403,10 +1399,6 @@ span.cross-sign {
   font-weight: 700;
   width: 10%;
   line-height: 30px;
-}
-.form-group .group-radio {
-  padding-top: 10px;
-  padding-bottom: 4px;
 }
 .success {
   color: #5cb85c;
@@ -2303,10 +2295,6 @@ td.nowrap {
 }
 .widget-content .alert {
   margin-bottom: 0;
-}
-.form-group label {
-  margin: 0 5px;
-  vertical-align: middle;
 }
 .query {
   margin: 20px 0;

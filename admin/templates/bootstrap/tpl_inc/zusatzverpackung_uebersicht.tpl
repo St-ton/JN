@@ -24,7 +24,10 @@
                 {foreach $oVerpackung_arr as $oVerpackung}
                     <tr>
                         <td>
-                            <input id="kVerpackung-{$oVerpackung->kVerpackung}" type="checkbox" name="kVerpackung[]" value="{$oVerpackung->kVerpackung}">
+                            <div class="custom-control custom-checkbox">
+                                <input class="custom-control-input" id="kVerpackung-{$oVerpackung->kVerpackung}" type="checkbox" name="kVerpackung[]" value="{$oVerpackung->kVerpackung}">
+                                <label class="custom-control-label" for="kVerpackung-{$oVerpackung->kVerpackung}"></label>
+                            </div>
                         </td>
                         <td><label for="kVerpackung-{$oVerpackung->kVerpackung}">{$oVerpackung->cName}</label></td>
                         <td>{getCurrencyConversionSmarty fPreisBrutto=$oVerpackung->fBrutto}</td>
@@ -37,7 +40,10 @@
                         </td>
                         <td>
                             <input name="nAktivTMP[]" type="hidden" value="{$oVerpackung->kVerpackung}" checked>
-                            <input name="nAktiv[]" type="checkbox" value="{$oVerpackung->kVerpackung}"{if $oVerpackung->nAktiv == 1} checked{/if}>
+                            <div class="custom-control custom-checkbox">
+                                <input class="custom-control-input" name="nAktiv[]" type="checkbox" id="active-id-{$oVerpackung->kVerpackung}" value="{$oVerpackung->kVerpackung}"{if $oVerpackung->nAktiv == 1} checked{/if}>
+                                <label class="custom-control-label" for="active-id-{$oVerpackung->kVerpackung}"></label>
+                            </div>
                         </td>
                         <td>
                             <a href="zusatzverpackung.php?kVerpackung={$oVerpackung->kVerpackung}&token={$smarty.session.jtl_token}"

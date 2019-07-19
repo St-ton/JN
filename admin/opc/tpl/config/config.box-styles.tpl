@@ -89,6 +89,8 @@
                 'label'   => 'Border style',
                 'options' => [
                     'hidden' => 'versteckt',
+                    'dotted' => 'gepunktet',
+                    'dashed' => 'gestrichelt',
                     'solid'  => 'durchgezogen'
                 ]
             ]}
@@ -100,5 +102,10 @@
                 'label'   => 'Border color'
             ]
         }
+        <div class='form-group'>
+            <label for="config-{$propname}-border-radius">Border radius</label>
+            <input type="text" class="form-control" id="config-{$propname}-border-radius"
+                   name="{$propname}[border-radius]" value="{$propval['border-radius']}">
+        </div>
     </div>
 </div>

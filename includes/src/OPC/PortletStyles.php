@@ -43,15 +43,15 @@ trait PortletStyles
 //                'option'     => __('hide'),
 //                'width'      => 25,
 //            ],
-            'color'            => [
-                'type'    => InputType::COLOR,
-                'label'   => __('Font color'),
-                'default' => '',
-                'width'   => 34,
-            ],
             'background-color' => [
                 'label'   => __('Background color'),
                 'type'    => InputType::COLOR,
+                'default' => '',
+                'width'   => 34,
+            ],
+            'color'            => [
+                'type'    => InputType::COLOR,
+                'label'   => __('Font color'),
                 'default' => '',
                 'width'   => 34,
             ],

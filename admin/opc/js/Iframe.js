@@ -46,6 +46,7 @@ class Iframe
         }).then(() => {
             this.ctx  = this.iframe[0].contentWindow;
             this.jq   = this.ctx.$;
+            this.ctx.opcFrame = this;
             this.head = this.jq('head');
             this.body = this.jq('body');
 

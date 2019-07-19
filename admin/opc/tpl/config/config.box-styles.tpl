@@ -3,7 +3,7 @@
         <div class="outer-box">
             <div class="top-row">
                 <div>
-                    margin (px)
+                    {__('margin')} (px)
                 </div>
                 <label class="mid-top-col">
                     <input id="margin-top-input" class="form-control" tabindex="1"
@@ -19,7 +19,7 @@
                 <div class="border-box">
                     <div class="top-row">
                         <div>
-                            border (px)
+                            {__('border')} (px)
                         </div>
                         <label class="mid-top-col">
                             <input id="border-top-input" class="form-control" tabindex="5"
@@ -35,7 +35,7 @@
                         <div class="padding-box">
                             <div class="top-row">
                                 <div>
-                                    padding (px)
+                                    {__('padding')} (px)
                                 </div>
                                 <label class="mid-top-col">
                                     <input id="padding-top-input" class="form-control" tabindex="9"
@@ -86,7 +86,7 @@
             propid="{$propname}-border-style"
             propval=$propval['border-style']
             propdesc=[
-                'label'   => 'Border style',
+                'label'   => __('Border style'),
                 'options' => [
                     'hidden' => 'versteckt',
                     'dotted' => 'gepunktet',
@@ -99,11 +99,11 @@
             propid="{$propname}-border-color"
             propval=$propval['border-color']
             propdesc=[
-                'label'   => 'Border color'
+                'label'   => __('Border color')
             ]
         }
         <div class='form-group'>
-            <label for="config-{$propname}-border-radius">Border radius</label>
+            <label for="config-{$propname}-border-radius">{__('Border radius')}</label>
             <input type="text" class="form-control" id="config-{$propname}-border-radius"
                    name="{$propname}[border-radius]" value="{$propval['border-radius']}">
         </div>

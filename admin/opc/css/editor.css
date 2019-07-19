@@ -743,6 +743,7 @@
 
 #opc .modal .box-config {
   font-size: 12px;
+  line-height: 0.9;
 }
 #opc .modal .box-config .form-control {
   width: 36px;

@@ -205,7 +205,14 @@
                                            type="text"
                                            value="{if isset($attachments[$loopdekr + 1])}{$attachments[$loopdekr + 1]}{/if}"
                                            class="form-control{if count($cFehlerAnhang_arr) > 0}{if isset($cFehlerAnhang_arr[$kSprache][$smarty.section.anhaenge.index]) && $cFehlerAnhang_arr[$kSprache][$smarty.section.anhaenge.index] == 1} fieldfillout{/if}{/if}" />
-                                        <input id="cPDFS_{$smarty.section.anhaenge.index}_{$kSprache}" name="cPDFS_{$kSprache}[]" type="file" class="form-control" maxlength="2097152" style="margin-top:5px;" />
+                                        <div class="input-group mb-3">
+                                            <div class="custom-file">
+                                                <input id="cPDFS_{$smarty.section.anhaenge.index}_{$kSprache}" name="cPDFS_{$kSprache}[]" type="file" class="custom-file-input" maxlength="2097152" style="margin-top:5px;" />
+                                                <label class="custom-file-label" for="cPDFS_{$smarty.section.anhaenge.index}_{$kSprache}">
+                                                    <span class="text-truncate">{__('fileSelect')}</span>
+                                                </label>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             {/section}

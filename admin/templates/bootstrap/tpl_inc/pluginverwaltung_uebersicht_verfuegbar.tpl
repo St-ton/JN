@@ -122,7 +122,7 @@
                         </tfoot>
                     </table>
                 </div>
-                <div class="card-footer">
+                <div class="card-footer save-wrapper">
                     <button name="installieren" type="submit" class="btn btn-primary"><i class="fa fa-share"></i> {__('pluginBtnInstall')}</button>
                 </div>
             </div>

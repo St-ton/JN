@@ -1835,3 +1835,6 @@ msgstr "Generate password"
 
 msgid "shopTitle"
 msgstr "Administration of JTL-Shop"
+
+msgid "fileSelect"
+msgstr "Select file"

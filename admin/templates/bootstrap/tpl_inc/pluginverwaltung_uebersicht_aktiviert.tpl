@@ -118,11 +118,9 @@
                         </tfoot>
                     </table>
                 </div>
-                <div class="card-footer">
-                    <div class="save btn-group">
-                        <button name="deaktivieren" type="submit" class="btn btn-warning"><i class="fa fa-close"></i> {__('deactivate')}</button>
-                        <button name="deinstallieren" type="submit" class="btn btn-danger"><i class="fas fa-trash-alt"></i> {__('pluginBtnDeInstall')}</button>
-                    </div>
+                <div class="card-footer save-wrapper save">
+                    <button name="deinstallieren" type="submit" class="btn btn-danger"><i class="fas fa-trash-alt"></i> {__('pluginBtnDeInstall')}</button>
+                    <button name="deaktivieren" type="submit" class="btn btn-warning"><i class="fa fa-close"></i> {__('deactivate')}</button>
                 </div>
             </div>
         </form>

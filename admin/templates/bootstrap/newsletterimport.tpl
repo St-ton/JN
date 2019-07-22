@@ -20,9 +20,16 @@
                     </div>
                     <div class="form-group form-row align-items-center">
                         <label class="col col-sm-4 col-form-label text-sm-right" for="csv">{__('csvFile')}:</label>
-                        <span class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                            <input class="form-control" type="file" name="csv" id="csv"  tabindex="1" />
-                        </span>
+                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                            <div class="input-group mb-3">
+                                <div class="custom-file">
+                                    <input class="custom-file-input" type="file" name="csv" id="csv"  tabindex="1" />
+                                    <label class="custom-file-label" for="csv">
+                                        <span class="text-truncate">{__('fileSelect')}</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

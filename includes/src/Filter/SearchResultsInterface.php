@@ -167,13 +167,13 @@ interface SearchResultsInterface
     /**
      * @return Option[]
      */
-    public function getAttributeFilterOptions(): array;
+    public function getCharacteristicFilterOptions(): array;
 
     /**
      * @param Option[] $options
      * @return $this
      */
-    public function setAttributeFilterOptions($options): SearchResultsInterface;
+    public function setCharacteristicFilterOptions($options): SearchResultsInterface;
 
     /**
      * @return Option[]

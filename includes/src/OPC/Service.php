@@ -9,7 +9,7 @@ namespace JTL\OPC;
 use JTL\Backend\AdminIO;
 use JTL\Filter\AbstractFilter;
 use JTL\Filter\Config;
-use JTL\Filter\Items\Attribute;
+use JTL\Filter\Items\Characteristic;
 use JTL\Filter\Items\PriceRange;
 use JTL\Filter\Option;
 use JTL\Filter\ProductFilter;
@@ -303,7 +303,7 @@ class Service
             $name    = $availableFilter->getFrontendName();
             $options = [];
 
-            if ($class === Attribute::class) {
+            if ($class === Characteristic::class) {
                 $name = 'Merkmale';
 
                 foreach ($availableFilter->getOptions() as $option) {

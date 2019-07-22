@@ -486,7 +486,7 @@ final class LinkAdmin
         if (GeneralObject::isCountable('cKundengruppen', $post)) {
             $link->cKundengruppen = \implode(';', $post['cKundengruppen']) . ';';
             if (\in_array('-1', $post['cKundengruppen'], true)) {
-                $link->cKundengruppen = 'NULL';
+                $link->cKundengruppen = '_DBNULL_';
             }
         }
         if (isset($post['bIsActive']) && (int)$post['bIsActive'] !== 1) {

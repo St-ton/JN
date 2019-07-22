@@ -99,7 +99,7 @@ class NetSyncHandler
     /**
      * @param int $request
      */
-    protected function request($request)
+    protected function request($request): void
     {
     }
 
@@ -123,21 +123,7 @@ class NetSyncHandler
      */
     public function streamFile($filename, $mimetype, $outname = ''): void
     {
-        $userAgent = empty($_SERVER['HTTP_USER_AGENT'])
-            ? ''
-            : $_SERVER['HTTP_USER_AGENT'];
-        $browser   = 'other';
-        if (\preg_match('/^Opera(\/| )([0-9].[0-9]{1,2})/', $userAgent) === 1) {
-            $browser = 'opera';
-        } elseif (\preg_match('/^MSIE ([0-9].[0-9]{1,2})/', $userAgent) === 1) {
-            $browser = 'ie';
-        } elseif (\preg_match('/^OmniWeb\/([0-9].[0-9]{1,2})/', $userAgent) === 1) {
-            $browser = 'omniweb';
-        } elseif (\preg_match('/^Mozilla\/([0-9].[0-9]{1,2})/', $userAgent) === 1) {
-            $browser = 'mozilla';
-        } elseif (\preg_match('/^Konqueror\/([0-9].[0-9]{1,2})/', $userAgent) === 1) {
-            $browser = 'konqueror';
-        }
+        $browser = $this->getBrowser($_SERVER['HTTP_USER_AGENT'] ?? '');
         if (($mimetype === 'application/octet-stream') || ($mimetype === 'application/octetstream')) {
             $mimetype = 'application/octet-stream';
             if (($browser === 'ie') || ($browser === 'opera')) {
@@ -168,6 +154,28 @@ class NetSyncHandler
         \readfile($filename);
         \unlink($filename);
         exit;
+    }
+
+    /**
+     * @param string $userAgent
+     * @return string
+     */
+    private function getBrowser(string $userAgent): string
+    {
+        $browser = 'other';
+        if (\preg_match('/^Opera(\/| )([0-9].[0-9]{1,2})/', $userAgent) === 1) {
+            $browser = 'opera';
+        } elseif (\preg_match('/^MSIE ([0-9].[0-9]{1,2})/', $userAgent) === 1) {
+            $browser = 'ie';
+        } elseif (\preg_match('/^OmniWeb\/([0-9].[0-9]{1,2})/', $userAgent) === 1) {
+            $browser = 'omniweb';
+        } elseif (\preg_match('/^Mozilla\/([0-9].[0-9]{1,2})/', $userAgent) === 1) {
+            $browser = 'mozilla';
+        } elseif (\preg_match('/^Konqueror\/([0-9].[0-9]{1,2})/', $userAgent) === 1) {
+            $browser = 'konqueror';
+        }
+
+        return $browser;
     }
 
     /**

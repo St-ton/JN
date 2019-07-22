@@ -18,7 +18,7 @@ class Uploader extends NetSyncHandler
     /**
      * @param int $request
      */
-    protected function request($request)
+    protected function request($request): void
     {
         if (!Upload::checkLicense()) {
             self::throwResponse(NetSyncResponse::ERRORNOLICENSE);

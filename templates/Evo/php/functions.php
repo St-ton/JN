@@ -64,8 +64,8 @@ function get_product_list($params, $smarty)
     $cAssign          = (isset($params['cAssign']) && mb_strlen($params['cAssign']) > 0)
         ? $params['cAssign']
         : 'oCustomArtikel_arr';
-    $attributeFilters = isset($params['cMerkmalFilter'])
-        ? ProductFilter::initAttributeFilter(explode(';', $params['cMerkmalFilter']))
+    $characteristicFilters = isset($params['cMerkmalFilter'])
+        ? ProductFilter::initCharacteristicFilter(explode(';', $params['cMerkmalFilter']))
         : [];
     $searchFilters    = isset($params['cSuchFilter'])
         ? ProductFilter::initSearchFilter(explode(';', $params['cSuchFilter']))
@@ -86,7 +86,7 @@ function get_product_list($params, $smarty)
         'cPreisspannenFilter'    => $params['cPreisspannenFilter'] ?? '',
         'kSuchspecialFilter'     => $params['kSuchspecialFilter'] ?? null,
         'nSortierung'            => $sort,
-        'MerkmalFilter_arr'      => $attributeFilters,
+        'MerkmalFilter_arr'      => $characteristicFilters,
         'SuchFilter_arr'         => $searchFilters,
         'nArtikelProSeite'       => $params['nArtikelProSeite'] ?? null,
         'cSuche'                 => $params['cSuche'] ?? null,

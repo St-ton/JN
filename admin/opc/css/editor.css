@@ -492,6 +492,10 @@ html, body {
   float: left;
   margin-bottom: 2px;
   text-align: left;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  padding-right: 8px;
 }
 #opc #configModal .product-filter-config .filters-section .filters-section-inner .filter-option:hover i:before {
   content: "";

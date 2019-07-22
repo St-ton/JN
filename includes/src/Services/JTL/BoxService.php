@@ -210,7 +210,7 @@ class BoxService implements BoxServiceInterface
         $mf  = $pf->getManufacturerFilter();
         $prf = $pf->getPriceRangeFilter();
         $rf  = $pf->getRatingFilter();
-        $afc = $pf->getAttributeFilterCollection();
+        $afc = $pf->getCharacteristicFilterCollection();
         $ssf = $pf->getSearchSpecialFilter();
         $sf  = $pf->searchFilterCompat;
 

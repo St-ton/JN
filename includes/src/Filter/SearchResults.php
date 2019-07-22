@@ -93,7 +93,7 @@ class SearchResults implements SearchResultsInterface
      * @var Option[]
      * @former MerkmalFilter
      */
-    private $attributeFilterOptions = [];
+    private $characteristicFilterOptions = [];
 
     /**
      * @var Option[]
@@ -165,7 +165,7 @@ class SearchResults implements SearchResultsInterface
         'SucheErfolglos'      => 'SearchUnsuccessful',
         'Herstellerauswahl'   => 'ManufacturerFilterOptions',
         'Bewertung'           => 'RatingFilterOptions',
-        'MerkmalFilter'       => 'AttributeFilterOptions',
+        'MerkmalFilter'       => 'CharacteristicFilterOptions',
         'Preisspanne'         => 'PriceRangeFilterOptions',
         'Kategorieauswahl'    => 'CategoryFilterOptions',
         'SuchFilter'          => 'SearchFilterOptions',
@@ -435,17 +435,17 @@ class SearchResults implements SearchResultsInterface
     /**
      * @inheritdoc
      */
-    public function getAttributeFilterOptions(): array
+    public function getCharacteristicFilterOptions(): array
     {
-        return $this->attributeFilterOptions;
+        return $this->characteristicFilterOptions;
     }
 
     /**
      * @inheritdoc
      */
-    public function setAttributeFilterOptions($options): SearchResultsInterface
+    public function setCharacteristicFilterOptions($options): SearchResultsInterface
     {
-        $this->attributeFilterOptions = $options;
+        $this->characteristicFilterOptions = $options;
 
         return $this;
     }
@@ -618,14 +618,14 @@ class SearchResults implements SearchResultsInterface
     public function getAllFilterOptions(): array
     {
         return [
-            'manufacturerFilterOptions'  => $this->getManufacturerFilterOptions(),
-            'ratingFilterOptions'        => $this->getRatingFilterOptions(),
-            'attributeFilterOptions'     => $this->getAttributeFilterOptions(),
-            'priceRangeFilterOptions'    => $this->getPriceRangeFilterOptions(),
-            'categoryFilterOptions'      => $this->getCategoryFilterOptions(),
-            'searchFilterOptions'        => $this->getSearchFilterOptions(),
-            'searchSpecialFilterOptions' => $this->getSearchSpecialFilterOptions(),
-            'customFilterOptions'        => $this->getCustomFilterOptions()
+            'manufacturerFilterOptions'   => $this->getManufacturerFilterOptions(),
+            'ratingFilterOptions'         => $this->getRatingFilterOptions(),
+            'CharacteristicFilterOptions' => $this->getCharacteristicFilterOptions(),
+            'priceRangeFilterOptions'     => $this->getPriceRangeFilterOptions(),
+            'categoryFilterOptions'       => $this->getCategoryFilterOptions(),
+            'searchFilterOptions'         => $this->getSearchFilterOptions(),
+            'searchSpecialFilterOptions'  => $this->getSearchSpecialFilterOptions(),
+            'customFilterOptions'         => $this->getCustomFilterOptions()
         ];
     }
 
@@ -664,8 +664,8 @@ class SearchResults implements SearchResultsInterface
 
     /**
      * @param FilterInterface[] $filters
-     * @param string $class
-     * @param array $activeValues
+     * @param string            $class
+     * @param array             $activeValues
      * @return array
      */
     private function getActiveFiltersByClassName($filters, $class, $activeValues): array
@@ -684,17 +684,17 @@ class SearchResults implements SearchResultsInterface
         $selectionWizard = false
     ): SearchResultsInterface {
         // @todo: make option
-        $hideActiveOnly          = true;
-        $manufacturerOptions     = $productFilter->getManufacturerFilter()->getOptions();
-        $ratingOptions           = $productFilter->getRatingFilter()->getOptions();
-        $categoryOptions         = $productFilter->getCategoryFilter()->getOptions();
-        $priceRangeOptions       = $productFilter->getPriceRangeFilter()->getOptions($this->getProductCount());
-        $searchSpecialFilters    = $productFilter->getSearchSpecialFilter()->getOptions();
-        $attribtuteFilterOptions = $productFilter->getAttributeFilterCollection()->getOptions([
+        $hideActiveOnly              = true;
+        $manufacturerOptions         = $productFilter->getManufacturerFilter()->getOptions();
+        $ratingOptions               = $productFilter->getRatingFilter()->getOptions();
+        $categoryOptions             = $productFilter->getCategoryFilter()->getOptions();
+        $priceRangeOptions           = $productFilter->getPriceRangeFilter()->getOptions($this->getProductCount());
+        $searchSpecialFilters        = $productFilter->getSearchSpecialFilter()->getOptions();
+        $characteristicFilterOptions = $productFilter->getCharacteristicFilterCollection()->getOptions([
             'oAktuelleKategorie' => $currentCategory,
             'bForce'             => $selectionWizard === true
         ]);
-        $searchFilterOptions     = [];
+        $searchFilterOptions         = [];
         foreach ($productFilter->getSearchFilter() as $searchFilter) {
             $opt = $searchFilter->getOptions();
             if (\is_array($opt)) {
@@ -727,16 +727,16 @@ class SearchResults implements SearchResultsInterface
         );
 
         $this->setManufacturerFilterOptions($manufacturerOptions)
-             ->setSortingOptions($productFilter->getSorting()->getOptions())
-             ->setLimitOptions($productFilter->getLimits()->getOptions())
-             ->setRatingFilterOptions($ratingOptions)
-             ->setPriceRangeFilterOptions($priceRangeOptions)
-             ->setCategoryFilterOptions($categoryOptions)
-             ->setSearchFilterOptions($searchFilterOptions)
-             ->setSearchSpecialFilterOptions($searchSpecialFilters)
-             ->setAttributeFilterOptions($attribtuteFilterOptions)
-             ->setCustomFilterOptions($customFilterOptions)
-             ->setSearchFilterJSON($json);
+            ->setSortingOptions($productFilter->getSorting()->getOptions())
+            ->setLimitOptions($productFilter->getLimits()->getOptions())
+            ->setRatingFilterOptions($ratingOptions)
+            ->setPriceRangeFilterOptions($priceRangeOptions)
+            ->setCategoryFilterOptions($categoryOptions)
+            ->setSearchFilterOptions($searchFilterOptions)
+            ->setSearchSpecialFilterOptions($searchSpecialFilters)
+            ->setCharacteristicFilterOptions($characteristicFilterOptions)
+            ->setCustomFilterOptions($customFilterOptions)
+            ->setSearchFilterJSON($json);
 
         if (empty($searchSpecialFilters)) {
             // hide category filter when a category is being browsed
@@ -770,10 +770,10 @@ class SearchResults implements SearchResultsInterface
         if (empty($ratingOptions)) {
             $productFilter->getRatingFilter()->hide();
         }
-        if (\count($attribtuteFilterOptions) < 1) {
-            $productFilter->getAttributeFilterCollection()->hide();
+        if (\count($characteristicFilterOptions) < 1) {
+            $productFilter->getCharacteristicFilterCollection()->hide();
         } elseif ($hideActiveOnly === true) {
-            foreach ($attribtuteFilterOptions as $af) {
+            foreach ($characteristicFilterOptions as $af) {
                 /** @var Option $af */
                 $options = $af->getOptions();
                 if (\is_array($options)
@@ -790,15 +790,15 @@ class SearchResults implements SearchResultsInterface
                     $af->hide();
                 }
             }
-            if (every($attribtuteFilterOptions, function (Option $item) {
+            if (every($characteristicFilterOptions, function (Option $item) {
                 return $item->getVisibility() === Visibility::SHOW_NEVER;
             })) {
                 // hide the whole attribute filter collection if every filter consists of only active options
-                $productFilter->getAttributeFilterCollection()->hide();
+                $productFilter->getCharacteristicFilterCollection()->hide();
             }
         }
-        $productFilter->getAttributeFilterCollection()
-                      ->setFilterCollection($attribtuteFilterOptions);
+        $productFilter->getCharacteristicFilterCollection()
+            ->setFilterCollection($characteristicFilterOptions);
 
         return $this;
     }

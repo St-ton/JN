@@ -533,12 +533,12 @@ function holeUmfrageStatistik(int $surveyID)
         }
     }
     $stats->cKundengruppe_arr = [];
-    $customerGroups           = Text::parseSSK($stats->cKundengruppe);
+    $customerGroups           = Text::parseSSKint($stats->cKundengruppe);
     foreach ($customerGroups as $customerGroupID) {
-        if ($customerGroupID == -1) {
+        if ($customerGroupID === -1) {
             $stats->cKundengruppe_arr[] = 'Alle';
         } else {
-            $customerGroup = $db->select('tkundengruppe', 'kKundengruppe', (int)$customerGroupID);
+            $customerGroup = $db->select('tkundengruppe', 'kKundengruppe', $customerGroupID);
             if (!empty($customerGroup->cName)) {
                 $stats->cKundengruppe_arr[] = $customerGroup->cName;
             }

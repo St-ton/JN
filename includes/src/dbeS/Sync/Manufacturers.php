@@ -10,6 +10,7 @@ use JTL\DB\ReturnType;
 use JTL\dbeS\Starter;
 use JTL\Helpers\Seo;
 use JTL\Language\LanguageHelper;
+use JTL\Language\LanguageModel;
 use stdClass;
 use function Functional\flatten;
 
@@ -25,22 +26,25 @@ final class Manufacturers extends AbstractSync
      */
     public function handle(Starter $starter)
     {
+        $cacheTags = [];
         foreach ($starter->getXML() as $i => $item) {
             [$file, $xml] = [\key($item), \reset($item)];
             if (\strpos($file, 'del_hersteller.xml') !== false) {
-                $this->handleDeletes($xml);
+                $cacheTags[] = $this->handleDeletes($xml);
             } elseif (\strpos($file, 'hersteller.xml') !== false) {
-                $this->handleInserts($xml);
+                $cacheTags[] = $this->handleInserts($xml);
             }
         }
+        $this->cache->flushTags(\array_unique(flatten($cacheTags)));
 
         return null;
     }
 
     /**
      * @param array $xml
+     * @return array
      */
-    private function handleDeletes(array $xml): void
+    private function handleDeletes(array $xml): array
     {
         $cacheTags = [];
         $source    = $xml['del_hersteller']['kHersteller'] ?? [];
@@ -64,26 +68,27 @@ final class Manufacturers extends AbstractSync
                 $cacheTags[] = \CACHING_GROUP_ARTICLE . '_' . $product->kArtikel;
             }
         }
-        $this->cache->flushTags(flatten($cacheTags));
+
+        return flatten($cacheTags);
     }
 
     /**
      * @param array $xml
+     * @return array
      */
-    private function handleInserts(array $xml): void
+    private function handleInserts(array $xml): array
     {
         $source = $xml['hersteller']['thersteller'] ?? null;
         if (!\is_array($source)) {
-            return;
+            return [];
         }
-        $manufacturers = $this->mapper->mapArray($xml['hersteller'], 'thersteller', 'mHersteller');
         $languages     = LanguageHelper::getAllLanguages();
+        $manufacturers = $this->mapper->mapArray($xml['hersteller'], 'thersteller', 'mHersteller');
         $mfCount       = \count($manufacturers);
         $cacheTags     = [];
         for ($i = 0; $i < $mfCount; $i++) {
             $id               = (int)$manufacturers[$i]->kHersteller;
             $affectedProducts = $this->db->selectAll('tartikel', 'kHersteller', $id, 'kArtikel');
-            $this->db->delete('tseo', ['kKey', 'cKey'], [$id, 'kHersteller']);
             if (!\trim($manufacturers[$i]->cSeo)) {
                 $manufacturers[$i]->cSeo = Seo::getFlatSeoPath($manufacturers[$i]->cName);
             }
@@ -104,25 +109,10 @@ final class Manufacturers extends AbstractSync
             } elseif (isset($source['therstellersprache'])) {
                 $xmlLanguage = $source;
             }
-            $mfSeo = $this->mapper->mapArray($xmlLanguage, 'therstellersprache', 'mHerstellerSpracheSeo');
-            foreach ($languages as $language) {
-                $baseSeo = $manufacturers[$i]->cSeo;
-                foreach ($mfSeo as $mf) {
-                    if (isset($mf->kSprache) && (int)$mf->kSprache === $language->getId() && !empty($mf->cSeo)) {
-                        $baseSeo = Seo::getSeo($mf->cSeo);
-                        break;
-                    }
-                }
-                $seo           = new stdClass();
-                $seo->cSeo     = Seo::checkSeo($baseSeo);
-                $seo->cKey     = 'kHersteller';
-                $seo->kKey     = $id;
-                $seo->kSprache = $language->getId();
-                $this->db->insert('tseo', $seo);
-            }
+            $this->updateSeo($id, $languages, $xmlLanguage, $manufacturers[$i]->cSeo);
             $this->db->delete('therstellersprache', 'kHersteller', $id);
 
-            $this->updateXMLinDB(
+            $this->upsertXML(
                 $xmlLanguage,
                 'therstellersprache',
                 'mHerstellerSprache',
@@ -136,6 +126,34 @@ final class Manufacturers extends AbstractSync
                 $cacheTags[] = \CACHING_GROUP_ARTICLE . '_' . (int)$product->kArtikel;
             }
         }
-        $this->cache->flushTags($cacheTags);
+
+        return $cacheTags;
+    }
+
+    /**
+     * @param int             $id
+     * @param LanguageModel[] $languages
+     * @param array           $xmlLanguage
+     * @param string          $slug
+     */
+    private function updateSeo(int $id, array $languages, array $xmlLanguage, $slug): void
+    {
+        $this->db->delete('tseo', ['kKey', 'cKey'], [$id, 'kHersteller']);
+        $mfSeo = $this->mapper->mapArray($xmlLanguage, 'therstellersprache', 'mHerstellerSpracheSeo');
+        foreach ($languages as $language) {
+            $baseSeo = $slug;
+            foreach ($mfSeo as $mf) {
+                if (isset($mf->kSprache) && (int)$mf->kSprache === $language->getId() && !empty($mf->cSeo)) {
+                    $baseSeo = Seo::getSeo($mf->cSeo);
+                    break;
+                }
+            }
+            $seo           = new stdClass();
+            $seo->cSeo     = Seo::checkSeo($baseSeo);
+            $seo->cKey     = 'kHersteller';
+            $seo->kKey     = $id;
+            $seo->kSprache = $language->getId();
+            $this->db->insert('tseo', $seo);
+        }
     }
 }

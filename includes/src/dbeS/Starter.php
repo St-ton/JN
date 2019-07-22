@@ -18,13 +18,13 @@ use JTL\dbeS\Push\MediaFiles;
 use JTL\dbeS\Push\Orders as PushOrders;
 use JTL\dbeS\Push\Payments;
 use JTL\dbeS\Sync\AbstractSync;
-use JTL\dbeS\Sync\Attributes;
+use JTL\dbeS\Sync\Characteristics;
 use JTL\dbeS\Sync\Brocken;
 use JTL\dbeS\Sync\Categories;
 use JTL\dbeS\Sync\ConfigGroups;
 use JTL\dbeS\Sync\Customer;
 use JTL\dbeS\Sync\Data;
-use JTL\dbeS\Sync\DeliverySlips;
+use JTL\dbeS\Sync\DeliveryNotes;
 use JTL\dbeS\Sync\Downloads;
 use JTL\dbeS\Sync\Globals;
 use JTL\dbeS\Sync\ImageCheck;
@@ -74,8 +74,8 @@ class Starter
         'Kategorien_xml'   => Categories::class,
         'Konfig_xml'       => ConfigGroups::class,
         'Kunden_xml'       => Customer::class,
-        'Lieferschein_xml' => DeliverySlips::class,
-        'Merkmal_xml'      => Attributes::class,
+        'Lieferschein_xml' => DeliveryNotes::class,
+        'Merkmal_xml'      => Characteristics::class,
         'QuickSync_xml'    => QuickSync::class,
         'SetKunde_xml'     => Customer::class
     ];

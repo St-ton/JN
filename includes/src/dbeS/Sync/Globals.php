@@ -58,24 +58,9 @@ final class Globals extends AbstractSync
     private function handleInserts(array $xml): void
     {
         $source = $xml['globals'] ?? null;
-        if (isset($source['tfirma'], $source['tfirma attr']['kFirma'])
-            && \is_array($source['tfirma'])
-            && $source['tfirma attr']['kFirma'] > 0
-        ) {
-            $this->mapper->mapObject($company, $source['tfirma'], 'mFirma');
-            $this->dbDelInsert('tfirma', [$company], 1);
-        }
         if ($source !== null) {
-            $languages = $this->mapper->mapArray($source, 'tsprache', 'mSprache');
-            $langCount = \count($languages);
-            for ($i = 0; $i < $langCount; $i++) {
-                $languages[$i]->cStandard = $languages[$i]->cWawiStandard;
-                unset($languages[$i]->cWawiStandard);
-            }
-            $this->cache->flushTags([\CACHING_GROUP_LANGUAGE]);
-            if (\count($languages) > 0) {
-                $this->dbDelInsert('tsprache', $languages, 1);
-            }
+            $this->updateCompany($source);
+            $this->updateLanguages($source);
             $this->xml2db($source, 'tlieferstatus', 'mLieferstatus');
             $this->xml2db($source, 'txsellgruppe', 'mXsellgruppe');
             $this->xml2db($source, 'teinheit', 'mEinheit');
@@ -83,89 +68,135 @@ final class Globals extends AbstractSync
             $this->xml2db($source, 'tsteuerklasse', 'mSteuerklasse');
             $this->xml2db($source, 'tsteuersatz', 'mSteuersatz');
             $this->xml2db($source, 'tversandklasse', 'mVersandklasse');
-            if (GeneralObject::isCountable('tsteuerzone', $source)) {
-                $taxZones = $this->mapper->mapArray($source, 'tsteuerzone', 'mSteuerzone');
-                $this->dbDelInsert('tsteuerzone', $taxZones, 1);
-                $this->db->query('DELETE FROM tsteuerzoneland', ReturnType::DEFAULT);
-                $taxCount = \count($taxZones);
-                for ($i = 0; $i < $taxCount; $i++) {
-                    $this->upsert(
-                        'tsteuerzoneland',
-                        $this->mapper->mapArray(
-                            $taxCount < 2 ? $source['tsteuerzone'] : $source['tsteuerzone'][$i],
-                            'tsteuerzoneland',
-                            'mSteuerzoneland'
-                        ),
-                        'kSteuerzone',
-                        'cISO'
-                    );
-                }
-            }
-            if (GeneralObject::isCountable('tkundengruppe', $source)) {
-                $customerGroups = $this->mapper->mapArray($source, 'tkundengruppe', 'mKundengruppe');
-                $this->dbDelInsert('tkundengruppe', $customerGroups, 1);
-                $this->db->query('TRUNCATE TABLE tkundengruppensprache', ReturnType::DEFAULT);
-                $this->db->query('TRUNCATE TABLE tkundengruppenattribut', ReturnType::DEFAULT);
-                $cgCount = \count($customerGroups);
-                for ($i = 0; $i < $cgCount; $i++) {
-                    if ($cgCount < 2) {
-                        $this->xml2db($source['tkundengruppe'], 'tkundengruppensprache', 'mKundengruppensprache', 0);
-                        $this->xml2db($source['tkundengruppe'], 'tkundengruppenattribut', 'mKundengruppenattribut', 0);
-                    } else {
-                        $this->xml2db(
-                            $source['tkundengruppe'][$i],
-                            'tkundengruppensprache',
-                            'mKundengruppensprache',
-                            0
-                        );
-                        $this->xml2db(
-                            $source['tkundengruppe'][$i],
-                            'tkundengruppenattribut',
-                            'mKundengruppenattribut',
-                            0
-                        );
-                    }
-                }
-                $this->cache->flushTags([\CACHING_GROUP_ARTICLE, \CACHING_GROUP_CATEGORY]);
-            }
-            if (GeneralObject::isCountable('twarenlager', $source)) {
-                $storages   = $this->mapper->mapArray($source, 'twarenlager', 'mWarenlager');
-                $visibility = $this->db->query(
-                    'SELECT kWarenlager, nAktiv FROM twarenlager WHERE nAktiv = 1',
-                    ReturnType::ARRAY_OF_OBJECTS
-                );
-                // Alle Einträge in twarenlager löschen - Wawi 1.0.1 sendet immer alle Warenlager.
-                $this->db->query('DELETE FROM twarenlager WHERE 1', ReturnType::DEFAULT);
-                $this->upsert('twarenlager', $storages, 'kWarenlager');
-                // Lagersichtbarkeit übertragen
-                if (!empty($visibility)) {
-                    foreach ($visibility as $lager) {
-                        $this->db->update('twarenlager', 'kWarenlager', $lager->kWarenlager, $lager);
-                    }
-                }
-            }
-            if (GeneralObject::isCountable('tmasseinheit', $source)) {
-                $units = $this->mapper->mapArray($source, 'tmasseinheit', 'mMasseinheit');
-                foreach ($units as &$_me) {
-                    //hack?
-                    unset($_me->kBezugsMassEinheit);
-                }
-                unset($_me);
-                $this->dbDelInsert('tmasseinheit', $units, 1);
-                $this->db->query('TRUNCATE TABLE tmasseinheitsprache', ReturnType::DEFAULT);
-                $meCount = \count($units);
-                for ($i = 0; $i < $meCount; $i++) {
-                    if ($meCount < 2) {
-                        $this->xml2db($source['tmasseinheit'], 'tmasseinheitsprache', 'mMasseinheitsprache', 0);
-                    } else {
-                        $this->xml2db($source['tmasseinheit'][$i], 'tmasseinheitsprache', 'mMasseinheitsprache', 0);
-                    }
-                }
-            }
+            $this->updateTaxZone($source);
+            $this->updateCustomerGroups($source);
+            $this->updateWarehouses($source);
+            $this->updateUnits($source);
         }
         if (isset($xml['globals_wg']['tWarengruppe']) && \is_array($xml['globals_wg']['tWarengruppe'])) {
             $groups = $this->mapper->mapArray($xml['globals_wg'], 'tWarengruppe', 'mWarengruppe');
             $this->upsert('twarengruppe', $groups, 'kWarengruppe');
+        }
+    }
+
+    /**
+     * @param array $source
+     */
+    private function updateCustomerGroups(array $source): void
+    {
+        if (!GeneralObject::isCountable('tkundengruppe', $source)) {
+            return;
+        }
+        $customerGroups = $this->mapper->mapArray($source, 'tkundengruppe', 'mKundengruppe');
+        $this->dbDelInsert('tkundengruppe', $customerGroups, 1);
+        $this->db->query('TRUNCATE TABLE tkundengruppensprache', ReturnType::DEFAULT);
+        $this->db->query('TRUNCATE TABLE tkundengruppenattribut', ReturnType::DEFAULT);
+        $cgCount = \count($customerGroups);
+        for ($i = 0; $i < $cgCount; $i++) {
+            $item = $cgCount < 2 ? $source['tkundengruppe'] : $source['tkundengruppe'][$i];
+            $this->xml2db($item, 'tkundengruppensprache', 'mKundengruppensprache', 0);
+            $this->xml2db($item, 'tkundengruppenattribut', 'mKundengruppenattribut', 0);
+        }
+        $this->cache->flushTags([\CACHING_GROUP_ARTICLE, \CACHING_GROUP_CATEGORY]);
+    }
+
+    /**
+     * @param array $source
+     */
+    private function updateCompany(array $source): void
+    {
+        if (isset($source['tfirma'], $source['tfirma attr']['kFirma'])
+            && \is_array($source['tfirma'])
+            && $source['tfirma attr']['kFirma'] > 0
+        ) {
+            $this->mapper->mapObject($company, $source['tfirma'], 'mFirma');
+            $this->dbDelInsert('tfirma', [$company], 1);
+        }
+    }
+
+    /**
+     * @param array $source
+     */
+    private function updateLanguages(array $source): void
+    {
+        $languages = $this->mapper->mapArray($source, 'tsprache', 'mSprache');
+        foreach ($languages as $language) {
+            $language->cStandard = $language->cWawiStandard;
+            unset($language->cWawiStandard);
+        }
+        if (\count($languages) > 0) {
+            $this->dbDelInsert('tsprache', $languages, 1);
+            $this->cache->flushTags([\CACHING_GROUP_LANGUAGE]);
+        }
+    }
+
+    /**
+     * @param array $source
+     */
+    private function updateTaxZone(array $source): void
+    {
+        if (!GeneralObject::isCountable('tsteuerzone', $source)) {
+            return;
+        }
+        $taxZones = $this->mapper->mapArray($source, 'tsteuerzone', 'mSteuerzone');
+        $this->dbDelInsert('tsteuerzone', $taxZones, 1);
+        $this->db->query('DELETE FROM tsteuerzoneland', ReturnType::DEFAULT);
+        $taxCount = \count($taxZones);
+        for ($i = 0; $i < $taxCount; $i++) {
+            $this->upsert(
+                'tsteuerzoneland',
+                $this->mapper->mapArray(
+                    $taxCount < 2 ? $source['tsteuerzone'] : $source['tsteuerzone'][$i],
+                    'tsteuerzoneland',
+                    'mSteuerzoneland'
+                ),
+                'kSteuerzone',
+                'cISO'
+            );
+        }
+    }
+
+    /**
+     * @param array $source
+     */
+    private function updateWarehouses(array $source): void
+    {
+        if (!GeneralObject::isCountable('twarenlager', $source)) {
+            return;
+        }
+        $warehouses = $this->mapper->mapArray($source, 'twarenlager', 'mWarenlager');
+        $visibility = $this->db->query(
+            'SELECT kWarenlager, nAktiv FROM twarenlager WHERE nAktiv = 1',
+            ReturnType::ARRAY_OF_OBJECTS
+        );
+        // Alle Einträge in twarenlager löschen - Wawi 1.0.1 sendet immer alle Warenlager.
+        $this->db->query('DELETE FROM twarenlager WHERE 1', ReturnType::DEFAULT);
+        $this->upsert('twarenlager', $warehouses, 'kWarenlager');
+        foreach ($visibility as $lager) {
+            $this->db->update('twarenlager', 'kWarenlager', $lager->kWarenlager, $lager);
+        }
+    }
+
+    /**
+     * @param array $source
+     */
+    private function updateUnits(array $source): void
+    {
+        if (!GeneralObject::isCountable('tmasseinheit', $source)) {
+            return;
+        }
+        $units = $this->mapper->mapArray($source, 'tmasseinheit', 'mMasseinheit');
+        foreach ($units as &$_me) {
+            //hack?
+            unset($_me->kBezugsMassEinheit);
+        }
+        unset($_me);
+        $this->dbDelInsert('tmasseinheit', $units, 1);
+        $this->db->query('TRUNCATE TABLE tmasseinheitsprache', ReturnType::DEFAULT);
+        $meCount = \count($units);
+        for ($i = 0; $i < $meCount; $i++) {
+            $item = $meCount < 2 ? $source['tmasseinheit'] : $source['tmasseinheit'][$i];
+            $this->xml2db($item, 'tmasseinheitsprache', 'mMasseinheitsprache', 0);
         }
     }
 

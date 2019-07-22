@@ -226,8 +226,8 @@ class Navigation
         if ($this->productFilter->hasManufacturer()) {
             return Shop::Lang()->get('productsFrom') . ' ' . $this->productFilter->getManufacturer()->getName();
         }
-        if ($this->productFilter->hasAttributeValue()) {
-            return Shop::Lang()->get('productsWith') . ' ' . $this->productFilter->getAttributeValue()->getName();
+        if ($this->productFilter->hasCharacteristicValue()) {
+            return Shop::Lang()->get('productsWith') . ' ' . $this->productFilter->getCharacteristicValue()->getName();
         }
         if ($this->productFilter->hasSearchSpecial()) {
             return $this->productFilter->getSearchSpecial()->getName() ?? '';

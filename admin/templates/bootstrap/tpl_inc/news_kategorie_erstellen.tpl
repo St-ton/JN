@@ -188,8 +188,18 @@
                             </div>
                         </div>
                         <div class="card-footer save-wrapper">
-                            <a class="btn btn-danger" href="news.php{if isset($cBackPage)}?{$cBackPage}{elseif isset($cTab)}?tab={$cTab}{/if}"><i class="fa fa-exclamation"></i> {__('Cancel')}</a>
-                            <button name="speichern" type="button" value="{__('save')}" onclick="document.news.submit();" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
+                            <div class="row">
+                                <div class="ml-auto col-sm-6 col-xl-auto">
+                                    <a class="btn btn-outline-primary btn-block mb-3" href="news.php{if isset($cBackPage)}?{$cBackPage}{elseif isset($cTab)}?tab={$cTab}{/if}">
+                                        <i class="fa fa-exclamation"></i> {__('Cancel')}
+                                    </a>
+                                </div>
+                                <div class=" col-sm-6 col-xl-auto">
+                                    <button name="speichern" type="button" value="{__('save')}" onclick="document.news.submit();" class="btn btn-primary btn-block">
+                                        <i class="fa fa-save"></i> {__('save')}
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

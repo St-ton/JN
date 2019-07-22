@@ -221,9 +221,23 @@
                     </div>
             {/foreach}
             <div class="card-footer save-wrapper">
-                <a href="emailvorlagen.php" title="{__('cancel')}" class="btn btn-danger"><i class="fa fa-exclamation"></i> {__('cancel')}</a>
-                <button type="submit" name="continue" value="1" class="btn btn-default">{__('saveAndContinue')}</button>
-                <button type="submit" name="continue" value="0" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
+                <div class="row">
+                    <div class="ml-auto col-sm-6 col-xl-auto">
+                        <a href="emailvorlagen.php" title="{__('cancel')}" class="btn btn-danger btn-block mb-3">
+                            <i class="fa fa-exclamation"></i> {__('cancel')}
+                        </a>
+                    </div>
+                    <div class="col-sm-6 col-xl-auto">
+                        <button type="submit" name="continue" value="1" class="btn btn-outline-primary btn-block mb-3">
+                            {__('saveAndContinue')}
+                        </button>
+                    </div>
+                    <div class="col-sm-6 col-xl-auto">
+                        <button type="submit" name="continue" value="0" class="btn btn-primary btn-block">
+                            <i class="fa fa-save"></i> {__('save')}
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </form>

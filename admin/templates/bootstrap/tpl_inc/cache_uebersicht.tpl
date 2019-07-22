@@ -109,7 +109,7 @@
                         </div>
                         <div class="card-footer save-wrapper">
                             <div class="row">
-                                <div class="col-md-6">
+                                <div class="col-sm-6 col-xl-auto mb-3">
                                     <div class="input-group">
                                         <span class="input-group-addon">
                                             <label for="cache-action">{__('action')}:</label>
@@ -127,13 +127,19 @@
                                     </div>
                                     <input name="a" type="hidden" value="cacheMassAction" />
                                 </div>
-                                <div class="col-md-6">
-                                    <form method="post" action="cache.php" class="submit-form">
-                                        {$jtl_token}
-                                        <button name="a" type="submit" value="flush_object_cache" class="btn btn-default delete"{if !$cache_enabled} disabled="disabled"{/if}><i class="fas fa-trash-alt"></i>&nbsp;{__('clearObjectCache')}</button>
-                                        <button name="a" type="submit" value="flush_template_cache" class="btn btn-default delete"><i class="fas fa-trash-alt"></i>&nbsp;{__('clearTemplateCache')}</button>
-                                    </form>
-                                </div>
+                                <form method="post" action="cache.php" class="submit-form">
+                                    {$jtl_token}
+                                    <div class="col-sm-6 col-xl-auto">
+                                        <button name="a" type="submit" value="flush_object_cache" class="btn btn-outline-primary btn-block mb-3 delete"{if !$cache_enabled} disabled="disabled"{/if}>
+                                            <i class="fas fa-trash-alt"></i>&nbsp;{__('clearObjectCache')}
+                                        </button>
+                                    </div>
+                                    <div class="ml-auto col-sm-6 col-xl-auto">
+                                        <button name="a" type="submit" value="flush_template_cache" class="btn btn-outline-primary btn-block delete">
+                                            <i class="fas fa-trash-alt"></i>&nbsp;{__('clearTemplateCache')}
+                                        </button>
+                                    </div>
+                                </form>
                             </div>
                         </div>
                     </div>
@@ -360,7 +366,13 @@
                                 <input name="a" type="hidden" value="benchmark" />
                             </div>
                             <div class="save-wrapper">
-                                <button name="submit" type="submit" value="Benchmark starten" class="btn btn-primary">{__('startBenchmark')}</button>
+                                <div class="row">
+                                    <div class="ml-auto col-sm-6 col-xl-auto">
+                                        <button name="submit" type="submit" value="Benchmark starten" class="btn btn-primary btn-block">
+                                            {__('startBenchmark')}
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
                         </form>
                     </div>
@@ -476,10 +488,16 @@
                         </div>
                     </div>
                     <div class="save-wrapper submit">
-                        <div class="float-left">
-                            <a id="btn_toggle_cache" class="btn btn-default down" style="margin: 10px 0;">{__('showAdvanced')}</a>
+                        <div class="row">
+                            <div class="col-sm-6 col-xl-auto mb-3">
+                                <a id="btn_toggle_cache" class="btn btn-outline-primary btn-block down">{__('showAdvanced')}</a>
+                            </div>
+                            <div class="ml-auto col-sm-6 col-xl-auto">
+                                <button name="speichern" type="submit" value="{__('save')}" class="btn btn-primary btn-block">
+                                    <i class="fa fa-save"></i> {__('save')}
+                                </button>
+                            </div>
                         </div>
-                        <button name="speichern" type="submit" value="{__('save')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
                     </div>
                 </form>
             </div>

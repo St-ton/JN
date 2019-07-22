@@ -117,9 +117,13 @@
                             </div>
                         </div>
                         <div class="save-wrapper">
-                            <button type="submit" class="btn btn-primary" name="add-cron" value="1">
-                                <i class="fa fa-save"></i> {__('create')}
-                            </button>
+                            <div class="row">
+                                <div class="ml-auto col-sm-6 col-xl-auto">
+                                    <button type="submit" class="btn btn-primary btn-block" name="add-cron" value="1">
+                                        <i class="fa fa-save"></i> {__('create')}
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </form>
                 </div>

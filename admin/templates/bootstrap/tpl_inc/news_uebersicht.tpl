@@ -124,23 +124,24 @@
                                         </tr>
                                     {/foreach}
                                     </tbody>
-                                    <tfoot>
-                                        <tr>
-                                            <td class="check">
-                                                <div class="custom-control custom-checkbox">
-                                                    <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS1" type="checkbox" onclick="AllMessages(this.form);" />
-                                                    <label class="custom-control-label" for="ALLMSGS1"></label>
-                                                </div>
-                                            </td>
-                                            <td colspan="5"><label for="ALLMSGS1">{__('globalSelectAll')}</label></td>
-                                        </tr>
-                                    </tfoot>
                                 </table>
                             </div>
                             <div class="card-footer save-wrapper">
-                                <input name="kommentareloeschenSubmit" type="submit" data-id="loeschen" value="{__('delete')}" class="hidden-soft">
-                                <button name="kommentareloeschenSubmit" type="button" data-toggle="modal" data-target=".delete-modal" value="{__('delete')}" class="btn btn-danger"><i class="fas fa-trash-alt"></i> {__('delete')}</button>
-                                <button name="freischalten" type="submit" value="{__('newsActivate')}" class="btn btn-primary"><i class="fa fa-thumbs-up"></i> {__('newsActivate')}</button>
+                                <div class="row">
+                                    <div class="col-sm-6 col-xl-auto text-left">
+                                        <div class="custom-control custom-checkbox mb-3">
+                                            <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS1" type="checkbox" onclick="AllMessages(this.form);" />
+                                            <label class="custom-control-label" for="ALLMSGS1">{__('globalSelectAll')}</label>
+                                        </div>
+                                    </div>
+                                    <div class="ml-auto col-sm-6 col-xl-auto">
+                                        <input name="kommentareloeschenSubmit" type="submit" data-id="loeschen" value="{__('delete')}" class="hidden-soft">
+                                        <button name="kommentareloeschenSubmit" type="button" data-toggle="modal" data-target=".delete-modal" value="{__('delete')}" class="btn btn-danger btn-block mb-3"><i class="fas fa-trash-alt"></i> {__('delete')}</button>
+                                    </div>
+                                    <div class="col-sm-6 col-xl-auto">
+                                        <button name="freischalten" type="submit" value="{__('newsActivate')}" class="btn btn-primary btn-block"><i class="fa fa-thumbs-up"></i> {__('newsActivate')}</button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </form>
@@ -220,26 +221,27 @@
                                     </tr>
                                 {/if}
                                 </tbody>
-                                <tfoot>
-                                <tr>
-                                    <td class="check">
-                                        <div class="custom-control custom-checkbox">
-                                            <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS2" type="checkbox" onclick="AllMessages(this.form);" />
-                                            <label class="custom-control-label" for="ALLMSGS2"></label>
-                                        </div>
-                                    </td>
-                                    <td colspan="8"><label for="ALLMSGS2">{__('globalSelectAll')}</label></td>
-                                </tr>
-                                </tfoot>
                             </table>
                         </div>
                         <input type="hidden" name="news" value="1" />
                         <input type="hidden" name="erstellen" value="1" />
                         <input type="hidden" name="tab" value="aktiv" />
                         <div class="card-footer save-wrapper">
-                            <input name="loeschen" type="submit" data-id="loeschen" value="{__('delete')}" class="hidden-soft">
-                            <button name="loeschen" type="button" data-toggle="modal" data-target=".delete-modal" value="{__('delete')}" class="btn btn-danger"><i class="fas fa-trash-alt"></i> {__('delete')}</button>
-                            <button name="news_erstellen" type="submit" value="{__('newAdd')}" class="btn btn-primary"><i class="fa fa-share"></i> {__('newAdd')}</button>
+                            <div class="row">
+                                <div class="col-sm-6 col-xl-auto text-left">
+                                    <div class="custom-control custom-checkbox mb-3">
+                                        <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS2" type="checkbox" onclick="AllMessages(this.form);" />
+                                        <label class="custom-control-label" for="ALLMSGS2">{__('globalSelectAll')}</label>
+                                    </div>
+                                </div>
+                                <div class="ml-auto col-sm-6 col-xl-auto">
+                                    <input name="loeschen" type="submit" data-id="loeschen" value="{__('delete')}" class="hidden-soft">
+                                    <button name="loeschen" type="button" data-toggle="modal" data-target=".delete-modal" value="{__('delete')}" class="btn btn-danger btn-block mb-3"><i class="fas fa-trash-alt"></i> {__('delete')}</button>
+                                </div>
+                                <div class="col-sm-6 col-xl-auto">
+                                    <button name="news_erstellen" type="submit" value="{__('newAdd')}" class="btn btn-primary btn-block"><i class="fa fa-share"></i> {__('newAdd')}</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </form>
@@ -323,9 +325,25 @@
                         <input type="hidden" name="erstellen" value="1" />
                         <input type="hidden" name="tab" value="kategorien" />
                         <div class="card-footer save-wrapper">
-                            <input name="loeschen" type="submit" data-id="loeschen" value="{__('delete')}" class="hidden-soft">
-                            <button name="loeschen" type="button" data-toggle="modal" data-target=".delete-modal" value="{__('delete')}" class="btn btn-danger"><i class="fas fa-trash-alt"></i> {__('delete')}</button>
-                            <button name="news_kategorie_erstellen" type="submit" value="{__('newsCatCreate')}" class="btn btn-primary"><i class="fa fa-share"></i> {__('newsCatCreate')}</button>
+                            <div class="row">
+                                <div class="col-sm-6 col-xl-auto text-left">
+                                    <div class="custom-control custom-checkbox mb-3">
+                                        <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS2" type="checkbox" onclick="AllMessages(this.form);" />
+                                        <label class="custom-control-label" for="ALLMSGS2">{__('globalSelectAll')}</label>
+                                    </div>
+                                </div>
+                                <div class="ml-auto col-sm-6 col-xl-auto">
+                                    <input name="loeschen" type="submit" data-id="loeschen" value="{__('delete')}" class="hidden-soft">
+                                    <button name="loeschen" type="button" data-toggle="modal" data-target=".delete-modal" value="{__('delete')}" class="btn btn-danger btn-block mb-3">
+                                        <i class="fas fa-trash-alt"></i> {__('delete')}
+                                    </button>
+                                </div>
+                                <div class="col-sm-6 col-xl-auto">
+                                    <button name="news_kategorie_erstellen" type="submit" value="{__('newsCatCreate')}" class="btn btn-primary btn-block">
+                                        <i class="fa fa-share"></i> {__('newsCatCreate')}
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </form>
@@ -383,7 +401,13 @@
                             {/foreach}
                         </div>
                         <div class="card-footer save-wrapper">
-                            <button type="submit" value="{__('save')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
+                            <div class="row">
+                                <div class="ml-auto col-sm-6 col-xl-auto">
+                                    <button type="submit" value="{__('save')}" class="btn btn-primary btn-block">
+                                        <i class="fa fa-save"></i> {__('save')}
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </form>

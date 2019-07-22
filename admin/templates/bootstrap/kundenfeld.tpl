@@ -271,8 +271,14 @@
                                 {/if}
                             </table>
                         </div>
-                        <div class="card-footer text-right">
-                            <button name="speichern" type="submit" class="btn btn-primary" value="{__('save')}"><i class="fa fa-save"></i> {__('save')}</button>
+                        <div class="card-footer">
+                            <div class="row">
+                                <div class="ml-auto col-sm-6 col-xl-auto">
+                                    <button name="speichern" type="submit" class="btn btn-primary btn-block" value="{__('save')}">
+                                        <i class="fa fa-save"></i> {__('save')}
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </form>
@@ -337,11 +343,19 @@
                             <div class="card-body">
                                 <div class="alert alert-info">{__('kundenfeldPflichtDesc')}</div>
                             </div>
-                            <div class="card-footer text-right">
-                                <button name="loeschen" type="submit" value="{__('delete')}" class="btn btn-danger">
-                                    <i class="fas fa-trash-alt"></i> {__('deleteSelected')}
-                                </button>
-                                <button name="aktualisieren" type="submit" value="{__('update')}" class="btn btn-primary"><i class="fa fa-refresh"></i> {__('update')}</button>
+                            <div class="card-footer">
+                                <div class="row">
+                                    <div class="ml-auto col-sm-6 col-xl-auto">
+                                        <button name="loeschen" type="submit" value="{__('delete')}" class="btn btn-danger btn-block mb-3">
+                                            <i class="fas fa-trash-alt"></i> {__('deleteSelected')}
+                                        </button>
+                                    </div>
+                                    <div class="col-sm-6 col-xl-auto">
+                                        <button name="aktualisieren" type="submit" value="{__('update')}" class="btn btn-primary btn-block">
+                                            <i class="fa fa-refresh"></i> {__('update')}
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
                         </form>
                     {else}

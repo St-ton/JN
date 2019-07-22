@@ -115,26 +115,37 @@
                                                 </tr>
                                             {/foreach}
                                             </tbody>
-                                            <tfoot>
-                                                <tr>
-                                                    <td>
-                                                        <div class="custom-control custom-checkbox">
-                                                            <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);">
-                                                            <label class="custom-control-label" for="ALLMSGS"></label>
-                                                        </div>
-                                                    </td>
-                                                    <td colspan="11"><label for="ALLMSGS">{__('globalSelectAll')}</label></td>
-                                                </tr>
-                                            </tfoot>
                                         </table>
                                     </div>
                                 </div>
                                 <div class="card-footer save-wrapper">
-                                    <div class="submit">
-                                        <button name="checkboxLoeschenSubmit" class="btn btn-danger" type="submit" value="{__('delete')}"><i class="fas fa-trash-alt"></i> {__('delete')}</button>
-                                        <button name="checkboxDeaktivierenSubmit" class="btn btn-default" type="submit" value="{__('deactivate')}"><i class="fal fa-times text-danger"></i> {__('deactivate')}</button>
-                                        <button name="checkboxAktivierenSubmit" type="submit" class="btn btn-default" value="{__('activate')}"><i class="fal fa-check text-success"></i> {__('activate')}</button>
-                                        <button name="erstellenShowButton" type="submit" class="btn btn-primary" value="neue Checkbox erstellen"><i class="fa fa-share"></i> {__('checkboxCreate')}</button>
+                                    <div class="row">
+                                        <div class="col-sm-6 col-xl-auto text-left">
+                                            <div class="custom-control custom-checkbox mb-3">
+                                                <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);">
+                                                <label class="custom-control-label" for="ALLMSGS">{__('globalSelectAll')}</label>
+                                            </div>
+                                        </div>
+                                        <div class="ml-auto col-sm-6 col-xl-auto">
+                                            <button name="checkboxLoeschenSubmit" class="btn btn-danger btn-block mb-3" type="submit" value="{__('delete')}">
+                                                <i class="fas fa-trash-alt"></i> {__('delete')}
+                                            </button>
+                                        </div>
+                                        <div class="col-sm-6 col-xl-auto">
+                                            <button name="checkboxDeaktivierenSubmit" class="btn btn-outline-primary btn-block mb-3" type="submit" value="{__('deactivate')}">
+                                                <i class="fal fa-times text-danger"></i> {__('deactivate')}
+                                            </button>
+                                        </div>
+                                        <div class="col-sm-6 col-xl-auto">
+                                            <button name="checkboxAktivierenSubmit" type="submit" class="btn btn-outline-primary btn-block mb-3" value="{__('activate')}">
+                                                <i class="fal fa-check text-success"></i> {__('activate')}
+                                            </button>
+                                        </div>
+                                        <div class="col-sm-6 col-xl-auto">
+                                            <button name="erstellenShowButton" type="submit" class="btn btn-primary btn-block" value="neue Checkbox erstellen">
+                                                <i class="fa fa-share"></i> {__('checkboxCreate')}
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -358,7 +369,13 @@
                             </div>
                         </div>
                         <div class="card-footer save-wrapper">
-                            <button name="speichern" type="submit" value="{__('save')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
+                            <div class="row">
+                                <div class="ml-auto col-sm-6 col-xl-auto">
+                                    <button name="speichern" type="submit" value="{__('save')}" class="btn btn-primary btn-block">
+                                        <i class="fa fa-save"></i> {__('save')}
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </form>
                 </div>

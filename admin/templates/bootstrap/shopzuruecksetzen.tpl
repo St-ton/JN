@@ -165,13 +165,21 @@
             </div>
         </div>
         <div class="save-wrapper">
-            <div class="checkbox hide">
-                <div class="custom-control custom-checkbox">
-                    <input class="custom-control-input" id="backupDone" type="checkbox" value="" />
-                    <label class="custom-control-label" for="backupDone">{__('yesBackupDone')}</label>
+            <div class="row">
+                <div class="ml-auto col-sm-6 col-xl-auto mb-3">
+                    <div class="checkbox hide">
+                        <div class="custom-control custom-checkbox">
+                            <input class="custom-control-input" id="backupDone" type="checkbox" value="" />
+                            <label class="custom-control-label" for="backupDone">{__('yesBackupDone')}</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-xl-auto">
+                    <button disabled="true" type="button" value="{__('shopResetButton')}" data-toggle="modal" data-target=".zuruecksetzen-modal" class="btn btn-danger btn-block">
+                        <i class="fa fa-exclamation-triangle"></i> {__('shopResetButton')}
+                    </button>
                 </div>
             </div>
-            <button disabled="true" type="button" value="{__('shopResetButton')}" data-toggle="modal" data-target=".zuruecksetzen-modal" class="btn btn-danger"><i class="fa fa-exclamation-triangle"></i> {__('shopResetButton')}</button>
         </div>
     </form>
 </div>

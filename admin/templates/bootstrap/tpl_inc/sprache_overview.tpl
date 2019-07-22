@@ -1,18 +1,28 @@
 {function sprache_buttons}
-    <a class="btn btn-default" href="sprache.php?token={$smarty.session.jtl_token}&action=newvar">
-        <i class="fa fa-share"></i>
-        {__('btnAddVar')}
-    </a>
-    {if $oWert_arr|@count > 0}
-        {include file='tpl_inc/csv_export_btn.tpl' exporterId="langvars"}
-    {/if}
-    {include file='tpl_inc/csv_import_btn.tpl' importerId="langvars" bCustomStrategy=true}
-    {if $oWert_arr|@count > 0}
-        <button type="submit" class="btn btn-primary" name="action" value="saveall">
-            <i class="fa fa-save"></i>
-            {__('save')}
-        </button>
-    {/if}
+    <div class="row">
+        <div class="ml-auto col-sm-6 col-xl-auto">
+            <a class="btn btn-outline-primary btn-block mb-3" href="sprache.php?token={$smarty.session.jtl_token}&action=newvar">
+                <i class="fa fa-share"></i>
+                {__('btnAddVar')}
+            </a>
+        </div>
+        {if $oWert_arr|@count > 0}
+            <div class="col-sm-6 col-xl-auto">
+                {include file='tpl_inc/csv_export_btn.tpl' exporterId="langvars"}
+            </div>
+        {/if}
+        <div class="col-sm-6 col-xl-auto">
+            {include file='tpl_inc/csv_import_btn.tpl' importerId="langvars" bCustomStrategy=true}
+        </div>
+        {if $oWert_arr|@count > 0}
+            <div class="col-sm-6 col-xl-auto">
+                <button type="submit" class="btn btn-primary btn-block" name="action" value="saveall">
+                    <i class="fa fa-save"></i>
+                    {__('save')}
+                </button>
+            </div>
+        {/if}
+    </div>
 {/function}
 {include file='tpl_inc/seite_header.tpl' cTitel=__('lang') cBeschreibung=__('langDesc') cDokuURL=__('langURL')}
 {assign var=cSearchString value=$oFilter->getField(1)->getValue()}
@@ -164,10 +174,14 @@
                     {/if}
                 </div>
                 <div class="save-wrapper">
-                    <a href="sprache.php?token={$smarty.session.jtl_token}&action=clearlog&tab=notfound" class="btn btn-danger">
-                        <i class="fa fa-refresh"></i>
-                        {__('btnResetLog')}
-                    </a>
+                    <div class="row">
+                        <div class="ml-auto col-sm-6 col-xl-auto">
+                            <a href="sprache.php?token={$smarty.session.jtl_token}&action=clearlog&tab=notfound" class="btn btn-danger btn-block">
+                                <i class="fa fa-refresh"></i>
+                                {__('btnResetLog')}
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

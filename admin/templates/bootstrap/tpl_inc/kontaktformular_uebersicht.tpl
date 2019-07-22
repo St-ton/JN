@@ -52,7 +52,13 @@
                             {/foreach}
                         </div>
                         <div class="card-footer save-wrapper">
-                            <button type="submit" value="{__('save')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
+                            <div class="row">
+                                <div class="ml-auto col-sm-6 col-xl-auto">
+                                    <button type="submit" value="{__('save')}" class="btn btn-primary btn-block">
+                                        <i class="fa fa-save"></i> {__('save')}
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </form>
@@ -94,7 +100,13 @@
                         </div>
                     </div>
                     <div class="card-footer save-wrapper">
-                        <a class="btn btn-primary" href="kontaktformular.php?neu=1&token={$smarty.session.jtl_token}"><i class="fa fa-share"></i> {__('newSubject')}</a>
+                        <div class="row">
+                            <div class="ml-auto col-sm-6 col-xl-auto">
+                                <a class="btn btn-primary btn-block" href="kontaktformular.php?neu=1&token={$smarty.session.jtl_token}">
+                                    <i class="fa fa-share"></i> {__('newSubject')}
+                                </a>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -132,7 +144,13 @@
                             </div>
                         </div>
                         <div class="card-footer save-wrapper">
-                            <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
+                            <div class="row">
+                                <div class="ml-auto col-sm-6 col-xl-auto">
+                                    <button type="submit" class="btn btn-primary btn-block">
+                                        <i class="fa fa-save"></i> {__('save')}
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </form>

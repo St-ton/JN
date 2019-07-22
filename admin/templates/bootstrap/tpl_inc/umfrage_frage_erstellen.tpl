@@ -714,12 +714,26 @@ function checkSelect(selectBox) {ldelim}
                         </table>
                     </div>
                     <div class="card-footer save-wrapper">
-                        {if isset($oUmfrageFrage->kUmfrageFrage) && $oUmfrageFrage->kUmfrageFrage > 0}
-                            <button class="btn btn-primary" name="speichern" type="submit" value="{__('save')}"><i class="fa fa-save"></i> {__('save')}</button>
-                        {else}
-                            <button class="btn btn-default" name="nocheinefrage" type="submit" value="{__('umfrageAnotherQ')}"><i class="fa fa-share"></i> {__('umfrageAnotherQ')}</button>
-                            <button class="btn btn-primary" name="speichern" type="submit" value="{__('umfrageSaveQ')}"><i class="fa fa-save"></i> {__('umfrageSaveQ')}</button>
-                        {/if}
+                        <div class="row">
+                            {if isset($oUmfrageFrage->kUmfrageFrage) && $oUmfrageFrage->kUmfrageFrage > 0}
+                                <div class="ml-auto col-sm-6 col-xl-auto">
+                                    <button class="btn btn-primary btn-block" name="speichern" type="submit" value="{__('save')}">
+                                        <i class="fa fa-save"></i> {__('save')}
+                                    </button>
+                                </div>
+                            {else}
+                                <div class="ml-auto col-sm-6 col-xl-auto">
+                                    <button class="btn btn-outline-primary btn-block mb-3" name="nocheinefrage" type="submit" value="{__('umfrageAnotherQ')}">
+                                        <i class="fa fa-share"></i> {__('umfrageAnotherQ')}
+                                    </button>
+                                </div>
+                                <div class="col-sm-6 col-xl-auto">
+                                    <button class="btn btn-primary btn-block" name="speichern" type="submit" value="{__('umfrageSaveQ')}">
+                                        <i class="fa fa-save"></i> {__('umfrageSaveQ')}
+                                    </button>
+                                </div>
+                            {/if}
+                        </div>
                     </div>
                 </div>
             </form>

@@ -249,8 +249,18 @@
                             {/if}
                         </div>
                         <div class="card-footer save-wrapper">
-                            <button type="button" onclick="window.location.href='boxen.php'" class="btn btn-default"><i class="fa fa-angle-double-left"></i> {__('cancel')}</button>
-                            <button type="submit" value="{__('save')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
+                            <div class="row">
+                                <div class="ml-auto col-sm-6 col-xl-auto">
+                                    <button type="button" onclick="window.location.href='boxen.php'" class="btn btn-outline-primary btn-block mb-3">
+                                        <i class="fa fa-angle-double-left"></i> {__('cancel')}
+                                    </button>
+                                </div>
+                                <div class="col-sm-6 col-xl-auto">
+                                    <button type="submit" value="{__('save')}" class="btn btn-primary btn-block">
+                                        <i class="fa fa-save"></i> {__('save')}
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </form>

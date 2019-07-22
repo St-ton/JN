@@ -56,7 +56,12 @@
                 </div>
             </div>
             <div class="card-footer save-wrapper">
-                <button type="submit" value="{__('import')}" class="btn btn-primary">{__('import')}</button>
+                <div class="row">
+                    <div class="ml-auto col-sm-6 col-xl-auto">
+                        <button type="submit" value="{__('import')}" class="btn btn-primary btn-block">{__('import')}</button>
+                    </div>
+                </div>
+
             </div>
         </div>
     </form>

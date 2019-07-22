@@ -55,7 +55,13 @@
                     </div>
                 {/if}
                 <div class="card-footer save-wrapper">
-                    <a class="btn btn-primary" href="slider.php?action=new&token={$smarty.session.jtl_token}"><i class="fa fa-share"></i> {__('sliderCreate')}</a>
+                    <div class="row">
+                        <div class="ml-auto col-sm-6 col-xl-auto">
+                            <a class="btn btn-primary btn-block" href="slider.php?action=new&token={$smarty.session.jtl_token}">
+                                <i class="fa fa-share"></i> {__('sliderCreate')}
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

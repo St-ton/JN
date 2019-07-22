@@ -109,21 +109,22 @@
                             </tr>
                         {/foreach}
                         </tbody>
-                        <tfoot>
-                            <tr>
-                                <td class="check">
-                                    <div class="custom-control custom-checkbox">
-                                        <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS4" type="checkbox" onclick="AllMessagesExcept(this.form, vLicenses);" />
-                                        <label class="custom-control-label" for="ALLMSGS4"></label>
-                                    </div>
-                                </td>
-                                <td colspan="5"><label for="ALLMSGS4">{__('selectAll')}</label></td>
-                            </tr>
-                        </tfoot>
                     </table>
                 </div>
                 <div class="card-footer save-wrapper">
-                    <button name="installieren" type="submit" class="btn btn-primary"><i class="fa fa-share"></i> {__('pluginBtnInstall')}</button>
+                    <div class="row">
+                        <div class="col-sm-6 col-xl-auto text-left mb-3">
+                            <div class="custom-control custom-checkbox">
+                                <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS4" type="checkbox" onclick="AllMessagesExcept(this.form, vLicenses);" />
+                                <label class="custom-control-label" for="ALLMSGS4">{__('selectAll')}</label>
+                            </div>
+                        </div>
+                        <div class="ml-auto col-sm-6 col-xl-auto">
+                            <button name="installieren" type="submit" class="btn btn-primary btn-block">
+                                <i class="fa fa-share"></i> {__('pluginBtnInstall')}
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </form>

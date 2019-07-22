@@ -74,11 +74,17 @@
                     </table>
                 </div>
                 <div class="save-wrapper">
-                    <form action="benutzerverwaltung.php" method="post">
-                        {$jtl_token}
-                        <input type="hidden" name="action" value="account_edit" />
-                        <button type="submit" class="btn btn-primary"><i class="fa fa-share"></i> {__('benutzerNeu')}</button>
-                    </form>
+                    <div class="row">
+                        <div class="ml-auto col-sm-6 col-xl-auto">
+                            <form action="benutzerverwaltung.php" method="post">
+                                {$jtl_token}
+                                <input type="hidden" name="action" value="account_edit" />
+                                <button type="submit" class="btn btn-primary btn-block">
+                                    <i class="fa fa-share"></i> {__('benutzerNeu')}
+                                </button>
+                            </form>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div id="group_view" class="tab-pane fade{if isset($cTab) && $cTab === 'group_view'} active show{/if}">
@@ -122,11 +128,17 @@
                     </table>
                 </div>
                 <div class="save-wrapper">
-                    <form action="benutzerverwaltung.php" method="post">
-                        <input type="hidden" name="action" value="group_edit" />
-                        {$jtl_token}
-                        <button type="submit" class="btn btn-primary"><i class="fa fa-share"></i> {__('gruppeNeu')}</button>
-                    </form>
+                    <div class="row">
+                        <div class="ml-auto col-sm-6 col-xl-auto">
+                            <form action="benutzerverwaltung.php" method="post">
+                                <input type="hidden" name="action" value="group_edit" />
+                                {$jtl_token}
+                                <button type="submit" class="btn btn-primary btn-block">
+                                    <i class="fa fa-share"></i> {__('gruppeNeu')}
+                                </button>
+                            </form>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

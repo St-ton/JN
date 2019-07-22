@@ -84,23 +84,28 @@
                             </tr>
                         {/foreach}
                         </tbody>
-                        <tfoot>
-                            <tr>
-                                <td class="check">
-                                    <div class="custom-control custom-checkbox">
-                                        <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS2" type="checkbox" onclick="AllMessages(this.form);" />
-                                        <label class="custom-control-label" for="ALLMSGS2"></label>
-                                    </div>
-                                </td>
-                                <td colspan="10"><label for="ALLMSGS2">{__('selectAll')}</label></td>
-                            </tr>
-                        </tfoot>
                     </table>
                 </div>
                 <div class="card-footer save-wrapper save">
+                    <div class="row">
+                        <div class="col-sm-6 col-xl-auto text-left mb-3">
+                            <div class="custom-control custom-checkbox">
+                                <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS2" type="checkbox" onclick="AllMessages(this.form);" />
+                                <label class="custom-control-label" for="ALLMSGS2">{__('selectAll')}</label>
+                            </div>
+                        </div>
+                        <div class="ml-auto col-sm-6 col-xl-auto">
+                            <button name="deinstallieren" type="submit" class="btn btn-danger btn-block mb-3">
+                                <i class="fas fa-trash-alt"></i> {__('pluginBtnDeInstall')
+                                }</button>
+                        </div>
+                        <div class="col-sm-6 col-xl-auto">
+                            <button name="aktivieren" type="submit" class="btn btn-primary btn-block">
+                                <i class="fa fa-share"></i> {__('activate')}
+                            </button>
+                        </div>
+                    </div>
                     {*<button name="deaktivieren" type="submit" class="btn btn-warning">{__('deactivate')}</button>*}
-                    <button name="deinstallieren" type="submit" class="btn btn-danger"><i class="fas fa-trash-alt"></i> {__('pluginBtnDeInstall')}</button>
-                    <button name="aktivieren" type="submit" class="btn btn-primary"><i class="fa fa-share"></i> {__('activate')}</button>
                 </div>
             </div>
         </form>

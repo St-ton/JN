@@ -132,27 +132,28 @@
                                         {/if}
                                     {/foreach}
                                     </tbody>
-                                    <tfoot>
-                                        <tr>
-                                            <td class="check">
-                                                <div class="custom-control custom-checkbox">
-                                                    <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);" />
-                                                    <label class="custom-control-label" for="ALLMSGS"></label>
-                                                </div>
-                                            </td>
-                                            <td colspan="6"><label for="ALLMSGS">{__('globalSelectAll')}</label></td>
-                                        </tr>
-                                    </tfoot>
                                 </table>
                             </div>
                         {else}
                             <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                         {/if}
                         <div class="card-footer save-wrapper">
-                            {if isset($nGroessterKey) && $nGroessterKey >= 1000}
-                                <button name="submitDelete" type="submit" value="{__('delete')}" class="btn btn-danger"><i class="fas fa-trash-alt"></i> {__('deleteSelected')}</button>
-                            {/if}
-                            <a href="kampagne.php?neu=1&token={$smarty.session.jtl_token}" class="btn btn-primary">{__('kampagneNewBTN')}</a>
+                            <div class="row">
+                                <div class="col-sm-6 col-xl-auto text-left mb-3">
+                                    <div class="custom-control custom-checkbox">
+                                        <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);" />
+                                        <label class="custom-control-label" for="ALLMSGS">{__('globalSelectAll')}</label>
+                                    </div>
+                                </div>
+                                {if isset($nGroessterKey) && $nGroessterKey >= 1000}
+                                    <div class="ml-auto col-sm-6 col-xl-auto">
+                                        <button name="submitDelete" type="submit" value="{__('delete')}" class="btn btn-danger btn-block mb-3"><i class="fas fa-trash-alt"></i> {__('deleteSelected')}</button>
+                                    </div>
+                                {/if}
+                                <div class="{if !(isset($nGroessterKey) && $nGroessterKey >= 1000)}ml-auto{/if} col-sm-6 col-xl-auto">
+                                    <a href="kampagne.php?neu=1&token={$smarty.session.jtl_token}" class="btn btn-primary btn-block">{__('kampagneNewBTN')}</a>
+                                </div>
+                            </div>
                         </div>
                     </form>
                 </div>
@@ -219,10 +220,20 @@
                         </table>
                     </div>
                     <div class="card-footer save-wrapper">
-                        <a href="kampagne.php?tab=globalestats&nStamp=-1&token={$smarty.session.jtl_token}" class="btn btn-default"><i class="fa fa-angle-double-left"></i> {__('earlier')}</a>
-                        {if isset($bGreaterNow) && !$bGreaterNow}
-                            <a href="kampagne.php?tab=globalestats&nStamp=1&token={$smarty.session.jtl_token}" class="btn btn-default"><i class="fa fa-angle-double-right"></i> {__('later')}</a>
-                        {/if}
+                        <div class="row">
+                            <div class="ml-auto col-sm-6 col-xl-auto">
+                                <a href="kampagne.php?tab=globalestats&nStamp=-1&token={$smarty.session.jtl_token}" class="btn btn-outline-primary btn-block mb-3">
+                                    <i class="fa fa-angle-double-left"></i> {__('earlier')}
+                                </a>
+                            </div>
+                            {if isset($bGreaterNow) && !$bGreaterNow}
+                            <div class="col-sm-6 col-xl-auto">
+                                <a href="kampagne.php?tab=globalestats&nStamp=1&token={$smarty.session.jtl_token}" class="btn btn-outline-primary btn-block">
+                                    <i class="fa fa-angle-double-right"></i> {__('later')}
+                                </a>
+                            </div>
+                            {/if}
+                        </div>
                     </div>
                 {else}
                     <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>

@@ -65,19 +65,29 @@
                 {/foreach}
             </div>
             <div class="card-footer save-wrapper">
-                <div class="float-left">
-                    <div class="custom-control custom-checkbox">
-                        <input class="custom-control-input" type="checkbox" onclick="AllMessages(this.form);" id="ALLMSGS" name="ALLMSGS" />
-                        <label class="custom-control-label" for="ALLMSGS">{__('globalSelectAll')}</label>
+                <div class="row">
+                    <div class="col-sm-6 col-xl-auto tex-left mb-3">
+                        <div class="custom-control custom-checkbox">
+                            <input class="custom-control-input" type="checkbox" onclick="AllMessages(this.form);" id="ALLMSGS" name="ALLMSGS" />
+                            <label class="custom-control-label" for="ALLMSGS">{__('globalSelectAll')}</label>
+                        </div>
+                    </div>
+                    <div class="ml-auto col-sm-6 col-xl-auto">
+                        <input type="hidden" name="action" value="group_edit" />
+                        {if isset($oAdminGroup) && $oAdminGroup->kAdminlogingruppe > 0}
+                            <input type="hidden" name="kAdminlogingruppe" value="{$oAdminGroup->kAdminlogingruppe}" />
+                        {/if}
+                        <input type="hidden" name="save" value="1" />
+                        <a class="btn btn-outline-primary btn-block mb-3" href="benutzerverwaltung.php?tab=group_view">
+                            <i class="fa fa-exclamation"></i> {__('cancel')}
+                        </a>
+                    </div>
+                    <div class="col-sm-6 col-xl-auto">
+                        <button type="submit" value="{$cTitel}" class="btn btn-primary btn-block">
+                            <i class="fa fa-save"></i> {__('save')}
+                        </button>
                     </div>
                 </div>
-                <input type="hidden" name="action" value="group_edit" />
-                {if isset($oAdminGroup) && $oAdminGroup->kAdminlogingruppe > 0}
-                    <input type="hidden" name="kAdminlogingruppe" value="{$oAdminGroup->kAdminlogingruppe}" />
-                {/if}
-                <input type="hidden" name="save" value="1" />
-                <a class="btn btn-danger" href="benutzerverwaltung.php?tab=group_view"><i class="fa fa-exclamation"></i> {__('cancel')}</a>
-                <button type="submit" value="{$cTitel}" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
             </div>
         </div>
     </form>

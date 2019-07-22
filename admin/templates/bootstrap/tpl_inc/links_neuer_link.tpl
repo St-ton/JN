@@ -316,8 +316,14 @@
                 </div>
             {/foreach}
             <div class="card-footer save-wrapper">
-                <button type="submit" name="continue" value="1" class="btn btn-default" id="save-and-continue">{__('newLinksSaveContinueEdit')}</button>
-                <button type="submit" value="{__('newLinksSave')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('newLinksSave')}</button>
+                <div class="row">
+                    <div class="ml-auto col-sm-6 col-xl-auto">
+                        <button type="submit" name="continue" value="1" class="btn btn-outline-primary btn-block mb-3" id="save-and-continue">{__('newLinksSaveContinueEdit')}</button>
+                    </div>
+                    <div class="col-sm-6 col-xl-auto">
+                        <button type="submit" value="{__('newLinksSave')}" class="btn btn-primary btn-block"><i class="fa fa-save"></i> {__('newLinksSave')}</button>
+                    </div>
+                </div>
             </div>
         </form>
         {if isset($Link->getID())}

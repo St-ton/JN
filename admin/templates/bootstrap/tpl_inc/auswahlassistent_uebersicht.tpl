@@ -65,11 +65,11 @@
                                                     </td>
                                                     <td class="tright" width="265">
                                                         {if isset($oAuswahlAssistentGruppe->oAuswahlAssistentFrage_arr) && $oAuswahlAssistentGruppe->oAuswahlAssistentFrage_arr|@count > 0}
-                                                            <button class="btn btn-default btn-circle button down"
+                                                            <a href="#" class="btn btn-default btn-circle button down"
                                                                id="btn_toggle_{$oAuswahlAssistentGruppe->kAuswahlAssistentGruppe}"
                                                                title="{__('showQuestions')}">
                                                                 <i class="fa fa-question-circle-o"></i>
-                                                            </button>
+                                                            </a>
                                                         {/if}
                                                             <a href="auswahlassistent.php?a=editGrp&g={$oAuswahlAssistentGruppe->kAuswahlAssistentGruppe}&token={$smarty.session.jtl_token}"
                                                                class="btn btn-primary btn-circle edit" title="{__('modify')}">
@@ -85,13 +85,16 @@
                                                             <div id="rowdiv_toggle_{$oAuswahlAssistentGruppe->kAuswahlAssistentGruppe}"
                                                                  style="display: none;">
                                                                 <table class="list table">
-                                                                    <tr>
-                                                                        <th class="tcenter"></th>
-                                                                        <th class="tleft">{__('question')}</th>
-                                                                        <th class="tcenter">{__('attribute')}</th>
-                                                                        <th class="tcenter">{__('sorting')}</th>
-                                                                        <th class="tright">&nbsp;</th>
-                                                                    </tr>
+                                                                    <thead>
+                                                                        <tr>
+                                                                            <th class="tcenter"></th>
+                                                                            <th class="tleft">{__('question')}</th>
+                                                                            <th class="tcenter">{__('attribute')}</th>
+                                                                            <th class="tcenter">{__('sorting')}</th>
+                                                                            <th class="tright">&nbsp;</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
                                                                     {foreach $oAuswahlAssistentGruppe->oAuswahlAssistentFrage_arr as $oAuswahlAssistentFrage}
                                                                         <tr{if !$oAuswahlAssistentFrage->nAktiv} class="text-danger"{/if}>
                                                                             <td>{if !$oAuswahlAssistentFrage->nAktiv}<i class="fal fa-times"></i>{/if}</td>
@@ -99,17 +102,16 @@
                                                                             <td class="tcenter">{$oAuswahlAssistentFrage->cName}</td>
                                                                             <td class="tcenter">{$oAuswahlAssistentFrage->nSort}</td>
                                                                             <td class="tright" style="width:250px">
-                                                                                <div class="btn-group">
-                                                                                    <a href="auswahlassistent.php?a=editQuest&q={$oAuswahlAssistentFrage->kAuswahlAssistentFrage}&token={$smarty.session.jtl_token}" class="btn btn-default edit">
-                                                                                        <i class="fal fa-edit"></i>
-                                                                                    </a>
-                                                                                    <a href="auswahlassistent.php?a=delQuest&q={$oAuswahlAssistentFrage->kAuswahlAssistentFrage}&token={$smarty.session.jtl_token}" class="btn btn-danger remove">
-                                                                                        <i class="fas fa-trash-alt"></i>
-                                                                                    </a>
-                                                                                </div>
+                                                                                <a href="auswahlassistent.php?a=delQuest&q={$oAuswahlAssistentFrage->kAuswahlAssistentFrage}&token={$smarty.session.jtl_token}" class="btn btn-danger btn-circle remove">
+                                                                                    <i class="fas fa-trash-alt"></i>
+                                                                                </a>
+                                                                                <a href="auswahlassistent.php?a=editQuest&q={$oAuswahlAssistentFrage->kAuswahlAssistentFrage}&token={$smarty.session.jtl_token}" class="btn btn-default btn-circle edit">
+                                                                                    <i class="fal fa-edit"></i>
+                                                                                </a>
                                                                             </td>
                                                                         </tr>
                                                                     {/foreach}
+                                                                    </tbody>
                                                                 </table>
                                                             </div>
                                                         </td>
@@ -123,35 +125,37 @@
                                                 {/if}
                                             {/foreach}
                                         </tbody>
-                                        <tfoot>
-                                            <tr>
-                                                <td class="check">
-                                                    <div class="custom-control custom-checkbox">
-                                                        <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);">
-                                                        <label class="custom-control-label" for="ALLMSGS"></label>
-                                                    </div>
-                                                <td colspan="4">
-                                                    <label for="ALLMSGS">{__('globalSelectAll')}</label>
-                                                </td>
-                                            </tr>
-                                        </tfoot>
                                     </table>
                                 </div>
                             {else}
                                 <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                             {/if}
                             <div class="card-footer save-wrapper">
-                                {if isset($oAuswahlAssistentGruppe_arr) && $oAuswahlAssistentGruppe_arr|@count > 0}
-                                    <button type="submit" name="a" value="delGrp" class="btn btn-danger">
-                                        <i class="fas fa-trash-alt"></i> {__('delete')}
-                                    </button>
-                                {/if}
-                                <button type="submit" name="a" value="newQuest" class="btn btn-default">
-                                    <i class="fa fa-share"></i> {__('aaQuestion')}
-                                </button>
-                                <button type="submit" name="a" value="newGrp" class="btn btn-primary">
-                                    <i class="fa fa-share"></i> {__('aaGroup')}
-                                </button>
+                                <div class="row">
+                                    <div class="col-sm-6 col-xl-auto text-left">
+                                        <div class="custom-control custom-checkbox mb-3">
+                                            <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);">
+                                            <label class="custom-control-label" for="ALLMSGS">{__('globalSelectAll')}</label>
+                                        </div>
+                                    </div>
+                                    {if isset($oAuswahlAssistentGruppe_arr) && $oAuswahlAssistentGruppe_arr|@count > 0}
+                                        <div class="ml-auto col-sm-6 col-xl-auto submit">
+                                            <button type="submit" name="a" value="delGrp" class="btn btn-danger btn-block mb-3">
+                                                <i class="fas fa-trash-alt"></i> {__('delete')}
+                                            </button>
+                                        </div>
+                                    {/if}
+                                    <div class="{if !(isset($oAuswahlAssistentGruppe_arr) && $oAuswahlAssistentGruppe_arr|@count > 0)}ml-auto{/if} col-sm-6 col-xl-auto submit">
+                                        <button type="submit" name="a" value="newQuest" class="btn btn-outline-primary btn-block mb-3">
+                                            <i class="fa fa-share"></i> {__('aaQuestion')}
+                                        </button>
+                                    </div>
+                                    <div class="col-sm-6 col-xl-auto submit">
+                                        <button type="submit" name="a" value="newGrp" class="btn btn-primary btn-block mb-3">
+                                            <i class="fa fa-share"></i> {__('aaGroup')}
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </form>

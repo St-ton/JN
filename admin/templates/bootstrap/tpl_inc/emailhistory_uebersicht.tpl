@@ -73,22 +73,25 @@
                             </tr>
                         {/foreach}
                         </tbody>
-                        <tfoot>
-                        <tr>
-                            <td class="check">
-                                <div class="custom-control custom-checkbox">
-                                    <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);" />
-                                    <label class="custom-control-label" for="ALLMSGS"></label>
-                                </div>
-                            </td>
-                            <td colspan="8"><label for="ALLMSGS">{__('globalSelectAll')}</label></td>
-                        </tr>
-                        </tfoot>
                     </table>
                 </div>
                 <div class="card-footer save-wrapper">
-                    <button name="zuruecksetzenBTN" type="submit" class="btn btn-warning"><i class="fas fa-trash-alt"></i> {__('deleteSelected')}</button>
-                    <button name="remove_all" type="button" class="btn btn-danger" data-target="#confirmModal" data-toggle="modal"><i class="fas fa-trash-alt"></i> {__('deleteAll')}</button>
+                    <div class="row">
+                        <div class="col-sm-6 col-xl-auto text-left mb-3">
+                            <div class="custom-control custom-checkbox">
+                                <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);" />
+                                <label class="custom-control-label" for="ALLMSGS">{__('globalSelectAll')}</label>
+                            </div>
+                        </div>
+                        <div class="ml-auto col-sm-6 col-xl-auto">
+                            <button name="remove_all" type="button" class="btn btn-danger btn-block mb-3" data-target="#confirmModal" data-toggle="modal"><i class="fas fa-trash-alt"></i> {__('deleteAll')}</button>
+                        </div>
+                        <div class="col-sm-6 col-xl-auto">
+                            <button name="zuruecksetzenBTN" type="submit" class="btn btn-warning btn-block">
+                                <i class="fas fa-trash-alt"></i> {__('deleteSelected')}
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </form>

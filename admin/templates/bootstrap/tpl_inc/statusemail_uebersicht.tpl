@@ -72,10 +72,18 @@
                     </div>
                 </div>
                 <div class="card-footer save-wrapper">
-                        <button type="submit" class="btn btn-default" name="action" value="sendnow">
-                            <i class="fa fa-envelope-o"></i> {__('sendEmail')}
-                        </button>
-                    <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
+                    <div class="row">
+                        <div class="ml-auto col-sm-6 col-xl-auto">
+                            <button type="submit" class="btn btn-outline-primary btn-block mb-3" name="action" value="sendnow">
+                                <i class="fa fa-envelope-o"></i> {__('sendEmail')}
+                            </button>
+                        </div>
+                        <div class="col-sm-6 col-xl-auto">
+                            <button type="submit" class="btn btn-primary btn-block">
+                                <i class="fa fa-save"></i> {__('save')}
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

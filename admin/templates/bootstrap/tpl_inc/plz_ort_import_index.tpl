@@ -11,7 +11,13 @@
                 {include file='tpl_inc/plz_ort_import_index_list.tpl'}
             </div>
             <div class="card-footer save-wrapper">
-                <a href="#" class="btn btn-primary" data-callback="plz_ort_import_new"><i class="fa fa-download"></i> {__('plz_ort_import_new')}</a>
+                <div class="row">
+                    <div class="ml-auto col-sm-6 col-xl-auto">
+                        <a href="#" class="btn btn-primary btn-block" data-callback="plz_ort_import_new">
+                            <i class="fa fa-download"></i> {__('plz_ort_import_new')}
+                        </a>
+                    </div>
+                </div>
             </div>
         </form>
     </div>

@@ -81,22 +81,27 @@
                                             </tr>
                                         {/foreach}
                                     </tbody>
-                                    <tfoot>
-                                        <tr>
-                                            <td class="check">
-                                                <div class="custom-control custom-checkbox">
-                                                    <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);">
-                                                    <label class="custom-control-label" for="ALLMSGS"></label>
-                                                </div>
-                                            </td>
-                                            <td colspan="6"><label for="ALLMSGS">{__('globalSelectAll')}</label></td>
-                                        </tr>
-                                    </tfoot>
                                 </table>
                             </div>
                             <div class="card-footer save-wrapper">
-                                <button name="loeschen" type="submit" value="{__('delete')}" class="btn btn-danger"><i class="fas fa-trash-alt"></i> {__('delete')}</button>
-                                <button name="aktivieren" type="submit" value="{__('activate')}" class="btn btn-primary"><i class="fa fa-thumbs-up"></i> {__('activate')}</button>
+                                <div class="row">
+                                    <div class="col-sm-6 col-xl-auto text-left">
+                                        <div class="custom-control custom-checkbox mb-3">
+                                            <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);">
+                                            <label class="custom-control-label" for="ALLMSGS">{__('globalSelectAll')}</label>
+                                        </div>
+                                    </div>
+                                    <div class="ml-auto col-sm-6 col-xl-auto">
+                                        <button name="loeschen" type="submit" value="{__('delete')}" class="btn btn-danger btn-block mb-3">
+                                            <i class="fas fa-trash-alt"></i> {__('delete')}
+                                        </button>
+                                    </div>
+                                    <div class="col-sm-6 col-xl-auto">
+                                        <button name="aktivieren" type="submit" value="{__('activate')}" class="btn btn-primary btn-block">
+                                            <i class="fa fa-thumbs-up"></i> {__('activate')}
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </form>
@@ -169,21 +174,20 @@
                                         </tr>
                                     {/foreach}
                                     </tbody>
-                                    <tfoot>
-                                    <tr>
-                                        <td class="check">
-                                            <div class="custom-control custom-checkbox">
-                                                <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS3" type="checkbox" onclick="AllMessages(this.form);">
-                                                <label class="custom-control-label" for="ALLMSGS3"></label>
-                                            </div>
-                                        </td>
-                                        <td colspan="6"><label for="ALLMSGS3">{__('globalSelectAll')}</label></td>
-                                    </tr>
-                                    </tfoot>
                                 </table>
                             </div>
                             <div class="card-footer save-wrapper">
-                                <button name="loeschen" type="submit" value="{__('delete')}" class="btn btn-danger"><i class="fas fa-trash-alt"></i> {__('deleteSelected')}</button>
+                                <div class="row">
+                                    <div class="col-sm-6 col-xl-auto text-left">
+                                        <div class="custom-control custom-checkbox mb-3">
+                                            <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS3" type="checkbox" onclick="AllMessages(this.form);">
+                                            <label class="custom-control-label" for="ALLMSGS3">{__('globalSelectAll')}</label>
+                                        </div>
+                                    </div>
+                                    <div class="ml-auto col-sm-6 col-xl-auto">
+                                        <button name="loeschen" type="submit" value="{__('delete')}" class="btn btn-danger btn-block"><i class="fas fa-trash-alt"></i> {__('deleteSelected')}</button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </form>
@@ -259,21 +263,20 @@
                                         </tr>
                                     {/foreach}
                                     </tbody>
-                                    <tfoot>
-                                    <tr>
-                                        <td>
-                                            <div class="custom-control custom-checkbox">
-                                                <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS2" type="checkbox" onclick="AllMessages(this.form);">
-                                                <label class="custom-control-label" for="ALLMSGS2"></label>
-                                            </div>
-                                        </td>
-                                        <td colspan="6"><label for="ALLMSGS2">{__('globalSelectAll')}</label></td>
-                                    </tr>
-                                    </tfoot>
                                 </table>
                             </div>
                             <div class="card-footer save-wrapper">
-                                <button name="loeschen" type="submit" class="btn btn-danger"><i class="fas fa-trash-alt"></i> {__('delete')}</button>
+                                <div class="row">
+                                    <div class="col-sm-6 col-xl-auto text-left">
+                                        <div class="custom-control custom-checkbox mb-3">
+                                            <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS2" type="checkbox" onclick="AllMessages(this.form);">
+                                            <label class="custom-control-label" for="ALLMSGS2">{__('globalSelectAll')}</label>
+                                        </div>
+                                    </div>
+                                    <div class="ml-auto col-sm-6 col-xl-auto">
+                                        <button name="loeschen" type="submit" class="btn btn-danger btn-block"><i class="fas fa-trash-alt"></i> {__('delete')}</button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     {/if}
@@ -327,7 +330,11 @@
                             {/foreach}
                         </div>
                         <div class="card-footer save-wrapper">
-                            <button type="submit" value="{__('save')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
+                            <div class="row">
+                                <div class="ml-auto col-sm-6 col-xl-auto">
+                                    <button type="submit" value="{__('save')}" class="btn btn-primary btn-block"><i class="fa fa-save"></i> {__('save')}</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </form>

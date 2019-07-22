@@ -130,12 +130,18 @@
             </table>
         </div>
         <div class="card-footer save-wrapper">
-            <a class="btn btn-default" href="#" id="exportall">
-                {__('exportAll')}
-            </a>
-            <a class="btn btn-primary" href="exportformate.php?neuerExport=1&token={$smarty.session.jtl_token}">
-                <i class="fa fa-share"></i> {__('newExportformat')}
-            </a>
+            <div class="row">
+                <div class="ml-auto col-sm-6 col-xl-auto">
+                    <a class="btn btn-outline-primary btn-block mb-3" href="#" id="exportall">
+                        {__('exportAll')}
+                    </a>
+                </div>
+                <div class="col-sm-6 col-xl-auto">
+                    <a class="btn btn-primary btn-block" href="exportformate.php?neuerExport=1&token={$smarty.session.jtl_token}">
+                        <i class="fa fa-share"></i> {__('newExportformat')}
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
 </div>

@@ -300,11 +300,25 @@
                 </div>
             {/foreach}
             <div class="card-footer save-wrapper">
-                <a class="btn btn-danger" href="news.php{if isset($cBackPage)}?{$cBackPage}{elseif isset($cTab)}?tab={$cTab}{/if}"><i class="fa fa-exclamation"></i> {__('Cancel')}</a>
-                {if $oNews->getID() > 0}
-                    <button type="submit" name="continue" value="1" class="btn btn-default" id="save-and-continue">{__('save')} {__('goOnEdit')}</button>
-                {/if}
-                <button name="speichern" type="button" value="{__('save')}" onclick="checkfile(event);" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
+                <div class="row">
+                    <div class="ml-auto col-sm-6 col-xl-auto">
+                        <a class="btn btn-outline-primary btn-block mb-3" href="news.php{if isset($cBackPage)}?{$cBackPage}{elseif isset($cTab)}?tab={$cTab}{/if}">
+                            <i class="fa fa-exclamation"></i> {__('Cancel')}
+                        </a>
+                    </div>
+                    {if $oNews->getID() > 0}
+                        <div class="col-sm-6 col-xl-auto">
+                            <button type="submit" name="continue" value="1" class="btn btn-outline-primary btn-block mb-3" id="save-and-continue">
+                                {__('save')} {__('goOnEdit')}
+                            </button>
+                        </div>
+                    {/if}
+                    <div class="col-sm-6 col-xl-auto">
+                        <button name="speichern" type="button" value="{__('save')}" onclick="checkfile(event);" class="btn btn-primary btn-block">
+                            <i class="fa fa-save"></i> {__('save')}
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </form>

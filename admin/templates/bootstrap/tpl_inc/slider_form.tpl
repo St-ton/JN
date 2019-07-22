@@ -378,8 +378,18 @@
             </div>
         </div>
         <div class="card-footer save-wrapper">
-            <button type="button" class="btn btn-default" onclick="window.location.href = 'slider.php';" value="zurück">{__('goBack')}</button>
-            <button type="submit" class="btn btn-primary" value="{__('save')}"><i class="fa fa-save"></i> {__('save')}</button>
+            <div class="row">
+                <div class="ml-auto col-sm-6 col-xl-auto">
+                    <button type="button" class="btn btn-default btn-block mb-3" onclick="window.location.href = 'slider.php';" value="zurück">
+                        {__('goBack')}
+                    </button>
+                </div>
+                <div class="col-sm-6 col-xl-auto">
+                    <button type="submit" class="btn btn-primary btn-block" value="{__('save')}">
+                        <i class="fa fa-save"></i> {__('save')}
+                    </button>
+                </div>
+            </div>
         </div>
     </form>
 </div>

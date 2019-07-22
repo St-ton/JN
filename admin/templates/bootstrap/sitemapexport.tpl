@@ -59,13 +59,19 @@
                     <p>{__('download')} <a href="{$URL}">{__('xml')}</a></p>
                 </div>
                 <div class="save-wrapper">
-                    <form action="sitemap.php" method="post">
-                        {$jtl_token}
-                        <input type="hidden" name="update" value="1" />
-                        <input type="hidden" name="tab" value="export" />
+                    <div class="row">
+                        <div class="ml-auto col-sm-6 col-xl-auto">
+                            <form action="sitemap.php" method="post">
+                                {$jtl_token}
+                                <input type="hidden" name="update" value="1" />
+                                <input type="hidden" name="tab" value="export" />
 
-                        <button type="submit" value="{__('sitemapExportSubmit')}" class="btn btn-primary"><i class="fa fa-share"></i> {__('sitemapExportSubmit')}</button>
-                    </form>
+                                <button type="submit" value="{__('sitemapExportSubmit')}" class="btn btn-primary btn-block">
+                                    <i class="fa fa-share"></i> {__('sitemapExportSubmit')}
+                                </button>
+                            </form>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div id="downloads" class="tab-pane fade {if isset($cTab) && $cTab === 'downloads'} active show{/if}">
@@ -86,7 +92,9 @@
                             </div>
                             <button name="action[year_downloads]" type="submit" value="1" class="btn btn-primary"><i class="fal fa-search"></i>&nbsp;{__('show')}</button>
                             <button type="button" class="btn btn-danger"
-                                    data-form="#formDeleteSitemapExport" data-action="year_downloads_delete" data-target="#confirmModal" data-toggle="modal" data-title="{__('sitemapDownload')} löschen"><i class="fas fa-trash-alt"></i>&nbsp;{__('delete')}</button>
+                                    data-form="#formDeleteSitemapExport" data-action="year_downloads_delete" data-target="#confirmModal" data-toggle="modal" data-title="{__('sitemapDownload')} löschen">
+                                <i class="fas fa-trash-alt"></i>&nbsp;{__('delete')}
+                            </button>
                         </form>
                     </div>
                     {include file='tpl_inc/pagination.tpl' pagination=$oSitemapDownloadPagination cParam_arr=['tab' => 'downloads', 'nYear_downloads' => {$nSitemapDownloadYear}]}
@@ -134,18 +142,28 @@
                                         <tfoot>
                                             <tr>
                                                 <td>
-                                                    <div class="custom-control custom-checkbox">
-                                                        <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);">
-                                                        <label class="custom-control-label" for="ALLMSGS"></label>
-                                                    </div>
+
                                                 </td>
-                                                <td colspan="6"><label for="ALLMSGS">{__('sitemapSelectAll')}</label></td>
+                                                <td colspan="6"><label for="ALLMSGS"></label></td>
                                             </tr>
                                         </tfoot>
                                     </table>
                                 </div>
                                 <div class="card-footer save-wrapper">
-                                    <button class="btn btn-danger" name="loeschen" type="submit" value="{__('delete')}"><i class="fas fa-trash-alt"></i> {__('deleteSelected')}</button>
+                                    <div class="row">
+                                        <div class="col-sm-6 col-xl-auto text-left mb-3">
+                                            <div class="custom-control custom-checkbox">
+                                                <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);">
+                                                <label class="custom-control-label" for="ALLMSGS">{__('sitemapSelectAll')}</label>
+                                            </div>
+                                        </div>
+                                        <div class="ml-auto col-sm-6 col-xl-auto">
+                                            <button class="btn btn-danger btn-block" name="loeschen" type="submit" value="{__('delete')}">
+                                                <i class="fas fa-trash-alt"></i> {__('deleteSelected')}
+                                            </button>
+                                        </div>
+                                    </div>
+
                                 </div>
                             </div>
                         </form>
@@ -244,21 +262,23 @@
                                         {/if}
                                     {/foreach}
                                     </tbody>
-                                    <tfoot>
-                                        <tr>
-                                            <td class="check">
-                                                <div class="custom-control custom-checkbox">
-                                                    <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS2" type="checkbox" onclick="AllMessages(this.form);">
-                                                    <label class="custom-control-label" for="ALLMSGS2"></label>
-                                                </div>
-                                            </td>
-                                            <td colspan="4"><label for="ALLMSGS2">{__('sitemapSelectAll')}</label></td>
-                                        </tr>
-                                    </tfoot>
                                 </table>
                             </div>
                             <div class="card-footer save-wrapper">
-                                <button name="loeschen" type="submit" value="{__('delete')}" class="btn btn-danger"><i class="fas fa-trash-alt"></i> {__('deleteSelected')}</button>
+                                <div class="row">
+                                    <div class="col-sm-6 col-xl-auto text-left mb-3">
+                                        <div class="custom-control custom-checkbox">
+                                            <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS2" type="checkbox" onclick="AllMessages(this.form);">
+                                            <label class="custom-control-label" for="ALLMSGS2">{__('sitemapSelectAll')}</label>
+                                        </div>
+                                    </div>
+                                    <div class="ml-auto col-sm-6 col-xl-auto">
+                                        <button name="loeschen" type="submit" value="{__('delete')}" class="btn btn-danger btn-block">
+                                            <i class="fas fa-trash-alt"></i> {__('deleteSelected')}
+                                        </button>
+                                    </div>
+                                </div>
+
                             </div>
                         </form>
                     </div>

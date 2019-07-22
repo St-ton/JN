@@ -175,9 +175,13 @@
             </div>
         </div>
         <div class="save-wrapper">
-            <button type="submit" class="btn btn-primary" value="{if !isset($Exportformat->kExportformat) || !$Exportformat->kExportformat}{__('newExportformatSave')}{else}{__('modifyExportformatSave')}{/if}">
-                <i class="fa fa-save"></i> {if !isset($Exportformat->kExportformat) || !$Exportformat->kExportformat}{__('newExportformatSave')}{else}{__('modifyExportformatSave')}{/if}
-            </button>
+            <div class="row">
+                <div class="ml-auto col-sm-6 col-xl-auto">
+                    <button type="submit" class="btn btn-primary btn-block" value="{if !isset($Exportformat->kExportformat) || !$Exportformat->kExportformat}{__('newExportformatSave')}{else}{__('modifyExportformatSave')}{/if}">
+                        <i class="fa fa-save"></i> {if !isset($Exportformat->kExportformat) || !$Exportformat->kExportformat}{__('newExportformatSave')}{else}{__('modifyExportformatSave')}{/if}
+                    </button>
+                </div>
+            </div>
         </div>
     </form>
 

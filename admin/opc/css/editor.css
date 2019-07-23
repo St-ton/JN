@@ -808,6 +808,52 @@
   height: 64px;
 }
 
+#opc .row-layout-controls .row {
+  margin: 0 -8px;
+}
+#opc .row-layout-controls .row .col-4,
+#opc .row-layout-controls .row .col-2 {
+  padding: 0 8px;
+}
+
+#opc .row-layout-previews {
+  text-align: center;
+}
+#opc .row-layout-previews > * {
+  display: inline-block;
+  margin: 24px;
+}
+#opc .row-layout-previews > * > * {
+  background-color: #5cbcf6;
+  height: 8px;
+  float: left;
+  margin: 1px;
+}
+#opc .row-layout-previews .layout-preview-3 {
+  background-image: url(../gfx/row-preview-desktop.png);
+  width: 126px;
+  height: 94px;
+  padding: 7px 7px 29px 8px;
+}
+#opc .row-layout-previews .layout-preview-2 {
+  background-image: url(../gfx/row-preview-laptop.png);
+  width: 118px;
+  height: 70px;
+  padding: 7px 11px 9px 11px;
+}
+#opc .row-layout-previews .layout-preview-1 {
+  background-image: url(../gfx/row-preview-tablet.png);
+  width: 46px;
+  height: 66px;
+  padding: 3px 3px 11px 3px;
+}
+#opc .row-layout-previews .layout-preview-0 {
+  background-image: url(../gfx/row-preview-phone.png);
+  width: 36px;
+  height: 56px;
+  padding: 2px 2px 7px 2px;
+}
+
 html, body {
   margin: 0;
   padding: 0;

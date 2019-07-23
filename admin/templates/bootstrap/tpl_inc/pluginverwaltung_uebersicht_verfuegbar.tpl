@@ -63,8 +63,12 @@
                                 </div>
                                 <div class="modal-footer">
                                     <div class="btn-group">
-                                        <button type="button" class="btn btn-success" name="ok" data-dismiss="modal"><i class="fal fa-check text-success"></i>&nbsp;{__('ok')}</button>
-                                        <button type="button" class="btn btn-danger" name="cancel" data-dismiss="modal"><i class="fa fa-close"></i>&nbsp;{__('Cancel')}</button>
+                                        <button type="button" class="btn btn-success" name="ok" data-dismiss="modal">
+                                            <i class="fal fa-check text-success"></i>&nbsp;{__('ok')}
+                                        </button>
+                                        <button type="button" class="btn btn-danger" name="cancel" data-dismiss="modal">
+                                            <i class="fa fa-close"></i>&nbsp;{__('Cancel')}
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -85,12 +89,25 @@
                         {foreach $pluginsAvailable->toArray() as $listingItem}
                             <tr class="plugin">
                                 <td class="check">
-                                    <input type="checkbox" name="cVerzeichnis[]" id="plugin-check-{$listingItem->getDir()}" value="{$listingItem->getDir()}" />
+                                    <div class="custom-control custom-checkbox">
+                                        <input class="custom-control-input" type="checkbox" name="cVerzeichnis[]" id="plugin-check-{$listingItem->getDir()}" value="{$listingItem->getDir()}" />
+                                        <label class="custom-control-label" for="plugin-check-{$listingItem->getDir()}"></label>
+                                    </div>
                                     {if $listingItem->isShop5Compatible() === false}
                                         {if $listingItem->isShop4Compatible() === false}
-                                            <span title="{__('dangerPluginNotCompatibleShop4')}" class="label warning label-danger"><i class="fal fa-exclamation-triangle"></i></span>
+                                            <span title="{__('dangerPluginNotCompatibleShop4')}" class="label warning label-danger">
+                                                <span class="icon-hover">
+                                                    <span class="fal fa-exclamation-triangle"></span>
+                                                    <span class="fas fa-exclamation-triangle"></span>
+                                                </span>
+                                            </span>
                                         {else}
-                                            <span title="{__('dangerPluginNotCompatibleShop5')}" class="label warning label-warning"><i class="fal fa-exclamation-triangle"></i></span>
+                                            <span title="{__('dangerPluginNotCompatibleShop5')}" class="label warning label-warning">
+                                                <span class="icon-hover">
+                                                    <span class="fal fa-exclamation-triangle"></span>
+                                                    <span class="fas fa-exclamation-triangle"></span>
+                                                </span>
+                                            </span>
                                         {/if}
                                     {/if}
                                 </td>
@@ -106,16 +123,22 @@
                             </tr>
                         {/foreach}
                         </tbody>
-                        <tfoot>
-                            <tr>
-                                <td class="check"><input name="ALLMSGS" id="ALLMSGS4" type="checkbox" onclick="AllMessagesExcept(this.form, vLicenses);" /></td>
-                                <td colspan="5"><label for="ALLMSGS4">{__('selectAll')}</label></td>
-                            </tr>
-                        </tfoot>
                     </table>
                 </div>
-                <div class="card-footer">
-                    <button name="installieren" type="submit" class="btn btn-primary"><i class="fa fa-share"></i> {__('pluginBtnInstall')}</button>
+                <div class="card-footer save-wrapper">
+                    <div class="row">
+                        <div class="col-sm-6 col-xl-auto text-left mb-3">
+                            <div class="custom-control custom-checkbox">
+                                <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS4" type="checkbox" onclick="AllMessagesExcept(this.form, vLicenses);" />
+                                <label class="custom-control-label" for="ALLMSGS4">{__('selectAll')}</label>
+                            </div>
+                        </div>
+                        <div class="ml-auto col-sm-6 col-xl-auto">
+                            <button name="installieren" type="submit" class="btn btn-primary btn-block">
+                                <i class="fa fa-share"></i> {__('pluginBtnInstall')}
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </form>

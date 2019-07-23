@@ -18,7 +18,6 @@ use stdClass;
  */
 final class Brocken extends AbstractSync
 {
-
     /**
      * @param Starter $starter
      * @return mixed|null

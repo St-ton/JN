@@ -101,7 +101,13 @@
                     </div>
                 </div>
                 <div class="save-wrapper">
-                    <button type="submit" value="{__('savePreferences')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('savePreferences')}</button>
+                    <div class="row">
+                        <div class="ml-auto col-sm-6 col-xl-auto">
+                            <button type="submit" value="{__('savePreferences')}" class="btn btn-primary btn-block">
+                                <i class="fa fa-save"></i> {__('savePreferences')}
+                            </button>
+                        </div>
+                    </div>
                 </div>
             {else}
                 <p class="alert alert-info">{__('noSearchResult')}</p>

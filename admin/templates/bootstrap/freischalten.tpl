@@ -98,8 +98,8 @@
                                         <tr>
                                             <td class="check">
                                                 <div class="custom-control custom-checkbox">
-                                                    <input class="custom-control-input" name="kBewertung[]" type="checkbox" value="{$oBewertung->kBewertung}" />
-                                                    <label class="custom-control-label"></label>
+                                                    <input class="custom-control-input" name="kBewertung[]" type="checkbox" id="review-id-{$oBewertung->kBewertung}" value="{$oBewertung->kBewertung}" />
+                                                    <label class="custom-control-label" for="review-id-{$oBewertung->kBewertung}"></label>
                                                 </div>
                                                 <input type="hidden" name="kArtikel[]" value="{$oBewertung->kArtikel}" />
                                                 <input type="hidden" name="kBewertungAll[]" value="{$oBewertung->kBewertung}" />
@@ -109,10 +109,15 @@
                                             <td class="tcenter">{$oBewertung->nSterne}</td>
                                             <td class="tcenter">{$oBewertung->Datum}</td>
                                             <td class="tcenter">
-                                                <a class="btn btn-default btn-sm" title="{__('modify')}"
-                                                   href="bewertung.php?a=editieren&kBewertung={$oBewertung->kBewertung}&nFZ=1&token={$smarty.session.jtl_token}">
-                                                    <i class="fal fa-edit"></i>
-                                                </a>
+                                                <div class="btn-group">
+                                                    <a class="btn btn-link px-2" title="{__('modify')}"
+                                                       href="bewertung.php?a=editieren&kBewertung={$oBewertung->kBewertung}&nFZ=1&token={$smarty.session.jtl_token}">
+                                                        <span class="icon-hover">
+                                                            <span class="fal fa-edit"></span>
+                                                            <span class="fas fa-edit"></span>
+                                                        </span>
+                                                    </a>
+                                                </div>
                                             </td>
                                         </tr>
                                         <tr>
@@ -124,22 +129,27 @@
                                         </tr>
                                     {/foreach}
                                     </tbody>
-                                    <tfoot>
-                                    <tr>
-                                        <td class="check">
-                                            <div class="custom-control custom-checkbox">
-                                                <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS1" type="checkbox" onclick="AllMessages(this.form);" />
-                                                <label class="custom-control-label" for="ALLSMSGS1"></label>
-                                            </div>
-                                        </td>
-                                        <td colspan="5"><label for="ALLMSGS1">{__('globalSelectAll')}</label></td>
-                                    </tr>
-                                    </tfoot>
                                 </table>
                             </div>
                             <div class="save-wrapper">
-                                <button name="freischaltenleoschen" type="submit" class="btn btn-danger"><i class="fas fa-trash-alt"></i> {__('deleteSelected')}</button>
-                                <button name="freischaltensubmit" type="submit" class="btn btn-primary"><i class="fa fa-thumbs-up"></i> {__('unlockMarked')}</button>
+                                <div class="row">
+                                    <div class="col-sm-6 col-xl-auto text-left mb-3">
+                                        <div class="custom-control custom-checkbox">
+                                            <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS1" type="checkbox" onclick="AllMessages(this.form);" />
+                                            <label class="custom-control-label" for="ALLMSGS1">{__('globalSelectAll')}</label>
+                                        </div>
+                                    </div>
+                                    <div class="ml-auto col-sm-6 col-xl-auto">
+                                        <button name="freischaltenleoschen" type="submit" class="btn btn-danger btn-block mb-3">
+                                            <i class="fas fa-trash-alt"></i> {__('deleteSelected')}
+                                        </button>
+                                    </div>
+                                    <div class="col-sm-6 col-xl-auto">
+                                        <button name="freischaltensubmit" type="submit" class="btn btn-primary btn-block">
+                                            <i class="fa fa-thumbs-up"></i> {__('unlockMarked')}
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </form>
@@ -180,8 +190,8 @@
                                         <tr>
                                             <td class="check">
                                                 <div class="custom-control custom-checkbox">
-                                                    <input class="custom-control-input" name="kSuchanfrage[]" type="checkbox" value="{$oSuchanfrage->kSuchanfrage}" />
-                                                    <label class="custom-control-label"></label>
+                                                    <input class="custom-control-input" name="kSuchanfrage[]" type="checkbox" id="search-request-id-{$oSuchanfrage->kSuchanfrage}" value="{$oSuchanfrage->kSuchanfrage}" />
+                                                    <label class="custom-control-label" for="search-request-id-{$oSuchanfrage->kSuchanfrage}"></label>
                                                 </div>
                                             </td>
                                             <td class="tleft">{$oSuchanfrage->cSuche}</td>
@@ -191,35 +201,36 @@
                                         </tr>
                                     {/foreach}
                                     </tbody>
-                                    <tfoot>
-                                    <tr>
-                                        <td class="check">
-                                            <div class="custom-control custom-checkbox">
-                                                <input class="custom-control-input"  name="ALLMSGS" id="ALLMSGS2" type="checkbox" onclick="AllMessages(this.form);" />
-                                                <label class="custom-control-label" for="ALLMSGS2"></label>
-                                            </div>
-                                        </td>
-                                        <td colspan="5"><label for="ALLMSGS2">{__('globalSelectAll')}</label></td>
-                                    </tr>
-                                    </tfoot>
                                 </table>
                             </div>
                             <div class="save-wrapper">
                                 <div class="row">
-                                    <div class="input-group col-md-6" data-toggle="tooltip" data-placement="bottom" title='{__('freischaltenMappingDesc')}'>
-                                        <span class="input-group-addon">
-                                            <label for="cMapping">{__('linkMarked')}:</label>
-                                        </span>
-                                        <input class="form-control" name="cMapping" id="cMapping" type="text" value="" />
-                                        <span class="input-group-btn ml-1">
-                                            <button name="submitMapping" type="submit" value="Verknüpfen" class="btn btn-primary">{__('linkVerb')}</button>
-                                        </span>
+                                    <div class="col-sm-6 col-xl-auto text-left mb-3">
+                                        <div class="custom-control custom-checkbox">
+                                            <input class="custom-control-input"  name="ALLMSGS" id="ALLMSGS2" type="checkbox" onclick="AllMessages(this.form);" />
+                                            <label class="custom-control-label" for="ALLMSGS2">{__('globalSelectAll')}</label>
+                                        </div>
                                     </div>
-                                    <div class="col-md-6">
-                                        <button name="freischaltenleoschen" type="submit" value="Markierte löschen" class="btn btn-danger">
+                                    <div class="col-sm-6 col-xl-auto mb-3">
+                                        <div class="input-group" data-toggle="tooltip" data-placement="bottom" title='{__('freischaltenMappingDesc')}'>
+                                            <span class="input-group-addon">
+                                                <label for="cMapping">{__('linkMarked')}:</label>
+                                            </span>
+                                            <input class="form-control" name="cMapping" id="cMapping" type="text" value="" />
+                                            <span class="input-group-btn ml-1">
+                                                <button name="submitMapping" type="submit" value="Verknüpfen" class="btn btn-primary">{__('linkVerb')}</button>
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-6 col-xl-auto">
+                                        <button name="freischaltenleoschen" type="submit" value="Markierte löschen" class="btn btn-danger btn-block mb-3">
                                             <i class="fas fa-trash-alt"></i> {__('deleteSelected')}
                                         </button>
-                                        <button name="freischaltensubmit" type="submit" value="Markierte freischalten" class="btn btn-primary"><i class="fa fa-thumbs-up"></i> {__('unlockMarked')}</button>
+                                    </div>
+                                    <div class="ml-auto col-sm-6 col-xl-auto">
+                                        <button name="freischaltensubmit" type="submit" value="Markierte freischalten" class="btn btn-primary btn-block">
+                                            <i class="fa fa-thumbs-up"></i> {__('unlockMarked')}
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -270,32 +281,40 @@
                                                 <td>{$oNewsKommentar->cBetreff|truncate:50:'...'}</td>
                                                 <td class="tcenter">{$oNewsKommentar->dErstellt_de}</td>
                                                 <td class="tcenter">
-                                                    <a class="btn btn-default btn-sm" title="{__('modify')}"
-                                                       href="news.php?news=1&kNews={$oNewsKommentar->kNews}&kNewsKommentar={$oNewsKommentar->kNewsKommentar}&nkedit=1&nFZ=1&token={$smarty.session.jtl_token}">
-                                                        <i class="fal fa-edit"></i>
-                                                    </a>
+                                                    <div class="btn-group">
+                                                        <a class="btn btn-link px-2" title="{__('modify')}"
+                                                           href="news.php?news=1&kNews={$oNewsKommentar->kNews}&kNewsKommentar={$oNewsKommentar->kNewsKommentar}&nkedit=1&nFZ=1&token={$smarty.session.jtl_token}">
+                                                            <span class="icon-hover">
+                                                                <span class="fal fa-edit"></span>
+                                                                <span class="fas fa-edit"></span>
+                                                            </span>
+                                                        </a>
+                                                    </div>
                                                 </td>
                                             </tr>
                                         {/foreach}
                                     </tbody>
-                                    <tfoot>
-                                        <tr>
-                                            <td class="check">
-                                                <div class="custom-control custom-checkbox">
-                                                    <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS4" type="checkbox" onclick="AllMessages(this.form);" />
-                                                    <label class="custom-control-label" for="ALLMSGS4"></label>
-                                                </div>
-                                            </td>
-                                            <td colspan="5"><label for="ALLMSGS4">{__('globalSelectAll')}</label></td>
-                                        </tr>
-                                    </tfoot>
                                 </table>
                             </div>
                             <div class="save-wrapper">
-                                <button name="freischaltenleoschen" type="submit" value="Markierte löschen" class="btn btn-danger">
-                                    <i class="fas fa-trash-alt"></i> {__('deleteSelected')}
-                                </button>
-                                <button name="freischaltensubmit" type="submit" value="Markierte freischalten" class="btn btn-primary"><i class="fa fa-thumbs-up"></i> {__('unlockMarked')}</button>
+                                <div class="row">
+                                    <div class="col-sm-6 col-xl-auto text-left mb-3">
+                                        <div class="custom-control custom-checkbox">
+                                            <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS4" type="checkbox" onclick="AllMessages(this.form);" />
+                                            <label class="custom-control-label" for="ALLMSGS4">{__('globalSelectAll')}</label>
+                                        </div>
+                                    </div>
+                                    <div class="ml-auto col-sm-6 col-xl-auto">
+                                        <button name="freischaltenleoschen" type="submit" value="Markierte löschen" class="btn btn-danger btn-block mb-3">
+                                            <i class="fas fa-trash-alt"></i> {__('deleteSelected')}
+                                        </button>
+                                    </div>
+                                    <div class="col-sm-6 col-xl-auto">
+                                        <button name="freischaltensubmit" type="submit" value="Markierte freischalten" class="btn btn-primary btn-block">
+                                            <i class="fa fa-thumbs-up"></i> {__('unlockMarked')}
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
                         </form>
                     </div>
@@ -331,8 +350,8 @@
                                             <tr>
                                                 <td class="check">
                                                     <div class="custom-control custom-checkbox">
-                                                        <input class="custom-control-input" type="checkbox" name="kNewsletterEmpfaenger[]" value="{$oNewsletterEmpfaenger->kNewsletterEmpfaenger}" />
-                                                        <label class="custom-control-label"></label>
+                                                        <input class="custom-control-input" type="checkbox" name="kNewsletterEmpfaenger[]" id="newsletter-recipient-id-{$oNewsletterEmpfaenger->kNewsletterEmpfaenger}" value="{$oNewsletterEmpfaenger->kNewsletterEmpfaenger}" />
+                                                        <label class="custom-control-label" for="newsletter-recipient-id-{$oNewsletterEmpfaenger->kNewsletterEmpfaenger}"></label>
                                                     </div>
                                                 </td>
                                                 <td>{$oNewsletterEmpfaenger->cEmail}</td>
@@ -342,24 +361,27 @@
                                             </tr>
                                         {/foreach}
                                     </tbody>
-                                    <tfoot>
-                                        <tr>
-                                            <td class="check">
-                                                <div class="custom-control custom-checkbox">
-                                                    <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS5" type="checkbox" onclick="AllMessages(this.form);" />
-                                                    <label class="custom-control-label" for="ALLMSGS5"></label>
-                                                </div>
-                                            </td>
-                                            <td colspan="5"><label for="ALLMSGS5">{__('globalSelectAll')}</label></td>
-                                        </tr>
-                                    </tfoot>
                                 </table>
                             </div>
                             <div class="save-wrapper">
-                                <button name="freischaltenleoschen" type="submit" value="Markierte löschen" class="btn btn-danger">
-                                    <i class="fas fa-trash-alt"></i> {__('deleteSelected')}
-                                </button>
-                                <button name="freischaltensubmit" type="submit" value="Markierte freischalten" class="btn btn-primary"><i class="fa fa-thumbs-up"></i> {__('unlockMarked')}</button>
+                                <div class="row">
+                                    <div class="col-sm-6 col-xl-auto text-left mb-3">
+                                        <div class="custom-control custom-checkbox">
+                                            <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS5" type="checkbox" onclick="AllMessages(this.form);" />
+                                            <label class="custom-control-label" for="ALLMSGS5">{__('globalSelectAll')}</label>
+                                        </div>
+                                    </div>
+                                    <div class="ml-auto col-sm-6 col-xl-auto">
+                                        <button name="freischaltenleoschen" type="submit" value="Markierte löschen" class="btn btn-danger btn-block mb-3">
+                                            <i class="fas fa-trash-alt"></i> {__('deleteSelected')}
+                                        </button>
+                                    </div>
+                                    <div class="col-sm-6 col-xl-auto">
+                                        <button name="freischaltensubmit" type="submit" value="Markierte freischalten" class="btn btn-primary btn-block">
+                                            <i class="fa fa-thumbs-up"></i> {__('unlockMarked')}
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
                         </form>
                     </div>

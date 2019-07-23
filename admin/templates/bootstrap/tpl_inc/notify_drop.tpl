@@ -7,7 +7,7 @@
         </span>
     </a>
     <div class="dropdown-menu dropdown-menu-right dropdown-menu-lg" role="main">
-        <span class="dropdown-header">Mitteilungen</span>
+        <span class="dropdown-header">{__('notificationsHeader')}</span>
         <div class="dropdown-divider"></div>
         {foreach $notifications as $notify}
             <div class="dropdown-item-text">

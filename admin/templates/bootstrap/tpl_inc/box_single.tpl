@@ -36,11 +36,15 @@
             {/if}
         </div>
         <div class="col-sm-2 col-xs-6{if $oBox->getContainerID() > 0} boxSubName{/if}">
-            <input class="left{if ($nPage !== 0 && is_array($oBox->getFilter($nPage))) || ($nPage === 0 && !\Functional\true($oBox->getFilter()) && !\Functional\false($oBox->getFilter()))} tristate{/if}"
-                   style="margin-right: 5px;"
-                   type="checkbox"
-                   name="aktiv[]"
-                   {if ($nPage !== 0 && $oBox->isVisibleOnPage($nPage)) || ($nPage === 0 && \Functional\true($oBox->getFilter()))}checked="checked"{/if} value="{$oBox->getID()}">
+            <div class="custom-control custom-checkbox">
+                <input class="custom-control-input" class="left{if ($nPage !== 0 && is_array($oBox->getFilter($nPage))) || ($nPage === 0 && !\Functional\true($oBox->getFilter()) && !\Functional\false($oBox->getFilter()))} tristate{/if}"
+               style="margin-right: 5px;"
+               type="checkbox"
+               name="aktiv[]"
+               id="box-id-{$oBox->getID()}"
+               {if ($nPage !== 0 && $oBox->isVisibleOnPage($nPage)) || ($nPage === 0 && \Functional\true($oBox->getFilter()))}checked="checked"{/if} value="{$oBox->getID()}">
+                <label class="custom-control-label" for="box-id-{$oBox->getID()}"></label>
+            </div>
             <input type="hidden" name="box[]" value="{$oBox->getID()}">
             {*prevents overwriting specific visibility when indeterminate checkbox is set on 'all pages' view*}
             {if $nPage === 0 && !\Functional\true($oBox->getFilter()) && !\Functional\false($oBox->getFilter())}
@@ -50,40 +54,51 @@
                    autocomplete="off" id="{$oBox->getSort()}">
         </div>
         <div class="col-sm-2 col-xs-6">
-            <a href="boxen.php?action=del&page={$nPage}&position={$position}&item={$oBox->getID()}&token={$smarty.session.jtl_token}"
-               onclick="return confirmDelete('{if $oBox->getBaseType() === $smarty.const.BOX_CONTAINER}Container #{$oBox->getID()}{else}{$oBox->getTitle()}{/if}');"
-               title="{__('remove')}"
-               class="btn btn-danger btn-circle">
-                <i class="fas fa-trash-alt"></i>
-            </a>
-            <a href="boxen.php?action=edit_mode&page={$nPage}&position={$position}&item={$oBox->getID()}&token={$smarty.session.jtl_token}"
-               title="{__('edit')}"
-               class="btn btn-default btn-circle{if empty($oBox->getType()) || ($oBox->getType() !== \JTL\Boxes\Type::TEXT && $oBox->getType() !== \JTL\Boxes\Type::LINK && $oBox->getType() !== \JTL\Boxes\Type::CATBOX)} disabled{/if}">
-                <i class="fal fa-edit"></i>
-            </a>
-            {if $oBox->getContainerID() === 0}
-                {if $nPage === $smarty.const.PAGE_ARTIKEL || $nPage === $smarty.const.PAGE_ARTIKELLISTE || $nPage === $smarty.const.PAGE_HERSTELLER || $nPage === $smarty.const.PAGE_EIGENE}
-                    {if $nPage === $smarty.const.PAGE_ARTIKEL}
-                        {assign var=picker value='articlePicker'}
-                    {elseif $nPage === $smarty.const.PAGE_ARTIKELLISTE}
-                        {assign var=picker value='categoryPicker'}
-                    {elseif $nPage === $smarty.const.PAGE_HERSTELLER}
-                        {assign var=picker value='manufacturerPicker'}
-                    {elseif $nPage === $smarty.const.PAGE_EIGENE}
-                        {assign var=picker value='pagePicker'}
+            <div class="btn-group">
+                <a href="boxen.php?action=del&page={$nPage}&position={$position}&item={$oBox->getID()}&token={$smarty.session.jtl_token}"
+                   onclick="return confirmDelete('{if $oBox->getBaseType() === $smarty.const.BOX_CONTAINER}Container #{$oBox->getID()}{else}{$oBox->getTitle()}{/if}');"
+                   title="{__('remove')}"
+                   class="btn btn-link px-2">
+                    <span class="icon-hover">
+                        <span class="fal fa-trash-alt"></span>
+                        <span class="fas fa-trash-alt"></span>
+                    </span>
+                </a>
+                <a href="boxen.php?action=edit_mode&page={$nPage}&position={$position}&item={$oBox->getID()}&token={$smarty.session.jtl_token}"
+                   title="{__('edit')}"
+                   class="btn btn-link px-2{if empty($oBox->getType()) || ($oBox->getType() !== \JTL\Boxes\Type::TEXT && $oBox->getType() !== \JTL\Boxes\Type::LINK && $oBox->getType() !== \JTL\Boxes\Type::CATBOX)} disabled{/if}">
+                    <span class="icon-hover">
+                        <span class="fal fa-edit"></span>
+                        <span class="fas fa-edit"></span>
+                    </span>
+                </a>
+                {if $oBox->getContainerID() === 0}
+                    {if $nPage === $smarty.const.PAGE_ARTIKEL || $nPage === $smarty.const.PAGE_ARTIKELLISTE || $nPage === $smarty.const.PAGE_HERSTELLER || $nPage === $smarty.const.PAGE_EIGENE}
+                        {if $nPage === $smarty.const.PAGE_ARTIKEL}
+                            {assign var=picker value='articlePicker'}
+                        {elseif $nPage === $smarty.const.PAGE_ARTIKELLISTE}
+                            {assign var=picker value='categoryPicker'}
+                        {elseif $nPage === $smarty.const.PAGE_HERSTELLER}
+                            {assign var=picker value='manufacturerPicker'}
+                        {elseif $nPage === $smarty.const.PAGE_EIGENE}
+                            {assign var=picker value='pagePicker'}
+                        {/if}
+                        {if !is_array($oBox->getFilter($nPage)) || \Functional\true($oBox->getFilter())}
+                            <input type="hidden" id="box-filter-{$oBox->getID()}" name="box-filter-{$oBox->getID()}" value="">
+                        {else}
+                            <input type="hidden" id="box-filter-{$oBox->getID()}" name="box-filter-{$oBox->getID()}"
+                                   value="{foreach $oBox->getFilter($nPage) as $pageID}{if !empty($pageID)}{$pageID}{/if}{if !$pageID@last},{/if}{/foreach}">
+                        {/if}
+                        <button type="button" class="btn btn-link px-2"
+                                onclick="openFilterPicker({$picker}, {$oBox->getID()})">
+                            <span class="icon-hover">
+                                <span class="fal fa-filter"></span>
+                                <span class="fas fa-filter"></span>
+                            </span>
+                        </button>
                     {/if}
-                    {if !is_array($oBox->getFilter($nPage)) || \Functional\true($oBox->getFilter())}
-                        <input type="hidden" id="box-filter-{$oBox->getID()}" name="box-filter-{$oBox->getID()}" value="">
-                    {else}
-                        <input type="hidden" id="box-filter-{$oBox->getID()}" name="box-filter-{$oBox->getID()}"
-                               value="{foreach $oBox->getFilter($nPage) as $pageID}{if !empty($pageID)}{$pageID}{/if}{if !$pageID@last},{/if}{/foreach}">
-                    {/if}
-                    <button type="button" class="btn btn-default btn-circle"
-                            onclick="openFilterPicker({$picker}, {$oBox->getID()})">
-                        <i class="fa fa-filter"></i>
-                    </button>
                 {/if}
-            {/if}
+            </div>
         </div>
     </div>
 </li>

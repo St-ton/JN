@@ -148,7 +148,7 @@ final class LanguageModel extends DataModel
     {
         static $attributes = null;
 
-        if (!isset($attributes)) {
+        if ($attributes === null) {
             $attributes                = [];
             $attributes['id']          = DataAttribute::create(
                 'kSprache',

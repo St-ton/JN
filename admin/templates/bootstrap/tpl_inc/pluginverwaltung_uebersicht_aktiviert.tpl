@@ -27,7 +27,10 @@
                         {foreach $pluginsByState.status_2 as $plugin}
                             <tr{if $plugin->getMeta()->isUpdateAvailable()} class="highlight"{/if}>
                                 <td class="check">
-                                    <input type="checkbox" name="kPlugin[]" id="plugin-check-{$plugin->getID()}" value="{$plugin->getID()}" />
+                                    <div class="custom-control custom-checkbox">
+                                        <input class="custom-control-input" type="checkbox" name="kPlugin[]" id="plugin-check-{$plugin->getID()}" value="{$plugin->getID()}" />
+                                        <label class="custom-control-label" for="plugin-check-{$plugin->getID()}"></label>
+                                    </div>
                                 </td>
                                 <td>
                                     <label for="plugin-check-{$plugin->getID()}">{$plugin->getMeta()->getName()}</label>
@@ -60,20 +63,34 @@
                                 <td class="tcenter plugin-lang-vars">
                                     {if $plugin->getLocalization()->getLangVars()->count() > 0}
                                         <a href="pluginverwaltung.php?pluginverwaltung_uebersicht=1&sprachvariablen=1&kPlugin={$plugin->getID()}&token={$smarty.session.jtl_token}"
-                                           class="btn btn-default btn-sm" title="{__('modify')}"><i class="fal fa-edit"></i></a>
+                                           class="btn btn-link" title="{__('modify')}">
+                                           <span class="icon-hover">
+                                                <span class="fal fa-edit"></span>
+                                                <span class="fas fa-edit"></span>
+                                            </span>
+                                        </a>
                                     {/if}
                                 </td>
                                 <td class="tcenter plugin-frontend-links">
                                     {if $plugin->getLinks()->getLinks()->count() > 0}
                                         <a href="links.php?kPlugin={$plugin->getID()}"
-                                           class="btn btn-default btn-sm" title="{__('modify')}"><i class="fal fa-edit"></i></a>
+                                           class="btn btn-link" title="{__('modify')}">
+                                            <span class="icon-hover">
+                                                <span class="fal fa-edit"></span>
+                                                <span class="fas fa-edit"></span>
+                                            </span>
+                                        </a>
                                     {/if}
                                 </td>
                                 <td class="tcenter plugin-license">
                                     {if $plugin->getLicense()->hasLicenseCheck()}
                                         <button name="lizenzkey" type="submit" title="{__('modify')}"
-                                                class="btn {if $plugin->getLicense()->hasLicense()}btn-default{else}btn-primary{/if} btn-sm" value="{$plugin->getID()}">
-                                        <i class="fal fa-edit"></i></button>
+                                                class="btn btn-link" value="{$plugin->getID()}">
+                                            <span class="icon-hover">
+                                                <span class="fal fa-edit"></span>
+                                                <span class="fas fa-edit"></span>
+                                            </span>
+                                        </button>
                                     {/if}
                                 </td>
                                 <td class="tcenter plugin-config">
@@ -83,37 +100,56 @@
                                         || $plugin->getMeta()->isUpdateAvailable()}
                                         {assign var=btnGroup value=true}
                                     {/if}
-                                    {if $btnGroup}
-                                        <div class="btn-group" style="min-width:75px;">
-                                    {/if}
-                                    {if $plugin->getConfig()->getOptions()->count() || $plugin->getAdminMenu()->getItems()->count()}
-                                        <a class="btn btn-default btn-sm" href="plugin.php?kPlugin={$plugin->getID()}" title="Einstellungen"><i class="fa fa-cogs"></i></a>
-                                    {elseif $plugin->getMeta()->getLicenseMD() || $plugin->getMeta()->getReadmeMD()}
-                                        <a class="btn btn-default btn-sm" href="plugin.php?kPlugin={$plugin->getID()}" title="Dokumentation"><i class="fa fa-copy"></i></a>
-                                        {*<a class="btn btn-default btn-sm" href="plugin.php?kPlugin={$plugin->getID()}" title="Dokumentation"><i class="fa fa-file-text-o"></i></a>*}
-                                    {/if}
-                                    {if $plugin->getMeta()->isUpdateAvailable()}
-                                        <a onclick="ackCheck({$plugin->getID()});return false;" class="btn btn-success btn-sm" title="{__('pluginBtnUpdate')}"><i class="fa fa-refresh"></i></a>
-                                    {/if}
-                                    {if $btnGroup}
-                                        </div>
-                                    {/if}
+                                    <div class="btn-group">
+                                        {if $plugin->getConfig()->getOptions()->count() || $plugin->getAdminMenu()->getItems()->count()}
+                                            <a class="btn btn-link px-1 href="plugin.php?kPlugin={$plugin->getID()}" title="Einstellungen">
+                                                <span class="icon-hover">
+                                                    <span class="fal fa-cogs"></span>
+                                                    <span class="fas fa-cogs"></span>
+                                                </span>
+                                            </a>
+                                        {elseif $plugin->getMeta()->getLicenseMD() || $plugin->getMeta()->getReadmeMD()}
+                                            <a class="btn btn-link px-1" href="plugin.php?kPlugin={$plugin->getID()}" title="Dokumentation">
+                                                <span class="icon-hover">
+                                                    <span class="fal fa-copy"></span>
+                                                    <span class="fas fa-copy"></span>
+                                                </span>
+                                            </a>
+                                            {*<a class="btn btn-default btn-sm" href="plugin.php?kPlugin={$plugin->getID()}" title="Dokumentation"><i class="fa fa-file-text-o"></i></a>*}
+                                        {/if}
+                                        {if $plugin->getMeta()->isUpdateAvailable()}
+                                            <a onclick="ackCheck({$plugin->getID()});return false;" class="btn btn-link px-1" title="{__('pluginBtnUpdate')}">
+                                                <span class="icon-hover">
+                                                    <span class="fal fa-refresh"></span>
+                                                    <span class="fas fa-refresh"></span>
+                                                </span>
+                                            </a>
+                                        {/if}
+                                    </div>
                                 </td>
                             </tr>
                         {/foreach}
                         </tbody>
-                        <tfoot>
-                            <tr>
-                                <td class="check"><input name="ALLMSGS" id="ALLMSGS1" type="checkbox" onclick="AllMessages(this.form);" /></td>
-                                <td colspan="10"><label for="ALLMSGS1">{__('selectAll')}</label></td>
-                            </tr>
-                        </tfoot>
                     </table>
                 </div>
-                <div class="card-footer">
-                    <div class="save btn-group">
-                        <button name="deaktivieren" type="submit" class="btn btn-warning"><i class="fa fa-close"></i> {__('deactivate')}</button>
-                        <button name="deinstallieren" type="submit" class="btn btn-danger"><i class="fas fa-trash-alt"></i> {__('pluginBtnDeInstall')}</button>
+                <div class="card-footer save-wrapper save">
+                    <div class="row">
+                        <div class="col-sm-6 col-xl-auto text-left mb-3">
+                            <div class="custom-control custom-checkbox">
+                                <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS1" type="checkbox" onclick="AllMessages(this.form);" />
+                                <label class="custom-control-label" for="ALLMSGS1">{__('selectAll')}</label>
+                            </div>
+                        </div>
+                        <div class="ml-auto col-sm-6 col-xl-auto">
+                            <button name="deinstallieren" type="submit" class="btn btn-danger btn-block mb-3">
+                                <i class="fas fa-trash-alt"></i> {__('pluginBtnDeInstall')}
+                            </button>
+                        </div>
+                        <div class="col-sm-6 col-xl-auto">
+                            <button name="deaktivieren" type="submit" class="btn btn-warning btn-block">
+                                <i class="fa fa-close"></i> {__('deactivate')}
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>

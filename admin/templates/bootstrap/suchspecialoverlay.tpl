@@ -11,18 +11,16 @@
                 <div class="col-md-4">
                     <form name="suchspecialoverlay" method="post" action="suchspecialoverlay.php" class="inline_block">
                         {$jtl_token}
-                        <div class="input-group">
-                            <span class="input-group-addon">
-                                <label for="{__('suchspecial')}">{__('suchspecial')}:</label>
-                            </span>
+                        <div class="form-row">
+                            <label class="col-sm-auto col-form-label" for="{__('suchspecial')}">{__('suchspecial')}:</label>
                             <input type="hidden" name="suchspecialoverlay" value="1" />
-                            <span class="label-wrap last">
+                            <div class="col-sm-auto">
                                 <select name="kSuchspecialOverlay" class="custom-select selectBox" id="{__('suchspecial')}" onchange="document.suchspecialoverlay.submit();">
                                     {foreach $oSuchspecialOverlay_arr as $oSuchspecialOverlayTMP}
                                         <option value="{$oSuchspecialOverlayTMP->getType()}" {if $oSuchspecialOverlayTMP->getType() == $oSuchspecialOverlay->getType()}selected{/if}>{$oSuchspecialOverlayTMP->getName()}</option>
                                     {/foreach}
                                 </select>
-                            </span>
+                            </div>
                         </div>
                     </form>
                 </div>
@@ -59,7 +57,14 @@
                         <div class="form-group form-row align-items-center file-input">
                             <label class="col col-sm-4 col-form-label text-sm-right" for="cSuchspecialOverlayBild">{__('suchspecialoverlayFileName')}:</label>
                             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                <input class="form-control" type="file" name="cSuchspecialOverlayBild" accept="image/jpeg,image/gif,image/png,image/bmp" id="cSuchspecialOverlayBild" value="" tabindex="1" />
+                                <div class="input-group mb-3">
+                                    <div class="custom-file">
+                                        <input class="custom-file-input" type="file" name="cSuchspecialOverlayBild" accept="image/jpeg,image/gif,image/png,image/bmp" id="cSuchspecialOverlayBild" value="" tabindex="1" />
+                                        <label class="custom-file-label" for="cSuchspecialOverlayBild">
+                                            <span class="text-truncate">{__('fileSelect')}</span>
+                                        </label>
+                                    </div>
+                                </div>
                             </div>
                             <div class="col-auto ml-sm-n4 order-2 order-sm-3">
                                 {getHelpDesc cDesc=__('suchspecialoverlayFileNameDesc')}
@@ -140,7 +145,13 @@
                         </div>
                     </div>
                     <div class="card-footer save-wrapper">
-                        <button type="submit" value="{__('save')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
+                        <div class="row">
+                            <div class="ml-auto col-sm-6 col-xl-auto submit">
+                                <button type="submit" value="{__('save')}" class="btn btn-primary btn-block">
+                                    {__('saveWithIcon')}
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

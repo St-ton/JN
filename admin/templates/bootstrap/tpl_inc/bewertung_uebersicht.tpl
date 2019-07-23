@@ -59,7 +59,10 @@
                                             <tr>
                                                 <td class="check">
                                                     <input type="hidden" name="kArtikel[{$review@index}]" value="{$review->kArtikel}"/>
-                                                    <input name="kBewertung[{$review@index}]" type="checkbox" value="{$review->kBewertung}" id="inactive-{$review->kBewertung}" />
+                                                    <div class="custom-control custom-checkbox">
+                                                        <input class="custom-control-input" name="kBewertung[{$review@index}]" type="checkbox" value="{$review->kBewertung}" id="inactive-{$review->kBewertung}" />
+                                                        <label class="custom-control-label" for="inactive-{$review->kBewertung}"></label>
+                                                    </div>
                                                 </td>
                                                 <td>
                                                     <label for="inactive-{$review->kBewertung}">{$review->ArtikelName}</label>
@@ -70,25 +73,40 @@
                                                 <td class="tcenter">{$review->nSterne}</td>
                                                 <td class="tcenter">{$review->Datum}</td>
                                                 <td class="tcenter">
-                                                    <a href="bewertung.php?a=editieren&kBewertung={$review->kBewertung}&tab=freischalten&token={$smarty.session.jtl_token}"
-                                                       class="btn btn-default btn-circle" title="{__('modify')}">
-                                                        <i class="fal fa-edit"></i>
-                                                    </a>
+                                                    <div class="btn-group">
+                                                        <a href="bewertung.php?a=editieren&kBewertung={$review->kBewertung}&tab=freischalten&token={$smarty.session.jtl_token}"
+                                                           class="btn btn-link px-2" title="{__('modify')}">
+                                                            <span class="icon-hover">
+                                                                <span class="fal fa-edit"></span>
+                                                                <span class="fas fa-edit"></span>
+                                                            </span>
+                                                        </a>
+                                                    </div>
                                                 </td>
                                             </tr>
                                         {/foreach}
                                     </tbody>
-                                    <tfoot>
-                                        <tr>
-                                            <td class="check"><input name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);"></td>
-                                            <td colspan="6"><label for="ALLMSGS">{__('globalSelectAll')}</label></td>
-                                        </tr>
-                                    </tfoot>
                                 </table>
                             </div>
                             <div class="card-footer save-wrapper">
-                                <button name="loeschen" type="submit" value="{__('delete')}" class="btn btn-danger"><i class="fas fa-trash-alt"></i> {__('delete')}</button>
-                                <button name="aktivieren" type="submit" value="{__('activate')}" class="btn btn-primary"><i class="fa fa-thumbs-up"></i> {__('activate')}</button>
+                                <div class="row">
+                                    <div class="col-sm-6 col-xl-auto text-left">
+                                        <div class="custom-control custom-checkbox mb-3">
+                                            <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);">
+                                            <label class="custom-control-label" for="ALLMSGS">{__('globalSelectAll')}</label>
+                                        </div>
+                                    </div>
+                                    <div class="ml-auto col-sm-6 col-xl-auto">
+                                        <button name="loeschen" type="submit" value="{__('delete')}" class="btn btn-danger btn-block mb-3">
+                                            <i class="fas fa-trash-alt"></i> {__('delete')}
+                                        </button>
+                                    </div>
+                                    <div class="col-sm-6 col-xl-auto">
+                                        <button name="aktivieren" type="submit" value="{__('activate')}" class="btn btn-primary btn-block">
+                                            <i class="fa fa-thumbs-up"></i> {__('activate')}
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </form>
@@ -123,7 +141,10 @@
                                     {foreach $activeReviews as $review}
                                         <tr>
                                             <td class="check">
-                                                <input name="kBewertung[]" type="checkbox" value="{$review->kBewertung}" id="l50-{$review->kBewertung}">
+                                                <div class="custom-control custom-checkbox">
+                                                    <input class="custom-control-input" name="kBewertung[]" type="checkbox" value="{$review->kBewertung}" id="l50-{$review->kBewertung}">
+                                                    <label class="custom-control-label" for="l50-{$review->kBewertung}"></label>
+                                                </div>
                                                 <input type="hidden" name="kArtikel[]" value="{$review->kArtikel}">
                                             </td>
                                             <td>
@@ -146,28 +167,38 @@
                                             <td class="tcenter tright" style="min-width: 130px;">
                                                 {if !empty($review->cAntwort)}
                                                     <a href="bewertung.php?a=delreply&kBewertung={$review->kBewertung}&tab=letzten50&token={$smarty.session.jtl_token}"
-                                                       class="btn btn-danger btn-circle" title="{__('removeReply')}">
-                                                        <i class="fal fa-trash-alt"></i>
+                                                       class="btn btn-link px-2" title="{__('removeReply')}">
+                                                        <span class="icon-hover">
+                                                            <span class="fal fa-trash-alt"></span>
+                                                            <span class="fas fa-trash-alt"></span>
+                                                        </span>
                                                     </a>
                                                 {/if}
                                                 <a href="bewertung.php?a=editieren&kBewertung={$review->kBewertung}&tab=letzten50&token={$smarty.session.jtl_token}"
-                                                   class="btn btn-primary btn-circle" title="{__('modify')}">
-                                                    <i class="fal fa-edit"></i>
+                                                   class="btn btn-link px-2" title="{__('modify')}">
+                                                    <span class="icon-hover">
+                                                        <span class="fal fa-edit"></span>
+                                                        <span class="fas fa-edit"></span>
+                                                    </span>
                                                 </a>
                                             </td>
                                         </tr>
                                     {/foreach}
                                     </tbody>
-                                    <tfoot>
-                                    <tr>
-                                        <td class="check"><input name="ALLMSGS" id="ALLMSGS3" type="checkbox" onclick="AllMessages(this.form);"></td>
-                                        <td colspan="6"><label for="ALLMSGS3">{__('globalSelectAll')}</label></td>
-                                    </tr>
-                                    </tfoot>
                                 </table>
                             </div>
                             <div class="card-footer save-wrapper">
-                                <button name="loeschen" type="submit" value="{__('delete')}" class="btn btn-danger"><i class="fas fa-trash-alt"></i> {__('deleteSelected')}</button>
+                                <div class="row">
+                                    <div class="col-sm-6 col-xl-auto text-left">
+                                        <div class="custom-control custom-checkbox mb-3">
+                                            <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS3" type="checkbox" onclick="AllMessages(this.form);">
+                                            <label class="custom-control-label" for="ALLMSGS3">{__('globalSelectAll')}</label>
+                                        </div>
+                                    </div>
+                                    <div class="ml-auto col-sm-6 col-xl-auto">
+                                        <button name="loeschen" type="submit" value="{__('delete')}" class="btn btn-danger btn-block"><i class="fas fa-trash-alt"></i> {__('deleteSelected')}</button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </form>
@@ -187,7 +218,7 @@
                             <input type="hidden" name="bewertung_aktiv" value="1" />
                             <input type="hidden" name="tab" value="artikelbewertung" />
                             <input class="form-control" name="cArtNr" type="text" value="{$cArtNr|default:''}" />
-                            <button name="submitSearch" type="submit" value="{__('search')}" class="btn btn-primary btn-circle ml-1">
+                            <button name="submitSearch" type="submit" value="{__('search')}" class="btn btn-link px-2 ml-1">
                                 <i class="fal fa-search"></i>
                             </button>
                         </div>
@@ -220,7 +251,10 @@
                                     {foreach $filteredReviews as $review}
                                         <tr>
                                             <td>
-                                                <input name="kBewertung[]" type="checkbox" value="{$review->kBewertung}" id="filtered-{$review->kBewertung}">
+                                                <div class="custom-control custom-checkbox">
+                                                    <input class="custom-control-input" name="kBewertung[]" type="checkbox" value="{$review->kBewertung}" id="filtered-{$review->kBewertung}">
+                                                    <label class="custom-control-label" for="filtered-{$review->kBewertung}"></label>
+                                                </div>
                                                 <input type="hidden" name="kArtikel[]" value="{$review->kArtikel}">
                                             </td>
                                             <td>
@@ -233,23 +267,30 @@
                                             <td class="tcenter">{$review->Datum}</td>
                                             <td class="tcenter">
                                                 <a href="bewertung.php?a=editieren&kBewertung={$review->kBewertung}&tab=artikelbewertung"
-                                                   class="btn btn-default btn-circle" title="{__('modify')}">
-                                                    <i class="fal fa-edit"></i>
+                                                   class="btn btn-link px-2" title="{__('modify')}">
+                                                    <span class="icon-hover">
+                                                        <span class="fal fa-edit"></span>
+                                                        <span class="fas fa-edit"></span>
+                                                    </span>
                                                 </a>
                                             </td>
                                         </tr>
                                     {/foreach}
                                     </tbody>
-                                    <tfoot>
-                                    <tr>
-                                        <td><input name="ALLMSGS" id="ALLMSGS2" type="checkbox" onclick="AllMessages(this.form);"></td>
-                                        <td colspan="6"><label for="ALLMSGS2">{__('globalSelectAll')}</label></td>
-                                    </tr>
-                                    </tfoot>
                                 </table>
                             </div>
                             <div class="card-footer save-wrapper">
-                                <button name="loeschen" type="submit" class="btn btn-danger"><i class="fas fa-trash-alt"></i> {__('delete')}</button>
+                                <div class="row">
+                                    <div class="col-sm-6 col-xl-auto text-left">
+                                        <div class="custom-control custom-checkbox mb-3">
+                                            <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS2" type="checkbox" onclick="AllMessages(this.form);">
+                                            <label class="custom-control-label" for="ALLMSGS2">{__('globalSelectAll')}</label>
+                                        </div>
+                                    </div>
+                                    <div class="ml-auto col-sm-6 col-xl-auto">
+                                        <button name="loeschen" type="submit" class="btn btn-danger btn-block"><i class="fas fa-trash-alt"></i> {__('delete')}</button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     {/if}
@@ -303,7 +344,11 @@
                             {/foreach}
                         </div>
                         <div class="card-footer save-wrapper">
-                            <button type="submit" value="{__('save')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
+                            <div class="row">
+                                <div class="ml-auto col-sm-6 col-xl-auto">
+                                    <button type="submit" value="{__('save')}" class="btn btn-primary btn-block">{__('saveWithIcon')}</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </form>

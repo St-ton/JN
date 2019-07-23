@@ -47,7 +47,7 @@
                             <input type="hidden" name="page" value="{$nPage}" />
                             <input type="hidden" name="action" value="resort" />
                             <button type="submit" value="aktualisieren" class="btn btn-primary">
-                                <i class="fa fa-save"></i> {__('save')}
+                                {__('saveWithIcon')}
                             </button>
                         </li>
                     </ul>

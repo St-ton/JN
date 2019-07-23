@@ -26,7 +26,10 @@
                 {foreach $pluginsByState.status_3 as $plugin}
                     <tr{if $plugin->getMeta()->isUpdateAvailable()} class="highlight"{/if}>
                         <td class="check">
-                            <input type="checkbox" name="kPlugin[]" value="{$plugin->getID()}" id="plugin-problem-{$plugin->getID()}" />
+                            <div class="custom-control custom-checkbox">
+                                <input class="custom-control-input" type="checkbox" name="kPlugin[]" value="{$plugin->getID()}" id="plugin-problem-{$plugin->getID()}" />
+                                <label class="custom-control-label" for="plugin-problem-{$plugin->getID()}"></label>
+                            </div>
                         </td>
                         <td>
                             <label for="plugin-problem-{$plugin->getID()}">{$plugin->getMeta()->getName()}</label>
@@ -48,13 +51,22 @@
                             {if $plugin->getLocalization()->getTranslations()|@count > 0}
                                 <a href="pluginverwaltung.php?pluginverwaltung_uebersicht=1&sprachvariablen=1&kPlugin={$plugin->getID()}"
                                    class="btn btn-default" title="{__('modify')}">
-                                    <i class="fal fa-edit"></i></a>
+                                    <span class="icon-hover">
+                                        <span class="fal fa-edit"></span>
+                                        <span class="fas fa-edit"></span>
+                                    </span>
+                                </a>
                             {/if}
                         </td>
                         <td class="tcenter">
                             {if $plugin->getLinks()->getLinks()->count() > 0}
                                 <a href="links.php?kPlugin={$plugin->getID()}"
-                                   class="btn btn-default" title="{__('modify')}"><i class="fal fa-edit"></i></a>
+                                   class="btn btn-default" title="{__('modify')}">
+                                    <span class="icon-hover">
+                                        <span class="fal fa-edit"></span>
+                                        <span class="fas fa-edit"></span>
+                                    </span>
+                                </a>
                             {/if}
                         </td>
                         <td class="tcenter">
@@ -62,10 +74,18 @@
                                 {if $plugin->getLicense()->hasLicense()}
                                     <strong>{__('pluginBtnLicence')}:</strong> {$plugin->getLicense()->getKey()}
                                     <button name="lizenzkey" type="submit" class="btn btn-default" value="{$plugin->getID()}">
-                                        <i class="fal fa-edit"></i> {__('pluginBtnLicenceChange')}</button>
+                                        <span class="icon-hover">
+                                            <span class="fal fa-edit"></span>
+                                            <span class="fas fa-edit"></span>
+                                        </span> {__('pluginBtnLicenceChange')}
+                                    </button>
                                 {else}
                                     <button name="lizenzkey" type="submit" class="btn btn-primary" value="{$plugin->getID()}">
-                                        <i class="fal fa-edit"></i> {__('pluginBtnLicenceAdd')}</button>
+                                        <span class="icon-hover">
+                                            <span class="fal fa-edit"></span>
+                                            <span class="fas fa-edit"></span>
+                                        </span> {__('pluginBtnLicenceAdd')}
+                                    </button>
                                 {/if}
                             {/if}
                         </td>
@@ -79,7 +99,10 @@
                 {foreach $pluginsByState.status_4 as $plugin}
                     <tr{if $plugin->getMeta()->isUpdateAvailable()} class="highlight"{/if}>
                         <td class="check">
-                            <input type="checkbox" name="kPlugin[]" value="{$plugin->getID()}" id="plugin-problem-{$plugin->getID()}" />
+                            <div class="custom-control custom-checkbox">
+                                <input class="custom-control-input" type="checkbox" name="kPlugin[]" value="{$plugin->getID()}" id="plugin-problem-{$plugin->getID()}" />
+                                <label class="custom-control-label" for="plugin-problem-{$plugin->getID()}"></label>
+                            </div>
                         </td>
                         <td>
                             <label for="plugin-problem-{$plugin->getID()}">{$plugin->getMeta()->getName()}</label>
@@ -134,7 +157,10 @@
                 {foreach $pluginsByState.status_5 as $plugin}
                     <tr{if $plugin->getMeta()->isUpdateAvailable()} class="highlight"{/if}>
                         <td class="check">
-                            <input type="checkbox" name="kPlugin[]" value="{$plugin->getID()}" id="plugin-problem-{$plugin->getID()}"/>
+                            <div class="custom-control custom-checkbox">
+                                <input class="custom-control-input" type="checkbox" name="kPlugin[]" value="{$plugin->getID()}" id="plugin-problem-{$plugin->getID()}"/>
+                                <label class="custom-control-label" for="plugin-problem-{$plugin->getID()}"></label>
+                            </div>
                         </td>
                         <td>
                             <label for="plugin-problem-{$plugin->getID()}">{$plugin->getMeta()->getName()}</label>
@@ -193,7 +219,10 @@
                 {foreach $pluginsByState.status_6 as $plugin}
                     <tr{if $plugin->getMeta()->isUpdateAvailable()} class="highlight"{/if}>
                         <td class="check">
-                            <input type="checkbox" name="kPlugin[]" value="{$plugin->getID()}" id="plugin-problem-{$plugin->getID()}" />
+                            <div class="custom-control custom-checkbox">
+                                <input class="custom-control-input" type="checkbox" name="kPlugin[]" value="{$plugin->getID()}" id="plugin-problem-{$plugin->getID()}" />
+                                <label class="custom-control-label" for="plugin-problem-{$plugin->getID()}"></label>
+                            </div>
                         </td>
                         <td>
                             <label for="plugin-problem-{$plugin->getID()}">{$plugin->getMeta()->getName()}</label>
@@ -248,20 +277,28 @@
                     </tr>
                 {/foreach}
                 </tbody>
-                <tfoot>
-                    <tr>
-                        <td class="check"><input name="ALLMSGS" id="ALLMSGS3" type="checkbox" onclick="AllMessages(this.form);" /></td>
-                        <td colspan="10"><label for="ALLMSGS3">{__('selectAll')}</label></td>
-                    </tr>
-                </tfoot>
                 </table>
             </div>
-            <div class="card-footer">
-                <div class="save btn-group">
-                    {*<button name="aktivieren" type="submit" class="btn btn-primary">{__('activate')}</button>*}
-                    <button name="deaktivieren" type="submit" class="btn btn-warning">{__('deactivate')}</button>
-                    <button name="deinstallieren" type="submit" class="btn btn-danger"><i class="fas fa-trash-alt"></i> {__('pluginBtnDeInstall')}</button>
+            <div class="card-footer save-wrapper save">
+                <div class="row">
+                    <div class="col-sm-6 col-xl-auto text-left mb-3">
+                        div class="custom-control custom-checkbox">
+                        <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS3" type="checkbox" onclick="AllMessages(this.form);" />
+                        <label class="custom-control-label" for="ALLMSGS3">{__('selectAll')}</label>
+                    </div>
+                    </div>
+                    <div class="ml-auto col-sm-6 col-xl-auto">
+                        <button name="deinstallieren" type="submit" class="btn btn-danger btn-block mb-3">
+                            <i class="fas fa-trash-alt"></i> {__('pluginBtnDeInstall')}
+                        </button>
+                    </div>
+                    <div class="col-sm-6 col-xl-auto">
+                        <button name="deaktivieren" type="submit" class="btn btn-warning btn-block">
+                            {__('deactivate')}
+                        </button>
+                    </div>
                 </div>
+                {*<button name="aktivieren" type="submit" class="btn btn-primary">{__('activate')}</button>*}
             </div>
         </div>
     </form>

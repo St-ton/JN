@@ -116,31 +116,37 @@
                                             <td class="TD4">{$oNewsKommentar->getText()|truncate:150:'...'}</td>
                                             <td class="tcenter">{$oNewsKommentar->getDateCreatedCompat()}</td>
                                             <td class="tcenter">
-                                                <a href="news.php?news=1&kNews={$oNewsKommentar->getNewsID()}&kNewsKommentar={$oNewsKommentar->getID()}&nkedit=1&tab=inaktiv&token={$smarty.session.jtl_token}"
-                                                   class="btn btn-primary btn-circle" title="{__('modify')}">
-                                                    <i class="fal fa-edit"></i>
-                                                </a>
+                                                <div class="btn-group">
+                                                    <a href="news.php?news=1&kNews={$oNewsKommentar->getNewsID()}&kNewsKommentar={$oNewsKommentar->getID()}&nkedit=1&tab=inaktiv&token={$smarty.session.jtl_token}"
+                                                       class="btn btn-link px-2" title="{__('modify')}">
+                                                        <span class="icon-hover">
+                                                            <span class="fal fa-edit"></span>
+                                                            <span class="fas fa-edit"></span>
+                                                        </span>
+                                                    </a>
+                                                </div>
                                             </td>
                                         </tr>
                                     {/foreach}
                                     </tbody>
-                                    <tfoot>
-                                        <tr>
-                                            <td class="check">
-                                                <div class="custom-control custom-checkbox">
-                                                    <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS1" type="checkbox" onclick="AllMessages(this.form);" />
-                                                    <label class="custom-control-label" for="ALLMSGS1"></label>
-                                                </div>
-                                            </td>
-                                            <td colspan="5"><label for="ALLMSGS1">{__('globalSelectAll')}</label></td>
-                                        </tr>
-                                    </tfoot>
                                 </table>
                             </div>
                             <div class="card-footer save-wrapper">
-                                <input name="kommentareloeschenSubmit" type="submit" data-id="loeschen" value="{__('delete')}" class="hidden-soft">
-                                <button name="kommentareloeschenSubmit" type="button" data-toggle="modal" data-target=".delete-modal" value="{__('delete')}" class="btn btn-danger"><i class="fas fa-trash-alt"></i> {__('delete')}</button>
-                                <button name="freischalten" type="submit" value="{__('newsActivate')}" class="btn btn-primary"><i class="fa fa-thumbs-up"></i> {__('newsActivate')}</button>
+                                <div class="row">
+                                    <div class="col-sm-6 col-xl-auto text-left">
+                                        <div class="custom-control custom-checkbox mb-3">
+                                            <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS1" type="checkbox" onclick="AllMessages(this.form);" />
+                                            <label class="custom-control-label" for="ALLMSGS1">{__('globalSelectAll')}</label>
+                                        </div>
+                                    </div>
+                                    <div class="ml-auto col-sm-6 col-xl-auto">
+                                        <input name="kommentareloeschenSubmit" type="submit" data-id="loeschen" value="{__('delete')}" class="hidden-soft">
+                                        <button name="kommentareloeschenSubmit" type="button" data-toggle="modal" data-target=".delete-modal" value="{__('delete')}" class="btn btn-danger btn-block mb-3"><i class="fas fa-trash-alt"></i> {__('delete')}</button>
+                                    </div>
+                                    <div class="col-sm-6 col-xl-auto">
+                                        <button name="freischalten" type="submit" value="{__('newsActivate')}" class="btn btn-primary btn-block"><i class="fa fa-thumbs-up"></i> {__('newsActivate')}</button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </form>
@@ -191,7 +197,9 @@
                                                 {/foreach}
                                             </td>
                                             <td class="TD5">{$oNews->getDateValidFromLocalizedCompat()}</td>
-                                            <td class="tcenter"><i class="fal fa-{if $oNews->getIsActive()}check text-success{else}times text-danger{/if}"></i></td>
+                                            <td class="tcenter">
+                                                <i class="fal fa-{if $oNews->getIsActive()}check text-success{else}times text-danger{/if}"></i>
+                                            </td>
                                             <td class="tcenter">
                                                 {if $oNews->getCommentCount() > 0}
                                                     <a href="news.php?news=1&nd=1&kNews={$oNews->getID()}&tab=aktiv&token={$smarty.session.jtl_token}">{$oNews->getCommentCount()}</a>
@@ -201,14 +209,22 @@
                                             </td>
                                             <td class="tcenter">{$oNews->getDateCompat()}</td>
                                             <td class="tcenter">
-                                                <a href="news.php?news=1&nd=1&kNews={$oNews->getID()}&tab=aktiv&token={$smarty.session.jtl_token}"
-                                                   class="btn btn-default btn-circle" title="{__('preview')}">
-                                                    <i class="fa fa-eye"></i>
-                                                </a>
-                                                <a href="news.php?news=1&news_editieren=1&kNews={$oNews->getID()}&tab=aktiv&token={$smarty.session.jtl_token}"
-                                                   class="btn btn-primary btn-circle" title="{__('modify')}">
-                                                    <i class="fal fa-edit"></i>
-                                                </a>
+                                                <div class="btn-group">
+                                                    <a href="news.php?news=1&nd=1&kNews={$oNews->getID()}&tab=aktiv&token={$smarty.session.jtl_token}"
+                                                       class="btn btn-link px-2" title="{__('preview')}">
+                                                        <span class="icon-hover">
+                                                            <span class="fal fa-eye"></span>
+                                                            <span class="fas fa-eye"></span>
+                                                        </span>
+                                                    </a>
+                                                    <a href="news.php?news=1&news_editieren=1&kNews={$oNews->getID()}&tab=aktiv&token={$smarty.session.jtl_token}"
+                                                       class="btn btn-link px-2" title="{__('modify')}">
+                                                        <span class="icon-hover">
+                                                            <span class="fal fa-edit"></span>
+                                                            <span class="fas fa-edit"></span>
+                                                        </span>
+                                                    </a>
+                                                </div>
                                             </td>
                                         </tr>
                                     {/foreach}
@@ -220,26 +236,27 @@
                                     </tr>
                                 {/if}
                                 </tbody>
-                                <tfoot>
-                                <tr>
-                                    <td class="check">
-                                        <div class="custom-control custom-checkbox">
-                                            <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS2" type="checkbox" onclick="AllMessages(this.form);" />
-                                            <label class="custom-control-label" for="ALLMSGS2"></label>
-                                        </div>
-                                    </td>
-                                    <td colspan="8"><label for="ALLMSGS2">{__('globalSelectAll')}</label></td>
-                                </tr>
-                                </tfoot>
                             </table>
                         </div>
                         <input type="hidden" name="news" value="1" />
                         <input type="hidden" name="erstellen" value="1" />
                         <input type="hidden" name="tab" value="aktiv" />
                         <div class="card-footer save-wrapper">
-                            <input name="loeschen" type="submit" data-id="loeschen" value="{__('delete')}" class="hidden-soft">
-                            <button name="loeschen" type="button" data-toggle="modal" data-target=".delete-modal" value="{__('delete')}" class="btn btn-danger"><i class="fas fa-trash-alt"></i> {__('delete')}</button>
-                            <button name="news_erstellen" type="submit" value="{__('newAdd')}" class="btn btn-primary"><i class="fa fa-share"></i> {__('newAdd')}</button>
+                            <div class="row">
+                                <div class="col-sm-6 col-xl-auto text-left">
+                                    <div class="custom-control custom-checkbox mb-3">
+                                        <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS2" type="checkbox" onclick="AllMessages(this.form);" />
+                                        <label class="custom-control-label" for="ALLMSGS2">{__('globalSelectAll')}</label>
+                                    </div>
+                                </div>
+                                <div class="ml-auto col-sm-6 col-xl-auto">
+                                    <input name="loeschen" type="submit" data-id="loeschen" value="{__('delete')}" class="hidden-soft">
+                                    <button name="loeschen" type="button" data-toggle="modal" data-target=".delete-modal" value="{__('delete')}" class="btn btn-danger btn-block mb-3"><i class="fas fa-trash-alt"></i> {__('delete')}</button>
+                                </div>
+                                <div class="col-sm-6 col-xl-auto">
+                                    <button name="news_erstellen" type="submit" value="{__('newAdd')}" class="btn btn-primary btn-block"><i class="fa fa-share"></i> {__('newAdd')}</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </form>
@@ -287,13 +304,20 @@
                                                 <label for="newscat-{$oNewsKategorie->getID()}">{$oNewsKategorie->getName()|default:'???'}</label>
                                             </td>
                                             <td class="tcenter">{$oNewsKategorie->getSort()}</td>
-                                            <td class="tcenter"><i class="fal fa-{if $oNewsKategorie->getIsActive()}check text-success{else}times text-danger{/if}"></i></td>
+                                            <td class="tcenter">
+                                                <i class="fal fa-{if $oNewsKategorie->getIsActive()}check text-success{else}times text-danger{/if}"></i>
+                                            </td>
                                             <td class="tcenter">{$oNewsKategorie->getDateLastModified()->format('d.m.Y H:i')}</td>
                                             <td class="tcenter">
-                                                <a href="news.php?news=1&newskategorie_editieren=1&kNewsKategorie={$oNewsKategorie->getID()}&tab=kategorien&token={$smarty.session.jtl_token}"
-                                                   class="btn btn-primary btn-circle" title="{__('modify')}">
-                                                    <i class="fal fa-edit"></i>
-                                                </a>
+                                                <div class="btn-group">
+                                                    <a href="news.php?news=1&newskategorie_editieren=1&kNewsKategorie={$oNewsKategorie->getID()}&tab=kategorien&token={$smarty.session.jtl_token}"
+                                                       class="btn btn-link px-2" title="{__('modify')}">
+                                                        <span class="icon-hover">
+                                                            <span class="fal fa-edit"></span>
+                                                            <span class="fas fa-edit"></span>
+                                                        </span>
+                                                    </a>
+                                                </div>
                                             </td>
                                         </tr>
                                         {include 'tpl_inc/newscategories_recursive.tpl' children=$oNewsKategorie->getChildren() level=$oNewsKategorie->getLevel()}
@@ -323,9 +347,25 @@
                         <input type="hidden" name="erstellen" value="1" />
                         <input type="hidden" name="tab" value="kategorien" />
                         <div class="card-footer save-wrapper">
-                            <input name="loeschen" type="submit" data-id="loeschen" value="{__('delete')}" class="hidden-soft">
-                            <button name="loeschen" type="button" data-toggle="modal" data-target=".delete-modal" value="{__('delete')}" class="btn btn-danger"><i class="fas fa-trash-alt"></i> {__('delete')}</button>
-                            <button name="news_kategorie_erstellen" type="submit" value="{__('newsCatCreate')}" class="btn btn-primary"><i class="fa fa-share"></i> {__('newsCatCreate')}</button>
+                            <div class="row">
+                                <div class="col-sm-6 col-xl-auto text-left">
+                                    <div class="custom-control custom-checkbox mb-3">
+                                        <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS2" type="checkbox" onclick="AllMessages(this.form);" />
+                                        <label class="custom-control-label" for="ALLMSGS2">{__('globalSelectAll')}</label>
+                                    </div>
+                                </div>
+                                <div class="ml-auto col-sm-6 col-xl-auto">
+                                    <input name="loeschen" type="submit" data-id="loeschen" value="{__('delete')}" class="hidden-soft">
+                                    <button name="loeschen" type="button" data-toggle="modal" data-target=".delete-modal" value="{__('delete')}" class="btn btn-danger btn-block mb-3">
+                                        <i class="fas fa-trash-alt"></i> {__('delete')}
+                                    </button>
+                                </div>
+                                <div class="col-sm-6 col-xl-auto">
+                                    <button name="news_kategorie_erstellen" type="submit" value="{__('newsCatCreate')}" class="btn btn-primary btn-block">
+                                        <i class="fa fa-share"></i> {__('newsCatCreate')}
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </form>
@@ -383,7 +423,13 @@
                             {/foreach}
                         </div>
                         <div class="card-footer save-wrapper">
-                            <button type="submit" value="{__('save')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
+                            <div class="row">
+                                <div class="ml-auto col-sm-6 col-xl-auto">
+                                    <button type="submit" value="{__('save')}" class="btn btn-primary btn-block">
+                                        {__('saveWithIcon')}
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </form>

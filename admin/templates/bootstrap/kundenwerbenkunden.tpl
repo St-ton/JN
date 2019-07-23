@@ -40,19 +40,22 @@
                         <div id="payment">
                             <div id="tabellenLivesuche" class="table-responsive">
                                 <table class="table table-striped">
-                                    <tr>
-                                        <th class="check"></th>
-                                        <th class="tleft">{__('name')}</th>
-                                        <th class="tleft">{__('kundenwerbenkundenFromReg')}</th>
-                                        <th class="tleft">{__('credit')}</th>
-                                        <th class="th-5">{__('kundenwerbenkundenDateInvite')}</th>
-                                    </tr>
+                                    <thead>
+                                        <tr>
+                                            <th class="check"></th>
+                                            <th class="tleft">{__('name')}</th>
+                                            <th class="tleft">{__('kundenwerbenkundenFromReg')}</th>
+                                            <th class="tleft">{__('credit')}</th>
+                                            <th class="th-5">{__('kundenwerbenkundenDateInvite')}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
                                     {foreach $oKwKNichtReg_arr as $oKwKNichtReg}
                                         <tr>
                                             <td class="check">
                                                 <div class="custom-control custom-checkbox">
-                                                    <input class="custom-control-input" type="checkbox" name="kKundenWerbenKunden[]" value="{$oKwKNichtReg->kKundenWerbenKunden}">
-                                                    <label class="custom-control-label"></label>
+                                                    <input class="custom-control-input" type="checkbox" name="kKundenWerbenKunden[]" id="customer-recruit-{$oKwKNichtReg->kKundenWerbenKunden}" value="{$oKwKNichtReg->kKundenWerbenKunden}">
+                                                    <label class="custom-control-label" for="customer-recruit-{$oKwKNichtReg->kKundenWerbenKunden}"></label>
                                                 </div>
                                             </td>
                                             <td class="tleft">
@@ -65,12 +68,19 @@
                                             <td class="tcenter">{$oKwKNichtReg->dErstellt_de}</td>
                                         </tr>
                                     {/foreach}
+                                    </tbody>
                                 </table>
                             </div>
                         </div>
-                        <p class="submit">
-                            <button name="loeschen" type="submit" value="{__('delete')}" class="btn btn-danger"><i class="fas fa-trash-alt"></i> {__('delete')}</button>
-                        </p>
+                        <div class="save-wrapper submit">
+                            <div class="row">
+                                <div class="ml-auto col-sm-6 col-xl-auto">
+                                    <button name="loeschen" type="submit" value="{__('delete')}" class="btn btn-danger btn-block">
+                                        <i class="fas fa-trash-alt"></i> {__('delete')}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
                     </form>
                 {else}
                     <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
@@ -82,13 +92,16 @@
                     <div id="payment">
                         <div id="tabellenLivesuche" class="table-responsive">
                             <table class="table table-striped">
-                                <tr>
-                                    <th class="tleft">{__('newCustomer')}</th>
-                                    <th class="tleft">{__('kundenwerbenkundenFromReg')}</th>
-                                    <th class="tleft">{__('credit')}</th>
-                                    <th class="th-4">{__('kundenwerbenkundenDateInvite')}</th>
-                                    <th class="th-5">{__('kundenwerbenkundenDateErstellt')}</th>
-                                </tr>
+                                <thead>
+                                    <tr>
+                                        <th class="tleft">{__('newCustomer')}</th>
+                                        <th class="tleft">{__('kundenwerbenkundenFromReg')}</th>
+                                        <th class="tleft">{__('credit')}</th>
+                                        <th class="th-4">{__('kundenwerbenkundenDateInvite')}</th>
+                                        <th class="th-5">{__('kundenwerbenkundenDateErstellt')}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
                                 {foreach $oKwKReg_arr as $oKwKReg}
                                     <tr>
                                         <td><b>{$oKwKReg->cVorname} {$oKwKReg->cNachname}</b><br />{$oKwKReg->cEmail}</td>
@@ -100,6 +113,7 @@
                                         <td class="tcenter">{$oKwKReg->dBestandErstellt_de}</td>
                                     </tr>
                                 {/foreach}
+                                </tbody>
                             </table>
                         </div>
                     </div>
@@ -113,12 +127,15 @@
                     <div id="payment">
                         <div id="tabellenLivesuche" class="table-responsive">
                             <table class="table table-striped">
-                                <tr>
-                                    <th class="tleft">{__('kundenwerbenkundenFromReg')}</th>
-                                    <th class="tleft">{__('credit')}</th>
-                                    <th class="">{__('kundenwerbenkundenExtraPoints')}</th>
-                                    <th class="th-4">{__('kundenwerbenkundenDateBoni')}</th>
-                                </tr>
+                                <thead>
+                                    <tr>
+                                        <th class="tleft">{__('kundenwerbenkundenFromReg')}</th>
+                                        <th class="tleft">{__('credit')}</th>
+                                        <th class="">{__('kundenwerbenkundenExtraPoints')}</th>
+                                        <th class="th-4">{__('kundenwerbenkundenDateBoni')}</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
                                 {foreach $oKwKBestandBonus_arr as $oKwKBestandBonus}
                                     <tr>
                                         <td>
@@ -129,6 +146,7 @@
                                         <td class="tcenter">{$oKwKBestandBonus->dErhalten_de}</td>
                                     </tr>
                                 {/foreach}
+                                </tbody>
                             </table>
                         </div>
                     </div>

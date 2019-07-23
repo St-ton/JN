@@ -334,15 +334,23 @@ $(document).ready(function() {
                 {$extContent}
             {/if}
         </div>
-        <div class="card-footer">
-            <div class="btn-group">
-                <input type="hidden" name="action" value="account_edit" />
-                {if isset($oAccount->kAdminlogin) && $oAccount->kAdminlogin > 0}
-                    <input type="hidden" name="kAdminlogin" value="{$oAccount->kAdminlogin}" />
-                {/if}
-                <input type="hidden" name="save" value="1" />
-                <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
-                <a class="btn btn-danger" href="benutzerverwaltung.php"><i class="fa fa-exclamation"></i> {__('cancel')}</a>
+        <div class="card-footer save-wrapper">
+            <div class="row">
+                <div class="ml-auto col-sm-6 col-xl-auto">
+                    <a class="btn btn-outline-primary btn-block mb-3" href="benutzerverwaltung.php">
+                        <i class="fa fa-exclamation"></i> {__('cancel')}
+                    </a>
+                </div>
+                <div class="col-sm-6 col-xl-auto">
+                    <input type="hidden" name="action" value="account_edit" />
+                    {if isset($oAccount->kAdminlogin) && $oAccount->kAdminlogin > 0}
+                        <input type="hidden" name="kAdminlogin" value="{$oAccount->kAdminlogin}" />
+                    {/if}
+                    <input type="hidden" name="save" value="1" />
+                    <button type="submit" class="btn btn-primary btn-block">
+                        {__('saveWithIcon')}
+                    </button>
+                </div>
             </div>
         </div>
     </form>

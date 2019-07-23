@@ -13,7 +13,7 @@
             </span>
             <input id="cKey" placeholder="{__('pluginverwaltungLicenceKey')}" class="form-control" name="cKey" type="text" value="{if isset($oPlugin->cLizenz)}{$oPlugin->cLizenz}{/if}" />
             <span class="input-group-btn">
-                <button name="speichern" type="submit" value="{__('save')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
+                <button name="speichern" type="submit" value="{__('save')}" class="btn btn-primary">{__('saveWithIcon')}</button>
             </span>
         </div>
     </form>

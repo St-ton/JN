@@ -96,7 +96,12 @@
                     <div class="form-group form-row align-items-center file-input">
                         <label class="col col-sm-4 col-form-label text-sm-right" for="oFile">{__('banner')} *:</label>
                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                            <input class="form-control" id="oFile" type="file" name="oFile" />
+                            <div class="custom-file">
+                                <input class="custom-file-input" id="oFile" type="file" name="oFile" />
+                                <label class="custom-file-label" for="oFile">
+                                    <span class="text-truncate">{__('fileSelect')}</span>
+                                </label>
+                            </div>
                         </div>
                     </div>
                     <div class="form-group form-row align-items-center">
@@ -337,7 +342,13 @@
             </div>
 
             <div class="save-wrapper">
-                <button type="submit" class="btn btn-primary" value="Banner speichern"><i class="fa fa-save"></i> {__('saveBanner')}</button>
+                <div class="row">
+                    <div class="ml-auto col-sm-6 col-xl-auto">
+                        <button type="submit" class="btn btn-primary btn-block" value="Banner speichern">
+                            <i class="fa fa-save"></i> {__('saveBanner')}
+                        </button>
+                    </div>
+                </div>
             </div>
 
         </form>
@@ -429,10 +440,24 @@
             <img src="{$oBanner->cBildPfad}" title="" id="clickarea" />
         </div>
     </div>
-    <div class="save-wrapper btn-group">
-        <a class="btn btn-default" href="#" id="area_new"><i class="fa fa-share"></i> {__('new')} {__('zone')}</a>
-        <a class="btn btn-primary" href="#" id="area_save"><i class="fa fa-save"></i> {__('zones')} {__('save')}</a>
-        <a class="btn btn-danger" href="banner.php" id="cancel"><i class="fa fa-angle-double-left"></i> {__('back')}</a>
+    <div class="save-wrapper">
+        <div class="row">
+            <div class="ml-auto col-sm-6 col-xl-auto">
+                <a class="btn btn-danger btn-block mb-3" href="banner.php" id="cancel">
+                    {__('goBack')}
+                </a>
+            </div>
+            <div class="col-sm-6 col-xl-auto">
+                <a class="btn btn-outline-primary btn-block mb-3" href="#" id="area_new">
+                    <i class="fa fa-share"></i> {__('new')} {__('zone')}
+                </a>
+            </div>
+            <div class="col-sm-6 col-xl-auto">
+                <a class="btn btn-primary btn-block" href="#" id="area_save">
+                    <i class="fa fa-save"></i> {__('zones')} {__('save')}
+                </a>
+            </div>
+        </div>
     </div>
     {else}
         <div id="settings">
@@ -479,9 +504,26 @@
                                     <form action="banner.php" method="post">
                                         {$jtl_token}
                                         <input type="hidden" name="id" value="{$oBanner->kImageMap}" />
-                                        <button class="btn btn-danger btn-circle" name="action" value="delete" title="{__('delete')}"><i class="fas fa-trash-alt"></i></button>
-                                        <button class="btn btn-default btn-circle" name="action" value="area" title="{__('actionLink')}"><i class="fa fa-link"></i></button>
-                                        <button class="btn btn-primary btn-circle" name="action" value="edit" title="{__('edit')}"><i class="fal fa-edit"></i></button>
+                                        <div class="btn-group">
+                                            <button class="btn btn-link px-2" name="action" value="delete" title="{__('delete')}">
+                                                <span class="icon-hover">
+                                                    <span class="fal fa-trash-alt"></span>
+                                                    <span class="fas fa-trash-alt"></span>
+                                                </span>
+                                            </button>
+                                            <button class="btn btn-link px-2" name="action" value="area" title="{__('actionLink')}">
+                                                <span class="icon-hover">
+                                                    <span class="fal fa-link"></span>
+                                                    <span class="fas fa-link"></span>
+                                                </span>
+                                            </button>
+                                            <button class="btn btn-link px-2" name="action" value="edit" title="{__('edit')}">
+                                                <span class="icon-hover">
+                                                    <span class="fal fa-edit"></span>
+                                                    <span class="fas fa-edit"></span>
+                                                </span>
+                                            </button>
+                                        </div>
                                     </form>
                                 </td>
                             </tr>
@@ -494,7 +536,13 @@
                 {/if}
                 </div>
                 <div class="card-footer save-wrapper">
-                    <a class="btn btn-primary" href="banner.php?action=new&token={$smarty.session.jtl_token}"><i class="fa fa-share"></i> {__('addBanner')}</a>
+                    <div class="row">
+                        <div class="ml-auto col-sm-6 col-xl-auto">
+                            <a class="btn btn-primary btn-block" href="banner.php?action=new&token={$smarty.session.jtl_token}">
+                                <i class="fa fa-share"></i> {__('addBanner')}
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

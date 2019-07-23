@@ -542,6 +542,23 @@ class Text
     }
 
     /**
+     * Parse a semicolon separated key string to an array
+     *
+     * @param string|mixed $ssk
+     * @return int[]
+     */
+    public static function parseSSKint($ssk): array
+    {
+        return \is_string($ssk)
+            ? \array_map(function ($e) {
+                return (int)\trim($e);
+            }, \array_filter(\explode(';', $ssk), function ($e) {
+                return $e !== '' && $e !== null;
+            }))
+            : [];
+    }
+
+    /**
      * @note PHP's FILTER_SANITIZE_EMAIL cannot handle unicode -
      * without idn_to_ascii (PECL) this will fail with umlaut domains
      * @param string $input

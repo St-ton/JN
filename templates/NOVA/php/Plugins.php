@@ -39,18 +39,18 @@ class Plugins
      */
     public function getProductList($params, $smarty)
     {
-        $limit            = (int)($params['nLimit'] ?? 10);
-        $sort             = (int)($params['nSortierung'] ?? 0);
-        $assignTo         = (isset($params['cAssign']) && \strlen($params['cAssign']) > 0)
+        $limit                 = (int)($params['nLimit'] ?? 10);
+        $sort                  = (int)($params['nSortierung'] ?? 0);
+        $assignTo              = (isset($params['cAssign']) && \strlen($params['cAssign']) > 0)
             ? $params['cAssign']
             : 'oCustomArtikel_arr';
-        $attributeFilters = isset($params['cMerkmalFilter'])
-            ? ProductFilter::initAttributeFilter(\explode(';', $params['cMerkmalFilter']))
+        $characteristicFilters = isset($params['cMerkmalFilter'])
+            ? ProductFilter::initCharacteristicFilter(\explode(';', $params['cMerkmalFilter']))
             : [];
-        $searchFilters    = isset($params['cSuchFilter'])
+        $searchFilters         = isset($params['cSuchFilter'])
             ? ProductFilter::initSearchFilter(\explode(';', $params['cSuchFilter']))
             : [];
-        $params           = [
+        $params                = [
             'kKategorie'             => $params['kKategorie'] ?? null,
             'kHersteller'            => $params['kHersteller'] ?? null,
             'kArtikel'               => $params['kArtikel'] ?? null,
@@ -65,7 +65,7 @@ class Plugins
             'cPreisspannenFilter'    => $params['cPreisspannenFilter'] ?? '',
             'kSuchspecialFilter'     => $params['kSuchspecialFilter'] ?? null,
             'nSortierung'            => $sort,
-            'MerkmalFilter_arr'      => $attributeFilters,
+            'MerkmalFilter_arr'      => $characteristicFilters,
             'SuchFilter_arr'         => $searchFilters,
             'nArtikelProSeite'       => $params['nArtikelProSeite'] ?? null,
             'cSuche'                 => $params['cSuche'] ?? null,

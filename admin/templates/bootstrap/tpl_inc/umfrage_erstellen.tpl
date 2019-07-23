@@ -122,8 +122,18 @@ function clearInput(inputField) {ldelim}
                 </form>
             </div>
             <div class="card-footer save-wrapper">
-                <a class="btn btn-default" href="umfrage.php"><i class="fa fa-angle-double-left"></i> {__('pageBack')}</a>
-                <button class="btn btn-primary" name="speichern" type="button" value="{__('save')}" onclick="document.umfrage.submit();"><i class="fa fa-save"></i> {__('save')}</button>
+                <div class="row">
+                    <div class="ml-auto col-sm-6 col-xl-auto">
+                        <a class="btn btn-outline-primary btn-block mb-3" href="umfrage.php">
+                            <i class="fa fa-angle-double-left"></i> {__('pageBack')}
+                        </a>
+                    </div>
+                    <div class="col-sm-6 col-xl-auto">
+                        <button class="btn btn-primary btn-block" name="speichern" type="button" value="{__('save')}" onclick="document.umfrage.submit();">
+                            {__('saveWithIcon')}
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

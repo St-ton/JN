@@ -20,15 +20,13 @@
 						<td>{__('name_'|cat:$template->getModuleID())}</td>
 						<td class="tcenter">{$template->getType()}</td>
 						<td class="tcenter">
-							<h4 class="label-wrap">
-								{if $template->getActive()}
-									<span class="label label-success success">{__('active')}</span>
-								{elseif $template->getHasError()}
-									<span class="label label-danger">{__('faulty')}</span>
-								{else}
-									<span class="label label-info error">{__('inactive')}</span>
-								{/if}
-							</h4>
+							{if $template->getActive()}
+								<span class="fal fa-check text-success"></span>
+							{elseif $template->getHasError()}
+								<span class="label text-danger">{__('faulty')}</span>
+							{else}
+								<span class="fal fa-times text-danger"></span>
+							{/if}
 						</td>
 						<td class="tcenter">
 							<form method="post" action="emailvorlagen.php">
@@ -36,15 +34,26 @@
 									<input type="hidden" name="kPlugin" value="{$template->getPluginID()}" />
 								{/if}
 								{$jtl_token}
-								<button type="submit" name="resetConfirm" value="{$template->getID()}" class="btn btn-danger btn-circle reset" title="{__('reset')}">
-									<i class="fal fa-refresh"></i>
-								</button>
-								<button type="submit" name="preview" value="{$template->getID()}" title="{__('testmail')}" class="btn btn-default btn-circle mail">
-									<i class="fal fa-envelope"></i>
-								</button>
-								<button type="submit" name="kEmailvorlage" value="{$template->getID()}" class="btn btn-primary btn-circle" title="{__('modify')}">
-									<i class="fal fa-edit"></i>
-								</button>
+								<div class="btn-group">
+									<button type="submit" name="resetConfirm" value="{$template->getID()}" class="btn btn-link px-2 reset" title="{__('reset')}">
+										<span class="icon-hover">
+											<span class="fal fa-refresh"></span>
+											<span class="fas fa-refresh"></span>
+										</span>
+									</button>
+									<button type="submit" name="preview" value="{$template->getID()}" title="{__('testmail')}" class="btn btn-link px-2 mail">
+										<span class="icon-hover">
+											<span class="fal fa-envelope"></span>
+											<span class="fas fa-envelope"></span>
+										</span>
+									</button>
+									<button type="submit" name="kEmailvorlage" value="{$template->getID()}" class="btn btn-link px-2" title="{__('modify')}">
+										<span class="icon-hover">
+											<span class="fal fa-edit"></span>
+											<span class="fas fa-edit"></span>
+										</span>
+									</button>
+								</div>
 							</form>
 						</td>
 					</tr>

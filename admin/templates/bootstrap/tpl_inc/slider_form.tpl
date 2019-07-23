@@ -114,8 +114,10 @@
                             <strong>{__('effects')}</strong>
                         </div>
                         <div class="for">
-                            <input id="cRandomEffects" type="checkbox" value="random" class="random_effects" {if isset($checked)}{$checked} {/if}name="cEffects" />
-                            <label for="cRandomEffects">{__('randomEffects')}</label>
+                            <div class="custom-control custom-checkbox">
+                                <input id="cRandomEffects" type="checkbox" value="random" class="custom-control-input random_effects" {if isset($checked)}{$checked} {/if}name="cEffects" />
+                                <label class="custom-control-label" for="cRandomEffects">{__('randomEffects')}</label>
+                            </div>
                             <div class="select_container row">
                                 <div class="col-xs-12 col-md-6 select_box">
                                     <label for="cSelectedEffects">{__('selectedEffects')}</label>
@@ -376,8 +378,18 @@
             </div>
         </div>
         <div class="card-footer save-wrapper">
-            <button type="button" class="btn btn-default" onclick="window.location.href = 'slider.php';" value="zurück">{__('goBack')}</button>
-            <button type="submit" class="btn btn-primary" value="{__('save')}"><i class="fa fa-save"></i> {__('save')}</button>
+            <div class="row">
+                <div class="ml-auto col-sm-6 col-xl-auto">
+                    <button type="button" class="btn btn-default btn-block mb-3" onclick="window.location.href = 'slider.php';" value="zurück">
+                        {__('goBack')}
+                    </button>
+                </div>
+                <div class="col-sm-6 col-xl-auto">
+                    <button type="submit" class="btn btn-primary btn-block" value="{__('save')}">
+                        {__('saveWithIcon')}
+                    </button>
+                </div>
+            </div>
         </div>
     </form>
 </div>

@@ -69,10 +69,18 @@
                         </div>
                     </div>
                 </div>
-                <div class="card-footer">
-                    <div class="btn-group">
-                        <button name="action[erstellen_eintragen]" type="submit" value="1" class="btn btn-primary"><i class="fa fa-save"></i> {if $cronID > 0}{__('save')}{else}{__('exportformatAdd')}{/if}</button>
-                        <a class="btn btn-danger" href="exportformat_queue.php"><i class="fa fa-exclamation"></i> {__('cancel')}</a>
+                <div class="card-footer save-wrapper">
+                    <div class="row">
+                        <div class="ml-auto col-sm-6 col-xl-auto">
+                            <a class="btn btn-outline-primary btn-block mb-3" href="exportformat_queue.php">
+                                <i class="fa fa-exclamation"></i> {__('cancel')}
+                            </a>
+                        </div>
+                        <div class="col-sm-6 col-xl-auto">
+                            <button name="action[erstellen_eintragen]" type="submit" value="1" class="btn btn-primary btn-block">
+                                <i class="fa fa-save"></i> {if $cronID > 0}{__('save')}{else}{__('exportformatAdd')}{/if}
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>

@@ -102,8 +102,8 @@
                                     <tr>
                                         <td>
                                             <div class="custom-control custom-checkbox">
-                                                <input class="custom-control-input" type="checkbox" name="kSuchanfrage[]" value="{$suchanfrage->kSuchanfrage}" />
-                                                <label class="custom-control-label"></label>
+                                                <input class="custom-control-input" type="checkbox" name="kSuchanfrage[]" id="search-request-id-{$suchanfrage->kSuchanfrage}" value="{$suchanfrage->kSuchanfrage}" />
+                                                <label class="custom-control-label" for="search-request-id-{$suchanfrage->kSuchanfrage}"></label>
                                             </div>
                                         </td>
                                         <td>{$suchanfrage->cSuche}</td>
@@ -122,22 +122,17 @@
                                     </tr>
                                 {/foreach}
                                 </tbody>
-                                <tfoot>
-                                    <tr>
-                                        <td>
-                                            <div class="custom-control custom-checkbox">
-                                                <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessagesExcept(this.form, 'nAktiv_');" />
-                                                <label class="custom-control-label" for="ALLMSGS"></label>
-                                            </div>
-                                        </td>
-                                        <td colspan="5"><label for="ALLMSGS">{__('livesucheSelectAll')}</label></td>
-                                    </tr>
-                                </tfoot>
                             </table>
                         </div>
                         <div class="save-wrapper">
                             <div class="row">
-                                <div class="col-md-6">
+                                <div class="col-sm-6 col-xl-auto text-left mb-3">
+                                    <div class="custom-control custom-checkbox">
+                                        <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessagesExcept(this.form, 'nAktiv_');" />
+                                        <label class="custom-control-label" for="ALLMSGS">{__('livesucheSelectAll')}</label>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6 col-xl-auto mb-3">
                                     <div class="input-group">
                                         <span class="input-group-addon">
                                             <label for="cMapping">{__('livesucheMappingOn')}:</label>
@@ -148,9 +143,15 @@
                                         </span>
                                     </div>
                                 </div>
-                                <div class="col-md-6">
-                                    <button name="delete" type="submit" value="{__('delete')}" class="btn btn-danger"><i class="fas fa-trash-alt"></i> {__('deleteSelected')}</button>
-                                    <button name="suchanfragenUpdate" type="submit" value="{__('update')}" class="btn btn-primary reset"><i class="fa fa-refresh"></i> {__('update')}</button>
+                                <div class="ml-auto col-sm-6 col-xl-auto">
+                                    <button name="delete" type="submit" value="{__('delete')}" class="btn btn-danger btn-block mb-3">
+                                        <i class="fas fa-trash-alt"></i> {__('deleteSelected')}
+                                    </button>
+                                </div>
+                                <div class="col-sm-6 col-xl-auto">
+                                    <button name="suchanfragenUpdate" type="submit" value="{__('update')}" class="btn btn-primary  btn-block reset">
+                                        <i class="fa fa-refresh"></i> {__('update')}
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -187,8 +188,8 @@
                                     <tr>
                                         <td>
                                             <div class="custom-control custom-checkbox">
-                                                <input class="custom-control-input" name="kSuchanfrageErfolglos[]" type="checkbox" value="{$Suchanfrageerfolglos->kSuchanfrageErfolglos}" />
-                                                <label class="custom-control-label"></label>
+                                                <input class="custom-control-input" name="kSuchanfrageErfolglos[]" type="checkbox" id="search-request-unsuccessful-id-{$Suchanfrageerfolglos->kSuchanfrageErfolglos}" value="{$Suchanfrageerfolglos->kSuchanfrageErfolglos}" />
+                                                <label class="custom-control-label" for="search-request-unsuccessful-id-{$Suchanfrageerfolglos->kSuchanfrageErfolglos}"></label>
                                             </div>
                                         </td>
                                         <td>
@@ -208,23 +209,32 @@
                                     </tr>
                                 </tbody>
                                 {/foreach}
-                                <tfoot>
-                                    <tr>
-                                        <td>
-                                            <div class="custom-control custom-checkbox">
-                                                <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS2" type="checkbox" onclick="AllMessagesExcept(this.form, 'nAktiv_');" />
-                                                <label class="custom-control-label" for="ALLMSGS2"></label>
-                                            </div>
-                                        </td>
-                                        <td colspan="4"><label for="ALLMSGS2">{__('livesucheSelectAll')}</label></td>
-                                    </tr>
-                                </tfoot>
                             </table>
                         </div>
                         <div class="save-wrapper">
-                            <button class="btn btn-danger" name="erfolglosDelete" type="submit"><i class="fas fa-trash-alt"></i> {__('delete')}</button>
-                            <button class="btn btn-default" name="erfolglosEdit" type="submit"><i class="fal fa-edit"></i> {__('livesucheEdit')}</button>
-                            <button class="btn btn-primary" name="erfolglosUpdate" type="submit"><i class="fa fa-refresh"></i> {__('update')}</button>
+                            <div class="row">
+                                <div class="col-sm-6 col-xl-auto text-left mb-3">
+                                    <div class="custom-control custom-checkbox">
+                                        <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS2" type="checkbox" onclick="AllMessagesExcept(this.form, 'nAktiv_');" />
+                                        <label class="custom-control-label" for="ALLMSGS2">{__('livesucheSelectAll')}</label>
+                                    </div>
+                                </div>
+                                <div class="ml-auto col-sm-6 col-xl-auto">
+                                    <button class="btn btn-danger btn-block mb-3" name="erfolglosDelete" type="submit">
+                                        <i class="fas fa-trash-alt"></i> {__('delete')}
+                                    </button>
+                                </div>
+                                <div class="col-sm-6 col-xl-auto">
+                                    <button class="btn btn-outline-primary btn-block mb-3" name="erfolglosEdit" type="submit">
+                                        <i class="fal fa-edit"></i> {__('livesucheEdit')}
+                                    </button>
+                                </div>
+                                <div class="col-sm-6 col-xl-auto">
+                                    <button class="btn btn-primary btn-block" name="erfolglosUpdate" type="submit">
+                                        <i class="fa fa-refresh"></i> {__('update')}
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </form>
@@ -257,8 +267,8 @@
                                     <tr>
                                         <td>
                                             <div class="custom-control custom-checkbox">
-                                                <input class="custom-control-input" name="kSuchanfrageMapping[]" type="checkbox" value="{$sfm->kSuchanfrageMapping}">
-                                                <label class="custom-control-label"></label>
+                                                <input class="custom-control-input" name="kSuchanfrageMapping[]" type="checkbox" id="search-mapping-id-{$sfm->kSuchanfrageMapping}" value="{$sfm->kSuchanfrageMapping}">
+                                                <label class="custom-control-label" for="search-mapping-id-{$sfm->kSuchanfrageMapping}"></label>
                                             </div>
                                         </td>
                                         <td>{$sfm->cSuche}</td>
@@ -270,7 +280,13 @@
                             </table>
                         </div>
                         <div class="save-wrapper">
-                            <button name="delete" type="submit" class="btn btn-danger"><i class="fas fa-trash-alt"></i> {__('mappingDelete')}</button>
+                            <div class="row">
+                                <div class="ml-auto col-sm-6 col-xl-auto">
+                                    <button name="delete" type="submit" class="btn btn-danger btn-block">
+                                        <i class="fas fa-trash-alt"></i> {__('mappingDelete')}
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </form>
@@ -304,7 +320,13 @@
                         </table>
                     </div>
                     <div class="save-wrapper">
-                        <button type="submit" class="btn btn-primary"><i class="fa fa-refresh"></i> {__('update')}</button>
+                        <div class="row">
+                            <div class="ml-auto col-sm-6 col-xl-auto">
+                                <button type="submit" class="btn btn-primary btn-block">
+                                    <i class="fa fa-refresh"></i> {__('update')}
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </form>

@@ -33,13 +33,6 @@
                         <div class="alert alert-info" role="alert">{__('noFilterResults')}</div>
                     {else}
                         <div class="listgroup">
-                            <div class="list-group-item">
-                                <div class="custom-control custom-checkbox">
-                                    <input class="custom-control-input" type="checkbox" id="select-all-1" name="aaa" value="bbb"
-                                       onchange="selectAllItems(this, $(this).prop('checked'))">
-                                    <label class="custom-control-label" for="select-all-1">{__('selectAllShown')}</label>
-                                </div>
-                            </div>
                             {foreach $oLog_arr as $oLog}
                                 <div class="list-group-item">
                                     <div class="row">
@@ -68,22 +61,28 @@
                                     </div>
                                 </div>
                             {/foreach}
-                            <div class="list-group-item">
-                                <div class="custom-control custom-checkbox">
-                                    <input class="custom-control-input" type="checkbox" id="select-all-2" name="aaa" value="bbb"
-                                       onchange="selectAllItems(this, $(this).prop('checked'))">
-                                    <label class="custom-control-label" for="select-all-2">{__('selectAllShown')}</label>
-                                </div>
-                            </div>
                         </div>
                     {/if}
                     <div class="save-wrapper">
-                        <button name="action" value="delselected" class="btn btn-warning">
-                            <i class="fas fa-trash-alt"></i> {__('deleteSelected')}
-                        </button>
-                        <button name="action" value="clearsyslog" class="btn btn-danger">
-                            <i class="fas fa-trash-alt"></i> {__('systemlogReset')}
-                        </button>
+                        <div class="row">
+                            <div class="col-sm-6 col-xl-auto text-left mb-3">
+                                <div class="custom-control custom-checkbox">
+                                    <input class="custom-control-input" type="checkbox" id="select-all-2" name="aaa" value="bbb"
+                                           onchange="selectAllItems(this, $(this).prop('checked'))">
+                                    <label class="custom-control-label" for="select-all-2">{__('selectAllShown')}</label>
+                                </div>
+                            </div>
+                            <div class="ml-auto col-sm-6 col-xl-auto">
+                                <button name="action" value="delselected" class="btn btn-warning btn-block mb-3">
+                                    <i class="fas fa-trash-alt"></i> {__('deleteSelected')}
+                                </button>
+                            </div>
+                            <div class="col-sm-6 col-xl-auto">
+                                <button name="action" value="clearsyslog" class="btn btn-danger btn-block">
+                                    <i class="fas fa-trash-alt"></i> {__('systemlogReset')}
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </form>
             </div>
@@ -107,9 +106,13 @@
                     </div>
                 </div>
                 <div class="save-wrapper">
-                    <button name="action" value="save" class="btn btn-primary">
-                        <i class="fa fa-save"></i> {__('save')}
-                    </button>
+                    <div class="row">
+                        <div class="ml-auto col-sm-6 col-xl-auto">
+                            <button name="action" value="save" class="btn btn-primary btn-block">
+                                {__('saveWithIcon')}
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </form>
         </div>

@@ -25,6 +25,6 @@
         <div style="text-align: center;">
             <textarea class="form-control" style="width: 100%; height: 300px;" readonly>{$oNewsletterVorlage->cInhaltText}</textarea></div>
         <br />
-        <button class="btn btn-primary" name="back" type="submit" value="{__('back')}"><i class="fa fa-angle-double-left"></i> {__('back')}</button>
+        <button class="btn btn-primary" name="back" type="submit" value="{__('back')}">{__('goBack')}</button>
     </form>
 </div>

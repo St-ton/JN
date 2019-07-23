@@ -36,7 +36,12 @@
                                 {foreach $oKupon_arr as $oKupon}
                                     <tr{if $oKupon->cAktiv === 'N'} class="text-danger"{/if}>
                                         <td>{if $oKupon->cAktiv === 'N'}<i class="fal fa-times"></i>{/if}</td>
-                                        <td><input type="checkbox" name="kKupon_arr[]" id="kupon-{$oKupon->kKupon}" value="{$oKupon->kKupon}"></td>
+                                        <td>
+                                            <div class="custom-control custom-checkbox">
+                                                <input class="custom-control-input" type="checkbox" name="kKupon_arr[]" id="kupon-{$oKupon->kKupon}" value="{$oKupon->kKupon}">
+                                                <label class="custom-control-label" for="kupon-{$oKupon->kKupon}"></label>
+                                            </div>
+                                        </td>
                                         <td>
                                             <label for="kupon-{$oKupon->kKupon}">
                                                 {$oKupon->cName}
@@ -88,21 +93,19 @@
                                             {__('to')}: {$oKupon->cGueltigBisShort}
                                         </td>
                                         <td>
-                                            <a href="kupons.php?kKupon={$oKupon->kKupon}&token={$smarty.session.jtl_token}"
-                                               class="btn btn-default btn-circle" title="{__('modify')}">
-                                                <i class="fal fa-edit"></i>
-                                            </a>
+                                            <div class="btn-group">
+                                                <a href="kupons.php?kKupon={$oKupon->kKupon}&token={$smarty.session.jtl_token}"
+                                                   class="btn btn-link px-2" title="{__('modify')}">
+                                                    <span class="icon-hover">
+                                                        <span class="fal fa-edit"></span>
+                                                        <span class="fas fa-edit"></span>
+                                                    </span>
+                                                </a>
+                                            </div>
                                         </td>
                                     </tr>
                                 {/foreach}
                             </tbody>
-                            <tfoot>
-                                <tr>
-                                    <td></td>
-                                    <td><input type="checkbox" name="ALLMSGS" id="ALLMSGS_{$cKuponTyp}" onclick="AllMessages(this.form);"></td>
-                                    <td colspan="9"><label for="ALLMSGS_{$cKuponTyp}">{__('globalSelectAll')}</label></td>
-                                </tr>
-                            </tfoot>
                         </table>
                     </div>
                 {elseif $nKuponCount > 0}
@@ -113,17 +116,33 @@
                     </div>
                 {/if}
                 <div class="card-footer save-wrapper">
-                    {if $oKupon_arr|@count > 0}
-                        <button type="submit" class="btn btn-danger" name="action" value="loeschen">
-                            <i class="fas fa-trash-alt"></i> {__('delete')}
-                        </button>
-                        {include file='tpl_inc/csv_export_btn.tpl' exporterId=$cKuponTyp}
-                    {/if}
-                    {include file='tpl_inc/csv_import_btn.tpl' importerId="kupon"}
-                    <a href="kupons.php?kKupon=0&cKuponTyp={$cKuponTyp}&token={$smarty.session.jtl_token}"
-                       class="btn btn-primary" title="{__('modify')}">
-                        <i class="fa fa-share"></i> {$cKuponTypName} {__('create')}
-                    </a>
+                    <div class="row">
+                        <div class="col-sm-6 col-xl-auto text-left">
+                            <div class="custom-control custom-checkbox">
+                                <input class="custom-control-input" type="checkbox" name="ALLMSGS" id="ALLMSGS_{$cKuponTyp}" onclick="AllMessages(this.form);">
+                                <label class="custom-control-label" for="ALLMSGS_{$cKuponTyp}">{__('globalSelectAll')}</label>
+                            </div>
+                        </div>
+                        {if $oKupon_arr|@count > 0}
+                            <div class="ml-auto col-sm-6 col-xl-auto">
+                                <button type="submit" class="btn btn-danger btn-block mb-3" name="action" value="loeschen">
+                                    <i class="fas fa-trash-alt"></i> {__('delete')}
+                                </button>
+                            </div>
+                            <div class="col-sm-6 col-xl-auto">
+                                {include file='tpl_inc/csv_export_btn.tpl' exporterId=$cKuponTyp}
+                            </div>
+                        {/if}
+                        <div class="{if !$oKupon_arr|@count > 0}ml-auto{/if} col-sm-6 col-xl-auto">
+                            {include file='tpl_inc/csv_import_btn.tpl' importerId="kupon"}
+                        </div>
+                        <div class="col-sm-6 col-xl-auto">
+                            <a href="kupons.php?kKupon=0&cKuponTyp={$cKuponTyp}&token={$smarty.session.jtl_token}"
+                               class="btn btn-primary btn-block" title="{__('modify')}">
+                                <i class="fa fa-share"></i> {$cKuponTypName} {__('create')}
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </form>
         </div>

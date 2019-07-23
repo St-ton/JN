@@ -93,10 +93,21 @@
                         <div class="form-group form-row align-items-center">
                             <label class="col col-sm-4 col-form-label text-sm-right" for="previewImage">{__('preview')}:</label>
                             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                {if !empty($oNewsKategorie->getPreviewImage())}
-                                    <img src="{$shopURL}/{$oNewsKategorie->getPreviewImage()}" alt="" height="20" width="20" class="preview-image left" style="margin: 0 10px;" />
-                                {/if}
-                                <input id="previewImage" name="previewImage" type="file" maxlength="2097152" accept="image/*" />
+                                <div class="input-group mb-3">
+                                    {if !empty($oNewsKategorie->getPreviewImage())}
+                                        <div class="input-group-prepend">
+                                            <div class="input-group-text">
+                                                <img src="{$shopURL}/{$oNewsKategorie->getPreviewImage()}" alt="" height="20" width="20" class="preview-image left"/>
+                                            </div>
+                                        </div>
+                                    {/if}
+                                    <div class="custom-file">
+                                        <input class="custom-file-input" id="previewImage" name="previewImage" type="file" maxlength="2097152" accept="image/*" />
+                                        <label class="custom-file-label" for="previewImage">
+                                            <span class="text-truncate">{__('fileSelect')}</span>
+                                        </label>
+                                    </div>
+                                </div>
                                 <input name="previewImage" type="hidden" value="{if !empty($oNewsKategorie->getPreviewImage())}{$oNewsKategorie->getPreviewImage()}{/if}" />
                             </div>
                         </div>
@@ -177,10 +188,18 @@
                             </div>
                         </div>
                         <div class="card-footer save-wrapper">
-                            <span class="btn-group">
-                                <button name="speichern" type="button" value="{__('save')}" onclick="document.news.submit();" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
-                                <a class="btn btn-danger" href="news.php{if isset($cBackPage)}?{$cBackPage}{elseif isset($cTab)}?tab={$cTab}{/if}"><i class="fa fa-exclamation"></i> {__('Cancel')}</a>
-                            </span>
+                            <div class="row">
+                                <div class="ml-auto col-sm-6 col-xl-auto">
+                                    <a class="btn btn-outline-primary btn-block mb-3" href="news.php{if isset($cBackPage)}?{$cBackPage}{elseif isset($cTab)}?tab={$cTab}{/if}">
+                                        <i class="fa fa-exclamation"></i> {__('Cancel')}
+                                    </a>
+                                </div>
+                                <div class=" col-sm-6 col-xl-auto">
+                                    <button name="speichern" type="button" value="{__('save')}" onclick="document.news.submit();" class="btn btn-primary btn-block">
+                                        {__('saveWithIcon')}
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

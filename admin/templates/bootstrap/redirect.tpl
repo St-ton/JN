@@ -178,9 +178,12 @@
                                         <td>
                                             {if $oRedirect->nCount > 0}
                                                 <div class="btn-group">
-                                                    <button type="button" class="btn btn-default btn-sm" title="{__('details')}"
+                                                    <button type="button" class="btn btn-link px-2" title="{__('details')}"
                                                             onclick="toggleReferer({$oRedirect->kRedirect});">
-                                                        <i class="fa fa-list"></i>
+                                                        <span class="icon-hover">
+                                                            <span class="fal fa-list"></span>
+                                                            <span class="fas fa-list"></span>
+                                                        </span>
                                                     </button>
                                                 </div>
                                             {/if}
@@ -230,19 +233,6 @@
                                     {/if}
                                 {/foreach}
                             </tbody>
-                            <tfoot>
-                                <tr>
-                                    <td>
-                                        <div class="custom-control custom-checkbox">
-                                            <input class="custom-control-input" type="checkbox" name="ALLMSGS" id="ALLMSGS" onclick="AllMessages(this.form);">
-                                            <label class="custom-control-label" for="ALLMSGS"></label>
-                                        </div>
-                                    </td>
-                                    <td colspan="4">
-                                        <label for="ALLMSGS">{__('globalSelectAll')}</label>
-                                    </td>
-                                </tr>
-                            </tfoot>
                         </table>
                     {elseif $nTotalRedirectCount > 0}
                         <div class="alert alert-info" role="alert">{__('noFilterResults')}</div>
@@ -250,19 +240,37 @@
                         <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                     {/if}
                     <div class="save-wrapper">
-                        {if $oRedirect_arr|@count > 0}
-                            <button name="action" value="delete" class="btn btn-danger">
-                                <i class="fas fa-trash-alt"></i> {__('deleteSelected')}
-                            </button>
-                            <button name="action" value="delete_all" class="btn btn-warning">
-                                {__('redirectDelUnassigned')}
-                            </button>
-                            {include file='tpl_inc/csv_export_btn.tpl' exporterId='redirects'}
-                        {/if}
-                        {include file='tpl_inc/csv_import_btn.tpl' importerId='redirects'}
-                        <button name="action" value="save" class="btn btn-primary">
-                            <i class="fa fa-save"></i> {__('save')}
-                        </button>
+                        <div class="row">
+                            <div class="col-sm-6 col-xl-auto text-left mb-3">
+                                <div class="custom-control custom-checkbox">
+                                    <input class="custom-control-input" type="checkbox" name="ALLMSGS" id="ALLMSGS" onclick="AllMessages(this.form);">
+                                    <label class="custom-control-label" for="ALLMSGS">{__('globalSelectAll')}</label>
+                                </div>
+                            </div>
+                            {if $oRedirect_arr|@count > 0}
+                                <div class="ml-auto col-sm-6 col-xl-auto">
+                                    <button name="action" value="delete" class="btn btn-danger btn-block mb-3">
+                                        <i class="fas fa-trash-alt"></i> {__('deleteSelected')}
+                                    </button>
+                                </div>
+                                <div class="col-sm-6 col-xl-auto">
+                                    <button name="action" value="delete_all" class="btn btn-warning btn-block mb-3">
+                                        {__('redirectDelUnassigned')}
+                                    </button>
+                                </div>
+                                <div class="col-sm-6 col-xl-auto">
+                                    {include file='tpl_inc/csv_export_btn.tpl' exporterId='redirects'}
+                                </div>
+                            {/if}
+                            <div class="{if !$oRedirect_arr|@count > 0}ml-auto{/if} col-sm-6 col-xl-auto">
+                                {include file='tpl_inc/csv_import_btn.tpl' importerId='redirects'}
+                            </div>
+                            <div class="ol-sm-6 col-xl-auto">
+                                <button name="action" value="save" class="btn btn-primary btn-block">
+                                    {__('saveWithIcon')}
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </form>
             </div>
@@ -305,9 +313,13 @@
                         </div>
                     </div>
                     <div class="save-wrapper">
-                        <button name="action" value="new" class="btn btn-primary">
-                            <i class="fa fa-save"></i> {__('create')}
-                        </button>
+                        <div class="row">
+                            <div class="ml-auto col-sm-6 col-xl-auto">
+                                <button name="action" value="new" class="btn btn-primary btn-block">
+                                    <i class="fa fa-save"></i> {__('create')}
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </form>
@@ -320,14 +332,25 @@
                         <div class="form-group form-row align-items-center">
                             <label class="col col-sm-4 col-form-label text-sm-right" for="cFile">{__('file')}:</label>
                             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                <input class="form-control" name="cFile" type="file" required>
+                                <div class="input-group mb-3">
+                                    <div class="custom-file">
+                                        <input class="custom-file-input" name="cFile" type="file" id="csv-import" required>
+                                        <label class="custom-file-label" for="csv-import">
+                                            <span class="text-truncate">{__('fileSelect')}</span>
+                                        </label>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                     <div class="save-wrapper">
-                        <button name="action" value="csvimport" class="btn btn-primary">
-                            {__('import')}
-                        </button>
+                        <div class="row">
+                            <div class="ml-auto col-sm-6 col-xl-auto">
+                                <button name="action" value="csvimport" class="btn btn-primary btn-block">
+                                    {__('import')}
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </form>

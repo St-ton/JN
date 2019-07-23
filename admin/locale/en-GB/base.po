@@ -1835,3 +1835,18 @@ msgstr "Generate password"
 
 msgid "shopTitle"
 msgstr "Administration of JTL-Shop"
+
+msgid "fileSelect"
+msgstr "Select file"
+
+msgid "helpCenterHeader"
+msgstr "Help center"
+
+msgid "notificationsHeader"
+msgstr "Notifications"
+
+msgid "favouritesHeader"
+msgstr "Favourites"
+
+msgid "saveWithIcon"
+msgstr "<i class=\"fal fa-save\"></i> Save"

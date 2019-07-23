@@ -205,7 +205,14 @@
                                            type="text"
                                            value="{if isset($attachments[$loopdekr + 1])}{$attachments[$loopdekr + 1]}{/if}"
                                            class="form-control{if count($cFehlerAnhang_arr) > 0}{if isset($cFehlerAnhang_arr[$kSprache][$smarty.section.anhaenge.index]) && $cFehlerAnhang_arr[$kSprache][$smarty.section.anhaenge.index] == 1} fieldfillout{/if}{/if}" />
-                                        <input id="cPDFS_{$smarty.section.anhaenge.index}_{$kSprache}" name="cPDFS_{$kSprache}[]" type="file" class="form-control" maxlength="2097152" style="margin-top:5px;" />
+                                        <div class="input-group mb-3">
+                                            <div class="custom-file">
+                                                <input id="cPDFS_{$smarty.section.anhaenge.index}_{$kSprache}" name="cPDFS_{$kSprache}[]" type="file" class="custom-file-input" maxlength="2097152" style="margin-top:5px;" />
+                                                <label class="custom-file-label" for="cPDFS_{$smarty.section.anhaenge.index}_{$kSprache}">
+                                                    <span class="text-truncate">{__('fileSelect')}</span>
+                                                </label>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             {/section}
@@ -214,9 +221,23 @@
                     </div>
             {/foreach}
             <div class="card-footer save-wrapper">
-                <a href="emailvorlagen.php" title="{__('cancel')}" class="btn btn-danger"><i class="fa fa-exclamation"></i> {__('cancel')}</a>
-                <button type="submit" name="continue" value="1" class="btn btn-default">{__('saveAndContinue')}</button>
-                <button type="submit" name="continue" value="0" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
+                <div class="row">
+                    <div class="ml-auto col-sm-6 col-xl-auto">
+                        <a href="emailvorlagen.php" title="{__('cancel')}" class="btn btn-danger btn-block mb-3">
+                            <i class="fa fa-exclamation"></i> {__('cancel')}
+                        </a>
+                    </div>
+                    <div class="col-sm-6 col-xl-auto">
+                        <button type="submit" name="continue" value="1" class="btn btn-outline-primary btn-block mb-3">
+                            {__('saveAndContinue')}
+                        </button>
+                    </div>
+                    <div class="col-sm-6 col-xl-auto">
+                        <button type="submit" name="continue" value="0" class="btn btn-primary btn-block">
+                            {__('saveWithIcon')}
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </form>

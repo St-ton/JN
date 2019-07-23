@@ -44,12 +44,24 @@
                 <div class="form-group form-row align-items-center">
                     <label class="col col-sm-4 col-form-label text-sm-right" for="csv">{__('csvFile')}:</label>
                     <span class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                        <input class="form-control" type="file" name="csv" id="csv" tabindex="1" />
+                        <div class="input-group mb-3">
+                            <div class="custom-file">
+                                <input class="custom-file-input" type="file" name="csv" id="csv" tabindex="1" />
+                                <label class="custom-file-label" for="csv">
+                                    <span class="text-truncate">{__('fileSelect')}</span>
+                                </label>
+                            </div>
+                        </div>
                     </span>
                 </div>
             </div>
             <div class="card-footer save-wrapper">
-                <button type="submit" value="{__('import')}" class="btn btn-primary">{__('import')}</button>
+                <div class="row">
+                    <div class="ml-auto col-sm-6 col-xl-auto">
+                        <button type="submit" value="{__('import')}" class="btn btn-primary btn-block">{__('import')}</button>
+                    </div>
+                </div>
+
             </div>
         </div>
     </form>

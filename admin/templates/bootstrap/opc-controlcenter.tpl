@@ -48,18 +48,24 @@
                                             <a href="#page-{$pageIdHash}" data-toggle="collapse">{$page->cPageId}</a>
                                         </td>
                                         <td>
-                                            <div class="float-right">
-                                                <a class="btn btn-danger btn-circle" title="{__('deleteDraftAll')}"
+                                            <div class="btn-group float-right">
+                                                <a class="btn btn-link px-2" title="{__('deleteDraftAll')}"
                                                    href="{strip}?token={$smarty.session.jtl_token}&
                                                          action=restore&pageId={$page->cPageId}{/strip}"
                                                    onclick="return confirm('{__('sureDeleteAll')}');">
-                                                    <i class="fas fa-trash-alt"></i>
+                                                    <span class="icon-hover">
+                                                        <span class="fal fa-trash-alt"></span>
+                                                        <span class="fas fa-trash-alt"></span>
+                                                    </span>
                                                 </a>
-                                                <button class="btn btn-default btn-circle" title="{__('preview')}"
+                                                <button class="btn btn-link px-2" title="{__('preview')}"
                                                         data-src="{$URL_SHOP}{$page->cPageUrl}"
                                                         data-toggle="modal"
                                                         data-target="#previewModal">
-                                                    <i class="fa fa-eye"></i>
+                                                    <span class="icon-hover">
+                                                        <span class="fal fa-eye"></span>
+                                                        <span class="fas fa-eye"></span>
+                                                    </span>
                                                 </button>
                                             </div>
                                         </td>
@@ -105,20 +111,26 @@
                                                             {if empty($draft->getLockedBy())}{else}{$draft->getLockedBy()}{/if}
                                                         </td>
                                                         <td>
-                                                            <div class="float-right">
-                                                                <a class="btn btn-danger btn-circle" title="{__('deleteDraft')}"
+                                                            <div class="btn-group float-right">
+                                                                <a class="btn btn-link px-2" title="{__('deleteDraft')}"
                                                                    href="{strip}?token={$smarty.session.jtl_token}&
                                                                          action=discard&
                                                                          pageKey={$draft->getKey()}{/strip}"
                                                                    onclick="return confirm('{__('sureDelete')}');">
-                                                                    <i class="fas fa-trash-alt"></i>
+                                                                    <span class="icon-hover">
+                                                                        <span class="fal fa-trash-alt"></span>
+                                                                        <span class="fas fa-trash-alt"></span>
+                                                                    </span>
                                                                 </a>
-                                                                <a class="btn btn-primary btn-circle" title="{__('edit')}" target="_blank"
+                                                                <a class="btn btn-link px-2" title="{__('edit')}" target="_blank"
                                                                    href="{strip}./opc.php?
                                                                         token={$smarty.session.jtl_token}&
                                                                         pageKey={$draft->getKey()}&
                                                                         action=edit{/strip}">
-                                                                    <i class="fal fa-edit"></i>
+                                                                    <span class="icon-hover">
+                                                                        <span class="fal fa-edit"></span>
+                                                                        <span class="fas fa-edit"></span>
+                                                                    </span>
                                                                 </a>
                                                             </div>
                                                         </td>

@@ -104,13 +104,26 @@
                         <div class="form-group form-row align-items-center">
                             <label class="col col-sm-4 col-form-label text-sm-right" for="cBrandingBild">{__('brandingFileName')}:</label>
                             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                <input class="form-control" type="file" name="cBrandingBild" maxlength="2097152" accept="image/jpeg,image/gif,image/png,image/bmp" id="cBrandingBild" value="" tabindex="1" {if !$oBranding->cBrandingBild|strlen > 0}required{/if}/>
+                                <div class="input-group mb-3">
+                                    <div class="custom-file">
+                                        <input class="custom-file-input" type="file" name="cBrandingBild" maxlength="2097152" accept="image/*" id="cBrandingBild" value="" tabindex="1" {if !$oBranding->cBrandingBild|strlen > 0}required{/if}/>
+                                        <label class="custom-file-label" for="cBrandingBild">
+                                            <span class="text-truncate">{__('fileSelect')}</span>
+                                        </label>
+                                    </div>
+                                </div>
                             </div>
                             <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=__('brandingFileNameDesc')}</div>
                         </div>
                     </div>
                     <div class="card-footer save-wrapper">
-                        <button type="submit" value="{__('save')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
+                        <div class="row">
+                            <div class="ml-auto col-sm-6 col-xl-auto submit">
+                                <button type="submit" value="{__('save')}" class="btn btn-primary btn-block">
+                                    {__('saveWithIcon')}
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </form>

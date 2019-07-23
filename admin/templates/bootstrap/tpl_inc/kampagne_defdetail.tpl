@@ -42,7 +42,7 @@
         {/if}
         <div class="card-footer">
             <a class="btn btn-default" href="kampagne.php?kKampagne={$oKampagne->kKampagne}&detail=1&token={$smarty.session.jtl_token}">
-                <i class="fa fa-angle-double-left"></i> {__('back')}
+                {__('goBack')}
             </a>
         </div>
     </div>

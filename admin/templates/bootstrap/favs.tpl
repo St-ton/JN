@@ -85,7 +85,7 @@
             </div>
             <div class="card-footer save-wrapper">
                 <button type="submit" name="action" value="save" class="btn btn-primary">
-                    <i class="fa fa-save"></i> {__('save')}
+                    {__('saveWithIcon')}
                 </button>
             </div>
         </div>

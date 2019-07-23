@@ -19,8 +19,24 @@
         <td>{$oPlzOrt->cKontinent}</td>
         <td>{$oPlzOrt->nPLZOrte|number_format:0:',':'.'}</td>
         <td>
-            {if isset($oPlzOrt->nBackup) && $oPlzOrt->nBackup > 0}<a title="{__('plz_ort_import_reset_desc')}" href="#" data-callback="plz_ort_import_reset" data-ref="{$oPlzOrt->cLandISO}"><i class="fa fa-history"></i></a> {/if}
-            {if isset($oPlzOrt->cImportFile)} <a title="{__('plz_ort_import_refresh_desc')}" href="#" data-callback="plz_ort_import_refresh" data-ref="{$oPlzOrt->cImportFile}"><i class="fa fa-download"></i></a>{/if}
+            <div class="btn-group">
+            {if isset($oPlzOrt->nBackup) && $oPlzOrt->nBackup > 0}
+                <a class="btn btn-link px-2" title="{__('plz_ort_import_reset_desc')}" href="#" data-callback="plz_ort_import_reset" data-ref="{$oPlzOrt->cLandISO}">
+                    <span class="icon-hover">
+                        <span class="fal fa-history"></span>
+                        <span class="fas fa-history"></span>
+                    </span>
+                </a>
+            {/if}
+            {if isset($oPlzOrt->cImportFile)}
+                <a class="btn btn-link px-2" title="{__('plz_ort_import_refresh_desc')}" href="#" data-callback="plz_ort_import_refresh" data-ref="{$oPlzOrt->cImportFile}">
+                    <span class="icon-hover">
+                        <span class="fal fa-download"></span>
+                        <span class="fas fa-download"></span>
+                    </span>
+                </a>
+            {/if}
+            </div>
         </td>
     </tr>
 {/foreach}

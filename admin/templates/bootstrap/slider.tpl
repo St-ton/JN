@@ -44,9 +44,26 @@
                                         </h4>
                                     </td>
                                     <td>
-                                        <a class="btn btn-danger btn-circle" href="slider.php?action=delete&id={$oSlider->kSlider}&token={$smarty.session.jtl_token}" title="{__('delete')}"><i class="fas fa-trash-alt"></i></a>
-                                        <a class="btn btn-default btn-circle add" href="slider.php?action=slides&id={$oSlider->kSlider}&token={$smarty.session.jtl_token}" title="{__('slides')}"><i class="fa fa-image"></i></a>
-                                        <a class="btn btn-primary btn-circle" href="slider.php?action=edit&id={$oSlider->kSlider}&token={$smarty.session.jtl_token}" title="{__('modify')}"><i class="fal fa-edit"></i></a>
+                                        <div class="btn-group">
+                                            <a class="btn btn-link px-2" href="slider.php?action=delete&id={$oSlider->kSlider}&token={$smarty.session.jtl_token}" title="{__('delete')}">
+                                                <span class="icon-hover">
+                                                    <span class="fal fa-trash-alt"></span>
+                                                    <span class="fas fa-trash-alt"></span>
+                                                </span>
+                                            </a>
+                                            <a class="btn btn-link px-2 add" href="slider.php?action=slides&id={$oSlider->kSlider}&token={$smarty.session.jtl_token}" title="{__('slides')}">
+                                                <span class="icon-hover">
+                                                    <span class="fal fa-images"></span>
+                                                    <span class="fas fa-images"></span>
+                                                </span>
+                                            </a>
+                                            <a class="btn btn-link px-2" href="slider.php?action=edit&id={$oSlider->kSlider}&token={$smarty.session.jtl_token}" title="{__('modify')}">
+                                                <span class="icon-hover">
+                                                    <span class="fal fa-edit"></span>
+                                                    <span class="fas fa-edit"></span>
+                                                </span>
+                                            </a>
+                                        </div>
                                     </td>
                                 </tr>
                             {/foreach}
@@ -55,7 +72,13 @@
                     </div>
                 {/if}
                 <div class="card-footer save-wrapper">
-                    <a class="btn btn-primary" href="slider.php?action=new&token={$smarty.session.jtl_token}"><i class="fa fa-share"></i> {__('sliderCreate')}</a>
+                    <div class="row">
+                        <div class="ml-auto col-sm-6 col-xl-auto">
+                            <a class="btn btn-primary btn-block" href="slider.php?action=new&token={$smarty.session.jtl_token}">
+                                <i class="fa fa-share"></i> {__('sliderCreate')}
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

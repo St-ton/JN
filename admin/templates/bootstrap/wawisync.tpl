@@ -24,7 +24,13 @@
                 </div>
             </div>
             <div class="card-footer save-wrapper">
-                <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
+                <div class="row">
+                    <div class="ml-auto col-sm-6 col-xl-auto">
+                        <button type="submit" class="btn btn-primary btn-block">
+                            {__('saveWithIcon')}
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </form>

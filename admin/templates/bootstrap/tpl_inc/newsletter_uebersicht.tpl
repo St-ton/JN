@@ -100,7 +100,10 @@
                                         {foreach $oNewsletterEmpfaenger_arr as $oNewsletterEmpfaenger}
                                             <tr>
                                                 <td class="tleft">
-                                                    <input name="kNewsletterEmpfaenger[]" type="checkbox" value="{$oNewsletterEmpfaenger->kNewsletterEmpfaenger}">
+                                                    <div class="custom-control custom-checkbox">
+                                                        <input class="custom-control-input" name="kNewsletterEmpfaenger[]" type="checkbox" id="newsletter-recipient-id-{$oNewsletterEmpfaenger->kNewsletterEmpfaenger}" value="{$oNewsletterEmpfaenger->kNewsletterEmpfaenger}">
+                                                        <label class="custom-control-label" for="newsletter-recipient-id-{$oNewsletterEmpfaenger->kNewsletterEmpfaenger}"></label>
+                                                    </div>
                                                 </td>
                                                 <td class="tleft">{if $oNewsletterEmpfaenger->cVorname != ""}{$oNewsletterEmpfaenger->cVorname}{else}{$oNewsletterEmpfaenger->newsVorname}{/if}</td>
                                                 <td class="tleft">{if $oNewsletterEmpfaenger->cNachname != ""}{$oNewsletterEmpfaenger->cNachname}{else}{$oNewsletterEmpfaenger->newsNachname}{/if}</td>
@@ -110,19 +113,27 @@
                                             </tr>
                                         {/foreach}
                                         </tbody>
-                                        <tfoot>
-                                            <tr>
-                                                <td>
-                                                    <input name="ALLMSGS" id="ALLMSGS2" type="checkbox" onclick="AllMessages(this.form);">
-                                                </td>
-                                                <td colspan="6"><label for="ALLMSGS2">{__('globalSelectAll')}</label></td>
-                                            </tr>
-                                        </tfoot>
                                     </table>
                                 </div>
                                 <div class="card-footer save-wrapper">
-                                    <button class="btn btn-danger" name="abonnentloeschenSubmit" type="submit" value="{__('delete')}"><i class="fas fa-trash-alt"></i> {__('marked')} {__('delete')}</button>
-                                    <button name="abonnentfreischaltenSubmit" type="submit" value="{__('newsletterUnlock')}" class="btn btn-primary"><i class="fa fa-thumbs-up"></i> {__('newsletterUnlock')}</button>
+                                    <div class="row">
+                                        <div class="col-sm-6 col-xl-auto text-left mb-3">
+                                            <div class="custom-control custom-checkbox">
+                                                <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS2" type="checkbox" onclick="AllMessages(this.form);">
+                                                <label class="custom-control-label" for="ALLMSGS2">{__('globalSelectAll')}</label>
+                                            </div>
+                                        </div>
+                                        <div class="ml-auto col-sm-6 col-xl-auto">
+                                            <button class="btn btn-danger btn-block mb-3" name="abonnentloeschenSubmit" type="submit" value="{__('delete')}">
+                                                <i class="fas fa-trash-alt"></i> {__('marked')} {__('delete')}
+                                            </button>
+                                        </div>
+                                        <div class="col-sm-6 col-xl-auto">
+                                            <button name="abonnentfreischaltenSubmit" type="submit" value="{__('newsletterUnlock')}" class="btn btn-primary btn-block">
+                                                <i class="fa fa-thumbs-up"></i> {__('newsletterUnlock')}
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </form>
@@ -182,7 +193,10 @@
                                         {foreach $oAbonnenten_arr as $oAbonnenten}
                                             <tr>
                                                 <td class="tleft">
-                                                    <input name="kNewsletterEmpfaenger[]" type="checkbox" value="{$oAbonnenten->kNewsletterEmpfaenger}" />
+                                                    <div class="custom-control custom-checkbox">
+                                                        <input class="custom-control-input" name="kNewsletterEmpfaenger[]" type="checkbox" id="newsletter-abo-id-{$oAbonnenten->kNewsletterEmpfaenger}" value="{$oAbonnenten->kNewsletterEmpfaenger}" />
+                                                        <label class="custom-control-label" for="newsletter-abo-id-{$oAbonnenten->kNewsletterEmpfaenger}"></label>
+                                                    </div>
                                                 </td>
                                                 <td class="tleft">{$oAbonnenten->cVorname} {$oAbonnenten->cNachname}</td>
                                                 <td class="tleft">{$oAbonnenten->cName}</td>
@@ -194,18 +208,22 @@
                                             </tr>
                                         {/foreach}
                                         </tbody>
-                                        <tfoot>
-                                            <tr>
-                                                <td>
-                                                    <input name="ALLMSGS" id="ALLMSGS3" type="checkbox" onclick="AllMessages(this.form);">
-                                                </td>
-                                                <td colspan="7"><label for="ALLMSGS3">{__('globalSelectAll')}</label></td>
-                                            </tr>
-                                        </tfoot>
                                     </table>
                                 </div>
                                 <div class="card-footer save-wrapper">
-                                    <button name="loeschen" type="submit" class="btn btn-danger"><i class="fas fa-trash-alt"></i> {__('deleteSelected')}</button>
+                                    <div class="row">
+                                        <div class="col-sm-6 col-xl-auto text-left mb-3">
+                                            <div class="custom-control custom-checkbox">
+                                                <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS3" type="checkbox" onclick="AllMessages(this.form);">
+                                                <label class="custom-control-label" for="ALLMSGS3">{__('globalSelectAll')}</label>
+                                            </div>
+                                        </div>
+                                        <div class="ml-auto col-sm-6 col-xl-auto">
+                                            <button name="loeschen" type="submit" class="btn btn-danger btn-block">
+                                                <i class="fas fa-trash-alt"></i> {__('deleteSelected')}
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -263,7 +281,13 @@
                             </div>
                         </div>
                         <div class="card-footer save-wrapper">
-                            <button name="speichern" type="submit" value="{__('save')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
+                            <div class="row">
+                                <div class="ml-auto col-sm-6 col-xl-auto">
+                                    <button name="speichern" type="submit" value="{__('save')}" class="btn btn-primary btn-block">
+                                        {__('saveWithIcon')}
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </form>
@@ -296,7 +320,10 @@
                                             {if isset($oNewsletterQueue->nAnzahlEmpfaenger) && $oNewsletterQueue->nAnzahlEmpfaenger > 0}
                                                 <tr>
                                                     <td>
-                                                        <input name="kNewsletterQueue[]" type="checkbox" value="{$oNewsletterQueue->kNewsletterQueue}">
+                                                        <div class="custom-control custom-checkbox">
+                                                            <input class="custom-control-input" name="kNewsletterQueue[]" type="checkbox" id="newsletter-queue-id-{$oNewsletterQueue->kNewsletterQueue}" value="{$oNewsletterQueue->kNewsletterQueue}">
+                                                            <label class="custom-control-label" for="newsletter-queue-id-{$oNewsletterQueue->kNewsletterQueue}"></label>
+                                                        </div>
                                                     </td>
                                                     <td>{$oNewsletterQueue->cBetreff}</td>
                                                     <td>{$oNewsletterQueue->Datum}</td>
@@ -314,18 +341,23 @@
                                             {/if}
                                         {/foreach}
                                         </tbody>
-                                        <tfoot>
-                                            <tr>
-                                                <td>
-                                                    <input name="ALLMSGS" id="ALLMSGS4" type="checkbox" onclick="AllMessages(this.form);">
-                                                </td>
-                                                <td colspan="6"><label for="ALLMSGS4">{__('globalSelectAll')}</label></td>
-                                            </tr>
-                                        </tfoot>
                                     </table>
                                 </div>
                                 <div class="card-footer save-wrapper">
-                                    <button name="loeschen" type="submit" value="{__('delete')}" class="btn btn-danger"><i class="fas fa-trash-alt"></i> {__('delete')}</button>
+                                    <div class="row">
+                                        <div class="col-sm-6 col-xl-auto text-left mb-3">
+                                            <div class="custom-control custom-checkbox">
+                                                <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS4" type="checkbox" onclick="AllMessages(this.form);">
+                                                <label class="custom-control-label" for="ALLMSGS4">{__('globalSelectAll')}</label>
+                                            </div>
+                                        </div>
+                                        <div class="ml-auto col-sm-6 col-xl-auto">
+                                            <button name="loeschen" type="submit" value="{__('delete')}" class="btn btn-danger btn-block">
+                                                <i class="fas fa-trash-alt"></i> {__('delete')}
+                                            </button>
+                                        </div>
+                                    </div>
+
                                 </div>
                             </div>
                         </div>
@@ -360,7 +392,10 @@
                                         {foreach $oNewsletterVorlage_arr as $oNewsletterVorlage}
                                             <tr>
                                                 <td>
-                                                    <input name="kNewsletterVorlage[]" type="checkbox" value="{$oNewsletterVorlage->kNewsletterVorlage}">
+                                                    <div class="custom-control custom-checkbox">
+                                                        <input class="custom-control-input" name="kNewsletterVorlage[]" type="checkbox" id="newsletter-template-id-{$oNewsletterVorlage->kNewsletterVorlage}" value="{$oNewsletterVorlage->kNewsletterVorlage}">
+                                                        <label class="custom-control-label" for="newsletter-template-id-{$oNewsletterVorlage->kNewsletterVorlage}"></label>
+                                                    </div>
                                                 </td>
                                                 <td>{$oNewsletterVorlage->cName}</td>
                                                 <td>{$oNewsletterVorlage->cBetreff}</td>
@@ -373,41 +408,69 @@
                                                 </td>
                                                 <td>
                                                     <div class="btn-group">
-                                                        <a class="btn btn-default"
+                                                        <a class="btn btn-link px-2"
                                                            href="newsletter.php?&vorschau={$oNewsletterVorlage->kNewsletterVorlage}&iframe=1&tab=newslettervorlagen&token={$smarty.session.jtl_token}"
-                                                           title="{__('preview')}"><i class="fa fa-eye"></i></a>
+                                                           title="{__('preview')}">
+                                                            <span class="icon-hover">
+                                                                <span class="fal fa-eye"></span>
+                                                                <span class="fas fa-eye"></span>
+                                                            </span>
+                                                        </a>
                                                         {if $oNewsletterVorlage->kNewslettervorlageStd > 0}
-                                                            <a class="btn btn-default"
+                                                            <a class="btn btn-link px-2"
                                                                href="newsletter.php?newslettervorlagenstd=1&editieren={$oNewsletterVorlage->kNewsletterVorlage}&tab=newslettervorlagen&token={$smarty.session.jtl_token}"
-                                                               title="{__('modify')}"><i class="fal fa-edit"></i></a>
+                                                               title="{__('modify')}">
+                                                                <span class="icon-hover">
+                                                                    <span class="fal fa-edit"></span>
+                                                                    <span class="fas fa-edit"></span>
+                                                                </span>
+                                                            </a>
                                                         {else}
-                                                            <a class="btn btn-default"
+                                                            <a class="btn btn-link px-2"
                                                                href="newsletter.php?newslettervorlagen=1&editieren={$oNewsletterVorlage->kNewsletterVorlage}&tab=newslettervorlagen&token={$smarty.session.jtl_token}"
-                                                               title="{__('modify')}"><i class="fal fa-edit"></i></a>
+                                                               title="{__('modify')}">
+                                                                <span class="icon-hover">
+                                                                    <span class="fal fa-edit"></span>
+                                                                    <span class="fas fa-edit"></span>
+                                                                </span>
+                                                            </a>
                                                         {/if}
-                                                        <a class="btn btn-default"
+                                                        <a class="btn btn-link px-2"
                                                            href="newsletter.php?newslettervorlagen=1&vorbereiten={$oNewsletterVorlage->kNewsletterVorlage}&tab=newslettervorlagen&token={$smarty.session.jtl_token}"
-                                                           title="{__('newsletterprepare')}">{__('newsletterprepare')}</a>
+                                                           title="{__('newsletterprepare')}">
+                                                            <span class="icon-hover">
+                                                                <span class="fal fa-newspaper"></span>
+                                                                <span class="fas fa-newspaper"></span>
+                                                            </span>
+                                                        </a>
                                                     </div>
                                                 </td>
                                             </tr>
                                         {/foreach}
                                         </tbody>
-                                        <tfoot>
-                                            <tr>
-                                                <td>
-                                                    <input name="ALLMSGS" id="ALLMSGS5" type="checkbox" onclick="AllMessages(this.form);">
-                                                </td>
-                                                <td colspan="6"><label for="ALLMSGS5">{__('globalSelectAll')}</label></td>
-                                            </tr>
-                                        </tfoot>
                                     </table>
                                 </div>
                                 <div class="card-footer save-wrapper">
-                                    {if isset($oNewsletterVorlage_arr) && $oNewsletterVorlage_arr|@count > 0}
-                                        <button class="btn btn-danger" name="loeschen" type="submit" value="{__('delete')}"><i class="fas fa-trash-alt"></i> {__('delete')}</button>
-                                    {/if}
-                                    <button name="vorlage_erstellen" class="btn btn-primary" type="submit">{__('newsletterdraftcreate')}</button>
+                                    <div class="row">
+                                        <div class="col-sm-6 col-xl-auto text-left mb-3">
+                                            <div class="custom-control custom-checkbox">
+                                                <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS5" type="checkbox" onclick="AllMessages(this.form);">
+                                                <label class="custom-control-label" for="ALLMSGS5">{__('globalSelectAll')}</label>
+                                            </div>
+                                        </div>
+                                        {if isset($oNewsletterVorlage_arr) && $oNewsletterVorlage_arr|@count > 0}
+                                            <div class="ml-auto col-sm-6 col-xl-auto">
+                                                <button class="btn btn-danger btn-block mb-3" name="loeschen" type="submit" value="{__('delete')}">
+                                                    <i class="fas fa-trash-alt"></i> {__('delete')}
+                                                </button>
+                                            </div>
+                                        {/if}
+                                        <div class="{if !(isset($oNewsletterVorlage_arr) && $oNewsletterVorlage_arr|@count > 0)}ml-auto{/if} col-sm-6 col-xl-auto">
+                                            <button name="vorlage_erstellen" class="btn btn-primary btn-block" type="submit">
+                                                {__('newsletterdraftcreate')}
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -460,7 +523,14 @@
                                     </table>
                                 </div>
                                 <div class="card-footer save-wrapper">
-                                    <button name="submitVorlageStd" type="submit" value="{__('newsletterdraftStdUse')}" class="btn btn-primary"><i class="fa fa-share"></i> {__('newsletterdraftStdUse')}</button>
+                                    <div class="row">
+                                        <div class="ml-auto col-sm-6 col-xl-auto">
+                                            <button name="submitVorlageStd" type="submit" value="{__('newsletterdraftStdUse')}" class="btn btn-primary btn-block">
+                                                <i class="fa fa-share"></i> {__('newsletterdraftStdUse')}
+                                            </button>
+                                        </div>
+                                    </div>
+
                                 </div>
                             </div>
                         </div>
@@ -495,7 +565,10 @@
                                         {foreach $oNewsletterHistory_arr as $oNewsletterHistory}
                                             <tr>
                                                 <td class="tleft">
-                                                    <input name="kNewsletterHistory[]" type="checkbox" value="{$oNewsletterHistory->kNewsletterHistory}">
+                                                    <div class="custom-control custom-checkbox">
+                                                        <input class="custom-control-input" name="kNewsletterHistory[]" type="checkbox" id="newsletter-history-id-{$oNewsletterHistory->kNewsletterHistory}" value="{$oNewsletterHistory->kNewsletterHistory}">
+                                                        <label class="custom-control-label" for="newsletter-history-id-{$oNewsletterHistory->kNewsletterHistory}"></label>
+                                                    </div>
                                                 </td>
                                                 <td class="tleft">
                                                     <a href="newsletter.php?newsletterhistory=1&anzeigen={$oNewsletterHistory->kNewsletterHistory}&tab=newsletterhistory&token={$smarty.session.jtl_token}">{$oNewsletterHistory->cBetreff}</a>
@@ -506,18 +579,22 @@
                                             </tr>
                                         {/foreach}
                                         </tbody>
-                                        <tfoot>
-                                            <tr>
-                                                <td>
-                                                    <input name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);">
-                                                </td>
-                                                <td colspan="6"><label for="ALLMSGS">{__('globalSelectAll')}</label></td>
-                                            </tr>
-                                        </tfoot>
                                     </table>
                                 </div>
                                 <div class="card-footer save-wrapper">
-                                    <button name="loeschen" type="submit" class="btn btn-danger" value="{__('delete')}"><i class="fas fa-trash-alt"></i> {__('delete')}</button>
+                                    <div class="row">
+                                        <div class="col-sm-6 col-xl-auto text-left mb-3">
+                                            <div class="custom-control custom-checkbox">
+                                            <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);">
+                                            <label class="custom-control-label" for="ALLMSGS">{__('globalSelectAll')}</label>
+                                        </div>
+                                        </div>
+                                        <div class="ml-auto col-sm-6 col-xl-auto">
+                                            <button name="loeschen" type="submit" class="btn btn-danger btn-block" value="{__('delete')}">
+                                                <i class="fas fa-trash-alt"></i> {__('delete')}
+                                            </button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>

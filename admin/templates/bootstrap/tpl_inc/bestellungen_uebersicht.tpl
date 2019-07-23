@@ -49,7 +49,10 @@
                         {foreach $oBestellung_arr as $oBestellung}
                             <tr>
                                 <td class="check">{if $oBestellung->cAbgeholt === 'Y' && $oBestellung->cZahlungsartName !== 'Amazon Payment' && $oBestellung->oKunde !== null}
-                                    <input type="checkbox" name="kBestellung[]" value="{$oBestellung->kBestellung}" />{/if}
+                                    <div class="custom-control custom-checkbox">
+                                        <input class="custom-control-input" type="checkbox" name="kBestellung[]" id="order-id-{$oBestellung->kBestellung}" value="{$oBestellung->kBestellung}" />{/if}
+                                        <label class="custom-control-label" for="order-id-{$oBestellung->kBestellung}"></label>
+                                    </div>
                                 </td>
                                 <td>{$oBestellung->cBestellNr}</td>
                                 <td>
@@ -90,11 +93,19 @@
                     </table>
                 </div>
                 <div class="card-footer save-wrapper">
-                    <div class="float-left">
-                        <input name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);" />
-                        <label for="ALLMSGS">{__('globalSelectAll')}</label>
+                    <div class="row">
+                        <div class="col-sm-6 col-xl-auto text-left mb-3">
+                            <div class="custom-control custom-checkbox">
+                                <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);" />
+                                <label class="custom-control-label" for="ALLMSGS">{__('globalSelectAll')}</label>
+                            </div>
+                        </div>
+                        <div class="ml-auto col-sm-6 col-xl-auto">
+                            <button name="zuruecksetzenBTN" type="submit" class="btn btn-primary btn-block">
+                                <i class="fa fa-refresh"></i> {__('orderPickedUpResetBTN')}
+                            </button>
+                        </div>
                     </div>
-                    <button name="zuruecksetzenBTN" type="submit" class="btn btn-primary"><i class="fa fa-refresh"></i> {__('orderPickedUpResetBTN')}</button>
                 </div>
             </div>
         </form>

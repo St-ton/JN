@@ -75,7 +75,7 @@ msgid "putOnServer"
 msgstr "Save on server"
 
 msgid "infoUpdateNow"
-msgstr "Click on <a href=\"dbupdater.php?action=update\" data-callback=\"update\">update now</a> to perform the database update."
+msgstr "Click on \"Start database update\" to perform the database update."
 
 msgid "dbUpdate"
 msgstr "Database update"

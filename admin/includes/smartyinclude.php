@@ -64,6 +64,9 @@ foreach ($adminMenu as $rootName => $rootEntry) {
         ];
 
         if ($secondEntry === 'DYNAMIC_PLUGINS') {
+            if (!$oAccount->permission('PLUGIN_ADMIN_VIEW')) {
+                continue;
+            }
             $pluginLinks = $db->queryPrepared(
                 'SELECT DISTINCT p.kPlugin, p.cName, p.cPluginID, p.nPrio
                     FROM tplugin AS p INNER JOIN tpluginadminmenu AS pam
@@ -90,6 +93,9 @@ foreach ($adminMenu as $rootName => $rootEntry) {
             $thirdKey = 0;
 
             if (is_object($secondEntry)) {
+                if (!$oAccount->permission($secondEntry->rights)) {
+                    continue;
+                }
                 $linkGruppe->oLink_arr = (object)[
                     'cLinkname' => $secondName,
                     'cURL' => $secondEntry->link,
@@ -121,7 +127,9 @@ foreach ($adminMenu as $rootName => $rootEntry) {
                     } else {
                         continue;
                     }
-
+                    if (!$oAccount->permission($link->cRecht)) {
+                        continue;
+                    }
                     $urlParts             = parse_url($link->cURL);
                     $urlParts['basename'] = basename($urlParts['path']);
 
@@ -153,11 +161,15 @@ foreach ($adminMenu as $rootName => $rootEntry) {
             }
         }
 
-        $mainGroup->oLinkGruppe_arr[] = $linkGruppe;
+        if (is_object($linkGruppe->oLink_arr) || count($linkGruppe->oLink_arr) > 0) {
+            $mainGroup->oLinkGruppe_arr[] = $linkGruppe;
+        }
         $secondKey++;
     }
 
-    $mainGroups[] = $mainGroup;
+    if (count($mainGroup->oLinkGruppe_arr) > 0) {
+        $mainGroups[] = $mainGroup;
+    }
     $rootKey++;
 }
 

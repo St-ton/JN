@@ -52,7 +52,13 @@
                             {/foreach}
                         </div>
                         <div class="card-footer save-wrapper">
-                            <button type="submit" value="{__('save')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
+                            <div class="row">
+                                <div class="ml-auto col-sm-6 col-xl-auto">
+                                    <button type="submit" value="{__('save')}" class="btn btn-primary btn-block">
+                                        {__('saveWithIcon')}
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </form>
@@ -82,10 +88,21 @@
                                         <td>{$Betreff->cMail}</td>
                                         <td class="tcenter">{$Betreff->Kundengruppen}</td>
                                         <td class="tcenter">
-                                            <a href="kontaktformular.php?del={$Betreff->kKontaktBetreff}&token={$smarty.session.jtl_token}" class="btn btn-danger btn-circle" title="{__('delete')}"><i class="fas fa-trash-alt"></i></a>
-                                            <a href="kontaktformular.php?kKontaktBetreff={$Betreff->kKontaktBetreff}&token={$smarty.session.jtl_token}"
-                                               class="btn btn-primary btn-circle" title="{__('modify')}"><i class="fal fa-edit"></i>
-                                            </a>
+                                            <div class="btn-group">
+                                                <a href="kontaktformular.php?del={$Betreff->kKontaktBetreff}&token={$smarty.session.jtl_token}" class="btn btn-link px-2" title="{__('delete')}">
+                                                    <span class="icon-hover">
+                                                        <span class="fal fa-trash-alt"></span>
+                                                        <span class="fas fa-trash-alt"></span>
+                                                    </span>
+                                                </a>
+                                                <a href="kontaktformular.php?kKontaktBetreff={$Betreff->kKontaktBetreff}&token={$smarty.session.jtl_token}"
+                                                   class="btn btn-link px-2" title="{__('modify')}">
+                                                    <span class="icon-hover">
+                                                        <span class="fal fa-edit"></span>
+                                                        <span class="fas fa-edit"></span>
+                                                    </span>
+                                                </a>
+                                            </div>
                                         </td>
                                     </tr>
                                 {/foreach}
@@ -94,7 +111,13 @@
                         </div>
                     </div>
                     <div class="card-footer save-wrapper">
-                        <a class="btn btn-primary" href="kontaktformular.php?neu=1&token={$smarty.session.jtl_token}"><i class="fa fa-share"></i> {__('newSubject')}</a>
+                        <div class="row">
+                            <div class="ml-auto col-sm-6 col-xl-auto">
+                                <a class="btn btn-primary btn-block" href="kontaktformular.php?neu=1&token={$smarty.session.jtl_token}">
+                                    <i class="fa fa-share"></i> {__('newSubject')}
+                                </a>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -132,7 +155,13 @@
                             </div>
                         </div>
                         <div class="card-footer save-wrapper">
-                            <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
+                            <div class="row">
+                                <div class="ml-auto col-sm-6 col-xl-auto">
+                                    <button type="submit" class="btn btn-primary btn-block">
+                                        {__('saveWithIcon')}
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </form>

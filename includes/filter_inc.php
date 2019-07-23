@@ -248,7 +248,7 @@ function gibTagFilterJSONOptionen($FilterSQL, $NaviFilter)
 function gibMerkmalFilterOptionen($FilterSQL, $NaviFilter)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return updateNaviFilter($NaviFilter)->getAttributeFilterCollection()->getOptions();
+    return updateNaviFilter($NaviFilter)->getCharacteristicFilterCollection()->getOptions();
 }
 
 /**

@@ -57,7 +57,7 @@
                     </table>
                 </div>
                 <div class="card-footer save-wrapper">
-                    <button name="speichern" type="submit" value="{__('save')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
+                    <button name="speichern" type="submit" value="{__('save')}" class="btn btn-primary">{__('saveWithIcon')}</button>
                 </div>
             </div>
         </form>

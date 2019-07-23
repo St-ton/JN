@@ -78,7 +78,10 @@
                             <input class="form-control" type="number" name="{$confItem->valueID}" id="{$confItem->valueID}" value="{$confItem->value}" />
                         {elseif $confItem->inputType === JTL\Plugin\Admin\InputType::CHECKBOX}
                             <div class="input-group-checkbox-wrap">
-                                <input class="form-control" id="{$confItem->valueID}" type="checkbox" name="{$confItem->valueID}"{if $confItem->value === 'on'} checked="checked"{/if}>
+                                <div class="custom-control custom-checkbox">
+                                    <input class="custom-control-input form-control" id="{$confItem->valueID}" type="checkbox" name="{$confItem->valueID}"{if $confItem->value === 'on'} checked="checked"{/if}>
+                                    <label class="custom-control-label" for="{$confItem->valueID}"></label>
+                                </div>
                             </div>
                         {elseif $confItem->inputType === JTL\Plugin\Admin\InputType::RADIO}
                             <div class="input-group-checkbox-wrap">
@@ -105,9 +108,15 @@
                 </div><!-- .panel-body -->
                 </div><!-- .panel -->
             {/if}
-            <button name="speichern" type="submit" value="{__('save')}" class="btn btn-primary">
-                <i class="fa fa-save"></i> {__('save')}
-            </button>
+            <div class="save-wrapper">
+                <div class="row">
+                    <div class="ml-auto col-sm-6 col-xl-auto">
+                           <button name="speichern" type="submit" value="{__('save')}" class="btn btn-primary btn-block">
+                            {__('saveWithIcon')}
+                        </button>
+                    </div>
+                </div>
+            </div>
         </form>
     </div>
 {/if}

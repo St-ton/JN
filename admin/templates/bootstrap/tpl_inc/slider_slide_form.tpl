@@ -23,9 +23,10 @@
     <div id="settings">
         <div class="card">
             <div class="card-header">
-                <div class="card-title">{__('slider')}</div>
+                <div class="subheading1">{__('slider')}</div>
+                <hr class="mb-n3">
             </div>
-            <div class="table-responsive">
+            <div class="table-responsive card-body">
                 <table id="tableSlide" class="table">
                     <thead>
                     <tr>
@@ -45,11 +46,27 @@
             </div>
             <table class="hidden"><tbody id="newSlide">{slide oSlide=null kSlide='NEU'}</tbody></table>
             <div class="card-footer">
-                <div class="btn-group">
-                    <button type="button" class="btn btn-default" onclick="window.location.href = 'slider.php';"><i class="fa fa-angle-double-left"></i> {__('pageBack')}</button>
-                    <button type="button" class="btn btn-success" onclick="addSlide();"><i class="glyphicon glyphicon-plus"></i> {__('add')}</button>
-                    <button type="button" class="btn btn-danger" onclick="location.reload();"><i class="glyphicon glyphicon-remove"></i> {__('cancel')}</button>
-                    <button type="submit" class="btn btn-primary" id="saveButton"><i class=" fa fa-save"></i> {__('save')}</button>
+                <div class="row">
+                    <div class="ml-auto col-sm-6 col-xl-auto">
+                        <button type="button" class="btn btn-outline-primary btn-block mb-3" onclick="location.reload();">
+                            <i class="glyphicon glyphicon-remove"></i> {__('cancel')}
+                        </button>
+                    </div>
+                    <div class="col-sm-6 col-xl-auto">
+                        <button type="button" class="btn btn-outline-primary btn-block mb-3" onclick="window.location.href = 'slider.php';">
+                            <i class="fa fa-angle-double-left"></i> {__('pageBack')}
+                        </button>
+                    </div>
+                    <div class="col-sm-6 col-xl-auto">
+                        <button type="button" class="btn btn-outline-primary btn-block mb-3" onclick="addSlide();">
+                            <i class="glyphicon glyphicon-plus"></i> {__('add')}
+                        </button>
+                    </div>
+                    <div class="col-sm-6 col-xl-auto">
+                        <button type="submit" class="btn btn-primary btn-block" id="saveButton">
+                            <i class=" fa fa-save"></i> {__('save')}
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>

@@ -39,12 +39,22 @@
                             {foreach $oWarenlager_arr as $oWarenlager}
                                 <tr>
                                     <td class="checkext">
-                                        <input name="kWarenlager[]" type="checkbox" value="{$oWarenlager->kWarenlager}"{if $oWarenlager->nAktiv == 1} checked{/if} />
+                                        <div class="custom-control custom-checkbox">
+                                            <input class="custom-control-input" name="kWarenlager[]" type="checkbox" id="store-id-{$oWarenlager->kWarenlager}" value="{$oWarenlager->kWarenlager}"{if $oWarenlager->nAktiv == 1} checked{/if} />
+                                            <label class="custom-control-label" for="store-id-{$oWarenlager->kWarenlager}"></label>
+                                        </div>
                                     </td>
                                     <td class="tcenter large">{$oWarenlager->cName}</td>
                                     <td class="tcenter">{$oWarenlager->cBeschreibung}</td>
                                     <td class="tcenter">
-                                        <a class="btn btn-default btn-circle" data-toggle="collapse" href="#collapse-{$oWarenlager->kWarenlager}" title="{__('edit')}"><i class="fal fa-edit"></i></a>
+                                        <div class="btn-group">
+                                            <a class="btn btn-link px-2" data-toggle="collapse" href="#collapse-{$oWarenlager->kWarenlager}" title="{__('edit')}">
+                                                <span class="icon-hover">
+                                                    <span class="fal fa-edit"></span>
+                                                    <span class="fas fa-edit"></span>
+                                                </span>
+                                            </a>
+                                        </div>
                                     </td>
                                 </tr>
                                 <tr class="collapse" id="collapse-{$oWarenlager->kWarenlager}">
@@ -70,7 +80,13 @@
                     </div>
                 </div>
                 <div class="card-footer save-wrapper">
-                    <button name="update" type="submit" title="{__('update')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
+                    <div class="row">
+                        <div class="ml-auto col-sm-6 col-xl-auto">
+                            <button name="update" type="submit" title="{__('update')}" class="btn btn-primary btn-block">
+                                {__('saveWithIcon')}
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </form>

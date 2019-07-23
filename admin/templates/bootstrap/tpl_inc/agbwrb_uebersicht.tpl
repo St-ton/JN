@@ -22,10 +22,15 @@
                     <tr>
                         <td class="">{$oKundengruppe->cName}</td>
                         <td class="tcenter">
-                            <a href="agbwrb.php?agbwrb=1&agbwrb_edit=1&kKundengruppe={$oKundengruppe->kKundengruppe}&token={$smarty.session.jtl_token}"
-                               class="btn btn-default btn-circle" title="{__('modify')}">
-                                <i class="fal fa-edit"></i>
-                            </a>
+                            <div class="btn-group">
+                                <a href="agbwrb.php?agbwrb=1&agbwrb_edit=1&kKundengruppe={$oKundengruppe->kKundengruppe}&token={$smarty.session.jtl_token}"
+                                   class="btn btn-link px-2" title="{__('modify')}">
+                                    <span class="icon-hover">
+                                        <span class="fal fa-edit"></span>
+                                        <span class="fas fa-edit"></span>
+                                    </span>
+                                </a>
+                            </div>
                         </td>
                     </tr>
                 {/foreach}

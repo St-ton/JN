@@ -294,8 +294,8 @@
                                     <textarea id="previewtext_{$cISO}" class="ckeditor" name="cVorschauText_{$cISO}" rows="15" cols="60">{if isset($cPostVar_arr.cVorschauText) && $cPostVar_arr.cVorschauText}{$cPostVar_arr.cVorschauText}{else}{$oNews->getPreview($langID)}{/if}</textarea>
                                 </div>
                             </div>
+                            <div class="alert alert-info">{__('newsMandatoryFields')}</div>
                         </div>
-                        <div class="alert alert-info">{__('newsMandatoryFields')}</div>
                     </div>
                 </div>
             {/foreach}

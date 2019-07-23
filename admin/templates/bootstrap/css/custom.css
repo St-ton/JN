@@ -308,6 +308,7 @@
   padding: 0;
   padding-left: 1em;
   height: 100%;
+  list-style: none;
 }
 .backend-wrapper > .backend-main > .backend-navbar > .backend-navbar-left > li {
   height: 100%;
@@ -1882,9 +1883,6 @@ body.modal-open nav {
   margin-top: -2px;
   color: rgba(255, 255, 255, 0.3);
 }
-.grid-item {
-  width: 33%;
-}
 .modal-backdrop.in {
   opacity: 0.85;
 }
@@ -2567,5 +2565,72 @@ div.markdown thead tr td {
 }
 .content-header {
   margin-top: 0;
+}
+.kv-upload-progress {
+  margin-bottom: 1rem;
+}
+.file-preview {
+  border-radius: 0.125rem;
+  border-style: dashed;
+  margin-bottom: 1rem;
+  padding: 1.5rem 1.5rem 0;
+}
+.file-preview .fileinput-remove {
+  top: 1rem;
+  right: 1rem;
+}
+.file-preview .krajee-default.file-preview-frame {
+  border: 0;
+  margin: 0;
+  box-shadow: none;
+  padding: 0;
+  float: none;
+}
+.file-preview .krajee-default.file-preview-frame:hover {
+  box-shadow: none;
+  border: 0;
+}
+.file-preview .krajee-default.file-preview-frame .kv-file-content {
+  width: 100%;
+  height: auto;
+}
+.file-preview .file-upload-indicator {
+  display: none;
+}
+.file-drop-zone {
+  margin: 0.75rem 0 0;
+  padding: 0;
+  border: 2px solid transparent;
+}
+.file-drop-zone.clickable:hover {
+  border: 2px solid transparent;
+}
+.file-drop-zone .file-drop-zone-title {
+  padding: 1.5rem 1rem;
+}
+.grid {
+  column-count: 2;
+}
+.grid .grid-item {
+  break-inside: avoid;
+  width: 100%;
+}
+.file-input .close {
+  float: right;
+}
+.file-input .input-grp-append .btn-file,
+.file-input #shoplogo-upload {
+  cursor: pointer;
+}
+.file-input .file-preview {
+  border-radius: 0.125rem;
+  border-style: dashed;
+  margin-bottom: 1rem;
+  padding: 1.5rem 1.5rem 0;
+}
+.file-input .file-drop-zone {
+  margin: 0.75rem 0 0;
+  padding: 0;
+  border: 2px solid transparent;
 }
 /*# sourceMappingURL=custom.css.map */

@@ -20,7 +20,7 @@ function ackCheck(kPlugin, hash)
 
 {*include file='tpl_inc/seite_header.tpl' cTitel=__('pluginverwaltung') cBeschreibung=__('pluginverwaltungDesc') cDokuURL=__('pluginverwaltungURL')*}
 
-<div id="content">
+<div>
     <div class="card">
         <div class="card-header">
             <div class="heading-body">

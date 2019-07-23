@@ -48,6 +48,29 @@
 
 <div id="content">
     <div class="grid">
+        <div class="grid-item">
+            <div class="card">
+                <div class="card-header">
+                    <div class="subheading1">{__('general')}</div>
+                    <hr class="mb-n3">
+                </div>
+                <div class="card-body">
+                    <table class="table table-hover table-striped table-blank text-x1 last-child">
+                        <tbody>
+                        {render_item title=__('databaseStructure') val=$status->validDatabaseStruct() more='dbcheck.php'}
+                        {render_item title=__('fileStructure') val=($status->validModifiedFileStruct()&&$status->validOrphanedFilesStruct()) more='filecheck.php'}
+                        {render_item title=__('directoryPermissions') val=$status->validFolderPermissions() more='permissioncheck.php'}
+                        {render_item title=__('openUpdates') val=!$status->hasPendingUpdates() more='dbupdater.php'}
+                        {render_item title=__('installDirectory') val=!$status->hasInstallDir()}
+                        {render_item title=__('profilerActive') val=!$status->hasActiveProfiler() more='profiler.php'}
+                        {render_item title=__('server') val=$status->hasValidEnvironment() more='systemcheck.php'}
+                        {render_item title=__('orphanedCategories') val=$status->getOrphanedCategories() more='categorycheck.php'}
+                        {render_item title=__('newPluginVersions') val=!$status->hasNewPluginVersions() more='pluginverwaltung.php'}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
 
         <div class="grid-item">
             <div class="card">
@@ -96,30 +119,6 @@
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="grid-item">
-            <div class="card">
-                <div class="card-header">
-                    <div class="subheading1">{__('general')}</div>
-                    <hr class="mb-n3">
-                </div>
-                <div class="card-body">
-                    <table class="table table-hover table-striped table-blank text-x1 last-child">
-                        <tbody>
-                            {render_item title=__('databaseStructure') val=$status->validDatabaseStruct() more='dbcheck.php'}
-                            {render_item title=__('fileStructure') val=($status->validModifiedFileStruct()&&$status->validOrphanedFilesStruct()) more='filecheck.php'}
-                            {render_item title=__('directoryPermissions') val=$status->validFolderPermissions() more='permissioncheck.php'}
-                            {render_item title=__('openUpdates') val=!$status->hasPendingUpdates() more='dbupdater.php'}
-                            {render_item title=__('installDirectory') val=!$status->hasInstallDir()}
-                            {render_item title=__('profilerActive') val=!$status->hasActiveProfiler() more='profiler.php'}
-                            {render_item title=__('server') val=$status->hasValidEnvironment() more='systemcheck.php'}
-                            {render_item title=__('orphanedCategories') val=$status->getOrphanedCategories() more='categorycheck.php'}
-                            {render_item title=__('newPluginVersions') val=!$status->hasNewPluginVersions() more='pluginverwaltung.php'}
-                        </tbody>
-                    </table>
                 </div>
             </div>
         </div>

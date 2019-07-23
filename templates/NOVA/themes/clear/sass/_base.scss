@@ -2716,7 +2716,7 @@ a.nice-deco {
     height: 5%;
   }
   &::before {
-    width: 0%;
+    width: 0;
     left: 0;
     bottom: 0;
     transition: width ease 0.4s;

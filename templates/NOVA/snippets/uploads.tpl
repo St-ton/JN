@@ -55,7 +55,7 @@
                                 {/block}
                                 {block name='snippets-uploads-scheme-product-script'}
                                     <script type="text/javascript">
-                                        $(function () {ldelim}
+                                        $(function () {
                                             var $el =  $('#fileinput{$oUploadSchema@index}');
                                             $el.fileinput({
                                                 uploadUrl:             '{$ShopURL}/{$smarty.const.PFAD_UPLOAD_CALLBACK}',
@@ -108,7 +108,7 @@
                                             }).on('fileloaded', function() {
                                                 $('#upload-{$oUploadSchema@index} .fileinput-upload').removeClass('disabled');
                                             });
-                                            {rdelim});
+                                        });
                                     </script>
                                 {/block}
                             {/col}

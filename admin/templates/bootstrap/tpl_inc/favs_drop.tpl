@@ -3,7 +3,7 @@
 </a>
 <div class="dropdown-menu dropdown-menu-right" role="main">
     {if isset($favorites) && is_array($favorites) && count($favorites) > 0}
-        <span class="dropdown-header">Favoriten</span>
+        <span class="dropdown-header">{__('favouritesHeader')}</span>
         <div class="dropdown-divider"></div>
         {foreach $favorites as $favorite}
             <a class="dropdown-item" href="{$favorite->cAbsUrl}" rel="{$favorite->kAdminfav}"{if $favorite->bExtern} target="_blank"{/if}>{$favorite->cTitel}{if $favorite->bExtern} <i class="fa fa-external-link"></i>{/if}</a>

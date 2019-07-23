@@ -1838,3 +1838,13 @@ msgstr "Administration von JTL-Shop"
 
 msgid "fileSelect"
 msgstr "Datei auswählen"
+
+msgid "helpCenterHeader"
+msgstr "Hilfecenter"
+
+msgid "notificationsHeader"
+msgstr "Mitteilungen"
+
+msgid "favouritesHeader"
+msgstr "Favoriten"
+

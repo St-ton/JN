@@ -63,12 +63,7 @@
                         <table id="cache-type-status" class="table list">
                             <thead>
                             <tr>
-                                <th class="tleft">
-                                    <div class="custom-control custom-checkbox">
-                                        <input type="checkbox" class="massaction-checkbox custom-control-input" id="massaction-main-switch" />
-                                        <label class="custom-control-label" for="massaction-main-switch"></label>
-                                    </div>
-                                </th>
+                                <th class="tleft"></th>
                                 <th class="tleft"><label style="margin-bottom:0;" for="massaction-main-switch">{__('type')}</label></th>
                                 <th class="tleft">{__('description')}</th>
                                 <th class="tleft">{__('entries')}</th>
@@ -109,6 +104,12 @@
                         </div>
                         <div class="card-footer save-wrapper">
                             <div class="row">
+                                <div class="col-sm-6 col-xl-auto text-left mb-3">
+                                    <div class="custom-control custom-checkbox">
+                                        <input type="checkbox" class="massaction-checkbox custom-control-input" id="massaction-main-switch" />
+                                        <label class="custom-control-label" for="massaction-main-switch">{__('globalSelectAll')}</label>
+                                    </div>
+                                </div>
                                 <div class="col-sm-6 col-xl-auto mb-3">
                                     <div class="input-group">
                                         <span class="input-group-addon">
@@ -129,12 +130,12 @@
                                 </div>
                                 <form method="post" action="cache.php" class="submit-form">
                                     {$jtl_token}
-                                    <div class="col-sm-6 col-xl-auto">
+                                    <div class="ml-auto col-sm-6 col-xl-auto">
                                         <button name="a" type="submit" value="flush_object_cache" class="btn btn-outline-primary btn-block mb-3 delete"{if !$cache_enabled} disabled="disabled"{/if}>
                                             <i class="fas fa-trash-alt"></i>&nbsp;{__('clearObjectCache')}
                                         </button>
                                     </div>
-                                    <div class="ml-auto col-sm-6 col-xl-auto">
+                                    <div class="col-sm-6 col-xl-auto">
                                         <button name="a" type="submit" value="flush_template_cache" class="btn btn-outline-primary btn-block delete">
                                             <i class="fas fa-trash-alt"></i>&nbsp;{__('clearTemplateCache')}
                                         </button>

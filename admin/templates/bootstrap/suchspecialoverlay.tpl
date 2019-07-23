@@ -11,18 +11,16 @@
                 <div class="col-md-4">
                     <form name="suchspecialoverlay" method="post" action="suchspecialoverlay.php" class="inline_block">
                         {$jtl_token}
-                        <div class="input-group">
-                            <span class="input-group-addon">
-                                <label for="{__('suchspecial')}">{__('suchspecial')}:</label>
-                            </span>
+                        <div class="form-row">
+                            <label class="col-sm-auto col-form-label" for="{__('suchspecial')}">{__('suchspecial')}:</label>
                             <input type="hidden" name="suchspecialoverlay" value="1" />
-                            <span class="label-wrap last">
+                            <div class="col-sm-auto">
                                 <select name="kSuchspecialOverlay" class="custom-select selectBox" id="{__('suchspecial')}" onchange="document.suchspecialoverlay.submit();">
                                     {foreach $oSuchspecialOverlay_arr as $oSuchspecialOverlayTMP}
                                         <option value="{$oSuchspecialOverlayTMP->getType()}" {if $oSuchspecialOverlayTMP->getType() == $oSuchspecialOverlay->getType()}selected{/if}>{$oSuchspecialOverlayTMP->getName()}</option>
                                     {/foreach}
                                 </select>
-                            </span>
+                            </div>
                         </div>
                     </form>
                 </div>

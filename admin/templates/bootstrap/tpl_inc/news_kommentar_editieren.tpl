@@ -47,7 +47,7 @@
                     </div>
                     <div class="col-sm-6 col-xl-auto">
                         <button name="newskommentarsavesubmit" type="submit" value="{__('save')}" class="btn btn-primary btn-block">
-                            <i class="fa fa-save"></i> {__('save')}
+                            {__('saveWithIcon')}
                         </button>
                     </div>
                 </div>

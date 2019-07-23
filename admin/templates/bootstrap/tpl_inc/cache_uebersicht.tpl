@@ -67,7 +67,7 @@
                                 <th class="tleft"><label style="margin-bottom:0;" for="massaction-main-switch">{__('type')}</label></th>
                                 <th class="tleft">{__('description')}</th>
                                 <th class="tleft">{__('entries')}</th>
-                                <th class="tleft">{__('status')}</th>
+                                <th class="tleft">{__('active')}</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -89,13 +89,11 @@
                                     </td>
                                     <td>{$cg.key_count}</td>
                                     <td>
-                                        <h4 class="label-wrap">
-                                            {if $cache_enabled === false || $cg.value|in_array:$disabled_caches}
-                                                <span class="label label-danger inactive">{__('inactive')}</span>
-                                            {else}
-                                                <span class="label label-success active">{__('active')}</span>
-                                            {/if}
-                                        </h4>
+                                        {if $cache_enabled === false || $cg.value|in_array:$disabled_caches}
+                                            <span class="fal fa-times text-danger"></span>
+                                        {else}
+                                            <span class="fal fa-check text-success"></span>
+                                        {/if}
                                     </td>
                                 </tr>
                             {/foreach}
@@ -495,7 +493,7 @@
                             </div>
                             <div class="ml-auto col-sm-6 col-xl-auto">
                                 <button name="speichern" type="submit" value="{__('save')}" class="btn btn-primary btn-block">
-                                    <i class="fa fa-save"></i> {__('save')}
+                                    {__('saveWithIcon')}
                                 </button>
                             </div>
                         </div>

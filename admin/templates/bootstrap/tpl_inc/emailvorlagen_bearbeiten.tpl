@@ -234,7 +234,7 @@
                     </div>
                     <div class="col-sm-6 col-xl-auto">
                         <button type="submit" name="continue" value="0" class="btn btn-primary btn-block">
-                            <i class="fa fa-save"></i> {__('save')}
+                            {__('saveWithIcon')}
                         </button>
                     </div>
                 </div>

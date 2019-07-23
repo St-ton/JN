@@ -95,7 +95,7 @@
             <div class="row">
                 <div class="ml-auto col-sm-6 col-xl-auto">
                     <button class="btn btn-primary btn-block" name="speichern" type="submit">
-                        <i class="fa fa-save"></i> {__('save')}
+                        {__('saveWithIcon')}
                     </button>
                 </div>
             </div>

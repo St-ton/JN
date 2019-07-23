@@ -168,7 +168,7 @@
                 </div>
             </div>
         <p class="submit btn-group">
-            <button type="submit" value="{__('save')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
+            <button type="submit" value="{__('save')}" class="btn btn-primary">{__('saveWithIcon')}</button>
             <a href="zahlungsarten.php" title="{__('cancel')}" class="btn btn-danger"><i class="fa fa-exclamation"></i> {__('cancel')}</a>
         </p>
     </form>

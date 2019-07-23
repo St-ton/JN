@@ -196,7 +196,7 @@
                                 </div>
                                 <div class=" col-sm-6 col-xl-auto">
                                     <button name="speichern" type="button" value="{__('save')}" onclick="document.news.submit();" class="btn btn-primary btn-block">
-                                        <i class="fa fa-save"></i> {__('save')}
+                                        {__('saveWithIcon')}
                                     </button>
                                 </div>
                             </div>

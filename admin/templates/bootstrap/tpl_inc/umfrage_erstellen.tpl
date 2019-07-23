@@ -130,7 +130,7 @@ function clearInput(inputField) {ldelim}
                     </div>
                     <div class="col-sm-6 col-xl-auto">
                         <button class="btn btn-primary btn-block" name="speichern" type="button" value="{__('save')}" onclick="document.umfrage.submit();">
-                            <i class="fa fa-save"></i> {__('save')}
+                            {__('saveWithIcon')}
                         </button>
                     </div>
                 </div>

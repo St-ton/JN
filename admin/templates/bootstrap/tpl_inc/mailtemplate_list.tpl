@@ -20,15 +20,13 @@
 						<td>{__('name_'|cat:$template->getModuleID())}</td>
 						<td class="tcenter">{$template->getType()}</td>
 						<td class="tcenter">
-							<h4 class="label-wrap">
-								{if $template->getActive()}
-									<span class="label label-success success">{__('active')}</span>
-								{elseif $template->getHasError()}
-									<span class="label label-danger">{__('faulty')}</span>
-								{else}
-									<span class="label label-info error">{__('inactive')}</span>
-								{/if}
-							</h4>
+							{if $template->getActive()}
+								<span class="fal fa-check text-success"></span>
+							{elseif $template->getHasError()}
+								<span class="label text-danger">{__('faulty')}</span>
+							{else}
+								<span class="fal fa-times text-danger"></span>
+							{/if}
 						</td>
 						<td class="tcenter">
 							<form method="post" action="emailvorlagen.php">

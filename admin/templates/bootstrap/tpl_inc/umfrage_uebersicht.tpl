@@ -64,7 +64,13 @@
                                                             {$oUmfrage->cKundengruppe_arr|implode:','}
                                                         </td>
                                                         <td>{$oUmfrage->dGueltigVon_de}-{if $oUmfrage->dGueltigBis === null}{__('umfrageInfinite')}{else}{$oUmfrage->dGueltigBis_de}{/if}</td>
-                                                        <td>{$oUmfrage->nAktiv}</td>
+                                                        <td>
+                                                            {if $oUmfrage->nAktiv}
+                                                                <i class="fal fa-check text-success"></i>
+                                                            {else}
+                                                                <i class="fal fa-times text-danger"></i>
+                                                            {/if}
+                                                        </td>
                                                         <td>{$oUmfrage->nAnzahlFragen}</td>
                                                         <td>{$oUmfrage->dErstellt_de}</td>
                                                         <td>

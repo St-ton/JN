@@ -348,7 +348,7 @@ $(document).ready(function() {
                     {/if}
                     <input type="hidden" name="save" value="1" />
                     <button type="submit" class="btn btn-primary btn-block">
-                        <i class="fa fa-save"></i> {__('save')}
+                        {__('saveWithIcon')}
                     </button>
                 </div>
             </div>

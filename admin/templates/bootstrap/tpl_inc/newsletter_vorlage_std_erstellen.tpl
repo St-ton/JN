@@ -385,11 +385,11 @@
             </div>
             <div class="card-footer save-wrapper">
                 {if (isset($oNewslettervorlageStd->kNewsletterVorlage) && $oNewslettervorlageStd->kNewsletterVorlage > 0) || (isset($cPostVar_arr.kNewslettervorlage) && $cPostVar_arr.kNewslettervorlage > 0)}
-                    <a class="btn btn-default" href="newsletter.php?tab=newslettervorlagen&token={$smarty.session.jtl_token}"><i class="fa fa-angle-double-left"></i> {__('back')}</a>
+                    <a class="btn btn-default" href="newsletter.php?tab=newslettervorlagen&token={$smarty.session.jtl_token}">{__('goBack')}</a>
                 {else}
-                    <a class="btn btn-default" href="newsletter.php?tab=newslettervorlagenstd&token={$smarty.session.jtl_token}"><i class="fa fa-angle-double-left"></i> {__('back')}</a>
+                    <a class="btn btn-default" href="newsletter.php?tab=newslettervorlagenstd&token={$smarty.session.jtl_token}">{__('goBack')}</a>
                 {/if}
-                <button class="btn btn-primary" name="speichern" type="submit" value="{__('save')}"><i class="fa fa-save"></i> {__('save')}</button>
+                <button class="btn btn-primary" name="speichern" type="submit" value="{__('save')}">{__('saveWithIcon')}</button>
             </div>
         </div>
     </form>

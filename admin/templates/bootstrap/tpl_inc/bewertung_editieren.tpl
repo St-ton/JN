@@ -42,7 +42,7 @@
                 <div class="save-wrapper card-footer">
                     <div class="row">
                         <div class="ml-auto col-sm-6 col-xl-auto">
-                            <button name="bewertungsubmit" type="submit" value="{__('save')}" class="btn btn-primary btn-block"><i class="fa fa-save"></i> {__('save')}</button>
+                            <button name="bewertungsubmit" type="submit" value="{__('save')}" class="btn btn-primary btn-block">{__('saveWithIcon')}</button>
                         </div>
                     </div>
                 </div>

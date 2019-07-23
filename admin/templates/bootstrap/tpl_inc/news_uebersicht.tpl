@@ -197,7 +197,9 @@
                                                 {/foreach}
                                             </td>
                                             <td class="TD5">{$oNews->getDateValidFromLocalizedCompat()}</td>
-                                            <td class="tcenter"><i class="fal fa-{if $oNews->getIsActive()}check text-success{else}times text-danger{/if}"></i></td>
+                                            <td class="tcenter">
+                                                <i class="fal fa-{if $oNews->getIsActive()}check text-success{else}times text-danger{/if}"></i>
+                                            </td>
                                             <td class="tcenter">
                                                 {if $oNews->getCommentCount() > 0}
                                                     <a href="news.php?news=1&nd=1&kNews={$oNews->getID()}&tab=aktiv&token={$smarty.session.jtl_token}">{$oNews->getCommentCount()}</a>
@@ -302,7 +304,9 @@
                                                 <label for="newscat-{$oNewsKategorie->getID()}">{$oNewsKategorie->getName()|default:'???'}</label>
                                             </td>
                                             <td class="tcenter">{$oNewsKategorie->getSort()}</td>
-                                            <td class="tcenter"><i class="fal fa-{if $oNewsKategorie->getIsActive()}check text-success{else}times text-danger{/if}"></i></td>
+                                            <td class="tcenter">
+                                                <i class="fal fa-{if $oNewsKategorie->getIsActive()}check text-success{else}times text-danger{/if}"></i>
+                                            </td>
                                             <td class="tcenter">{$oNewsKategorie->getDateLastModified()->format('d.m.Y H:i')}</td>
                                             <td class="tcenter">
                                                 <div class="btn-group">
@@ -422,7 +426,7 @@
                             <div class="row">
                                 <div class="ml-auto col-sm-6 col-xl-auto">
                                     <button type="submit" value="{__('save')}" class="btn btn-primary btn-block">
-                                        <i class="fa fa-save"></i> {__('save')}
+                                        {__('saveWithIcon')}
                                     </button>
                                 </div>
                             </div>

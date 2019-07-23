@@ -1848,3 +1848,5 @@ msgstr "Mitteilungen"
 msgid "favouritesHeader"
 msgstr "Favoriten"
 
+msgid "saveWithIcon"
+msgstr "<i class=\"fal fa-save\"></i> Speichern"

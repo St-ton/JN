@@ -718,7 +718,7 @@ function checkSelect(selectBox) {ldelim}
                             {if isset($oUmfrageFrage->kUmfrageFrage) && $oUmfrageFrage->kUmfrageFrage > 0}
                                 <div class="ml-auto col-sm-6 col-xl-auto">
                                     <button class="btn btn-primary btn-block" name="speichern" type="submit" value="{__('save')}">
-                                        <i class="fa fa-save"></i> {__('save')}
+                                        {__('saveWithIcon')}
                                     </button>
                                 </div>
                             {else}

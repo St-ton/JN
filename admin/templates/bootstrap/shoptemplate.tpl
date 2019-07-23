@@ -215,7 +215,7 @@
                         <input type="hidden" name="ordner" value="{$oTemplate->cOrdner}" />
                         <input type="hidden" name="admin" value="{$admin}" />
                         <button type="submit" class="btn btn-primary btn-block">
-                            {if isset($smarty.get.activate)}<i class="fa fa-share"></i> {__('activateTemplate')}{else}<i class="fa fa-save"></i> {__('save')}{/if}
+                            {if isset($smarty.get.activate)}<i class="fa fa-share"></i> {__('activateTemplate')}{else}{__('saveWithIcon')}{/if}
                         </button>
                     </div>
                 </div>

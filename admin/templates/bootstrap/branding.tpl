@@ -120,7 +120,7 @@
                         <div class="row">
                             <div class="ml-auto col-sm-6 col-xl-auto submit">
                                 <button type="submit" value="{__('save')}" class="btn btn-primary btn-block">
-                                    <i class="fa fa-save"></i> {__('save')}
+                                    {__('saveWithIcon')}
                                 </button>
                             </div>
                         </div>

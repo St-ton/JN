@@ -444,7 +444,7 @@
         <div class="row">
             <div class="ml-auto col-sm-6 col-xl-auto">
                 <a class="btn btn-danger btn-block mb-3" href="banner.php" id="cancel">
-                    <i class="fa fa-angle-double-left"></i> {__('back')}
+                    {__('goBack')}
                 </a>
             </div>
             <div class="col-sm-6 col-xl-auto">

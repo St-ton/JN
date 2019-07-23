@@ -267,7 +267,7 @@
                             </div>
                             <div class="ol-sm-6 col-xl-auto">
                                 <button name="action" value="save" class="btn btn-primary btn-block">
-                                    <i class="fa fa-save"></i> {__('save')}
+                                    {__('saveWithIcon')}
                                 </button>
                             </div>
                         </div>

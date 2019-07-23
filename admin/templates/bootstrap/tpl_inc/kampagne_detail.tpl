@@ -243,7 +243,7 @@
         
     </div>
     <div class="card-footer">
-        <a href="kampagne.php?tab=globalestats&token={$smarty.session.jtl_token}" class="btn btn-default"><i class="fa fa-angle-double-left"></i> {__('back')}</a>
+        <a href="kampagne.php?tab=globalestats&token={$smarty.session.jtl_token}" class="btn btn-default">{__('goBack')}</a>
     </div>
 </div>
 

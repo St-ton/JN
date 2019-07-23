@@ -116,7 +116,7 @@ cDokuURL=__('auswahlassistentURL')}
                             <a href="auswahlassistent.php" class="btn btn-outline-primary btn-block mb-3">{__('goBack')}</a>
                         </div>
                         <div class="col-sm-6 col-xl-auto">
-                            <button name="speichernSubmit" type="submit" class="btn btn-primary btn-block"><i class="fa fa-save"></i> {__('save')}</button>
+                            <button name="speichernSubmit" type="submit" class="btn btn-primary btn-block">{__('saveWithIcon')}</button>
                         </div>
                     </div>
                 </div>

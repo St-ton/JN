@@ -77,12 +77,12 @@
             <div class=row>
                 <div class="ml-auto col-sm-6 col-xl-auto">
                     <a href="kampagne.php?tab=uebersicht" class="button btn btn-outline-primary btn-block">
-                        <i class="fa fa-angle-double-left"></i> {__('back')}
+                        {__('goBack')}
                     </a>
                 </div>
                 <div class="col-sm-6 col-xl-auto">
                     <button name="submitSave" type="submit" value="{__('save')}" class="btn btn-primary btn-block mb-3">
-                        <i class="fa fa-save"></i> {__('save')}
+                        {__('saveWithIcon')}
                     </button>
                 </div>
             </div>

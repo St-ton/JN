@@ -2698,6 +2698,9 @@ h2 .btn-group {
 .card-header .heading-right {
     display: table-cell;
     vertical-align: middle;
+    .btn {
+        white-space: nowrap;
+    }
 }
 
 .card-header .heading-right > .btn-group {
@@ -3171,5 +3174,26 @@ div.markdown thead tr td {
         margin: 0.75rem 0 0;
         padding: 0;
         border: 2px solid transparent;
+    }
+}
+.modal-header {
+  flex-direction: row-reverse;
+}
+#articlePicker-result-list .list-group-item {
+  padding: 0.5rem;
+}
+#articlePicker-result-list .list-group-item .list-group-item-text {
+  margin: 0;
+}
+#settings form.settings {
+    column-count: 2;
+    column-width: 450px;
+    column-gap: 2rem;
+    .card {
+        break-inside: avoid;
+    }
+    .save-wrapper {
+        column-span: all;
+        margin-top: 2rem;
     }
 }

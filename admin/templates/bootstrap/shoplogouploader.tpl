@@ -37,7 +37,7 @@
                             theme: 'fas',
                             language: '{$uploaderLang}',
                             browseOnZoneClick:     true,
-                            maxFileSize: 100000,
+                            maxFileSize: 500,
                             maxFilesNum: 1,
                             {if $ShopLogo|strlen > 0}
                             initialPreviewConfig: [
@@ -47,7 +47,7 @@
                                 }
                             ],
                             initialPreview: [
-                                '<img src="{$ShopLogoURL}" class="file-preview-image" alt="Logo" title="Logo" />'
+                                '<img src="{$ShopLogoURL}" class="file-preview-image img-fluid" alt="Logo" title="Logo" />'
                             ]
                             {/if}
                         }).on("filebrowse", function(event, files) {
@@ -62,6 +62,10 @@
                             } else {
                                 $('#logo-upload-error').show().removeClass('hidden');
                             }
+                        }).on('fileuploaderror', function(event, data, msg) {
+                            $('#logo-upload-error').show().removeClass('hidden');
+                            $('#logo-upload-error').append('<p style="margin-top:20px">'+msg+'</p>')
+                            console.log('File uploaded', data.previewId, data.index, data.fileId, msg);
                         });
                     </script>
                     <div id="logo-upload-success" class="alert alert-info hidden">{__('successLogoUpload')}</div>

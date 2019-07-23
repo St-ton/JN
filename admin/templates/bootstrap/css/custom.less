@@ -320,6 +320,7 @@
                 padding: 0;
                 padding-left: 1em;
                 height: 100%;
+                list-style: none;
 
                 > li {
                     height: 100%;
@@ -2279,17 +2280,6 @@ body.modal-open nav {
     color: rgba(255,255,255,0.3);
 }
 
-.grid {
-}
-
-.grid-item {
-    width: 33%;
-}
-//
-//.grid-item .panel {
-//    margin: 10px;
-//}
-
 .modal-backdrop.in {
     opacity: .85;
 }
@@ -3125,4 +3115,70 @@ div.markdown thead tr td {
 //override in app.css
 .content-header {
     margin-top: 0;
+}
+.kv-upload-progress {
+    margin-bottom: 1rem;
+}
+.file-preview {
+    border-radius: 0.125rem;
+    border-style: dashed;
+    margin-bottom: 1rem;
+    padding: 1.5rem 1.5rem 0;
+
+    .fileinput-remove {
+        top: 1rem;
+        right: 1rem;
+    }
+    .krajee-default.file-preview-frame {
+        border: 0;
+        margin: 0;
+        box-shadow: none;
+        padding: 0;
+        float: none;
+        &:hover {
+            box-shadow: none;
+            border: 0;
+        }
+        .kv-file-content {
+            width: 100%;
+            height: auto;
+        }
+    }
+    .file-upload-indicator {
+        display: none;
+    }
+}
+.file-drop-zone{
+    margin: 0.75rem 0 0;
+    padding: 0;
+    border: 2px solid transparent;
+
+    &.clickable:hover {
+        border: 2px solid transparent;
+    }
+    .file-drop-zone-title {
+        padding: 1.5rem 1rem;
+    }
+}
+.grid {
+    column-count: 2;
+    .grid-item {
+        break-inside: avoid;
+        width: 100%;
+    }
+}
+.file-input .input-grp-append .btn-file,
+#shoplogo-upload {
+    cursor: pointer;
+}
+.file-preview {
+    border-radius: 0.125rem;
+    border-style: dashed;
+    margin-bottom: 1rem;
+    padding: 1.5rem 1.5rem 0;
+}
+.file-drop-zone {
+    margin: 0.75rem 0 0;
+    padding: 0;
+    border: 2px solid transparent;
 }

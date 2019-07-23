@@ -12,39 +12,55 @@
                 <input type="hidden" name="upload" value="1" />
                 <div class="col-xs-12">
                     <input name="shopLogo" id="shoplogo-upload" type="file" class="file" accept="image/*">
+                    {if isset($language) && $language === 'de-DE'}
+                        {assign var=uploaderLang value='de'}
+                    {else}
+                        {assign var=uploaderLang value='LANG'}
+                    {/if}
                     <script>
-                        $('#shoplogo-upload').fileinput({ldelim}
+                        $('#shoplogo-upload').fileinput({
                             uploadUrl: '{$shopURL}/{$PFAD_ADMIN}shoplogouploader.php?token={$smarty.session.jtl_token}',
+                            showUpload: false,
+                            showRemove: false,
+                            showCancel: false,
+                            uploadAsync: false,
+                            showPreview: true,
+                            fileActionSettings: {
+                                showZoom: false,
+                                showRemove: false,
+                                showDrag: false
+                            },
                             allowedFileExtensions : ['jpg', 'jpeg', 'jpe', 'gif', 'png', 'bmp'],
                             overwriteInitial: true,
                             deleteUrl: '{$shopURL}/{$PFAD_ADMIN}shoplogouploader.php?token={$smarty.session.jtl_token}',
                             initialPreviewCount: 1,
-                            uploadAsync: false,
-                            showPreview: true,
-                            language: 'de',
+                            theme: 'fas',
+                            language: '{$uploaderLang}',
+                            browseOnZoneClick:     true,
                             maxFileSize: 100000,
                             maxFilesNum: 1,
-                            fileActionSettings: {ldelim}
-                                showDrag: false
-                            {rdelim}{if $ShopLogo|strlen > 0},
+                            {if $ShopLogo|strlen > 0}
                             initialPreviewConfig: [
-                                {ldelim}
+                                {
                                     url: '{$shopURL}/{$PFAD_ADMIN}shoplogouploader.php',
-                                    extra: {ldelim}logo: '{$ShopLogo}'{rdelim}
-                                {rdelim}
+                                    extra: { logo: '{$ShopLogo}' }
+                                }
                             ],
                             initialPreview: [
                                 '<img src="{$ShopLogoURL}" class="file-preview-image" alt="Logo" title="Logo" />'
                             ]
                             {/if}
-                        {rdelim}).on('fileuploaded', function(event, data) {ldelim}
-                            if (data.response.status === 'OK') {ldelim}
+                        }).on("filebrowse", function(event, files) {
+                            $('#shoplogo-upload').fileinput('clear');
+                        }).on("filebatchselected", function(event, files) {
+                            $('#shoplogo-upload').fileinput("upload");
+                        }).on('filebatchuploadsuccess', function(event, data) {
+                            if (data.response.status === 'OK') {
                                 $('#logo-upload-success').show().removeClass('hidden');
-                                $('.kv-upload-progress').addClass('hide');
-                            {rdelim} else {ldelim}
+                            } else {
                                 $('#logo-upload-error').show().removeClass('hidden');
-                            {rdelim}
-                        {rdelim});
+                            }
+                        });
                     </script>
                     <div id="logo-upload-success" class="alert alert-info hidden">{__('successLogoUpload')}</div>
                     <div id="logo-upload-error" class="alert alert-danger hidden">{{__('errorLogoUpload')}|sprintf:{$smarty.const.PFAD_SHOPLOGO}}</div>

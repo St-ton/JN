@@ -116,10 +116,15 @@
                                             <td class="TD4">{$oNewsKommentar->getText()|truncate:150:'...'}</td>
                                             <td class="tcenter">{$oNewsKommentar->getDateCreatedCompat()}</td>
                                             <td class="tcenter">
-                                                <a href="news.php?news=1&kNews={$oNewsKommentar->getNewsID()}&kNewsKommentar={$oNewsKommentar->getID()}&nkedit=1&tab=inaktiv&token={$smarty.session.jtl_token}"
-                                                   class="btn btn-primary btn-circle" title="{__('modify')}">
-                                                    <i class="fal fa-edit"></i>
-                                                </a>
+                                                <div class="btn-group">
+                                                    <a href="news.php?news=1&kNews={$oNewsKommentar->getNewsID()}&kNewsKommentar={$oNewsKommentar->getID()}&nkedit=1&tab=inaktiv&token={$smarty.session.jtl_token}"
+                                                       class="btn btn-link px-2" title="{__('modify')}">
+                                                        <span class="icon-hover">
+                                                            <span class="fal fa-edit"></span>
+                                                            <span class="fas fa-edit"></span>
+                                                        </span>
+                                                    </a>
+                                                </div>
                                             </td>
                                         </tr>
                                     {/foreach}
@@ -202,14 +207,22 @@
                                             </td>
                                             <td class="tcenter">{$oNews->getDateCompat()}</td>
                                             <td class="tcenter">
-                                                <a href="news.php?news=1&nd=1&kNews={$oNews->getID()}&tab=aktiv&token={$smarty.session.jtl_token}"
-                                                   class="btn btn-default btn-circle" title="{__('preview')}">
-                                                    <i class="fa fa-eye"></i>
-                                                </a>
-                                                <a href="news.php?news=1&news_editieren=1&kNews={$oNews->getID()}&tab=aktiv&token={$smarty.session.jtl_token}"
-                                                   class="btn btn-primary btn-circle" title="{__('modify')}">
-                                                    <i class="fal fa-edit"></i>
-                                                </a>
+                                                <div class="btn-group">
+                                                    <a href="news.php?news=1&nd=1&kNews={$oNews->getID()}&tab=aktiv&token={$smarty.session.jtl_token}"
+                                                       class="btn btn-link px-2" title="{__('preview')}">
+                                                        <span class="icon-hover">
+                                                            <span class="fal fa-eye"></span>
+                                                            <span class="fas fa-eye"></span>
+                                                        </span>
+                                                    </a>
+                                                    <a href="news.php?news=1&news_editieren=1&kNews={$oNews->getID()}&tab=aktiv&token={$smarty.session.jtl_token}"
+                                                       class="btn btn-link px-2" title="{__('modify')}">
+                                                        <span class="icon-hover">
+                                                            <span class="fal fa-edit"></span>
+                                                            <span class="fas fa-edit"></span>
+                                                        </span>
+                                                    </a>
+                                                </div>
                                             </td>
                                         </tr>
                                     {/foreach}
@@ -292,10 +305,15 @@
                                             <td class="tcenter"><i class="fal fa-{if $oNewsKategorie->getIsActive()}check text-success{else}times text-danger{/if}"></i></td>
                                             <td class="tcenter">{$oNewsKategorie->getDateLastModified()->format('d.m.Y H:i')}</td>
                                             <td class="tcenter">
-                                                <a href="news.php?news=1&newskategorie_editieren=1&kNewsKategorie={$oNewsKategorie->getID()}&tab=kategorien&token={$smarty.session.jtl_token}"
-                                                   class="btn btn-primary btn-circle" title="{__('modify')}">
-                                                    <i class="fal fa-edit"></i>
-                                                </a>
+                                                <div class="btn-group">
+                                                    <a href="news.php?news=1&newskategorie_editieren=1&kNewsKategorie={$oNewsKategorie->getID()}&tab=kategorien&token={$smarty.session.jtl_token}"
+                                                       class="btn btn-link px-2" title="{__('modify')}">
+                                                        <span class="icon-hover">
+                                                            <span class="fal fa-edit"></span>
+                                                            <span class="fas fa-edit"></span>
+                                                        </span>
+                                                    </a>
+                                                </div>
                                             </td>
                                         </tr>
                                         {include 'tpl_inc/newscategories_recursive.tpl' children=$oNewsKategorie->getChildren() level=$oNewsKategorie->getLevel()}

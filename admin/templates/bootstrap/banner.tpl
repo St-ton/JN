@@ -504,9 +504,26 @@
                                     <form action="banner.php" method="post">
                                         {$jtl_token}
                                         <input type="hidden" name="id" value="{$oBanner->kImageMap}" />
-                                        <button class="btn btn-danger btn-circle" name="action" value="delete" title="{__('delete')}"><i class="fas fa-trash-alt"></i></button>
-                                        <button class="btn btn-default btn-circle" name="action" value="area" title="{__('actionLink')}"><i class="fa fa-link"></i></button>
-                                        <button class="btn btn-primary btn-circle" name="action" value="edit" title="{__('edit')}"><i class="fal fa-edit"></i></button>
+                                        <div class="btn-group">
+                                            <button class="btn btn-link px-2" name="action" value="delete" title="{__('delete')}">
+                                                <span class="icon-hover">
+                                                    <span class="fal fa-trash-alt"></span>
+                                                    <span class="fas fa-trash-alt"></span>
+                                                </span>
+                                            </button>
+                                            <button class="btn btn-link px-2" name="action" value="area" title="{__('actionLink')}">
+                                                <span class="icon-hover">
+                                                    <span class="fal fa-link"></span>
+                                                    <span class="fas fa-link"></span>
+                                                </span>
+                                            </button>
+                                            <button class="btn btn-link px-2" name="action" value="edit" title="{__('edit')}">
+                                                <span class="icon-hover">
+                                                    <span class="fal fa-edit"></span>
+                                                    <span class="fas fa-edit"></span>
+                                                </span>
+                                            </button>
+                                        </div>
                                     </form>
                                 </td>
                             </tr>

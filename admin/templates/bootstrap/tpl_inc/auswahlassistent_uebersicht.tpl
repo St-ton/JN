@@ -64,17 +64,25 @@
                                                         {/foreach}
                                                     </td>
                                                     <td class="tright" width="265">
-                                                        {if isset($oAuswahlAssistentGruppe->oAuswahlAssistentFrage_arr) && $oAuswahlAssistentGruppe->oAuswahlAssistentFrage_arr|@count > 0}
-                                                            <a href="#" class="btn btn-default btn-circle button down"
-                                                               id="btn_toggle_{$oAuswahlAssistentGruppe->kAuswahlAssistentGruppe}"
-                                                               title="{__('showQuestions')}">
-                                                                <i class="fa fa-question-circle-o"></i>
-                                                            </a>
-                                                        {/if}
+                                                        <div class="btn-group">
+                                                            {if isset($oAuswahlAssistentGruppe->oAuswahlAssistentFrage_arr) && $oAuswahlAssistentGruppe->oAuswahlAssistentFrage_arr|@count > 0}
+                                                                <a href="#" class="btn btn-link px-2 down"
+                                                                   id="btn_toggle_{$oAuswahlAssistentGruppe->kAuswahlAssistentGruppe}"
+                                                                   title="{__('showQuestions')}">
+                                                                    <span class="icon-hover">
+                                                                        <span class="fal fa-question-circle"></span>
+                                                                        <span class="fas fa-question-circle"></span>
+                                                                    </span>
+                                                                </a>
+                                                            {/if}
                                                             <a href="auswahlassistent.php?a=editGrp&g={$oAuswahlAssistentGruppe->kAuswahlAssistentGruppe}&token={$smarty.session.jtl_token}"
-                                                               class="btn btn-primary btn-circle edit" title="{__('modify')}">
-                                                                <i class="fal fa-edit"></i>
+                                                               class="btn btn-link px-2 edit" title="{__('modify')}">
+                                                                <span class="icon-hover">
+                                                                    <span class="fal fa-edit"></span>
+                                                                    <span class="fas fa-edit"></span>
+                                                                </span>
                                                             </a>
+                                                        </div>
                                                     </td>
                                                 </tr>
                                                 {if isset($oAuswahlAssistentGruppe->oAuswahlAssistentFrage_arr) && $oAuswahlAssistentGruppe->oAuswahlAssistentFrage_arr|@count > 0}
@@ -102,12 +110,20 @@
                                                                             <td class="tcenter">{$oAuswahlAssistentFrage->cName}</td>
                                                                             <td class="tcenter">{$oAuswahlAssistentFrage->nSort}</td>
                                                                             <td class="tright" style="width:250px">
-                                                                                <a href="auswahlassistent.php?a=delQuest&q={$oAuswahlAssistentFrage->kAuswahlAssistentFrage}&token={$smarty.session.jtl_token}" class="btn btn-danger btn-circle remove">
-                                                                                    <i class="fas fa-trash-alt"></i>
-                                                                                </a>
-                                                                                <a href="auswahlassistent.php?a=editQuest&q={$oAuswahlAssistentFrage->kAuswahlAssistentFrage}&token={$smarty.session.jtl_token}" class="btn btn-default btn-circle edit">
-                                                                                    <i class="fal fa-edit"></i>
-                                                                                </a>
+                                                                                <div class="btn-group">
+                                                                                    <a href="auswahlassistent.php?a=delQuest&q={$oAuswahlAssistentFrage->kAuswahlAssistentFrage}&token={$smarty.session.jtl_token}" class="btn btn-link px-2 remove">
+                                                                                        <span class="icon-hover">
+                                                                                            <span class="fal fa-trash-alt"></span>
+                                                                                            <span class="fas fa-trash-alt"></span>
+                                                                                        </span>
+                                                                                    </a>
+                                                                                    <a href="auswahlassistent.php?a=editQuest&q={$oAuswahlAssistentFrage->kAuswahlAssistentFrage}&token={$smarty.session.jtl_token}" class="btn btn-link px-2 edit">
+                                                                                        <span class="icon-hover">
+                                                                                            <span class="fal fa-edit"></span>
+                                                                                            <span class="fas fa-edit"></span>
+                                                                                        </span>
+                                                                                    </a>
+                                                                                </div>
                                                                             </td>
                                                                         </tr>
                                                                     {/foreach}

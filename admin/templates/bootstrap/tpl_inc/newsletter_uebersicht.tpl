@@ -408,21 +408,41 @@
                                                 </td>
                                                 <td>
                                                     <div class="btn-group">
-                                                        <a class="btn btn-default"
+                                                        <a class="btn btn-link px-2"
                                                            href="newsletter.php?&vorschau={$oNewsletterVorlage->kNewsletterVorlage}&iframe=1&tab=newslettervorlagen&token={$smarty.session.jtl_token}"
-                                                           title="{__('preview')}"><i class="fa fa-eye"></i></a>
+                                                           title="{__('preview')}">
+                                                            <span class="icon-hover">
+                                                                <span class="fal fa-eye"></span>
+                                                                <span class="fas fa-eye"></span>
+                                                            </span>
+                                                        </a>
                                                         {if $oNewsletterVorlage->kNewslettervorlageStd > 0}
-                                                            <a class="btn btn-default"
+                                                            <a class="btn btn-link px-2"
                                                                href="newsletter.php?newslettervorlagenstd=1&editieren={$oNewsletterVorlage->kNewsletterVorlage}&tab=newslettervorlagen&token={$smarty.session.jtl_token}"
-                                                               title="{__('modify')}"><i class="fal fa-edit"></i></a>
+                                                               title="{__('modify')}">
+                                                                <span class="icon-hover">
+                                                                    <span class="fal fa-edit"></span>
+                                                                    <span class="fas fa-edit"></span>
+                                                                </span>
+                                                            </a>
                                                         {else}
-                                                            <a class="btn btn-default"
+                                                            <a class="btn btn-link px-2"
                                                                href="newsletter.php?newslettervorlagen=1&editieren={$oNewsletterVorlage->kNewsletterVorlage}&tab=newslettervorlagen&token={$smarty.session.jtl_token}"
-                                                               title="{__('modify')}"><i class="fal fa-edit"></i></a>
+                                                               title="{__('modify')}">
+                                                                <span class="icon-hover">
+                                                                    <span class="fal fa-edit"></span>
+                                                                    <span class="fas fa-edit"></span>
+                                                                </span>
+                                                            </a>
                                                         {/if}
-                                                        <a class="btn btn-default"
+                                                        <a class="btn btn-link px-2"
                                                            href="newsletter.php?newslettervorlagen=1&vorbereiten={$oNewsletterVorlage->kNewsletterVorlage}&tab=newslettervorlagen&token={$smarty.session.jtl_token}"
-                                                           title="{__('newsletterprepare')}">{__('newsletterprepare')}</a>
+                                                           title="{__('newsletterprepare')}">
+                                                            <span class="icon-hover">
+                                                                <span class="fal fa-newspaper"></span>
+                                                                <span class="fas fa-newspaper"></span>
+                                                            </span>
+                                                        </a>
                                                     </div>
                                                 </td>
                                             </tr>

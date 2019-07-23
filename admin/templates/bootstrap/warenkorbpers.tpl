@@ -68,8 +68,18 @@
                                             <td class="tcenter">{$oKunde->Datum}</td>
                                             <td class="tcenter">
                                                 <div class="btn-group">
-                                                    <a href="warenkorbpers.php?a={$oKunde->kKunde}&token={$smarty.session.jtl_token}" class="btn btn-default">{__('warenkorbpersShow')}</a>
-                                                    <a href="warenkorbpers.php?l={$oKunde->kKunde}&token={$smarty.session.jtl_token}" class="btn btn-danger"><i class="fas fa-trash-alt"></i></a>
+                                                    <a href="warenkorbpers.php?l={$oKunde->kKunde}&token={$smarty.session.jtl_token}" class="btn btn-link px-2">
+                                                        <span class="icon-hover">
+                                                            <span class="fal fa-trash-alt"></span>
+                                                            <span class="fas fa-trash-alt"></span>
+                                                        </span>
+                                                    </a>
+                                                    <a href="warenkorbpers.php?a={$oKunde->kKunde}&token={$smarty.session.jtl_token}" class="btn btn-link px-2">
+                                                        <span class="icon-hover">
+                                                            <span class="fal fa-eye"></span>
+                                                            <span class="fas fa-eye"></span>
+                                                        </span>
+                                                    </a>
                                                 </div>
                                             </td>
                                         </tr>

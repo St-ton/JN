@@ -40,16 +40,25 @@
                             {if $linkgruppe->getID() > 0}
                                 <input type="hidden" name="kLinkgruppe" value="{$linkgruppe->getID()}">
                             {/if}
-                            <div class="float-right">
+                            <div class="btn-group float-right">
                                 {if $linkgruppe->getID() > 0}
-                                    <button name="action" value="delete-linkgroup" class="btn btn-danger btn-circle" title="{__('linkGroup')} {__('delete')}">
-                                        <i class="fas fa-trash-alt"></i>
+                                    <button name="action" value="delete-linkgroup" class="btn btn-link px-2" title="{__('linkGroup')} {__('delete')}">
+                                        <span class="icon-hover">
+                                            <span class="fal fa-trash-alt"></span>
+                                            <span class="fas fa-trash-alt"></span>
+                                        </span>
                                     </button>
-                                    <button name="action" value="add-link-to-linkgroup" class="btn btn-default  btn-circle add" title="{__('addLink')}">
-                                        <i class="fal fa-plus"></i>
+                                    <button name="action" value="add-link-to-linkgroup" class="btn btn-link px-2 add" title="{__('addLink')}">
+                                        <span class="icon-hover">
+                                            <span class="fal fa-plus"></span>
+                                            <span class="fas fa-plus"></span>
+                                        </span>
                                     </button>
-                                    <button name="action" value="edit-linkgroup" class="btn btn-primary btn-circle" title="{__('modify')}">
-                                        <i class="fal fa-edit"></i>
+                                    <button name="action" value="edit-linkgroup" class="btn btn-link px-2" title="{__('modify')}">
+                                        <span class="icon-hover">
+                                            <span class="fal fa-edit"></span>
+                                            <span class="fas fa-edit"></span>
+                                        </span>
                                     </button>
                                 {/if}
                             </div>

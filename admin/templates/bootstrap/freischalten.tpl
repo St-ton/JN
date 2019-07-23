@@ -109,10 +109,15 @@
                                             <td class="tcenter">{$oBewertung->nSterne}</td>
                                             <td class="tcenter">{$oBewertung->Datum}</td>
                                             <td class="tcenter">
-                                                <a class="btn btn-default btn-sm" title="{__('modify')}"
-                                                   href="bewertung.php?a=editieren&kBewertung={$oBewertung->kBewertung}&nFZ=1&token={$smarty.session.jtl_token}">
-                                                    <i class="fal fa-edit"></i>
-                                                </a>
+                                                <div class="btn-group">
+                                                    <a class="btn btn-link px-2" title="{__('modify')}"
+                                                       href="bewertung.php?a=editieren&kBewertung={$oBewertung->kBewertung}&nFZ=1&token={$smarty.session.jtl_token}">
+                                                        <span class="icon-hover">
+                                                            <span class="fal fa-edit"></span>
+                                                            <span class="fas fa-edit"></span>
+                                                        </span>
+                                                    </a>
+                                                </div>
                                             </td>
                                         </tr>
                                         <tr>
@@ -196,21 +201,16 @@
                                         </tr>
                                     {/foreach}
                                     </tbody>
-                                    <tfoot>
-                                    <tr>
-                                        <td class="check">
-                                            <div class="custom-control custom-checkbox">
-                                                <input class="custom-control-input"  name="ALLMSGS" id="ALLMSGS2" type="checkbox" onclick="AllMessages(this.form);" />
-                                                <label class="custom-control-label" for="ALLMSGS2"></label>
-                                            </div>
-                                        </td>
-                                        <td colspan="5"><label for="ALLMSGS2">{__('globalSelectAll')}</label></td>
-                                    </tr>
-                                    </tfoot>
                                 </table>
                             </div>
                             <div class="save-wrapper">
                                 <div class="row">
+                                    <div class="col-sm-6 col-xl-auto text-left mb-3">
+                                        <div class="custom-control custom-checkbox">
+                                            <input class="custom-control-input"  name="ALLMSGS" id="ALLMSGS2" type="checkbox" onclick="AllMessages(this.form);" />
+                                            <label class="custom-control-label" for="ALLMSGS2">{__('globalSelectAll')}</label>
+                                        </div>
+                                    </div>
                                     <div class="col-sm-6 col-xl-auto mb-3">
                                         <div class="input-group" data-toggle="tooltip" data-placement="bottom" title='{__('freischaltenMappingDesc')}'>
                                             <span class="input-group-addon">
@@ -281,22 +281,19 @@
                                                 <td>{$oNewsKommentar->cBetreff|truncate:50:'...'}</td>
                                                 <td class="tcenter">{$oNewsKommentar->dErstellt_de}</td>
                                                 <td class="tcenter">
-                                                    <a class="btn btn-default btn-sm" title="{__('modify')}"
-                                                       href="news.php?news=1&kNews={$oNewsKommentar->kNews}&kNewsKommentar={$oNewsKommentar->kNewsKommentar}&nkedit=1&nFZ=1&token={$smarty.session.jtl_token}">
-                                                        <i class="fal fa-edit"></i>
-                                                    </a>
+                                                    <div class="btn-group">
+                                                        <a class="btn btn-link px-2" title="{__('modify')}"
+                                                           href="news.php?news=1&kNews={$oNewsKommentar->kNews}&kNewsKommentar={$oNewsKommentar->kNewsKommentar}&nkedit=1&nFZ=1&token={$smarty.session.jtl_token}">
+                                                            <span class="icon-hover">
+                                                                <span class="fal fa-edit"></span>
+                                                                <span class="fas fa-edit"></span>
+                                                            </span>
+                                                        </a>
+                                                    </div>
                                                 </td>
                                             </tr>
                                         {/foreach}
                                     </tbody>
-                                    <tfoot>
-                                        <tr>
-                                            <td class="check">
-
-                                            </td>
-                                            <td colspan="5"><label for="ALLMSGS4"></label></td>
-                                        </tr>
-                                    </tfoot>
                                 </table>
                             </div>
                             <div class="save-wrapper">

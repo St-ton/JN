@@ -246,9 +246,12 @@
                                value="{if !empty($cPostVar_arr.cArtikel)}{$cPostVar_arr.cArtikel}{elseif isset($oNewslettervorlageStd->cArtikel)}{$oNewslettervorlageStd->cArtikel}{/if}">
                     </div>
                     <div class="col-auto ml-sm-n4 order-2 order-sm-3">
-                        <button type="button" class="btn btn-default btn-circle" data-toggle="modal"
+                        <button type="button" class="btn btn-link px-2" data-toggle="modal"
                                 data-target="#articlePicker-modal" title="{__('labelSearchProduct')}">
-                            <i class="fal fa-edit"></i>
+                            <span class="icon-hover">
+                                <span class="fal fa-edit"></span>
+                                <span class="fas fa-edit"></span>
+                            </span>
                         </button>
                     </div>
                 </div>
@@ -285,7 +288,7 @@
                                value="{if !empty($cPostVar_arr.cHersteller)}{$cPostVar_arr.cHersteller}{elseif isset($oNewslettervorlageStd->cHersteller)}{$oNewslettervorlageStd->cHersteller}{/if}">
                     </div>
                     <div class="col-auto ml-sm-n4 order-2 order-sm-3">
-                        <button type="button" class="btn btn-default btn-circle" data-toggle="modal"
+                        <button type="button" class="btn btn-link px-2" data-toggle="modal"
                                 data-target="#manufacturerPicker-modal" title="{__('labelSearchManufacturer')}">
                             <i class="fal fa-edit"></i>
                         </button>
@@ -324,7 +327,7 @@
                                value="{if !empty($cPostVar_arr.cKategorie)}{$cPostVar_arr.cKategorie}{elseif isset($oNewslettervorlageStd->cKategorie)}{$oNewslettervorlageStd->cKategorie}{/if}">
                     </div>
                     <div class="col-auto ml-sm-n4 order-2 order-sm-3">
-                        <button type="button" class="btn btn-default btn-circle" data-toggle="modal"
+                        <button type="button" class="btn btn-link px-2" data-toggle="modal"
                                 data-target="#categoryPicker-modal" title="{__('labelSearchCategory')}">
                             <i class="fal fa-edit"></i>
                         </button>

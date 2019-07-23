@@ -82,21 +82,31 @@
                 {/if}
                 <input type="hidden" name="kLinkgruppe" value="{$id}" />
                 <input type="hidden" name="kLink" value="{$link->getID()}" />
-                <div>
+                <div class="btn-group">
                     {assign var=deleteCount value=$linkGroupCountByLinkID[$link->getID()]|default:1}
                     <button name="action"
                             value="delete-link"
-                            class="btn btn-danger btn-circle{if $link->getPluginID() > 0} disabled{/if}"
+                            class="btn btn-link px-2{if $link->getPluginID() > 0} disabled{/if}"
                             {if $link->getPluginID() === 0} onclick="return confirmDelete();"{/if}
                             title="{if $deleteCount > 1}{{__('dangerLinkWillGetDeleted')}|sprintf:{$deleteCount}}{else}{__('delete')}{/if}">
-                        <i class="fas fa-trash-alt"></i>{if $deleteCount > 1} ({$deleteCount}){/if}
+                        <span class="icon-hover">
+                            <span class="fal fa-trash-alt"></span>
+                            <span class="fas fa-trash-alt"></span>
+                        </span>
+                        {if $deleteCount > 1} ({$deleteCount}){/if}
                     </button>
                     {if $id > 0}
-                        <button name="action" value="remove-linklfrom-linkgroup" class="btn btn-default btn-circle" title="{__('linkGroupRemove')}">
-                            <i class="fa fa-unlink"></i>
+                        <button name="action" value="remove-linklfrom-linkgroup" class="btn btn-link px-2" title="{__('linkGroupRemove')}">
+                            <span class="icon-hover">
+                                <span class="fal fa-unlink"></span>
+                                <span class="fas fa-unlink"></span>
+                            </span>
                         </button>
-                        <button name="action" value="edit-link" class="btn btn-primary btn-circle" title="{__('modify')}">
-                            <i class="fal fa-edit"></i>
+                        <button name="action" value="edit-link" class="btn btn-link px-2" title="{__('modify')}">
+                            <span class="icon-hover">
+                                <span class="fal fa-edit"></span>
+                                <span class="fas fa-edit"></span>
+                            </span>
                         </button>
                     {/if}
                 </div>

@@ -61,9 +61,14 @@
                                             <td class="tcenter">{if isset($oKampagne->nAktiv) && $oKampagne->nAktiv == 1}{__('yes')}{else}{__('no')}{/if}</td>
                                             <td class="tcenter">{$oKampagne->dErstellt_DE}</td>
                                             <td class="tcenter">
-                                                <a href="kampagne.php?kKampagne={$oKampagne->kKampagne}&editieren=1&token={$smarty.session.jtl_token}" title="{__('modify')}" class="btn btn-default btn-circle">
-                                                    <i class="fal fa-edit"></i>
-                                                </a>
+                                                <div class="btn-group">
+                                                    <a href="kampagne.php?kKampagne={$oKampagne->kKampagne}&editieren=1&token={$smarty.session.jtl_token}" title="{__('modify')}" class="btn btn-link px-2">
+                                                        <span class="icon-hover">
+                                                            <span class="fal fa-edit"></span>
+                                                            <span class="fas fa-edit"></span>
+                                                        </span>
+                                                    </a>
+                                                </div>
                                             </td>
                                         </tr>
                                     {/if}
@@ -124,7 +129,7 @@
                                                 <td class="tcenter">{$oKampagne->dErstellt_DE}</td>
                                                 <td class="tcenter">
                                                     <a href="kampagne.php?kKampagne={$oKampagne->kKampagne}&editieren=1&token={$smarty.session.jtl_token}"
-                                                       class="btn btn-default btn-circle" title="{__('modify')}">
+                                                       class="btn btn-link px-2" title="{__('modify')}">
                                                         <i class="fal fa-edit"></i>
                                                     </a>
                                                 </td>

@@ -63,8 +63,12 @@
                                 </div>
                                 <div class="modal-footer">
                                     <div class="btn-group">
-                                        <button type="button" class="btn btn-success" name="ok" data-dismiss="modal"><i class="fal fa-check text-success"></i>&nbsp;{__('ok')}</button>
-                                        <button type="button" class="btn btn-danger" name="cancel" data-dismiss="modal"><i class="fa fa-close"></i>&nbsp;{__('Cancel')}</button>
+                                        <button type="button" class="btn btn-success" name="ok" data-dismiss="modal">
+                                            <i class="fal fa-check text-success"></i>&nbsp;{__('ok')}
+                                        </button>
+                                        <button type="button" class="btn btn-danger" name="cancel" data-dismiss="modal">
+                                            <i class="fa fa-close"></i>&nbsp;{__('Cancel')}
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -91,9 +95,19 @@
                                     </div>
                                     {if $listingItem->isShop5Compatible() === false}
                                         {if $listingItem->isShop4Compatible() === false}
-                                            <span title="{__('dangerPluginNotCompatibleShop4')}" class="label warning label-danger"><i class="fal fa-exclamation-triangle"></i></span>
+                                            <span title="{__('dangerPluginNotCompatibleShop4')}" class="label warning label-danger">
+                                                <span class="icon-hover">
+                                                    <span class="fal fa-exclamation-triangle"></span>
+                                                    <span class="fas fa-exclamation-triangle"></span>
+                                                </span>
+                                            </span>
                                         {else}
-                                            <span title="{__('dangerPluginNotCompatibleShop5')}" class="label warning label-warning"><i class="fal fa-exclamation-triangle"></i></span>
+                                            <span title="{__('dangerPluginNotCompatibleShop5')}" class="label warning label-warning">
+                                                <span class="icon-hover">
+                                                    <span class="fal fa-exclamation-triangle"></span>
+                                                    <span class="fas fa-exclamation-triangle"></span>
+                                                </span>
+                                            </span>
                                         {/if}
                                     {/if}
                                 </td>

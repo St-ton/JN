@@ -88,10 +88,21 @@
                                         <td>{$Betreff->cMail}</td>
                                         <td class="tcenter">{$Betreff->Kundengruppen}</td>
                                         <td class="tcenter">
-                                            <a href="kontaktformular.php?del={$Betreff->kKontaktBetreff}&token={$smarty.session.jtl_token}" class="btn btn-danger btn-circle" title="{__('delete')}"><i class="fas fa-trash-alt"></i></a>
-                                            <a href="kontaktformular.php?kKontaktBetreff={$Betreff->kKontaktBetreff}&token={$smarty.session.jtl_token}"
-                                               class="btn btn-primary btn-circle" title="{__('modify')}"><i class="fal fa-edit"></i>
-                                            </a>
+                                            <div class="btn-group">
+                                                <a href="kontaktformular.php?del={$Betreff->kKontaktBetreff}&token={$smarty.session.jtl_token}" class="btn btn-link px-2" title="{__('delete')}">
+                                                    <span class="icon-hover">
+                                                        <span class="fal fa-trash-alt"></span>
+                                                        <span class="fas fa-trash-alt"></span>
+                                                    </span>
+                                                </a>
+                                                <a href="kontaktformular.php?kKontaktBetreff={$Betreff->kKontaktBetreff}&token={$smarty.session.jtl_token}"
+                                                   class="btn btn-link px-2" title="{__('modify')}">
+                                                    <span class="icon-hover">
+                                                        <span class="fal fa-edit"></span>
+                                                        <span class="fas fa-edit"></span>
+                                                    </span>
+                                                </a>
+                                            </div>
                                         </td>
                                     </tr>
                                 {/foreach}

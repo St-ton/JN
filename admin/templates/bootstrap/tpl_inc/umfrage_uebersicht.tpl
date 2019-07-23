@@ -68,12 +68,20 @@
                                                         <td>{$oUmfrage->nAnzahlFragen}</td>
                                                         <td>{$oUmfrage->dErstellt_de}</td>
                                                         <td>
-                                                            <a href="umfrage.php?umfrage=1&token={$smarty.session.jtl_token}&kUmfrage={$oUmfrage->kUmfrage}&umfrage_statistik=1" class="btn btn-default btn-circle" title="{__('umfrageStats')}">
-                                                                <i class="fa fa-bar-chart"></i>
-                                                            </a>
-                                                            <a href="umfrage.php?umfrage=1&token={$smarty.session.jtl_token}&umfrage_editieren=1&kUmfrage={$oUmfrage->kUmfrage}&tab=umfrage" class="btn btn-primary btn-circle" title="{__('modify')}">
-                                                                <i class="fal fa-edit"></i>
-                                                            </a>
+                                                            <div class="btn-group">
+                                                                <a href="umfrage.php?umfrage=1&token={$smarty.session.jtl_token}&kUmfrage={$oUmfrage->kUmfrage}&umfrage_statistik=1" class="btn btn-link px-2" title="{__('umfrageStats')}">
+                                                                    <span class="icon-hover">
+                                                                        <span class="fal fa-bar-chart"></span>
+                                                                        <span class="fas fa-bar-chart"></span>
+                                                                    </span>
+                                                                </a>
+                                                                <a href="umfrage.php?umfrage=1&token={$smarty.session.jtl_token}&umfrage_editieren=1&kUmfrage={$oUmfrage->kUmfrage}&tab=umfrage" class="btn btn-link px-2" title="{__('modify')}">
+                                                                    <span class="icon-hover">
+                                                                        <span class="fal fa-edit"></span>
+                                                                        <span class="fas fa-edit"></span>
+                                                                    </span>
+                                                                </a>
+                                                            </div>
                                                         </td>
                                                     </tr>
                                                 {/foreach}

@@ -73,10 +73,15 @@
                                                 <td class="tcenter">{$review->nSterne}</td>
                                                 <td class="tcenter">{$review->Datum}</td>
                                                 <td class="tcenter">
-                                                    <a href="bewertung.php?a=editieren&kBewertung={$review->kBewertung}&tab=freischalten&token={$smarty.session.jtl_token}"
-                                                       class="btn btn-default btn-circle" title="{__('modify')}">
-                                                        <i class="fal fa-edit"></i>
-                                                    </a>
+                                                    <div class="btn-group">
+                                                        <a href="bewertung.php?a=editieren&kBewertung={$review->kBewertung}&tab=freischalten&token={$smarty.session.jtl_token}"
+                                                           class="btn btn-link px-2" title="{__('modify')}">
+                                                            <span class="icon-hover">
+                                                                <span class="fal fa-edit"></span>
+                                                                <span class="fas fa-edit"></span>
+                                                            </span>
+                                                        </a>
+                                                    </div>
                                                 </td>
                                             </tr>
                                         {/foreach}
@@ -162,13 +167,19 @@
                                             <td class="tcenter tright" style="min-width: 130px;">
                                                 {if !empty($review->cAntwort)}
                                                     <a href="bewertung.php?a=delreply&kBewertung={$review->kBewertung}&tab=letzten50&token={$smarty.session.jtl_token}"
-                                                       class="btn btn-danger btn-circle" title="{__('removeReply')}">
-                                                        <i class="fal fa-trash-alt"></i>
+                                                       class="btn btn-link px-2" title="{__('removeReply')}">
+                                                        <span class="icon-hover">
+                                                            <span class="fal fa-trash-alt"></span>
+                                                            <span class="fas fa-trash-alt"></span>
+                                                        </span>
                                                     </a>
                                                 {/if}
                                                 <a href="bewertung.php?a=editieren&kBewertung={$review->kBewertung}&tab=letzten50&token={$smarty.session.jtl_token}"
-                                                   class="btn btn-primary btn-circle" title="{__('modify')}">
-                                                    <i class="fal fa-edit"></i>
+                                                   class="btn btn-link px-2" title="{__('modify')}">
+                                                    <span class="icon-hover">
+                                                        <span class="fal fa-edit"></span>
+                                                        <span class="fas fa-edit"></span>
+                                                    </span>
                                                 </a>
                                             </td>
                                         </tr>
@@ -207,7 +218,7 @@
                             <input type="hidden" name="bewertung_aktiv" value="1" />
                             <input type="hidden" name="tab" value="artikelbewertung" />
                             <input class="form-control" name="cArtNr" type="text" value="{$cArtNr|default:''}" />
-                            <button name="submitSearch" type="submit" value="{__('search')}" class="btn btn-primary btn-circle ml-1">
+                            <button name="submitSearch" type="submit" value="{__('search')}" class="btn btn-link px-2 ml-1">
                                 <i class="fal fa-search"></i>
                             </button>
                         </div>
@@ -256,8 +267,11 @@
                                             <td class="tcenter">{$review->Datum}</td>
                                             <td class="tcenter">
                                                 <a href="bewertung.php?a=editieren&kBewertung={$review->kBewertung}&tab=artikelbewertung"
-                                                   class="btn btn-default btn-circle" title="{__('modify')}">
-                                                    <i class="fal fa-edit"></i>
+                                                   class="btn btn-link px-2" title="{__('modify')}">
+                                                    <span class="icon-hover">
+                                                        <span class="fal fa-edit"></span>
+                                                        <span class="fas fa-edit"></span>
+                                                    </span>
                                                 </a>
                                             </td>
                                         </tr>

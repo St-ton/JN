@@ -114,13 +114,40 @@
                                 <form method="post" action="exportformate.php">
                                     {$jtl_token}
                                     <input type="hidden" name="kExportformat" value="{$exportformat->kExportformat}" />
-                                    <button name="action" value="delete" class="btn btn-danger btn-circle remove notext" title="{__('delete')}" onclick="return confirm('{__('sureDeleteFormat')}');"><i class="fas fa-trash-alt"></i></button>
-                                    <button name="action" value="export" class="btn btn-default btn-circle extract notext" title="{__('createExportFile')}"><i class="fal fa-plus"></i></button>
-                                    <button name="action" value="download" class="btn btn-default btn-circle download notext" title="{__('download')}"><i class="fa fa-download"></i></button>
-                                    {if !$exportformat->bPluginContentExtern}
-                                        <a href="#" onclick="return init_export('{$exportformat->kExportformat}');" class="btn btn-default btn-circle extract_async notext" title="{__('createExportFileAsync')}"><i class="fal fa-plus-square"></i></a>
-                                    {/if}
-                                    <button name="action" value="edit" class="btn btn-primary btn-circle edit notext" title="{__('edit')}"><i class="fal fa-edit"></i></button>
+                                    <div class="btn-group">
+                                        <button name="action" value="delete" class="btn btn-link px-1 remove notext" title="{__('delete')}" onclick="return confirm('{__('sureDeleteFormat')}');">
+                                            <span class="icon-hover">
+                                                <span class="fal fa-trash-alt"></span>
+                                                <span class="fas fa-trash-alt"></span>
+                                            </span>
+                                        </button>
+                                        <button name="action" value="export" class="btn btn-link px-1 extract notext" title="{__('createExportFile')}">
+                                            <span class="icon-hover">
+                                                <span class="fal fa-plus"></span>
+                                                <span class="fas fa-plus"></span>
+                                            </span>
+                                        </button>
+                                        <button name="action" value="download" class="btn btn-link px-1 download notext" title="{__('download')}">
+                                            <span class="icon-hover">
+                                                <span class="fal fa-download"></span>
+                                                <span class="fas fa-download"></span>
+                                            </span>
+                                        </button>
+                                        {if !$exportformat->bPluginContentExtern}
+                                            <a href="#" onclick="return init_export('{$exportformat->kExportformat}');" class="btn btn-link px-1 extract_async notext" title="{__('createExportFileAsync')}">
+                                                <span class="icon-hover">
+                                                    <span class="fal fa-plus-square"></span>
+                                                    <span class="fas fa-plus-square"></span>
+                                                </span>
+                                            </a>
+                                        {/if}
+                                        <button name="action" value="edit" class="btn btn-link px-1 edit notext" title="{__('edit')}">
+                                            <span class="icon-hover">
+                                                <span class="fal fa-edit"></span>
+                                                <span class="fas fa-edit"></span>
+                                            </span>
+                                        </button>
+                                    </div>
                                 </form>
                             </td>
                         </tr>

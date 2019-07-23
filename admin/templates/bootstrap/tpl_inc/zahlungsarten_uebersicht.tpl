@@ -26,30 +26,44 @@
                                 </span>
                             </td>
                             <td class="text-right">
-                                <div class="btn-group" role="group">
+                                <div class="btn-group">
                                     <a href="zahlungsarten.php?a=log&kZahlungsart={$zahlungsart->kZahlungsart}&token={$smarty.session.jtl_token}"
-                                       class="btn btn-sm down
+                                       class="btn btn-link sx-2 down
                                                   {if $zahlungsart->nLogCount > 0}
-                                                        {if $zahlungsart->nErrorLogCount}btn-danger{else}btn-default{/if}
+                                                        {if $zahlungsart->nErrorLogCount}text-danger{/if}
                                                   {else}
-                                                        btn-default disabled
+                                                        text-success disabled
                                                   {/if}"
                                        title="{__('viewLog')}">
-                                        <i class="fa
-                                                      {if $zahlungsart->nLogCount > 0}
-                                                            {if $zahlungsart->nErrorLogCount}fa-warning{else}fa-bars{/if}
-                                                      {else}
-                                                            fa-check
-                                                      {/if}"></i>
+                                        <span class="icon-hover">
+                                            {if $zahlungsart->nLogCount > 0}
+                                                {if $zahlungsart->nErrorLogCount}
+                                                    <span class="fal fa-exclamation-triangle"></span>
+                                                    <span class="fas fa-exclamation-triangle"></span>
+                                                {else}
+                                                    <span class="fal fa-bars"></span>
+                                                    <span class="fas fa-bars"></span>
+                                                {/if}
+                                            {else}
+                                                <span class="fal fa-check"></span>
+                                                <span class="fas fa-check"></span>
+                                            {/if}
+                                        </span>
                                     </a>
                                     <a {if $zahlungsart->nEingangAnzahl > 0}href="zahlungsarten.php?a=payments&kZahlungsart={$zahlungsart->kZahlungsart}&token={$smarty.session.jtl_token}"{/if}
-                                       class="btn btn-default {if $zahlungsart->nEingangAnzahl === 0}disabled{/if}"
+                                       class="btn btn-link sx-2 {if $zahlungsart->nEingangAnzahl === 0}disabled{/if}"
                                        title="Zahlungseingänge">
-                                        <i class="fa fa-money"></i>
+                                        <span class="icon-hover">
+                                            <span class="fal fa-hand-holding-us"></span>
+                                            <span class="fas fa-hand-holding-us"></span>
+                                        </span>
                                     </a>
                                     <a href="zahlungsarten.php?kZahlungsart={$zahlungsart->kZahlungsart}&token={$smarty.session.jtl_token}"
-                                       class="btn btn-default btn-sm" title="{__('edit')}">
-                                        <i class="fal fa-edit"></i>
+                                       class="btn btn-link sx-2" title="{__('edit')}">
+                                        <span class="icon-hover">
+                                            <span class="fal fa-edit"></span>
+                                            <span class="fas fa-edit"></span>
+                                        </span>
                                     </a>
                                 </div>
                             </td>

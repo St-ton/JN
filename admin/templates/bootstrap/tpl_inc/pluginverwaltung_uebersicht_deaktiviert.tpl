@@ -60,25 +60,43 @@
                                 <td class="tcenter plugin-lang-vars">
                                     {if $plugin->getLocalization()->getTranslations()|@count > 0}
                                         <a href="pluginverwaltung.php?pluginverwaltung_uebersicht=1&sprachvariablen=1&kPlugin={$plugin->getID()}"
-                                           class="btn btn-default btn-sm" title="{__('modify')}"><i class="fal fa-edit"></i></a>
+                                           class="btn btn-default btn-sm" title="{__('modify')}">
+                                            <span class="icon-hover">
+                                                <span class="fal fa-edit"></span>
+                                                <span class="fas fa-edit"></span>
+                                            </span>
+                                        </a>
                                     {/if}
                                 </td>
                                 <td class="tcenter plugin-frontend-links">
                                     {if $plugin->getLinks()->getLinks()->count() > 0}
-                                        <a href="links.php?kPlugin={$plugin->getID()}" class="btn btn-default btn-sm" title="{__('modify')}"><i class="fal fa-edit"></i></a>
+                                        <a href="links.php?kPlugin={$plugin->getID()}" class="btn btn-default btn-sm" title="{__('modify')}">
+                                            <span class="icon-hover">
+                                                <span class="fal fa-edit"></span>
+                                                <span class="fas fa-edit"></span>
+                                            </span>
+                                        </a>
                                     {/if}
                                 </td>
                                 <td class="tcenter plugin-license">
                                     {if $plugin->getLicense()->hasLicenseCheck()}
                                         <button name="lizenzkey" type="submit" title="{__('modify')}"
                                                 class="btn {if $plugin->getLicense()->hasLicense()}btn-default{else}btn-primary{/if} btn-sm" value="{$plugin->getID()}">
-                                            <i class="fal fa-edit"></i>
+                                            <span class="icon-hover">
+                                                <span class="fal fa-edit"></span>
+                                                <span class="fas fa-edit"></span>
+                                            </span>
                                         </button>
                                     {/if}
                                 </td>
                                 <td class="tcenter">
                                     {if $plugin->getMeta()->isUpdateAvailable()}
-                                        <a onclick="ackCheck({$plugin->getID()}, 'deaktiviert'); return false;" class="btn btn-primary btn-sm" title="{__('pluginBtnUpdate')}"><i class="fa fa-refresh"></i></a>
+                                        <a onclick="ackCheck({$plugin->getID()}, 'deaktiviert'); return false;" class="btn btn-primary btn-sm" title="{__('pluginBtnUpdate')}">
+                                            <span class="icon-hover">
+                                                <span class="fal fa-refresh"></span>
+                                                <span class="fas fa-refresh"></span>
+                                            </span>
+                                        </a>
                                     {/if}
                                 </td>
                             </tr>

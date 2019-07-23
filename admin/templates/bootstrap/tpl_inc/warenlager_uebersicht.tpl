@@ -47,7 +47,14 @@
                                     <td class="tcenter large">{$oWarenlager->cName}</td>
                                     <td class="tcenter">{$oWarenlager->cBeschreibung}</td>
                                     <td class="tcenter">
-                                        <a class="btn btn-default btn-circle" data-toggle="collapse" href="#collapse-{$oWarenlager->kWarenlager}" title="{__('edit')}"><i class="fal fa-edit"></i></a>
+                                        <div class="btn-group">
+                                            <a class="btn btn-link px-2" data-toggle="collapse" href="#collapse-{$oWarenlager->kWarenlager}" title="{__('edit')}">
+                                                <span class="icon-hover">
+                                                    <span class="fal fa-edit"></span>
+                                                    <span class="fas fa-edit"></span>
+                                                </span>
+                                            </a>
+                                        </div>
                                     </td>
                                 </tr>
                                 <tr class="collapse" id="collapse-{$oWarenlager->kWarenlager}">

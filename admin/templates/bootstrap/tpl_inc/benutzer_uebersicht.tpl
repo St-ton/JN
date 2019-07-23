@@ -59,13 +59,35 @@
                                     <form method="post" action="benutzerverwaltung.php">
                                         {$jtl_token}
                                         <input type="hidden" name="id" value="{$oAdmin->kAdminlogin}" />
-                                        {if $oAdmin->bAktiv}
-                                            <button class="notext btn btn-default btn-circle" name="action" value="account_lock" title="{__('sperrenLabel')}"><i class="fa fa-lock"></i></button>
-                                        {else}
-                                            <button class="notext btn btn-default btn-circle" name="action" value="account_unlock" title="{__('entsperrenLabel')}"><i class="fa fa-unlock"></i></button>
-                                        {/if}
-                                        <button class="notext btn btn-danger btn-circle" name="action" value="account_delete" onclick="return confirm('{__('sureDeleteGroup')}');" title="{__('delete')}"><i class="fas fa-trash-alt"></i></button>
-                                        <button class="notext btn btn-primary btn-circle" name="action" value="account_edit" title="{__('modify')}"><i class="fal fa-edit"></i></button>
+                                        <div class="btn-group">
+                                            {if $oAdmin->bAktiv}
+                                                <button class="notext btn btn-link px-2" name="action" value="account_lock" title="{__('sperrenLabel')}">
+                                                    <span class="icon-hover">
+                                                        <span class="fal fa-lock"></span>
+                                                        <span class="fas fa-lock"></span>
+                                                    </span>
+                                                </button>
+                                            {else}
+                                                <button class="notext btn btn-link px-2" name="action" value="account_unlock" title="{__('entsperrenLabel')}">
+                                                    <span class="icon-hover">
+                                                        <span class="fal fa-unlock"></span>
+                                                        <span class="fas fa-unlock"></span>
+                                                    </span>
+                                                </button>
+                                            {/if}
+                                            <button class="notext btn btn-link px-2" name="action" value="account_delete" onclick="return confirm('{__('sureDeleteGroup')}');" title="{__('delete')}">
+                                                <span class="icon-hover">
+                                                    <span class="fal fa-trash-alt"></span>
+                                                    <span class="fas fa-trash-alt"></span>
+                                                </span>
+                                            </button>
+                                            <button class="notext btn btn-link px-2" name="action" value="account_edit" title="{__('modify')}">
+                                                <span class="icon-hover">
+                                                    <span class="fal fa-edit"></span>
+                                                    <span class="fas fa-edit"></span>
+                                                </span>
+                                            </button>
+                                        </div>
                                     </form>
                                 </td>
                             </tr>
@@ -113,12 +135,20 @@
                                         <form method="post" action="benutzerverwaltung.php">
                                             {$jtl_token}
                                             <input type="hidden" value="{$oGroup->kAdminlogingruppe}" name="id" />
-                                            <button type="submit" class="delete btn btn-danger btn-circle" name="action" value="group_delete" onclick="return confirm('{__('sureDeleteGroup')}');" {if 0 < (int)$oGroup->nCount}title="{__('loeschenLabelDeaktiviert')}" disabled="disabled"{else}title="{__('loeschenLabel')}"{/if}>
-                                                <i class="fas fa-trash-alt"></i>
-                                            </button>
-                                            <button type="submit" class="edit btn btn-primary btn-circle" name="action" value="group_edit" title="{__('modify')}">
-                                                <i class="fal fa-edit"></i>
-                                            </button>
+                                            <div class="btn-group">
+                                                <button type="submit" class="delete btn btn-link px-2" name="action" value="group_delete" onclick="return confirm('{__('sureDeleteGroup')}');" {if (int)$oGroup->nCount > 0}title="{__('loeschenLabelDeaktiviert')}" disabled="disabled"{else}title="{__('loeschenLabel')}"{/if}>
+                                                    <span class="icon-hover">
+                                                        <span class="fal fa-trash-alt"></span>
+                                                        <span class="fas fa-trash-alt"></span>
+                                                    </span>
+                                                </button>
+                                                <button type="submit" class="edit btn btn-link px-2" name="action" value="group_edit" title="{__('modify')}">
+                                                    <span class="icon-hover">
+                                                        <span class="fal fa-edit"></span>
+                                                        <span class="fas fa-edit"></span>
+                                                    </span>
+                                                </button>
+                                            </div>
                                         </form>
                                     {/if}
                                 </td>

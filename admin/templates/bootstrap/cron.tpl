@@ -55,16 +55,24 @@
                                             <td>{$job->getStartTime()->format('H:i')}</td>
                                             <td>{if $job->getDateLastStarted() === null}&dash;{else}{$job->getDateLastStarted()->format('d.m.Y H:i')}{/if}</td>
                                             <td>{$job->getFrequency()}h</td>
-                                            <td>{if $job->isRunning()}<i class="fal fa-check text-success"></i>{else}<i class="fal fa-times"></i>{/if}</td>
+                                            <td>{if $job->isRunning()}<i class="fal fa-check text-success"></i>{else}<i class="fal fa-times text-danger"></i>{/if}</td>
                                             <td>
-                                                {if $job->isRunning()}
-                                                    <button class="btn btn-default btn-sm btn-circle" type="submit" name="reset" value="{$job->getQueueID()}">
-                                                        <i class="fa fa-refresh"></i>
+                                                <div class="btn-group">
+                                                    {if $job->isRunning()}
+                                                        <button class="btn btn-link px-2" type="submit" name="reset" value="{$job->getQueueID()}">
+                                                            <span class="icon-hover">
+                                                                <span class="fal fa-refresh"></span>
+                                                                <span class="fas fa-refresh"></span>
+                                                            </span>
+                                                        </button>
+                                                    {/if}
+                                                    <button class="btn btn-link px-2" type="submit" name="delete" value="{$job->getCronID()}">
+                                                        <span class="icon-hover">
+                                                            <span class="fal fa-trash-alt"></span>
+                                                            <span class="fas fa-trash-alt"></span>
+                                                        </span>
                                                     </button>
-                                                {/if}
-                                                <button class="btn btn-danger btn-sm btn-circle" type="submit" name="delete" value="{$job->getCronID()}">
-                                                    <i class="fas fa-trash-alt"></i>
-                                                </button>
+                                                </div>
                                             </td>
                                         </tr>
                                     {/foreach}

@@ -67,13 +67,18 @@
                     {/if}
                 {/foreach}
             </div>
-            <div class="card-footer">
-                <div class="btn-group">
-                    <button type="submit" class="btn btn-primary" name="action" value="savevar">
-                        <i class="fa fa-save"></i>
-                        {__('save')}
-                    </button>
-                    <a href="sprache.php?tab={$tab}" class="btn btn-danger">{__('goBack')}</a>
+            <div class="card-footer save-wrapper">
+                <div class="row">
+                    <div class="ml-auto col-sm-6 col-xl-auto">
+                        <a href="sprache.php?tab={$tab}" class="btn btn-outline-primary">{__('goBack')}</a>
+                    </div>
+                    <div class="col-sm-6 col-xl-auto">
+                        <button type="submit" class="btn btn-primary" name="action" value="savevar">
+                            <i class="fa fa-save"></i>
+                            {__('save')}
+                        </button>
+                    </div>
+
                 </div>
             </div>
         </form>

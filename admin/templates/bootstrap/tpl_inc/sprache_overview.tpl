@@ -111,18 +111,24 @@
                                                           id="cStandard_{$oWert->kSprachsektion}_{$oWert->cName}">{$oWert->cStandard|escape}</span>
                                                 </td>
                                                 <td style="width:6em;">
-                                                    <div class="btn-group right">
-                                                        <button type="button" class="btn btn-default"
-                                                                onclick="resetVarText({$oWert->kSprachsektion},
-                                                                                      '{$oWert->cName}');">
-                                                            <i class="fa fa-refresh"></i>
-                                                        </button>
+                                                    <div class="btn-group">
                                                         {if $oWert->bSystem === '0'}
                                                             <a href="sprache.php?token={$smarty.session.jtl_token}&action=delvar&kSprachsektion={$oWert->kSprachsektion}&cName={$oWert->cName}"
-                                                               class="btn btn-danger">
-                                                                <i class="fas fa-trash-alt"></i>
+                                                               class="btn btn-link px-2">
+                                                                <span class="icon-hover">
+                                                                    <span class="fal fa-trash-alt"></span>
+                                                                    <span class="fas fa-trash-alt"></span>
+                                                                </span>
                                                             </a>
                                                         {/if}
+                                                        <button type="button" class="btn btn-link px-2"
+                                                                onclick="resetVarText({$oWert->kSprachsektion},
+                                                                                      '{$oWert->cName}');">
+                                                            <span class="icon-hover">
+                                                                <span class="fal fa-refresh"></span>
+                                                                <span class="fas fa-refresh"></span>
+                                                            </span>
+                                                        </button>
                                                     </div>
                                                 </td>
                                             </tr>
@@ -160,8 +166,11 @@
                                         <td>
                                             <div class="btn-group right">
                                                 <a href="sprache.php?token={$smarty.session.jtl_token}&action=newvar&kSprachsektion={$oWert->kSprachsektion}&cName={$oWert->cName}&tab=notfound"
-                                                   class="btn btn-default" title="{__('create')}">
-                                                    <i class="fal fa-plus"></i>
+                                                   class="btn btn-link px-2" title="{__('create')}">
+                                                    <span class="icon-hover">
+                                                        <span class="fal fa-plus"></span>
+                                                        <span class="fas fa-plus"></span>
+                                                    </span>
                                                 </a>
                                             </div>
                                         </td>

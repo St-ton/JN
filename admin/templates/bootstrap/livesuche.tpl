@@ -122,21 +122,16 @@
                                     </tr>
                                 {/foreach}
                                 </tbody>
-                                <tfoot>
-                                    <tr>
-                                        <td>
-                                            <div class="custom-control custom-checkbox">
-                                                <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessagesExcept(this.form, 'nAktiv_');" />
-                                                <label class="custom-control-label" for="ALLMSGS"></label>
-                                            </div>
-                                        </td>
-                                        <td colspan="5"><label for="ALLMSGS">{__('livesucheSelectAll')}</label></td>
-                                    </tr>
-                                </tfoot>
                             </table>
                         </div>
                         <div class="save-wrapper">
                             <div class="row">
+                                <div class="col-sm-6 col-xl-auto text-left mb-3">
+                                    <div class="custom-control custom-checkbox">
+                                        <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessagesExcept(this.form, 'nAktiv_');" />
+                                        <label class="custom-control-label" for="ALLMSGS">{__('livesucheSelectAll')}</label>
+                                    </div>
+                                </div>
                                 <div class="col-sm-6 col-xl-auto mb-3">
                                     <div class="input-group">
                                         <span class="input-group-addon">

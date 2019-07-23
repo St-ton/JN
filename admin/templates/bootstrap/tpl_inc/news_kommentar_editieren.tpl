@@ -18,25 +18,24 @@
         <div class="card">
             <div class="card-header">
                 <div class="subheading1">{$oNewsKommentar->getName()} - {__('newsCommentEdit')}</div>
+                <hr class="mb-n3">
             </div>
-            <div class="table-responsive card-body">
-                <table class="list table" id="formtable">
-                    <tr>
-                        <td><label for="cName">{__('visitors')}</label></td>
-                        <td>
-                            <input id="cName" name="cName" class="form-control" type="text" value="{$oNewsKommentar->getName()}" />
-                            {if $oNewsKommentar->getCustomerID() === 0}
-                                &nbsp;({$oNewsKommentar->getMail()})
-                            {/if}
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><label for="cKommentar">{__('text')}</label></td>
-                        <td>
-                            <textarea id="cKommentar" class="ckeditor form-control" name="cKommentar" rows="15" cols="60">{$oNewsKommentar->getText()}</textarea>
-                        </td>
-                    </tr>
-                </table>
+            <div class="card-body">
+                <div class="form-group form-row align-items-center">
+                    <label class="col col-sm-4 col-form-label text-sm-right" for="cName">{__('visitors')}:</label>
+                    <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                        <input id="cName" name="cName" class="form-control" type="text" value="{$oNewsKommentar->getName()}" />
+                        {if $oNewsKommentar->getCustomerID() === 0}
+                            &nbsp;({$oNewsKommentar->getMail()})
+                        {/if}
+                    </div>
+                </div>
+                <div class="form-group form-row align-items-center">
+                    <label class="col col-sm-4 col-form-label text-sm-right" for="cKommentar">{__('text')}:</label>
+                    <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                        <textarea id="cKommentar" class="ckeditor form-control" name="cKommentar" rows="15" cols="60">{$oNewsKommentar->getText()}</textarea>
+                    </div>
+                </div>
             </div>
             <div class="card-footer save-wrapper">
                 <div class="row">

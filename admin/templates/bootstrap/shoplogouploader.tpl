@@ -52,6 +52,8 @@
                             {/if}
                         }).on("filebrowse", function(event, files) {
                             $('#shoplogo-upload').fileinput('clear');
+                            $('#logo-upload-success').hide().addClass('hidden');
+                            $('#logo-upload-error').hide().addClass('hidden');
                         }).on("filebatchselected", function(event, files) {
                             $('#shoplogo-upload').fileinput("upload");
                         }).on('filebatchuploadsuccess', function(event, data) {

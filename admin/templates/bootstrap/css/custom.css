@@ -2628,17 +2628,20 @@ div.markdown thead tr td {
   break-inside: avoid;
   width: 100%;
 }
+.file-input .close {
+  float: right;
+}
 .file-input .input-grp-append .btn-file,
-#shoplogo-upload {
+.file-input #shoplogo-upload {
   cursor: pointer;
 }
-.file-preview {
+.file-input .file-preview {
   border-radius: 0.125rem;
   border-style: dashed;
   margin-bottom: 1rem;
   padding: 1.5rem 1.5rem 0;
 }
-.file-drop-zone {
+.file-input .file-drop-zone {
   margin: 0.75rem 0 0;
   padding: 0;
   border: 2px solid transparent;

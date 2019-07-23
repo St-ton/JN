@@ -36,12 +36,7 @@
         setJtlToken('{$smarty.session.jtl_token}');
     </script>
 
-    {if isset($language) && $language === 'de-DE'}
-        {assign var=uploaderLang value='de'}
-    {else}
-        {assign var=uploaderLang value='LANG'}
-    {/if}
-    <script type="text/javascript" src="{$URL_SHOP}/{$PFAD_ADMIN}{$currentTemplateDir}js/fileinput/locales/{$uploaderLang}.js"></script>
+    <script type="text/javascript" src="{$URL_SHOP}/{$PFAD_ADMIN}{$currentTemplateDir}js/fileinput/locales/{$language|mb_substr:0:2}.js"></script>
 </head>
 <body>
 {if $account !== false && isset($smarty.session.loginIsValid) && $smarty.session.loginIsValid === true}

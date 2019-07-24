@@ -818,12 +818,13 @@
 
 #opc .row-layout-previews {
   text-align: center;
+  color: #BDBDBD;
 }
 #opc .row-layout-previews > * {
   display: inline-block;
 }
 #opc .row-layout-previews .layout-preview {
-  margin: 24px;
+  margin: 10px 40px 20px 40px;
 }
 #opc .row-layout-previews .layout-preview > * {
   background-color: #5cbcf6;

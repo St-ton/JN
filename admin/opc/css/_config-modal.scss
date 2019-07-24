@@ -428,13 +428,14 @@
 
 #opc .row-layout-previews {
   text-align: center;
+  color: $muted-text;
 
   > * {
     display: inline-block;
   }
 
   .layout-preview {
-    margin: 24px;
+    margin: 10px 40px 20px 40px;
 
     > * {
       background-color: $primary-color;

@@ -73,13 +73,12 @@ if (empty($AktuellerArtikel->kArtikel)) {
 
     return;
 }
-$similarArticles = (int)$conf['artikeldetails']['artikeldetails_aehnlicheartikel_anzahl'] > 0
+$similarProducts = (int)$conf['artikeldetails']['artikeldetails_aehnlicheartikel_anzahl'] > 0
     ? $AktuellerArtikel->holeAehnlicheArtikel()
     : [];
 if (Shop::$kVariKindArtikel > 0) {
-    $options               = Artikel::getDefaultOptions();
-    $options->nVariationen = 1;
-    $oVariKindArtikel      = (new Artikel())->fuelleArtikel(Shop::$kVariKindArtikel, $options);
+    $options          = Artikel::getDetailOptions();
+    $oVariKindArtikel = (new Artikel())->fuelleArtikel(Shop::$kVariKindArtikel, $options);
     if ($oVariKindArtikel !== null && $oVariKindArtikel->kArtikel > 0) {
         $oVariKindArtikel->verfuegbarkeitsBenachrichtigung = Product::showAvailabilityForm(
             $oVariKindArtikel,
@@ -120,8 +119,7 @@ if (isset($_POST['fragezumprodukt']) && (int)$_POST['fragezumprodukt'] === 1) {
 } elseif (isset($_POST['benachrichtigung_verfuegbarkeit']) && (int)$_POST['benachrichtigung_verfuegbarkeit'] === 1) {
     $productNotices = Product::checkAvailabilityMessage($productNotices);
 }
-$kKategorie         = $AktuellerArtikel->gibKategorie();
-$AktuelleKategorie  = new Kategorie($kKategorie);
+$AktuelleKategorie  = new Kategorie($AktuellerArtikel->gibKategorie());
 $expandedCategories = new KategorieListe();
 $expandedCategories->getOpenCategories($AktuelleKategorie);
 $ratingPage   = Request::verifyGPCDataInt('btgseite');
@@ -134,14 +132,13 @@ if ($ratingPage === 0) {
 }
 if ($AktuellerArtikel->Bewertungen === null || $ratingStars > 0) {
     $AktuellerArtikel->holeBewertung(
-        Shop::getLanguageID(),
         $conf['bewertung']['bewertung_anzahlseite'],
         $ratingPage,
         $ratingStars,
         $conf['bewertung']['bewertung_freischalten'],
         $sorting
     );
-    $AktuellerArtikel->holehilfreichsteBewertung(Shop::getLanguageID());
+    $AktuellerArtikel->holehilfreichsteBewertung();
 }
 
 if (isset($AktuellerArtikel->HilfreichsteBewertung->oBewertung_arr[0]->nHilfreich)
@@ -201,18 +198,13 @@ $nav = $conf['artikeldetails']['artikeldetails_navi_blaettern'] === 'Y'
     ? Product::getProductNavigation($AktuellerArtikel->kArtikel ?? 0, $AktuelleKategorie->kKategorie ?? 0)
     : null;
 
-//alerts
-if (($productNote = Product::editProductTags($AktuellerArtikel, $conf)) !== null) {
-    $alertHelper->addAlert(Alert::TYPE_SUCCESS, $productNote, 'editProductTags');
-}
-
 $maxSize = Upload::uploadMax();
 $smarty->assign('nMaxUploadSize', $maxSize)
        ->assign('cMaxUploadSize', Upload::formatGroesse($maxSize))
        ->assign('oUploadSchema_arr', Upload::gibArtikelUploads($AktuellerArtikel->kArtikel))
        ->assign('showMatrix', $AktuellerArtikel->showMatrix())
        ->assign('arNichtErlaubteEigenschaftswerte', $nonAllowed)
-       ->assign('oAehnlicheArtikel_arr', $similarArticles)
+       ->assign('oAehnlicheArtikel_arr', $similarProducts)
        ->assign('UVPlocalized', $AktuellerArtikel->cUVPLocalized)
        ->assign('UVPBruttolocalized', Preise::getLocalizedPriceString($AktuellerArtikel->fUVPBrutto))
        ->assign('Artikel', $AktuellerArtikel)
@@ -227,8 +219,6 @@ $smarty->assign('nMaxUploadSize', $maxSize)
                $conf['artikeldetails']['benachrichtigung_nutzen']
            )
        )
-       ->assign('ProdukttagHinweis', Product::editProductTags($AktuellerArtikel, $conf))
-       ->assign('ProduktTagging', $AktuellerArtikel->tags)
        ->assign('BlaetterNavi', $ratingNav)
        ->assign('BewertungsTabAnzeigen', ($ratingPage || $ratingStars || $showRatings || $allLanguages) ? 1 : 0)
        ->assign('alertNote', $alertHelper->alertTypeExists(Alert::TYPE_NOTE))

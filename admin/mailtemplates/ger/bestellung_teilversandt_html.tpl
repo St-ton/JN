@@ -2,7 +2,7 @@
 
 Guten Tag {$Kunde->cVorname} {$Kunde->cNachname},
 <br>
-der Versandstatus Ihrer Bestellung mit der Bestell-Nr. {$Bestellung->cBestellNr} hat sich geändert.<br>
+der Versandstatus Ihrer Bestellung mit Bestellnummer {$Bestellung->cBestellNr} hat sich geändert.<br>
 <br>
 {foreach $Bestellung->oLieferschein_arr as $oLieferschein}
     {if !$oLieferschein->getEmailVerschickt()}
@@ -58,7 +58,7 @@ der Versandstatus Ihrer Bestellung mit der Bestell-Nr. {$Bestellung->cBestellNr}
 <br>
 Über den weiteren Verlauf Ihrer Bestellung werden wir Sie jeweils gesondert informieren.<br>
 <br>
-Mit freundlichem Gruß,<br>
+Mit freundlichem Gruß<br>
 Ihr Team von {$Firma->cName}
 
 {includeMailTemplate template=footer type=html}

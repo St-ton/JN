@@ -41,23 +41,33 @@ final class QuickSync extends AbstractSync
      */
     private function handleInserts(array $xml): void
     {
-        if (!\is_array($xml['quicksync']['tartikel'])) {
+        $source = $xml['quicksync']['tartikel'] ?? null;
+        if (!\is_array($source)) {
             return;
         }
         $products = $this->mapper->mapArray($xml['quicksync'], 'tartikel', 'mArtikelQuickSync');
         $count    = \count($products);
         if ($count < 2) {
-            $this->handleNewPriceFormat((int)$products[0]->kArtikel, $xml['quicksync']['tartikel']);
-            $this->handlePriceHistory((int)$products[0]->kArtikel, $xml['quicksync']['tartikel']);
+            $this->handleNewPriceFormat((int)$products[0]->kArtikel, $source);
+            $this->handlePriceHistory((int)$products[0]->kArtikel, $source);
         } else {
             for ($i = 0; $i < $count; ++$i) {
-                $this->handleNewPriceFormat((int)$products[$i]->kArtikel, $xml['quicksync']['tartikel'][$i]);
-                $this->handlePriceHistory((int)$products[$i]->kArtikel, $xml['quicksync']['tartikel'][$i]);
+                $this->handleNewPriceFormat((int)$products[$i]->kArtikel, $source[$i]);
+                $this->handlePriceHistory((int)$products[$i]->kArtikel, $source[$i]);
             }
         }
+        $this->insertProducts($products);
+    }
+
+    /**
+     * @param array $products
+     */
+    private function insertProducts(array $products): void
+    {
         $clearTags = [];
         $conf      = Shop::getSettings([\CONF_ARTIKELDETAILS]);
         foreach ($products as $product) {
+            $id = (int)$product->kArtikel;
             if (isset($product->fLagerbestand) && $product->fLagerbestand > 0) {
                 $delta = $this->db->query(
                     "SELECT SUM(pos.nAnzahl) AS totalquantity
@@ -65,7 +75,7 @@ final class QuickSync extends AbstractSync
                     JOIN twarenkorbpos pos
                     ON pos.kWarenkorb = b.kWarenkorb
                     WHERE b.cAbgeholt = 'N'
-                        AND pos.kArtikel = " . (int)$product->kArtikel,
+                        AND pos.kArtikel = " . $id,
                     ReturnType::SINGLE_OBJECT
                 );
                 if ($delta->totalquantity > 0) {
@@ -81,13 +91,12 @@ final class QuickSync extends AbstractSync
             $upd->fLagerbestand         = $product->fLagerbestand;
             $upd->fStandardpreisNetto   = $product->fStandardpreisNetto;
             $upd->dLetzteAktualisierung = 'NOW()';
-            $this->db->update('tartikel', 'kArtikel', (int)$product->kArtikel, $upd);
+            $this->db->update('tartikel', 'kArtikel', $id, $upd);
             \executeHook(\HOOK_QUICKSYNC_XML_BEARBEITEINSERT, ['oArtikel' => $product]);
-            // clear object cache for this article and its parent if there is any
-            $oarentProduct = $this->db->select(
+            $parentProduct = $this->db->select(
                 'tartikel',
                 'kArtikel',
-                $product->kArtikel,
+                $id,
                 null,
                 null,
                 null,
@@ -95,14 +104,15 @@ final class QuickSync extends AbstractSync
                 false,
                 'kVaterArtikel'
             );
-            if (!empty($oarentProduct->kVaterArtikel)) {
-                $clearTags[] = (int)$oarentProduct->kVaterArtikel;
+            if (!empty($parentProduct->kVaterArtikel)) {
+                $clearTags[] = (int)$parentProduct->kVaterArtikel;
             }
-            $clearTags[] = (int)$product->kArtikel;
+            $clearTags[] = $id;
             $this->sendAvailabilityMails($product, $conf);
         }
+        $clearTags = \array_unique($clearTags);
         $this->handlePriceRange($clearTags);
-        $this->cache->flushTags(map(\array_unique($clearTags), function ($e) {
+        $this->cache->flushTags(map($clearTags, function ($e) {
             return \CACHING_GROUP_ARTICLE . '_' . $e;
         }));
     }

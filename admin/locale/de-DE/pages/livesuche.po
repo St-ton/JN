@@ -9,10 +9,7 @@ msgid "livesucheURL"
 msgstr "https://jtl-url.de/uxd87"
 
 msgid "livesucheDesc"
-msgstr "Hier finden Sie die zuletzt getätigten Suchanfragen über die Suchfunktion von JTL-Shop, sowie Suchanfragen bzw. Suchbegriffe mit anderen Suchanfragen/Suchbegriffen verknüpfen, z. B. Mobiltelefon mit Smartphone. Dadurch wird Ihren Kunden bei einer Suche nach Mobiltelefon das Suchergebnis für Smartphone angezeigt."
-
-msgid "search"
-msgstr "Suche"
+msgstr "Hier finden Sie die zuletzt getätigten Suchanfragen über die Suchfunktion von JTL-Shop und können Suchanfragen bzw. Suchbegriffe mit anderen Suchanfragen/Suchbegriffen verknüpfen, z. B. Mobiltelefon mit Smartphone. Dadurch wird Ihren Kunden bei einer Suche nach Mobiltelefon das Suchergebnis für Smartphone angezeigt."
 
 msgid "searchnew"
 msgstr "Neue Suche"

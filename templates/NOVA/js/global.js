@@ -416,16 +416,16 @@ $(document).ready(function () {
         datumTokenizer: Bloodhound.tokenizers.obj.whitespace('keyword'),
         queryTokenizer: Bloodhound.tokenizers.whitespace,
         remote:         {
-            url:      'io.php?io={"name":"getCitiesByZip", "params":["%QUERY", "' + $(this).closest('fieldset').find('.country_input').val() + '", "' + $(this).closest('fieldset').find('.postcode_input').val() + '"]}',
+            url:      'io.php?io={"name":"getCitiesByZip", "params":["%QUERY", "' + $(this).closest('fieldset').find('.country-input').val() + '", "' + $(this).closest('fieldset').find('.postcode_input').val() + '"]}',
             wildcard: '%QUERY'
         },
         dataType: "json"
     });
     $('.city_input').on('focusin', function () {
-        citySuggestion.remote.url = 'io.php?io={"name":"getCitiesByZip", "params":["%QUERY", "' + $(this).closest('fieldset').find('.country_input').val() + '", "' + $(this).closest('fieldset').find('.postcode_input').val() + '"]}';
+        citySuggestion.remote.url = 'io.php?io={"name":"getCitiesByZip", "params":["%QUERY", "' + $(this).closest('fieldset').find('.country-input').val() + '", "' + $(this).closest('fieldset').find('.postcode_input').val() + '"]}';
     });
     $('.postcode_input').on('change', function () {
-        citySuggestion.remote.url = 'io.php?io={"name":"getCitiesByZip", "params":["%QUERY", "' + $(this).closest('fieldset').find('.country_input').val() + '", "' + $(this).val() + '"]}';
+        citySuggestion.remote.url = 'io.php?io={"name":"getCitiesByZip", "params":["%QUERY", "' + $(this).closest('fieldset').find('.country-input').val() + '", "' + $(this).val() + '"]}';
     });
     $('.country_input').on('change', function () {
         citySuggestion.remote.url = 'io.php?io={"name":"getCitiesByZip", "params":["%QUERY", "' + $(this).val() + '", "' + $(this).closest('fieldset').find('.postcode_input').val() + '"]}';
@@ -572,4 +572,8 @@ $(document).ready(function () {
     addCopyToClipboardListener();
     addCloseMenuDropdownListener();
     initWow();
+
+    $('.label-slide input').on('keyup', function() {
+        $(this).attr('value', $(this).val());
+    });
 });

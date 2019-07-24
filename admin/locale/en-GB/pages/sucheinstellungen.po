@@ -3,40 +3,43 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "errorIndexNotCreatable"
-msgstr "Der Index für die Volltextsuche konnte nicht angelegt werden! Die Volltextsuche wird deaktiviert."
+msgstr "Could not create index for full-text search due to a MySQL error. Full-text search was deactivated. Please contact the Support team."
 
 msgid "errorIndexInvalid"
-msgstr "Ungültiger Index angegeben."
+msgstr "Invalid index. Please enter a valid index (tartikel or tartikelsprache)."
 
 msgid "successIndexCreate"
-msgstr "Der Volltextindex für %s wurde angelegt!"
+msgstr "Full-text index for %s generated successfully."
 
 msgid "successIndexDelete"
-msgstr "Der Volltextindex für %s wurde gelöscht!"
+msgstr "Full-text index for %s deleted successfully."
 
 msgid "errorFulltextSearchMYSQL"
-msgstr "Die Volltextsuche erfordert MySQL ab Version 5.6!"
+msgstr "The full-text search requires MySQL version 5.6 or higher."
 
 msgid "successSearchActivate"
-msgstr "Volltextsuche wurde aktiviert."
+msgstr "Full-text search activated successfully."
 
 msgid "successSearchDeactivate"
-msgstr "Volltextsuche wurde deaktiviert."
+msgstr "Full-text search deactivated successfully."
 
 msgid "indexCreate"
-msgstr "Der Volltextindex wird erstellt!"
+msgstr "Generating full-text index…"
 
 msgid "errorCreateTime"
-msgstr "Der Volltextindex ist nicht vorhanden! Die Erstellung des Index kann jedoch einige Zeit in Anspruch nehmen."
+msgstr "No full-text index available. Generating the index might take some time."
 
 msgid "successSearchCacheDelete"
-msgstr "Der Such-Cache wurde gelöscht."
+msgstr "Search cache deleted successfully."
 
 msgid "searchSettingsChange"
-msgstr "Sucheinstellungen ändern"
+msgstr "Changing the search settings"
 
 msgid "fulltextSearchMysql"
-msgstr "Die Volltextsuche erfordert MySQL ab Version 5.6!"
+msgstr "The full-text search requires MySQL version 5.6 or higher."
 
 msgid "useFulltextSearch"
-msgstr "Volltextsuche verwenden"
+msgstr "Use full-text search"
+
+msgid "Sucheinstellungen"
+msgstr "Search settings"

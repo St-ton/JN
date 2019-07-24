@@ -42,4 +42,4 @@ msgid "successImport"
 msgstr "Data set OK. Import of: "
 
 msgid "errorImportRow"
-msgstr "Could not import row."
+msgstr "The row could not be imported."

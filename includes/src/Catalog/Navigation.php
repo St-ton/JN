@@ -6,16 +6,16 @@
 
 namespace JTL\Catalog;
 
-use JTL\Helpers\Request;
 use JTL\Catalog\Category\KategorieListe;
 use JTL\Catalog\Product\Artikel;
 use JTL\Filter\ProductFilter;
+use JTL\Helpers\Request;
+use JTL\Language\LanguageHelper;
 use JTL\Link\Link;
 use JTL\Link\LinkInterface;
 use JTL\Services\JTL\LinkServiceInterface;
 use JTL\Session\Frontend;
 use JTL\Shop;
-use JTL\Sprache;
 use stdClass;
 
 /**
@@ -25,7 +25,7 @@ use stdClass;
 class Navigation
 {
     /**
-     * @var Sprache
+     * @var LanguageHelper
      */
     private $language;
 
@@ -77,10 +77,10 @@ class Navigation
     /**
      * Navigation constructor.
      *
-     * @param Sprache              $language
+     * @param LanguageHelper       $language
      * @param LinkServiceInterface $linkService
      */
-    public function __construct(Sprache $language, LinkServiceInterface $linkService)
+    public function __construct(LanguageHelper $language, LinkServiceInterface $linkService)
     {
         $this->language    = $language;
         $this->linkService = $linkService;
@@ -226,11 +226,8 @@ class Navigation
         if ($this->productFilter->hasManufacturer()) {
             return Shop::Lang()->get('productsFrom') . ' ' . $this->productFilter->getManufacturer()->getName();
         }
-        if ($this->productFilter->hasAttributeValue()) {
-            return Shop::Lang()->get('productsWith') . ' ' . $this->productFilter->getAttributeValue()->getName();
-        }
-        if ($this->productFilter->hasTag()) {
-            return Shop::Lang()->get('showAllProductsTaggedWith') . ' ' . $this->productFilter->getTag()->getName();
+        if ($this->productFilter->hasCharacteristicValue()) {
+            return Shop::Lang()->get('productsWith') . ' ' . $this->productFilter->getCharacteristicValue()->getName();
         }
         if ($this->productFilter->hasSearchSpecial()) {
             return $this->productFilter->getSearchSpecial()->getName() ?? '';

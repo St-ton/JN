@@ -150,7 +150,7 @@ msgid "newsletterSearchBTN"
 msgstr "Search"
 
 msgid "newsletterUnlock"
-msgstr "Activate"
+msgstr "Approve"
 
 msgid "newsletterdraftStd"
 msgstr "Standard templates"
@@ -195,10 +195,10 @@ msgid "errorFillEmail"
 msgstr "Please fill in the field \"Email\"."
 
 msgid "successNewsletterQueueDelete"
-msgstr "Newsletterqueue(s) %s successfully deleted."
+msgstr "Newsletter queue(s) %s deleted successfully."
 
 msgid "successNewsletterHistoryDelete"
-msgstr "Newsletterhistory(s) %s successfully deleted."
+msgstr "Newsletter history/ies %s deleted successfully."
 
 msgid "errorAtLeastOneNewsletter"
 msgstr "Please select at least one newsletter."
@@ -214,6 +214,9 @@ msgstr "Newsletter template %s saved successfully."
 
 msgid "successNewsletterPrepared"
 msgstr "Newsletter %s is ready to be sent."
+
+msgid "newsletterCronjobNotFound"
+msgstr "Newsletter cron job not found! Sending of newsletters is not possible."
 
 msgid "errorTestTemplateEmpty"
 msgstr "Empty recipient address for the trial newsletter."
@@ -231,4 +234,4 @@ msgid "newsletterNoAccount"
 msgstr "Newsletter recipient w/o customer account"
 
 msgid "errorEmailExists"
-msgstr "Error: Email already exists"
+msgstr "The email address already exists."

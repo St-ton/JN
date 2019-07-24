@@ -22,7 +22,7 @@
     <div class="tab-content">
         <div id="aktivegeschenke" class="tab-pane fade {if !isset($cTab) || $cTab === 'aktivegeschenke'} active in{/if}">
             {if isset($oAktiveGeschenk_arr) && $oAktiveGeschenk_arr|@count > 0}
-                {include file='tpl_inc/pagination.tpl' oPagination=$oPagiAktiv cAnchor='aktivegeschenke'}
+                {include file='tpl_inc/pagination.tpl' pagination=$oPagiAktiv cAnchor='aktivegeschenke'}
                 <div class="settings panel panel-default table-responsive">
                     <table class="table table-striped">
                         <thead>
@@ -51,7 +51,7 @@
         </div>
         <div id="haeufigegeschenke" class="tab-pane fade {if isset($cTab) && $cTab === 'haeufigegeschenke'} active in{/if}">
             {if isset($oHaeufigGeschenk_arr) && $oHaeufigGeschenk_arr|@count > 0}
-                {include file='tpl_inc/pagination.tpl' oPagination=$oPagiHaeufig cAnchor='haeufigegeschenke'}
+                {include file='tpl_inc/pagination.tpl' pagination=$oPagiHaeufig cAnchor='haeufigegeschenke'}
                 <div class="settings panel panel-default table-responsive">
                     <table class="table table-striped">
                         <thead>
@@ -67,10 +67,10 @@
                         {foreach $oHaeufigGeschenk_arr as $oHaeufigGeschenk}
                             <tr>
                                 <td>
-                                    <a href="{$oAktiveGeschenk->cURLFull}" target="_blank">{$oHaeufigGeschenk->Artikel->cName}</a>
+                                    <a href="{$oAktiveGeschenk->cURLFull}" target="_blank">{$oHaeufigGeschenk->artikel->cName}</a>
                                 </td>
-                                <td class="tcenter">{getCurrencyConversionSmarty fPreisBrutto=$oHaeufigGeschenk->Artikel->FunktionsAttribute[$cFunAttrib]}</td>
-                                <td class="tcenter">{$oHaeufigGeschenk->Artikel->nGGAnzahl} x</td>
+                                <td class="tcenter">{getCurrencyConversionSmarty fPreisBrutto=$oHaeufigGeschenk->artikel->FunktionsAttribute[$cFunAttrib]}</td>
+                                <td class="tcenter">{$oHaeufigGeschenk->artikel->nGGAnzahl} x</td>
                                 <td class="tcenter">{getCurrencyConversionSmarty fPreisBrutto=$oHaeufigGeschenk->avgOrderValue}</td>
                                 <td class="tcenter">{$oHaeufigGeschenk->lastOrdered}</td>
                             </tr>
@@ -84,7 +84,7 @@
         </div>
         <div id="letzten100geschenke" class="tab-pane fade {if isset($cTab) && $cTab === 'letzten100geschenke'} active in{/if}">
             {if isset($oLetzten100Geschenk_arr) && $oLetzten100Geschenk_arr|@count > 0}
-                {include file='tpl_inc/pagination.tpl' oPagination=$oPagiLetzte100 cAnchor='letzten100geschenke'}
+                {include file='tpl_inc/pagination.tpl' pagination=$oPagiLetzte100 cAnchor='letzten100geschenke'}
                 <div class="settings panel panel-default table-responsive">
                     <table class="table table-striped">
                         <thead>
@@ -99,9 +99,9 @@
                         {foreach $oLetzten100Geschenk_arr as $oLetzten100Geschenk}
                             <tr>
                                 <td>
-                                    <a href="{$oAktiveGeschenk->cURLFull}" target="_blank">{$oLetzten100Geschenk->Artikel->cName}</a>
+                                    <a href="{$oAktiveGeschenk->cURLFull}" target="_blank">{$oLetzten100Geschenk->artikel->cName}</a>
                                 </td>
-                                <td class="tcenter">{getCurrencyConversionSmarty fPreisBrutto=$oLetzten100Geschenk->Artikel->FunktionsAttribute[$cFunAttrib]}</td>
+                                <td class="tcenter">{getCurrencyConversionSmarty fPreisBrutto=$oLetzten100Geschenk->artikel->FunktionsAttribute[$cFunAttrib]}</td>
                                 <td class="tcenter">{getCurrencyConversionSmarty fPreisBrutto=$oLetzten100Geschenk->orderValue}</td>
                                 <td class="tcenter">{$oLetzten100Geschenk->orderCreated}</td>
                             </tr>

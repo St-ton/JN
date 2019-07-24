@@ -16,6 +16,38 @@ use stdClass;
 class GeneralObject
 {
     /**
+     * @param int|string|array $index
+     * @param mixed  $source
+     * @return bool
+     */
+    public static function isCountable($index, $source = null): bool
+    {
+        if (\is_object($source)) {
+            return isset($source->$index) && \is_countable($source->$index);
+        }
+
+        return $source === null
+            ? $index !== null && \is_countable($index)
+            : isset($source[$index]) && \is_countable($source[$index]);
+    }
+
+    /**
+     * @param string|int|array $index
+     * @param mixed      $source
+     * @return bool
+     */
+    public static function hasCount($index, $source = null): bool
+    {
+        if (\is_object($source)) {
+            return isset($source->$index) && \is_countable($source->$index) && \count($source->$index) > 0;
+        }
+
+        return $source === null
+            ? $index !== null && \is_countable($index) && \count($index) > 0
+            : isset($source[$index]) && \is_countable($source[$index]) && \count($source[$index]) > 0;
+    }
+
+    /**
      * @param array  $data
      * @param string $key
      * @param bool   $bStringToLower
@@ -84,12 +116,12 @@ class GeneralObject
     }
 
     /**
-     * @param object $oObj
+     * @param object $object
      * @return mixed
      * @since 5.0.0
      */
-    public static function deepCopy($oObj)
+    public static function deepCopy($object)
     {
-        return \unserialize(\serialize($oObj));
+        return \unserialize(\serialize($object));
     }
 }

@@ -4,7 +4,6 @@
  *}
 {block name='boxes-box-direct-purchase'}
     {card class="box box-direct-purchase mb-7" id="sidebox{$oBox->getID()}" title="{lang key='quickBuy'}"}
-        <hr class="mt-0 mb-4">
         {block name='boxes-box-direct-purchase-form'}
             {form class="top10" action="{get_static_route id='warenkorb.php'}" method="post"}
                 {input type="hidden" name="schnellkauf" value="1"}

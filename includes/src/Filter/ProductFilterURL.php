@@ -6,14 +6,13 @@
 
 namespace JTL\Filter;
 
-use JTL\Filter\Items\Attribute;
+use JTL\Filter\Items\Characteristic;
 use JTL\Filter\Items\Category;
 use JTL\Filter\Items\Manufacturer;
 use JTL\Filter\Items\PriceRange;
 use JTL\Filter\Items\Rating;
 use JTL\Filter\Items\Search;
 use JTL\Filter\Items\SearchSpecial;
-use JTL\Filter\Items\Tag;
 use JTL\Filter\States\BaseSearchQuery;
 use JTL\Session\Frontend;
 use JTL\Shop;
@@ -270,48 +269,48 @@ class ProductFilterURL
             $manufacturerFilter->setUnsetFilterURL($urls);
         }
 
-        $additionalFilter = (new Attribute($this->productFilter))->setDoUnset(true);
-        foreach ($this->productFilter->getAttributeFilter() as $filter) {
-            if ($filter->getAttributeID() > 0) {
-                $url->addAttribute(
-                    $filter->getAttributeID(),
+        $additionalFilter = (new Characteristic($this->productFilter))->setDoUnset(true);
+        foreach ($this->productFilter->getCharacteristicFilter() as $filter) {
+            if ($filter->getId() > 0) {
+                $url->addCharacteristic(
+                    $filter->getId(),
                     $this->getURL(
-                        $additionalFilter->init($filter->getAttributeID())
+                        $additionalFilter->init($filter->getId())
                                          ->setSeo($this->productFilter->getFilterConfig()->getLanguages())
                     )
                 );
-                $filter->setUnsetFilterURL($url->getAttributes());
+                $filter->setUnsetFilterURL($url->getCharacteristics());
             }
             if (\is_array($filter->getValue())) {
                 $urls = [];
-                foreach ($filter->getValue() as $mmw) {
-                    $additionalFilter->init($mmw)->setValue($mmw);
-                    $_attributesURL = $this->getURL($additionalFilter);
-                    $url->addAttributeValue($mmw, $_attributesURL);
-                    $urls[$mmw] = $_attributesURL;
+                foreach ($filter->getValue() as $charVal) {
+                    $additionalFilter->init($charVal)->setValue($charVal);
+                    $charURL = $this->getURL($additionalFilter);
+                    $url->addCharacteristicValue($charVal, $charURL);
+                    $urls[$charVal] = $charURL;
                 }
                 $filter->setUnsetFilterURL($urls);
             } else {
-                $url->addAttributeValue($filter->getValue(), $this->getURL(
+                $url->addCharacteristicValue($filter->getValue(), $this->getURL(
                     $additionalFilter->init($filter->getValue())
                 ));
-                $filter->setUnsetFilterURL($url->getAttributeValues());
+                $filter->setUnsetFilterURL($url->getCharacteristicValues());
             }
         }
         // kinda hacky: try to build url that removes a merkmalwert url from merkmalfilter url
-        if ($this->productFilter->getAttributeValue()->isInitialized()
-            && !isset($url->getAttributeValues()[$this->productFilter->getAttributeValue()->getValue()])
+        if ($this->productFilter->getCharacteristicValue()->isInitialized()
+            && !isset($url->getCharacteristicValues()[$this->productFilter->getCharacteristicValue()->getValue()])
         ) {
             // the url should be <shop>/<merkmalwert-url>__<merkmalfilter>[__<merkmalfilter>]
             $_mmwSeo = \str_replace(
-                $this->productFilter->getAttributeValue()
+                $this->productFilter->getCharacteristicValue()
                                     ->getSeo($this->productFilter->getFilterConfig()->getLanguageID()) . \SEP_MERKMAL,
                 '',
                 $url->getCategories()
             );
             if ($_mmwSeo !== $url->getCategories()) {
-                $url->addAttributeValue($this->productFilter->getAttributeValue()->getValue(), $_mmwSeo);
-                $this->productFilter->getAttributeValue()->setUnsetFilterURL($_mmwSeo);
+                $url->addCharacteristicValue($this->productFilter->getCharacteristicValue()->getValue(), $_mmwSeo);
+                $this->productFilter->getCharacteristicValue()->setUnsetFilterURL($_mmwSeo);
             }
         }
         $extraFilter    = (new PriceRange($this->productFilter))->setDoUnset(true);
@@ -323,18 +322,6 @@ class ProductFilterURL
         $_ratingURL  = $this->getURL($extraFilter);
         $url->setRatings($_ratingURL);
         $this->productFilter->getRatingFilter()->setUnsetFilterURL($_ratingURL);
-
-        $extraFilter = (new Tag($this->productFilter))->init(null)->setDoUnset(true);
-        $_tagsURL    = $this->getURL($extraFilter);
-        $url->setTags($_tagsURL);
-        $this->productFilter->getTag()->setUnsetFilterURL($_tagsURL);
-        $this->productFilter->tagFilterCompat->setUnsetFilterURL($_tagsURL);
-
-        $additionalFilter = (new Tag($this->productFilter))->setDoUnset(true);
-        foreach ($this->productFilter->getTagFilter() as $tagFilter) {
-            $additionalFilter->init($tagFilter->getValue());
-            $tagFilter->setUnsetFilterURL($this->getURL($additionalFilter));
-        }
 
         $extraFilter        = (new SearchSpecial($this->productFilter))->init(null)->setDoUnset(true);
         $_searchSpecialsURL = $this->getURL($extraFilter);
@@ -422,10 +409,10 @@ class ProductFilterURL
         } elseif (isset($extraFilter->MerkmalFilter->kMerkmalWert)
             || isset($extraFilter->FilterLoesen->MerkmalWert)
         ) {
-            $filter = (new Attribute($this->productFilter))
+            $filter = (new Characteristic($this->productFilter))
                 ->init($extraFilter->MerkmalFilter->kMerkmalWert ?? $extraFilter->FilterLoesen->MerkmalWert);
         } elseif (isset($extraFilter->FilterLoesen->Merkmale)) {
-            $filter = (new Attribute($this->productFilter))->init($extraFilter->FilterLoesen->Merkmale);
+            $filter = (new Characteristic($this->productFilter))->init($extraFilter->FilterLoesen->Merkmale);
         } elseif (isset($extraFilter->PreisspannenFilter->fVon)
             || (isset($extraFilter->FilterLoesen->Preisspannen) && $extraFilter->FilterLoesen->Preisspannen === true)
         ) {
@@ -439,10 +426,6 @@ class ProductFilterURL
         ) {
             $filter = (new Rating($this->productFilter))
                 ->init($extraFilter->BewertungFilter->nSterne ?? null);
-        } elseif (isset($extraFilter->TagFilter->kTag)
-            || (isset($extraFilter->FilterLoesen->Tags) && $extraFilter->FilterLoesen->Tags === true)
-        ) {
-            $filter = (new Tag($this->productFilter))->init($extraFilter->TagFilter->kTag ?? null);
         } elseif (isset($extraFilter->SuchspecialFilter->kKey)
             || (isset($extraFilter->FilterLoesen->Suchspecials) && $extraFilter->FilterLoesen->Suchspecials === true)
         ) {

@@ -65,32 +65,32 @@ class NetSyncHandler
             return $_SESSION['bAuthed'];
         }
         // by syncdata
-        $cName   = \urldecode($_REQUEST['uid']);
-        $cPass   = \urldecode($_REQUEST['upwd']);
-        $bAuthed = (\strlen($cName) > 0 && \strlen($cPass) > 0)
-            ? (new Synclogin($this->db, $this->logger))->checkLogin($cName, $cPass)
+        $name          = \urldecode($_REQUEST['uid']);
+        $pass          = \urldecode($_REQUEST['upwd']);
+        $authenticated = (\strlen($name) > 0 && \strlen($pass) > 0)
+            ? (new Synclogin($this->db, $this->logger))->checkLogin($name, $pass)
             : false;
-        if ($bAuthed) {
+        if ($authenticated) {
             \session_start();
-            $_SESSION['bAuthed'] = $bAuthed;
+            $_SESSION['bAuthed'] = $authenticated;
         }
 
-        return $bAuthed;
+        return $authenticated;
     }
 
     /**
-     * @param int        $nCode
-     * @param null|mixed $oData
+     * @param int        $code
+     * @param null|mixed $data
      */
-    protected static function throwResponse($nCode, $oData = null): void
+    protected static function throwResponse($code, $data = null): void
     {
         $response         = new stdClass();
-        $response->nCode  = $nCode;
+        $response->nCode  = $code;
         $response->cToken = '';
         $response->oData  = null;
-        if ($nCode === 0) {
+        if ($code === 0) {
             $response->cToken = \session_id();
-            $response->oData  = $oData;
+            $response->oData  = $data;
         }
         echo \json_encode($response);
         exit;
@@ -99,7 +99,7 @@ class NetSyncHandler
     /**
      * @param int $request
      */
-    protected function request($request)
+    protected function request($request): void
     {
     }
 
@@ -123,21 +123,7 @@ class NetSyncHandler
      */
     public function streamFile($filename, $mimetype, $outname = ''): void
     {
-        $userAgent = empty($_SERVER['HTTP_USER_AGENT'])
-            ? ''
-            : $_SERVER['HTTP_USER_AGENT'];
-        $browser   = 'other';
-        if (\preg_match('/^Opera(\/| )([0-9].[0-9]{1,2})/', $userAgent) === 1) {
-            $browser = 'opera';
-        } elseif (\preg_match('/^MSIE ([0-9].[0-9]{1,2})/', $userAgent) === 1) {
-            $browser = 'ie';
-        } elseif (\preg_match('/^OmniWeb\/([0-9].[0-9]{1,2})/', $userAgent) === 1) {
-            $browser = 'omniweb';
-        } elseif (\preg_match('/^Mozilla\/([0-9].[0-9]{1,2})/', $userAgent) === 1) {
-            $browser = 'mozilla';
-        } elseif (\preg_match('/^Konqueror\/([0-9].[0-9]{1,2})/', $userAgent) === 1) {
-            $browser = 'konqueror';
-        }
+        $browser = $this->getBrowser($_SERVER['HTTP_USER_AGENT'] ?? '');
         if (($mimetype === 'application/octet-stream') || ($mimetype === 'application/octetstream')) {
             $mimetype = 'application/octet-stream';
             if (($browser === 'ie') || ($browser === 'opera')) {
@@ -168,6 +154,28 @@ class NetSyncHandler
         \readfile($filename);
         \unlink($filename);
         exit;
+    }
+
+    /**
+     * @param string $userAgent
+     * @return string
+     */
+    private function getBrowser(string $userAgent): string
+    {
+        $browser = 'other';
+        if (\preg_match('/^Opera(\/| )([0-9].[0-9]{1,2})/', $userAgent) === 1) {
+            $browser = 'opera';
+        } elseif (\preg_match('/^MSIE ([0-9].[0-9]{1,2})/', $userAgent) === 1) {
+            $browser = 'ie';
+        } elseif (\preg_match('/^OmniWeb\/([0-9].[0-9]{1,2})/', $userAgent) === 1) {
+            $browser = 'omniweb';
+        } elseif (\preg_match('/^Mozilla\/([0-9].[0-9]{1,2})/', $userAgent) === 1) {
+            $browser = 'mozilla';
+        } elseif (\preg_match('/^Konqueror\/([0-9].[0-9]{1,2})/', $userAgent) === 1) {
+            $browser = 'konqueror';
+        }
+
+        return $browser;
     }
 
     /**

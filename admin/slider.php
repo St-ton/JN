@@ -5,16 +5,16 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use JTL\Helpers\Form;
+use JTL\Alert\Alert;
+use JTL\Boxes\Admin\BoxAdmin;
 use JTL\Customer\Kundengruppe;
+use JTL\DB\ReturnType;
+use JTL\Helpers\Form;
+use JTL\Language\LanguageHelper;
+use JTL\Pagination\Pagination;
 use JTL\Shop;
 use JTL\Slide;
 use JTL\Slider;
-use JTL\Sprache;
-use JTL\DB\ReturnType;
-use JTL\Boxes\Admin\BoxAdmin;
-use JTL\Alert\Alert;
-use JTL\Pagination\Pagination;
 
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . 'toolsajax.server.php';
@@ -63,28 +63,27 @@ switch ($action) {
             $slider->load($kSlider, false);
             $slider->set((object)$_REQUEST);
             // extensionpoint
-            $kSprache      = (int)$_POST['kSprache'];
-            $kKundengruppe = $_POST['kKundengruppe'];
-            $nSeite        = (int)$_POST['nSeitenTyp'];
-            $cKey          = $_POST['cKey'];
-            $cKeyValue     = '';
-            $cValue        = '';
-            if ($nSeite === PAGE_ARTIKEL) {
+            $languageID      = (int)$_POST['kSprache'];
+            $customerGroupID = $_POST['kKundengruppe'];
+            $pageType        = (int)$_POST['nSeitenTyp'];
+            $cKey            = $_POST['cKey'];
+            $cKeyValue       = '';
+            $cValue          = '';
+            if ($pageType === PAGE_ARTIKEL) {
                 $cKey      = 'kArtikel';
                 $cKeyValue = 'article_key';
                 $cValue    = $_POST[$cKeyValue];
-            } elseif ($nSeite === PAGE_ARTIKELLISTE) {
-                $aFilter_arr = [
-                    'kTag'         => 'tag_key',
+            } elseif ($pageType === PAGE_ARTIKELLISTE) {
+                $filter = [
                     'kMerkmalWert' => 'attribute_key',
                     'kKategorie'   => 'categories_key',
                     'kHersteller'  => 'manufacturer_key',
                     'cSuche'       => 'keycSuche'
                 ];
 
-                $cKeyValue = $aFilter_arr[$cKey];
+                $cKeyValue = $filter[$cKey];
                 $cValue    = $_POST[$cKeyValue];
-            } elseif ($nSeite === PAGE_EIGENE) {
+            } elseif ($pageType === PAGE_EIGENE) {
                 $cKey      = 'kLink';
                 $cKeyValue = 'link_key';
                 $cValue    = $_POST[$cKeyValue];
@@ -106,9 +105,9 @@ switch ($action) {
                         ['slider', $slider->getID()]
                     );
                     $extension                = new stdClass();
-                    $extension->kSprache      = $kSprache;
-                    $extension->kKundengruppe = $kKundengruppe;
-                    $extension->nSeite        = $nSeite;
+                    $extension->kSprache      = $languageID;
+                    $extension->kKundengruppe = $customerGroupID;
+                    $extension->nSeite        = $pageType;
                     $extension->cKey          = $cKey;
                     $extension->cValue        = $cValue;
                     $extension->cClass        = 'slider';
@@ -146,17 +145,17 @@ switch ($action) {
         }
         $slider = new Slider($db);
         $slider->load($kSlider, false);
-        $smarty->assign('oSprachen_arr', Sprache::getInstance()->gibInstallierteSprachen())
+        $smarty->assign('oSprachen_arr', LanguageHelper::getInstance()->gibInstallierteSprachen())
                ->assign('oKundengruppe_arr', Kundengruppe::getGroups())
                ->assign('oExtension', holeExtension($kSlider));
 
         if ($slider->getEffects() !== 'random') {
-            $cEffects_arr = explode(';', $slider->getEffects());
-            $cEffects     = '';
-            foreach ($cEffects_arr as $cKey => $cValue) {
-                $cEffects .= '<option value="' . $cValue . '">' . $cValue . '</option>';
+            $effects = explode(';', $slider->getEffects());
+            $options = '';
+            foreach ($effects as $cKey => $cValue) {
+                $options .= '<option value="' . $cValue . '">' . $cValue . '</option>';
             }
-            $smarty->assign('cEffects', $cEffects);
+            $smarty->assign('cEffects', $options);
         } else {
             $smarty->assign('checked', 'checked="checked"')
                    ->assign('disabled', 'disabled="true"');
@@ -172,7 +171,7 @@ switch ($action) {
 
     case 'new':
         $smarty->assign('checked', 'checked="checked"')
-               ->assign('oSprachen_arr', Sprache::getInstance()->gibInstallierteSprachen())
+               ->assign('oSprachen_arr', LanguageHelper::getInstance()->gibInstallierteSprachen())
                ->assign('oKundengruppe_arr', Kundengruppe::getGroups())
                ->assign('oSlider', new Slider($db));
         break;
@@ -197,7 +196,7 @@ $pagination = (new Pagination('sliders'))
     ->setItemArray($sliders)
     ->assemble();
 
-$smarty->assign('cAction', $action)
+$smarty->assign('action', $action)
        ->assign('kSlider', $kSlider)
        ->assign('validPageTypes', (new BoxAdmin($db))->getMappedValidPageTypes())
        ->assign('pagination', $pagination)

@@ -76,7 +76,7 @@
                 maxValStr     = '9'.repeat(maxValLength),
                 maxVal        = parseInt(maxValStr);
 
-            var result = 'Vorschau: ' + praefix + maxValStr + suffix;
+            var result = {/literal}'{__('preview')}: '{literal} + praefix + maxValStr + suffix;
 
             $(elem).attr('title', result)
                 .tooltip('fixTitle')

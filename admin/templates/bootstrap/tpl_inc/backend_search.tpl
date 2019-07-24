@@ -1,6 +1,6 @@
 <div class="backend-search">
     <i class="fa fa-search"></i>
-    <input id="backend-search-input" placeholder="Suchbegriff" name="cSuche" type="search"
+    <input id="backend-search-input" placeholder="{__('searchTerm')}" name="cSuche" type="search"
            value="" autocomplete="off">
     <ul id="backend-search-dropdown"></ul>
     <script>

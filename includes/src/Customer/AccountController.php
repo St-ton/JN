@@ -26,12 +26,12 @@ use JTL\GeneralDataProtection\Journal;
 use JTL\Helpers\Cart;
 use JTL\Helpers\Date;
 use JTL\Helpers\Form;
-use JTL\Helpers\Product;
 use JTL\Helpers\Request;
 use JTL\Helpers\ShippingMethod;
 use JTL\Helpers\Tax;
 use JTL\Helpers\Text;
 use JTL\Kampagne;
+use JTL\Language\LanguageHelper;
 use JTL\Pagination\Pagination;
 use JTL\Services\JTL\AlertServiceInterface;
 use JTL\Services\JTL\LinkServiceInterface;
@@ -40,10 +40,10 @@ use JTL\Shop;
 use JTL\Shopsetting;
 use JTL\SimpleMail;
 use JTL\Smarty\JTLSmarty;
-use JTL\Sprache;
 use Session;
 use stdClass;
 use Vergleichsliste;
+use function Functional\some;
 
 /**
  * Class AccountController
@@ -107,7 +107,7 @@ class AccountController
         if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
             $customer = new Kunde($_SESSION['Kunde']->kKunde);
             if ($customer->kKunde > 0) {
-                $customer->angezeigtesLand = Sprache::getCountryCodeByCountryName($customer->cLand);
+                $customer->angezeigtesLand = LanguageHelper::getCountryCodeByCountryName($customer->cLand);
                 Frontend::getInstance()->setCustomer($customer);
             }
         }
@@ -225,15 +225,6 @@ class AccountController
             $step = 'kunden_werben_kunden';
             $this->checkPromotion($_POST);
         }
-        if (isset($_GET['wlph']) && (int)$_GET['wlph'] > 0 && (int)$_GET['wl'] > 0) {
-            $step = 'mein Konto';
-            $this->addWishlistProductToCart();
-        }
-        // WunschlistePos alle in den Warenkorb adden
-        if (isset($_GET['wlpah']) && (int)$_GET['wlpah'] === 1 && (int)$_GET['wl'] > 0) {
-            $step = 'mein Konto';
-            $this->addAllWishlistProductsToCart();
-        }
         if (isset($_POST['wlh']) && (int)$_POST['wlh'] > 0) {
             $step = 'mein Konto';
             $name = Text::htmlentities(Text::filterXSS($_POST['cWunschlisteName']));
@@ -241,29 +232,7 @@ class AccountController
         }
         $wishlistID = Request::verifyGPCDataInt('wl');
         if ($wishlistID > 0) {
-            if (Request::verifyGPCDataInt('wla') > 0) {
-                $step = 'mein Konto';
-                // Prüfe ob die Wunschliste dem eingeloggten Kunden gehört
-                $wishlist = $this->db->select('twunschliste', 'kWunschliste', $wishlistID);
-                if (!empty($wishlist->kKunde) && (int)$wishlist->kKunde === $customerID) {
-                    $this->alertService->addAlert(Alert::TYPE_NOTE, Wunschliste::update($wishlistID), 'updateWL');
-                    $step                    = 'wunschliste anzeigen';
-                    $_SESSION['Wunschliste'] = new Wunschliste($_SESSION['Wunschliste']->kWunschliste ?? $wishlistID);
-                }
-            }
-            if (Request::verifyGPCDataInt('wlvm') > 0) {
-                $step = $this->viewWishlist($customerID, $wishlistID);
-            }
-            if (Request::verifyGPCDataInt('wldl') === 1) {
-                $step = 'wunschliste anzeigen';
-                $this->deleteWishlistPositions($customerID, $wishlistID);
-            }
-            if (Request::verifyGPCDataInt('wlsearch') === 1) {
-                $step = 'wunschliste anzeigen';
-                $this->searchInWishlist($customerID, $wishlistID);
-            } elseif (Request::verifyGPCDataInt('wl') > 0 && Request::verifyGPCDataInt('wlvm') === 0) {
-                $step = $this->modifyWishlist($customerID, $wishlistID);
-            }
+            $step = $this->modifyWishlist($customerID, $wishlistID);
         }
         if ((isset($_GET['editRechnungsadresse']) && (int)$_GET['editRechnungsadresse'] > 0)
             || (isset($_POST['editRechnungsadresse']) && (int)$_POST['editRechnungsadresse'] > 0)) {
@@ -272,7 +241,7 @@ class AccountController
         if (isset($_GET['pass']) && (int)$_GET['pass'] === 1) {
             $step = 'passwort aendern';
         }
-        if (isset($_POST['edit']) && (int)$_POST['edit'] === 1) {
+        if ($valid && isset($_POST['edit']) && (int)$_POST['edit'] === 1) {
             $this->changeCustomerData();
         }
         if ($valid && isset($_POST['pass_aendern']) && (int)$_POST['pass_aendern']) {
@@ -460,21 +429,21 @@ class AccountController
             if ($this->config['kaufabwicklung']['warenkorb_warenkorb2pers_merge'] === 'Y') {
                 $this->setzeWarenkorbPersInWarenkorb($_SESSION['Kunde']->kKunde);
             } elseif ($this->config['kaufabwicklung']['warenkorb_warenkorb2pers_merge'] === 'P') {
-                $oWarenkorbPers = new WarenkorbPers($customer->kKunde);
-                if (\count($oWarenkorbPers->oWarenkorbPersPos_arr) > 0) {
+                $persCart = new WarenkorbPers($customer->kKunde);
+                if (\count($persCart->oWarenkorbPersPos_arr) > 0) {
                     $this->smarty->assign('nWarenkorb2PersMerge', 1);
                 }
             }
         }
         $this->checkCoupons($coupons);
         // setzte Sprache auf Sprache des Kunden
-        $oISOSprache = Shop::Lang()->getIsoFromLangID($customer->kSprache);
-        if ((int)$_SESSION['kSprache'] !== (int)$customer->kSprache && !empty($oISOSprache->cISO)) {
+        $isoLang = Shop::Lang()->getIsoFromLangID($customer->kSprache);
+        if ((int)$_SESSION['kSprache'] !== (int)$customer->kSprache && !empty($isoLang->cISO)) {
             $_SESSION['kSprache']        = (int)$customer->kSprache;
-            $_SESSION['cISOSprache']     = $oISOSprache->cISO;
-            $_SESSION['currentLanguage'] = Sprache::getAllLanguages(1)[$customer->kSprache];
-            Shop::setLanguage($customer->kSprache, $oISOSprache->cISO);
-            Shop::Lang()->setzeSprache($oISOSprache->cISO);
+            $_SESSION['cISOSprache']     = $isoLang->cISO;
+            $_SESSION['currentLanguage'] = LanguageHelper::getAllLanguages(1)[$customer->kSprache];
+            Shop::setLanguage($customer->kSprache, $isoLang->cISO);
+            Shop::Lang()->setzeSprache($isoLang->cISO);
         }
     }
 
@@ -527,13 +496,13 @@ class AccountController
         if (\count($persCart->oWarenkorbPersPos_arr) === 0) {
             return false;
         }
-        foreach ($persCart->oWarenkorbPersPos_arr as $position) {
-            if (!empty($position->Artikel->bHasKonfig)) {
+        foreach ($persCart->oWarenkorbPersPos_arr as $item) {
+            if (!empty($item->Artikel->bHasKonfig)) {
                 continue;
             }
             // Gratisgeschenk in Warenkorb legen
-            if ((int)$position->nPosTyp === \C_WARENKORBPOS_TYP_GRATISGESCHENK) {
-                $productID = (int)$position->kArtikel;
+            if ((int)$item->nPosTyp === \C_WARENKORBPOS_TYP_GRATISGESCHENK) {
+                $productID = (int)$item->kArtikel;
                 $present   = $this->db->queryPrepared(
                     'SELECT tartikelattribut.kArtikel, tartikel.fLagerbestand, 
                         tartikel.cLagerKleinerNull, tartikel.cLagerBeachten
@@ -560,32 +529,32 @@ class AccountController
                         ->fuegeEin($productID, 1, [], \C_WARENKORBPOS_TYP_GRATISGESCHENK);
                 }
                 // Konfigitems ohne Artikelbezug
-            } elseif ($position->kArtikel === 0 && !empty($position->kKonfigitem)) {
-                $configItem = new Konfigitem($position->kKonfigitem);
+            } elseif ($item->kArtikel === 0 && !empty($item->kKonfigitem)) {
+                $configItem = new Konfigitem($item->kKonfigitem);
                 $cart->erstelleSpezialPos(
                     $configItem->getName(),
-                    $position->fAnzahl,
+                    $item->fAnzahl,
                     $configItem->getPreis(),
                     $configItem->getSteuerklasse(),
                     \C_WARENKORBPOS_TYP_ARTIKEL,
                     false,
                     !Frontend::getCustomerGroup()->isMerchant(),
                     '',
-                    $position->cUnique,
-                    $position->kKonfigitem,
-                    $position->kArtikel
+                    $item->cUnique,
+                    $item->kKonfigitem,
+                    $item->kArtikel
                 );
             } else {
                 Cart::addProductIDToCart(
-                    $position->kArtikel,
-                    $position->fAnzahl,
-                    $position->oWarenkorbPersPosEigenschaft_arr,
+                    $item->kArtikel,
+                    $item->fAnzahl,
+                    $item->oWarenkorbPersPosEigenschaft_arr,
                     1,
-                    $position->cUnique,
-                    $position->kKonfigitem,
+                    $item->cUnique,
+                    $item->kKonfigitem,
                     null,
                     false,
-                    $position->cResponsibility
+                    $item->cResponsibility
                 );
             }
         }
@@ -605,18 +574,18 @@ class AccountController
         if ($customerGroupID <= 0 || empty($cart->PositionenArr)) {
             return;
         }
-        foreach ($cart->PositionenArr as $i => $position) {
-            if ($position->nPosTyp !== \C_WARENKORBPOS_TYP_ARTIKEL || !empty($position->cUnique)) {
+        foreach ($cart->PositionenArr as $i => $item) {
+            if ($item->nPosTyp !== \C_WARENKORBPOS_TYP_ARTIKEL || !empty($item->cUnique)) {
                 continue;
             }
             $visibility = $this->db->query(
                 'SELECT kArtikel
                 FROM tartikelsichtbarkeit
-                WHERE kArtikel = ' . (int)$position->kArtikel . '
+                WHERE kArtikel = ' . (int)$item->kArtikel . '
                     AND kKundengruppe = ' . $customerGroupID,
                 ReturnType::SINGLE_OBJECT
             );
-            if (isset($visibility->kArtikel) && $visibility->kArtikel > 0 && (int)$position->kKonfigitem === 0) {
+            if (isset($visibility->kArtikel) && $visibility->kArtikel > 0 && (int)$item->kKonfigitem === 0) {
                 unset($cart->PositionenArr[$i]);
             }
             $price = $this->db->queryPrepared(
@@ -626,7 +595,7 @@ class AccountController
                     AND tpreisdetail.nAnzahlAb = 0
                 WHERE tpreis.kArtikel = :productID
                     AND tpreis.kKundengruppe = :customerGroup',
-                ['productID' => (int)$position->kArtikel, 'customerGroup' => $customerGroupID],
+                ['productID' => (int)$item->kArtikel, 'customerGroup' => $customerGroupID],
                 ReturnType::SINGLE_OBJECT
             );
             if (!isset($price->fVKNetto)) {
@@ -645,9 +614,9 @@ class AccountController
             return false;
         }
         $cart = Frontend::getCart();
-        foreach ($cart->PositionenArr as $position) {
-            if ($position->nPosTyp === \C_WARENKORBPOS_TYP_GRATISGESCHENK) {
-                $productID = (int)$position->kArtikel;
+        foreach ($cart->PositionenArr as $item) {
+            if ($item->nPosTyp === \C_WARENKORBPOS_TYP_GRATISGESCHENK) {
+                $productID = (int)$item->kArtikel;
                 $present   = $this->db->queryPrepared(
                     'SELECT tartikelattribut.kArtikel, tartikel.fLagerbestand,
                        tartikel.cLagerKleinerNull, tartikel.cLagerBeachten
@@ -669,23 +638,23 @@ class AccountController
                 }
             } else {
                 WarenkorbPers::addToCheck(
-                    $position->kArtikel,
-                    $position->nAnzahl,
-                    $position->WarenkorbPosEigenschaftArr,
-                    $position->cUnique,
-                    $position->kKonfigitem,
-                    $position->nPosTyp,
-                    $position->cResponsibility
+                    $item->kArtikel,
+                    $item->nAnzahl,
+                    $item->WarenkorbPosEigenschaftArr,
+                    $item->cUnique,
+                    $item->kKonfigitem,
+                    $item->nPosTyp,
+                    $item->cResponsibility
                 );
             }
         }
         $cart->PositionenArr = [];
 
-        $oWarenkorbPers = new WarenkorbPers($customerID);
-        /** @var WarenkorbPersPos $position */
-        foreach ($oWarenkorbPers->oWarenkorbPersPos_arr as $position) {
-            if ($position->nPosTyp === \C_WARENKORBPOS_TYP_GRATISGESCHENK) {
-                $productID = (int)$position->kArtikel;
+        $persCart = new WarenkorbPers($customerID);
+        /** @var WarenkorbPersPos $item */
+        foreach ($persCart->oWarenkorbPersPos_arr as $item) {
+            if ($item->nPosTyp === \C_WARENKORBPOS_TYP_GRATISGESCHENK) {
+                $productID = (int)$item->kArtikel;
                 $present   = $this->db->queryPrepared(
                     'SELECT tartikelattribut.kArtikel, tartikel.fLagerbestand,
                        tartikel.cLagerKleinerNull, tartikel.cLagerBeachten
@@ -715,29 +684,29 @@ class AccountController
                 }
             } else {
                 $tmpProduct = new Artikel();
-                $tmpProduct->fuelleArtikel($position->kArtikel, Artikel::getDefaultOptions());
+                $tmpProduct->fuelleArtikel($item->kArtikel, Artikel::getDefaultOptions());
 
                 if ((int)$tmpProduct->kArtikel > 0 && \count(Cart::addToCartCheck(
                     $tmpProduct,
-                    $position->fAnzahl,
-                    $position->oWarenkorbPersPosEigenschaft_arr
+                    $item->fAnzahl,
+                    $item->oWarenkorbPersPosEigenschaft_arr
                 )) === 0) {
                     Cart::addProductIDToCart(
-                        $position->kArtikel,
-                        $position->fAnzahl,
-                        $position->oWarenkorbPersPosEigenschaft_arr,
+                        $item->kArtikel,
+                        $item->fAnzahl,
+                        $item->oWarenkorbPersPosEigenschaft_arr,
                         1,
-                        $position->cUnique,
-                        $position->kKonfigitem,
+                        $item->cUnique,
+                        $item->kKonfigitem,
                         null,
                         true,
-                        $position->cResponsibility
+                        $item->cResponsibility
                     );
                 } else {
                     Shop::Container()->getAlertService()->addAlert(
                         Alert::TYPE_WARNING,
-                        \sprintf(Shop::Lang()->get('cartPersRemoved', 'errorMessages'), $position->cArtikelName),
-                        'cartPersRemoved' . $position->kArtikel,
+                        \sprintf(Shop::Lang()->get('cartPersRemoved', 'errorMessages'), $item->cArtikelName),
+                        'cartPersRemoved' . $item->kArtikel,
                         ['saveInSession' => true]
                     );
                 }
@@ -918,76 +887,6 @@ class AccountController
     }
 
     /**
-     *
-     */
-    private function addWishlistProductToCart(): void
-    {
-        $urlID      = Text::filterXSS(Request::verifyGPDataString('wlid'));
-        $wishListID = Request::verifyGPCDataInt('wl');
-        $position   = Wunschliste::getWishListPositionDataByID(Request::verifyGPCDataInt('wlph'));
-        if (!isset($position->kArtikel) || $position->kArtikel <= 0) {
-            return;
-        }
-        $attributeValues = Product::isVariChild($position->kArtikel)
-            ? Product::getVarCombiAttributeValues($position->kArtikel)
-            : Wunschliste::getAttributesByID($wishListID, $position->kWunschlistePos);
-        if (!$position->bKonfig) {
-            Cart::addProductIDToCart(
-                $position->kArtikel,
-                $position->fAnzahl,
-                $attributeValues
-            );
-        }
-        \header(
-            'Location: ' . $this->linkService->getStaticRoute('jtl.php') .
-            '?wl=' . $wishListID .
-            '&wlidmsg=1' . mb_strlen($urlID) > 0 ? ('&wlid=' . $urlID) : '',
-            true,
-            303
-        );
-        exit();
-    }
-
-    /**
-     *
-     */
-    private function addAllWishlistProductsToCart(): void
-    {
-        $cURLID       = Text::filterXSS(Request::verifyGPDataString('wlid'));
-        $kWunschliste = Request::verifyGPCDataInt('wl');
-        $wishlist     = Wunschliste::getWishListDataByID($kWunschliste);
-        $wishlist     = new Wunschliste($wishlist->kWunschliste);
-        if (\count($wishlist->CWunschlistePos_arr) === 0) {
-            return;
-        }
-        foreach ($wishlist->CWunschlistePos_arr as $wishlistPosition) {
-            $attributeValues = Product::isVariChild($wishlistPosition->kArtikel)
-                ? Product::getVarCombiAttributeValues($wishlistPosition->kArtikel)
-                : Wunschliste::getAttributesByID($kWunschliste, $wishlistPosition->kWunschlistePos);
-            if (!$wishlistPosition->Artikel->bHasKonfig
-                && !$wishlistPosition->bKonfig
-                && isset($wishlistPosition->Artikel->inWarenkorbLegbar)
-                && $wishlistPosition->Artikel->inWarenkorbLegbar > 0
-            ) {
-                Cart::addProductIDToCart(
-                    $wishlistPosition->kArtikel,
-                    $wishlistPosition->fAnzahl,
-                    $attributeValues
-                );
-            }
-        }
-        \header(
-            'Location: ' . $this->linkService->getStaticRoute('jtl.php') .
-            '?wl=' . $kWunschliste .
-            '&wlid=' . $cURLID .
-            '&wlidmsg=2',
-            true,
-            303
-        );
-        exit();
-    }
-
-    /**
      * @param int $customerID
      * @return string
      * @throws Exception
@@ -1088,7 +987,7 @@ class AccountController
             }
         }
         $step                               = 'bestellung';
-        $_SESSION['Kunde']->angezeigtesLand = Sprache::getCountryCodeByCountryName($_SESSION['Kunde']->cLand);
+        $_SESSION['Kunde']->angezeigtesLand = LanguageHelper::getCountryCodeByCountryName($_SESSION['Kunde']->cLand);
         $this->smarty->assign('Bestellung', $order)
             ->assign('billingAddress', $order->oRechnungsadresse)
             ->assign('Lieferadresse', $order->Lieferadresse ?? null);
@@ -1140,23 +1039,22 @@ class AccountController
         );
         $currencies = [];
         foreach ($orders as $order) {
-            $order->bDownload = false;
-            foreach ($downloads as $oDownload) {
-                if ((int)$order->kBestellung === (int)$oDownload->kBestellung) {
-                    $order->bDownload = true;
-                    break;
-                }
-            }
+            $order->bDownload   = some($downloads, function ($dl) use ($order) {
+                return $dl->kBestellung === $order->kBestellung;
+            });
+            $order->kBestellung = (int)$order->kBestellung;
+            $order->kWaehrung   = (int)$order->kWaehrung;
+            $order->cStatus     = (int)$order->cStatus;
             if ($order->kWaehrung > 0) {
-                if (isset($currencies[(int)$order->kWaehrung])) {
-                    $order->Waehrung = $currencies[(int)$order->kWaehrung];
+                if (isset($currencies[$order->kWaehrung])) {
+                    $order->Waehrung = $currencies[$order->kWaehrung];
                 } else {
-                    $order->Waehrung                    = $this->db->select(
+                    $order->Waehrung               = $this->db->select(
                         'twaehrung',
                         'kWaehrung',
-                        (int)$order->kWaehrung
+                        $order->kWaehrung
                     );
-                    $currencies[(int)$order->kWaehrung] = $order->Waehrung;
+                    $currencies[$order->kWaehrung] = $order->Waehrung;
                 }
                 if (isset($order->fWaehrungsFaktor, $order->Waehrung->fFaktor) && $order->fWaehrungsFaktor !== 1) {
                     $order->Waehrung->fFaktor = $order->fWaehrungsFaktor;
@@ -1166,7 +1064,7 @@ class AccountController
                 $order->fGesamtsumme,
                 $order->Waehrung
             );
-            $order->Status                = \lang_bestellstatus((int)$order->cStatus);
+            $order->Status                = \lang_bestellstatus($order->cStatus);
         }
 
         $orderPagination = (new Pagination('orders'))
@@ -1227,100 +1125,8 @@ class AccountController
                 $_SESSION['Kunde']->kKundengruppe,
                 false,
                 true
-            ));
-        $customerFields = $this->db->selectAll(
-            'tkundenfeld',
-            'kSprache',
-            Shop::getLanguageID(),
-            '*',
-            'nSort, cName'
-        );
-        foreach ($customerFields as $field) {
-            if ($field->cTyp !== 'auswahl') {
-                continue;
-            }
-            $field->oKundenfeldWert_arr = $this->db->selectAll(
-                'tkundenfeldwert',
-                'kKundenfeld',
-                (int)$field->kKundenfeld,
-                '*',
-                '`kKundenfeld`, `nSort`, `kKundenfeldWert` ASC'
-            );
-        }
-        $this->smarty->assign('oKundenfeld_arr', $customerFields);
-    }
-
-    /**
-     * @param int $customerID
-     * @param int $wishlistID
-     * @return string
-     */
-    private function viewWishlist(int $customerID, int $wishlistID): string
-    {
-        $step     = 'mein Konto';
-        $wishlist = $this->db->select(
-            'twunschliste',
-            'kWunschliste',
-            $wishlistID,
-            'kKunde',
-            $customerID
-        );
-        if (isset($wishlist->kWunschliste) && $wishlist->kWunschliste > 0 && mb_strlen($wishlist->cURLID) > 0) {
-            $step = 'wunschliste anzeigen';
-            if (isset($_POST['send']) && (int)$_POST['send'] === 1) {
-                if ($this->config['global']['global_wunschliste_anzeigen'] === 'Y') {
-                    $this->alertService->addAlert(
-                        Alert::TYPE_NOTE,
-                        Wunschliste::send(
-                            \explode(' ', Text::htmlentities(Text::filterXSS($_POST['email']))),
-                            $wishlistID
-                        ),
-                        'sendWL'
-                    );
-                    $this->smarty->assign('CWunschliste', Wunschliste::buildPrice(new Wunschliste($wishlistID)));
-                }
-            } else {
-                $step = 'wunschliste versenden';
-                $this->smarty->assign('CWunschliste', Wunschliste::buildPrice(new Wunschliste($wishlistID)));
-            }
-        }
-
-        return $step;
-    }
-
-    /**
-     * @param int $customerID
-     * @param int $wishlistID
-     */
-    private function deleteWishlistPositions(int $customerID, int $wishlistID): void
-    {
-        $wishlist = new Wunschliste($wishlistID);
-        if ($wishlist->kKunde > 0 && $wishlist->kKunde === $customerID) {
-            $wishlist->entferneAllePos();
-            if ((int)$_SESSION['Wunschliste']->kWunschliste === $wishlist->kWunschliste) {
-                $_SESSION['Wunschliste']->CWunschlistePos_arr = [];
-            }
-            $this->alertService->addAlert(
-                Alert::TYPE_NOTE,
-                Shop::Lang()->get('wishlistDelAll', 'messages'),
-                'wishlistDelAll'
-            );
-        }
-    }
-
-    /**
-     * @param int $customerID
-     * @param int $wishlistID
-     */
-    private function searchInWishlist(int $customerID, int $wishlistID): void
-    {
-        $searchQuery = Text::filterXSS(Request::verifyGPDataString('cSuche'));
-        $wishlist    = new Wunschliste($wishlistID);
-        if ($wishlist->kKunde && $wishlist->kKunde === $customerID) {
-            $wishlist->CWunschlistePos_arr = $wishlist->sucheInWunschliste($searchQuery);
-            $this->smarty->assign('wlsearch', $searchQuery)
-                ->assign('CWunschliste', $wishlist);
-        }
+            ))
+            ->assign('oKundenfeld_arr', new CustomerFields(Shop::getLanguageID()));
     }
 
     /**
@@ -1331,31 +1137,27 @@ class AccountController
     private function modifyWishlist(int $customerID, int $wishlistID): string
     {
         $step     = 'mein Konto';
-        $wishlist = $this->db->select('twunschliste', 'kWunschliste', $wishlistID);
-        if (!isset($wishlist->kKunde) || (int)$wishlist->kKunde !== $customerID) {
+        $wishlist = new Wunschliste($wishlistID);
+        if ($wishlist->kKunde !== $customerID) {
             return $step;
         }
         if (isset($_REQUEST['wlAction']) && Form::validateToken()) {
             $action = Request::verifyGPDataString('wlAction');
             if ($action === 'setPrivate') {
-                Wunschliste::setPrivate($wishlistID);
+                Wunschliste::setPrivate($wishlist->kWunschliste);
                 $this->alertService->addAlert(
                     Alert::TYPE_NOTE,
                     Shop::Lang()->get('wishlistSetPrivate', 'messages'),
                     'wishlistSetPrivate'
                 );
             } elseif ($action === 'setPublic') {
-                Wunschliste::setPublic($wishlistID);
+                Wunschliste::setPublic($wishlist->kWunschliste);
                 $this->alertService->addAlert(
                     Alert::TYPE_NOTE,
                     Shop::Lang()->get('wishlistSetPublic', 'messages'),
                     'wishlistSetPublic'
                 );
             }
-        }
-        $this->smarty->assign('CWunschliste', Wunschliste::buildPrice(new Wunschliste((int)$wishlist->kWunschliste)));
-        if (Request::verifyGPCDataInt('accountPage') !== 1) {
-            $step = 'wunschliste anzeigen';
         }
 
         return $step;

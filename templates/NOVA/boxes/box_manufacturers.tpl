@@ -4,7 +4,6 @@
  *}
 {block name='boxes-box-manufacturers'}
     {card class="box box-manufacturers mb-7" id="sidebox{$oBox->getID()}" title="{lang key='manufacturers'}"}
-        <hr class="mt-0 mb-4">
         {block name='boxes-box-manufacturers-content'}
             {if $oBox->getManufacturers()|@count > 8}
                 {block name='boxes-box-manufacturers-dropdown'}

@@ -18,7 +18,7 @@ Your order with the order number {$Bestellung->cBestellNr} consists of the follo
     {if $Position->nPosTyp == 1}
         {if !empty($Position->kKonfigitem)} * {/if}{$Position->nAnzahl}x {$Position->cName} {if $Position->cArtNr}({$Position->cArtNr}){/if} - {$Position->cGesamtpreisLocalized[$NettoPreise]}{if $Einstellungen.kaufabwicklung.bestellvorgang_lieferstatus_anzeigen === 'Y' && $Position->cLieferstatus}
 
-        Shipping time: {$Position->cLieferstatus}{/if}
+        Delivery time: {$Position->cLieferstatus}{/if}
         {foreach $Position->WarenkorbPosEigenschaftArr as $WKPosEigenschaft}
 
             {$WKPosEigenschaft->cEigenschaftName}: {$WKPosEigenschaft->cEigenschaftWertName}{/foreach}
@@ -35,7 +35,7 @@ Your order with the order number {$Bestellung->cBestellNr} consists of the follo
 
 Total: {$Bestellung->WarensummeLocalized[0]}
 
-Shipping time: {if isset($Bestellung->cEstimatedDeliveryEx)}{$Bestellung->cEstimatedDeliveryEx}{else}{$Bestellung->cEstimatedDelivery}{/if}
+Delivery time: {if isset($Bestellung->cEstimatedDeliveryEx)}{$Bestellung->cEstimatedDeliveryEx}{else}{$Bestellung->cEstimatedDelivery}{/if}
 
 
 Your billing address:
@@ -47,16 +47,16 @@ Your billing address:
 {/if}{$Kunde->cPLZ} {$Kunde->cOrt}
 {if $Kunde->cBundesland}{$Kunde->cBundesland}
 {/if}{$Kunde->cLand}
-{if $Kunde->cTel}Tel: {$Kunde->cTel}
-{/if}{if $Kunde->cMobil}Mobil: {$Kunde->cMobil}
+{if $Kunde->cTel}Phone: {$Kunde->cTel}
+{/if}{if $Kunde->cMobil}Mobile: {$Kunde->cMobil}
 {/if}{if $Kunde->cFax}Fax: {$Kunde->cFax}
 {/if}
-Email: {$Kunde->cMail}
+Email address: {$Kunde->cMail}
 {if $Kunde->cUSTID}VAT ID: {$Kunde->cUSTID}
 {/if}
 
 {if !empty($Bestellung->Lieferadresse->kLieferadresse)}
-    Your shipping address:
+    Your delivery address:
 
     {if !empty($Bestellung->Lieferadresse->cFirma)}{$Bestellung->Lieferadresse->cFirma}{/if}
     {$Bestellung->Lieferadresse->cVorname} {$Bestellung->Lieferadresse->cNachname}
@@ -65,24 +65,26 @@ Email: {$Kunde->cMail}
     {/if}{$Bestellung->Lieferadresse->cPLZ} {$Bestellung->Lieferadresse->cOrt}
     {if $Bestellung->Lieferadresse->cBundesland}{$Bestellung->Lieferadresse->cBundesland}
     {/if}{$Bestellung->Lieferadresse->cLand}
-    {if $Bestellung->Lieferadresse->cTel}Tel: {$Bestellung->Lieferadresse->cTel}
-    {/if}{if $Bestellung->Lieferadresse->cMobil}Mobil: {$Bestellung->Lieferadresse->cMobil}
+    {if $Bestellung->Lieferadresse->cTel}Phone: {$Bestellung->Lieferadresse->cTel}
+    {/if}{if $Bestellung->Lieferadresse->cMobil}Mobile: {$Bestellung->Lieferadresse->cMobil}
 {/if}{if $Bestellung->Lieferadresse->cFax}Fax: {$Bestellung->Lieferadresse->cFax}
-{/if}{if $Bestellung->Lieferadresse->cMail}Email: {$Bestellung->Lieferadresse->cMail}
+{/if}{if $Bestellung->Lieferadresse->cMail}Email address: {$Bestellung->Lieferadresse->cMail}
 {/if}
+{else}
+    Delivery address same as billing address.
 {/if}
 
 You have chosen the following payment option: {$Bestellung->cZahlungsartName}
 
 {if $Bestellung->Zahlungsart->cModulId === 'za_ueberweisung_jtl'}
-    Please make the following banktransfer:
+    Please make the following cash transfer:
     Account owner:{$Firma->cKontoinhaber}
     Bank name:{$Firma->cBank}
     IBAN:{$Firma->cIBAN}
     BIC:{$Firma->cBIC}
 
-    Purpose:{$Bestellung->cBestellNr}
-    Total sum:{$Bestellung->WarensummeLocalized[0]}
+    Reference:{$Bestellung->cBestellNr}
+    Total:{$Bestellung->WarensummeLocalized[0]}
 
 
 {elseif $Bestellung->Zahlungsart->cModulId === 'za_nachnahme_jtl'}
@@ -103,7 +105,7 @@ You have chosen the following payment option: {$Bestellung->cZahlungsartName}
 {elseif $Bestellung->Zahlungsart->cModulId === 'za_paypal_jtl'}
 {/if}
 
-You will be notified of the subsequent status of your order separately.
+You will be notified of the status of your order separately.
 
 
 Yours sincerely,

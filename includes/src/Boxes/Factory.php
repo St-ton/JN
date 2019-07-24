@@ -21,8 +21,6 @@ use JTL\Boxes\Items\FilterManufacturer;
 use JTL\Boxes\Items\FilterPricerange;
 use JTL\Boxes\Items\FilterRating;
 use JTL\Boxes\Items\FilterSearch;
-use JTL\Boxes\Items\FilterTag;
-use JTL\Boxes\Items\GlobalAttributes;
 use JTL\Boxes\Items\LinkGroup;
 use JTL\Boxes\Items\Login;
 use JTL\Boxes\Items\Manufacturer;
@@ -36,7 +34,6 @@ use JTL\Boxes\Items\ProductCategories;
 use JTL\Boxes\Items\RecentlyViewedProducts;
 use JTL\Boxes\Items\SearchCloud;
 use JTL\Boxes\Items\SpecialOffers;
-use JTL\Boxes\Items\TagCloud;
 use JTL\Boxes\Items\TopOffers;
 use JTL\Boxes\Items\TopRatedProducts;
 use JTL\Boxes\Items\UpcomingProducts;
@@ -85,16 +82,12 @@ class Factory implements FactoryInterface
                 return new SpecialOffers($this->config);
             case \BOX_LOGIN:
                 return new Login($this->config);
-            case \BOX_GLOBALE_MERKMALE:
-                return new GlobalAttributes($this->config);
             case \BOX_KATEGORIEN:
                 return new ProductCategories($this->config);
             case \BOX_NEWS_KATEGORIEN:
                 return new NewsCategories($this->config);
             case \BOX_NEWS_AKTUELLER_MONAT:
                 return new NewsCurrentMonth($this->config);
-            case \BOX_TAGWOLKE:
-                return new TagCloud($this->config);
             case \BOX_WUNSCHLISTE:
                 return new Wishlist($this->config);
             case \BOX_WARENKORB:
@@ -118,8 +111,6 @@ class Factory implements FactoryInterface
                 return new FilterCategory($this->config);
             case \BOX_FILTER_HERSTELLER:
                 return new FilterManufacturer($this->config);
-            case \BOX_FILTER_TAG:
-                return new FilterTag($this->config);
             case \BOX_FILTER_PREISSPANNE:
                 return new FilterPricerange($this->config);
             case \BOX_FILTER_BEWERTUNG:

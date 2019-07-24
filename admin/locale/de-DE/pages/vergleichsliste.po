@@ -9,7 +9,7 @@ msgid "configureComparelistURL"
 msgstr "https://jtl-url.de/4djgz"
 
 msgid "configureComparelistDesc"
-msgstr "Mithilfe der Vergleichsliste können Ihre Kunden ähnliche Artikel miteinander vergleichen. Hier können Sie verschiedene Einstellungen zur Darstellung der Vergleichsliste vornehmen und einsehen, welche Produkte Ihre Kunden miteinander verglichen haben."
+msgstr "Mithilfe der Vergleichsliste können Ihre Kunden ähnliche Artikel miteinander vergleichen. Hier können Sie verschiedene Einstellungen zur Darstellung der Vergleichsliste vornehmen und einsehen, welche Artikel Ihre Kunden miteinander verglichen haben."
 
 msgid "last20Compares"
 msgstr "Alle Vergleiche"
@@ -32,17 +32,8 @@ msgstr "Anzahl"
 msgid "compareProduct"
 msgstr "Artikel"
 
-msgid "compareFrom"
-msgstr "von"
-
-msgid "comparePrevious"
-msgstr "Vorherige"
-
-msgid "compareNext"
-msgstr "Nächster"
-
 msgid "compareTimeFilter"
-msgstr "Zeitfilter"
+msgstr "Zeitraum"
 
 msgid "compareNoTopCompares"
 msgstr "Es wurden keine Vergleiche gefunden."

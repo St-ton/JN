@@ -1,0 +1,12 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "Gallery"
+msgstr "Gallery"
+
+msgid "heightPreviewImages"
+msgstr "Höhe der Vorschaubilder"
+
+msgid "imageList"
+msgstr "Bilder-Liste"

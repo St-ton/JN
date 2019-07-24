@@ -13,8 +13,8 @@ namespace JTL;
 interface IExtensionPoint
 {
     /**
-     * @param int $kInitial
+     * @param int $id
      * @return mixed
      */
-    public function init($kInitial);
+    public function init($id);
 }

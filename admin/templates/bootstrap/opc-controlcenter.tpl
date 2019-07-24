@@ -24,7 +24,7 @@
                     $pagesPagi->getFirstPageItem(),
                     $pagesPagi->getPageItemCount()
                 )}
-                {include file='tpl_inc/pagination.tpl' oPagination=$pagesPagi cParam_arr=['tab'=>'pages']}
+                {include file='tpl_inc/pagination.tpl' pagination=$pagesPagi cParam_arr=['tab'=>'pages']}
                 <div class="table-responsive">
                     <table class="list table">
                         <thead>
@@ -105,7 +105,7 @@
                                                     <td>
                                                         <div class="btn-group pull-right">
                                                             <a class="btn btn-primary" title="{__('edit')}" target="_blank"
-                                                               href="{strip}./onpage-composer.php?
+                                                               href="{strip}./opc.php?
                                                                     token={$smarty.session.jtl_token}&
                                                                     pageKey={$draft->getKey()}&
                                                                     action=edit{/strip}">

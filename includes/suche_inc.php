@@ -4,8 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Language\LanguageHelper;
 use JTL\Shop;
-use JTL\Sprache;
 
 /**
  * @return array
@@ -70,20 +70,20 @@ function suchanfragenSpeichern($search, $hits, $realSearch = false, $langIDExt =
 
 /**
  * @param string $query
- * @param int    $kSpracheExt
+ * @param int    $languageID
  * @return mixed
  * @deprecated since 4.05
  */
-function mappingBeachten($query, int $kSpracheExt = 0)
+function mappingBeachten($query, int $languageID = 0)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    $kSprache = ($kSpracheExt > 0) ? $kSpracheExt : Sprache::getDefaultLanguage(true)->kSprache;
+    $languageID = $languageID > 0 ? $languageID : LanguageHelper::getDefaultLanguage()->kSprache;
     if (mb_strlen($query) > 0) {
         $db      = Shop::Container()->getDB();
         $tmp     = $db->select(
             'tsuchanfragemapping',
             'kSprache',
-            $kSprache,
+            $languageID,
             'cSuche',
             $query,
             null,
@@ -96,7 +96,7 @@ function mappingBeachten($query, int $kSpracheExt = 0)
             $tmp = $db->select(
                 'tsuchanfragemapping',
                 'kSprache',
-                $kSprache,
+                $languageID,
                 'cSuche',
                 $tmp->cSucheNeu,
                 null,

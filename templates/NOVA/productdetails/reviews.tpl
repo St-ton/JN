@@ -18,7 +18,7 @@
                         {/block}
                         {if $Artikel->Bewertungen->oBewertungGesamt->nAnzahl > 0}
                             {block name='productdetails-reviews-include-rating'}
-                                {link href="#article_votes" data=["toggle"=>"collapse"] role="button" aria=["expanded"=>"true","controls"=>"article_votes"]}
+                                {link href="#article_votes" data=["toggle"=>"collapse"] role="button" aria=["expanded"=>"true","controls"=>"article_votes"] class="no-deco"}
                                     {include file='productdetails/rating.tpl' total=$Artikel->Bewertungen->oBewertungGesamt->nAnzahl}<i class="ml-3 fas fa-chevron-down"></i>
                                 {/link}
                             {/block}

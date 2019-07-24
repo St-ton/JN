@@ -512,11 +512,7 @@ define('HOOK_ARTIKEL_INC_BENACHRICHTIGUNG', 66);
 define('HOOK_ARTIKEL_INC_ARTIKELHINWEISSWITCH', 67);
 
 /**
- * Kurz vor der Rückgabe der Produktstags in den Artikeldetails
- *
- * @file artikel_inc.php
- * @param kArtikel
- * @param tags
+ * @removed in 5.0.0
  */
 define('HOOK_ARTIKEL_INC_PRODUKTTAGGING', 68);
 
@@ -596,7 +592,7 @@ define('HOOK_BESTELLVORGANG_INC_UNREGISTRIERTBESTELLEN', 77);
  * before saving a rating to the database
  *
  * @file bewertung_inc.php
- * @param rating
+ * @param JTL\Review\ReviewModel rating
  */
 define('HOOK_BEWERTUNG_INC_SPEICHERBEWERTUNG', 78);
 
@@ -662,9 +658,7 @@ define('HOOK_BOXEN_INC_ERSCHEINENDEPRODUKTE', 86);
 define('HOOK_BOXEN_INC_SUCHWOLKE', 87);
 
 /**
- * @file Boxen.php
- * @param JTL\Boxes\Items\BoxInterface box
- * @param array                        cache_tags
+ * @removed in 5.0.0
  */
 define('HOOK_BOXEN_INC_TAGWOLKE', 88);
 
@@ -745,6 +739,7 @@ define('HOOK_LETZTERINCLUDE_INC', 99);
  *
  * @file mailTools.php
  * @param \JTL\Smarty\JTLSmarty mailsmarty
+ * @param \JTL\Mail\Renderer\RendererInterface renderer - since 5.0.0
  * @param object mail - null since 5.0.0
  * @param int kEmailvorlage
  * @param int kSprache
@@ -1872,11 +1867,26 @@ define('HOOK_CAPTCHA_VALIDATE', 272);
  */
 define('HOOK_PLUGIN_SAVE_OPTIONS', 280);
 
+/**
+ * @since 5.0.0
+ * @file includes/src/Sitemap/Export.php
+ * @param \JTL\Sitemap\Factories\FactoryInterface[] factories
+ * @param \JTL\Sitemap\Export instance
+ */
+define('HOOK_SITEMAP_EXPORT_GENERATE', 285);
 
 /**
  * @since 5.0.0
  * @file includes/src/Sitemap/Export.php
- * @param JTL\Sitemap\Factories\FactoryInterface[] factories
- * @param \JTL\Sitemap\Export exporter
+ * @param \JTL\Sitemap\Export instance
  */
-define('HOOK_SITEMAP_EXPORT_GET_FACTORIES', 285);
+define('HOOK_SITEMAP_EXPORT_INIT', 286);
+
+
+/**
+ * @since 5.0.0
+ * @file includes/src/Mail/Mailer.php
+ * @param \JTL\Mail\Mailer mailer
+ * @param \JTL\Mail\Mail mail
+ */
+define('HOOK_MAIL_PRERENDER', 290);

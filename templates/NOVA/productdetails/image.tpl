@@ -19,20 +19,14 @@
                         {block name='productdetails-image-actions'}
                             <div class="actions btn-group btn-group-xs btn-group-justified" data-toggle="product-actions">
                                 {if $Einstellungen.artikeldetails.artikeldetails_vergleichsliste_anzeigen === 'Y'}
-                                    {button name="Vergleichsliste" type="submit" class="compare badge badge-circle"
-                                    title="{lang key='addToCompare' section='productOverview'}"
-                                    data=["toggle"=>"tooltip", "placement"=>"top"]
-                                    }
-                                        <span class="far fa-list-alt"></span>
-                                    {/button}
+                                    {block name='productdetails-image-include-comparelist-button'}
+                                        {include file='snippets/comparelist_button.tpl'}
+                                    {/block}
                                 {/if}
                                 {if $Einstellungen.global.global_wunschliste_anzeigen === 'Y'}
-                                    {button name="Wunschliste" type="submit" class="wishlist badge badge-circle"
-                                    title="{lang key='addToWishlist' section='productDetails'}"
-                                    data=["toggle"=>"tooltip", "placement"=>"top"]
-                                    }
-                                        <span class="far fa-heart"></span>
-                                    {/button}
+                                    {block name='productdetails-image-include-wishlist-button'}
+                                        {include file='snippets/wishlist_button.tpl'}
+                                    {/block}
                                 {/if}
                             </div>
                         {/block}
@@ -72,8 +66,9 @@
                                     {foreach $Artikel->Bilder as $image}
                                         {strip}
                                             <div>
-                                                {image src="{$imageBaseURL}gfx/trans.png" data=["lazy"=>"{$image->cURLMini}"]
-                                                     alt="{$image->cAltAttribut|escape:"html"}"}
+                                                {image src="{$imageBaseURL}gfx/trans.png" data=["lazy"=>"{$image->cURLKlein}"]
+                                                    alt="{$image->cAltAttribut|escape:"html"}"
+                                                    fluid=true}
                                             </div>
                                         {/strip}
                                     {/foreach}

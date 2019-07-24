@@ -36,23 +36,28 @@
         {/if}
         {if isset($oBestseller_arr) && $oBestseller_arr|@count > 0}
             {block name='productlist-bestseller'}
-            {lang key='bestseller' section='global' assign='slidertitle'}
-            {include file='snippets/product_slider.tpl' id='slider-top-products' productlist=$oBestseller_arr title=$slidertitle}
+                {include file='snippets/opc_mount_point.tpl' id='opc_before_bestseller'}
+                {lang key='bestseller' section='global' assign='slidertitle'}
+                {include file='snippets/product_slider.tpl' id='slider-top-products'
+                        productlist=$oBestseller_arr title=$slidertitle}
             {/block}
         {/if}
 
         {block name='productlist-results'}
-        <div class="row {if $style !== 'list'}row-eq-height row-eq-img-height{/if} {$style}" id="product-list" itemprop="mainEntity" itemscope itemtype="http://schema.org/ItemList">
-            {foreach $Suchergebnisse->getProducts() as $Artikel}
-                <div class="product-wrapper {$grid}" itemprop="itemListElement" itemscope itemtype="http://schema.org/Product">
-                    {if $style === 'list'}
-                        {include file='productlist/item_list.tpl' tplscope=$style}
-                    {else}
-                        {include file='productlist/item_box.tpl' tplscope=$style class='thumbnail'}
-                    {/if}
+            {if $Suchergebnisse->getProducts()|@count > 0}
+                {include file='snippets/opc_mount_point.tpl' id='opc_before_products'}
+                <div class="row {if $style !== 'list'}row-eq-height row-eq-img-height{/if} {$style}" id="product-list" itemprop="mainEntity" itemscope itemtype="http://schema.org/ItemList">
+                    {foreach $Suchergebnisse->getProducts() as $Artikel}
+                        <div class="product-wrapper {$grid}" itemprop="itemListElement" itemscope itemtype="http://schema.org/Product">
+                            {if $style === 'list'}
+                                {include file='productlist/item_list.tpl' tplscope=$style}
+                            {else}
+                                {include file='productlist/item_box.tpl' tplscope=$style class='thumbnail'}
+                            {/if}
+                        </div>
+                    {/foreach}
                 </div>
-            {/foreach}
-        </div>
+            {/if}
         {/block}
         {block name='productlist-footer'}
             {include file='productlist/footer.tpl'}

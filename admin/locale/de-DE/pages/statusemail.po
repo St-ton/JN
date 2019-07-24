@@ -15,7 +15,7 @@ msgid "statusemailUse"
 msgstr "E-Mail-Berichte nutzen"
 
 msgid "statusemailUseDesc"
-msgstr "Hier aktivieren Sie die Funktion \"E-Mail-Berichte\"."
+msgstr "Hier aktivieren Sie die Funktion „E-Mail-Berichte“."
 
 msgid "statusemailEmail"
 msgstr "Empfänger-E-Mail-Adresse"
@@ -27,19 +27,19 @@ msgid "statusemailIntervall"
 msgstr "Berichtszeitraum"
 
 msgid "statusemailIntervallDesc"
-msgstr "Hier legen Sie fest, wie oft ein Bericht erstellt werden soll. Mehrfachauswahl möglich."
+msgstr "Hier legen Sie fest, wie oft ein Bericht erstellt werden soll. Eine Mehrfachauswahl ist möglich."
 
 msgid "statusemailContent"
 msgstr "Berichtsinhalt"
 
 msgid "statusemailContentDesc"
-msgstr "Hier legen Sie fest, welche Informationen die E-Mail-Berichte beinhalten sollen. Mehrfachauswahl möglich. "
+msgstr "Hier legen Sie fest, welche Informationen die E-Mail-Berichte beinhalten sollen. Eine Mehrfachauswahl ist möglich."
 
 msgid "sendEmail"
-msgstr "E-Mail-Berichte jetzt senden"
+msgstr "E-Mail-Bericht jetzt senden"
 
 msgid "contentTypeCountItemCustomerGroup"
-msgstr "Anzahl Produkte pro Kundengruppe"
+msgstr "Anzahl Artikel pro Kundengruppe"
 
 msgid "contentTypeCountNewCustomer"
 msgstr "Anzahl Neukunden"
@@ -63,22 +63,22 @@ msgid "contentTypeCountVisitors"
 msgstr "Anzahl Besucher"
 
 msgid "contentTypeCountVisitorsSearchEngine"
-msgstr "Anzahl Besucher von Suchmaschinen"
+msgstr "Anzahl Besucher über Suchmaschine"
 
 msgid "contentTypeCountRatings"
 msgstr "Anzahl Bewertungen"
 
 msgid "contentTypeCountRatingsLocked"
-msgstr "Anzahl Bewertungen nicht freigeschaltet"
+msgstr "Anzahl nicht freigeschalteter Bewertungen"
 
 msgid "contentTypeCountRatingDepositPayed"
-msgstr "Anzahl Bewertungsguthaben gezahlt"
+msgstr "Anzahl gewährter Bewertungsguthaben"
 
 msgid "contentTypeCountTags"
 msgstr "Anzahl Tags"
 
 msgid "contentTypeCountTagsLocked"
-msgstr "Anzahl Tags nicht freigeschaltet"
+msgstr "Anzahl nicht freigeschalteter Tags"
 
 msgid "contentTypeCountCustomerRecruited"
 msgstr "Anzahl geworbener Kunden"
@@ -87,37 +87,37 @@ msgid "contentTypeCountCustomerRecruitedOrdered"
 msgstr "Anzahl geworbener Kunden, die gekauft haben"
 
 msgid "contentTypeCountSentWishlists"
-msgstr "Anzahl versendeter Wunschlisten"
+msgstr "Anzahl versendeter Wunschzettel"
 
 msgid "contentTypeCountPolls"
-msgstr "Anzahl durchgeführter Umfragen"
+msgstr "Anzahl angelegter Umfragen"
 
 msgid "contentTypeCountNewsComments"
 msgstr "Anzahl neuer Newskommentare"
 
 msgid "contentTypeCountNewsCommentsLocked"
-msgstr "Anzahl Newskommentare nicht freigeschaltet"
+msgstr "Anzahl nicht freigeschalteter Newskommentare"
 
 msgid "contentTypeCountProductQuestion"
-msgstr "Anzahl neuer Produktanfragen"
+msgstr "Anzahl neuer Fragen zum Artikel"
 
 msgid "contentTypeCountAvailabilityNotifications"
 msgstr "Anzahl neuer Verfügbarkeitsanfragen"
 
 msgid "contentTypeCountProductCompare"
-msgstr "Anzahl Produktvergleiche"
+msgstr "Anzahl Artikelvergleiche"
 
 msgid "contentTypeCountCouponsUsed"
-msgstr "Anzahl genutzter Kupons"
+msgstr "Anzahl genutzter Coupons"
 
 msgid "contentTypeLastErrorLog"
-msgstr "Letzte Fehlermeldungen im Systemlog"
+msgstr "Letzte Fehlermeldungen im System-Log"
 
 msgid "contentTypeLastNoteLog"
-msgstr "Letzte Hinweise im Systemlog"
+msgstr "Letzte Hinweise im System-Log"
 
 msgid "contentTypeLastDebugLog"
-msgstr "Letzte Debugeinträge im Systemlog"
+msgstr "Letzte Debug-Einträge im System-Log"
 
 msgid "intervalDay"
 msgstr "Tagesbericht"
@@ -127,3 +127,6 @@ msgstr "Wochenbericht"
 
 msgid "intervalMonth"
 msgstr "Monatsbericht"
+
+msgid "nextStatusMail"
+msgstr "Der nächste %s wird am %s versendet."

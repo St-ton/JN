@@ -9,6 +9,7 @@ namespace JTL\Plugin;
 use InvalidArgumentException;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
+use JTL\Language\LanguageHelper;
 use JTL\Plugin\Data\Config;
 use JTL\Plugin\Data\Hook;
 use JTL\Plugin\Data\License;
@@ -16,7 +17,6 @@ use JTL\Plugin\Data\Links;
 use JTL\Plugin\Data\Paths;
 use JTL\Plugin\Data\Widget;
 use JTL\Shop;
-use JTL\Sprache;
 use stdClass;
 
 /**
@@ -125,7 +125,7 @@ class LegacyPluginLoader extends AbstractLoader
     {
         $currentLanguageCode = $currentLanguageCode
             ?? Shop::getLanguageCode()
-            ?? Sprache::getDefaultLanguage()->cISO;
+            ?? LanguageHelper::getDefaultLanguage()->cISO;
 
         Shop::Container()->getGetText();
 
@@ -167,7 +167,7 @@ class LegacyPluginLoader extends AbstractLoader
     {
         $widgets = parent::loadWidgets($extension);
         foreach ($widgets->getWidgets() as $widget) {
-            $widget->className = \str_replace($widget->namespace, 'Widget', $widget->className);
+            $widget->className = \str_replace('\Plugin' . $widget->namespace, 'Widget', $widget->className);
             $widget->namespace = null;
             $widget->classFile = \str_replace(
                 \PFAD_PLUGIN_ADMINMENU . \PFAD_PLUGIN_WIDGET,

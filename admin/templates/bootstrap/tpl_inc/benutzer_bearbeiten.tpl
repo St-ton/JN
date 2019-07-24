@@ -162,7 +162,7 @@ $(document).ready(function() {
                             </span>
                             <span class="input-group-addon">
                                 <button type="button" onclick="ioCall('getRandomPassword');return false;"
-                                        class="btn btn-info btn-xs" title="Passwort generieren">
+                                        class="btn btn-info btn-xs" title="{__('passwordGenerate')}">
                                     <i class="fa fa-random"></i>
                                 </button>
                             </span>
@@ -174,7 +174,7 @@ $(document).ready(function() {
                         <div class="item">
                             <div class="input-group">
                             <span class="input-group-addon">
-                                <label for="tmp_check">{__('timelyAccess')}</label>
+                                <label for="tmp_check">{__('temporaryAccess')}</label>
                             </span>
                             <span class="input-group-wrap">
                                 <span class="input-group-checkbox-wrap">

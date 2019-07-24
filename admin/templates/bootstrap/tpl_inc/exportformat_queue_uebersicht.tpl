@@ -38,7 +38,7 @@
                                                 <input name="kCron[]" type="checkbox" value="{$oExportformatCron->cronID}" id="kCron-{$oExportformatCron->cronID}" />
                                             </td>
                                             <td class="tleft"><label for="kCron-{$oExportformatCron->cronID}">{$oExportformatCron->cName}</label></td>
-                                            <td class="tleft">{$oExportformatCron->Sprache->cNameDeutsch}/{$oExportformatCron->Waehrung->cName}/{$oExportformatCron->Kundengruppe->cName}</td>
+                                            <td class="tleft">{$oExportformatCron->Sprache->getLocalizedName()}/{$oExportformatCron->Waehrung->cName}/{$oExportformatCron->Kundengruppe->cName}</td>
                                             <td class="tcenter">{$oExportformatCron->dStart_de}</td>
                                             <td class="tcenter">{$oExportformatCron->cAlleXStdToDays}</td>
                                             <td class="tcenter">
@@ -118,7 +118,7 @@
                                         <td>{$oExportformatQueueBearbeitet->cName}</td>
                                         <td>{$oExportformatQueueBearbeitet->cDateiname}</td>
                                         <td>
-                                            {$oExportformatQueueBearbeitet->cNameSprache}/{$oExportformatQueueBearbeitet->cNameWaehrung}/{$oExportformatQueueBearbeitet->cNameKundengruppe}
+                                            {$oExportformatQueueBearbeitet->name}/{$oExportformatQueueBearbeitet->cNameWaehrung}/{$oExportformatQueueBearbeitet->cNameKundengruppe}
                                         </td>
                                         <td>{$oExportformatQueueBearbeitet->nLimitN}</td>
                                         <td>{$oExportformatQueueBearbeitet->dZuletztGelaufen_DE}</td>

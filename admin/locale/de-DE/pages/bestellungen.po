@@ -24,7 +24,7 @@ msgid "orderCostumerRegistered"
 msgstr "Registrierter Kunde"
 
 msgid "orderSum"
-msgstr "Warensumme"
+msgstr "Gesamtsumme"
 
 msgid "orderDate"
 msgstr "Bestelldatum"
@@ -60,7 +60,7 @@ msgid "successOrderReset"
 msgstr "Die markierten Bestellungen wurden erfolgreich zurückgesetzt."
 
 msgid "errorAtLeastOneOrder"
-msgstr "Fehler: Bitte markieren Sie mindestens eine Bestellung."
+msgstr "Bitte markieren Sie mindestens eine Bestellung."
 
 msgid "errorMissingOrderNumber"
-msgstr "Fehler: Bitte geben Sie eine Bestellnummer ein."
+msgstr "Bitte geben Sie eine Bestellnummer ein."

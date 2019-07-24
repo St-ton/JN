@@ -54,7 +54,7 @@ if ($link->getLinkType() === LINKTYP_STARTSEITE) {
         Shop::getLanguage(),
         Frontend::getCustomerGroup()->getID()
     ));
-} elseif ($link->getLinkType() === LINKTYP_WRB) {
+} elseif (\in_array($link->getLinkType(), [LINKTYP_WRB, LINKTYP_WRB_FORMULAR, LINKTYP_DATENSCHUTZ], true)) {
     $smarty->assign('WRB', Shop::Container()->getLinkService()->getAGBWRB(
         Shop::getLanguage(),
         Frontend::getCustomerGroup()->getID()
@@ -79,8 +79,6 @@ if ($link->getLinkType() === LINKTYP_STARTSEITE) {
     }
     $smarty->assign('LivesucheTop', $liveSearchTop)
            ->assign('LivesucheLast', $liveSearchLast);
-} elseif ($link->getLinkType() === LINKTYP_TAGGING) {
-    $smarty->assign('Tagging', CMS::getTagging($conf));
 } elseif ($link->getLinkType() === LINKTYP_HERSTELLER) {
     $smarty->assign('oHersteller_arr', Hersteller::getAll());
 } elseif ($link->getLinkType() === LINKTYP_NEWSLETTERARCHIV) {
@@ -96,9 +94,9 @@ if ($link->getLinkType() === LINKTYP_STARTSEITE) {
     $alertHelper->addAlert(Alert::TYPE_DANGER, Shop::Lang()->get('pageNotFound'), 'pageNotFound');
 } elseif ($link->getLinkType() === LINKTYP_GRATISGESCHENK) {
     if ($conf['sonstiges']['sonstiges_gratisgeschenk_nutzen'] === 'Y') {
-        $oArtikelGeschenk_arr = CMS::getFreeGifts($conf);
-        if (is_array($oArtikelGeschenk_arr) && count($oArtikelGeschenk_arr) > 0) {
-            $smarty->assign('oArtikelGeschenk_arr', $oArtikelGeschenk_arr);
+        $freeGifts = CMS::getFreeGifts($conf);
+        if (count($freeGifts) > 0) {
+            $smarty->assign('oArtikelGeschenk_arr', $freeGifts);
         } else {
             $alertHelper->addAlert(
                 Alert::TYPE_ERROR,

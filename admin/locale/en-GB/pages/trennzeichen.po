@@ -3,25 +3,25 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "Trennzeichen"
-msgstr "Zahlenformate"
+msgstr "Number formats"
 
 msgid "trennzeichenURL"
-msgstr "https://jtl-url.de/xiepq"
+msgstr "https://jtl-url.de/p7xo3"
 
 msgid "trennzeichenDesc"
 msgstr " "
 
 msgid "errorWeightDecimals"
-msgstr "Fehler: Die Anzahl der Dezimalstellen beim Gewicht dürfen nicht größer 4 sein!"
+msgstr "The weight value must not have more than 4 decimal places."
 
 msgid "errorAmountDecimals"
-msgstr "Fehler: Die Anzahl der Dezimalstellen bei der Menge dürfen nicht größer 2 sein!"
+msgstr "The quantity must not have more than 2 decimal places."
 
 msgid "countDecimals"
-msgstr "Anzahl Dezimalstellen"
+msgstr "Number of decimal places"
 
 msgid "thousandDivider"
-msgstr "Tausendertrennzeichen"
+msgstr "Thousands separator"
 
 msgid "decimalsDivider"
-msgstr "Dezimaltrennzeichen"
+msgstr "Decimal separator"

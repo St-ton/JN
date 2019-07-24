@@ -3,7 +3,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "auswahlassistent"
-msgstr "Selection wizard"
+msgstr "Selection Wizard"
 
 msgid "auswahlassistentDesc"
 msgstr " "
@@ -57,28 +57,28 @@ msgid "successGroupDeleted"
 msgstr "Selected groups deleted successfully."
 
 msgid "errorGroupDeleted"
-msgstr "Error: Could not delete the selected groups."
+msgstr "Could not delete the selected groups."
 
 msgid "successQuestionSaved"
 msgstr "Question saved successfully."
 
 msgid "successQuestionDeleted"
-msgstr "Question deleted successfully."
+msgstr "Selected question deleted successfully."
 
 msgid "errorQuestionDeleted"
-msgstr "Error: Could not delete the selected question."
+msgstr "Could not delete the selected question."
 
 msgid "hintName"
-msgstr "Please enter the name of the questions group. This is only for internal usage."
+msgstr "Please enter the name of the question group. This is only for internal usage."
 
 msgid "hintDesc"
 msgstr "Here you can enter a description for a question group, which will be shown above the group."
 
 msgid "questionCatInGroup"
-msgstr "Specify for which categories the questions group will be displayed."
+msgstr "Specify for which categories the question group will be displayed."
 
 msgid "noSpecialPageAvailable"
-msgstr "Special page \"Selection wizard\" does not exist."
+msgstr "Special page \"Selection Wizard\" does not exist."
 
 msgid "hintSpecialPage"
 msgstr "Specify on which special page the group will be displayed. By holding Ctrl, you can select several pages at once."
@@ -87,7 +87,7 @@ msgid "hintGroupOnHome"
 msgstr "Specify whether the group will be active on the start page of your JTL-Shop. Only one question group can be displayed on the start page."
 
 msgid "hintShowCheckbox"
-msgstr "Define whether the questions group is active or not. Only active question groups are displayed."
+msgstr "Define whether the question group is active or not. Only active question groups are displayed."
 
 msgid "hintQuestionName"
 msgstr "Enter the question to your customers."
@@ -96,7 +96,7 @@ msgid "hintQuestionGroup"
 msgstr "Assign the question to a question group."
 
 msgid "hintQuestionAttribute"
-msgstr "Define which characteristic will be the subject of this question."
+msgstr "Define which characteristic will be asked for."
 
 msgid "hintQuestionPosition"
 msgstr "Specify in which position the question will be displayed. The smaller the number, the higher up the question will be displayed."

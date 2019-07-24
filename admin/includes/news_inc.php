@@ -7,31 +7,31 @@
 use JTL\Shop;
 
 /**
- * @param string $cBetreff
- * @param string $cText
- * @param array  $kKundengruppe_arr
- * @param array  $kNewsKategorie_arr
+ * @param string $subject
+ * @param string $text
+ * @param array  $customerGroupIDs
+ * @param array  $newsCategoryIDs
  * @return array
  * @deprecated since 5.0.0
  */
-function pruefeNewsPost($cBetreff, $cText, $kKundengruppe_arr, $kNewsKategorie_arr)
+function pruefeNewsPost($subject, $text, $customerGroupIDs, $newsCategoryIDs)
 {
     trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
     $checks = [];
     // Betreff prüfen
-    if (mb_strlen($cBetreff) === 0) {
+    if (mb_strlen($subject) === 0) {
         $checks['cBetreff'] = 1;
     }
     // Text prüfen
-    if (mb_strlen($cText) === 0) {
+    if (mb_strlen($text) === 0) {
         $checks['cText'] = 1;
     }
     // Kundengruppe prüfen
-    if (!is_array($kKundengruppe_arr) || count($kKundengruppe_arr) === 0) {
+    if (!is_array($customerGroupIDs) || count($customerGroupIDs) === 0) {
         $checks['kKundengruppe_arr'] = 1;
     }
     // Newskategorie prüfen
-    if (!is_array($kNewsKategorie_arr) || count($kNewsKategorie_arr) === 0) {
+    if (!is_array($newsCategoryIDs) || count($newsCategoryIDs) === 0) {
         $checks['kNewsKategorie_arr'] = 1;
     }
 
@@ -87,79 +87,79 @@ function cmp_obj($a, $b)
 }
 
 /**
- * @param string $cMonat
- * @param int    $nJahr
- * @param string $cISOSprache
+ * @param string $month
+ * @param int    $year
+ * @param string $iso
  * @return string
  * @deprecated since 5.0.0
  */
-function mappeDatumName($cMonat, $nJahr, $cISOSprache)
+function mappeDatumName($month, $year, $iso)
 {
     trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
-    $cName = '';
+    $name = '';
 
-    if ($cISOSprache === 'ger') {
-        switch ($cMonat) {
+    if ($iso === 'ger') {
+        switch ($month) {
             case '01':
-                $cName .= Shop::Lang()->get('january', 'news') . ', ' . $nJahr;
+                $name .= Shop::Lang()->get('january', 'news') . ', ' . $year;
                 break;
             case '02':
-                $cName .= Shop::Lang()->get('february', 'news') . ', ' . $nJahr;
+                $name .= Shop::Lang()->get('february', 'news') . ', ' . $year;
                 break;
             case '03':
-                $cName .= Shop::Lang()->get('march', 'news') . ', ' . $nJahr;
+                $name .= Shop::Lang()->get('march', 'news') . ', ' . $year;
                 break;
             case '04':
-                $cName .= Shop::Lang()->get('april', 'news') . ', ' . $nJahr;
+                $name .= Shop::Lang()->get('april', 'news') . ', ' . $year;
                 break;
             case '05':
-                $cName .= Shop::Lang()->get('may', 'news') . ', ' . $nJahr;
+                $name .= Shop::Lang()->get('may', 'news') . ', ' . $year;
                 break;
             case '06':
-                $cName .= Shop::Lang()->get('june', 'news') . ', ' . $nJahr;
+                $name .= Shop::Lang()->get('june', 'news') . ', ' . $year;
                 break;
             case '07':
-                $cName .= Shop::Lang()->get('july', 'news') . ', ' . $nJahr;
+                $name .= Shop::Lang()->get('july', 'news') . ', ' . $year;
                 break;
             case '08':
-                $cName .= Shop::Lang()->get('august', 'news') . ', ' . $nJahr;
+                $name .= Shop::Lang()->get('august', 'news') . ', ' . $year;
                 break;
             case '09':
-                $cName .= Shop::Lang()->get('september', 'news') . ', ' . $nJahr;
+                $name .= Shop::Lang()->get('september', 'news') . ', ' . $year;
                 break;
             case '10':
-                $cName .= Shop::Lang()->get('october', 'news') . ', ' . $nJahr;
+                $name .= Shop::Lang()->get('october', 'news') . ', ' . $year;
                 break;
             case '11':
-                $cName .= Shop::Lang()->get('november', 'news') . ', ' . $nJahr;
+                $name .= Shop::Lang()->get('november', 'news') . ', ' . $year;
                 break;
             case '12':
-                $cName .= Shop::Lang()->get('december', 'news') . ', ' . $nJahr;
+                $name .= Shop::Lang()->get('december', 'news') . ', ' . $year;
                 break;
         }
     } else {
-        $cName .= date('F', mktime(0, 0, 0, (int)$cMonat, 1, $nJahr)) . ', ' . $nJahr;
+        $name .= date('F', mktime(0, 0, 0, (int)$month, 1, $year)) . ', ' . $year;
     }
 
-    return $cName;
+    return $name;
 }
 
 /**
- * @param string $cDateTimeStr
+ * @param string $dateTimeStr
  * @return stdClass
  * @deprecated since 4.06
  */
-function gibJahrMonatVonDateTime($cDateTimeStr)
+function gibJahrMonatVonDateTime($dateTimeStr)
 {
     trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
-    [$dDatum, $dUhrzeit]     = explode(' ', $cDateTimeStr);
-    [$dJahr, $dMonat, $dTag] = explode('-', $dDatum);
-    $oDatum                  = new stdClass();
-    $oDatum->Jahr            = (int)$dJahr;
-    $oDatum->Monat           = (int)$dMonat;
-    $oDatum->Tag             = (int)$dTag;
+    [$date,]              = explode(' ', $dateTimeStr);
+    [$year, $month, $day] = explode('-', $date);
+    $res                  = new stdClass();
+    $res->Jahr            = (int)$year;
+    $res->Monat           = (int)$month;
+    $res->Tag             = (int)$day;
 
-    return $oDatum;
+    return $res;
 }
 
 /**

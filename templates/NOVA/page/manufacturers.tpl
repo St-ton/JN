@@ -3,20 +3,17 @@
  * @license https://jtl-url.de/jtlshoplicense
  *}
 {block name='page-manufacturers'}
-    {include file='snippets/opc_mount_point.tpl' id='opc_manufacturers_preview_prepend'}
+    {include file='snippets/opc_mount_point.tpl' id='opc_before_manufacturers'}
+
     {block name='page-manufacturers-content'}
-        {row class="row-eq-height content-cats-small clearfix"}
+        <div class="card-columns manufacturers-columns">
             {foreach $oHersteller_arr as $Hersteller}
-                {col cols=6 md=4 lg=3}
-                    {card class="text-center"}
-                        {link href=$Hersteller->cURL title=$Hersteller->cMetaTitle}
-                            {image src=$Hersteller->cBildURLNormal alt=$Hersteller->getName()}
-                            {$Hersteller->getName()}
-                        {/link}
+                {link href=$Hersteller->cURL title=$Hersteller->cMetaTitle}
+                    {card class="text-center p-2 mb-5 border-0" img-src=$Hersteller->cBildURLNormal img-alt=$Hersteller->getName()}
+                        {$Hersteller->getName()}
                     {/card}
-                {/col}
+                {/link}
             {/foreach}
-        {/row}
+        </div>
     {/block}
-    {include file='snippets/opc_mount_point.tpl' id='opc_manufacturers_preview_append'}
 {/block}

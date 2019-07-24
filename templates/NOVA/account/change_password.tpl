@@ -6,9 +6,6 @@
     {block name='account-change-password-heading'}
         <h1>{lang key='changePassword' section='login'}</h1>
     {/block}
-    {block name='account-change-password-include-extension'}
-        {include file='snippets/extension.tpl'}
-    {/block}
     {block name='account-change-password-change-password-form'}
         {block name='account-change-password-alert'}
             {alert variant="info"}{lang key='changePasswordDesc' section='login'}{/alert}
@@ -16,7 +13,7 @@
         {row}
             {col md=5 lg=4}
                 {block name='account-change-password-form-password'}
-                    {form id="password" action="{get_static_route id='jtl.php'}" method="post" class="evo-validate"}
+                    {form id="password" action="{get_static_route id='jtl.php'}" method="post" class="evo-validate label-slide"}
                         {block name='account-change-password-form-password-content'}
                             {include file='snippets/form_group_simple.tpl'
                                 options=[
@@ -24,12 +21,21 @@
                                     {lang key='currentPassword' section='login'}, true
                                 ]
                             }
-                            {include file='snippets/form_group_simple.tpl'
-                                options=[
-                                    'password', 'newPassword', 'neuesPasswort1', null,
-                                    {lang key='newPassword' section='login'}, true
-                                ]
-                            }
+                            <div class="form-group d-flex flex-column" role="group">
+                                {input type="password"
+                                       class="form-control"
+                                       placeholder="{lang key='newPassword' section='login'}"
+                                       id="newPassword"
+                                       value=""
+                                       required=true
+                                       name="neuesPasswort1"}
+                                <label for="newPassword" class="col-form-label pt-0">
+                                    {lang key='newPassword' section='login'}
+                                </label>
+                            </div>
+                            {block name='account-change-password-include-password-check'}
+                                {include file='snippets/password_check.tpl' id='#newPassword'}
+                            {/block}
                             {include file='snippets/form_group_simple.tpl'
                                 options=[
                                     'password', 'newPasswordRpt', 'neuesPasswort2', null,

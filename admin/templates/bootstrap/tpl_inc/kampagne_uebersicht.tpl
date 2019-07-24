@@ -160,7 +160,7 @@
                                     <th class="th-1"></th>
                                     {foreach $oKampagneDef_arr as $oKampagneDef}
                                         <th class="th-2">
-                                            <a href="kampagne.php?tab=globalestats&nSort={$oKampagneDef->kKampagneDef}&token={$smarty.session.jtl_token}">{$oKampagneDef->cName}</a>
+                                            <a href="kampagne.php?tab=globalestats&nSort={$oKampagneDef->kKampagneDef}&token={$smarty.session.jtl_token}">{__($oKampagneDef->cName)}</a>
                                             {if $oKampagneDef->cName === 'Angeschaute Newsletter'}
                                                 <label type="button" class="label label-default label-sm"
                                                        data-toggle="tooltip"

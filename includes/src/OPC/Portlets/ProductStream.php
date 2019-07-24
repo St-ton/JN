@@ -29,25 +29,34 @@ class ProductStream extends Portlet
     public function getPropertyDesc(): array
     {
         return [
+            'search' => [
+                'type'  => InputType::SEARCH,
+                'label' => 'Suche',
+                'placeholder' => __('search'),
+                'width' => 67,
+                'order' => 2,
+            ],
             'listStyle'    => [
                 'type'    => InputType::SELECT,
-                'label'   => 'Darstellung',
+                'label'   => __('presentation'),
+                'width'   => 34,
+                'order'   => 1,
                 'options' => [
-                    'gallery'    => 'Galerie',
-                    'list'       => 'Liste',
-                    'slider'     => 'Slider',
-                    'vertSlider' => 'vertikaler Slider'
+                    'gallery'    => __('presentationGallery'),
+                    'list'       => __('presentationList'),
+                    'slider'     => __('presentationSlider'),
+                    'vertSlider' => __('presentationSliderVertical'),
                 ],
                 'default' => 'gallery',
                 'childrenFor' => [
                     'slider' => [
                         'sliderTitle'  => [
-                            'label' => 'Slidertitel',
+                            'label' => __('sliderTitle'),
                             'width' => 50,
                         ],
                         'productCount' => [
                             'type'    => InputType::NUMBER,
-                            'label'   => 'Anzahl sichtbare Artikel',
+                            'label'   => __('numberVisibleItems'),
                             'width'   => 50,
                             'default' => 3,
                         ],
@@ -55,9 +64,10 @@ class ProductStream extends Portlet
                 ]
             ],
             'filters'      => [
-                'type'    => InputType::FILTER,
-                'label'   => 'Artikelfilter',
-                'default' => [],
+                'type'     => InputType::FILTER,
+                'label'    => __('itemFilter'),
+                'default'  => [],
+                'searcher' => 'search',
             ],
         ];
     }
@@ -68,7 +78,7 @@ class ProductStream extends Portlet
     public function getPropertyTabs(): array
     {
         return [
-            'Styles' => 'styles',
+            __('Styles') => 'styles',
         ];
     }
 
@@ -98,17 +108,15 @@ class ProductStream extends Portlet
     /**
      * @param PortletInstance $instance
      * @return Artikel[]
-     * @throws \JTL\Exceptions\CircularReferenceException
-     * @throws \JTL\Exceptions\ServiceNotFoundException
      */
     public function getFilteredProducts(PortletInstance $instance): array
     {
         $products = [];
         $options  = Artikel::getDefaultOptions();
 
-        foreach ($this->getFilteredProductIds($instance) as $kArtikel) {
+        foreach ($this->getFilteredProductIds($instance) as $productID) {
             $product = new Artikel();
-            $product->fuelleArtikel($kArtikel, $options);
+            $product->fuelleArtikel($productID, $options);
             $products[] = $product;
         }
 

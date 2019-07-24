@@ -8,7 +8,7 @@ namespace JTL\Sitemap\Factories;
 
 use Generator;
 use JTL\DB\ReturnType;
-use JTL\Sprache;
+use JTL\Language\LanguageHelper;
 use JTL\Sitemap\Items\Product as Item;
 use PDO;
 use function Functional\first;
@@ -26,7 +26,7 @@ final class Product extends AbstractFactory
     public function getCollection(array $languages, array $customerGroups): Generator
     {
         $defaultCustomerGroupID  = first($customerGroups);
-        $defaultLang             = Sprache::getDefaultLanguage();
+        $defaultLang             = LanguageHelper::getDefaultLanguage();
         $defaultLangID           = (int)$defaultLang->kSprache;
         $_SESSION['kSprache']    = $defaultLangID;
         $_SESSION['cISOSprache'] = $defaultLang->cISO;

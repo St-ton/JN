@@ -59,9 +59,8 @@ final class Customers extends AbstractPush
                 WHERE kKunde = ' . (int)$attribute['kKunde'],
                 ReturnType::ARRAY_OF_ASSOC_ARRAYS
             );
-            $attributeCount              = \count($customer['tkundenattribut']);
-            for ($o = 0; $o < $attributeCount; $o++) {
-                $customer['tkundenattribut'][$o . ' attr'] = $this->buildAttributes($customer['tkundenattribut'][$o]);
+            foreach ($customer['tkundenattribut'] as $o => $attr) {
+                $customer['tkundenattribut'][$o . ' attr'] = $this->buildAttributes($attr);
             }
             $attributes[] = $attribute;
         }

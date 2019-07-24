@@ -68,12 +68,6 @@ msgstr "Mouseover zeigt Länder"
 msgid "global_versandkostenfrei_darstellung_value(D)"
 msgstr "Länder direkt sichtbar"
 
-msgid "global_artikelname_htmlentities_value(Y)"
-msgstr "Ja"
-
-msgid "global_artikelname_htmlentities_value(N)"
-msgstr "Nein"
-
 msgid "kategorien_anzeigefilter_value(1)"
 msgstr "Alle Kategorien anzeigen"
 
@@ -399,13 +393,13 @@ msgid "artikeluebersicht_sonderpreisanzeige_value(2)"
 msgstr "Zusätzlich den alten Preis anzeigen"
 
 msgid "topbest_anzeigen_value(Top)"
-msgstr "Nur Top-Angebote anzeigen"
+msgstr "Nur Top-Artikel anzeigen"
 
 msgid "topbest_anzeigen_value(Bestseller)"
 msgstr "Nur Bestseller anzeigen"
 
 msgid "topbest_anzeigen_value(TopBest)"
-msgstr "Top-Angebote und Bestseller anzeigen"
+msgstr "Top-Artikel und Bestseller anzeigen"
 
 msgid "topbest_anzeigen_value(N)"
 msgstr "Nein"
@@ -693,7 +687,7 @@ msgid "artikeldetails_fragezumprodukt_anzeigen_value(N)"
 msgstr "Nein"
 
 msgid "artikeldetails_fragezumprodukt_anzeigen_value(P)"
-msgstr "Ja, als Pop-up"
+msgstr "Ja, als Dialogfenster"
 
 msgid "produktfrage_abfragen_anrede_value(Y)"
 msgstr "Ja, erforderliche Angabe"
@@ -777,10 +771,10 @@ msgid "benachrichtigung_nutzen_value(N)"
 msgstr "Nein"
 
 msgid "benachrichtigung_nutzen_value(P)"
-msgstr "Ja, als Pop-up"
+msgstr "Ja, als Dialogfenster"
 
 msgid "benachrichtigung_nutzen_value(L)"
-msgstr "Ja, als Pop-up (und in allen Listenansichten)"
+msgstr "Ja, als Dialogfenster (und in allen Listenansichten)"
 
 msgid "benachrichtigung_abfragen_vorname_value(O)"
 msgstr "Ja, optionale Angabe"
@@ -810,21 +804,6 @@ msgid "artikeldetails_vergleichsliste_anzeigen_value(Y)"
 msgstr "Ja"
 
 msgid "artikeldetails_vergleichsliste_anzeigen_value(N)"
-msgstr "Nein"
-
-msgid "tagging_freischaltung_value(Y)"
-msgstr "Ja, nur für angemeldete Kunden"
-
-msgid "tagging_freischaltung_value(O)"
-msgstr "Ja, für alle Besucher"
-
-msgid "tagging_freischaltung_value(N)"
-msgstr "Nein"
-
-msgid "tagging_anzeigen_value(Y)"
-msgstr "Ja"
-
-msgid "tagging_anzeigen_value(N)"
 msgstr "Nein"
 
 msgid "mediendatei_anzeigen_value(YM)"
@@ -1164,7 +1143,7 @@ msgid "warenkorb_warenkorb2pers_merge_value(N)"
 msgstr "Nein"
 
 msgid "warenkorb_warenkorb2pers_merge_value(P)"
-msgstr "Kunde entscheidet via Pop-up"
+msgstr "Kunde entscheidet via Dialogfenster"
 
 msgid "bestellvorgang_kaufabwicklungsmethode_value(N)"
 msgstr "Normale Kaufabwicklung"
@@ -1293,12 +1272,6 @@ msgid "boxen_livesuche_anzeigen_value(Y)"
 msgstr "Ja"
 
 msgid "boxen_livesuche_anzeigen_value(N)"
-msgstr "Nein"
-
-msgid "boxen_tagging_anzeigen_value(Y)"
-msgstr "Ja"
-
-msgid "boxen_tagging_anzeigen_value(N)"
 msgstr "Nein"
 
 msgid "boxen_wunschzettel_bilder_value(Y)"
@@ -1611,7 +1584,7 @@ msgid "vergleichsliste_target_value(blank)"
 msgstr "In einem neuen Fenster"
 
 msgid "vergleichsliste_target_value(popup)"
-msgstr "Als Pop-up"
+msgstr "Als Dialogfenster"
 
 msgid "bewertung_anzeigen_value(Y)"
 msgstr "Ja"
@@ -1638,7 +1611,7 @@ msgid "bewertungserinnerung_nutzen_value(N)"
 msgstr "Nie"
 
 msgid "bewertungserinnerung_nutzen_value(B)"
-msgstr "An Newslettereinwilligung koppeln"
+msgstr "An Newsletter-Einwilligung koppeln"
 
 msgid "bewertung_guthaben_nutzen_value(Y)"
 msgstr "Ja"
@@ -1777,24 +1750,6 @@ msgstr "Ja, im Content-Bereich und der Navigationsbox"
 
 msgid "bewertungsfilter_benutzen_value(N)"
 msgstr "Nein"
-
-msgid "allgemein_tagfilter_benutzen_value(content)"
-msgstr "Ja, im Content-Bereich"
-
-msgid "allgemein_tagfilter_benutzen_value(box)"
-msgstr "Ja, in Navigationsbox"
-
-msgid "allgemein_tagfilter_benutzen_value(Y)"
-msgstr "Ja, im Content-Bereich und der Navigationsbox"
-
-msgid "allgemein_tagfilter_benutzen_value(N)"
-msgstr "Nein"
-
-msgid "tag_filter_type_value(A)"
-msgstr "Keine Mehrfachauswahl (nur Einschränkung der Ergebnisse)"
-
-msgid "tag_filter_type_value(O)"
-msgstr "Mehrfachauswahl"
 
 msgid "suchtrefferfilter_nutzen_value(Y)"
 msgstr "Ja"
@@ -1961,12 +1916,6 @@ msgstr "Ja"
 msgid "news_kommentare_freischalten_value(N)"
 msgstr "Nein"
 
-msgid "news_kommentare_eingeloggt_value(Y)"
-msgstr "Ja"
-
-msgid "news_kommentare_eingeloggt_value(N)"
-msgstr "Nein"
-
 msgid "news_kategorie_unternewsanzeigen_value(Y)"
 msgstr "Ja"
 
@@ -1997,12 +1946,6 @@ msgstr "Ja"
 msgid "sitemap_kategorien_anzeigen_value(N)"
 msgstr "Nein"
 
-msgid "sitemap_globalemerkmale_anzeigen_value(Y)"
-msgstr "Ja"
-
-msgid "sitemap_globalemerkmale_anzeigen_value(N)"
-msgstr "Nein"
-
 msgid "sitemap_hersteller_anzeigen_value(Y)"
 msgstr "Ja"
 
@@ -2025,12 +1968,6 @@ msgid "sitemap_weitereseiten_artikeluebersicht_value(Y)"
 msgstr "Ja"
 
 msgid "sitemap_weitereseiten_artikeluebersicht_value(N)"
-msgstr "Nein"
-
-msgid "sitemap_tags_anzeigen_value(Y)"
-msgstr "Ja"
-
-msgid "sitemap_tags_anzeigen_value(N)"
 msgstr "Nein"
 
 msgid "sitemap_livesuche_anzeigen_value(Y)"
@@ -2379,7 +2316,7 @@ msgid "auswahlassistent_anzeigeformat_value(BT)"
 msgstr "Bild und Text"
 
 msgid "auswahlassistent_anzeigeformat_value(S)"
-msgstr "Dropdown"
+msgstr "Drop-down-Menü"
 
 msgid "auswahlassistent_allefragen_value(Y)"
 msgstr "Ja"
@@ -2484,7 +2421,16 @@ msgid "cron_type_value(N)"
 msgstr "deaktiviert"
 
 msgid "cron_type_value(tpl)"
-msgstr "Template-gesteuert"
+msgstr "Templategesteuert"
 
 msgid "cron_type_value(s2s)"
 msgstr "Curl Server-to-Server"
+
+msgid "hersteller_anzeigen_als_value(T)"
+msgstr "Text"
+
+msgid "hersteller_anzeigen_als_value(BT)"
+msgstr "Bild und Text"
+
+msgid "hersteller_anzeigen_als_value(B)"
+msgstr "Bild"

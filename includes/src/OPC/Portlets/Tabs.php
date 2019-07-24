@@ -8,7 +8,6 @@ namespace JTL\OPC\Portlets;
 
 use JTL\OPC\InputType;
 use JTL\OPC\Portlet;
-use JTL\OPC\PortletInstance;
 
 /**
  * Class Tabs
@@ -23,9 +22,9 @@ class Tabs extends Portlet
     {
         return [
             'tabs' => [
-                'label'   => 'Tabs',
+                'label'   => __('Tabs'),
                 'type'    => InputType::TEXT_LIST,
-                'default' => ['Tab eins', 'Tab zwei', 'Tab drei'],
+                'default' => [__('tabOne'), __('tabTwo'), __('tabThree')],
             ],
         ];
     }
@@ -36,8 +35,8 @@ class Tabs extends Portlet
     public function getPropertyTabs(): array
     {
         return [
-            'Styles'    => 'styles',
-            'Animation' => 'animations',
+            __('Styles')    => 'styles',
+            __('Animation') => 'animations',
         ];
     }
 }

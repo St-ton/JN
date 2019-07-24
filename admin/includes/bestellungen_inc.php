@@ -5,51 +5,51 @@
  */
 
 use JTL\Checkout\Bestellung;
-use JTL\Shop;
 use JTL\DB\ReturnType;
+use JTL\Shop;
 
 /**
- * @param string $cLimitSQL
- * @param string $cSuchFilter
+ * @param string $limitSQL
+ * @param string $query
  * @return array
  */
-function gibBestellungsUebersicht($cLimitSQL, $cSuchFilter): array
+function gibBestellungsUebersicht($limitSQL, $query): array
 {
-    $oBestellung_arr = [];
-    $cSuchFilterSQL  = '';
-    if (mb_strlen($cSuchFilter)) {
-        $cSuchFilterSQL = " WHERE cBestellNr LIKE '%" . Shop::Container()->getDB()->escape($cSuchFilter) . "%'";
+    $orders       = [];
+    $searchFilter = '';
+    if (mb_strlen($query)) {
+        $searchFilter = " WHERE cBestellNr LIKE '%" . Shop::Container()->getDB()->escape($query) . "%'";
     }
-    $oBestellungToday_arr = Shop::Container()->getDB()->query(
+    $items = Shop::Container()->getDB()->query(
         'SELECT kBestellung
             FROM tbestellung
-            ' . $cSuchFilterSQL . '
-            ORDER BY dErstellt DESC' . $cLimitSQL,
+            ' . $searchFilter . '
+            ORDER BY dErstellt DESC' . $limitSQL,
         ReturnType::ARRAY_OF_OBJECTS
     );
-    foreach ($oBestellungToday_arr as $oBestellungToday) {
-        if (isset($oBestellungToday->kBestellung) && $oBestellungToday->kBestellung > 0) {
-            $oBestellung = new Bestellung($oBestellungToday->kBestellung);
-            $oBestellung->fuelleBestellung(true, 0, false);
-            $oBestellung_arr[] = $oBestellung;
+    foreach ($items as $item) {
+        if (isset($item->kBestellung) && $item->kBestellung > 0) {
+            $order = new Bestellung((int)$item->kBestellung);
+            $order->fuelleBestellung(true, 0, false);
+            $orders[] = $order;
         }
     }
 
-    return $oBestellung_arr;
+    return $orders;
 }
 
 /**
- * @param string $cSuchFilter
+ * @param string $query
  * @return int
  */
-function gibAnzahlBestellungen($cSuchFilter): int
+function gibAnzahlBestellungen($query): int
 {
-    $cSuchFilterSQL = (mb_strlen($cSuchFilter) > 0)
-        ? " WHERE cBestellNr LIKE '%" . Shop::Container()->getDB()->escape($cSuchFilter) . "%'"
+    $filterSQL = (mb_strlen($query) > 0)
+        ? " WHERE cBestellNr LIKE '%" . Shop::Container()->getDB()->escape($query) . "%'"
         : '';
-    $order          = Shop::Container()->getDB()->query(
+    $order     = Shop::Container()->getDB()->query(
         'SELECT COUNT(*) AS nAnzahl
-            FROM tbestellung' . $cSuchFilterSQL,
+            FROM tbestellung' . $filterSQL,
         ReturnType::SINGLE_OBJECT
     );
     if (isset($order->nAnzahl) && $order->nAnzahl > 0) {
@@ -83,17 +83,17 @@ function setzeAbgeholtZurueck(array $orderIDs): int
         ReturnType::ARRAY_OF_OBJECTS
     );
     if (is_array($customers) && count($customers) > 0) {
-        $kKunde_arr = [];
-        foreach ($customers as $oKunde) {
-            $oKunde->kKunde = (int)$oKunde->kKunde;
-            if (!in_array($oKunde->kKunde, $kKunde_arr, true)) {
-                $kKunde_arr[] = $oKunde->kKunde;
+        $customerIDs = [];
+        foreach ($customers as $customer) {
+            $customer->kKunde = (int)$customer->kKunde;
+            if (!in_array($customer->kKunde, $customerIDs, true)) {
+                $customerIDs[] = $customer->kKunde;
             }
         }
         Shop::Container()->getDB()->query(
             "UPDATE tkunde
                 SET cAbgeholt = 'N'
-                WHERE kKunde IN(" . implode(',', $kKunde_arr) . ')',
+                WHERE kKunde IN(" . implode(',', $customerIDs) . ')',
             ReturnType::AFFECTED_ROWS
         );
     }

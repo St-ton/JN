@@ -53,6 +53,7 @@ executeHook(HOOK_LETZTERINCLUDE_CSS_JS, [
     'cPluginJsHead_arr' => &$minify['plugin_js_head'],
     'cPluginJsBody_arr' => &$minify['plugin_js_body']
 ]);
+$device = new Mobile_Detect;
 
 $expandedCategories = $expandedCategories ?? new KategorieListe();
 $debugbar           = Shop::Container()->getDebugBar();
@@ -126,6 +127,7 @@ $smarty->assign('linkgroups', $linkHelper->getLinkGroups())
        ->assign('currentTemplateDirFullPath', PFAD_ROOT . $tplDir)
        ->assign('currentThemeDir', $tplDir . 'themes/' . $themeDir . '/')
        ->assign('currentThemeDirFull', $shopURL . '/' . $tplDir . 'themes/' . $themeDir . '/')
+       ->assign('opcDir', PFAD_ROOT . PFAD_ADMIN . 'opc/')
        ->assign('session_name', session_name())
        ->assign('session_id', session_id())
        ->assign('lang', Shop::getLanguageCode())
@@ -187,7 +189,8 @@ $smarty->assign('linkgroups', $linkHelper->getLinkGroups())
        ->assign('opcPageService', Shop::Container()->getOPCPageService())
        ->assign('shopFaviconURL', Shop::getFaviconURL())
        ->assign('wishlists', Wunschliste::getWishlists())
-       ->assign('robotsContent', $smarty->get_template_vars('robotsContent'));
+       ->assign('robotsContent', $smarty->get_template_vars('robotsContent'))
+       ->assign('device', $device);
 
 $nav = new Navigation(Shop::Lang(), Shop::Container()->getLinkService());
 $nav->setPageType(Shop::getPageType());

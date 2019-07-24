@@ -11,11 +11,11 @@
             </div>
             <div class="panel-body">
                 <ul class="jtl-list-group">
-                    {foreach $sprachen as $sprache}
-                        {assign var=cISO value=$sprache->cISO}
+                    {foreach $sprachen as $language}
+                        {assign var=cISO value=$language->getIso()}
                         <li class="input-group">
                             <span class="input-group-addon">
-                                <label for="cName_{$cISO}">{__('showedName')} ({$sprache->cNameDeutsch})</label>
+                                <label for="cName_{$cISO}">{__('showedName')} ({$language->getLocalizedName()})</label>
                             </span>
                             <input class="form-control" type="text" name="cName_{$cISO}" id="cName_{$cISO}" value="{if isset($Zahlungsartname[$cISO])}{$Zahlungsartname[$cISO]}{/if}" tabindex="1" />
                         </li>
@@ -27,13 +27,16 @@
                         <input class="form-control" type="text" name="cBild" id="cBild" value="{if isset($zahlungsart->cBild)}{$zahlungsart->cBild}{/if}" tabindex="1" />
                         <span class="input-group-addon">{getHelpDesc cDesc=__('pictureDesc')}</span>
                     </li>
-                    {foreach $sprachen as $sprache}
-                        {assign var=cISO value=$sprache->cISO}
+                    {foreach $sprachen as $language}
+                        {assign var=cISO value=$language->getIso()}
                         <li class="input-group">
                             <span class="input-group-addon">
-                                <label for="cGebuehrname_{$cISO}">{__('feeName')} ({$sprache->cNameDeutsch})</label>
+                                <label for="cGebuehrname_{$cISO}">{__('feeName')} ({$language->getLocalizedName()})</label>
                             </span>
-                            <input class="form-control" type="text" name="cGebuehrname_{$cISO}" id="cGebuehrname_{$cISO}" value="{if isset($Gebuehrname[$cISO])}{$Gebuehrname[$cISO]}{/if}" tabindex="2" />
+                            <div class="input-group">
+                                <input class="form-control" type="text" name="cGebuehrname_{$cISO}" id="cGebuehrname_{$cISO}" value="{if isset($Gebuehrname[$cISO])}{$Gebuehrname[$cISO]}{/if}" tabindex="2" />
+                                <span class="input-group-addon">{getHelpDesc cDesc=__('feeNameHint')}</span>
+                            </div>
                         </li>
                     {/foreach}
                     <li class="input-group">
@@ -58,21 +61,21 @@
                         <input class="form-control" type="text" name="nSort" id="nSort" value="{if isset($zahlungsart->nSort)}{$zahlungsart->nSort}{/if}" tabindex="3" />
                     </li>
 
-                    {foreach $sprachen as $sprache}
-                        {assign var=cISO value=$sprache->cISO}
+                    {foreach $sprachen as $language}
+                        {assign var=cISO value=$language->getIso()}
                         <li class="input-group">
                             <span class="input-group-addon">
-                                <label for="cHinweisTextShop_{$cISO}">{__('noticeTextShop')} ({$sprache->cNameDeutsch})</label>
+                                <label for="cHinweisTextShop_{$cISO}">{__('noticeTextShop')} ({$language->getLocalizedName()})</label>
                             </span>
                             <textarea class="form-control" id="cHinweisTextShop_{$cISO}" name="cHinweisTextShop_{$cISO}">{if isset($cHinweisTexteShop_arr[$cISO])}{$cHinweisTexteShop_arr[$cISO]}{/if}</textarea>
                         </li>
                     {/foreach}
 
-                    {foreach $sprachen as $sprache}
-                        {assign var=cISO value=$sprache->cISO}
+                    {foreach $sprachen as $language}
+                        {assign var=cISO value=$language->getIso()}
                         <li class="input-group">
                             <span class="input-group-addon">
-                                <label for="cHinweisText_{$cISO}">{__('noticeTextEmail')} ({$sprache->cNameDeutsch})</label>
+                                <label for="cHinweisText_{$cISO}">{__('noticeTextEmail')} ({$language->getLocalizedName()})</label>
                             </span>
                             <textarea class="form-control" id="cHinweisText_{$cISO}" name="cHinweisText_{$cISO}">{if isset($cHinweisTexte_arr[$cISO])}{$cHinweisTexte_arr[$cISO]}{/if}</textarea>
                         </li>
@@ -178,7 +181,7 @@
             </div>
         <p class="submit btn-group">
             <button type="submit" value="{__('save')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
-            <a href="zahlungsarten.php" value="{__('cancel')}" class="btn btn-danger"><i class="fa fa-exclamation"></i> {__('cancel')}</a>
+            <a href="zahlungsarten.php" title="{__('cancel')}" class="btn btn-danger"><i class="fa fa-exclamation"></i> {__('cancel')}</a>
         </p>
     </form>
 </div>

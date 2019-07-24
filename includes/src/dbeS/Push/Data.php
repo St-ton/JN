@@ -56,9 +56,8 @@ final class Data extends AbstractPush
         if ($count > 0) {
             $xml['queueddata']['uploadqueue']['tuploadqueue'] = $queueData;
             $xml['tuploadqueue attr']['anzahl']               = $count;
-            for ($i = 0; $i < $xml['tuploadqueue attr']['anzahl']; $i++) {
-                $xml['queueddata']['uploadqueue']['tuploadqueue'][$i . ' attr'] =
-                    $this->buildAttributes($xml['queueddata']['uploadqueue']['tuploadqueue'][$i]);
+            foreach ($queueData as $i => $item) {
+                $xml['queueddata']['uploadqueue']['tuploadqueue'][$i . ' attr'] = $this->buildAttributes($item);
             }
         }
 

@@ -66,69 +66,17 @@
                                 </div>
                             {elseif $oField->getType() === 'daterange'}
                                 <div class="col-md-3 toolbar-col">
-                                    <label for="{$oFilter->getId()}_{$oField->getId()}">{$oField->getTitle()}</label>
+                                    <label for="{$oFilter->getId()}_{$oField->getId()}">{__($oField->getTitle())}</label>
                                     <input type="text"  class="form-control"
                                            name="{$oFilter->getId()}_{$oField->getId()}"
                                            id="{$oFilter->getId()}_{$oField->getId()}">
-                                    <script>
-                                        $(function () {
-                                            var $datepicker = $('#{$oFilter->getId()}_{$oField->getId()}');
-                                            $datepicker.daterangepicker({
-                                                locale: {
-                                                    format: 'DD.MM.YYYY', separator: ' - ', applyLabel: 'Übernehmen',
-                                                    cancelLabel: 'Abbrechen', customRangeLabel: 'Benutzerdefiniert',
-                                                    daysOfWeek: ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'],
-                                                    monthNames: ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni',
-                                                        'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'],
-                                                    firstDay: 1
-                                                },
-                                                alwaysShowCalendars: true,
-                                                autoUpdateInput: false,
-                                                autoApply: false,
-                                                parentEl: 'html',
-                                                applyClass: 'btn btn-primary',
-                                                cancelClass: 'btn btn-danger',
-                                                ranges: {
-                                                    'Heute': [moment(), moment()],
-                                                    'Gestern': [
-                                                        moment().subtract(1, 'days'),
-                                                        moment().subtract(1, 'days')
-                                                    ],
-                                                    'Diese Woche': [
-                                                        moment().startOf('week').add(1, 'day'),
-                                                        moment().endOf('week').add(1, 'day')
-                                                    ],
-                                                    'Letzte Woche': [
-                                                        moment().subtract(1, 'week').startOf('week').add(1, 'day'),
-                                                        moment().subtract(1, 'week').endOf('week').add(1, 'day')
-                                                    ],
-                                                    'Dieser Monat': [
-                                                        moment().startOf('month'),
-                                                        moment().endOf('month')
-                                                    ],
-                                                    'Letzter Monat': [
-                                                        moment().subtract(1, 'month').startOf('month'),
-                                                        moment().subtract(1, 'month').endOf('month')
-                                                    ],
-                                                    'Dieses Jahr': [moment().startOf('year'), moment().endOf('year')],
-                                                    'Letztes Jahr': [
-                                                        moment().subtract(1, 'year').startOf('year'),
-                                                        moment().subtract(1, 'year').endOf('year')
-                                                    ]
-                                                }
-                                            });
-                                            $datepicker.on('apply.daterangepicker', function(ev, picker) {
-                                                $(this).val(picker.startDate.format('DD.MM.YYYY') + ' - '
-                                                        + picker.endDate.format('DD.MM.YYYY'));
-                                            });
-                                            var curDateRange = '{$oField->getValue()}'.split(' - ');
-                                            if (curDateRange.length === 2) {
-                                                $datepicker.val(curDateRange[0] + ' - ' + curDateRange[1]);
-                                                $datepicker.data('daterangepicker').setStartDate(curDateRange[0]);
-                                                $datepicker.data('daterangepicker').setEndDate(curDateRange[1]);
-                                            }
-                                        });
-                                    </script>
+                                    {include
+                                        file="snippets/daterange_picker.tpl"
+                                        datepickerID="#{$oFilter->getId()}_{$oField->getId()}"
+                                        currentDate="{$oField->getValue()}"
+                                        format="DD.MM.YYYY"
+                                        separator="{__('datepickerSeparator')}"
+                                    }
                                 </div>
                             {/if}
                         {/foreach}
@@ -138,11 +86,11 @@
                     <label>&nbsp;</label>
                     <div class="btn-group">
                         <button type="submit" class="btn btn-primary" name="action" value="{$oFilter->getId()}_filter"
-                                title="Filter anwenden" id="{$oFilter->getId()}_btn_filter">
+                                title="{__('useFilter')}" id="{$oFilter->getId()}_btn_filter">
                             <i class="fa fa-search"></i>
                         </button>
                         <button type="submit" class="btn btn-default" name="action" value="{$oFilter->getId()}_resetfilter"
-                                title="Filter zurücksetzen" id="{$oFilter->getId()}_btn_resetfilter">
+                                title="{__('resetFilter')}" id="{$oFilter->getId()}_btn_resetfilter">
                             <i class="fa fa-eraser"></i>
                         </button>
                     </div>

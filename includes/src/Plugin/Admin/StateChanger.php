@@ -89,8 +89,8 @@ class StateChanger
             $validation = $this->pluginValidator->validateByPath($path . $pluginData->cVerzeichnis);
         }
         if ($validation === InstallCode::OK
+            || $validation === InstallCode::OK_LEGACY
             || $validation === InstallCode::DUPLICATE_PLUGIN_ID
-            || $validation === InstallCode::OK_BUT_NOT_SHOP4_COMPATIBLE
         ) {
             $affectedRow = $this->db->update(
                 'tplugin',

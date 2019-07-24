@@ -69,27 +69,27 @@ class AuswahlAssistentGruppe
 
     /**
      * @param int  $groupID
-     * @param bool $bAktiv
+     * @param bool $active
      * @param bool $activeOnly
-     * @param bool $bBackend
+     * @param bool $backend
      */
-    public function __construct(int $groupID = 0, bool $bAktiv = true, bool $activeOnly = true, bool $bBackend = false)
+    public function __construct(int $groupID = 0, bool $active = true, bool $activeOnly = true, bool $backend = false)
     {
         if ($groupID > 0) {
-            $this->loadFromDB($groupID, $bAktiv, $activeOnly, $bBackend);
+            $this->loadFromDB($groupID, $active, $activeOnly, $backend);
         }
     }
 
     /**
      * @param int  $groupID
-     * @param bool $bAktiv
+     * @param bool $active
      * @param bool $activeOnly
-     * @param bool $bBackend
+     * @param bool $backend
      */
-    private function loadFromDB(int $groupID, bool $bAktiv, bool $activeOnly, bool $bBackend): void
+    private function loadFromDB(int $groupID, bool $active, bool $activeOnly, bool $backend): void
     {
         if ($groupID > 0) {
-            $activeSQL = $bAktiv ? ' AND nAktiv = 1' : '';
+            $activeSQL = $active ? ' AND nAktiv = 1' : '';
             $group     = Shop::Container()->getDB()->queryPrepared(
                 'SELECT *
                     FROM tauswahlassistentgruppe
@@ -109,17 +109,17 @@ class AuswahlAssistentGruppe
                     $group->kAuswahlAssistentGruppe,
                     $activeOnly
                 );
-                $oAuswahlAssistentOrt             = new AuswahlAssistentOrt(
+                $localtion                        = new AuswahlAssistentOrt(
                     0,
                     $this->kAuswahlAssistentGruppe,
-                    $bBackend
+                    $backend
                 );
-                $this->oAuswahlAssistentOrt_arr   = $oAuswahlAssistentOrt->oOrt_arr;
-                foreach ($this->oAuswahlAssistentOrt_arr as $oAuswahlAssistentOrt) {
-                    if ($oAuswahlAssistentOrt->cKey === \AUSWAHLASSISTENT_ORT_KATEGORIE) {
-                        $this->cKategorie .= $oAuswahlAssistentOrt->kKey . ';';
+                $this->oAuswahlAssistentOrt_arr   = $localtion->oOrt_arr;
+                foreach ($this->oAuswahlAssistentOrt_arr as $localtion) {
+                    if ($localtion->cKey === \AUSWAHLASSISTENT_ORT_KATEGORIE) {
+                        $this->cKategorie .= $localtion->kKey . ';';
                     }
-                    if ($oAuswahlAssistentOrt->cKey === \AUSWAHLASSISTENT_ORT_STARTSEITE) {
+                    if ($localtion->cKey === \AUSWAHLASSISTENT_ORT_STARTSEITE) {
                         $this->nStartseite = 1;
                     }
                 }
@@ -173,20 +173,20 @@ class AuswahlAssistentGruppe
     {
         $checks = $this->checkGroup($params);
         if (\count($checks) === 0) {
-            $oObj = GeneralObject::copyMembers($this);
+            $data = GeneralObject::copyMembers($this);
 
             $this->nAktiv                  = (int)$this->nAktiv;
             $this->kSprache                = (int)$this->kSprache;
             $this->nStartseite             = (int)$this->nStartseite;
             $this->kAuswahlAssistentGruppe = (int)$this->kAuswahlAssistentGruppe;
             unset(
-                $oObj->cSprache,
-                $oObj->nStartseite,
-                $oObj->cKategorie,
-                $oObj->oAuswahlAssistentOrt_arr,
-                $oObj->oAuswahlAssistentFrage_arr
+                $data->cSprache,
+                $data->nStartseite,
+                $data->cKategorie,
+                $data->oAuswahlAssistentOrt_arr,
+                $data->oAuswahlAssistentFrage_arr
             );
-            $groupID = Shop::Container()->getDB()->insert('tauswahlassistentgruppe', $oObj);
+            $groupID = Shop::Container()->getDB()->insert('tauswahlassistentgruppe', $data);
             if ($groupID > 0) {
                 AuswahlAssistentOrt::saveLocation($params, $groupID);
 
@@ -200,12 +200,12 @@ class AuswahlAssistentGruppe
     }
 
     /**
-     * @param array $cParam_arr
+     * @param array $params
      * @return array|bool
      */
-    public function updateGroup(array $cParam_arr)
+    public function updateGroup(array $params)
     {
-        $validation = $this->checkGroup($cParam_arr, true);
+        $validation = $this->checkGroup($params, true);
         if (\count($validation) === 0) {
             $upd                = new stdClass();
             $upd->kSprache      = $this->kSprache;
@@ -219,7 +219,7 @@ class AuswahlAssistentGruppe
                 (int)$this->kAuswahlAssistentGruppe,
                 $upd
             );
-            AuswahlAssistentOrt::updateLocation($cParam_arr, $this->kAuswahlAssistentGruppe);
+            AuswahlAssistentOrt::updateLocation($params, $this->kAuswahlAssistentGruppe);
 
             return true;
         }

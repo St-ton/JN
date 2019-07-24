@@ -3,7 +3,7 @@
     <div id="tabellenLivesuche" class="table-responsive">
         <table class="table">
             <tr>
-                <th class="tleft"><strong>{$oKampagneDef->cName}</strong></th>
+                <th class="tleft"><strong>{__($oKampagneDef->cName)}</strong></th>
             </tr>
             <tr>
                 <td>
@@ -16,7 +16,7 @@
 
     <div class="panel panel-default" id="payment">
         {if isset($oKampagneStat_arr) && $oKampagneStat_arr|@count > 0 && isset($oKampagneDef->kKampagneDef) && $oKampagneDef->kKampagneDef > 0}
-            {include file='tpl_inc/pagination.tpl' oPagination=$oPagiDefDetail
+            {include file='tpl_inc/pagination.tpl' pagination=$oPagiDefDetail
                      cParam_arr=['kKampagne'=>$oKampagne->kKampagne, 'defdetail'=>1,
                                  'kKampagneDef'=>$oKampagneDef->kKampagneDef, 'cZeitParam'=>$cZeitraumParam,
                                  'token'=>$smarty.session.jtl_token]}

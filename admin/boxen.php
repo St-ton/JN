@@ -4,16 +4,18 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Alert\Alert;
 use JTL\Backend\Revision;
 use JTL\Boxes\Admin\BoxAdmin;
+use JTL\Boxes\Type;
+use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
+use JTL\Link\LinkGroupInterface;
 use JTL\Shop;
 use JTL\Template;
-use JTL\DB\ReturnType;
-use JTL\Link\LinkGroupInterface;
-use JTL\Boxes\Type;
-use JTL\Alert\Alert;
+use function Functional\map;
+use function Functional\reindex;
 
 require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('BOXES_VIEW', true, true);
@@ -22,7 +24,7 @@ $oAccount->permission('BOXES_VIEW', true, true);
 $pageID      = Request::verifyGPCDataInt('page');
 $boxService  = Shop::Container()->getBoxService();
 $boxAdmin    = new BoxAdmin(Shop::Container()->getDB());
-$bOk         = false;
+$ok          = false;
 $linkID      = Request::verifyGPCDataInt('linkID');
 $boxID       = Request::verifyGPCDataInt('item');
 $alertHelper = Shop::Container()->getAlertService();
@@ -33,7 +35,7 @@ if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && Form::
             if (!empty($_POST['kInvisibleBox']) && count($_POST['kInvisibleBox']) > 0) {
                 $cnt = 0;
                 foreach ($_POST['kInvisibleBox'] as $box) {
-                    $bOk = $boxAdmin->delete((int)$box);
+                    $ok = $boxAdmin->delete((int)$box);
                     if ($box) {
                         ++$cnt;
                     }
@@ -43,19 +45,19 @@ if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && Form::
             break;
 
         case 'new':
-            $ePosition  = $_REQUEST['position'];
-            $kContainer = $_REQUEST['container'] ?? 0;
+            $position    = $_REQUEST['position'];
+            $containerID = $_REQUEST['container'] ?? 0;
             if ($boxID === 0) {
                 // Neuer Container
-                $bOk = $boxAdmin->create(0, $pageID, $ePosition);
-                if ($bOk) {
+                $ok = $boxAdmin->create(0, $pageID, $position);
+                if ($ok) {
                     $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successContainerCreate'), 'successContainerCreate');
                 } else {
                     $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorContainerCreate'), 'errorContainerCreate');
                 }
             } else {
-                $bOk = $boxAdmin->create($boxID, $pageID, $ePosition, $kContainer);
-                if ($bOk) {
+                $ok = $boxAdmin->create($boxID, $pageID, $position, $containerID);
+                if ($ok) {
                     $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successBoxCreate'), 'successBoxCreate');
                 } else {
                     $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorBoxCreate'), 'errorBoxCreate');
@@ -64,8 +66,8 @@ if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && Form::
             break;
 
         case 'del':
-            $bOk = $boxAdmin->delete($boxID);
-            if ($bOk) {
+            $ok = $boxAdmin->delete($boxID);
+            if ($ok) {
                 $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successBoxDelete'), 'successBoxDelete');
             } else {
                 $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorBoxDelete'), 'errorBoxDelete');
@@ -85,42 +87,42 @@ if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && Form::
                 }
             );
             $smarty->assign('oEditBox', $oBox)
-                   ->assign('revisionData', $revisionData)
-                   ->assign('oLink_arr', $links);
+                ->assign('revisionData', $revisionData)
+                ->assign('oLink_arr', $links);
             break;
 
         case 'edit':
             $cTitel = $_REQUEST['boxtitle'];
-            $eTyp   = $_REQUEST['typ'];
-            if ($eTyp === 'text') {
+            $type   = $_REQUEST['typ'];
+            if ($type === 'text') {
                 $oldBox = $boxAdmin->getByID($boxID);
                 if ($oldBox->supportsRevisions === true) {
                     $revision = new Revision(Shop::Container()->getDB());
                     $revision->addRevision('box', $boxID, true);
                 }
-                $bOk = $boxAdmin->update($boxID, $cTitel);
-                if ($bOk) {
+                $ok = $boxAdmin->update($boxID, $cTitel);
+                if ($ok) {
                     foreach ($_REQUEST['title'] as $cISO => $cTitel) {
                         $cInhalt = $_REQUEST['text'][$cISO];
-                        $bOk     = $boxAdmin->updateLanguage($boxID, $cISO, $cTitel, $cInhalt);
-                        if (!$bOk) {
+                        $ok      = $boxAdmin->updateLanguage($boxID, $cISO, $cTitel, $cInhalt);
+                        if (!$ok) {
                             break;
                         }
                     }
                 }
-            } elseif (($eTyp === Type::LINK && $linkID > 0) || $eTyp === Type::CATBOX) {
-                $bOk = $boxAdmin->update($boxID, $cTitel, $linkID);
-                if ($bOk) {
+            } elseif (($type === Type::LINK && $linkID > 0) || $type === Type::CATBOX) {
+                $ok = $boxAdmin->update($boxID, $cTitel, $linkID);
+                if ($ok) {
                     foreach ($_REQUEST['title'] as $cISO => $cTitel) {
-                        $bOk = $boxAdmin->updateLanguage($boxID, $cISO, $cTitel, '');
-                        if (!$bOk) {
+                        $ok = $boxAdmin->updateLanguage($boxID, $cISO, $cTitel, '');
+                        if (!$ok) {
                             break;
                         }
                     }
                 }
             }
 
-            if ($bOk) {
+            if ($ok) {
                 $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successBoxEdit'), 'successBoxEdit');
             } else {
                 $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorBoxEdit'), 'errorBoxEdit');
@@ -128,25 +130,25 @@ if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && Form::
             break;
 
         case 'resort':
-            $ePosition  = $_REQUEST['position'];
-            $boxes      = $_REQUEST['box'] ?? [];
-            $sort_arr   = $_REQUEST['sort'] ?? [];
-            $aktiv_arr  = $_REQUEST['aktiv'] ?? [];
-            $ignore_arr = $_REQUEST['ignore'] ?? [];
-            $boxCount   = count($boxes);
-            $bValue     = $_REQUEST['box_show'] ?? false;
-            $bOk        = $boxAdmin->setVisibility($pageID, $ePosition, $bValue);
+            $position = $_REQUEST['position'];
+            $boxes    = $_REQUEST['box'] ?? [];
+            $sort     = $_REQUEST['sort'] ?? [];
+            $active   = $_REQUEST['aktiv'] ?? [];
+            $ignore   = $_REQUEST['ignore'] ?? [];
+            $boxCount = count($boxes);
+            $show     = $_REQUEST['box_show'] ?? false;
+            $ok       = $boxAdmin->setVisibility($pageID, $position, $show);
 
             foreach ($boxes as $i => $box) {
                 $idx = 'box-filter-' . $box;
-                $boxAdmin->sort($box, $pageID, $sort_arr[$i], in_array($box, $aktiv_arr), in_array($box, $ignore_arr));
+                $boxAdmin->sort($box, $pageID, $sort[$i], in_array($box, $active), in_array($box, $ignore));
                 $boxAdmin->filterBoxVisibility((int)$box, $pageID, $_POST[$idx] ?? '');
             }
             // see jtlshop/jtl-shop/issues#544 && jtlshop/shop4#41
-            if ($ePosition !== 'left' || $pageID > 0) {
-                $boxAdmin->setVisibility($pageID, $ePosition, isset($_REQUEST['box_show']));
+            if ($position !== 'left' || $pageID > 0) {
+                $boxAdmin->setVisibility($pageID, $position, isset($_REQUEST['box_show']));
             }
-            if ($bOk) {
+            if ($ok) {
                 $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successBoxRefresh'), 'successBoxRefresh');
             } else {
                 $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorBoxesVisibilityEdit'), 'errorBoxesVisibilityEdit');
@@ -155,8 +157,8 @@ if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && Form::
 
         case 'activate':
             $bActive = (bool)$_REQUEST['value'];
-            $bOk     = $boxAdmin->activate($boxID, 0, $bActive);
-            if ($bOk) {
+            $ok      = $boxAdmin->activate($boxID, 0, $bActive);
+            if ($ok) {
                 $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successBoxEdit'), 'successBoxEdit');
             } else {
                 $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorBoxEdit'), 'errorBoxEdit');
@@ -164,10 +166,10 @@ if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && Form::
             break;
 
         case 'container':
-            $ePosition = $_REQUEST['position'];
-            $bValue    = (bool)$_GET['value'];
-            $bOk       = $boxAdmin->setVisibility(0, $ePosition, $bValue);
-            if ($bOk) {
+            $position = $_REQUEST['position'];
+            $show     = (bool)$_GET['value'];
+            $ok       = $boxAdmin->setVisibility(0, $position, $show);
+            if ($ok) {
                 $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successBoxEdit'), 'successBoxEdit');
             } else {
                 $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorBoxEdit'), 'errorBoxEdit');
@@ -180,10 +182,10 @@ if (isset($_REQUEST['action']) && !isset($_REQUEST['revision-action']) && Form::
     $flushres = Shop::Container()->getCache()->flushTags([CACHING_GROUP_OBJECT, CACHING_GROUP_BOX, 'boxes']);
     Shop::Container()->getDB()->query('UPDATE tglobals SET dLetzteAenderung = NOW()', ReturnType::DEFAULT);
 }
-$oBoxen_arr      = $boxService->buildList($pageID, false, true);
-$oVorlagen_arr   = $boxAdmin->getTemplates($pageID);
-$oBoxenContainer = Template::getInstance()->getBoxLayoutXML();
-$filterMapping   = [];
+$boxList       = $boxService->buildList($pageID, false, true);
+$boxTemplates  = $boxAdmin->getTemplates($pageID);
+$boxContainer  = Template::getInstance()->getBoxLayoutXML();
+$filterMapping = [];
 if ($pageID === PAGE_ARTIKELLISTE) { //map category name
     $filterMapping = Shop::Container()->getDB()->query(
         'SELECT kKategorie AS id, cName AS name FROM tkategorie',
@@ -206,24 +208,24 @@ if ($pageID === PAGE_ARTIKELLISTE) { //map category name
     );
 }
 
-$filterMapping = \Functional\reindex($filterMapping, function ($e) {
+$filterMapping = reindex($filterMapping, function ($e) {
     return $e->id;
 });
-$filterMapping = \Functional\map($filterMapping, function ($e) {
+$filterMapping = map($filterMapping, function ($e) {
     return $e->name;
 });
 $smarty->assign('filterMapping', $filterMapping)
-       ->assign('validPageTypes', $boxAdmin->getMappedValidPageTypes())
-       ->assign('bBoxenAnzeigen', $boxAdmin->getVisibility($pageID))
-       ->assign('oBoxenLeft_arr', $oBoxen_arr['left'] ?? [])
-       ->assign('oBoxenTop_arr', $oBoxen_arr['top'] ?? [])
-       ->assign('oBoxenBottom_arr', $oBoxen_arr['bottom'] ?? [])
-       ->assign('oBoxenRight_arr', $oBoxen_arr['right'] ?? [])
-       ->assign('oContainerTop_arr', $boxAdmin->getContainer('top'))
-       ->assign('oContainerBottom_arr', $boxAdmin->getContainer('bottom'))
-       ->assign('oSprachen_arr', Shop::Lang()->getAvailable())
-       ->assign('oVorlagen_arr', $oVorlagen_arr)
-       ->assign('oBoxenContainer', $oBoxenContainer)
-       ->assign('nPage', $pageID)
-       ->assign('invisibleBoxes', $boxAdmin->getInvisibleBoxes())
-       ->display('boxen.tpl');
+    ->assign('validPageTypes', $boxAdmin->getMappedValidPageTypes())
+    ->assign('bBoxenAnzeigen', $boxAdmin->getVisibility($pageID))
+    ->assign('oBoxenLeft_arr', $boxList['left'] ?? [])
+    ->assign('oBoxenTop_arr', $boxList['top'] ?? [])
+    ->assign('oBoxenBottom_arr', $boxList['bottom'] ?? [])
+    ->assign('oBoxenRight_arr', $boxList['right'] ?? [])
+    ->assign('oContainerTop_arr', $boxAdmin->getContainer('top'))
+    ->assign('oContainerBottom_arr', $boxAdmin->getContainer('bottom'))
+    ->assign('oSprachen_arr', Shop::Lang()->gibInstallierteSprachen())
+    ->assign('oVorlagen_arr', $boxTemplates)
+    ->assign('oBoxenContainer', $boxContainer)
+    ->assign('nPage', $pageID)
+    ->assign('invisibleBoxes', $boxAdmin->getInvisibleBoxes())
+    ->display('boxen.tpl');

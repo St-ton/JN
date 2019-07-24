@@ -15,7 +15,10 @@
         {/if}
     {/if}
     {block name='productdetails-availability-notification-form-form'}
-        {form action="{if !empty($Artikel->cURLFull)}{$Artikel->cURLFull}{else}{$ShopURL}/{/if}" method="post" id="article_availability{$Artikel->kArtikel}" class="evo-validate"}
+        {form action="{if !empty($Artikel->cURLFull)}{$Artikel->cURLFull}{else}{$ShopURL}/{/if}"
+            method="post" id="article_availability{$Artikel->kArtikel}"
+            class="evo-validate label-slide"
+        }
             {block name='productdetails-availability-notification-form-fieldset-contact'}
                 <fieldset>
                     {block name='productdetails-availability-notification-form-legend-contact'}

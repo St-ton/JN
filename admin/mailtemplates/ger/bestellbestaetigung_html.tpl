@@ -209,7 +209,7 @@ Ihre Bestellung mit Bestellnummer {$Bestellung->cBestellNr} umfasst folgende Pos
                 <tr>
                     <td>
                         <font color="#313131" face="Helvetica, Arial, sans-serif" size="3" style="color: #313131; font-family: Helvetica, Arial, sans-serif; font-size: 15px; line-height: 18px;">
-                            <strong>Email:</strong>
+                            <strong>E-Mail:</strong>
                         </font>
                     </td>
                 </tr>
@@ -576,7 +576,7 @@ Sie haben folgende Zahlungsart gewählt: {$Bestellung->cZahlungsartName}<br>
 {/if}
 {if $Bestellung->Zahlungsart->cModulId === 'za_rechnung_jtl'}
 {elseif $Bestellung->Zahlungsart->cModulId === 'za_lastschrift_jtl'}
-    Wir belasten in Kürze folgendes Bankkonto um die fällige Summe:<br>
+    Wir belasten in Kürze folgendes Bankkonto mit der fälligen Summe:<br>
     <br>
     Kontoinhaber: {$Bestellung->Zahlungsinfo->cInhaber}<br>
     IBAN: {$Bestellung->Zahlungsinfo->cIBAN}<br>
@@ -585,12 +585,12 @@ Sie haben folgende Zahlungsart gewählt: {$Bestellung->cZahlungsartName}<br>
     <br>
 {elseif $Bestellung->Zahlungsart->cModulId === 'za_barzahlung_jtl'}
 {elseif $Bestellung->Zahlungsart->cModulId === 'za_paypal_jtl'}
-    Falls Sie Ihre Zahlung per PayPal noch nicht durchgeführt haben, nutzen Sie folgende Emailadresse als Empfänger: {$Einstellungen.zahlungsarten.zahlungsart_paypal_empfaengermail}
+    Falls Sie Ihre Zahlung per PayPal noch nicht durchgeführt haben, nutzen Sie folgende E-Mail-Adresse als Empfänger: {$Einstellungen.zahlungsarten.zahlungsart_paypal_empfaengermail}
 {/if}
 Über den weiteren Verlauf Ihrer Bestellung werden wir Sie jeweils gesondert informieren.<br>
 <br>
 <br>
-Mit freundlichem Gruß,<br>
+Mit freundlichem Gruß<br>
 Ihr Team von {$Firma->cName}
 
 {includeMailTemplate template=footer type=html}

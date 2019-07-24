@@ -15,7 +15,7 @@
 
     {if isset($nWarenkorb2PersMerge) && $nWarenkorb2PersMerge === 1}
         <script type="text/javascript">
-            $(function() {
+            $(window).on('load', function() {
                 eModal.confirm({ldelim}
                         message: '{lang key='basket2PersMerge' section='login'}',
                         label1: '{lang key='no' section='global'}',
@@ -37,9 +37,12 @@
         {$showLoginPanel = false}
     {/if}
 
+    {include file='snippets/opc_mount_point.tpl' id='opc_before_account'}
+
     <div id="account" class="row">
         {if $showLoginPanel}
             <div class="col-xs-12 col-md-3">
+                {include file='snippets/opc_mount_point.tpl' id='opc_before_menu'}
                 <div class="list-group">
                     <a href="{get_static_route id='jtl.php'}" class="list-group-item{if $step === 'mein Konto'} active{/if}">
                         {lang key='accountOverview' section='account data'}
@@ -59,10 +62,14 @@
                         {lang key='allRatings'}
                     </a>
                 </div>
+                {include file='snippets/opc_mount_point.tpl' id='opc_after_menu'}
             </div>
         {/if}
     
         <div class="col-xs-12 {if !$showLoginPanel}col-md-12{else}col-md-9{/if}">
+            {if $showLoginPanel}
+                {include file='snippets/opc_mount_point.tpl' id='opc_before_account_page'}
+            {/if}
             {if $step === 'login'}
                 {include file='account/login.tpl'}
             {elseif $step === 'mein Konto'}
@@ -79,14 +86,13 @@
                 {include file='account/delete_account.tpl'}
             {elseif $step === 'wunschliste'}
                 {include file='account/wishlists.tpl'}
-            {elseif $step === 'wunschliste anzeigen'}
-                {include file='account/wishlist.tpl'}
-            {elseif $step === 'wunschliste versenden'}
-                {include file='account/wishlist_email_form.tpl'}
             {elseif $step === 'kunden_werben_kunden'}
                 {include file='account/customers_recruiting.tpl'}
             {elseif $step === 'bewertungen'}
                 {include file='account/feedback.tpl'}
+            {/if}
+            {if $showLoginPanel}
+                {include file='snippets/opc_mount_point.tpl' id='opc_after_account_page'}
             {/if}
         </div>
     </div>

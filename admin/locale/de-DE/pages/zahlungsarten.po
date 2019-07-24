@@ -21,7 +21,7 @@ msgid "moduleid"
 msgstr "Modul"
 
 msgid "configurePaymentmethod"
-msgstr "Einstellungen für Zahlungsart"
+msgstr "Hier können Sie die Einstellungen der Zahlungsart anpassen."
 
 msgid "restrictedToCustomerGroups"
 msgstr "Erlaubte Kundengruppen"
@@ -48,19 +48,13 @@ msgid "paymentAckMail"
 msgstr "E-Mail: Bestätigung der Zahlung"
 
 msgid "paymentCancelMail"
-msgstr "E-Mail: Storno der Bestellung"
-
-msgid "provider"
-msgstr "Anbieter"
+msgstr "E-Mail: Stornierung der Bestellung"
 
 msgid "duringOrder"
 msgstr "Zahlung vor Bestellabschluss"
 
 msgid "paymentmethodsCheckAll"
 msgstr "Anforderungen aller Zahlungsarten prüfen"
-
-msgid "expansionNeeded"
-msgstr "Erweiterung nötig"
 
 msgid "log"
 msgstr "Log"
@@ -99,7 +93,7 @@ msgid "paymentsDesc"
 msgstr "Hier können Sie alle Zahlungseingänge zu einer gewünschten Zahlungsart und deren Abgleichs-Status zu JTL-Wawi einsehen."
 
 msgid "successPaymentMethodCheck"
-msgstr "Ihre Zahlungsarten wurden auf Nutzbarkeit geprüft."
+msgstr "Die Prüfung der Zahlungsarten auf Nutzbarkeit ist abgeschlossen."
 
 msgid "successLogReset"
 msgstr "Der Fehler-Log von %s wurde erfolgreich zurückgesetzt."
@@ -114,13 +108,16 @@ msgid "syncedWithWawi"
 msgstr "Bereits durch JTL-Wawi abgeholt"
 
 msgid "wawiSyncReset"
-msgstr "Für den nächsten JTL-Wawi-Abgleich zur erneuten Abholung vormerken"
+msgstr "Für den nächsten JTL-Wawi-Abgleich zum erneuten Senden vormerken"
 
 msgid "installedPaymentTypes"
 msgstr "Installierte Zahlungsarten"
 
 msgid "successPaymentMethodSave"
-msgstr "Zahlungsart gespeichert."
+msgstr "Die Zahlungsart wurde erfolgreich gespeichert."
 
 msgid "errorPaymentMethodNotFound"
 msgstr "Zahlungsart nicht gefunden."
+
+msgid "feeNameHint"
+msgstr "Hier legen Sie den Namen einer eventuell anfallenden Gebühr für die Zahlungsart fest. Der Name der Gebühr wird während der Kaufabwicklung bei der Zahlungsart angezeigt. Die Höhe der Gebühr legen Sie individuell in jeder Versandart fest, für die die Zahlungsart angeboten wird."

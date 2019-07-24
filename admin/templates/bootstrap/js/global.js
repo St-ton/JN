@@ -44,10 +44,6 @@ function get_list_callback(type, id) {
             return (id == 0) ? 'getCategoryList' :
                 'getCategoryListFromString';
 
-        case 'tag':
-            return (id == 0) ? 'getTagList' :
-                'getTagListFromString';
-
         case 'attribute':
             return (id == 0) ? 'getAttributeList' :
                 'getAttributeListFromString';
@@ -69,18 +65,6 @@ function show_simple_search(type) {
     browser.center().fadeIn(850);
     browser.find('select').empty();
     browser.find('input').val('').focus();
-}
-
-/**
- *
- */
-function banners_datepicker() {
-    var v = $('#vDatum'),
-        b = $('#bDatum');
-    if (v && b && v.length > 0 && b.length > 0) {
-        v.datepicker();
-        b.datepicker();
-    }
 }
 
 /**
@@ -419,7 +403,6 @@ $(document).ready(function () {
         });
     });
 
-    banners_datepicker();
     $('.help').each(function () {
         var id = $(this).attr('ref'),
             tooltip = $('<div></div>').text($(this).attr('title')).addClass('tooltip').attr('id', 'help' + id),
@@ -755,4 +738,12 @@ function activateAjaxLoadingSpinner() {
     .ajaxStop(function () {
         $loading.addClass('hide');
     });
+}
+
+function sprintf(format)
+{
+    for( var i=1; i < arguments.length; i++ ) {
+        format = format.replace( /%s/, arguments[i] );
+    }
+    return format;
 }

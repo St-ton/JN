@@ -11,12 +11,11 @@
         {block name='snippets-filter-genericFilterItem-content'}
             {foreach $filter->getOptions() as $filterOption}
                 {assign var=filterIsActive value=$filterOption->isActive() || $NaviFilter->getFilterValue($filter->getClassName()) === $filterOption->getValue()}
-                {dropdownitem class="filter-item"
+                {dropdownitem class="filter-item py-1"
                     active=$filterIsActive
                     href="{if $filterOption->isActive()}{$filter->getUnsetFilterURL($filterOption->getValue())}{else}{$filterOption->getURL()}{/if}"
                     rel='nofollow'}
-                    <span class="badge badge-light float-right">{$filterOption->getCount()}</span>
-                    <span class="value mr-5">
+                    <span class="value">
                         {if $filter->getIcon() !== null}
                             <i class="fa {$filter->getIcon()}"></i>
                         {else}
@@ -27,7 +26,7 @@
                                 {include file='productdetails/rating.tpl' stars=$filterOption->getValue()}
                             {/block}
                         {/if}
-                        <span class="word-break">{$filterOption->getName()}</span>
+                        <span class="word-break">{$filterOption->getName()}</span><span class="ml-2">({$filterOption->getCount()})</span>
                     </span>
                 {/dropdownitem}
             {/foreach}
@@ -39,7 +38,7 @@
             {nav vertical=true}
                 {foreach $filter->getOptions() as $filterOption}
                     {if $limit != -1 && $filterOption@iteration > $limit && !$collapseInit}
-                        <div class="collapse" id="box-collps-filter{$filter->getNiceName()}" aria-expanded="false">
+                        <div class="collapse {if $filter->isActive()} show{/if}" id="box-collps-filter{$filter->getNiceName()}" aria-expanded="false">
                             {$collapseInit = true}
                     {/if}
                     {assign var=filterIsActive value=$filterOption->isActive() || $NaviFilter->getFilterValue($filter->getClassName()) === $filterOption->getValue()}
@@ -61,7 +60,7 @@
                             {/if}
                             <span class="word-break">{$filterOption->getName()}</span>
                         </span>
-                        <span class="badge badge-light float-right">{$filterOption->getCount()}</span>
+                        ({$filterOption->getCount()})
                     {/navitem}
                 {/foreach}
                 {if $limit != -1 && $filter->getOptions()|count > $limit}

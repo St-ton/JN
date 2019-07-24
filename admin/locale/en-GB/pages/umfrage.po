@@ -3,184 +3,187 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "umfrage"
-msgstr "Umfragesystem"
+msgstr "Survey system"
 
 msgid "umfrageDesc"
-msgstr "Das Umfragesystem erlaubt es Ihnen, vielseitige Umfragen im Shop durchzuführen. Als Motivation für Shop-Besucher können Sie Kupons oder Bonusguthaben an die Teilnahme der Umfrage knüpfen."
+msgstr "Use the surveys to measure customer satisfaction or carry out market research regarding the demand for new products. In order to use the Survey Module, you need to purchase it first in the JTL-Customer Centre. You can also test it first. In both cases, activating the module with the licence in the online shop connection of JTL-Wawi is required."
 
 msgid "umfrageURL"
-msgstr "https://jtl-url.de/nx0d7"
+msgstr "https://jtl-url.de/rodci"
 
 msgid "umfrageAdd"
-msgstr "Neue Umfrage erstellen"
+msgstr "Create new survey"
 
 msgid "umfrageOverview"
-msgstr "Umfragen"
+msgstr "Surveys"
 
 msgid "umfrageValidation"
-msgstr "Gültigkeit"
+msgstr "Validity"
 
 msgid "umfrageDate"
-msgstr "Erstellt am"
+msgstr "Created on"
 
 msgid "umfrageInfinite"
-msgstr "immer"
+msgstr "always"
 
 msgid "umfrageExtraPoints"
-msgstr "Bonuspunkte"
+msgstr "Bonus points"
 
 msgid "umfrageNoCoupon"
-msgstr "Keinen"
+msgstr "No coupon"
 
 msgid "umfrageType"
-msgstr "Typ"
+msgstr "Type"
 
 msgid "umfrageAnotherQ"
-msgstr "Weitere Frage"
+msgstr "Add next question"
 
 msgid "umfrageSaveQ"
-msgstr "Fertig"
+msgstr "Save and close"
 
 msgid "umfrageEnterQ"
-msgstr "Fragen hinzufügen"
+msgstr "Adding questions"
 
 msgid "umfrageEnter"
-msgstr "Umfrage hinzufügen"
+msgstr "Creating surveys"
 
 msgid "umfrageQ"
-msgstr "Frage"
+msgstr "Question"
 
 msgid "umfrageQType"
-msgstr "Typ"
+msgstr "Type"
 
 msgid "umfrageQs"
-msgstr "Fragen"
+msgstr "Questions"
 
 msgid "umfrageQA"
-msgstr "Anworten"
+msgstr "Replies"
 
 msgid "umfrageQASing"
-msgstr "Antwort"
+msgstr "Reply"
 
 msgid "umfrageQO"
-msgstr "Optionen"
+msgstr "Options"
 
 msgid "umfrageQAdd"
-msgstr "Frage hinzufügen"
+msgstr "Add question"
 
 msgid "umfrageQFreeField"
-msgstr "Freifeld hinzufügen"
+msgstr "Add field for free text"
 
 msgid "umfrageQEssential"
-msgstr "Notwendig"
+msgstr "Mandatory question"
 
 msgid "umfrageStats"
-msgstr "Statistik"
+msgstr "Reports"
 
 msgid "umfrageStatsView"
-msgstr "Statistik anschauen"
+msgstr "View reports"
 
 msgid "umfrageQResPercent"
-msgstr "Antworten Prozent"
+msgstr "Replies (percentage)"
 
 msgid "umfrageQResCount"
-msgstr "Antworten Anzahl"
+msgstr "Replies (quantity)"
 
 msgid "umfrageQMax"
-msgstr "Gesamtanzahl"
+msgstr "Total number"
 
 msgid "umfrageTryCount"
-msgstr "Anzahl Durchläufe"
+msgstr "Number of completed surveys"
 
 msgid "umfrageQCount"
-msgstr "Anzahl Fragen"
+msgstr "Number of questions"
 
 msgid "umfrageQADelete"
-msgstr "Antwort löschen"
+msgstr "Delete reply"
 
 msgid "umfrageQODelete"
-msgstr "Option löschen"
+msgstr "Delete option"
 
 msgid "umfrageQSort"
-msgstr "Sortierung"
+msgstr "Sorting"
 
 msgid "errorPollNotFound"
-msgstr "Fehler: Ihre Umfrage konnte nicht gefunden werden."
+msgstr "Could not find survey."
 
 msgid "successPollCreateNextSteps"
-msgstr "Ihre Umfrage wurde erfolgreich gespeichert. Bitte folgen Sie nun den weiteren Schritten."
+msgstr "Survey saved successfully. Please follow the steps below."
 
 msgid "errorRewardMissing"
-msgstr "Fehler: Bitte geben Sie nur eine Belohnungsart an."
+msgstr "Please enter only one type of reward."
 
 msgid "errorDataMissing"
-msgstr "Fehler: Bitte geben Sie einen Namen, mindestens eine Kundengruppe und ein gültiges Anfangsdatum ein."
+msgstr "Please enter a name, at least one customer group and a valid start date."
 
 msgid "errorQuestionTypeNotCompatible"
-msgstr "Fehler: Ihr Fragentyp ist leider nicht kompatibel mit dem voherigen. 'Um den Fragetyp zu ändern, resetten Sie bitte die Frage."
+msgstr "The selected question type is not compatible with the one selected before. Please reset the question to change the question type."
 
 msgid "successQuestionSave"
-msgstr "Ihr Frage wurde erfolgreich gespeichert."
+msgstr "Question saved successfully."
 
 msgid "errorMinNameTypeMissing"
-msgstr "Fehler: Bitte tragen Sie mindestens einen Namen und einen Typ ein."
+msgstr "Please select at least one question and one type."
 
 msgid "successPollDelete"
-msgstr "Ihre markierten Umfragen wurden erfolgreich gelöscht."
+msgstr "Selected surveys deleted successfully."
 
 msgid "successAtLeastOnePoll"
-msgstr "Fehler: Bitte markieren Sie mindestens eine Umfrage."
+msgstr "Please select at least one survey."
 
 msgid "successQuestionDelete"
-msgstr "Ihre markierten Fragen wurden erfolgreich gelöscht."
+msgstr "Selected questions deleted successfully."
 
 msgid "successAnswerDelete"
-msgstr "Ihre markierten Antworten wurden erfolgreich gelöscht."
+msgstr "Selected replies deleted successfully."
 
 msgid "successOptionDelete"
-msgstr "Ihre markierten Optionen wurden erfolgreich gelöscht."
+msgstr "Selected options deleted successfully."
 
 msgid "errorNoStatistic"
-msgstr "Fehler: Für diese Umfrage gibt es noch keine Stastistik."
+msgstr "No reports available for this survey yet."
 
 msgid "errorPollSelect"
-msgstr "Fehler: Bitte wählen Sie eine korrekte Umfrage aus."
+msgstr "The entered survey does not exist."
 
 msgid "questionTypeMultipleChoiceOne"
-msgstr "Multiple Choice (Eine Antwort)"
+msgstr "Radio button (one possible reply)"
 
 msgid "questionTypeMultipleChoiceMany"
-msgstr "Multiple Choice (Viele Antworten)"
+msgstr "Multiple selection (several possible replies)"
 
 msgid "questionTypeSelectboxOne"
-msgstr "Selectbox (Eine Antwort)"
+msgstr "List (single selection)"
 
 msgid "questionTypeSelectboxMany"
-msgstr "SelectBox (Viele Antworten)"
+msgstr "List (multiple selection)"
 
 msgid "questionTypeTextSmall"
-msgstr "Textfeld (klein)"
+msgstr "Text field (small)"
 
 msgid "questionTypeTextBig"
-msgstr "Textfeld (groß)"
+msgstr "Text field (large)"
 
 msgid "questionTypeMatrixOne"
-msgstr "Matrix (Eine Antwort pro Zeile)"
+msgstr "Matrix (one reply per row)"
 
 msgid "questionTypeMatrixMany"
-msgstr "Matrix (Viele Antworten pro Zeile)"
+msgstr "Matrix (several replies per row)"
 
 msgid "questionTypeDivider"
-msgstr "Statischer Trenntext"
+msgstr "Structural element: static text"
 
 msgid "questionTypeDividerNewPage"
-msgstr "Statischer Trenntext + Seitenwechsel"
+msgstr "Structural element: static text"
 
 msgid "addAnswer"
-msgstr "Antwort hinzufügen"
+msgstr "Add a reply"
 
 msgid "addOption"
-msgstr "Option hinzufügen"
+msgstr "Add an option"
 
 msgid "activePolls"
-msgstr "Aktive Umfragen"
+msgstr "Active surveys"
+
+msgid "pollSortHint"
+msgstr "Enter a number to specify the sorting order of the questions. The smaller the number, the further up the question will be displayed in the list."

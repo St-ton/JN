@@ -26,8 +26,8 @@ class NavigationURLs implements NavigationURLsInterface
         'cAlleSuchspecials' => 'SearchSpecials',
         'cAlleKategorien'   => 'Categories',
         'cAlleHersteller'   => 'Manufacturers',
-        'cAlleMerkmale'     => 'Attributes',
-        'cAlleMerkmalWerte' => 'AttributeValues',
+        'cAlleMerkmale'     => 'Characteristics',
+        'cAlleMerkmalWerte' => 'CharacteristicValues',
         'cAlleSuchFilter'   => 'SearchFilters',
         'cNoFilter'         => 'UnsetAll'
     ];
@@ -65,12 +65,12 @@ class NavigationURLs implements NavigationURLsInterface
     /**
      * @var array
      */
-    private $attributes = [];
+    private $characteristics = [];
 
     /**
      * @var array
      */
-    private $attributeValues = [];
+    private $characteristicValues = [];
 
     /**
      * @var array
@@ -114,24 +114,6 @@ class NavigationURLs implements NavigationURLsInterface
     public function setRatings(string $ratings): NavigationURLsInterface
     {
         $this->ratings = $ratings;
-
-        return $this;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getTags(): string
-    {
-        return $this->tags;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function setTags(string $tags): NavigationURLsInterface
-    {
-        $this->tags = $tags;
 
         return $this;
     }
@@ -203,17 +185,17 @@ class NavigationURLs implements NavigationURLsInterface
     /**
      * @inheritdoc
      */
-    public function getAttributes(): array
+    public function getCharacteristics(): array
     {
-        return $this->attributes;
+        return $this->characteristics;
     }
 
     /**
      * @inheritdoc
      */
-    public function setAttributes(string $attributes): NavigationURLsInterface
+    public function setCharacteristics(string $characteristics): NavigationURLsInterface
     {
-        $this->attributes = $attributes;
+        $this->characteristics = $characteristics;
 
         return $this;
     }
@@ -221,9 +203,9 @@ class NavigationURLs implements NavigationURLsInterface
     /**
      * @inheritdoc
      */
-    public function addAttribute($idx, string $attribute): NavigationURLsInterface
+    public function addCharacteristic($idx, string $characteristic): NavigationURLsInterface
     {
-        $this->attributes[$idx] = $attribute;
+        $this->characteristics[$idx] = $characteristic;
 
         return $this;
     }
@@ -231,17 +213,17 @@ class NavigationURLs implements NavigationURLsInterface
     /**
      * @inheritdoc
      */
-    public function getAttributeValues(): array
+    public function getCharacteristicValues(): array
     {
-        return $this->attributeValues;
+        return $this->characteristicValues;
     }
 
     /**
      * @inheritdoc
      */
-    public function setAttributeValues(string $attributeValues): NavigationURLsInterface
+    public function setCharacteristicValues(string $value): NavigationURLsInterface
     {
-        $this->attributeValues = $attributeValues;
+        $this->characteristicValues = $value;
 
         return $this;
     }
@@ -249,9 +231,9 @@ class NavigationURLs implements NavigationURLsInterface
     /**
      * @inheritdoc
      */
-    public function addAttributeValue($idx, string $attributeValue): NavigationURLsInterface
+    public function addCharacteristicValue($idx, string $value): NavigationURLsInterface
     {
-        $this->attributeValues[$idx] = $attributeValue;
+        $this->characteristicValues[$idx] = $value;
 
         return $this;
     }

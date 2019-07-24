@@ -6,13 +6,11 @@
 
 namespace JTL\Services\JTL;
 
-use function Functional\first;
-use function Functional\group;
-use function Functional\map;
 use JTL\Boxes\Admin\BoxAdmin;
 use JTL\Boxes\Factory;
 use JTL\Boxes\FactoryInterface;
 use JTL\Boxes\Items\BoxInterface;
+use JTL\Boxes\Items\Extension;
 use JTL\Boxes\Renderer\RendererInterface;
 use JTL\Boxes\Type;
 use JTL\Cache\JTLCacheInterface;
@@ -21,13 +19,16 @@ use JTL\DB\ReturnType;
 use JTL\Filter\ProductFilter;
 use JTL\Filter\Visibility;
 use JTL\Plugin\LegacyPlugin;
-use JTL\Plugin\Plugin;
 use JTL\Plugin\PluginLoader;
 use JTL\Plugin\State;
+use JTL\Boxes\Items\Plugin;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
 use JTL\Template;
+use function Functional\first;
+use function Functional\group;
+use function Functional\map;
 use function Functional\tail;
 
 /**
@@ -209,8 +210,7 @@ class BoxService implements BoxServiceInterface
         $mf  = $pf->getManufacturerFilter();
         $prf = $pf->getPriceRangeFilter();
         $rf  = $pf->getRatingFilter();
-        $tf  = $pf->tagFilterCompat;
-        $afc = $pf->getAttributeFilterCollection();
+        $afc = $pf->getCharacteristicFilterCollection();
         $ssf = $pf->getSearchSpecialFilter();
         $sf  = $pf->searchFilterCompat;
 
@@ -221,7 +221,6 @@ class BoxService implements BoxServiceInterface
             || ($mf->getVisibility() !== $invis && $mf->getVisibility() !== $visContent)
             || ($prf->getVisibility() !== $invis && $prf->getVisibility() !== $visContent)
             || ($rf->getVisibility() !== $invis && $rf->getVisibility() !== $visContent)
-            || ($tf->getVisibility() !== $invis && $tf->getVisibility() !== $visContent)
             || ($afc->getVisibility() !== $invis && $afc->getVisibility() !== $visContent)
             || ($ssf->getVisibility() !== $invis && $ssf->getVisibility() !== $visContent)
             || ($sf->getVisibility() !== $invis && $sf->getVisibility() !== $visContent)
@@ -290,7 +289,6 @@ class BoxService implements BoxServiceInterface
      * @param int   $pageType
      * @return array
      * @throws \Exception
-     * @throws \SmartyException
      */
     public function render(array $positionedBoxes, int $pageType): array
     {
@@ -345,7 +343,7 @@ class BoxService implements BoxServiceInterface
     public function buildList(int $pageType = 0, bool $active = true, bool $visible = false): array
     {
         $boxAdmin          = new BoxAdmin(Shop::Container()->getDB());
-        $validPages        = implode(',', $boxAdmin->getValidPageTypes());
+        $validPages        = \implode(',', $boxAdmin->getValidPageTypes());
         $cacheID           = 'bx_' . $pageType .
             '_' . (int)$active .
             '_' . (int)$visible .
@@ -395,11 +393,30 @@ class BoxService implements BoxServiceInterface
                         ON tboxsprache.kBox = tboxen.kBox
                     LEFT JOIN tsprache
                         ON tsprache.cISO = tboxsprache.cISO
-                    WHERE tboxen.kContainer > -1 AND FIND_IN_SET(tboxensichtbar.kSeite, "' . $validPages . '") > 0 ' . $activeSQL . $plgnSQL . ' 
+                    WHERE tboxen.kContainer > -1 AND FIND_IN_SET(tboxensichtbar.kSeite, "' . $validPages . '") > 0 '
+                        . $activeSQL . $plgnSQL . ' 
                     GROUP BY tboxsprache.kBoxSprache, tboxen.kBox, tboxensichtbar.cFilter
                     ORDER BY tboxensichtbar.nSort, tboxen.kBox ASC',
                 ReturnType::ARRAY_OF_OBJECTS
             );
+            if (isset($_SESSION['AdminAccount'])) {
+                $boxData = map($boxData, function ($box) {
+                    $box->cName = __($box->cName);
+
+                    return $box;
+                });
+            }
+            $boxData = map($boxData, function ($box) {
+                $box->kBox        = (int)$box->kBox;
+                $box->kBoxvorlage = (int)$box->kBoxvorlage;
+                $box->kCustomID   = (int)$box->kCustomID;
+                $box->kContainer  = (int)$box->kContainer;
+                $box->kSeite      = (int)$box->kSeite;
+                $box->nSort       = (int)$box->nSort;
+                $box->kSprache    = $box->kSprache === null ? null : (int)$box->kSprache;
+
+                return $box;
+            });
             $grouped = group($boxData, function ($e) {
                 return (int)$e->kBox;
             });
@@ -434,7 +451,7 @@ class BoxService implements BoxServiceInterface
             $box   = $this->factory->getBoxByBaseType($first->kBoxvorlage, $first->eTyp);
             $box->map($boxes);
             $class = \get_class($box);
-            if ($class === LegacyPlugin::class) {
+            if ($class === Plugin::class) {
                 $plugin = new LegacyPlugin($box->getCustomID());
                 $box->setTemplateFile(
                     $plugin->getPaths()->getFrontendPath() .
@@ -442,7 +459,7 @@ class BoxService implements BoxServiceInterface
                     $box->getTemplateFile()
                 );
                 $box->setPlugin($plugin);
-            } elseif ($class === Plugin::class) {
+            } elseif ($class === Extension::class) {
                 $loader = new PluginLoader($this->db, $this->cache);
                 $plugin = $loader->init($box->getCustomID());
                 $box->setTemplateFile(

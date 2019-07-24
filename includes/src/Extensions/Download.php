@@ -105,16 +105,16 @@ class Download
     private $licenseOK;
 
     /**
-     * @param int  $kDownload
-     * @param int  $kSprache
-     * @param bool $bInfo
-     * @param int  $kBestellung
+     * @param int  $id
+     * @param int  $languageID
+     * @param bool $info
+     * @param int  $orderID
      */
-    public function __construct(int $kDownload = 0, int $kSprache = 0, bool $bInfo = true, int $kBestellung = 0)
+    public function __construct(int $id = 0, int $languageID = 0, bool $info = true, int $orderID = 0)
     {
         $this->licenseOK = self::checkLicense();
-        if ($kDownload > 0 && $this->licenseOK === true) {
-            $this->loadFromDB($kDownload, $kSprache, $bInfo, $kBestellung);
+        if ($id > 0 && $this->licenseOK === true) {
+            $this->loadFromDB($id, $languageID, $info, $orderID);
         }
     }
 
@@ -188,10 +188,10 @@ class Download
     }
 
     /**
-     * @param bool $bPrimary
+     * @param bool $primary
      * @return bool|int
      */
-    public function save(bool $bPrimary = false)
+    public function save(bool $primary = false)
     {
         $ins = $this->kopiereMembers();
         unset(
@@ -203,9 +203,9 @@ class Download
             $ins->dGueltigBis,
             $ins->kBestellung
         );
-        $kDownload = Shop::Container()->getDB()->insert('tdownload', $ins);
-        if ($kDownload > 0) {
-            return $bPrimary ? $kDownload : true;
+        $id = Shop::Container()->getDB()->insert('tdownload', $ins);
+        if ($id > 0) {
+            return $primary ? $id : true;
         }
 
         return false;
@@ -254,35 +254,35 @@ class Download
      */
     public static function getDownloads($keys = [], int $languageID = 0): array
     {
-        $kArtikel    = isset($keys['kArtikel']) ? (int)$keys['kArtikel'] : 0;
-        $kBestellung = isset($keys['kBestellung']) ? (int)$keys['kBestellung'] : 0;
-        $kKunde      = isset($keys['kKunde']) ? (int)$keys['kKunde'] : 0;
-        $downloads   = [];
-        if (($kArtikel > 0 || $kBestellung > 0 || $kKunde > 0) && $languageID > 0 && self::checkLicense()) {
-            $cSQLSelect = 'tartikeldownload.kDownload';
-            $cSQLWhere  = 'kArtikel = ' . $kArtikel;
-            $cSQLJoin   = 'LEFT JOIN tdownload ON tartikeldownload.kDownload = tdownload.kDownload';
-            if ($kBestellung > 0) {
-                $cSQLSelect = 'tbestellung.kBestellung, tbestellung.kKunde, tartikeldownload.kDownload';
-                $cSQLWhere  = 'tartikeldownload.kArtikel = twarenkorbpos.kArtikel';
-                $cSQLJoin   = 'JOIN tbestellung ON tbestellung.kBestellung = ' . $kBestellung . '
+        $productID  = isset($keys['kArtikel']) ? (int)$keys['kArtikel'] : 0;
+        $orderID    = isset($keys['kBestellung']) ? (int)$keys['kBestellung'] : 0;
+        $customerID = isset($keys['kKunde']) ? (int)$keys['kKunde'] : 0;
+        $downloads  = [];
+        if (($productID > 0 || $orderID > 0 || $customerID > 0) && $languageID > 0 && self::checkLicense()) {
+            $select = 'tartikeldownload.kDownload';
+            $where  = 'kArtikel = ' . $productID;
+            $join   = 'LEFT JOIN tdownload ON tartikeldownload.kDownload = tdownload.kDownload';
+            if ($orderID > 0) {
+                $select = 'tbestellung.kBestellung, tbestellung.kKunde, tartikeldownload.kDownload';
+                $where  = 'tartikeldownload.kArtikel = twarenkorbpos.kArtikel';
+                $join   = 'JOIN tbestellung ON tbestellung.kBestellung = ' . $orderID . '
                                JOIN tdownload ON tdownload.kDownload = tartikeldownload.kDownload
                                JOIN twarenkorbpos ON twarenkorbpos.kWarenkorb = tbestellung.kWarenkorb
                                     AND twarenkorbpos.nPosTyp = ' . \C_WARENKORBPOS_TYP_ARTIKEL;
-            } elseif ($kKunde > 0) {
-                $cSQLSelect = 'MAX(tbestellung.kBestellung) AS kBestellung, tbestellung.kKunde, 
+            } elseif ($customerID > 0) {
+                $select = 'MAX(tbestellung.kBestellung) AS kBestellung, tbestellung.kKunde, 
                     tartikeldownload.kDownload';
-                $cSQLWhere  = 'tartikeldownload.kArtikel = twarenkorbpos.kArtikel';
-                $cSQLJoin   = 'JOIN tbestellung ON tbestellung.kKunde = ' . $kKunde . '
+                $where  = 'tartikeldownload.kArtikel = twarenkorbpos.kArtikel';
+                $join   = 'JOIN tbestellung ON tbestellung.kKunde = ' . $customerID . '
                                JOIN tdownload ON tdownload.kDownload = tartikeldownload.kDownload
                                JOIN twarenkorbpos ON twarenkorbpos.kWarenkorb = tbestellung.kWarenkorb
                                     AND twarenkorbpos.nPosTyp = ' . \C_WARENKORBPOS_TYP_ARTIKEL;
             }
             $items = Shop::Container()->getDB()->query(
-                'SELECT ' . $cSQLSelect . '
+                'SELECT ' . $select . '
                     FROM tartikeldownload
-                    ' . $cSQLJoin . '
-                    WHERE ' . $cSQLWhere . '
+                    ' . $join . '
+                    WHERE ' . $where . '
                     GROUP BY tartikeldownload.kDownload
                     ORDER BY tdownload.nSort, tdownload.dErstellt DESC',
                 ReturnType::ARRAY_OF_OBJECTS
@@ -295,7 +295,7 @@ class Download
                     true,
                     (int)($download->kBestellung ?? 0)
                 );
-                if (($kBestellung > 0 || $kKunde > 0) && $downloads[$i]->getAnzahl() > 0) {
+                if (($orderID > 0 || $customerID > 0) && $downloads[$i]->getAnzahl() > 0) {
                     $download->kKunde      = (int)$download->kKunde;
                     $download->kBestellung = (int)$download->kBestellung;
 
@@ -303,9 +303,9 @@ class Download
                         $download->kKunde,
                         $download->kBestellung
                     );
-                    $kDownload                  = $downloads[$i]->getDownload();
-                    $count                      = isset($history[$kDownload])
-                        ? \count($history[$kDownload])
+                    $id                         = $downloads[$i]->getDownload();
+                    $count                      = isset($history[$id])
+                        ? \count($history[$id])
                         : 0;
                     $downloads[$i]->cLimit      = $count . ' / ' . $downloads[$i]->getAnzahl();
                     $downloads[$i]->kBestellung = $download->kBestellung;
@@ -322,10 +322,10 @@ class Download
      */
     public static function hasDownloads($cart): bool
     {
-        foreach ($cart->PositionenArr as $oPosition) {
-            if ($oPosition->nPosTyp === \C_WARENKORBPOS_TYP_ARTIKEL
-                && isset($oPosition->Artikel->oDownload_arr)
-                && \count($oPosition->Artikel->oDownload_arr) > 0
+        foreach ($cart->PositionenArr as $item) {
+            if ($item->nPosTyp === \C_WARENKORBPOS_TYP_ARTIKEL
+                && isset($item->Artikel->oDownload_arr)
+                && \count($item->Artikel->oDownload_arr) > 0
             ) {
                 return true;
             }
@@ -335,36 +335,34 @@ class Download
     }
 
     /**
-     * @param int $kDownload
-     * @param int $kKunde
-     * @param int $kBestellung
+     * @param int $downloadID
+     * @param int $customerID
+     * @param int $orderID
      * @return int
      */
-    public static function getFile(int $kDownload, int $kKunde, int $kBestellung): int
+    public static function getFile(int $downloadID, int $customerID, int $orderID): int
     {
-        if ($kDownload > 0 && $kKunde > 0 && $kBestellung > 0) {
-            $oDownload = new self($kDownload, 0, false);
-            $nReturn   = $oDownload::checkFile($oDownload->kDownload, $kKunde, $kBestellung);
-            if ($nReturn === 1) {
+        if ($downloadID > 0 && $customerID > 0 && $orderID > 0) {
+            $download = new self($downloadID, 0, false);
+            $res      = $download::checkFile($download->kDownload, $customerID, $orderID);
+            if ($res === self::ERROR_NONE) {
                 (new DownloadHistory())
-                    ->setDownload($kDownload)
-                    ->setKunde($kKunde)
-                    ->setBestellung($kBestellung)
+                    ->setDownload($downloadID)
+                    ->setKunde($customerID)
+                    ->setBestellung($orderID)
                     ->setErstellt('NOW()')
                     ->save();
 
                 self::send_file_to_browser(
-                    \PFAD_DOWNLOADS . $oDownload->getPfad(),
+                    \PFAD_DOWNLOADS . $download->getPfad(),
                     'application/octet-stream'
                 );
-
-                return 1;
             }
 
-            return $nReturn;
+            return $res;
         }
 
-        return 7;
+        return self::ERROR_MISSING_PARAMS;
     }
 
     /**
@@ -377,43 +375,43 @@ class Download
      * 6 = Maximales Datum wurde erreicht
      * 7 = Paramter fehlen
      *
-     * @param int $kDownload
-     * @param int $kKunde
-     * @param int $kBestellung
+     * @param int $downloadID
+     * @param int $customerID
+     * @param int $orderID
      * @return int
      */
-    public static function checkFile(int $kDownload, int $kKunde, int $kBestellung): int
+    public static function checkFile(int $downloadID, int $customerID, int $orderID): int
     {
-        if ($kDownload > 0 && $kKunde > 0 && $kBestellung > 0) {
-            $order = new Bestellung($kBestellung);
+        if ($downloadID > 0 && $customerID > 0 && $orderID > 0) {
+            $order = new Bestellung($orderID);
             // Existiert die Bestellung und wurde Sie bezahlt?
             if ($order->kBestellung <= 0 || empty($order->dBezahltDatum) || $order->dBezahltDatum === null) {
                 return self::ERROR_ORDER_NOT_FOUND;
             }
             // Stimmt der Kunde?
-            if ((int)$order->kKunde !== $kKunde) {
+            if ((int)$order->kKunde !== $customerID) {
                 return self::ERROR_INVALID_CUSTOMER;
             }
             $order->fuelleBestellung();
-            $download = new self($kDownload, 0, false);
+            $download = new self($downloadID, 0, false);
             // Gibt es einen Artikel der zum Download passt?
             if (!\is_array($download->oArtikelDownload_arr) || \count($download->oArtikelDownload_arr) === 0) {
                 return self::ERROR_PRODUCT_NOT_FOUND;
             }
-            foreach ($order->Positionen as &$position) {
-                foreach ($download->oArtikelDownload_arr as &$oArtikelDownload) {
-                    if ($position->kArtikel != $oArtikelDownload->kArtikel) {
+            foreach ($order->Positionen as &$item) {
+                foreach ($download->oArtikelDownload_arr as &$donwloadItem) {
+                    if ($item->kArtikel != $donwloadItem->kArtikel) {
                         continue;
                     }
                     // Check Anzahl
                     if ($download->getAnzahl() > 0) {
-                        $history = DownloadHistory::getOrderHistory($kKunde, $kBestellung);
+                        $history = DownloadHistory::getOrderHistory($customerID, $orderID);
                         if (\count($history[$download->kDownload]) >= $download->getAnzahl()) {
                             return self::ERROR_DOWNLOAD_LIMIT_REACHED;
                         }
                     }
                     // Check Datum
-                    $paymentDate = new \DateTime($order->dBezahltDatum);
+                    $paymentDate = new DateTime($order->dBezahltDatum);
                     $paymentDate->modify('+' . ($download->getTage() + 1) . ' day');
                     if ($download->getTage() > 0 && $paymentDate < new DateTime()) {
                         return self::ERROR_DOWNLOAD_EXPIRED;
@@ -535,12 +533,12 @@ class Download
     }
 
     /**
-     * @param int $nSort
+     * @param int $sort
      * @return $this
      */
-    public function setSort(int $nSort): self
+    public function setSort(int $sort): self
     {
-        $this->nSort = $nSort;
+        $this->nSort = $sort;
 
         return $this;
     }

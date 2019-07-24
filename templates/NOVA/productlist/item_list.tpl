@@ -20,7 +20,8 @@
                         {/if}
                         {block name='productlist-item-list-include-searchspecials'}
                             {if isset($Artikel->oSuchspecialBild)}
-                                {include file='snippets/searchspecials.tpl' src=$Artikel->oSuchspecialBild->getURL($smarty.const.IMAGE_SIZE_SM) alt=$alt}
+                                {include file='snippets/ribbon.tpl'}
+                                {*{include file='snippets/searchspecials.tpl' src=$Artikel->oSuchspecialBild->getURL($smarty.const.IMAGE_SIZE_SM) alt=$alt}*}
                             {/if}
                         {/block}
 
@@ -108,7 +109,7 @@
                                 {$Artikel->cKurzBeschreibung}
                             </div>
                         {/if}
-                        <div class="attr-group list-unstyled small text-muted mt-2 d-none d-sm-block">
+                        <div class="attr-group list-unstyled small mt-2 d-none d-sm-block">
                             {row class="item attr-sku"}
                                 {col sm=5 class="attr-label"}{lang key='productNo'}: {/col}
                                 {col sm=7 class="value" itemprop="sku"}{$Artikel->cArtNr}{/col}
@@ -265,13 +266,14 @@
                                                                     step="{if $Artikel->fAbnahmeintervall > 0}{$Artikel->fAbnahmeintervall}{/if}"
                                                                     size="2"
                                                                     id="quantity{$Artikel->kArtikel}"
-                                                                    class="quantity text-right"
+                                                                    class="quantity"
                                                                     name="anzahl"
                                                                     autocomplete="off"
+                                                                    data=["decimals"=>{getDecimalLength quantity=$Artikel->fAbnahmeintervall}]
                                                                     value="{if $Artikel->fAbnahmeintervall > 0}{if $Artikel->fMindestbestellmenge > $Artikel->fAbnahmeintervall}{$Artikel->fMindestbestellmenge}{else}{$Artikel->fAbnahmeintervall}{/if}{else}1{/if}"
                                                             }
                                                             {inputgroupaddon append=true}
-                                                                {button type="submit" variant="primary" id="submit{$Artikel->kArtikel}"
+                                                                {button type="submit" variant="primary" block=true id="submit{$Artikel->kArtikel}"
                                                                         title="{lang key='addToCart'}" class="ml-3"}
                                                                     <i class="fa fa-shopping-cart"></i>
                                                                 {/button}
@@ -309,11 +311,8 @@
                                         {if $NaviFilter->hasSearchQuery()}
                                             {input type="hidden" name="l" value=$NaviFilter->getSearchQuery()->getValue()}
                                         {/if}
-                                        {if $NaviFilter->hasAttributeValue()}
-                                            {input type="hidden" name="m" value=$NaviFilter->getAttributeValue()->getValue()}
-                                        {/if}
-                                        {if $NaviFilter->hasTag()}
-                                            {input type="hidden" name="t" value=$NaviFilter->getTag()->getValue()}
+                                        {if $NaviFilter->hasCharacteristicValue()}
+                                            {input type="hidden" name="m" value=$NaviFilter->getCharacteristicValue()->getValue()}
                                         {/if}
                                         {if $NaviFilter->hasCategoryFilter()}
                                             {assign var=cfv value=$NaviFilter->getCategoryFilter()->getValue()}
@@ -335,16 +334,9 @@
                                                 {input type="hidden" name="hf" value=$mfv}
                                             {/if}
                                         {/if}
-                                        {if $NaviFilter->hasAttributeFilter()}
-                                            {foreach $NaviFilter->getAttributeFilter() as $attributeFilter}
-                                                {input type="hidden" name="mf{$attributeFilter@iteration}" value=$attributeFilter->getValue()}
-                                            {/foreach}
-                                        {/if}
-                                        {if $NaviFilter->hasTagFilter()}
-                                            {foreach $NaviFilter->getTagFilter() as $tagFilter}
-                                                {input type="hidden" name="tf{$tagFilter@iteration}" value=$tagFilter->getValue()}
-                                            {/foreach}
-                                        {/if}
+                                        {foreach $NaviFilter->getCharacteristicFilter() as $filter}
+                                            {input type="hidden" name="mf{$filter@iteration}" value=$filter->getValue()}
+                                        {/foreach}
                                     {/block}
                                 {/form}
                             {/block}

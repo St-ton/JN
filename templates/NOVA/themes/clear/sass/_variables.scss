@@ -30,13 +30,14 @@ $grid-gutter-width:                 32px;
 // font
 
 $font-family-sans-serif:            "Open Sans", Helvetica, Arial, sans-serif;
-$headings-font-family:              $font-family-sans-serif;
-$font-size-base:                    0.875rem;
+$headings-font-family:              "Montserrat", Helvetica, Arial, sans-serif;
+$headings-margin-bottom:            1.5rem;
+$font-size-base:                    0.95rem;
 $line-height-base:                  1.5;
 
 $font-weight-normal:                400;
 $font-weight-semibold:              600;
-$font-weight-bold:                  700;
+$font-weight-bold:                  600;
 
 // heading
 
@@ -72,6 +73,7 @@ $link-decoration:                   underline;
 $link-hover-color:                  $link-color;
 $link-hover-decoration:             none;
 
+//$breadcrumb-divider:                "/";
 $breadcrumb-divider:                "\f054";
 $breadcrumb-divider-back:           "\f053";
 $breadcrumb-active-color:           $gray-dark;
@@ -89,6 +91,8 @@ $list-group-disabled-bg:            #fff;
 
 $progress-bar-color:                $gray;
 
+$table-accent-bg:                   $gray-lighter;
+
 // spacer
 
 $spacer: 1rem;
@@ -97,6 +101,13 @@ $spacers: (
   6:                                ($spacer * 3),
   7:                                ($spacer * 4),
   8:                                ($spacer * 5)
+);
+
+$sizes: (
+  20:                               20%,
+  40:                               40%,
+  60:                               60%,
+  80:                               80%
 );
 
 // paths
@@ -124,7 +135,7 @@ $tooltip-margin:                    .25rem;
 
 $border-width:                      1px;
 $input-btn-padding-y:               .375rem;
-$input-height:                      calc(#{$line-height-base * 1em} + #{$input-btn-padding-y * 2} + #{$border-width * 4});
+$input-height:                      calc(#{$line-height-base * 1em} + #{$input-btn-padding-y * 2} + #{$border-width * 9});
 $custom-control-indicator-bg:       $sand;
 $custom-control-indicator-border-color: transparent;
 
@@ -148,3 +159,34 @@ $pagination-disabled-bg:            transparent;
 $breadcrumb-bg:                     transparent;
 $breadcrumb-divider-color:          $gray-dark;
 $breadcrumb-active-color:           $gray-dark;
+
+$tap-target-size:                   44px;
+$tap-target-size-sm:                36px;
+
+//BESTSELLER, 1
+$ribbon-bg-1:                       #eeb728;
+$ribbon-color-1:                    #fff;
+//SPECIALOFFERS, 2
+$ribbon-bg-2:                       #4bc223;
+$ribbon-color-2:                    #fff;
+//NEWPRODUCTS, 3
+$ribbon-bg-3:                       #525252;
+$ribbon-color-3:                    #fff;
+//TOPOFFERS, 4
+$ribbon-bg-4:                       #c3ebe6;
+$ribbon-color-4:                    $gray-dark;
+//UPCOMINGPRODUCTS, 5
+$ribbon-bg-5:                       #b9056f;
+$ribbon-color-5:                    #fff;
+//TOPREVIEWS, 6
+$ribbon-bg-6:                       #ebebeb;
+$ribbon-color-6:                    $gray-dark;
+//OUTOFSTOCK, 7
+$ribbon-bg-7:                       #b9080e;
+$ribbon-color-7:                    #fff;
+//ONSTOCK, 8
+$ribbon-bg-8:                       #11926b;
+$ribbon-color-8:                    #fff;
+//PREORDER, 9
+$ribbon-bg-9:                       #f78e26;
+$ribbon-color-9:                    #fff;

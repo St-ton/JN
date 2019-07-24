@@ -102,14 +102,14 @@ class UnitsOfMeasure
     }
 
     /**
-     * @param int $kMassEinheit
+     * @param int $id
      * @return stdClass|null
      */
-    public static function getUnit(int $kMassEinheit): ?stdClass
+    public static function getUnit(int $id): ?stdClass
     {
         $units = self::getUnits();
 
-        return $units[$kMassEinheit] ?? null;
+        return $units[$id] ?? null;
     }
 
     /**

@@ -11,6 +11,8 @@ use JTL\dbeS\Starter;
 use JTL\Media\Image;
 use JTL\Media\MediaImage;
 use SimpleXMLElement;
+use function Functional\flatten;
+use function Functional\map;
 
 /**
  * Class ImageLink
@@ -24,60 +26,60 @@ final class ImageLink extends AbstractSync
      */
     public function handle(Starter $starter)
     {
+        $productIDs = [];
         foreach ($starter->getXML(true) as $i => $item) {
             [$file, $xml] = [\key($item), \reset($item)];
             if (\strpos($file, 'del_bildartikellink.xml') !== false) {
-                $this->handleDeletes($xml);
+                $productIDs[] = $this->handleDeletes($xml);
             } elseif (\strpos($file, 'bildartikellink.xml') !== false) {
-                $this->handleInserts($xml);
+                $productIDs[] = $this->handleInserts($xml);
             }
         }
+        $productIDs = \array_unique(flatten($productIDs));
+        foreach ($productIDs as $pid) {
+            MediaImage::clearCache(Image::TYPE_PRODUCT, $pid);
+        }
+        $this->cache->flushTags(map($productIDs, function ($pid) {
+            return \CACHING_GROUP_ARTICLE . '_' . $pid;
+        }));
 
         return null;
     }
 
     /**
      * @param SimpleXMLElement $xml
+     * @return array
      */
-    private function handleInserts(SimpleXMLElement $xml): void
+    private function handleInserts(SimpleXMLElement $xml): array
     {
-        $items           = $this->getArray($xml);
-        $articleIDs      = [];
-        $cacheArticleIDs = [];
-        foreach ($items as $item) {
+        $productIDs = [];
+        foreach ($this->getArray($xml) as $item) {
             // delete link first. Important because jtl-wawi does not send del_bildartikellink when image is updated.
             $this->db->delete(
                 'tartikelpict',
                 ['kArtikel', 'nNr'],
                 [(int)$item->kArtikel, (int)$item->nNr]
             );
-            $articleIDs[] = (int)$item->kArtikel;
+            $productIDs[] = (int)$item->kArtikel;
             $this->upsert('tartikelpict', [$item], 'kArtikelPict');
         }
-        foreach (\array_unique($articleIDs) as $_aid) {
-            $cacheArticleIDs[] = \CACHING_GROUP_ARTICLE . '_' . $_aid;
-            MediaImage::clearCache(Image::TYPE_PRODUCT, $_aid);
-        }
-        $this->cache->flushTags($cacheArticleIDs);
+
+        return $productIDs;
     }
 
     /**
      * @param SimpleXMLElement $xml
+     * @return array
      */
-    private function handleDeletes(SimpleXMLElement $xml): void
+    private function handleDeletes(SimpleXMLElement $xml): array
     {
-        $items           = $this->getItemsToDelete($xml);
-        $articleIDs      = [];
-        $cacheArticleIDs = [];
-        foreach ($items as $item) {
+        $productIDs = [];
+        foreach ($this->getItemsToDelete($xml) as $item) {
             $this->deleteImageItem($item);
-            $articleIDs[] = $item->kArtikel;
+            $productIDs[] = $item->kArtikel;
         }
-        foreach (\array_unique($articleIDs) as $_aid) {
-            $cacheArticleIDs[] = \CACHING_GROUP_ARTICLE . '_' . $_aid;
-            MediaImage::clearCache(Image::TYPE_PRODUCT, $_aid);
-        }
-        $this->cache->flushTags($cacheArticleIDs);
+
+        return $productIDs;
     }
 
     /**
@@ -86,25 +88,26 @@ final class ImageLink extends AbstractSync
     private function deleteImageItem($item): void
     {
         $image = $this->db->select('tartikelpict', 'kArtikel', $item->kArtikel, 'nNr', $item->nNr);
-        if (\is_object($image)) {
-            // is last reference
-            $res = $this->db->query(
-                'SELECT COUNT(*) AS cnt FROM tartikelpict WHERE kBild = ' . (int)$image->kBild,
-                ReturnType::SINGLE_OBJECT
-            );
-            if ((int)$res->cnt === 1) {
-                $this->db->delete('tbild', 'kBild', (int)$image->kBild);
-                $storage = \PFAD_ROOT . \PFAD_MEDIA_IMAGE_STORAGE . $image->cPfad;
-                if (\file_exists($storage)) {
-                    @\unlink($storage);
-                }
-            }
-            $this->db->delete(
-                'tartikelpict',
-                ['kArtikel', 'nNr'],
-                [(int)$item->kArtikel, (int)$item->nNr]
-            );
+        if (!\is_object($image)) {
+            return;
         }
+        // is last reference
+        $res = $this->db->query(
+            'SELECT COUNT(*) AS cnt FROM tartikelpict WHERE kBild = ' . (int)$image->kBild,
+            ReturnType::SINGLE_OBJECT
+        );
+        if ((int)$res->cnt === 1) {
+            $this->db->delete('tbild', 'kBild', (int)$image->kBild);
+            $storage = \PFAD_ROOT . \PFAD_MEDIA_IMAGE_STORAGE . $image->cPfad;
+            if (\file_exists($storage)) {
+                @\unlink($storage);
+            }
+        }
+        $this->db->delete(
+            'tartikelpict',
+            ['kArtikel', 'nNr'],
+            [(int)$item->kArtikel, (int)$item->nNr]
+        );
     }
 
     /**
@@ -140,13 +143,13 @@ final class ImageLink extends AbstractSync
                 'kArtikel'     => (int)$child->attributes()->kArtikel,
                 'kArtikelPict' => (int)$child->attributes()->kArtikelPict
             ];
-            $imageId = (int)$child->attributes()->kBild;
-            $image   = $this->db->select('tbild', 'kBild', $imageId);
+            $imageID = (int)$child->attributes()->kBild;
+            $image   = $this->db->select('tbild', 'kBild', $imageID);
             if (\is_object($image)) {
                 $item->cPfad = $image->cPfad;
                 $items[]     = $item;
             } else {
-                $this->logger->debug('Missing reference in tbild (Key: ' . $imageId . ')');
+                $this->logger->debug('Missing reference in tbild (Key: ' . $imageID . ')');
             }
         }
 

@@ -1,9 +1,9 @@
-{include file='tpl_inc/header.tpl' bForceFluid=($cAction === 'area')}
+{include file='tpl_inc/header.tpl' bForceFluid=($action === 'area')}
 {config_load file="$lang.conf" section='banner'}
 {include file='tpl_inc/seite_header.tpl' cTitel=__('banner') cBeschreibung=__('bannerDesc') cDokuURL=__('bannerURL')}
 
 <div id="content">
-    {if $cAction === 'edit' || $cAction === 'new'}
+    {if $action === 'edit' || $action === 'new'}
     <script type="text/javascript">
         var file2large = false;
 
@@ -76,8 +76,8 @@
     <div id="settings">
         <form name="banner" action="banner.php" method="post" enctype="multipart/form-data" onsubmit="checkfile(event);">
             {$jtl_token}
-            <input type="hidden" name="action" value="{$cAction}" />
-            {if $cAction === 'edit'}
+            <input type="hidden" name="action" value="{$action}" />
+            {if $action === 'edit'}
                 <input type="hidden" name="kImageMap" value="{$oBanner->kImageMap}" />
             {/if}
 
@@ -111,11 +111,27 @@
                     </div>
                     <div class="input-group">
                         <span class="input-group-addon"><label for="vDatum">{__('activeFrom')}</label></span>
-                        <input class="form-control" type="text" name="vDatum" id="vDatum" value="{if isset($vDatum) && $vDatum > 0}{$vDatum|date_format:'%d.%m.%Y'}{elseif isset($oBanner->vDatum) && $oBanner->vDatum > 0}{$oBanner->vDatum|date_format:'%d.%m.%Y'}{/if}" />
+                        <input class="form-control" type="text" name="vDatum" id="vDatum"/>
+                        {include
+                            file="snippets/daterange_picker.tpl"
+                            datepickerID="#vDatum"
+                            currentDate="{if isset($vDatum) && $vDatum > 0}{$vDatum|date_format:'%d.%m.%Y'}{elseif isset($oBanner->vDatum) && $oBanner->vDatum > 0}{$oBanner->vDatum|date_format:'%d.%m.%Y'}{/if}"
+                            format="DD.MM.YYYY"
+                            separator="{__('datepickerSeparator')}"
+                            single=true
+                        }
                     </div>
                     <div class="input-group">
                         <span class="input-group-addon"><label for="bDatum">{__('activeTo')}</label></span>
-                        <input class="form-control" type="text" name="bDatum" id="bDatum" value="{if isset($bDatum) && $bDatum > 0}{$bDatum|date_format:'%d.%m.%Y'}{elseif isset($oBanner->bDatum) && $oBanner->bDatum > 0}{$oBanner->bDatum|date_format:'%d.%m.%Y'}{/if}" />
+                        <input class="form-control" type="text" name="bDatum" id="bDatum"  />
+                        {include
+                            file="snippets/daterange_picker.tpl"
+                            datepickerID="#bDatum"
+                            currentDate="{if isset($bDatum) && $bDatum > 0}{$bDatum|date_format:'%d.%m.%Y'}{elseif isset($oBanner->bDatum) && $oBanner->bDatum > 0}{$oBanner->bDatum|date_format:'%d.%m.%Y'}{/if}"
+                            format="DD.MM.YYYY"
+                            separator="{__('datepickerSeparator')}"
+                            single=true
+                        }
                     </div>
                 </div><!-- /.panel-body -->
             </div><!-- /.panel -->
@@ -132,8 +148,8 @@
                         <span class="input-group-wrap">
                             <select class="form-control" id="kSprache" name="kSprache">
                                 <option value="0">{__('all')}</option>
-                                {foreach $oSprachen_arr as $oSprache}
-                                    <option value="{$oSprache->kSprache}" {if isset($kSprache) && $kSprache == $oSprache->kSprache}selected="selected" {elseif isset($oExtension->kSprache) && $oExtension->kSprache == $oSprache->kSprache}selected="selected"{/if}>{$oSprache->cNameDeutsch}</option>
+                                {foreach $oSprachen_arr as $language}
+                                    <option value="{$language->getId()}" {if isset($kSprache) && $kSprache === $language->getId()}selected="selected" {elseif isset($oExtension->kSprache) && (int)$oExtension->kSprache === $language->getId()}selected="selected"{/if}>{$language->getLocalizedName()}</option>
                                 {/foreach}
                             </select>
                         </span>
@@ -173,9 +189,6 @@
                                 <select class="form-control" id="cKey" name="cKey">
                                     <option value="" {if isset($oExtension->cKey) && $oExtension->cKey === ''}selected="selected"{/if}>
                                         {__('noFilter')}
-                                    </option>
-                                    <option value="kTag" {if isset($cKey) && $cKey === 'kTag'}selected="selected" {elseif isset($oExtension->cKey) && $oExtension->cKey === 'kTag'}selected="selected"{/if}>
-                                        {__('tag')}
                                     </option>
                                     <option value="kMerkmalWert" {if isset($cKey) && $cKey === 'kMerkmalWert'}selected="selected" {elseif isset($oExtension->cKey) && $oExtension->cKey === 'kMerkmalWert'}selected="selected"{/if}>
                                         {__('attribute')}
@@ -226,24 +239,6 @@
                                 {if (isset($cKey) && $cKey === 'kLink') || (isset($oExtension->cKey) && $oExtension->cKey === 'kLink')}
                                     ioCall('getPages', [[$('#link_key').val()]], function (data) {
                                         $('#link_name').val(data[0].cName);
-                                    });
-                                {/if}
-                            </script>
-                        </div>
-                        <div id="keykTag" class="input-group key">
-                            <span class="input-group-addon"><label for="tag_name">{__('tag')}</label></span>
-                            <input type="hidden" name="tag_key" id="tag_key"
-                                   value="{if (isset($cKey) && $cKey === 'kTag') || (isset($oExtension->cKey) && $oExtension->cKey === 'kTag')}{$oExtension->cValue}{/if}">
-                            <input class="form-control" type="text" name="tag_name" id="tag_name">
-                            <span class="input-group-addon">{getHelpDesc cDesc=__('typeAheadTag')}</span>
-                            <script>
-                                enableTypeahead('#tag_name', 'getTags', 'cName', null, function(e, item) {
-                                    $('#tag_name').val(item.cName);
-                                    $('#tag_key').val(item.kTag);
-                                });
-                                {if (isset($cKey) && $cKey === 'kTag') || (isset($oExtension->cKey) && $oExtension->cKey === 'kTag')}
-                                    ioCall('getTags', [[$('#tag_key').val()]], function (data) {
-                                        $('#tag_name').val(data[0].cName);
                                     });
                                 {/if}
                             </script>
@@ -325,7 +320,7 @@
 
         </form>
     </div>
-    {elseif $cAction === 'area'}
+    {elseif $action === 'area'}
     <script type="text/javascript" src="{$shopURL}/includes/libs/flashchart/js/json/json2.js"></script>
     <script type="text/javascript" src="{$shopURL}/{$PFAD_ADMIN}/{$currentTemplateDir}js/clickareas.js"></script>
     <link rel="stylesheet" href="{$shopURL}/{$PFAD_ADMIN}/{$currentTemplateDir}css/clickareas.css" type="text/css" media="screen" />
@@ -418,7 +413,7 @@
         <a class="btn btn-danger" href="banner.php" id="cancel"><i class="fa fa-angle-double-left"></i> {__('back')}</a>
     </div>
     {else}
-        {include file='tpl_inc/pagination.tpl' oPagination=$pagination}
+        {include file='tpl_inc/pagination.tpl' pagination=$pagination}
 
         <div id="settings">
             <div class="panel panel-default">
@@ -462,9 +457,9 @@
                                     {$jtl_token}
                                     <input type="hidden" name="id" value="{$oBanner->kImageMap}" />
                                     <div class="btn-group">
-                                        <button class="btn btn-default" name="action" value="area" title="verlinken"><i class="fa fa-link"></i></button>
-                                        <button class="btn btn-default" name="action" value="edit" title="bearbeiten"><i class="fa fa-edit"></i></button>
-                                        <button class="btn btn-danger" name="action" value="delete" title="entfernen"><i class="fa fa-trash"></i></button>
+                                        <button class="btn btn-default" name="action" value="area" title="{__('actionLink')}"><i class="fa fa-link"></i></button>
+                                        <button class="btn btn-default" name="action" value="edit" title="{__('edit')}"><i class="fa fa-edit"></i></button>
+                                        <button class="btn btn-danger" name="action" value="delete" title="{__('delete')}"><i class="fa fa-trash"></i></button>
                                     </div>
                                 </form>
                             </td>

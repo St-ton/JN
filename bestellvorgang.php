@@ -12,6 +12,7 @@ use JTL\Customer\AccountController;
 use JTL\Extensions\Download;
 use JTL\Extensions\Upload;
 use JTL\Helpers\Cart;
+use JTL\Helpers\Order;
 use JTL\Helpers\Request;
 use JTL\Helpers\ShippingMethod;
 use JTL\Session\Frontend;
@@ -58,12 +59,12 @@ if (Download::hasDownloads($cart)) {
 if ($conf['kaufabwicklung']['bestellvorgang_kaufabwicklungsmethode'] === 'NO'
     && Request::verifyGPCDataInt('wk') === 1
 ) {
-    $kKunde         = $_SESSION['Kunde']->kKunde ?? 0;
-    $oWarenkorbPers = new WarenkorbPers($kKunde);
+    $customerID = $_SESSION['Kunde']->kKunde ?? 0;
+    $persCart   = new WarenkorbPers($customerID);
     if (!(isset($_POST['login']) && (int)$_POST['login'] === 1
         && $conf['global']['warenkorbpers_nutzen'] === 'Y'
         && $conf['kaufabwicklung']['warenkorb_warenkorb2pers_merge'] === 'P'
-        && count($oWarenkorbPers->oWarenkorbPersPos_arr) > 0)
+        && count($persCart->oWarenkorbPersPos_arr) > 0)
     ) {
         pruefeAjaxEinKlick();
     }
@@ -110,26 +111,38 @@ if (isset($_GET['unreg'])
 //autom. step ermitteln
 if (isset($_SESSION['Kunde']) && $_SESSION['Kunde']) {
     if (!isset($_SESSION['Lieferadresse'])) {
-        pruefeLieferdaten(['kLieferadresse' => 0]);
+        pruefeLieferdaten([
+            'kLieferadresse' => Order::getLastOrderRefIDs((int)$_SESSION['Kunde']->kKunde)->kLieferadresse
+        ]);
+        if (isset($_SESSION['Lieferadresse']) && $_SESSION['Lieferadresse']->kLieferadresse > 0) {
+            $_GET['editLieferadresse'] = 1;
+        }
     }
 
     if (!isset($_SESSION['Versandart']) || !is_object($_SESSION['Versandart'])) {
-        $land          = $_SESSION['Lieferadresse']->cLand ?? $_SESSION['Kunde']->cLand;
-        $plz           = $_SESSION['Lieferadresse']->cPLZ ?? $_SESSION['Kunde']->cPLZ;
-        $kKundengruppe = Frontend::getCustomerGroup()->getID();
-
-        $shippingMethods  = ShippingMethod::getPossibleShippingMethods(
+        $land            = $_SESSION['Lieferadresse']->cLand ?? $_SESSION['Kunde']->cLand;
+        $plz             = $_SESSION['Lieferadresse']->cPLZ ?? $_SESSION['Kunde']->cPLZ;
+        $customerGroupID = Frontend::getCustomerGroup()->getID();
+        $shippingMethods = ShippingMethod::getPossibleShippingMethods(
             $land,
             $plz,
             ShippingMethod::getShippingClasses($cart),
-            $kKundengruppe
+            $customerGroupID
         );
-        $activeVersandart = gibAktiveVersandart($shippingMethods);
 
-        pruefeVersandartWahl(
-            $activeVersandart,
-            ['kVerpackung' => array_keys(gibAktiveVerpackung(ShippingMethod::getPossiblePackagings($kKundengruppe)))]
-        );
+        if (empty($shippingMethods)) {
+            $alertHelper->addAlert(
+                Alert::TYPE_DANGER,
+                Shop::Lang()->get('noShippingAvailable', 'checkout'),
+                'noShippingAvailable'
+            );
+        } else {
+            $activeVersandart = gibAktiveVersandart($shippingMethods);
+            pruefeVersandartWahl(
+                $activeVersandart,
+                ['kVerpackung' => array_keys(gibAktiveVerpackung(ShippingMethod::getPossiblePackagings($customerGroupID)))]
+            );
+        }
     }
 }
 if (empty($_SESSION['Kunde']->cPasswort) && Download::hasDownloads($cart)) {

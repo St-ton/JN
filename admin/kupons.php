@@ -4,16 +4,18 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use JTL\Helpers\Form;
-use JTL\Helpers\Request;
+use JTL\Alert\Alert;
 use JTL\Checkout\Kupon;
-use JTL\Shop;
-use JTL\Sprache;
-use JTL\Helpers\Text;
-use JTL\Pagination\Filter;
-use JTL\Pagination\Pagination;
-use JTL\Pagination\Operation;
 use JTL\DB\ReturnType;
+use JTL\Helpers\Form;
+use JTL\Helpers\GeneralObject;
+use JTL\Helpers\Request;
+use JTL\Helpers\Text;
+use JTL\Language\LanguageHelper;
+use JTL\Pagination\Filter;
+use JTL\Pagination\Operation;
+use JTL\Pagination\Pagination;
+use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
@@ -23,15 +25,16 @@ require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'kupons_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'csv_exporter_inc.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'csv_importer_inc.php';
 
-$action       = '';
-$tab          = Kupon::TYPE_STANDARD;
-$oSprache_arr = Sprache::getAllLanguages();
-$oKupon       = null;
-$alertHelper  = Shop::Container()->getAlertService();
-$res          = handleCsvImportAction('kupon', function ($obj, &$importDeleteDone, $importType = 2) {
+$action      = '';
+$tab         = Kupon::TYPE_STANDARD;
+$languages   = LanguageHelper::getAllLanguages();
+$coupon      = null;
+$alertHelper = Shop::Container()->getAlertService();
+$res         = handleCsvImportAction('kupon', function ($obj, &$importDeleteDone, $importType = 2) {
+    $db = Shop::Container()->getDB();
     if ($importType === 0 && $importDeleteDone === false) {
-        Shop::Container()->getDB()->query('TRUNCATE TABLE tkupon', ReturnType::AFFECTED_ROWS);
-        Shop::Container()->getDB()->query('TRUNCATE TABLE tkuponsprache', ReturnType::AFFECTED_ROWS);
+        $db->query('TRUNCATE TABLE tkupon', ReturnType::AFFECTED_ROWS);
+        $db->query('TRUNCATE TABLE tkuponsprache', ReturnType::AFFECTED_ROWS);
         $importDeleteDone = true;
     }
 
@@ -44,25 +47,18 @@ $res          = handleCsvImportAction('kupon', function ($obj, &$importDeleteDon
         }
     }
 
-    if (isset($obj->cCode)
-        && Shop::Container()->getDB()->select('tkupon', 'cCode', $obj->cCode) !== null
-    ) {
+    if (isset($obj->cCode) && $db->select('tkupon', 'cCode', $obj->cCode) !== null) {
         return false;
     }
 
     unset($obj->dLastUse);
-    $kKupon = Shop::Container()->getDB()->insert('tkupon', $obj);
-
-    if ($kKupon === 0) {
+    $couponID = $db->insert('tkupon', $obj);
+    if ($couponID === 0) {
         return false;
     }
 
     foreach ($couponNames as $key => $val) {
-        $res = Shop::Container()->getDB()->insert(
-            'tkuponsprache',
-            (object)['kKupon' => $kKupon, 'cISOSprache' => $key, 'cName' => $val]
-        );
-
+        $res = $db->insert('tkuponsprache', (object)['kKupon' => $couponID, 'cISOSprache' => $key, 'cName' => $val]);
         if ($res === 0) {
             return false;
         }
@@ -77,35 +73,28 @@ if ($res > 0) {
     $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successImportCSV'), 'successImportCSV');
 }
 
-// Aktion ausgeloest?
 if (Form::validateToken()) {
     if (isset($_POST['action'])) {
         if ($_POST['action'] === 'speichern') {
-            // Kupon speichern
             $action = 'speichern';
         } elseif ($_POST['action'] === 'loeschen') {
-            // Kupons loeschen
             $action = 'loeschen';
         }
     } elseif (isset($_GET['kKupon']) && Request::verifyGPCDataInt('kKupon') >= 0) {
-        // Kupon bearbeiten
         $action = 'bearbeiten';
     }
 }
 
-// Aktion behandeln
 if ($action === 'bearbeiten') {
-    // Kupon bearbeiten
-    $kKupon = isset($_GET['kKupon']) ? (int)$_GET['kKupon'] : (int)$_POST['kKuponBearbeiten'];
-    if ($kKupon > 0) {
-        $oKupon = getCoupon($kKupon);
+    $couponID = isset($_GET['kKupon']) ? (int)$_GET['kKupon'] : (int)$_POST['kKuponBearbeiten'];
+    if ($couponID > 0) {
+        $coupon = getCoupon($couponID);
     } else {
-        $oKupon = createNewCoupon($_REQUEST['cKuponTyp']);
+        $coupon = createNewCoupon($_REQUEST['cKuponTyp']);
     }
 } elseif ($action === 'speichern') {
-    // Kupon speichern
-    $oKupon       = createCouponFromInput();
-    $couponErrors = validateCoupon($oKupon);
+    $coupon       = createCouponFromInput();
+    $couponErrors = validateCoupon($coupon);
     if (count($couponErrors) > 0) {
         // Es gab Fehler bei der Validierung => weiter bearbeiten
         $errorMessage = __('errorCheckInput') . ':<ul>';
@@ -117,15 +106,15 @@ if ($action === 'bearbeiten') {
         $errorMessage .= '</ul>';
         $action        = 'bearbeiten';
         $alertHelper->addAlert(Alert::TYPE_ERROR, $errorMessage, 'errorCheckInput');
-        augmentCoupon($oKupon);
-    } elseif (saveCoupon($oKupon, $oSprache_arr) > 0) {// Validierung erfolgreich => Kupon speichern
+        augmentCoupon($coupon);
+    } elseif (saveCoupon($coupon, $languages) > 0) {// Validierung erfolgreich => Kupon speichern
         // erfolgreich gespeichert => evtl. Emails versenden
         if (isset($_POST['informieren'])
             && $_POST['informieren'] === 'Y'
-            && ($oKupon->cKuponTyp === Kupon::TYPE_STANDARD || $oKupon->cKuponTyp === Kupon::TYPE_SHIPPING)
-            && $oKupon->cAktiv === 'Y'
+            && ($coupon->cKuponTyp === Kupon::TYPE_STANDARD || $coupon->cKuponTyp === Kupon::TYPE_SHIPPING)
+            && $coupon->cAktiv === 'Y'
         ) {
-            informCouponCustomers($oKupon);
+            informCouponCustomers($coupon);
         }
         $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successCouponSave'), 'successCouponSave');
     } else {
@@ -133,9 +122,9 @@ if ($action === 'bearbeiten') {
     }
 } elseif ($action === 'loeschen') {
     // Kupons loeschen
-    if (isset($_POST['kKupon_arr']) && is_array($_POST['kKupon_arr']) && count($_POST['kKupon_arr']) > 0) {
-        $kKupon_arr = array_map('\intval', $_POST['kKupon_arr']);
-        if (loescheKupons($kKupon_arr)) {
+    if (GeneralObject::hasCount('kKupon_arr', $_POST)) {
+        $couponIDs = array_map('\intval', $_POST['kKupon_arr']);
+        if (loescheKupons($couponIDs)) {
             $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successCouponDelete'), 'successCouponDelete');
         } else {
             $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorCouponDelete'), 'errorCouponDelete');
@@ -144,46 +133,42 @@ if ($action === 'bearbeiten') {
         $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorAtLeastOneCoupon'), 'errorAtLeastOneCoupon');
     }
 }
-
-// Seite ausgeben
 if ($action === 'bearbeiten') {
-    // Seite: Bearbeiten
-    $oSteuerklasse_arr = Shop::Container()->getDB()->query(
+    $taxClasses     = Shop::Container()->getDB()->query(
         'SELECT kSteuerklasse, cName FROM tsteuerklasse',
         ReturnType::ARRAY_OF_OBJECTS
     );
-    $oKundengruppe_arr = Shop::Container()->getDB()->query(
+    $customerGroups = Shop::Container()->getDB()->query(
         'SELECT kKundengruppe, cName FROM tkundengruppe',
         ReturnType::ARRAY_OF_OBJECTS
     );
-    $oHersteller_arr   = getManufacturers($oKupon->cHersteller);
-    $oKategorie_arr    = getCategories($oKupon->cKategorien);
-    $kKunde_arr        = array_filter(
-        Text::parseSSK($oKupon->cKunden),
-        function ($kKunde) {
-            return (int)$kKunde > 0;
+    $manufacturers  = getManufacturers($coupon->cHersteller);
+    $categories     = getCategories($coupon->cKategorien);
+    $customerIDs    = array_filter(
+        Text::parseSSKint($coupon->cKunden),
+        function ($customerID) {
+            return (int)$customerID > 0;
         }
     );
-    if ($oKupon->kKupon > 0) {
-        $oKuponName_arr = getCouponNames((int)$oKupon->kKupon);
+    if ($coupon->kKupon > 0) {
+        $names = getCouponNames((int)$coupon->kKupon);
     } else {
-        $oKuponName_arr = [];
-        foreach ($oSprache_arr as $oSprache) {
-            $postVarName                     = 'cName_' . $oSprache->cISO;
-            $oKuponName_arr[$oSprache->cISO] = (isset($_POST[$postVarName]) && $_POST[$postVarName] !== '')
+        $names = [];
+        foreach ($languages as $language) {
+            $postVarName                = 'cName_' . $language->getIso();
+            $names[$language->getIso()] = (isset($_POST[$postVarName]) && $_POST[$postVarName] !== '')
                 ? $_POST[$postVarName]
-                : $oKupon->cName;
+                : $coupon->cName;
         }
     }
 
-    $smarty->assign('oSteuerklasse_arr', $oSteuerklasse_arr)
-           ->assign('oKundengruppe_arr', $oKundengruppe_arr)
-           ->assign('oHersteller_arr', $oHersteller_arr)
-           ->assign('oKategorie_arr', $oKategorie_arr)
-           ->assign('kKunde_arr', $kKunde_arr)
-           ->assign('oSprache_arr', $oSprache_arr)
-           ->assign('oKuponName_arr', $oKuponName_arr)
-           ->assign('oKupon', $oKupon);
+    $smarty->assign('oSteuerklasse_arr', $taxClasses)
+        ->assign('oKundengruppe_arr', $customerGroups)
+        ->assign('oHersteller_arr', $manufacturers)
+        ->assign('oKategorie_arr', $categories)
+        ->assign('kKunde_arr', $customerIDs)
+        ->assign('oKuponName_arr', $names)
+        ->assign('oKupon', $coupon);
 } else {
     // Seite: Uebersicht
     if (Request::hasGPCData('tab')) {
@@ -196,36 +181,36 @@ if ($action === 'bearbeiten') {
     deactivateExhaustedCoupons();
 
     $filterStandard = new Filter(Kupon::TYPE_STANDARD);
-    $filterStandard->addTextfield('Name', 'cName');
-    $filterStandard->addTextfield('Code', 'cCode');
-    $activeSelection = $filterStandard->addSelectfield('Status', 'cAktiv');
-    $activeSelection->addSelectOption('alle', '', Operation::CUSTOM);
-    $activeSelection->addSelectOption('aktiv', 'Y', Operation::EQUALS);
-    $activeSelection->addSelectOption('inaktiv', 'N', Operation::EQUALS);
+    $filterStandard->addTextfield(__('name'), 'cName');
+    $filterStandard->addTextfield(__('code'), 'cCode');
+    $activeSelection = $filterStandard->addSelectfield(__('status'), 'cAktiv');
+    $activeSelection->addSelectOption(__('all'), '');
+    $activeSelection->addSelectOption(__('active'), 'Y', Operation::EQUALS);
+    $activeSelection->addSelectOption(__('inactive'), 'N', Operation::EQUALS);
     $filterStandard->assemble();
 
     $filterVersand = new Filter(Kupon::TYPE_SHIPPING);
-    $filterVersand->addTextfield('Name', 'cName');
-    $filterVersand->addTextfield('Code', 'cCode');
-    $activeSelection = $filterVersand->addSelectfield('Status', 'cAktiv');
-    $activeSelection->addSelectOption('alle', '', Operation::CUSTOM);
-    $activeSelection->addSelectOption('aktiv', 'Y', Operation::EQUALS);
-    $activeSelection->addSelectOption('inaktiv', 'N', Operation::EQUALS);
+    $filterVersand->addTextfield(__('name'), 'cName');
+    $filterVersand->addTextfield(__('code'), 'cCode');
+    $activeSelection = $filterVersand->addSelectfield(__('status'), 'cAktiv');
+    $activeSelection->addSelectOption(__('all'), '');
+    $activeSelection->addSelectOption(__('active'), 'Y', Operation::EQUALS);
+    $activeSelection->addSelectOption(__('inactive'), 'N', Operation::EQUALS);
     $filterVersand->assemble();
 
     $filterNeukunden = new Filter(Kupon::TYPE_NEWCUSTOMER);
-    $filterNeukunden->addTextfield('Name', 'cName');
-    $activeSelection = $filterNeukunden->addSelectfield('Status', 'cAktiv');
-    $activeSelection->addSelectOption('alle', '', Operation::CUSTOM);
-    $activeSelection->addSelectOption('aktiv', 'Y', Operation::EQUALS);
-    $activeSelection->addSelectOption('inaktiv', 'N', Operation::EQUALS);
+    $filterNeukunden->addTextfield(__('name'), 'cName');
+    $activeSelection = $filterNeukunden->addSelectfield(__('status'), 'cAktiv');
+    $activeSelection->addSelectOption(__('all'), '');
+    $activeSelection->addSelectOption(__('active'), 'Y', Operation::EQUALS);
+    $activeSelection->addSelectOption(__('inactive'), 'N', Operation::EQUALS);
     $filterNeukunden->assemble();
 
     $sortByOptions = [
-        ['cName', 'Name'],
-        ['cCode', 'Code'],
-        ['nVerwendungenBisher', 'Verwendungen'],
-        ['dLastUse', 'Zuletzt verwendet']
+        ['cName', __('name')],
+        ['cCode', __('code')],
+        ['nVerwendungenBisher', __('curmaxusage')],
+        ['dLastUse', __('lastUsed')]
     ];
 
 
@@ -276,19 +261,19 @@ if ($action === 'bearbeiten') {
         ->setItemCount($nKuponNeukundenCount)
         ->assemble();
 
-    $oKuponStandard_arr  = getCoupons(
+    $standardCoupons    = getCoupons(
         Kupon::TYPE_STANDARD,
         $filterStandard->getWhereSQL(),
         $paginationStandard->getOrderSQL(),
         $paginationStandard->getLimitSQL()
     );
-    $oKuponVersand_arr   = getCoupons(
+    $shippingCoupons    = getCoupons(
         Kupon::TYPE_SHIPPING,
         $filterVersand->getWhereSQL(),
         $paginationVersand->getOrderSQL(),
         $paginationVersand->getLimitSQL()
     );
-    $oKuponNeukunden_arr = getCoupons(
+    $newCustomerCoupons = getCoupons(
         Kupon::TYPE_NEWCUSTOMER,
         $filterNeukunden->getWhereSQL(),
         $paginationNeukunden->getOrderSQL(),
@@ -302,9 +287,9 @@ if ($action === 'bearbeiten') {
            ->assign('oPaginationStandard', $paginationStandard)
            ->assign('oPaginationVersandkupon', $paginationVersand)
            ->assign('oPaginationNeukundenkupon', $paginationNeukunden)
-           ->assign('oKuponStandard_arr', $oKuponStandard_arr)
-           ->assign('oKuponVersandkupon_arr', $oKuponVersand_arr)
-           ->assign('oKuponNeukundenkupon_arr', $oKuponNeukunden_arr)
+           ->assign('oKuponStandard_arr', $standardCoupons)
+           ->assign('oKuponVersandkupon_arr', $shippingCoupons)
+           ->assign('oKuponNeukundenkupon_arr', $newCustomerCoupons)
            ->assign('nKuponStandardCount', $nKuponStandardTotal)
            ->assign('nKuponVersandCount', $nKuponVersandTotal)
            ->assign('nKuponNeukundenCount', $nKuponNeukundenTotal);

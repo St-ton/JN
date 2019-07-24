@@ -12,10 +12,10 @@
 @import "../../base/fileinput/fileinput.min.scss";
 
 // wow animation
-@import "../base/wow/animate.css";
+@import "../../base/wow/animate";
 
 // slider
-@import "../base/slider/slider.css";
+@import "../../base/slider/slider";
 
 // theme mixins
 @import "mixins";
@@ -28,6 +28,12 @@
 
 // theme tooltip
 @import "components/tooltip";
+
+// theme ui_slider
+@import "components/ui_slider";
+
+// ribbons
+@import "components/ribbons";
 
 // theme base
 @import "base";

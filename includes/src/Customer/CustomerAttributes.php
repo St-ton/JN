@@ -52,7 +52,8 @@ class CustomerAttributes implements ArrayAccess, IteratorAggregate, Countable
             'SELECT tkundenattribut.kKundenAttribut, COALESCE(tkundenattribut.kKunde, :customerID) kKunde,
                     tkundenfeld.kKundenfeld, tkundenfeld.cName, tkundenfeld.cWawi, tkundenattribut.cWert,
                     tkundenfeld.nSort,
-                    IF(tkundenattribut.kKundenAttribut IS NULL, 1, tkundenfeld.nEditierbar) nEditierbar
+                    IF(tkundenattribut.kKundenAttribut IS NULL
+                        OR COALESCE(tkundenattribut.cWert, \'\') = \'\', 1, tkundenfeld.nEditierbar) nEditierbar
                 FROM tkundenfeld
                 LEFT JOIN tkundenattribut ON tkundenattribut.kKunde = :customerID
                     AND tkundenattribut.kKundenfeld = tkundenfeld.kKundenfeld
@@ -75,7 +76,7 @@ class CustomerAttributes implements ArrayAccess, IteratorAggregate, Countable
      */
     public function save(): self
     {
-        $nonEditables = self::getNonEditableAttributes();
+        $nonEditables = (new CustomerFields())->getNonEditableFields();
         $usedIDs      = [];
 
         /** @var CustomerAttribute $attribute */
@@ -136,29 +137,7 @@ class CustomerAttributes implements ArrayAccess, IteratorAggregate, Countable
     }
 
     /**
-     * @return array
-     */
-    public static function getNonEditableAttributes(): array
-    {
-        $result = [];
-        foreach (Shop::Container()->getDB()->selectAll(
-            'tkundenfeld',
-            ['kSprache', 'nEditierbar'],
-            [Shop::getLanguage(), 0],
-            'kKundenfeld'
-        ) as $attribute) {
-            $result[] = (int)$attribute->kKundenfeld;
-        }
-
-        return $result;
-    }
-
-    /**
-     * Retrieve an external iterator
-     * @link  https://php.net/manual/en/iteratoraggregate.getiterator.php
-     * @return Traversable An instance of an object implementing <b>Iterator</b> or
-     * <b>Traversable</b>
-     * @since 5.0.0
+     * @inheritDoc
      */
     public function getIterator(): Traversable
     {
@@ -166,16 +145,7 @@ class CustomerAttributes implements ArrayAccess, IteratorAggregate, Countable
     }
 
     /**
-     * Whether a offset exists
-     * @link  https://php.net/manual/en/arrayaccess.offsetexists.php
-     * @param mixed $offset <p>
-     *                      An offset to check for.
-     *                      </p>
-     * @return boolean true on success or false on failure.
-     *                      </p>
-     *                      <p>
-     *                      The return value will be casted to boolean if non-boolean was returned.
-     * @since 5.0.0
+     * @inheritDoc
      */
     public function offsetExists($offset): bool
     {
@@ -183,13 +153,7 @@ class CustomerAttributes implements ArrayAccess, IteratorAggregate, Countable
     }
 
     /**
-     * Offset to retrieve
-     * @link  https://php.net/manual/en/arrayaccess.offsetget.php
-     * @param mixed $offset <p>
-     *                      The offset to retrieve.
-     *                      </p>
-     * @return mixed Can return all value types.
-     * @since 5.0.0
+     * @inheritDoc
      */
     public function offsetGet($offset)
     {
@@ -205,16 +169,7 @@ class CustomerAttributes implements ArrayAccess, IteratorAggregate, Countable
     }
 
     /**
-     * Offset to set
-     * @link  https://php.net/manual/en/arrayaccess.offsetset.php
-     * @param mixed $offset <p>
-     *                      The offset to assign the value to.
-     *                      </p>
-     * @param mixed $value  <p>
-     *                      The value to set.
-     *                      </p>
-     * @return void
-     * @since 5.0.0
+     * @inheritDoc
      */
     public function offsetSet($offset, $value): void
     {
@@ -230,13 +185,7 @@ class CustomerAttributes implements ArrayAccess, IteratorAggregate, Countable
     }
 
     /**
-     * Offset to unset
-     * @link  https://php.net/manual/en/arrayaccess.offsetunset.php
-     * @param mixed $offset <p>
-     *                      The offset to unset.
-     *                      </p>
-     * @return void
-     * @since 5.0.0
+     * @inheritDoc
      */
     public function offsetUnset($offset): void
     {
@@ -244,13 +193,7 @@ class CustomerAttributes implements ArrayAccess, IteratorAggregate, Countable
     }
 
     /**
-     * Count elements of an object
-     * @link  https://php.net/manual/en/countable.count.php
-     * @return int The custom count as an integer.
-     * </p>
-     * <p>
-     * The return value is cast to an integer.
-     * @since 5.1.0
+     * @inheritDoc
      */
     public function count(): int
     {

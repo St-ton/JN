@@ -1,7 +1,7 @@
 <script type="text/javascript">
     function append_file_selector() {ldelim}
         var file_input = $('<input type="file" name="Bilder[]" maxlength="2097152" accept="image/*" />'),
-            container = $('<p class="multi_input vmiddle"><a href="#" title="Entfernen"><img src="{$currentTemplateDir}/gfx/layout/delete.png" class="vmiddle" /></a></p>').prepend(file_input);
+            container = $('<p class="multi_input vmiddle"><a href="#" title="{__("delete")}"><img src="{$currentTemplateDir}/gfx/layout/delete.png" class="vmiddle" /></a></p>').prepend(file_input);
         $('#file_input_wrapper').append(container);
         $(container).find('img').bind('click', function () {ldelim}
             $(file_input).parent().remove();
@@ -103,7 +103,7 @@
                                 <select id="specialLinkType" name="nSpezialseite">
                                     <option value="0">{__('choose')}</option>
                                     {foreach $specialPages as $specialPage}
-                                        <option value="{$specialPage->nLinkart}" {if isset($xPostVar_arr.nSpezialseite) && $xPostVar_arr.nSpezialseite === $specialPage->nLinkart}selected{elseif $Link->getLinkType() === $specialPage->nLinkart}selected{/if}>{$specialPage->cName}</option>
+                                        <option value="{$specialPage->nLinkart}" {if isset($xPostVar_arr.nSpezialseite) && $xPostVar_arr.nSpezialseite === $specialPage->nLinkart}selected{elseif $Link->getLinkType() === $specialPage->nLinkart}selected{/if}>{__($specialPage->cName)}</option>
                                     {/foreach}
                                 </select>
                                 <span id="specialLinkType-error" class="hidden-soft error"> <i title="{__('isDuplicateSpecialLink')}" class="fa fa-warning error"></i></span>
@@ -228,8 +228,8 @@
                         <span class="input-group-addon"><label for="lang">{__('language')}</label></span>
                         <span class="input-group-wrap">
                             <select class="form-control" name="cISO" id="lang">
-                                {foreach $sprachen as $sprache}
-                                    <option value="{$sprache->cISO}" {if $sprache->cShopStandard === 'Y'}selected="selected"{/if}>{$sprache->cNameDeutsch} {if $sprache->cShopStandard === 'Y'}({__('standard')}){/if}</option>
+                                {foreach $sprachen as $language}
+                                    <option value="{$language->getIso()}" {if $language->getShopDefault() === 'Y'}selected="selected"{/if}>{$language->getLocalizedName()} {if $language->getShopDefault() === 'Y'}({__('standard')}){/if}</option>
                                 {/foreach}
                             </select>
                         </span>
@@ -237,13 +237,13 @@
                 </div>
             </div>
 
-            {foreach $sprachen as $sprache}
-                {assign var=cISO value=$sprache->cISO}
-                {assign var=langID value=(int)$sprache->kSprache}
-                <div id="iso_{$cISO}" class="iso_wrapper{if $sprache->cShopStandard !== 'Y'} hidden-soft{/if}">
+            {foreach $sprachen as $language}
+                {assign var=cISO value=$language->getIso()}
+                {assign var=langID value=$language->getId()}
+                <div id="iso_{$cISO}" class="iso_wrapper{if !$language->isShopDefault()} hidden-soft{/if}">
                     <div class="panel panel-default">
                         <div class="panel-heading">
-                            <h3 class="panel-title">{__('metaSeo')} ({$sprache->cNameDeutsch})</h3>
+                            <h3 class="panel-title">{__('metaSeo')} ({$language->getLocalizedName()})</h3>
                         </div>
                         <div class="panel-body">
                             <div class="input-group">

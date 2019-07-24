@@ -58,14 +58,14 @@ class Jtllog
     }
 
     /**
-     * @param int $kLog
+     * @param int $id
      * @return $this
      */
-    private function loadFromDB(int $kLog): self
+    private function loadFromDB(int $id): self
     {
-        $oObj = Shop::Container()->getDB()->select('tjtllog', 'kLog', $kLog);
-        if (isset($oObj->kLog) && $oObj->kLog > 0) {
-            foreach (\get_object_vars($oObj) as $k => $v) {
+        $data = Shop::Container()->getDB()->select('tjtllog', 'kLog', $id);
+        if (isset($data->kLog) && $data->kLog > 0) {
+            foreach (\get_object_vars($data) as $k => $v) {
                 $this->$k = $v;
             }
         }
@@ -214,30 +214,30 @@ class Jtllog
     }
 
     /**
-     * @param string $cFilter
-     * @param int    $nLevel
+     * @param string $filter
+     * @param int    $level
      * @return int
      */
-    public static function getLogCount(string $cFilter = '', int $nLevel = 0): int
+    public static function getLogCount(string $filter = '', int $level = 0): int
     {
-        $cSQLWhere = $nLevel > 0
-            ? ' WHERE nLevel = ' . $nLevel
+        $where = $level > 0
+            ? ' WHERE nLevel = ' . $level
             : '';
-        if (\mb_strlen($cFilter) > 0) {
-            if (\mb_strlen($cSQLWhere) === 0) {
-                $cSQLWhere .= " WHERE cLog LIKE '%" . $cFilter . "%'";
+        if (\mb_strlen($filter) > 0) {
+            if (\mb_strlen($where) === 0) {
+                $where .= " WHERE cLog LIKE '%" . $filter . "%'";
             } else {
-                $cSQLWhere .= " AND cLog LIKE '%" . $cFilter . "%'";
+                $where .= " AND cLog LIKE '%" . $filter . "%'";
             }
         }
-        $oLog = Shop::Container()->getDB()->query(
+        $data = Shop::Container()->getDB()->query(
             'SELECT COUNT(*) AS nAnzahl 
                 FROM tjtllog' .
-            $cSQLWhere,
+            $where,
             ReturnType::SINGLE_OBJECT
         );
 
-        return (int)($oLog->nAnzahl ?? 0);
+        return (int)$data->nAnzahl;
     }
 
     /**
@@ -250,16 +250,16 @@ class Jtllog
                 WHERE DATE_ADD(dErstellt, INTERVAL 30 DAY) < NOW()',
             ReturnType::AFFECTED_ROWS
         );
-        $oObj = Shop::Container()->getDB()->query(
+        $data = Shop::Container()->getDB()->query(
             'SELECT COUNT(*) AS nCount 
                 FROM tjtllog',
             ReturnType::SINGLE_OBJECT
         );
 
-        if (isset($oObj->nCount) && (int)$oObj->nCount > \JTLLOG_MAX_LOGSIZE) {
-            $nLimit = (int)$oObj->nCount - \JTLLOG_MAX_LOGSIZE;
+        if (isset($data->nCount) && (int)$data->nCount > \JTLLOG_MAX_LOGSIZE) {
+            $limit = (int)$data->nCount - \JTLLOG_MAX_LOGSIZE;
             Shop::Container()->getDB()->query(
-                'DELETE FROM tjtllog ORDER BY dErstellt LIMIT ' . $nLimit,
+                'DELETE FROM tjtllog ORDER BY dErstellt LIMIT ' . $limit,
                 ReturnType::DEFAULT
             );
         }

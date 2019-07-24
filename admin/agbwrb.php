@@ -4,11 +4,10 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Alert\Alert;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Shop;
-use JTL\Sprache;
-use JTL\Alert\Alert;
 
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'agbwrb_inc.php';
@@ -52,7 +51,7 @@ if (Request::verifyGPCDataInt('agbwrb') === 1 && Form::validateToken()) {
 
 if ($step === 'agbwrb_uebersicht') {
     // Kundengruppen holen
-    $oKundengruppe_arr = Shop::Container()->getDB()->selectAll(
+    $customerGroups = Shop::Container()->getDB()->selectAll(
         'tkundengruppe',
         [],
         [],
@@ -60,17 +59,16 @@ if ($step === 'agbwrb_uebersicht') {
         'cStandard DESC'
     );
     // AGB fuer jeweilige Sprache holen
-    $oAGBWRB_arr    = [];
-    $oAGBWRBTMP_arr = Shop::Container()->getDB()->selectAll('ttext', 'kSprache', (int)$_SESSION['kSprache']);
+    $agbWrb = [];
+    $data   = Shop::Container()->getDB()->selectAll('ttext', 'kSprache', (int)$_SESSION['kSprache']);
     // Assoc Array mit kKundengruppe machen
-    foreach ($oAGBWRBTMP_arr as $i => $oAGBWRBTMP) {
-        $oAGBWRB_arr[$oAGBWRBTMP->kKundengruppe] = $oAGBWRBTMP;
+    foreach ($data as $i => $oAGBWRBTMP) {
+        $agbWrb[$oAGBWRBTMP->kKundengruppe] = $oAGBWRBTMP;
     }
-    $smarty->assign('oKundengruppe_arr', $oKundengruppe_arr)
-           ->assign('oAGBWRB_arr', $oAGBWRB_arr);
+    $smarty->assign('oKundengruppe_arr', $customerGroups)
+           ->assign('oAGBWRB_arr', $agbWrb);
 }
 
 $smarty->assign('step', $step)
-       ->assign('Sprachen', Sprache::getAllLanguages())
        ->assign('kSprache', $_SESSION['kSprache'])
        ->display('agbwrb.tpl');

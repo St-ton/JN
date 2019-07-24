@@ -3,10 +3,12 @@
  * @license https://jtl-url.de/jtlshoplicense
  *}
 {if !isset($oNavigationsinfo) || isset($Suchergebnisse) && isset($oNavigationsinfo) && empty($oNavigationsinfo->getName())}
+    {include file='snippets/opc_mount_point.tpl' id='opc_before_heading'}
     <h1>{$Suchergebnisse->getSearchTermWrite()}</h1>
 {/if}
 
 {if $Suchergebnisse->getSearchUnsuccessful() == true}
+    {include file='snippets/opc_mount_point.tpl' id='opc_before_no_results'}
     <div class="alert alert-info">{lang key='noResults' section='productOverview'}</div>
     <form id="suche2" action="{$ShopURL}" method="get" class="form">
         <fieldset>
@@ -27,12 +29,17 @@
 
 {block name='productlist-header-navinfo'}
 {if $oNavigationsinfo->hasData()}
-    <div class="title">{if $oNavigationsinfo->getName()}<h1>{$oNavigationsinfo->getName()}</h1>{/if}</div>
+    <div class="title">
+        {if $oNavigationsinfo->getName()}
+            {include file='snippets/opc_mount_point.tpl' id='opc_before_heading'}
+            <h1>{$oNavigationsinfo->getName()}</h1>
+        {/if}
+    </div>
     <div class="desc clearfix">
         {if $oNavigationsinfo->getImageURL() !== 'gfx/keinBild.gif' && $oNavigationsinfo->getImageURL() !== 'gfx/keinBild_kl.gif'}
-          <div class="img pull-left">
-            <img class="img-responsive" src="{$imageBaseURL}{$oNavigationsinfo->getImageURL()}" alt="{if $oNavigationsinfo->getCategory() !== null}{$oNavigationsinfo->getCategory()->cBeschreibung|strip_tags|truncate:40|escape:'html'}{elseif $oNavigationsinfo->getManufacturer() !== null}{$oNavigationsinfo->getManufacturer()->cBeschreibung|strip_tags|truncate:40|escape:'html'}{/if}" />
-          </div>
+            <div class="img pull-left">
+                <img class="img-responsive" src="{$imageBaseURL}{$oNavigationsinfo->getImageURL()}" alt="{if $oNavigationsinfo->getCategory() !== null}{$oNavigationsinfo->getCategory()->cBeschreibung|strip_tags|truncate:40|escape:'html'}{elseif $oNavigationsinfo->getManufacturer() !== null}{$oNavigationsinfo->getManufacturer()->cBeschreibung|strip_tags|truncate:40|escape:'html'}{/if}" />
+            </div>
         {/if}
         {if $Einstellungen.navigationsfilter.kategorie_beschreibung_anzeigen === 'Y'
             && $oNavigationsinfo->getCategory() !== null
@@ -45,17 +52,18 @@
             <div class="item_desc custom_content">{$oNavigationsinfo->getManufacturer()->cBeschreibung}</div>
         {/if}
         {if $Einstellungen.navigationsfilter.merkmalwert_beschreibung_anzeigen === 'Y'
-            && $oNavigationsinfo->getAttributeValue() !== null
-            && $oNavigationsinfo->getAttributeValue()->cBeschreibung|strlen > 0}
-            <div class="item_desc custom_content">{$oNavigationsinfo->getAttributeValue()->cBeschreibung}</div>
+            && $oNavigationsinfo->getCharacteristicValue() !== null
+            && $oNavigationsinfo->getCharacteristicValue()->cBeschreibung|strlen > 0}
+            <div class="item_desc custom_content">{$oNavigationsinfo->getCharacteristicValue()->cBeschreibung}</div>
         {/if}
     </div>
 {/if}
 {/block}
 
 {block name='productlist-subcategories'}
-{include file='snippets/opc_mount_point.tpl' id='opc_productlist_subcats_prepend'}
 {if $Einstellungen.navigationsfilter.artikeluebersicht_bild_anzeigen !== 'N' && $oUnterKategorien_arr|@count > 0}
+    {include file='snippets/opc_mount_point.tpl' id='opc_before_subcategories'}
+
     <div class="row row-eq-height content-cats-small clearfix">
         {foreach $oUnterKategorien_arr as $Unterkat}
             <div class="col-xs-6 col-md-4 col-lg-3">
@@ -92,24 +100,27 @@
         {/foreach}
     </div>
 {/if}
-{include file='snippets/opc_mount_point.tpl' id='opc_productlist_subcats_append'}
 {/block}
 
 {include file='productwizard/index.tpl'}
 
 {if count($Suchergebnisse->getProducts()) > 0}
+    {include file='snippets/opc_mount_point.tpl' id='opc_before_result_options'}
     <div id="improve_search" class="form-inline clearfix">
         {include file='productlist/result_options.tpl'}
     </div>
 {/if}
 
 {if $Suchergebnisse->getProducts()|@count <= 0 && isset($KategorieInhalt)}
-    {if isset($KategorieInhalt->TopArtikel->elemente)}
+    {if isset($KategorieInhalt->TopArtikel->elemente) && $KategorieInhalt->TopArtikel->elemente|@count > 0}
+        {$KategorieInhalt->TopArtikel->elemente|var_dump}
+        {include file='snippets/opc_mount_point.tpl' id='opc_before_category_top'}
         {lang key='topOffer' section='global' assign='slidertitle'}
         {include file='snippets/product_slider.tpl' id='slider-top-products' productlist=$KategorieInhalt->TopArtikel->elemente title=$slidertitle}
     {/if}
 
-    {if isset($KategorieInhalt->BestsellerArtikel->elemente)}
+    {if isset($KategorieInhalt->BestsellerArtikel->elemente) && $KategorieInhalt->BestsellerArtikel->elemente|@count > 0}
+        {include file='snippets/opc_mount_point.tpl' id='opc_before_category_bestseller'}
         {lang key='bestsellers' section='global' assign='slidertitle'}
         {include file='snippets/product_slider.tpl' id='slider-bestseller-products' productlist=$KategorieInhalt->BestsellerArtikel->elemente title=$slidertitle}
     {/if}

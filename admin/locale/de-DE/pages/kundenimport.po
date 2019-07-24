@@ -30,7 +30,7 @@ msgid "passNo"
 msgstr "Nein, Passwort aus CSV-Datei übernehmen und Kunden nicht per E-Mail benachrichtigen"
 
 msgid "errorInvalidEmail"
-msgstr "Keine gültige E-Mail-Adresse (%s)! Datensatz wurde übersprungen."
+msgstr "Keine gültige E-Mail-Adresse: (%s)! Datensatz wurde übersprungen."
 
 msgid "errorNoPassword"
 msgstr "Kein Passwort. Datensatz wurde übersprungen. (Es könnte sich um einen nicht registrierten JTL-Shop-Kunden handeln)"
@@ -42,7 +42,7 @@ msgid "errorEmailDuplicate"
 msgstr "Kunde mit dieser E-Mail-Adresse bereits vorhanden: %s. Datensatz wurde übersprungen."
 
 msgid "errorImportRecord"
-msgstr "Fehler beim Import dieser Zeile. Bitte sehen Sie sich die Log-Datei (Root/logs/) an und beheben Sie die entsprechenden Fehler in der CSV-Datei."
+msgstr "Diese Zeile konnte nicht importiert werden. Bitte sehen Sie sich die Log-Datei (Root/logs/) an und beheben Sie die entsprechenden Fehler in der CSV-Datei."
 
 msgid "successImportRecord"
 msgstr "Datensatz OK. Importiere: "

@@ -9,8 +9,6 @@ namespace JTL\OPC\Portlets;
 use JTL\Catalog\Product\Artikel;
 use JTL\OPC\InputType;
 use JTL\OPC\Portlet;
-use JTL\OPC\PortletInstance;
-use JTL\Shop;
 
 /**
  * Class Banner
@@ -19,16 +17,18 @@ use JTL\Shop;
 class Banner extends Portlet
 {
     /**
-     * @param int $kArtikel
+     * @param int $productID
      * @return Artikel
+     * @throws \JTL\Exceptions\CircularReferenceException
+     * @throws \JTL\Exceptions\ServiceNotFoundException
      */
-    public function getProduct(int $kArtikel)
+    public function getProduct(int $productID)
     {
         $defaultOptions = Artikel::getDefaultOptions();
-        $oArtikel       = new Artikel();
-        $oArtikel->fuelleArtikel($kArtikel, $defaultOptions);
+        $product        = new Artikel();
+        $product->fuelleArtikel($productID, $defaultOptions);
 
-        return $oArtikel;
+        return $product;
     }
 
     /**
@@ -51,12 +51,12 @@ class Banner extends Portlet
             ],
             'zones' => [
                 'type'    => InputType::ZONES,
-                'label'   => 'Banner-Zonen',
+                'label'   => __('bannerAreas'),
                 'srcProp' => 'src',
                 'default' => [],
             ],
             'alt'   => [
-                'label' => __('Alternativ text'),
+                'label' => __('Alternative text'),
             ],
         ];
     }

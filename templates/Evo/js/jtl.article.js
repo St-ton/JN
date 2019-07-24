@@ -15,6 +15,7 @@
     ArticleClass.DEFAULTS = {
         input: {
             id: 'a',
+            childId: 'VariKindArtikel',
             quantity: 'anzahl'
         },
         action: {
@@ -764,7 +765,15 @@
                     sidebar.affix({
                         offset: {
                             top: function () {
-                                var top = container.offset().top - $('#evo-main-nav-wrapper.affix').outerHeight(true);
+                                var navHeight = $('#evo-main-nav-wrapper.affix').outerHeight(true);
+                                navHeight = navHeight === undefined ? 0 : navHeight;
+                                var top = parseInt(container.offset().top - navHeight);
+                                if (sidebar.hasClass('affix')) {
+                                    sidebar.css('top', navHeight);
+                                } else {
+                                    sidebar.css('top', 0);
+                                }
+
                                 if (viewport.current() !== 'lg') {
                                     top = 999999;
                                 }

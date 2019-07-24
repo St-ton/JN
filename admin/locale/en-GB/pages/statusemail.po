@@ -3,121 +3,121 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "statusemail"
-msgstr "E-Mail-Berichte"
+msgstr "Email reports"
 
 msgid "statusemailURL"
-msgstr "https://jtl-url.de/b15ip"
+msgstr "https://jtl-url.de/4oqs8"
 
 msgid "statusemailDesc"
-msgstr "Mithilfe von E-Mail-Berichten erhalten Sie automatisch eine Übersicht aller Aktivitäten im Shop. Der E-Mail-Bericht kann 1x am Tag, 1x in der Woche und/oder 1x im Monat an Sie verschickt werden."
+msgstr "You can have reports containing information on all online shop activities emailed to you on a regular basis. The reports can be sent to you daily, weekly and/or monthly."
 
 msgid "statusemailUse"
-msgstr "E-Mail-Berichte nutzen"
+msgstr "Use email reports"
 
 msgid "statusemailUseDesc"
-msgstr "Möchten Sie das E-Mail-Berichte Modul nutzen?"
+msgstr "Here you can activate the \"Email reports\" function."
 
 msgid "statusemailEmail"
-msgstr "Empfänger E-Mail-Adresse"
+msgstr "Send email to"
 
 msgid "statusemailEmailDesc"
-msgstr "An diese E-Mail-Adresse wird der E-Mail-Bericht gesendet."
+msgstr "Enter the email address to which the report is to be sent."
 
 msgid "statusemailIntervall"
-msgstr "Berichtintervall"
+msgstr "Period covered by report"
 
 msgid "statusemailIntervallDesc"
-msgstr "&Uumlber welchen Zeitraum möchten Sie Informationen im E-Mail-Bericht erhalten? Mehrfachauswahl möglich."
+msgstr "Specify the intervals in which reports are to be sent. Multiple selection is possible."
 
 msgid "statusemailContent"
-msgstr "Berichtsinhalt"
+msgstr "Content of report"
 
 msgid "statusemailContentDesc"
-msgstr "Welchen Inhalt soll der E-Mail-Bericht enthalten? Mehrfachauswahl möglich."
+msgstr "Specify which information is to be included in the email reports. Multiple selection is possible."
 
 msgid "sendEmail"
-msgstr "E-Mail-Berichte jetzt senden"
+msgstr "Send email report now"
 
 msgid "contentTypeCountItemCustomerGroup"
-msgstr "Count items per customer group"
+msgstr "Number of items per customer group"
 
 msgid "contentTypeCountNewCustomer"
-msgstr "Count new customers"
+msgstr "Number of new customers"
 
 msgid "contentTypeCountNewCustomerOrdered"
-msgstr "Count new customers who also ordered"
+msgstr "Number of new customers who purchased something"
 
 msgid "contentTypeCountOrders"
-msgstr "Count orders"
+msgstr "Number of purchase orders"
 
 msgid "contentTypeCountOrdersNewCustomers"
-msgstr "Count orders new customers"
+msgstr "Number of orders by new customers"
 
 msgid "contentTypeCountPayments"
-msgstr "Count payments received for orders"
+msgstr "Number of received payments for orders"
 
 msgid "contentTypeCountOrdersSent"
-msgstr "Count orders sent"
+msgstr "Number of shipped orders"
 
 msgid "contentTypeCountVisitors"
-msgstr "Count visitors"
+msgstr "Number of visitors"
 
 msgid "contentTypeCountVisitorsSearchEngine"
-msgstr "Count visitors from search machine"
+msgstr "Number of visitors via search engines"
 
 msgid "contentTypeCountRatings"
-msgstr "Count ratings"
+msgstr "Number of customer reviews"
 
 msgid "contentTypeCountRatingsLocked"
-msgstr "Count ratings locked"
+msgstr "Number of unapproved reviews"
 
 msgid "contentTypeCountRatingDepositPayed"
-msgstr "Count rating deposit payed"
+msgstr "Number of granted review credits"
 
 msgid "contentTypeCountTags"
-msgstr "Count tags"
+msgstr "Number of tags"
 
 msgid "contentTypeCountTagsLocked"
-msgstr "Count tags locked"
+msgstr "Number of unapproved tags"
 
 msgid "contentTypeCountCustomerRecruited"
-msgstr "Count recruited customers"
+msgstr "Number of acquired customers"
 
 msgid "contentTypeCountCustomerRecruitedOrdered"
-msgstr "Count recruited customers who also ordered"
+msgstr "Number of acquired customers who purchased something"
 
 msgid "contentTypeCountSentWishlists"
-msgstr "Count wishlists sent"
+msgstr "Number of sent wish lists"
 
 msgid "contentTypeCountPolls"
-msgstr "Count polls"
+msgstr "Number of created surveys"
 
 msgid "contentTypeCountNewsComments"
-msgstr "Count news comments"
+msgstr "Number of new news comments"
 
 msgid "contentTypeCountNewsCommentsLocked"
-msgstr "Count news comments locked"
+msgstr "Number of unapproved news comments"
 
 msgid "contentTypeCountProductQuestion"
-msgstr "Count question for item"
+msgstr "Number of new questions about item"
 
 msgid "contentTypeCountAvailabilityNotifications"
-msgstr "Count availability notification requests"
+msgstr "Number of availability requests"
 
 msgid "contentTypeCountProductCompare"
-msgstr "Count item comparisons"
+msgstr "Number of item comparisons"
 
 msgid "contentTypeCountCouponsUsed"
-msgstr "Count coupons used"
+msgstr "Number of used coupons"
 
 msgid "contentTypeLastErrorLog"
-msgstr "Last error in system log"
+msgstr "Last error messages in system log"
 
 msgid "contentTypeLastNoteLog"
-msgstr "Last notice in system log"
+msgstr "Last notes in system log"
 
 msgid "contentTypeLastDebugLog"
-msgstr "Last debug notice in system log"
+msgstr "Last debug entries in system log"
 
 msgid "intervalDay"
 msgstr "Daily report"
@@ -127,3 +127,6 @@ msgstr "Weekly report"
 
 msgid "intervalMonth"
 msgstr "Monthly report"
+
+msgid "nextStatusMail"
+msgstr "The next %s will be sent on %s."

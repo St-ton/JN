@@ -2,7 +2,7 @@ msgid "store"
 msgstr "JTL-Store"
 
 msgid "storeDesc"
-msgstr "Please link with JTL-Account in order to be able to access these resources"
+msgstr "In order to access content of JTL-Store, connect your JTL account to the marketplace first."
 
 msgid "storeURL"
 msgstr ""
@@ -11,4 +11,4 @@ msgid "storeLink"
 msgstr "Link now"
 
 msgid "storeRevoke"
-msgstr "Unlink"
+msgstr "Cancel link"

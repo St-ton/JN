@@ -11,6 +11,7 @@ use JTL\Customer\Kundengruppe;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
 use JTL\Helpers\FileSystem;
+use JTL\Language\LanguageHelper;
 use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
 use JTL\Shop;
@@ -18,7 +19,6 @@ use JTL\Sitemap\Config\DefaultConfig;
 use JTL\Sitemap\Export;
 use JTL\Sitemap\ItemRenderers\DefaultRenderer;
 use JTL\Sitemap\SchemaRenderers\DefaultSchemaRenderer;
-use JTL\Sprache;
 use Psr\Log\LoggerInterface;
 use stdClass;
 
@@ -59,7 +59,7 @@ final class LastJob
         $GLOBALS['nIntervall'] = \defined('LASTJOBS_INTERVALL') ? \LASTJOBS_INTERVALL : 12;
         $jobs                  = $this->getRepeatedJobs($GLOBALS['nIntervall']);
         \executeHook(\HOOK_LASTJOBS_HOLEJOBS, ['jobs' => &$jobs]);
-        $conf = Shop::getSettings([\CONF_GLOBAL, \CONF_RSS, \CONF_SITEMAP]);
+        $config = Shop::getSettings([\CONF_GLOBAL, \CONF_RSS, \CONF_SITEMAP]);
         foreach ($jobs as $job) {
             switch ((int)$job->nJob) {
                 case \LASTJOBS_BEWERTUNGSERINNNERUNG:
@@ -72,8 +72,7 @@ final class LastJob
                     $this->restartJob(\LASTJOBS_BEWERTUNGSERINNNERUNG);
                     break;
                 case \LASTJOBS_SITEMAP:
-                    if ($conf['sitemap']['sitemap_wawiabgleich'] === 'Y') {
-                        $config       = Shop::getSettings([\CONF_GLOBAL, \CONF_SITEMAP]);
+                    if ($config['sitemap']['sitemap_wawiabgleich'] === 'Y') {
                         $exportConfig = new DefaultConfig(
                             $this->db,
                             $config,
@@ -89,21 +88,21 @@ final class LastJob
                         );
                         $exporter->generate(
                             [Kundengruppe::getDefaultGroupID()],
-                            Sprache::getAllLanguages(),
+                            LanguageHelper::getAllLanguages(),
                             $exportConfig->getFactories()
                         );
                         $this->restartJob(\LASTJOBS_SITEMAP);
                     }
                     break;
                 case \LASTJOBS_RSS:
-                    if ($conf['rss']['rss_wawiabgleich'] === 'Y') {
+                    if ($config['rss']['rss_wawiabgleich'] === 'Y') {
                         require_once \PFAD_ROOT . \PFAD_ADMIN . \PFAD_INCLUDES . 'rss_inc.php';
                         \generiereRSSXML();
                         $this->restartJob(\LASTJOBS_RSS);
                     }
                     break;
                 case \LASTJOBS_GARBAGECOLLECTOR:
-                    if ($conf['global']['garbagecollector_wawiabgleich'] === 'Y') {
+                    if ($config['global']['garbagecollector_wawiabgleich'] === 'Y') {
                         Shop::Container()->getDBServiceGC()->run();
                         $this->restartJob(\LASTJOBS_GARBAGECOLLECTOR);
                     }

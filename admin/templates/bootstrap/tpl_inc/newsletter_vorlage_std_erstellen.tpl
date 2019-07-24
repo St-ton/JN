@@ -240,7 +240,7 @@
                     function onApplySelectedArticles(selected)
                     {
                         $('#articleSelectionInfo')
-                            .val(selected.length > 0 ? selected.length + {__('product')} : '');
+                            .val(selected.length > 0 ? selected.length + ' {__('product')}' : '');
                         $('#cArtikel')
                             .val(selected.length > 0 ? selected.join(';') + ';' : '');
                     }
@@ -256,7 +256,7 @@
                     </span>
                     <span class="input-group-addon">
                         <button type="button" class="btn btn-info btn-xs" data-toggle="modal"
-                                data-target="#articlePicker-modal" title="Artikel verwalten">
+                                data-target="#articlePicker-modal" title="{__('labelSearchProduct')}">
                             <i class="fa fa-edit"></i>
                         </button>
                     </span>
@@ -281,7 +281,7 @@
                     function onApplySelectedManufacturers(selected)
                     {
                         $('#manufacturerSelectionInfo')
-                            .val(selected.length > 0 ? selected.length + {__('manufacturer')} : '');
+                            .val(selected.length > 0 ? selected.length + ' {__('manufacturer')}' : '');
                         $('#cHersteller')
                             .val(selected.length > 0 ? selected.join(';') + ';' : '');
                     }
@@ -297,7 +297,7 @@
                     </span>
                     <span class="input-group-addon">
                         <button type="button" class="btn btn-info btn-xs" data-toggle="modal"
-                                data-target="#manufacturerPicker-modal" title="Hersteller verwalten">
+                                data-target="#manufacturerPicker-modal" title="{__('labelSearchManufacturer')}">
                             <i class="fa fa-edit"></i>
                         </button>
                     </span>
@@ -322,7 +322,7 @@
                     function onApplySelectedCategories(selected)
                     {
                         $('#categorySelectionInfo')
-                            .val(selected.length > 0 ? selected.length + {__('category')} : '');
+                            .val(selected.length > 0 ? selected.length + ' {__('category')}' : '');
                         $('#cKategorie')
                             .val(selected.length > 0 ? selected.join(';') + ';' : '');
                     }
@@ -338,7 +338,7 @@
                     </span>
                     <span class="input-group-addon">
                         <button type="button" class="btn btn-info btn-xs" data-toggle="modal"
-                                data-target="#categoryPicker-modal" title="Kategorien verwalten">
+                                data-target="#categoryPicker-modal" title="{__('labelSearchCategory')}">
                             <i class="fa fa-edit"></i>
                         </button>
                     </span>

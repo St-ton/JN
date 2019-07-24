@@ -36,6 +36,8 @@ class InputType extends Enum
 
     public const TEXT = 'text';
 
+    public const SEARCH = 'search';
+
     public const TEXT_LIST = 'textlist';
 
     public const IMAGE = 'image';

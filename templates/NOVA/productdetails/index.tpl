@@ -6,8 +6,6 @@
     {block name='productdetails-index-include-header'}
         {if !isset($bAjaxRequest) || !$bAjaxRequest}
             {include file='layout/header.tpl'}
-        {elseif isset($smarty.get.quickView) && $smarty.get.quickView == 1}
-            {include file='layout/modal_header.tpl'}
         {/if}
     {/block}
     {block name='productdetails-index-content'}
@@ -40,8 +38,6 @@
     {block name='productdetails-include-footer'}
         {if !isset($bAjaxRequest) || !$bAjaxRequest}
             {include file='layout/footer.tpl'}
-        {elseif isset($smarty.get.quickView) && $smarty.get.quickView == 1}
-            {include file='layout/modal_footer.tpl'}
         {/if}
     {/block}
 {/block}

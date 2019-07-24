@@ -8,6 +8,7 @@ namespace JTL\Cron\Admin;
 
 use DateTime;
 use InvalidArgumentException;
+use JTL\Cron\Job\Newsletter;
 use JTL\Cron\JobHydrator;
 use JTL\Cron\JobInterface;
 use JTL\Cron\Job\Statusmail;
@@ -17,7 +18,6 @@ use JTL\DB\ReturnType;
 use JTL\Events\Dispatcher;
 use JTL\Events\Event;
 use JTL\Mapper\JobTypeToJob;
-use JTL\Shop;
 use Psr\Log\LoggerInterface;
 use stdClass;
 
@@ -99,7 +99,6 @@ final class Controller
             $jobs  = $this->db->selectAll('tstatusemail', 'nAktiv', 1);
             $count = 0;
             foreach ($jobs as $job) {
-                $date              = new DateTime($post['date']);
                 $ins               = new stdClass();
                 $ins->frequency    = (int)$job->nInterval * 24;
                 $ins->jobType      = $post['type'];
@@ -108,20 +107,19 @@ final class Controller
                 $ins->foreignKey   = 'id';
                 $ins->foreignKeyID = (int)$job->id;
                 $ins->startTime    = \mb_strlen($post['time']) === 5 ? $post['time'] . ':00' : $post['time'];
-                $ins->startDate    = $date->format('Y-m-d H:i:s');
+                $ins->startDate    = (new DateTime($post['date']))->format('Y-m-d H:i:s');
                 $this->db->insert('tcron', $ins);
                 ++$count;
             }
 
             return $count;
         }
-        $date           = new DateTime($post['date']);
         $ins            = new stdClass();
         $ins->frequency = (int)$post['frequency'];
         $ins->jobType   = $post['type'];
         $ins->name      = 'manuell@' . \date('Y-m-d H:i:s');
         $ins->startTime = \mb_strlen($post['time']) === 5 ? $post['time'] . ':00' : $post['time'];
-        $ins->startDate = $date->format('Y-m-d H:i:s');
+        $ins->startDate = (new DateTime($post['date']))->format('Y-m-d H:i:s');
 
         return $this->db->insert('tcron', $ins);
     }
@@ -134,7 +132,6 @@ final class Controller
         $available = [
             Type::IMAGECACHE,
             Type::STATUSMAIL,
-            Type::NEWSLETTER,
             Type::DATAPROTECTION,
         ];
         Dispatcher::getInstance()->fire(Event::GET_AVAILABLE_CRONJOBS, ['jobs' => &$available]);

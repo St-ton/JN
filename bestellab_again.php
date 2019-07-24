@@ -16,21 +16,21 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'bestellabschluss_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'bestellvorgang_inc.php';
 
 Shop::setPageType(PAGE_BESTELLABSCHLUSS);
-$kBestellung = (int)$_REQUEST['kBestellung'];
-$db          = Shop::Container()->getDB();
-$linkHelper  = Shop::Container()->getLinkService();
-$bestellung  = new Bestellung($kBestellung, true);
+$orderID    = (int)$_REQUEST['kBestellung'];
+$db         = Shop::Container()->getDB();
+$linkHelper = Shop::Container()->getLinkService();
+$order      = new Bestellung($orderID, true);
 //abfragen, ob diese Bestellung dem Kunden auch gehoert
 //bei Gastbestellungen ist ggf das Kundenobjekt bereits entfernt bzw nRegistriert = 0
-if ($bestellung->oKunde !== null
-    && (int)$bestellung->oKunde->nRegistriert === 1
-    && (int)$bestellung->kKunde !== (int)$_SESSION['Kunde']->kKunde
+if ($order->oKunde !== null
+    && (int)$order->oKunde->nRegistriert === 1
+    && (int)$order->kKunde !== (int)$_SESSION['Kunde']->kKunde
 ) {
     header('Location: ' . $linkHelper->getStaticRoute('jtl.php'), true, 303);
     exit;
 }
 
-$bestellid         = $db->select('tbestellid', 'kBestellung', $bestellung->kBestellung);
+$bestellid         = $db->select('tbestellid', 'kBestellung', $order->kBestellung);
 $successPaymentURL = Shop::getURL();
 if ($bestellid->cId) {
     $orderCompleteURL  = $linkHelper->getStaticRoute('bestellabschluss.php');
@@ -39,13 +39,11 @@ if ($bestellid->cId) {
 
 $obj              = new stdClass();
 $obj->tkunde      = $_SESSION['Kunde'];
-$obj->tbestellung = $bestellung;
-Shop::Smarty()->assign('Bestellung', $bestellung);
-
-$oZahlungsInfo = new stdClass();
+$obj->tbestellung = $order;
+Shop::Smarty()->assign('Bestellung', $order);
 if (Request::verifyGPCDataInt('zusatzschritt') === 1) {
-    $bZusatzangabenDa = false;
-    $moduleID         = $bestellung->Zahlungsart->cModulId;
+    $hasAdditionalInformation = false;
+    $moduleID                 = $order->Zahlungsart->cModulId;
     switch ($moduleID) {
         case 'za_kreditkarte_jtl':
             if ($_POST['kreditkartennr']
@@ -64,7 +62,7 @@ if (Request::verifyGPCDataInt('zusatzschritt') === 1) {
                     Text::htmlentities(stripslashes($_POST['kartentyp']), ENT_QUOTES);
                 $_SESSION['Zahlungsart']->ZahlungsInfo->cInhaber     =
                     Text::htmlentities(stripslashes($_POST['inhaber']), ENT_QUOTES);
-                $bZusatzangabenDa                                    = true;
+                $hasAdditionalInformation                            = true;
             }
             break;
         case 'za_lastschrift_jtl':
@@ -89,17 +87,17 @@ if (Request::verifyGPCDataInt('zusatzschritt') === 1) {
                     Text::htmlentities(stripslashes($_POST['bic']), ENT_QUOTES);
                 $_SESSION['Zahlungsart']->ZahlungsInfo->cInhaber  =
                     Text::htmlentities(stripslashes($_POST['inhaber']), ENT_QUOTES);
-                $bZusatzangabenDa                                 = true;
+                $hasAdditionalInformation                         = true;
             }
             break;
     }
 
-    if ($bZusatzangabenDa) {
-        if (saveZahlungsInfo($bestellung->kKunde, $bestellung->kBestellung)) {
+    if ($hasAdditionalInformation) {
+        if (saveZahlungsInfo($order->kKunde, $order->kBestellung)) {
             $db->update(
                 'tbestellung',
                 'kBestellung',
-                (int)$bestellung->kBestellung,
+                (int)$order->kBestellung,
                 (object)['cAbgeholt' => 'N']
             );
             unset($_SESSION['Zahlungsart']);
@@ -111,29 +109,30 @@ if (Request::verifyGPCDataInt('zusatzschritt') === 1) {
     }
 }
 // Zahlungsart als Plugin
-$kPlugin = Helper::getIDByModuleID($moduleID);
-if ($kPlugin > 0) {
-    $loader  = Helper::getLoaderByPluginID($kPlugin, $db);
-    $oPlugin = $loader->init($kPlugin);
-    if ($oPlugin !== null) {
-        require_once $oPlugin->getPaths()->getVersionedPath() . PFAD_PLUGIN_PAYMENTMETHOD .
-            $oPlugin->oPluginZahlungsKlasseAssoc_arr[$moduleID]->cClassPfad;
+$pluginID = Helper::getIDByModuleID($moduleID);
+if ($pluginID > 0) {
+    $loader = Helper::getLoaderByPluginID($pluginID, $db);
+    $plugin = $loader->init($pluginID);
+    if ($plugin !== null) {
+        $methods = $plugin->getPaymentMethods()->getMethodsAssoc();
+        require_once $plugin->getPaths()->getVersionedPath() . PFAD_PLUGIN_PAYMENTMETHOD .
+            $methods[$moduleID]->cClassPfad;
         /** @var PaymentMethod $paymentMethod */
-        $pluginName              = $oPlugin->oPluginZahlungsKlasseAssoc_arr[$moduleID]->cClassName;
+        $pluginName              = $methods[$moduleID]->cClassName;
         $paymentMethod           = new $pluginName($moduleID);
         $paymentMethod->cModulId = $moduleID;
-        $paymentMethod->preparePaymentProcess($bestellung);
-        Shop::Smarty()->assign('oPlugin', $oPlugin);
+        $paymentMethod->preparePaymentProcess($order);
+        Shop::Smarty()->assign('oPlugin', $plugin);
     }
 } elseif ($moduleID === 'za_lastschrift_jtl') {
-    $oKundenKontodaten = gibKundenKontodaten($_SESSION['Kunde']->kKunde);
-    if ($oKundenKontodaten->kKunde > 0) {
-        Shop::Smarty()->assign('oKundenKontodaten', $oKundenKontodaten);
+    $customerAccountData = gibKundenKontodaten($_SESSION['Kunde']->kKunde);
+    if ($customerAccountData->kKunde > 0) {
+        Shop::Smarty()->assign('oKundenKontodaten', $customerAccountData);
     }
 }
 
 Shop::Smarty()->assign('WarensummeLocalized', Frontend::getCart()->gibGesamtsummeWarenLocalized())
-    ->assign('Bestellung', $bestellung);
+    ->assign('Bestellung', $order);
 
 unset(
     $_SESSION['Zahlungsart'],

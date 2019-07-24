@@ -16,6 +16,7 @@ use JTL\Shopsetting;
 \define('CACHING_ROOT_DIR', __DIR__ . '/');
 \define('CACHING_METHODS_DIR', \CACHING_ROOT_DIR . 'CachingMethods/');
 \define('CACHING_GROUP_ARTICLE', 'art');
+\define('CACHING_GROUP_PRODUCT', 'art');
 \define('CACHING_GROUP_CATEGORY', 'cat');
 \define('CACHING_GROUP_LANGUAGE', 'lang');
 \define('CACHING_GROUP_TEMPLATE', 'tpl');
@@ -28,6 +29,7 @@ use JTL\Shopsetting;
 \define('CACHING_GROUP_ATTRIBUTE', 'attr');
 \define('CACHING_GROUP_MANUFACTURER', 'mnf');
 \define('CACHING_GROUP_FILTER', 'fltr');
+\define('CACHING_GROUP_FILTER_CHARACTERISTIC', 'fltrchr');
 
 /**
  * Class JTLCache

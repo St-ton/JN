@@ -40,13 +40,13 @@ class Konfiggruppesprache implements JsonSerializable
     /**
      * Constructor
      *
-     * @param int $kKonfiggruppe
-     * @param int $kSprache
+     * @param int $groupID
+     * @param int $languageID
      */
-    public function __construct(int $kKonfiggruppe = 0, int $kSprache = 0)
+    public function __construct(int $groupID = 0, int $languageID = 0)
     {
-        if ($kKonfiggruppe > 0 && $kSprache > 0) {
-            $this->loadFromDB($kKonfiggruppe, $kSprache);
+        if ($groupID > 0 && $languageID > 0) {
+            $this->loadFromDB($groupID, $languageID);
         }
     }
 
@@ -66,17 +66,17 @@ class Konfiggruppesprache implements JsonSerializable
     /**
      * Loads database member into class member
      *
-     * @param int $kKonfiggruppe primarykey
-     * @param int $kSprache primarykey
+     * @param int $groupID primarykey
+     * @param int $languageID primarykey
      */
-    private function loadFromDB(int $kKonfiggruppe = 0, int $kSprache = 0): void
+    private function loadFromDB(int $groupID = 0, int $languageID = 0): void
     {
         $item = Shop::Container()->getDB()->select(
             'tkonfiggruppesprache',
             'kKonfiggruppe',
-            $kKonfiggruppe,
+            $groupID,
             'kSprache',
-            $kSprache
+            $languageID
         );
         if (isset($item->kKonfiggruppe, $item->kSprache) && $item->kKonfiggruppe > 0 && $item->kSprache > 0) {
             foreach (\array_keys(\get_object_vars($item)) as $member) {
@@ -88,10 +88,10 @@ class Konfiggruppesprache implements JsonSerializable
     }
 
     /**
-     * @param bool $bPrim
+     * @param bool $primary
      * @return bool|int
      */
-    public function save(bool $bPrim = true)
+    public function save(bool $primary = true)
     {
         $ins = new stdClass();
         foreach (\array_keys(\get_object_vars($this)) as $member) {
@@ -102,7 +102,7 @@ class Konfiggruppesprache implements JsonSerializable
         $kPrim = Shop::Container()->getDB()->insert('tkonfiggruppesprache', $ins);
 
         if ($kPrim > 0) {
-            return $bPrim ? $kPrim : true;
+            return $primary ? $kPrim : true;
         }
 
         return false;
@@ -150,23 +150,23 @@ class Konfiggruppesprache implements JsonSerializable
     }
 
     /**
-     * @param int $kSprache
+     * @param int $languageID
      * @return $this
      */
-    public function setSprache(int $kSprache): self
+    public function setSprache(int $languageID): self
     {
-        $this->kSprache = $kSprache;
+        $this->kSprache = $languageID;
 
         return $this;
     }
 
     /**
-     * @param string $cName
+     * @param string $name
      * @return $this
      */
-    public function setName($cName): self
+    public function setName($name): self
     {
-        $this->cName = Shop::Container()->getDB()->escape($cName);
+        $this->cName = Shop::Container()->getDB()->escape($name);
 
         return $this;
     }

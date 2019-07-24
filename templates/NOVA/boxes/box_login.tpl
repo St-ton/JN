@@ -8,7 +8,6 @@
         id="sidebox{$oBox->getID()}"
         title="{if empty($smarty.session.Kunde)}{lang key='login'}{else}{lang key='hello'}, {$smarty.session.Kunde->cVorname} {$smarty.session.Kunde->cNachname}{/if}"
     }
-        <hr class="mt-0 mb-4">
         {block name='boxes-box-login-content'}
             {if empty($smarty.session.Kunde->kKunde)}
                 {block name='boxes-box-login-form'}
@@ -61,8 +60,14 @@
                 {/block}
             {else}
                 {block name='boxes-box-login-actions'}
-                    {link href="{get_static_route id='jtl.php'}" class="btn btn-secondary btn-block btn-sm btn-account"}{lang key='myAccount'}{/link}
-                    {link href="{get_static_route id='jtl.php'}?logout=1&token={$smarty.session.jtl_token}" class="btn btn-block btn-sm btn-warning btn-logout"}{lang key='logOut'}{/link}
+                    {link href="{get_static_route id='jtl.php'}" class="btn btn-secondary btn-block btn-sm btn-account"}
+                        {lang key='myAccount'}
+                    {/link}
+                    {link href="{get_static_route id='jtl.php'}?logout=1&token={$smarty.session.jtl_token}"
+                        class="btn btn-block btn-sm btn-primary btn-logout"
+                    }
+                        {lang key='logOut'}
+                    {/link}
                 {/block}
             {/if}
         {/block}

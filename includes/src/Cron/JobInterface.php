@@ -114,7 +114,7 @@ interface JobInterface
     /**
      * @return DateTime
      */
-    public function getStartDate(): DateTime;
+    public function getStartDate(): ?DateTime;
 
     /**
      * @param DateTime|string $date

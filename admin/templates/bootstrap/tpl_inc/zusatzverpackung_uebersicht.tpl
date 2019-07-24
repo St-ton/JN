@@ -1,5 +1,5 @@
 {if $oVerpackung_arr|@count > 0}
-    {include file='tpl_inc/pagination.tpl' oPagination=$oPagination}
+    {include file='tpl_inc/pagination.tpl' pagination=$pagination}
 {/if}
 
 <form method="post" action="zusatzverpackung.php">
@@ -55,7 +55,7 @@
             <div class="btn-group">
                 <a href="zusatzverpackung.php?kVerpackung=0&token={$smarty.session.jtl_token}"
                    class="btn btn-primary" title="{__('modify')}">
-                    <i class="fa fa-share"></i> {__('zusatzverpackungAdd')}
+                    <i class="fa fa-share"></i> {__('zusatzverpackungCreate')}
                 </a>
                 {if isset($oVerpackung_arr) && $oVerpackung_arr|@count > 0}
                     <button type="submit" name="action" value="delete" class="btn btn-danger"><i class="fa fa-trash"></i> {__('delete')}</button>

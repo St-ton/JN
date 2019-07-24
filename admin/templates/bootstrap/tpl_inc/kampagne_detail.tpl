@@ -183,7 +183,7 @@
                             <tr>
                                 <th class="th-1"></th>
                                 {foreach $oKampagneDef_arr as $oKampagneDef}
-                                    <th class="th-2">{$oKampagneDef->cName}</th>
+                                    <th class="th-2">{__($oKampagneDef->cName)}</th>
                                 {/foreach}
                             </tr>
 

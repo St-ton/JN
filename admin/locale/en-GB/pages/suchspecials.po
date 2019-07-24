@@ -3,46 +3,46 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "suchspecials"
-msgstr "Besondere Produkte SEO"
+msgstr "Special items"
 
 msgid "suchspecialURL"
-msgstr "https://jtl-url.de/u38fa"
+msgstr "https://jtl-url.de/3ys8a"
 
 msgid "suchspecialsDesc"
-msgstr "Hier können Sie angeben, wie die sprechenden Links zu Übersichten besonderer Produkte lauten sollen. Bitte beachten Sie, dass hierfür das SEO Modul installiert werden sein muss, damit diese Einstellungen greifen."
+msgstr "Specify the structure of links to special item overviews. The links are added to the end of the online shop URL."
 
 msgid "specialOffers"
-msgstr "Sonderangebote"
+msgstr "Special offers"
 
 msgid "newInAssortment"
-msgstr "Neu im Sortiment"
+msgstr "New in product range"
 
 msgid "topOffers"
-msgstr "Top Angebote"
+msgstr "Top items"
 
 msgid "shortTermAvailable"
-msgstr "In Kürze verfügbar"
+msgstr "Available soon"
 
 msgid "topreviews"
-msgstr "Top bewertet"
+msgstr "Top rated"
 
 msgid "errorBestsellerExistRename"
-msgstr "Das BestSeller Seo %s war bereits vorhanden und wurde in %s umbenannt."
+msgstr "The Bestseller page %s already existed and was renamed %s."
 
 msgid "errorSpecialExistRename"
-msgstr "Das Sonderangebot Seo %s war bereits vorhanden und wurde auf %s umbenannt."
+msgstr "The Special price page %s already existed and was renamed %s."
 
 msgid "errorNewExistRename"
-msgstr "Das Neu im Sortiment Seo %s war bereits vorhanden und wurde auf %s umbenannt."
+msgstr "The New in product range page %s already existed and was renamed %s."
 
 msgid "errorTopProductsExistRename"
-msgstr "Das Top Angebote Seo %s war bereits vorhanden und wurde auf %s umbenannt."
+msgstr "The Top item page %s already existed and was renamed %s."
 
 msgid "errorSoonExistRename"
-msgstr "Das In kürze Verfügbar Seo %s war bereits vorhanden und wurde auf %s umbenannt."
+msgstr "The Available soon page %s already existed and was renamed %s."
 
 msgid "errorTopRatingExistRename"
-msgstr "Das Top Bewertet Seo %s war bereits vorhanden und wurde auf %s umbenannt."
+msgstr "The Top rated page %s already existed and was renamed %s."
 
 msgid "successSeoSave"
-msgstr "Ihre Seos wurden erfolgreich gespeichert bzw. aktualisiert."
+msgstr "Page names saved/updated successfully."

@@ -12,7 +12,7 @@ msgid "communityForum"
 msgstr "Community-Forum"
 
 msgid "noPatchesATM"
-msgstr "Zur Zeit stehen keine Patches zur Verfügung"
+msgstr "Zurzeit stehen keine Patches zur Verfügung."
 
 msgid "noStatisticsThisMonth"
 msgstr "Für den aktuellen Monat liegen noch keine Statistiken vor."
@@ -27,16 +27,16 @@ msgid "mysqlVersion"
 msgstr "MySQL-Version"
 
 msgid "maxPHPExecutionTime"
-msgstr "Maximale PHP Ausführungszeit"
+msgstr "Maximale PHP-Ausführungszeit"
 
 msgid "phpMemoryLimit"
 msgstr "PHP-Speicherlimit"
 
 msgid "phpMaxTransimissionSizeFile"
-msgstr "Maximale PHP Übertragungsgröße (FILE)"
+msgstr "Maximale PHP-Übertragungsgröße (FILE)"
 
 msgid "phpMaxTransimissionSizePost"
-msgstr "Maximale PHP Übertragungsgröße (POST)"
+msgstr "Maximale PHP-Übertragungsgröße (POST)"
 
 msgid "soapExtension"
 msgstr "SOAP-Erweiterung"
@@ -45,16 +45,16 @@ msgid "shopVersion"
 msgstr "Shopversion"
 
 msgid "templateVersion"
-msgstr "Templateversion"
+msgstr "Template-Version"
 
 msgid "dbVersion"
 msgstr "Datenbankversion"
 
 msgid "dbLastUpdate"
-msgstr "Datenbank zuletzt aktualisiert"
+msgstr "Letzte Datenbankaktualisierung"
 
 msgid "subscriptionValidUntil"
-msgstr "Subscription gültig bis"
+msgstr "Shop-Lizenz gültig bis"
 
 msgid "shopVersionUpToDate"
 msgstr "Sie nutzen die aktuelle Version von JTL-Shop."
@@ -81,19 +81,19 @@ msgid "noStatisticsFound"
 msgstr "Keine Statistiken gefunden"
 
 msgid "moduleSurvey"
-msgstr "Umfragen Modul"
+msgstr "Umfragen-Modul"
 
 msgid "moduleSelectionWizard"
-msgstr "Auswahlassistent Modul"
+msgstr "Auswahlassistent-Modul"
 
 msgid "moduleUpload"
-msgstr "Upload Modul"
+msgstr "Upload-Modul"
 
 msgid "moduleDownload"
-msgstr "Download Modul"
+msgstr "Download-Modul"
 
 msgid "moduleConfigurator"
-msgstr "Konfigurator Modul"
+msgstr "Konfigurator-Modul"
 
 msgid "moduleBrandFree"
-msgstr "Brandfree Option"
+msgstr "BrandFree Option"

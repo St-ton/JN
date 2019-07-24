@@ -77,10 +77,10 @@ class BaseManufacturer extends AbstractFilter
             );
             foreach ($languages as $language) {
                 $this->cSeo[$language->kSprache] = '';
-                foreach ($seoData as $oSeo) {
-                    if ($language->kSprache === (int)$oSeo->kSprache) {
+                foreach ($seoData as $seo) {
+                    if ($language->kSprache === (int)$seo->kSprache) {
                         $sep                              = $this->cSeo[$language->kSprache] === '' ? '' : \SEP_HST;
-                        $this->cSeo[$language->kSprache] .= $sep . $oSeo->cSeo;
+                        $this->cSeo[$language->kSprache] .= $sep . $seo->cSeo;
                     }
                 }
             }
@@ -160,6 +160,7 @@ class BaseManufacturer extends AbstractFilter
             'thersteller.kHersteller',
             'thersteller.cName',
             'thersteller.nSortNr',
+            'thersteller.cBildPfad',
             'tartikel.kArtikel'
         ]);
         $sql->setOrderBy(null);
@@ -179,7 +180,12 @@ class BaseManufacturer extends AbstractFilter
             return $this->options;
         }
         $manufacturers    = $this->productFilter->getDB()->query(
-            'SELECT tseo.cSeo, ssMerkmal.kHersteller, ssMerkmal.cName, ssMerkmal.nSortNr, COUNT(*) AS nAnzahl
+            'SELECT tseo.cSeo,
+                ssMerkmal.kHersteller,
+                ssMerkmal.cName,
+                ssMerkmal.nSortNr,
+                ssMerkmal.cBildPfad,
+                COUNT(*) AS nAnzahl
                 FROM (' . $baseQuery . ") AS ssMerkmal
                     LEFT JOIN tseo 
                         ON tseo.kKey = ssMerkmal.kHersteller
@@ -214,7 +220,8 @@ class BaseManufacturer extends AbstractFilter
                 ->setName($manufacturer->cName)
                 ->setValue($manufacturer->kHersteller)
                 ->setCount($manufacturer->nAnzahl)
-                ->setSort($manufacturer->nSortNr);
+                ->setSort($manufacturer->nSortNr)
+                ->setData('cBildpfadKlein', \PFAD_HERSTELLERBILDER_KLEIN . $manufacturer->cBildPfad);
         }
         $this->options = $options;
         $this->productFilter->getCache()->set($cacheID, $options, [\CACHING_GROUP_FILTER]);

@@ -98,7 +98,7 @@
                                         {assign var=bAOSelect value=false}
                                         {if isset($oGruppe->oAuswahlAssistentOrt_arr) && $oGruppe->oAuswahlAssistentOrt_arr|@count > 0}
                                             {foreach $oGruppe->oAuswahlAssistentOrt_arr as $oAuswahlAssistentOrt}
-                                                {if $oLink->kLink == $oAuswahlAssistentOrt->kKey && $oAuswahlAssistentOrt->cKey == $AUSWAHLASSISTENT_ORT_LINK}
+                                                {if $oLink->kLink == $oAuswahlAssistentOrt->kKey && $oAuswahlAssistentOrt->cKey == $smarty.const.AUSWAHLASSISTENT_ORT_LINK}
                                                     {assign var=bAOSelect value=true}
                                                 {/if}
                                             {/foreach}
@@ -130,10 +130,10 @@
                         <span class="input-group-wrap">
                             <select id="nStartseite" name="nStartseite"  class="form-control{if isset($cPlausi_arr.cOrt)} fieldfillout{/if}">
                                 <option value="0"{if (isset($cPost_arr.nStartseite) && $cPost_arr.nStartseite == 0) || (isset($oGruppe->nStartseite) && $oGruppe->nStartseite == 0)} selected{/if}>
-                                    Nein
+                                    {__('no')}
                                 </option>
                                 <option value="1"{if (isset($cPost_arr.nStartseite) && $cPost_arr.nStartseite == 1) || (isset($oGruppe->nStartseite) && $oGruppe->nStartseite == 1)} selected{/if}>
-                                    Ja
+                                    {__('yes')}
                                 </option>
                             </select>
                         </span>
@@ -147,10 +147,10 @@
                         <span class="input-group-wrap">
                             <select id="nAktiv" class="form-control" name="nAktiv">
                                 <option value="1"{if (isset($cPost_arr.nAktiv) && $cPost_arr.nAktiv == 1) || (isset($oGruppe->nAktiv) && $oGruppe->nAktiv == 1)} selected{/if}>
-                                    Ja
+                                    {__('yes')}
                                 </option>
                                 <option value="0"{if (isset($cPost_arr.nAktiv) && $cPost_arr.nAktiv == 0) || (isset($oGruppe->nAktiv) && $oGruppe->nAktiv == 0)} selected{/if}>
-                                    Nein
+                                    {__('no')}
                                 </option>
                             </select>
                         </span>

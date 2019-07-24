@@ -18,7 +18,7 @@ msgid "newInAssortment"
 msgstr "Neu im Sortiment"
 
 msgid "topOffers"
-msgstr "Top-Angebote"
+msgstr "Top-Artikel"
 
 msgid "shortTermAvailable"
 msgstr "In Kürze verfügbar"
@@ -36,7 +36,7 @@ msgid "errorNewExistRename"
 msgstr "Die Neu-im-Sortiment-Seite %s war bereits vorhanden und wurde in %s umbenannt."
 
 msgid "errorTopProductsExistRename"
-msgstr "Die Top-Angebote-Seite %s war bereits vorhanden und wurde in %s umbenannt."
+msgstr "Die Top-Artikel-Seite %s war bereits vorhanden und wurde in %s umbenannt."
 
 msgid "errorSoonExistRename"
 msgstr "Die In-Kürze-verfügbar-Seite %s war bereits vorhanden und wurde in %s umbenannt."
@@ -45,4 +45,4 @@ msgid "errorTopRatingExistRename"
 msgstr "Die Top-Bewertet-Seite %s war bereits vorhanden und wurde in %s umbenannt."
 
 msgid "successSeoSave"
-msgstr "Ihre Seitennamen wurden erfolgreich gepeichert bzw. aktualisiert."
+msgstr "Die Seitennamen wurden erfolgreich gespeichert bzw. aktualisiert."

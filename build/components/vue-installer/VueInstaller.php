@@ -4,6 +4,7 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\DB\NiceDB;
 use JTL\DB\ReturnType;
 
 /**
@@ -20,6 +21,11 @@ class VueInstaller
      * @var array
      */
     private $post;
+
+    /**
+     * @var bool
+     */
+    private $cli;
 
     /**
      * @var NiceDB
@@ -46,17 +52,19 @@ class VueInstaller
      *
      * @param string     $task
      * @param array|null $post
+     * @param bool       $cli
      */
-    public function __construct($task, $post = null)
+    public function __construct($task, $post = null, $cli = false)
     {
         $this->task = $task;
         $this->post = $post;
+        $this->cli  = $cli;
     }
 
     /**
      *
      */
-    public function run(): void
+    public function run(): ?array
     {
         switch ($this->task) {
             case 'installedcheck':
@@ -83,7 +91,8 @@ class VueInstaller
             default:
                 break;
         }
-        $this->output();
+
+        return $this->output();
     }
 
     /**
@@ -93,7 +102,7 @@ class VueInstaller
     {
         if ($this->initNiceDB($this->post['db'])) {
             $step   = isset($this->post['stepId']) ? (int)$this->post['stepId'] : 0;
-            $wizard = new \jtl\Wizard\Shop4Wizard($step);
+            $wizard = new \jtl\Wizard\ShopWizard($step);
             if (isset($this->post['action']) && $this->post['action'] === 'setData') {
                 foreach ($wizard->getQuestions() as $idx => $question) {
                     $questionId = $question->getID();
@@ -123,10 +132,14 @@ class VueInstaller
     /**
      *
      */
-    private function output(): void
+    private function output(): ?array
     {
-        echo json_encode($this->payload);
-        exit(0);
+        if (!$this->cli) {
+            echo json_encode($this->payload);
+            exit(0);
+        }
+
+        return $this->payload;
     }
 
     /**
@@ -194,7 +207,15 @@ class VueInstaller
             $this->payload['secretKey'] = $blowfishKey;
             $this->db->query('SET FOREIGN_KEY_CHECKS=1', ReturnType::DEFAULT);
         }
-        $this->sendResponse();
+
+        if (!$this->cli) {
+            $this->sendResponse();
+        } else {
+            $this->payload['error'] = !$this->responseStatus;
+            $this->payload['msg']   = $this->responseStatus === true && empty($this->responseMessage)
+                ? 'Erfolgreich ausgeführt'
+                : $this->responseMessage;
+        }
 
         return $this;
     }
@@ -231,7 +252,7 @@ class VueInstaller
             if (strpos(PFAD_ROOT, '\\') !== false) {
                 $rootPath = str_replace('\\', '\\\\', $rootPath);
             }
-            $cConfigFile = "<?php
+            $config = "<?php
 define('PFAD_ROOT', '" . $rootPath . "');
 define('URL_SHOP', '" . substr(URL_SHOP, 0, strlen(URL_SHOP) - 1) . "');" .
                 $socket . "
@@ -243,17 +264,17 @@ define('DB_PASS','" . $credentials['pass'] . "');
 define('BLOWFISH_KEY', '" . $blowfishKey . "');
 
 //enables printing of warnings/infos/errors for the shop frontend
-define('SHOP_LOG_LEVEL', 0);
+define('SHOP_LOG_LEVEL', E_ALL);
 //enables printing of warnings/infos/errors for the dbeS sync
-define('SYNC_LOG_LEVEL', 0);
+define('SYNC_LOG_LEVEL', E_ALL ^ E_NOTICE ^ E_DEPRECATED ^ E_WARNING);
 //enables printing of warnings/infos/errors for the admin backend
-define('ADMIN_LOG_LEVEL', 0);
+define('ADMIN_LOG_LEVEL', E_ALL);
 //enables printing of warnings/infos/errors for the smarty templates
-define('SMARTY_LOG_LEVEL', 0);
+define('SMARTY_LOG_LEVEL', E_ALL);
 //excplicitly show/hide errors
 ini_set('display_errors', 0);" . "\n";
-            $file = fopen(PFAD_ROOT . PFAD_INCLUDES . 'config.JTL-Shop.ini.php', 'w');
-            fwrite($file, $cConfigFile);
+            $file        = fopen(PFAD_ROOT . PFAD_INCLUDES . 'config.JTL-Shop.ini.php', 'w');
+            fwrite($file, $config);
             fclose($file);
 
             return true;
@@ -271,18 +292,18 @@ ini_set('display_errors', 0);" . "\n";
         if ($this->db === null) {
             return 'NiceDB nicht initialisiert.';
         }
-        $file_content = file($url);
-        $errors       = '';
-        $query        = '';
-        foreach ($file_content as $i => $sql_line) {
-            $tsl = trim($sql_line);
-            if ($sql_line !== ''
+        $content = file($url);
+        $errors  = '';
+        $query   = '';
+        foreach ($content as $i => $line) {
+            $tsl = trim($line);
+            if ($line !== ''
                 && substr($tsl, 0, 2) !== '/*'
                 && substr($tsl, 0, 2) !== '--'
                 && substr($tsl, 0, 1) !== '#'
             ) {
-                $query .= $sql_line;
-                if (preg_match('/;\s*$/', $sql_line)) {
+                $query .= $line;
+                if (preg_match('/;\s*$/', $line)) {
                     $result = $this->db->executeQuery($query, ReturnType::QUERYSINGLE);
                     if (!$result) {
                         $this->responseStatus    = false;
@@ -400,9 +421,8 @@ ini_set('display_errors', 0);" . "\n";
      */
     public function getSystemCheck(): self
     {
-        $oSC    = new Systemcheck_Environment();
-        $vTests = $oSC->executeTestGroup('Shop4');
-        $this->payload['testresults'] = $vTests;
+        $environment                  = new Systemcheck_Environment();
+        $this->payload['testresults'] = $environment->executeTestGroup('Shop5');
 
         return $this;
     }
@@ -412,74 +432,74 @@ ini_set('display_errors', 0);" . "\n";
      */
     public function getDirectoryCheck(): self
     {
-        $oFS = new Systemcheck_Platform_Filesystem(PFAD_ROOT);
-        $this->payload['testresults'] = $oFS->getFoldersChecked();
+        $fsCheck                      = new Systemcheck_Platform_Filesystem(PFAD_ROOT);
+        $this->payload['testresults'] = $fsCheck->getFoldersChecked();
 
         return $this;
     }
 
     /**
      * @param int    $length
-     * @param string $cString
+     * @param string $seed
      * @return bool|string
      */
-    private function getUID(int $length = 40, string $cString = ''): string
+    private function getUID(int $length = 40, string $seed = ''): string
     {
-        $cUID            = '';
-        $cSalt           = '';
-        $cSaltBuchstaben = 'aAbBcCdDeEfFgGhHiIjJkKlLmMnNoOpPqQrRsStTuUvVwWxXyYzZ0123456789';
+        $uid      = '';
+        $salt     = '';
+        $saltBase = 'aAbBcCdDeEfFgGhHiIjJkKlLmMnNoOpPqQrRsStTuUvVwWxXyYzZ0123456789';
         // Gen SALT
         for ($j = 0; $j < 30; $j++) {
-            $cSalt .= substr($cSaltBuchstaben, mt_rand(0, strlen($cSaltBuchstaben) - 1), 1);
+            $salt .= substr($saltBase, mt_rand(0, strlen($saltBase) - 1), 1);
         }
-        $cSalt = md5($cSalt);
+        $salt = md5($salt);
         mt_srand();
         // Wurde ein String übergeben?
-        if (strlen($cString) > 0) {
+        if (strlen($seed) > 0) {
             // Hat der String Elemente?
-            list($cString_arr) = explode(';', $cString);
-            if (is_array($cString_arr) && count($cString_arr) > 0) {
-                foreach ($cString_arr as $string) {
-                    $cUID .= md5($string . md5(PFAD_ROOT . (time() - mt_rand())));
+            list($strings) = explode(';', $seed);
+            if (is_array($strings) && count($strings) > 0) {
+                foreach ($strings as $string) {
+                    $uid .= md5($string . md5(PFAD_ROOT . (time() - mt_rand())));
                 }
 
-                $cUID = md5($cUID . $cSalt);
+                $uid = md5($uid . $salt);
             } else {
-                $sl = strlen($cString);
+                $sl = strlen($seed);
                 for ($i = 0; $i < $sl; $i++) {
-                    $nPos = mt_rand(0, strlen($cString) - 1);
-                    if (((int)date('w') % 2) <= strlen($cString)) {
+                    $nPos = mt_rand(0, strlen($seed) - 1);
+                    if (((int)date('w') % 2) <= strlen($seed)) {
                         $nPos = (int)date('w') % 2;
                     }
-                    $cUID .= md5(substr($cString, $nPos, 1) . $cSalt . md5(PFAD_ROOT . (microtime(true) - mt_rand())));
+                    $uid .= md5(substr($seed, $nPos, 1) . $salt . md5(PFAD_ROOT . (microtime(true) - mt_rand())));
                 }
             }
-            $cUID = $this->cryptPasswort($cUID . $cSalt);
+            $uid = $this->cryptPasswort($uid . $salt);
         } else {
-            $cUID = $this->cryptPasswort(md5(M_PI . $cSalt . md5(time() - mt_rand())));
+            $uid = $this->cryptPasswort(md5(M_PI . $salt . md5(time() - mt_rand())));
         }
 
-        return $length > 0 ? substr($cUID, 0, $length) : $cUID;
+        return $length > 0 ? substr($uid, 0, $length) : $uid;
     }
 
     /**
-     * @param string      $cPasswort
-     * @param null|string $cHashPasswort
+     * @param string      $pass
+     * @param null|string $hashPass
      * @return bool|string
      */
-    private function cryptPasswort(string $cPasswort, $cHashPasswort = null)
+    private function cryptPasswort(string $pass, $hashPass = null)
     {
-        $cSalt   = sha1(uniqid(mt_rand(), true));
-        $nLaenge = strlen($cSalt);
-        $nLaenge = max($nLaenge >> 3, ($nLaenge >> 2) - strlen($cPasswort));
-        $cSalt   = $cHashPasswort
-            ? substr($cHashPasswort, min(strlen($cPasswort), strlen($cHashPasswort) - $nLaenge), $nLaenge)
-            : strrev(substr($cSalt, 0, $nLaenge));
-        $cHash   = sha1($cPasswort);
-        $cHash   = sha1(substr($cHash, 0, strlen($cPasswort)) . $cSalt . substr($cHash, strlen($cPasswort)));
-        $cHash   = substr($cHash, $nLaenge);
-        $cHash   = substr($cHash, 0, strlen($cPasswort)) . $cSalt . substr($cHash, strlen($cPasswort));
+        $salt   = sha1(uniqid(mt_rand(), true));
+        $length = strlen($salt);
+        $length = max($length >> 3, ($length >> 2) - strlen($pass));
+        $salt   = $hashPass
+            ? substr($hashPass, min(strlen($pass), strlen($hashPass) - $length), $length)
+            : strrev(substr($salt, 0, $length));
+        $hash   = sha1($pass);
+        $hash   = sha1(substr($hash, 0, strlen($pass)) . $salt . substr($hash, strlen($pass)));
+        $hash   = substr($hash, $length);
+        $hash   = substr($hash, 0, strlen($pass)) . $salt . substr($hash, strlen($pass));
 
-        return $cHashPasswort && $cHashPasswort !== $cHash ? false : $cHash;
+        return $hashPass && $hashPass !== $hash ? false : $hash;
     }
 }

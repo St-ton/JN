@@ -7,13 +7,13 @@
 namespace JTL\Mail\Mail;
 
 use InvalidArgumentException;
+use JTL\Language\LanguageHelper;
+use JTL\Language\LanguageModel;
 use JTL\Mail\Template\TemplateFactory;
 use JTL\Mail\Template\TemplateInterface;
 use JTL\Session\Frontend;
 use JTL\Shop;
-use JTL\Sprache;
 use PHPMailer\PHPMailer\PHPMailer;
-use stdClass;
 
 /**
  * Class Mail
@@ -29,14 +29,9 @@ class Mail implements MailInterface
     private $customerGroupID = 0;
 
     /**
-     * @var int
+     * @var LanguageModel
      */
-    private $languageID = 0;
-
-    /**
-     * @var string
-     */
-    private $languageCode;
+    private $language;
 
     /**
      * @var string
@@ -142,21 +137,18 @@ class Mail implements MailInterface
     {
         $this->setData($data);
         $this->setTemplate($template);
-        $language              = $language ?? $this->getLanguage();
-        $this->languageID      = (int)$language->kSprache;
-        $this->languageCode    = $language->cISO;
+        $this->language        = $language ?? $this->detectLanguage();
         $this->customerGroupID = Frontend::getCustomer()->kKundengruppe ?? Frontend::getCustomerGroup()->getID();
-        $template->load($this->languageID, $this->customerGroupID);
+        $template->load($this->language->getId(), $this->customerGroupID);
         $model = $template->getModel();
         if ($model === null) {
             throw new InvalidArgumentException('Cannot parse model for ' . $template->getID());
         }
-        $names = $model->getAttachmentNames($this->languageID);
-        foreach ($model->getAttachments($this->languageID) as $i => $attachment) {
+        $names = $model->getAttachmentNames($this->language->getId());
+        foreach ($model->getAttachments($this->language->getId()) as $i => $attachment) {
             $this->addPdfFile($names[$i], $attachment);
         }
-        $this->setSubject($model->getSubject($this->languageID));
-        $this->setLanguageCode(Sprache::getIsoFromLangID($model->getLanguageID())->cISO);
+        $this->setSubject($model->getSubject($this->language->getId()));
         $this->fromName       = $template->getFromName() ?? $this->fromName;
         $this->fromMail       = $template->getFromMail() ?? $this->fromMail;
         $this->copyRecipients = $template->getCopyTo() ?? $this->copyRecipients;
@@ -222,14 +214,14 @@ class Mail implements MailInterface
     }
 
     /**
-     * @return stdClass
+     * @return LanguageModel
      */
-    private function detectLanguage(): stdClass
+    private function detectLanguage(): LanguageModel
     {
-        if ($this->languageID !== null && $this->languageCode !== null) {
-            return (object)['kSprache' => $this->getLanguageID(), 'cISO' => $this->getLanguageCode()];
+        if ($this->language !== null) {
+            return $this->language;
         }
-        $allLanguages = Sprache::getAllLanguages(1);
+        $allLanguages = LanguageHelper::getAllLanguages(1);
         if (isset($this->data->tkunde->kSprache) && $this->data->tkunde->kSprache > 0) {
             return $allLanguages[(int)$this->data->tkunde->kSprache];
         }
@@ -242,19 +234,25 @@ class Mail implements MailInterface
 
         return isset($_SESSION['kSprache'])
             ? $allLanguages[$_SESSION['kSprache']]
-            : Sprache::getDefaultLanguage();
+            : LanguageHelper::getDefaultLanguage();
     }
 
     /**
      * @inheritdoc
      */
-    public function getLanguage(): stdClass
+    public function getLanguage(): LanguageModel
     {
-        $language = $this->detectLanguage();
-        $this->setLanguageID((int)$language->kSprache);
-        $this->setLanguageCode($language->cISO);
+        return $this->language;
+    }
 
-        return $language;
+    /**
+     * @inheritDoc
+     */
+    public function setLanguage(LanguageModel $language): MailInterface
+    {
+        $this->language = $language;
+
+        return $this;
     }
 
     /**
@@ -268,9 +266,11 @@ class Mail implements MailInterface
     /**
      * @inheritdoc
      */
-    public function setData($data): void
+    public function setData($data): MailInterface
     {
         $this->data = $data;
+
+        return $this;
     }
 
     /**
@@ -294,51 +294,11 @@ class Mail implements MailInterface
     /**
      * @inheritdoc
      */
-    public function setCustomerGroupID(int $customerGroupID): void
+    public function setCustomerGroupID(int $customerGroupID): MailInterface
     {
         $this->customerGroupID = $customerGroupID;
-    }
 
-    /**
-     * @inheritdoc
-     */
-    public function getLanguageID(): int
-    {
-        return $this->languageID;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function setLanguageID(int $languageID): void
-    {
-        $this->languageID = $languageID;
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function getLanguageCode(): string
-    {
-        return $this->languageCode;
-    }
-
-    /**
-     * ISO 639-1
-     *
-     * @inheritdoc
-     */
-    public function getLanguageCode6391(): string
-    {
-        return $this->languageCode === 'ger' ? 'de' : 'en';
-    }
-
-    /**
-     * @inheritdoc
-     */
-    public function setLanguageCode($languageCode): void
-    {
-        $this->languageCode = $languageCode;
+        return $this;
     }
 
     /**
@@ -352,9 +312,11 @@ class Mail implements MailInterface
     /**
      * @inheritdoc
      */
-    public function setFromMail($fromMail): void
+    public function setFromMail($fromMail): MailInterface
     {
         $this->fromMail = $fromMail;
+
+        return $this;
     }
 
     /**
@@ -368,9 +330,11 @@ class Mail implements MailInterface
     /**
      * @inheritdoc
      */
-    public function setFromName($fromName): void
+    public function setFromName($fromName): MailInterface
     {
         $this->fromName = $fromName;
+
+        return $this;
     }
 
     /**
@@ -384,9 +348,11 @@ class Mail implements MailInterface
     /**
      * @inheritdoc
      */
-    public function setToMail($toMail): void
+    public function setToMail($toMail): MailInterface
     {
         $this->toMail = $toMail;
+
+        return $this;
     }
 
     /**
@@ -400,9 +366,11 @@ class Mail implements MailInterface
     /**
      * @inheritdoc
      */
-    public function setToName($toName): void
+    public function setToName($toName): MailInterface
     {
         $this->toName = $toName;
+
+        return $this;
     }
 
     /**
@@ -416,9 +384,11 @@ class Mail implements MailInterface
     /**
      * @inheritdoc
      */
-    public function setReplyToMail($replyToMail): void
+    public function setReplyToMail($replyToMail): MailInterface
     {
         $this->replyToMail = $replyToMail;
+
+        return $this;
     }
 
     /**
@@ -432,9 +402,11 @@ class Mail implements MailInterface
     /**
      * @inheritdoc
      */
-    public function setReplyToName(string $replyToName): void
+    public function setReplyToName(string $replyToName): MailInterface
     {
         $this->replyToName = $replyToName;
+
+        return $this;
     }
 
     /**
@@ -448,9 +420,11 @@ class Mail implements MailInterface
     /**
      * @inheritdoc
      */
-    public function setSubject($subject): void
+    public function setSubject($subject): MailInterface
     {
         $this->subject = $subject;
+
+        return $this;
     }
 
     /**
@@ -464,9 +438,11 @@ class Mail implements MailInterface
     /**
      * @inheritdoc
      */
-    public function setBodyHTML(string $bodyHTML): void
+    public function setBodyHTML(string $bodyHTML): MailInterface
     {
         $this->bodyHTML = $this->wordwrap($bodyHTML);
+
+        return $this;
     }
 
     /**
@@ -480,9 +456,11 @@ class Mail implements MailInterface
     /**
      * @inheritdoc
      */
-    public function setBodyText($bodyText): void
+    public function setBodyText($bodyText): MailInterface
     {
         $this->bodyText = $this->wordwrap($bodyText);
+
+        return $this;
     }
 
     /**
@@ -496,9 +474,11 @@ class Mail implements MailInterface
     /**
      * @inheritdoc
      */
-    public function setAttachments(array $attachments): void
+    public function setAttachments(array $attachments): MailInterface
     {
         $this->attachments = $attachments;
+
+        return $this;
     }
 
     /**
@@ -512,9 +492,11 @@ class Mail implements MailInterface
     /**
      * @inheritdoc
      */
-    public function setPdfAttachments(array $pdfAttachments): void
+    public function setPdfAttachments(array $pdfAttachments): MailInterface
     {
         $this->pdfAttachments = $pdfAttachments;
+
+        return $this;
     }
 
     /**
@@ -549,9 +531,11 @@ class Mail implements MailInterface
     /**
      * @inheritdoc
      */
-    public function setError(string $error): void
+    public function setError(string $error): MailInterface
     {
         $this->error = $error;
+
+        return $this;
     }
 
     /**
@@ -565,9 +549,11 @@ class Mail implements MailInterface
     /**
      * @inheritdoc
      */
-    public function setCopyRecipients(array $copyRecipients): void
+    public function setCopyRecipients(array $copyRecipients): MailInterface
     {
         $this->copyRecipients = $copyRecipients;
+
+        return $this;
     }
 
     /**
@@ -589,8 +575,10 @@ class Mail implements MailInterface
     /**
      * @inheritdoc
      */
-    public function setTemplate(?TemplateInterface $template): void
+    public function setTemplate(?TemplateInterface $template): MailInterface
     {
         $this->template = $template;
+
+        return $this;
     }
 }

@@ -191,6 +191,16 @@
                             {/foreach}
                         </ul>
                     {/if}
+                    {if !empty($oPosition->Artikel->kStueckliste) && !empty($oPosition->Artikel->oStueckliste_arr)}
+                        <ul class="partlist-items text-muted small">
+                            {foreach $oPosition->Artikel->oStueckliste_arr as $partListItem}
+                                <li>
+                                    <span class="qty">{$partListItem->fAnzahl_stueckliste}x</span>
+                                    {$partListItem->cName|trans}
+                                </li>
+                            {/foreach}
+                        </ul>
+                    {/if}
                 </td>
 
                 <td class="qty-col">
@@ -233,7 +243,17 @@
                                                         {/if}
                                                     </label>:
                                                     <div id="quantity-grp{$oPosition@index}" class="choose_quantity input-group">
-                                                        <input name="anzahl[{$oPosition@index}]" id="quantity{$oPosition@index}" class="form-control quantity form-control text-right" size="3" value="{$oPosition->nAnzahl}" />
+                                                        <input name="anzahl[{$oPosition@index}]"
+                                                               type="{if $oPosition->Artikel->cTeilbar === 'Y' && $oPosition->Artikel->fAbnahmeintervall == 0}text{else}number{/if}"
+                                                               id="quantity{$oPosition@index}"
+                                                               class="form-control quantity form-control text-right"
+                                                               size="3"
+                                                               min="0"
+                                                                {if $oPosition->Artikel->fAbnahmeintervall > 0}
+                                                                    step="{$oPosition->Artikel->fAbnahmeintervall}"
+                                                                {/if}
+                                                               value="{$oPosition->nAnzahl}"
+                                                        />
                                                         <span class="input-group-btn">
                                                             <button type="submit" class="btn btn-default" title="{lang key='refresh' section='checkout'}"><i class="fa fa-refresh"></i></button>
                                                         </span>

@@ -1,7 +1,7 @@
 {assign var=template value=__('template')}
 {assign var=modify value=__('modify')}
 {include file='tpl_inc/seite_header.tpl'
-    cTitel=$template|cat: ' '|cat:$mailTemplate->getName()|cat: ' '|cat:$modify
+    cTitel=$template|cat: ' - '|cat:{__('name_'|cat:$mailTemplate->getModuleID())}|cat: ' - '|cat:$modify
     cBeschreibung=__('emailTemplateModifyHint')}
 <div id="content" class="container-fluid">
     <form name="vorlagen_aendern" method="post" action="emailvorlagen.php" enctype="multipart/form-data">
@@ -158,9 +158,9 @@
             </div>
             {foreach $availableLanguages as $language}
                 <div class="box_info panel panel-default">
-                    {assign var=kSprache value=$language->kSprache}
+                    {assign var=kSprache value=$language->getId()}
                     <div class="panel-heading">
-                        <h3 class="panel-title">{__('content')} {$language->cNameDeutsch}</h3>
+                        <h3 class="panel-title">{__('content')} {$language->getLocalizedName()}</h3>
                     </div>
                     <div class="panel-body">
                         {if $mailTemplate->getModuleID() !== 'core_jtl_anbieterkennzeichnung'}

@@ -56,7 +56,6 @@ final class BoxAdmin
         \PAGE_VERSAND,
         \PAGE_AGB,
         \PAGE_DATENSCHUTZ,
-        \PAGE_TAGGING,
         \PAGE_LIVESUCHE,
         \PAGE_HERSTELLER,
         \PAGE_SITEMAP,
@@ -336,13 +335,13 @@ final class BoxAdmin
     /**
      * @param int      $boxID
      * @param int      $pageID
-     * @param int      $nSort
+     * @param int      $sort
      * @param bool|int $active
      * @param bool     $ignore
      * @return bool
      * @former sortBox()
      */
-    public function sort(int $boxID, int $pageID, int $nSort, $active = true, $ignore = false): bool
+    public function sort(int $boxID, int $pageID, int $sort, $active = true, $ignore = false): bool
     {
         $active         = (int)$active;
         $validPageTypes = $this->getValidPageTypes();
@@ -361,7 +360,7 @@ final class BoxAdmin
                         [
                             'boxID'         => $boxID,
                             'validPageType' => $validPageType,
-                            'sort'          => $nSort,
+                            'sort'          => $sort,
                             'active'        => $active
                         ],
                         ReturnType::DEFAULT
@@ -375,7 +374,7 @@ final class BoxAdmin
                         [
                             'boxID'         => $boxID,
                             'validPageType' => $validPageType,
-                            'sort'          => $nSort,
+                            'sort'          => $sort,
                             'active'        => $active
                         ],
                         ReturnType::DEFAULT
@@ -394,7 +393,7 @@ final class BoxAdmin
             [
                     'boxID'         => $boxID,
                     'validPageType' => $pageID,
-                    'sort'          => $nSort,
+                    'sort'          => $sort,
                     'active'        => $active
                 ],
             ReturnType::DEFAULT
@@ -428,7 +427,7 @@ final class BoxAdmin
      */
     public function activate(int $boxID, int $pageID, $active = true): bool
     {
-        $upd            = new \stdClass();
+        $upd            = new stdClass();
         $upd->bAktiv    = (int)$active;
         $validPageTypes = $this->getValidPageTypes();
         if ($pageID === 0) {
@@ -470,29 +469,29 @@ final class BoxAdmin
         );
         foreach ($data as $template) {
             $id   = 0;
-            $name = 'Vorlage';
+            $name = __('templateTypeTemplate');
             if ($template->eTyp === Type::TEXT) {
                 $id   = 1;
-                $name = 'Inhalt';
+                $name = __('templateTypeContent');
             } elseif ($template->eTyp === Type::LINK) {
                 $id   = 2;
-                $name = 'Linkliste';
+                $name = __('templateTypeLinkList');
             } elseif ($template->eTyp === Type::PLUGIN) {
                 $id   = 3;
-                $name = 'Plugin';
+                $name = __('templateTypePlugin');
             } elseif ($template->eTyp === Type::CATBOX) {
                 $id   = 4;
-                $name = 'Kategorie';
+                $name = __('templateTypeCategory');
             } elseif ($template->eTyp === Type::EXTENSION) {
                 $id   = 5;
-                $name = 'Extension';
+                $name = __('templateTypeExtension');
             }
 
             if (!isset($templates[$id])) {
                 $templates[$id]               = new stdClass();
                 $templates[$id]->oVorlage_arr = [];
             }
-
+            $template->cName                = __($template->cName);
             $templates[$id]->cName          = $name;
             $templates[$id]->oVorlage_arr[] = $template;
         }

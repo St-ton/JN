@@ -9,40 +9,40 @@ use JTL\Shop;
 /**
  * Speichert das aktuelle ShopLogo
  *
- * @param array $cFiles_arr
+ * @param array $files
  * @return int
  * 1 = Alles O.K.
  * 2 = Dateiname leer
  * 3 = Dateityp entspricht nicht der Konvention (Nur jpg/gif/png/bmp/ Bilder) oder fehlt
  * 4 = Konnte nicht bewegen
  */
-function saveShopLogo(array $cFiles_arr): int
+function saveShopLogo(array $files): int
 {
     if (!file_exists(PFAD_ROOT . PFAD_SHOPLOGO)) {
         mkdir(PFAD_ROOT . PFAD_SHOPLOGO);
     }
     // Prüfe Dateiname
-    if (mb_strlen($cFiles_arr['shopLogo']['name']) > 0) {
+    if (mb_strlen($files['shopLogo']['name']) > 0) {
         // Prüfe Dateityp
-        if ($cFiles_arr['shopLogo']['type'] !== 'image/jpeg'
-            && $cFiles_arr['shopLogo']['type'] !== 'image/pjpeg'
-            && $cFiles_arr['shopLogo']['type'] !== 'image/gif'
-            && $cFiles_arr['shopLogo']['type'] !== 'image/png'
-            && $cFiles_arr['shopLogo']['type'] !== 'image/bmp'
-            && $cFiles_arr['shopLogo']['type'] !== 'image/x-png'
-            && $cFiles_arr['shopLogo']['type'] !== 'image/jpg'
+        if ($files['shopLogo']['type'] !== 'image/jpeg'
+            && $files['shopLogo']['type'] !== 'image/pjpeg'
+            && $files['shopLogo']['type'] !== 'image/gif'
+            && $files['shopLogo']['type'] !== 'image/png'
+            && $files['shopLogo']['type'] !== 'image/bmp'
+            && $files['shopLogo']['type'] !== 'image/x-png'
+            && $files['shopLogo']['type'] !== 'image/jpg'
         ) {
             // Dateityp entspricht nicht der Konvention (Nur jpg/gif/png/bmp/ Bilder) oder fehlt
             return 3;
         }
-        $cUploadDatei = PFAD_ROOT . PFAD_SHOPLOGO . basename($cFiles_arr['shopLogo']['name']);
-        if ($cFiles_arr['shopLogo']['error'] === UPLOAD_ERR_OK
-            && move_uploaded_file($cFiles_arr['shopLogo']['tmp_name'], $cUploadDatei)
+        $uploadFile = PFAD_ROOT . PFAD_SHOPLOGO . basename($files['shopLogo']['name']);
+        if ($files['shopLogo']['error'] === UPLOAD_ERR_OK
+            && move_uploaded_file($files['shopLogo']['tmp_name'], $uploadFile)
         ) {
             $option                        = new stdClass();
             $option->kEinstellungenSektion = CONF_LOGO;
             $option->cName                 = 'shop_logo';
-            $option->cWert                 = $cFiles_arr['shopLogo']['name'];
+            $option->cWert                 = $files['shopLogo']['name'];
             Shop::Container()->getDB()->update('teinstellungen', 'cName', 'shop_logo', $option);
             Shop::Container()->getCache()->flushTags([CACHING_GROUP_OPTION]);
 
@@ -86,12 +86,12 @@ function loescheAlleShopBilder(): bool
 }
 
 /**
- * @param string $cTyp
+ * @param string $type
  * @return string
  */
-function mappeFileTyp(string $cTyp): string
+function mappeFileTyp(string $type): string
 {
-    switch ($cTyp) {
+    switch ($type) {
         case 'image/jpeg':
             return '.jpg';
             break;

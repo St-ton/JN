@@ -25,11 +25,11 @@ final class NewsCategories extends AbstractBox
     {
         parent::__construct($config);
         $this->addMapping('oNewsKategorie_arr', 'Items');
-        $cSQL      = (int)$config['news']['news_anzahl_box'] > 0
+        $sql       = (int)$config['news']['news_anzahl_box'] > 0
             ? ' LIMIT ' . (int)$config['news']['news_anzahl_box']
             : '';
         $langID    = Shop::getLanguageID();
-        $cacheID   = 'bnk_' . $langID . '_' . Frontend::getCustomerGroup()->getID() . '_' . \md5($cSQL);
+        $cacheID   = 'bnk_' . $langID . '_' . Frontend::getCustomerGroup()->getID() . '_' . \md5($sql);
         $cached    = true;
         $cacheTags = [\CACHING_GROUP_BOX, \CACHING_GROUP_NEWS];
         if (($newsCategories = Shop::Container()->getCache()->get($cacheID)) === false) {
@@ -59,7 +59,7 @@ final class NewsCategories extends AbstractBox
                             OR FIND_IN_SET(':cid', REPLACE(tnews.cKundengruppe, ';', ',')) > 0)
                         AND t.languageID = :lid
                     GROUP BY tnewskategorienews.kNewsKategorie
-                    ORDER BY tnewskategorie.nSort DESC" . $cSQL,
+                    ORDER BY tnewskategorie.nSort DESC" . $sql,
                 ['lid' => $langID, 'cid' => Frontend::getCustomerGroup()->getID()],
                 ReturnType::ARRAY_OF_OBJECTS
             );

@@ -11,7 +11,7 @@ Your order with the order number {$Bestellung->cBestellNr} consists of the follo
     {if $Position->nPosTyp == 1}
         {$Position->nAnzahl}x {$Position->cName} - {$Position->cGesamtpreisLocalized[$NettoPreise]}{if $Einstellungen.kaufabwicklung.bestellvorgang_lieferstatus_anzeigen === 'Y' && $Position->cLieferstatus}
 
-        Shipping time: {$Position->cLieferstatus}{/if}
+        Delivery time: {$Position->cLieferstatus}{/if}
         {foreach $Position->WarenkorbPosEigenschaftArr as $WKPosEigenschaft}
 
             {$WKPosEigenschaft->cEigenschaftName}: {$WKPosEigenschaft->cEigenschaftWertName}{/foreach}
@@ -19,10 +19,10 @@ Your order with the order number {$Bestellung->cBestellNr} consists of the follo
             Serialnumber: {$Position->cSeriennummer}
         {/if}
         {if $Position->dMHD|strlen > 0}
-            Best before: {$Position->dMHD}
+            Shelf life expiration date: {$Position->dMHD}
         {/if}
         {if $Position->cChargeNr|strlen > 0}
-            Charge: {$Position->cChargeNr}
+            Batch: {$Position->cChargeNr}
         {/if}
     {else}
         {$Position->nAnzahl}x {$Position->cName} - {$Position->cGesamtpreisLocalized[$NettoPreise]}{/if}
@@ -46,8 +46,8 @@ Your billing address:
 {/if}{$Kunde->cPLZ} {$Kunde->cOrt}
 {if $Kunde->cBundesland}{$Kunde->cBundesland}
 {/if}{$Kunde->cLand}
-{if $Kunde->cTel}Tel: {$Kunde->cTel}
-{/if}{if $Kunde->cMobil}Mobil: {$Kunde->cMobil}
+{if $Kunde->cTel}Phone: {$Kunde->cTel}
+{/if}{if $Kunde->cMobil}Mobile: {$Kunde->cMobil}
 {/if}{if $Kunde->cFax}Fax: {$Kunde->cFax}
 {/if}
 Email: {$Kunde->cMail}
@@ -55,7 +55,7 @@ Email: {$Kunde->cMail}
 {/if}
 
 {if $Bestellung->Lieferadresse->kLieferadresse>0}
-    Your shipping address:
+    Your delivery address:
 
     {$Bestellung->Lieferadresse->cVorname} {$Bestellung->Lieferadresse->cNachname}
     {$Bestellung->Lieferadresse->cStrasse} {$Bestellung->Lieferadresse->cHausnummer}
@@ -68,9 +68,11 @@ Email: {$Kunde->cMail}
 {/if}{if $Bestellung->Lieferadresse->cFax}Fax: {$Bestellung->Lieferadresse->cFax}
 {/if}{if $Bestellung->Lieferadresse->cMail}Email: {$Bestellung->Lieferadresse->cMail}
 {/if}
+{else}
+    Delivery address same as billing address.
 {/if}
 
-You have chosen the following shipping option: {$Bestellung->cZahlungsartName}
+You have chosen the following payment option: {$Bestellung->cZahlungsartName}
 
 {if isset($Zahlungsart->cHinweisText) && $Zahlungsart->cHinweisText|strlen > 0} {$Zahlungsart->cHinweisText}
 
@@ -83,7 +85,7 @@ You have chosen the following shipping option: {$Bestellung->cZahlungsartName}
 {elseif $Bestellung->Zahlungsart->cModulId === 'za_paypal_jtl'}
 {/if}
 
-You will be notified of the subsequent status of your order separately.
+You will be notified of the status of your order separately.
 
 
 Yours sincerely,

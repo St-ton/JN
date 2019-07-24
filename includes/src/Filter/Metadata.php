@@ -72,7 +72,7 @@ class Metadata implements MetadataInterface
     /**
      * @var MerkmalWert
      */
-    private $attributeValue;
+    private $characteristicValue;
 
     /**
      * @var string
@@ -94,7 +94,7 @@ class Metadata implements MetadataInterface
         'cName'            => 'Name',
         'oHersteller'      => 'Manufacturer',
         'cBildURL'         => 'ImageURL',
-        'oMerkmalWert'     => 'AttributeValue',
+        'oMerkmalWert'     => 'CharacteristicValue',
         'oKategorie'       => 'Category',
         'cBrotNavi'        => 'BreadCrumb'
     ];
@@ -220,17 +220,17 @@ class Metadata implements MetadataInterface
     /**
      * @inheritdoc
      */
-    public function getAttributeValue(): ?MerkmalWert
+    public function getCharacteristicValue(): ?MerkmalWert
     {
-        return $this->attributeValue;
+        return $this->characteristicValue;
     }
 
     /**
      * @inheritdoc
      */
-    public function setAttributeValue(MerkmalWert $attributeValue): MetadataInterface
+    public function setCharacteristicValue(MerkmalWert $value): MetadataInterface
     {
-        $this->attributeValue = $attributeValue;
+        $this->characteristicValue = $value;
 
         return $this;
     }
@@ -369,20 +369,20 @@ class Metadata implements MetadataInterface
                      ->setMetaDescription($this->manufacturer->cMetaDescription)
                      ->setMetaKeywords($this->manufacturer->cMetaKeywords);
             }
-        } elseif ($this->productFilter->hasAttributeValue()) {
-            $this->attributeValue = new MerkmalWert($this->productFilter->getAttributeValue()->getValue());
+        } elseif ($this->productFilter->hasCharacteristicValue()) {
+            $this->characteristicValue = new MerkmalWert($this->productFilter->getCharacteristicValue()->getValue());
             if ($this->conf['navigationsfilter']['merkmalwert_bild_anzeigen'] === 'Y') {
-                $this->setName($this->attributeValue->cWert);
+                $this->setName($this->characteristicValue->cWert);
             } elseif ($this->conf['navigationsfilter']['merkmalwert_bild_anzeigen'] === 'BT') {
-                $this->setName($this->attributeValue->cWert)
-                     ->setImageURL($this->attributeValue->cBildpfadNormal);
+                $this->setName($this->characteristicValue->cWert)
+                     ->setImageURL($this->characteristicValue->cBildpfadNormal);
             } elseif ($this->conf['navigationsfilter']['merkmalwert_bild_anzeigen'] === 'B') {
-                $this->setImageURL($this->attributeValue->cBildpfadNormal);
+                $this->setImageURL($this->characteristicValue->cBildpfadNormal);
             }
-            if ($this->attributeValue !== null) {
-                $this->setMetaTitle($this->attributeValue->cMetaTitle)
-                     ->setMetaDescription($this->attributeValue->cMetaDescription)
-                     ->setMetaKeywords($this->attributeValue->cMetaKeywords);
+            if ($this->characteristicValue !== null) {
+                $this->setMetaTitle($this->characteristicValue->cMetaTitle)
+                     ->setMetaDescription($this->characteristicValue->cMetaDescription)
+                     ->setMetaKeywords($this->characteristicValue->cMetaKeywords);
             }
         }
 
@@ -674,14 +674,12 @@ class Metadata implements MetadataInterface
     {
         $parts = new Collection();
         // MerkmalWert
-        if ($this->productFilter->hasAttributeValue()) {
-            $parts->push($this->productFilter->getAttributeValue()->getName());
+        if ($this->productFilter->hasCharacteristicValue()) {
+            $parts->push($this->productFilter->getCharacteristicValue()->getName());
         } elseif ($this->productFilter->hasCategory()) { // Kategorie
             $parts->push($this->productFilter->getCategory()->getName());
         } elseif ($this->productFilter->hasManufacturer()) { // Hersteller
             $parts->push($this->productFilter->getManufacturer()->getName());
-        } elseif ($this->productFilter->hasTag()) { // Tag
-            $parts->push($this->productFilter->getTag()->getName());
         } elseif ($this->productFilter->hasSearch()) { // Suchbegriff
             $parts->push($this->productFilter->getSearch()->getName());
         } elseif ($this->productFilter->hasSearchQuery()) { // Suchbegriff
@@ -696,12 +694,6 @@ class Metadata implements MetadataInterface
         // Herstellerfilter
         if ($this->productFilter->hasManufacturerFilter()) {
             $parts->push($this->productFilter->getManufacturerFilter()->getName());
-        }
-        // Tagfilter
-        if ($this->productFilter->hasTagFilter()
-            && ($name = $this->productFilter->getTagFilter(0)->getName()) !== null
-        ) {
-            $parts->push($name);
         }
         // Suchbegrifffilter
         $parts = $parts->merge(
@@ -746,7 +738,7 @@ class Metadata implements MetadataInterface
         }
         // MerkmalWertfilter
         $parts = $parts->merge(
-            \collect($this->productFilter->getAttributeFilter())
+            \collect($this->productFilter->getCharacteristicFilter())
             ->map(function (FilterInterface $filter) {
                 return $filter->getName();
             })
@@ -783,15 +775,10 @@ class Metadata implements MetadataInterface
 
             return Shop::Lang()->get('productsFrom') . ' ' . $this->breadCrumb;
         }
-        if ($this->productFilter->hasAttributeValue()) {
-            $this->breadCrumb = $this->productFilter->getAttributeValue()->getName();
+        if ($this->productFilter->hasCharacteristicValue()) {
+            $this->breadCrumb = $this->productFilter->getCharacteristicValue()->getName();
 
             return Shop::Lang()->get('productsWith') . ' ' . $this->breadCrumb;
-        }
-        if ($this->productFilter->hasTag()) {
-            $this->breadCrumb = $this->productFilter->getTag()->getName();
-
-            return Shop::Lang()->get('showAllProductsTaggedWith') . ' ' . $this->breadCrumb;
         }
         if ($this->productFilter->hasSearchSpecial()) {
             $this->breadCrumb = $this->productFilter->getSearchSpecial()->getName();
@@ -951,8 +938,8 @@ class Metadata implements MetadataInterface
         if (!$noIndex) {
             $noIndex = $this->productFilter->getFilterCount() > 1
                 || ($this->conf['global']['global_merkmalwert_url_indexierung'] === 'N'
-                    && $this->productFilter->hasAttributeValue()
-                    && $this->productFilter->getAttributeValue()->getValue() > 0);
+                    && $this->productFilter->hasCharacteristicValue()
+                    && $this->productFilter->getCharacteristicValue()->getValue() > 0);
         }
 
         return $noIndex;
@@ -980,15 +967,11 @@ class Metadata implements MetadataInterface
      * @param int    $maxLength $metaProposal will be truncated to $maxlength - \mb_strlen($metaSuffix) characters
      * @return string truncated meta value with optional suffix (always appended if set)
      */
-    public static function prepareMeta(string $metaProposal, string $metaSuffix = null, int $maxLength = null): string
+    public static function prepareMeta(string $metaProposal, ?string $metaSuffix = null, ?int $maxLength = null): string
     {
-        $metaProposal = \str_replace('"', '', Text::unhtmlentities($metaProposal));
-        $metaSuffix   = !empty($metaSuffix) ? $metaSuffix : '';
-        if (!empty($maxLength) && $maxLength > 0) {
-            $metaProposal = \mb_substr($metaProposal, 0, $maxLength);
-        }
+        $metaStr = trim(preg_replace('/\s\s+/', ' ', Text::htmlentitiesOnce($metaProposal)));
 
-        return Text::htmlentities(\trim(\preg_replace('/\s\s+/', ' ', $metaProposal))) . $metaSuffix;
+        return Text::htmlentitiesSubstr($metaStr, $maxLength ?? 0) . ($metaSuffix ?? '');
     }
 
     /**

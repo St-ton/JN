@@ -31,7 +31,7 @@ class OptinAvailAgain extends OptinBase implements OptinInterface
 
     /**
      * OptinAvailAgain constructor.
-     * @param $inheritData
+     * @param parent $inheritData
      */
     public function __construct($inheritData)
     {
@@ -63,7 +63,7 @@ class OptinAvailAgain extends OptinBase implements OptinInterface
      */
     public function sendActivationMail(): void
     {
-        $customerId = !empty(Frontend::getCustomer()->getID()) ? Frontend::getCustomer()->getID() : 0;
+        $customerId = Frontend::getCustomer()->getID();
 
         $recipient               = new stdClass();
         $recipient->kSprache     = Shop::getLanguage();
@@ -76,10 +76,10 @@ class OptinAvailAgain extends OptinBase implements OptinInterface
         $recipient->dEingetragen = $this->nowDataTime->format('Y-m-d H:i:s');
 
         $optin                  = new stdClass();
-        $articleSeoURL          = Shop::getURL() . '/' . $this->product->cSeo;
+        $productURL             = Shop::getURL() . '/' . $this->product->cSeo;
         $optinCodePrefix        = '?oc=';
-        $optin->activationURL   = $articleSeoURL . $optinCodePrefix . self::ACTIVATE_CODE . $this->optCode;
-        $optin->deactivationURL = $articleSeoURL . $optinCodePrefix . self::DELETE_CODE . $this->optCode;
+        $optin->activationURL   = $productURL . $optinCodePrefix . self::ACTIVATE_CODE . $this->optCode;
+        $optin->deactivationURL = $productURL . $optinCodePrefix . self::DELETE_CODE . $this->optCode;
 
         $templateData                                   = new stdClass();
         $templateData->tkunde                           = $_SESSION['Kunde'] ?? null;

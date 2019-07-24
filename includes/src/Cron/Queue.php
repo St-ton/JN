@@ -9,7 +9,6 @@ namespace JTL\Cron;
 use DateTime;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
-use JTL\Shop;
 use Psr\Log\LoggerInterface;
 use stdClass;
 
@@ -58,9 +57,9 @@ class Queue
     public function loadQueueFromDB(): array
     {
         $queueData = $this->db->query(
-            'SELECT * 
-                FROM tjobqueue 
-                WHERE isRunning = 0 
+            'SELECT *
+                FROM tjobqueue
+                WHERE isRunning = 0
                     AND startTime <= NOW()',
             ReturnType::ARRAY_OF_OBJECTS
         );
@@ -73,7 +72,7 @@ class Queue
     }
 
     /**
-     * @param \stdClass[] $jobs
+     * @param stdClass[] $jobs
      */
     public function enqueueCronJobs(array $jobs): void
     {

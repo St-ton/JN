@@ -26,7 +26,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h4>{__('plz_ort_import_load')} <img src="{$shopURL}/{$smarty.const.PFAD_ADMIN}/templates/bootstrap/gfx/widgets/ajax-loader.gif"></h4>
+                <h2>{__('plz_ort_import_load')} <img src="{$shopURL}/{$smarty.const.PFAD_ADMIN}/templates/bootstrap/gfx/widgets/ajax-loader.gif"></h2>
             </div>
         </div>
     </div>
@@ -35,10 +35,12 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header alert-warning">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4><i class="fal fa-exclamation-triangle"></i> {__('plz_ort_import')}</h4>
+                <button type="button" class="close" data-dismiss="modal">
+                    <i class="fal fa-times"></i>
+                </button>
+                <h2><i class="fal fa-exclamation-triangle"></i> {__('plz_ort_import')}</h2>
             </div>
-            <div class="modal-body">
+            <div class="modal-body py-5">
                 {__('plz_ort_import_tmp_exists')}
             </div>
             <div class="modal-footer">
@@ -52,10 +54,12 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4><i class="fa fa-question-circle"></i> {__('plz_ort_import')}</h4>
+                <button type="button" class="close" data-dismiss="modal">
+                    <i class="fal fa-times"></i>
+                </button>
+                <h2><i class="fa fa-question-circle"></i> {__('plz_ort_import')}</h2>
             </div>
-            <div class="modal-body">
+            <div class="modal-body py-5">
                 {{__('plz_ort_import_help')}|sprintf:{$smarty.const.PLZIMPORT_URL}}
             </div>
             <div class="modal-footer">

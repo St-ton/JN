@@ -55,10 +55,12 @@
 
                             <div class="modal-content">
                                 <div class="modal-header">
-                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                    <h4 class="modal-title">{__('licensePlugin')}</h4>
+                                    <button type="button" class="close" data-dismiss="modal">
+                                        <i class="fal fa-times"></i>
+                                    </button>
+                                    <h2 class="modal-title">{__('licensePlugin')}</h2>
                                 </div>
-                                <div class="modal-body">
+                                <div class="modal-body py-5">
                                     {* license.md content goes here via js *}
                                 </div>
                                 <div class="modal-footer">

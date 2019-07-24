@@ -271,10 +271,12 @@ $(document).ready(function() {
                                 <div class="modal-dialog">
                                     <div class="modal-content">
                                         <div class="modal-header">
-                                            <h4 class="modal-title">{__('emergencyCode')}</h4>
-                                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                                            <button type="button" class="close" data-dismiss="modal">
+                                                <i class="fal fa-times"></i>
+                                            </button>
+                                            <h2 class="modal-title">{__('emergencyCode')}</h2>
                                         </div>
-                                        <div class="modal-body">
+                                        <div class="modal-body py-5">
                                             <div id="EmergencyCodes">
                                                 <div class="iframewrapper">
                                                     <iframe src="" id="printframe" name="printframe" frameborder="0" width="100%" height="300" align="middle"></iframe>

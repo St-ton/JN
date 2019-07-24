@@ -8,9 +8,9 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title">{$modalTitle}</h4>
+                <h2 class="modal-title">{$modalTitle}</h2>
             </div>
-            <div class="modal-body">{if isset($modalBody)}{$modalBody}{/if}</div>
+            <div class="modal-body py-5">{if isset($modalBody)}{$modalBody}{/if}</div>
             <div class="modal-footer">
                 <p>{__('wantToConfirm')}</p>
                 <div class="btn-group">

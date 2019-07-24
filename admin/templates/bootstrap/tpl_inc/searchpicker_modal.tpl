@@ -11,16 +11,16 @@
                 <button type="button" class="close" data-dismiss="modal">
                     <i class="fal fa-times"></i>
                 </button>
-                <h4 class="modal-title">{$modalTitle}</h4>
+                <h2 class="modal-title">{$modalTitle}</h2>
             </div>
-            <div class="modal-body">
+            <div class="modal-body py-5">
                 <div class="input-group">
                     <label for="{$searchPickerName}-search-input" class="sr-only">
                         {$searchInputLabel}:
                     </label>
                     <input type="text" class="form-control" id="{$searchPickerName}-search-input" placeholder="{__('search')}"
                            autocomplete="off">
-                    <span class="input-group-btn">
+                    <span class="input-group-append">
                         <button type="button" class="btn btn-default" id="{$searchPickerName}-reset-btn"
                                 title="{__('deleteInput')}">
                             <i class="fa fa-eraser"></i>

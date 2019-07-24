@@ -187,9 +187,9 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title">{__('followingWillBeDeleted')}</h4>
+                <h2 class="modal-title">{__('followingWillBeDeleted')}</h2>
             </div>
-            <div class="modal-body"></div>
+            <div class="modal-body py-5"></div>
             <div class="modal-footer">
                 <p>{__('sureContinue')}</p>
                 <button type="button" id="submitZuruecksetzen" class="btn btn-danger">{__('shopResetButton')}</button>

@@ -61,10 +61,12 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                    <h4 class="modal-title">{__('importCsvChooseType')}</h4>
+                    <button type="button" class="close" data-dismiss="modal">
+                        <i class="fal fa-times"></i>
+                    </button>
+                    <h2 class="modal-title">{__('importCsvChooseType')}</h2>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body py-5">
                     <label for="importType-{$importerId}" class="sr-only">{__('importCsvChooseType')}</label>
                     <select class="form-control" name="importType" id="importType-{$importerId}">
                         <option value="0">{__('importCsvType0')}</option>

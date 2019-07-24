@@ -249,6 +249,8 @@ build_add_files_to_patch_dir()
         fi
         if [[ -f ${path} ]]; then
             rsync -R ${path} ${PATCH_DIR};
+        elif [[ -d ${path} ]]; then
+            rsync -Rrl ${path} ${PATCH_DIR};
         fi
     done< <(git diff --name-status --diff-filter=d ${PATCH_VERSION} ${APPLICATION_VERSION});
     

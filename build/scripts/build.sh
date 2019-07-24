@@ -274,6 +274,8 @@ build_add_files_to_patch_dir()
                 if [[ ! -z "${filename}" ]] && [[ -f ${filename} ]]; then
                     path="${filename}";
                     rsync -Ra -f"+ *" ${path} ${PATCH_DIR};
+                elif [[ ! -z "${filename}" ]] && [[ -d ${filename} ]]; then
+                    rsync -Rrl ${filename} ${PATCH_DIR};
                 fi
             else
                 rsync -R ${path} ${PATCH_DIR};

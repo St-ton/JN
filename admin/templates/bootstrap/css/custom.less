@@ -3189,10 +3189,15 @@ div.markdown thead tr td {
     column-count: 2;
     column-width: 450px;
     column-gap: 2rem;
+
     .card {
         break-inside: avoid;
+        &.single {
+            column-span: all;
+        }
     }
     .save-wrapper {
+        -webkit-column-span: all;
         column-span: all;
         margin-top: 2rem;
     }

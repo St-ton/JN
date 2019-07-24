@@ -7,9 +7,9 @@
     <Preview>preview.png</Preview>
     <Minify>
         <CSS Name="admin_css">
+            <File Path="css/preload.css"/>
             <File Path="css/jquery-ui.theme.css"/>
             <File Path="css/jquery-ui.min.css"/>
-            <!--<File Path="css/preload.css"/>-->
             <File Path="css/app.css"/>
             <File Path="css/font-awesome.min.css"/>
             <File Path="css/colorpicker.css"/>

@@ -2654,7 +2654,11 @@ div.markdown thead tr td {
 #settings form.settings .card {
   break-inside: avoid;
 }
+#settings form.settings .card.single {
+  column-span: all;
+}
 #settings form.settings .save-wrapper {
+  -webkit-column-span: all;
   column-span: all;
   margin-top: 2rem;
 }

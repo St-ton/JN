@@ -79,6 +79,9 @@
             {/if}
             {slideEntry slideData=$slideData}
         {/foreach}
+        {if $propval|count === 0}
+            {slideEntry}
+        {/if}
     </div>
     <div style="display: none" id="{$propname}-slide-blueprint">
         {slideEntry}

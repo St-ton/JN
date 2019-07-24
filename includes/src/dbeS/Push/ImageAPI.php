@@ -11,6 +11,7 @@ use JTL\Helpers\Request;
 use JTL\Media\Image;
 use JTL\Media\MediaImage;
 use JTL\Shop;
+use stdClass;
 
 /**
  * Class ImageAPI
@@ -70,7 +71,7 @@ final class ImageAPI extends AbstractPush
      * @param int $productID
      * @param int $imageNo
      * @param int $cgroupID
-     * @return array
+     * @return stdClass[]
      */
     private function getProductImages(int $productID, int $imageNo, int $cgroupID): array
     {
@@ -78,7 +79,7 @@ final class ImageAPI extends AbstractPush
             ? ''
             : ' AND tartikelpict.nNr = ' . $imageNo;
 
-        return  $this->db->queryPrepared(
+        return $this->db->queryPrepared(
             'SELECT tartikelpict.cPfad, tartikelpict.kArtikel, tartikel.cSeo, tartikelpict.nNr
                 FROM tartikelpict
                 JOIN tartikel
@@ -112,19 +113,22 @@ final class ImageAPI extends AbstractPush
     {
         switch ($size) {
             case 1:
-                return Image::SIZE_LG;
-
+                $res = Image::SIZE_LG;
+                break;
             case 2:
-                return Image::SIZE_MD;
-
+                $res = Image::SIZE_MD;
+                break;
             case 3:
-                return Image::SIZE_SM;
-
+                $res = Image::SIZE_SM;
+                break;
             case 4:
-                return Image::SIZE_XS;
-
+                $res = Image::SIZE_XS;
+                break;
             default:
-                return null;
+                $res = null;
+                break;
         }
+
+        return $res;
     }
 }

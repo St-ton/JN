@@ -131,13 +131,13 @@ final class Upload
     }
 
     /**
-     * @param int $nErrorCode
+     * @param int $errorCode
      */
-    public static function redirectWarenkorb(int $nErrorCode): void
+    public static function redirectWarenkorb(int $errorCode): void
     {
         \header('Location: ' .
             LinkService::getInstance()->getStaticRoute('warenkorb.php') .
-            '?fillOut=' . $nErrorCode, true, 303);
+            '?fillOut=' . $errorCode, true, 303);
     }
 
     /**

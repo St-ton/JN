@@ -82,7 +82,7 @@ abstract class AbstractSync
      * @param string     $pk1
      * @param int|string $pk2
      */
-    protected function updateXMLinDB($xml, $table, $toMap, $pk1, $pk2 = 0): void
+    protected function upsertXML($xml, $table, $toMap, $pk1, $pk2 = 0): void
     {
         $idx = $table . ' attr';
         if (GeneralObject::isCountable($table, $xml) || GeneralObject::isCountable($idx, $xml)) {
@@ -200,110 +200,6 @@ abstract class AbstractSync
     }
 
     /**
-     * @param null|stdClass $image
-     * @param int            $productID
-     * @param int            $imageID
-     */
-    protected function deleteProductImage($image = null, int $productID = 0, int $imageID = 0): void
-    {
-        if ($image === null && $imageID > 0) {
-            $image     = $this->db->select('tartikelpict', 'kArtikelPict', $imageID);
-            $productID = isset($image->kArtikel) ? (int)$image->kArtikel : 0;
-        }
-        // Das Bild ist eine Verknüpfung
-        if (isset($image->kMainArtikelBild) && $image->kMainArtikelBild > 0 && $productID > 0) {
-            // Existiert der Artikel vom Mainbild noch?
-            $main = $this->db->query(
-                'SELECT kArtikel
-                FROM tartikel
-                WHERE kArtikel = (
-                    SELECT kArtikel
-                        FROM tartikelpict
-                        WHERE kArtikelPict = ' . (int)$image->kMainArtikelBild . ')',
-                ReturnType::SINGLE_OBJECT
-            );
-            // Main Artikel existiert nicht mehr
-            if (!isset($main->kArtikel) || (int)$main->kArtikel === 0) {
-                // Existiert noch eine andere aktive Verknüpfung auf das Mainbild?
-                $productImages = $this->db->query(
-                    'SELECT kArtikelPict
-                    FROM tartikelpict
-                    WHERE kMainArtikelBild = ' . (int)$image->kMainArtikelBild . '
-                        AND kArtikel != ' . $productID,
-                    ReturnType::ARRAY_OF_OBJECTS
-                );
-                // Lösche das MainArtikelBild
-                if (\count($productImages) === 0) {
-                    $this->deleteImageFiles($image->cPfad);
-                    $this->db->delete('tartikelpict', 'kArtikelPict', (int)$image->kMainArtikelBild);
-                }
-            }
-            // Bildverknüpfung aus DB löschen
-            $this->db->delete('tartikelpict', 'kArtikelPict', (int)$image->kArtikelPict);
-        } elseif (isset($image->kMainArtikelBild) && (int)$image->kMainArtikelBild === 0) {
-            // Das Bild ist ein Hauptbild
-            // Gibt es Artikel die auf Bilder des zu löschenden Artikel verknüpfen?
-            $childProducts = $this->db->queryPrepared(
-                'SELECT kArtikelPict
-                FROM tartikelpict
-                WHERE kMainArtikelBild = :img',
-                ['img' => (int)$image->kArtikelPict],
-                ReturnType::ARRAY_OF_OBJECTS
-            );
-            if (\count($childProducts) === 0) {
-                $data = $this->db->queryPrepared(
-                    'SELECT COUNT(*) AS nCount
-                    FROM tartikelpict
-                    WHERE cPfad = :pth',
-                    ['pth' => $image->cPfad],
-                    ReturnType::SINGLE_OBJECT
-                );
-                if (isset($data->nCount) && $data->nCount < 2) {
-                    $this->deleteImageFiles($image->cPfad);
-                }
-            } else {
-                // Reorder linked images because master imagelink will be deleted
-                $next = $childProducts[0]->kArtikelPict;
-                // this will be the next masterimage
-                $this->db->update(
-                    'tartikelpict',
-                    'kArtikelPict',
-                    (int)$next,
-                    (object)['kMainArtikelBild' => 0]
-                );
-                // now link other images to the new masterimage
-                $this->db->update(
-                    'tartikelpict',
-                    'kMainArtikelBild',
-                    (int)$image->kArtikelPict,
-                    (object)['kMainArtikelBild' => (int)$next]
-                );
-            }
-            $this->db->delete('tartikelpict', 'kArtikelPict', (int)$image->kArtikelPict);
-        }
-        $this->cache->flushTags([\CACHING_GROUP_ARTICLE . '_' . $productID]);
-    }
-
-    /**
-     * @param string $path
-     */
-    private function deleteImageFiles(string $path): void
-    {
-        $files = [
-            \PFAD_ROOT . \PFAD_PRODUKTBILDER_MINI . $path,
-            \PFAD_ROOT . \PFAD_PRODUKTBILDER_KLEIN . $path,
-            \PFAD_ROOT . \PFAD_PRODUKTBILDER_NORMAL . $path,
-            \PFAD_ROOT . \PFAD_PRODUKTBILDER_GROSS . $path,
-            \PFAD_ROOT . \PFAD_MEDIA_IMAGE_STORAGE . $path
-        ];
-        foreach ($files as $file) {
-            if (\file_exists($file)) {
-                @\unlink($file);
-            }
-        }
-    }
-
-    /**
      * @param object $product
      * @param array  $conf
      * @throws CircularReferenceException
@@ -340,8 +236,8 @@ abstract class AbstractSync
         }
         $campaign = new Kampagne(\KAMPAGNE_INTERN_VERFUEGBARKEIT);
         if ($campaign->kKampagne > 0) {
-            $cSep           = \strpos($product->cURL, '.php') === false ? '?' : '&';
-            $product->cURL .= $cSep . $campaign->cParameter . '=' . $campaign->cWert;
+            $sep            = \strpos($product->cURL, '.php') === false ? '?' : '&';
+            $product->cURL .= $sep . $campaign->cParameter . '=' . $campaign->cWert;
         }
         foreach ($subscriptions as $msg) {
             $availAgainOptin = (new Optin(OptinAvailAgain::class))->setEmail($msg->cMail);
@@ -596,7 +492,6 @@ abstract class AbstractSync
         }
 
         $prices = isset($xml['tpreis']) ? $this->mapper->mapArray($xml, 'tpreis', 'mPreis') : [];
-
         // Delete prices and price details from not existing customer groups
         $this->db->queryPrepared(
             'DELETE tpreis, tpreisdetail
@@ -617,9 +512,7 @@ abstract class AbstractSync
                     INNER JOIN tpreisdetail ON tpreisdetail.kPreis = tpreis.kPreis
                 WHERE tpreis.kArtikel = :productID
                     AND tpreisdetail.nAnzahlAb > 0',
-            [
-                'productID' => $productID,
-            ],
+            ['productID' => $productID],
             ReturnType::DEFAULT
         );
         // Insert price record for each customer group - ignore existing
@@ -627,9 +520,7 @@ abstract class AbstractSync
             'INSERT IGNORE INTO tpreis (kArtikel, kKundengruppe, kKunde)
                 SELECT :productID, kKundengruppe, 0
                 FROM tkundengruppe',
-            [
-                'productID' => $productID,
-            ],
+            ['productID' => $productID],
             ReturnType::DEFAULT
         );
         // Insert base price for each price record - update existing
@@ -711,34 +602,31 @@ abstract class AbstractSync
      */
     protected function getSeoFromDB(int $keyValue, string $keyName, int $langID = null, $assoc = null)
     {
-        if (!($keyValue > 0 && \strlen($keyName) > 0)) {
+        if ($keyValue <= 0 || \strlen($keyName) === 0) {
             return null;
         }
-        if ($langID !== null && $langID > 0) {
-            $oSeo = $this->db->select('tseo', 'kKey', $keyValue, 'cKey', $keyName, 'kSprache', $langID);
-            if (isset($oSeo->kKey) && (int)$oSeo->kKey > 0) {
-                return $oSeo;
-            }
-        } else {
-            $seo = $this->db->selectAll('tseo', ['kKey', 'cKey'], [$keyValue, $keyName]);
-            if (\count($seo) > 0) {
-                if ($assoc !== null && \strlen($assoc) > 0) {
-                    $seoData = [];
-                    foreach ($seo as $oSeo) {
-                        if (isset($oSeo->{$assoc})) {
-                            $seoData[$oSeo->{$assoc}] = $oSeo;
-                        }
-                    }
-                    if (\count($seoData) > 0) {
-                        $seo = $seoData;
-                    }
-                }
+        if ($langID > 0) {
+            $seo = $this->db->select('tseo', 'kKey', $keyValue, 'cKey', $keyName, 'kSprache', $langID);
 
-                return $seo;
+            return isset($seo->kKey) && (int)$seo->kKey > 0 ? $seo : null;
+        }
+        $seo = $this->db->selectAll('tseo', ['kKey', 'cKey'], [$keyValue, $keyName]);
+        if (\count($seo) === 0) {
+            return null;
+        }
+        if ($assoc !== null && \strlen($assoc) > 0) {
+            $seoData = [];
+            foreach ($seo as $oSeo) {
+                if (isset($oSeo->{$assoc})) {
+                    $seoData[$oSeo->{$assoc}] = $oSeo;
+                }
+            }
+            if (\count($seoData) > 0) {
+                $seo = $seoData;
             }
         }
 
-        return null;
+        return $seo;
     }
 
     /**
@@ -753,7 +641,7 @@ abstract class AbstractSync
             $keys     = \array_keys($arr);
             $keyCount = \count($keys);
             for ($i = 0; $i < $keyCount; $i++) {
-                if (!\in_array($keys[$i], $excludes) && $keys[$i]{0} === 'k') {
+                if (!\in_array($keys[$i], $excludes, true) && $keys[$i]{0} === 'k') {
                     $attributes[$keys[$i]] = $arr[$keys[$i]];
                     unset($arr[$keys[$i]]);
                 }
@@ -790,11 +678,7 @@ abstract class AbstractSync
         }
         $redirect = new Redirect();
         $parsed   = \parse_url(Shop::getURL());
-        if (isset($parsed['path'])) {
-            $source = $parsed['path'] . '/' . $oldSeo;
-        } else {
-            $source = '/' . $oldSeo;
-        }
+        $source   = isset($parsed['path']) ? ($parsed['path'] . '/' . $oldSeo) : ('/' . $oldSeo);
 
         return $redirect->saveExt($source, $newSeo, true);
     }
@@ -804,11 +688,11 @@ abstract class AbstractSync
      */
     protected function handlePriceRange(array $productIDs): void
     {
+        $idString = \implode(',', $productIDs);
         $this->db->executeQuery(
-            'DELETE FROM tpricerange WHERE kArtikel IN (' . \implode(',', $productIDs) . ')',
+            'DELETE FROM tpricerange WHERE kArtikel IN (' . $idString . ')',
             ReturnType::DEFAULT
         );
-        $uniqueProductIDs = \implode(',', \array_unique($productIDs));
         $this->db->executeQuery(
             'INSERT INTO tpricerange
             (kArtikel, kKundengruppe, kKunde, nRangeType, fVKNettoMin, fVKNettoMax, nLagerAnzahlMax, dStart, dEnde)
@@ -838,7 +722,7 @@ abstract class AbstractSync
                 INNER JOIN tpreisdetail ON tpreisdetail.kPreis = tpreis.kPreis
                 WHERE tartikel.nIstVater = 0
                     AND IF(tartikel.kVaterartikel = 0, tartikel.kArtikel, tartikel.kVaterartikel) IN ('
-            . $uniqueProductIDs . ')
+            . $idString . ')
                 UNION ALL
                 SELECT IF(tartikel.kVaterartikel = 0, tartikel.kArtikel, tartikel.kVaterartikel) kArtikel,
                     tartikel.kArtikel kKindArtikel,
@@ -860,7 +744,7 @@ abstract class AbstractSync
                     AND tsonderpreise.kKundengruppe = tpreis.kKundengruppe
                 WHERE tartikelsonderpreis.cAktiv = \'Y\'
                     AND IF(tartikel.kVaterartikel = 0, tartikel.kArtikel, tartikel.kVaterartikel) IN ('
-            . $uniqueProductIDs . ')) baseprice
+            . $idString . ')) baseprice
             LEFT JOIN (
                 SELECT variations.kArtikel, variations.kKundengruppe,
                     SUM(variations.fMinAufpreisNetto) fMinAufpreisNetto,
@@ -879,7 +763,7 @@ abstract class AbstractSync
                     LEFT JOIN teigenschaftwertaufpreis
                         ON teigenschaftwertaufpreis.kEigenschaftWert = teigenschaftwert.kEigenschaftWert
                         AND teigenschaftwertaufpreis.kKundengruppe = tkundengruppe.kKundengruppe
-                    WHERE teigenschaft.kArtikel IN (' . $uniqueProductIDs . ')
+                    WHERE teigenschaft.kArtikel IN (' . $idString . ')
                     GROUP BY teigenschaft.kArtikel, tkundengruppe.kKundengruppe, teigenschaft.kEigenschaft
                 ) variations
                 GROUP BY variations.kArtikel, variations.kKundengruppe
@@ -887,7 +771,7 @@ abstract class AbstractSync
                 ON varaufpreis.kArtikel = baseprice.kKindArtikel
                 AND varaufpreis.kKundengruppe = baseprice.kKundengruppe
                 AND baseprice.nIstVater = 0
-            WHERE baseprice.kArtikel IN (' . $uniqueProductIDs . ')
+            WHERE baseprice.kArtikel IN (' . $idString . ')
             GROUP BY baseprice.kArtikel,
                 baseprice.kKundengruppe,
                 baseprice.kKunde,

@@ -145,7 +145,7 @@ if ($action === 'bearbeiten') {
     $manufacturers  = getManufacturers($coupon->cHersteller);
     $categories     = getCategories($coupon->cKategorien);
     $customerIDs    = array_filter(
-        Text::parseSSK($coupon->cKunden),
+        Text::parseSSKint($coupon->cKunden),
         function ($customerID) {
             return (int)$customerID > 0;
         }

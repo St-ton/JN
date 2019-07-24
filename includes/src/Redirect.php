@@ -741,23 +741,23 @@ class Redirect
     public static function doMainwordRedirect($productFilter, int $count, bool $seo = false): void
     {
         $main       = [
-            'getCategory'       => [
+            'getCategory'            => [
                 'cKey'   => 'kKategorie',
                 'cParam' => 'k'
             ],
-            'getManufacturer'   => [
+            'getManufacturer'        => [
                 'cKey'   => 'kHersteller',
                 'cParam' => 'h'
             ],
-            'getSearchQuery'    => [
+            'getSearchQuery'         => [
                 'cKey'   => 'kSuchanfrage',
                 'cParam' => 'l'
             ],
-            'getAttributeValue' => [
+            'getCharacteristicValue' => [
                 'cKey'   => 'kMerkmalWert',
                 'cParam' => 'm'
             ],
-            'getSearchSpecial'  => [
+            'getSearchSpecial'       => [
                 'cKey'   => 'kKey',
                 'cParam' => 'q'
             ]

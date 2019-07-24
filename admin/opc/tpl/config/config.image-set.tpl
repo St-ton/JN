@@ -45,15 +45,15 @@
                             <input type="hidden" name="{$propname}[#SORT#][action]" value="">
                             <select class="form-control" onchange="onActionChange_{$propname}(this)">
                                 <option value="none" {if $slideData.action === 'none'}selected{/if}>
-                                    Keine Aktion
+                                    {__('noAction')}
                                 </option>
                                 {if $useLightbox}
                                     <option value="lightbox" {if $slideData.action === 'lightbox'}selected{/if}>
-                                        Lightbox
+                                        {__('lightbox')}
                                     </option>
                                 {/if}
                                 <option value="link" {if $slideData.action === 'link'}selected{/if}>
-                                    Verlinkung
+                                    {__('linked')}
                                 </option>
                             </select>
                         </label>
@@ -79,6 +79,9 @@
             {/if}
             {slideEntry slideData=$slideData}
         {/foreach}
+        {if $propval|count === 0}
+            {slideEntry}
+        {/if}
     </div>
     <div style="display: none" id="{$propname}-slide-blueprint">
         {slideEntry}

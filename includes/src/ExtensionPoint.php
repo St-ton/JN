@@ -130,9 +130,9 @@ class ExtensionPoint
             case \PAGE_ARTIKELLISTE:
                 $productFilter = Shop::getProductFilter();
                 // MerkmalWert
-                if ($productFilter->hasAttributeValue()) {
+                if ($productFilter->hasCharacteristicValue()) {
                     $key->cKey   = 'kMerkmalWert';
-                    $key->cValue = $productFilter->getAttributeValue()->getValue();
+                    $key->cValue = $productFilter->getCharacteristicValue()->getValue();
                 } elseif ($productFilter->hasCategory()) {
                     // Kategorie
                     $key->cKey   = 'kKategorie';

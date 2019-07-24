@@ -66,16 +66,14 @@ class FileHandler
      */
     public function getSyncFiles(array $data = null): ?array
     {
-        $zipFile = $this->checkFile($data);
-        if ($zipFile === '') {
+        if (($zipFile = $this->checkFile($data)) === '') {
             return null;
         }
-        $this->unzipPath = \PFAD_ROOT . \PFAD_DBES . \PFAD_SYNC_TMP . \basename($zipFile) . '_' . \date('dhis') . '/';
+        $this->unzipPath = self::TEMP_DIR . \basename($zipFile) . '_' . \date('dhis') . '/';
         if (($syncFiles = $this->unzipSyncFiles($zipFile, $this->unzipPath)) === false) {
             $this->logger->error('Error: Cannot extract zip file ' . $zipFile . ' to ' . $this->unzipPath);
             $this->removeTemporaryFiles($zipFile);
-
-            return null;
+            $syncFiles = null;
         }
 
         return $syncFiles;
@@ -103,8 +101,7 @@ class FileHandler
     private function unzipSyncFiles(string $zipFile, string $targetPath)
     {
         $archive = new ZipArchive();
-        $open    = $archive->open($zipFile);
-        if ($open !== true) {
+        if (($open = $archive->open($zipFile)) !== true) {
             $this->logger->error('unzipSyncFiles: Kann Datei ' . $zipFile . ' nicht öffnen. ErrorCode: ' . $open);
 
             return false;

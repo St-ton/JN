@@ -15,6 +15,7 @@ use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
+use JTL\Model\DataModel;
 use JTL\Services\JTL\AlertServiceInterface;
 use JTL\Session\Frontend;
 use JTL\Shop;
@@ -193,14 +194,13 @@ class ReviewController extends BaseController
         }
         if ($product->Bewertungen === null) {
             $product->holeBewertung(
-                Shop::getLanguageID(),
                 $this->config['bewertung']['bewertung_anzahlseite'],
                 0,
                 -1,
                 $this->config['bewertung']['bewertung_freischalten'],
                 $params['nSortierung']
             );
-            $product->holehilfreichsteBewertung(Shop::getLanguageID());
+            $product->holehilfreichsteBewertung();
         }
         if ($this->checkProductWasPurchased($product->kArtikel, Frontend::getCustomer()) === false) {
             $this->alertService->addAlert(
@@ -287,7 +287,7 @@ class ReviewController extends BaseController
             return;
         }
         try {
-            $review = new ReviewModel(['id' => $reviewID], $this->db);
+            $review = ReviewModel::load(['id' => $reviewID], $this->db, ReviewModel::ON_NOTEXISTS_FAIL);
         } catch (Exception $e) {
             return;
         }

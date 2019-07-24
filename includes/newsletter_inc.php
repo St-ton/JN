@@ -11,6 +11,7 @@ use JTL\Helpers\Form;
 use JTL\Helpers\Text;
 use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
+use JTL\Newsletter\Helper;
 use JTL\Session\Frontend;
 use JTL\Shop;
 
@@ -20,12 +21,15 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'mailTools.php';
  * @param string $dbfeld
  * @param string $email
  * @return string
+ * @throws Exception
+ * @deprecated since 5.0.0
  */
 function create_NewsletterCode($dbfeld, $email): string
 {
-    $code = md5($email . time() . rand(123, 456));
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
+    $code = md5($email . time() . random_int(123, 456));
     while (!unique_NewsletterCode($dbfeld, $code)) {
-        $code = md5($email . time() . rand(123, 456));
+        $code = md5($email . time() . random_int(123, 456));
     }
 
     return $code;
@@ -35,43 +39,81 @@ function create_NewsletterCode($dbfeld, $email): string
  * @param string     $dbfeld
  * @param string|int $code
  * @return bool
+ * @deprecated since 5.0.0
  */
 function unique_NewsletterCode($dbfeld, $code): bool
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $res = Shop::Container()->getDB()->select('tnewsletterempfaenger', $dbfeld, $code);
 
     return !(isset($res->kNewsletterEmpfaenger) && $res->kNewsletterEmpfaenger > 0);
 }
 
 /**
+ * @param int $customerID
+ * @return bool
+ * @deprecated since 5.0.0
+ */
+function pruefeObBereitsAbonnent(int $customerID): bool
+{
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
+    return Helper::customerIsSubscriber($customerID);
+}
+
+/**
+ * @param int    $groupID
+ * @param string $groupKeys
+ * @return bool
+ * @deprecated since 5.0.0
+ */
+function pruefeNLHistoryKundengruppe(int $groupID, string $groupKeys): bool
+{
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
+    if ($groupKeys === '') {
+        return false;
+    }
+    $groupIDs = [];
+    foreach (explode(';', $groupKeys) as $id) {
+        if ((int)$id > 0 || ($id !== '' && (int)$id === 0)) {
+            $groupIDs[] = (int)$id;
+        }
+    }
+
+    return in_array(0, $groupIDs, true) || ($groupID > 0 && in_array($groupID, $groupIDs, true));
+}
+
+/**
  * @param Kunde|stdClass $customer
  * @param bool           $validate
  * @return stdClass
+ * @throws Exception
+ * @deprecated since 5.0.0
  */
 function fuegeNewsletterEmpfaengerEin($customer, $validate = false): stdClass
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $alertHelper         = Shop::Container()->getAlertService();
     $conf                = Shop::getSettings([CONF_NEWSLETTER]);
-    $plausi              = new stdClass();
-    $plausi->nPlausi_arr = [];
+    $checks              = new stdClass();
+    $checks->nPlausi_arr = [];
     $nlCustomer          = null;
     if (!$validate || Text::filterEmailAddress($customer->cEmail) !== false) {
-        $plausi->nPlausi_arr = newsletterAnmeldungPlausi();
+        $checks->nPlausi_arr = newsletterAnmeldungPlausi();
         $customerGroupID     = Frontend::getCustomerGroup()->getID();
         $checkBox            = new CheckBox();
-        $plausi->nPlausi_arr = array_merge(
-            $plausi->nPlausi_arr,
+        $checks->nPlausi_arr = array_merge(
+            $checks->nPlausi_arr,
             $checkBox->validateCheckBox(CHECKBOX_ORT_NEWSLETTERANMELDUNG, $customerGroupID, $_POST, true)
         );
 
-        $plausi->cPost_arr['cAnrede']   = $customer->cAnrede;
-        $plausi->cPost_arr['cVorname']  = $customer->cVorname;
-        $plausi->cPost_arr['cNachname'] = $customer->cNachname;
-        $plausi->cPost_arr['cEmail']    = $customer->cEmail;
-        $plausi->cPost_arr['captcha']   = isset($_POST['captcha'])
+        $checks->cPost_arr['cAnrede']   = $customer->cAnrede;
+        $checks->cPost_arr['cVorname']  = $customer->cVorname;
+        $checks->cPost_arr['cNachname'] = $customer->cNachname;
+        $checks->cPost_arr['cEmail']    = $customer->cEmail;
+        $checks->cPost_arr['captcha']   = isset($_POST['captcha'])
             ? Text::htmlentities(Text::filterXSS($_POST['captcha']))
             : null;
-        if (!$validate || count($plausi->nPlausi_arr) === 0) {
+        if (!$validate || count($checks->nPlausi_arr) === 0) {
             $recipient = Shop::Container()->getDB()->select(
                 'tnewsletterempfaenger',
                 'cEmail',
@@ -88,9 +130,7 @@ function fuegeNewsletterEmpfaengerEin($customer, $validate = false): stdClass
                     (int)$_SESSION['Kunde']->kKunde
                 );
             }
-            if ((isset($recipient->cEmail) && mb_strlen($recipient->cEmail) > 0)
-                || (isset($nlCustomer->kKunde) && $nlCustomer->kKunde > 0)
-            ) {
+            if (!empty($recipient->cEmail) || (isset($nlCustomer->kKunde) && $nlCustomer->kKunde > 0)) {
                 $alertHelper->addAlert(
                     Alert::TYPE_ERROR,
                     Shop::Lang()->get('newsletterExists', 'errorMessages'),
@@ -112,8 +152,8 @@ function fuegeNewsletterEmpfaengerEin($customer, $validate = false): stdClass
                     ? (int)$_SESSION['Kunde']->kKunde
                     : 0;
                 $recipient->nAktiv             = isset($_SESSION['Kunde']->kKunde)
-                    && $_SESSION['Kunde']->kKunde > 0
-                    && $conf['newsletter']['newsletter_doubleopt'] === 'U' ? 1 : 0;
+                && $_SESSION['Kunde']->kKunde > 0
+                && $conf['newsletter']['newsletter_doubleopt'] === 'U' ? 1 : 0;
                 $recipient->cAnrede            = $customer->cAnrede;
                 $recipient->cVorname           = $customer->cVorname;
                 $recipient->cNachname          = $customer->cNachname;
@@ -153,14 +193,11 @@ function fuegeNewsletterEmpfaengerEin($customer, $validate = false): stdClass
                 if (($conf['newsletter']['newsletter_doubleopt'] === 'U' && empty($_SESSION['Kunde']->kKunde))
                     || $conf['newsletter']['newsletter_doubleopt'] === 'A'
                 ) {
-                    $recipient->cLoeschURL     = Shop::getURL() . '/newsletter.php?lang=' .
-                        $_SESSION['cISOSprache'] . '&lc=' . $recipient->cLoeschCode;
-                    $recipient->cFreischaltURL = Shop::getURL() . '/newsletter.php?lang=' .
-                        $_SESSION['cISOSprache'] . '&fc=' . $recipient->cOptCode;
-                    $obj                       = new stdClass();
-                    $obj->tkunde               = $_SESSION['Kunde'] ?? null;
-                    $obj->NewsletterEmpfaenger = $recipient;
+                    $base                      = Shop::getURL() . '/newsletter.php?lang=' . $_SESSION['cISOSprache'];
+                    $recipient->cLoeschURL     = $base . '&lc=' . $recipient->cLoeschCode;
+                    $recipient->cFreischaltURL = $base . '&fc=' . $recipient->cOptCode;
 
+                    $obj    = (object)['tkunde' => $_SESSION['Kunde'] ?? null, 'NewsletterEmpfaenger' => $recipient];
                     $mailer = Shop::Container()->get(Mailer::class);
                     $mail   = new Mail();
                     $mailer->send($mail->createFromTemplateID(MAILTEMPLATE_NEWSLETTERANMELDEN, $obj));
@@ -175,7 +212,7 @@ function fuegeNewsletterEmpfaengerEin($customer, $validate = false): stdClass
                         Shop::Lang()->get('newsletterAdd', 'messages'),
                         'newsletterAdd'
                     );
-                    $plausi = new stdClass();
+                    $checks = new stdClass();
                 } else {
                     $alertHelper->addAlert(
                         Alert::TYPE_NOTE,
@@ -193,57 +230,20 @@ function fuegeNewsletterEmpfaengerEin($customer, $validate = false): stdClass
         );
     }
 
-    return $plausi;
+    return $checks;
 }
 
 /**
  * @return array
+ * @deprecated since 5.0.0
  */
 function newsletterAnmeldungPlausi(): array
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $res = [];
     if (Shop::getConfigValue(CONF_NEWSLETTER, 'newsletter_sicherheitscode') !== 'N' && !Form::validateCaptcha($_POST)) {
         $res['captcha'] = 2;
     }
 
     return $res;
-}
-
-/**
- * @param int $customerID
- * @return bool
- */
-function pruefeObBereitsAbonnent(int $customerID): bool
-{
-    if ($customerID <= 0) {
-        return false;
-    }
-    $recipient = Shop::Container()->getDB()->select('tnewsletterempfaenger', 'kKunde', $customerID);
-
-    return isset($recipient->kKunde) && $recipient->kKunde > 0;
-}
-
-/**
- * @param int    $groupID
- * @param string $groupKeys
- * @return bool
- */
-function pruefeNLHistoryKundengruppe(int $groupID, $groupKeys): bool
-{
-    if (mb_strlen($groupKeys) > 0) {
-        $groupIDs = [];
-        foreach (explode(';', $groupKeys) as $id) {
-            if ((int)$id > 0 || (mb_strlen($id) > 0 && (int)$id === 0)) {
-                $groupIDs[] = (int)$id;
-            }
-        }
-        if (in_array(0, $groupIDs, true)) {
-            return true;
-        }
-        if ($groupID > 0 && in_array($groupID, $groupIDs, true)) {
-            return true;
-        }
-    }
-
-    return false;
 }

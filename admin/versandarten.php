@@ -554,9 +554,9 @@ if ($step === 'neue Versandart') {
         'cAnbieter, nSort, cName'
     );
     $smarty->assign('versandKlassen', $db->selectAll('tversandklasse', [], [], '*', 'kVersandklasse'));
-    $kVersandartTMP = 0;
+    $tmpID = 0;
     if (isset($shippingMethod->kVersandart) && $shippingMethod->kVersandart > 0) {
-        $kVersandartTMP = $shippingMethod->kVersandart;
+        $tmpID = $shippingMethod->kVersandart;
     }
     $smarty->assign('zahlungsarten', $zahlungsarten)
         ->assign('versandlaender', $versandlaender)
@@ -566,7 +566,7 @@ if ($step === 'neue Versandart') {
             'SELECT kKundengruppe, cName FROM tkundengruppe ORDER BY kKundengruppe',
             ReturnType::ARRAY_OF_OBJECTS
         ))
-        ->assign('oVersandartSpracheAssoc_arr', getShippingLanguage($kVersandartTMP, $languages))
+        ->assign('oVersandartSpracheAssoc_arr', getShippingLanguage($tmpID, $languages))
         ->assign('gesetzteVersandklassen', isset($shippingMethod->cVersandklassen)
             ? gibGesetzteVersandklassen($shippingMethod->cVersandklassen)
             : null)
@@ -664,12 +664,12 @@ if ($step === 'uebersicht') {
             'cName',
             'cISOSprache'
         );
-        foreach (Text::parseSSK($method->cKundengruppen) as $customerGroupID) {
-            if ((int)$customerGroupID === -1) {
+        foreach (Text::parseSSKint($method->cKundengruppen) as $customerGroupID) {
+            if ($customerGroupID === -1) {
                 $method->cKundengruppenName_arr[] = __('allCustomerGroups');
             } else {
                 foreach ($customerGroups as $customerGroup) {
-                    if ((int)$customerGroup->kKundengruppe === (int)$customerGroupID) {
+                    if ((int)$customerGroup->kKundengruppe === $customerGroupID) {
                         $method->cKundengruppenName_arr[] = $customerGroup->cName;
                     }
                 }

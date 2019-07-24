@@ -345,3 +345,12 @@ msgstr "Abwechselnd"
 
 msgid "columns"
 msgstr "Spalten"
+
+msgid "noAction"
+msgstr "Keine Aktion"
+
+msgid "lightbox"
+msgstr "Lightbox"
+
+msgid "linked"
+msgstr "Verlinkung"

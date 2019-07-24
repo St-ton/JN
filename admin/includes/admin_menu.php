@@ -67,7 +67,7 @@ $adminMenu = [
         __('Pages')   => [
             __('OnPage Composer')         => (object)[
                 'link'   => 'opc-controlcenter.php',
-                'rights' => 'DISPLAY_TEMPLATE_VIEW',
+                'rights' => 'CONTENT_PAGE_VIEW',
             ],
             __('Front page')              => (object)[
                 'link'   => 'einstellungen.php?kSektion=' . CONF_STARTSEITE,

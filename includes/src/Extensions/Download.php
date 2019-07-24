@@ -188,10 +188,10 @@ class Download
     }
 
     /**
-     * @param bool $bPrimary
+     * @param bool $primary
      * @return bool|int
      */
-    public function save(bool $bPrimary = false)
+    public function save(bool $primary = false)
     {
         $ins = $this->kopiereMembers();
         unset(
@@ -203,9 +203,9 @@ class Download
             $ins->dGueltigBis,
             $ins->kBestellung
         );
-        $kDownload = Shop::Container()->getDB()->insert('tdownload', $ins);
-        if ($kDownload > 0) {
-            return $bPrimary ? $kDownload : true;
+        $id = Shop::Container()->getDB()->insert('tdownload', $ins);
+        if ($id > 0) {
+            return $primary ? $id : true;
         }
 
         return false;
@@ -303,9 +303,9 @@ class Download
                         $download->kKunde,
                         $download->kBestellung
                     );
-                    $kDownload                  = $downloads[$i]->getDownload();
-                    $count                      = isset($history[$kDownload])
-                        ? \count($history[$kDownload])
+                    $id                         = $downloads[$i]->getDownload();
+                    $count                      = isset($history[$id])
+                        ? \count($history[$id])
                         : 0;
                     $downloads[$i]->cLimit      = $count . ' / ' . $downloads[$i]->getAnzahl();
                     $downloads[$i]->kBestellung = $download->kBestellung;

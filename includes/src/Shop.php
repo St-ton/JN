@@ -1379,7 +1379,7 @@ final class Shop
                 self::updateLanguage((int)$oSeo->kSprache);
             }
         }
-        self::$MerkmalFilter = ProductFilter::initAttributeFilter();
+        self::$MerkmalFilter = ProductFilter::initCharacteristicFilter();
         self::$SuchFilter    = ProductFilter::initSearchFilter();
 
         \executeHook(\HOOK_SEOCHECK_ENDE);
@@ -1590,7 +1590,7 @@ final class Shop
                 self::Container()->getAlertService()->addAlert(
                     Alert::TYPE_ERROR,
                     self::Lang()->get('optinCodeUnknown', 'errorMessages'),
-                    'optinUnknown'
+                    'optinCodeUnknown'
                 );
             } catch (Exceptions\InvalidInputException $e) {
                 self::Container()->getAlertService()->addAlert(

@@ -7,7 +7,7 @@
 namespace JTL\Extensions;
 
 use JTL\DB\ReturnType;
-use JTL\Filter\Items\Attribute;
+use JTL\Filter\Items\Characteristic;
 use JTL\Filter\Option;
 use JTL\Filter\ProductFilter;
 use JTL\Filter\SearchResults;
@@ -103,7 +103,6 @@ class AuswahlAssistent
     public function __construct($keyName, int $id, int $languageID = 0, bool $activeOnly = true)
     {
         $this->config = Shop::getSettings(\CONF_AUSWAHLASSISTENT)['auswahlassistent'];
-
         if ($languageID === 0) {
             $languageID = Shop::getLanguageID();
         }
@@ -204,25 +203,24 @@ class AuswahlAssistent
                 $params['MerkmalFilter_arr'] = \array_slice($this->selections, 1);
             }
         }
-        $productFilter     = Shop::buildProductFilter($params);
-        $AktuelleKategorie = isset($params['kKategorie'])
+        $productFilter   = Shop::buildProductFilter($params);
+        $currentCategory = isset($params['kKategorie'])
             ? new Kategorie($params['kKategorie'])
             : null;
-        $attributeFilters  = (new SearchResults())->setFilterOptions(
+        $filterOptions   = (new SearchResults())->setFilterOptions(
             $productFilter,
-            $AktuelleKategorie,
+            $currentCategory,
             true
-        )->getAttributeFilterOptions();
-
-        foreach ($attributeFilters as $attributeFilter) {
-            /** @var Attribute $attributeFilter */
-            if (\array_key_exists($attributeFilter->getValue(), $this->questionsAssoc)) {
-                $oFrage                    = $this->questionsAssoc[$attributeFilter->getValue()];
-                $oFrage->oWert_arr         = $attributeFilter->getOptions();
-                $oFrage->nTotalResultCount = 0;
-                foreach ($attributeFilter->getOptions() as $oWert) {
-                    $oFrage->nTotalResultCount                           += $oWert->getCount();
-                    $oFrage->oWert_assoc[$oWert->getData('kMerkmalWert')] = $oWert;
+        )->getCharacteristicFilterOptions();
+        foreach ($filterOptions as $option) {
+            /** @var Characteristic $option */
+            if (\array_key_exists($option->getValue(), $this->questionsAssoc)) {
+                $question                    = $this->questionsAssoc[$option->getValue()];
+                $question->oWert_arr         = $option->getOptions();
+                $question->nTotalResultCount = 0;
+                foreach ($option->getOptions() as $oWert) {
+                    $question->nTotalResultCount                           += $oWert->getCount();
+                    $question->oWert_assoc[$oWert->getData('kMerkmalWert')] = $oWert;
                 }
             }
         }
@@ -340,15 +338,15 @@ class AuswahlAssistent
     }
 
     /**
-     * @param int $nFrage
+     * @param int $questionID
      * @return array|null
      */
-    public function getSelectedValue(int $nFrage)
+    public function getSelectedValue(int $questionID)
     {
-        $oFrage         = $this->questions[$nFrage];
-        $kSelectedValue = $this->selections[$nFrage];
+        $question      = $this->questions[$questionID];
+        $selectedValue = $this->selections[$questionID];
 
-        return $oFrage->oWert_assoc[$kSelectedValue];
+        return $question->oWert_assoc[$selectedValue];
     }
 
     /**

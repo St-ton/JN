@@ -94,28 +94,28 @@ class Statusmail
 
     /**
      * @param int $id
-     * @param int $nAlleXStunden
+     * @param int $frequency
      * @return bool
      */
-    private function createCronJob(int $id, int $nAlleXStunden): bool
+    private function createCronJob(int $id, int $frequency): bool
     {
         $types     = [
             24  => ['name' => __('intervalDay'), 'date' => 'tomorrow'],
             168 => ['name' => __('intervalWeek'), 'date' => 'next week'],
             720 => ['name' => __('intervalMonth'), 'date' => 'first day of next month']
         ];
-        $startDate = date('Y-m-d', strtotime($types[$nAlleXStunden]['date']));
+        $startDate = \date('Y-m-d', \strtotime($types[$frequency]['date']));
         $d         = new DateTime($startDate);
         $d->setTime(0, 0);
         Shop::Container()->getAlertService()->addAlert(
             Alert::TYPE_INFO,
-            sprintf(__('nextStatusMail'), $types[$nAlleXStunden]['name'], $d->format('Y-m-d')),
-            'nextStatusMail' . $nAlleXStunden
+            \sprintf(__('nextStatusMail'), $types[$frequency]['name'], $d->format('Y-m-d')),
+            'nextStatusMail' . $frequency
         );
         $cron = new LegacyCron(
             0,
             $id,
-            $nAlleXStunden,
+            $frequency,
             'statusemail',
             'statusemail',
             'tstatusemail',
@@ -144,7 +144,7 @@ class Statusmail
         $conf->nIntervall_arr         = map($data, function ($e) {
             return (int)$e->nInterval;
         });
-        $conf->nInhalt_arr            = Text::parseSSK($first->cInhalt ?? '');
+        $conf->nInhalt_arr            = Text::parseSSKint($first->cInhalt ?? '');
         $conf->cEmail                 = $first->cEmail ?? '';
         $conf->nAktiv                 = (int)($first->nAktiv ?? 0);
 
@@ -903,22 +903,22 @@ class Statusmail
         if ($statusMail === null) {
             $statusMail = $this->db->select('tstatusemail', 'nAktiv', 1);
         }
-        $statusMail->nInhalt_arr = Text::parseSSK($statusMail->cInhalt);
+        $statusMail->nInhalt_arr = Text::parseSSKint($statusMail->cInhalt);
         $nIntervall              = (int)$statusMail->nInterval;
         switch ($nIntervall) {
             case 1:
-                $startDate   = date('Y-m-d', strtotime('yesterday'));
-                $endDate     = date('Y-m-d', strtotime('today'));
+                $startDate   = \date('Y-m-d', \strtotime('yesterday'));
+                $endDate     = \date('Y-m-d', \strtotime('today'));
                 $intervalLoc = 'Tägliche';
                 break;
             case 7:
-                $startDate   = date('Y-m-d', strtotime('last week monday'));
-                $endDate     = date('Y-m-d', strtotime('last week sunday'));
+                $startDate   = \date('Y-m-d', \strtotime('last week monday'));
+                $endDate     = \date('Y-m-d', \strtotime('last week sunday'));
                 $intervalLoc = 'Wöchentliche';
                 break;
             case 30:
-                $startDate   = date('Y-m-d', strtotime('first day of previous month'));
-                $endDate     = date('Y-m-d', strtotime('last day of previous month'));
+                $startDate   = \date('Y-m-d', \strtotime('first day of previous month'));
+                $endDate     = \date('Y-m-d', \strtotime('last day of previous month'));
                 $intervalLoc = 'Monatliche';
                 break;
             default:

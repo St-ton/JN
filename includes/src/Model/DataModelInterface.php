@@ -31,7 +31,7 @@ interface DataModelInterface
     public const ERR_DATABASE       = 0x1A0;
 
     /**
-     * non-static variant of create()
+     * fill and load from database or create and store if item does not exist
      *
      * @param array $attributes
      * @param int   $option
@@ -54,7 +54,7 @@ interface DataModelInterface
      *     specified
      *
      */
-    public static function create($attributes, DbInterface $db, $option = self::NONE): self;
+    public static function create($attributes, DbInterface $db, $option = self::NONE);
 
     /**
      * Load model from database and return new instance
@@ -71,7 +71,7 @@ interface DataModelInterface
      * @throws Exception - throws Exception with ERR_NOT_FOUND if model doesnt exists and option NONE is specified
      *
      */
-    public static function load($attributes, DbInterface $db, $option = self::ON_NOTEXISTS_NEW): self;
+    public static function load($attributes, DbInterface $db, $option = self::ON_NOTEXISTS_NEW);
 
     /**
      * @param array       $attributes
@@ -81,7 +81,7 @@ interface DataModelInterface
      * @throws Exception
      * @see DataModelInterface::load()
      */
-    public static function loadByAttributes($attributes, DbInterface $db, $option = self::ON_NOTEXISTS_NEW): self;
+    public static function loadByAttributes($attributes, DbInterface $db, $option = self::ON_NOTEXISTS_NEW);
 
     /**
      * @param DbInterface  $db
@@ -105,7 +105,6 @@ interface DataModelInterface
      * Save the model to database and return true if successful - false otherwise
      *
      * @param array $partial - if specified, save only this partiell attributes
-     *
      * @return bool
      */
     public function save(array $partial = null): bool;
@@ -228,9 +227,10 @@ interface DataModelInterface
     public function rawObject(bool $iterated = false): stdClass;
 
     /**
+     * @param bool $noPrimary
      * @return stdClass
      */
-    public function getSqlObject(): stdClass;
+    public function getSqlObject(bool $noPrimary = false): stdClass;
 
     /**
      * Clone the model into a new, non-existing instance
@@ -244,6 +244,16 @@ interface DataModelInterface
      *
      */
     public function wasLoaded(): void;
+
+    /**
+     * @return bool
+     */
+    public function getWasLoaded(): bool;
+
+    /**
+     * @param bool $loaded
+     */
+    public function setWasLoaded(bool $loaded): void;
 
     /**
      * Get the name of the corresponding database table

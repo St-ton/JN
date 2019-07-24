@@ -361,13 +361,18 @@ class WarenkorbPers
                 // Falls Artikel vorhanden
                 if (isset($productExists->kArtikel) && $productExists->kArtikel > 0) {
                     // Sichtbarkeit Prüfen
-                    $visibility = $db->select(
-                        'tartikelsichtbarkeit',
-                        'kArtikel',
-                        (int)$item->kArtikel,
-                        'kKundengruppe',
-                        Frontend::getCustomerGroup()->getID()
-                    );
+                    if (!empty($item->cUnique) && (int)$item->kKonfigitem > 0) {
+                        // config components are always visible in cart...
+                        $visibility = null;
+                    } else {
+                        $visibility = $db->select(
+                            'tartikelsichtbarkeit',
+                            'kArtikel',
+                            (int)$item->kArtikel,
+                            'kKundengruppe',
+                            Frontend::getCustomerGroup()->getID()
+                        );
+                    }
                     if ($visibility === null || !isset($visibility->kArtikel) || !$visibility->kArtikel) {
                         // Prüfe welche kEigenschaft gesetzt ist
                         $attributes = $db->selectAll(
@@ -515,17 +520,22 @@ class WarenkorbPers
             // Falls Artikel vorhanden
             if ($existing !== null) {
                 // Sichtbarkeit pruefen
-                $visibility = Shop::Container()->getDB()->select(
-                    'tartikelsichtbarkeit',
-                    'kArtikel',
-                    $productID,
-                    'kKundengruppe',
-                    Frontend::getCustomerGroup()->getID(),
-                    null,
-                    null,
-                    false,
-                    'kArtikel'
-                );
+                if (!empty($unique) && $configItemID > 0) {
+                    // config components are always visible in cart...
+                    $visibility = null;
+                } else {
+                    $visibility = Shop::Container()->getDB()->select(
+                        'tartikelsichtbarkeit',
+                        'kArtikel',
+                        $productID,
+                        'kKundengruppe',
+                        Frontend::getCustomerGroup()->getID(),
+                        null,
+                        null,
+                        false,
+                        'kArtikel'
+                    );
+                }
                 if ($visibility === null || !isset($visibility->kArtikel) || !$visibility->kArtikel) {
                     $persCart = new WarenkorbPers(Frontend::getCustomer()->getID());
                     if ($type === \C_WARENKORBPOS_TYP_GRATISGESCHENK) {

@@ -17,7 +17,7 @@ use JTL\Shop;
 class Optin extends OptinBase
 {
     /**
-     * @var OptinAvailAgain|null
+     * @var OptinInterface
      */
     protected $currentOptin;
 
@@ -28,6 +28,7 @@ class Optin extends OptinBase
 
     /**
      * Optin constructor.
+     *
      * @param string|null $optinClass
      * @throws EmptyResultSetException
      */
@@ -63,7 +64,7 @@ class Optin extends OptinBase
     /**
      * return message meanings:
      * 'optinCanceled'       = cancel (a previously active) subscription
-     * 'optinRemoved'        = cancel optin without the existence  of a subscription
+     * 'optinRemoved'        = cancel optin without the existence of a subscription
      * 'optinSucceeded'      = subscription successfully
      * 'optinSucceededAgain' = user clicked again
      *
@@ -79,65 +80,26 @@ class Optin extends OptinBase
         $this->loadOptin();
         if (empty($this->foundOptinTupel)) {
             throw new EmptyResultSetException('Double-Opt-in not found: ' .
-                (($this->emailAddress === '') ? $this->emailAddress : $this->optCode));
+                (($this->emailAddress !== '') ? $this->emailAddress : $this->optCode));
         }
         $this->generateOptin($this->refData->getOptinClass());
         if ($this->actionPrefix === self::DELETE_CODE || $this->externalAction === self::DELETE_CODE) {
             $this->deactivateOptin();
+            if (!empty($this->currentOptin)) {
+                $this->currentOptin->deactivateOptin();
+            }
 
             return empty($this->foundOptinTupel->dActivated) ? 'optinRemoved' : 'optinCanceled';
         }
         if ($this->actionPrefix === self::ACTIVATE_CODE || $this->externalAction === self::ACTIVATE_CODE) {
             $this->activateOptin();
+            if (!empty($this->currentOptin)) {
+                $this->currentOptin->activateOptin();
+            }
 
             return empty($this->foundOptinTupel->dActivated) ? 'optinSucceeded' : 'optinSucceededAgain';
         }
         throw new InvalidInputException('unknown action received.');
-    }
-
-    /**
-     * @throws \Exception
-     */
-    public function activateOptin(): void
-    {
-        if (!empty($this->currentOptin)) {
-            $this->currentOptin->activateOptin();
-        }
-        $rowData = new \stdClass();
-        if (empty($this->foundOptinTupel->dActivated)) {
-            $rowData->dActivated = $this->nowDataTime->format('Y-m-d H:i:s');
-            $this->dbHandler->update('toptin', 'kOptinCode', $this->optCode, $rowData);
-        }
-    }
-
-    /**
-     * deactivate and cleanup this optin
-     * (class specific deactivations AND finishing here)
-     */
-    public function deactivateOptin(): void
-    {
-        if (!empty($this->currentOptin)) {
-            $this->currentOptin->deactivateOptin();
-        }
-        $this->finishOptin();
-    }
-
-    /**
-     * only move the optin-tupel to history
-     * (e.g. used for "one shot opt-in" actions)
-     */
-    public function finishOptin(): void
-    {
-        $newRow               = new \stdClass();
-        $newRow->kOptinCode   = $this->foundOptinTupel->kOptinCode;
-        $newRow->kOptinClass  = $this->foundOptinTupel->kOptinClass;
-        $newRow->cMail        = 'anonym'; // anonymized for history
-        $newRow->cRefData     = \serialize($this->refData->anonymized()); // anonymized for history
-        $newRow->dCreated     = $this->foundOptinTupel->dCreated;
-        $newRow->dActivated   = $this->foundOptinTupel->dActivated;
-        $newRow->dDeActivated = $this->nowDataTime->format('Y-m-d H:i:s');
-        $this->dbHandler->insert('toptinhistory', $newRow);
-        $this->dbHandler->delete('toptin', 'kOptinCode', $this->foundOptinTupel->kOptinCode);
     }
 
     /**

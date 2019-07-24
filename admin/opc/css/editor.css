@@ -821,9 +821,11 @@
 }
 #opc .row-layout-previews > * {
   display: inline-block;
+}
+#opc .row-layout-previews .layout-preview {
   margin: 24px;
 }
-#opc .row-layout-previews > * > * {
+#opc .row-layout-previews .layout-preview > * {
   background-color: #5cbcf6;
   height: 8px;
   float: left;

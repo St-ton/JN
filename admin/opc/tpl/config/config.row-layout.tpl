@@ -1,4 +1,4 @@
-<div class="form-group row-layout-controls">
+<div class="row-layout-controls">
     <label for="config-{$propname}">{$propdesc.label}</label>
     <div class="row">
         <div class="col-4">
@@ -36,11 +36,25 @@
     </div>
 </div>
 
+<label>Vorschau</label>
+
 <div class="row-layout-previews" id="{$propname}-previews">
-    <div class="layout-preview-0"></div>
-    <div class="layout-preview-1"></div>
-    <div class="layout-preview-2"></div>
-    <div class="layout-preview-3"></div>
+    <div>
+        <div class="layout-preview layout-preview-0"></div>
+        <div>Mobile (XS)</div>
+    </div>
+    <div>
+        <div class="layout-preview layout-preview-1"></div>
+        <div>Tablet (SM)</div>
+    </div>
+    <div>
+        <div class="layout-preview layout-preview-2"></div>
+        <div>Desktop (MD)</div>
+    </div>
+    <div>
+        <div class="layout-preview layout-preview-3"></div>
+        <div>Large Desktop (LG)</div>
+    </div>
 </div>
 
 <script>

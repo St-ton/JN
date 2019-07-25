@@ -9,7 +9,7 @@
                 $('input[type="checkbox"]:checked').next().each(function(i){
                     itemsChecked += $(this).prev().val();
                 });
-                if (itemsChecked === 'artikel' || itemsChecked === '') {
+                if (itemsChecked === 'artikel' || itemsChecked === 'steuern' || itemsChecked === '') {
                     $('#warningZuruecksetzen, #messageDataGetsLost').addClass('hide');
                     $('button[data-target=".zuruecksetzen-modal"]').prop('disabled', itemsChecked === '');
                     $('#backupDone').closest('div.checkbox').addClass('hide');
@@ -56,6 +56,10 @@
                 <div class="item">
                     <input type="checkbox" name="cOption_arr[]" value="artikel" tabindex="3" id="Artikel" />
                     <label for="Artikel">{__('deleteProductCategory')}</label>
+                </div>
+                <div class="item">
+                    <input type="checkbox" name="cOption_arr[]" value="steuern" tabindex="3" id="Steuern" />
+                    <label for="Steuern">{__('deleteTax')}</label>
                 </div>
                 <div class="item">
                     <input type="checkbox" name="cOption_arr[]" value="news" tabindex="4" id="News" />

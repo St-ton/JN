@@ -2595,8 +2595,12 @@ div.markdown thead tr td {
   border: 0;
 }
 .file-preview .krajee-default.file-preview-frame .kv-file-content {
-  width: 100%;
+  max-width: 100%;
   height: auto;
+  margin: 0 auto;
+}
+.file-preview-thumbnails img {
+  max-width: 100%;
 }
 .file-preview .file-upload-indicator {
   display: none;

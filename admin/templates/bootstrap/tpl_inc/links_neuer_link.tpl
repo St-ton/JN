@@ -37,17 +37,21 @@
             browseOnZoneClick:     true,
             maxFileSize:           1000,
             initialPreview:        [
-                {foreach $cDatei_arr as $cDatei}
-                    '{$cDatei->cURL}<a href="links.php?action=edit-link&kLink={$Link->getID()}&token={$smarty.session.jtl_token}&delpic=1&cName={$cDatei->cNameFull}{if isset($Link->getPluginID()) && $Link->getPluginID() > 0}{$Link->getPluginID()}{/if}"><i class="fas fa-trash"></i></a>',
-                {/foreach}
+                {if !empty($cDatei_arr)}
+                    {foreach $cDatei_arr as $cDatei}
+                        '{$cDatei->cURL}<a href="links.php?action=edit-link&kLink={$Link->getID()}&token={$smarty.session.jtl_token}&delpic=1&cName={$cDatei->cNameFull}{if isset($Link->getPluginID()) && $Link->getPluginID() > 0}{$Link->getPluginID()}{/if}"><i class="fas fa-trash"></i></a>',
+                    {/foreach}
+                {/if}
             ],
             initialPreviewConfig:  [
-                {foreach $cDatei_arr as $cDatei}
-                {
-                    caption: '$#{$cDatei->cName}#$',
-                    width:   '120px'
-                },
-                {/foreach}
+                {if !empty($cDatei_arr)}
+                    {foreach $cDatei_arr as $cDatei}
+                    {
+                        caption: '$#{$cDatei->cName}#$',
+                        width:   '120px'
+                    },
+                    {/foreach}
+                {/if}
             ]
         });
     });

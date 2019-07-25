@@ -4,16 +4,16 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use JTL\Session\Frontend;
-use JTL\Helpers\URL;
-use JTL\Helpers\ShippingMethod;
 use JTL\Alert\Alert;
-use JTL\Helpers\CMS;
 use JTL\Catalog\Hersteller;
+use JTL\Extensions\SelectionWizard\Wizard;
+use JTL\Helpers\CMS;
+use JTL\Helpers\ShippingMethod;
+use JTL\Helpers\URL;
+use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Shopsetting;
 use JTL\Sitemap\Sitemap;
-use JTL\Extensions\SelectionWizard;
 
 if (!defined('PFAD_ROOT')) {
     http_response_code(400);
@@ -48,7 +48,7 @@ if ($link->getLinkType() === LINKTYP_STARTSEITE) {
            ->assign('oNews_arr', $conf['news']['news_benutzen'] === 'Y'
                ? CMS::getHomeNews($conf)
                : []);
-    SelectionWizard::startIfRequired(AUSWAHLASSISTENT_ORT_STARTSEITE, 1, Shop::getLanguage(), $smarty);
+    Wizard::startIfRequired(AUSWAHLASSISTENT_ORT_STARTSEITE, 1, Shop::getLanguage(), $smarty);
 } elseif ($link->getLinkType() === LINKTYP_AGB) {
     $smarty->assign('AGB', Shop::Container()->getLinkService()->getAGBWRB(
         Shop::getLanguage(),
@@ -106,7 +106,7 @@ if ($link->getLinkType() === LINKTYP_STARTSEITE) {
         }
     }
 } elseif ($link->getLinkType() === LINKTYP_AUSWAHLASSISTENT) {
-    SelectionWizard::startIfRequired(
+    Wizard::startIfRequired(
         AUSWAHLASSISTENT_ORT_LINK,
         $link->getID(),
         Shop::getLanguageID(),

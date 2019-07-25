@@ -4,20 +4,20 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace JTL\Extensions;
+namespace JTL\Extensions\SelectionWizard;
 
+use JTL\Catalog\Category\Kategorie;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
-use JTL\Catalog\Category\Kategorie;
 use JTL\Helpers\GeneralObject;
 use JTL\Shop;
 use stdClass;
 
 /**
- * Class SelectionWizardLocation
- * @package JTL\Extensions
+ * Class Location
+ * @package JTL\Extensions\SelectionWizard
  */
-class SelectionWizardLocation
+class Location
 {
     /**
      * @var int
@@ -55,7 +55,7 @@ class SelectionWizardLocation
     private $db;
 
     /**
-     * SelectionWizardLocation constructor.
+     * Location constructor.
      * @param int  $locationID
      * @param int  $groupID
      * @param bool $backend
@@ -400,7 +400,7 @@ class SelectionWizardLocation
      * @param int    $id
      * @param int    $languageID
      * @param bool   $backend
-     * @return SelectionWizardLocation|null
+     * @return Location|null
      */
     public function getLocation($keyName, int $id, int $languageID, bool $backend = false): ?self
     {

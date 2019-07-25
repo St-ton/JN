@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace JTL\Extensions;
+namespace JTL\Extensions\SelectionWizard;
 
 use JTL\Catalog\Category\Kategorie;
 use JTL\DB\ReturnType;
@@ -17,10 +17,10 @@ use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
 
 /**
- * Class SelectionWizard
- * @package JTL\Extensions
+ * Class Wizard
+ * @package JTL\Extensions\SelectionWizard
  */
-class SelectionWizard
+class Wizard
 {
     /**
      * @var int
@@ -63,12 +63,12 @@ class SelectionWizard
     private $nAktiv = 0;
 
     /**
-     * @var SelectionWizardQuestion[]
+     * @var Question[]
      */
     private $questions = [];
 
     /**
-     * @var SelectionWizardQuestion[] - keys are kMerkmal
+     * @var Question[] - keys are kMerkmal
      */
     private $questionsAssoc = [];
 
@@ -93,7 +93,7 @@ class SelectionWizard
     private $config;
 
     /**
-     * SelectionWizard constructor.
+     * Wizard constructor.
      *
      * @param string $keyName
      * @param int    $id
@@ -163,7 +163,7 @@ class SelectionWizard
             $this->questions = [];
 
             foreach ($questionIDs as $questionID) {
-                $question                                  = new SelectionWizardQuestion((int)$questionID->id);
+                $question                                  = new Question((int)$questionID->id);
                 $this->questions[]                         = $question;
                 $this->questionsAssoc[$question->kMerkmal] = $question;
             }
@@ -296,15 +296,15 @@ class SelectionWizard
 
     /**
      * @param int $nFrage
-     * @return SelectionWizardQuestion|null
+     * @return Question|null
      */
-    public function getQuestion(int $nFrage): ?SelectionWizardQuestion
+    public function getQuestion(int $nFrage): ?Question
     {
         return $this->questions[$nFrage] ?? null;
     }
 
     /**
-     * @return SelectionWizardQuestion[]
+     * @return Question[]
      */
     public function getQuestions(): array
     {

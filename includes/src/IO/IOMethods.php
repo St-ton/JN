@@ -8,38 +8,38 @@ namespace JTL\IO;
 
 use Exception;
 use JTL\Alert\Alert;
-use JTL\Boxes\Renderer\DefaultRenderer;
-use JTL\Boxes\Type;
-use JTL\Catalog\Product\Artikel;
 use JTL\Boxes\Items\BoxInterface;
 use JTL\Boxes\Items\CompareList;
 use JTL\Boxes\Items\Wishlist;
+use JTL\Boxes\Renderer\DefaultRenderer;
+use JTL\Boxes\Type;
 use JTL\Cart\Warenkorb;
 use JTL\Cart\WarenkorbPers;
-use JTL\DB\ReturnType;
+use JTL\Catalog\Category\Kategorie;
+use JTL\Catalog\Category\KategorieListe;
+use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\EigenschaftWert;
-use JTL\Extensions\SelectionWizard;
+use JTL\Catalog\Product\Preise;
+use JTL\Catalog\Trennzeichen;
+use JTL\Catalog\Wishlist\Wunschliste;
+use JTL\Checkout\Kupon;
+use JTL\Customer\Kundengruppe;
+use JTL\DB\ReturnType;
+use JTL\Extensions\SelectionWizard\Wizard;
 use JTL\Helpers\Cart;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Product;
 use JTL\Helpers\ShippingMethod;
-use JTL\Helpers\Text;
 use JTL\Helpers\Tax;
+use JTL\Helpers\Text;
 use JTL\Helpers\URL;
 use JTL\Kampagne;
-use JTL\Catalog\Category\Kategorie;
-use JTL\Catalog\Category\KategorieListe;
-use JTL\Customer\Kundengruppe;
-use JTL\Checkout\Kupon;
-use JTL\Catalog\Product\Preise;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Shopsetting;
 use JTL\Staat;
-use JTL\Catalog\Trennzeichen;
 use SmartyException;
 use stdClass;
-use JTL\Catalog\Wishlist\Wunschliste;
 
 require_once \PFAD_ROOT . \PFAD_INCLUDES . 'artikel_inc.php';
 
@@ -1252,7 +1252,7 @@ class IOMethods
     {
         $smarty   = Shop::Smarty();
         $response = new IOResponse();
-        $AWA      = SelectionWizard::startIfRequired($keyName, $id, $languageID, $smarty, $selection);
+        $AWA      = Wizard::startIfRequired($keyName, $id, $languageID, $smarty, $selection);
 
         if ($AWA !== null) {
             $oLastSelectedValue = $AWA->getLastSelectedValue();

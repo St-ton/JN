@@ -4,19 +4,19 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace JTL\Extensions;
+namespace JTL\Extensions\SelectionWizard;
 
+use JTL\Catalog\Product\Merkmal;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
-use JTL\Catalog\Product\Merkmal;
 use JTL\Shop;
 use stdClass;
 
 /**
- * Class SelectionWizardQuestion
- * @package JTL\Extensions
+ * Class Question
+ * @package JTL\Extensions\SelectionWizard
  */
-class SelectionWizardQuestion
+class Question
 {
     /**
      * @var int
@@ -74,7 +74,7 @@ class SelectionWizardQuestion
     private $db;
 
     /**
-     * SelectionWizardQuestion constructor.
+     * Location constructor.
      * @param int  $id
      * @param bool $activeOnly
      */

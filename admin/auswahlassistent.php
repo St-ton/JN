@@ -6,9 +6,9 @@
 
 use JTL\Alert\Alert;
 use JTL\DB\ReturnType;
-use JTL\Extensions\SelectionWizard;
-use JTL\Extensions\SelectionWizardQuestion;
-use JTL\Extensions\SelectionWizardGroup;
+use JTL\Extensions\SelectionWizard\Wizard;
+use JTL\Extensions\SelectionWizard\Group;
+use JTL\Extensions\SelectionWizard\Question;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
@@ -26,8 +26,8 @@ $alertHelper = Shop::Container()->getAlertService();
 JTL\Shop::Container()->getGetText()->loadConfigLocales();
 
 if ($nice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
-    $group    = new SelectionWizardGroup();
-    $question = new SelectionWizardQuestion();
+    $group    = new Group();
+    $question = new Question();
     $step     = 'uebersicht';
     setzeSprache();
 
@@ -80,7 +80,7 @@ if ($nice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
         }
     } elseif (isset($_GET['a']) && $_GET['a'] === 'editQuest' && (int)$_GET['q'] > 0 && Form::validateToken()) {
         $step = 'edit-question';
-        $smarty->assign('oFrage', new SelectionWizardQuestion((int)$_GET['q'], false));
+        $smarty->assign('oFrage', new Question((int)$_GET['q'], false));
     }
 
     if (isset($_POST['a']) && Form::validateToken()) {
@@ -134,7 +134,7 @@ if ($nice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
         && Form::validateToken()
     ) {
         $step = 'edit-group';
-        $smarty->assign('oGruppe', new SelectionWizardGroup((int)$_GET['g'], false, false, true));
+        $smarty->assign('oGruppe', new Group((int)$_GET['g'], false, false, true));
     }
     if ($step === 'uebersicht') {
         $smarty->assign(
@@ -142,7 +142,7 @@ if ($nice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
             $group->getGroups($_SESSION['kSprache'], false, false, true)
         );
     } elseif ($step === 'edit-group') {
-        $smarty->assign('oLink_arr', SelectionWizard::getLinks());
+        $smarty->assign('oLink_arr', Wizard::getLinks());
     } elseif ($step === 'edit-question') {
         $defaultLanguage = Shop::Container()->getDB()->select('tsprache', 'cShopStandard', 'Y');
         $select          = 'tmerkmal.*';

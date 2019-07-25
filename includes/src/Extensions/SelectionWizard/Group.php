@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace JTL\Extensions;
+namespace JTL\Extensions\SelectionWizard;
 
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
@@ -13,10 +13,10 @@ use JTL\Shop;
 use stdClass;
 
 /**
- * Class SelectionWizardGroup
- * @package JTL\Extensions
+ * Class Group
+ * @package JTL\Extensions\SelectionWizard
  */
-class SelectionWizardGroup
+class Group
 {
     /**
      * @var int
@@ -74,7 +74,7 @@ class SelectionWizardGroup
     private $db;
 
     /**
-     * SelectionWizardGroup constructor.
+     * Group constructor.
      * @param int  $groupID
      * @param bool $active
      * @param bool $activeOnly
@@ -106,7 +106,7 @@ class SelectionWizardGroup
             ReturnType::SINGLE_OBJECT
         );
         if (isset($group->kAuswahlAssistentGruppe) && $group->kAuswahlAssistentGruppe > 0) {
-            $question = new SelectionWizardQuestion();
+            $question = new Question();
             foreach (\array_keys(\get_object_vars($group)) as $member) {
                 $this->$member = $group->$member;
             }
@@ -114,7 +114,7 @@ class SelectionWizardGroup
             $this->kSprache                   = (int)$this->kSprache;
             $this->nAktiv                     = (int)$this->nAktiv;
             $this->oAuswahlAssistentFrage_arr = $question->getQuestions($groupID, $activeOnly);
-            $location                         = new SelectionWizardLocation(0, $groupID, $backend);
+            $location                         = new Location(0, $groupID, $backend);
             $this->oAuswahlAssistentOrt_arr   = $location->oOrt_arr;
             foreach ($this->oAuswahlAssistentOrt_arr as $location) {
                 if ($location->cKey === \AUSWAHLASSISTENT_ORT_KATEGORIE) {
@@ -186,7 +186,7 @@ class SelectionWizardGroup
         );
         $groupID = $this->db->insert('tauswahlassistentgruppe', $data);
         if ($groupID > 0) {
-            $location = new SelectionWizardLocation();
+            $location = new Location();
             $location->saveLocation($params, $groupID);
 
             return $primary ? $groupID : true;
@@ -217,7 +217,7 @@ class SelectionWizardGroup
             (int)$this->kAuswahlAssistentGruppe,
             $upd
         );
-        $location = new SelectionWizardLocation();
+        $location = new Location();
         $location->updateLocation($params, $this->kAuswahlAssistentGruppe);
 
         return true;
@@ -240,7 +240,7 @@ class SelectionWizardGroup
         if ($this->nAktiv !== 0 && $this->nAktiv !== 1) {
             $validation['nAktiv'] = 1;
         }
-        $location = (new SelectionWizardLocation())->checkLocation($params, $update);
+        $location = (new Location())->checkLocation($params, $update);
 
         return \array_merge($location, $validation);
     }

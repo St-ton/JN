@@ -587,15 +587,12 @@ function getSytemlogFlag($cache = true)
 }
 
 /**
- * @param object $startKat
- * @param object $AufgeklappteKategorien
- * @param object $AktuelleKategorie
  * @deprecated since 5.0.0
  */
-function baueKategorieListenHTML($startKat, $AufgeklappteKategorien, $AktuelleKategorie)
+function baueKategorieListenHTML()
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    Category::buildCategoryListHTML($startKat, $AktuelleKategorie, $AktuelleKategorie);
+    Shop::Smarty()->assign('cKategorielistenHTML_arr', []);
 }
 
 /**

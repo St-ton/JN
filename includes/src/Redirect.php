@@ -378,7 +378,7 @@ class Redirect
             if (!empty($queryString)) {
                 $item = $this->find($url . '?' . $queryString);
                 if ($item !== null) {
-                    $url                    = $url . '?' . $queryString;
+                    $url                   .= '?' . $queryString;
                     $foundRedirectWithQuery = true;
                 }
             } else {

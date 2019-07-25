@@ -344,7 +344,7 @@ class MenuItem
             $this->setDescription($data->cBeschreibung_spr);
         }
 
-        $this->setUrl($data->cSeo ?? '');
+        $this->setURL($data->cSeo ?? '');
         $this->setImageURL($data->cPfad ?? '');
         $this->setProductCount($data->cnt);
     }

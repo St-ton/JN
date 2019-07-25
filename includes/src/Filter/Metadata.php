@@ -952,7 +952,7 @@ class Metadata implements MetadataInterface
      */
     public static function prepareMeta(string $metaProposal, ?string $metaSuffix = null, ?int $maxLength = null): string
     {
-        $metaStr = trim(preg_replace('/\s\s+/', ' ', Text::htmlentitiesOnce($metaProposal)));
+        $metaStr = \trim(\preg_replace('/\s\s+/', ' ', Text::htmlentitiesOnce($metaProposal)));
 
         return Text::htmlentitiesSubstr($metaStr, $maxLength ?? 0) . ($metaSuffix ?? '');
     }

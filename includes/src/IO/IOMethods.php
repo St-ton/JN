@@ -1304,7 +1304,7 @@ class IOMethods
             ->assign('opcPageService', $opcPageService)
             ->assign('publicDraftKey', $publicDraftkey)
             ->assign('opcStartUrl', Shop::getURL() . '/admin/opc.php')
-            ->fetch(PFAD_ROOT . PFAD_ADMIN . 'opc/tpl/draftlist.tpl');
+            ->fetch(\PFAD_ROOT . \PFAD_ADMIN . 'opc/tpl/draftlist.tpl');
 
         $response->assign('opc-draft-list', 'innerHTML', $newDraftListHtml);
 

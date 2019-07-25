@@ -308,7 +308,7 @@ class Filesystem implements IFilesystem
 
         $zipArchive = new ZipArchive();
 
-        if (($code = $zipArchive->open($directory, ZIPARCHIVE::CHECKCONS)) !== true) {
+        if (($code = $zipArchive->open($directory, ZipArchive::CHECKCONS)) !== true) {
             throw new Exception('Incompatible Archive.', $code);
         }
 

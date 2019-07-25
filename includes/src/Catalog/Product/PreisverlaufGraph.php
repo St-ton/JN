@@ -690,7 +690,7 @@ class PreisverlaufGraph
 
             for ($i = 0; $i < $this->nAnzahlPreise; $i++) {
                 $this->nStepY += $nPixelProSchrittY;
-                $price       -= $this->fStepWert_arr[$this->nStep];
+                $price        -= $this->fStepWert_arr[$this->nStep];
                 \imagefttext(
                     $this->image,
                     $this->nSchriftgroesse,

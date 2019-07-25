@@ -26,7 +26,9 @@ $alertHelper = Shop::Container()->getAlertService();
 JTL\Shop::Container()->getGetText()->loadConfigLocales();
 
 if ($nice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
-    $step = 'uebersicht';
+    $group    = new AuswahlAssistentGruppe();
+    $question = new AuswahlAssistentFrage();
+    $step     = 'uebersicht';
     setzeSprache();
 
     if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
@@ -38,7 +40,6 @@ if ($nice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
         } elseif ($_POST['a'] === 'newQuest') {
             $step = 'edit-question';
         } elseif ($_POST['a'] === 'addQuest') {
-            $question                          = new AuswahlAssistentFrage();
             $question->cFrage                  = htmlspecialchars(
                 $_POST['cFrage'],
                 ENT_COMPAT | ENT_HTML401,
@@ -72,7 +73,7 @@ if ($nice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
         && (int)$_GET['q'] > 0
         && Form::validateToken()
     ) {
-        if (AuswahlAssistentFrage::deleteQuestion(['kAuswahlAssistentFrage_arr' => [$_GET['q']]])) {
+        if ($question->deleteQuestion([$_GET['q']])) {
             $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successQuestionDeleted'), 'successQuestionDeleted');
         } else {
             $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorQuestionDeleted'), 'errorQuestionDeleted');
@@ -84,7 +85,6 @@ if ($nice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
 
     if (isset($_POST['a']) && Form::validateToken()) {
         if ($_POST['a'] === 'addGrp') {
-            $group                = new AuswahlAssistentGruppe();
             $group->kSprache      = (int)$_SESSION['kSprache'];
             $group->cName         = htmlspecialchars(
                 $_POST['cName'],
@@ -115,7 +115,7 @@ if ($nice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
                         : 0));
             }
         } elseif ($_POST['a'] === 'delGrp') {
-            if (AuswahlAssistentGruppe::deleteGroup($_POST)) {
+            if ($group->deleteGroup($_POST['kAuswahlAssistentGruppe_arr'] ?? [])) {
                 $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successGroupDeleted'), 'successGroupDeleted');
             } else {
                 $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorGroupDeleted'), 'errorGroupDeleted');
@@ -134,12 +134,12 @@ if ($nice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
         && Form::validateToken()
     ) {
         $step = 'edit-group';
-        $smarty->assign('oGruppe', new AuswahlAssistentGruppe($_GET['g'], false, false, true));
+        $smarty->assign('oGruppe', new AuswahlAssistentGruppe((int)$_GET['g'], false, false, true));
     }
     if ($step === 'uebersicht') {
         $smarty->assign(
             'oAuswahlAssistentGruppe_arr',
-            AuswahlAssistentGruppe::getGroups($_SESSION['kSprache'], false, false, true)
+            $group->getGroups($_SESSION['kSprache'], false, false, true)
         );
     } elseif ($step === 'edit-group') {
         $smarty->assign('oLink_arr', AuswahlAssistent::getLinks());
@@ -162,7 +162,7 @@ if ($nice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
         $smarty->assign('oMerkmal_arr', $attributes)
             ->assign(
                 'oAuswahlAssistentGruppe_arr',
-                AuswahlAssistentGruppe::getGroups($_SESSION['kSprache'], false, false, true)
+                $group->getGroups($_SESSION['kSprache'], false, false, true)
             );
     }
 } else {

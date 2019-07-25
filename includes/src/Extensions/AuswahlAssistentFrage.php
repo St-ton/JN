@@ -6,6 +6,7 @@
 
 namespace JTL\Extensions;
 
+use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
 use JTL\Catalog\Product\Merkmal;
 use JTL\Helpers\GeneralObject;
@@ -69,24 +70,30 @@ class AuswahlAssistentFrage
     public $oMerkmal;
 
     /**
+     * @var DbInterface
+     */
+    private $db;
+
+    /**
      * AuswahlAssistentFrage constructor.
-     * @param int  $kAuswahlAssistentFrage
+     * @param int  $id
      * @param bool $activeOnly
      */
-    public function __construct(int $kAuswahlAssistentFrage = 0, bool $activeOnly = true)
+    public function __construct(int $id = 0, bool $activeOnly = true)
     {
-        if ($kAuswahlAssistentFrage > 0) {
-            $this->loadFromDB($kAuswahlAssistentFrage, $activeOnly);
+        $this->db = Shop::Container()->getDB();
+        if ($id > 0) {
+            $this->loadFromDB($id, $activeOnly);
         }
     }
 
     /**
-     * @param int  $questionID
+     * @param int  $id
      * @param bool $activeOnly
      */
-    private function loadFromDB(int $questionID, bool $activeOnly = true): void
+    private function loadFromDB(int $id, bool $activeOnly = true): void
     {
-        $data = Shop::Container()->getDB()->query(
+        $data = $this->db->query(
             'SELECT af.*, m.cBildpfad, COALESCE(ms.cName, m.cName) AS cName, m.cBildpfad
                 FROM tauswahlassistentfrage AS af
                     JOIN tauswahlassistentgruppe as ag
@@ -96,7 +103,7 @@ class AuswahlAssistentFrage
                     LEFT JOIN tmerkmalsprache AS ms
                         ON ms.kMerkmal = m.kMerkmal 
                             AND ms.kSprache = ag.kSprache
-                WHERE af.kAuswahlAssistentFrage = ' . $questionID .
+                WHERE af.kAuswahlAssistentFrage = ' . $id .
                     ($activeOnly ? ' AND af.nAktiv = 1' : ''),
             ReturnType::SINGLE_OBJECT
         );
@@ -117,55 +124,46 @@ class AuswahlAssistentFrage
      * @param bool $activeOnly
      * @return array
      */
-    public static function getQuestions(int $groupID, bool $activeOnly = true): array
+    public function getQuestions(int $groupID, bool $activeOnly = true): array
     {
-        $questions = [];
-        if ($groupID > 0) {
-            $cAktivSQL = '';
-            if ($activeOnly) {
-                $cAktivSQL = ' AND nAktiv = 1';
-            }
-            $data = Shop::Container()->getDB()->query(
-                'SELECT *
-                    FROM tauswahlassistentfrage
-                    WHERE kAuswahlAssistentGruppe = ' . $groupID .
-                    $cAktivSQL . '
-                    ORDER BY nSort',
-                ReturnType::ARRAY_OF_OBJECTS
-            );
-            foreach ($data as $question) {
-                $questions[] = new self((int)$question->kAuswahlAssistentFrage, $activeOnly);
-            }
-        }
+        $activeSQL = $activeOnly ? ' AND nAktiv = 1' : '';
 
-        return $questions;
+        return $this->db->queryPrepared(
+            'SELECT kAuswahlAssistentFrage AS id
+                FROM tauswahlassistentfrage
+                WHERE kAuswahlAssistentGruppe = :gid' . $activeSQL . '
+                ORDER BY nSort',
+            ['gid' => $groupID],
+            ReturnType::COLLECTION
+        )->map(function ($e) use ($activeOnly) {
+            return new self((int)$e->id, $activeOnly);
+        })->all();
     }
 
     /**
-     * @param bool $bPrimary
+     * @param bool $primary
      * @return array|bool
      */
-    public function saveQuestion(bool $bPrimary = false)
+    public function saveQuestion(bool $primary = false)
     {
         $checks = $this->checkQuestion();
-        if (\count($checks) === 0) {
-            $ins                          = new stdClass();
-            $ins->kAuswahlAssistentFrage  = $this->kAuswahlAssistentFrage;
-            $ins->kAuswahlAssistentGruppe = $this->kAuswahlAssistentGruppe;
-            $ins->kMerkmal                = $this->kMerkmal;
-            $ins->cFrage                  = $this->cFrage;
-            $ins->nSort                   = $this->nSort;
-            $ins->nAktiv                  = $this->nAktiv;
-            $kAuswahlAssistentFrage       = Shop::Container()->getDB()->insert('tauswahlassistentfrage', $ins);
+        if (\count($checks) !== 0) {
+            return $checks;
+        }
+        $ins                          = new stdClass();
+        $ins->kAuswahlAssistentFrage  = $this->kAuswahlAssistentFrage;
+        $ins->kAuswahlAssistentGruppe = $this->kAuswahlAssistentGruppe;
+        $ins->kMerkmal                = $this->kMerkmal;
+        $ins->cFrage                  = $this->cFrage;
+        $ins->nSort                   = $this->nSort;
+        $ins->nAktiv                  = $this->nAktiv;
+        $id                           = $this->db->insert('tauswahlassistentfrage', $ins);
 
-            if ($kAuswahlAssistentFrage > 0) {
-                return $bPrimary ? $kAuswahlAssistentFrage : true;
-            }
-
-            return false;
+        if ($id > 0) {
+            return $primary ? $id : true;
         }
 
-        return $checks;
+        return false;
     }
 
     /**
@@ -174,46 +172,41 @@ class AuswahlAssistentFrage
     public function updateQuestion()
     {
         $checks = $this->checkQuestion(true);
-        if (\count($checks) === 0) {
-            $upd                          = new stdClass();
-            $upd->kAuswahlAssistentGruppe = $this->kAuswahlAssistentGruppe;
-            $upd->kMerkmal                = $this->kMerkmal;
-            $upd->cFrage                  = $this->cFrage;
-            $upd->nSort                   = $this->nSort;
-            $upd->nAktiv                  = $this->nAktiv;
-
-            Shop::Container()->getDB()->update(
-                'tauswahlassistentfrage',
-                'kAuswahlAssistentFrage',
-                (int)$this->kAuswahlAssistentFrage,
-                $upd
-            );
-
-            return true;
+        if (\count($checks) !== 0) {
+            return $checks;
         }
+        $upd                          = new stdClass();
+        $upd->kAuswahlAssistentGruppe = $this->kAuswahlAssistentGruppe;
+        $upd->kMerkmal                = $this->kMerkmal;
+        $upd->cFrage                  = $this->cFrage;
+        $upd->nSort                   = $this->nSort;
+        $upd->nAktiv                  = $this->nAktiv;
 
-        return $checks;
+        $this->db->update(
+            'tauswahlassistentfrage',
+            'kAuswahlAssistentFrage',
+            (int)$this->kAuswahlAssistentFrage,
+            $upd
+        );
+
+        return true;
     }
 
     /**
-     * @param array $params
+     * @param array $questionIDs
      * @return bool
      */
-    public static function deleteQuestion(array $params): bool
+    public function deleteQuestion(array $questionIDs): bool
     {
-        if (GeneralObject::hasCount('kAuswahlAssistentFrage_arr', $params)) {
-            foreach ($params['kAuswahlAssistentFrage_arr'] as $questionID) {
-                Shop::Container()->getDB()->delete(
-                    'tauswahlassistentfrage',
-                    'kAuswahlAssistentFrage',
-                    (int)$questionID
-                );
-            }
-
-            return true;
+        foreach (\array_map('\intval', $questionIDs) as $questionID) {
+            $this->db->delete(
+                'tauswahlassistentfrage',
+                'kAuswahlAssistentFrage',
+                $questionID
+            );
         }
 
-        return false;
+        return true;
     }
 
     /**
@@ -255,19 +248,15 @@ class AuswahlAssistentFrage
      */
     private function isMerkmalTaken(int $characteristicID, int $groupID): bool
     {
-        if ($characteristicID > 0 && $groupID > 0) {
-            $question = Shop::Container()->getDB()->select(
-                'tauswahlassistentfrage',
-                'kMerkmal',
-                $characteristicID,
-                'kAuswahlAssistentGruppe',
-                $groupID
-            );
+        $question = $this->db->select(
+            'tauswahlassistentfrage',
+            'kMerkmal',
+            $characteristicID,
+            'kAuswahlAssistentGruppe',
+            $groupID
+        );
 
-            return isset($question->kAuswahlAssistentFrage) && $question->kAuswahlAssistentFrage > 0;
-        }
-
-        return false;
+        return isset($question->kAuswahlAssistentFrage) && $question->kAuswahlAssistentFrage > 0;
     }
 
     /**

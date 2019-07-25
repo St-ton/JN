@@ -6,12 +6,12 @@
 
 namespace JTL\Extensions;
 
+use JTL\Catalog\Category\Kategorie;
 use JTL\DB\ReturnType;
 use JTL\Filter\Items\Characteristic;
 use JTL\Filter\Option;
 use JTL\Filter\ProductFilter;
 use JTL\Filter\SearchResults;
-use JTL\Catalog\Category\Kategorie;
 use JTL\Nice;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
@@ -103,9 +103,7 @@ class AuswahlAssistent
     public function __construct($keyName, int $id, int $languageID = 0, bool $activeOnly = true)
     {
         $this->config = Shop::getSettings(\CONF_AUSWAHLASSISTENT)['auswahlassistent'];
-        if ($languageID === 0) {
-            $languageID = Shop::getLanguageID();
-        }
+        $languageID   = $languageID ?: Shop::getLanguageID();
 
         if ($id > 0
             && $languageID > 0

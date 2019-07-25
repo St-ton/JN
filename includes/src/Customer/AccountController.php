@@ -402,8 +402,6 @@ class AccountController
             $_SESSION['VersandKupon'],
             $_SESSION['NeukundenKupon'],
             $_SESSION['Kupon'],
-            $_SESSION['kKategorieVonUnterkategorien_arr'],
-            $_SESSION['oKategorie_arr'],
             $_SESSION['oKategorie_arr_new']
         );
         if (isset($_SESSION['Kampagnenbesucher'])) {
@@ -813,12 +811,7 @@ class AccountController
         $languageID   = Shop::getLanguageID();
         $languageCode = Shop::getLanguageCode();
         $currency     = Frontend::getCurrency();
-        unset(
-            $_SESSION['kKategorieVonUnterkategorien_arr'],
-            $_SESSION['oKategorie_arr'],
-            $_SESSION['oKategorie_arr_new'],
-            $_SESSION['Warenkorb']
-        );
+        unset($_SESSION['oKategorie_arr_new'], $_SESSION['Warenkorb']);
 
         $params = \session_get_cookie_params();
         \setcookie(

@@ -197,10 +197,8 @@ class Frontend extends AbstractSession
     private function updateGlobals(): void
     {
         unset($_SESSION['cTemplate'], $_SESSION['template'], $_SESSION['oKategorie_arr_new']);
-        $_SESSION['oKategorie_arr']                   = [];
-        $_SESSION['kKategorieVonUnterkategorien_arr'] = [];
-        $_SESSION['ks']                               = [];
-        $_SESSION['Sprachen']                         = LanguageHelper::getInstance()->gibInstallierteSprachen();
+        $_SESSION['ks']       = [];
+        $_SESSION['Sprachen'] = LanguageHelper::getInstance()->gibInstallierteSprachen();
         Currency::setCurrencies(true);
 
         if (!isset($_SESSION['jtl_token'])) {

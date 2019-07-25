@@ -431,14 +431,6 @@ class Metadata implements MetadataInterface
                     $maxLength
                 );
             }
-            if (!empty($category->KategorieAttribute['meta_description'])) {
-                /** @deprecated since 4.05 - this is for compatibilty only! */
-                return self::prepareMeta(
-                    \strip_tags($category->KategorieAttribute['meta_description']),
-                    null,
-                    $maxLength
-                );
-            }
             // Hat die aktuelle Kategorie eine Beschreibung?
             if (!empty($category->cBeschreibung)) {
                 $catDescription = \strip_tags(\str_replace(['<br>', '<br />'], [' ', ' '], $category->cBeschreibung));
@@ -528,11 +520,6 @@ class Metadata implements MetadataInterface
             if (!empty($category->categoryAttributes['meta_keywords']->cWert)) {
                 // Hat die aktuelle Kategorie als Kategorieattribut einen Meta Keywords gesetzt?
                 return \strip_tags($category->categoryAttributes['meta_keywords']->cWert);
-            }
-            if (!empty($category->KategorieAttribute['meta_keywords'])) {
-                /** @deprecated since 4.05 - this is for compatibilty only! */
-
-                return \strip_tags($category->KategorieAttribute['meta_keywords']);
             }
         }
         // Keine eingestellten Metas vorhanden => baue Standard Metas
@@ -642,11 +629,6 @@ class Metadata implements MetadataInterface
             } elseif (!empty($category->categoryAttributes['meta_title']->cWert)) {
                 // Hat die aktuelle Kategorie als Kategorieattribut einen Meta Title gesetzt?
                 $metaTitle = \strip_tags($category->categoryAttributes['meta_title']->cWert);
-                $metaTitle = \str_replace('"', "'", $metaTitle);
-                $metaTitle = Text::htmlentitydecode($metaTitle, \ENT_NOQUOTES);
-            } elseif (!empty($category->KategorieAttribute['meta_title'])) {
-                /** @deprecated since 4.05 - this is for compatibilty only! */
-                $metaTitle = \strip_tags($category->KategorieAttribute['meta_title']);
                 $metaTitle = \str_replace('"', "'", $metaTitle);
                 $metaTitle = Text::htmlentitydecode($metaTitle, \ENT_NOQUOTES);
             }

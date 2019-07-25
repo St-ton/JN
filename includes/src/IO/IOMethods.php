@@ -1171,27 +1171,27 @@ class IOMethods
     }
 
     /**
-     * @param int $categoryId
+     * @param int $categoryID
      * @return IOResponse
      * @throws SmartyException
      */
-    public function getCategoryMenu(int $categoryId): IOResponse
+    public function getCategoryMenu(int $categoryID): IOResponse
     {
         $smarty = Shop::Smarty();
-        $auto   = $categoryId === 0;
+        $auto   = $categoryID === 0;
 
         if ($auto) {
-            $categoryId = Shop::$kKategorie;
+            $categoryID = Shop::$kKategorie;
         }
 
         $response   = new IOResponse();
         $list       = new KategorieListe();
-        $category   = new Kategorie($categoryId);
-        $categories = $list->holUnterkategorien($category->kKategorie, 0, 0);
+        $category   = new Kategorie($categoryID);
+        $categories = $list->getChildCategories($category->kKategorie, 0, 0);
 
         if ($auto && \count($categories) === 0) {
             $category   = new Kategorie($category->kOberKategorie);
-            $categories = $list->holUnterkategorien($category->kKategorie, 0, 0);
+            $categories = $list->getChildCategories($category->kKategorie, 0, 0);
         }
 
         $result = (object)['current' => $category, 'items' => $categories];

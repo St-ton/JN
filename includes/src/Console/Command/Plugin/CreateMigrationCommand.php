@@ -12,8 +12,15 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
+/**
+ * Class CreateMigrationCommand
+ * @package JTL\Console\Command\Plugin
+ */
 class CreateMigrationCommand extends Command
 {
+    /**
+     * @inheritDoc
+     */
     protected function configure()
     {
         $this
@@ -25,20 +32,20 @@ class CreateMigrationCommand extends Command
     }
 
     /**
-     * @param InputInterface $input
+     * @param InputInterface  $input
      * @param OutputInterface $output
      * @return int|null
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $pluginDir   = trim($input->getArgument('plugin-dir'));
-        $description = trim($input->getArgument('description'));
-        $author      = trim($input->getArgument('author'));
+        $pluginDir   = \trim($input->getArgument('plugin-dir'));
+        $description = \trim($input->getArgument('description'));
+        $author      = \trim($input->getArgument('author'));
 
         try {
             $migrationPath = MigrationHelper::create($pluginDir, $description, $author);
 
-            $output->writeln("<info>Created Migration:</info> <comment>'".$migrationPath."'</comment>");
+            $output->writeln("<info>Created Migration:</info> <comment>'" . $migrationPath . "'</comment>");
         } catch (\Exception $e) {
             $this->getIO()->error($e->getMessage());
 

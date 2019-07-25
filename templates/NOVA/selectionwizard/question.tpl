@@ -8,7 +8,7 @@
             <div class="h5 selection-wizard-question-heading">
                 {$oFrage->cFrage}
                 {if $nQuestion < $AWA->getCurQuestion()}
-                    {link href="#" data=["value"=>$nQuestion] class="fa fa-edit question-edit"}{/link}
+                    {link href="#" data=["value"=>$nQuestion] class="question-edit"}<i class="fa fa-edit"></i>{/link}
                 {/if}
             </div>
         {/block}
@@ -16,8 +16,8 @@
             {block name='selectionwizard-question-answer-smaller'}
                 <span class="selection-wizard-answer">
                     {assign var=oWert value=$AWA->getSelectedValue($nQuestion)}
-                    {if $AWA->getConf('auswahlassistent_anzeigeformat')|in_array:['B', 'BT']:true && $oWert->cBildpfadKlein !== ''}
-                        {image src=$oWert->cBildURLKlein alt=$oWert->getValue() title=$oWert->getValue()}
+                    {if $AWA->getConf('auswahlassistent_anzeigeformat')|in_array:['B', 'BT']:true && $oWert->cBildURLNormal !== ''}
+                        {image src=$oWert->cBildURLNormal alt=$oWert->getValue() title=$oWert->getValue()}
                     {/if}
                     {if $AWA->getConf('auswahlassistent_anzeigeformat')|in_array:['T', 'BT', 'S']:true}
                         {$oWert->getValue()}
@@ -46,9 +46,9 @@
                 {block name='selectionwizard-question-answer-equals-other'}
                     {foreach $oFrage->oWert_arr as $oWert}
                         {if isset($oWert->nAnzahl)}
-                            {link class="selection-wizard-answer no-deco" href="#" data=["value"=>$oWert->kMerkmalWert]}
-                                {if $AWA->getConf('auswahlassistent_anzeigeformat')|in_array:['B', 'BT']:true && $oWert->cBildpfadKlein !== ''}
-                                    {image src=$oWert->cBildURLKlein alt=$oWert->getValue() title=$oWert->getValue()}
+                            {link class="selection-wizard-answer no-deco mb-3" href="#" data=["value"=>$oWert->kMerkmalWert]}
+                                {if $AWA->getConf('auswahlassistent_anzeigeformat')|in_array:['B', 'BT']:true && $oWert->cBildURLNormal !== ''}
+                                    {image src=$oWert->cBildURLNormal alt=$oWert->getValue() title=$oWert->getValue()}
                                 {/if}
                                 {if $AWA->getConf('auswahlassistent_anzeigeformat')|in_array:['T', 'BT']:true}
                                     {$oWert->getValue()}
@@ -72,8 +72,8 @@
                     {foreach $oFrage->oWert_arr as $oWert}
                         {if $oWert->getCount() > 0}
                             <span class="selection-wizard-answer">
-                                {if $AWA->getConf('auswahlassistent_anzeigeformat')|in_array:['B', 'BT']:true && $oWert->cBildpfadKlein !== ''}
-                                    {image src=$oWert->cBildURLKlein alt=$oWert->getValue() title=$oWert->getValue()}
+                                {if $AWA->getConf('auswahlassistent_anzeigeformat')|in_array:['B', 'BT']:true && $oWert->cBildURLNormal !== ''}
+                                    {image src=$oWert->cBildURLNormal alt=$oWert->getValue() title=$oWert->getValue()}
                                 {/if}
                                 {if $AWA->getConf('auswahlassistent_anzeigeformat')|in_array:['T', 'BT']:true}
                                     {$oWert->getValue()}

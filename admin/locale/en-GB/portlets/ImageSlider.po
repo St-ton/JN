@@ -1,0 +1,57 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "Bilder-Slider"
+msgstr "Image slider"
+
+msgid "Slides"
+msgstr "Slides"
+
+msgid "Theme"
+msgstr "Theme"
+
+msgid "themeStandard"
+msgstr "Standard"
+
+msgid "themeBar"
+msgstr "Balken"
+
+msgid "themeBright"
+msgstr "Hell"
+
+msgid "themeDark"
+msgstr "Dunkel"
+
+msgid "sliderAnimationSpeed"
+msgstr "Slidergeschwindigkeit"
+
+msgid "pause"
+msgstr "Pause"
+
+msgid "autoStart"
+msgstr "Autostart?"
+
+msgid "pauseOnHover"
+msgstr "Pause bei \"hover\"?"
+
+msgid "pauseOnHoverPause"
+msgstr "anhalten"
+
+msgid "pauseOnHoverContinue"
+msgstr "weitermachen"
+
+msgid "pointNavigation"
+msgstr "Punktnavigation?"
+
+msgid "useKenBurnsEffect"
+msgstr "Ken-Burns-Effekt nutzen??"
+
+msgid "overridesOtherSettings"
+msgstr "overrides other settings"
+
+msgid "showNavigationArrows"
+msgstr "Navipfeile anzeigen?"
+
+msgid "randomEffects"
+msgstr "zufällige Effekte?"

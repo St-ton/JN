@@ -94,8 +94,6 @@ class TestHydrator extends DefaultsHydrator
         $mail->nAnzahlBewertungen                       = 99;
         $mail->nAnzahlBewertungenNichtFreigeschaltet    = 15;
         $mail->oAnzahlGezahltesGuthaben                 = -1;
-        $mail->nAnzahlTags                              = 33;
-        $mail->nAnzahlTagsNichtFreigeschaltet           = 22;
         $mail->nAnzahlGeworbenerKunden                  = 11;
         $mail->nAnzahlErfolgreichGeworbenerKunden       = 0;
         $mail->nAnzahlVersendeterWunschlisten           = 0;
@@ -477,19 +475,19 @@ class TestHydrator extends DefaultsHydrator
         $order->fWaehrungsFaktor  = 1;
         $order->oLieferschein_arr = [];
 
-        $deliverySlip = new Lieferschein();
-        $deliverySlip->setEmailVerschickt(false);
-        $deliverySlip->oVersand_arr = [];
-        $oVersand                   = new Versand();
-        $oVersand->setLogistikURL('http://nolp.dhl.de/nextt-online-public/' .
+        $deliveryNote = new Lieferschein();
+        $deliveryNote->setEmailVerschickt(false);
+        $deliveryNote->oVersand_arr = [];
+        $shipping                   = new Versand();
+        $shipping->setLogistikURL('http://nolp.dhl.de/nextt-online-public/' .
             'report_popup.jsp?lang=de&zip=#PLZ#&idc=#IdentCode#');
-        $oVersand->setIdentCode('123456');
-        $deliverySlip->oVersand_arr[]  = $oVersand;
-        $deliverySlip->oPosition_arr   = [];
-        $deliverySlip->oPosition_arr[] = $item;
-        $deliverySlip->oPosition_arr[] = $item;
+        $shipping->setIdentCode('123456');
+        $deliveryNote->oVersand_arr[]  = $shipping;
+        $deliveryNote->oPosition_arr   = [];
+        $deliveryNote->oPosition_arr[] = $item;
+        $deliveryNote->oPosition_arr[] = $item;
 
-        $order->oLieferschein_arr[] = $deliverySlip;
+        $order->oLieferschein_arr[] = $deliveryNote;
 
         $order->oEstimatedDelivery->localized = ShippingMethod::getDeliverytimeEstimationText(
             $order->oEstimatedDelivery->longestMin,
@@ -521,14 +519,12 @@ class TestHydrator extends DefaultsHydrator
         $recipient->cVorname           = 'Erika';
         $recipient->cNachname          = 'Mustermann';
         $recipient->cEmail             = 'test@example.com';
-        $recipient->cOptCode           = '88abd18fe51be05d775a2151fbb74bf7';
-        $recipient->cLoeschCode        = 'a14a986321ff6a4998e81b84056933d3';
+        $recipient->cOptCode           = 'acc4cedb690aed6161d6034417925b97f2';
+        $recipient->cLoeschCode        = 'dc1338521613c3cfeb1988261029fe3058';
         $recipient->dEingetragen       = 'NOW()';
         $recipient->dLetzterNewsletter = '_DBNULL_';
-        $recipient->cLoeschURL         = Shop::getURL() .
-            '/newsletter.php?lang=ger&lc=a14a986321ff6a4998e81b84056933d3';
-        $recipient->cFreischaltURL     = Shop::getURL() .
-            '/newsletter.php?lang=ger&fc=88abd18fe51be05d775a2151fbb74bf7';
+        $recipient->cLoeschURL         = Shop::getURL() . '/?oc=' . $recipient->cLoeschCode;
+        $recipient->cFreischaltURL     = Shop::getURL() . '/?oc=' . $recipient->cOptCode;
 
         return $recipient;
     }
@@ -557,13 +553,13 @@ class TestHydrator extends DefaultsHydrator
      */
     private function getBonus(): stdClass
     {
-        $customerBonus                          = new stdClass();
-        $customerBonus->kKunde                  = 1379;
-        $customerBonus->fGuthaben               = '2,00 &euro';
-        $customerBonus->nBonuspunkte            = 0;
-        $customerBonus->dErhalten               = 'NOW()';
-        $customerBonus->fGuthabenBonusLocalized = Preise::getLocalizedPriceString(2.00);
+        $bonus                          = new stdClass();
+        $bonus->kKunde                  = 1379;
+        $bonus->fGuthaben               = '2,00 &euro';
+        $bonus->nBonuspunkte            = 0;
+        $bonus->dErhalten               = 'NOW()';
+        $bonus->fGuthabenBonusLocalized = Preise::getLocalizedPriceString(2.00);
 
-        return $customerBonus;
+        return $bonus;
     }
 }

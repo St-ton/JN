@@ -165,11 +165,6 @@ final class Shop
     /**
      * @var int
      */
-    public static $kTag;
-
-    /**
-     * @var int
-     */
     public static $kSuchspecial;
 
     /**
@@ -276,11 +271,6 @@ final class Shop
      * @var array
      */
     public static $SuchFilter;
-
-    /**
-     * @var array
-     */
-    public static $TagFilter;
 
     /**
      * @var int
@@ -668,7 +658,8 @@ final class Shop
      */
     public function _Cache(): JTLCacheInterface
     {
-//        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
+        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
+
         return self::Container()->getCache();
     }
 
@@ -881,7 +872,6 @@ final class Shop
         self::$kHersteller            = Request::verifyGPCDataInt('h');
         self::$kSuchanfrage           = Request::verifyGPCDataInt('l');
         self::$kMerkmalWert           = Request::verifyGPCDataInt('m');
-        self::$kTag                   = Request::verifyGPCDataInt('t');
         self::$kSuchspecial           = Request::verifyGPCDataInt('q');
         self::$kNews                  = Request::verifyGPCDataInt('n');
         self::$kNewsMonatsUebersicht  = Request::verifyGPCDataInt('nm');
@@ -1021,7 +1011,6 @@ final class Shop
             'kLink'                  => self::$kLink,
             'kSuchanfrage'           => self::$kSuchanfrage,
             'kMerkmalWert'           => self::$kMerkmalWert,
-            'kTag'                   => self::$kTag,
             'kSuchspecial'           => self::$kSuchspecial,
             'kNews'                  => self::$kNews,
             'kNewsMonatsUebersicht'  => self::$kNewsMonatsUebersicht,
@@ -1035,7 +1024,6 @@ final class Shop
             'nSortierung'            => self::$nSortierung,
             'nSort'                  => self::$nSort,
             'MerkmalFilter_arr'      => self::$MerkmalFilter,
-            'TagFilter_arr'          => self::$TagFilter ?? [],
             'SuchFilter_arr'         => self::$SuchFilter ?? [],
             'nArtikelProSeite'       => self::$nArtikelProSeite,
             'cSuche'                 => self::$cSuche,
@@ -1046,7 +1034,6 @@ final class Shop
             'kWunschliste'           => self::$kWunschliste,
             'MerkmalFilter'          => self::$MerkmalFilter,
             'SuchFilter'             => self::$SuchFilter,
-            'TagFilter'              => self::$TagFilter,
             'vergleichsliste'        => self::$vergleichsliste,
             'nDarstellung'           => self::$nDarstellung,
             'isSeoMainword'          => false,
@@ -1367,10 +1354,6 @@ final class Shop
                         self::$kMerkmalWert = $oSeo->kKey;
                         break;
 
-                    case 'kTag':
-                        self::$kTag = $oSeo->kKey;
-                        break;
-
                     case 'suchspecial':
                         self::$kSuchspecial = $oSeo->kKey;
                         break;
@@ -1396,9 +1379,8 @@ final class Shop
                 self::updateLanguage((int)$oSeo->kSprache);
             }
         }
-        self::$MerkmalFilter = ProductFilter::initAttributeFilter();
+        self::$MerkmalFilter = ProductFilter::initCharacteristicFilter();
         self::$SuchFilter    = ProductFilter::initSearchFilter();
-        self::$TagFilter     = ProductFilter::initTagFilter();
 
         \executeHook(\HOOK_SEOCHECK_ENDE);
     }
@@ -1455,7 +1437,6 @@ final class Shop
             && ((self::$kHersteller > 0
                     || self::$kSuchanfrage > 0
                     || self::$kMerkmalWert > 0
-                    || self::$kTag > 0
                     || self::$kKategorie > 0
                     || self::$nBewertungSterneFilter > 0
                     || self::$kHerstellerFilter > 0
@@ -1540,8 +1521,6 @@ final class Shop
                     self::setPageType(\PAGE_VERSAND);
                 } elseif ($linkType === \LINKTYP_LIVESUCHE) {
                     self::setPageType(\PAGE_LIVESUCHE);
-                } elseif ($linkType === \LINKTYP_TAGGING) {
-                    self::setPageType(\PAGE_TAGGING);
                 } elseif ($linkType === \LINKTYP_HERSTELLER) {
                     self::setPageType(\PAGE_HERSTELLER);
                 } elseif ($linkType === \LINKTYP_NEWSLETTERARCHIV) {
@@ -1611,7 +1590,7 @@ final class Shop
                 self::Container()->getAlertService()->addAlert(
                     Alert::TYPE_ERROR,
                     self::Lang()->get('optinCodeUnknown', 'errorMessages'),
-                    'optinUnknown'
+                    'optinCodeUnknown'
                 );
             } catch (Exceptions\InvalidInputException $e) {
                 self::Container()->getAlertService()->addAlert(

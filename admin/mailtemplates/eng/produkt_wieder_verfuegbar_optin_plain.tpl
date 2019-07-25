@@ -2,13 +2,13 @@
 
 Dear Customer,
 
-Please use the following confirmation-Link, which you can insert into your browser,
-to get the information, if the article
+Please copy the following confirmation-Link into your browser
+if you would like to be notified then the item
 "{$Artikel->cName}"
-is available again: {$Optin->activationURL}
+becomes available again: {$Optin->activationURL}
 
 If you want to unsubscribe from this notification feature,
-please follow the following link with your browser:
+please insert the following link into your browser:
 {$Optin->deactivationURL}
 
 Yours sincerely,

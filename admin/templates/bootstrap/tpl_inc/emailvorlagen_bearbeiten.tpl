@@ -1,7 +1,7 @@
 {assign var=template value=__('template')}
 {assign var=modify value=__('modify')}
 {include file='tpl_inc/seite_header.tpl'
-    cTitel=$template|cat: ' '|cat:$mailTemplate->getName()|cat: ' '|cat:$modify
+    cTitel=$template|cat: ' - '|cat:{__('name_'|cat:$mailTemplate->getModuleID())}|cat: ' - '|cat:$modify
     cBeschreibung=__('emailTemplateModifyHint')}
 <div id="content" class="container-fluid">
     <form name="vorlagen_aendern" method="post" action="emailvorlagen.php" enctype="multipart/form-data">

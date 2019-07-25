@@ -8,7 +8,6 @@ namespace JTL\OPC\Portlets;
 
 use JTL\OPC\InputType;
 use JTL\OPC\Portlet;
-use JTL\OPC\PortletInstance;
 
 /**
  * Class Button
@@ -23,35 +22,35 @@ class Button extends Portlet
     {
         return [
             'label' => [
-                'label'   => 'Label',
-                'default' => 'Hey there!',
+                'label'   => __('label'),
+                'default' => __('defaultText'),
                 'width'   => 50,
             ],
             'url' => [
-                'label' => 'URL',
+                'label' => __('url'),
                 'width' => 50,
             ],
             'style' => [
                 'type'    => InputType::SELECT,
-                'label'   => 'Stil',
+                'label'   => __('style'),
                 'default' => 'primary',
                 'options' => [
-                    'primary' => 'Primär',
-                    'success' => 'Erfolg',
-                    'info'    => 'Info',
-                    'warning' => 'Warnung',
-                    'danger'  => 'Gefahr',
+                    'primary' => __('stylePrimary'),
+                    'success' => __('styleSuccess'),
+                    'info'    => __('styleInfo'),
+                    'warning' => __('styleWarning'),
+                    'danger'  => __('styleDanger'),
                 ],
                 'width'   => 50,
             ],
             'new-tab' => [
                 'type'       => InputType::CHECKBOX,
-                'label'      => 'In neuem Tab öffnen',
+                'label'      => __('openInNewTab'),
                 'width'      => 50,
             ],
             'size' => [
                 'type'       => InputType::SELECT,
-                'label'      => 'Größe',
+                'label'      => __('size'),
                 'default'    => 'md',
                 'options'    => [
                     'sm' => 'S',
@@ -61,36 +60,36 @@ class Button extends Portlet
                 'width' => 50,
             ],
             'link-title' => [
-                'label'      => 'Linktitel',
+                'label'      => __('linkTitle'),
                 'width'      => 50,
             ],
             'align' => [
                 'type'       => InputType::SELECT,
-                'label'      => 'Ausrichtung',
+                'label'      => __('alignment'),
                 'options'    => [
-                    'block'  => 'gesamte Breite nutzen',
-                    'left'   => 'links',
-                    'right'  => 'rechts',
-                    'center' => 'zentriert',
+                    'block'  => __('useFullWidth'),
+                    'left'   => __('left'),
+                    'right'  => __('right'),
+                    'center' => __('centred'),
                 ],
                 'default'    => 'left',
                 'width'      => 50,
             ],
             'use-icon' => [
                 'type'     => InputType::CHECKBOX,
-                'label'    => 'Button mit Icon versehen',
+                'label'    => __('iconForButton'),
                 'children' => [
                     'icon-align'    => [
                         'type'    => InputType::SELECT,
-                        'label'   => 'Iconausrichtung',
+                        'label'   => __('iconAlignment'),
                         'options' => [
-                            'left'  => 'links',
-                            'right' => 'rechts'
+                            'left'  => __('left'),
+                            'right' => __('right')
                         ],
                     ],
                     'icon' => [
                         'type'  => InputType::ICON,
-                        'label' => 'Icon',
+                        'label' => __('Icon'),
                     ],
                 ],
             ],
@@ -106,8 +105,8 @@ class Button extends Portlet
             'Icon'      => [
                 'use-icon',
             ],
-            'Styles'    => 'styles',
-            'Animation' => 'animations',
+            __('Styles')    => 'styles',
+            __('Animation') => 'animations',
         ];
     }
 }

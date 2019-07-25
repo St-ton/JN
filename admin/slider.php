@@ -75,7 +75,6 @@ switch ($action) {
                 $cValue    = $_POST[$cKeyValue];
             } elseif ($pageType === PAGE_ARTIKELLISTE) {
                 $filter = [
-                    'kTag'         => 'tag_key',
                     'kMerkmalWert' => 'attribute_key',
                     'kKategorie'   => 'categories_key',
                     'kHersteller'  => 'manufacturer_key',

@@ -111,11 +111,27 @@
                     </div>
                     <div class="input-group">
                         <span class="input-group-addon"><label for="vDatum">{__('activeFrom')}</label></span>
-                        <input class="form-control" type="text" name="vDatum" id="vDatum" value="{if isset($vDatum) && $vDatum > 0}{$vDatum|date_format:'%d.%m.%Y'}{elseif isset($oBanner->vDatum) && $oBanner->vDatum > 0}{$oBanner->vDatum|date_format:'%d.%m.%Y'}{/if}" />
+                        <input class="form-control" type="text" name="vDatum" id="vDatum"/>
+                        {include
+                            file="snippets/daterange_picker.tpl"
+                            datepickerID="#vDatum"
+                            currentDate="{if isset($vDatum) && $vDatum > 0}{$vDatum|date_format:'%d.%m.%Y'}{elseif isset($oBanner->vDatum) && $oBanner->vDatum > 0}{$oBanner->vDatum|date_format:'%d.%m.%Y'}{/if}"
+                            format="DD.MM.YYYY"
+                            separator="{__('datepickerSeparator')}"
+                            single=true
+                        }
                     </div>
                     <div class="input-group">
                         <span class="input-group-addon"><label for="bDatum">{__('activeTo')}</label></span>
-                        <input class="form-control" type="text" name="bDatum" id="bDatum" value="{if isset($bDatum) && $bDatum > 0}{$bDatum|date_format:'%d.%m.%Y'}{elseif isset($oBanner->bDatum) && $oBanner->bDatum > 0}{$oBanner->bDatum|date_format:'%d.%m.%Y'}{/if}" />
+                        <input class="form-control" type="text" name="bDatum" id="bDatum"  />
+                        {include
+                            file="snippets/daterange_picker.tpl"
+                            datepickerID="#bDatum"
+                            currentDate="{if isset($bDatum) && $bDatum > 0}{$bDatum|date_format:'%d.%m.%Y'}{elseif isset($oBanner->bDatum) && $oBanner->bDatum > 0}{$oBanner->bDatum|date_format:'%d.%m.%Y'}{/if}"
+                            format="DD.MM.YYYY"
+                            separator="{__('datepickerSeparator')}"
+                            single=true
+                        }
                     </div>
                 </div><!-- /.panel-body -->
             </div><!-- /.panel -->
@@ -174,9 +190,6 @@
                                     <option value="" {if isset($oExtension->cKey) && $oExtension->cKey === ''}selected="selected"{/if}>
                                         {__('noFilter')}
                                     </option>
-                                    <option value="kTag" {if isset($cKey) && $cKey === 'kTag'}selected="selected" {elseif isset($oExtension->cKey) && $oExtension->cKey === 'kTag'}selected="selected"{/if}>
-                                        {__('tag')}
-                                    </option>
                                     <option value="kMerkmalWert" {if isset($cKey) && $cKey === 'kMerkmalWert'}selected="selected" {elseif isset($oExtension->cKey) && $oExtension->cKey === 'kMerkmalWert'}selected="selected"{/if}>
                                         {__('attribute')}
                                     </option>
@@ -226,24 +239,6 @@
                                 {if (isset($cKey) && $cKey === 'kLink') || (isset($oExtension->cKey) && $oExtension->cKey === 'kLink')}
                                     ioCall('getPages', [[$('#link_key').val()]], function (data) {
                                         $('#link_name').val(data[0].cName);
-                                    });
-                                {/if}
-                            </script>
-                        </div>
-                        <div id="keykTag" class="input-group key">
-                            <span class="input-group-addon"><label for="tag_name">{__('tag')}</label></span>
-                            <input type="hidden" name="tag_key" id="tag_key"
-                                   value="{if (isset($cKey) && $cKey === 'kTag') || (isset($oExtension->cKey) && $oExtension->cKey === 'kTag')}{$oExtension->cValue}{/if}">
-                            <input class="form-control" type="text" name="tag_name" id="tag_name">
-                            <span class="input-group-addon">{getHelpDesc cDesc=__('typeAheadTag')}</span>
-                            <script>
-                                enableTypeahead('#tag_name', 'getTags', 'cName', null, function(e, item) {
-                                    $('#tag_name').val(item.cName);
-                                    $('#tag_key').val(item.kTag);
-                                });
-                                {if (isset($cKey) && $cKey === 'kTag') || (isset($oExtension->cKey) && $oExtension->cKey === 'kTag')}
-                                    ioCall('getTags', [[$('#tag_key').val()]], function (data) {
-                                        $('#tag_name').val(data[0].cName);
                                     });
                                 {/if}
                             </script>
@@ -462,9 +457,9 @@
                                     {$jtl_token}
                                     <input type="hidden" name="id" value="{$oBanner->kImageMap}" />
                                     <div class="btn-group">
-                                        <button class="btn btn-default" name="action" value="area" title="verlinken"><i class="fa fa-link"></i></button>
-                                        <button class="btn btn-default" name="action" value="edit" title="bearbeiten"><i class="fa fa-edit"></i></button>
-                                        <button class="btn btn-danger" name="action" value="delete" title="entfernen"><i class="fa fa-trash"></i></button>
+                                        <button class="btn btn-default" name="action" value="area" title="{__('actionLink')}"><i class="fa fa-link"></i></button>
+                                        <button class="btn btn-default" name="action" value="edit" title="{__('edit')}"><i class="fa fa-edit"></i></button>
+                                        <button class="btn btn-danger" name="action" value="delete" title="{__('delete')}"><i class="fa fa-trash"></i></button>
                                     </div>
                                 </form>
                             </td>

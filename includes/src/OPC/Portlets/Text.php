@@ -53,7 +53,7 @@ class Text extends Portlet
      */
     public function getButtonHtml(): string
     {
-        return '<i class="fa fa-font"></i><br>Text';
+        return $this->getFontAwesomeButtonHtml('fas fa-font');
     }
 
     /**
@@ -63,9 +63,9 @@ class Text extends Portlet
     {
         return [
             'text' => [
-                'label'   => 'Text',
+                'label'   => __('text'),
                 'type'    => InputType::RICHTEXT,
-                'default' => '<p>Rich Text Content</p>',
+                'default' => __('exampleRichText'),
             ],
         ];
     }
@@ -76,7 +76,7 @@ class Text extends Portlet
     public function getPropertyTabs(): array
     {
         return [
-            'Styles' => 'styles',
+            __('Styles') => 'styles',
         ];
     }
 }

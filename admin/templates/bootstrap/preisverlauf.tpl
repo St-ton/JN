@@ -11,7 +11,7 @@
             a='saveSettings'
             action='preisverlauf.php'
             buttonCaption=__('save')
-            title='Einstellungen'
+            title=__('settings')
             tab='einstellungen'}
 </div>
 {include file='tpl_inc/footer.tpl'}

@@ -132,14 +132,13 @@ if ($ratingPage === 0) {
 }
 if ($AktuellerArtikel->Bewertungen === null || $ratingStars > 0) {
     $AktuellerArtikel->holeBewertung(
-        Shop::getLanguageID(),
         $conf['bewertung']['bewertung_anzahlseite'],
         $ratingPage,
         $ratingStars,
         $conf['bewertung']['bewertung_freischalten'],
         $sorting
     );
-    $AktuellerArtikel->holehilfreichsteBewertung(Shop::getLanguageID());
+    $AktuellerArtikel->holehilfreichsteBewertung();
 }
 
 if (isset($AktuellerArtikel->HilfreichsteBewertung->oBewertung_arr[0]->nHilfreich)
@@ -199,11 +198,6 @@ $nav = $conf['artikeldetails']['artikeldetails_navi_blaettern'] === 'Y'
     ? Product::getProductNavigation($AktuellerArtikel->kArtikel ?? 0, $AktuelleKategorie->kKategorie ?? 0)
     : null;
 
-//alerts
-if (($productNote = Product::editProductTags($AktuellerArtikel, $conf)) !== null) {
-    $alertHelper->addAlert(Alert::TYPE_SUCCESS, $productNote, 'editProductTags');
-}
-
 $maxSize = Upload::uploadMax();
 $smarty->assign('nMaxUploadSize', $maxSize)
        ->assign('cMaxUploadSize', Upload::formatGroesse($maxSize))
@@ -225,8 +219,6 @@ $smarty->assign('nMaxUploadSize', $maxSize)
                $conf['artikeldetails']['benachrichtigung_nutzen']
            )
        )
-       ->assign('ProdukttagHinweis', Product::editProductTags($AktuellerArtikel, $conf))
-       ->assign('ProduktTagging', $AktuellerArtikel->tags)
        ->assign('BlaetterNavi', $ratingNav)
        ->assign('BewertungsTabAnzeigen', ($ratingPage || $ratingStars || $showRatings || $allLanguages) ? 1 : 0)
        ->assign('alertNote', $alertHelper->alertTypeExists(Alert::TYPE_NOTE))

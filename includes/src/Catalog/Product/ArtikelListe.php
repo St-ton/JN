@@ -9,6 +9,7 @@ namespace JTL\Catalog\Product;
 use JTL\Catalog\Category\KategorieListe;
 use JTL\Catalog\Category\MenuItem;
 use JTL\DB\ReturnType;
+use JTL\Helpers\GeneralObject;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use function Functional\map;
@@ -235,6 +236,9 @@ class ArtikelListe
             }
             Shop::Container()->getCache()->set($cacheID, $items, $cacheTags);
         }
+        if ($items === false) {
+            return $this->elemente;
+        }
         $defaultOptions = Artikel::getDefaultOptions();
         foreach ($items as $obj) {
             $product = new Artikel();
@@ -256,7 +260,7 @@ class ArtikelListe
             return $this->elemente;
         }
         $categoryIDs = [];
-        if (isset($categoryList->elemente) && \is_array($categoryList->elemente)) {
+        if (GeneralObject::isCountable('elemente', $categoryList)) {
             foreach ($categoryList->elemente as $i => $category) {
                 /** @var MenuItem $category */
                 $categoryIDs[] = $category->getID();
@@ -279,7 +283,7 @@ class ArtikelListe
             $customerGroupID = Frontend::getCustomerGroup()->getID();
             // top artikel nicht nochmal in den bestsellen vorkommen lassen
             $excludes = '';
-            if (isset($topProductsList->elemente) && \is_array($topProductsList->elemente)) {
+            if (GeneralObject::isCountable('elemente', $topProductsList)) {
                 $exclude  = map($topProductsList->elemente, function ($e) {
                     return (int)$e->kArtikel;
                 });

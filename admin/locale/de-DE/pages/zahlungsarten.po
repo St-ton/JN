@@ -48,7 +48,7 @@ msgid "paymentAckMail"
 msgstr "E-Mail: Bestätigung der Zahlung"
 
 msgid "paymentCancelMail"
-msgstr "E-Mail: Storno der Bestellung"
+msgstr "E-Mail: Stornierung der Bestellung"
 
 msgid "duringOrder"
 msgstr "Zahlung vor Bestellabschluss"
@@ -114,10 +114,10 @@ msgid "installedPaymentTypes"
 msgstr "Installierte Zahlungsarten"
 
 msgid "successPaymentMethodSave"
-msgstr "Zahlungsart gespeichert."
+msgstr "Die Zahlungsart wurde erfolgreich gespeichert."
 
 msgid "errorPaymentMethodNotFound"
 msgstr "Zahlungsart nicht gefunden."
 
 msgid "feeNameHint"
-msgstr "Hier legen Sie fest, wie eine eventuell anfallende Gebühr für die Zahlungsart heißen soll. Der Name wird während der Kaufabwicklung bei der Zahlungsart angezeigt. Die Höhe der Gebühr legen Sie individuell in jeder Versandart fest, in der die Zahlungsart angeboten wird."
+msgstr "Hier legen Sie den Namen einer eventuell anfallenden Gebühr für die Zahlungsart fest. Der Name der Gebühr wird während der Kaufabwicklung bei der Zahlungsart angezeigt. Die Höhe der Gebühr legen Sie individuell in jeder Versandart fest, für die die Zahlungsart angeboten wird."

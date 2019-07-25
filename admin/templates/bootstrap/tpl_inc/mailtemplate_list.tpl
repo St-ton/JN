@@ -16,7 +16,7 @@
 				<tbody>
 				{foreach $mailTemplates as $template}
 					<tr>
-						<td>{$template->getName()}</td>
+						<td>{__('name_'|cat:$template->getModuleID())}</td>
 						<td class="tcenter">{$template->getType()}</td>
 						<td class="tcenter">
 							<h4 class="label-wrap">

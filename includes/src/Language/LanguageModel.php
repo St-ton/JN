@@ -126,7 +126,7 @@ final class LanguageModel extends DataModel
         $activeLangCode        = Shop::getLanguageCode();
         $this->iso639          = Text::convertISO2ISO639($this->iso);
         $this->displayLanguage = Locale::getDisplayLanguage($this->iso639, $this->iso639);
-        if (isset($_SESSION['AdminAccount'])) {
+        if (isset($_SESSION['AdminAccount']->language)) {
             $this->localizedName = Locale::getDisplayLanguage(
                 $this->iso639,
                 $_SESSION['AdminAccount']->language
@@ -148,7 +148,7 @@ final class LanguageModel extends DataModel
     {
         static $attributes = null;
 
-        if (!isset($attributes)) {
+        if ($attributes === null) {
             $attributes                = [];
             $attributes['id']          = DataAttribute::create(
                 'kSprache',

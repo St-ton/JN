@@ -52,7 +52,7 @@ class Plausi
                 $filter      = \array_diff_key($variables, $excludeKeys);
                 $excludes    = \array_intersect_key($variables, $excludeKeys);
                 if ($toEntities) {
-                    \array_walk($excludes, '\htmlentities');
+                    \array_map('\htmlentities', $excludes);
                 }
                 $this->xPostVar_arr = \array_merge($variables, $filter, $excludes);
             } else {

@@ -10,6 +10,7 @@ use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\Preise;
 use JTL\DB\ReturnType;
 use JTL\Extensions\Konfigitemsprache;
+use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Tax;
 use JTL\Session\Frontend;
 use JTL\Shop;
@@ -193,25 +194,23 @@ class WarenkorbPers
             ReturnType::SINGLE_OBJECT
         );
         // Prüfen ob der eingeloggte Kunde auch der Besitzer der zu löschenden WarenkorbPersPos ist
-        if (isset($customer->kKunde) && (int)$customer->kKunde === Frontend::getCustomer()->getID()) {
-            // Alle Eigenschaften löschen
-            Shop::Container()->getDB()->delete('twarenkorbpersposeigenschaft', 'kWarenkorbPersPos', $id);
-            // Die Position mit ID $id löschen
-            Shop::Container()->getDB()->delete('twarenkorbperspos', 'kWarenkorbPersPos', $id);
-            // WarenkorbPers Position aus der Session löschen
-            if (isset($_SESSION['WarenkorbPers']->oWarenkorbPersPos_arr)
-                && \is_array($_SESSION['WarenkorbPers']->oWarenkorbPersPos_arr)
-                && \count($_SESSION['WarenkorbPers']->oWarenkorbPersPos_arr) > 0
-            ) {
-                foreach ($_SESSION['WarenkorbPers']->oWarenkorbPersPos_arr as $i => $oWarenkorbPersPos) {
-                    if ($oWarenkorbPersPos->kWarenkorbPersPos == $id) {
-                        unset($_SESSION['WarenkorbPers']->oWarenkorbPersPos_arr[$i]);
-                    }
+        if (!isset($customer->kKunde) || (int)$customer->kKunde === Frontend::getCustomer()->getID()) {
+            return $this;
+        }
+        // Alle Eigenschaften löschen
+        Shop::Container()->getDB()->delete('twarenkorbpersposeigenschaft', 'kWarenkorbPersPos', $id);
+        // Die Position mit ID $id löschen
+        Shop::Container()->getDB()->delete('twarenkorbperspos', 'kWarenkorbPersPos', $id);
+        // WarenkorbPers Position aus der Session löschen
+        $source = $_SESSION['WarenkorbPers'];
+        if (GeneralObject::hasCount('oWarenkorbPersPos_arr', $source)) {
+            foreach ($source->oWarenkorbPersPos_arr as $i => $item) {
+                if ((int)$item->kWarenkorbPersPos === $id) {
+                    unset($source->oWarenkorbPersPos_arr[$i]);
                 }
-                // Positionen Array in der WarenkorbPers neu nummerieren
-                $_SESSION['WarenkorbPers']->oWarenkorbPersPos_arr =
-                    \array_merge($_SESSION['WarenkorbPers']->oWarenkorbPersPos_arr);
             }
+            // Positionen Array in der WarenkorbPers neu nummerieren
+            $source->oWarenkorbPersPos_arr = \array_merge($source->oWarenkorbPersPos_arr);
         }
 
         return $this;
@@ -362,13 +361,18 @@ class WarenkorbPers
                 // Falls Artikel vorhanden
                 if (isset($productExists->kArtikel) && $productExists->kArtikel > 0) {
                     // Sichtbarkeit Prüfen
-                    $visibility = $db->select(
-                        'tartikelsichtbarkeit',
-                        'kArtikel',
-                        (int)$item->kArtikel,
-                        'kKundengruppe',
-                        Frontend::getCustomerGroup()->getID()
-                    );
+                    if (!empty($item->cUnique) && (int)$item->kKonfigitem > 0) {
+                        // config components are always visible in cart...
+                        $visibility = null;
+                    } else {
+                        $visibility = $db->select(
+                            'tartikelsichtbarkeit',
+                            'kArtikel',
+                            (int)$item->kArtikel,
+                            'kKundengruppe',
+                            Frontend::getCustomerGroup()->getID()
+                        );
+                    }
                     if ($visibility === null || !isset($visibility->kArtikel) || !$visibility->kArtikel) {
                         // Prüfe welche kEigenschaft gesetzt ist
                         $attributes = $db->selectAll(
@@ -516,17 +520,22 @@ class WarenkorbPers
             // Falls Artikel vorhanden
             if ($existing !== null) {
                 // Sichtbarkeit pruefen
-                $visibility = Shop::Container()->getDB()->select(
-                    'tartikelsichtbarkeit',
-                    'kArtikel',
-                    $productID,
-                    'kKundengruppe',
-                    Frontend::getCustomerGroup()->getID(),
-                    null,
-                    null,
-                    false,
-                    'kArtikel'
-                );
+                if (!empty($unique) && $configItemID > 0) {
+                    // config components are always visible in cart...
+                    $visibility = null;
+                } else {
+                    $visibility = Shop::Container()->getDB()->select(
+                        'tartikelsichtbarkeit',
+                        'kArtikel',
+                        $productID,
+                        'kKundengruppe',
+                        Frontend::getCustomerGroup()->getID(),
+                        null,
+                        null,
+                        false,
+                        'kArtikel'
+                    );
+                }
                 if ($visibility === null || !isset($visibility->kArtikel) || !$visibility->kArtikel) {
                     $persCart = new WarenkorbPers(Frontend::getCustomer()->getID());
                     if ($type === \C_WARENKORBPOS_TYP_GRATISGESCHENK) {

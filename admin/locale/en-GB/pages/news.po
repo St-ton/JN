@@ -117,7 +117,7 @@ msgid "successNewsDelete"
 msgstr "Selected news postings deleted successfully."
 
 msgid "errorAtLeastOneNews"
-msgstr "You must select at least one news posting."
+msgstr "Please select at least one news posting."
 
 msgid "successNewsCatDelete"
 msgstr "Selected news categories deleted successfully."
@@ -144,16 +144,16 @@ msgid "mainCategory"
 msgstr "Main category"
 
 msgid "deleteComment"
-msgstr "Delete comments?"
+msgstr "Are you sure you want to delete the comments?"
 
 msgid "successNewsSave"
-msgstr "News saved"
+msgstr "News posting saved successfully."
 
 msgid "successNewsCatSave"
-msgstr "News category created"
+msgstr "News category entered successfully."
 
 msgid "successNewsCommentDelete"
-msgstr "News comments deleted."
+msgstr "Selected comments deleted successfully."
 
 msgid "errorAtLeastOneNewsComment"
 msgstr "Please select at least one news comment."

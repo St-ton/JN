@@ -271,7 +271,7 @@ msgid "Import newsletter recipient"
 msgstr "Newsletter-Empfänger importieren"
 
 msgid "Zip code import"
-msgstr "PLZ Import"
+msgstr "PLZ-Import"
 
 # Mid Menu
 msgid "Export"
@@ -309,7 +309,7 @@ msgid "Synchronisation with JTL-Wawi"
 msgstr "Synchronisierung mit JTL-Wawi"
 
 msgid "Global meta data"
-msgstr "Globale Meta-Angaben"
+msgstr "Globale Metadaten"
 
 msgid "Special items"
 msgstr "Besondere Artikel"
@@ -502,3 +502,6 @@ msgstr "Benutzerverwaltung"
 
 msgid "The algorithm for saving passwords has changed. <br/>Please generate a new emergency code for the 2 factor authentication."
 msgstr "Der Algorithmus zur Passwortspeicherung hat sich geändert.<br/>Bitte erzeugen Sie neue Notfall-Codes für die Zwei-Faktor-Authentifizierung."
+
+msgid "My Plugins"
+msgstr "Meine Plugins"

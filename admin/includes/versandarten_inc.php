@@ -171,7 +171,7 @@ function gibGesetzteVersandklassenUebersicht($shippingClasses)
 function gibGesetzteKundengruppen($customerGroupsString)
 {
     $activeGroups = [];
-    $groups       = Text::parseSSK($customerGroupsString);
+    $groups       = Text::parseSSKint($customerGroupsString);
     $groupData    = Shop::Container()->getDB()->query(
         'SELECT kKundengruppe
             FROM tkundengruppe
@@ -179,7 +179,8 @@ function gibGesetzteKundengruppen($customerGroupsString)
         ReturnType::ARRAY_OF_OBJECTS
     );
     foreach ($groupData as $group) {
-        $activeGroups[(int)$group->kKundengruppe] = in_array($group->kKundengruppe, $groups);
+        $id                = (int)$group->kKundengruppe;
+        $activeGroups[$id] = in_array($id, $groups, true);
     }
     $activeGroups['alle'] = $customerGroupsString === '-1';
 
@@ -191,7 +192,7 @@ function gibGesetzteKundengruppen($customerGroupsString)
  * @param array $languages
  * @return array
  */
-function getShippingLanguage(int $shippingMethodID, $languages)
+function getShippingLanguage(int $shippingMethodID, array $languages)
 {
     $localized        = [];
     $localizedMethods = Shop::Container()->getDB()->selectAll(
@@ -199,10 +200,8 @@ function getShippingLanguage(int $shippingMethodID, $languages)
         'kVersandart',
         $shippingMethodID
     );
-    if (is_array($languages)) {
-        foreach ($languages as $language) {
-            $localized[$language->cISO] = new stdClass();
-        }
+    foreach ($languages as $language) {
+        $localized[$language->cISO] = new stdClass();
     }
     foreach ($localizedMethods as $localizedMethod) {
         if (isset($localizedMethod->kVersandart) && $localizedMethod->kVersandart > 0) {
@@ -241,8 +240,8 @@ function getZuschlagNames(int $feeID)
  */
 function getShippingByName(string $query)
 {
-    $byName = [];
-    $db     = Shop::Container()->getDB();
+    $results = [];
+    $db      = Shop::Container()->getDB();
     foreach (explode(',', $query) as $search) {
         $search = trim($search);
         if (mb_strlen($search) > 2) {
@@ -257,17 +256,14 @@ function getShippingByName(string $query)
                 ['search' => '%' . $search . '%'],
                 ReturnType::ARRAY_OF_OBJECTS
             );
-            if (count($hits) > 1) {
-                foreach ($hits as $shippingByName) {
-                    $byName[$shippingByName->kVersandart] = $shippingByName;
-                }
-            } else {
-                $byName[$hits[0]->kVersandart] = $hits[0];
+            foreach ($hits as $item) {
+                $item->kVersandart           = (int)$item->kVersandart;
+                $results[$item->kVersandart] = $item;
             }
         }
     }
 
-    return $byName;
+    return $results;
 }
 
 /**

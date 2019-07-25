@@ -8,7 +8,6 @@ namespace JTL\OPC\Portlets;
 
 use JTL\OPC\InputType;
 use JTL\OPC\Portlet;
-use JTL\OPC\PortletInstance;
 
 /**
  * Class Gallery
@@ -24,13 +23,13 @@ class Gallery extends Portlet
         return [
             'height' => [
                 'type'    => InputType::NUMBER,
-                'label'   => 'Höhe der Vorschaubilder',
+                'label'   => __('heightPreviewImages'),
                 'default' => 250,
                 'width'   => 50,
             ],
             'images' => [
                 'type'       => InputType::IMAGE_SET,
-                'label'      => 'Bilder-Liste',
+                'label'      => __('imageList'),
                 'default'    => [],
                 'useColumns' => true,
             ],
@@ -43,8 +42,8 @@ class Gallery extends Portlet
     public function getPropertyTabs(): array
     {
         return [
-            'Images' => ['images'],
-            'Styles' => 'styles',
+            __('Images') => ['images'],
+            __('Styles') => 'styles',
         ];
     }
 }

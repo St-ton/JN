@@ -76,11 +76,16 @@
                                                 {/if}
                                             {/col}
                                         {/if}
+                                        {if !empty($Artikel->cBarcode)}
+                                            {col cols=12}
+                                                <p class="text-muted">{lang key='ean'}: <span itemprop="{if $Artikel->cBarcode|count_characters === 8}gtin8{else}gtin13{/if}">{$Artikel->cBarcode}</span></p>
+                                            {/col}
+                                        {/if}
                                         {if !empty($Artikel->cISBN)
                                         && ($Einstellungen.artikeldetails.isbn_display === 'D'
                                         || $Einstellungen.artikeldetails.isbn_display === 'DL')}
                                             {col cols=12}
-                                                <p class="text-muted">{lang key='isbn'}: <span>{$Artikel->cISBN}</span></p>
+                                                <p class="text-muted">{lang key='isbn'}: <span itemprop="gtin13">{$Artikel->cISBN}</span></p>
                                             {/col}
                                         {/if}
                                         {block name='productdetails-details-info-category-wrapper'}
@@ -183,10 +188,10 @@
                                     {block name='productdetails-details-include-stock'}
                                         {col cols=12}
                                             {row class="bordered-top-bottom align-items-center {if !isset($availability) && !isset($shippingTime)}p-3 mt-3 mb-4{/if}"}
-                                                {col cols=8}
+                                                {col cols="{if $Einstellungen.artikeldetails.artikeldetails_fragezumprodukt_anzeigen !== 'P'}12{else}7{/if}"}
                                                     {include file='productdetails/stock.tpl'}
                                                 {/col}
-                                                {col cols=4 class="text-right align-self-end"}
+                                                {col class="text-right align-self-end"}
                                                     {if $Einstellungen.artikeldetails.artikeldetails_fragezumprodukt_anzeigen === 'P'}
                                                         <button type="button" id="z{$Artikel->kArtikel}" class="btn btn-link popup-dep question" title="{lang key='productQuestion' section='productDetails'}">
                                                             <span class="fa fa-question-circle"></span>

@@ -6,6 +6,7 @@
 
 namespace JTL\Plugin\Admin\Installation\Items;
 
+use JTL\Helpers\GeneralObject;
 use JTL\Helpers\PaymentMethod;
 use JTL\Language\LanguageHelper;
 use JTL\Plugin\Admin\InputType;
@@ -164,7 +165,7 @@ class PaymentMethods extends AbstractItem
                 $this->db->insert('tplugineinstellungenconf', $plgnConf);
             }
 
-            if (isset($data['Setting']) && \is_array($data['Setting']) && \count($data['Setting']) > 0) {
+            if (GeneralObject::hasCount('Setting', $data)) {
                 $type         = '';
                 $initialValue = '';
                 $sort         = 0;
@@ -238,10 +239,7 @@ class PaymentMethods extends AbstractItem
                         }
                         // Ist der Typ eine Selectbox => Es müssen SelectboxOptionen vorhanden sein
                         if ($type === InputType::SELECT) {
-                            if (isset($config['OptionsSource'])
-                                && \is_array($config['OptionsSource'])
-                                && \count($config['OptionsSource']) > 0
-                            ) {
+                            if (GeneralObject::hasCount('OptionsSource', $config)) {
                                 //do nothing for now
                             } elseif (\count($config['SelectboxOptions'][0]) === 1) {
                                 foreach ($config['SelectboxOptions'][0]['Option'] as $y => $option) {
@@ -276,10 +274,7 @@ class PaymentMethods extends AbstractItem
                                 $this->db->insert('tplugineinstellungenconfwerte', $plgnConfValues);
                             }
                         } elseif ($type === InputType::RADIO) {
-                            if (isset($config['OptionsSource'])
-                                && \is_array($config['OptionsSource'])
-                                && \count($config['OptionsSource']) > 0
-                            ) {
+                            if (GeneralObject::hasCount('OptionsSource', $config)) {
                                 //do nothing for now
                             } elseif (\count($config['RadioOptions'][0]) === 1) { // Es gibt mehr als eine Option
                                 foreach ($config['RadioOptions'][0]['Option'] as $y => $option) {

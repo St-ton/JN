@@ -132,9 +132,9 @@ abstract class BaseController
 
         $reviewBonus = ReviewBonusModel::loadByAttributes(
             ['customerID' => $review->getCustomerID(), 'reviewID' => $review->getId()],
-            $this->db
+            $this->db,
+            ReviewBonusModel::ON_NOTEXISTS_NEW
         );
-        /** @var $reviewBonus ReviewBonusModel */
         $reviewBonus->setBonus($reward);
         $reviewBonus->setReviewID($review->getId());
         $reviewBonus->setCustomerID($review->getCustomerID());

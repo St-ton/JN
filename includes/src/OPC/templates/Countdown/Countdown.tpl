@@ -14,19 +14,19 @@
     {row class='text-center'}
         {col cols=3 class='days'}
             <div class="cntdwn-item"></div>
-            <div class="cntdwn-unit">Tage</div>
+            <div class="cntdwn-unit">{lang key='days'}</div>
         {/col}
         {col cols=3 class='hours'}
             <div class="cntdwn-item"></div>
-            <div class="cntdwn-unit">Stunden</div>
+            <div class="cntdwn-unit">{lang key='hours'}</div>
         {/col}
         {col cols=3 class='minutes'}
             <div class="cntdwn-item"></div>
-            <div class="cntdwn-unit">Minuten</div>
+            <div class="cntdwn-unit">{lang key='minutes'}</div>
         {/col}
         {col cols=3 class='seconds'}
             <div class="cntdwn-item"></div>
-            <div class="cntdwn-unit">Sekunden</div>
+            <div class="cntdwn-unit">{lang key='seconds'}</div>
         {/col}
         {col cols=12 class='expired'}
             {$instance->getProperty('expired-text')}

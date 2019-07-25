@@ -3,7 +3,7 @@
  * @license https://jtl-url.de/jtlshoplicense
  *}
 {block name='boxes-box-filter-manufacturer'}
-    {if $nSeitenTyp === $smarty.const.PAGE_ARTIKELLISTE}
+    {if $nSeitenTyp === $smarty.const.PAGE_ARTIKELLISTE && (!$device->isMobile() || $device->isTablet())}
         <div class="h4">
             {button
             variant="link"
@@ -16,8 +16,8 @@
             {/button}
         </div>
         {collapse class="box box-filter-manufacturer" id="sidebox{$oBox->getID()}" visible=$oBox->getItems()->isActive()}
-        {block name='boxes-box-filter-search-special-content'}
-            {include file='snippets/filter/genericFilterItem.tpl' filter=$oBox->getItems()}
+        {block name='boxes-box-filter-manufacturer-include-manufacturer'}
+                {include file='snippets/filter/manufacturer.tpl' filter=$oBox->getItems()}
         {/block}
         {/collapse}
         <hr class="mt-0 mb-4">

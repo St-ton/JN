@@ -8,6 +8,7 @@ use JTL\Catalog\Product\Preise;
 use JTL\Customer\Kundengruppe;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Date;
+use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Request;
 use JTL\Kampagne;
 use JTL\Linechart;
@@ -85,11 +86,7 @@ function holeKampagneGesamtStats($campaigns, $definitions)
             break;
     }
 
-    if (is_array($campaigns)
-        && count($campaigns) > 0
-        && is_array($definitions)
-        && count($definitions)
-    ) {
+    if (GeneralObject::hasCount($campaigns) && GeneralObject::hasCount($definitions)) {
         foreach ($campaigns as $campaign) {
             foreach ($definitions as $definition) {
                 $stats[$campaign->kKampagne][$definition->kKampagneDef] = 0;
@@ -280,7 +277,7 @@ function holeKampagneDetailStats($campaignID, $definitions)
     }
     // Finde den maximalen Wert heraus, um die Höhe des Graphen zu ermitteln
     $graphMax = []; // Assoc Array key = kKampagneDef
-    if (is_array($stats) && is_array($definitions) && count($stats) > 0 && count($definitions) > 0) {
+    if (GeneralObject::hasCount($stats) && GeneralObject::hasCount($definitions)) {
         foreach ($stats as $stat) {
             foreach ($definitions as $definition) {
                 if (isset($statsAssoc[$stat->cDatum][$definition->kKampagneDef])) {
@@ -1513,16 +1510,16 @@ function mappeENGMonat($month)
 function GetTypes()
 {
     return [
-        1  => 'Hit',
-        2  => 'Verkauf',
-        3  => 'Anmeldung',
-        4  => 'Verkaufssumme',
-        5  => 'Frage zum Produkt',
-        6  => 'Verfügbarkeitsanfrage',
-        7  => 'Login',
-        8  => 'Produkt auf Wunschliste',
-        9  => 'Produkt in den Warenkorb',
-        10 => 'Angeschaute Newsletter'
+        1  => __('globalReportHit'),
+        2  => __('globalReportSale'),
+        3  => __('globalReportRegister'),
+        4  => __('globalReportAmount'),
+        5  => __('globalReportProductQuestion'),
+        6  => __('globalReportAvailabilityRequest'),
+        7  => __('globalReportLogin'),
+        8  => __('globalReportWishlistProducts'),
+        9  => __('globalReportComaprelistProducts'),
+        10 => __('globalReportNewsletterViewed')
     ];
 }
 

@@ -8,6 +8,7 @@ use JTL\Alert\Alert;
 use JTL\Checkout\Kupon;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
+use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Language\LanguageHelper;
@@ -121,7 +122,7 @@ if ($action === 'bearbeiten') {
     }
 } elseif ($action === 'loeschen') {
     // Kupons loeschen
-    if (isset($_POST['kKupon_arr']) && is_array($_POST['kKupon_arr']) && count($_POST['kKupon_arr']) > 0) {
+    if (GeneralObject::hasCount('kKupon_arr', $_POST)) {
         $couponIDs = array_map('\intval', $_POST['kKupon_arr']);
         if (loescheKupons($couponIDs)) {
             $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successCouponDelete'), 'successCouponDelete');
@@ -144,7 +145,7 @@ if ($action === 'bearbeiten') {
     $manufacturers  = getManufacturers($coupon->cHersteller);
     $categories     = getCategories($coupon->cKategorien);
     $customerIDs    = array_filter(
-        Text::parseSSK($coupon->cKunden),
+        Text::parseSSKint($coupon->cKunden),
         function ($customerID) {
             return (int)$customerID > 0;
         }
@@ -180,36 +181,36 @@ if ($action === 'bearbeiten') {
     deactivateExhaustedCoupons();
 
     $filterStandard = new Filter(Kupon::TYPE_STANDARD);
-    $filterStandard->addTextfield('Name', 'cName');
-    $filterStandard->addTextfield('Code', 'cCode');
-    $activeSelection = $filterStandard->addSelectfield('Status', 'cAktiv');
-    $activeSelection->addSelectOption('alle', '');
-    $activeSelection->addSelectOption('aktiv', 'Y', Operation::EQUALS);
-    $activeSelection->addSelectOption('inaktiv', 'N', Operation::EQUALS);
+    $filterStandard->addTextfield(__('name'), 'cName');
+    $filterStandard->addTextfield(__('code'), 'cCode');
+    $activeSelection = $filterStandard->addSelectfield(__('status'), 'cAktiv');
+    $activeSelection->addSelectOption(__('all'), '');
+    $activeSelection->addSelectOption(__('active'), 'Y', Operation::EQUALS);
+    $activeSelection->addSelectOption(__('inactive'), 'N', Operation::EQUALS);
     $filterStandard->assemble();
 
     $filterVersand = new Filter(Kupon::TYPE_SHIPPING);
-    $filterVersand->addTextfield('Name', 'cName');
-    $filterVersand->addTextfield('Code', 'cCode');
-    $activeSelection = $filterVersand->addSelectfield('Status', 'cAktiv');
-    $activeSelection->addSelectOption('alle', '');
-    $activeSelection->addSelectOption('aktiv', 'Y', Operation::EQUALS);
-    $activeSelection->addSelectOption('inaktiv', 'N', Operation::EQUALS);
+    $filterVersand->addTextfield(__('name'), 'cName');
+    $filterVersand->addTextfield(__('code'), 'cCode');
+    $activeSelection = $filterVersand->addSelectfield(__('status'), 'cAktiv');
+    $activeSelection->addSelectOption(__('all'), '');
+    $activeSelection->addSelectOption(__('active'), 'Y', Operation::EQUALS);
+    $activeSelection->addSelectOption(__('inactive'), 'N', Operation::EQUALS);
     $filterVersand->assemble();
 
     $filterNeukunden = new Filter(Kupon::TYPE_NEWCUSTOMER);
-    $filterNeukunden->addTextfield('Name', 'cName');
-    $activeSelection = $filterNeukunden->addSelectfield('Status', 'cAktiv');
-    $activeSelection->addSelectOption('alle', '');
-    $activeSelection->addSelectOption('aktiv', 'Y', Operation::EQUALS);
-    $activeSelection->addSelectOption('inaktiv', 'N', Operation::EQUALS);
+    $filterNeukunden->addTextfield(__('name'), 'cName');
+    $activeSelection = $filterNeukunden->addSelectfield(__('status'), 'cAktiv');
+    $activeSelection->addSelectOption(__('all'), '');
+    $activeSelection->addSelectOption(__('active'), 'Y', Operation::EQUALS);
+    $activeSelection->addSelectOption(__('inactive'), 'N', Operation::EQUALS);
     $filterNeukunden->assemble();
 
     $sortByOptions = [
-        ['cName', 'Name'],
-        ['cCode', 'Code'],
-        ['nVerwendungenBisher', 'Verwendungen'],
-        ['dLastUse', 'Zuletzt verwendet']
+        ['cName', __('name')],
+        ['cCode', __('code')],
+        ['nVerwendungenBisher', __('curmaxusage')],
+        ['dLastUse', __('lastUsed')]
     ];
 
 

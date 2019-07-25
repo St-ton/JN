@@ -4,6 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Helpers\GeneralObject;
 use JTL\Shop;
 use JTL\Helpers\Text;
 use JTL\DB\ReturnType;
@@ -184,7 +185,7 @@ function speicherAntwortZuFrage(
             }
             break;
         case QuestionType::MATRIX_SINGLE:
-            if (is_array($answerName) && is_array($optionName) && count($answerName) > 0 && count($optionName) > 0) {
+            if (GeneralObject::hasCount($answerName) && GeneralObject::hasCount($optionName)) {
                 $count = count($answerName);
                 for ($i = $data->nAnzahlAntworten; $i < $count; $i++) {
                     unset($answer);
@@ -532,12 +533,12 @@ function holeUmfrageStatistik(int $surveyID)
         }
     }
     $stats->cKundengruppe_arr = [];
-    $customerGroups           = Text::parseSSK($stats->cKundengruppe);
+    $customerGroups           = Text::parseSSKint($stats->cKundengruppe);
     foreach ($customerGroups as $customerGroupID) {
-        if ($customerGroupID == -1) {
+        if ($customerGroupID === -1) {
             $stats->cKundengruppe_arr[] = 'Alle';
         } else {
-            $customerGroup = $db->select('tkundengruppe', 'kKundengruppe', (int)$customerGroupID);
+            $customerGroup = $db->select('tkundengruppe', 'kKundengruppe', $customerGroupID);
             if (!empty($customerGroup->cName)) {
                 $stats->cKundengruppe_arr[] = $customerGroup->cName;
             }

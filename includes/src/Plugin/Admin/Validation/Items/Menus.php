@@ -6,6 +6,7 @@
 
 namespace JTL\Plugin\Admin\Validation\Items;
 
+use JTL\Helpers\GeneralObject;
 use JTL\Plugin\Admin\InputType;
 use JTL\Plugin\InstallCode;
 
@@ -26,7 +27,7 @@ final class Menus extends AbstractItem
             return InstallCode::OK;
         }
         $node = $node['Adminmenu'][0];
-        if (!empty($node['Customlink']) && \is_array($node['Customlink'])) {
+        if (GeneralObject::hasCount('Customlink', $node)) {
             $this->validateCustomLinks($node['Customlink'], $dir);
         }
         if (!isset($node['Settingslink']) || !\is_array($node['Settingslink'])) {
@@ -161,7 +162,7 @@ final class Menus extends AbstractItem
             if (!\file_exists($dir . \PFAD_PLUGIN_ADMINMENU . $setting['OptionsSource'][0]['File'])) {
                 return InstallCode::MISSING_OPTIONS_SOURE_FILE;
             }
-        } elseif (!empty($setting['SelectboxOptions']) && \is_array($setting['SelectboxOptions'])) {
+        } elseif (GeneralObject::hasCount('SelectboxOptions', $setting)) {
             if (\count($setting['SelectboxOptions'][0]) === 1) {
                 foreach ($setting['SelectboxOptions'][0]['Option'] as $y => $option) {
                     $y = (string)$y;
@@ -208,7 +209,7 @@ final class Menus extends AbstractItem
         if (!empty($setting['OptionsSource']) && \is_array($setting['OptionsSource'])) {
             return InstallCode::OK;
         }
-        if (!empty($setting['RadioOptions']) && \is_array($setting['RadioOptions'])) {
+        if (GeneralObject::hasCount('RadioOptions', $setting)) {
             if (\count($setting['RadioOptions'][0]) === 1) {
                 foreach ($setting['RadioOptions'][0]['Option'] as $y => $option) {
                     $y = (string)$y;

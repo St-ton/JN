@@ -68,8 +68,8 @@
         {else}
             <link type="text/css" href="{$ShopURL}/asset/{$Einstellungen.template.theme.theme_default}.css{if isset($cPluginCss_arr) && $cPluginCss_arr|@count > 0},plugin_css{/if}?v={$nTemplateVersion}" rel="stylesheet">
         {/if}
-        {if \JTL\Shop::isAdmin() && $opc->isEditMode() === false}
-            <link type="text/css" href="{$ShopURL}/admin/opc/style.css" rel="stylesheet">
+        {if \JTL\Shop::isAdmin() && $opc->isEditMode() === false && $opc->isPreviewMode() === false}
+            <link type="text/css" href="{$ShopURL}/admin/opc/css/startmenu.css" rel="stylesheet">
         {/if}
         {* RSS *}
         {if isset($Einstellungen.rss.rss_nutzen) && $Einstellungen.rss.rss_nutzen === 'Y'}
@@ -111,7 +111,7 @@
 {block name='body-tag'}
 <body data-page="{$nSeitenTyp}" class="body-offcanvas"{if isset($Link) && !empty($Link->getIdentifier())} id="{$Link->getIdentifier()}"{/if}>
 {/block}
-    {include file=$opcDir|cat:'startmenu.tpl'}
+    {include file=$opcDir|cat:'tpl/startmenu.tpl'}
 {block name='main-wrapper-starttag'}
 <div id="main-wrapper" class="main-wrapper{if $bExclusive} exclusive{/if}{if isset($Einstellungen.template.theme.pagelayout) && $Einstellungen.template.theme.pagelayout === 'boxed'} boxed{else} fluid{/if}{if $hasLeftPanel} aside-active{/if}">
 {/block}

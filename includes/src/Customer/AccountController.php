@@ -26,7 +26,6 @@ use JTL\GeneralDataProtection\Journal;
 use JTL\Helpers\Cart;
 use JTL\Helpers\Date;
 use JTL\Helpers\Form;
-use JTL\Helpers\Product;
 use JTL\Helpers\Request;
 use JTL\Helpers\ShippingMethod;
 use JTL\Helpers\Tax;
@@ -44,6 +43,7 @@ use JTL\Smarty\JTLSmarty;
 use Session;
 use stdClass;
 use Vergleichsliste;
+use function Functional\some;
 
 /**
  * Class AccountController
@@ -241,7 +241,7 @@ class AccountController
         if (isset($_GET['pass']) && (int)$_GET['pass'] === 1) {
             $step = 'passwort aendern';
         }
-        if (isset($_POST['edit']) && (int)$_POST['edit'] === 1) {
+        if ($valid && isset($_POST['edit']) && (int)$_POST['edit'] === 1) {
             $this->changeCustomerData();
         }
         if ($valid && isset($_POST['pass_aendern']) && (int)$_POST['pass_aendern']) {
@@ -1039,23 +1039,22 @@ class AccountController
         );
         $currencies = [];
         foreach ($orders as $order) {
-            $order->bDownload = false;
-            foreach ($downloads as $oDownload) {
-                if ((int)$order->kBestellung === (int)$oDownload->kBestellung) {
-                    $order->bDownload = true;
-                    break;
-                }
-            }
+            $order->bDownload   = some($downloads, function ($dl) use ($order) {
+                return $dl->kBestellung === $order->kBestellung;
+            });
+            $order->kBestellung = (int)$order->kBestellung;
+            $order->kWaehrung   = (int)$order->kWaehrung;
+            $order->cStatus     = (int)$order->cStatus;
             if ($order->kWaehrung > 0) {
-                if (isset($currencies[(int)$order->kWaehrung])) {
-                    $order->Waehrung = $currencies[(int)$order->kWaehrung];
+                if (isset($currencies[$order->kWaehrung])) {
+                    $order->Waehrung = $currencies[$order->kWaehrung];
                 } else {
-                    $order->Waehrung                    = $this->db->select(
+                    $order->Waehrung               = $this->db->select(
                         'twaehrung',
                         'kWaehrung',
-                        (int)$order->kWaehrung
+                        $order->kWaehrung
                     );
-                    $currencies[(int)$order->kWaehrung] = $order->Waehrung;
+                    $currencies[$order->kWaehrung] = $order->Waehrung;
                 }
                 if (isset($order->fWaehrungsFaktor, $order->Waehrung->fFaktor) && $order->fWaehrungsFaktor !== 1) {
                     $order->Waehrung->fFaktor = $order->fWaehrungsFaktor;
@@ -1065,7 +1064,7 @@ class AccountController
                 $order->fGesamtsumme,
                 $order->Waehrung
             );
-            $order->Status                = \lang_bestellstatus((int)$order->cStatus);
+            $order->Status                = \lang_bestellstatus($order->cStatus);
         }
 
         $orderPagination = (new Pagination('orders'))

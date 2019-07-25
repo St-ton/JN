@@ -9,6 +9,10 @@ namespace JTL\OPC\Portlets;
 use JTL\OPC\InputType;
 use JTL\OPC\Portlet;
 
+/**
+ * Class Accordion
+ * @package JTL\OPC\Portlets
+ */
 class Accordion extends Portlet
 {
     /**
@@ -19,11 +23,11 @@ class Accordion extends Portlet
         return [
             'groups' => [
                 'type' => InputType::TEXT_LIST,
-                'label' => 'Gruppen-Name',
+                'label' => __('groupName'),
             ],
             'expanded' => [
                 'type' => InputType::CHECKBOX,
-                'label' => 'Erste Gruppe bereits aufklappen?'
+                'label' => __('unfoldFirstGroup')
             ]
         ];
     }

@@ -198,20 +198,15 @@ class Category
             ? '' //the join is not needed if we don't select the category image path
             : ' LEFT JOIN tkategoriepict
                         ON tkategoriepict.kKategorie = node.kKategorie';
-        $nameSelect           = $isDefaultLang === true
-            ? ', node.cName'
-            : ', node.cName, tkategoriesprache.cName AS cName_spr';
-        $seoSelect            = $isDefaultLang === true
-            ? ', node.cSeo'
-            : ', tseo.cSeo';
-        $langJoin             = $isDefaultLang === true
-            ? ''
-            : ' LEFT JOIN tkategoriesprache
+            $nameSelect           = $isDefaultLang === true
+                ? ', node.cName'
+                : ', node.cName, tkategoriesprache.cName AS cName_spr';
+            $langJoin             = $isDefaultLang === true
+                ? ''
+                : ' LEFT JOIN tkategoriesprache
                         ON tkategoriesprache.kKategorie = node.kKategorie
                             AND tkategoriesprache.kSprache = ' . self::$languageID . ' ';
-        $seoJoin              = $isDefaultLang === true
-            ? ''
-            : " LEFT JOIN tseo
+            $seoJoin              = " LEFT JOIN tseo
                         ON tseo.cKey = 'kKategorie'
                         AND tseo.kKey = node.kKategorie
                         AND tseo.kSprache = " . self::$languageID . ' ';
@@ -239,17 +234,16 @@ class Category
         }
 
         return Shop::Container()->getDB()->query(
-            'SELECT node.kKategorie, node.kOberKategorie' . $nameSelect .
-            $descriptionSelect . $imageSelect . $seoSelect . $countSelect . '
-                    FROM tkategorie AS node INNER JOIN tkategorie AS parent ' . $langJoin . '                    
-                    LEFT JOIN tkategoriesichtbarkeit
-                        ON node.kKategorie = tkategoriesichtbarkeit.kKategorie
-                        AND tkategoriesichtbarkeit.kKundengruppe = ' . self::$customerGroupID . $seoJoin . $imageJoin .
-            $hasProductsCheckJoin . $stockJoin . $visibilityJoin . '                     
+            'SELECT node.kKategorie, node.kOberKategorie, tseo.cSeo' . $nameSelect .
+                $descriptionSelect . $imageSelect . $countSelect . '
+                FROM tkategorie AS node INNER JOIN tkategorie AS parent ' . $langJoin . '                    
+                LEFT JOIN tkategoriesichtbarkeit
+                    ON node.kKategorie = tkategoriesichtbarkeit.kKategorie
+                    AND tkategoriesichtbarkeit.kKundengruppe = ' . self::$customerGroupID . $seoJoin . $imageJoin .
+                    $hasProductsCheckJoin . $stockJoin . $visibilityJoin . '                     
                 WHERE node.nLevel > 0 AND parent.nLevel > 0
                     AND tkategoriesichtbarkeit.kKategorie IS NULL AND node.lft BETWEEN parent.lft AND parent.rght
-                    AND parent.kOberKategorie = 0 ' . $visibilityWhere . $depthWhere . '
-                    
+                    AND parent.kOberKategorie = 0 ' . $visibilityWhere . $depthWhere . '                    
                 GROUP BY node.kKategorie
                 ORDER BY node.lft',
             ReturnType::COLLECTION

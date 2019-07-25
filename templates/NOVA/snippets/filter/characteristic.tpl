@@ -4,6 +4,8 @@
  *}
 {block name='snippets-filter-characteristics'}
     {$is_dropdown = ($Merkmal->cTyp === 'SELECTBOX') && $Merkmal->oMerkmalWerte_arr|@count > 1}
+    {$limit = $Einstellungen.template.productlist.filter_max_options}
+    {$collapseInit = false}
     {foreach $Merkmal->getOptions() as $attributeValue}
         {assign var=attributeImageURL value=''}
         {if ($Merkmal->getData('cTyp') === 'BILD' || $Merkmal->getData('cTyp') === 'BILD-TEXT')
@@ -29,6 +31,11 @@
                 {/dropdownitem}
             {/block}
         {else}
+            {if $limit != -1 && $attributeValue@iteration > $limit && !$collapseInit}
+                <div class="collapse {if $Merkmal->isActive()} show{/if}" id="box-collps-filter-attribute-{$Merkmal->getValue()}" aria-expanded="false">
+                    <ul class="nav {if $Merkmal->getData('cTyp') !== 'BILD'}flex-column{/if}">
+                {$collapseInit = true}
+            {/if}
             {block name='snippets-filter-characteristics-nav'}
                 {if {$Merkmal->getData('cTyp')} === 'TEXT'}
                     {navitem
@@ -62,10 +69,12 @@
                         data=["toggle"=>"tooltip"]
                         class="{if $attributeValue->isActive()}active{/if}"
                     }
-                        {image src=$attributeImageURL alt=$attributeValue->getValue()|escape:'html'
-                            title="{$attributeValue->getValue()|escape:'html'}: {$attributeValue->getCount()}"
-                            class="vmiddle filter-img"
-                        }
+                        {if !empty($attributeImageURL)}
+                            {image src=$attributeImageURL alt=$attributeValue->getValue()|escape:'html'
+                                title="{$attributeValue->getValue()|escape:'html'}: {$attributeValue->getCount()}"
+                                class="vmiddle filter-img"
+                            }
+                        {/if}
                         <span class="word-break">
                             {$attributeValue->getValue()|escape:'html'} ({$attributeValue->getCount()})
                         </span>
@@ -74,4 +83,16 @@
             {/block}
         {/if}
     {/foreach}
+    {if !$is_dropdown && $limit != -1 && $Merkmal->getOptions()|count > $limit}
+            </ul>
+        </div>
+        {button
+        variant="link"
+        role="button"
+        class="text-right pr-0"
+        data=["toggle"=> "collapse", "target"=>"#box-collps-filter-attribute-{$Merkmal->getValue()}"]
+        }
+        {lang key='showAll'} <i class="fas fa-chevron-down"></i>
+        {/button}
+    {/if}
 {/block}

@@ -598,94 +598,6 @@ function generateSitemapXML()
             }
         }
     }
-    if ($conf['sitemap']['sitemap_tags_anzeigen'] === 'Y') {
-        // Tags
-        $res = $db->queryPrepared(
-            "SELECT ttag.kTag, ttag.cName, tseo.cSeo
-                FROM ttag               
-                JOIN tseo 
-                    ON tseo.cKey = 'kTag'
-                    AND tseo.kKey = ttag.kTag
-                    AND tseo.kSprache = :langID
-                WHERE ttag.kSprache = :langID
-                    AND ttag.nAktiv = 1
-                ORDER BY ttag.kTag",
-            ['langID' => $defaultLangID],
-            ReturnType::QUERYSINGLE
-        );
-        while (($oTag = $res->fetch(PDO::FETCH_OBJ)) !== false) {
-            $urls = baueExportURL(
-                $oTag->kTag,
-                'kTag',
-                null,
-                $languages,
-                $defaultLangID,
-                $nArtikelProSeite,
-                $conf
-            );
-            foreach ($urls as $catURL) {
-                if ($sitemapNumber > $sitemapLimit) {
-                    $sitemapNumber = 1;
-                    baueSitemap($fileNumber, $sitemapData);
-                    ++$fileNumber;
-                    $urlCounts[$fileNumber] = 0;
-                    $sitemapData            = '';
-                }
-                if (!isSitemapBlocked($catURL)) {
-                    $sitemapData .= $catURL;
-                    ++$sitemapNumber;
-                    ++$urlCounts[$fileNumber];
-                    ++$stats['tag'];
-                }
-            }
-        }
-        // Tags sonstige Sprachen
-        foreach ($languages as $tmpLang) {
-            if ($tmpLang->kSprache === $defaultLangID) {
-                continue;
-            }
-            $res = $db->queryPrepared(
-                "SELECT ttag.kTag, ttag.cName, tseo.cSeo
-                    FROM ttag
-                    JOIN tseo 
-                        ON tseo.cKey = 'kTag'
-                        AND tseo.kKey = ttag.kTag
-                        AND tseo.kSprache = :langID
-                    WHERE ttag.kSprache = :langID
-                        AND ttag.nAktiv = 1
-                    ORDER BY ttag.kTag",
-                ['langID' => $tmpLang->kSprache],
-                ReturnType::QUERYSINGLE
-            );
-            while (($oTag = $res->fetch(PDO::FETCH_OBJ)) !== false) {
-                $urls = baueExportURL(
-                    $oTag->kTag,
-                    'kTag',
-                    null,
-                    $languages,
-                    $tmpLang->kSprache,
-                    $nArtikelProSeite,
-                    $conf
-                );
-                foreach ($urls as $catURL) {
-                    // X viele Seiten durchlaufen
-                    if ($sitemapNumber > $sitemapLimit) {
-                        $sitemapNumber = 1;
-                        baueSitemap($fileNumber, $sitemapData);
-                        ++$fileNumber;
-                        $urlCounts[$fileNumber] = 0;
-                        $sitemapData            = '';
-                    }
-                    if (!isSitemapBlocked($catURL)) {
-                        $sitemapData .= $catURL;
-                        ++$sitemapNumber;
-                        ++$urlCounts[$fileNumber];
-                        ++$stats['tagsprache'];
-                    }
-                }
-            }
-        }
-    }
     if ($conf['sitemap']['sitemap_hersteller_anzeigen'] === 'Y') {
         // Hersteller
         $res = $db->queryPrepared(
@@ -1108,11 +1020,6 @@ function baueExportURL(int $keyID, $keyName, $lastUpdate, $languages, $langID, $
 
         case 'kMerkmalWert':
             $params['kMerkmalWert'] = $keyID;
-            $naviFilter->initStates($params);
-            break;
-
-        case 'kTag':
-            $params['kTag'] = $keyID;
             $naviFilter->initStates($params);
             break;
 

@@ -2,7 +2,7 @@
 
 Guten Tag {$Kunde->cVorname} {$Kunde->cNachname},
 <br>
-vielen Dank für die Registrierung in unserem Onlineshop unter <a href="{$ShopURL}" target="_blank"><strong>{$ShopURL}</strong></a><br>
+vielen Dank für die Registrierung in unserem Onlineshop unter <a href="{$ShopURL}" target="_blank"><strong>{$ShopURL}</strong></a>.<br>
 <br>
 Zur Kontrolle hier noch einmal Ihre Kundendaten:<br>
 <br>
@@ -120,7 +120,7 @@ Zur Kontrolle hier noch einmal Ihre Kundendaten:<br>
 				<tr>
 					<td>
 						<font color="#313131" face="Helvetica, Arial, sans-serif" size="3" style="color: #313131; font-family: Helvetica, Arial, sans-serif; font-size: 15px; line-height: 18px;">
-							<strong>E-Mail:</strong>
+							<strong>E-Mail-Adresse:</strong>
 						</font>
 					</td>
 				</tr>
@@ -145,7 +145,7 @@ Zur Kontrolle hier noch einmal Ihre Kundendaten:<br>
 				<tr>
 					<td>
 						<font color="#313131" face="Helvetica, Arial, sans-serif" size="3" style="color: #313131; font-family: Helvetica, Arial, sans-serif; font-size: 15px; line-height: 18px;">
-							<strong>UstID:</strong>
+							<strong>Ust.-ID:</strong>
 						</font>
 					</td>
 				</tr>
@@ -171,7 +171,7 @@ Wir freuen uns sehr, Sie als neuen Kunden bei uns begrüßen zu dürfen. Wenn si
 <br>
 Wir wünschen Ihnen viel Spaß beim Stöbern in unserem Sortiment.<br>
 <br>
-Mit freundlichem Gruß,<br>
+Mit freundlichem Gruß<br>
 Ihr Team von {$Firma->cName}
 
 {includeMailTemplate template=footer type=html}

@@ -311,11 +311,8 @@
                                         {if $NaviFilter->hasSearchQuery()}
                                             {input type="hidden" name="l" value=$NaviFilter->getSearchQuery()->getValue()}
                                         {/if}
-                                        {if $NaviFilter->hasAttributeValue()}
-                                            {input type="hidden" name="m" value=$NaviFilter->getAttributeValue()->getValue()}
-                                        {/if}
-                                        {if $NaviFilter->hasTag()}
-                                            {input type="hidden" name="t" value=$NaviFilter->getTag()->getValue()}
+                                        {if $NaviFilter->hasCharacteristicValue()}
+                                            {input type="hidden" name="m" value=$NaviFilter->getCharacteristicValue()->getValue()}
                                         {/if}
                                         {if $NaviFilter->hasCategoryFilter()}
                                             {assign var=cfv value=$NaviFilter->getCategoryFilter()->getValue()}
@@ -337,16 +334,9 @@
                                                 {input type="hidden" name="hf" value=$mfv}
                                             {/if}
                                         {/if}
-                                        {if $NaviFilter->hasAttributeFilter()}
-                                            {foreach $NaviFilter->getAttributeFilter() as $attributeFilter}
-                                                {input type="hidden" name="mf{$attributeFilter@iteration}" value=$attributeFilter->getValue()}
-                                            {/foreach}
-                                        {/if}
-                                        {if $NaviFilter->hasTagFilter()}
-                                            {foreach $NaviFilter->getTagFilter() as $tagFilter}
-                                                {input type="hidden" name="tf{$tagFilter@iteration}" value=$tagFilter->getValue()}
-                                            {/foreach}
-                                        {/if}
+                                        {foreach $NaviFilter->getCharacteristicFilter() as $filter}
+                                            {input type="hidden" name="mf{$filter@iteration}" value=$filter->getValue()}
+                                        {/foreach}
                                     {/block}
                                 {/form}
                             {/block}

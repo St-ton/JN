@@ -6,6 +6,7 @@
 
 namespace JTL\dbeS;
 
+use JTL\Helpers\GeneralObject;
 use stdClass;
 
 /**
@@ -718,29 +719,27 @@ final class Mapper
      * @param array  $xml
      * @param string $name
      * @param string $toMap
-     * @return array
+     * @return stdClass[]
      */
     public function mapArray(array $xml, string $name, string $toMap): array
     {
         $objects = [];
         $idx     = $name . ' attr';
-        if ((isset($xml[$name]) && \is_array($xml[$name])) || (isset($xml[$idx]) && \is_array($xml[$idx]))) {
-            if (isset($xml[$idx]) && \is_array($xml[$idx])) {
-                $obj = new stdClass();
-                $this->mapAttributes($obj, $xml[$idx]);
-                $this->mapObject($obj, $xml[$name], $toMap);
+        if (GeneralObject::isCountable($idx, $xml)) {
+            $obj = new stdClass();
+            $this->mapAttributes($obj, $xml[$idx]);
+            $this->mapObject($obj, $xml[$name], $toMap);
 
-                return [$obj];
-            }
-            if (\count($xml[$name]) > 2) {
-                $cnt = \count($xml[$name]) / 2;
-                for ($i = 0; $i < $cnt; $i++) {
-                    if (!isset($objects[$i]) || $objects[$i] === null) {
-                        $objects[$i] = new stdClass();
-                    }
-                    $this->mapAttributes($objects[$i], $xml[$name][$i . ' attr']);
-                    $this->mapObject($objects[$i], $xml[$name][$i], $toMap);
+            return [$obj];
+        }
+        if (GeneralObject::isCountable($name, $xml) && \count($xml[$name]) > 2) {
+            $cnt = \count($xml[$name]) / 2;
+            for ($i = 0; $i < $cnt; $i++) {
+                if (!isset($objects[$i]) || $objects[$i] === null) {
+                    $objects[$i] = new stdClass();
                 }
+                $this->mapAttributes($objects[$i], $xml[$name][$i . ' attr']);
+                $this->mapObject($objects[$i], $xml[$name][$i], $toMap);
             }
         }
 
@@ -759,11 +758,7 @@ final class Mapper
             $obj = new stdClass();
         }
 
-        if (!$this->isAssoc($map)) {
-            foreach ($map as $key) {
-                $obj->$key = $xml[$key] ?? null;
-            }
-        } else {
+        if ($this->isAssoc($map)) {
             foreach ($map as $key => $value) {
                 $val = null;
                 if (isset($value) && empty($xml[$key])) {
@@ -772,6 +767,10 @@ final class Mapper
                     $val = $xml[$key];
                 }
                 $obj->$key = $val;
+            }
+        } else {
+            foreach ($map as $key) {
+                $obj->$key = $xml[$key] ?? null;
             }
         }
     }

@@ -5,7 +5,7 @@
         }
     </script>
     <div class="backend-brandbar">
-        <a class="backend-brand" href="index.php" title="Dashboard">
+        <a class="backend-brand" href="index.php" title="{__('dashboard')}">
             <img src="{$currentTemplateDir}gfx/JTL-Shop-Logo-rgb.png" alt="JTL-Shop">
         </a>
         <button type="button" class="backend-sidebar-toggle"
@@ -40,9 +40,16 @@
                         </div>
                         <ul class="backend-menu secondlevel" id="group-{$rootEntryName}">
                             {foreach $oLinkOberGruppe->oLinkGruppe_arr as $oLinkGruppe}
-                                {if $oLinkGruppe->oLink_arr|@count > 0}
-                                    {assign var=entryName
-                                            value=$oLinkGruppe->cName|replace:' ':'-'|replace:'&':''|lower}
+                                {assign var=entryName value=$oLinkGruppe->cName|replace:' ':'-'|replace:'&':''|lower}
+                                {if is_object($oLinkGruppe->oLink_arr)}
+                                    <li id="dropdown-header-{$entryName}"
+                                        class="backend-dropdown-header
+                                                {if $oLinkGruppe->key === $currentMenuPath[1]}expanded current{/if}">
+                                        <a href="{$oLinkGruppe->oLink_arr->cURL}">
+                                            <span>{$oLinkGruppe->cName}</span>
+                                        </a>
+                                    </li>
+                                {elseif $oLinkGruppe->oLink_arr|@count > 0}
                                     <li id="dropdown-header-{$entryName}"
                                         class="backend-dropdown-header
                                                {if $oLinkGruppe->key === $currentMenuPath[1]}expanded current{/if}">
@@ -52,8 +59,7 @@
                                         </a>
                                         <ul class="backend-menu thirdlevel" id="collapse-{$entryName}">
                                             {foreach $oLinkGruppe->oLink_arr as $oLink}
-                                                <li class="{if !$oLink->cRecht|permission}noperm{/if}
-                                                       {if $oLink->key === $currentMenuPath[2]}current{/if}">
+                                                <li class="{if $oLink->key === $currentMenuPath[2]}current{/if}">
                                                     <a href="{$oLink->cURL}">{$oLink->cLinkname}</a>
                                                 </li>
                                             {/foreach}
@@ -62,8 +68,7 @@
                                 {/if}
                             {/foreach}
                             {foreach $oLinkOberGruppe->oLink_arr as $oLink}
-                                <li class="{if !$oLink->cRecht|permission}noperm{/if}
-                                           {if $oLink->key === $currentMenuPath[1]}current{/if}">
+                                <li class="{if $oLink->key === $currentMenuPath[1]}current{/if}">
                                     <a href="{$oLink->cURL}" class="">{$oLink->cLinkname}</a>
                                 </li>
                             {/foreach}

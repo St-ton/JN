@@ -405,7 +405,7 @@ class Kunde
         // check if password has to be updated because of PASSWORD_DEFAULT method changes or using old md5 hash
         if (isset($user->cPasswort) && $passwordService->needsRehash($user->cPasswort)) {
             $upd            = new stdClass();
-            $upd->cPasswort = $passwordService->hash($password);
+            $upd->cPasswort = $passwordService->hash($user->cPasswort);
             Shop::Container()->getDB()->update('tkunde', 'kKunde', (int)$user->kKunde, $upd);
         }
     }

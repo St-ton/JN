@@ -88,9 +88,6 @@ function extractParameters($NaviFilter)
     if (!empty($NaviFilter->MerkmalWert->kMerkmalWert)) {
         $params['kMerkmalWert'] = (int)$NaviFilter->MerkmalWert->kMerkmalWert;
     }
-    if (!empty($NaviFilter->Tag->kTag)) {
-        $params['kTag'] = (int)$NaviFilter->Tag->kTag;
-    }
     if (!empty($NaviFilter->PreisspannenFilter->fVon) && !empty($NaviFilter->PreisspannenFilter->fBis)) {
         $params['cPreisspannenFilter'] = $NaviFilter->PreisspannenFilter->fVon .
             '_' . $NaviFilter->PreisspannenFilter->fBis;
@@ -107,11 +104,6 @@ function extractParameters($NaviFilter)
     if (!empty($NaviFilter->MerkmalFilter) && is_array($NaviFilter->MerkmalFilter)) {
         foreach ($NaviFilter->MerkmalFilter as $mf) {
             $params['MerkmalFilter_arr'] = (int)$mf->kMerkmalWert;
-        }
-    }
-    if (!empty($NaviFilter->TagFilter) && is_array($NaviFilter->TagFilter)) {
-        foreach ($NaviFilter->TagFilter as $tf) {
-            $params['TagFilter_arr'] = (int)$tf->kTag;
         }
     }
     if (!empty($NaviFilter->SuchFilter) && is_array($NaviFilter->SuchFilter)) {
@@ -208,8 +200,11 @@ function gibPreisspannenFilterOptionen($FilterSQL, $NaviFilter)
  */
 function gibTagFilterOptionen($FilterSQL, $NaviFilter)
 {
-    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return updateNaviFilter($NaviFilter)->tagFilterCompat->getOptions();
+    trigger_error(
+        __FUNCTION__ . ' is deprecated. Functionalitiy of product tags was removed in 5.0.0',
+        E_USER_DEPRECATED
+    );
+    return [];
 }
 
 /**
@@ -237,12 +232,11 @@ function gibSuchFilterJSONOptionen($FilterSQL, $NaviFilter)
  */
 function gibTagFilterJSONOptionen($FilterSQL, $NaviFilter)
 {
-    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    $tags = gibTagFilterOptionen($FilterSQL, $NaviFilter);
-    foreach ($tags as $key => $oTags) {
-        $tags[$key]->cURL = Text::htmlentitydecode($oTags->cURL);
-    }
-    return AbstractBox::getJSONString($tags);
+    trigger_error(
+        __FUNCTION__ . ' is deprecated. Functionalitiy of product tags was removed in 5.0.0',
+        E_USER_DEPRECATED
+    );
+    return '';
 }
 
 /**
@@ -254,7 +248,7 @@ function gibTagFilterJSONOptionen($FilterSQL, $NaviFilter)
 function gibMerkmalFilterOptionen($FilterSQL, $NaviFilter)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return updateNaviFilter($NaviFilter)->getAttributeFilterCollection()->getOptions();
+    return updateNaviFilter($NaviFilter)->getCharacteristicFilterCollection()->getOptions();
 }
 
 /**
@@ -946,7 +940,6 @@ function bauFilterSQL($NaviFilter)
     $filterSQL->oHerstellerFilterSQL      = new stdClass();
     $filterSQL->oKategorieFilterSQL       = new stdClass();
     $filterSQL->oMerkmalFilterSQL         = new stdClass();
-    $filterSQL->oTagFilterSQL             = new stdClass();
     $filterSQL->oBewertungSterneFilterSQL = new stdClass();
     $filterSQL->oPreisspannenFilterSQL    = new stdClass();
     $filterSQL->oSuchFilterSQL            = new stdClass();
@@ -986,7 +979,6 @@ function baueArtikelAnzahl($filterSQL, &$oSuchergebnisse, $productsPerPage = 20,
                 ($filterSQL->oKategorieFilterSQL->cJoin ?? '') . ' ' .
                 ($filterSQL->oSuchFilterSQL->cJoin ?? '') . ' ' .
                 ($filterSQL->oMerkmalFilterSQL->cJoin ?? '') . ' ' .
-                ($filterSQL->oTagFilterSQL->cJoin ?? '') . ' ' .
                 ($filterSQL->oBewertungSterneFilterSQL->cJoin ?? '') . ' ' .
                 ($filterSQL->oPreisspannenFilterSQL->cJoin ?? '') .
             ' LEFT JOIN tartikelsichtbarkeit 
@@ -1000,7 +992,6 @@ function baueArtikelAnzahl($filterSQL, &$oSuchergebnisse, $productsPerPage = 20,
                 ($filterSQL->oHerstellerFilterSQL->cWhere ?? '') . ' ' .
                 ($filterSQL->oKategorieFilterSQL->cWhere ?? '') . ' ' .
                 ($filterSQL->oMerkmalFilterSQL->cWhere ?? '') . ' ' .
-                ($filterSQL->oTagFilterSQL->cWhere ?? '') . ' ' .
                 ($filterSQL->oBewertungSterneFilterSQL->cWhere ?? '') . ' ' .
                 ($filterSQL->oPreisspannenFilterSQL->cWhere ?? '') .
                 ' GROUP BY tartikel.kArtikel ' .

@@ -9,7 +9,6 @@ namespace JTL\Country;
 use JTL\Language\LanguageModel;
 use JTL\Shop;
 use JTL\MagicCompatibilityTrait;
-use JTL\Helpers\Text;
 
 /**
  * Class Country
@@ -173,10 +172,11 @@ class Country
      */
     public function getName(int $idx = null): string
     {
-        $langID = $_SESSION['AdminAccount']->kSprache ??
-            (Shop::getLanguageID() !== 0 ? Shop::getLanguageID() : ($_SESSION['kSprachISO'] ?? 0));
+        $langID = Shop::getLanguageID() !== 0 ? Shop::getLanguageID() : ($_SESSION['kSprachISO'] ?? 0);
 
-        return $this->names[$idx ?? $langID] ?? '';
+        return isset($_SESSION['AdminAccount']->language)
+            ? $this->getNameForLangISO($_SESSION['AdminAccount']->language)
+            : $this->names[$idx ?? $langID] ?? '';
     }
 
     /**

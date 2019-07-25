@@ -17,6 +17,7 @@ use JTL\OPC\PortletInstance;
 class Image extends Portlet
 {
     /**
+     * @param PortletInstance $instance
      * @return bool|string
      */
     public function getRoundedProp(PortletInstance $instance)
@@ -47,7 +48,7 @@ class Image extends Portlet
      */
     public function getButtonHtml(): string
     {
-        return $this->getFontAwesomeButtonHtml('image');
+        return $this->getFontAwesomeButtonHtml('far fa-image');
     }
 
     /**
@@ -57,29 +58,29 @@ class Image extends Portlet
     {
         return [
             'src'        => [
-                'label'   => 'Bild',
+                'label'   => __('Image'),
                 'type'    => InputType::IMAGE,
                 'default' => '',
             ],
             'shape'      => [
-                'label'      => 'Form',
+                'label'      => __('shape'),
                 'type'       => InputType::SELECT,
                 'options'    => [
-                    'normal'    => 'normal',
-                    'rounded'   => 'abgerundete Ecken',
-                    'circle'    => 'Kreis',
-                    'thumbnail' => 'Als Thumbnail',
+                    'normal'    => __('shapeNormal'),
+                    'rounded'   => __('shapeRoundedCorners'),
+                    'circle'    => __('shapeCircle'),
+                    'thumbnail' => __('shapeThumbnail'),
                 ],
                 'width' => 50,
             ],
             'responsive' => [
-                'label'      => 'Responsives Bild?',
+                'label'      => __('imageResponsive'),
                 'type'       => InputType::CHECKBOX,
                 'default'    => true,
                 'width' => 50,
             ],
             'alt'        => [
-                'label' => 'Alternativtext',
+                'label' => __('alternativeText'),
             ],
         ];
     }
@@ -90,7 +91,7 @@ class Image extends Portlet
     public function getPropertyTabs(): array
     {
         return [
-            'Styles' => 'styles',
+            __('Styles') => 'styles',
         ];
     }
 }

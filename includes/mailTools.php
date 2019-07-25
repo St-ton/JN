@@ -147,7 +147,7 @@ function sendeMail($moduleID, $data, $mail = null)
             'kEmailvorlage',
             $mailTPL->kEmailvorlage
         );
-        if (is_array($mailTPL->oEinstellung_arr) && count($mailTPL->oEinstellung_arr) > 0) {
+        if (GeneralObject::hasCount('oEinstellung_arr', $mailTPL)) {
             $mailTPL->oEinstellungAssoc_arr = [];
             foreach ($mailTPL->oEinstellung_arr as $conf) {
                 $mailTPL->oEinstellungAssoc_arr[$conf->cKey] = $conf->cValue;
@@ -770,14 +770,12 @@ function getPDFAttachments($pdfString, $nameString)
     $pdfData   = Text::parseSSK(trim($pdfString, ";\t\n\r\0"));
     $names     = Text::parseSSK(trim($nameString, ";\t\n\r\0"));
     $uploadDir = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_EMAILPDFS;
-    if (is_array($pdfData)) {
-        foreach ($pdfData as $key => $pdfFile) {
-            if (!empty($pdfFile) && file_exists($uploadDir . $pdfFile)) {
-                $result[] = (object)[
-                    'fileName'   => $pdfFile,
-                    'publicName' => $names[$key] ?? $pdfFile,
-                ];
-            }
+    foreach ($pdfData as $key => $pdfFile) {
+        if (!empty($pdfFile) && file_exists($uploadDir . $pdfFile)) {
+            $result[] = (object)[
+                'fileName'   => $pdfFile,
+                'publicName' => $names[$key] ?? $pdfFile,
+            ];
         }
     }
 

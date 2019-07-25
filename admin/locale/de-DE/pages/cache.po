@@ -159,7 +159,7 @@ msgid "successCacheMethodSave"
 msgstr " wurde als Cache-Methode gespeichert."
 
 msgid "errorCacheMethodSelect"
-msgstr "Konnte keine funktionierende Cache-Methode auswählen."
+msgstr "Es konnte keine funktionierende Cache-Methode ausgewählt werden."
 
 msgid "errorFileDelete"
 msgstr "Die Datei %s konnte nicht gelöscht werden!"
@@ -168,7 +168,7 @@ msgid "errorDirDelete"
 msgstr "Das Verzeichnis %s konnte nicht gelöscht werden!"
 
 msgid "successTemplateCacheDelete"
-msgstr "Es wurden %d Dateien im Templatecache gelöscht!"
+msgstr "Es wurden %d Dateien im Template-Cache gelöscht!"
 
 msgid "uptime"
 msgstr "Uptime"
@@ -229,3 +229,12 @@ msgstr "Benchmark konnte nicht ausgeführt werden."
 
 msgid "errorMethodNotFound"
 msgstr "Keine Methoden gefunden."
+
+msgid "typeArray"
+msgstr "Array"
+
+msgid "typeObject"
+msgstr "Objekt"
+
+msgid "typeString"
+msgstr "String"

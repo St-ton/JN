@@ -69,8 +69,8 @@
             {else}
                 <link type="text/css" href="{$ShopURL}/asset/{$Einstellungen.template.theme.theme_default}.css{if isset($cPluginCss_arr) && $cPluginCss_arr|@count > 0},plugin_css{/if}?v={$nTemplateVersion}" rel="stylesheet">
             {/if}
-            {if \JTL\Shop::isAdmin() && $opc->isEditMode() === false}
-                <link type="text/css" href="{$ShopURL}/admin/opc/style.css" rel="stylesheet">
+            {if \JTL\Shop::isAdmin() && $opc->isEditMode() === false && $opc->isPreviewMode() === false}
+                <link type="text/css" href="{$ShopURL}/admin/opc/css/startmenu.css" rel="stylesheet">
             {/if}
             {* RSS *}
             {if isset($Einstellungen.rss.rss_nutzen) && $Einstellungen.rss.rss_nutzen === 'Y'}
@@ -114,7 +114,7 @@
     {/block}
 
     {if !$bExclusive}
-        {include file=$opcDir|cat:'startmenu.tpl'}
+        {include file=$opcDir|cat:'tpl/startmenu.tpl'}
 
         {if isset($bAdminWartungsmodus) && $bAdminWartungsmodus}
             {alert show=true variant="warning" id="maintenance-mode" dismissible=true}{lang key='adminMaintenanceMode'}{/alert}
@@ -128,7 +128,7 @@
 
                     <div class="container-fluid px-md-4 clearfix">
                     {block name='layout-header-branding-top-bar'}
-                        <div id="top-bar" class="pt-2 text-right d-none d-md-block">
+                        <div class="top-bar pt-2 text-right d-none {if $nSeitenTyp !== $smarty.const.PAGE_BESTELLVORGANG}d-md-block{/if}">
                             {include file='layout/header_top_bar.tpl'}
                         </div>
                     {/block}
@@ -153,7 +153,7 @@
                                     </div>
                                 {/block}
                             {/col}
-                            {col id="shop-nav" order=3 order-md=3 order-lg=4 class="col-auto bg-white" style="z-index: 1;"}
+                            {col id="shop-nav" order=3 order-md=3 order-lg=4 class="col-auto bg-white {if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG}d-none{/if}" style="z-index: 1;"}
                                 {block name='layout-header-branding-shop-nav'}
                                     <div class="d-flex text-right">
                                         {include file='layout/header_nav_icons.tpl'}
@@ -161,13 +161,13 @@
                                 {/block}
                             {/col}
 
-                            {col md=12 order=1 order-md=5 order-xl=5 class="no-flex-grow"}
+                            {col md=12 order=1 order-md=5 order-xl=5 class="no-flex-grow {if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG}d-none{/if}"}
                                 {block name='layout-header-navbar-toggler'}
                                     {navbartoggle data=["target"=>"#navbarToggler"] class="d-flex d-md-none"}
                                 {/block}
                             {/col}
 
-                            {col cols=12 col-md=auto order=5 order-xl=2 class="col-xl"}
+                            {col cols=12 col-md=auto order=5 order-xl=2 class="col-xl {if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG}d-none{/if}"}
                                 {*categories*}
                                 {block name='layout-header-include-categories-mega'}
                                     <div id="navbarToggler" class="collapse navbar-collapse" data-parent="#evo-main-nav-wrapper">
@@ -184,13 +184,24 @@
                                 {/block}
                             {/col}
 
-                            {col order=6 order-md=2 cols=12 order-lg=3 class="col-md-auto bg-white"}
+                            {col order=6 order-md=2 cols=12 order-lg=3 class="col-md-auto bg-white {if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG}d-none{/if}"}
                                 {block name='layout-header-include-header-nav-search'}
                                     {collapse id="nav-search-collapse" tag="div" data=["parent"=>"#evo-main-nav-wrapper"] class="d-md-flex mx-auto float-md-right"}
                                         {include file='layout/header_nav_search.tpl'}
                                     {/collapse}
                                 {/block}
                             {/col}
+
+                            {if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG}
+                                {col class="d-block text-right text-md-left" order=3}
+                                    <i class="fas fa-lock align-center mr-2"></i>{lang key='secureCheckout' section='checkout'}
+                                {/col}
+                                {col order=4 class="d-none d-md-block"}
+                                    <div class="top-bar text-right">
+                                        {include file='layout/header_top_bar.tpl'}
+                                    </div>
+                                {/col}
+                            {/if}
                         {/navbar}
 
                     {/block}
@@ -216,7 +227,7 @@
     {/block}
     {block name='layout-header-content-all-starttags'}
         {block name='layout-header-content-wrapper-starttag'}
-            <div id="content-wrapper" class="container-fluid mt-0 pt-4 px-md-4">
+            <div id="content-wrapper" class="container-fluid mt-0 pt-4 {if $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp}px-4 px-lg-7{else}px-0{/if}">
         {/block}
 
         {block name='layout-header-breadcrumb'}
@@ -240,7 +251,7 @@
         {/block}
 
         {block name='layout-header-content-row-starttag'}
-            <div class="row">
+            <div class="row no-gutters px-xl-8">
         {/block}
 
         {block name='layout-header-content-starttag'}

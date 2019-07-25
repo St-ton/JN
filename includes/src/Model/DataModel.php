@@ -7,13 +7,12 @@
 namespace JTL\Model;
 
 use Exception;
-use function Functional\select;
 use Illuminate\Support\Collection;
 use InvalidArgumentException;
 use Iterator;
 use JTL\DB\DbInterface;
-use JTL\Shop;
 use stdClass;
+use function Functional\select;
 
 /**
  * Class DataModel
@@ -77,22 +76,29 @@ abstract class DataModel implements DataModelInterface, Iterator
     }
 
     /**
-     * DataModel constructor.
-     * @param null|array|object $attributes
-     * @param DbInterface|null  $db
+     * @inheritDoc
      */
-    public function __construct($attributes = null, DbInterface $db = null)
+    public function getWasLoaded(): bool
+    {
+        return $this->loaded;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setWasLoaded(bool $loaded): void
+    {
+        $this->loaded = $loaded;
+    }
+
+    /**
+     * DataModel constructor.
+     * @param DbInterface|null $db
+     */
+    public function __construct(DbInterface $db = null)
     {
         $this->prepare($db);
-        if ($attributes !== null) {
-            $this->fill($attributes);
-            if ($db !== null) {
-                $this->init((array)$attributes);
-            }
-            $this->onInstanciation();
-        } else {
-            $this->fabricate();
-        }
+        $this->fabricate();
     }
 
     /**
@@ -163,6 +169,26 @@ abstract class DataModel implements DataModelInterface, Iterator
     }
 
     /**
+     * check if an attribute exists - mapped or unmapped
+     *
+     * @param object $attributes
+     * @param string $attribName
+     * @return string|null
+     */
+    private function checkAttribute(object $attributes, $attribName): ?string
+    {
+        if (\property_exists($attributes, $attribName)) {
+            return $attribName;
+        }
+        $attribName = $this->getMapping($attribName);
+        if (\property_exists($attributes, $attribName)) {
+            return $attribName;
+        }
+
+        return null;
+    }
+
+    /**
      * @param DbInterface|null $db
      */
     public function prepare(DbInterface $db = null): void
@@ -173,31 +199,44 @@ abstract class DataModel implements DataModelInterface, Iterator
     }
 
     /**
-     * @param null|array|object $attributes
-     * @param DbInterface|null  $db
+     * @param DbInterface|null $db
      * @return static
      */
-    public static function newInstance($attributes = null, DbInterface $db = null): self
+    public static function newInstance(DbInterface $db = null): self
     {
-        return new static($attributes, $db);
+        return new static($db);
+    }
+
+    /**
+     * @param int $option
+     * @return $this
+     * @throws Exception
+     */
+    protected function createNew($option = self::NONE): self
+    {
+        $pkValue = $this->db->insert($this->getTableName(), $this->getSqlObject(true));
+        if (!empty($pkValue)) {
+            if (empty($this->getKey())) {
+                $this->setKey($pkValue);
+            }
+        } elseif ($option === self::ON_EXISTS_UPDATE) {
+            $this->save();
+        } elseif ($option !== self::ON_INSERT_IGNORE) {
+            throw new Exception(__METHOD__ . ': SQL error', self::ERR_DATABASE);
+        }
+
+        return $this;
     }
 
     /**
      * @inheritDoc
      */
-    public static function create($attributes, DbInterface $db, $option = self::NONE): DataModelInterface
+    public static function create($attributes, DbInterface $db, $option = self::NONE)
     {
-        $instance = static::newInstance($attributes, $db);
-        $pkValue  = $db->insert($instance->getTableName(), $instance->getSqlObject());
-        if (!empty($pkValue)) {
-            $instance->setKey($pkValue);
-        } elseif ($option === self::ON_EXISTS_UPDATE) {
-            $instance->save();
-        } elseif ($option === self::ON_INSERT_IGNORE) {
-            return $instance;
-        } else {
-            throw new Exception(__METHOD__ . ': SQL error', self::ERR_DATABASE);
-        }
+        $instance = static::newInstance($db);
+        $instance->fill($attributes);
+        $instance->createNew($option);
+        $instance->updateChildModels();
 
         return $instance;
     }
@@ -222,18 +261,14 @@ abstract class DataModel implements DataModelInterface, Iterator
                 throw $e;
             }
         }
-        if (isset($record)) {
-            $this->loaded = true;
-        } else {
-            switch ($option) {
-                case self::ON_NOTEXISTS_NEW:
-                    return $this;
-                case self::ON_NOTEXISTS_CREATE:
-                    return static::create($this, $this->db);
-                default:
-                    throw new Exception(__METHOD__ . ': No Data Found', self::ERR_NOT_FOUND);
+
+        if ($record === null) {
+            if ($option === self::ON_NOTEXISTS_FAIL) {
+                throw new Exception(__METHOD__ . ': No Data Found', self::ERR_NOT_FOUND);
             }
+            return $option === self::ON_NOTEXISTS_NEW ? $this->createNew($option) : $this;
         }
+        $this->loaded = true;
 
         return $this->fill($record);
     }
@@ -241,55 +276,26 @@ abstract class DataModel implements DataModelInterface, Iterator
     /**
      * @inheritDoc
      */
-    public static function load($attributes, DbInterface $db, $option = self::ON_NOTEXISTS_NEW): DataModelInterface
+    public static function load($attributes, DbInterface $db, $option = self::ON_NOTEXISTS_NEW)
     {
-        $instance = static::newInstance($attributes, $db);
-
-        try {
-            $record = $db->select($instance->getTableName(), $instance->getKeyName(true), $instance->getKey());
-        } catch (Exception $e) {
-            if ($e->getCode() === self::ERR_NO_PRIMARY_KEY) {
-                $attribs = $instance->getAttributes();
-                $conds   = [];
-                foreach ($attributes as $key => $value) {
-                    $conds[$attribs[$instance->getMapping($key)]->name] = $value;
-                }
-                $record = $db->select($instance->getTableName(), \array_keys($conds), \array_values($conds));
-            } else {
-                throw $e;
-            }
-        }
-        if (isset($record)) {
-            $instance->loaded = true;
-        } else {
-            switch ($option) {
-                case self::ON_NOTEXISTS_NEW:
-                    return $instance;
-                case self::ON_NOTEXISTS_CREATE:
-                    return static::create($attributes, $instance->getDB());
-                default:
-                    throw new Exception(__METHOD__ . ': No Data Found', self::ERR_NOT_FOUND);
-            }
-        }
-
-        return $instance->fill($record);
+        return static::newInstance($db)->init((array)$attributes, $option);
     }
 
     /**
      * @inheritDoc
      */
-    public static function loadByAttributes(
-        $attributes,
-        DbInterface $db,
-        $option = self::ON_NOTEXISTS_NEW
-    ): DataModelInterface {
-        $instance = static::newInstance($attributes);
-        $instance->setDB($db);
-        $attribs = $instance->getAttributes();
-        $conds   = [];
+    public static function loadByAttributes($attributes, DbInterface $db, $option = self::ON_NOTEXISTS_FAIL)
+    {
+        $instance = static::newInstance($db);
+        $attribs  = $instance->getAttributes();
+        $conds    = [];
         foreach ($attributes as $key => $value) {
-            $mapped = $attribs[$key]->name ?? null;
-            if ($mapped !== null) {
+            $attribute = $attribs[$key] ?? null;
+            if ($attribute === null) {
+                continue;
+            }
+            $mapped = $attribute->name;
+            if ($mapped !== null && !self::isChildModel($attribute->dataType)) {
                 $conds[$mapped] = $value;
             }
         }
@@ -313,6 +319,8 @@ abstract class DataModel implements DataModelInterface, Iterator
         } else {
             switch ($option) {
                 case self::ON_NOTEXISTS_NEW:
+                    $instance->fill($attributes);
+
                     return $instance;
                 case self::ON_NOTEXISTS_CREATE:
                     return static::create($attributes, $db);
@@ -321,7 +329,6 @@ abstract class DataModel implements DataModelInterface, Iterator
             }
         }
         $instance->fill($record);
-        $instance->onInstanciation();
 
         return $instance;
     }
@@ -331,15 +338,15 @@ abstract class DataModel implements DataModelInterface, Iterator
      */
     public static function loadAll(DbInterface $db, $key, $value): Collection
     {
-        $instance = static::newInstance(null, $db);
-        $class    = static::class;
+        $instance = static::newInstance($db);
 
         return \collect($db->selectAll($instance->getTableName(), $key, $value))
-            ->map(function ($value) use ($class) {
-                return new $class($value);
-            })
-            ->each(function (DataModelInterface $e) {
-                $e->wasLoaded();
+            ->map(function ($value) use ($db) {
+                $i = new static($db);
+                $i->fill($value);
+                $i->setWasLoaded(true);
+
+                return $i;
             });
     }
 
@@ -364,9 +371,7 @@ abstract class DataModel implements DataModelInterface, Iterator
                 $result = (bool)$value;
                 break;
             case 'int':
-                if (\is_numeric($value)) {
-                    $result = (int)$value;
-                }
+                $result = (int)$value;
                 break;
             case 'float':
                 if (\is_numeric($value)) {
@@ -380,6 +385,18 @@ abstract class DataModel implements DataModelInterface, Iterator
                 break;
             case 'model':
                 return $value;
+            case 'yesno':
+                if (\is_string($value) && \in_array($value, ['Y', 'N'], true)) {
+                    $result = $value;
+                } elseif (\is_numeric($value) || \is_bool($value)) {
+                    $result = (bool)$value === true ? 'Y' : 'N';
+                } elseif ($value === 'true') {
+                    $result = 'Y';
+                } elseif ($value === 'false') {
+                    $result = 'N';
+                }
+                break;
+
             default:
                 throw new Exception(__METHOD__ . ': unsupported data type(' . $type . ')', self::ERR_INVALID_PARAM);
         }
@@ -393,13 +410,14 @@ abstract class DataModel implements DataModelInterface, Iterator
      */
     private static function getType(string $type)
     {
-        if (\strpos($type, 'app\\models\\') !== false || \strpos($type, 'jtl\\') === 0) {
+        if (self::isChildModel($type)) {
             return 'model';
         }
         $typeMap = [
             'bool|boolean',
             'int|tinyint|smallint|mediumint|integer|bigint|decimal|dec',
             'float|double',
+            'yesno',
             'string|date|time|year|datetime|timestamp|char|varchar|tinytext|text|mediumtext|enum',
         ];
 
@@ -481,21 +499,15 @@ abstract class DataModel implements DataModelInterface, Iterator
         if (\is_array($attributes)) {
             $attributes = (object)$attributes;
         }
-
-        if (!\is_object($attributes)) {
-            throw new Exception(__METHOD__ . ': invalid param', self::ERR_INVALID_PARAM);
-        }
         foreach ($this->getAttributes() as $attribute) {
             $attribName = $attribute->name;
-            if (\property_exists($attributes, $attribName)) {
-                $this->setAttribValue($attribName, $attributes->$attribName);
-            } elseif (\property_exists($attributes, $this->getMapping($attribName))) {
-                $attribName = $this->getMapping($attribName);
-                $this->setAttribValue($attribName, $attributes->$attribName);
-            } elseif ($this->db !== null && $attribute->foreignKey !== null && \class_exists($attribute->dataType)) {
+            if (($name = $this->checkAttribute($attributes, $attribName)) !== null) {
+                $this->setAttribValue($name, $attributes->$name);
+            } elseif ($attribute->foreignKey !== null && \class_exists($attribute->dataType)) {
                 $key       = $attribute->foreignKey;
                 $className = $attribute->dataType;
-                $value     = $className::loadAll($this->db, $attribute->foreignKeyChild ?? $key, $this->$key);
+                /** @var DataModelInterface $className */
+                $value = $className::loadAll($this->db, $attribute->foreignKeyChild ?? $key, $this->$key);
                 if (isset($this->setters[$attribName])) {
                     $value = \call_user_func($this->setters[$attribName], $value, $this);
                 }
@@ -504,6 +516,7 @@ abstract class DataModel implements DataModelInterface, Iterator
                 $this->setAttribValue($attribName, $attribute->default);
             }
         }
+        $this->onInstanciation();
 
         return $this;
     }
@@ -533,11 +546,10 @@ abstract class DataModel implements DataModelInterface, Iterator
         $keyName      = null;
         $members      = $this->getSqlObject();
         $allKeyNames  = $this->getAllKeyNames(true);
-
         try {
             $keyValue = $this->getKey();
             $keyName  = $this->getKeyName(true);
-            if (\count($allKeyNames) === 1) {
+            if (\count($allKeyNames) === 1 && empty($members->$keyName)) {
                 unset($members->$keyName);
             }
         } catch (Exception $e) {
@@ -550,13 +562,13 @@ abstract class DataModel implements DataModelInterface, Iterator
         $members = $this->getMembersToSave($members, $partial);
         if (!$this->loaded || $noPrimaryKey || $keyValue === null) {
             $pkValue = $this->db->insert($this->getTableName(), $members);
-            $this->updateChildModels();
-
-            if (!($noPrimaryKey || empty($pkValue))) {
+            if ((empty($keyValue) || $noPrimaryKey) && !empty($pkValue)) {
                 $this->setKey($pkValue);
+                $this->updateChildModels();
 
                 return true;
             }
+            $this->updateChildModels();
 
             return false;
         }
@@ -646,9 +658,8 @@ abstract class DataModel implements DataModelInterface, Iterator
         if (!isset($record)) {
             throw new Exception(__METHOD__ . ': No Data Found', self::ERR_NOT_FOUND);
         }
-
+        $this->setWasLoaded(true);
         $this->fill($record);
-        $this->onInstanciation();
 
         return $this;
     }
@@ -688,6 +699,17 @@ abstract class DataModel implements DataModelInterface, Iterator
         }
 
         return isset($mapping[$attribName]);
+    }
+
+    /**
+     * @param string $type
+     * @return bool
+     */
+    private static function isChildModel(string $type): bool
+    {
+        $type = \strtolower($type);
+
+        return \strpos($type, 'japi\\models\\') !== false || \strpos($type, 'jtl\\') !== false;
     }
 
     /**
@@ -850,16 +872,23 @@ abstract class DataModel implements DataModelInterface, Iterator
     /**
      * @inheritDoc
      */
-    public function getSqlObject(): stdClass
+    public function getSqlObject(bool $noPrimary = false): stdClass
     {
         $result = new stdClass();
         foreach ($this->getAttributes() as $name => $attr) {
-            if ($attr->foreignKey !== null || $attr->foreignKeyChild !== null || $attr->dynamic === true) {
+            if ($attr->foreignKey !== null
+                || $attr->foreignKeyChild !== null
+                || $attr->dynamic === true
+                || ($noPrimary === true && $attr->isPrimaryKey === true && $this->members[$name] === null)
+            ) {
                 // do not add child relations to sql statement
                 continue;
             }
             $member          = $attr->name;
             $result->$member = $this->members[$name];
+            if ($result->$member === null) {
+                $result->$member = '_DBNULL_';
+            }
         }
 
         return $result;
@@ -879,8 +908,9 @@ abstract class DataModel implements DataModelInterface, Iterator
                 }
             }
         }
+        $instance = static::newInstance($this->db);
 
-        return static::newInstance($members, $this->db);
+        return $instance->init((array)$members);
     }
 
     /**

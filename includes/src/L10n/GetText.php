@@ -10,7 +10,6 @@ use Gettext\Translations;
 use Gettext\Translator;
 use JTL\Plugin\Admin\ListingItem;
 use JTL\Plugin\PluginInterface;
-use JTL\Shop;
 
 /**
  * Class GetText
@@ -24,7 +23,7 @@ class GetText
     private $langTag;
 
     /**
-     * @var null|\Gettext\Translator
+     * @var null|Translator
      */
     private $translator;
 

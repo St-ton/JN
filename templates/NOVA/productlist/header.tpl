@@ -58,9 +58,9 @@
                     <div class="item_desc custom_content">{$oNavigationsinfo->getManufacturer()->cBeschreibung}</div>
                 {/if}
                 {if $Einstellungen.navigationsfilter.merkmalwert_beschreibung_anzeigen === 'Y'
-                    && $oNavigationsinfo->getAttributeValue() !== null
-                    && $oNavigationsinfo->getAttributeValue()->cBeschreibung|strlen > 0}
-                    <div class="item_desc custom_content">{$oNavigationsinfo->getAttributeValue()->cBeschreibung}</div>
+                    && $oNavigationsinfo->getCharacteristicValue() !== null
+                    && $oNavigationsinfo->getCharacteristicValue()->cBeschreibung|strlen > 0}
+                    <div class="item_desc custom_content">{$oNavigationsinfo->getCharacteristicValue()->cBeschreibung}</div>
                 {/if}
             </div>
         {/if}
@@ -109,15 +109,6 @@
         {include file='selectionwizard/index.tpl'}
     {/block}
 
-    {if count($Suchergebnisse->getProducts()) > 0}
-        {block name='productlist-header-include-result-options'}
-            {include file='snippets/opc_mount_point.tpl' id='opc_before_result_options'}
-            <div id="improve_search" class="mb-3">
-                {include file='productlist/result_options.tpl'}
-            </div>
-        {/block}
-    {/if}
-
     {if $Suchergebnisse->getProducts()|@count <= 0 && isset($KategorieInhalt)}
         {if isset($KategorieInhalt->TopArtikel->elemente) && $KategorieInhalt->TopArtikel->elemente|@count > 0}
             {block name='productlist-header-include-product-slider-top'}
@@ -139,4 +130,13 @@
     {block name='productlist-header-include-productlist-page-nav'}
         {include file='snippets/productlist_page_nav.tpl' navid='header'}
     {/block}
+
+    {if !$device->isMobile() || $Suchergebnisse->getProducts()|@count <= 0}
+        {block name='productlist-header-include-active-filter'}
+            {$alertList->displayAlertByKey('noFilterResults')}
+            <div class="my-3">
+                {include file='snippets/filter/active_filter.tpl'}
+            </div>
+        {/block}
+    {/if}
 {/block}

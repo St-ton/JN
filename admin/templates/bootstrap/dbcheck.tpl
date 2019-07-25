@@ -241,7 +241,7 @@
             step = 1;
         }
         if (typeof table !== 'undefined' && table !== '') {
-            updateModalWait('{/literal}{__('migrationOf')}{literal}' + table + ' - {/literal}{__('step')}{literal}' + step);
+            updateModalWait(sprintf('{/literal}{__('migrationOf')}{literal}', table, step));
         }
         ioCall('migrateToInnoDB_utf8', ['migrate', table, step],
             function (data, context) {
@@ -255,12 +255,12 @@
                         closeModalWait();
                     }
                 } else {
-                    window.alert('{/literal}{__('errorMigrationTableOne')}{literal}' + table + '{/literal}{__('errorMigrationTableTwo')}{literal}');
+                    window.alert(sprintf('{/literal}{__('errorMigrationTable')}{literal}', table));
                     window.location.reload(true);
                 }
             },
             function (responseJSON) {
-                window.alert('{/literal}{__('errorMigrationTableOne')}{literal}' + table + '{/literal}{__('errorMigrationTableTwo')}{literal}');
+                window.alert(sprintf('{/literal}{__('errorMigrationTable')}{literal}', table));
                 window.location.reload(true);
             },
             {}

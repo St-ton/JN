@@ -7,6 +7,7 @@
 use JTL\Alert\Alert;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
+use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Request;
 use JTL\Helpers\Seo;
 use JTL\Helpers\Text;
@@ -23,7 +24,7 @@ $db          = Shop::Container()->getDB();
 $alertHelper = Shop::Container()->getAlertService();
 $step        = 'umfrage_uebersicht';
 $surveyID    = 0;
-$kUmfrageTMP = Request::verifyGPCDataInt('kUmfrage') > 0
+$tmpID       = Request::verifyGPCDataInt('kUmfrage') > 0
     ? Request::verifyGPCDataInt('kUmfrage')
     : Request::verifyGPCDataInt('kU');
 setzeSprache();
@@ -182,7 +183,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                     $seo->kSprache = $_SESSION['kSprache'];
                     $db->insert('tseo', $seo);
 
-                    $kUmfrageTMP = $surveyID;
+                    $tmpID = $surveyID;
 
                     $alertHelper->addAlert(
                         Alert::TYPE_SUCCESS,
@@ -281,12 +282,10 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
             }
         } elseif (isset($_POST['umfrage_loeschen']) && (int)$_POST['umfrage_loeschen'] === 1) {
             // Umfrage loeschen
-            if (is_array($_POST['kUmfrage']) && count($_POST['kUmfrage']) > 0) {
-                foreach ($_POST['kUmfrage'] as $surveyID) {
-                    $surveyID = (int)$surveyID;
-                    // tumfrage loeschen
+            $surveyIDs = Request::verifyGPDataIntegerArray('kUmfrage');
+            if (count($surveyIDs) > 0) {
+                foreach ($surveyIDs as $surveyID) {
                     $db->delete('tumfrage', 'kUmfrage', $surveyID);
-
                     $surveyQuestions = $db->query(
                         'SELECT kUmfrageFrage
                             FROM tumfragefrage
@@ -294,7 +293,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                         ReturnType::ARRAY_OF_OBJECTS
                     );
                     foreach ($surveyQuestions as $question) {
-                        loescheFrage($question->kUmfrageFrage);
+                        loescheFrage((int)$question->kUmfrageFrage);
                     }
                     // tseo loeschen
                     $db->delete('tseo', ['cKey', 'kKey'], ['kUmfrage', $surveyID]);
@@ -348,10 +347,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                 $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successAnswerDelete'), 'successAnswerDelete');
             }
             // Bestimmte Optionen loeschen
-            if (isset($_POST['kUmfrageMatrixOption'])
-                && is_array($_POST['kUmfrageMatrixOption'])
-                && count($_POST['kUmfrageMatrixOption']) > 0
-            ) {
+            if (GeneralObject::hasCount('kUmfrageMatrixOption', $_POST)) {
                 foreach ($_POST['kUmfrageMatrixOption'] as $kUmfrageMatrixOption) {
                     $kUmfrageMatrixOption = (int)$kUmfrageMatrixOption;
                     $db->query(
@@ -372,18 +368,18 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
             && (int)$_POST['umfrage_frage_hinzufuegen'] === 1
         ) {
             $step = 'umfrage_frage_erstellen';
-            $smarty->assign('kUmfrageTMP', $kUmfrageTMP);
+            $smarty->assign('kUmfrageTMP', $tmpID);
         } elseif (Request::verifyGPCDataInt('umfrage_statistik') === 1) {
             $conducts = $db->query(
                 'SELECT kUmfrageDurchfuehrung
                     FROM tumfragedurchfuehrung
-                    WHERE kUmfrage = ' . $kUmfrageTMP,
+                    WHERE kUmfrage = ' . $tmpID,
                 ReturnType::ARRAY_OF_OBJECTS
             );
 
             if (count($conducts) > 0) {
                 $step = 'umfrage_statistik';
-                $smarty->assign('oUmfrageStats', holeUmfrageStatistik($kUmfrageTMP));
+                $smarty->assign('oUmfrageStats', holeUmfrageStatistik($tmpID));
             } else {
                 $step = 'umfrage_vorschau';
                 $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorNoStatistic'), 'errorNoStatistic');
@@ -432,7 +428,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
             }
 
             $smarty->assign('oUmfrageFrage', $question)
-                ->assign('kUmfrageTMP', $kUmfrageTMP);
+                ->assign('kUmfrageTMP', $tmpID);
         }
         // Umfrage Detail
         if ((isset($_GET['ud']) && (int)$_GET['ud'] === 1) || $step === 'umfrage_vorschau') {
@@ -449,14 +445,14 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                 );
                 if ($survey->kUmfrage > 0) {
                     $survey->cKundengruppe_arr = [];
-                    foreach (Text::parseSSK($survey->cKundengruppe) as $customerGroupID) {
-                        if ($customerGroupID == -1) {
+                    foreach (Text::parseSSKint($survey->cKundengruppe) as $customerGroupID) {
+                        if ($customerGroupID === -1) {
                             $survey->cKundengruppe_arr[] = 'Alle';
                         } else {
                             $customerGroup = $db->select(
                                 'tkundengruppe',
                                 'kKundengruppe',
-                                (int)$customerGroupID
+                                $customerGroupID
                             );
                             if (!empty($customerGroup->cName)) {
                                 $survey->cKundengruppe_arr[] = $customerGroup->cName;
@@ -493,7 +489,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                 $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorPollSelect'), 'errorPollSelect');
             }
         }
-        if ($kUmfrageTMP > 0
+        if ($tmpID > 0
             && (!isset($_POST['umfrage_frage_edit_speichern']) || (int)$_POST['umfrage_frage_edit_speichern'] !== 1)
             && (!isset($_GET['fe']) || (int)$_GET['fe']) !== 1
         ) {
@@ -502,11 +498,11 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                 $db->selectAll(
                     'tumfragefrage',
                     'kUmfrage',
-                    $kUmfrageTMP,
+                    $tmpID,
                     '*',
                     'nSort'
                 )
-            )->assign('kUmfrageTMP', $kUmfrageTMP);
+            )->assign('kUmfrageTMP', $tmpID);
         }
     }
     if ($step === 'umfrage_uebersicht') {
@@ -535,14 +531,15 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
         );
         foreach ($surveys as $i => $survey) {
             $survey->cKundengruppe_arr = [];
-            foreach (Text::parseSSK($survey->cKundengruppe) as $customerGroupID) {
-                if ($customerGroupID == -1) {
+            foreach (Text::parseSSKint($survey->cKundengruppe) as $customerGroupID) {
+                if ($customerGroupID === -1) {
                     $surveys[$i]->cKundengruppe_arr[] = 'Alle';
                 } else {
-                    $customerGroup = $db->query(
+                    $customerGroup = $db->queryPrepared(
                         'SELECT cName
                             FROM tkundengruppe
-                            WHERE kKundengruppe = ' . (int)$customerGroupID,
+                            WHERE kKundengruppe = :cgid',
+                        ['cgid' => $customerGroupID],
                         ReturnType::SINGLE_OBJECT
                     );
                     if (!empty($customerGroup->cName)) {
@@ -563,7 +560,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
         ReturnType::ARRAY_OF_OBJECTS
     );
     $langData       = $db->select('tsprache', 'kSprache', (int)$_SESSION['kSprache']);
-    $coupons        = $db->query(
+    $coupons        = $db->queryPrepared(
         "SELECT tkupon.kKupon, tkuponsprache.cName
             FROM tkupon
             LEFT JOIN tkuponsprache 
@@ -572,8 +569,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                 AND (tkupon.dGueltigBis >= NOW() OR tkupon.dGueltigBis IS NULL)
                 AND (tkupon.nVerwendungenBisher <= tkupon.nVerwendungen OR tkupon.nVerwendungen = 0)
                 AND tkupon.cAktiv = 'Y'
-                AND tkuponsprache.cISOSprache = '" . $langData->cISO . "'
+                AND tkuponsprache.cISOSprache = :ccode
             ORDER BY tkupon.cName",
+        ['ccode' => $langData->cISO],
         ReturnType::ARRAY_OF_OBJECTS
     );
 

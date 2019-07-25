@@ -18,7 +18,7 @@ msgid "errorAmountDecimals"
 msgstr "Die Menge darf maximal mit 2 Nachkommastellen angegeben werden."
 
 msgid "countDecimals"
-msgstr "Anzahl der Dezimalstellen"
+msgstr "Anzahl der Nachkommastellen"
 
 msgid "thousandDivider"
 msgstr "Tausendertrennzeichen"

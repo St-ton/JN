@@ -8,6 +8,7 @@ namespace JTL\Extensions;
 
 use JTL\DB\ReturnType;
 use JTL\Catalog\Product\Merkmal;
+use JTL\Helpers\GeneralObject;
 use JTL\Shop;
 use stdClass;
 
@@ -85,7 +86,7 @@ class AuswahlAssistentFrage
      */
     private function loadFromDB(int $questionID, bool $activeOnly = true): void
     {
-        $oDbResult = Shop::Container()->getDB()->query(
+        $data = Shop::Container()->getDB()->query(
             'SELECT af.*, m.cBildpfad, COALESCE(ms.cName, m.cName) AS cName, m.cBildpfad
                 FROM tauswahlassistentfrage AS af
                     JOIN tauswahlassistentgruppe as ag
@@ -99,8 +100,8 @@ class AuswahlAssistentFrage
                     ($activeOnly ? ' AND af.nAktiv = 1' : ''),
             ReturnType::SINGLE_OBJECT
         );
-        if ($oDbResult !== null && $oDbResult !== false) {
-            foreach (\get_object_vars($oDbResult) as $name => $value) {
+        if ($data !== null && $data !== false) {
+            foreach (\get_object_vars($data) as $name => $value) {
                 $this->$name = $value;
             }
             $this->kAuswahlAssistentFrage  = (int)$this->kAuswahlAssistentFrage;
@@ -200,15 +201,12 @@ class AuswahlAssistentFrage
      */
     public static function deleteQuestion(array $params): bool
     {
-        if (isset($params['kAuswahlAssistentFrage_arr'])
-            && \is_array($params['kAuswahlAssistentFrage_arr'])
-            && \count($params['kAuswahlAssistentFrage_arr']) > 0
-        ) {
-            foreach ($params['kAuswahlAssistentFrage_arr'] as $kAuswahlAssistentFrage) {
+        if (GeneralObject::hasCount('kAuswahlAssistentFrage_arr', $params)) {
+            foreach ($params['kAuswahlAssistentFrage_arr'] as $questionID) {
                 Shop::Container()->getDB()->delete(
                     'tauswahlassistentfrage',
                     'kAuswahlAssistentFrage',
-                    (int)$kAuswahlAssistentFrage
+                    (int)$questionID
                 );
             }
 
@@ -251,36 +249,36 @@ class AuswahlAssistentFrage
     }
 
     /**
-     * @param int $kMerkmal
-     * @param int $kAuswahlAssistentGruppe
+     * @param int $characteristicID
+     * @param int $groupID
      * @return bool
      */
-    private function isMerkmalTaken(int $kMerkmal, int $kAuswahlAssistentGruppe): bool
+    private function isMerkmalTaken(int $characteristicID, int $groupID): bool
     {
-        if ($kMerkmal > 0 && $kAuswahlAssistentGruppe > 0) {
-            $oFrage = Shop::Container()->getDB()->select(
+        if ($characteristicID > 0 && $groupID > 0) {
+            $question = Shop::Container()->getDB()->select(
                 'tauswahlassistentfrage',
                 'kMerkmal',
-                $kMerkmal,
+                $characteristicID,
                 'kAuswahlAssistentGruppe',
-                $kAuswahlAssistentGruppe
+                $groupID
             );
 
-            return isset($oFrage->kAuswahlAssistentFrage) && $oFrage->kAuswahlAssistentFrage > 0;
+            return isset($question->kAuswahlAssistentFrage) && $question->kAuswahlAssistentFrage > 0;
         }
 
         return false;
     }
 
     /**
-     * @param int  $kMerkmal
-     * @param bool $bMMW
+     * @param int  $characteristicID
+     * @param bool $value
      * @return Merkmal|stdClass
      */
-    public static function getMerkmal(int $kMerkmal, bool $bMMW = false)
+    public static function getMerkmal(int $characteristicID, bool $value = false)
     {
-        return $kMerkmal > 0
-            ? new Merkmal($kMerkmal, $bMMW)
+        return $characteristicID > 0
+            ? new Merkmal($characteristicID, $value)
             : new stdClass();
     }
 }

@@ -9,13 +9,14 @@ namespace JTL\OPC;
 use JTL\Backend\AdminIO;
 use JTL\Filter\AbstractFilter;
 use JTL\Filter\Config;
-use JTL\Filter\Items\Attribute;
+use JTL\Filter\Items\Characteristic;
 use JTL\Filter\Items\PriceRange;
 use JTL\Filter\Option;
 use JTL\Filter\ProductFilter;
 use JTL\Filter\Type;
 use JTL\Helpers\Request;
 use JTL\Helpers\Tax;
+use JTL\IO\IOResponse;
 use JTL\OPC\Portlets\MissingPortlet;
 use JTL\Shop;
 
@@ -47,6 +48,8 @@ class Service
     public function __construct(DB $db)
     {
         $this->db = $db;
+
+        Shop::Container()->getGetText()->loadAdminLocale("pages/opc");
     }
 
     /**
@@ -67,6 +70,7 @@ class Service
             'getConfigPanelHtml',
             'getFilteredProductIds',
             'getFilterOptions',
+            'getFilterList',
         ];
     }
 
@@ -268,6 +272,24 @@ class Service
     }
 
     /**
+     * @param string $propname
+     * @param array $enabledFilters
+     * @return string
+     * @throws \SmartyException
+     */
+    public function getFilterList(string $propname, array $enabledFilters = [])
+    {
+        $filters = $this->getFilterOptions($enabledFilters);
+        $smarty  = Shop::Smarty();
+        $html    = $smarty
+            ->assign('propname', $propname)
+            ->assign('filters', $filters)
+            ->fetch(PFAD_ROOT . PFAD_ADMIN . 'opc/tpl/config/filter-list.tpl');
+
+        return $html;
+    }
+
+    /**
      * @param array $enabledFilters
      * @return array
      */
@@ -301,7 +323,7 @@ class Service
             $name    = $availableFilter->getFrontendName();
             $options = [];
 
-            if ($class === Attribute::class) {
+            if ($class === Characteristic::class) {
                 $name = 'Merkmale';
 
                 foreach ($availableFilter->getOptions() as $option) {

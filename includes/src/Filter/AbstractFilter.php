@@ -129,7 +129,7 @@ abstract class AbstractFilter implements FilterInterface
     protected $frontendName = '';
 
     /**
-     * list of filter options for AttributeFilters etc. that consist of multiple different filter options
+     * list of filter options for CharacteristicFilters etc. that consist of multiple different filter options
      *
      * @var array
      */
@@ -328,7 +328,7 @@ abstract class AbstractFilter implements FilterInterface
      */
     public function getUnsetFilterURL($idx = null): ?string
     {
-        if ($idx !== null && \is_array($idx) && \count($idx) === 1) {
+        if (\is_array($idx) && \count($idx) === 1) {
             $idx = $idx[0];
         }
 

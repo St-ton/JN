@@ -3,7 +3,7 @@
  * @license https://jtl-url.de/jtlshoplicense
  *}
 {block name='boxes-box-filter-category'}
-    {if $nSeitenTyp === $smarty.const.PAGE_ARTIKELLISTE}
+    {if $nSeitenTyp === $smarty.const.PAGE_ARTIKELLISTE && (!$device->isMobile() || $device->isTablet())}
         <div class="h4">
             {button
             variant="link"

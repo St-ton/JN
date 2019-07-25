@@ -14,7 +14,7 @@
 {/function}
 
 <h1>{$oMailObjekt->cIntervall}</h1>
-<h2>Zeitraum: {$oMailObjekt->dVon|date_format:'d.m.Y - H:i'} bis {$oMailObjekt->dBis|date_format:'d.m.Y - H:i'}</h2>
+<h2>Zeitraum: {$oMailObjekt->dVon|date_format:'d.m.Y'} bis {$oMailObjekt->dBis|date_format:'d.m.Y'}</h2>
 
 <div style="display:table">
     {if is_array($oMailObjekt->oAnzahlArtikelProKundengruppe)}
@@ -39,8 +39,6 @@
         {quantityStatisticRow cAnzahlTitle='Bewertungsguthaben Summe' nAnzahlVar=$oMailObjekt->oAnzahlGezahltesGuthaben->fSummeGuthaben}
     {/if}
 
-    {quantityStatisticRow cAnzahlTitle='Tags' nAnzahlVar=$oMailObjekt->nAnzahlTags}
-    {quantityStatisticRow cAnzahlTitle='Tags, nicht freigeschaltet' nAnzahlVar=$oMailObjekt->nAnzahlTagsNichtFreigeschaltet}
     {quantityStatisticRow cAnzahlTitle='Geworbene Kunden' nAnzahlVar=$oMailObjekt->nAnzahlGeworbenerKunden}
     {quantityStatisticRow cAnzahlTitle='Geworbene Kunden, die etwas kauften' nAnzahlVar=$oMailObjekt->nAnzahlErfolgreichGeworbenerKunden}
     {quantityStatisticRow cAnzahlTitle='Versendete Wunschlisten' nAnzahlVar=$oMailObjekt->nAnzahlVersendeterWunschlisten}

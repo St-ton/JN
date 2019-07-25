@@ -41,13 +41,16 @@
                     {assign var=activeParent value=$activeParents[$i]}
                 {/if}
                 {if $isDropdown}
-                    <li class="nav-item dropdown{if $category->getID() === (int)$activeId
+                    <li class="nav-item dropdown{if $category->getID() === $activeId
                     || ((isset($activeParent)
                         && isset($activeParent->kKategorie))
                         && $activeParent->kKategorie == $category->getID())} active{/if}">
                         {if $category@first}
                             <div class="wee d-none d-md-block"></div>
                         {/if}
+                        {link href=$category->getURL() title=$category->getName() class="float-right subcat-link d-inline-block d-md-none"}
+                            <i class="fas fa-arrow-alt-circle-right"></i>
+                        {/link}
                         {link href=$category->getURL() title=$category->getName() class="nav-link" data=["toggle"=>"dropdown"] target="_self"}
                             {$category->getName()}
                         {/link}
@@ -67,22 +70,20 @@
                                                 {/if}
                                                 {foreach $sub_categories as $sub}
                                                     {col cols=12 md=6 lg=3}
-                                                        {dropdownitem tag="div" active=$sub->getID() === (int)$activeId || (isset($activeParents[1]) && $activeParents[1]->kKategorie == $sub->kKategorie) class="p-3 mb-md-6"}
+                                                        {dropdownitem tag="div" active=$sub->getID() === $activeId || (isset($activeParents[1]) && $activeParents[1]->kKategorie === $sub->getID()) class="p-3 mb-md-6"}
                                                             <div class="category-wrapper">
-                                                                {if $Einstellungen.template.megamenu.show_category_images !== 'N'}
-                                                                    <div class="d-none d-md-block">
-                                                                        {link href=$sub->getURL() title=$sub->getName()}
+                                                                {link href=$sub->getURL() title=$sub->getName()}
+                                                                    {if $Einstellungen.template.megamenu.show_category_images !== 'N'}
+                                                                        <div class="d-none d-md-block">
                                                                             {image fluid-grow=true lazy=true src="{$imageBaseURL}gfx/trans.png"
                                                                                 alt=$category->getShortName()|escape:'html'
                                                                                 data=["src" => $sub->getImageURL()]}
-                                                                        {/link}
-                                                                    </div>
-                                                                {/if}
+                                                                        </div>
+                                                                    {/if}
                                                                     <div class="title pt-2">
-                                                                        {link href=$sub->getURL() title=$sub->getName()}
                                                                             {$sub->getShortName()}
-                                                                        {/link}
                                                                     </div>
+                                                                {/link}
                                                                 {if $show_subcategories && $sub->hasChildren()}
                                                                     {if !empty($sub->getChildren())}
                                                                         {assign var=subsub_categories value=$sub->getChildren()}
@@ -93,7 +94,7 @@
                                                                     <ul class="list-unstyled small subsub py-2">
                                                                         {foreach $subsub_categories as $subsub}
                                                                             {if $subsub@iteration <= $max_subsub_items}
-                                                                                <li{if $subsub->getID() === (int)$activeId || (isset($activeParents[2]) && $activeParents[2]->kKategorie == $subsub->getID())} class="active"{/if}>
+                                                                                <li{if $subsub->getID() === $activeId || (isset($activeParents[2]) && $activeParents[2]->kKategorie == $subsub->getID())} class="active"{/if}>
                                                                                     {link href=$subsub->getURL() title=$subsub->getName()}
                                                                                         {$subsub->getShortName()}
                                                                                     {/link}
@@ -130,7 +131,7 @@
                     {*{/navitemdropdown}*}
                 {else}
                     {navitem href=$category->getURL() title=$category->getName()
-                        class="{if $category->getID() === (int)$activeId}active{/if}"}
+                        class="{if $category->getID() === $activeId}active{/if}"}
                         {if $category@first}
                             <div class="wee d-none d-md-block"></div>
                         {/if}

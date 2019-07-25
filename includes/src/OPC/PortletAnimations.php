@@ -22,7 +22,7 @@ trait PortletAnimations
                 'label'   => __('Animation style'),
                 'type'    => InputType::SELECT,
                 'default' => '',
-                'width'   => 50,
+                'width'   => 34,
                 'options' => [
                     ''          => 'none',
                     'attention' => [
@@ -115,12 +115,12 @@ trait PortletAnimations
                 'label'       => __('Duration'),
                 'help'        => __('Change the animation duration (e.g. 2s)'),
                 'placeholder' => '1s',
-                'width'       => 50,
+                'width'       => 34,
             ],
             'wow-delay'     => [
                 'label'      => __('Delay'),
                 'help'       => __('Delay before the animation starts'),
-                'width'      => 50,
+                'width'      => 34,
             ],
             'wow-offset'    => [
                 'label'       => __('Offset (px)'),

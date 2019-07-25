@@ -18,8 +18,9 @@
             {assign var=attributeImageURL value=$attributeValue->getData('cBildURLKlein')}
         {/if}
 
-        {if $limit!= -1 && $attributeValue@iteration > $limit && !$collapseInit && !$is_dropdown}
-            <div class="collapse" id="box-collps-{$Merkmal->kMerkmal}" aria-expanded="false"><ul class="nav nav-list">
+        {if $limit != -1 && $attributeValue@iteration > $limit && !$collapseInit && !$is_dropdown}
+            <div class="collapse {if $Merkmal->isActive()} in{/if}" id="box-collps-{$Merkmal->kMerkmal}" aria-expanded="false">
+                <ul class="nav nav-list">
                 {$collapseInit = true}
         {/if}
         {if $Merkmal->getData('cTyp') === 'BILD'}
@@ -59,14 +60,15 @@
             </li>
         {/if}
     {/foreach}
+    {if $limit != -1 && $Merkmal->getOptions()|count > $limit && !$is_dropdown}
+            </ul>
+        </div>
+        <button class="btn btn-link pull-right"
+                role="button"
+                data-toggle="collapse"
+                data-target="#box-collps-{$Merkmal->kMerkmal}"
+        >
+            {lang key='showAll'} <span class="caret"></span>
+        </button>
+    {/if}
 </ul>
-{if $limit != -1 && $Merkmal->getOptions()|count > $limit && !$is_dropdown}
-        </ul></div>
-    <button class="btn btn-link pull-right"
-            role="button"
-            data-toggle="collapse"
-            data-target="#box-collps-{$Merkmal->kMerkmal}"
-    >
-        {lang key='showAll'} <span class="caret"></span>
-    </button>
-{/if}

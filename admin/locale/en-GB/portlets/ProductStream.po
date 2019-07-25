@@ -1,0 +1,30 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+
+msgid "Product Stream"
+msgstr "Product stream"
+
+msgid "presentation"
+msgstr "Darstellung"
+
+msgid "presentationGallery"
+msgstr "Galerie"
+
+msgid "presentationList"
+msgstr "Liste"
+
+msgid "presentationSlider"
+msgstr "Slider"
+
+msgid "presentationSliderVertical"
+msgstr "vertikaler Slider"
+
+msgid "sliderTitle"
+msgstr "Slidertitel"
+
+msgid "numberVisibleItems"
+msgstr "Anzahl sichtbare Artikel"
+
+msgid "itemFilter"
+msgstr "Artikelfilter"

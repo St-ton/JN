@@ -7,8 +7,8 @@ Anfrage von:
 {if $Nachricht->cVorname}{$Nachricht->cVorname} {/if}{if $Nachricht->cNachname}{$Nachricht->cNachname}{/if}
 {if $Nachricht->cFirma}{$Nachricht->cFirma}{/if}
 
-Email: {$Nachricht->cMail}
-{if $Nachricht->cTel}Tel: {$Nachricht->cTel}{/if}
+E-Mail-Adresse: {$Nachricht->cMail}
+{if $Nachricht->cTel}Tel.: {$Nachricht->cTel}{/if}
 {if $Nachricht->cMobil}Mobil: {$Nachricht->cMobil}{/if}
 {if $Nachricht->cFax}Fax: {$Nachricht->cFax}{/if}
 

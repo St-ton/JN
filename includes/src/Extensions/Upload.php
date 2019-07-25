@@ -131,13 +131,13 @@ final class Upload
     }
 
     /**
-     * @param int $nErrorCode
+     * @param int $errorCode
      */
-    public static function redirectWarenkorb(int $nErrorCode): void
+    public static function redirectWarenkorb(int $errorCode): void
     {
         \header('Location: ' .
             LinkService::getInstance()->getStaticRoute('warenkorb.php') .
-            '?fillOut=' . $nErrorCode, true, 303);
+            '?fillOut=' . $errorCode, true, 303);
     }
 
     /**
@@ -269,8 +269,8 @@ final class Upload
     public static function formatTypen(string $type): array
     {
         $fileTypes = \explode(',', $type);
-        foreach ($fileTypes as &$type) {
-            $type = '*' . $type;
+        foreach ($fileTypes as &$fileTtype) {
+            $fileTtype = '*' . $fileTtype;
         }
 
         return $fileTypes;

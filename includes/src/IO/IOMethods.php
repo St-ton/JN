@@ -10,7 +10,7 @@ use Exception;
 use JTL\Alert\Alert;
 use JTL\Boxes\Items\BoxInterface;
 use JTL\Boxes\Items\CompareList;
-use JTL\Boxes\Items\Wishlist;
+use JTL\Boxes\Items\Wishlist as WishlistBox;
 use JTL\Boxes\Renderer\DefaultRenderer;
 use JTL\Boxes\Type;
 use JTL\Cart\Cart;
@@ -21,7 +21,7 @@ use JTL\Catalog\Category\KategorieListe;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\EigenschaftWert;
 use JTL\Catalog\Product\Preise;
-use JTL\Catalog\Trennzeichen;
+use JTL\Catalog\Separator;
 use JTL\Catalog\Wishlist\Wishlist;
 use JTL\Checkout\Kupon;
 use JTL\Customer\CustomerGroup;
@@ -514,12 +514,12 @@ class IOMethods
             foreach ($boxes as $box) {
                 if ($box->getType() === Type::CONTAINER) {
                     foreach ($box->getChildren() as $childBox) {
-                        if (\get_class($childBox) === Wishlist::class) {
+                        if (\get_class($childBox) === WishlistBox::class) {
                             $renderer                                    = new DefaultRenderer($smarty, $childBox);
                             $response->cBoxContainer[$childBox->getID()] = $renderer->render();
                         }
                     }
-                } elseif (\get_class($box) === Wishlist::class) {
+                } elseif (\get_class($box) === WishlistBox::class) {
                     $renderer                               = new DefaultRenderer($smarty, $box);
                     $response->cBoxContainer[$box->getID()] = $renderer->render();
                 }
@@ -569,12 +569,12 @@ class IOMethods
             foreach ($boxes as $box) {
                 if ($box->getType() === Type::CONTAINER) {
                     foreach ($box->getChildren() as $childBox) {
-                        if ($childBox->getType() === Wishlist::class) {
+                        if ($childBox->getType() === WishlistBox::class) {
                             $renderer                                    = new DefaultRenderer($smarty, $childBox);
                             $response->cBoxContainer[$childBox->getID()] = $renderer->render();
                         }
                     }
-                } elseif (\get_class($box) === Wishlist::class) {
+                } elseif (\get_class($box) === WishlistBox::class) {
                     $renderer                               = new DefaultRenderer($smarty, $box);
                     $response->cBoxContainer[$box->getID()] = $renderer->render();
                 }
@@ -814,12 +814,12 @@ class IOMethods
                 ? $currentValue->cArtNr
                 : $product->cArtNr;
         }
-        $weightTotal        = Trennzeichen::getUnit(
+        $weightTotal        = Separator::getUnit(
             \JTL_SEPARATOR_WEIGHT,
             Shop::getLanguage(),
             $product->fGewicht + $weightDiff
         );
-        $weightProductTotal = Trennzeichen::getUnit(
+        $weightProductTotal = Separator::getUnit(
             \JTL_SEPARATOR_WEIGHT,
             Shop::getLanguage(),
             $product->fArtikelgewicht + $weightDiff

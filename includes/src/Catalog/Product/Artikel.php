@@ -10,9 +10,9 @@ use DateTime;
 use JTL\Catalog\Category\Kategorie;
 use JTL\Catalog\Category\KategorieListe;
 use JTL\Catalog\Hersteller;
-use JTL\Catalog\Trennzeichen;
+use JTL\Catalog\Separator;
 use JTL\Catalog\UnitsOfMeasure;
-use JTL\Catalog\Warenlager;
+use JTL\Catalog\Warehouse;
 use JTL\Checkout\Versandart;
 use JTL\Country\Country;
 use JTL\Customer\CustomerGroup;
@@ -4336,11 +4336,11 @@ class Artikel
                 $this->cVPEEinheit = $unit->cName;
             }
         }
-        $this->cGewicht        = Trennzeichen::getUnit(\JTL_SEPARATOR_WEIGHT, $langID, $this->fGewicht);
-        $this->cArtikelgewicht = Trennzeichen::getUnit(\JTL_SEPARATOR_WEIGHT, $langID, $this->fArtikelgewicht);
+        $this->cGewicht        = Separator::getUnit(\JTL_SEPARATOR_WEIGHT, $langID, $this->fGewicht);
+        $this->cArtikelgewicht = Separator::getUnit(\JTL_SEPARATOR_WEIGHT, $langID, $this->fArtikelgewicht);
 
         if ($this->fMassMenge != 0) {
-            $this->cMassMenge = Trennzeichen::getUnit(\JTL_SEPARATOR_AMOUNT, $langID, $this->fMassMenge);
+            $this->cMassMenge = Separator::getUnit(\JTL_SEPARATOR_AMOUNT, $langID, $this->fMassMenge);
         }
         if ($this->fPackeinheit == 0) {
             $this->fPackeinheit = 1;
@@ -4700,7 +4700,7 @@ class Artikel
                 : Shop::Lang()->get('ampelRot')
         ];
 
-        $this->oWarenlager_arr = Warenlager::getByProduct($this->kArtikel, $this->kSprache, $options);
+        $this->oWarenlager_arr = Warehouse::getByProduct($this->kArtikel, $this->kSprache, $options);
 
         return $this;
     }
@@ -6497,7 +6497,7 @@ class Artikel
                 continue;
             }
             $idx          = Shop::Lang()->get('dimension_' . $key, 'productDetails');
-            $values[$idx] = Trennzeichen::getUnit(\JTL_SEPARATOR_LENGTH, $this->kSprache, $val);
+            $values[$idx] = Separator::getUnit(\JTL_SEPARATOR_LENGTH, $this->kSprache, $val);
         }
 
         return $values;

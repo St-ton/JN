@@ -6,7 +6,7 @@
  * @created Wed, 18 Jan 2018 16:20:00 +0100
  */
 
-use JTL\Catalog\Trennzeichen;
+use JTL\Catalog\Separator;
 use JTL\Update\IMigration;
 use JTL\Update\Migration;
 
@@ -20,7 +20,7 @@ class Migration_20180124162000 extends Migration implements IMigration
 
     public function up()
     {
-        Trennzeichen::migrateUpdate();
+        Separator::migrateUpdate();
         $this->execute('ALTER TABLE `ttrennzeichen` ADD UNIQUE INDEX `unique_lang_unit` (`kSprache`, `nEinheit`)');
     }
 

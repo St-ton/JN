@@ -12,10 +12,10 @@ use JTL\Shop;
 use stdClass;
 
 /**
- * Class Trennzeichen
+ * Class Separator
  * @package JTL\Catalog
  */
-class Trennzeichen
+class Separator
 {
     /**
      * @var int
@@ -53,8 +53,7 @@ class Trennzeichen
     private static $unitObject = [];
 
     /**
-     * Trennzeichen constructor.
-     *
+     * Separator constructor.
      * @param int $id
      */
     public function __construct(int $id = 0)
@@ -132,7 +131,7 @@ class Trennzeichen
      * @param int $unitID
      * @param int $languageID
      * @param int $qty
-     * @return int|string|Trennzeichen
+     * @return int|string|Separator
      */
     public static function getUnit(int $unitID, int $languageID, $qty = -1)
     {

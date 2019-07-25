@@ -5,7 +5,7 @@
  */
 
 use JTL\Cart\CartHelper;
-use JTL\Catalog\Vergleichsliste;
+use JTL\Catalog\ComparisonList;
 use JTL\Helpers\Request;
 use JTL\Shop;
 
@@ -19,12 +19,12 @@ $attrVar       = [[], []];
 $linkHelper    = Shop::Container()->getLinkService();
 $kLink         = $linkHelper->getSpecialPageLinkKey(LINKTYP_VERGLEICHSLISTE);
 $link          = $linkHelper->getPageLink($kLink);
-$compareList   = new Vergleichsliste();
-$attrVar       = Vergleichsliste::buildAttributeAndVariation($compareList);
-$prioRowsArray = Vergleichsliste::getPrioRows();
-$prioRows      = Vergleichsliste::getPrioRows(true, false);
+$compareList   = new ComparisonList();
+$attrVar       = ComparisonList::buildAttributeAndVariation($compareList);
+$prioRowsArray = ComparisonList::getPrioRows();
+$prioRows      = ComparisonList::getPrioRows(true, false);
 $alertHelper   = Shop::Container()->getAlertService();
-Vergleichsliste::setComparison($compareList);
+ComparisonList::setComparison($compareList);
 
 if (Request::verifyGPCDataInt('addToCart') !== 0) {
     CartHelper::addProductIDToCart(

@@ -11,7 +11,7 @@ use JTL\Catalog\Currency;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\EigenschaftWert;
 use JTL\Catalog\Product\Preise;
-use JTL\Catalog\Vergleichsliste;
+use JTL\Catalog\ComparisonList;
 use JTL\Catalog\Wishlist\Wishlist;
 use JTL\Checkout\Kupon;
 use JTL\Checkout\Lieferadresse;
@@ -610,7 +610,7 @@ class CartHelper
                     $productID  = Product::getArticleForParent($productID);
                     $variations = Product::getSelectedPropertiesForVarCombiArticle($productID, 1);
                 }
-                $compareList = new Vergleichsliste($productID, $variations);
+                $compareList = new ComparisonList($productID, $variations);
                 // Falls es eine Vergleichsliste in der Session gibt
                 if (isset($_SESSION['Vergleichsliste'])) {
                     // Falls Artikel vorhanden sind

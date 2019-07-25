@@ -14,10 +14,10 @@ use JTL\Shop;
 use stdClass;
 
 /**
- * Class Warenlager
+ * Class Warehouse
  * @package JTL\Catalog
  */
-class Warenlager extends MainModel
+class Warehouse extends MainModel
 {
     /**
      * @var int
@@ -572,14 +572,14 @@ class Warenlager extends MainModel
     }
 
     /**
-     * @param bool $bActive
-     * @param bool $bLoadLanguages
+     * @param bool $activeOnly
+     * @param bool $loadLanguages
      * @return array
      */
-    public static function getAll(bool $bActive = true, bool $bLoadLanguages = false): array
+    public static function getAll(bool $activeOnly = true, bool $loadLanguages = false): array
     {
         $warehouses = [];
-        $sql        = $bActive ? ' WHERE nAktiv = 1' : '';
+        $sql        = $activeOnly ? ' WHERE nAktiv = 1' : '';
         $data       = Shop::Container()->getDB()->query(
             'SELECT *
                FROM twarenlager' . $sql,
@@ -587,7 +587,7 @@ class Warenlager extends MainModel
         );
         foreach ($data as $item) {
             $warehouse = new self(null, $item);
-            if ($bLoadLanguages) {
+            if ($loadLanguages) {
                 $warehouse->loadLanguages();
             }
             $warehouses[] = $warehouse;
@@ -645,18 +645,18 @@ class Warenlager extends MainModel
     }
 
     /**
-     * @param float $fBestand
+     * @param float $stock
      * @param array $config
      * @return $this
      */
-    public function buildWarehouseInfo($fBestand, array $config): self
+    public function buildWarehouseInfo($stock, array $config): self
     {
         $this->oLageranzeige                = new stdClass();
         $this->oLageranzeige->cLagerhinweis = [];
         $conf                               = Shop::getSettings([\CONF_GLOBAL, \CONF_ARTIKELDETAILS]);
         if ($config['cLagerBeachten'] === 'Y') {
-            if ($fBestand > 0) {
-                $this->oLageranzeige->cLagerhinweis['genau']          = $fBestand . ' '
+            if ($stock > 0) {
+                $this->oLageranzeige->cLagerhinweis['genau']          = $stock . ' '
                     . (!empty($config['cEinheit']) ? ($config['cEinheit'] . ' ') : '')
                     . Shop::Lang()->get('inStock');
                 $this->oLageranzeige->cLagerhinweis['verfuegbarkeit'] = Shop::Lang()->get('productAvailable');
@@ -679,12 +679,12 @@ class Warenlager extends MainModel
         if ($config['cLagerBeachten'] === 'Y') {
             $this->oLageranzeige->nStatus   = 1;
             $this->oLageranzeige->AmpelText = $config['attribut_ampeltext_gelb'];
-            if ($fBestand <= (int)$conf['global']['artikel_lagerampel_rot']) {
+            if ($stock <= (int)$conf['global']['artikel_lagerampel_rot']) {
                 $this->oLageranzeige->nStatus   = 0;
                 $this->oLageranzeige->AmpelText = $config['attribut_ampeltext_rot'];
             }
             if ($config['cLagerBeachten'] !== 'Y'
-                || $fBestand >= (int)$conf['global']['artikel_lagerampel_gruen']
+                || $stock >= (int)$conf['global']['artikel_lagerampel_gruen']
                 || ($config['cLagerBeachten'] === 'Y'
                     && $config['cLagerKleinerNull'] === 'Y'
                     && $conf['global']['artikel_ampel_lagernull_gruen'] === 'Y')

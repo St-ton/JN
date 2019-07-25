@@ -9,7 +9,7 @@ namespace JTL\Session;
 use JTL\Cart\Cart;
 use JTL\Cart\PersistentCart;
 use JTL\Catalog\Currency;
-use JTL\Catalog\Vergleichsliste;
+use JTL\Catalog\ComparisonList;
 use JTL\Catalog\Wishlist\Wishlist;
 use JTL\Checkout\Lieferadresse;
 use JTL\Customer\Customer;
@@ -626,18 +626,18 @@ class Frontend extends AbstractSession
     }
 
     /**
-     * @return Vergleichsliste
+     * @return ComparisonList
      */
-    public static function getCompareList(): Vergleichsliste
+    public static function getCompareList(): ComparisonList
     {
-        return $_SESSION['Vergleichsliste'] ?? new Vergleichsliste();
+        return $_SESSION['Vergleichsliste'] ?? new ComparisonList();
     }
 
     /**
-     * @return Vergleichsliste
+     * @return ComparisonList
      * @deprecated since 5.0.0
      */
-    public static function compareList(): Vergleichsliste
+    public static function compareList(): ComparisonList
     {
         \trigger_error(__METHOD__. ' is deprecated.', \E_USER_DEPRECATED);
         return self::getCompareList();

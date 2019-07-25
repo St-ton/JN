@@ -19,10 +19,10 @@ use function Functional\some;
 use function Functional\sort;
 
 /**
- * Class Vergleichsliste
+ * Class ComparisonList
  * @package JTL\Catalog
  */
-class Vergleichsliste
+class ComparisonList
 {
     /**
      * @var array
@@ -30,7 +30,7 @@ class Vergleichsliste
     public $oArtikel_arr = [];
 
     /**
-     * Vergleichsliste constructor.
+     * ComparisonList constructor.
      * @param int   $productID
      * @param array $variations
      */
@@ -151,12 +151,12 @@ class Vergleichsliste
     }
 
     /**
-     * @param Vergleichsliste $compareList
+     * @param ComparisonList $compareList
      * @return array
      * @former baueMerkmalundVariation()
      * @since 5.0.0
      */
-    public static function buildAttributeAndVariation(Vergleichsliste $compareList): array
+    public static function buildAttributeAndVariation(ComparisonList $compareList): array
     {
         $attributes = [];
         $variations = [];
@@ -400,9 +400,9 @@ class Vergleichsliste
      * Fügt nach jedem Preisvergleich eine Statistik in die Datenbank.
      * Es sind allerdings nur 3 Einträge pro IP und Tag möglich
      *
-     * @param Vergleichsliste $compareList
+     * @param ComparisonList $compareList
      */
-    public static function setComparison(Vergleichsliste $compareList): void
+    public static function setComparison(ComparisonList $compareList): void
     {
         if (\count($compareList->oArtikel_arr) === 0) {
             return;

@@ -4,17 +4,17 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use JTL\Catalog\Vergleichsliste;
+use JTL\Catalog\ComparisonList;
 
 /**
- * @param Vergleichsliste $compareList
+ * @param ComparisonList $compareList
  * @return array
  * @deprecated since 5.0.0
  */
 function baueMerkmalundVariation($compareList)
 {
     trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
-    return Vergleichsliste::buildAttributeAndVariation($compareList);
+    return ComparisonList::buildAttributeAndVariation($compareList);
 }
 
 /**
@@ -26,7 +26,7 @@ function baueMerkmalundVariation($compareList)
 function istMerkmalEnthalten($attributes, $attributeID)
 {
     trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
-    return Vergleichsliste::containsAttribute($attributes, $attributeID);
+    return ComparisonList::containsAttribute($attributes, $attributeID);
 }
 
 /**
@@ -38,7 +38,7 @@ function istMerkmalEnthalten($attributes, $attributeID)
 function istVariationEnthalten($variations, $name)
 {
     trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
-    return Vergleichsliste::containsVariation($variations, $name);
+    return ComparisonList::containsVariation($variations, $name);
 }
 
 /**
@@ -50,18 +50,18 @@ function istVariationEnthalten($variations, $name)
 function gibMaxPrioSpalteV($exclude, $config)
 {
     trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
-    return Vergleichsliste::gibMaxPrioSpalteV($exclude, $config);
+    return ComparisonList::gibMaxPrioSpalteV($exclude, $config);
 }
 
 /**
  * Fügt nach jedem Preisvergleich eine Statistik in die Datenbank.
  * Es sind allerdings nur 3 Einträge pro IP und Tag möglich
  *
- * @param Vergleichsliste $compareList
+ * @param ComparisonList $compareList
  * @deprecated since 5.0.0
  */
 function setzeVergleich($compareList)
 {
     trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
-    Vergleichsliste::setComparison($compareList);
+    ComparisonList::setComparison($compareList);
 }

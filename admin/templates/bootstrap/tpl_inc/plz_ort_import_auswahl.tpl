@@ -36,8 +36,8 @@
                 <div class="alert alert-warning"><i class="fal fa-exclamation-triangle"></i> {__('plz_ort_import_select_failed')}</div>
                 {/if}
             </div>
-            <div class="modal-footer">
-                <a href="#" class="btn btn-primary" data-dismiss="modal"><i class="fa fa-close"></i> {__('cancel')}</a>
+            <div class="modal-footer text-right">
+                <a href="#" class="btn btn-outline-primary" data-dismiss="modal"><i class="fa fa-close"></i> {__('cancel')}</a>
             </div>
         </div>
     </div>

@@ -75,13 +75,17 @@
                     </select>
                 </div>
                 <div class="modal-footer">
-                    <div class="btn-group">
-                        <button type="button" class="btn btn-danger" onclick="onModalCancel_{$importerId}();">
-                            <i class="fal fa-times"></i> {__('cancel')}
-                        </button>
-                        <button type="button" class="btn btn-primary" onclick="onModalSubmit_{$importerId}();">
-                            <i class="fa fa-upload"></i> {__('importCsv')}
-                        </button>
+                    <div class="row">
+                        <div class="ml-auto col-sm-6 col-xl-auto">
+                            <button type="button" class="btn btn-outline-primary" onclick="onModalCancel_{$importerId}();">
+                                <i class="fal fa-times"></i> {__('cancel')}
+                            </button>
+                        </div>
+                        <div class="col-sm-6 col-xl-auto">
+                            <button type="button" class="btn btn-primary" onclick="onModalSubmit_{$importerId}();">
+                                <i class="fa fa-upload"></i> {__('importCsv')}
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>

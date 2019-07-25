@@ -166,7 +166,7 @@
         </div>
         <div class="save-wrapper">
             <div class="row">
-                <div class="ml-auto col-sm-6 col-xl-auto mb-3">
+                <div class="col-sm-6 col-xl-auto mb-3">
                     <div class="checkbox hide">
                         <div class="custom-control custom-checkbox">
                             <input class="custom-control-input" id="backupDone" type="checkbox" value="" />
@@ -174,7 +174,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-sm-6 col-xl-auto">
+                <div class="ml-auto col-sm-6 col-xl-auto">
                     <button disabled="true" type="button" value="{__('shopResetButton')}" data-toggle="modal" data-target=".zuruecksetzen-modal" class="btn btn-danger btn-block">
                         <i class="fa fa-exclamation-triangle"></i> {__('shopResetButton')}
                     </button>
@@ -192,8 +192,14 @@
             <div class="modal-body py-5"></div>
             <div class="modal-footer">
                 <p>{__('sureContinue')}</p>
-                <button type="button" id="submitZuruecksetzen" class="btn btn-danger">{__('shopResetButton')}</button>
-                <button type="button" class="btn btn-primary" data-dismiss="modal">{__('cancel')}</button>
+                <div class="row">
+                    <div class="ml-auto col-sm-6 col-xl-auto">
+                        <button type="button" class="btn btn-outline-primary" data-dismiss="modal">{__('cancel')}</button>
+                    </div>
+                    <div class="col-sm-6 col-xl-auto">
+                        <button type="button" id="submitZuruecksetzen" class="btn btn-danger">{__('shopResetButton')}</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

@@ -15,9 +15,13 @@
                     <p>{__('sureDeleteEntries')}</p>
                 </div>
                 <div class="modal-footer">
-                    <div class="btn-group">
-                        <button type="button" class="btn btn-info" name="cancel" data-dismiss="modal"><i class="fa fa-close"></i>&nbsp;{__('cancel')}</button>
-                        <button id="formSubmit" type="button" class="btn btn-danger" name="delete" ><i class="fas fa-trash-alt"></i>&nbsp;{__('delete')}</button>
+                    <div class="row">
+                        <div class="ml-auto col-sm-6 col-xl-auto">
+                            <button type="button" class="btn btn-outline-primary" name="cancel" data-dismiss="modal"><i class="fa fa-close"></i>&nbsp;{__('cancel')}</button>
+                        </div>
+                        <div class="col-sm-6 col-xl-auto">
+                            <button id="formSubmit" type="button" class="btn btn-danger" name="delete" ><i class="fas fa-trash-alt"></i>&nbsp;{__('delete')}</button>
+                        </div>
                     </div>
                 </div>
             </div>

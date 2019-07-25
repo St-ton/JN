@@ -1,8 +1,3 @@
-{if isset($language) && $language === 'de-DE'}
-    {assign var=uploaderLang value='de'}
-{else}
-    {assign var=uploaderLang value='LANG'}
-{/if}
 <script type="text/javascript">
     $(function () {
         $('#lang').on('change', function () {
@@ -37,7 +32,7 @@
                 showRemove: false,
             },
             theme:                 'fas',
-            language:              '{$uploaderLang}',
+            language:              '{$language|mb_substr:0:2}',
             allowedFileExtensions: ['jpg', 'jpeg', 'jpe', 'gif', 'png', 'bmp'],
             browseOnZoneClick:     true,
             maxFileSize:           1000,

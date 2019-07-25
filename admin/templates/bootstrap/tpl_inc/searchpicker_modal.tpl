@@ -27,30 +27,34 @@
                         </button>
                     </span>
                 </div>
-                <h5 id="{$searchPickerName}-list-title"></h5>
+                <p id="{$searchPickerName}-list-title"></p>
                 <div class="list-group" id="{$searchPickerName}-result-list" style="max-height:500px;overflow:auto;">
                 </div>
                 <div class="btn-group">
-                    <button type="button" class="btn btn-sm btn-primary" id="{$searchPickerName}-select-all-btn">
+                    <button type="button" class="btn btn-sm btn-link" id="{$searchPickerName}-select-all-btn">
                         <i class="fal fa-check-square-o"></i>
                         {__('selectAllShown')}
                     </button>
-                    <button type="button" class="btn btn-sm btn-danger" id="{$searchPickerName}-unselect-all-btn">
+                    <button type="button" class="btn btn-sm btn-link" id="{$searchPickerName}-unselect-all-btn">
                         <i class="fa fa-square-o"></i>
                         {__('unselectAllShown')}
                     </button>
                 </div>
             </div>
-            <div class="modal-footer">
-                <div class="btn-group">
-                    <button type="button" class="btn btn-danger" data-dismiss="modal" id="{$searchPickerName}-cancel-btn">
-                        <i class="fal fa-times"></i>
-                        {__('cancel')}
-                    </button>
-                    <button type="button" class="btn btn-primary" data-dismiss="modal" id="{$searchPickerName}-apply-btn">
-                        <i class="fa fa-save"></i>
-                        {__('apply')}
-                    </button>
+            <div class="modal-footer text-right">
+                <div class="row">
+                    <div class="ml-auto col-sm-6 col-xl-auto">
+                        <button type="button" class="btn btn-outline-primary" data-dismiss="modal" id="{$searchPickerName}-cancel-btn">
+                            <i class="fal fa-times"></i>
+                            {__('cancel')}
+                        </button>
+                    </div>
+                    <div class="col-sm-6 col-xl-auto">
+                        <button type="button" class="btn btn-primary" data-dismiss="modal" id="{$searchPickerName}-apply-btn">
+                            <i class="fa fa-save"></i>
+                            {__('apply')}
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>

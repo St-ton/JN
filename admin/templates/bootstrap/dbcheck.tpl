@@ -135,7 +135,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <div class="btn-group">
+                <div class="btn-group text-right">
                     <button id="cancelWait" class="btn btn-danger"><i class="fa fa-close"></i>&nbsp;{__('migrationCancel')}</button>
                 </div>
             </div>

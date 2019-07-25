@@ -44,8 +44,14 @@
                 {__('plz_ort_import_tmp_exists')}
             </div>
             <div class="modal-footer">
-                <a href="#" class="btn btn-default" data-dismiss="modal"><i class="fa fa-exclamation"></i> {__('plz_ort_import_delete_no')}</a>
-                <a href="#" class="btn btn-primary" data-callback="plz_ort_import_delete_temp" data-dismiss="modal"><i class="fas fa-trash-alt"></i> {__('plz_ort_import_delete_yes')}</a>
+                <div class="row">
+                    <div class="ml-auto col-sm-6 col-xl-auto">
+                        <a href="#" class="btn btn-outline-primary" data-dismiss="modal"><i class="fa fa-exclamation"></i> {__('plz_ort_import_delete_no')}</a>
+                    </div>
+                    <div class="col-sm-6 col-xl-auto">
+                        <a href="#" class="btn btn-primary" data-callback="plz_ort_import_delete_temp" data-dismiss="modal"><i class="fas fa-trash-alt"></i> {__('plz_ort_import_delete_yes')}</a>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -62,7 +68,7 @@
             <div class="modal-body py-5">
                 {{__('plz_ort_import_help')}|sprintf:{$smarty.const.PLZIMPORT_URL}}
             </div>
-            <div class="modal-footer">
+            <div class="modal-footer text-right">
                 <a href="#" class="btn btn-primary" data-dismiss="modal"><i class="fal fa-check text-success"></i> {__('ok')}</a>
             </div>
         </div>

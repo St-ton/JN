@@ -284,10 +284,16 @@ $(document).ready(function() {
                                             </div>
                                         </div>
                                         <div class="modal-footer">
-                                            <div class="btn-group">
-                                                <button class="btn btn-default" type="button" data-dismiss="modal">Schließen</button>
-                                                <button class="btn btn-primary" type="button" onclick="printframe.print();">Drucken</button>
-                                                <button class="btn btn-danger" type="button" onclick="showEmergencyCodes('forceReload');">{__('codeCreateAgain')}</button>
+                                            <div class="row">
+                                                <div class="ml-auto col-sm-6 col-xl-auto">
+                                                    <button class="btn btn-outline-primary" type="button" data-dismiss="modal">Schließen</button>
+                                                </div>
+                                                <div class="col-sm-6 col-xl-auto">
+                                                    <button class="btn btn-outline-primary" type="button" onclick="printframe.print();">Drucken</button>
+                                                </div>
+                                                <div class="col-sm-6 col-xl-auto">
+                                                    <button class="btn btn-danger" type="button" onclick="showEmergencyCodes('forceReload');">{__('codeCreateAgain')}</button>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>

@@ -12,11 +12,6 @@
                 <input type="hidden" name="upload" value="1" />
                 <div class="col-xs-12">
                     <input name="shopLogo" id="shoplogo-upload" type="file" class="file" accept="image/*">
-                    {if isset($language) && $language === 'de-DE'}
-                        {assign var=uploaderLang value='de'}
-                    {else}
-                        {assign var=uploaderLang value='LANG'}
-                    {/if}
                     <script>
                         $('#shoplogo-upload').fileinput({
                             uploadUrl: '{$shopURL}/{$PFAD_ADMIN}shoplogouploader.php?token={$smarty.session.jtl_token}',
@@ -35,7 +30,7 @@
                             deleteUrl: '{$shopURL}/{$PFAD_ADMIN}shoplogouploader.php?token={$smarty.session.jtl_token}',
                             initialPreviewCount: 1,
                             theme: 'fas',
-                            language: '{$uploaderLang}',
+                            language: '{$language|mb_substr:0:2}',
                             browseOnZoneClick:     true,
                             maxFileSize: 500,
                             maxFilesNum: 1,

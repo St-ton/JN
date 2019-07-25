@@ -2,17 +2,21 @@
     {include file='tpl_inc/header.tpl'}
     {$cTitel = {__('searchResultsFor')}|sprintf:$query}
     {include file='tpl_inc/seite_header.tpl' cTitel=$cTitel}
-    <ul>
+    <div class="card">
+        <div class="card-body search-page">
 {/if}
 
 {if $adminMenuItems|count}
     <div class="dropdown-header">{__('pagesMenu')}</div>
     <ul class="backend-search-section">
         {foreach $adminMenuItems as $item}
-            <li class="backend-search-item" tabindex="-1">
-                <a href="{$item->link}">
-                    {$item->path}
-                </a>
+            <li class="backend-search-item has-icon" tabindex="-1">
+                <span class="title">
+                    {include file="img/icons/{$item->icon}.svg"}
+                </span>
+                <span class="path">
+                    <a href="{$item->link}">{$item->path}</a>
+                </span>
             </li>
         {/foreach}
     </ul>
@@ -73,6 +77,7 @@
 {/if}
 
 {if $standalonePage}
-    </ul>
+        </div>
+    </div>
     {include file='tpl_inc/footer.tpl'}
 {/if}

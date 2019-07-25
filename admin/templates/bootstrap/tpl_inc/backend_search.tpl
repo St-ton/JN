@@ -2,13 +2,13 @@
     <span class="fal fa-search fa-fw" data-fa-transform="grow-4"></span>
     <input id="backend-search-input" placeholder="{__('searchTerm')}" name="cSuche" type="search"
            value="" autocomplete="off">
-    <div class="dropdown-menu" id="backend-search-dropdown"></div>
+    <div class="dropdown-menu" id="dropdown-search"></div>
     <script>
         var lastIoSearchCall    = null;
         var searchItems         = null;
         var selectedSearchIndex = null;
         var selectedSearchItem  = null;
-        var searchDropdown      = $('#backend-search-dropdown');
+        var searchDropdown      = $('#dropdown-search');
         var searchInput         = $('#backend-search-input');
         var lastSearchTerm      = '';
 
@@ -24,9 +24,9 @@
 
                     lastIoSearchCall = ioCall('adminSearch', [lastSearchTerm], function (html) {
                         if (html) {
-                            searchDropdown.html(html).addClass('open');
+                            searchDropdown.html(html).addClass('show');
                         } else {
-                            searchDropdown.removeClass('open');
+                            searchDropdown.removeClass('show');
                         }
 
                         searchItems         = null;
@@ -35,7 +35,7 @@
                     });
                 } else {
                     searchDropdown.html('');
-                    searchDropdown.removeClass('open');
+                    searchDropdown.removeClass('show');
                     searchItems         = null;
                     selectedSearchIndex = null;
                     selectedSearchItem  = null;
@@ -64,7 +64,7 @@
         });
         $(document).on('click', function(e) {
             if ($(e.target).closest('.backend-search').length === 0) {
-                searchDropdown.removeClass('open');
+                searchDropdown.removeClass('show');
             }
         });
 

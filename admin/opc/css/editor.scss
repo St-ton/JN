@@ -1,4 +1,8 @@
 @import "base";
+@import "portlets-tab";
+@import "blueprints-tab";
+@import "pagetree-tab";
+@import "config-modal";
 
 html, body {
   margin: 0;
@@ -39,19 +43,46 @@ html, body {
       margin-bottom: 8px;
     }
 
-    .form-control {
+    .form-control,
+    .input-group-append,
+    .input-group-prepend {
       margin-bottom: 16px;
+
+      button {
+        border: 1px solid $text-color;
+        padding: 4px 12px;
+        height: 38px;
+
+        &.primary {
+          border: 1px solid $primary-color;
+          background-color: $primary-color;
+          color: $light-bg;
+        }
+      }
     }
 
     .input-group {
       .form-control {
-        border-bottom-right-radius: 0;
-        border-top-right-radius: 0;
-        border-right: none;
+        &:not(:last-child) {
+          border-bottom-right-radius: 0;
+          border-top-right-radius: 0;
+          border-right: none;
+        }
+        &:not(:first-child) {
+          &:not(.tt-input) {
+            border-bottom-left-radius: 0;
+            border-top-left-radius: 0;
+            border-left: none;
+          }
+        }
+      }
+
+      .twitter-typeahead {
+        flex: 1 1 auto;
+        width: 1%;
       }
 
       .input-group-text {
-        margin-bottom: 16px;
         background: none;
         border: 1px solid $text-color;
         border-left: none;
@@ -303,109 +334,6 @@ html, body {
         height: 100%;
       }
 
-      #portlets {
-        hr {
-          margin-top: 0;
-        }
-
-        .portletGroupBtn {
-          display: block;
-          font-weight: 600;
-          width: 100%;
-          text-align: left;
-          margin-bottom: 16px;
-
-          .fas {
-            float: right;
-            line-height: inherit;
-          }
-
-          &.collapsed .fas::before {
-            content: '\f078';
-          }
-        }
-
-        .collapse {
-          width: 340px;
-
-          &:after {
-            content: ' ';
-            display: block;
-            clear: both;
-          }
-        }
-
-        .collapsing {
-          width: 340px;
-        }
-
-        .portletButton {
-          display: block;
-          float: left;
-          width: 96px;
-          height: 96px;
-          margin-right: 22px;
-          margin-bottom: 22px;
-          background-color: $light-bg;
-          border-radius: 5px;
-
-          &:hover {
-            box-shadow: 4px 4px 4px rgba(0,0,0,0.125);
-          }
-
-          &:nth-child(3n) {
-            margin-right: 0;
-          }
-
-          > .portletBtnInner {
-            display: block;
-            width: 96px;
-            height: 96px;
-            position: relative;
-
-            > img {
-              position: absolute;
-              left: 50%;
-              top: 36%;
-              transform: translate(-50%, -50%);
-            }
-
-            > i {
-              display: block;
-              position: absolute;
-              left: 50%;
-              top: 36%;
-              transform: translate(-50%, -50%);
-              font-size: 32px;
-              color: $primary-color;
-            }
-
-            > span {
-              position: absolute;
-              left: 0;
-              bottom: 8px;
-              width: 100%;
-              line-height: 16px;
-            }
-          }
-        }
-
-        .collapseGroup {
-          display: block;
-          color: $text-color;
-          font-size: 16px;
-          padding: 8px 25px;
-          margin: 0 -15px 5px -15px;
-          text-decoration: none;
-        }
-
-        .collapse {
-          .row {
-            padding-bottom: 14px;
-          }
-        }
-      }
-
       #revisions .revisionBtn ,
       #blueprints .blueprintButton {
         display: block;
@@ -424,144 +352,6 @@ html, body {
         .revisionBtn {
           &:hover {
             background-color: $hover-btn-bg;
-          }
-        }
-      }
-
-      #blueprints {
-        #blueprintList {
-          padding-bottom: 60px;
-        }
-
-        .blueprintButton {
-          cursor: pointer;
-
-          &:hover {
-            box-shadow: 4px 4px 4px rgba(0,0,0,0.125);
-          }
-
-          .blueprint-icon {
-            color: $primary-color;
-            font-size: 22px;
-            vertical-align: bottom;
-            margin-right: 8px;
-          }
-
-          .blueprint-btn-actions {
-            float: right;
-            display: none;
-
-            button {
-              padding: 0 4px;
-              margin-top: -4px;
-              font-size: 16px;
-              width: 28px;
-              height: 28px;
-              border-radius: 100px;
-
-              &:hover {
-                background-color: $hover-btn-bg;
-              }
-            }
-          }
-
-          &:hover {
-            .blueprint-btn-actions {
-              display: block;
-            }
-          }
-        }
-
-        #btnImportBlueprint {
-          position: fixed;
-          bottom: 212px;
-          width: 334px;
-          box-shadow: none;
-        }
-      }
-
-      #pagetree {
-        height: 100%;
-
-        #pageTreeView {
-          padding: 1em 0;
-          background-color: $light-bg;
-          border-radius: 5px;
-          height: 100%;
-          overflow-y: auto;
-
-          ul {
-            list-style: none;
-            padding: 0;
-            padding-left: 1em;
-            margin: 0;
-          }
-
-          a {
-            display: inline-block;
-            text-decoration: none;
-            color: $text-color;
-          }
-
-          .area-item {
-            color: $text-lighter;
-            padding: 0 4px;
-            margin: 2px;
-          }
-
-          .portlet-item {
-            border-radius: 4px;
-            padding: 0 4px;
-            margin: 2px;
-          }
-
-          .item-expander {
-            > .fa-chevron-down {
-              display: none;
-            }
-
-            > .fa-chevron-right {
-              display: inline-block;
-            }
-          }
-
-          li {
-            > ul {
-              display: none;
-            }
-
-            &.expanded {
-              > .item-expander {
-                > .fa-chevron-down {
-                  display: inline-block;
-                }
-
-                > .fa-chevron-right {
-                  display: none;
-                }
-              }
-
-              > ul {
-                display: block;
-              }
-            }
-
-            &.leaf {
-              > .item-expander {
-                visibility: hidden;
-              }
-
-              > .area-item {
-                color: $muted-text;
-              }
-            }
-
-            &.selected {
-              > .item-label {
-                background-color: $gray-dark;
-                color: $light-bg;
-              }
-            }
           }
         }
       }
@@ -735,18 +525,6 @@ html, body {
     }
   }
 
-  .image-btn {
-    min-width: 64px;
-    min-height: 64px;
-
-    img {
-      min-width: 64px;
-      min-height: 64px;
-      max-width: 100%;
-      max-height: 100%;
-    }
-  }
-
   #publishModal {
     .modal-body {
       overflow: inherit;
@@ -767,10 +545,6 @@ html, body {
       color: #fff;
       background-color: #5cbcf6;
     }
-  }
-
-  #configModalBody {
-    overflow: initial;
   }
 
   .banner-zones {

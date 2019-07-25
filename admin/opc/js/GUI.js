@@ -63,10 +63,11 @@ class GUI
             'portletGroupBtn',
             'restoreUnsavedModal',
             'restoreUnsavedForm',
-            'btnDisplayWidthMobile',
-            'btnDisplayWidthTablet',
-            'btnDisplayWidthLaptop',
-            'btnDisplayWidthDesktop',
+            'btnDisplayWidthXS',
+            'btnDisplayWidthSM',
+            'btnDisplayWidthMD',
+            'btnDisplayWidthLG',
+            'btnDisplayWidthXL',
             'unsavedState',
             'iconpicker',
             'disableVeil',
@@ -283,6 +284,11 @@ class GUI
         }
     }
 
+    isPageUnsaved()
+    {
+        return this.unsavedState.css('display') !== 'none';
+    }
+
     onBtnClose(e)
     {
         this.page.unlock().then(() => {
@@ -489,7 +495,7 @@ class GUI
                 this.setInfiniteSchedule();
             }
         } else {
-            this.setUnpublished();
+            this.setPublishNow();
         }
 
         this.draftName.val(this.page.name);
@@ -598,6 +604,10 @@ class GUI
             .catch(er => this.showError(er.error.message))
             .then(() => this.io.getDraftStatusHtml(this.page.key));
 
+        if (this.isPageUnsaved()) {
+            this.savePage();
+        }
+
         this.publishModal.modal('hide');
     }
 
@@ -647,36 +657,44 @@ class GUI
         this.iconPickerCB = callback;
     }
 
-    onBtnDisplayWidthMobile(e)
+    onBtnDisplayWidthXS(e)
     {
         this.iframe.iframe.width('375px');
         this.previewFrame.previewFrame.width('375px');
         $('#displayWidths .active').removeClass('active');
-        this.btnDisplayWidthMobile.parent().addClass('active');
+        this.btnDisplayWidthXS.parent().addClass('active');
     }
 
-    onBtnDisplayWidthTablet(e)
+    onBtnDisplayWidthSM(e)
     {
-        this.iframe.iframe.width('768px');
-        this.previewFrame.previewFrame.width('768px');
+        this.iframe.iframe.width('577px');
+        this.previewFrame.previewFrame.width('577px');
         $('#displayWidths .active').removeClass('active');
-        this.btnDisplayWidthTablet.parent().addClass('active');
+        this.btnDisplayWidthSM.parent().addClass('active');
     }
 
-    onBtnDisplayWidthLaptop(e)
+    onBtnDisplayWidthMD(e)
     {
-        this.iframe.iframe.width('992px');
-        this.previewFrame.previewFrame.width('992px');
+        this.iframe.iframe.width('769px');
+        this.previewFrame.previewFrame.width('769px');
         $('#displayWidths .active').removeClass('active');
-        this.btnDisplayWidthLaptop.parent().addClass('active');
+        this.btnDisplayWidthMD.parent().addClass('active');
     }
 
-    onBtnDisplayWidthDesktop(e)
+    onBtnDisplayWidthLG(e)
+    {
+        this.iframe.iframe.width('993px');
+        this.previewFrame.previewFrame.width('993px');
+        $('#displayWidths .active').removeClass('active');
+        this.btnDisplayWidthLG.parent().addClass('active');
+    }
+
+    onBtnDisplayWidthXL(e)
     {
         this.iframe.iframe.width('100%');
         this.previewFrame.previewFrame.width('100%');
         $('#displayWidths .active').removeClass('active');
-        this.btnDisplayWidthDesktop.parent().addClass('active');
+        this.btnDisplayWidthXL.parent().addClass('active');
     }
 
     onBeginEditDraftName()

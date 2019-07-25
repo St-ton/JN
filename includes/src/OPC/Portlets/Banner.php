@@ -48,6 +48,7 @@ class Banner extends Portlet
             'src' => [
                 'type'  => InputType::IMAGE,
                 'label' => __('Image'),
+                'thumb' => true,
             ],
             'zones' => [
                 'type'    => InputType::ZONES,

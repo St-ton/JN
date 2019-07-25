@@ -18,8 +18,8 @@ use JTL\Checkout\Lieferadresse;
 use JTL\Catalog\Product\Merkmal;
 use JTL\Catalog\Product\MerkmalWert;
 use JTL\Catalog\Product\Preise;
-use JTL\Cart\Warenkorb;
-use JTL\Cart\WarenkorbPos;
+use JTL\Cart\Cart;
+use JTL\Cart\CartItem;
 
 /**
  * Ende Artikeldetail
@@ -1716,9 +1716,9 @@ define('HOOK_GET_MANUFACTURERS', 226);
 define('HOOK_BACKEND_FUNCTIONS_GRAVATAR', 227);
 
 /**
- * @since 4.06
+ * @param Cart - oWarenkorb
+ *@since 4.06
  * @file includes/bestellabschluss_inc.php
- * @param Warenkorb - oWarenkorb
  */
 define('HOOK_BESTELLABSCHLUSS_INC_WARENKORBINDB', 228);
 
@@ -1733,10 +1733,10 @@ define('HOOK_BACKEND_SHOP_RESET_AFTER', 229);
 /**
  * on removing a cart position that has been deactivated / deleted in the meantime
  *
- * @since 5.0.0
- * @file classes/Warenkorb.php
- * @param WarenkorbPos - oPosition
+ * @param CartItem - oPosition
  * @param bool         - &delete
+ *@since 5.0.0
+ * @file classes/Warenkorb.php
  */
 define('HOOK_WARENKORB_CLASS_LOESCHEDEAKTIVIERTEPOS', 230);
 

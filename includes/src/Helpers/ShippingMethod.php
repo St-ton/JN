@@ -6,7 +6,7 @@
 
 namespace JTL\Helpers;
 
-use JTL\Cart\Warenkorb;
+use JTL\Cart\Cart;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\Preise;
 use JTL\Checkout\Versandart;
@@ -465,34 +465,34 @@ class ShippingMethod
             ) { // Normale Variation
                 if ($product['cInputData']{0} === '_') {
                     // 1D
-                    [$kEigenschaft0, $kEigenschaftWert0] = \explode(':', \mb_substr($product['cInputData'], 1));
+                    [$property0, $propertyValue0] = \explode(':', \mb_substr($product['cInputData'], 1));
 
-                    $oVariation = Product::findVariation(
+                    $variation = Product::findVariation(
                         $tmpProduct->Variationen,
-                        $kEigenschaft0,
-                        $kEigenschaftWert0
+                        $property0,
+                        $propertyValue0
                     );
 
                     $additionalProduct->fAnzahl         += $product['fAnzahl'];
                     $additionalProduct->fWarenwertNetto += $product['fAnzahl'] *
-                        ($tmpProduct->Preise->fVKNetto + $oVariation->fAufpreisNetto);
+                        ($tmpProduct->Preise->fVKNetto + $variation->fAufpreisNetto);
                     $additionalProduct->fGewicht        += $product['fAnzahl'] *
-                        ($tmpProduct->fGewicht + $oVariation->fGewichtDiff);
+                        ($tmpProduct->fGewicht + $variation->fGewichtDiff);
                 } else {
                     // 2D
                     [$cVariation0, $cVariation1]         = \explode('_', $product['cInputData']);
-                    [$kEigenschaft0, $kEigenschaftWert0] = \explode(':', $cVariation0);
-                    [$kEigenschaft1, $kEigenschaftWert1] = \explode(':', $cVariation1);
+                    [$property0, $propertyValue0] = \explode(':', $cVariation0);
+                    [$property1, $propertyValue1] = \explode(':', $cVariation1);
 
                     $variation0 = Product::findVariation(
                         $tmpProduct->Variationen,
-                        $kEigenschaft0,
-                        $kEigenschaftWert0
+                        $property0,
+                        $propertyValue0
                     );
                     $variation1 = Product::findVariation(
                         $tmpProduct->Variationen,
-                        $kEigenschaft1,
-                        $kEigenschaftWert1
+                        $property1,
+                        $propertyValue1
                     );
 
                     $additionalProduct->fAnzahl         += $product['fAnzahl'];
@@ -513,11 +513,11 @@ class ShippingMethod
                 if ($product['cInputData']{0} === '_') {
                     // 1D
                     $cVariation0                         = \mb_substr($product['cInputData'], 1);
-                    [$kEigenschaft0, $kEigenschaftWert0] = \explode(':', $cVariation0);
+                    [$property0, $propertyValue0] = \explode(':', $cVariation0);
                     $childProductID                      = Product::getChildProductIDByAttribute(
                         $tmpProduct->kArtikel,
-                        $kEigenschaft0,
-                        $kEigenschaftWert0
+                        $property0,
+                        $propertyValue0
                     );
                     $child->fuelleArtikel($childProductID, $defaultOptions);
                     // Summen pro Steuerklasse summieren
@@ -542,15 +542,15 @@ class ShippingMethod
                 } else {
                     // 2D
                     [$cVariation0, $cVariation1]         = \explode('_', $product['cInputData']);
-                    [$kEigenschaft0, $kEigenschaftWert0] = \explode(':', $cVariation0);
-                    [$kEigenschaft1, $kEigenschaftWert1] = \explode(':', $cVariation1);
+                    [$property0, $propertyValue0] = \explode(':', $cVariation0);
+                    [$property1, $propertyValue1] = \explode(':', $cVariation1);
 
                     $childProductID = Product::getChildProductIDByAttribute(
                         $tmpProduct->kArtikel,
-                        $kEigenschaft0,
-                        $kEigenschaftWert0,
-                        $kEigenschaft1,
-                        $kEigenschaftWert1
+                        $property0,
+                        $propertyValue0,
+                        $property1,
+                        $propertyValue1
                     );
                     $child->fuelleArtikel($childProductID, $defaultOptions);
                     // Summen pro Steuerklasse summieren
@@ -920,10 +920,10 @@ class ShippingMethod
     }
 
     /**
-     * @param Warenkorb $cart
+     * @param Cart $cart
      * @return string
      */
-    public static function getShippingClasses(Warenkorb $cart): string
+    public static function getShippingClasses(Cart $cart): string
     {
         $classes = [];
         foreach ($cart->PositionenArr as $item) {

@@ -7,7 +7,7 @@
 namespace JTL\Extensions\Download;
 
 use DateTime;
-use JTL\Cart\Warenkorb;
+use JTL\Cart\Cart;
 use JTL\Checkout\Bestellung;
 use JTL\DB\ReturnType;
 use JTL\Nice;
@@ -288,7 +288,7 @@ class Download
     }
 
     /**
-     * @param Warenkorb $cart
+     * @param Cart $cart
      * @return bool
      */
     public static function hasDownloads($cart): bool

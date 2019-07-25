@@ -6,6 +6,7 @@
 
 namespace JTL\Helpers;
 
+use JTL\Cart\CartHelper;
 use JTL\Catalog\Currency;
 use JTL\Checkout\Bestellung;
 use JTL\Checkout\Lieferadresse;
@@ -19,7 +20,7 @@ use stdClass;
  * Class Order
  * @package JTL\Helpers
  */
-class Order extends Cart
+class Order extends CartHelper
 {
     /**
      * @var Bestellung

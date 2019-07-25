@@ -51,27 +51,27 @@ class WunschlistePosEigenschaft
     public $cEigenschaftWertName;
 
     /**
-     * @param int    $kEigenschaft
-     * @param int    $kEigenschaftWert
-     * @param string $cFreifeldWert
-     * @param string $cEigenschaftName
-     * @param string $cEigenschaftWertName
-     * @param int    $kWunschlistePos
+     * @param int    $propertyID
+     * @param int    $propertyValueID
+     * @param string $freeText
+     * @param string $propertyName
+     * @param string $propertyValueName
+     * @param int    $wishlistItemID
      */
     public function __construct(
-        int $kEigenschaft,
-        int $kEigenschaftWert,
-        $cFreifeldWert,
-        $cEigenschaftName,
-        $cEigenschaftWertName,
-        int $kWunschlistePos
+        int $propertyID,
+        int $propertyValueID,
+        $freeText,
+        $propertyName,
+        $propertyValueName,
+        int $wishlistItemID
     ) {
-        $this->kEigenschaft         = $kEigenschaft;
-        $this->kEigenschaftWert     = $kEigenschaftWert;
-        $this->kWunschlistePos      = $kWunschlistePos;
-        $this->cFreifeldWert        = $cFreifeldWert;
-        $this->cEigenschaftName     = $cEigenschaftName;
-        $this->cEigenschaftWertName = $cEigenschaftWertName;
+        $this->kEigenschaft         = $propertyID;
+        $this->kEigenschaftWert     = $propertyValueID;
+        $this->kWunschlistePos      = $wishlistItemID;
+        $this->cFreifeldWert        = $freeText;
+        $this->cEigenschaftName     = $propertyName;
+        $this->cEigenschaftWertName = $propertyValueName;
     }
 
     /**

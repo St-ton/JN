@@ -18,10 +18,10 @@ use JTL\Shop;
 use stdClass;
 
 /**
- * Class WarenkorbPos
+ * Class CartItem
  * @package JTL\Cart
  */
-class WarenkorbPos
+class CartItem
 {
     /**
      * @var int
@@ -198,13 +198,13 @@ class WarenkorbPos
     public $oEstimatedDelivery;
 
     /**
-     * WarenkorbPos constructor.
-     * @param int $kWarenkorbPos
+     * CartItem constructor.
+     * @param int $id
      */
-    public function __construct(int $kWarenkorbPos = 0)
+    public function __construct(int $id = 0)
     {
-        if ($kWarenkorbPos > 0) {
-            $this->loadFromDB($kWarenkorbPos);
+        if ($id > 0) {
+            $this->loadFromDB($id);
         }
     }
 
@@ -212,19 +212,19 @@ class WarenkorbPos
      * Setzt in dieser Position einen Eigenschaftswert der angegebenen Eigenschaft.
      * Existiert ein EigenschaftsWert für die Eigenschaft, so wir er überschrieben, ansonsten neu angelegt
      *
-     * @param int    $kEigenschaft
-     * @param int    $kEigenschaftWert
-     * @param string $freifeld
+     * @param int    $propertyID
+     * @param int    $valueID
+     * @param string $freeText
      * @return bool
      */
-    public function setzeVariationsWert(int $kEigenschaft, int $kEigenschaftWert, $freifeld = ''): bool
+    public function setzeVariationsWert(int $propertyID, int $valueID, $freeText = ''): bool
     {
         $db                                = Shop::Container()->getDB();
-        $attributeValue                    = new EigenschaftWert($kEigenschaftWert);
-        $attribute                         = new Eigenschaft($kEigenschaft);
-        $newAttributes                     = new WarenkorbPosEigenschaft();
-        $newAttributes->kEigenschaft       = $kEigenschaft;
-        $newAttributes->kEigenschaftWert   = $kEigenschaftWert;
+        $attributeValue                    = new EigenschaftWert($valueID);
+        $attribute                         = new Eigenschaft($propertyID);
+        $newAttributes                     = new CartItemProperty();
+        $newAttributes->kEigenschaft       = $propertyID;
+        $newAttributes->kEigenschaftWert   = $valueID;
         $newAttributes->fGewichtsdifferenz = $attributeValue->fGewichtDiff;
         $newAttributes->fAufpreis          = $attributeValue->fAufpreisNetto;
         $Aufpreis_obj                      = $db->select(
@@ -275,8 +275,8 @@ class WarenkorbPos
                 }
             }
 
-            if ($freifeld || \mb_strlen(\trim($freifeld)) > 0) {
-                $newAttributes->cEigenschaftWertName[$language->cISO] = $db->escape($freifeld);
+            if ($freeText || \mb_strlen(\trim($freeText)) > 0) {
+                $newAttributes->cEigenschaftWertName[$language->cISO] = $db->escape($freeText);
             }
         }
         $this->WarenkorbPosEigenschaftArr[] = $newAttributes;
@@ -288,14 +288,14 @@ class WarenkorbPos
     /**
      * gibt EigenschaftsWert zu einer Eigenschaft bei dieser Position
      *
-     * @param int $kEigenschaft - Key der Eigenschaft
+     * @param int $propertyID - ID der Eigenschaft
      * @return int - gesetzter Wert. Falls nicht gesetzt, wird 0 zurückgegeben
      */
-    public function gibGesetztenEigenschaftsWert(int $kEigenschaft): int
+    public function gibGesetztenEigenschaftsWert(int $propertyID): int
     {
         foreach ($this->WarenkorbPosEigenschaftArr as $WKPosEigenschaft) {
             $WKPosEigenschaft->kEigenschaft = (int)$WKPosEigenschaft->kEigenschaft;
-            if ($WKPosEigenschaft->kEigenschaft === $kEigenschaft) {
+            if ($WKPosEigenschaft->kEigenschaft === $propertyID) {
                 return (int)$WKPosEigenschaft->kEigenschaftWert;
             }
         }
@@ -428,7 +428,7 @@ class WarenkorbPos
                 $gross     = 0;
                 $parentIdx = null;
                 if (!empty($this->cUnique)) {
-                    /** @var WarenkorbPos $item */
+                    /** @var CartItem $item */
                     foreach (Frontend::getCart()->PositionenArr as $idx => $item) {
                         if ($this->cUnique === $item->cUnique) {
                             $net   += $item->fPreis * $item->nAnzahl;
@@ -565,9 +565,9 @@ class WarenkorbPos
     }
 
     /**
-     * @param WarenkorbPos $cartPos
-     * @param int|null     $minDelivery
-     * @param int|null     $maxDelivery
+     * @param CartItem $cartPos
+     * @param int|null $minDelivery
+     * @param int|null $maxDelivery
      */
     public static function setEstimatedDelivery($cartPos, int $minDelivery = null, int $maxDelivery = null): void
     {

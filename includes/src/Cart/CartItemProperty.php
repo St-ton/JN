@@ -10,10 +10,10 @@ use JTL\Helpers\GeneralObject;
 use JTL\Shop;
 
 /**
- * Class WarenkorbPosEigenschaft
+ * Class CartItemProperty
  * @package JTL\Cart
  */
-class WarenkorbPosEigenschaft
+class CartItemProperty
 {
     /**
      * @var int
@@ -65,13 +65,13 @@ class WarenkorbPosEigenschaft
     public $cTyp;
 
     /**
-     * WarenkorbPosEigenschaft constructor.
-     * @param int $kWarenkorbPosEigenschaft
+     * CartItemProperty constructor.
+     * @param int $id
      */
-    public function __construct(int $kWarenkorbPosEigenschaft = 0)
+    public function __construct(int $id = 0)
     {
-        if ($kWarenkorbPosEigenschaft > 0) {
-            $this->loadFromDB($kWarenkorbPosEigenschaft);
+        if ($id > 0) {
+            $this->loadFromDB($id);
         }
     }
 

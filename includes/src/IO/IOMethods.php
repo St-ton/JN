@@ -13,8 +13,9 @@ use JTL\Boxes\Items\CompareList;
 use JTL\Boxes\Items\Wishlist;
 use JTL\Boxes\Renderer\DefaultRenderer;
 use JTL\Boxes\Type;
-use JTL\Cart\Warenkorb;
-use JTL\Cart\WarenkorbPers;
+use JTL\Cart\CartHelper;
+use JTL\Cart\PersistentCart;
+use JTL\Cart\Cart;
 use JTL\Catalog\Category\Kategorie;
 use JTL\Catalog\Category\KategorieListe;
 use JTL\Catalog\Product\Artikel;
@@ -26,7 +27,6 @@ use JTL\Checkout\Kupon;
 use JTL\Customer\CustomerGroup;
 use JTL\DB\ReturnType;
 use JTL\Extensions\SelectionWizard\Wizard;
-use JTL\Helpers\Cart;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Product;
 use JTL\Helpers\ShippingMethod;
@@ -199,7 +199,7 @@ class IOMethods
             $amount = \max((int)$amount, 1);
         }
         // Prüfung
-        $errors = Cart::addToCartCheck($product, $amount, $properties);
+        $errors = CartHelper::addToCartCheck($product, $amount, $properties);
 
         if (\count($errors) > 0) {
             $localizedErrors = Product::getProductMessages($errors, true, $product, $amount);
@@ -212,8 +212,8 @@ class IOMethods
             return $objResponse;
         }
         $cart = Frontend::getCart();
-        Cart::addVariationPictures($cart);
-        /** @var Warenkorb $cart */
+        CartHelper::addVariationPictures($cart);
+        /** @var Cart $cart */
         $cart->fuegeEin($productID, $amount, $properties)
              ->loescheSpezialPos(\C_WARENKORBPOS_TYP_VERSANDPOS)
              ->loescheSpezialPos(\C_WARENKORBPOS_TYP_VERSANDZUSCHLAG)
@@ -235,7 +235,7 @@ class IOMethods
         Kupon::reCheck();
         // Persistenter Warenkorb
         if (!isset($_POST['login'])) {
-            WarenkorbPers::addToCheck($productID, $amount, $properties);
+            PersistentCart::addToCheck($productID, $amount, $properties);
         }
         $pageType    = Shop::getPageType();
         $boxes       = Shop::Container()->getBoxService();
@@ -306,7 +306,7 @@ class IOMethods
         $_POST['Vergleichsliste'] = 1;
         $_POST['a']               = $productID;
 
-        Cart::checkAdditions();
+        CartHelper::checkAdditions();
         $response->nType  = 2;
         $response->nCount = \count($_SESSION['Vergleichsliste']->oArtikel_arr);
         $response->cTitle = Shop::Lang()->get('compare');
@@ -467,7 +467,7 @@ class IOMethods
         $_POST['a']           = $productID;
         $_POST['n']           = (int)$qty;
 
-        Cart::checkAdditions();
+        CartHelper::checkAdditions();
 
         foreach ($_SESSION['Wunschliste']->CWunschlistePos_arr as $wlPos) {
             if ($wlPos->kArtikel === $productID) {
@@ -617,7 +617,7 @@ class IOMethods
         $response    = new stdClass();
         $objResponse = new IOResponse();
 
-        Cart::addVariationPictures($cart);
+        CartHelper::addVariationPictures($cart);
         switch ($type) {
             default:
             case 0:
@@ -915,23 +915,23 @@ class IOMethods
     }
 
     /**
-     * @param array $aValues
-     * @param int   $kEigenschaft
-     * @param int   $kEigenschaftWert
+     * @param array $values
+     * @param int   $propertyID
+     * @param int   $propertyValueID
      * @return IOResponse
      */
-    public function checkVarkombiDependencies($aValues, $kEigenschaft = 0, $kEigenschaftWert = 0): IOResponse
+    public function checkVarkombiDependencies($values, $propertyID = 0, $propertyValueID = 0): IOResponse
     {
-        $kEigenschaft             = (int)$kEigenschaft;
-        $kEigenschaftWert         = (int)$kEigenschaftWert;
+        $propertyID               = (int)$propertyID;
+        $propertyValueID          = (int)$propertyValueID;
         $product                  = null;
         $objResponse              = new IOResponse();
-        $parentProductID          = (int)$aValues['a'];
-        $childProductID           = isset($aValues['VariKindArtikel']) ? (int)$aValues['VariKindArtikel'] : 0;
-        $idx                      = isset($aValues['eigenschaftwert']) ? (array)$aValues['eigenschaftwert'] : [];
+        $parentProductID          = (int)$values['a'];
+        $childProductID           = isset($values['VariKindArtikel']) ? (int)$values['VariKindArtikel'] : 0;
+        $idx                      = isset($values['eigenschaftwert']) ? (array)$values['eigenschaftwert'] : [];
         $kFreifeldEigeschaftWerte = [];
         $kGesetzteEigeschaftWerte = \array_filter($idx);
-        $wrapper                  = isset($aValues['wrapper']) ? Text::filterXSS($aValues['wrapper']) : '';
+        $wrapper                  = isset($values['wrapper']) ? Text::filterXSS($values['wrapper']) : '';
 
         if ($parentProductID > 0) {
             $options                            = new stdClass();
@@ -968,11 +968,11 @@ class IOMethods
             if ($hasInvalidSelection) {
                 $objResponse->jsfunc('$.evo.article().variationResetAll', $wrapper);
 
-                $kGesetzteEigeschaftWerte = [$kEigenschaft => $kEigenschaftWert];
+                $kGesetzteEigeschaftWerte = [$propertyID => $propertyValueID];
                 $invalidVariations        = $product->getVariationsBySelection($kGesetzteEigeschaftWerte, true);
 
                 // Auswählter EigenschaftWert ist ebenfalls nicht vorhanden
-                if (\in_array($kEigenschaftWert, $invalidVariations[$kEigenschaft])) {
+                if (\in_array($propertyValueID, $invalidVariations[$propertyID])) {
                     $kGesetzteEigeschaftWerte = [];
 
                     // Wir befinden uns im Kind-Artikel -> Weiterleitung auf Vater-Artikel

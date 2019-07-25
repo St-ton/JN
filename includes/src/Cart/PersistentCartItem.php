@@ -11,10 +11,10 @@ use JTL\Shop;
 use stdClass;
 
 /**
- * Class WarenkorbPersPos
+ * Class PersistentCartItem
  * @package JTL\Cart
  */
-class WarenkorbPersPos
+class PersistentCartItem
 {
     /**
      * @var int
@@ -87,10 +87,11 @@ class WarenkorbPersPos
     public $Artikel;
 
     /**
+     * PersistentCartItem constructor.
      * @param int        $productID
      * @param string     $productName
      * @param float      $qty
-     * @param int        $kWarenkorbPers
+     * @param int        $cartItemID
      * @param string     $unique
      * @param int        $configItemID
      * @param int|string $type
@@ -100,7 +101,7 @@ class WarenkorbPersPos
         int $productID,
         $productName,
         $qty,
-        int $kWarenkorbPers,
+        int $cartItemID,
         $unique = '',
         int $configItemID = 0,
         int $type = \C_WARENKORBPOS_TYP_ARTIKEL,
@@ -110,7 +111,7 @@ class WarenkorbPersPos
         $this->cArtikelName    = $productName;
         $this->fAnzahl         = $qty;
         $this->dHinzugefuegt   = 'NOW()';
-        $this->kWarenkorbPers  = $kWarenkorbPers;
+        $this->kWarenkorbPers  = $cartItemID;
         $this->cUnique         = $unique;
         $this->cResponsibility = !empty($responsibility) ? $responsibility : 'core';
         $this->kKonfigitem     = $configItemID;
@@ -125,7 +126,7 @@ class WarenkorbPersPos
     {
         foreach ($attrValues as $value) {
             if (isset($value->kEigenschaft)) {
-                $attr = new WarenkorbPersPosEigenschaft(
+                $attr = new PersistentCartItemProperty(
                     $value->kEigenschaft,
                     $value->kEigenschaftWert ?? 0,
                     $value->cFreifeldWert ?? null,
@@ -187,19 +188,19 @@ class WarenkorbPersPos
     }
 
     /**
-     * @param int    $kEigenschaft
-     * @param int    $kEigenschaftWert
-     * @param string $cFreifeldWert
+     * @param int    $propertyID
+     * @param int    $propertyValueID
+     * @param string $freeText
      * @return bool
      */
-    public function istEigenschaftEnthalten(int $kEigenschaft, ?int $kEigenschaftWert, string $cFreifeldWert = ''): bool
+    public function istEigenschaftEnthalten(int $propertyID, ?int $propertyValueID, string $freeText = ''): bool
     {
         foreach ($this->oWarenkorbPersPosEigenschaft_arr as $oWarenkorbPersPosEigenschaft) {
-            if ((int)$oWarenkorbPersPosEigenschaft->kEigenschaft === $kEigenschaft
+            if ((int)$oWarenkorbPersPosEigenschaft->kEigenschaft === $propertyID
                 && ((!empty($oWarenkorbPersPosEigenschaft->kEigenschaftWert)
-                        && $oWarenkorbPersPosEigenschaft->kEigenschaftWert === $kEigenschaftWert)
+                        && $oWarenkorbPersPosEigenschaft->kEigenschaftWert === $propertyValueID)
                     || ($oWarenkorbPersPosEigenschaft->kEigenschaftWert === 0
-                        && $oWarenkorbPersPosEigenschaft->cFreifeldWert === $cFreifeldWert))
+                        && $oWarenkorbPersPosEigenschaft->cFreifeldWert === $freeText))
             ) {
                 return true;
             }

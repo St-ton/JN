@@ -9,7 +9,7 @@ use JTL\Helpers\Request;
 use JTL\Customer\Customer;
 use JTL\Shop;
 use JTL\Helpers\Text;
-use JTL\Cart\WarenkorbPers;
+use JTL\Cart\PersistentCart;
 use JTL\Pagination\Pagination;
 use JTL\DB\ReturnType;
 use JTL\Alert\Alert;
@@ -50,7 +50,7 @@ if (isset($_POST['einstellungen'])
 
 if (isset($_GET['l']) && (int)$_GET['l'] > 0 && Form::validateToken()) {
     $customerID = (int)$_GET['l'];
-    $persCart   = new WarenkorbPers($customerID);
+    $persCart   = new PersistentCart($customerID);
     if ($persCart->entferneSelf()) {
         $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successCartPersPosDelete'), 'successCartPersPosDelete');
     }

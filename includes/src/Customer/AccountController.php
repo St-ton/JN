@@ -8,8 +8,9 @@ namespace JTL\Customer;
 
 use Exception;
 use JTL\Alert\Alert;
-use JTL\Cart\WarenkorbPers;
-use JTL\Cart\WarenkorbPersPos;
+use JTL\Cart\CartHelper;
+use JTL\Cart\PersistentCart;
+use JTL\Cart\PersistentCartItem;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\Preise;
 use JTL\Catalog\Wishlist\Wunschliste;
@@ -23,7 +24,6 @@ use JTL\Extensions\Config\Item;
 use JTL\Extensions\Download\Download;
 use JTL\Extensions\Upload\File;
 use JTL\GeneralDataProtection\Journal;
-use JTL\Helpers\Cart;
 use JTL\Helpers\Date;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
@@ -414,7 +414,7 @@ class AccountController
             && $this->loadPersistentCart($customer);
         $this->pruefeWarenkorbArtikelSichtbarkeit($_SESSION['Kunde']->kKundengruppe);
         \executeHook(\HOOK_JTL_PAGE_REDIRECT);
-        Cart::checkAdditions();
+        CartHelper::checkAdditions();
         $url = Text::filterXSS(Request::verifyGPDataString('cURL'));
         if (\mb_strlen($url) > 0) {
             if (\mb_strpos($url, 'http') !== 0) {
@@ -427,7 +427,7 @@ class AccountController
             if ($this->config['kaufabwicklung']['warenkorb_warenkorb2pers_merge'] === 'Y') {
                 $this->setzeWarenkorbPersInWarenkorb($_SESSION['Kunde']->kKunde);
             } elseif ($this->config['kaufabwicklung']['warenkorb_warenkorb2pers_merge'] === 'P') {
-                $persCart = new WarenkorbPers($customer->kKunde);
+                $persCart = new PersistentCart($customer->kKunde);
                 if (\count($persCart->oWarenkorbPersPos_arr) > 0) {
                     $this->smarty->assign('nWarenkorb2PersMerge', 1);
                 }
@@ -489,7 +489,7 @@ class AccountController
         if (\count($cart->PositionenArr) > 0) {
             return false;
         }
-        $persCart = new WarenkorbPers($customer->kKunde);
+        $persCart = new PersistentCart($customer->kKunde);
         $persCart->ueberpruefePositionen(true);
         if (\count($persCart->oWarenkorbPersPos_arr) === 0) {
             return false;
@@ -543,7 +543,7 @@ class AccountController
                     $item->kArtikel
                 );
             } else {
-                Cart::addProductIDToCart(
+                CartHelper::addProductIDToCart(
                     $item->kArtikel,
                     $item->fAnzahl,
                     $item->oWarenkorbPersPosEigenschaft_arr,
@@ -632,10 +632,10 @@ class AccountController
                     ReturnType::SINGLE_OBJECT
                 );
                 if (isset($present->kArtikel) && $present->kArtikel > 0) {
-                    WarenkorbPers::addToCheck($productID, 1, [], null, 0, \C_WARENKORBPOS_TYP_GRATISGESCHENK);
+                    PersistentCart::addToCheck($productID, 1, [], null, 0, \C_WARENKORBPOS_TYP_GRATISGESCHENK);
                 }
             } else {
-                WarenkorbPers::addToCheck(
+                PersistentCart::addToCheck(
                     $item->kArtikel,
                     $item->nAnzahl,
                     $item->WarenkorbPosEigenschaftArr,
@@ -648,8 +648,8 @@ class AccountController
         }
         $cart->PositionenArr = [];
 
-        $persCart = new WarenkorbPers($customerID);
-        /** @var WarenkorbPersPos $item */
+        $persCart = new PersistentCart($customerID);
+        /** @var PersistentCartItem $item */
         foreach ($persCart->oWarenkorbPersPos_arr as $item) {
             if ($item->nPosTyp === \C_WARENKORBPOS_TYP_GRATISGESCHENK) {
                 $productID = (int)$item->kArtikel;
@@ -684,12 +684,12 @@ class AccountController
                 $tmpProduct = new Artikel();
                 $tmpProduct->fuelleArtikel($item->kArtikel, Artikel::getDefaultOptions());
 
-                if ((int)$tmpProduct->kArtikel > 0 && \count(Cart::addToCartCheck(
+                if ((int)$tmpProduct->kArtikel > 0 && \count(CartHelper::addToCartCheck(
                     $tmpProduct,
                     $item->fAnzahl,
                     $item->oWarenkorbPersPosEigenschaft_arr
                 )) === 0) {
-                    Cart::addProductIDToCart(
+                    CartHelper::addProductIDToCart(
                         $item->kArtikel,
                         $item->fAnzahl,
                         $item->oWarenkorbPersPosEigenschaft_arr,

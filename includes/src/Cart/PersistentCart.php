@@ -20,7 +20,7 @@ use stdClass;
  * Class WarenkorbPers
  * @package JTL\Cart
  */
-class WarenkorbPers
+class PersistentCart
 {
     /**
      * @var int
@@ -48,6 +48,7 @@ class WarenkorbPers
     public $cWarenwertLocalized;
 
     /**
+     * PersistentCart constructor.
      * @param int  $customerID
      * @param bool $addProducts
      */
@@ -64,10 +65,10 @@ class WarenkorbPers
      *
      * @param int    $productID
      * @param string $productName
-     * @param array  $attrValues
+     * @param array  $properties
      * @param float  $qty
      * @param string $unique
-     * @param int    $kKonfigitem
+     * @param int    $configItemID
      * @param int    $type
      * @param string $responsibility
      * @return $this
@@ -75,29 +76,29 @@ class WarenkorbPers
     public function fuegeEin(
         int $productID,
         $productName,
-        $attrValues,
+        $properties,
         $qty,
         $unique = '',
-        int $kKonfigitem = 0,
+        int $configItemID = 0,
         int $type = \C_WARENKORBPOS_TYP_ARTIKEL,
         $responsibility = 'core'
     ): self {
         $exists = false;
         $idx    = 0;
         foreach ($this->oWarenkorbPersPos_arr as $i => $item) {
-            /** @var WarenkorbPersPos $item */
+            /** @var PersistentCartItem $item */
             $item->kArtikel = (int)$item->kArtikel;
             if ($exists) {
                 break;
             }
             if ($item->kArtikel === $productID
                 && $item->cUnique === $unique
-                && (int)$item->kKonfigitem === $kKonfigitem
+                && (int)$item->kKonfigitem === $configItemID
                 && \count($item->oWarenkorbPersPosEigenschaft_arr) > 0
             ) {
                 $idx    = $i;
                 $exists = true;
-                foreach ($attrValues as $oEigenschaftwerte) {
+                foreach ($properties as $oEigenschaftwerte) {
                     // kEigenschaftsWert is not set when using free text variations
                     if (!$item->istEigenschaftEnthalten(
                         $oEigenschaftwerte->kEigenschaft,
@@ -111,7 +112,7 @@ class WarenkorbPers
             } elseif ($item->kArtikel === $productID
                 && $unique !== ''
                 && $item->cUnique === $unique
-                && (int)$item->kKonfigitem === $kKonfigitem
+                && (int)$item->kKonfigitem === $configItemID
             ) {
                 $idx    = $i;
                 $exists = true;
@@ -122,18 +123,18 @@ class WarenkorbPers
             $this->oWarenkorbPersPos_arr[$idx]->fAnzahl += $qty;
             $this->oWarenkorbPersPos_arr[$idx]->updateDB();
         } else {
-            $item = new WarenkorbPersPos(
+            $item = new PersistentCartItem(
                 $productID,
                 $productName,
                 $qty,
                 $this->kWarenkorbPers,
                 $unique,
-                $kKonfigitem,
+                $configItemID,
                 $type,
                 $responsibility
             );
             $item->schreibeDB();
-            $item->erstellePosEigenschaften($attrValues);
+            $item->erstellePosEigenschaften($properties);
             $this->oWarenkorbPersPos_arr[] = $item;
         }
 
@@ -294,7 +295,7 @@ class WarenkorbPers
             $item->kKonfigitem       = (int)$item->kKonfigitem;
             $item->nPosTyp           = (int)$item->nPosTyp;
 
-            $persItem                    = new WarenkorbPersPos(
+            $persItem                    = new PersistentCartItem(
                 $item->kArtikel,
                 $item->cArtikelName,
                 $item->fAnzahl,
@@ -315,7 +316,7 @@ class WarenkorbPers
                 (int)$item->kWarenkorbPersPos
             );
             foreach ($attributes as $attribute) {
-                $persItem->oWarenkorbPersPosEigenschaft_arr[] = new WarenkorbPersPosEigenschaft(
+                $persItem->oWarenkorbPersPosEigenschaft_arr[] = new PersistentCartItemProperty(
                     (int)$attribute->kEigenschaft,
                     (int)$attribute->kEigenschaftWert,
                     $attribute->cFreifeldWert ?? null,
@@ -537,7 +538,7 @@ class WarenkorbPers
                     );
                 }
                 if ($visibility === null || !isset($visibility->kArtikel) || !$visibility->kArtikel) {
-                    $persCart = new WarenkorbPers(Frontend::getCustomer()->getID());
+                    $persCart = new PersistentCart(Frontend::getCustomer()->getID());
                     if ($type === \C_WARENKORBPOS_TYP_GRATISGESCHENK) {
                         $persCart->loescheGratisGeschenkAusWarenkorbPers();
                     }
@@ -555,7 +556,7 @@ class WarenkorbPers
             }
         } elseif ($productID === 0 && !empty($configItemID)) {
             // Konfigitems ohne Artikelbezug
-            (new WarenkorbPers(Frontend::getCustomer()->getID()))->fuegeEin(
+            (new PersistentCart(Frontend::getCustomer()->getID()))->fuegeEin(
                 $productID,
                 (new ItemLocalization($configItemID, Shop::getLanguageID()))->getName(),
                 $attributeValues,

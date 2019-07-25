@@ -141,16 +141,16 @@ class WunschlistePos
     }
 
     /**
-     * @param int $kEigenschaft
-     * @param int $kEigenschaftWert
+     * @param int $propertyID
+     * @param int $propertyValueID
      * @return bool
      */
-    public function istEigenschaftEnthalten(int $kEigenschaft, int $kEigenschaftWert): bool
+    public function istEigenschaftEnthalten(int $propertyID, int $propertyValueID): bool
     {
         return some(
             $this->CWunschlistePosEigenschaft_arr,
-            function ($e) use ($kEigenschaft, $kEigenschaftWert) {
-                return (int)$e->kEigenschaft === $kEigenschaft && (int)$e->kEigenschaftWert === $kEigenschaftWert;
+            function ($e) use ($propertyID, $propertyValueID) {
+                return (int)$e->kEigenschaft === $propertyID && (int)$e->kEigenschaftWert === $propertyValueID;
             }
         );
     }

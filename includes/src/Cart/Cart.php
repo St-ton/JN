@@ -18,7 +18,6 @@ use JTL\Extensions\Config\Item;
 use JTL\Extensions\Config\ItemLocalization;
 use JTL\Extensions\Download\Download;
 use JTL\GlobalSetting;
-use JTL\Helpers\Cart;
 use JTL\Helpers\Product;
 use JTL\Helpers\Request;
 use JTL\Helpers\ShippingMethod;
@@ -33,7 +32,7 @@ use function Functional\some;
  * Class Warenkorb
  * @package JTL\Cart
  */
-class Warenkorb
+class Cart
 {
     /**
      * @var int
@@ -56,7 +55,7 @@ class Warenkorb
     public $kZahlungsInfo = 0;
 
     /**
-     * @var WarenkorbPos[]
+     * @var CartItem[]
      */
     public $PositionenArr = [];
 
@@ -115,13 +114,13 @@ class Warenkorb
 
     /**
      * Warenkorb constructor.
-     * @param int $kWarenkorb
+     * @param int $id
      */
-    public function __construct(int $kWarenkorb = 0)
+    public function __construct(int $id = 0)
     {
         $this->config = Shop::getSettings([\CONF_GLOBAL, \CONF_KAUFABWICKLUNG]);
-        if ($kWarenkorb > 0) {
-            $this->loadFromDB($kWarenkorb);
+        if ($id > 0) {
+            $this->loadFromDB($id);
         }
     }
 
@@ -357,7 +356,7 @@ class Warenkorb
         if ($configItemID > 0) {
             $options->nKeineSichtbarkeitBeachten = 1;
         }
-        $cartItem          = new WarenkorbPos();
+        $cartItem          = new CartItem();
         $cartItem->Artikel = new Artikel();
         $cartItem->Artikel->fuelleArtikel($productID, $options);
         $cartItem->nAnzahl           = $qty;
@@ -481,19 +480,19 @@ class Warenkorb
                             );
                             // aktuellen Eigenschaftswert mit Bild ermitteln
                             // und Variationsbild an der Position speichern
-                            $kEigenschaftWert = $value->kEigenschaftWert;
-                            $oVariationWert   = \current(
+                            $propertyValueID = $value->kEigenschaftWert;
+                            $oVariationWert  = \current(
                                 \array_filter(
                                     $variation->Werte,
-                                    function ($item) use ($kEigenschaftWert) {
-                                        return $item->kEigenschaftWert === $kEigenschaftWert
+                                    function ($item) use ($propertyValueID) {
+                                        return $item->kEigenschaftWert === $propertyValueID
                                             && !empty($item->cPfadNormal);
                                     }
                                 )
                             );
 
                             if ($oVariationWert !== false) {
-                                Cart::setVariationPicture($cartItem, $oVariationWert);
+                                CartHelper::setVariationPicture($cartItem, $oVariationWert);
                             }
                         }
                     }
@@ -650,7 +649,7 @@ class Warenkorb
         if ($delSamePosType) {
             $this->loescheSpezialPos($typ);
         }
-        $cartItem                = new WarenkorbPos();
+        $cartItem                = new CartItem();
         $cartItem->nAnzahl       = $qty;
         $cartItem->nAnzahlEinzel = $qty;
         $cartItem->kArtikel      = 0;
@@ -997,7 +996,7 @@ class Warenkorb
                     && $_SESSION['Kupon']->kKupon > 0
                     && (int)$_SESSION['Kupon']->nGanzenWKRabattieren === 0
                 ) {
-                    $item = Cart::checkCouponCartItems($item, $_SESSION['Kupon']);
+                    $item = CartHelper::checkCouponCartItems($item, $_SESSION['Kupon']);
                     $item->setzeGesamtpreisLocalized();
                 }
             }
@@ -1045,20 +1044,20 @@ class Warenkorb
     /**
      * gibt Gesamtanzahl einer bestimmten Variation im Warenkorb zurueck
      * @param int $productID
-     * @param int $kEigenschaftsWert
-     * @param int $excludePos
+     * @param int $propertyValueID
+     * @param int $excludeItem
      * @return int
      */
-    public function gibAnzahlEinerVariation(int $productID, int $kEigenschaftsWert, int $excludePos = -1)
+    public function gibAnzahlEinerVariation(int $productID, int $propertyValueID, int $excludeItem = -1)
     {
-        if (!$productID || !$kEigenschaftsWert) {
+        if (!$productID || !$propertyValueID) {
             return 0;
         }
         $qty = 0;
         foreach ($this->PositionenArr as $i => $item) {
-            if ($item->kArtikel == $productID && $excludePos != $i && \is_array($item->WarenkorbPosEigenschaftArr)) {
+            if ($item->kArtikel == $productID && $excludeItem != $i && \is_array($item->WarenkorbPosEigenschaftArr)) {
                 foreach ($item->WarenkorbPosEigenschaftArr as $attr) {
-                    if ($attr->kEigenschaftWert == $kEigenschaftsWert) {
+                    if ($attr->kEigenschaftWert == $propertyValueID) {
                         $qty += $item->nAnzahl;
                     }
                 }
@@ -1169,7 +1168,7 @@ class Warenkorb
         $total /= $conversionFactor;
         $this->useSummationRounding();
 
-        return Cart::roundOptionalCurrency($total, $this->Waehrung ?? Frontend::getCurrency());
+        return CartHelper::roundOptionalCurrency($total, $this->Waehrung ?? Frontend::getCurrency());
     }
 
     /**
@@ -1206,7 +1205,7 @@ class Warenkorb
         }
         $this->useSummationRounding();
 
-        return Cart::roundOptionalCurrency($total, $this->Waehrung ?? Frontend::getCurrency());
+        return CartHelper::roundOptionalCurrency($total, $this->Waehrung ?? Frontend::getCurrency());
     }
 
     /**
@@ -1248,7 +1247,7 @@ class Warenkorb
     public function optionaleRundung($total)
     {
         \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
-        return Cart::roundOptionalCurrency($total, $this->Waehrung ?? Frontend::getCurrency());
+        return CartHelper::roundOptionalCurrency($total, $this->Waehrung ?? Frontend::getCurrency());
     }
 
     /**
@@ -1526,13 +1525,13 @@ class Warenkorb
         $longestMinDeliveryDays = 0;
         $longestMaxDeliveryDays = 0;
 
-        /** @var WarenkorbPos $item */
+        /** @var CartItem $item */
         foreach ($this->PositionenArr as $item) {
             if ($item->nPosTyp !== \C_WARENKORBPOS_TYP_ARTIKEL || !$item->Artikel instanceof Artikel) {
                 continue;
             }
             $item->Artikel->getDeliveryTime($_SESSION['cLieferlandISO'], $item->nAnzahl);
-            WarenkorbPos::setEstimatedDelivery(
+            CartItem::setEstimatedDelivery(
                 $item,
                 $item->Artikel->nMinDeliveryDays,
                 $item->Artikel->nMaxDeliveryDays
@@ -1767,7 +1766,7 @@ class Warenkorb
     }
 
     /**
-     * @param Warenkorb $cart
+     * @param Cart $cart
      * @return string
      */
     public static function getChecksum($cart): string
@@ -1798,7 +1797,7 @@ class Warenkorb
 
     /**
      * refresh internal wk-checksum
-     * @param Warenkorb|object $cart
+     * @param Cart|object $cart
      */
     public static function refreshChecksum($cart): void
     {

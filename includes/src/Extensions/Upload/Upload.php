@@ -6,7 +6,7 @@
 
 namespace JTL\Extensions\Upload;
 
-use JTL\Cart\Warenkorb;
+use JTL\Cart\Cart;
 use JTL\Helpers\PHPSettings;
 use JTL\Nice;
 use JTL\Services\JTL\LinkService;
@@ -71,10 +71,10 @@ final class Upload
     }
 
     /**
-     * @param Warenkorb $cart
+     * @param Cart $cart
      * @return stdClass[]
      */
-    public static function gibWarenkorbUploads(Warenkorb $cart): array
+    public static function gibWarenkorbUploads(Cart $cart): array
     {
         $uploads = [];
         foreach ($cart->PositionenArr as $item) {
@@ -114,10 +114,10 @@ final class Upload
     }
 
     /**
-     * @param Warenkorb $cart
+     * @param Cart $cart
      * @return bool
      */
-    public static function pruefeWarenkorbUploads(Warenkorb $cart): bool
+    public static function pruefeWarenkorbUploads(Cart $cart): bool
     {
         foreach (self::gibWarenkorbUploads($cart) as $scheme) {
             foreach ($scheme->oUpload_arr as $upload) {
@@ -141,10 +141,10 @@ final class Upload
     }
 
     /**
-     * @param Warenkorb $cart
-     * @param int       $orderID
+     * @param Cart $cart
+     * @param int  $orderID
      */
-    public static function speicherUploadDateien(Warenkorb $cart, int $orderID): void
+    public static function speicherUploadDateien(Cart $cart, int $orderID): void
     {
         foreach (self::gibWarenkorbUploads($cart) as $scheme) {
             foreach ($scheme->oUpload_arr as $upload) {

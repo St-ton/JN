@@ -5,7 +5,7 @@
  */
 
 use JTL\Alert\Alert;
-use JTL\Cart\Warenkorb;
+use JTL\Cart\Cart;
 use JTL\Catalog\Category\Kategorie;
 use JTL\Catalog\Category\KategorieListe;
 use JTL\Catalog\Navigation;
@@ -36,7 +36,7 @@ $smarty     = Shop::Smarty();
 $template   = Template::getInstance();
 $tplDir     = PFAD_TEMPLATES . $template->getDir() . '/';
 $shopURL    = Shop::getURL();
-$cart       = $_SESSION['Warenkorb'] ?? new Warenkorb();
+$cart       = $_SESSION['Warenkorb'] ?? new Cart();
 $conf       = Shopsetting::getInstance()->getAll();
 $linkHelper = Shop::Container()->getLinkService();
 $link       = $linkHelper->getLinkByID(Shop::$kLink ?? 0);
@@ -176,8 +176,8 @@ $smarty->assign('linkgroups', $linkHelper->getLinkGroups())
        ->assign('Einstellungen', $conf)
        ->assign('isFluidTemplate', isset($conf['template']['theme']['pagelayout'])
            && $conf['template']['theme']['pagelayout'] === 'fluid')
-       ->assign('deletedPositions', Warenkorb::$deletedPositions)
-       ->assign('updatedPositions', Warenkorb::$updatedPositions)
+       ->assign('deletedPositions', Cart::$deletedPositions)
+       ->assign('updatedPositions', Cart::$updatedPositions)
        ->assign('cCanonicalURL', $cCanonicalURL ?? null)
        ->assign('Firma', new Firma())
        ->assign('AktuelleKategorie', $AktuelleKategorie)

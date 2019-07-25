@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use JTL\Cart\Warenkorb;
+use JTL\Cart\Cart;
 use JTL\Checkout\Bestellung;
 use JTL\Checkout\ZahlungsLog;
 use JTL\Customer\Customer;
@@ -451,8 +451,8 @@ class PaymentMethod
 
     /**
      *
-     * @param object    $customer
-     * @param Warenkorb $cart
+     * @param object $customer
+     * @param Cart   $cart
      * @return bool - true, if $customer with $cart may use Payment Method
      */
     public function isValid($customer, $cart)

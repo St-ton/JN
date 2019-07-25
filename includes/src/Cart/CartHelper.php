@@ -4,12 +4,9 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace JTL\Helpers;
+namespace JTL\Cart;
 
 use JTL\Alert\Alert;
-use JTL\Cart\Warenkorb;
-use JTL\Cart\WarenkorbPers;
-use JTL\Cart\WarenkorbPos;
 use JTL\Catalog\Currency;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\EigenschaftWert;
@@ -24,6 +21,11 @@ use JTL\DB\ReturnType;
 use JTL\Extensions\Config\Configurator;
 use JTL\Extensions\Config\Item;
 use JTL\Extensions\Upload\Upload;
+use JTL\Helpers\GeneralObject;
+use JTL\Helpers\Product;
+use JTL\Helpers\Request;
+use JTL\Helpers\Tax;
+use JTL\Helpers\Text;
 use JTL\Kampagne;
 use JTL\Session\Frontend;
 use JTL\Shop;
@@ -32,10 +34,10 @@ use function Functional\filter;
 use function Functional\map;
 
 /**
- * Class Cart
- * @package JTL\Helpers
+ * Class CartHelper
+ * @package JTL\Cart
  */
-class Cart
+class CartHelper
 {
     public const NET = 0;
 
@@ -196,7 +198,7 @@ class Cart
     }
 
     /**
-     * @return Warenkorb|null
+     * @return Cart|null
      */
     public function getObject()
     {
@@ -260,11 +262,11 @@ class Cart
     }
 
     /**
-     * @param WarenkorbPos $item
-     * @param object       $variation
+     * @param CartItem $item
+     * @param object   $variation
      * @return void
      */
-    public static function setVariationPicture(WarenkorbPos $item, $variation): void
+    public static function setVariationPicture(CartItem $item, $variation): void
     {
         if ($item->variationPicturesArr === null) {
             $item->variationPicturesArr = [];
@@ -289,10 +291,10 @@ class Cart
     }
 
     /**
-     * @param Warenkorb $warenkorb
+     * @param Cart $warenkorb
      * @return int - since 5.0.0
      */
-    public static function addVariationPictures(Warenkorb $warenkorb): int
+    public static function addVariationPictures(Cart $warenkorb): int
     {
         $count = 0;
         foreach ($warenkorb->PositionenArr as $item) {
@@ -522,7 +524,7 @@ class Cart
                         break;
                 }
 
-                WarenkorbPers::addToCheck(
+                PersistentCart::addToCheck(
                     $configItem->getArtikelKey(),
                     $configItem->fAnzahlWK,
                     $configItem->oEigenschaftwerte_arr ?? [],
@@ -1457,7 +1459,7 @@ class Cart
         // Wenn Kupon vorhanden und der cWertTyp prozentual ist, dann verwerfen und neu anlegen
         Kupon::reCheck();
         if (!isset($_POST['login']) && !isset($_REQUEST['basket2Pers'])) {
-            WarenkorbPers::addToCheck($productID, $qty, $attrValues, $unique, $configItemID);
+            PersistentCart::addToCheck($productID, $qty, $attrValues, $unique, $configItemID);
         }
         Shop::Smarty()
             ->assign('cartNote', Shop::Lang()->get('basketAdded', 'messages'))
@@ -1522,12 +1524,12 @@ class Cart
         self::deleteAllSpecialItems($removeShippingCoupon);
         if (!$cart->posTypEnthalten(\C_WARENKORBPOS_TYP_ARTIKEL)) {
             unset($_SESSION['Kupon']);
-            $_SESSION['Warenkorb'] = new Warenkorb();
+            $_SESSION['Warenkorb'] = new Cart();
         }
         require_once \PFAD_ROOT . \PFAD_INCLUDES . 'bestellvorgang_inc.php';
         \freeGiftStillValid();
         if (isset($_SESSION['Kunde']) && $_SESSION['Kunde']->kKunde > 0) {
-            (new WarenkorbPers($_SESSION['Kunde']->kKunde))->entferneAlles()->bauePersVonSession();
+            (new PersistentCart($_SESSION['Kunde']->kKunde))->entferneAlles()->bauePersVonSession();
         }
     }
 
@@ -1721,7 +1723,7 @@ class Cart
         //positionen mit nAnzahl = 0 müssen gelöscht werden
         $cart->loescheNullPositionen();
         if (!$cart->posTypEnthalten(\C_WARENKORBPOS_TYP_ARTIKEL)) {
-            $_SESSION['Warenkorb'] = new Warenkorb();
+            $_SESSION['Warenkorb'] = new Cart();
             $cart                  = $_SESSION['Warenkorb'];
         }
         if ($updated) {
@@ -1768,7 +1770,7 @@ class Cart
             }
         }
         if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
-            $persCart = new WarenkorbPers($_SESSION['Kunde']->kKunde);
+            $persCart = new PersistentCart($_SESSION['Kunde']->kKunde);
             $persCart->entferneAlles()
                            ->bauePersVonSession();
         }

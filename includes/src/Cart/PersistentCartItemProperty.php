@@ -10,10 +10,10 @@ use JTL\Helpers\GeneralObject;
 use JTL\Shop;
 
 /**
- * Class WarenkorbPersPosEigenschaft
+ * Class PersistentCartItemProperty
  * @package JTL\Cart
  */
-class WarenkorbPersPosEigenschaft
+class PersistentCartItemProperty
 {
     /**
      * @var int
@@ -51,27 +51,28 @@ class WarenkorbPersPosEigenschaft
     public $cEigenschaftWertName;
 
     /**
-     * @param int    $kEigenschaft
-     * @param int    $kEigenschaftWert
-     * @param string $cFreifeldWert
-     * @param string $cEigenschaftName
-     * @param string $cEigenschaftWertName
+     * PersistentCartItemProperty constructor.
+     * @param int    $propertyID
+     * @param int    $propertyValueID
+     * @param string $freeText
+     * @param string $propertyName
+     * @param string $propertyValueName
      * @param int    $kWarenkorbPersPos
      */
     public function __construct(
-        int $kEigenschaft,
-        int $kEigenschaftWert,
-        $cFreifeldWert,
-        $cEigenschaftName,
-        $cEigenschaftWertName,
+        int $propertyID,
+        int $propertyValueID,
+        $freeText,
+        $propertyName,
+        $propertyValueName,
         int $kWarenkorbPersPos
     ) {
         $this->kWarenkorbPersPos    = $kWarenkorbPersPos;
-        $this->kEigenschaft         = $kEigenschaft;
-        $this->kEigenschaftWert     = $kEigenschaftWert;
-        $this->cFreifeldWert        = $cFreifeldWert;
-        $this->cEigenschaftName     = $cEigenschaftName;
-        $this->cEigenschaftWertName = $cEigenschaftWertName;
+        $this->kEigenschaft         = $propertyID;
+        $this->kEigenschaftWert     = $propertyValueID;
+        $this->cFreifeldWert        = $freeText;
+        $this->cEigenschaftName     = $propertyName;
+        $this->cEigenschaftWertName = $propertyValueName;
     }
 
     /**

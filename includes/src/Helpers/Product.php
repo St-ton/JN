@@ -8,7 +8,8 @@ namespace JTL\Helpers;
 
 use Illuminate\Support\Collection;
 use JTL\Alert\Alert;
-use JTL\Cart\WarenkorbPos;
+use JTL\Cart\CartHelper;
+use JTL\Cart\CartItem;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\Preise;
 use JTL\Catalog\UnitsOfMeasure;
@@ -291,7 +292,7 @@ class Product
         $attrVal          = new stdClass();
         $attrVal->cSELECT = '';
         $attrVal->cJOIN   = '';
-        foreach ($propertyValues as $i => $kEigenschaftWertProEigenschaft) {
+        foreach ($propertyValues as $i => $_u) {
             $attributes[]      = $i;
             $attributeValues[] = $propertyValues[$i];
         }
@@ -825,24 +826,24 @@ class Product
 
     /**
      * @param array $variations
-     * @param int   $kEigenschaft
-     * @param int   $kEigenschaftWert
+     * @param int   $propertyID
+     * @param int   $propertyValueID
      * @return bool|object
      * @former findeVariation()
      * @since 5.0.0
      */
-    public static function findVariation(array $variations, int $kEigenschaft, int $kEigenschaftWert): bool
+    public static function findVariation(array $variations, int $propertyID, int $propertyValueID): bool
     {
-        foreach ($variations as $oVariation) {
-            $oVariation->kEigenschaft = (int)$oVariation->kEigenschaft;
-            if ($oVariation->kEigenschaft === $kEigenschaft
-                && isset($oVariation->Werte)
-                && \is_array($oVariation->Werte)
-                && \count($oVariation->Werte) > 0
+        foreach ($variations as $variation) {
+            $variation->kEigenschaft = (int)$variation->kEigenschaft;
+            if ($variation->kEigenschaft === $propertyID
+                && isset($variation->Werte)
+                && \is_array($variation->Werte)
+                && \count($variation->Werte) > 0
             ) {
-                foreach ($oVariation->Werte as $oWert) {
+                foreach ($variation->Werte as $oWert) {
                     $oWert->kEigenschaftWert = (int)$oWert->kEigenschaftWert;
-                    if ($oWert->kEigenschaftWert === $kEigenschaftWert) {
+                    if ($oWert->kEigenschaftWert === $propertyValueID) {
                         return $oWert;
                     }
                 }
@@ -1905,7 +1906,7 @@ class Product
         $options->nArtikelAttribute          = 1;
         $options->nKeineSichtbarkeitBeachten = 1;
 
-        return Cart::addProductIDToCart($productID, 1, [], 0, false, 0, $options);
+        return CartHelper::addProductIDToCart($productID, 1, [], 0, false, 0, $options);
     }
 
     /**
@@ -2051,14 +2052,14 @@ class Product
         if (!isset($cart->PositionenArr[$configID]) || !Item::checkLicense()) {
             return;
         }
-        /** @var WarenkorbPos $baseItem */
+        /** @var CartItem $baseItem */
         $baseItem = $cart->PositionenArr[$configID];
-        /** @var WarenkorbPos $basePosition */
+        /** @var CartItem $basePosition */
         if ($baseItem->istKonfigVater()) {
             $configItems        = [];
             $configItemAmounts  = [];
             $configGroupAmounts = [];
-            /** @var WarenkorbPos $item */
+            /** @var CartItem $item */
             foreach ($cart->PositionenArr as &$item) {
                 if ($item->cUnique !== $baseItem->cUnique || !$item->istKonfigKind()) {
                     continue;

@@ -6,7 +6,8 @@
 
 namespace JTL\Checkout;
 
-use JTL\Cart\WarenkorbPos;
+use JTL\Cart\CartHelper;
+use JTL\Cart\CartItem;
 use JTL\Catalog\Category\Kategorie;
 use JTL\Catalog\Category\KategorieListe;
 use JTL\Catalog\Product\Artikel;
@@ -15,7 +16,6 @@ use JTL\Customer\Customer;
 use JTL\DB\ReturnType;
 use JTL\Extensions\Download\Download;
 use JTL\Extensions\Upload\Upload;
-use JTL\Helpers\Cart;
 use JTL\Helpers\ShippingMethod;
 use JTL\Helpers\Tax;
 use JTL\Language\LanguageHelper;
@@ -159,7 +159,7 @@ class Bestellung
     public $oEstimatedDelivery;
 
     /**
-     * @var WarenkorbPos[]
+     * @var CartItem[]
      */
     public $Positionen;
 
@@ -611,7 +611,7 @@ class Bestellung
                     }
                 }
 
-                WarenkorbPos::setEstimatedDelivery(
+                CartItem::setEstimatedDelivery(
                     $item,
                     $item->nLongestMinDelivery,
                     $item->nLongestMaxDelivery
@@ -711,7 +711,7 @@ class Bestellung
         $this->fWarensummeKundenwaehrung  = ($this->fWarensumme + $this->fGuthaben) * $this->fWaehrungsFaktor;
         $this->fVersandKundenwaehrung     = $this->fVersand * $this->fWaehrungsFaktor;
         $this->fSteuern                   = $this->fGesamtsumme - $this->fGesamtsummeNetto;
-        $this->fGesamtsummeKundenwaehrung = Cart::roundOptional(
+        $this->fGesamtsummeKundenwaehrung = CartHelper::roundOptional(
             $this->fWarensummeKundenwaehrung + $this->fVersandKundenwaehrung
         );
 
@@ -955,9 +955,9 @@ class Bestellung
             foreach ($data as $item) {
                 if (isset($item->kWarenkorbPos) && $item->kWarenkorbPos > 0) {
                     if ($assoc) {
-                        $items[$item->kArtikel] = new WarenkorbPos($item->kWarenkorbPos);
+                        $items[$item->kArtikel] = new CartItem($item->kWarenkorbPos);
                     } else {
-                        $items[] = new WarenkorbPos($item->kWarenkorbPos);
+                        $items[] = new CartItem($item->kWarenkorbPos);
                     }
                 }
             }
@@ -1060,7 +1060,7 @@ class Bestellung
                     $lang->cISO ?? null,
                     $this->kVersandart
                 );
-                WarenkorbPos::setEstimatedDelivery(
+                CartItem::setEstimatedDelivery(
                     $item,
                     $item->Artikel->nMinDeliveryDays,
                     $item->Artikel->nMaxDeliveryDays

@@ -6364,30 +6364,30 @@ class Artikel
     }
 
     /**
-     * @param array $attributes
+     * @param array $properties
      * @param array $setData
      * @return array
      */
-    public function getPossibleVariationsBySelection(array $attributes, array $setData): array
+    public function getPossibleVariationsBySelection(array $properties, array $setData): array
     {
         $possibleVariations = [];
-        foreach ($attributes as $kEigenschaft => $nEigenschaftWert_arr) {
-            $i            = 2;
-            $queries      = [];
-            $kEigenschaft = (int)$kEigenschaft;
-            $prepvalues   = [
+        foreach ($properties as $propertyID => $propertyValues) {
+            $i          = 2;
+            $queries    = [];
+            $propertyID = (int)$propertyID;
+            $prepvalues = [
                 'customerGroupID' => Frontend::getCustomerGroup()->getID(),
-                'where'           => $kEigenschaft
+                'where'           => $propertyID
             ];
-            foreach ($setData as $kGesetzteEigenschaft => $kEigenschaftWert) {
-                $kGesetzteEigenschaft = (int)$kGesetzteEigenschaft;
-                $kEigenschaftWert     = (int)$kEigenschaftWert;
-                if ($kEigenschaft !== $kGesetzteEigenschaft) {
+            foreach ($setData as $setPropertyID => $propertyValue) {
+                $setPropertyID = (int)$setPropertyID;
+                $propertyValue = (int)$propertyValue;
+                if ($propertyID !== $setPropertyID) {
                     $queries[] = 'INNER JOIN teigenschaftkombiwert e' . $i . '
                                     ON e1.kEigenschaftKombi = e' . $i . '.kEigenschaftKombi
                                     AND e' . $i . '.kEigenschaftWert = :kev' . $i;
 
-                    $prepvalues['kev' . $i] = $kEigenschaftWert;
+                    $prepvalues['kev' . $i] = $propertyValue;
                     ++$i;
                 }
             }

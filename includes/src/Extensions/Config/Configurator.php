@@ -6,10 +6,10 @@
 
 namespace JTL\Extensions\Config;
 
+use JTL\Cart\CartHelper;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\Preise;
 use JTL\DB\ReturnType;
-use JTL\Helpers\Cart;
 use JTL\Nice;
 use JTL\Shop;
 use function Functional\some;
@@ -142,7 +142,7 @@ class Configurator
                 );
             }
         }
-        Cart::deleteCartItems($deletedItems, false);
+        CartHelper::deleteCartItems($deletedItems, false);
     }
 
     /**

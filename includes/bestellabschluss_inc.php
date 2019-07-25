@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use JTL\Cart\WarenkorbPos;
+use JTL\Cart\CartItem;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\EigenschaftWert;
 use JTL\Catalog\Wishlist\Wunschliste;
@@ -159,7 +159,7 @@ function bestellungInDB($cleared = 0, $orderNo = '')
     //füge alle Warenkorbpositionen ein
     if (is_array($cart->PositionenArr) && count($cart->PositionenArr) > 0) {
         $productFilter = (int)$conf['global']['artikel_artikelanzeigefilter'];
-        /** @var WarenkorbPos $item */
+        /** @var CartItem $item */
         foreach ($cart->PositionenArr as $item) {
             if ($item->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL) {
                 $item->fLagerbestandVorAbschluss = $item->Artikel->fLagerbestand !== null
@@ -1087,7 +1087,7 @@ function fakeBestellung()
     if (is_array($cart->PositionenArr) && count($cart->PositionenArr) > 0) {
         $order->Positionen = [];
         foreach ($cart->PositionenArr as $i => $item) {
-            $order->Positionen[$i] = new WarenkorbPos();
+            $order->Positionen[$i] = new CartItem();
             foreach (array_keys(get_object_vars($item)) as $member) {
                 $order->Positionen[$i]->$member = $item->$member;
             }

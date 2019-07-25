@@ -4,10 +4,10 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Cart\CartHelper;
+use JTL\Catalog\Vergleichsliste;
 use JTL\Helpers\Request;
 use JTL\Shop;
-use JTL\Catalog\Vergleichsliste;
-use JTL\Helpers\Cart;
 
 require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'vergleichsliste_inc.php';
@@ -27,7 +27,7 @@ $alertHelper   = Shop::Container()->getAlertService();
 Vergleichsliste::setComparison($compareList);
 
 if (Request::verifyGPCDataInt('addToCart') !== 0) {
-    Cart::addProductIDToCart(
+    CartHelper::addProductIDToCart(
         Request::verifyGPCDataInt('addToCart'),
         Request::verifyGPDataString('anzahl')
     );

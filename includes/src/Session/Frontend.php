@@ -6,8 +6,8 @@
 
 namespace JTL\Session;
 
-use JTL\Cart\Warenkorb;
-use JTL\Cart\WarenkorbPers;
+use JTL\Cart\Cart;
+use JTL\Cart\PersistentCart;
 use JTL\Catalog\Currency;
 use JTL\Catalog\Vergleichsliste;
 use JTL\Catalog\Wishlist\Wunschliste;
@@ -80,7 +80,7 @@ class Frontend extends AbstractSession
     {
         LanguageHelper::getInstance()->autoload();
         $_SESSION['FremdParameter'] = [];
-        $_SESSION['Warenkorb']      = $_SESSION['Warenkorb'] ?? new Warenkorb();
+        $_SESSION['Warenkorb']      = $_SESSION['Warenkorb'] ?? new Cart();
 
         $updateGlobals  = $this->checkGlobals();
         $updateLanguage = $this->checkLanguageUpdate();
@@ -395,9 +395,9 @@ class Frontend extends AbstractSession
             $_SESSION['IP'],
             $_SESSION['kommentar']
         );
-        $_SESSION['Warenkorb'] = new Warenkorb();
+        $_SESSION['Warenkorb'] = new Cart();
         // WarenkorbPers loeschen
-        $oWarenkorbPers = new WarenkorbPers($_SESSION['Kunde']->kKunde ?? 0);
+        $oWarenkorbPers = new PersistentCart($_SESSION['Kunde']->kKunde ?? 0);
         $oWarenkorbPers->entferneAlles();
 
         return $this;
@@ -562,18 +562,18 @@ class Frontend extends AbstractSession
     }
 
     /**
-     * @return Warenkorb
+     * @return Cart
      */
-    public static function getCart(): Warenkorb
+    public static function getCart(): Cart
     {
-        return $_SESSION['Warenkorb'] ?? new Warenkorb();
+        return $_SESSION['Warenkorb'] ?? new Cart();
     }
 
     /**
-     * @return Warenkorb
+     * @return Cart
      * @deprecated since 5.0.0
      */
-    public static function cart(): Warenkorb
+    public static function cart(): Cart
     {
         \trigger_error(__METHOD__. ' is deprecated.', \E_USER_DEPRECATED);
         return self::getCart();
@@ -598,13 +598,13 @@ class Frontend extends AbstractSession
     }
 
     /**
-     * @return Warenkorb
+     * @return Cart
      * @deprecated since 5.0.0
      */
-    public function basket(): Warenkorb
+    public function basket(): Cart
     {
         \trigger_error(__METHOD__. ' is deprecated.', \E_USER_DEPRECATED);
-        return $_SESSION['Warenkorb'] ?? new Warenkorb();
+        return $_SESSION['Warenkorb'] ?? new Cart();
     }
 
     /**

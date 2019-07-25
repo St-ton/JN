@@ -5,13 +5,13 @@
  */
 
 use JTL\Alert\Alert;
-use JTL\Cart\Warenkorb;
-use JTL\Cart\WarenkorbPers;
+use JTL\Cart\CartHelper;
+use JTL\Cart\PersistentCart;
+use JTL\Cart\Cart;
 use JTL\Checkout\Kupon;
 use JTL\Customer\AccountController;
 use JTL\Extensions\Download\Download;
 use JTL\Extensions\Upload\Upload;
-use JTL\Helpers\Cart;
 use JTL\Helpers\Order;
 use JTL\Helpers\Request;
 use JTL\Helpers\ShippingMethod;
@@ -60,7 +60,7 @@ if ($conf['kaufabwicklung']['bestellvorgang_kaufabwicklungsmethode'] === 'NO'
     && Request::verifyGPCDataInt('wk') === 1
 ) {
     $customerID = $_SESSION['Kunde']->kKunde ?? 0;
-    $persCart   = new WarenkorbPers($customerID);
+    $persCart   = new PersistentCart($customerID);
     if (!(isset($_POST['login']) && (int)$_POST['login'] === 1
         && $conf['global']['warenkorbpers_nutzen'] === 'Y'
         && $conf['kaufabwicklung']['warenkorb_warenkorb2pers_merge'] === 'P'
@@ -192,11 +192,11 @@ if ($step === 'Versand' || $step === 'Zahlung') {
     validateCouponInCheckout();
     gibStepVersand();
     gibStepZahlung();
-    Warenkorb::refreshChecksum($cart);
+    Cart::refreshChecksum($cart);
 }
 if ($step === 'ZahlungZusatzschritt') {
     gibStepZahlungZusatzschritt($_POST);
-    Warenkorb::refreshChecksum($cart);
+    Cart::refreshChecksum($cart);
 }
 if ($step === 'Bestaetigung') {
     validateCouponInCheckout();
@@ -208,7 +208,7 @@ if ($step === 'Bestaetigung') {
     getPaymentSurchageDiscount($_SESSION['Zahlungsart']);
     gibStepBestaetigung($_GET);
     $cart->cEstimatedDelivery = $cart->getEstimatedDeliveryTime();
-    Warenkorb::refreshChecksum($cart);
+    Cart::refreshChecksum($cart);
 }
 if ($step === 'Bestaetigung' && $cart->gibGesamtsummeWaren(true) === 0.0) {
     $savedPayment   = $_SESSION['AktiveZahlungsart'];
@@ -224,12 +224,12 @@ if ($step === 'Bestaetigung' && $cart->gibGesamtsummeWaren(true) === 0.0) {
             Frontend::getCart()->gibGesamtsummeWaren(true, false)
         );
     }
-    Warenkorb::refreshChecksum($cart);
+    Cart::refreshChecksum($cart);
     $_SESSION['AktiveZahlungsart'] = $savedPayment;
 }
 $kLink = $linkService->getSpecialPageLinkKey(LINKTYP_BESTELLVORGANG);
 $link  = $linkService->getPageLink($kLink);
-Cart::addVariationPictures($cart);
+CartHelper::addVariationPictures($cart);
 Shop::Smarty()->assign(
     'AGB',
     Shop::Container()->getLinkService()->getAGBWRB(

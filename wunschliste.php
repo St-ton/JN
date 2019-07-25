@@ -4,16 +4,16 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use JTL\Helpers\Product;
-use JTL\Helpers\Form;
-use JTL\Helpers\Request;
-use JTL\Helpers\Cart;
 use JTL\Alert\Alert;
-use JTL\Kampagne;
-use JTL\Shop;
-use JTL\Helpers\Text;
+use JTL\Cart\CartHelper;
 use JTL\Catalog\Wishlist\Wunschliste;
+use JTL\Helpers\Form;
+use JTL\Helpers\Product;
+use JTL\Helpers\Request;
+use JTL\Helpers\Text;
+use JTL\Kampagne;
 use JTL\Session\Frontend;
+use JTL\Shop;
 
 require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'wunschliste_inc.php';
@@ -67,7 +67,7 @@ if ($action !== null && Form::validateToken()) {
                         ? Product::getVarCombiAttributeValues($wishlistPosition->kArtikel)
                         : Wunschliste::getAttributesByID($kWunschliste, $wishlistPosition->kWunschlistePos);
                     if (!$wishlistPosition->bKonfig) {
-                        Cart::addProductIDToCart(
+                        CartHelper::addProductIDToCart(
                             $wishlistPosition->kArtikel,
                             $wishlistPosition->fAnzahl,
                             $attributeValues
@@ -112,7 +112,7 @@ if ($action !== null && Form::validateToken()) {
                             && isset($wishlistPosition->Artikel->inWarenkorbLegbar)
                             && $wishlistPosition->Artikel->inWarenkorbLegbar > 0
                         ) {
-                            Cart::addProductIDToCart(
+                            CartHelper::addProductIDToCart(
                                 $wishlistPosition->kArtikel,
                                 $wishlistPosition->fAnzahl,
                                 $attributeValues

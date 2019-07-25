@@ -16,10 +16,10 @@ use JTL\Shop;
 use stdClass;
 
 /**
- * Class KundenwerbenKunden
+ * Class Referral
  * @package JTL\Customer
  */
-class KundenwerbenKunden
+class Referral
 {
     /**
      * @var int
@@ -72,20 +72,20 @@ class KundenwerbenKunden
     public $fGuthabenLocalized;
 
     /**
-     * @var Kunde
+     * @var Customer
      */
     public $oNeukunde;
 
     /**
-     * @var Kunde
+     * @var Customer
      */
     public $oBestandskunde;
 
     /**
-     * KundenwerbenKunden constructor.
+     * Referral constructor.
      * @param string $email
      */
-    public function __construct($email = '')
+    public function __construct(string $email = '')
     {
         if (\mb_strlen($email) > 0) {
             $this->loadFromDB($email);
@@ -96,7 +96,7 @@ class KundenwerbenKunden
      * @param string $email
      * @return $this
      */
-    private function loadFromDB($email): self
+    private function loadFromDB(string $email): self
     {
         if (\mb_strlen($email) > 0) {
             $email = Text::filterXSS($email);
@@ -105,10 +105,10 @@ class KundenwerbenKunden
                 foreach (\array_keys(\get_object_vars($oKwK)) as $member) {
                     $this->$member = $oKwK->$member;
                 }
-                $tmpCustomer              = new Kunde();
+                $tmpCustomer              = new Customer();
                 $this->fGuthabenLocalized = Preise::getLocalizedPriceString($this->fGuthaben);
                 $this->oNeukunde          = $tmpCustomer->holRegKundeViaEmail($this->cEmail);
-                $this->oBestandskunde     = new Kunde($this->kKunde);
+                $this->oBestandskunde     = new Customer($this->kKunde);
             }
         }
 
@@ -116,16 +116,16 @@ class KundenwerbenKunden
     }
 
     /**
-     * @param bool $bLoadDB
+     * @param bool $reload
      * @return $this
      */
-    public function insertDB(bool $bLoadDB = false): self
+    public function insertDB(bool $reload = false): self
     {
         $ins = GeneralObject::copyMembers($this);
         unset($ins->fGuthabenLocalized, $ins->oNeukunde, $ins->oBestandskunde);
 
         $this->kKundenWerbenKunden = Shop::Container()->getDB()->insert('tkundenwerbenkunden', $ins);
-        if ($bLoadDB) {
+        if ($reload) {
             $this->loadFromDB($this->cEmail);
         }
 
@@ -156,7 +156,7 @@ class KundenwerbenKunden
      * @param string $email
      * @return $this
      */
-    public function verbucheBestandskundenBoni($email): self
+    public function verbucheBestandskundenBoni(string $email): self
     {
         if (\mb_strlen($email) === 0) {
             return $this;
@@ -176,8 +176,8 @@ class KundenwerbenKunden
             if ($conf['kundenwerbenkunden']['kwk_nutzen'] === 'Y') {
                 $guthaben             = (float)$conf['kundenwerbenkunden']['kwk_bestandskundenguthaben'];
                 $data                 = new stdClass();
-                $data->tkunde         = new Kunde($customer->kKunde);
-                $tmpCustomer          = new Kunde();
+                $data->tkunde         = new Customer($customer->kKunde);
+                $tmpCustomer          = new Customer();
                 $data->oNeukunde      = $tmpCustomer->holRegKundeViaEmail($email);
                 $data->oBestandskunde = $data->tkunde;
                 $data->Einstellungen  = $conf;
@@ -218,7 +218,7 @@ class KundenwerbenKunden
     public function sendeEmailanNeukunde(): self
     {
         $data                       = new stdClass();
-        $data->oBestandskunde       = new Kunde($this->kKunde);
+        $data->oBestandskunde       = new Customer($this->kKunde);
         $data->oNeukunde            = $this;
         $this->fGuthabenLocalized   = Preise::getLocalizedPriceString($this->fGuthaben);
         $data->oNeukunde->fGuthaben = $this->fGuthabenLocalized;

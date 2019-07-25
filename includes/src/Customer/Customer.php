@@ -25,10 +25,10 @@ use JTL\Shopsetting;
 use stdClass;
 
 /**
- * Class Kunde
+ * Class Customer
  * @package JTL\Customer
  */
-class Kunde
+class Customer
 {
     use MagicCompatibilityTrait;
 
@@ -260,7 +260,8 @@ class Kunde
     ];
 
     /**
-     * @param int $id
+     * Customer constructor.
+     * @param int|null $id
      */
     public function __construct(int $id = null)
     {
@@ -273,9 +274,9 @@ class Kunde
      * get customer by email address
      *
      * @param string $mail
-     * @return Kunde|null
+     * @return Customer|null
      */
-    public function holRegKundeViaEmail($mail): ?Kunde
+    public function holRegKundeViaEmail(string $mail): ?Customer
     {
         if ($mail !== '') {
             $data = Shop::Container()->getDB()->select(
@@ -302,7 +303,7 @@ class Kunde
      * @param array $post
      * @return bool|int - true, if captcha verified or no captcha necessary
      */
-    public function verifyLoginCaptcha($post)
+    public function verifyLoginCaptcha(array $post)
     {
         $conf = Shop::getSettings([\CONF_KUNDEN]);
         $name = $post['email'];
@@ -343,7 +344,7 @@ class Kunde
      * @return int 1 = Alles O.K., 2 = Kunde ist gesperrt
      * @throws Exception
      */
-    public function holLoginKunde($username, $password): int
+    public function holLoginKunde(string $username, string $password): int
     {
         if ($username === '' || $password === '') {
             return self::ERROR_INVALID_DATA;
@@ -720,8 +721,8 @@ class Kunde
     }
 
     /**
-     * @param Kunde $customer1
-     * @param Kunde $customer2
+     * @param Customer $customer1
+     * @param Customer $customer2
      * @return bool
      */
     public static function isEqual($customer1, $customer2): bool

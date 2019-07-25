@@ -19,7 +19,7 @@ use JTL\Catalog\Wishlist\Wunschliste;
 use JTL\Checkout\Kupon;
 use JTL\Checkout\Lieferadresse;
 use JTL\Checkout\Rechnungsadresse;
-use JTL\Customer\Kunde;
+use JTL\Customer\Customer;
 use JTL\DB\ReturnType;
 use JTL\Extensions\Config\Configurator;
 use JTL\Extensions\Config\Item;
@@ -220,9 +220,9 @@ class Cart
     }
 
     /**
-     * @return Kunde
+     * @return Customer
      */
-    public function getCustomer(): ?Kunde
+    public function getCustomer(): ?Customer
     {
         return $_SESSION['Kunde'];
     }

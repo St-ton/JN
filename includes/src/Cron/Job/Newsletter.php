@@ -11,7 +11,7 @@ use DateTime;
 use JTL\Cron\Job;
 use JTL\Cron\JobInterface;
 use JTL\Cron\QueueEntry;
-use JTL\Customer\Kunde;
+use JTL\Customer\Customer;
 use JTL\DB\ReturnType;
 use JTL\Kampagne;
 use JTL\Shop;
@@ -99,7 +99,7 @@ final class Newsletter extends Job
                     $manufacturers,
                     $categories[$cgID],
                     $campaign,
-                    $recipient->kKunde > 0 ? new Kunde($recipient->kKunde) : null
+                    $recipient->kKunde > 0 ? new Customer($recipient->kKunde) : null
                 );
                 $this->db->update(
                     'tnewsletterempfaenger',

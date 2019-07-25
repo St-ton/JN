@@ -10,7 +10,7 @@ use JTL\Catalog\Currency;
 use JTL\Checkout\Bestellung;
 use JTL\Checkout\Lieferadresse;
 use JTL\Checkout\Rechnungsadresse;
-use JTL\Customer\Kunde;
+use JTL\Customer\Customer;
 use JTL\DB\ReturnType;
 use JTL\Shop;
 use stdClass;
@@ -182,9 +182,9 @@ class Order extends Cart
     }
 
     /**
-     * @return Kunde
+     * @return Customer
      */
-    public function getCustomer(): ?Kunde
+    public function getCustomer(): ?Customer
     {
         return $this->object->oKunde;
     }

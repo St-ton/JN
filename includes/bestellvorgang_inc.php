@@ -14,7 +14,7 @@ use JTL\Customer\CustomerAttribute;
 use JTL\Customer\CustomerAttributes;
 use JTL\Customer\CustomerField;
 use JTL\Customer\CustomerFields;
-use JTL\Customer\Kunde;
+use JTL\Customer\Customer;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Date;
 use JTL\Helpers\Form;
@@ -592,7 +592,7 @@ function gibStepAccountwahl(): void
  */
 function gibStepUnregistriertBestellen(): void
 {
-    /** @var Kunde $Kunde */
+    /** @var Customer $Kunde */
     global $Kunde;
     $herkunfte       = Shop::Container()->getDB()->query(
         'SELECT *
@@ -2421,7 +2421,7 @@ function warenkorbKuponFaehigKategorien($coupon, array $items): bool
  * @param array $post
  * @param int   $kundenaccount
  * @param int   $htmlentities
- * @return Kunde
+ * @return Customer
  */
 function getKundendaten(array $post, $kundenaccount, $htmlentities = 1)
 {
@@ -2453,7 +2453,7 @@ function getKundendaten(array $post, $kundenaccount, $htmlentities = 1)
         $mapping['pass'] = 'cPasswort';
     }
     $customerID = Frontend::getCustomer()->kKunde;
-    $customer   = new Kunde($customerID);
+    $customer   = new Customer($customerID);
     foreach ($mapping as $external => $internal) {
         if (isset($post[$external])) {
             $val = Text::filterXSS($post[$external]);
@@ -2889,7 +2889,7 @@ function plausiAccountwahlLogin($cUserLogin, $cUserPass): int
 {
     global $Kunde;
     if (mb_strlen($cUserLogin) > 0 && mb_strlen($cUserPass) > 0) {
-        $Kunde = new Kunde();
+        $Kunde = new Customer();
         $Kunde->holLoginKunde($cUserLogin, $cUserPass);
         if ($Kunde->kKunde > 0) {
             return 10;
@@ -2902,7 +2902,7 @@ function plausiAccountwahlLogin($cUserLogin, $cUserPass): int
 }
 
 /**
- * @param Kunde $customer
+ * @param Customer $customer
  * @return bool
  */
 function setzeSesssionAccountwahlLogin($customer): bool

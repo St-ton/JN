@@ -16,7 +16,7 @@ use JTL\Checkout\Lieferadresse;
 use JTL\Checkout\Nummern;
 use JTL\Checkout\Rechnungsadresse;
 use JTL\Checkout\ZahlungsInfo;
-use JTL\Customer\Kunde;
+use JTL\Customer\Customer;
 use JTL\DB\ReturnType;
 use JTL\Extensions\Upload\Upload;
 use JTL\Helpers\Date;
@@ -443,7 +443,7 @@ function speicherKundenKontodaten($paymentInfo): void
  */
 function unhtmlSession(): void
 {
-    $customer        = new Kunde();
+    $customer        = new Customer();
     $sessionCustomer = Frontend::getCustomer();
     if ($sessionCustomer->kKunde > 0) {
         $customer->kKunde = $sessionCustomer->kKunde;
@@ -1198,7 +1198,7 @@ function finalisiereBestellung($orderNo = '', bool $sendMail = true): Bestellung
         )->format('d.m.Y') . ' - ' .
         Date::dateAddWeekday($order->dErstellt, $order->oEstimatedDelivery->longestMax)->format('d.m.Y');
     }
-    $customer = new Kunde();
+    $customer = new Customer();
     $customer->kopiereSession();
     if ($sendMail === true) {
         $mailer = Shop::Container()->get(Mailer::class);

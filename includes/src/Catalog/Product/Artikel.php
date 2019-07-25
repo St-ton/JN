@@ -15,7 +15,7 @@ use JTL\Catalog\UnitsOfMeasure;
 use JTL\Catalog\Warenlager;
 use JTL\Checkout\Versandart;
 use JTL\Country\Country;
-use JTL\Customer\Kundengruppe;
+use JTL\Customer\CustomerGroup;
 use JTL\DB\ReturnType;
 use JTL\Exceptions\CircularReferenceException;
 use JTL\Exceptions\ServiceNotFoundException;
@@ -3682,7 +3682,7 @@ class Artikel
         }
         if (!$customerGroupID) {
             if (!isset($_SESSION['Kundengruppe']) || Frontend::getCustomerGroup()->getID() === 0) {
-                $customerGroup = (new Kundengruppe())
+                $customerGroup = (new CustomerGroup())
                     ->loadDefaultGroup()
                     ->setMayViewPrices(1)
                     ->setMayViewCategories(1);
@@ -3699,7 +3699,7 @@ class Artikel
         } else {
             // Holt eine neue Kundengruppe und setzt diese auch gleichzeitig in die Session
             // (falls keine Kundengruppe in der Session existiert)
-            Kundengruppe::reset($customerGroupID);
+            CustomerGroup::reset($customerGroupID);
         }
         if (!$langID) {
             $langID = Shop::getLanguageID();
@@ -5816,7 +5816,7 @@ class Artikel
         $customerGroup = (isset($_SESSION['Kundengruppe']->fRabatt)
             && Frontend::getCustomerGroup()->getID() === $customerGroupID)
             ? $_SESSION['Kundengruppe']
-            : new Kundengruppe($customerGroupID);
+            : new CustomerGroup($customerGroupID);
         if ($customerGroup->getDiscount() != 0) {
             $discounts[] = $customerGroup->getDiscount();
         }
@@ -5866,7 +5866,7 @@ class Artikel
     public function gibMwStVersandString($net): string
     {
         if (!isset($_SESSION['Kundengruppe'])) {
-            $_SESSION['Kundengruppe'] = (new Kundengruppe())->loadDefaultGroup();
+            $_SESSION['Kundengruppe'] = (new CustomerGroup())->loadDefaultGroup();
             $net                      = Frontend::getCustomerGroup()->isMerchant();
         }
         if (!isset($_SESSION['Link_Versandseite'])) {
@@ -5954,7 +5954,7 @@ class Artikel
             return $asString ? '' : [];
         }
         if (!isset($_SESSION['Kundengruppe'])) {
-            $_SESSION['Kundengruppe'] = (new Kundengruppe())->loadDefaultGroup();
+            $_SESSION['Kundengruppe'] = (new CustomerGroup())->loadDefaultGroup();
         }
         $customerGroupID       = Frontend::getCustomer()->kKundengruppe > 0
             ? Frontend::getCustomer()->kKundengruppe
@@ -6264,7 +6264,7 @@ class Artikel
             ? Frontend::getCustomerGroup()->isMerchant()
             : false;
         if (!isset($_SESSION['Kundengruppe'])) {
-            $_SESSION['Kundengruppe'] = (new Kundengruppe())->loadDefaultGroup();
+            $_SESSION['Kundengruppe'] = (new CustomerGroup())->loadDefaultGroup();
             $net                      = Frontend::getCustomerGroup()->isMerchant();
         }
         if (!isset($_SESSION['Link_Versandseite'])) {
@@ -6549,7 +6549,7 @@ class Artikel
         ];
 
         if ($this->kStueckliste > 0 && \count($this->oStueckliste_arr) === 0) {
-            $this->holeStueckliste(Kundengruppe::getCurrent());
+            $this->holeStueckliste(CustomerGroup::getCurrent());
         }
 
         /** @var static $item */

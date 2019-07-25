@@ -14,7 +14,7 @@ use JTL\Catalog\Wishlist\Wunschliste;
 use JTL\Checkout\Kupon;
 use JTL\Checkout\Versandart;
 use JTL\Checkout\Zahlungsart;
-use JTL\Customer\Kunde;
+use JTL\Customer\Customer;
 use JTL\GeneralDataProtection\IpAnonymizer;
 use JTL\Helpers\Cart;
 use JTL\Helpers\Category;
@@ -760,7 +760,7 @@ function setzeKampagnenVorgang(int $definitionID, int $key, $value, $customData 
 function mappeKundenanrede($salutation, int $languageID, int $customerID = 0)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use Kunde::mapSalutation() instead.', E_USER_DEPRECATED);
-    return Kunde::mapSalutation($salutation, $languageID, $customerID);
+    return Customer::mapSalutation($salutation, $languageID, $customerID);
 }
 
 /**

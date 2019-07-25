@@ -5,7 +5,7 @@
  */
 
 use JTL\Alert\Alert;
-use JTL\Customer\Kunde;
+use JTL\Customer\Customer;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\Text;
@@ -142,7 +142,7 @@ function checkformat($data, $format)
  */
 function processImport($fmt, $data)
 {
-    $customer                = new Kunde();
+    $customer                = new Customer();
     $customer->kKundengruppe = (int)$_POST['kKundengruppe'];
     $customer->kSprache      = (int)$_POST['kSprache'];
     $customer->cAbgeholt     = 'Y';

@@ -6,7 +6,7 @@
 
 namespace JTL\GeneralDataProtection;
 
-use JTL\Customer\Kunde;
+use JTL\Customer\Customer;
 use JTL\DB\ReturnType;
 use JTL\Shop;
 
@@ -46,7 +46,7 @@ class CleanupGuestAccountsWithoutOrders extends Method implements MethodInterfac
         );
 
         foreach ($guestAccounts as $guestAccount) {
-            (new Kunde((int)$guestAccount->kKunde))->deleteAccount(Journal::ISSUER_TYPE_APPLICATION, 0, true);
+            (new Customer((int)$guestAccount->kKunde))->deleteAccount(Journal::ISSUER_TYPE_APPLICATION, 0, true);
         }
     }
 }

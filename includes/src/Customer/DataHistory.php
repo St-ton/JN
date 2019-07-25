@@ -14,10 +14,10 @@ use JTL\Shop;
 use stdClass;
 
 /**
- * Class Kundendatenhistory
+ * Class DataHistory
  * @package JTL\Customer
  */
-class Kundendatenhistory extends MainModel
+class DataHistory extends MainModel
 {
     /**
      * @var int
@@ -247,9 +247,9 @@ class Kundendatenhistory extends MainModel
     }
 
     /**
-     * @param Kunde  $old
-     * @param Kunde  $new
-     * @param string $source
+     * @param Customer $old
+     * @param Customer $new
+     * @param string   $source
      * @return bool
      */
     public static function saveHistory($old, $new, $source): bool
@@ -266,7 +266,7 @@ class Kundendatenhistory extends MainModel
 
         $new->cPasswort = $old->cPasswort;
 
-        if (Kunde::isEqual($old, $new)) {
+        if (Customer::isEqual($old, $new)) {
             return true;
         }
         $cryptoService = Shop::Container()->getCryptoService();

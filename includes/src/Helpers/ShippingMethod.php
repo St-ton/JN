@@ -11,7 +11,7 @@ use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\Preise;
 use JTL\Checkout\Versandart;
 use JTL\Country\Country;
-use JTL\Customer\Kundengruppe;
+use JTL\Customer\CustomerGroup;
 use JTL\DB\ReturnType;
 use JTL\Language\LanguageHelper;
 use JTL\Session\Frontend;
@@ -1415,7 +1415,7 @@ class ShippingMethod
         array $filterISO = []
     ): array {
         if (empty($customerGroupID)) {
-            $customerGroupID = Kundengruppe::getDefaultGroupID();
+            $customerGroupID = CustomerGroup::getDefaultGroupID();
         }
         $conf          = Shop::getSettings([\CONF_KUNDEN]);
         $countryHelper = Shop::Container()->getCountryService();

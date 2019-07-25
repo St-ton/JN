@@ -13,7 +13,7 @@ use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\Preise;
 use JTL\Catalog\UnitsOfMeasure;
 use JTL\CheckBox;
-use JTL\Customer\Kundengruppe;
+use JTL\Customer\CustomerGroup;
 use JTL\DB\ReturnType;
 use JTL\Extensions\Config\Configurator;
 use JTL\Extensions\Config\Group;
@@ -187,7 +187,7 @@ class Product
         bool $group = false
     ): array {
         if (!$customerGroupID) {
-            $customerGroupID = Kundengruppe::getDefaultGroupID();
+            $customerGroupID = CustomerGroup::getDefaultGroupID();
         }
         $cGroupBy = $group ? 'GROUP BY teigenschaftkombiwert.kEigenschaftWert ' : '';
 

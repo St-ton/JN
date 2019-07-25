@@ -11,7 +11,7 @@ use JTL\Catalog\Category\Kategorie;
 use JTL\Catalog\Category\KategorieListe;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\Preise;
-use JTL\Customer\Kunde;
+use JTL\Customer\Customer;
 use JTL\DB\ReturnType;
 use JTL\Extensions\Download\Download;
 use JTL\Extensions\Upload\Upload;
@@ -204,7 +204,7 @@ class Bestellung
     public $cIP = '';
 
     /**
-     * @var Kunde
+     * @var Customer
      */
     public $oKunde;
 
@@ -449,7 +449,7 @@ class Bestellung
         }
         // Kunde holen
         if ($this->kKunde !== null && $this->kKunde > 0) {
-            $customer = new Kunde($this->kKunde);
+            $customer = new Customer($this->kKunde);
             if ($customer->kKunde !== null && $customer->kKunde > 0) {
                 unset($customer->cPasswort, $customer->fRabatt, $customer->fGuthaben, $customer->cUSTID);
                 $this->oKunde = $customer;

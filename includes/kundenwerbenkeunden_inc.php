@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use JTL\Customer\KundenwerbenKunden;
+use JTL\Customer\Referral;
 use JTL\Shop;
 use JTL\DB\ReturnType;
 
@@ -17,7 +17,7 @@ function pruefeEingabe(array $post)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. ' .
         'Use KundenwerbenKunden::checkInputData() instead.', E_USER_DEPRECATED);
-    return KundenwerbenKunden::checkInputData($post);
+    return Referral::checkInputData($post);
 }
 
 /**
@@ -29,7 +29,7 @@ function pruefeEingabe(array $post)
 function setzeKwKinDB(array $post, array $conf)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use KundenwerbenKunden::saveToDB() instead.', E_USER_DEPRECATED);
-    return KundenwerbenKunden::saveToDB($post, $conf);
+    return Referral::saveToDB($post, $conf);
 }
 
 /**

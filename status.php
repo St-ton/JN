@@ -6,7 +6,7 @@
 
 use JTL\Checkout\Bestellung;
 use JTL\Alert\Alert;
-use JTL\Customer\Kunde;
+use JTL\Customer\Customer;
 use JTL\Shop;
 use JTL\DB\ReturnType;
 use JTL\Session\Frontend;
@@ -38,7 +38,7 @@ if (isset($_GET['uid'])) {
     }
     $order = new Bestellung($status->kBestellung, true);
     $smarty->assign('Bestellung', $order)
-           ->assign('Kunde', new Kunde($order->kKunde))
+           ->assign('Kunde', new Customer($order->kKunde))
            ->assign('Lieferadresse', $order->Lieferadresse)
            ->assign('showLoginPanel', Frontend::getCustomer()->isLoggedIn())
            ->assign('billingAddress', $order->oRechnungsadresse);

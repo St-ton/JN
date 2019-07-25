@@ -23,7 +23,7 @@ use JTL\Catalog\Product\Preise;
 use JTL\Catalog\Trennzeichen;
 use JTL\Catalog\Wishlist\Wunschliste;
 use JTL\Checkout\Kupon;
-use JTL\Customer\Kundengruppe;
+use JTL\Customer\CustomerGroup;
 use JTL\DB\ReturnType;
 use JTL\Extensions\SelectionWizard\Wizard;
 use JTL\Helpers\Cart;
@@ -746,7 +746,7 @@ class IOMethods
             $product->fuelleArtikel(
                 $productID,
                 $options,
-                Kundengruppe::getCurrent(),
+                CustomerGroup::getCurrent(),
                 Shop::getLanguageID()
             );
 

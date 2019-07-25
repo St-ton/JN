@@ -6,7 +6,7 @@
 
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
-use JTL\Customer\Kunde;
+use JTL\Customer\Customer;
 use JTL\Shop;
 use JTL\Pagination\Pagination;
 use JTL\DB\ReturnType;
@@ -85,7 +85,7 @@ if ($step === 'kwk_uebersicht') {
         ReturnType::ARRAY_OF_OBJECTS
     );
     foreach ($nonRegistered as $item) {
-        $cstmr                  = new Kunde((int)($item->kKundeBestand ?? 0));
+        $cstmr                  = new Customer((int)($item->kKundeBestand ?? 0));
         $item->cBestandNachname = $cstmr->cNachname;
     }
     $registered = Shop::Container()->getDB()->query(
@@ -101,7 +101,7 @@ if ($step === 'kwk_uebersicht') {
         ReturnType::ARRAY_OF_OBJECTS
     );
     foreach ($registered as $customer) {
-        $regCstmr = new Kunde($customer->kKunde ?? 0);
+        $regCstmr = new Customer($customer->kKunde ?? 0);
 
         $customer->cBestandVorname  = $regCstmr->cVorname;
         $customer->cBestandNachname = $regCstmr->cNachname;
@@ -120,7 +120,7 @@ if ($step === 'kwk_uebersicht') {
         ReturnType::ARRAY_OF_OBJECTS
     );
     foreach ($last100bonus as $item) {
-        $cstmr                  = new Kunde((int)($item->kKundeBestand ?? 0));
+        $cstmr                  = new Customer((int)($item->kKundeBestand ?? 0));
         $item->cBestandNachname = $cstmr->cNachname;
     }
     $smarty->assign('oConfig_arr', getAdminSectionSettings(CONF_KUNDENWERBENKUNDEN))

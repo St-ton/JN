@@ -12,8 +12,8 @@ use JTL\Catalog\Currency;
 use JTL\Catalog\Vergleichsliste;
 use JTL\Catalog\Wishlist\Wunschliste;
 use JTL\Checkout\Lieferadresse;
-use JTL\Customer\Kunde;
-use JTL\Customer\Kundengruppe;
+use JTL\Customer\Customer;
+use JTL\Customer\CustomerGroup;
 use JTL\DB\ReturnType;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Manufacturer;
@@ -145,7 +145,7 @@ class Frontend extends AbstractSession
             ReturnType::SINGLE_OBJECT
         );
         if (isset($data->kKunde) && $data->kKunde > 0) {
-            $this->setCustomer(new Kunde($_SESSION['Kunde']->kKunde));
+            $this->setCustomer(new Customer($_SESSION['Kunde']->kKunde));
             $_SESSION['kundendaten_aktualisiert'] = 1;
         }
 
@@ -268,7 +268,7 @@ class Frontend extends AbstractSession
         if (!isset($_SESSION['Kunde']->kKunde, $_SESSION['Kundengruppe']->kKundengruppe)
             || \get_class($_SESSION['Kundengruppe']) === 'stdClass'
         ) {
-            $_SESSION['Kundengruppe'] = (new Kundengruppe())
+            $_SESSION['Kundengruppe'] = (new CustomerGroup())
                 ->setLanguageID((int)$_SESSION['kSprache'])
                 ->loadDefaultGroup();
         }
@@ -420,14 +420,14 @@ class Frontend extends AbstractSession
     }
 
     /**
-     * @param Kunde $customer
+     * @param Customer $customer
      * @return $this
      */
-    public function setCustomer(Kunde $customer): self
+    public function setCustomer(Customer $customer): self
     {
         $customer->angezeigtesLand = LanguageHelper::getCountryCodeByCountryName($customer->cLand);
         $_SESSION['Kunde']         = $customer;
-        $_SESSION['Kundengruppe']  = new Kundengruppe((int)$customer->kKundengruppe);
+        $_SESSION['Kundengruppe']  = new CustomerGroup((int)$customer->kKundengruppe);
         $_SESSION['Kundengruppe']->setMayViewCategories(1)
                                      ->setMayViewPrices(1)
                                      ->initAttributes();
@@ -439,36 +439,36 @@ class Frontend extends AbstractSession
     }
 
     /**
-     * @return Kunde
+     * @return Customer
      */
-    public static function getCustomer(): Kunde
+    public static function getCustomer(): Customer
     {
-        return $_SESSION['Kunde'] ?? new Kunde();
+        return $_SESSION['Kunde'] ?? new Customer();
     }
 
     /**
-     * @return Kunde
+     * @return Customer
      * @deprecated since 5.0.0
      */
-    public static function customer(): Kunde
+    public static function customer(): Customer
     {
         \trigger_error(__METHOD__. ' is deprecated.', \E_USER_DEPRECATED);
         return self::getCustomer();
     }
 
     /**
-     * @return Kundengruppe
+     * @return CustomerGroup
      */
-    public static function getCustomerGroup(): Kundengruppe
+    public static function getCustomerGroup(): CustomerGroup
     {
-        return $_SESSION['Kundengruppe'] ?? (new Kundengruppe())->loadDefaultGroup();
+        return $_SESSION['Kundengruppe'] ?? (new CustomerGroup())->loadDefaultGroup();
     }
 
     /**
-     * @return Kundengruppe
+     * @return CustomerGroup
      * @deprecated since 5.0.0
      */
-    public static function customerGroup(): Kundengruppe
+    public static function customerGroup(): CustomerGroup
     {
         \trigger_error(__METHOD__. ' is deprecated.', \E_USER_DEPRECATED);
         return self::getCustomerGroup();

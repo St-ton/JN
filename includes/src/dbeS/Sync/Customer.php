@@ -8,8 +8,8 @@ namespace JTL\dbeS\Sync;
 
 use JTL\Customer\CustomerAttribute;
 use JTL\Customer\CustomerField;
-use JTL\Customer\Kunde;
-use JTL\Customer\Kundendatenhistory;
+use JTL\Customer\Customer;
+use JTL\Customer\DataHistory;
 use JTL\DB\ReturnType;
 use JTL\dbeS\Starter;
 use JTL\GeneralDataProtection\Journal;
@@ -70,7 +70,7 @@ final class Customer extends AbstractSync
             }
             $customerData->kKunde = (int)$customerData->kKunde;
 
-            $customer = new Kunde($customerData->kKunde);
+            $customer = new Customer($customerData->kKunde);
             if ($customer->kKunde > 0 && $customer->kKundengruppe !== $customerData->kKundenGruppe) {
                 $this->db->update(
                     'tkunde',
@@ -101,7 +101,7 @@ final class Customer extends AbstractSync
             if (empty($customerData->kKunde)) {
                 continue;
             }
-            $customer = new Kunde((int)$customerData->kKunde);
+            $customer = new Customer((int)$customerData->kKunde);
             if ($customer->nRegistriert === 1 && $customer->cMail) {
                 $customer->prepareResetPassword();
             } else {
@@ -126,7 +126,7 @@ final class Customer extends AbstractSync
             $source = [$source];
         }
         foreach (\array_filter($source, '\is_numeric') as $customerID) {
-            (new Kunde((int)$customerID))->deleteAccount(Journal::ISSUER_TYPE_DBES, 0, true);
+            (new Customer((int)$customerID))->deleteAccount(Journal::ISSUER_TYPE_DBES, 0, true);
         }
     }
 
@@ -180,7 +180,7 @@ final class Customer extends AbstractSync
                         AND fGuthaben < 0',
                     ReturnType::DEFAULT
                 );
-                $customer        = new Kunde((int)$voucher->kKunde);
+                $customer        = new Customer((int)$voucher->kKunde);
                 $obj             = new stdClass();
                 $obj->tkunde     = $customer;
                 $obj->tgutschein = $voucher;
@@ -215,7 +215,7 @@ final class Customer extends AbstractSync
             $customer->kSprache = $lang->kSprache;
         }
         $kInetKunde  = (int)($xml['tkunde attr']['kKunde'] ?? 0);
-        $oldCustomer = new Kunde($kInetKunde);
+        $oldCustomer = new Customer($kInetKunde);
         // Kunde existiert mit dieser kInetKunde
         // Kunde wird aktualisiert bzw. seine KdGrp wird geändert
         if ($oldCustomer->kKunde > 0) {
@@ -260,11 +260,11 @@ final class Customer extends AbstractSync
 
     /**
      * @param array $xml
-     * @return Kunde
+     * @return Customer
      */
-    private function getCustomerObject(array $xml): Kunde
+    private function getCustomerObject(array $xml): Customer
     {
-        $customer                = new Kunde();
+        $customer                = new Customer();
         $customer->kKundengruppe = 0;
         if (isset($xml['tkunde attr']) && \is_array($xml['tkunde attr'])) {
             $customer->kKundengruppe = (int)$xml['tkunde attr']['kKundengruppe'];
@@ -297,7 +297,7 @@ final class Customer extends AbstractSync
         $cstmr[0]['cFirma']    = \trim($crypto->decryptXTEA($cstmr[0]['cFirma']));
         $cstmr[0]['cZusatz']   = \trim($crypto->decryptXTEA($cstmr[0]['cZusatz']));
         $cstmr[0]['cStrasse']  = \trim($crypto->decryptXTEA($cstmr[0]['cStrasse']));
-        $cstmr[0]['cAnrede']   = Kunde::mapSalutation($cstmr[0]['cAnrede'], $cstmr[0]['kSprache']);
+        $cstmr[0]['cAnrede']   = Customer::mapSalutation($cstmr[0]['cAnrede'], $cstmr[0]['kSprache']);
         // Strasse und Hausnummer zusammenführen
         $cstmr[0]['cStrasse'] .= ' ' . $cstmr[0]['cHausnummer'];
         unset($cstmr[0]['cHausnummer']);
@@ -349,11 +349,11 @@ final class Customer extends AbstractSync
     }
 
     /**
-     * @param Kunde $customer
-     * @param array $customerAttributes
+     * @param Customer $customer
+     * @param array    $customerAttributes
      * @return int
      */
-    private function addNewCustomer(Kunde $customer, array $customerAttributes): int
+    private function addNewCustomer(Customer $customer, array $customerAttributes): int
     {
         $passwordService             = Shop::Container()->getPasswordService();
         $customer->dErstellt         = 'NOW()';
@@ -381,14 +381,14 @@ final class Customer extends AbstractSync
     }
 
     /**
-     * @param Kunde $customer
-     * @param Kunde $oldCustomer
-     * @param int   $kInetKunde
-     * @param array $customerAttributes
-     * @param array $res
+     * @param Customer $customer
+     * @param Customer $oldCustomer
+     * @param int      $kInetKunde
+     * @param array    $customerAttributes
+     * @param array    $res
      * @return array
      */
-    private function merge(Kunde $customer, Kunde $oldCustomer, int $kInetKunde, array $customerAttributes, array $res): array
+    private function merge(Customer $customer, Customer $oldCustomer, int $kInetKunde, array $customerAttributes, array $res): array
     {
         // Angaben vom alten Kunden übernehmen
         $customer->kKunde      = $kInetKunde;
@@ -436,7 +436,7 @@ final class Customer extends AbstractSync
         $this->extractStreet($customer);
         // $this->upsert('tkunde', [$Kunde], 'kKunde');
         $customer->updateInDB();
-        Kundendatenhistory::saveHistory($oldCustomer, $customer, Kundendatenhistory::QUELLE_DBES);
+        DataHistory::saveHistory($oldCustomer, $customer, DataHistory::QUELLE_DBES);
         if (\count($customerAttributes) > 0) {
             $this->saveAttribute($customer->kKunde, $customer->kSprache, $customerAttributes);
         }

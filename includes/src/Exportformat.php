@@ -11,7 +11,7 @@ use JTL\Catalog\Category\Kategorie;
 use JTL\Catalog\Currency;
 use JTL\Catalog\Product\Artikel;
 use JTL\Cron\QueueEntry;
-use JTL\Customer\Kundengruppe;
+use JTL\Customer\CustomerGroup;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Category;
@@ -245,7 +245,7 @@ class Exportformat
             }
             $this->setConfig($id);
             if (!$this->getKundengruppe()) {
-                $this->setKundengruppe(Kundengruppe::getDefaultGroupID());
+                $this->setKundengruppe(CustomerGroup::getDefaultGroupID());
             }
             $this->isOk         = true;
             $this->tempFileName = 'tmp_' . $this->cDateiname;
@@ -771,7 +771,7 @@ class Exportformat
             return $l->getId() === $this->getSprache();
         });
 
-        $_SESSION['Kundengruppe']  = (new Kundengruppe($this->getKundengruppe()))
+        $_SESSION['Kundengruppe']  = (new CustomerGroup($this->getKundengruppe()))
             ->setMayViewPrices(1)
             ->setMayViewCategories(1)
             ->setIsMerchant($net !== null ? $net->nNettoPreise : 0);

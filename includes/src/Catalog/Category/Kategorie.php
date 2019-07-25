@@ -6,7 +6,7 @@
 
 namespace JTL\Catalog\Category;
 
-use JTL\Customer\Kundengruppe;
+use JTL\Customer\CustomerGroup;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Category;
@@ -165,7 +165,7 @@ class Kategorie
     ): self {
         $customerGroupID = $customerGroupID ?: Frontend::getCustomerGroup()->getID();
         if (!$customerGroupID) {
-            $customerGroupID = Kundengruppe::getDefaultGroupID();
+            $customerGroupID = CustomerGroup::getDefaultGroupID();
             if (!isset($_SESSION['Kundengruppe']->kKundengruppe)) { //auswahlassistent admin fix
                 $_SESSION['Kundengruppe']                = new stdClass();
                 $_SESSION['Kundengruppe']->kKundengruppe = $customerGroupID;

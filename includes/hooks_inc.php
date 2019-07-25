@@ -13,7 +13,7 @@ use JTL\Firma;
 use JTL\Catalog\Hersteller;
 use JTL\IO\IO;
 use JTL\Catalog\Category\Kategorie;
-use JTL\Customer\Kunde;
+use JTL\Customer\Customer;
 use JTL\Checkout\Lieferadresse;
 use JTL\Catalog\Product\Merkmal;
 use JTL\Catalog\Product\MerkmalWert;
@@ -576,7 +576,7 @@ define('HOOK_BESTELLABSCHLUSS_INC_BESTELLUNGINDB', 75);
  * @file bestellvorgang_inc.php
  * @param nReturnValue
  * @param fehlendeAngaben
- * @param Kunde
+ * @param Customer
  * @param cPost_arr
  */
 define('HOOK_BESTELLVORGANG_INC_UNREGISTRIERTBESTELLEN_PLAUSI', 76);
@@ -1604,9 +1604,9 @@ define('HOOK_SHOP_SET_PAGE_TYPE', 214);
 /**
  * immediately before storing kunde in DB
  *
- * @since 4.03
+ * @param Customer - oKunde
+ *@since 4.03
  * @file Kunde.php
- * @param Kunde - oKunde
  */
 define('HOOK_KUNDE_DB_INSERT', 215);
 

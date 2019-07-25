@@ -12,10 +12,10 @@ use JTL\Shop;
 use stdClass;
 
 /**
- * Class Kundengruppe
+ * Class CustomerGroup
  * @package JTL\Customer
  */
-class Kundengruppe
+class CustomerGroup
 {
     use MagicCompatibilityTrait;
 
@@ -90,8 +90,7 @@ class Kundengruppe
     ];
 
     /**
-     * Kundengruppe constructor.
-     *
+     * CustomerGroup constructor.
      * @param int $id
      */
     public function __construct(int $id = 0)
@@ -489,7 +488,7 @@ class Kundengruppe
     /**
      * Static helper
      *
-     * @return Kundengruppe[]
+     * @return CustomerGroup[]
      */
     public static function getGroups(): array
     {
@@ -571,7 +570,7 @@ class Kundengruppe
 
     /**
      * @param int $id
-     * @return Kundengruppe|stdClass
+     * @return CustomerGroup|stdClass
      */
     public static function reset(int $id)
     {

@@ -11,7 +11,7 @@ use Illuminate\Support\Collection;
 use JTL\Alert\Alert;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\Preise;
-use JTL\Customer\Kunde;
+use JTL\Customer\Customer;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Product;
 use JTL\Helpers\Request;
@@ -76,7 +76,7 @@ class Wunschliste
     public $CWunschlistePos_arr = [];
 
     /**
-     * @var Kunde
+     * @var Customer
      */
     public $oKunde;
 
@@ -1106,7 +1106,7 @@ class Wunschliste
         $this->dErstellt_DE = $record->dErstellt_DE ?? \DateTime::createFromFormat('Y-m-d H:i:s', $record->dErstellt)
                 ->format('d.m.Y H:i');
         if ($this->kKunde > 0) {
-            $this->oKunde = new Kunde($this->kKunde);
+            $this->oKunde = new Customer($this->kKunde);
             unset($this->oKunde->cPasswort, $this->oKunde->fRabatt, $this->oKunde->fGuthaben, $this->oKunde->cUSTID);
         }
         $db             = Shop::Container()->getDB();

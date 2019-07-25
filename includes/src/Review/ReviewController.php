@@ -10,7 +10,7 @@ use Exception;
 use JTL\Alert\Alert;
 use JTL\Cache\JTLCacheInterface;
 use JTL\Catalog\Product\Artikel;
-use JTL\Customer\Kunde;
+use JTL\Customer\Customer;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Request;
@@ -167,11 +167,11 @@ class ReviewController extends BaseController
     }
 
     /**
-     * @param Kunde $customer
-     * @param array $params
+     * @param Customer $customer
+     * @param array    $params
      * @return bool|void
      */
-    private function reviewPreCheck(Kunde $customer, array $params): bool
+    private function reviewPreCheck(Customer $customer, array $params): bool
     {
         $reviewAllowed = true;
         if (!$customer->isLoggedIn()) {
@@ -225,11 +225,11 @@ class ReviewController extends BaseController
     }
 
     /**
-     * @param int   $productID
-     * @param Kunde $customer
+     * @param int      $productID
+     * @param Customer $customer
      * @return bool
      */
-    private function checkProductWasPurchased(int $productID, Kunde $customer): bool
+    private function checkProductWasPurchased(int $productID, Customer $customer): bool
     {
         if ($this->config['bewertung']['bewertung_artikel_gekauft'] !== 'Y') {
             return true;

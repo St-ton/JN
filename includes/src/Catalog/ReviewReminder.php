@@ -9,7 +9,7 @@ namespace JTL\Catalog;
 use Exception;
 use JTL\Catalog\Product\Artikel;
 use JTL\Checkout\Bestellung;
-use JTL\Customer\Kunde;
+use JTL\Customer\Customer;
 use JTL\DB\ReturnType;
 use JTL\Exceptions\CircularReferenceException;
 use JTL\Exceptions\EmptyResultSetException;
@@ -105,7 +105,7 @@ class ReviewReminder
             $openReviews = [];
             $order       = new Bestellung((int)$orderData->kBestellung);
             $order->fuelleBestellung(false);
-            $customer         = new Kunde($order->kKunde ?? 0);
+            $customer         = new Customer($order->kKunde ?? 0);
             $obj              = new stdClass();
             $obj->tkunde      = $customer;
             $obj->tbestellung = $order;

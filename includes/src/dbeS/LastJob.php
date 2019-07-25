@@ -7,7 +7,7 @@
 namespace JTL\dbeS;
 
 use JTL\Catalog\ReviewReminder;
-use JTL\Customer\Kundengruppe;
+use JTL\Customer\CustomerGroup;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
 use JTL\Helpers\FileSystem;
@@ -87,7 +87,7 @@ final class LastJob
                             $config
                         );
                         $exporter->generate(
-                            [Kundengruppe::getDefaultGroupID()],
+                            [CustomerGroup::getDefaultGroupID()],
                             LanguageHelper::getAllLanguages(),
                             $exportConfig->getFactories()
                         );

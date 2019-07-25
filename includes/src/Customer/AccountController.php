@@ -105,7 +105,7 @@ class AccountController
         $customerID = Frontend::getCustomer()->getID();
         $step       = 'login';
         if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
-            $customer = new Kunde($_SESSION['Kunde']->kKunde);
+            $customer = new Customer($_SESSION['Kunde']->kKunde);
             if ($customer->kKunde > 0) {
                 $customer->angezeigtesLand = LanguageHelper::getCountryCodeByCountryName($customer->cLand);
                 Frontend::getInstance()->setCustomer($customer);
@@ -316,11 +316,11 @@ class AccountController
     /**
      * @param string $userLogin
      * @param string $passLogin
-     * @return Kunde
+     * @return Customer
      */
-    public function login(string $userLogin, string $passLogin): Kunde
+    public function login(string $userLogin, string $passLogin): Customer
     {
-        $customer = new Kunde();
+        $customer = new Customer();
         if (Form::validateToken() === false) {
             $this->alertService->addAlert(
                 Alert::TYPE_NOTE,
@@ -336,14 +336,14 @@ class AccountController
             $returnCode = $customer->holLoginKunde($userLogin, $passLogin);
             $tries      = $customer->nLoginversuche;
         } else {
-            $returnCode = Kunde::ERROR_CAPTCHA;
+            $returnCode = Customer::ERROR_CAPTCHA;
             $tries      = $captchaState;
         }
         if ($customer->kKunde > 0) {
             $this->initCustomer($customer);
-        } elseif ($returnCode === Kunde::ERROR_LOCKED) {
+        } elseif ($returnCode === Customer::ERROR_LOCKED) {
             $this->alertService->addAlert(Alert::TYPE_NOTE, Shop::Lang()->get('accountLocked'), 'accountLocked');
-        } elseif ($returnCode === Kunde::ERROR_INACTIVE) {
+        } elseif ($returnCode === Customer::ERROR_INACTIVE) {
             $this->alertService->addAlert(Alert::TYPE_NOTE, Shop::Lang()->get('accountInactive'), 'accountInactive');
         } else {
             $this->checkLoginCaptcha($tries);
@@ -365,10 +365,10 @@ class AccountController
     }
 
     /**
-     * @param Kunde $customer
+     * @param Customer $customer
      * @throws Exception
      */
-    private function initCustomer(Kunde $customer): void
+    private function initCustomer(Customer $customer): void
     {
         unset($_SESSION['showLoginCaptcha']);
         $coupons   = [];
@@ -480,10 +480,10 @@ class AccountController
     }
 
     /**
-     * @param Kunde $customer
+     * @param Customer $customer
      * @return bool
      */
-    private function loadPersistentCart(Kunde $customer): bool
+    private function loadPersistentCart(Customer $customer): bool
     {
         $cart = Frontend::getCart();
         if (\count($cart->PositionenArr) > 0) {
@@ -850,8 +850,8 @@ class AccountController
                 Shop::Lang()->get('kwkEmailblocked', 'errorMessages') . '<br />',
                 'kwkEmailblocked'
             );
-        } elseif (KundenwerbenKunden::checkInputData($data)) {
-            if (KundenwerbenKunden::saveToDB($data, $this->config)) {
+        } elseif (Referral::checkInputData($data)) {
+            if (Referral::saveToDB($data, $this->config)) {
                 $this->alertService->addAlert(
                     Alert::TYPE_NOTE,
                     \sprintf(
@@ -920,7 +920,7 @@ class AccountController
             && $_POST['neuesPasswort1'] === $_POST['neuesPasswort2']
             && \mb_strlen($_POST['neuesPasswort1']) >= $minLength
         ) {
-            $customer = new Kunde($customerID);
+            $customer = new Customer($customerID);
             $user     = $this->db->select(
                 'tkunde',
                 'kKunde',
@@ -1187,7 +1187,7 @@ class AccountController
                 $postData,
                 ['oKunde' => $customerData]
             )->checkLogging(\CHECKBOX_ORT_KUNDENDATENEDITIEREN, $customerGroupID, $postData, true);
-            Kundendatenhistory::saveHistory($_SESSION['Kunde'], $customerData, Kundendatenhistory::QUELLE_MEINKONTO);
+            DataHistory::saveHistory($_SESSION['Kunde'], $customerData, DataHistory::QUELLE_MEINKONTO);
             $customerAttributes->save();
             $customerData->getCustomerAttributes()->load($customerData->getID());
             $_SESSION['Kunde'] = $customerData;

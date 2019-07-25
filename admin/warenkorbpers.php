@@ -6,7 +6,7 @@
 
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
-use JTL\Customer\Kunde;
+use JTL\Customer\Customer;
 use JTL\Shop;
 use JTL\Helpers\Text;
 use JTL\Cart\WarenkorbPers;
@@ -94,7 +94,7 @@ $customers = Shop::Container()->getDB()->query(
 );
 
 foreach ($customers as $item) {
-    $customer = new Kunde($item->kKunde);
+    $customer = new Customer($item->kKunde);
 
     $item->cNachname = $customer->cNachname;
     $item->cFirma    = $customer->cFirma;
@@ -134,7 +134,7 @@ if (isset($_GET['a']) && (int)$_GET['a'] > 0) {
         ReturnType::ARRAY_OF_OBJECTS
     );
     foreach ($carts as $cart) {
-        $customer = new Kunde($cart->kKundeTMP);
+        $customer = new Customer($cart->kKundeTMP);
 
         $cart->cNachname = $customer->cNachname;
         $cart->cFirma    = $customer->cFirma;

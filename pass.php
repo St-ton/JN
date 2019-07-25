@@ -5,7 +5,7 @@
  */
 
 use JTL\Alert\Alert;
-use JTL\Customer\Kunde;
+use JTL\Customer\Customer;
 use JTL\Shop;
 use JTL\Helpers\Text;
 
@@ -31,7 +31,7 @@ if (isset($_POST['passwort_vergessen'], $_POST['email']) && (int)$_POST['passwor
     );
     if (isset($kunde->kKunde) && $kunde->kKunde > 0 && $kunde->cSperre !== 'Y') {
         $step     = 'passwort versenden';
-        $customer = new Kunde($kunde->kKunde);
+        $customer = new Customer($kunde->kKunde);
         $customer->prepareResetPassword();
 
         $smarty->assign('Kunde', $customer);
@@ -46,7 +46,7 @@ if (isset($_POST['passwort_vergessen'], $_POST['email']) && (int)$_POST['passwor
         if ($resetItem) {
             $dateExpires = new DateTime($resetItem->dExpires);
             if ($dateExpires >= new DateTime()) {
-                $customer = new Kunde($resetItem->kKunde);
+                $customer = new Customer($resetItem->kKunde);
                 if ($customer && $customer->cSperre !== 'Y') {
                     $customer->updatePassword($_POST['pw_new']);
                     Shop::Container()->getDB()->delete('tpasswordreset', 'kKunde', $customer->kKunde);

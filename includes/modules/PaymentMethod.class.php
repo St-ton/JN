@@ -7,7 +7,7 @@
 use JTL\Cart\Warenkorb;
 use JTL\Checkout\Bestellung;
 use JTL\Checkout\ZahlungsLog;
-use JTL\Customer\Kunde;
+use JTL\Customer\Customer;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Request;
 use JTL\Mail\Mail\Mail;
@@ -668,7 +668,7 @@ class PaymentMethod
     {
         $order = new Bestellung($orderID);
         $order->fuelleBestellung(false);
-        $customer = new Kunde($order->kKunde);
+        $customer = new Customer($order->kKunde);
         $data     = new stdClass();
         $mailer   = Shop::Container()->get(Mailer::class);
         $mail     = new Mail();

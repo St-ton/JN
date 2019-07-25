@@ -20,15 +20,16 @@
         {if !isset($activeId)}
             {if $NaviFilter->hasCategory()}
                 {$activeId = $NaviFilter->getCategory()->getValue()}
-            {elseif $nSeitenTyp == 1 && isset($Artikel)}
+            {elseif $nSeitenTyp === $smarty.const.PAGE_ARTIKEL && isset($Artikel)}
                 {assign var='activeId' value=$Artikel->gibKategorie()}
-            {elseif $nSeitenTyp == 1 && isset($smarty.session.LetzteKategorie)}
+            {elseif $nSeitenTyp === $smarty.const.PAGE_ARTIKEL && isset($smarty.session.LetzteKategorie)}
                 {$activeId = $smarty.session.LetzteKategorie}
             {else}
                 {$activeId = 0}
             {/if}
         {/if}
-        {if !isset($activeParents) && ($nSeitenTyp == 1 || $nSeitenTyp == 2)}
+        {if !isset($activeParents)
+        && ($nSeitenTyp === $smarty.const.PAGE_ARTIKEL || $nSeitenTyp === $smarty.const.PAGE_ARTIKELLISTE)}
             {get_category_parents categoryId=$activeId assign='activeParents'}
         {/if}
         {foreach $categories as $category}

@@ -23,7 +23,8 @@
                 {assign var='activeId' value=$smarty.session.LetzteKategorie}
             {/if}
         {/if}
-        {if !isset($activeParents) && ($nSeitenTyp == 1 || $nSeitenTyp == 2)}
+        {if !isset($activeParents)
+        && ($nSeitenTyp === $smarty.const.PAGE_ARTIKEL || $nSeitenTyp === $smarty.const.PAGE_ARTIKELLISTE)}
             {get_category_parents categoryId=$activeId assign='activeParents'}
         {/if}
         {if !isset($activeParents)}

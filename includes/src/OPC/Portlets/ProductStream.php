@@ -29,9 +29,18 @@ class ProductStream extends Portlet
     public function getPropertyDesc(): array
     {
         return [
+            'search' => [
+                'type'  => InputType::SEARCH,
+                'label' => 'Suche',
+                'placeholder' => __('search'),
+                'width' => 67,
+                'order' => 2,
+            ],
             'listStyle'    => [
                 'type'    => InputType::SELECT,
                 'label'   => __('presentation'),
+                'width'   => 34,
+                'order'   => 1,
                 'options' => [
                     'gallery'    => __('presentationGallery'),
                     'list'       => __('presentationList'),
@@ -55,9 +64,10 @@ class ProductStream extends Portlet
                 ]
             ],
             'filters'      => [
-                'type'    => InputType::FILTER,
-                'label'   => __('itemFilter'),
-                'default' => [],
+                'type'     => InputType::FILTER,
+                'label'    => __('itemFilter'),
+                'default'  => [],
+                'searcher' => 'search',
             ],
         ];
     }

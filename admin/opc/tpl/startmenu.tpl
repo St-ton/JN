@@ -234,9 +234,6 @@
             </nav>
             <div id="opcSidebar">
                 <header id="opcHeader">
-                    <button id="opcMenuBtn" class="opc-header-btn">
-                        <i class="fa fas fa-ellipsis-v"></i>
-                    </button>
                     <h1 id="opc-sidebar-title">
                         {__('editPage')}
                     </h1>

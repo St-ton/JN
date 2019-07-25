@@ -4,19 +4,24 @@
     {$width = floor(($propdesc.width|default:100) * 12 / 100)}
     {$rowWidthAccu = $rowWidthAccu + $width}
 
+    {if !empty($propdesc.order)}
+        {$order = 'order-'|cat:$propdesc.order}
+    {else}
+        {$order = ''}
+    {/if}
+
     {if $instance->hasProperty($propname)}
         {$propval = $instance->getProperty($propname)}
     {else}
         {$propval = $propDesc.default|default:null}
     {/if}
 
-    <div class="col-{$width}">
+    <div class="col-{$width} {$order}">
         {if $type === 'text' || $type === 'email' || $type === 'password' || $type === 'number'
                 || $type === 'date' || $type === 'time'}
             <div class='form-group'>
                 <label for="config-{$propname}">{$propdesc.label}</label>
-                <input type="{$type}" class="form-control"
-                       id="config-{$propname}" name="{$propname}"
+                <input type="{$type}" class="form-control" id="config-{$propname}" name="{$propname}"
                        value="{$propval}"
                        {if !empty($propdesc.placeholder)}placeholder="{$propdesc.placeholder}"{/if}
                        {if $required === true}required{/if}>

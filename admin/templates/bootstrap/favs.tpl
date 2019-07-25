@@ -52,10 +52,15 @@
             <input class="form-control" type="text" name="url[]" value="{$url}">
         </td>
         <th class="text-muted text-center" scope="row">
-            <i class="fa fa-arrows-v" aria-hidden="true"></i>
+            <i class="fal fa-arrows-v" aria-hidden="true"></i>
         </th>
         <td class="text-center">
-            <button type="button" class="btn btn-sm btn-danger btn-remove btn-circle"><i class="fal fa-times"></i></button>
+            <button type="button" class="btn btn-link btn-remove">
+                <span class="icon-hover">
+                    <span class="fal fa-trash-alt"></span>
+                    <span class="fas fa-trash-alt"></span>
+                </span>
+            </button>
         </td>
     </tr>
 {/function}
@@ -84,9 +89,13 @@
                 </table>
             </div>
             <div class="card-footer save-wrapper">
-                <button type="submit" name="action" value="save" class="btn btn-primary">
-                    {__('saveWithIcon')}
-                </button>
+                <div class="row">
+                    <div class="ml-auto col-sm-6 col-xl-auto">
+                        <button type="submit" name="action" value="save" class="btn btn-primary btn-block">
+                        {__('saveWithIcon')}
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </form>

@@ -16,7 +16,7 @@ use JTL\Boxes\Renderer\DefaultRenderer;
 use JTL\Cache\JTLCache;
 use JTL\Cache\JTLCacheInterface;
 use JTL\Catalog\Category\Kategorie;
-use JTL\Catalog\Wishlist\Wunschliste;
+use JTL\Catalog\Wishlist\Wishlist;
 use JTL\Cron\Admin\Controller as CronController;
 use JTL\Cron\Starter\StarterFactory;
 use JTL\DB\DbInterface;
@@ -899,7 +899,7 @@ final class Shop
 
         self::$nSterne = Request::verifyGPCDataInt('nSterne');
 
-        self::$kWunschliste = Wunschliste::checkeParameters();
+        self::$kWunschliste = Wishlist::checkeParameters();
 
         self::$nNewsKat = Request::verifyGPCDataInt('nNewsKat');
         self::$cDatum   = Request::verifyGPDataString('cDatum');

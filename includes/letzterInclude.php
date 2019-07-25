@@ -12,7 +12,7 @@ use JTL\Catalog\Navigation;
 use JTL\Catalog\NavigationEntry;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\Preise;
-use JTL\Catalog\Wishlist\Wunschliste;
+use JTL\Catalog\Wishlist\Wishlist;
 use JTL\DB\ReturnType;
 use JTL\ExtensionPoint;
 use JTL\Filter\Metadata;
@@ -188,7 +188,7 @@ $smarty->assign('linkgroups', $linkHelper->getLinkGroups())
        ->assign('opc', Shop::Container()->getOPC())
        ->assign('opcPageService', Shop::Container()->getOPCPageService())
        ->assign('shopFaviconURL', Shop::getFaviconURL())
-       ->assign('wishlists', Wunschliste::getWishlists())
+       ->assign('wishlists', Wishlist::getWishlists())
        ->assign('robotsContent', $smarty->get_template_vars('robotsContent'))
        ->assign('device', $device);
 

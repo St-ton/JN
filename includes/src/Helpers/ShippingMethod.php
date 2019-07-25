@@ -480,7 +480,7 @@ class ShippingMethod
                         ($tmpProduct->fGewicht + $variation->fGewichtDiff);
                 } else {
                     // 2D
-                    [$cVariation0, $cVariation1]         = \explode('_', $product['cInputData']);
+                    [$cVariation0, $cVariation1]  = \explode('_', $product['cInputData']);
                     [$property0, $propertyValue0] = \explode(':', $cVariation0);
                     [$property1, $propertyValue1] = \explode(':', $cVariation1);
 
@@ -512,9 +512,9 @@ class ShippingMethod
                 $child = new Artikel();
                 if ($product['cInputData']{0} === '_') {
                     // 1D
-                    $cVariation0                         = \mb_substr($product['cInputData'], 1);
+                    $cVariation0                  = \mb_substr($product['cInputData'], 1);
                     [$property0, $propertyValue0] = \explode(':', $cVariation0);
-                    $childProductID                      = Product::getChildProductIDByAttribute(
+                    $childProductID               = Product::getChildProductIDByAttribute(
                         $tmpProduct->kArtikel,
                         $property0,
                         $propertyValue0
@@ -541,7 +541,7 @@ class ShippingMethod
                     $additionalProduct->fGewicht        += $product['fAnzahl'] * $child->fGewicht;
                 } else {
                     // 2D
-                    [$cVariation0, $cVariation1]         = \explode('_', $product['cInputData']);
+                    [$cVariation0, $cVariation1]  = \explode('_', $product['cInputData']);
                     [$property0, $propertyValue0] = \explode(':', $cVariation0);
                     [$property1, $propertyValue1] = \explode(':', $cVariation1);
 

@@ -11,7 +11,7 @@ use JTL\Catalog\Category\KategorieListe;
 use JTL\Catalog\Currency;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\Preise;
-use JTL\Catalog\Wishlist\Wunschliste;
+use JTL\Catalog\Wishlist\Wishlist;
 use JTL\Checkout\Kupon;
 use JTL\Checkout\Versandart;
 use JTL\Checkout\Zahlungsart;
@@ -829,7 +829,7 @@ function parseNewsText($text)
 function checkeWunschlisteParameter()
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use Wunschliste::checkeParameters() instead.', E_USER_DEPRECATED);
-    return Wunschliste::checkeParameters();
+    return Wishlist::checkeParameters();
 }
 
 /**

@@ -12,10 +12,10 @@ use stdClass;
 use function Functional\some;
 
 /**
- * Class WunschlistePos
+ * Class WishlistItem
  * @package JTL\Catalog\Wishlist
  */
-class WunschlistePos
+class WishlistItem
 {
     /**
      * @var int
@@ -68,12 +68,13 @@ class WunschlistePos
     public $Artikel;
 
     /**
+     * WishlistItem constructor.
      * @param int    $productID
      * @param string $productName
      * @param float  $qty
      * @param int    $wihlistID
      */
-    public function __construct(int $productID, $productName, $qty, int $wihlistID)
+    public function __construct(int $productID, string $productName, $qty, int $wihlistID)
     {
         $this->kArtikel     = $productID;
         $this->cArtikelName = $productName;
@@ -88,7 +89,7 @@ class WunschlistePos
     public function erstellePosEigenschaften(array $values): self
     {
         foreach ($values as $value) {
-            $wlPosAttr = new WunschlistePosEigenschaft(
+            $wlItemProp = new WishlistItemProperty(
                 $value->kEigenschaft,
                 !empty($value->kEigenschaftWert) ? $value->kEigenschaftWert : null,
                 !empty($value->cFreifeldWert) ? $value->cFreifeldWert : null,
@@ -96,8 +97,8 @@ class WunschlistePos
                 !empty($value->cEigenschaftWertName) ? $value->cEigenschaftWertName : null,
                 $this->kWunschlistePos
             );
-            $wlPosAttr->schreibeDB();
-            $this->CWunschlistePosEigenschaft_arr[] = $wlPosAttr;
+            $wlItemProp->schreibeDB();
+            $this->CWunschlistePosEigenschaft_arr[] = $wlItemProp;
         }
 
         return $this;

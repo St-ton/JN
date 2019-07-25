@@ -48,7 +48,7 @@ class Service
     {
         $this->db = $db;
 
-        Shop::Container()->getGetText()->loadAdminLocale("pages/opc");
+        Shop::Container()->getGetText()->loadAdminLocale('pages/opc');
     }
 
     /**

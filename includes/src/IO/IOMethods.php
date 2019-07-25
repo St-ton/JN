@@ -22,7 +22,7 @@ use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\EigenschaftWert;
 use JTL\Catalog\Product\Preise;
 use JTL\Catalog\Trennzeichen;
-use JTL\Catalog\Wishlist\Wunschliste;
+use JTL\Catalog\Wishlist\Wishlist;
 use JTL\Checkout\Kupon;
 use JTL\Customer\CustomerGroup;
 use JTL\DB\ReturnType;
@@ -595,7 +595,7 @@ class IOMethods
         $objResponse = new IOResponse();
         $smarty      = Shop::Smarty();
 
-        $smarty->assign('wishlists', Wunschliste::getWishlists());
+        $smarty->assign('wishlists', Wishlist::getWishlists());
 
         $response->content         = $smarty->fetch('snippets/wishlist_dropdown.tpl');
         $response->currentPosCount = \count(Frontend::getWishList()->CWunschlistePos_arr);

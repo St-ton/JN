@@ -10,10 +10,10 @@ use JTL\Helpers\GeneralObject;
 use JTL\Shop;
 
 /**
- * Class WunschlistePosEigenschaft
+ * Class WishlistItemProperty
  * @package JTL\Catalog\Wishlist
  */
-class WunschlistePosEigenschaft
+class WishlistItemProperty
 {
     /**
      * @var int
@@ -51,6 +51,7 @@ class WunschlistePosEigenschaft
     public $cEigenschaftWertName;
 
     /**
+     * WishlistItemProperty constructor.
      * @param int    $propertyID
      * @param int    $propertyValueID
      * @param string $freeText

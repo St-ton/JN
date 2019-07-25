@@ -10,7 +10,7 @@ use JTL\Cart\Cart;
 use JTL\Cart\PersistentCart;
 use JTL\Catalog\Currency;
 use JTL\Catalog\Vergleichsliste;
-use JTL\Catalog\Wishlist\Wunschliste;
+use JTL\Catalog\Wishlist\Wishlist;
 use JTL\Checkout\Lieferadresse;
 use JTL\Customer\Customer;
 use JTL\Customer\CustomerGroup;
@@ -292,7 +292,7 @@ class Frontend extends AbstractSession
     {
         $index = Request::verifyGPCDataInt('wlplo');
         if ($index !== 0) {
-            $wl = new Wunschliste();
+            $wl = new Wishlist();
             $wl->entfernePos($index);
         }
 
@@ -608,18 +608,18 @@ class Frontend extends AbstractSession
     }
 
     /**
-     * @return Wunschliste
+     * @return Wishlist
      */
-    public static function getWishList(): Wunschliste
+    public static function getWishList(): Wishlist
     {
-        return $_SESSION['Wunschliste'] ?? new Wunschliste();
+        return $_SESSION['Wunschliste'] ?? new Wishlist();
     }
 
     /**
-     * @return Wunschliste
+     * @return Wishlist
      * @deprecated since 5.0.0
      */
-    public static function wishList(): Wunschliste
+    public static function wishList(): Wishlist
     {
         \trigger_error(__METHOD__. ' is deprecated.', \E_USER_DEPRECATED);
         return self::getWishList();

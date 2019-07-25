@@ -4706,10 +4706,10 @@ class Artikel
     }
 
     /**
-     * @param int|float $fPreisStaffel
+     * @param int|float $scalePrice
      * @return $this
      */
-    public function baueVPE($fPreisStaffel = 0): self
+    public function baueVPE($scalePrice = 0): self
     {
         $basepriceUnit = ($this->kGrundpreisEinheit > 0 && $this->fGrundpreisMenge > 0)
             ? \sprintf('%s %s', $this->fGrundpreisMenge, $this->cGrundpreisEinheitName)
@@ -4718,7 +4718,7 @@ class Artikel
             && (int)$this->FunktionsAttribute[\FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT] > 0)
             ? (int)$this->FunktionsAttribute[\FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT]
             : 2;
-        $fPreis        = ($fPreisStaffel > 0) ? $fPreisStaffel : $this->Preise->fVKNetto;
+        $price         = ($scalePrice > 0) ? $scalePrice : $this->Preise->fVKNetto;
         $currency      = Frontend::getCurrency();
         $per           = ' ' . Shop::Lang()->get('vpePer') . ' ' . $basepriceUnit;
         $ust           = Tax::getSalesTax($this->kSteuerklasse);
@@ -4784,13 +4784,13 @@ class Artikel
             }
         } else {
             $this->cLocalizedVPE[0] = Preise::getLocalizedPriceString(
-                Tax::getGross($fPreis / $this->fVPEWert, $ust, $precision),
+                Tax::getGross($price / $this->fVPEWert, $ust, $precision),
                 $currency,
                 true,
                 $precision
             ) . $per;
             $this->cLocalizedVPE[1] = Preise::getLocalizedPriceString(
-                $fPreis / $this->fVPEWert,
+                $price / $this->fVPEWert,
                 $currency,
                 true,
                 $precision
@@ -4953,8 +4953,8 @@ class Artikel
         );
         $this->fStaffelpreisVPE5[1]          = $basePriceUnit->fBasePreis;
 
-        foreach ($this->Preise->fPreis_arr as $key => $fPreis) {
-            $basePriceUnit = Product::getBasePriceUnit($this, $fPreis, $this->Preise->nAnzahl_arr[$key]);
+        foreach ($this->Preise->fPreis_arr as $key => $price) {
+            $basePriceUnit = Product::getBasePriceUnit($this, $price, $this->Preise->nAnzahl_arr[$key]);
 
             $this->cStaffelpreisLocalizedVPE_arr[] = [
                 Preise::getLocalizedPriceString(

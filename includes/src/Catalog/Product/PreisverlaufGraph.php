@@ -667,7 +667,7 @@ class PreisverlaufGraph
 
             // Grid Y
             $this->nStepY = $this->nInnenRahmenOben;
-            $fPreis       = $this->fMaxPreis;
+            $price        = $this->fMaxPreis;
 
             \imagefttext(
                 $this->image,
@@ -677,7 +677,7 @@ class PreisverlaufGraph
                 $this->nStepY + ($this->nSchriftgroesse / 2),
                 $TextColor,
                 $this->cSchriftverzeichnis . $this->cSchriftart,
-                \round($fPreis, 2) . ' ' . $this->oPreisConfig->Waehrung
+                \round($price, 2) . ' ' . $this->oPreisConfig->Waehrung
             );
             \imageline(
                 $this->image,
@@ -690,7 +690,7 @@ class PreisverlaufGraph
 
             for ($i = 0; $i < $this->nAnzahlPreise; $i++) {
                 $this->nStepY += $nPixelProSchrittY;
-                $fPreis       -= $this->fStepWert_arr[$this->nStep];
+                $price       -= $this->fStepWert_arr[$this->nStep];
                 \imagefttext(
                     $this->image,
                     $this->nSchriftgroesse,
@@ -699,7 +699,7 @@ class PreisverlaufGraph
                     $this->nStepY + ($this->nSchriftgroesse / 2),
                     $TextColor,
                     $this->cSchriftverzeichnis . $this->cSchriftart,
-                    \round($fPreis, 2) . ' ' . $this->oPreisConfig->Waehrung
+                    \round($price, 2) . ' ' . $this->oPreisConfig->Waehrung
                 );
                 \imageline(
                     $this->image,

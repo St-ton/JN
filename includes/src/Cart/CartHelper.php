@@ -12,7 +12,7 @@ use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\EigenschaftWert;
 use JTL\Catalog\Product\Preise;
 use JTL\Catalog\Vergleichsliste;
-use JTL\Catalog\Wishlist\Wunschliste;
+use JTL\Catalog\Wishlist\Wishlist;
 use JTL\Checkout\Kupon;
 use JTL\Checkout\Lieferadresse;
 use JTL\Checkout\Rechnungsadresse;
@@ -723,7 +723,7 @@ class CartHelper
                     }
                     if ($productID > 0) {
                         if (empty($_SESSION['Wunschliste']->kWunschliste)) {
-                            $_SESSION['Wunschliste'] = new Wunschliste();
+                            $_SESSION['Wunschliste'] = new Wishlist();
                             $_SESSION['Wunschliste']->schreibeDB();
                         }
                         $qty             = \max(1, $qty);

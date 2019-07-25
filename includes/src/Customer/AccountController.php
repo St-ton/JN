@@ -13,7 +13,7 @@ use JTL\Cart\PersistentCart;
 use JTL\Cart\PersistentCartItem;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\Preise;
-use JTL\Catalog\Wishlist\Wunschliste;
+use JTL\Catalog\Wishlist\Wishlist;
 use JTL\CheckBox;
 use JTL\Checkout\Bestellung;
 use JTL\Checkout\Kupon;
@@ -114,7 +114,7 @@ class AccountController
         if (Request::verifyGPCDataInt('wlidmsg') > 0) {
             $this->alertService->addAlert(
                 Alert::TYPE_NOTE,
-                Wunschliste::mapMessage(Request::verifyGPCDataInt('wlidmsg')),
+                Wishlist::mapMessage(Request::verifyGPCDataInt('wlidmsg')),
                 'wlidmsg'
             );
         }
@@ -209,7 +209,7 @@ class AccountController
             $step = 'mein Konto';
             $this->alertService->addAlert(
                 Alert::TYPE_NOTE,
-                Wunschliste::delete(Request::verifyGPCDataInt('wllo')),
+                Wishlist::delete(Request::verifyGPCDataInt('wllo')),
                 'wllo'
             );
         }
@@ -217,7 +217,7 @@ class AccountController
             $step = 'mein Konto';
             $this->alertService->addAlert(
                 Alert::TYPE_NOTE,
-                Wunschliste::setDefault(Request::verifyGPCDataInt('wls')),
+                Wishlist::setDefault(Request::verifyGPCDataInt('wls')),
                 'wls'
             );
         }
@@ -228,7 +228,7 @@ class AccountController
         if (isset($_POST['wlh']) && (int)$_POST['wlh'] > 0) {
             $step = 'mein Konto';
             $name = Text::htmlentities(Text::filterXSS($_POST['cWunschlisteName']));
-            $this->alertService->addAlert(Alert::TYPE_NOTE, Wunschliste::save($name), 'saveWL');
+            $this->alertService->addAlert(Alert::TYPE_NOTE, Wishlist::save($name), 'saveWL');
         }
         $wishlistID = Request::verifyGPCDataInt('wl');
         if ($wishlistID > 0) {
@@ -266,7 +266,7 @@ class AccountController
             $this->viewOrders($customerID);
         }
         if ($step === 'mein Konto' || $step === 'wunschliste') {
-            $this->smarty->assign('oWunschliste_arr', Wunschliste::getWishlists());
+            $this->smarty->assign('oWunschliste_arr', Wishlist::getWishlists());
         }
         if ($step === 'mein Konto') {
             $deliveryAddresses = [];
@@ -409,7 +409,7 @@ class AccountController
         }
         $session = Frontend::getInstance();
         $session->setCustomer($customer);
-        Wunschliste::persistInSession();
+        Wishlist::persistInSession();
         $persCartLoaded = $this->config['global']['warenkorbpers_nutzen'] === 'Y'
             && $this->loadPersistentCart($customer);
         $this->pruefeWarenkorbArtikelSichtbarkeit($_SESSION['Kunde']->kKundengruppe);
@@ -1130,21 +1130,21 @@ class AccountController
     private function modifyWishlist(int $customerID, int $wishlistID): string
     {
         $step     = 'mein Konto';
-        $wishlist = new Wunschliste($wishlistID);
+        $wishlist = new Wishlist($wishlistID);
         if ($wishlist->kKunde !== $customerID) {
             return $step;
         }
         if (isset($_REQUEST['wlAction']) && Form::validateToken()) {
             $action = Request::verifyGPDataString('wlAction');
             if ($action === 'setPrivate') {
-                Wunschliste::setPrivate($wishlist->kWunschliste);
+                Wishlist::setPrivate($wishlist->kWunschliste);
                 $this->alertService->addAlert(
                     Alert::TYPE_NOTE,
                     Shop::Lang()->get('wishlistSetPrivate', 'messages'),
                     'wishlistSetPrivate'
                 );
             } elseif ($action === 'setPublic') {
-                Wunschliste::setPublic($wishlist->kWunschliste);
+                Wishlist::setPublic($wishlist->kWunschliste);
                 $this->alertService->addAlert(
                     Alert::TYPE_NOTE,
                     Shop::Lang()->get('wishlistSetPublic', 'messages'),

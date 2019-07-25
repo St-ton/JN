@@ -2242,6 +2242,10 @@ td.nowrap {
   display: table-cell;
   vertical-align: middle;
 }
+.card-header .heading-body .btn,
+.card-header .heading-right .btn {
+  white-space: nowrap;
+}
 .card-header .heading-right > .btn-group {
   border-collapse: collapse;
 }
@@ -2590,8 +2594,12 @@ div.markdown thead tr td {
   border: 0;
 }
 .file-preview .krajee-default.file-preview-frame .kv-file-content {
-  width: 100%;
+  max-width: 100%;
   height: auto;
+  margin: 0 auto;
+}
+.file-preview-thumbnails img {
+  max-width: 100%;
 }
 .file-preview .file-upload-indicator {
   display: none;
@@ -2631,5 +2639,30 @@ div.markdown thead tr td {
   margin: 0.75rem 0 0;
   padding: 0;
   border: 2px solid transparent;
+}
+.modal-header {
+  flex-direction: row-reverse;
+}
+#articlePicker-result-list .list-group-item {
+  padding: 0.5rem;
+}
+#articlePicker-result-list .list-group-item .list-group-item-text {
+  margin: 0;
+}
+#settings form.settings {
+  column-count: 2;
+  column-width: 450px;
+  column-gap: 2rem;
+}
+#settings form.settings .card {
+  break-inside: avoid;
+}
+#settings form.settings .card.single {
+  column-span: all;
+}
+#settings form.settings .save-wrapper {
+  -webkit-column-span: all;
+  column-span: all;
+  margin-top: 2rem;
 }
 /*# sourceMappingURL=custom.css.map */

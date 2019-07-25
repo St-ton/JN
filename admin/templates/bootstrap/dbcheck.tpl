@@ -127,15 +127,15 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h4><span>&nbsp;</span> <img src="{$shopURL}/{$PFAD_ADMIN}/{$currentTemplateDir}gfx/widgets/ajax-loader.gif"></h4>
+                <h2><span>&nbsp;</span> <img src="{$shopURL}/{$PFAD_ADMIN}/{$currentTemplateDir}gfx/widgets/ajax-loader.gif"></h2>
             </div>
-            <div class="modal-body">
+            <div class="modal-body py-5">
                 <div class="progress" data-notify="progressbar">
                     <div class="progress-bar progress-bar-{ldelim}0{rdelim}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0;"></div>
                 </div>
             </div>
             <div class="modal-footer">
-                <div class="btn-group">
+                <div class="btn-group text-right">
                     <button id="cancelWait" class="btn btn-danger"><i class="fa fa-close"></i>&nbsp;{__('migrationCancel')}</button>
                 </div>
             </div>
@@ -215,7 +215,7 @@
         var $modalWait = $("#modalWait");
 
         if (typeof msg !== 'undefined' && msg !== null && msg !== '') {
-            $('h4 > span', $modalWait).text(msg);
+            $('h2 > span', $modalWait).text(msg);
         }
         if (typeof step !== 'undefined' && step !== null && step > 0) {
             var progressMax     = $('.progress-bar', $modalWait).attr('aria-valuemax');

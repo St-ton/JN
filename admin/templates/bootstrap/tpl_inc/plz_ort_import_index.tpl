@@ -26,7 +26,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h4>{__('plz_ort_import_load')} <img src="{$shopURL}/{$smarty.const.PFAD_ADMIN}/templates/bootstrap/gfx/widgets/ajax-loader.gif"></h4>
+                <h2>{__('plz_ort_import_load')} <img src="{$shopURL}/{$smarty.const.PFAD_ADMIN}/templates/bootstrap/gfx/widgets/ajax-loader.gif"></h2>
             </div>
         </div>
     </div>
@@ -35,15 +35,23 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header alert-warning">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4><i class="fal fa-exclamation-triangle"></i> {__('plz_ort_import')}</h4>
+                <button type="button" class="close" data-dismiss="modal">
+                    <i class="fal fa-times"></i>
+                </button>
+                <h2><i class="fal fa-exclamation-triangle"></i> {__('plz_ort_import')}</h2>
             </div>
-            <div class="modal-body">
+            <div class="modal-body py-5">
                 {__('plz_ort_import_tmp_exists')}
             </div>
             <div class="modal-footer">
-                <a href="#" class="btn btn-default" data-dismiss="modal"><i class="fa fa-exclamation"></i> {__('plz_ort_import_delete_no')}</a>
-                <a href="#" class="btn btn-primary" data-callback="plz_ort_import_delete_temp" data-dismiss="modal"><i class="fas fa-trash-alt"></i> {__('plz_ort_import_delete_yes')}</a>
+                <div class="row">
+                    <div class="ml-auto col-sm-6 col-xl-auto">
+                        <a href="#" class="btn btn-outline-primary" data-dismiss="modal"><i class="fa fa-exclamation"></i> {__('plz_ort_import_delete_no')}</a>
+                    </div>
+                    <div class="col-sm-6 col-xl-auto">
+                        <a href="#" class="btn btn-primary" data-callback="plz_ort_import_delete_temp" data-dismiss="modal"><i class="fas fa-trash-alt"></i> {__('plz_ort_import_delete_yes')}</a>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -52,13 +60,15 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
-                <h4><i class="fa fa-question-circle"></i> {__('plz_ort_import')}</h4>
+                <button type="button" class="close" data-dismiss="modal">
+                    <i class="fal fa-times"></i>
+                </button>
+                <h2><i class="fa fa-question-circle"></i> {__('plz_ort_import')}</h2>
             </div>
-            <div class="modal-body">
+            <div class="modal-body py-5">
                 {{__('plz_ort_import_help')}|sprintf:{$smarty.const.PLZIMPORT_URL}}
             </div>
-            <div class="modal-footer">
+            <div class="modal-footer text-right">
                 <a href="#" class="btn btn-primary" data-dismiss="modal"><i class="fal fa-check text-success"></i> {__('ok')}</a>
             </div>
         </div>

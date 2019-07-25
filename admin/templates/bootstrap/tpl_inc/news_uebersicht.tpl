@@ -441,13 +441,21 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title">{__('deleteComment')}</h4>
+                <h2 class="modal-title">{__('deleteComment')}</h2>
             </div>
-            <div class="modal-body"></div>
+            <div class="modal-body py-5"></div>
             <div class="modal-footer">
                 <p>{__('wantToConfirm')}</p>
-                <button type="button" id="submitDelete" data-name="" class="btn btn-danger">{__('delete')}</button>
-                <button type="button" class="btn btn-primary" data-dismiss="modal">{__('cancel')}</button>
+                <div class="modal-footer">
+                    <div class="row">
+                        <div class="ml-auto col-sm-6 col-xl-auto">
+                            <button type="button" class="btn btn-outline-primary" data-dismiss="modal">{__('cancel')}</button>
+                        </div>
+                        <div class="col-sm-6 col-xl-auto">
+                            <button type="button" id="submitDelete" data-name="" class="btn btn-danger">{__('delete')}</button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

@@ -41,7 +41,8 @@
 <body>
 {if $account !== false && isset($smarty.session.loginIsValid) && $smarty.session.loginIsValid === true}
     {getCurrentPage assign='currentPage'}
-    <div class="backend-wrapper {if $currentPage === 'index' || $currentPage === 'status'} dashboard{/if}">
+    <div class="spinner"></div>
+    <div id="page-wrapper" class="backend-wrapper hidden disable-transitions{if $currentPage === 'index' || $currentPage === 'status'} dashboard{/if}">
         {include file='tpl_inc/backend_sidebar.tpl'}
         <div class="backend-main sidebar-offset">
             <nav class="backend-navbar topbar" id="topbar">

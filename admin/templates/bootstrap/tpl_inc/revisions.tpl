@@ -21,14 +21,13 @@
             {/if}
             <div id="accordion" role="tablist" aria-multiselectable="true">
                 {foreach $revisions as $revision}
-                    <div class="card">
-                        <div class="card-header" role="tab" data-idx="{$revision@iteration}" id="heading-revision-{$revision@iteration}">
-                            <div class="">
-                                <a class="align-items-center" data-toggle="collapse" data-parent="#accordion" href="#revision-{$revision@iteration}" aria-expanded="true" aria-controls="profile-{$revision@iteration}">
-                                    <span class="badge">{$revision->timestamp}</span>
-                                    <span> | {$revision->author}</span>
-                                </a>
-                            </div>
+                    <div class="card mb-2">
+                        <div class="card-header py-2" role="tab" data-idx="{$revision@iteration}" id="heading-revision-{$revision@iteration}">
+                            <a class="align-items-center text-decoration-none" data-toggle="collapse" data-parent="#accordion" href="#revision-{$revision@iteration}" aria-expanded="true" aria-controls="profile-{$revision@iteration}">
+                                <span class="badge">{$revision->timestamp}</span>
+                                <span> | {$revision->author}</span>
+                                <i class="fas fa-plus float-right"></i>
+                            </a>
                         </div>
                         <div id="revision-{$revision@iteration}" data-idx="{$revision@iteration}" class="collapse" role="tabpanel" aria-labelledby="heading-revision-{$revision@iteration}">
                             <div class="card-body">

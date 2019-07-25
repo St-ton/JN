@@ -6,9 +6,9 @@
 
 use JTL\Alert\Alert;
 use JTL\DB\ReturnType;
-use JTL\Extensions\SelectionWizard\Wizard;
 use JTL\Extensions\SelectionWizard\Group;
 use JTL\Extensions\SelectionWizard\Question;
+use JTL\Extensions\SelectionWizard\Wizard;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;

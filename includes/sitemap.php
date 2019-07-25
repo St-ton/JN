@@ -4,11 +4,11 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use JTL\Helpers\Request;
-use JTL\Shop;
-use JTL\Helpers\Text;
-use JTL\Visitor;
 use JTL\DB\ReturnType;
+use JTL\Helpers\Request;
+use JTL\Helpers\Text;
+use JTL\Shop;
+use JTL\Visitor;
 
 define('JTL_INCLUDE_ONLY_DB', 1);
 require_once __DIR__ . '/globalinclude.php';

@@ -10,7 +10,6 @@ use JTL\Catalog\Currency;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
-use JTL\Helpers\Text;
 use JTL\IO\IOError;
 use JTL\IO\IOResponse;
 use JTL\Kampagne;

@@ -4,22 +4,22 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use JTL\Catalog\Product\Artikel;
-use JTL\Checkout\Bestellung;
-use JTL\Catalog\Product\Bewertung;
-use JTL\CheckBox;
-use JTL\Emailvorlage;
-use JTL\Firma;
-use JTL\Catalog\Hersteller;
-use JTL\IO\IO;
+use JTL\Cart\Cart;
+use JTL\Cart\CartItem;
 use JTL\Catalog\Category\Kategorie;
-use JTL\Customer\Customer;
-use JTL\Checkout\Lieferadresse;
+use JTL\Catalog\Hersteller;
+use JTL\Catalog\Product\Artikel;
+use JTL\Catalog\Product\Bewertung;
 use JTL\Catalog\Product\Merkmal;
 use JTL\Catalog\Product\MerkmalWert;
 use JTL\Catalog\Product\Preise;
-use JTL\Cart\Cart;
-use JTL\Cart\CartItem;
+use JTL\CheckBox;
+use JTL\Checkout\Bestellung;
+use JTL\Checkout\Lieferadresse;
+use JTL\Customer\Customer;
+use JTL\Emailvorlage;
+use JTL\Firma;
+use JTL\IO\IO;
 
 /**
  * Ende Artikeldetail

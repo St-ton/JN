@@ -4,8 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use JTL\Cart\CartHelper;
 use JTL\Cart\Cart;
+use JTL\Cart\CartHelper;
 use JTL\Checkout\Bestellung;
 use JTL\DB\ReturnType;
 use JTL\Plugin\Helper;

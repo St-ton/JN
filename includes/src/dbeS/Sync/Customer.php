@@ -8,7 +8,6 @@ namespace JTL\dbeS\Sync;
 
 use JTL\Customer\CustomerAttribute;
 use JTL\Customer\CustomerField;
-use JTL\Customer\Customer;
 use JTL\Customer\DataHistory;
 use JTL\DB\ReturnType;
 use JTL\dbeS\Starter;

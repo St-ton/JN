@@ -4,12 +4,12 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use JTL\Helpers\Request;
-use JTL\Shop;
-use JTL\Helpers\Text;
-use JTL\DB\ReturnType;
-use JTL\Smarty\JTLSmarty;
 use JTL\Alert\Alert;
+use JTL\DB\ReturnType;
+use JTL\Helpers\Request;
+use JTL\Helpers\Text;
+use JTL\Shop;
+use JTL\Smarty\JTLSmarty;
 
 defined('PLZIMPORT_HOST') || define('PLZIMPORT_HOST', 'www.fa-technik.adfc.de');
 defined('PLZIMPORT_URL') || define('PLZIMPORT_URL', 'http://' . PLZIMPORT_HOST . '/code/opengeodb/');

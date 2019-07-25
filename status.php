@@ -4,12 +4,12 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use JTL\Checkout\Bestellung;
 use JTL\Alert\Alert;
+use JTL\Checkout\Bestellung;
 use JTL\Customer\Customer;
-use JTL\Shop;
 use JTL\DB\ReturnType;
 use JTL\Session\Frontend;
+use JTL\Shop;
 
 require_once __DIR__ . '/includes/globalinclude.php';
 

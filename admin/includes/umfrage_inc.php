@@ -4,10 +4,10 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use JTL\Helpers\GeneralObject;
-use JTL\Shop;
-use JTL\Helpers\Text;
 use JTL\DB\ReturnType;
+use JTL\Helpers\GeneralObject;
+use JTL\Helpers\Text;
+use JTL\Shop;
 use JTL\Survey\QuestionType;
 
 define('UMFRAGE_MAXANZAHLANZEIGEN', 20);

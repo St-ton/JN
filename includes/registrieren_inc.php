@@ -5,9 +5,9 @@
  */
 
 use JTL\CheckBox;
+use JTL\Customer\Customer;
 use JTL\Customer\CustomerAttributes;
 use JTL\Customer\CustomerFields;
-use JTL\Customer\Customer;
 use JTL\Customer\DataHistory;
 use JTL\DB\ReturnType;
 use JTL\Helpers\ShippingMethod;

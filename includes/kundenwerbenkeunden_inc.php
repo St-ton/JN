@@ -5,8 +5,8 @@
  */
 
 use JTL\Customer\Referral;
-use JTL\Shop;
 use JTL\DB\ReturnType;
+use JTL\Shop;
 
 /**
  * @param array $post

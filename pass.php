@@ -6,8 +6,8 @@
 
 use JTL\Alert\Alert;
 use JTL\Customer\Customer;
-use JTL\Shop;
 use JTL\Helpers\Text;
+use JTL\Shop;
 
 require_once __DIR__ . '/includes/globalinclude.php';
 

@@ -4,8 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use JTL\Shop;
 use JTL\Catalog\Trennzeichen;
+use JTL\Shop;
 
 /**
  * @param array $post

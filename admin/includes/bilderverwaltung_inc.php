@@ -5,10 +5,10 @@
  */
 
 use JTL\Helpers\URL;
-use JTL\Media\Image;
 use JTL\IO\IOError;
-use JTL\Shop;
+use JTL\Media\Image;
 use JTL\Media\MediaImage;
+use JTL\Shop;
 
 /**
  * @param bool $filesize

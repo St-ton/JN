@@ -5,9 +5,9 @@
  */
 
 use JTL\Catalog\Product\PreisverlaufGraph;
-use JTL\Shop;
 use JTL\DB\ReturnType;
 use JTL\Session\Frontend;
+use JTL\Shop;
 
 if ((int)$_GET['kArtikel'] > 0 && (int)$_GET['kKundengruppe'] > 0 && (int)$_GET['kSteuerklasse'] > 0) {
     require_once __DIR__ . '/globalinclude.php';

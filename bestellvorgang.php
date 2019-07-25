@@ -5,9 +5,9 @@
  */
 
 use JTL\Alert\Alert;
+use JTL\Cart\Cart;
 use JTL\Cart\CartHelper;
 use JTL\Cart\PersistentCart;
-use JTL\Cart\Cart;
 use JTL\Checkout\Kupon;
 use JTL\Customer\AccountController;
 use JTL\Extensions\Download\Download;

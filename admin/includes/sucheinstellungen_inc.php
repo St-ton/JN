@@ -4,11 +4,11 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\DB\ReturnType;
+use JTL\Helpers\Text;
 use JTL\IO\IOError;
 use JTL\Shop;
 use JTL\Shopsetting;
-use JTL\Helpers\Text;
-use JTL\DB\ReturnType;
 
 /**
  * @param string $index

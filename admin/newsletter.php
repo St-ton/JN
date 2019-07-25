@@ -5,7 +5,6 @@
  */
 
 use JTL\Alert\Alert;
-use JTL\Newsletter\NewsletterCronDAO;
 use JTL\Customer\Customer;
 use JTL\Customer\CustomerGroup;
 use JTL\DB\ReturnType;
@@ -15,6 +14,7 @@ use JTL\Helpers\Text;
 use JTL\Kampagne;
 use JTL\Newsletter\Admin;
 use JTL\Newsletter\Newsletter;
+use JTL\Newsletter\NewsletterCronDAO;
 use JTL\Pagination\Pagination;
 use JTL\Session\Frontend;
 use JTL\Shop;

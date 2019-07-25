@@ -106,9 +106,9 @@
                                             </td>
                                             <td><a href="{$shopURL}/index.php?a={$oBewertung->kArtikel}" target="_blank">{$oBewertung->ArtikelName}</a></td>
                                             <td>{$oBewertung->cName}.</td>
-                                            <td class="tcenter">{$oBewertung->nSterne}</td>
-                                            <td class="tcenter">{$oBewertung->Datum}</td>
-                                            <td class="tcenter">
+                                            <td class="text-center">{$oBewertung->nSterne}</td>
+                                            <td class="text-center">{$oBewertung->Datum}</td>
+                                            <td class="text-center">
                                                 <div class="btn-group">
                                                     <a class="btn btn-link px-2" title="{__('modify')}"
                                                        href="bewertung.php?a=editieren&kBewertung={$oBewertung->kBewertung}&nFZ=1&token={$smarty.session.jtl_token}">
@@ -195,9 +195,9 @@
                                                 </div>
                                             </td>
                                             <td class="tleft">{$oSuchanfrage->cSuche}</td>
-                                            <td class="tcenter">{$oSuchanfrage->nAnzahlGesuche}</td>
-                                            <td class="tcenter">{$oSuchanfrage->nAnzahlTreffer}</td>
-                                            <td class="tcenter">{$oSuchanfrage->dZuletztGesucht_de}</td>
+                                            <td class="text-center">{$oSuchanfrage->nAnzahlGesuche}</td>
+                                            <td class="text-center">{$oSuchanfrage->nAnzahlTreffer}</td>
+                                            <td class="text-center">{$oSuchanfrage->dZuletztGesucht_de}</td>
                                         </tr>
                                     {/foreach}
                                     </tbody>
@@ -279,8 +279,8 @@
                                                     </label>
                                                 </td>
                                                 <td>{$oNewsKommentar->cBetreff|truncate:50:'...'}</td>
-                                                <td class="tcenter">{$oNewsKommentar->dErstellt_de}</td>
-                                                <td class="tcenter">
+                                                <td class="text-center">{$oNewsKommentar->dErstellt_de}</td>
+                                                <td class="text-center">
                                                     <div class="btn-group">
                                                         <a class="btn btn-link px-2" title="{__('modify')}"
                                                            href="news.php?news=1&kNews={$oNewsKommentar->kNews}&kNewsKommentar={$oNewsKommentar->kNewsKommentar}&nkedit=1&nFZ=1&token={$smarty.session.jtl_token}">
@@ -357,7 +357,7 @@
                                                 <td>{$oNewsletterEmpfaenger->cEmail}</td>
                                                 <td>{$oNewsletterEmpfaenger->cVorname}</td>
                                                 <td>{$oNewsletterEmpfaenger->cNachname}</td>
-                                                <td class="tcenter">{$oNewsletterEmpfaenger->dEingetragen_de}</td>
+                                                <td class="text-center">{$oNewsletterEmpfaenger->dEingetragen_de}</td>
                                             </tr>
                                         {/foreach}
                                     </tbody>

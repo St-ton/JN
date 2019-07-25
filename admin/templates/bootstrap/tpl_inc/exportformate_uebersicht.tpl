@@ -82,12 +82,12 @@
                 <tr>
                     <th class="tleft">{__('name')}</th>
                     <th class="tleft" style="width:320px">{__('filename')}</th>
-                    <th class="tcenter">{__('language')}</th>
-                    <th class="tcenter">{__('currency')}</th>
-                    <th class="tcenter">{__('customerGroup')}</th>
-                    <th class="tcenter">{__('lastModified')}</th>
-                    <th class="tcenter">{__('syntax')}</th>
-                    <th class="tcenter" width="200">{__('actions')}</th>
+                    <th class="text-center">{__('language')}</th>
+                    <th class="text-center">{__('currency')}</th>
+                    <th class="text-center">{__('customerGroup')}</th>
+                    <th class="text-center">{__('lastModified')}</th>
+                    <th class="text-center">{__('syntax')}</th>
+                    <th class="text-center" width="200">{__('actions')}</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -99,18 +99,18 @@
                                 <p>{$exportformat->cDateiname}</p>
                                 <div></div>
                             </td>
-                            <td class="tcenter">{$exportformat->Sprache->getLocalizedName()}</td>
-                            <td class="tcenter">{$exportformat->Waehrung->cName}</td>
-                            <td class="tcenter">{$exportformat->Kundengruppe->cName}</td>
-                            <td class="tcenter">{if !empty($exportformat->dZuletztErstellt)}{$exportformat->dZuletztErstellt}{else}-{/if}</td>
-                            <td class="tcenter">
+                            <td class="text-center">{$exportformat->Sprache->getLocalizedName()}</td>
+                            <td class="text-center">{$exportformat->Waehrung->cName}</td>
+                            <td class="text-center">{$exportformat->Kundengruppe->cName}</td>
+                            <td class="text-center">{if !empty($exportformat->dZuletztErstellt)}{$exportformat->dZuletztErstellt}{else}-{/if}</td>
+                            <td class="text-center">
                                 {if (int)$exportformat->nFehlerhaft === 1}
                                     <i class="fal fa-times text-danger"></i>
                                 {else}
                                     <i class="fal fa-check text-success"></i>
                                 {/if}
                             </td>
-                            <td class="tcenter">
+                            <td class="text-center">
                                 <form method="post" action="exportformate.php">
                                     {$jtl_token}
                                     <input type="hidden" name="kExportformat" value="{$exportformat->kExportformat}" />

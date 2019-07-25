@@ -37,17 +37,17 @@
                                 <p>{__('pluginUpdateExists')}</p>
                             {/if}
                         </td>
-                        <td class="tcenter">
+                        <td class="text-center">
                             <h4 class="label-wrap">
                                 <span class="label {if $plugin->getState() === \JTL\Plugin\State::ACTIVATED}success label-success{elseif $plugin->getState() === \JTL\Plugin\State::DISABLED}success label-info{elseif $plugin->getState() === \JTL\Plugin\State::ERRONEOUS}success label-default{elseif $plugin->getState() === \JTL\Plugin\State::UPDATE_FAILED || $plugin->getState() === \JTL\Plugin\State::LICENSE_KEY_MISSING}info label-info{elseif $plugin->getState() === \JTL\Plugin\State::LICENSE_KEY_INVALID}danger label-danger{/if}">
                                     {$mapper->map($plugin->getState())}
                                 </span>
                             </h4>
                         </td>
-                        <td class="tcenter">{(string)$plugin->getMeta()->getSemVer()}{if $plugin->getMeta()->isUpdateAvailable()} <span class="error">{(string)$plugin->getCurrentVersion()}</span>{/if}</td>
-                        <td class="tcenter">{$plugin->getDateInstalled()->format('d.m.Y H:i')}</td>
-                        <td class="tcenter">{$plugin->getPaths()->getBaseDir()}</td>
-                        <td class="tcenter">
+                        <td class="text-center">{(string)$plugin->getMeta()->getSemVer()}{if $plugin->getMeta()->isUpdateAvailable()} <span class="error">{(string)$plugin->getCurrentVersion()}</span>{/if}</td>
+                        <td class="text-center">{$plugin->getDateInstalled()->format('d.m.Y H:i')}</td>
+                        <td class="text-center">{$plugin->getPaths()->getBaseDir()}</td>
+                        <td class="text-center">
                             {if $plugin->getLocalization()->getTranslations()|@count > 0}
                                 <a href="pluginverwaltung.php?pluginverwaltung_uebersicht=1&sprachvariablen=1&kPlugin={$plugin->getID()}"
                                    class="btn btn-default" title="{__('modify')}">
@@ -58,7 +58,7 @@
                                 </a>
                             {/if}
                         </td>
-                        <td class="tcenter">
+                        <td class="text-center">
                             {if $plugin->getLinks()->getLinks()->count() > 0}
                                 <a href="links.php?kPlugin={$plugin->getID()}"
                                    class="btn btn-default" title="{__('modify')}">
@@ -69,7 +69,7 @@
                                 </a>
                             {/if}
                         </td>
-                        <td class="tcenter">
+                        <td class="text-center">
                             {if $plugin->getLicense()->hasLicenseCheck()}
                                 {if $plugin->getLicense()->hasLicense()}
                                     <strong>{__('pluginBtnLicence')}:</strong> {$plugin->getLicense()->getKey()}
@@ -89,7 +89,7 @@
                                 {/if}
                             {/if}
                         </td>
-                        <td class="tcenter">
+                        <td class="text-center">
                             {if $plugin->getMeta()->isUpdateAvailable()}
                                 <a onclick="ackCheck({$plugin->getID()}, '#probleme'); return false;" class="btn btn-primary">{__('pluginBtnUpdate')}</a>
                             {/if}
@@ -110,22 +110,22 @@
                                 <p>{__('pluginUpdateExists')}</p>
                             {/if}
                         </td>
-                        <td class="tcenter">
+                        <td class="text-center">
                             <h4 class="label-wrap">
                             <span class="label {if $plugin->getState() === \JTL\Plugin\State::ACTIVATED}success label-success{elseif $plugin->getState() === \JTL\Plugin\State::DISABLED}success label-info{elseif $plugin->getState() === \JTL\Plugin\State::ERRONEOUS}success label-default{elseif $plugin->getState() === \JTL\Plugin\State::UPDATE_FAILED || $plugin->getState() === \JTL\Plugin\State::LICENSE_KEY_MISSING}info label-info{elseif $plugin->getState() === \JTL\Plugin\State::LICENSE_KEY_INVALID}danger label-danger{/if}">
                                 {$mapper->map($plugin->getState())}
                             </span>
                             </h4>
                         </td>
-                        <td class="tcenter">{(string)$plugin->getMeta()->getSemVer()}{if $plugin->getMeta()->isUpdateAvailable()} <span class="error">{(string)$plugin->getCurrentVersion()}</span>{/if}</td>
-                        <td class="tcenter">{$plugin->getMeta()->getDateInstalled()->format('d.m.Y H:i')}</td>
-                        <td class="tcenter">{$plugin->getPaths()->getBaseDir()}</td>
-                        <td class="tcenter">
+                        <td class="text-center">{(string)$plugin->getMeta()->getSemVer()}{if $plugin->getMeta()->isUpdateAvailable()} <span class="error">{(string)$plugin->getCurrentVersion()}</span>{/if}</td>
+                        <td class="text-center">{$plugin->getMeta()->getDateInstalled()->format('d.m.Y H:i')}</td>
+                        <td class="text-center">{$plugin->getPaths()->getBaseDir()}</td>
+                        <td class="text-center">
                             {if $plugin->getLocalization()->getTranslations()|@count > 0}
                                 <a href="pluginverwaltung.php?pluginverwaltung_uebersicht=1&sprachvariablen=1&kPlugin={$plugin->getID()}" class="btn btn-default">{__('modify')}</a>
                             {/if}
                         </td>
-                        <td class="tcenter">
+                        <td class="text-center">
                             {if $plugin->getLinks()->getLinks()->count() > 0}
                                 <a href="links.php?kPlugin={$plugin->getID()}"
                                    class="btn btn-default" title="{__('modify')}">
@@ -133,7 +133,7 @@
                                 </a>
                             {/if}
                         </td>
-                        <td class="tcenter">
+                        <td class="text-center">
                             {if $plugin->getLicense()->hasLicenseCheck()}
                                 {if $plugin->getLicense()->hasLicense()}
                                     {$plugin->getLicense()->getKey()|truncate:35:'...':true}
@@ -147,7 +147,7 @@
                                 {/if}
                             {/if}
                         </td>
-                        <td class="tcenter">
+                        <td class="text-center">
                             {if $plugin->getMeta()->isUpdateAvailable()}
                                 <a onclick="ackCheck({$plugin->getID()}, '#probleme'); return false;" class="btn btn-primary">{__('pluginBtnUpdate')}</a>
                             {/if}
@@ -168,17 +168,17 @@
                                 <p>{__('pluginUpdateExists')}</p>
                             {/if}
                         </td>
-                        <td class="tcenter">
+                        <td class="text-center">
                             <h4 class="label-wrap">
                                 <span class="label {if $plugin->getState() === \JTL\Plugin\State::ACTIVATED}success label-success{elseif $plugin->getState() === \JTL\Plugin\State::DISABLED}success label-info{elseif $plugin->getState() === \JTL\Plugin\State::ERRONEOUS}success label-default{elseif $plugin->getState() === \JTL\Plugin\State::UPDATE_FAILED || $plugin->getState() === \JTL\Plugin\State::LICENSE_KEY_MISSING}info label-info{elseif $plugin->getState() === \JTL\Plugin\State::LICENSE_KEY_INVALID}danger label-danger{/if}">
                                     {$mapper->map($plugin->getState())}
                                 </span>
                             </h4>
                         </td>
-                        <td class="tcenter">{(string)$plugin->getMeta()->getSemVer()}{if $plugin->getMeta()->isUpdateAvailable()} <span class="error">{(string)$plugin->getCurrentVersion()}</span>{/if}</td>
-                        <td class="tcenter">{$plugin->getMeta()->getDateInstalled()->format('d.m.Y H:i')}</td>
-                        <td class="tcenter">{$plugin->getPaths()->getBaseDir()}</td>
-                        <td class="tcenter">
+                        <td class="text-center">{(string)$plugin->getMeta()->getSemVer()}{if $plugin->getMeta()->isUpdateAvailable()} <span class="error">{(string)$plugin->getCurrentVersion()}</span>{/if}</td>
+                        <td class="text-center">{$plugin->getMeta()->getDateInstalled()->format('d.m.Y H:i')}</td>
+                        <td class="text-center">{$plugin->getPaths()->getBaseDir()}</td>
+                        <td class="text-center">
                             {if $plugin->getLocalization()->getTranslations()|@count > 0}
                                 <a href="pluginverwaltung.php?pluginverwaltung_uebersicht=1&sprachvariablen=1&kPlugin={$plugin->getID()}"
                                    class="btn btn-default" title="{__('modify')}">
@@ -186,14 +186,14 @@
                                 </a>
                             {/if}
                         </td>
-                        <td class="tcenter">
+                        <td class="text-center">
                             {if $plugin->getLinks()->getLinks()->count() > 0}
                                 <a href="links.php?kPlugin={$plugin->getID()}" class="btn btn-default" title="{__('modify')}">
                                     <i class="fal fa-edit"></i>
                                 </a>
                             {/if}
                         </td>
-                        <td class="tcenter">
+                        <td class="text-center">
                             {if $plugin->getLicense()->hasLicenseCheck()}
                                 {if $plugin->getLicense()->hasLicense()}
                                     <strong>{__('pluginBtnLicence')}:</strong> {$plugin->getLicense()->getKey()}
@@ -209,7 +209,7 @@
                                 {/if}
                             {/if}
                         </td>
-                        <td class="tcenter">
+                        <td class="text-center">
                             {if $plugin->getMeta()->isUpdateAvailable()}
                                 <a onclick="ackCheck({$plugin->getID()}, '#probleme'); return false;" class="btn btn-primary">{__('pluginBtnUpdate')}</a>
                             {/if}
@@ -230,17 +230,17 @@
                                 <p>{__('pluginUpdateExists')}</p>
                             {/if}
                         </td>
-                        <td class="tcenter plugin-status">
+                        <td class="text-center plugin-status">
                             <h4 class="label-wrap">
                                 <span class="label {if $plugin->getState() === \JTL\Plugin\State::ACTIVATED}success label-success{elseif $plugin->getState() === \JTL\Plugin\State::DISABLED}success label-info{elseif $plugin->getState() === \JTL\Plugin\State::ERRONEOUS}success label-default{elseif $plugin->getState() === \JTL\Plugin\State::UPDATE_FAILED || $plugin->getState() === \JTL\Plugin\State::LICENSE_KEY_MISSING}info label-info{elseif $plugin->getState() === \JTL\Plugin\State::LICENSE_KEY_INVALID}danger label-danger{/if}">
                                     {$mapper->map($plugin->getState())}
                                 </span>
                             </h4>
                         </td>
-                        <td class="tcenter plugin-version">{(string)$plugin->getMeta()->getSemVer()}{if $plugin->getMeta()->isUpdateAvailable() } <span class="label label-danger error">{(string)$plugin->getCurrentVersion()}</span>{/if}</td>
-                        <td class="tcenter plugin-install-date">{$plugin->getMeta()->getDateInstalled()->format('d.m.Y H:i')}</td>
-                        <td class="tcenter plugin-folder">{$plugin->getPaths()->getBaseDir()}</td>
-                        <td class="tcenter plugin-lang-vars">
+                        <td class="text-center plugin-version">{(string)$plugin->getMeta()->getSemVer()}{if $plugin->getMeta()->isUpdateAvailable() } <span class="label label-danger error">{(string)$plugin->getCurrentVersion()}</span>{/if}</td>
+                        <td class="text-center plugin-install-date">{$plugin->getMeta()->getDateInstalled()->format('d.m.Y H:i')}</td>
+                        <td class="text-center plugin-folder">{$plugin->getPaths()->getBaseDir()}</td>
+                        <td class="text-center plugin-lang-vars">
                             {if $plugin->getLocalization()->getTranslations()|@count > 0}
                                 <a href="pluginverwaltung.php?pluginverwaltung_uebersicht=1&sprachvariablen=1&kPlugin={$plugin->getID()}"
                                    class="btn btn-default" title="{__('modify')}">
@@ -248,14 +248,14 @@
                                 </a>
                             {/if}
                         </td>
-                        <td class="tcenter plugin-frontend-links">
+                        <td class="text-center plugin-frontend-links">
                             {if $plugin->getLinks()->getLinks()->count() > 0}
                                 <a href="links.php?kPlugin={$plugin->getID()}" class="btn btn-default" title="{__('modify')}">
                                     <i class="fal fa-edit"></i>
                                 </a>
                             {/if}
                         </td>
-                        <td class="tcenter plugin-license">
+                        <td class="text-center plugin-license">
                             {if $plugin->getLicense()->hasLicenseCheck()}
                                 {if $plugin->getLicense()->hasLicense()}
                                     <strong>{__('pluginBtnLicence')}:</strong> {$plugin->getLicense()->getKey()}
@@ -269,7 +269,7 @@
                                 {/if}
                             {/if}
                         </td>
-                        <td class="tcenter">
+                        <td class="text-center">
                             {if $plugin->getMeta()->isUpdateAvailable()}
                                 <a onclick="ackCheck({$plugin->getID()}, '#probleme'); return false;" class="btn btn-primary">{__('pluginBtnUpdate')}</a>
                             {/if}

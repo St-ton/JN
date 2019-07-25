@@ -64,9 +64,9 @@
                                         <tr>
                                             <td>{$oKunde->cFirma}</td>
                                             <td>{$oKunde->cVorname} {$oKunde->cNachname}</td>
-                                            <td class="tcenter">{$oKunde->nAnzahl}</td>
-                                            <td class="tcenter">{$oKunde->Datum}</td>
-                                            <td class="tcenter">
+                                            <td class="text-center">{$oKunde->nAnzahl}</td>
+                                            <td class="text-center">{$oKunde->Datum}</td>
+                                            <td class="text-center">
                                                 <div class="btn-group">
                                                     <a href="warenkorbpers.php?l={$oKunde->kKunde}&token={$smarty.session.jtl_token}" class="btn btn-link px-2">
                                                         <span class="icon-hover">
@@ -120,8 +120,8 @@
                             <td class="tleft">
                                 <a href="{$shopURL}/index.php?a={$oWarenkorbPersPos->kArtikel}" target="_blank">{$oWarenkorbPersPos->cArtikelName}</a>
                             </td>
-                            <td class="tcenter">{$oWarenkorbPersPos->fAnzahl}</td>
-                            <td class="tcenter">{$oWarenkorbPersPos->Datum}</td>
+                            <td class="text-center">{$oWarenkorbPersPos->fAnzahl}</td>
+                            <td class="text-center">{$oWarenkorbPersPos->Datum}</td>
                         </tr>
                     {/foreach}
                     </tbody>

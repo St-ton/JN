@@ -73,7 +73,7 @@
                             <tr>
                                 {foreach name=member from=$cMember_arr[$i] key=j item=cMember}
                                     {assign var=cMemberVar value=$cMember[0]}
-                                    <td class="tcenter">
+                                    <td class="text-center">
                                         {if $cMemberVar === 'nCount' && $nTyp == $STATS_ADMIN_TYPE_UMSATZ}
                                             {$oStat->$cMemberVar|number_format:2:',':'.'} &euro;
                                         {elseif $cMemberVar === 'nCount'}

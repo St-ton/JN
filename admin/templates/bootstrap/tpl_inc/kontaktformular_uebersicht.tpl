@@ -86,8 +86,8 @@
                                             <a href="kontaktformular.php?kKontaktBetreff={$Betreff->kKontaktBetreff}&token={$smarty.session.jtl_token}">{$Betreff->cName}</a>
                                         </td>
                                         <td>{$Betreff->cMail}</td>
-                                        <td class="tcenter">{$Betreff->Kundengruppen}</td>
-                                        <td class="tcenter">
+                                        <td class="text-center">{$Betreff->Kundengruppen}</td>
+                                        <td class="text-center">
                                             <div class="btn-group">
                                                 <a href="kontaktformular.php?del={$Betreff->kKontaktBetreff}&token={$smarty.session.jtl_token}" class="btn btn-link px-2" title="{__('delete')}">
                                                     <span class="icon-hover">

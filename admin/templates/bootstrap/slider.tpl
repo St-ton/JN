@@ -26,7 +26,7 @@
                             <thead>
                             <tr>
                                 <th class="tleft" width="50%">{__('name')}</th>
-                                <th width="20%">{__('status')}</th>
+                                <th class="text-center" width="20%">{__('active')}</th>
                                 <th width="30%">{__('options')}</th>
                             </tr>
                             </thead>
@@ -34,14 +34,12 @@
                             {foreach $oSlider_arr as $oSlider}
                                 <tr>
                                     <td class="tleft">{$oSlider->cName}</td>
-                                    <td class="tcenter">
-                                        <h4 class="label-wrap">
+                                    <td class="text-center">
                                         {if $oSlider->bAktiv == 1}
-                                            <span class="label label-success">{__('active')}</span>
+                                            <i class="fal fa-check text-success"></i>
                                         {else}
-                                            <span class="label label-danger">{__('inactive')}</span>
+                                            <i class="fal fa-times text-danger"></i>
                                         {/if}
-                                        </h4>
                                     </td>
                                     <td>
                                         <div class="btn-group">

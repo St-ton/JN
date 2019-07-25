@@ -30,12 +30,12 @@
                                             <th class="tleft" style="width: 10px;">&nbsp;</th>
                                             <th class="tleft">{__('exportformat')}</th>
                                             <th class="tleft">{__('exportformatOptions')}</th>
-                                            <th class="tcenter">{__('exportformatStart')}</th>
-                                            <th class="tcenter">{__('repetition')}</th>
-                                            <th class="tcenter">{__('exportformatExported')}</th>
-                                            <th class="tcenter">{__('exportformatLastStart')}</th>
-                                            <th class="tcenter">{__('exportformatNextStart')}</th>
-                                            <th class="tcenter">&nbsp;</th>
+                                            <th class="text-center">{__('exportformatStart')}</th>
+                                            <th class="text-center">{__('repetition')}</th>
+                                            <th class="text-center">{__('exportformatExported')}</th>
+                                            <th class="text-center">{__('exportformatLastStart')}</th>
+                                            <th class="text-center">{__('exportformatNextStart')}</th>
+                                            <th class="text-center">&nbsp;</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -49,14 +49,14 @@
                                             </td>
                                             <td class="tleft"><label for="kCron-{$oExportformatCron->cronID}">{$oExportformatCron->cName}</label></td>
                                             <td class="tleft">{$oExportformatCron->Sprache->getLocalizedName()}/{$oExportformatCron->Waehrung->cName}/{$oExportformatCron->Kundengruppe->cName}</td>
-                                            <td class="tcenter">{$oExportformatCron->dStart_de}</td>
-                                            <td class="tcenter">{$oExportformatCron->cAlleXStdToDays}</td>
-                                            <td class="tcenter">
+                                            <td class="text-center">{$oExportformatCron->dStart_de}</td>
+                                            <td class="text-center">{$oExportformatCron->cAlleXStdToDays}</td>
+                                            <td class="text-center">
                                                 {$oExportformatCron->oJobQueue->tasksExecuted|default:0}/{$oExportformatCron->nAnzahlArtikel->nAnzahl}
                                             </td>
-                                            <td class="tcenter">{if $oExportformatCron->dLetzterStart_de === '00.00.0000 00:00'}-{else}{$oExportformatCron->dLetzterStart_de}{/if}</td>
-                                            <td class="tcenter">{if $oExportformatCron->dNaechsterStart_de === null}sofort{else}{$oExportformatCron->dNaechsterStart_de}{/if}</td>
-                                            <td class="tcenter">
+                                            <td class="text-center">{if $oExportformatCron->dLetzterStart_de === '00.00.0000 00:00'}-{else}{$oExportformatCron->dLetzterStart_de}{/if}</td>
+                                            <td class="text-center">{if $oExportformatCron->dNaechsterStart_de === null}sofort{else}{$oExportformatCron->dNaechsterStart_de}{/if}</td>
+                                            <td class="text-center">
                                                 <div class="btn-group">
                                                     <a href="exportformat_queue.php?action=editieren&kCron={$oExportformatCron->cronID}&token={$smarty.session.jtl_token}"
                                                        class="btn btn-link px-2" title="{__('modify')}">

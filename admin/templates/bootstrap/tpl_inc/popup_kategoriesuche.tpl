@@ -14,7 +14,7 @@
         </div>
         <div class="clear"></div>
     </div>
-    <div class="tcenter btn-group">
+    <div class="text-center btn-group">
         <a href="#" class="btn btn-primary" id="categories_list_save">{__('saveWithIcon')}</a>
         <a href="#" class="btn btn-danger" id="categories_list_cancel"><i class="fal fa-exclamation-triangle"></i> {__('cancel')}</a>
     </div>

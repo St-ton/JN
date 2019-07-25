@@ -12,10 +12,10 @@
                 {for $i=2 to $childCat->getLevel()}&nbsp;&nbsp;{/for}{$childCat->getName()}
             </label>
         </td>
-        <td class="tcenter">{$childCat->getSort()}</td>
-        <td class="tcenter"><i class="fa fa-{if $childCat->getIsActive()}check{else}close{/if}"></i></td>
-        <td class="tcenter">{$childCat->getDateLastModified()->format('d.m.Y H:i')}</td>
-        <td class="tcenter">
+        <td class="text-center">{$childCat->getSort()}</td>
+        <td class="text-center"><i class="fa fa-{if $childCat->getIsActive()}check{else}close{/if}"></i></td>
+        <td class="text-center">{$childCat->getDateLastModified()->format('d.m.Y H:i')}</td>
+        <td class="text-center">
             <a href="news.php?news=1&newskategorie_editieren=1&kNewsKategorie={$childCat->getID()}&tab=kategorien&token={$smarty.session.jtl_token}"
                class="btn btn-primary" title="{__('modify')}">
                 <i class="fal fa-edit"></i>

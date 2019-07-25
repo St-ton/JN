@@ -14,7 +14,7 @@
         </div>
         <div class="clear"></div>
     </div>
-    <div class="tcenter btn-group">
+    <div class="text-center btn-group">
         <a href="#" class="btn btn-default" id="article_list_add"><i class="fal fa-check text-success-square-o"></i> {__('add')}</a>
         <a href="#" class="btn btn-default" id="article_list_remove"><i class="fa fa-square-o"></i> {__('delete')}</a>
         <a href="#" class="btn btn-primary" id="article_list_save">{__('saveWithIcon')}</a>

@@ -235,7 +235,7 @@
                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                         {if isset($cDatei_arr)}
                             {foreach $cDatei_arr as $cDatei}
-                                <span class="block tcenter vmiddle">
+                                <span class="block text-center vmiddle">
                                     <a href="links.php?kLink={$Link->getID()}&token={$smarty.session.jtl_token}&delpic=1&cName={$cDatei->cNameFull}{if isset($Link->getPluginID()) && $Link->getPluginID() > 0}{$Link->getPluginID()}{/if}">
                                         <img src="{$currentTemplateDir}/gfx/layout/remove.png" alt="delete">
                                     </a>

@@ -35,7 +35,7 @@
                                         <th class="tleft">{__('kampagneName')}</th>
                                         <th class="tleft">{__('kampagneParam')}</th>
                                         <th class="tleft">{__('kampagneValue')}</th>
-                                        <th class="th-4">{__('activated')}</th>
+                                        <th class="th-4 text-center">{__('activated')}</th>
                                         <th class="th-5">{__('kampagnenDate')}</th>
                                         <th class="th-6"></th>
                                     </tr>
@@ -58,9 +58,15 @@
                                                     {$oKampagne->cWert}
                                                 {/if}
                                             </td>
-                                            <td class="tcenter">{if isset($oKampagne->nAktiv) && $oKampagne->nAktiv == 1}{__('yes')}{else}{__('no')}{/if}</td>
-                                            <td class="tcenter">{$oKampagne->dErstellt_DE}</td>
-                                            <td class="tcenter">
+                                            <td class="text-center">
+                                                {if isset($oKampagne->nAktiv) && $oKampagne->nAktiv == 1}
+                                                    <i class="fal fa-check text-success"></i>
+                                                {else}
+                                                    <i class="fal fa-times text-danger"></i>
+                                                {/if}
+                                            </td>
+                                            <td class="text-center">{$oKampagne->dErstellt_DE}</td>
+                                            <td class="text-center">
                                                 <div class="btn-group">
                                                     <a href="kampagne.php?kKampagne={$oKampagne->kKampagne}&editieren=1&token={$smarty.session.jtl_token}" title="{__('modify')}" class="btn btn-link px-2">
                                                         <span class="icon-hover">
@@ -96,7 +102,7 @@
                                             <th class="tleft">{__('kampagneName')}</th>
                                             <th class="tleft">{__('kampagneParam')}</th>
                                             <th class="tleft">{__('kampagneValue')}</th>
-                                            <th class="th-4">{__('activated')}</th>
+                                            <th class="th-4 text-center">{__('activated')}</th>
                                             <th class="th-5">{__('kampagnenDate')}</th>
                                             <th class="th-6"></th>
                                         </tr>
@@ -125,9 +131,15 @@
                                                         {$oKampagne->cWert}
                                                     {/if}
                                                 </td>
-                                                <td class="tcenter">{if isset($oKampagne->nAktiv) && $oKampagne->nAktiv == 1}{__('yes')}{else}{__('no')}{/if}</td>
-                                                <td class="tcenter">{$oKampagne->dErstellt_DE}</td>
-                                                <td class="tcenter">
+                                                <td class="text-center">
+                                                    {if isset($oKampagne->nAktiv) && $oKampagne->nAktiv == 1}
+                                                        <i class="fal fa-check text-success"></i>
+                                                    {else}
+                                                        <i class="fal fa-times text-danger"></i>
+                                                    {/if}
+                                                </td>
+                                                <td class="text-center">{$oKampagne->dErstellt_DE}</td>
+                                                <td class="text-center">
                                                     <a href="kampagne.php?kKampagne={$oKampagne->kKampagne}&editieren=1&token={$smarty.session.jtl_token}"
                                                        class="btn btn-link px-2" title="{__('modify')}">
                                                         <i class="fal fa-edit"></i>

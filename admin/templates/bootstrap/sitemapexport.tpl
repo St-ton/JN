@@ -235,9 +235,9 @@
                                             {else}
                                                 <td>&nbsp;</td>
                                             {/if}
-                                            <td class="tcenter">{$oSitemapReport->fVerarbeitungszeit}s</td>
-                                            <td class="tcenter">{$oSitemapReport->nTotalURL}</td>
-                                            <td class="tcenter">{$oSitemapReport->dErstellt_DE}</td>
+                                            <td class="text-center">{$oSitemapReport->fVerarbeitungszeit}s</td>
+                                            <td class="text-center">{$oSitemapReport->nTotalURL}</td>
+                                            <td class="text-center">{$oSitemapReport->dErstellt_DE}</td>
                                         </tr>
                                         {if isset($oSitemapReport->oSitemapReportFile_arr) && $oSitemapReport->oSitemapReportFile_arr|@count > 0}
                                             <tr id="info_{$oSitemapReport->kSitemapReport}" style="display: none;">
@@ -256,8 +256,8 @@
                                                             {foreach $oSitemapReport->oSitemapReportFile_arr as $oSitemapReportFile}
                                                                 <tr>
                                                                     <td>{$oSitemapReportFile->cDatei}</td>
-                                                                    <td class="tcenter">{$oSitemapReportFile->nAnzahlURL}</td>
-                                                                    <td class="tcenter">{$oSitemapReportFile->fGroesse} KB</td>
+                                                                    <td class="text-center">{$oSitemapReportFile->nAnzahlURL}</td>
+                                                                    <td class="text-center">{$oSitemapReportFile->fGroesse} KB</td>
                                                                 </tr>
                                                             {/foreach}
                                                         </tbody>

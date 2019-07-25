@@ -29,8 +29,8 @@
                                         {$listingItem->getErrorMessage()}
                                     </p>
                                 </td>
-                                <td class="tcenter">{$listingItem->getVersion()}</td>
-                                <td class="tcenter">{$listingItem->getDir()}</td>
+                                <td class="text-center">{$listingItem->getVersion()}</td>
+                                <td class="text-center">{$listingItem->getDir()}</td>
                             </tr>
                         {/foreach}
                         </tbody>

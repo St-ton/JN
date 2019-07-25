@@ -39,14 +39,14 @@
                             <tbody>
                             {foreach $Letzten20Vergleiche as $oVergleichsliste20}
                                 <tr>
-                                    <td class="tcenter">{$oVergleichsliste20->kVergleichsliste}</td>
+                                    <td class="text-center">{$oVergleichsliste20->kVergleichsliste}</td>
                                     <td class="">
                                         {foreach $oVergleichsliste20->oLetzten20VergleichslistePos_arr as $oVergleichslistePos20}
                                             <a href="{$shopURL}/index.php?a={$oVergleichslistePos20->kArtikel}" target="_blank">{$oVergleichslistePos20->cArtikelName}</a>{if !$oVergleichslistePos20@last}{/if}
                                             <br />
                                         {/foreach}
                                     </td>
-                                    <td class="tcenter">{$oVergleichsliste20->Datum}</td>
+                                    <td class="text-center">{$oVergleichsliste20->Datum}</td>
                                 </tr>
                             {/foreach}
                             </tbody>
@@ -129,7 +129,7 @@
                                         <td>
                                             <a href="{$shopURL}/index.php?a={$oVergleichslistePosTop->kArtikel}" target="_blank">{$oVergleichslistePosTop->cArtikelName}</a>
                                         </td>
-                                        <td class="tcenter">{$oVergleichslistePosTop->nAnzahl}</td>
+                                        <td class="text-center">{$oVergleichslistePosTop->nAnzahl}</td>
                                     </tr>
                                 {/foreach}
                                 </tbody>

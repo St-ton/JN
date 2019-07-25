@@ -21,7 +21,7 @@
                 {foreach $oKundengruppe_arr as $oKundengruppe}
                     <tr>
                         <td class="">{$oKundengruppe->cName}</td>
-                        <td class="tcenter">
+                        <td class="text-center">
                             <div class="btn-group">
                                 <a href="agbwrb.php?agbwrb=1&agbwrb_edit=1&kKundengruppe={$oKundengruppe->kKundengruppe}&token={$smarty.session.jtl_token}"
                                    class="btn btn-link px-2" title="{__('modify')}">

@@ -35,9 +35,9 @@
                                         <thead>
                                             <tr>
                                                 <th class="check" style="width:35px">&nbsp;</th>
-                                                <th class="tcenter">{__('active')}</th>
+                                                <th class="text-center">{__('active')}</th>
                                                 <th class="tleft">{__('name')}</th>
-                                                <th class="tcenter">{__('aaLocation')}</th>
+                                                <th class="text-center">{__('aaLocation')}</th>
                                                 <th class="tright">&nbsp;</th>
                                             </tr>
                                         </thead>
@@ -64,7 +64,7 @@
                                                             {$oAuswahlAssistentGruppe->cName}
                                                         </label>
                                                     </td>
-                                                    <td class="tcenter">
+                                                    <td class="text-center">
                                                         {foreach $oAuswahlAssistentGruppe->oAuswahlAssistentOrt_arr as $oAuswahlAssistentOrt}
                                                             {$oAuswahlAssistentOrt->cOrt}{if !$oAuswahlAssistentOrt@last}, {/if}
                                                         {/foreach}
@@ -101,10 +101,10 @@
                                                                 <table class="list table">
                                                                     <thead>
                                                                         <tr>
-                                                                            <th class="tcenter"></th>
+                                                                            <th class="text-center"></th>
                                                                             <th class="tleft">{__('question')}</th>
-                                                                            <th class="tcenter">{__('attribute')}</th>
-                                                                            <th class="tcenter">{__('sorting')}</th>
+                                                                            <th class="text-center">{__('attribute')}</th>
+                                                                            <th class="text-center">{__('sorting')}</th>
                                                                             <th class="tright">&nbsp;</th>
                                                                         </tr>
                                                                     </thead>
@@ -113,8 +113,8 @@
                                                                         <tr{if !$oAuswahlAssistentFrage->nAktiv} class="text-danger"{/if}>
                                                                             <td>{if !$oAuswahlAssistentFrage->nAktiv}<i class="fal fa-times"></i>{/if}</td>
                                                                             <td class="tleft">{$oAuswahlAssistentFrage->cFrage}</td>
-                                                                            <td class="tcenter">{$oAuswahlAssistentFrage->cName}</td>
-                                                                            <td class="tcenter">{$oAuswahlAssistentFrage->nSort}</td>
+                                                                            <td class="text-center">{$oAuswahlAssistentFrage->cName}</td>
+                                                                            <td class="text-center">{$oAuswahlAssistentFrage->nSort}</td>
                                                                             <td class="tright" style="width:250px">
                                                                                 <div class="btn-group">
                                                                                     <a href="auswahlassistent.php?a=delQuest&q={$oAuswahlAssistentFrage->kAuswahlAssistentFrage}&token={$smarty.session.jtl_token}" class="btn btn-link px-2 remove">

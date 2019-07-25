@@ -65,7 +65,6 @@
   src: local('Source Serif Pro Bold'), local('SourceSerifPro-Bold'), url(../fonts/SourceSerifPro-Bold.ttf) format('truetype');
 }
 .backend-wrapper {
-  display: flex;
   flex-direction: row;
   min-height: 100%;
 }

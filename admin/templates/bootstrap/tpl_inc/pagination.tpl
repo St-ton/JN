@@ -13,64 +13,62 @@
 {assign var=bSortByOptions value=$pagination->getSortByOptions()|@count > 0}
 
 {function pageButtons}
-    <div class="col-md-6">
-        <span class="font-weight-bold d-block mb-3">
-            {if $bMultiplePages}
-                {__('entries')} {$pagination->getFirstPageItem() + 1}
-                - {$pagination->getFirstPageItem() + $pagination->getPageItemCount()}
-                {__('of')} {$pagination->getItemCount()}
-            {else}
-                {__('allEntries')}
-            {/if}
-        </span>
-        <nav aria-label="Page navigation example">
+    <span class="font-weight-bold d-block mb-3">
         {if $bMultiplePages}
-            <ul class="pagination justify-content-between justify-content-md-start mb-5 mb-md-0">
-                <li class="page-item">
-                    <a class="page-link" {if $pagination->getPrevPage() != $pagination->getPage()}href="?{$pagination->getId()}_nPage={$pagination->getPrevPage()}&{$cUrlAppend}"{/if}>
-                        <span class="fal fa-long-arrow-left"></span>
-                    </a>
-                </li>
-                {if $pagination->getLeftRangePage() > 0}
-                    <li class="page-item">
-                        <a class="page-link" href="?{$pagination->getId()}_nPage=0&{$cUrlAppend}">1</a>
-                    </li>
-                {/if}
-                {if $pagination->getLeftRangePage() > 1}
-                    <li class="page-item">
-                        <span class="page-text">&hellip;</span>
-                    </li>
-                {/if}
-                {for $i=$pagination->getLeftRangePage() to $pagination->getRightRangePage()}
-                    <li class="page-item{if $pagination->getPage() == $i} active{/if}">
-                        <a class="page-link" href="?{$pagination->getId()}_nPage={$i}&{$cUrlAppend}">{$i+1}</a>
-                    </li>
-                {/for}
-                {if $pagination->getRightRangePage() < $pagination->getPageCount() - 2}
-                    <li class="page-item">
-                        <span class="page-text">&hellip;</span>
-                    </li>
-                {/if}
-                {if $pagination->getRightRangePage() < $pagination->getPageCount() - 1}
-                    <li class="page-item">
-                        <a class="page-link" href="?{$pagination->getId()}_nPage={$pagination->getPageCount() - 1}&{$cUrlAppend}">{$pagination->getPageCount()}</a>
-                    </li>
-                {/if}
-                <li class="page-item">
-                    <a class="page-link" {if $pagination->getNextPage() != $pagination->getPage()}href="?{$pagination->getId()}_nPage={$pagination->getNextPage()}&{$cUrlAppend}"{/if}>
-                        <span class="fal fa-long-arrow-right"></span>
-                    </a>
-                </li>
-            </ul>
+            {__('entries')} {$pagination->getFirstPageItem() + 1}
+            - {$pagination->getFirstPageItem() + $pagination->getPageItemCount()}
+            {__('of')} {$pagination->getItemCount()}
         {else}
-            <ul class="pagination">
-                <li>
-                    <a>{$pagination->getItemCount()}</a>
-                </li>
-            </ul>
+            {__('allEntries')}
         {/if}
-        </nav>
-    </div>
+    </span>
+    <nav aria-label="Page navigation example">
+    {if $bMultiplePages}
+        <ul class="pagination justify-content-between justify-content-md-start mb-5 mb-md-0">
+            <li class="page-item">
+                <a class="page-link" {if $pagination->getPrevPage() != $pagination->getPage()}href="?{$pagination->getId()}_nPage={$pagination->getPrevPage()}&{$cUrlAppend}"{/if}>
+                    <span class="fal fa-long-arrow-left"></span>
+                </a>
+            </li>
+            {if $pagination->getLeftRangePage() > 0}
+                <li class="page-item">
+                    <a class="page-link" href="?{$pagination->getId()}_nPage=0&{$cUrlAppend}">1</a>
+                </li>
+            {/if}
+            {if $pagination->getLeftRangePage() > 1}
+                <li class="page-item">
+                    <span class="page-text">&hellip;</span>
+                </li>
+            {/if}
+            {for $i=$pagination->getLeftRangePage() to $pagination->getRightRangePage()}
+                <li class="page-item{if $pagination->getPage() == $i} active{/if}">
+                    <a class="page-link" href="?{$pagination->getId()}_nPage={$i}&{$cUrlAppend}">{$i+1}</a>
+                </li>
+            {/for}
+            {if $pagination->getRightRangePage() < $pagination->getPageCount() - 2}
+                <li class="page-item">
+                    <span class="page-text">&hellip;</span>
+                </li>
+            {/if}
+            {if $pagination->getRightRangePage() < $pagination->getPageCount() - 1}
+                <li class="page-item">
+                    <a class="page-link" href="?{$pagination->getId()}_nPage={$pagination->getPageCount() - 1}&{$cUrlAppend}">{$pagination->getPageCount()}</a>
+                </li>
+            {/if}
+            <li class="page-item">
+                <a class="page-link" {if $pagination->getNextPage() != $pagination->getPage()}href="?{$pagination->getId()}_nPage={$pagination->getNextPage()}&{$cUrlAppend}"{/if}>
+                    <span class="fal fa-long-arrow-right"></span>
+                </a>
+            </li>
+        </ul>
+    {else}
+        <ul class="pagination">
+            <li>
+                <a>{$pagination->getItemCount()}</a>
+            </li>
+        </ul>
+    {/if}
+    </nav>
 {/function}
 
 {function itemsPerPageOptions}
@@ -107,26 +105,28 @@
 {/function}
 
 {if $bItemsAvailable}
-    <div class="toolbar">
-        <div class="container-fluid toolbar-container">
+    <div class="container-fluid toolbar-container">
+        <form action="{if isset($cAnchor)}#{$cAnchor}{/if}" method="get" name="{$pagination->getId()}" id="{$pagination->getId()}">
             <div class="row mb-5">
-                {pageButtons}
-                <div class="col-md-auto ml-md-auto">
-                    <form action="{if isset($cAnchor)}#{$cAnchor}{/if}" method="get" name="{$pagination->getId()}" id="{$pagination->getId()}">
-                        {foreach $cParam_arr as $cParamName => $cParamValue}
-                            <input type="hidden" name="{$cParamName}" value="{$cParamValue}">
-                        {/foreach}
-                        <div class="form-group">
-                            {itemsPerPageOptions}
-                        </div>
-                        {if $bSortByOptions}
-                            <div class="form-group">
-                                {sortByDirOptions}
-                            </div>
-                        {/if}
-                    </form>
+                <div class="col-12 col-md-4">
+                    {pageButtons}
                 </div>
+                {foreach $cParam_arr as $cParamName => $cParamValue}
+                    <input type="hidden" name="{$cParamName}" value="{$cParamValue}">
+                {/foreach}
+                <div class="col-12 col-md-4 col-lg-3 col-xl-2 ml-lg-auto">
+                    <div class="form-group">
+                        {itemsPerPageOptions}
+                    </div>
+                </div>
+                {if $bSortByOptions}
+                    <div class="col-12 col-md-4 col-lg-3 col-xl-2">
+                        <div class="form-group">
+                            {sortByDirOptions}
+                        </div>
+                    </div>
+                {/if}
             </div>
-        </div>
+        </form>
     </div>
 {/if}

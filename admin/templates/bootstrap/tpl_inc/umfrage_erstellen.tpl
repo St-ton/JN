@@ -59,66 +59,76 @@ function clearInput(inputField) {ldelim}
                         <input type="hidden" name="umfrage_edit_speichern" value="1" />
                         <input type="hidden" name="kUmfrage" value="{$oUmfrage->kUmfrage}" />
                     {/if}
-                    <table class="kundenfeld table" id="formtable">
-                        <tr>
-                            <td><label for="cName">{__('name')}:</label></td>
-                            <td><input class="form-control" id="cName" name="cName" type="text"  value="{if isset($oUmfrage->cName)}{$oUmfrage->cName}{/if}" /></td>
-                        </tr>
-                        <tr>
-                            <td><label for="cSeo">{__('seo')}:</label></td>
-                            <td><input class="form-control" id="cSeo" name="cSeo" type="text"  value="{if isset($oUmfrage->cSeo)}{$oUmfrage->cSeo}{/if}" /></td>
-                        </tr>
-                        <tr>
-                            <td><label for="kKundengruppe">{__('customerGroup')}:</label></td>
-                            <td>
-                                <select id="kKundengruppe" name="kKundengruppe[]" multiple="multiple" class="combo custom-select">
-                                    <option value="-1" {if isset($oUmfrage->kKundengruppe_arr)}{foreach $oUmfrage->kKundengruppe_arr as $kKundengruppe}{if $kKundengruppe == '-1'}selected{/if}{/foreach}{/if}>{__('all')}</option>
+                    <div class="form-group form-row align-items-center">
+                        <label class="col col-sm-3 col-form-label text-sm-right" for="cName">{__('name')}:</label>
+                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                            <input class="form-control" id="cName" name="cName" type="text"  value="{if isset($oUmfrage->cName)}{$oUmfrage->cName}{/if}" />
+                        </div>
+                    </div>
+                    <div class="form-group form-row align-items-center">
+                        <label class="col col-sm-3 col-form-label text-sm-right" for="cSeo">{__('seo')}:</label>
+                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                            <input class="form-control" id="cSeo" name="cSeo" type="text"  value="{if isset($oUmfrage->cSeo)}{$oUmfrage->cSeo}{/if}" />
+                        </div>
+                    </div>
+                    <div class="form-group form-row align-items-center">
+                        <label class="col col-sm-3 col-form-label text-sm-right" for="kKundengruppe">{__('customerGroup')}:</label>
+                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                            <select id="kKundengruppe" name="kKundengruppe[]" multiple="multiple" class="combo custom-select">
+                                <option value="-1" {if isset($oUmfrage->kKundengruppe_arr)}{foreach $oUmfrage->kKundengruppe_arr as $kKundengruppe}{if $kKundengruppe == '-1'}selected{/if}{/foreach}{/if}>{__('all')}</option>
                                 {foreach $oKundengruppe_arr as $oKundengruppe}
                                     <option value="{$oKundengruppe->kKundengruppe}" {if isset($oUmfrage->kKundengruppe_arr)}{foreach $oUmfrage->kKundengruppe_arr as $kKundengruppe}{if $oKundengruppe->kKundengruppe == $kKundengruppe}selected{/if}{/foreach}{/if}>{$oKundengruppe->cName}</option>
                                 {/foreach}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group form-row align-items-center">
+                        <label class="col col-sm-3 col-form-label text-sm-right" for="dGueltigVon">{__('umfrageValidation')}:</label>
+                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                            <input class="form-control" id="dGueltigVon" name="dGueltigVon" type="text"  value="{if isset($oUmfrage->dGueltigVon_de) && $oUmfrage->dGueltigVon_de|strlen > 0}{$oUmfrage->dGueltigVon_de}{else}{$smarty.now|date_format:'%d.%m.%Y %H:%M'}{/if}" />
+                        </div>
+                        <div class="col-1 pl-sm-3 pr-sm-5 order-last order-sm-2">
+                            <label for="dGueltigBis">{__('to')}</label>
+                        </div>
+                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                            <input class="form-control" id="dGueltigBis" name="dGueltigBis" type="text"  value="{if isset($oUmfrage->dGueltigBis_de)}{$oUmfrage->dGueltigBis_de}{/if}"/>
+                        </div>
+                    </div>
+                    <div class="form-group form-row align-items-center">
+                        <label class="col col-sm-3 col-form-label text-sm-right" for="nAktiv">{__('active')}:</label>
+                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                            <select id="nAktiv" name="nAktiv" class="combo custom-select">
+                                <option value="1"{if isset($oUmfrage->nAktiv) && $oUmfrage->nAktiv == 1} selected{/if}>{__('yes')}</option>
+                                <option value="0"{if isset($oUmfrage->nAktiv) && $oUmfrage->nAktiv == 0} selected{/if}>{__('no')}</option>
+                            </select>
+                        </div>
+                    </div>
+                    {if $oKupon_arr|@count > 0 && $oKupon_arr}
+                        <div class="form-group form-row align-items-center">
+                            <label class="col col-sm-3 col-form-label text-sm-right" for="kupon">{__('coupon')}:</label>
+                            <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                <select id="kupon" name="kKupon" class="combo custom-select" onchange="selectCheck(this);">
+                                    <option value="0"{if isset($oUmfrage->kKupon) && $oUmfrage->kKupon == 0} selected{/if} index=0>{__('umfrageNoCoupon')}</option>
+                                    {foreach $oKupon_arr as $oKupon}
+                                        <option value="{$oKupon->kKupon}"{if isset($oUmfrage->kKupon) && $oKupon->kKupon == $oUmfrage->kKupon} selected{/if}>{$oKupon->cName}</option>
+                                    {/foreach}
                                 </select>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><label for="dGueltigVon">{__('umfrageValidation')}:</label></td>
-                            <td>
-                                <input class="form-control" id="dGueltigVon" name="dGueltigVon" type="text"  value="{if isset($oUmfrage->dGueltigVon_de) && $oUmfrage->dGueltigVon_de|strlen > 0}{$oUmfrage->dGueltigVon_de}{else}{$smarty.now|date_format:'%d.%m.%Y %H:%M'}{/if}" style="width: 150px;" />
-                                <label for="dGueltigBis">{__('to')}</label>
-                                <input class="form-control" id="dGueltigBis" name="dGueltigBis" type="text"  value="{if isset($oUmfrage->dGueltigBis_de)}{$oUmfrage->dGueltigBis_de}{/if}" style="width: 150px;" />
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><label for="nAktiv">{__('active')}:</label></td>
-                            <td>
-                                <select id="nAktiv" name="nAktiv" class="combo custom-select" style="width: 80px;">
-                                    <option value="1"{if isset($oUmfrage->nAktiv) && $oUmfrage->nAktiv == 1} selected{/if}>{__('yes')}</option>
-                                    <option value="0"{if isset($oUmfrage->nAktiv) && $oUmfrage->nAktiv == 0} selected{/if}>{__('no')}</option>
-                                </select>
-                            </td>
-                        </tr>
-                        {if $oKupon_arr|@count > 0 && $oKupon_arr}
-                            <tr>
-                                <td><label for="kupon">{__('coupon')}:</label></td>
-                                <td valign="top">
-                                    <select id="kupon" name="kKupon" class="combo custom-select" onchange="selectCheck(this);" style="width: 180px;">
-                                        <option value="0"{if isset($oUmfrage->kKupon) && $oUmfrage->kKupon == 0} selected{/if} index=0>{__('umfrageNoCoupon')}</option>
-                                        {foreach $oKupon_arr as $oKupon}
-                                            <option value="{$oKupon->kKupon}"{if isset($oUmfrage->kKupon) && $oKupon->kKupon == $oUmfrage->kKupon} selected{/if}>{$oKupon->cName}</option>
-                                        {/foreach}
-                                    </select>
-                                </td>
-                            </tr>
-                        {/if}
-                        <tr>
-                            <td><label for="fGuthaben">{__('credit')}:</label></td>
-                            <td><input class="form-control" name="fGuthaben" id="fGuthaben" type="text"  value="{if isset($oUmfrage->fGuthaben)}{$oUmfrage->fGuthaben}{/if}" onclick="checkInput(this,'fGuthaben');" onblur="clearInput(this);" /></td>
-                            <input id="nBonuspunkte" type="hidden" />{*placeholder to avoid js errors*}
-                        </tr>
-                        <tr>
-                            <td><label for="cBeschreibung">{__('description')}:</label></td>
-                            <td><textarea id="cBeschreibung" class="ckeditor" name="cBeschreibung" rows="15" cols="60">{if isset($oUmfrage->cBeschreibung)}{$oUmfrage->cBeschreibung}{/if}</textarea></td>
-                        </tr>
-                    </table>
+                            </div>
+                        </div>
+                    {/if}
+                    <div class="form-group form-row align-items-center">
+                        <label class="col col-sm-3 col-form-label text-sm-right" for="fGuthaben">{__('credit')}:</label>
+                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                            <input class="form-control" name="fGuthaben" id="fGuthaben" type="text"  value="{if isset($oUmfrage->fGuthaben)}{$oUmfrage->fGuthaben}{/if}" onclick="checkInput(this,'fGuthaben');" onblur="clearInput(this);" />
+                            <input id="nBonuspunkte" type="hidden" />
+                        </div>
+                    </div>
+                    <div class="form-group form-row align-items-center">
+                        <label class="col col-sm-3 col-form-label text-sm-right" for="cBeschreibung">{__('description')}:</label>
+                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                            <textarea id="cBeschreibung" class="ckeditor" name="cBeschreibung" rows="15" cols="60">{if isset($oUmfrage->cBeschreibung)}{$oUmfrage->cBeschreibung}{/if}</textarea>
+                        </div>
+                    </div>
                 </form>
             </div>
             <div class="card-footer save-wrapper">

@@ -16,6 +16,7 @@ use JTL\Filter\ProductFilter;
 use JTL\Filter\Type;
 use JTL\Helpers\Request;
 use JTL\Helpers\Tax;
+use JTL\IO\IOResponse;
 use JTL\OPC\Portlets\MissingPortlet;
 use JTL\Shop;
 
@@ -69,6 +70,7 @@ class Service
             'getConfigPanelHtml',
             'getFilteredProductIds',
             'getFilterOptions',
+            'getFilterList',
         ];
     }
 
@@ -267,6 +269,24 @@ class Service
     public function getEditedPageKey(): int
     {
         return Request::verifyGPCDataInt('opcEditedPageKey');
+    }
+
+    /**
+     * @param string $propname
+     * @param array $enabledFilters
+     * @return string
+     * @throws \SmartyException
+     */
+    public function getFilterList(string $propname, array $enabledFilters = [])
+    {
+        $filters = $this->getFilterOptions($enabledFilters);
+        $smarty  = Shop::Smarty();
+        $html    = $smarty
+            ->assign('propname', $propname)
+            ->assign('filters', $filters)
+            ->fetch(PFAD_ROOT . PFAD_ADMIN . 'opc/tpl/config/filter-list.tpl');
+
+        return $html;
     }
 
     /**

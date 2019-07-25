@@ -149,13 +149,13 @@
                                         </td>
                                         <td>
                                             <div class="input-group" id="input-group-{$oRedirect->kRedirect}">
-                                                <span class="input-group-addon alert-info state-checking">
+                                                <span class="input-group-addon text-info state-checking">
                                                     <i class="fa fa-spinner fa-pulse"></i>
                                                 </span>
-                                                <span class="input-group-addon alert-success state-available" style="display:none;">
+                                                <span class="input-group-addon text-success state-available" style="display:none;">
                                                     <i class="fal fa-check"></i>
                                                 </span>
-                                                <span class="input-group-addon alert-danger state-unavailable" style="display:none;">
+                                                <span class="input-group-addon text-danger state-unavailable" style="display:none;">
                                                     <i class="fal fa-exclamation-triangle"></i>
                                                 </span>
                                                 <input class="form-control" name="redirects[{$oRedirect->kRedirect}][cToUrl]"
@@ -170,9 +170,9 @@
                                                 </script>
                                             </div>
                                         </td>
-                                        <td>
+                                        <td class="text-center">
                                             {if $oRedirect->nCount > 0}
-                                                <span class="badge">{$oRedirect->nCount}</span>
+                                                <span class="badge badge-primary font-weight-bold font-size-sm">{$oRedirect->nCount}</span>
                                             {/if}
                                         </td>
                                         <td>

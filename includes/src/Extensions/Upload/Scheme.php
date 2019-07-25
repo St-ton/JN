@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace JTL\Extensions;
+namespace JTL\Extensions\Upload;
 
 use JTL\DB\ReturnType;
 use JTL\Nice;
@@ -12,10 +12,10 @@ use JTL\Shop;
 use stdClass;
 
 /**
- * Class UploadSchema
- * @package JTL\Extensions
+ * Class Scheme
+ * @package JTL\Extensions\Upload
  */
-final class UploadSchema
+final class Scheme
 {
     /**
      * @var int
@@ -58,6 +58,7 @@ final class UploadSchema
     private $licenseOK;
 
     /**
+     * Scheme constructor.
      * @param int $id
      */
     public function __construct(int $id = 0)
@@ -104,31 +105,32 @@ final class UploadSchema
 
     /**
      * @return int
+     * @deprecated since 5.0.0
      */
     public function save(): int
     {
-        return Shop::Container()->getDB()->insert('tuploadschema', self::copyMembers($this));
+        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
+        return 0;
     }
 
     /**
      * @return int
+     * @deprecated since 5.0.0
      */
     public function update(): int
     {
-        return Shop::Container()->getDB()->update(
-            'tuploadschema',
-            'kUploadSchema',
-            (int)$this->kUploadSchema,
-            self::copyMembers($this)
-        );
+        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
+        return 0;
     }
 
     /**
      * @return int
+     * @deprecated since 5.0.0
      */
     public function delete(): int
     {
-        return Shop::Container()->getDB()->delete('tuploadschema', 'kUploadSchema', (int)$this->kUploadSchema);
+        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
+        return 0;
     }
 
     /**

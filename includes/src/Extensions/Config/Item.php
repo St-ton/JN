@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace JTL\Extensions;
+namespace JTL\Extensions\Config;
 
 use JsonSerializable;
 use JTL\Catalog\Product\Artikel;
@@ -19,10 +19,10 @@ use JTL\Shop;
 use stdClass;
 
 /**
- * Class Konfigitem
- * @package JTL\Extensions
+ * Class Item
+ * @package JTL\Extensions\Config
  */
-class Konfigitem implements JsonSerializable
+class Item implements JsonSerializable
 {
     /**
      * @var int
@@ -95,12 +95,12 @@ class Konfigitem implements JsonSerializable
     protected $fInitial;
 
     /**
-     * @var Konfigitemsprache
+     * @var ItemLocalization
      */
     protected $oSprache;
 
     /**
-     * @var Konfigitempreis
+     * @var ItemPrice
      */
     protected $oPreis;
 
@@ -140,8 +140,7 @@ class Konfigitem implements JsonSerializable
     public $bAktiv;
 
     /**
-     * Constructor
-     *
+     * Item constructor.
      * @param int $id
      * @param int $languageID
      * @param int $customerGroupID
@@ -238,8 +237,8 @@ class Konfigitem implements JsonSerializable
             $this->bIgnoreMultiplier = (int)$this->bIgnoreMultiplier;
             $this->kSprache          = $languageID;
             $this->kKundengruppe     = $customerGroupID;
-            $this->oSprache          = new Konfigitemsprache($this->kKonfigitem, $languageID);
-            $this->oPreis            = new Konfigitempreis($this->kKonfigitem, $customerGroupID);
+            $this->oSprache          = new ItemLocalization($this->kKonfigitem, $languageID);
+            $this->oPreis            = new ItemPrice($this->kKonfigitem, $customerGroupID);
             $this->oArtikel          = null;
             if ($this->kArtikel > 0) {
                 $options                             = new stdClass();
@@ -267,70 +266,38 @@ class Konfigitem implements JsonSerializable
     }
 
     /**
-     * @param bool $bPrim
-     * @return bool|int
+     * @return bool
+     * @deprecated since 5.0.0
      */
-    public function save(bool $bPrim = true)
+    public function save(): bool
     {
-        $ins                    = new stdClass();
-        $ins->kKonfiggruppe     = $this->kKonfiggruppe;
-        $ins->kArtikel          = $this->kArtikel;
-        $ins->nPosTyp           = $this->nPosTyp;
-        $ins->bSelektiert       = $this->bSelektiert;
-        $ins->bEmpfohlen        = $this->bEmpfohlen;
-        $ins->bName             = $this->bName;
-        $ins->bPreis            = $this->bPreis;
-        $ins->bRabatt           = $this->bRabatt;
-        $ins->bZuschlag         = $this->bZuschlag;
-        $ins->bIgnoreMultiplier = $this->bIgnoreMultiplier;
-        $ins->fMin              = $this->fMin;
-        $ins->fMax              = $this->fMax;
-        $ins->fInitial          = $this->fInitial;
-        $ins->nSort             = $this->nSort;
-
-        $kPrim = Shop::Container()->getDB()->insert('tkonfigitem', $ins);
-        if ($kPrim > 0) {
-            return $bPrim ? $kPrim : true;
-        }
-
+        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
         return false;
     }
 
     /**
      * @return int
+     * @deprecated since 5.0.0
      */
     public function update(): int
     {
-        $upd                    = new stdClass();
-        $upd->kKonfiggruppe     = $this->kKonfiggruppe;
-        $upd->kArtikel          = $this->kArtikel;
-        $upd->nPosTyp           = $this->nPosTyp;
-        $upd->bSelektiert       = $this->bSelektiert;
-        $upd->bEmpfohlen        = $this->bEmpfohlen;
-        $upd->bPreis            = $this->bPreis;
-        $upd->bName             = $this->bName;
-        $upd->bRabatt           = $this->bRabatt;
-        $upd->bZuschlag         = $this->bZuschlag;
-        $upd->bIgnoreMultiplier = $this->bIgnoreMultiplier;
-        $upd->fMin              = $this->fMin;
-        $upd->fMax              = $this->fMax;
-        $upd->fInitial          = $this->fInitial;
-        $upd->nSort             = $this->nSort;
-
-        return Shop::Container()->getDB()->update('tkonfigitem', 'kKonfigitem', (int)$this->kKonfigitem, $upd);
+        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
+        return 0;
     }
 
     /**
      * @return int
+     * @deprecated since 5.0.0
      */
     public function delete(): int
     {
-        return Shop::Container()->getDB()->delete('tkonfigitem', 'kKonfigitem', (int)$this->kKonfigitem);
+        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
+        return 0;
     }
 
     /**
      * @param int $groupID
-     * @return Konfigitem[]
+     * @return Item[]
      */
     public static function fetchAll(int $groupID): array
     {
@@ -455,9 +422,9 @@ class Konfigitem implements JsonSerializable
     }
 
     /**
-     * @return Konfigitemsprache|null
+     * @return ItemLocalization|null
      */
-    public function getSprache(): ?Konfigitemsprache
+    public function getSprache(): ?ItemLocalization
     {
         return $this->oSprache;
     }
@@ -535,9 +502,9 @@ class Konfigitem implements JsonSerializable
             $fVKPreis = $this->oArtikel->Preise->fVKNetto ?? 0;
             $fSpecial = $this->oPreis->getPreis($convertCurrency);
             if ($fSpecial != 0) {
-                if ($this->oPreis->getTyp() === Konfigitempreis::PRICE_TYPE_SUM) {
+                if ($this->oPreis->getTyp() === ItemPrice::PRICE_TYPE_SUM) {
                     $fVKPreis += $fSpecial;
-                } elseif ($this->oPreis->getTyp() === Konfigitempreis::PRICE_TYPE_PERCENTAGE) {
+                } elseif ($this->oPreis->getTyp() === ItemPrice::PRICE_TYPE_PERCENTAGE) {
                     $fVKPreis *= (100 + $fSpecial) / 100;
                 }
             }

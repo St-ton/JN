@@ -4,19 +4,18 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace JTL\Extensions;
+namespace JTL\Extensions\Download;
 
-use Illuminate\Support\Collection;
 use JTL\DB\ReturnType;
 use JTL\Nice;
 use JTL\Shop;
 use stdClass;
 
 /**
- * Class DownloadHistory
- * @package JTL\Extensions
+ * Class History
+ * @package JTL\Extensions\Download
  */
-class DownloadHistory
+class History
 {
     /**
      * @var int
@@ -44,6 +43,7 @@ class DownloadHistory
     protected $dErstellt;
 
     /**
+     * History constructor.
      * @param int $id
      */
     public function __construct(int $id = 0)
@@ -103,16 +103,16 @@ class DownloadHistory
      */
     public static function getHistory(int $downloadID): array
     {
-            return Shop::Container()->getDB()->queryPrepared(
-                'SELECT kDownloadHistory AS id 
-                    FROM tdownloadhistory
-                    WHERE kDownload = :dlid
-                    ORDER BY dErstellt DESC',
-                ['dlid' => $downloadID],
-                ReturnType::COLLECTION
-            )->pluck('id')->transform(function ($e) {
-                return (int)$e;
-            })->mapInto(self::class)->toArray();
+        return Shop::Container()->getDB()->queryPrepared(
+            'SELECT kDownloadHistory AS id 
+                FROM tdownloadhistory
+                WHERE kDownload = :dlid
+                ORDER BY dErstellt DESC',
+            ['dlid' => $downloadID],
+            ReturnType::COLLECTION
+        )->pluck('id')->transform(function ($e) {
+            return (int)$e;
+        })->mapInto(self::class)->toArray();
     }
 
     /**

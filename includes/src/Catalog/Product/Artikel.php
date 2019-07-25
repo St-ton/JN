@@ -19,9 +19,9 @@ use JTL\Customer\Kundengruppe;
 use JTL\DB\ReturnType;
 use JTL\Exceptions\CircularReferenceException;
 use JTL\Exceptions\ServiceNotFoundException;
-use JTL\Extensions\Download;
-use JTL\Extensions\Konfigitem;
-use JTL\Extensions\Konfigurator;
+use JTL\Extensions\Config\Configurator;
+use JTL\Extensions\Config\Item;
+use JTL\Extensions\Download\Download;
 use JTL\Filter\Metadata;
 use JTL\Helpers\Product;
 use JTL\Helpers\Request;
@@ -4090,11 +4090,11 @@ class Artikel
         if ($this->getOption('nDownload', 0) === 1) {
             $this->oDownload_arr = Download::getDownloads(['kArtikel' => $this->kArtikel], $langID);
         }
-        if (Konfigurator::checkLicense()) {
-            $this->bHasKonfig = Konfigurator::hasKonfig($this->kArtikel);
+        if (Configurator::checkLicense()) {
+            $this->bHasKonfig = Configurator::hasKonfig($this->kArtikel);
             if ($this->bHasKonfig && $this->getOption('nKonfig', 0) === 1) {
-                if (Konfigurator::validateKonfig($this->kArtikel)) {
-                    $this->oKonfig_arr = Konfigurator::getKonfig($this->kArtikel, $langID);
+                if (Configurator::validateKonfig($this->kArtikel)) {
+                    $this->oKonfig_arr = Configurator::getKonfig($this->kArtikel, $langID);
                 } else {
                     Shop::Container()->getLogService()->error(
                         'Konfigurator für Artikel (Art.Nr.: ' .
@@ -4155,7 +4155,7 @@ class Artikel
         if (!empty($this->FunktionsAttribute[\FKT_ATTRIBUT_UNVERKAEUFLICH])) {
             $this->inWarenkorbLegbar = \INWKNICHTLEGBAR_UNVERKAEUFLICH;
         }
-        if ($this->bHasKonfig && Konfigurator::hasUnavailableGroup($this->oKonfig_arr)) {
+        if ($this->bHasKonfig && Configurator::hasUnavailableGroup($this->oKonfig_arr)) {
             $this->inWarenkorbLegbar = \INWKNICHTLEGBAR_LAGER;
         }
         $this->baueLageranzeige();
@@ -4663,7 +4663,7 @@ class Artikel
                     break;
             }
         }
-        if ($this->bHasKonfig && Konfigurator::hasUnavailableGroup($this->oKonfig_arr)) {
+        if ($this->bHasKonfig && Configurator::hasUnavailableGroup($this->oKonfig_arr)) {
             $this->Lageranzeige->cLagerhinweis['genau']          = Shop::Lang()->get('productNotAvailable');
             $this->Lageranzeige->cLagerhinweis['verfuegbarkeit'] = Shop::Lang()->get('productNotAvailable');
 
@@ -5401,7 +5401,7 @@ class Artikel
         }
         if ($this->bHasKonfig && !empty($this->oKonfig_arr)) {
             foreach ($this->oKonfig_arr as $gruppe) {
-                /** @var Konfigitem $piece */
+                /** @var Item $piece */
                 foreach ($gruppe->oItem_arr as $piece) {
                     $konfigItemProduct = $piece->getArtikel();
                     if ($konfigItemProduct !== null) {

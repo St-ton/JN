@@ -4,17 +4,17 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace JTL\Extensions;
+namespace JTL\Extensions\Download;
 
 use JTL\Nice;
 use JTL\Shop;
 use stdClass;
 
 /**
- * Class DownloadLocalization
- * @package JTL\Extensions
+ * Class Localization
+ * @package JTL\Extensions\Download
  */
-class DownloadLocalization
+class Localization
 {
     /**
      * @var int
@@ -37,7 +37,7 @@ class DownloadLocalization
     protected $cBeschreibung;
 
     /**
-     * DownloadLocalization constructor.
+     * Localization constructor.
      * @param int $downloadID
      * @param int $languageID
      */
@@ -79,35 +79,23 @@ class DownloadLocalization
     }
 
     /**
-     * @param bool $primary
-     * @return bool|int
+     * @return bool
+     * @deprecated since 5.0.0
      */
-    public function save(bool $primary = false)
+    public function save(): bool
     {
-        $data = $this->kopiereMembers();
-        $id   = Shop::Container()->getDB()->insert('tdownloadsprache', $data);
-        if ($id > 0) {
-            return $primary ? $id : true;
-        }
-
+        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
         return false;
     }
 
     /**
      * @return int
+     * @deprecated since 5.0.0
      */
     public function update(): int
     {
-        $upd                = new stdClass();
-        $upd->cName         = $this->getName();
-        $upd->cBeschreibung = $this->getBeschreibung();
-
-        return Shop::Container()->getDB()->update(
-            'tdownloadsprache',
-            ['kDownload', 'kSprache'],
-            [$this->getDownload(), $this->getSprache()],
-            $upd
-        );
+        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
+        return 0;
     }
 
     /**

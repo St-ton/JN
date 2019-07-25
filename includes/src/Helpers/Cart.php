@@ -21,9 +21,9 @@ use JTL\Checkout\Lieferadresse;
 use JTL\Checkout\Rechnungsadresse;
 use JTL\Customer\Kunde;
 use JTL\DB\ReturnType;
-use JTL\Extensions\Konfigitem;
-use JTL\Extensions\Konfigurator;
-use JTL\Extensions\Upload;
+use JTL\Extensions\Config\Configurator;
+use JTL\Extensions\Config\Item;
+use JTL\Extensions\Upload\Upload;
 use JTL\Kampagne;
 use JTL\Session\Frontend;
 use JTL\Shop;
@@ -386,11 +386,11 @@ class Cart
             $attributes = Product::getSelectedPropertiesForArticle($productID);
         }
         $isConfigProduct = false;
-        if (Konfigurator::checkLicense()) {
-            if (!Konfigurator::validateKonfig($productID)) {
+        if (Configurator::checkLicense()) {
+            if (!Configurator::validateKonfig($productID)) {
                 $isConfigProduct = false;
             } else {
-                $groups          = Konfigurator::getKonfig($productID);
+                $groups          = Configurator::getKonfig($productID);
                 $isConfigProduct = GeneralObject::hasCount($groups);
             }
         }
@@ -425,7 +425,7 @@ class Cart
                 if ($configItemID <= 0) {
                     continue;
                 }
-                $configItem          = new Konfigitem($configItemID);
+                $configItem          = new Item($configItemID);
                 $configItem->fAnzahl = (float)($configItemCounts[$configItemID]
                     ?? $configGroupCounts[$configItem->getKonfiggruppe()] ?? $configItem->getInitial());
                 if ($configItemCounts && isset($configItemCounts[$configItem->getKonfigitem()])) {
@@ -481,7 +481,7 @@ class Cart
             }
         }
         // Komplette Konfiguration validieren
-        if (!$ignoreLimits && (($errors = Konfigurator::validateCart($productID, $configItems)) !== true)) {
+        if (!$ignoreLimits && (($errors = Configurator::validateCart($productID, $configItems)) !== true)) {
             $valid = false;
         }
         // Alle Konfigurationsartikel können in den WK gelegt werden
@@ -1995,7 +1995,7 @@ class Cart
      */
     public static function validateCartConfig(): void
     {
-        Konfigurator::postcheckCart($_SESSION['Warenkorb']);
+        Configurator::postcheckCart($_SESSION['Warenkorb']);
     }
 
     /**

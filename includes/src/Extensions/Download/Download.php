@@ -4,11 +4,11 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace JTL\Extensions;
+namespace JTL\Extensions\Download;
 
 use DateTime;
-use JTL\Checkout\Bestellung;
 use JTL\Cart\Warenkorb;
+use JTL\Checkout\Bestellung;
 use JTL\DB\ReturnType;
 use JTL\Nice;
 use JTL\Shop;
@@ -16,7 +16,7 @@ use stdClass;
 
 /**
  * Class Download
- * @package JTL\Extensions
+ * @package JTL\Extensions\Download
  */
 class Download
 {
@@ -105,6 +105,7 @@ class Download
     private $licenseOK;
 
     /**
+     * Download constructor.
      * @param int  $id
      * @param int  $languageID
      * @param bool $info
@@ -147,8 +148,8 @@ class Download
                 if (!$languageID) {
                     $languageID = Shop::getLanguageID();
                 }
-                $this->oDownloadSprache     = new DownloadLocalization($item->kDownload, $languageID);
-                $this->oDownloadHistory_arr = DownloadHistory::getHistory($item->kDownload);
+                $this->oDownloadSprache     = new Localization($item->kDownload, $languageID);
+                $this->oDownloadHistory_arr = History::getHistory($item->kDownload);
             }
             if ($orderID > 0) {
                 $this->kBestellung = $orderID;
@@ -188,63 +189,33 @@ class Download
     }
 
     /**
-     * @param bool $primary
-     * @return bool|int
+     * @return bool
+     * @deprecated since 5.0.0
      */
-    public function save(bool $primary = false)
+    public function save(): bool
     {
-        $ins = $this->kopiereMembers();
-        unset(
-            $ins->kDownload,
-            $ins->oDownloadSprache,
-            $ins->oDownloadHistory_arr,
-            $ins->oArtikelDownload_arr,
-            $ins->cLimit,
-            $ins->dGueltigBis,
-            $ins->kBestellung
-        );
-        $id = Shop::Container()->getDB()->insert('tdownload', $ins);
-        if ($id > 0) {
-            return $primary ? $id : true;
-        }
-
+        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
         return false;
     }
 
     /**
      * @return int
+     * @deprecated since 5.0.0
      */
     public function update(): int
     {
-        $upd                = new stdClass();
-        $upd->cID           = $this->cID;
-        $upd->cPfad         = $this->cPfad;
-        $upd->cPfadVorschau = $this->cPfadVorschau;
-        $upd->nAnzahl       = $this->nAnzahl;
-        $upd->nTage         = $this->nTage;
-        $upd->dErstellt     = $this->dErstellt;
-
-        return Shop::Container()->getDB()->update('tdownload', 'kDownload', (int)$this->kDownload, $upd);
+        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
+        return 0;
     }
 
     /**
      * @return int
+     * @deprecated since 5.0.0
      */
     public function delete(): int
     {
-        return Shop::Container()->getDB()->queryPrepared(
-            'DELETE tdownload, tdownloadhistory, tdownloadsprache, tartikeldownload
-                FROM tdownload
-                JOIN tdownloadsprache 
-                    ON tdownloadsprache.kDownload = tdownload.kDownload
-                LEFT JOIN tartikeldownload 
-                    ON tartikeldownload.kDownload = tdownload.kDownload
-                LEFT JOIN tdownloadhistory 
-                    ON tdownloadhistory.kDownload = tdownload.kDownload
-                WHERE tdownload.kDownload = :dlid',
-            ['dlid' => $this->kDownload],
-            ReturnType::AFFECTED_ROWS
-        );
+        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
+        return 0;
     }
 
     /**
@@ -252,7 +223,7 @@ class Download
      * @param int   $languageID
      * @return array
      */
-    public static function getDownloads($keys = [], int $languageID = 0): array
+    public static function getDownloads(array $keys = [], int $languageID = 0): array
     {
         $productID  = isset($keys['kArtikel']) ? (int)$keys['kArtikel'] : 0;
         $orderID    = isset($keys['kBestellung']) ? (int)$keys['kBestellung'] : 0;
@@ -299,7 +270,7 @@ class Download
                     $download->kKunde      = (int)$download->kKunde;
                     $download->kBestellung = (int)$download->kBestellung;
 
-                    $history                    = DownloadHistory::getOrderHistory(
+                    $history                    = History::getOrderHistory(
                         $download->kKunde,
                         $download->kBestellung
                     );
@@ -346,7 +317,7 @@ class Download
             $download = new self($downloadID, 0, false);
             $res      = $download::checkFile($download->kDownload, $customerID, $orderID);
             if ($res === self::ERROR_NONE) {
-                (new DownloadHistory())
+                (new History())
                     ->setDownload($downloadID)
                     ->setKunde($customerID)
                     ->setBestellung($orderID)
@@ -405,7 +376,7 @@ class Download
                     }
                     // Check Anzahl
                     if ($download->getAnzahl() > 0) {
-                        $history = DownloadHistory::getOrderHistory($customerID, $orderID);
+                        $history = History::getOrderHistory($customerID, $orderID);
                         if (\count($history[$download->kDownload]) >= $download->getAnzahl()) {
                             return self::ERROR_DOWNLOAD_LIMIT_REACHED;
                         }
@@ -718,12 +689,6 @@ class Download
             $browser = 'opera';
         } elseif (\preg_match('/MSIE ([0-9].[0-9]{1,2})/', $userAgent, $log_version)) {
             $browser = 'ie';
-        } elseif (\preg_match('/OmniWeb\/([0-9].[0-9]{1,2})/', $userAgent, $log_version)) {
-            $browser = 'omniweb';
-        } elseif (\preg_match('/Mozilla\/([0-9].[0-9]{1,2})/', $userAgent, $log_version)) {
-            $browser = 'mozilla';
-        } elseif (\preg_match('/Konqueror\/([0-9].[0-9]{1,2})/', $userAgent, $log_version)) {
-            $browser = 'konqueror';
         }
         if (($mimetype === 'application/octet-stream') || ($mimetype === 'application/octetstream')) {
             $mimetype = ($browser === 'ie' || $browser === 'opera')

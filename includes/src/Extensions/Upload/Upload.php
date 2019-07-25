@@ -4,7 +4,7 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-namespace JTL\Extensions;
+namespace JTL\Extensions\Upload;
 
 use JTL\Cart\Warenkorb;
 use JTL\Helpers\PHPSettings;
@@ -15,7 +15,7 @@ use stdClass;
 
 /**
  * Class Upload
- * @package JTL\Extensions
+ * @package JTL\Extensions\Upload
  */
 final class Upload
 {
@@ -34,7 +34,7 @@ final class Upload
      */
     public static function gibArtikelUploads(int $productID, $attributes = false): array
     {
-        $scheme  = new UploadSchema();
+        $scheme  = new Scheme();
         $uploads = $scheme->fetchAll($productID, \UPLOAD_TYP_WARENKORBPOS);
         foreach ($uploads as $upload) {
             $upload->nEigenschaften_arr = $attributes;
@@ -110,7 +110,7 @@ final class Upload
      */
     public static function gibBestellungUploads(int $orderID): array
     {
-        return UploadDatei::fetchAll($orderID, \UPLOAD_TYP_BESTELLUNG);
+        return File::fetchAll($orderID, \UPLOAD_TYP_BESTELLUNG);
     }
 
     /**

@@ -4,18 +4,17 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace JTL\Extensions;
+namespace JTL\Extensions\Config;
 
 use JsonSerializable;
 use JTL\Helpers\Text;
 use JTL\Shop;
-use stdClass;
 
 /**
- * Class Konfiggruppesprache
- * @package JTL\Extensions
+ * Class GroupLocalization
+ * @package JTL\Extensions\Config
  */
-class Konfiggruppesprache implements JsonSerializable
+class GroupLocalization implements JsonSerializable
 {
     /**
      * @var int
@@ -38,8 +37,7 @@ class Konfiggruppesprache implements JsonSerializable
     protected $cBeschreibung;
 
     /**
-     * Constructor
-     *
+     * GroupLocalization constructor.
      * @param int $groupID
      * @param int $languageID
      */
@@ -90,52 +88,32 @@ class Konfiggruppesprache implements JsonSerializable
     /**
      * @param bool $primary
      * @return bool|int
+     * @deprecated since 5.0.0
      */
     public function save(bool $primary = true)
     {
-        $ins = new stdClass();
-        foreach (\array_keys(\get_object_vars($this)) as $member) {
-            $ins->$member = $this->$member;
-        }
-        unset($ins->kKonfiggruppe, $ins->kSprache);
-
-        $kPrim = Shop::Container()->getDB()->insert('tkonfiggruppesprache', $ins);
-
-        if ($kPrim > 0) {
-            return $primary ? $kPrim : true;
-        }
-
+        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
         return false;
     }
 
     /**
      * @return int
+     * @deprecated since 5.0.0
      */
     public function update(): int
     {
-        $upd                = new stdClass();
-        $upd->kSprache      = $this->getSprache();
-        $upd->cName         = $this->getName();
-        $upd->cBeschreibung = $this->getBeschreibung();
-
-        return Shop::Container()->getDB()->update(
-            'tkonfiggruppesprache',
-            ['kKonfiggruppe', 'kSprache'],
-            [$this->getKonfiggruppe(), $this->getSprache()],
-            $upd
-        );
+        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
+        return 0;
     }
 
     /**
      * @return int
+     * @deprecated since 5.0.0
      */
     public function delete(): int
     {
-        return Shop::Container()->getDB()->delete(
-            'tkonfiggruppesprache',
-            ['kKonfiggruppe', 'kSprache'],
-            [(int)$this->kKonfiggruppe, (int)$this->kSprache]
-        );
+        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
+        return 0;
     }
 
     /**

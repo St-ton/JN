@@ -4,20 +4,19 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace JTL\Extensions;
+namespace JTL\Extensions\Config;
 
 use JsonSerializable;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Text;
 use JTL\Nice;
 use JTL\Shop;
-use stdClass;
 
 /**
- * Class Konfiggruppe
- * @package JTL\Extensions
+ * Class Group
+ * @package JTL\Extensions\Config
  */
-class Konfiggruppe implements JsonSerializable
+class Group implements JsonSerializable
 {
     /**
      * @var int
@@ -60,7 +59,7 @@ class Konfiggruppe implements JsonSerializable
     public $oSprache;
 
     /**
-     * @var Konfigitem[]
+     * @var Item[]
      */
     public $oItem_arr = [];
 
@@ -70,8 +69,7 @@ class Konfiggruppe implements JsonSerializable
     public $bAktiv;
 
     /**
-     * Constructor
-     *
+     * Group constructor.
      * @param int $id
      * @param int $languageID
      */
@@ -99,7 +97,7 @@ class Konfiggruppe implements JsonSerializable
     public function jsonSerialize()
     {
         if ($this->oSprache === null) {
-            $this->oSprache = new Konfiggruppesprache($this->kKonfiggruppe);
+            $this->oSprache = new GroupLocalization($this->kKonfiggruppe);
         }
         $override = [
             'kKonfiggruppe' => (int)$this->kKonfiggruppe,
@@ -141,62 +139,41 @@ class Konfiggruppe implements JsonSerializable
             $this->nMax          = (int)$this->nMax;
             $this->nTyp          = (int)$this->nTyp;
             $this->nSort         = (int)$this->nSort;
-            $this->oSprache      = new Konfiggruppesprache($this->kKonfiggruppe, $languageID);
-            $this->oItem_arr     = Konfigitem::fetchAll($this->kKonfiggruppe);
+            $this->oSprache      = new GroupLocalization($this->kKonfiggruppe, $languageID);
+            $this->oItem_arr     = Item::fetchAll($this->kKonfiggruppe);
         }
 
         return $this;
     }
 
     /**
-     * @param bool $bPrim
-     * @return bool|int
+     * @return bool
+     * @deprecated since 5.0.0
      */
-    public function save(bool $bPrim = true)
+    public function save(): bool
     {
-        $ins             = new stdClass();
-        $ins->cBildPfad  = $this->cBildPfad;
-        $ins->nMin       = $this->nMin;
-        $ins->nMax       = $this->nMax;
-        $ins->nTyp       = $this->nTyp;
-        $ins->nSort      = $this->nSort;
-        $ins->cKommentar = $this->cKommentar;
-
-        $kPrim = Shop::Container()->getDB()->insert('tkonfiggruppe', $ins);
-        if ($kPrim > 0) {
-            return $bPrim ? $kPrim : true;
-        }
-
+        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
         return false;
     }
 
     /**
      * @return int
+     * @deprecated since 5.0.0
      */
     public function update(): int
     {
-        $upd             = new stdClass();
-        $upd->cBildPfad  = $this->cBildPfad;
-        $upd->nMin       = $this->nMin;
-        $upd->nMax       = $this->nMax;
-        $upd->nTyp       = $this->nTyp;
-        $upd->nSort      = $this->nSort;
-        $upd->cKommentar = $this->cKommentar;
-
-        return Shop::Container()->getDB()->update(
-            'tkonfiggruppe',
-            'kKonfiggruppe',
-            (int)$this->kKonfiggruppe,
-            $upd
-        );
+        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
+        return 0;
     }
 
     /**
      * @return int
+     * @deprecated since 5.0.0
      */
     public function delete(): int
     {
-        return Shop::Container()->getDB()->delete('tkonfiggruppe', 'kKonfiggruppe', (int)$this->kKonfiggruppe);
+        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
+        return 0;
     }
 
     /**
@@ -338,11 +315,11 @@ class Konfiggruppe implements JsonSerializable
         $equal = false;
         if (\count($this->oItem_arr) > 0) {
             $item = $this->oItem_arr[0];
-            if ($item->getMin() == $item->getMax()) {
+            if ($item->getMin() === $item->getMax()) {
                 $equal = true;
                 $nKey  = $item->getMin();
                 foreach ($this->oItem_arr as &$item) {
-                    if (!($item->getMin() == $item->getMax() && $item->getMin() == $nKey)) {
+                    if (!($item->getMin() === $item->getMax() && $item->getMin() === $nKey)) {
                         $equal = false;
                     }
                 }

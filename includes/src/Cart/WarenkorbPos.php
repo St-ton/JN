@@ -7,12 +7,12 @@
 namespace JTL\Cart;
 
 use JTL\Catalog\Product\Artikel;
-use JTL\Checkout\Eigenschaft;
 use JTL\Catalog\Product\EigenschaftWert;
-use JTL\Extensions\Konfigitem;
+use JTL\Catalog\Product\Preise;
+use JTL\Checkout\Eigenschaft;
+use JTL\Extensions\Config\Item;
 use JTL\Helpers\ShippingMethod;
 use JTL\Helpers\Tax;
-use JTL\Catalog\Product\Preise;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use stdClass;
@@ -601,7 +601,7 @@ class WarenkorbPos
         static $ignoreMultipliers = null;
 
         if ($ignoreMultipliers === null || !\array_key_exists($this->kKonfigitem, $ignoreMultipliers)) {
-            $konfigItem        = new Konfigitem($this->kKonfigitem);
+            $konfigItem        = new Item($this->kKonfigitem);
             $ignoreMultipliers = [
                 $this->kKonfigitem => $konfigItem->ignoreMultiplier(),
             ];

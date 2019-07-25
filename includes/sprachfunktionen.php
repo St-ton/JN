@@ -7,7 +7,7 @@
 use JTL\Cart\Warenkorb;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\Preise;
-use JTL\Extensions\Konfigitem;
+use JTL\Extensions\Config\Item;
 use JTL\Session\Frontend;
 use JTL\Shop;
 
@@ -165,7 +165,7 @@ function lang_mindestbestellmenge($product, $amount, int $configItemID = 0)
     }
     $name = $product->cName;
     if ($configItemID > 0 && class_exists('Konfigitem')) {
-        $name = (new Konfigitem($configItemID))->getName();
+        $name = (new Item($configItemID))->getName();
     }
 
     return Shop::Lang()->get('product') . ' &quot;' . $name . '&quot; ' .

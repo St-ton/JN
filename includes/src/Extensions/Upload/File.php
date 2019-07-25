@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace JTL\Extensions;
+namespace JTL\Extensions\Upload;
 
 use JTL\DB\ReturnType;
 use JTL\Nice;
@@ -12,10 +12,10 @@ use JTL\Shop;
 use stdClass;
 
 /**
- * Class UploadDatei
- * @package JTL\Extensions
+ * Class File
+ * @package JTL\Extensions\Upload
  */
-class UploadDatei
+class File
 {
     /**
      * @var int
@@ -53,6 +53,7 @@ class UploadDatei
     private $licenseOK;
 
     /**
+     * File constructor.
      * @param int $id
      */
     public function __construct(int $id = 0)
@@ -106,39 +107,40 @@ class UploadDatei
 
     /**
      * @return int
+     * @deprecated since 5.0.0
      */
     public function save(): int
     {
-        return Shop::Container()->getDB()->insert('tuploaddatei', self::copyMembers($this));
+        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
+        return 0;
     }
 
     /**
      * @return int
+     * @deprecated since 5.0.0
      */
     public function update(): int
     {
-        return Shop::Container()->getDB()->update(
-            'tuploaddatei',
-            'kUpload',
-            (int)$this->kUpload,
-            self::copyMembers($this)
-        );
+        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
+        return 0;
     }
 
     /**
      * @return int
+     * @deprecated since 5.0.0
      */
     public function delete(): int
     {
-        return Shop::Container()->getDB()->delete('tuploaddatei', 'kUpload', (int)$this->kUpload);
+        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
+        return 0;
     }
 
     /**
-     * @param int $kCustomID
+     * @param int $customID
      * @param int $type
      * @return array
      */
-    public static function fetchAll(int $kCustomID, int $type): array
+    public static function fetchAll(int $customID, int $type): array
     {
         if (!self::checkLicense()) {
             return [];
@@ -146,7 +148,7 @@ class UploadDatei
         $files   = Shop::Container()->getDB()->selectAll(
             'tuploaddatei',
             ['kCustomID', 'nTyp'],
-            [$kCustomID, $type]
+            [$customID, $type]
         );
         $baseURL = Shop::getURL();
         $crypto  = Shop::Container()->getCryptoService();
@@ -203,12 +205,6 @@ class UploadDatei
             $browser = 'opera';
         } elseif (\preg_match('/MSIE ([0-9].[0-9]{1,2})/', $userAgent, $log_version)) {
             $browser = 'ie';
-        } elseif (\preg_match('/OmniWeb\/([0-9].[0-9]{1,2})/', $userAgent, $log_version)) {
-            $browser = 'omniweb';
-        } elseif (\preg_match('/Mozilla\/([0-9].[0-9]{1,2})/', $userAgent, $log_version)) {
-            $browser = 'mozilla';
-        } elseif (\preg_match('/Konqueror\/([0-9].[0-9]{1,2})/', $userAgent, $log_version)) {
-            $browser = 'konqueror';
         }
         if (($mimetype === 'application/octet-stream') || ($mimetype === 'application/octetstream')) {
             $mimetype = ($browser === 'ie' || $browser === 'opera')

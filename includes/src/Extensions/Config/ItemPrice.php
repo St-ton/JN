@@ -4,18 +4,17 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace JTL\Extensions;
+namespace JTL\Extensions\Config;
 
 use JTL\Nice;
 use JTL\Session\Frontend;
 use JTL\Shop;
-use stdClass;
 
 /**
- * Class Konfigitempreis
- * @package JTL\Extensions
+ * Class ItemPrice
+ * @package JTL\Extensions\Config
  */
-class Konfigitempreis
+class ItemPrice
 {
     public const PRICE_TYPE_PERCENTAGE = 1;
 
@@ -47,7 +46,7 @@ class Konfigitempreis
     protected $nTyp;
 
     /**
-     * Konfigitempreis constructor.
+     * ItemPrice constructor.
      * @param int $configItemID
      * @param int $customerGroupID
      */
@@ -95,54 +94,33 @@ class Konfigitempreis
     }
 
     /**
-     * @param bool $primary
-     * @return bool|int
+     * @return bool
+     * @deprecated since 5.0.0
      */
-    public function save(bool $primary = true)
+    public function save(): bool
     {
-        $ins = new stdClass();
-        foreach (\array_keys(\get_object_vars($this)) as $member) {
-            $ins->$member = $this->$member;
-        }
-        unset($ins->kKonfigitem, $ins->kKundengruppe);
-
-        $kPrim = Shop::Container()->getDB()->insert('tkonfigitempreis', $ins);
-
-        if ($kPrim > 0) {
-            return $primary ? $kPrim : true;
-        }
-
+        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
         return false;
     }
 
     /**
      * @return int
+     * @deprecated since 5.0.0
      */
     public function update(): int
     {
-        $upd                = new stdClass();
-        $upd->kSteuerklasse = $this->getSteuerklasse();
-        $upd->fPreis        = $this->fPreis;
-        $upd->nTyp          = $this->getTyp();
-
-        return Shop::Container()->getDB()->update(
-            'tkonfigitempreis',
-            ['kKonfigitem', 'kKundengruppe'],
-            [$this->getKonfigitem(), $this->getKundengruppe()],
-            $upd
-        );
+        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
+        return 0;
     }
 
     /**
      * @return int
+     * @deprecated since 5.0.0
      */
     public function delete(): int
     {
-        return Shop::Container()->getDB()->delete(
-            'tkonfigitempreis',
-            ['kKonfigitem', 'kKundengruppe'],
-            [(int)$this->kKonfigitem, (int)$this->kKundengruppe]
-        );
+        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
+        return 0;
     }
 
     /**
@@ -214,17 +192,17 @@ class Konfigitempreis
     }
 
     /**
-     * @param bool $bConvertCurrency
+     * @param bool $convertCurrency
      * @return float|null
      */
-    public function getPreis(bool $bConvertCurrency = false)
+    public function getPreis(bool $convertCurrency = false)
     {
-        $fPreis = $this->fPreis;
-        if ($bConvertCurrency && $fPreis > 0) {
-            $fPreis *= Frontend::getCurrency()->getConversionFactor();
+        $price = $this->fPreis;
+        if ($convertCurrency && $price > 0) {
+            $price *= Frontend::getCurrency()->getConversionFactor();
         }
 
-        return $fPreis;
+        return $price;
     }
 
     /**

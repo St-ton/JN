@@ -14,9 +14,9 @@ use JTL\Checkout\Eigenschaft;
 use JTL\Checkout\Kupon;
 use JTL\Checkout\Versandart;
 use JTL\DB\ReturnType;
-use JTL\Extensions\Download;
-use JTL\Extensions\Konfigitem;
-use JTL\Extensions\Konfigitemsprache;
+use JTL\Extensions\Config\Item;
+use JTL\Extensions\Config\ItemLocalization;
+use JTL\Extensions\Download\Download;
 use JTL\GlobalSetting;
 use JTL\Helpers\Cart;
 use JTL\Helpers\Product;
@@ -1020,7 +1020,7 @@ class Warenkorb
         if ((int)$item->kKonfigitem <= 0 || !\class_exists('Konfigitem')) {
             return $this;
         }
-        $configItem = new Konfigitem($item->kKonfigitem);
+        $configItem = new Item($item->kKonfigitem);
         if ($configItem->getKonfigitem() > 0) {
             if ($prices) {
                 $item->fPreisEinzelNetto = $configItem->getPreis(true);
@@ -1030,7 +1030,7 @@ class Warenkorb
             }
             if ($name && $configItem->getUseOwnName()) {
                 foreach (Frontend::getLanguages() as $language) {
-                    $localized                    = new Konfigitemsprache(
+                    $localized                    = new ItemLocalization(
                         $configItem->getKonfigitem(),
                         $language->kSprache
                     );

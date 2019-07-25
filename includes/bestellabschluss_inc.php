@@ -18,7 +18,7 @@ use JTL\Checkout\Rechnungsadresse;
 use JTL\Checkout\ZahlungsInfo;
 use JTL\Customer\Kunde;
 use JTL\DB\ReturnType;
-use JTL\Extensions\Upload;
+use JTL\Extensions\Upload\Upload;
 use JTL\Helpers\Date;
 use JTL\Helpers\Product;
 use JTL\Helpers\Request;

@@ -4,18 +4,17 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-namespace JTL\Extensions;
+namespace JTL\Extensions\Config;
 
 use JTL\Language\LanguageHelper;
 use JTL\Nice;
 use JTL\Shop;
-use stdClass;
 
 /**
- * Class Konfigitemsprache
- * @package JTL\Extensions
+ * Class ItemLocalization
+ * @package JTL\Extensions\Config
  */
-class Konfigitemsprache
+class ItemLocalization
 {
     /**
      * @var int
@@ -38,7 +37,7 @@ class Konfigitemsprache
     protected $cBeschreibung = '';
 
     /**
-     * Konfigitemsprache constructor.
+     * ItemLocalization constructor.
      * @param int $itemID
      * @param int $languageID
      */
@@ -113,53 +112,33 @@ class Konfigitemsprache
     }
 
     /**
-     * @param bool $bPrim
-     * @return bool|int
+     * @return bool
+     * @deprecated since 5.0.0
      */
-    public function save(bool $bPrim = true)
+    public function save(): bool
     {
-        $ins = new stdClass();
-        foreach (\array_keys(\get_object_vars($this)) as $member) {
-            $ins->$member = $this->$member;
-        }
-        unset($ins->kKonfigitem, $ins->kSprache);
-
-        $kPrim = Shop::Container()->getDB()->insert('tkonfigitemsprache', $ins);
-
-        if ($kPrim > 0) {
-            return $bPrim ? $kPrim : true;
-        }
-
+        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
         return false;
     }
 
     /**
      * @return int
+     * @deprecated since 5.0.0
      */
     public function update(): int
     {
-        $upd                = new stdClass();
-        $upd->cName         = $this->getName();
-        $upd->cBeschreibung = $this->getBeschreibung();
-
-        return Shop::Container()->getDB()->update(
-            'tkonfigitemsprache',
-            ['kKonfigitem', 'kSprache'],
-            [$this->getKonfigitem(), $this->getSprache()],
-            $upd
-        );
+        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
+        return 0;
     }
 
     /**
      * @return int
+     * @deprecated since 5.0.0
      */
     public function delete(): int
     {
-        return Shop::Container()->getDB()->delete(
-            'tkonfigitemsprache',
-            ['kKonfigitem', 'kSprache'],
-            [(int)$this->kKonfigitem, (int)$this->kSprache]
-        );
+        \trigger_error(__METHOD__ . ' is deprecated.', \E_USER_DEPRECATED);
+        return 0;
     }
 
     /**

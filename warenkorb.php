@@ -4,16 +4,16 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use JTL\Helpers\ShippingMethod;
-use JTL\Helpers\Cart;
 use JTL\Alert\Alert;
-use JTL\Checkout\Kupon;
-use JTL\Catalog\Product\Preise;
-use JTL\Shop;
 use JTL\Cart\WarenkorbPers;
+use JTL\Catalog\Product\Preise;
+use JTL\Checkout\Kupon;
 use JTL\DB\ReturnType;
+use JTL\Extensions\Upload\Upload;
+use JTL\Helpers\Cart;
+use JTL\Helpers\ShippingMethod;
 use JTL\Session\Frontend;
-use JTL\Extensions\Upload;
+use JTL\Shop;
 
 require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'warenkorb_inc.php';

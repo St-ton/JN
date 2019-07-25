@@ -15,9 +15,9 @@ use JTL\Catalog\UnitsOfMeasure;
 use JTL\CheckBox;
 use JTL\Customer\Kundengruppe;
 use JTL\DB\ReturnType;
-use JTL\Extensions\Konfiggruppe;
-use JTL\Extensions\Konfigitem;
-use JTL\Extensions\Konfigurator;
+use JTL\Extensions\Config\Group;
+use JTL\Extensions\Config\Item;
+use JTL\Extensions\Config\Configurator;
 use JTL\Kampagne;
 use JTL\Language\LanguageHelper;
 use JTL\Mail\Mail\Mail;
@@ -1934,7 +1934,7 @@ class Product
         $config->cPreisLocalized = [];
         $config->cPreisString    = Shop::Lang()->get('priceAsConfigured', 'productDetails');
 
-        if (!Konfigurator::checkLicense() || !Konfigurator::validateKonfig($productID)) {
+        if (!Configurator::checkLicense() || !Configurator::validateKonfig($productID)) {
             return null;
         }
         foreach ($variations as $i => $nVariation) {
@@ -1981,13 +1981,13 @@ class Product
         foreach ($configGroups as $i => $data) {
             $configGroups[$i] = (array)$data;
         }
-        /** @var Konfiggruppe $configGroup */
+        /** @var Group $configGroup */
         foreach ($config->oKonfig_arr as $i => &$configGroup) {
             $configGroup->bAktiv = false;
             $configGroupID       = $configGroup->getKonfiggruppe();
             $configItems         = $configGroups[$configGroupID] ?? [];
             foreach ($configGroup->oItem_arr as $j => &$configItem) {
-                /** @var Konfigitem $configItem */
+                /** @var Item $configItem */
                 $configItemID        = $configItem->getKonfigitem();
                 $configItem->fAnzahl = (float)(
                     $configGroupAmounts[$configItem->getKonfiggruppe()] ?? $configItem->getInitial()
@@ -2048,7 +2048,7 @@ class Product
     public static function getEditConfigMode($configID, $smarty): void
     {
         $cart = Frontend::getCart();
-        if (!isset($cart->PositionenArr[$configID]) || !Konfigitem::checkLicense()) {
+        if (!isset($cart->PositionenArr[$configID]) || !Item::checkLicense()) {
             return;
         }
         /** @var WarenkorbPos $baseItem */
@@ -2063,7 +2063,7 @@ class Product
                 if ($item->cUnique !== $baseItem->cUnique || !$item->istKonfigKind()) {
                     continue;
                 }
-                $configItem                                      = new Konfigitem($item->kKonfigitem);
+                $configItem                                      = new Item($item->kKonfigitem);
                 $configItems[]                                   = $configItem->getKonfigitem();
                 $configItemAmounts[$configItem->getKonfigitem()] = $item->nAnzahl / $baseItem->nAnzahl;
                 if ($configItem->ignoreMultiplier()) {

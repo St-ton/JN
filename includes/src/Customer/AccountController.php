@@ -19,9 +19,9 @@ use JTL\Checkout\Kupon;
 use JTL\Checkout\Lieferadresse;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
-use JTL\Extensions\Download;
-use JTL\Extensions\Konfigitem;
-use JTL\Extensions\UploadDatei;
+use JTL\Extensions\Config\Item;
+use JTL\Extensions\Download\Download;
+use JTL\Extensions\Upload\File;
 use JTL\GeneralDataProtection\Journal;
 use JTL\Helpers\Cart;
 use JTL\Helpers\Date;
@@ -170,9 +170,9 @@ class AccountController
             $this->logout();
         }
         if ($valid && ($uploadID = Request::verifyGPCDataInt('kUpload')) > 0) {
-            $file = new UploadDatei($uploadID);
+            $file = new File($uploadID);
             if ($file->validateOwner($customerID)) {
-                UploadDatei::send_file_to_browser(
+                File::send_file_to_browser(
                     \PFAD_UPLOADS . $file->cPfad,
                     'application/octet-stream',
                     $file->cName
@@ -528,7 +528,7 @@ class AccountController
                 }
                 // Konfigitems ohne Artikelbezug
             } elseif ($item->kArtikel === 0 && !empty($item->kKonfigitem)) {
-                $configItem = new Konfigitem($item->kKonfigitem);
+                $configItem = new Item($item->kKonfigitem);
                 $cart->erstelleSpezialPos(
                     $configItem->getName(),
                     $item->fAnzahl,

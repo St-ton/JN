@@ -9,7 +9,7 @@ namespace JTL\Cart;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\Preise;
 use JTL\DB\ReturnType;
-use JTL\Extensions\Konfigitemsprache;
+use JTL\Extensions\Config\ItemLocalization;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Tax;
 use JTL\Session\Frontend;
@@ -557,7 +557,7 @@ class WarenkorbPers
             // Konfigitems ohne Artikelbezug
             (new WarenkorbPers(Frontend::getCustomer()->getID()))->fuegeEin(
                 $productID,
-                (new Konfigitemsprache($configItemID, Shop::getLanguageID()))->getName(),
+                (new ItemLocalization($configItemID, Shop::getLanguageID()))->getName(),
                 $attributeValues,
                 $amount,
                 $unique,

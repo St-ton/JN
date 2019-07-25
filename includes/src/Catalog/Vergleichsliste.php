@@ -9,13 +9,13 @@ namespace JTL\Catalog;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\Merkmal;
 use JTL\DB\ReturnType;
-use JTL\Extensions\Konfigitem;
+use JTL\Extensions\Config\Item;
 use JTL\Helpers\Request;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use stdClass;
-use function Functional\some;
 use function Functional\map;
+use function Functional\some;
 use function Functional\sort;
 
 /**
@@ -114,7 +114,7 @@ class Vergleichsliste
             $product->kArtikel = $productID;
             if ($configItemID > 0) {
                 // Falls Konfigitem gesetzt Preise + Name überschreiben
-                $configItem = new Konfigitem($configItemID);
+                $configItem = new Item($configItemID);
                 if ($configItem->getKonfigitem() > 0) {
                     $product->Preise->cVKLocalized[0] = $configItem->getPreisLocalized(true, false);
                     $product->Preise->cVKLocalized[1] = $configItem->getPreisLocalized(true, false, true);

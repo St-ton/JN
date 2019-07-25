@@ -6,7 +6,6 @@
 
 use JTL\Helpers\Cart;
 use JTL\Shop;
-use function Functional\some;
 
 require __DIR__ . '/includes/globalinclude.php';
 

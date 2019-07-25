@@ -6,8 +6,8 @@
 
 namespace JTL\dbeS;
 
-use JTL\Extensions\Upload\Upload;
 use JTL\Extensions\Upload\File;
+use JTL\Extensions\Upload\Upload;
 
 /**
  * Class Uploader

@@ -15,7 +15,6 @@ use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
-use JTL\Model\DataModel;
 use JTL\Services\JTL\AlertServiceInterface;
 use JTL\Session\Frontend;
 use JTL\Shop;

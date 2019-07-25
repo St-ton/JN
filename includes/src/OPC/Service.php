@@ -16,7 +16,6 @@ use JTL\Filter\ProductFilter;
 use JTL\Filter\Type;
 use JTL\Helpers\Request;
 use JTL\Helpers\Tax;
-use JTL\IO\IOResponse;
 use JTL\OPC\Portlets\MissingPortlet;
 use JTL\Shop;
 

@@ -6,8 +6,8 @@
 
 namespace JTL\Boxes\Items;
 
-use JTL\Helpers\Text;
 use JTL\Catalog\Product\Preise;
+use JTL\Helpers\Text;
 use JTL\Session\Frontend;
 
 /**

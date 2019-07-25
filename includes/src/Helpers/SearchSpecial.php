@@ -6,8 +6,8 @@
 
 namespace JTL\Helpers;
 
-use JTL\DB\ReturnType;
 use JTL\Customer\Kundengruppe;
+use JTL\DB\ReturnType;
 use JTL\Media\Image\Overlay;
 use JTL\Shop;
 use stdClass;

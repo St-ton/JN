@@ -7,7 +7,6 @@
 namespace JTL\Helpers;
 
 use JTL\Catalog\Category\Kategorie;
-use JTL\Catalog\Category\KategorieListe;
 use JTL\Catalog\Category\MenuItem;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;

@@ -6,11 +6,11 @@
 
 namespace JTL\Helpers;
 
-use JTL\Checkout\Bestellung;
 use JTL\Catalog\Currency;
-use JTL\Customer\Kunde;
+use JTL\Checkout\Bestellung;
 use JTL\Checkout\Lieferadresse;
 use JTL\Checkout\Rechnungsadresse;
+use JTL\Customer\Kunde;
 use JTL\DB\ReturnType;
 use JTL\Shop;
 use stdClass;

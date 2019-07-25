@@ -6,8 +6,8 @@
 
 namespace JTL\GeneralDataProtection;
 
-use JTL\DB\ReturnType;
 use JTL\Customer\Kunde;
+use JTL\DB\ReturnType;
 use JTL\Shop;
 
 /**

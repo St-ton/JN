@@ -6,8 +6,8 @@
 
 namespace JTL\Filter;
 
-use JTL\Filter\Items\Characteristic;
 use JTL\Filter\Items\Category;
+use JTL\Filter\Items\Characteristic;
 use JTL\Filter\Items\Manufacturer;
 use JTL\Filter\Items\PriceRange;
 use JTL\Filter\Items\Rating;

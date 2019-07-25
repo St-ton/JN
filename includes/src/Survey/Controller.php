@@ -6,18 +6,18 @@
 
 namespace JTL\Survey;
 
+use Illuminate\Support\Collection;
+use JTL\Catalog\Product\Preise;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Nice;
-use JTL\Catalog\Product\Preise;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
 use stdClass;
-use Illuminate\Support\Collection;
 
 /**
  * Class Controller

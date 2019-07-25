@@ -6,16 +6,16 @@
 
 namespace JTL\Catalog;
 
+use Exception;
 use JTL\Catalog\Product\Artikel;
 use JTL\Checkout\Bestellung;
 use JTL\Customer\Kunde;
 use JTL\DB\ReturnType;
-use JTL\Shop;
-use Exception;
 use JTL\Exceptions\CircularReferenceException;
-use JTL\Exceptions\ServiceNotFoundException;
 use JTL\Exceptions\EmptyResultSetException;
 use JTL\Exceptions\InvalidSettingException;
+use JTL\Exceptions\ServiceNotFoundException;
+use JTL\Shop;
 use stdClass;
 
 /**

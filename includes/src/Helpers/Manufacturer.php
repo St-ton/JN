@@ -6,9 +6,9 @@
 
 namespace JTL\Helpers;
 
-use JTL\DB\ReturnType;
 use JTL\Catalog\Hersteller;
 use JTL\Customer\Kundengruppe;
+use JTL\DB\ReturnType;
 use JTL\Language\LanguageHelper;
 use JTL\Shop;
 

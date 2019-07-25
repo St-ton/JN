@@ -7,15 +7,15 @@
 namespace JTL\Helpers;
 
 use Exception;
-use function Functional\none;
-use JTL\DB\ReturnType;
 use JTL\Customer\Kundengruppe;
+use JTL\DB\ReturnType;
 use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\SimpleMail;
 use stdClass;
+use function Functional\none;
 
 /**
  * Class Form

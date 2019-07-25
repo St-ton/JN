@@ -6,9 +6,9 @@
 
 namespace JTL\Helpers;
 
+use JTL\Checkout\Zahlungsart;
 use JTL\Session\Frontend;
 use JTL\Shop;
-use JTL\Checkout\Zahlungsart;
 
 /**
  * Class PaymentMethod

@@ -147,7 +147,7 @@ class Download
                 if (!$languageID) {
                     $languageID = Shop::getLanguageID();
                 }
-                $this->oDownloadSprache     = new DownloadSprache($item->kDownload, $languageID);
+                $this->oDownloadSprache     = new DownloadLocalization($item->kDownload, $languageID);
                 $this->oDownloadHistory_arr = DownloadHistory::getHistory($item->kDownload);
             }
             if ($orderID > 0) {

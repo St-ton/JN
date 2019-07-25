@@ -13,7 +13,7 @@ use JTL\Catalog\Hersteller;
 use JTL\Shop;
 use JTL\Shopsetting;
 use JTL\Sitemap\Sitemap;
-use JTL\Extensions\AuswahlAssistent;
+use JTL\Extensions\SelectionWizard;
 
 if (!defined('PFAD_ROOT')) {
     http_response_code(400);
@@ -48,7 +48,7 @@ if ($link->getLinkType() === LINKTYP_STARTSEITE) {
            ->assign('oNews_arr', $conf['news']['news_benutzen'] === 'Y'
                ? CMS::getHomeNews($conf)
                : []);
-    AuswahlAssistent::startIfRequired(AUSWAHLASSISTENT_ORT_STARTSEITE, 1, Shop::getLanguage(), $smarty);
+    SelectionWizard::startIfRequired(AUSWAHLASSISTENT_ORT_STARTSEITE, 1, Shop::getLanguage(), $smarty);
 } elseif ($link->getLinkType() === LINKTYP_AGB) {
     $smarty->assign('AGB', Shop::Container()->getLinkService()->getAGBWRB(
         Shop::getLanguage(),
@@ -106,7 +106,7 @@ if ($link->getLinkType() === LINKTYP_STARTSEITE) {
         }
     }
 } elseif ($link->getLinkType() === LINKTYP_AUSWAHLASSISTENT) {
-    AuswahlAssistent::startIfRequired(
+    SelectionWizard::startIfRequired(
         AUSWAHLASSISTENT_ORT_LINK,
         $link->getID(),
         Shop::getLanguageID(),

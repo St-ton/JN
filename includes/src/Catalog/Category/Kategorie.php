@@ -163,9 +163,7 @@ class Kategorie
         bool $recall = false,
         bool $noCache = false
     ): self {
-        if (!$customerGroupID) {
-            $customerGroupID = Frontend::getCustomerGroup()->getID();
-        }
+        $customerGroupID = $customerGroupID ?: Frontend::getCustomerGroup()->getID();
         if (!$customerGroupID) {
             $customerGroupID = Kundengruppe::getDefaultGroupID();
             if (!isset($_SESSION['Kundengruppe']->kKundengruppe)) { //auswahlassistent admin fix

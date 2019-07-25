@@ -18,7 +18,7 @@ use JTL\Cart\Warenkorb;
 use JTL\Cart\WarenkorbPers;
 use JTL\DB\ReturnType;
 use JTL\Catalog\Product\EigenschaftWert;
-use JTL\Extensions\AuswahlAssistent;
+use JTL\Extensions\SelectionWizard;
 use JTL\Helpers\Cart;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Product;
@@ -1252,7 +1252,7 @@ class IOMethods
     {
         $smarty   = Shop::Smarty();
         $response = new IOResponse();
-        $AWA      = AuswahlAssistent::startIfRequired($keyName, $id, $languageID, $smarty, $selection);
+        $AWA      = SelectionWizard::startIfRequired($keyName, $id, $languageID, $smarty, $selection);
 
         if ($AWA !== null) {
             $oLastSelectedValue = $AWA->getLastSelectedValue();

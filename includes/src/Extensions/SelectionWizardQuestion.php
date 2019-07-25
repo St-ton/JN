@@ -9,15 +9,14 @@ namespace JTL\Extensions;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
 use JTL\Catalog\Product\Merkmal;
-use JTL\Helpers\GeneralObject;
 use JTL\Shop;
 use stdClass;
 
 /**
- * Class AuswahlAssistentFrage
+ * Class SelectionWizardQuestion
  * @package JTL\Extensions
  */
-class AuswahlAssistentFrage
+class SelectionWizardQuestion
 {
     /**
      * @var int
@@ -75,7 +74,7 @@ class AuswahlAssistentFrage
     private $db;
 
     /**
-     * AuswahlAssistentFrage constructor.
+     * SelectionWizardQuestion constructor.
      * @param int  $id
      * @param bool $activeOnly
      */

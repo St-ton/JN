@@ -9,7 +9,7 @@ use JTL\Catalog\Category\Kategorie;
 use JTL\Catalog\Category\KategorieListe;
 use JTL\Catalog\Product\ArtikelListe;
 use JTL\Catalog\Product\Bestseller;
-use JTL\Extensions\AuswahlAssistent;
+use JTL\Extensions\SelectionWizard;
 use JTL\Filter\ProductFilter;
 use JTL\Helpers\Category;
 use JTL\Helpers\Product;
@@ -156,7 +156,7 @@ if (mb_strpos(basename($NaviFilter->getFilterURL()->getURL()), '.php') === false
         ? SEP_SEITE . $pages->getCurrentPage()
         : '');
 }
-AuswahlAssistent::startIfRequired(
+SelectionWizard::startIfRequired(
     AUSWAHLASSISTENT_ORT_KATEGORIE,
     $params['kKategorie'],
     Shop::getLanguageID(),

@@ -11,10 +11,10 @@ use JTL\Shop;
 use stdClass;
 
 /**
- * Class DownloadSprache
+ * Class DownloadLocalization
  * @package JTL\Extensions
  */
-class DownloadSprache
+class DownloadLocalization
 {
     /**
      * @var int
@@ -37,6 +37,7 @@ class DownloadSprache
     protected $cBeschreibung;
 
     /**
+     * DownloadLocalization constructor.
      * @param int $downloadID
      * @param int $languageID
      */

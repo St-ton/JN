@@ -17,10 +17,10 @@ use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
 
 /**
- * Class AuswahlAssistent
+ * Class SelectionWizard
  * @package JTL\Extensions
  */
-class AuswahlAssistent
+class SelectionWizard
 {
     /**
      * @var int
@@ -63,12 +63,12 @@ class AuswahlAssistent
     private $nAktiv = 0;
 
     /**
-     * @var AuswahlAssistentFrage[]
+     * @var SelectionWizardQuestion[]
      */
     private $questions = [];
 
     /**
-     * @var AuswahlAssistentFrage[] - keys are kMerkmal
+     * @var SelectionWizardQuestion[] - keys are kMerkmal
      */
     private $questionsAssoc = [];
 
@@ -93,7 +93,7 @@ class AuswahlAssistent
     private $config;
 
     /**
-     * AuswahlAssistent constructor.
+     * SelectionWizard constructor.
      *
      * @param string $keyName
      * @param int    $id
@@ -163,7 +163,7 @@ class AuswahlAssistent
             $this->questions = [];
 
             foreach ($questionIDs as $questionID) {
-                $question                                  = new AuswahlAssistentFrage((int)$questionID->id);
+                $question                                  = new SelectionWizardQuestion((int)$questionID->id);
                 $this->questions[]                         = $question;
                 $this->questionsAssoc[$question->kMerkmal] = $question;
             }
@@ -296,15 +296,15 @@ class AuswahlAssistent
 
     /**
      * @param int $nFrage
-     * @return AuswahlAssistentFrage|null
+     * @return SelectionWizardQuestion|null
      */
-    public function getQuestion(int $nFrage): ?AuswahlAssistentFrage
+    public function getQuestion(int $nFrage): ?SelectionWizardQuestion
     {
         return $this->questions[$nFrage] ?? null;
     }
 
     /**
-     * @return AuswahlAssistentFrage[]
+     * @return SelectionWizardQuestion[]
      */
     public function getQuestions(): array
     {

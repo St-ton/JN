@@ -14,10 +14,10 @@ use JTL\Shop;
 use stdClass;
 
 /**
- * Class AuswahlAssistentOrt
+ * Class SelectionWizardLocation
  * @package JTL\Extensions
  */
-class AuswahlAssistentOrt
+class SelectionWizardLocation
 {
     /**
      * @var int
@@ -55,6 +55,7 @@ class AuswahlAssistentOrt
     private $db;
 
     /**
+     * SelectionWizardLocation constructor.
      * @param int  $locationID
      * @param int  $groupID
      * @param bool $backend
@@ -399,7 +400,7 @@ class AuswahlAssistentOrt
      * @param int    $id
      * @param int    $languageID
      * @param bool   $backend
-     * @return AuswahlAssistentOrt|null
+     * @return SelectionWizardLocation|null
      */
     public function getLocation($keyName, int $id, int $languageID, bool $backend = false): ?self
     {

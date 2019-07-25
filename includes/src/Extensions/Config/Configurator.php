@@ -74,12 +74,12 @@ class Configurator
         }
 
         return (int)Shop::Container()->getDB()->queryPrepared(
-                'SELECT COUNT(*) AS cnt
+            'SELECT COUNT(*) AS cnt
                  FROM tartikelkonfiggruppe
                  WHERE tartikelkonfiggruppe.kArtikel = :pid',
-                ['pid' => $productID],
-                ReturnType::SINGLE_OBJECT
-            )->cnt > 0;
+            ['pid' => $productID],
+            ReturnType::SINGLE_OBJECT
+        )->cnt > 0;
     }
 
     /**

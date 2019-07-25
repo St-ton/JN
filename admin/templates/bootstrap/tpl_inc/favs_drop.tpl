@@ -1,5 +1,6 @@
 <a href="#" class="btn btn-primary favorites dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
-    <span class="fas fa-star mr-0 mr-lg-2"></span> {__('favorites')}
+    <span class="fas fa-star mr-0 mr-lg-2"></span>
+    <span class="d-none d-lg-inline-block">{__('favorites')}</span>
 </a>
 <div class="dropdown-menu dropdown-menu-right" role="main">
     {if isset($favorites) && is_array($favorites) && count($favorites) > 0}

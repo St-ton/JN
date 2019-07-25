@@ -1,8 +1,17 @@
-<div class="backend-search">
-    <span class="fal fa-search fa-fw" data-fa-transform="grow-4"></span>
-    <input id="backend-search-input" placeholder="{__('searchTerm')}" name="cSuche" type="search"
-           value="" autocomplete="off">
-    <div class="dropdown-menu" id="dropdown-search"></div>
+<div class="backend-search row no-gutters align-items-center flex-nowrap">
+    <div class="col-auto">
+        <button type="button" class="btn btn-link px-2 ml-n2 search-icon">
+            <span class="fal fa-search fa-fw" data-fa-transform="grow-4"></span>
+        </button>
+    </div>
+    <div class="col dropdown">
+        <input id="backend-search-input" class="form-control border-0 pl-2" placeholder="{__('searchTerm')}" name="cSuche" type="search"
+               value="" autocomplete="off">
+        <div class="dropdown-menu" id="dropdown-search"></div>
+    </div>
+    <div class="col-auto search-btn">
+        <button class="btn btn-primary"><span class="fal fa-search"></span></button>
+    </div>
     <script>
         var lastIoSearchCall    = null;
         var searchItems         = null;

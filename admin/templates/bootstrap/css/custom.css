@@ -333,10 +333,6 @@
 .backend-wrapper > .backend-main > .backend-navbar > .backend-navbar-left .backend-search input::placeholder {
   color: #bdbdbd;
 }
-.backend-wrapper > .backend-main > .backend-navbar > .backend-navbar-left .backend-search #dropdown-search {
-  max-height: 75vh;
-  overflow: auto;
-}
 .backend-wrapper > .backend-main > .backend-navbar > .backend-navbar-right {
   margin: 0;
   padding: 0;
@@ -2642,5 +2638,9 @@ div.markdown thead tr td {
   -webkit-column-span: all;
   column-span: all;
   margin-top: 2rem;
+}
+#dropdown-search {
+  max-height: 75vh;
+  overflow: auto;
 }
 /*# sourceMappingURL=custom.css.map */

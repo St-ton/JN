@@ -6,16 +6,22 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                    <h4 class="modal-title">{__('danger')}!</h4>
+                    <button type="button" class="close" data-dismiss="modal">
+                        <i class="fal fa-times"></i>
+                    </button>
+                    <h2 class="modal-title">{__('danger')}!</h2>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body py-5">
                     <p>{__('sureDeleteEntries')}</p>
                 </div>
                 <div class="modal-footer">
-                    <div class="btn-group">
-                        <button type="button" class="btn btn-info" name="cancel" data-dismiss="modal"><i class="fa fa-close"></i>&nbsp;{__('cancel')}</button>
-                        <button id="formSubmit" type="button" class="btn btn-danger" name="delete" ><i class="fas fa-trash-alt"></i>&nbsp;{__('delete')}</button>
+                    <div class="row">
+                        <div class="ml-auto col-sm-6 col-xl-auto">
+                            <button type="button" class="btn btn-outline-primary" name="cancel" data-dismiss="modal"><i class="fa fa-close"></i>&nbsp;{__('cancel')}</button>
+                        </div>
+                        <div class="col-sm-6 col-xl-auto">
+                            <button id="formSubmit" type="button" class="btn btn-danger" name="delete" ><i class="fas fa-trash-alt"></i>&nbsp;{__('delete')}</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -229,9 +235,9 @@
                                             {else}
                                                 <td>&nbsp;</td>
                                             {/if}
-                                            <td class="tcenter">{$oSitemapReport->fVerarbeitungszeit}s</td>
-                                            <td class="tcenter">{$oSitemapReport->nTotalURL}</td>
-                                            <td class="tcenter">{$oSitemapReport->dErstellt_DE}</td>
+                                            <td class="text-center">{$oSitemapReport->fVerarbeitungszeit}s</td>
+                                            <td class="text-center">{$oSitemapReport->nTotalURL}</td>
+                                            <td class="text-center">{$oSitemapReport->dErstellt_DE}</td>
                                         </tr>
                                         {if isset($oSitemapReport->oSitemapReportFile_arr) && $oSitemapReport->oSitemapReportFile_arr|@count > 0}
                                             <tr id="info_{$oSitemapReport->kSitemapReport}" style="display: none;">
@@ -250,8 +256,8 @@
                                                             {foreach $oSitemapReport->oSitemapReportFile_arr as $oSitemapReportFile}
                                                                 <tr>
                                                                     <td>{$oSitemapReportFile->cDatei}</td>
-                                                                    <td class="tcenter">{$oSitemapReportFile->nAnzahlURL}</td>
-                                                                    <td class="tcenter">{$oSitemapReportFile->fGroesse} KB</td>
+                                                                    <td class="text-center">{$oSitemapReportFile->nAnzahlURL}</td>
+                                                                    <td class="text-center">{$oSitemapReportFile->fGroesse} KB</td>
                                                                 </tr>
                                                             {/foreach}
                                                         </tbody>

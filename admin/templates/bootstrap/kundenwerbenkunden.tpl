@@ -65,7 +65,7 @@
                                                 <b>{$oKwKNichtReg->cBestandVorname} {$oKwKNichtReg->cBestandNachname}</b><br />{$oKwKNichtReg->cMail}
                                             </td>
                                             <td class="tleft">{getCurrencyConversionSmarty fPreisBrutto=$oKwKNichtReg->fGuthaben}</td>
-                                            <td class="tcenter">{$oKwKNichtReg->dErstellt_de}</td>
+                                            <td class="text-center">{$oKwKNichtReg->dErstellt_de}</td>
                                         </tr>
                                     {/foreach}
                                     </tbody>
@@ -109,8 +109,8 @@
                                             <b>{$oKwKReg->cBestandVorname} {$oKwKReg->cBestandNachname}</b><br />{$oKwKReg->cMail}
                                         </td>
                                         <td>{getCurrencyConversionSmarty fPreisBrutto=$oKwKReg->fGuthaben}</td>
-                                        <td class="tcenter">{$oKwKReg->dErstellt_de}</td>
-                                        <td class="tcenter">{$oKwKReg->dBestandErstellt_de}</td>
+                                        <td class="text-center">{$oKwKReg->dErstellt_de}</td>
+                                        <td class="text-center">{$oKwKReg->dBestandErstellt_de}</td>
                                     </tr>
                                 {/foreach}
                                 </tbody>
@@ -142,8 +142,8 @@
                                             <b>{$oKwKBestandBonus->cBestandVorname} {$oKwKBestandBonus->cBestandNachname}</b><br />{$oKwKBestandBonus->cMail}
                                         </td>
                                         <td>{getCurrencyConversionSmarty fPreisBrutto=$oKwKBestandBonus->fGuthaben}</td>
-                                        <td class="tcenter">{$oKwKBestandBonus->nBonuspunkte}</td>
-                                        <td class="tcenter">{$oKwKBestandBonus->dErhalten_de}</td>
+                                        <td class="text-center">{$oKwKBestandBonus->nBonuspunkte}</td>
+                                        <td class="text-center">{$oKwKBestandBonus->dErhalten_de}</td>
                                     </tr>
                                 {/foreach}
                                 </tbody>

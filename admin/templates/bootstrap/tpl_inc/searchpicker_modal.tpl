@@ -11,46 +11,50 @@
                 <button type="button" class="close" data-dismiss="modal">
                     <i class="fal fa-times"></i>
                 </button>
-                <h4 class="modal-title">{$modalTitle}</h4>
+                <h2 class="modal-title">{$modalTitle}</h2>
             </div>
-            <div class="modal-body">
+            <div class="modal-body py-5">
                 <div class="input-group">
                     <label for="{$searchPickerName}-search-input" class="sr-only">
                         {$searchInputLabel}:
                     </label>
                     <input type="text" class="form-control" id="{$searchPickerName}-search-input" placeholder="{__('search')}"
                            autocomplete="off">
-                    <span class="input-group-btn">
+                    <span class="input-group-append">
                         <button type="button" class="btn btn-default" id="{$searchPickerName}-reset-btn"
                                 title="{__('deleteInput')}">
                             <i class="fa fa-eraser"></i>
                         </button>
                     </span>
                 </div>
-                <h5 id="{$searchPickerName}-list-title"></h5>
+                <p id="{$searchPickerName}-list-title"></p>
                 <div class="list-group" id="{$searchPickerName}-result-list" style="max-height:500px;overflow:auto;">
                 </div>
                 <div class="btn-group">
-                    <button type="button" class="btn btn-sm btn-primary" id="{$searchPickerName}-select-all-btn">
+                    <button type="button" class="btn btn-sm btn-link" id="{$searchPickerName}-select-all-btn">
                         <i class="fal fa-check-square-o"></i>
                         {__('selectAllShown')}
                     </button>
-                    <button type="button" class="btn btn-sm btn-danger" id="{$searchPickerName}-unselect-all-btn">
+                    <button type="button" class="btn btn-sm btn-link" id="{$searchPickerName}-unselect-all-btn">
                         <i class="fa fa-square-o"></i>
                         {__('unselectAllShown')}
                     </button>
                 </div>
             </div>
-            <div class="modal-footer">
-                <div class="btn-group">
-                    <button type="button" class="btn btn-danger" data-dismiss="modal" id="{$searchPickerName}-cancel-btn">
-                        <i class="fal fa-times"></i>
-                        {__('cancel')}
-                    </button>
-                    <button type="button" class="btn btn-primary" data-dismiss="modal" id="{$searchPickerName}-apply-btn">
-                        <i class="fa fa-save"></i>
-                        {__('apply')}
-                    </button>
+            <div class="modal-footer text-right">
+                <div class="row">
+                    <div class="ml-auto col-sm-6 col-xl-auto">
+                        <button type="button" class="btn btn-outline-primary" data-dismiss="modal" id="{$searchPickerName}-cancel-btn">
+                            <i class="fal fa-times"></i>
+                            {__('cancel')}
+                        </button>
+                    </div>
+                    <div class="col-sm-6 col-xl-auto">
+                        <button type="button" class="btn btn-primary" data-dismiss="modal" id="{$searchPickerName}-apply-btn">
+                            <i class="fa fa-save"></i>
+                            {__('apply')}
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>

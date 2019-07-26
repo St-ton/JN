@@ -37,7 +37,7 @@
                                 <input type="password" tabindex="10" size="20" value="" id="user_pw_confirm" name="pw_new_confirm" placeholder="{__('confirmNewPassword')}" class="form-control" />
                             </div>
                         {/if}
-                        <p class="tcenter">
+                        <p class="text-center">
                             <button type="submit" value="Passwort zurücksetzen" tabindex="100" class="btn btn-primary btn-block btn-lg">{__('resetPassword')}</button>
                         </p>
                     </form>

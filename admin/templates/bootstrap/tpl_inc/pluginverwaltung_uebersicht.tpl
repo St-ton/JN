@@ -126,7 +126,7 @@ function ackCheck(kPlugin, hash)
                                 allowedFileExtensions : ['zip'],
                                 overwriteInitial: false,
                                 showPreview: false,
-                                language: 'de',
+                                language: '{$language|mb_substr:0:2}',
                                 maxFileSize: 100000,
                                 maxFilesNum: 1
                             {rdelim}).on('fileuploaded', function(event, data, previewId, index) {ldelim}

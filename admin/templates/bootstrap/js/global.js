@@ -386,6 +386,12 @@ function tristate(cb) {
     else if (!cb.checked) cb.readOnly=cb.indeterminate=true;
 }
 
+function checkSingleSettingCard() {
+    if ($('#settings .card').length === 1) {
+        $('#settings .card').addClass('single');
+    }
+}
+
 /**
  * document ready
  */
@@ -520,6 +526,20 @@ $(document).ready(function () {
     $("input[type=checkbox].tristate").on('change', function(e){
         tristate(e.target);
     });
+
+    checkSingleSettingCard();
+});
+
+$(window).on('load', () => {
+    $('#page-wrapper').removeClass('hidden disable-transitions');
+    $('html').addClass('ready');
+    $('body > .spinner').remove();
+
+    document.dispatchEvent(new CustomEvent('ready', {
+        detail: {
+            jquery : $
+        }
+    }))
 });
 
 function showBackdrop() {

@@ -52,8 +52,8 @@
                                         {/if}
                                     </td>
                                     <td>{$CWunschliste->cVorname} {$CWunschliste->cNachname}</td>
-                                    <td class="tcenter">{$CWunschliste->Anzahl}</td>
-                                    <td class="tcenter">{$CWunschliste->Datum}</td>
+                                    <td class="text-center">{$CWunschliste->Anzahl}</td>
+                                    <td class="text-center">{$CWunschliste->Datum}</td>
                                 </tr>
                             {/foreach}
                             </tbody>
@@ -81,8 +81,8 @@
                                     <td>
                                         <a href="{$shopURL}/index.php?a={$CWunschlistePos->kArtikel}&" rel="external">{$CWunschlistePos->cArtikelName}</a>
                                     </td>
-                                    <td class="tcenter">{$CWunschlistePos->Anzahl}</td>
-                                    <td class="tcenter">{$CWunschlistePos->Datum}</td>
+                                    <td class="text-center">{$CWunschlistePos->Anzahl}</td>
+                                    <td class="text-center">{$CWunschlistePos->Datum}</td>
                                 </tr>
                             {/foreach}
                             </tbody>
@@ -113,9 +113,9 @@
                                         <a href="{$shopURL}/index.php?wlid={$CWunschlisteVersand->cURLID}" rel="external">{$CWunschlisteVersand->cName}</a>
                                     </td>
                                     <td>{$CWunschlisteVersand->cVorname} {$CWunschlisteVersand->cNachname}</td>
-                                    <td class="tcenter">{$CWunschlisteVersand->nAnzahlEmpfaenger}</td>
-                                    <td class="tcenter">{$CWunschlisteVersand->nAnzahlArtikel}</td>
-                                    <td class="tcenter">{$CWunschlisteVersand->Datum}</td>
+                                    <td class="text-center">{$CWunschlisteVersand->nAnzahlEmpfaenger}</td>
+                                    <td class="text-center">{$CWunschlisteVersand->nAnzahlArtikel}</td>
+                                    <td class="text-center">{$CWunschlisteVersand->Datum}</td>
                                 </tr>
                             {/foreach}
                             </tbody>

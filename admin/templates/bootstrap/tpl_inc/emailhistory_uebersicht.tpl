@@ -20,16 +20,22 @@
                 <div class="modal-dialog">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                            <h4 class="modal-title">{__('danger')}!</h4>
+                            <button type="button" class="close" data-dismiss="modal">
+                                <i class="fal fa-times"></i>
+                            </button>
+                            <h2 class="modal-title">{__('danger')}!</h2>
                         </div>
-                        <div class="modal-body">
+                        <div class="modal-body py-5">
                             <p>{__('sureEmailDelete')}</p>
                         </div>
                         <div class="modal-footer">
-                            <div class="btn-group">
-                                <button type="button" class="btn btn-success" name="ok" id="submitForm"><i class="fal fa-check text-success"></i>&nbsp;{__('ok')}</button>
-                                <button type="button" class="btn btn-danger" name="cancel" data-dismiss="modal"><i class="fa fa-close"></i>&nbsp;{__('cancel')}</button>
+                            <div class="row">
+                                <div class="ml-auto col-sm-6 col-xl-auto">
+                                    <button type="button" class="btn btn-outline-primary" name="cancel" data-dismiss="modal"><i class="fa fa-close"></i>&nbsp;{__('cancel')}</button>
+                                </div>
+                                <div class="col-sm-6 col-xl-auto">
+                                    <button type="button" class="btn btn-primary" name="ok" id="submitForm"><i class="fal fa-check text-success"></i>&nbsp;{__('ok')}</button>
+                                </div>
                             </div>
                         </div>
                     </div>

@@ -3,8 +3,10 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h4>{__('plz_ort_import_select')}</h4>
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h2>{__('plz_ort_import_select')}</h2>
+                <button type="button" class="close" data-dismiss="modal">
+                    <i class="fal fa-times"></i>
+                </button>
             </div>
             <div class="modal-body">
                 {if isset($oLand_arr) && count($oLand_arr) > 0}
@@ -34,8 +36,8 @@
                 <div class="alert alert-warning"><i class="fal fa-exclamation-triangle"></i> {__('plz_ort_import_select_failed')}</div>
                 {/if}
             </div>
-            <div class="modal-footer">
-                <a href="#" class="btn btn-primary" data-dismiss="modal"><i class="fa fa-close"></i> {__('cancel')}</a>
+            <div class="modal-footer text-right">
+                <a href="#" class="btn btn-outline-primary" data-dismiss="modal"><i class="fa fa-close"></i> {__('cancel')}</a>
             </div>
         </div>
     </div>

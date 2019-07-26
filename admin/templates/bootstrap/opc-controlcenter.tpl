@@ -217,10 +217,12 @@
         <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal">×</button>
-                    <h3>{__('preview')}</h3>
+                    <button type="button" class="close" data-dismiss="modal">
+                        <i class="fal fa-times"></i>
+                    </button>
+                    <h2>{__('preview')}</h2>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body py-5">
                     <iframe id="previewFrame" src="" style="zoom:0.60" width="99.6%" height="850" frameborder="0"></iframe>
                 </div>
                 <div class="modal-footer">

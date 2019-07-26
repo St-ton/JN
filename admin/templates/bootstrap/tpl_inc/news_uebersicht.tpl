@@ -114,8 +114,8 @@
                                             </td>
                                             <td class="TD3">{$oNewsKommentar->getNewsTitle()|truncate:50:'...'}</td>
                                             <td class="TD4">{$oNewsKommentar->getText()|truncate:150:'...'}</td>
-                                            <td class="tcenter">{$oNewsKommentar->getDateCreatedCompat()}</td>
-                                            <td class="tcenter">
+                                            <td class="text-center">{$oNewsKommentar->getDateCreatedCompat()}</td>
+                                            <td class="text-center">
                                                 <div class="btn-group">
                                                     <a href="news.php?news=1&kNews={$oNewsKommentar->getNewsID()}&kNewsKommentar={$oNewsKommentar->getID()}&nkedit=1&tab=inaktiv&token={$smarty.session.jtl_token}"
                                                        class="btn btn-link px-2" title="{__('modify')}">
@@ -197,18 +197,18 @@
                                                 {/foreach}
                                             </td>
                                             <td class="TD5">{$oNews->getDateValidFromLocalizedCompat()}</td>
-                                            <td class="tcenter">
+                                            <td class="text-center">
                                                 <i class="fal fa-{if $oNews->getIsActive()}check text-success{else}times text-danger{/if}"></i>
                                             </td>
-                                            <td class="tcenter">
+                                            <td class="text-center">
                                                 {if $oNews->getCommentCount() > 0}
                                                     <a href="news.php?news=1&nd=1&kNews={$oNews->getID()}&tab=aktiv&token={$smarty.session.jtl_token}">{$oNews->getCommentCount()}</a>
                                                 {else}
                                                     {$oNews->getCommentCount()}
                                                 {/if}
                                             </td>
-                                            <td class="tcenter">{$oNews->getDateCompat()}</td>
-                                            <td class="tcenter">
+                                            <td class="text-center">{$oNews->getDateCompat()}</td>
+                                            <td class="text-center">
                                                 <div class="btn-group">
                                                     <a href="news.php?news=1&nd=1&kNews={$oNews->getID()}&tab=aktiv&token={$smarty.session.jtl_token}"
                                                        class="btn btn-link px-2" title="{__('preview')}">
@@ -303,12 +303,12 @@
                                                 <i class="fa fa-caret-right nav-toggle{if $oNewsKategorie->getChildren()->count() === 0} hidden{/if}" style="cursor:pointer"></i>
                                                 <label for="newscat-{$oNewsKategorie->getID()}">{$oNewsKategorie->getName()|default:'???'}</label>
                                             </td>
-                                            <td class="tcenter">{$oNewsKategorie->getSort()}</td>
-                                            <td class="tcenter">
+                                            <td class="text-center">{$oNewsKategorie->getSort()}</td>
+                                            <td class="text-center">
                                                 <i class="fal fa-{if $oNewsKategorie->getIsActive()}check text-success{else}times text-danger{/if}"></i>
                                             </td>
-                                            <td class="tcenter">{$oNewsKategorie->getDateLastModified()->format('d.m.Y H:i')}</td>
-                                            <td class="tcenter">
+                                            <td class="text-center">{$oNewsKategorie->getDateLastModified()->format('d.m.Y H:i')}</td>
+                                            <td class="text-center">
                                                 <div class="btn-group">
                                                     <a href="news.php?news=1&newskategorie_editieren=1&kNewsKategorie={$oNewsKategorie->getID()}&tab=kategorien&token={$smarty.session.jtl_token}"
                                                        class="btn btn-link px-2" title="{__('modify')}">
@@ -441,13 +441,21 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h4 class="modal-title">{__('deleteComment')}</h4>
+                <h2 class="modal-title">{__('deleteComment')}</h2>
             </div>
-            <div class="modal-body"></div>
+            <div class="modal-body py-5"></div>
             <div class="modal-footer">
                 <p>{__('wantToConfirm')}</p>
-                <button type="button" id="submitDelete" data-name="" class="btn btn-danger">{__('delete')}</button>
-                <button type="button" class="btn btn-primary" data-dismiss="modal">{__('cancel')}</button>
+                <div class="modal-footer">
+                    <div class="row">
+                        <div class="ml-auto col-sm-6 col-xl-auto">
+                            <button type="button" class="btn btn-outline-primary" data-dismiss="modal">{__('cancel')}</button>
+                        </div>
+                        <div class="col-sm-6 col-xl-auto">
+                            <button type="button" id="submitDelete" data-name="" class="btn btn-danger">{__('delete')}</button>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

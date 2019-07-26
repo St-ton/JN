@@ -1,17 +1,4 @@
 <script type="text/javascript">
-    function append_file_selector() {ldelim}
-        var file_input = $('<input type="file" name="Bilder[]" maxlength="2097152" accept="image/*" />'),
-            container = $('<p class="multi_input vmiddle"><a href="#" title="{__("delete")}"><img src="{$currentTemplateDir}/gfx/layout/delete.png" class="vmiddle" /></a></p>').prepend(file_input);
-        $('#file_input_wrapper').append(container);
-        $(container).find('img').bind('click', function () {ldelim}
-            $(file_input).parent().remove();
-            return false;
-        {rdelim});
-        $(file_input).trigger('click');
-        return false;
-    {rdelim}
-
-    {literal}
     $(function () {
         $('#lang').on('change', function () {
             var iso = $('#lang option:selected').val();
@@ -30,6 +17,44 @@
             }
         }).trigger('change');
     });
+    $(function () {
+        var $el = $('#Bilder_0');
+        $el.fileinput({
+            uploadAsync:           false,
+            showPreview:           true,
+            showUpload:            false,
+            showRemove:            false,
+            showDrag:              false,
+            browseClass:           'btn btn-default',
+            fileActionSettings:    {
+                showZoom:   false,
+                showDrag:   false,
+                showRemove: false,
+            },
+            theme:                 'fas',
+            language:              '{$language|mb_substr:0:2}',
+            allowedFileExtensions: ['jpg', 'jpeg', 'jpe', 'gif', 'png', 'bmp'],
+            browseOnZoneClick:     true,
+            maxFileSize:           1000,
+            initialPreview:        [
+                {if !empty($cDatei_arr)}
+                    {foreach $cDatei_arr as $cDatei}
+                        '{$cDatei->cURL}<a href="links.php?action=edit-link&kLink={$Link->getID()}&token={$smarty.session.jtl_token}&delpic=1&cName={$cDatei->cNameFull}{if isset($Link->getPluginID()) && $Link->getPluginID() > 0}{$Link->getPluginID()}{/if}"><i class="fas fa-trash"></i></a>',
+                    {/foreach}
+                {/if}
+            ],
+            initialPreviewConfig:  [
+                {if !empty($cDatei_arr)}
+                    {foreach $cDatei_arr as $cDatei}
+                    {
+                        caption: '$#{$cDatei->cName}#$',
+                        width:   '120px'
+                    },
+                    {/foreach}
+                {/if}
+            ]
+        });
+    });
     $(window).on('load', function () {
         $('#specialLinkType, #cKundengruppen').change(function () {
             ioCall('isDuplicateSpecialLink', [
@@ -47,7 +72,6 @@
             );
         }).trigger('change');
     });
-    {/literal}
 </script>
 {if $Link->getID() > 0 && !empty($Link->getName())}
     {assign var=description value=$Link->getName()|cat:' (ID '|cat:$Link->getID()|cat:')'}
@@ -188,7 +212,7 @@
                     </div>
                     <div class="form-group form-row align-items-center">
                         <label class="col col-sm-4 col-form-label text-sm-right" for="Bilder_0">{__('images')}:</label>
-                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                        {*<div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                             <div id="file_input_wrapper">
                                 <p class="multi_input">
                                     <input class="form-control-upload" id="Bilder_0" name="Bilder[]" type="file" maxlength="2097152" accept="image/*" />
@@ -200,15 +224,18 @@
                                     onclick="return append_file_selector();" class="btn btn-info">
                                 <i class="fal fa-plus"></i>
                             </button>
+                        </div>*}
+                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                            <input class="form-control-upload" id="Bilder_0" name="Bilder[]" type="file" multiple/>
                         </div>
 
                     </div>
-                    <div class="form-group form-row align-items-center">
+                    {*<div class="form-group form-row align-items-center">
                         <label class="col col-sm-4 col-form-label text-sm-right">{__('linkPics')}:</label>
                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                         {if isset($cDatei_arr)}
                             {foreach $cDatei_arr as $cDatei}
-                                <span class="block tcenter vmiddle">
+                                <span class="block text-center vmiddle">
                                     <a href="links.php?kLink={$Link->getID()}&token={$smarty.session.jtl_token}&delpic=1&cName={$cDatei->cNameFull}{if isset($Link->getPluginID()) && $Link->getPluginID() > 0}{$Link->getPluginID()}{/if}">
                                         <img src="{$currentTemplateDir}/gfx/layout/remove.png" alt="delete">
                                     </a>
@@ -218,7 +245,7 @@
                             {/foreach}
                         {/if}
                         </div>
-                    </div>
+                    </div>*}
                     <div class="form-group form-row align-items-center">
                         <label class="col col-sm-4 col-form-label text-sm-right" for="bIsFluid">{__('bIsFluidText')}:</label>
                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">

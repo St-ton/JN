@@ -70,9 +70,9 @@
                                                 </td>
                                                 <td>{$review->cName}.</td>
                                                 <td><b>{$review->cTitel}</b><br />{$review->cText}</td>
-                                                <td class="tcenter">{$review->nSterne}</td>
-                                                <td class="tcenter">{$review->Datum}</td>
-                                                <td class="tcenter">
+                                                <td class="text-center">{$review->nSterne}</td>
+                                                <td class="text-center">{$review->Datum}</td>
+                                                <td class="text-center">
                                                     <div class="btn-group">
                                                         <a href="bewertung.php?a=editieren&kBewertung={$review->kBewertung}&tab=freischalten&token={$smarty.session.jtl_token}"
                                                            class="btn btn-link px-2" title="{__('modify')}">
@@ -162,9 +162,9 @@
                                                     </blockquote>
                                                 {/if}
                                             </td>
-                                            <td class="tcenter">{$review->nSterne}</td>
-                                            <td class="tcenter">{$review->Datum}</td>
-                                            <td class="tcenter tright" style="min-width: 130px;">
+                                            <td class="text-center">{$review->nSterne}</td>
+                                            <td class="text-center">{$review->Datum}</td>
+                                            <td class="text-center tright" style="min-width: 130px;">
                                                 {if !empty($review->cAntwort)}
                                                     <a href="bewertung.php?a=delreply&kBewertung={$review->kBewertung}&tab=letzten50&token={$smarty.session.jtl_token}"
                                                        class="btn btn-link px-2" title="{__('removeReply')}">
@@ -263,9 +263,9 @@
                                             </td>
                                             <td>{$review->cName}.</td>
                                             <td><b>{$review->cTitel}</b><br />{$review->cText}</td>
-                                            <td class="tcenter">{$review->nSterne}</td>
-                                            <td class="tcenter">{$review->Datum}</td>
-                                            <td class="tcenter">
+                                            <td class="text-center">{$review->nSterne}</td>
+                                            <td class="text-center">{$review->Datum}</td>
+                                            <td class="text-center">
                                                 <a href="bewertung.php?a=editieren&kBewertung={$review->kBewertung}&tab=artikelbewertung"
                                                    class="btn btn-link px-2" title="{__('modify')}">
                                                     <span class="icon-hover">

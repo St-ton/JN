@@ -1224,7 +1224,7 @@ msgid "customer"
 msgstr "Kunde"
 
 msgid "search"
-msgstr "Suchen"
+msgstr "Suche"
 
 msgid "more"
 msgstr "Mehr"

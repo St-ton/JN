@@ -1,14 +1,14 @@
 {function name=slide level=0}
     <tr class="text-vcenter" id="slide{$kSlide}">
-        <td class="tcenter">
+        <td class="text-center">
             <input type="hidden" id="aSlide{$kSlide}delete" name="aSlide[{$kSlide}][delete]" value="0" />
             <input type="hidden" name="aSlide[{$kSlide}][cBild]" value="{if isset($oSlide)}{$oSlide->getImage()}{/if}" />
             <input type="hidden" name="aSlide[{$kSlide}][cThumbnail]" value="{if isset($oSlide)}{$oSlide->getThumbnail()}{/if}" />
             <input type="hidden" class="form-control" id="aSlide[{$kSlide}][nSort]" name="aSlide[{$kSlide}][nSort]" value="{if $kSlide}{$smarty.foreach.slide.iteration}{/if}" autocomplete="off" />
             <i class="btn btn-primary fa fa-bars"></i>
         </td>
-        <td class="tcenter"><img src="{if isset($oSlide)}{$oSlide->getAbsoluteImage()}{else}templates/bootstrap/gfx/layout/upload.png{/if}" id="img{$kSlide}" onclick="select_image('{$kSlide}');" alt="Slidergrafik" class="slide-image" role="button" /></td>
-        <td class="tcenter">
+        <td class="text-center"><img src="{if isset($oSlide)}{$oSlide->getAbsoluteImage()}{else}templates/bootstrap/gfx/layout/upload.png{/if}" id="img{$kSlide}" onclick="select_image('{$kSlide}');" alt="Slidergrafik" class="slide-image" role="button" /></td>
+        <td class="text-center">
             <input class="form-control margin2" id="cTitel{$kSlide}" type="text" name="aSlide[{$kSlide}][cTitel]" value="{if isset($oSlide)}{$oSlide->getTitle()}{/if}" placeholder="{__('title')}" />
             <input class="form-control margin2" id="cLink{$kSlide}" type="text" name="aSlide[{$kSlide}][cLink]" value="{if isset($oSlide)}{$oSlide->getLink()}{/if}" placeholder="{__('link')}" />
         </td>

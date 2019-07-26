@@ -170,7 +170,7 @@
                                                             deleteUrl: '{$shopURL}/{$PFAD_ADMIN}shoptemplate.php?token={$smarty.session.jtl_token}',
                                                             initialPreviewCount: 1,
                                                             showPreview: true,
-                                                            language: 'de',
+                                                            language: '{$language|mb_substr:0:2}',
                                                             maxFileSize: {if !empty($oSetting->rawAttributes.maxFileSize)}{$oSetting->rawAttributes.maxFileSize}{else}1000{/if},
                                                             maxFilesNum: 1{if !empty($oSetting->cValue)}, initialPreview: [
                                                                 '<img src="{$shopURL}/templates/{$oTemplate->cOrdner}/{$oSetting->rawAttributes.target}{$oSetting->cValue}?v={$smarty.now}" class="file-preview-image" alt="" title="" />'

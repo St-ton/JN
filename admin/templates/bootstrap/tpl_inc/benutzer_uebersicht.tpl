@@ -24,24 +24,24 @@
                         <thead>
                         <tr>
                             <th class="tleft">#</th>
-                            <th class="tcenter">{__('username')}</th>
-                            <th class="tcenter">{__('benutzer2FA')}</th>
-                            <th class="tcenter">{__('email')}</th>
-                            <th class="tcenter">{__('group')}</th>
-                            <th class="tcenter">{__('benutzerLoginVersuche')}</th>
-                            <th class="tcenter">{__('benutzerLetzterLogin')}</th>
-                            <th class="tcenter">{__('benutzerGueltigBis')}</th>
-                            <th class="tcenter" width="135">{__('action')}</th>
+                            <th class="text-center">{__('username')}</th>
+                            <th class="text-center">{__('benutzer2FA')}</th>
+                            <th class="text-center">{__('email')}</th>
+                            <th class="text-center">{__('group')}</th>
+                            <th class="text-center">{__('benutzerLoginVersuche')}</th>
+                            <th class="text-center">{__('benutzerLetzterLogin')}</th>
+                            <th class="text-center">{__('benutzerGueltigBis')}</th>
+                            <th class="text-center" width="135">{__('action')}</th>
                         </tr>
                         </thead>
                         <tbody>
                         {foreach $oAdminList_arr as $oAdmin}
                             <tr>
                                 <td class="tleft">{$oAdmin->kAdminlogin}</td>
-                                <td class="tcenter">{$oAdmin->cLogin}</td>
-                                <td class="tcenter">{if $oAdmin->b2FAauth}{__('stateON')}{else}{__('stateOFF')}{/if}</td>
-                                <td class="tcenter">{$oAdmin->cMail}</td>
-                                <td class="tcenter">
+                                <td class="text-center">{$oAdmin->cLogin}</td>
+                                <td class="text-center">{if $oAdmin->b2FAauth}{__('stateON')}{else}{__('stateOFF')}{/if}</td>
+                                <td class="text-center">{$oAdmin->cMail}</td>
+                                <td class="text-center">
                                     {if $oAdmin->kAdminlogingruppe > 1}
                                         <form method="post" action="benutzerverwaltung.php">
                                             {$jtl_token}
@@ -52,10 +52,10 @@
                                         {$oAdmin->cGruppe}
                                     {/if}
                                 </td>
-                                <td class="tcenter">{$oAdmin->nLoginVersuch}</td>
-                                <td class="tcenter">{if $oAdmin->dLetzterLogin && $oAdmin->dLetzterLogin !== null}{$oAdmin->dLetzterLogin|date_format:'%d.%m.%Y %H:%M:%S'}{else}---{/if}</td>
-                                <td class="tcenter">{if !$oAdmin->bAktiv}gesperrt{else}{if $oAdmin->dGueltigBis && $oAdmin->dGueltigBis !== null}{$oAdmin->dGueltigBis|date_format:'%d.%m.%Y %H:%M:%S'}{else}---{/if}{/if}</td>
-                                <td class="tcenter">
+                                <td class="text-center">{$oAdmin->nLoginVersuch}</td>
+                                <td class="text-center">{if $oAdmin->dLetzterLogin && $oAdmin->dLetzterLogin !== null}{$oAdmin->dLetzterLogin|date_format:'%d.%m.%Y %H:%M:%S'}{else}---{/if}</td>
+                                <td class="text-center">{if !$oAdmin->bAktiv}gesperrt{else}{if $oAdmin->dGueltigBis && $oAdmin->dGueltigBis !== null}{$oAdmin->dGueltigBis|date_format:'%d.%m.%Y %H:%M:%S'}{else}---{/if}{/if}</td>
+                                <td class="text-center">
                                     <form method="post" action="benutzerverwaltung.php">
                                         {$jtl_token}
                                         <input type="hidden" name="id" value="{$oAdmin->kAdminlogin}" />
@@ -119,8 +119,8 @@
                             <th class="tleft">#</th>
                             <th class="tleft">{__('group')}</th>
                             <th class="tleft">{__('description')}</th>
-                            <th class="tcenter">{__('user')}</th>
-                            <th class="tcenter">{__('action')}</th>
+                            <th class="text-center">{__('user')}</th>
+                            <th class="text-center">{__('action')}</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -129,8 +129,8 @@
                                 <td class="tleft">{$oGroup->kAdminlogingruppe}</td>
                                 <td class="tleft">{$oGroup->cGruppe}</td>
                                 <td class="tleft">{__($oGroup->cBeschreibung)}</td>
-                                <td class="tcenter">{$oGroup->nCount}</td>
-                                <td class="tcenter">
+                                <td class="text-center">{$oGroup->nCount}</td>
+                                <td class="text-center">
                                     {if $oGroup->kAdminlogingruppe !== '1'}
                                         <form method="post" action="benutzerverwaltung.php">
                                             {$jtl_token}

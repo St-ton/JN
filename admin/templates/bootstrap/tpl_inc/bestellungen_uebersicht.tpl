@@ -68,8 +68,8 @@
                                 <td>{if isset($oBestellung->oKunde) && $oBestellung->oKunde->nRegistriert === 1}{__('yes')}{else}{__('no')}{/if}</td>
                                 <td>{$oBestellung->cVersandartName}</td>
                                 <td>{$oBestellung->cZahlungsartName}</td>
-                                <td class="tcenter">{if $oBestellung->cAbgeholt === 'Y'}{__('yes')}{else}{__('no')}{/if}</td>
-                                <td class="tcenter">
+                                <td class="text-center">{if $oBestellung->cAbgeholt === 'Y'}{__('yes')}{else}{__('no')}{/if}</td>
+                                <td class="text-center">
                                     {if $oBestellung->cStatus == 1}
                                         {__('new')}
                                     {elseif $oBestellung->cStatus == 2}
@@ -84,7 +84,7 @@
                                         {__('orderCanceled')}
                                     {/if}
                                 </td>
-                                <td class="tcenter">{$oBestellung->WarensummeLocalized[0]}</td>
+                                <td class="text-center">{$oBestellung->WarensummeLocalized[0]}</td>
                                 <td class="tright">{$oBestellung->dErstelldatum_de}</td>
                                 <td class="tright">{$oBestellung->cIP}</td>
                             </tr>

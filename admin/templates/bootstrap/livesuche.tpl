@@ -110,13 +110,13 @@
                                         <td>
                                             <input class="form-control fieldOther" name="nAnzahlGesuche_{$suchanfrage->kSuchanfrage}" type="text" value="{$suchanfrage->nAnzahlGesuche}" style="width:50px;" />
                                         </td>
-                                        <td class="tcenter">
+                                        <td class="text-center">
                                             <div class="custom-control custom-checkbox">
                                                 <input class="custom-control-input" type="checkbox" name="nAktiv[]" id="nAktiv_{$suchanfrage->kSuchanfrage}" value="{$suchanfrage->kSuchanfrage}" {if $suchanfrage->nAktiv==1}checked="checked"{/if} />
                                                 <label class="custom-control-label" for="nAktiv_{$suchanfrage->kSuchanfrage}"></label>
                                             </div>
                                         </td>
-                                        <td class="tcenter">
+                                        <td class="text-center">
                                             <input class="form-control fieldOther" type="text" name="mapping_{$suchanfrage->kSuchanfrage}" />
                                         </td>
                                     </tr>

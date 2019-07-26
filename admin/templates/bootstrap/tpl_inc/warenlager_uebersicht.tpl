@@ -44,9 +44,9 @@
                                             <label class="custom-control-label" for="store-id-{$oWarenlager->kWarenlager}"></label>
                                         </div>
                                     </td>
-                                    <td class="tcenter large">{$oWarenlager->cName}</td>
-                                    <td class="tcenter">{$oWarenlager->cBeschreibung}</td>
-                                    <td class="tcenter">
+                                    <td class="text-center large">{$oWarenlager->cName}</td>
+                                    <td class="text-center">{$oWarenlager->cBeschreibung}</td>
+                                    <td class="text-center">
                                         <div class="btn-group">
                                             <a class="btn btn-link px-2" data-toggle="collapse" href="#collapse-{$oWarenlager->kWarenlager}" title="{__('edit')}">
                                                 <span class="icon-hover">

@@ -60,7 +60,7 @@
                                         id="{$oFilter->getId()}_{$oField->getId()}"
                                         {if $oField->getTitleLong() !== ''}data-toggle="tooltip"
                                         data-placement="bottom" title="{$oField->getTitleLong()}"{/if}
-                                        {if $oField->bReloadOnChange}onchange="$('#{$oFilter->getId()}_btn_filter').click()"{/if}>
+                                        {if $oField->reloadOnChange}onchange="$('#{$oFilter->getId()}_btn_filter').click()"{/if}>
                                     {foreach $oField->getOptions() as $i => $oOption}
                                         <option value="{$i}"{if $i == (int)$oField->getValue()} selected{/if}>
                                             {$oOption->getTitle()}

@@ -325,11 +325,11 @@
                                                     {/foreach}
                                                 {/if}
                                             </td>
-                                            <td class="tcenter">{if $oKundenfeld->nEditierbar == 1}{__('yes')}{else}{__('no')}{/if}</td>
-                                            <td class="tcenter">
+                                            <td class="text-center">{if $oKundenfeld->nEditierbar == 1}{__('yes')}{else}{__('no')}{/if}</td>
+                                            <td class="text-center">
                                                 <input class="form-control" name="nSort_{$oKundenfeld->kKundenfeld}" type="text" value="{$oKundenfeld->nSort}" size="5" />
                                             </td>
-                                            <td class="tcenter">
+                                            <td class="text-center">
                                                 <div class="btn-group">
                                                     <a href="kundenfeld.php?a=edit&kKundenfeld={$oKundenfeld->kKundenfeld}&tab=uebersicht&token={$smarty.session.jtl_token}"
                                                        class="btn btn-link px-2" title="{__('modify')}">

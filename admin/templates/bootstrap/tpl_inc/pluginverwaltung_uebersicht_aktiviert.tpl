@@ -38,7 +38,7 @@
                                         <p>{__('pluginUpdateExists')}</p>
                                     {/if}
                                 </td>
-                                <td class="tcenter plugin-status">
+                                <td class="text-center plugin-status">
                                     <h4 class="label-wrap text-nowrap">
                                         <span class="label {if $plugin->getState() === \JTL\Plugin\State::ACTIVATED}success label-success{elseif $plugin->getState() === \JTL\Plugin\State::DISABLED}success label-info{elseif $plugin->getState() === \JTL\Plugin\State::ERRONEOUS}success label-default{elseif $plugin->getState() === \JTL\Plugin\State::UPDATE_FAILED || $plugin->getState() === \JTL\Plugin\State::LICENSE_KEY_MISSING}info label-info{elseif $plugin->getState() == 6}danger label-danger{/if}">
                                             {$mapper->map($plugin->getState())}
@@ -55,12 +55,12 @@
                                         {/foreach}
                                     </h4>
                                 </td>
-                                <td class="tcenter plugin-version">
+                                <td class="text-center plugin-version">
                                     {(string)$plugin->getMeta()->getSemVer()}{if $plugin->getMeta()->isUpdateAvailable()} <span class="badge update-available">{(string)$plugin->getCurrentVersion()}</span>{/if}
                                 </td>
-                                <td class="tcenter plugin-install-date">{$plugin->getMeta()->getDateInstalled()->format('d.m.Y H:i')}</td>
-                                <td class="tcenter plugin-folder">{$plugin->getPaths()->getBaseDir()}</td>
-                                <td class="tcenter plugin-lang-vars">
+                                <td class="text-center plugin-install-date">{$plugin->getMeta()->getDateInstalled()->format('d.m.Y H:i')}</td>
+                                <td class="text-center plugin-folder">{$plugin->getPaths()->getBaseDir()}</td>
+                                <td class="text-center plugin-lang-vars">
                                     {if $plugin->getLocalization()->getLangVars()->count() > 0}
                                         <a href="pluginverwaltung.php?pluginverwaltung_uebersicht=1&sprachvariablen=1&kPlugin={$plugin->getID()}&token={$smarty.session.jtl_token}"
                                            class="btn btn-link" title="{__('modify')}">
@@ -71,7 +71,7 @@
                                         </a>
                                     {/if}
                                 </td>
-                                <td class="tcenter plugin-frontend-links">
+                                <td class="text-center plugin-frontend-links">
                                     {if $plugin->getLinks()->getLinks()->count() > 0}
                                         <a href="links.php?kPlugin={$plugin->getID()}"
                                            class="btn btn-link" title="{__('modify')}">
@@ -82,7 +82,7 @@
                                         </a>
                                     {/if}
                                 </td>
-                                <td class="tcenter plugin-license">
+                                <td class="text-center plugin-license">
                                     {if $plugin->getLicense()->hasLicenseCheck()}
                                         <button name="lizenzkey" type="submit" title="{__('modify')}"
                                                 class="btn btn-link" value="{$plugin->getID()}">
@@ -93,7 +93,7 @@
                                         </button>
                                     {/if}
                                 </td>
-                                <td class="tcenter plugin-config">
+                                <td class="text-center plugin-config">
                                     {assign var=btnGroup value=false}
                                     {if $plugin->getConfig()->getOptions()->count() > 0
                                         || $plugin->getAdminMenu()->getItems()->count() > 0

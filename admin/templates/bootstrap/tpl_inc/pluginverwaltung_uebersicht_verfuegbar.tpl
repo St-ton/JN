@@ -55,20 +55,26 @@
 
                             <div class="modal-content">
                                 <div class="modal-header">
-                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                    <h4 class="modal-title">{__('licensePlugin')}</h4>
+                                    <button type="button" class="close" data-dismiss="modal">
+                                        <i class="fal fa-times"></i>
+                                    </button>
+                                    <h2 class="modal-title">{__('licensePlugin')}</h2>
                                 </div>
-                                <div class="modal-body">
+                                <div class="modal-body py-5">
                                     {* license.md content goes here via js *}
                                 </div>
                                 <div class="modal-footer">
-                                    <div class="btn-group">
-                                        <button type="button" class="btn btn-success" name="ok" data-dismiss="modal">
-                                            <i class="fal fa-check text-success"></i>&nbsp;{__('ok')}
-                                        </button>
-                                        <button type="button" class="btn btn-danger" name="cancel" data-dismiss="modal">
-                                            <i class="fa fa-close"></i>&nbsp;{__('Cancel')}
-                                        </button>
+                                    <div class="row">
+                                        <div class="ml-auto col-sm-6 col-xl-auto">
+                                            <button type="button" class="btn btn-outline-primary" name="cancel" data-dismiss="modal">
+                                                <i class="fa fa-close"></i>&nbsp;{__('Cancel')}
+                                            </button>
+                                        </div>
+                                        <div class="col-sm-6 col-xl-auto">
+                                            <button type="button" class="btn btn-primary" name="ok" data-dismiss="modal">
+                                                <i class="fal fa-check text-success"></i>&nbsp;{__('ok')}
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -118,8 +124,8 @@
                                         <div class="alert alert-info">{__('dangerPluginNotCompatibleShop4')}</div>
                                     {/if}
                                 </td>
-                                <td class="tcenter">{$listingItem->getVersion()}</td>
-                                <td class="tcenter">{$listingItem->getDir()}</td>
+                                <td class="text-center">{$listingItem->getVersion()}</td>
+                                <td class="text-center">{$listingItem->getDir()}</td>
                             </tr>
                         {/foreach}
                         </tbody>

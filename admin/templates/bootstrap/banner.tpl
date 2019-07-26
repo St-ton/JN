@@ -483,7 +483,7 @@
                                 <td class="tleft">
                                     {$oBanner->cTitel}
                                 </td>
-                                <td class="tcenter">
+                                <td class="text-center">
                                     <h4 class="label-wrap">
                                         {if (int)$oBanner->active === 1}
                                             <span class="label success label-success">{__('active')}</span>
@@ -500,7 +500,7 @@
                                         {$oBanner->bDatum|date_format:'%d.%m.%Y'}
                                     {/if}
                                 </td>
-                                <td class="tcenter">
+                                <td class="text-center">
                                     <form action="banner.php" method="post">
                                         {$jtl_token}
                                         <input type="hidden" name="id" value="{$oBanner->kImageMap}" />

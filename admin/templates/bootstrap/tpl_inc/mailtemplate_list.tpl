@@ -18,8 +18,8 @@
 				{foreach $mailTemplates as $template}
 					<tr>
 						<td>{__('name_'|cat:$template->getModuleID())}</td>
-						<td class="tcenter">{$template->getType()}</td>
-						<td class="tcenter">
+						<td class="text-center">{$template->getType()}</td>
+						<td class="text-center">
 							{if $template->getActive()}
 								<span class="fal fa-check text-success"></span>
 							{elseif $template->getHasError()}
@@ -28,7 +28,7 @@
 								<span class="fal fa-times text-danger"></span>
 							{/if}
 						</td>
-						<td class="tcenter">
+						<td class="text-center">
 							<form method="post" action="emailvorlagen.php">
 								{if $template->getPluginID() > 0}
 									<input type="hidden" name="kPlugin" value="{$template->getPluginID()}" />

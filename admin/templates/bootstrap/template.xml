@@ -7,9 +7,9 @@
     <Preview>preview.png</Preview>
     <Minify>
         <CSS Name="admin_css">
+            <File Path="css/preload.css"/>
             <File Path="css/jquery-ui.theme.css"/>
             <File Path="css/jquery-ui.min.css"/>
-            <!--<File Path="css/preload.css"/>-->
             <File Path="css/app.css"/>
             <File Path="css/font-awesome.min.css"/>
             <File Path="css/colorpicker.css"/>
@@ -26,11 +26,11 @@
             <File Path="js/jquery-3.3.1.min.js"/>
             <File Path="js/jquery-ui.min.js"/>
             <File Path="js/popper.min.js"/>
-            <File Path="js/bootstrap.js"/>
+            <!--<File Path="js/bootstrap.js"/>-->
             <File Path="js/button.js"/>
-            <!--<File Path="js/app.js"/>-->
-            <!--<File Path="js/manifest.js"/>-->
-            <!--<File Path="js/vendor.js"/>-->
+            <File Path="js/app.js"/>
+            <File Path="js/manifest.js"/>
+            <File Path="js/vendor.js"/>
             <File Path="js/colorpicker.js"/>
             <File Path="js/jquery-ui-timepicker-addon.js"/>
             <File Path="js/jquery.cookie.js"/>

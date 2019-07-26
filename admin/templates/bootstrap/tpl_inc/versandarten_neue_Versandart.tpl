@@ -2,7 +2,7 @@
     {assign var=addOne value=1}
     var i = {if isset($VersandartStaffeln) && $VersandartStaffeln|@count > 0}Number({$VersandartStaffeln|@count}) + 1{else}2{/if};
     function addInputRow() {ldelim}
-        $('#price_range tbody').append('<tr><td><div class="input-group"><span class="input-group-addon"><label>{__('upTo')}</label></span><input type="text" name="bis[]"  id="bis' + i + '" class="form-control kilogram"><span class="input-group-addon"><label>{if isset($einheit)}{$einheit}{/if}</label></span></div></td><td class="tcenter"><div class="input-group"><span class="input-group-addon"><label>{__('amount')}</label></span><input type="text" name="preis[]"  id="preis' + i + '" class="form-control price_large"></div></td></tr>');
+        $('#price_range tbody').append('<tr><td><div class="input-group"><span class="input-group-addon"><label>{__('upTo')}</label></span><input type="text" name="bis[]"  id="bis' + i + '" class="form-control kilogram"><span class="input-group-addon"><label>{if isset($einheit)}{$einheit}{/if}</label></span></div></td><td class="text-center"><div class="input-group"><span class="input-group-addon"><label>{__('amount')}</label></span><input type="text" name="preis[]"  id="preis' + i + '" class="form-control price_large"></div></td></tr>');
         i += 1;
     {rdelim}
 
@@ -395,7 +395,7 @@
                                             </label>
                                         </td>
                                         <td>{__('discount')}</td>
-                                        <td class="tcenter">
+                                        <td class="text-center">
                                             <input type="text" id="Netto_{$kZahlungsart}" name="fAufpreis_{$kZahlungsart}" value="{if isset($VersandartZahlungsarten[$kZahlungsart]->fAufpreis)}{$VersandartZahlungsarten[$kZahlungsart]->fAufpreis}{/if}" class="form-control price_large"{* onKeyUp="setzePreisAjax(false, 'ZahlungsartAufpreis_{$zahlungsart->kZahlungsart}', this)"*} />
                                         </td>
                                         <td>
@@ -463,7 +463,7 @@
                                         </div>
                                     </td>
                                     <td><label for="versanddeckelungAktiv">{__('activate')}</label></td>
-                                    <td class="tcenter">
+                                    <td class="text-center">
                                         <input type="text" id="fDeckelung" name="fDeckelung" value="{if isset($Versandart->fDeckelung)}{$Versandart->fDeckelung}{/if}" class="form-control price_large">{* onKeyUp="setzePreisAjax(false, 'ajaxdeckelung', this)" /> <span id="ajaxdeckelung"></span>*}
                                     </td>
                                 </tr>
@@ -519,7 +519,7 @@
                                                 <span class="input-group-addon"><label>{$einheit}</label></span>
                                             </div>
                                         </td>
-                                        <td class="tcenter">
+                                        <td class="text-center">
                                             <div class="input-group">
                                                 <span class="input-group-addon"><label>{__('amount')}:</label></span>
                                                 <input type="text" id="preis1" name="preis[]" value="" class="form-control price_large">{* onKeyUp="setzePreisAjax(false, 'ajaxpreis1', this)" /> <span id="ajaxpreis1"></span>*}
@@ -558,7 +558,7 @@
                                 <tr>
                                     <td class="check"></td>
                                     <td></td>
-                                    <td class="tcenter">
+                                    <td class="text-center">
                                         <input type="text" id="fPreisNetto" name="fPreis" value="{if isset($Versandart->fPreis)}{$Versandart->fPreis}{/if}" class="form-control price_large">{* onKeyUp="setzePreisAjax(false, 'ajaxfPreisNetto', this)" /> <span id="ajaxfPreisNetto"></span>*}
                                     </td>
                                 </tr>

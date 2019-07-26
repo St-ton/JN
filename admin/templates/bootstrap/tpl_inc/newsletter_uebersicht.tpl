@@ -93,7 +93,7 @@
                                                 <th class="tleft">{__('lastName')}</th>
                                                 <th class="tleft">{__('customerGroup')}</th>
                                                 <th class="tleft">{__('email')}</th>
-                                                <th class="tcenter">{__('newslettersubscriberdate')}</th>
+                                                <th class="text-center">{__('newslettersubscriberdate')}</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -109,7 +109,7 @@
                                                 <td class="tleft">{if $oNewsletterEmpfaenger->cNachname != ""}{$oNewsletterEmpfaenger->cNachname}{else}{$oNewsletterEmpfaenger->newsNachname}{/if}</td>
                                                 <td class="tleft">{if isset($oNewsletterEmpfaenger->cName) && $oNewsletterEmpfaenger->cName|strlen > 0}{$oNewsletterEmpfaenger->cName}{else}{__('NotAvailable')}{/if}</td>
                                                 <td class="tleft">{$oNewsletterEmpfaenger->cEmail}{if $oNewsletterEmpfaenger->nAktiv == 0} *{/if}</td>
-                                                <td class="tcenter">{$oNewsletterEmpfaenger->Datum}</td>
+                                                <td class="text-center">{$oNewsletterEmpfaenger->Datum}</td>
                                             </tr>
                                         {/foreach}
                                         </tbody>
@@ -183,10 +183,10 @@
                                                 <th class="tleft">{__('newslettersubscribername')}</th>
                                                 <th class="tleft">{__('customerGroup')}</th>
                                                 <th class="tleft">{__('email')}</th>
-                                                <th class="tcenter">{__('newslettersubscriberdate')}</th>
-                                                <th class="tcenter">{__('newslettersubscriberLastNewsletter')}</th>
+                                                <th class="text-center">{__('newslettersubscriberdate')}</th>
+                                                <th class="text-center">{__('newslettersubscriberLastNewsletter')}</th>
                                                 <th class="tleft">{__('newsletterOptInIp')}</th>
-                                                <th class="tcenter">{__('newsletterOptInDate')}</th>
+                                                <th class="text-center">{__('newsletterOptInDate')}</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -201,10 +201,10 @@
                                                 <td class="tleft">{$oAbonnenten->cVorname} {$oAbonnenten->cNachname}</td>
                                                 <td class="tleft">{$oAbonnenten->cName}</td>
                                                 <td class="tleft">{$oAbonnenten->cEmail}</td>
-                                                <td class="tcenter">{$oAbonnenten->dEingetragen_de}</td>
-                                                <td class="tcenter">{$oAbonnenten->dLetzterNewsletter_de}</td>
+                                                <td class="text-center">{$oAbonnenten->dEingetragen_de}</td>
+                                                <td class="text-center">{$oAbonnenten->dLetzterNewsletter_de}</td>
                                                 <td class="tleft">{$oAbonnenten->cOptIp}</td>
-                                                <td class="tcenter">{$oAbonnenten->optInDate}</td>
+                                                <td class="text-center">{$oAbonnenten->optInDate}</td>
                                             </tr>
                                         {/foreach}
                                         </tbody>
@@ -558,7 +558,7 @@
                                                 <th class="tleft">{__('newsletterhistorysubject')}</th>
                                                 <th class="tleft">{__('newsletterhistorycount')}</th>
                                                 <th class="tleft">{__('newsletterqueuecustomergrp')}</th>
-                                                <th class="tcenter">{__('newsletterhistorydate')}</th>
+                                                <th class="text-center">{__('newsletterhistorydate')}</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -575,7 +575,7 @@
                                                 </td>
                                                 <td class="tleft">{$oNewsletterHistory->nAnzahl}</td>
                                                 <td class="tleft">{$oNewsletterHistory->cKundengruppe}</td>
-                                                <td class="tcenter">{$oNewsletterHistory->Datum}</td>
+                                                <td class="text-center">{$oNewsletterHistory->Datum}</td>
                                             </tr>
                                         {/foreach}
                                         </tbody>

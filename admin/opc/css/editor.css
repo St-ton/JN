@@ -546,6 +546,10 @@
   float: left;
   margin-bottom: 2px;
   text-align: left;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  padding-right: 8px;
 }
 #opc #configModal .product-filter-config .filters-section .filters-section-inner .filter-option:hover i:before {
   content: "";
@@ -741,6 +745,69 @@
   padding: 0 8px;
 }
 
+#opc .modal .box-config {
+  font-size: 12px;
+  line-height: 0.9;
+}
+#opc .modal .box-config .form-control {
+  width: 36px;
+  display: inline;
+  margin: 0;
+  padding: 0;
+  height: 22px;
+  text-align: center;
+  font-size: 12px;
+}
+#opc .modal .box-config label {
+  display: block;
+  margin-bottom: 0;
+}
+#opc .modal .box-config .top-row:after {
+  content: "";
+  display: block;
+  clear: both;
+}
+#opc .modal .box-config .top-row > * {
+  float: left;
+  display: block;
+  width: 33.33%;
+}
+#opc .modal .box-config .top-row > .mid-top-col {
+  text-align: center;
+}
+#opc .modal .box-config .mid-row {
+  display: flex;
+  align-items: center;
+}
+#opc .modal .box-config .mid-row > label {
+  flex: none;
+}
+#opc .modal .box-config .mid-row > div {
+  flex: auto;
+}
+#opc .modal .box-config .bottom-row {
+  text-align: center;
+}
+#opc .modal .box-config .outer-box,
+#opc .modal .box-config .padding-box,
+#opc .modal .box-config .border-box,
+#opc .modal .box-config .content-box {
+  padding: 5px;
+  margin: 5px;
+}
+#opc .modal .box-config .outer-box,
+#opc .modal .box-config .padding-box {
+  border: 1px dashed #BDBDBD;
+  background-color: #F5F7FA;
+}
+#opc .modal .box-config .border-box,
+#opc .modal .box-config .content-box {
+  background-color: #e3e3e3;
+}
+#opc .modal .box-config .content-box {
+  height: 64px;
+}
+
 html, body {
   margin: 0;
   padding: 0;
@@ -859,6 +926,9 @@ html, body {
   padding: 0;
   margin-bottom: 16px;
 }
+#opc .modal .modal-body .form-group.no-pb {
+  margin-bottom: 0;
+}
 #opc .modal .modal-footer {
   border: none;
   padding: 24px;
@@ -901,71 +971,6 @@ html, body {
   top: 50%;
   transform: translate(0, -75%);
   margin: 0 auto;
-}
-#opc #configModal .modal-dialog {
-  width: 700px;
-  max-width: none;
-}
-#opc #configModal .modal-dialog .checkbox-standalone {
-  padding: 26px 0 0 2px;
-}
-#opc #configModal .product-filter-config label {
-  display: block;
-  font-weight: bold;
-}
-#opc #configModal .product-filter-config .active-filters {
-  margin-bottom: 10px;
-}
-#opc #configModal .product-filter-config .active-filters .filters-enabled button {
-  background-color: #435A6B;
-  color: #F5F7FA;
-  padding: 4px 16px;
-  border-radius: 100px;
-  margin-right: 8px;
-  margin-bottom: 8px;
-}
-#opc #configModal .product-filter-config .active-filters .filters-enabled button.restore-all {
-  background-color: #5cbcf6;
-}
-#opc #configModal .product-filter-config .active-filters .filters-enabled button i {
-  margin-left: 4px;
-  font-size: 12px;
-}
-#opc #configModal .product-filter-config .filters-section {
-  background-color: #F5F7FA;
-  border-radius: 5px;
-  margin-bottom: 8px;
-  padding: 16px;
-  padding-bottom: 12px;
-}
-#opc #configModal .product-filter-config .filters-section .no-options {
-  color: #BDBDBD;
-  font-style: italic;
-}
-#opc #configModal .product-filter-config .filters-section .filters-section-inner {
-  max-height: 92px;
-  overflow-y: scroll;
-}
-#opc #configModal .product-filter-config .filters-section .filters-section-inner:after {
-  content: "";
-  display: block;
-  clear: both;
-}
-#opc #configModal .product-filter-config .filters-section .filters-section-inner .filter-option {
-  width: 33%;
-  float: left;
-  margin-bottom: 2px;
-  text-align: left;
-  text-overflow: ellipsis;
-  overflow: hidden;
-  white-space: nowrap;
-  padding-right: 8px;
-}
-#opc #configModal .product-filter-config .filters-section .filters-section-inner .filter-option:hover i:before {
-  content: "";
-}
-#opc #configModal .product-filter-config .filters-section .filters-section-inner .filter-option i {
-  margin-right: 4px;
 }
 #opc #opcSidebar {
   width: 380px;

@@ -69,6 +69,10 @@
           float: left;
           margin-bottom: 2px;
           text-align: left;
+          text-overflow: ellipsis;
+          overflow: hidden;
+          white-space: nowrap;
+          padding-right: 8px;
 
           &:hover {
             i:before {
@@ -330,5 +334,83 @@
     .col-6 {
       padding: 0 8px;
     }
+  }
+}
+
+#opc .modal .box-config {
+  font-size: 12px;
+  line-height: 0.9;
+
+  .form-control {
+    width: 36px;
+    display: inline;
+    margin: 0;
+    padding: 0;
+    height: 22px;
+    text-align: center;
+    font-size: 12px;
+  }
+
+  label {
+    display: block;
+    margin-bottom: 0;
+  }
+
+  .top-row {
+    &:after {
+      content: "";
+      display: block;
+      clear: both;
+    }
+
+    > * {
+      float: left;
+      display: block;
+      width: 33.33%;
+    }
+
+    > .mid-top-col {
+      text-align: center;
+    }
+  }
+
+  .mid-row {
+    display: flex;
+    align-items: center;
+
+    > label {
+      flex: none;
+    }
+
+    > div {
+      flex: auto;
+    }
+  }
+
+  .bottom-row {
+    text-align: center;
+  }
+
+  .outer-box ,
+  .padding-box ,
+  .border-box ,
+  .content-box {
+    padding: 5px;
+    margin: 5px;
+  }
+
+  .outer-box ,
+  .padding-box {
+    border: 1px dashed $muted-text;
+    background-color: $light-bg;
+  }
+
+  .border-box ,
+  .content-box {
+    background-color: #e3e3e3;
+  }
+
+  .content-box {
+    height: 64px;
   }
 }

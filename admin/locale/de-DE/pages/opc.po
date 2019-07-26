@@ -346,6 +346,24 @@ msgstr "Abwechselnd"
 msgid "columns"
 msgstr "Spalten"
 
+msgid "margin"
+msgstr "Außenabstand"
+
+msgid "border"
+msgstr "Rahmen"
+
+msgid "padding"
+msgstr "Innenabstand"
+
+msgid "Border style"
+msgstr "Rahmenstil"
+
+msgid "Border color"
+msgstr "Rahmenfarbe"
+
+msgid "Border radius"
+msgstr "Rahmenabrundung"
+
 msgid "noAction"
 msgstr "Keine Aktion"
 
@@ -354,3 +372,15 @@ msgstr "Lightbox"
 
 msgid "linked"
 msgstr "Verlinkung"
+
+msgid "hidden"
+msgstr "versteckt"
+
+msgid "dotted"
+msgstr "gepunktet"
+
+msgid "dashed"
+msgstr "gestrichelt"
+
+msgid "solid"
+msgstr "durchgezogen"

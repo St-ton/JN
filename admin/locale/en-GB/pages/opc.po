@@ -354,3 +354,15 @@ msgstr "Lightbox"
 
 msgid "linked"
 msgstr "Verlinkung"
+
+msgid "hidden"
+msgstr "hidden"
+
+msgid "dotted"
+msgstr "dotted"
+
+msgid "dashed"
+msgstr "dashed"
+
+msgid "solid"
+msgstr "solid"

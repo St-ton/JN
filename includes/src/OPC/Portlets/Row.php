@@ -35,31 +35,31 @@ class Row extends Portlet
                 'label'   => 'Aufteilung',
                 'presets' => [
                     [
-                        'name' => '1 Column',
+                        'name' => '1 ' . __('Column'),
                         'layout' => ['12', '12', '12', '12'],
                     ],
                     [
-                        'name' => '2 Columns',
+                        'name' => '2 ' . __('Columns'),
                         'layout' => ['12+12', '6+6', '6+6', '6+6'],
                     ],
                     [
-                        'name' => '3 Columns',
+                        'name' => '3 ' . __('Columns'),
                         'layout' => ['12+12+12', '6+6+12', '4+4+4', '4+4+4'],
                     ],
                     [
-                        'name' => '4 Columns',
+                        'name' => '4 ' . __('Columns'),
                         'layout' => ['12+12+12+12', '6+6+6+6', '3+3+3+3', '3+3+3+3'],
                     ],
                     [
-                        'name' => '6 Columns',
+                        'name' => '6 ' . __('Columns'),
                         'layout' => ['6+6+6+6+6+6', '4+4+4+4+4+4', '4+4+4+4+4+4', '2+2+2+2+2+2'],
                     ],
                     [
-                        'name' => '2 Columns (2:1)',
+                        'name' => '2 ' . __('Columns') . ' (2:1)',
                         'layout' => ['12+12', '6+6', '8+4', '8+4'],
                     ],
                     [
-                        'name' => '2 Columns (1:2)',
+                        'name' => '2 ' . __('Columns') . ' (1:2)',
                         'layout' => ['12+12', '6+6', '4+8', '4+8'],
                     ],
                 ],

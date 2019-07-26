@@ -372,3 +372,24 @@ msgstr "Lightbox"
 
 msgid "linked"
 msgstr "Verlinkung"
+
+msgid "mobileXS"
+msgstr "Mobil (XS)"
+
+msgid "tabletSM"
+msgstr "Tablet (SM)"
+
+msgid "desktopMD"
+msgstr "Desktop (MD)"
+
+msgid "desktopLG"
+msgstr "Großer Desktop (LG)"
+
+msgid "Column"
+msgstr "Spalte"
+
+msgid "Columns"
+msgstr "Spalten"
+
+msgid "Custom"
+msgstr "Benutzerdefiniert"

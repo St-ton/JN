@@ -12,7 +12,7 @@
                     {/foreach}
                     <option value="-1" data-layout="{['', '', '', '']|json_encode|htmlentities}"
                             {if $propval.preset == -1}selected{/if}>
-                        Custom
+                        {__('Custom')}
                     </option>
                 </select>
             </div>
@@ -41,19 +41,19 @@
 <div class="row-layout-previews" id="{$propname}-previews">
     <div>
         <div class="layout-preview layout-preview-0"></div>
-        <div>Mobile (XS)</div>
+        <div>{__('mobileXS')}</div>
     </div>
     <div>
         <div class="layout-preview layout-preview-1"></div>
-        <div>Tablet (SM)</div>
+        <div>{__('tabletSM')}</div>
     </div>
     <div>
         <div class="layout-preview layout-preview-2"></div>
-        <div>Desktop (MD)</div>
+        <div>{__('desktopMD')}</div>
     </div>
     <div>
         <div class="layout-preview layout-preview-3"></div>
-        <div>Large Desktop (LG)</div>
+        <div>{__('desktopLG')}</div>
     </div>
 </div>
 

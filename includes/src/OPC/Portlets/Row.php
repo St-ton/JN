@@ -32,7 +32,7 @@ class Row extends Portlet
         return [
             'layout' => [
                 'type'    => InputType::ROW_LAYOUT,
-                'label'   => 'Aufteilung',
+                'label'   => __('Layout'),
                 'presets' => [
                     [
                         'name' => '1 ' . __('Column'),

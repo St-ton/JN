@@ -366,15 +366,3 @@ msgstr "Desktop (MD)"
 
 msgid "desktopLG"
 msgstr "Large Desktop (LG)"
-
-msgid "hidden"
-msgstr "hidden"
-
-msgid "dotted"
-msgstr "dotted"
-
-msgid "dashed"
-msgstr "dashed"
-
-msgid "solid"
-msgstr "solid"

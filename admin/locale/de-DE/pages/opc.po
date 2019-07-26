@@ -397,11 +397,5 @@ msgstr "Desktop (MD)"
 msgid "desktopLG"
 msgstr "Großer Desktop (LG)"
 
-msgid "Column"
-msgstr "Spalte"
-
-msgid "Columns"
-msgstr "Spalten"
-
 msgid "Custom"
 msgstr "Benutzerdefiniert"

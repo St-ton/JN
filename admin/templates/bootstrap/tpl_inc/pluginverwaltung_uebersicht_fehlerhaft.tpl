@@ -11,8 +11,8 @@
                         <thead>
                         <tr>
                             <th class="text-left">{__('pluginName')}</th>
-                            <th class="text-left">{__('pluginErrorCode')}</th>
-                            <th>{__('pluginVersion')}</th>
+                            <th class="text-center">{__('pluginErrorCode')}</th>
+                            <th class="text-center">{__('pluginVersion')}</th>
                             <th>{__('pluginFolder')}</th>
                         </tr>
                         </thead>
@@ -23,14 +23,14 @@
                                     <strong>{$listingItem->getName()}</strong>
                                     <p>{$listingItem->getDescription()}</p>
                                 </td>
-                                <td>
+                                <td class="text-center">
                                     <p>
-                                        <span class="badge error">{$listingItem->getErrorCode()}</span>
+                                        <span class="badge badge-danger">{$listingItem->getErrorCode()}</span>
                                         {$listingItem->getErrorMessage()}
                                     </p>
                                 </td>
                                 <td class="text-center">{$listingItem->getVersion()}</td>
-                                <td class="text-center">{$listingItem->getDir()}</td>
+                                <td>{$listingItem->getDir()}</td>
                             </tr>
                         {/foreach}
                         </tbody>

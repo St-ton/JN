@@ -12,14 +12,14 @@
                     <tr>
                         <th></th>
                         <th class="text-left">{__('pluginName')}</th>
-                        <th>{__('status')}</th>
-                        <th>{__('pluginVersion')}</th>
-                        <th>{__('pluginInstalled')}</th>
+                        <th class="text-center">{__('status')}</th>
+                        <th class="text-center">{__('pluginVersion')}</th>
+                        <th class="text-center">{__('pluginInstalled')}</th>
                         <th>{__('pluginFolder')}</th>
-                        <th>{__('pluginEditLocales')}</th>
-                        <th>{__('pluginEditLinkgrps')}</th>
-                        <th>{__('pluginBtnLicence')}</th>
-                        <th>&nbsp;</th>
+                        <th class="text-center">{__('pluginEditLocales')}</th>
+                        <th class="text-center">{__('pluginEditLinkgrps')}</th>
+                        <th class="text-center">{__('pluginBtnLicence')}</th>
+                        <th class="text-center">&nbsp;</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -46,11 +46,11 @@
                         </td>
                         <td class="text-center">{(string)$plugin->getMeta()->getSemVer()}{if $plugin->getMeta()->isUpdateAvailable()} <span class="error">{(string)$plugin->getCurrentVersion()}</span>{/if}</td>
                         <td class="text-center">{$plugin->getDateInstalled()->format('d.m.Y H:i')}</td>
-                        <td class="text-center">{$plugin->getPaths()->getBaseDir()}</td>
+                        <td>{$plugin->getPaths()->getBaseDir()}</td>
                         <td class="text-center">
                             {if $plugin->getLocalization()->getTranslations()|@count > 0}
                                 <a href="pluginverwaltung.php?pluginverwaltung_uebersicht=1&sprachvariablen=1&kPlugin={$plugin->getID()}"
-                                   class="btn btn-default" title="{__('modify')}">
+                                   class="btn btn-link" title="{__('modify')}">
                                     <span class="icon-hover">
                                         <span class="fal fa-edit"></span>
                                         <span class="fas fa-edit"></span>
@@ -61,7 +61,7 @@
                         <td class="text-center">
                             {if $plugin->getLinks()->getLinks()->count() > 0}
                                 <a href="links.php?kPlugin={$plugin->getID()}"
-                                   class="btn btn-default" title="{__('modify')}">
+                                   class="btn btn-link" title="{__('modify')}">
                                     <span class="icon-hover">
                                         <span class="fal fa-edit"></span>
                                         <span class="fas fa-edit"></span>
@@ -73,14 +73,14 @@
                             {if $plugin->getLicense()->hasLicenseCheck()}
                                 {if $plugin->getLicense()->hasLicense()}
                                     <strong>{__('pluginBtnLicence')}:</strong> {$plugin->getLicense()->getKey()}
-                                    <button name="lizenzkey" type="submit" class="btn btn-default" value="{$plugin->getID()}">
+                                    <button name="lizenzkey" type="submit" class="btn btn-link" value="{$plugin->getID()}">
                                         <span class="icon-hover">
                                             <span class="fal fa-edit"></span>
                                             <span class="fas fa-edit"></span>
                                         </span> {__('pluginBtnLicenceChange')}
                                     </button>
                                 {else}
-                                    <button name="lizenzkey" type="submit" class="btn btn-primary" value="{$plugin->getID()}">
+                                    <button name="lizenzkey" type="submit" class="btn btn-link" value="{$plugin->getID()}">
                                         <span class="icon-hover">
                                             <span class="fal fa-edit"></span>
                                             <span class="fas fa-edit"></span>
@@ -119,7 +119,7 @@
                         </td>
                         <td class="text-center">{(string)$plugin->getMeta()->getSemVer()}{if $plugin->getMeta()->isUpdateAvailable()} <span class="error">{(string)$plugin->getCurrentVersion()}</span>{/if}</td>
                         <td class="text-center">{$plugin->getMeta()->getDateInstalled()->format('d.m.Y H:i')}</td>
-                        <td class="text-center">{$plugin->getPaths()->getBaseDir()}</td>
+                        <td>{$plugin->getPaths()->getBaseDir()}</td>
                         <td class="text-center">
                             {if $plugin->getLocalization()->getTranslations()|@count > 0}
                                 <a href="pluginverwaltung.php?pluginverwaltung_uebersicht=1&sprachvariablen=1&kPlugin={$plugin->getID()}" class="btn btn-default">{__('modify')}</a>
@@ -127,9 +127,11 @@
                         </td>
                         <td class="text-center">
                             {if $plugin->getLinks()->getLinks()->count() > 0}
-                                <a href="links.php?kPlugin={$plugin->getID()}"
-                                   class="btn btn-default" title="{__('modify')}">
-                                    <i class="fal fa-edit"></i>
+                                <a href="links.php?kPlugin={$plugin->getID()}" class="btn btn-link" title="{__('modify')}">
+                                    <span class="icon-hover">
+                                        <span class="fal fa-edit"></span>
+                                        <span class="fas fa-edit"></span>
+                                    </span>
                                 </a>
                             {/if}
                         </td>
@@ -137,7 +139,7 @@
                             {if $plugin->getLicense()->hasLicenseCheck()}
                                 {if $plugin->getLicense()->hasLicense()}
                                     {$plugin->getLicense()->getKey()|truncate:35:'...':true}
-                                    <button name="lizenzkey" type="submit" class="btn btn-default" value="{$plugin->getID()}">
+                                    <button name="lizenzkey" type="submit" class="btn btn-outline-primary" value="{$plugin->getID()}">
                                         <i class="fal fa-edit"></i> {__('pluginBtnLicenceChange')}
                                     </button>
                                 {else}
@@ -177,19 +179,25 @@
                         </td>
                         <td class="text-center">{(string)$plugin->getMeta()->getSemVer()}{if $plugin->getMeta()->isUpdateAvailable()} <span class="error">{(string)$plugin->getCurrentVersion()}</span>{/if}</td>
                         <td class="text-center">{$plugin->getMeta()->getDateInstalled()->format('d.m.Y H:i')}</td>
-                        <td class="text-center">{$plugin->getPaths()->getBaseDir()}</td>
+                        <td>{$plugin->getPaths()->getBaseDir()}</td>
                         <td class="text-center">
                             {if $plugin->getLocalization()->getTranslations()|@count > 0}
                                 <a href="pluginverwaltung.php?pluginverwaltung_uebersicht=1&sprachvariablen=1&kPlugin={$plugin->getID()}"
-                                   class="btn btn-default" title="{__('modify')}">
-                                    <i class="fal fa-edit"></i>
+                                   class="btn btn-link" title="{__('modify')}">
+                                    <span class="icon-hover">
+                                        <span class="fal fa-edit"></span>
+                                        <span class="fas fa-edit"></span>
+                                    </span>
                                 </a>
                             {/if}
                         </td>
                         <td class="text-center">
                             {if $plugin->getLinks()->getLinks()->count() > 0}
-                                <a href="links.php?kPlugin={$plugin->getID()}" class="btn btn-default" title="{__('modify')}">
-                                    <i class="fal fa-edit"></i>
+                                <a href="links.php?kPlugin={$plugin->getID()}" class="btn btn-link" title="{__('modify')}">
+                                    <span class="icon-hover">
+                                        <span class="fal fa-edit"></span>
+                                        <span class="fas fa-edit"></span>
+                                    </span>
                                 </a>
                             {/if}
                         </td>
@@ -197,7 +205,7 @@
                             {if $plugin->getLicense()->hasLicenseCheck()}
                                 {if $plugin->getLicense()->hasLicense()}
                                     <strong>{__('pluginBtnLicence')}:</strong> {$plugin->getLicense()->getKey()}
-                                    <button name="lizenzkey" type="submit" class="btn btn-default"
+                                    <button name="lizenzkey" type="submit" class="btn btn-outline-primary"
                                             value="{$plugin->getID()}">
                                         <i class="fal fa-edit"></i> {__('pluginBtnLicenceChange')}
                                     </button>
@@ -239,19 +247,25 @@
                         </td>
                         <td class="text-center plugin-version">{(string)$plugin->getMeta()->getSemVer()}{if $plugin->getMeta()->isUpdateAvailable() } <span class="label label-danger error">{(string)$plugin->getCurrentVersion()}</span>{/if}</td>
                         <td class="text-center plugin-install-date">{$plugin->getMeta()->getDateInstalled()->format('d.m.Y H:i')}</td>
-                        <td class="text-center plugin-folder">{$plugin->getPaths()->getBaseDir()}</td>
+                        <td class="plugin-folder">{$plugin->getPaths()->getBaseDir()}</td>
                         <td class="text-center plugin-lang-vars">
                             {if $plugin->getLocalization()->getTranslations()|@count > 0}
                                 <a href="pluginverwaltung.php?pluginverwaltung_uebersicht=1&sprachvariablen=1&kPlugin={$plugin->getID()}"
-                                   class="btn btn-default" title="{__('modify')}">
-                                    <i class="fal fa-edit"></i>
+                                   class="btn btn-link" title="{__('modify')}">
+                                    <span class="icon-hover">
+                                        <span class="fal fa-edit"></span>
+                                        <span class="fas fa-edit"></span>
+                                    </span>
                                 </a>
                             {/if}
                         </td>
                         <td class="text-center plugin-frontend-links">
                             {if $plugin->getLinks()->getLinks()->count() > 0}
-                                <a href="links.php?kPlugin={$plugin->getID()}" class="btn btn-default" title="{__('modify')}">
-                                    <i class="fal fa-edit"></i>
+                                <a href="links.php?kPlugin={$plugin->getID()}" class="btn btn-link" title="{__('modify')}">
+                                    <span class="icon-hover">
+                                        <span class="fal fa-edit"></span>
+                                        <span class="fas fa-edit"></span>
+                                    </span>
                                 </a>
                             {/if}
                         </td>
@@ -259,13 +273,21 @@
                             {if $plugin->getLicense()->hasLicenseCheck()}
                                 {if $plugin->getLicense()->hasLicense()}
                                     <strong>{__('pluginBtnLicence')}:</strong> {$plugin->getLicense()->getKey()}
-                                    <button name="lizenzkey" type="submit" class="btn btn-default"
+                                    <button name="lizenzkey" type="submit" class="btn btn-link"
                                             value="{$plugin->getID()}" title="{__('modify')}">
-                                        <i class="fal fa-edit"></i></button>
+                                        <span class="icon-hover">
+                                            <span class="fal fa-edit"></span>
+                                            <span class="fas fa-edit"></span>
+                                        </span>
+                                    </button>
                                 {else}
                                     <button name="lizenzkey" type="submit" class="btn btn-primary"
                                             value="{$plugin->getID()}" title="{__('modify')}">
-                                        <i class="fal fa-edit"></i></button>
+                                        <span class="icon-hover">
+                                            <span class="fal fa-edit"></span>
+                                            <span class="fas fa-edit"></span>
+                                        </span>
+                                    </button>
                                 {/if}
                             {/if}
                         </td>

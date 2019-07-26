@@ -13,14 +13,14 @@
                             <tr>
                                 <th></th>
                                 <th class="text-left">{__('pluginName')}</th>
-                                <th>{__('status')}</th>
-                                <th>{__('pluginVersion')}</th>
-                                <th>{__('pluginInstalled')}</th>
+                                <th class="text-center">{__('status')}</th>
+                                <th class="text-center">{__('pluginVersion')}</th>
+                                <th class="text-center">{__('pluginInstalled')}</th>
                                 <th>{__('pluginFolder')}</th>
-                                <th>{__('pluginEditLocales')}</th>
-                                <th>{__('pluginEditLinkgrps')}</th>
-                                <th>{__('pluginBtnLicence')}</th>
-                                <th>{__('actions')}</th>
+                                <th class="text-center">{__('pluginEditLocales')}</th>
+                                <th class="text-center">{__('pluginEditLinkgrps')}</th>
+                                <th class="text-center">{__('pluginBtnLicence')}</th>
+                                <th class="text-center">{__('actions')}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -59,7 +59,7 @@
                                     {(string)$plugin->getMeta()->getSemVer()}{if $plugin->getMeta()->isUpdateAvailable()} <span class="badge update-available">{(string)$plugin->getCurrentVersion()}</span>{/if}
                                 </td>
                                 <td class="text-center plugin-install-date">{$plugin->getMeta()->getDateInstalled()->format('d.m.Y H:i')}</td>
-                                <td class="text-center plugin-folder">{$plugin->getPaths()->getBaseDir()}</td>
+                                <td class="plugin-folder">{$plugin->getPaths()->getBaseDir()}</td>
                                 <td class="text-center plugin-lang-vars">
                                     {if $plugin->getLocalization()->getLangVars()->count() > 0}
                                         <a href="pluginverwaltung.php?pluginverwaltung_uebersicht=1&sprachvariablen=1&kPlugin={$plugin->getID()}&token={$smarty.session.jtl_token}"
@@ -102,7 +102,7 @@
                                     {/if}
                                     <div class="btn-group">
                                         {if $plugin->getConfig()->getOptions()->count() || $plugin->getAdminMenu()->getItems()->count()}
-                                            <a class="btn btn-link px-1 href="plugin.php?kPlugin={$plugin->getID()}" title="Einstellungen">
+                                            <a class="btn btn-link px-1" href="plugin.php?kPlugin={$plugin->getID()}" title="Einstellungen">
                                                 <span class="icon-hover">
                                                     <span class="fal fa-cogs"></span>
                                                     <span class="fas fa-cogs"></span>

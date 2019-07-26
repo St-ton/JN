@@ -52,7 +52,6 @@
                     <!-- license-modal definition -->
                     <div id="licenseModal" class="modal fade" role="dialog">
                         <div class="modal-dialog modal-lg">
-
                             <div class="modal-content">
                                 <div class="modal-header">
                                     <button type="button" class="close" data-dismiss="modal">
@@ -78,7 +77,6 @@
                                     </div>
                                 </div>
                             </div>
-
                         </div>
                     </div>
 
@@ -87,7 +85,7 @@
                             <tr>
                                 <th></th>
                                 <th class="text-left">{__('pluginName')}</th>
-                                <th>{__('pluginVersion')}</th>
+                                <th class="text-center">{__('pluginVersion')}</th>
                                 <th>{__('pluginFolder')}</th>
                             </tr>
                         </thead>
@@ -125,7 +123,7 @@
                                     {/if}
                                 </td>
                                 <td class="text-center">{$listingItem->getVersion()}</td>
-                                <td class="text-center">{$listingItem->getDir()}</td>
+                                <td>{$listingItem->getDir()}</td>
                             </tr>
                         {/foreach}
                         </tbody>

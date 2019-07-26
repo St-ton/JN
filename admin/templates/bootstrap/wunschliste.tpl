@@ -35,10 +35,10 @@
                         <table class="table table-striped">
                             <thead>
                                 <tr>
-                                    <th class="tleft">{__('wishlistName')}</th>
-                                    <th class="tleft">{__('customer')}</th>
-                                    <th class="th-3">{__('wishlistPosCount')}</th>
-                                    <th class="th-4">{__('date')}</th>
+                                    <th class="text-left">{__('wishlistName')}</th>
+                                    <th class="text-left">{__('customer')}</th>
+                                    <th class="th-3 text-center">{__('wishlistPosCount')}</th>
+                                    <th class="th-4 text-center">{__('date')}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -70,9 +70,9 @@
                         <table class="table table-striped">
                             <thead>
                                 <tr>
-                                    <th class="tleft">{__('wishlistPosName')}</th>
-                                    <th class="th-2">{__('wishlistPosCount')}</th>
-                                    <th class="th-3">{__('wishlistLastAdded')}</th>
+                                    <th class="text-left">{__('wishlistPosName')}</th>
+                                    <th class="th-2 text-center">{__('wishlistPosCount')}</th>
+                                    <th class="th-3 text-center">{__('wishlistLastAdded')}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -99,11 +99,11 @@
                         <table class="table table-striped">
                             <thead>
                                 <tr>
-                                    <th class="tleft">{__('wishlistName')}</th>
-                                    <th class="tleft">{__('customer')}</th>
-                                    <th class="th-3">{__('wishlistRecipientCount')}</th>
-                                    <th class="th-4">{__('wishlistPosCount')}</th>
-                                    <th class="th-5">{__('date')}</th>
+                                    <th class="text-left">{__('wishlistName')}</th>
+                                    <th class="text-left">{__('customer')}</th>
+                                    <th class="th-3 text-center">{__('wishlistRecipientCount')}</th>
+                                    <th class="th-4 text-center">{__('wishlistPosCount')}</th>
+                                    <th class="th-5 text-center">{__('date')}</th>
                                 </tr>
                             </thead>
                             <tbody>

@@ -11,7 +11,7 @@
                 <thead>
                     <tr>
                         <th></th>
-                        <th class="tleft">{__('pluginName')}</th>
+                        <th class="text-left">{__('pluginName')}</th>
                         <th>{__('status')}</th>
                         <th>{__('pluginVersion')}</th>
                         <th>{__('pluginInstalled')}</th>

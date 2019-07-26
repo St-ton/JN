@@ -63,11 +63,11 @@
                         <table id="cache-type-status" class="table list">
                             <thead>
                             <tr>
-                                <th class="tleft"></th>
-                                <th class="tleft"><label style="margin-bottom:0;" for="massaction-main-switch">{__('type')}</label></th>
-                                <th class="tleft">{__('description')}</th>
-                                <th class="tleft">{__('entries')}</th>
-                                <th class="tleft">{__('active')}</th>
+                                <th class="text-left"></th>
+                                <th class="text-left"><label style="margin-bottom:0;" for="massaction-main-switch">{__('type')}</label></th>
+                                <th class="text-left">{__('description')}</th>
+                                <th class="text-left">{__('entries')}</th>
+                                <th class="text-left">{__('active')}</th>
                             </tr>
                             </thead>
                             <tbody>

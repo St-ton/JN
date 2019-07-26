@@ -32,11 +32,11 @@
                             <table class="table table-striped">
                                 <thead>
                                     <tr>
-                                        <th class="tleft">{__('kampagneName')}</th>
-                                        <th class="tleft">{__('kampagneParam')}</th>
-                                        <th class="tleft">{__('kampagneValue')}</th>
+                                        <th class="text-left">{__('kampagneName')}</th>
+                                        <th class="text-left">{__('kampagneParam')}</th>
+                                        <th class="text-left">{__('kampagneValue')}</th>
                                         <th class="th-4 text-center">{__('activated')}</th>
-                                        <th class="th-5">{__('kampagnenDate')}</th>
+                                        <th class="th-5 text-center">{__('kampagnenDate')}</th>
                                         <th class="th-6"></th>
                                     </tr>
                                 </thead>
@@ -99,11 +99,11 @@
                                     <thead>
                                         <tr>
                                             <th class="check"></th>
-                                            <th class="tleft">{__('kampagneName')}</th>
-                                            <th class="tleft">{__('kampagneParam')}</th>
-                                            <th class="tleft">{__('kampagneValue')}</th>
+                                            <th class="text-left">{__('kampagneName')}</th>
+                                            <th class="text-left">{__('kampagneParam')}</th>
+                                            <th class="text-left">{__('kampagneValue')}</th>
                                             <th class="th-4 text-center">{__('activated')}</th>
-                                            <th class="th-5">{__('kampagnenDate')}</th>
+                                            <th class="th-5 text-center">{__('kampagnenDate')}</th>
                                             <th class="th-6"></th>
                                         </tr>
                                     </thead>

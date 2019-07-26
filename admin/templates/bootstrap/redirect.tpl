@@ -124,7 +124,7 @@
                                     <th style="width:24px"></th>
                                     <th style="width:35%">{__('redirectFrom')} {call sortControls pagination=$pagination nSortBy=0}</th>
                                     <th>{__('redirectTo')} {call sortControls pagination=$pagination nSortBy=1}</th>
-                                    <th style="width:85px">{__('redirectRefererCount')} {call sortControls pagination=$pagination nSortBy=2}</th>
+                                    <th style="width:110px">{__('redirectRefererCount')} {call sortControls pagination=$pagination nSortBy=2}</th>
                                     <th></th>
                                 </tr>
                             </thead>

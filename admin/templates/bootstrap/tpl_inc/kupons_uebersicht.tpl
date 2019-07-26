@@ -25,8 +25,8 @@
                                     {if $cKuponTyp === $couponTypes.standard || $cKuponTyp === $couponTypes.shipping}
                                         <th>{__('code')} {call sortControls pagination=$pagination nSortBy=1}</th>
                                     {/if}
-                                    <th>{__('mbw')}</th>
-                                    <th>{__('curmaxusage')} {call sortControls pagination=$pagination nSortBy=2}</th>
+                                    <th class="text-center">{__('mbw')}</th>
+                                    <th class="text-center">{__('curmaxusage')} {call sortControls pagination=$pagination nSortBy=2}</th>
                                     <th>{__('restrictions')}</th>
                                     <th>{__('validityPeriod')}</th>
                                     <th></th>
@@ -60,13 +60,13 @@
                                             </td>
                                         {/if}
                                         {if $cKuponTyp === $couponTypes.standard || $cKuponTyp === $couponTypes.shipping}<td>{$oKupon->cCode}</td>{/if}
-                                        <td>
+                                        <td class="text-center">
                                             <span data-toggle="tooltip" data-placement="right" data-html="true"
                                                   title='{getCurrencyConversionSmarty fPreisBrutto=$oKupon->fMindestbestellwert}'>
                                                 {$oKupon->cLocalizedMbw}
                                             </span>
                                         </td>
-                                        <td>
+                                        <td class="text-center">
                                             {$oKupon->nVerwendungenBisher}
                                             {if $oKupon->nVerwendungen > 0}
                                             {__('of')} {$oKupon->nVerwendungen}</td>

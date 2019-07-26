@@ -34,7 +34,7 @@
                                 <div class="col-sm-2">
                                     <strong>{__('sorting')}</strong>
                                 </div>
-                                <div class="col-sm-2">
+                                <div class="col-sm-2 text-center">
                                     <strong>{__('actions')}</strong>
                                 </div>
                             </div>

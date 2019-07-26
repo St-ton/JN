@@ -16,7 +16,7 @@
                     <table class="list table table-border-light table-images">
                         <thead>
                         <tr>
-                            <th class="tleft">{__('type')}</th>
+                            <th class="text-left">{__('type')}</th>
                             <th class="text-center">{__('xs')}<small>{__('widthXHeight')}</small></th>
                             <th class="text-center">{__('sm')}<small>{__('widthXHeight')}</small></th>
                             <th class="text-center">{__('md')}<small>{__('widthXHeight')}</small></th>
@@ -25,7 +25,7 @@
                         </thead>
                         <tbody>
                         <tr>
-                            <td class="tleft">{__('category')}</td>
+                            <td class="text-left">{__('category')}</td>
                             <td class="text-center"></td>
                             <td class="text-center"></td>
                             <td class="widthheight text-center">
@@ -37,7 +37,7 @@
                         </tr>
 
                         <tr>
-                            <td class="tleft">{__('variations')}</td>
+                            <td class="text-left">{__('variations')}</td>
                             <td class="widthheight text-center">
                                 <input size="4" class="form-control left" type="number" name="bilder_variationen_mini_breite" value="{$oConfig.bilder_variationen_mini_breite}" />
                                 <span class="cross-sign left">x</span>
@@ -57,7 +57,7 @@
                         </tr>
 
                         <tr>
-                            <td class="tleft">{__('product')}</td>
+                            <td class="text-left">{__('product')}</td>
                             <td class="widthheight text-center">
                                 <input size="4" class="form-control left" type="number" name="bilder_artikel_mini_breite" value="{$oConfig.bilder_artikel_mini_breite}" />
                                 <span class="cross-sign left">x</span>
@@ -81,7 +81,7 @@
                         </tr>
 
                         <tr>
-                            <td class="tleft">{__('manufacturer')}</td>
+                            <td class="text-left">{__('manufacturer')}</td>
                             <td class="text-center"></td>
                             <td class="widthheight text-center">
                                 <input size="4" class="form-control left" type="number" name="bilder_hersteller_klein_breite" value="{$oConfig.bilder_hersteller_klein_breite}" />
@@ -97,7 +97,7 @@
                         </tr>
 
                         <tr>
-                            <td class="tleft">{__('attributes')}</td>
+                            <td class="text-left">{__('attributes')}</td>
                             <td class="text-center"></td>
                             <td class="widthheight text-center">
                                 <input size="4" class="form-control left" type="number" name="bilder_merkmal_klein_breite" value="{$oConfig.bilder_merkmal_klein_breite}" />
@@ -113,7 +113,7 @@
                         </tr>
 
                         <tr>
-                            <td class="tleft">{__('attributeValues')}</td>
+                            <td class="text-left">{__('attributeValues')}</td>
                             <td class="text-center"></td>
                             <td class="widthheight text-center">
                                 <input size="4" class="form-control left" type="number" name="bilder_merkmalwert_klein_breite" value="{$oConfig.bilder_merkmalwert_klein_breite}" />
@@ -129,7 +129,7 @@
                         </tr>
 
                         <tr>
-                            <td class="tleft">{__('configGroup')}</td>
+                            <td class="text-left">{__('configGroup')}</td>
                             <td class="text-center"></td>
                             <td class="widthheight text-center">
                                 <input size="4" class="form-control left" type="number" name="bilder_konfiggruppe_klein_breite" value="{$oConfig.bilder_konfiggruppe_klein_breite}" />

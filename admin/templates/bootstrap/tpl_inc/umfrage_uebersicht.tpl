@@ -42,10 +42,10 @@
                                                         <th class="th-2">{__('name')}</th>
                                                         <th class="th-3">{__('customerGroup')}</th>
                                                         <th class="th-4">{__('umfrageValidation')}</th>
-                                                        <th class="th-5">{__('active')}</th>
-                                                        <th class="th-6">{__('umfrageQCount')}</th>
-                                                        <th class="th-7">{__('umfrageDate')}</th>
-                                                        <th class="th-8">{__('actions')}</th>
+                                                        <th class="th-5 text-center">{__('active')}</th>
+                                                        <th class="th-6 text-center">{__('umfrageQCount')}</th>
+                                                        <th class="th-7 text-center">{__('umfrageDate')}</th>
+                                                        <th class="th-8 text-center">{__('actions')}</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -63,17 +63,17 @@
                                                         <td>
                                                             {$oUmfrage->cKundengruppe_arr|implode:','}
                                                         </td>
-                                                        <td>{$oUmfrage->dGueltigVon_de}-{if $oUmfrage->dGueltigBis === null}{__('umfrageInfinite')}{else}{$oUmfrage->dGueltigBis_de}{/if}</td>
-                                                        <td>
+                                                        <td>{$oUmfrage->dGueltigVon_de} - {if $oUmfrage->dGueltigBis === null}{__('umfrageInfinite')}{else}{$oUmfrage->dGueltigBis_de}{/if}</td>
+                                                        <td class="text-center">
                                                             {if $oUmfrage->nAktiv}
                                                                 <i class="fal fa-check text-success"></i>
                                                             {else}
                                                                 <i class="fal fa-times text-danger"></i>
                                                             {/if}
                                                         </td>
-                                                        <td>{$oUmfrage->nAnzahlFragen}</td>
-                                                        <td>{$oUmfrage->dErstellt_de}</td>
-                                                        <td>
+                                                        <td class="text-center">{$oUmfrage->nAnzahlFragen}</td>
+                                                        <td class="text-center">{$oUmfrage->dErstellt_de}</td>
+                                                        <td class="text-center">
                                                             <div class="btn-group">
                                                                 <a href="umfrage.php?umfrage=1&token={$smarty.session.jtl_token}&kUmfrage={$oUmfrage->kUmfrage}&umfrage_statistik=1" class="btn btn-link px-2" title="{__('umfrageStats')}">
                                                                     <span class="icon-hover">

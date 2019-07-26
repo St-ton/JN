@@ -16,10 +16,12 @@
         <td class="text-center"><i class="fa fa-{if $childCat->getIsActive()}check{else}close{/if}"></i></td>
         <td class="text-center">{$childCat->getDateLastModified()->format('d.m.Y H:i')}</td>
         <td class="text-center">
-            <a href="news.php?news=1&newskategorie_editieren=1&kNewsKategorie={$childCat->getID()}&tab=kategorien&token={$smarty.session.jtl_token}"
-               class="btn btn-primary" title="{__('modify')}">
-                <i class="fal fa-edit"></i>
-            </a>
+            <div class="btn-group">
+                <a href="news.php?news=1&newskategorie_editieren=1&kNewsKategorie={$childCat->getID()}&tab=kategorien&token={$smarty.session.jtl_token}"
+                   class="btn btn-link" title="{__('modify')}">
+                    <i class="fal fa-edit"></i>
+                </a>
+            </div>
         </td>
     </tr>
     {include 'tpl_inc/newscategories_recursive.tpl' children=$childCat->getChildren() level=$childCat->getLevel()}

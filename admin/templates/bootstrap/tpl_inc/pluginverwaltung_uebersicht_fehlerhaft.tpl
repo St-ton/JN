@@ -10,8 +10,8 @@
                     <table class="list table">
                         <thead>
                         <tr>
-                            <th class="tleft">{__('pluginName')}</th>
-                            <th class="tleft">{__('pluginErrorCode')}</th>
+                            <th class="text-left">{__('pluginName')}</th>
+                            <th class="text-left">{__('pluginErrorCode')}</th>
                             <th>{__('pluginVersion')}</th>
                             <th>{__('pluginFolder')}</th>
                         </tr>

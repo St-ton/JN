@@ -63,9 +63,9 @@
                     <tr>
                         <th>{__('coupon')}</th>
                         <th>{__('customer')}</th>
-                        <th>{__('orderNumberShort')}</th>
-                        <th>{__('couponValue')}</th>
-                        <th>{__('orderValue')}</th>
+                        <th class="text-center">{__('orderNumberShort')}</th>
+                        <th class="text-center">{__('couponValue')}</th>
+                        <th class="text-center">{__('orderValue')}</th>
                         <th>{__('date')}</th>
                         <th></th>
                     </tr>
@@ -81,12 +81,20 @@
                                 {/if}
                             </td>
                             <td>{$usedCouponOrder.cUserName}</td>
-                            <td>{$usedCouponOrder.cBestellNr}</td>
-                            <td>{$usedCouponOrder.nCouponValue}</td>
-                            <td>{$usedCouponOrder.nShoppingCartAmount}</td>
+                            <td class="text-center">{$usedCouponOrder.cBestellNr}</td>
+                            <td class="text-center">{$usedCouponOrder.nCouponValue}</td>
+                            <td class="text-center">{$usedCouponOrder.nShoppingCartAmount}</td>
                             <td>{$usedCouponOrder.dErstellt|date_format:'%d.%m.%Y %H:%M:%S'}</td>
                             <td>
-                                <button type="button" class="btn btn-sm btn-info" data-toggle="modal" data-target="#order_{$usedCouponOrder.cBestellNr}"><i class="fa fa-info"></i></button>
+                                <div class="btn-group">
+                                    <button type="button" class="btn btn-link" data-toggle="modal" data-target="#order_{$usedCouponOrder.cBestellNr}">
+                                        <span class="icon-hover">
+                                            <span class="fal fa-info"></span>
+                                            <span class="fas fa-info"></span>
+                                        </span>
+                                    </button>
+                                </div>
+
                                 <div class="modal fade bs-example-modal-lg" id="order_{$usedCouponOrder.cBestellNr}" role="dialog">
                                     <div class="modal-dialog modal-lg" role="document">
                                         <div class="modal-content">

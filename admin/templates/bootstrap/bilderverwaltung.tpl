@@ -13,7 +13,7 @@
                 <table class="list table" id="cache-items">
                     <thead>
                     <tr>
-                        <th class="tleft">{__('headlineTyp')}</th>
+                        <th class="text-left">{__('headlineTyp')}</th>
                         <th class="text-center">{__('headlineTotal')}</th>
                         <th class="text-center abbr">{__('headlineCache')}</th>
                         <th class="text-center">{__('faulty')}</th>

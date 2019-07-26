@@ -3,7 +3,7 @@
     <div id="tabellenLivesuche" class="table-responsive">
         <table class="table">
             <tr>
-                <th class="tleft"><strong>{__($oKampagneDef->cName)}</strong></th>
+                <th class="text-left"><strong>{__($oKampagneDef->cName)}</strong></th>
             </tr>
             <tr>
                 <td>

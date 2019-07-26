@@ -213,10 +213,10 @@
                                     <thead>
                                         <tr>
                                             <th class="check"></th>
+                                            <th class="text-center">{__('sitemapProcessTime')}</th>
+                                            <th class="text-center">{__('sitemapTotalURL')}</th>
+                                            <th class="text-center">{__('sitemapDate')}</th>
                                             <th class="th-1"></th>
-                                            <th class="tleft">{__('sitemapProcessTime')}</th>
-                                            <th class="th-3">{__('sitemapTotalURL')}</th>
-                                            <th class="th-5">{__('sitemapDate')}</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -228,16 +228,16 @@
                                                     <label class="custom-control-label" for="sitemap-report-id-{$oSitemapReport->kSitemapReport}"></label>
                                                 </div>
                                             </td>
-                                            {if isset($oSitemapReport->oSitemapReportFile_arr) && $oSitemapReport->oSitemapReportFile_arr|@count > 0}
-                                                <td>
-                                                    <a href="#" onclick="$('#info_{$oSitemapReport->kSitemapReport}').toggle();return false;"><i class="fal fa-plus-circle"></i></a>
-                                                </td>
-                                            {else}
-                                                <td>&nbsp;</td>
-                                            {/if}
                                             <td class="text-center">{$oSitemapReport->fVerarbeitungszeit}s</td>
                                             <td class="text-center">{$oSitemapReport->nTotalURL}</td>
                                             <td class="text-center">{$oSitemapReport->dErstellt_DE}</td>
+                                            <td>
+                                                {if isset($oSitemapReport->oSitemapReportFile_arr) && $oSitemapReport->oSitemapReportFile_arr|@count > 0}
+                                                    <a href="#" onclick="$('#info_{$oSitemapReport->kSitemapReport}').toggle();return false;"><i class="fal fa-plus-circle"></i></a>
+                                                {else}
+                                                    &nbsp;
+                                                {/if}
+                                            </td>
                                         </tr>
                                         {if isset($oSitemapReport->oSitemapReportFile_arr) && $oSitemapReport->oSitemapReportFile_arr|@count > 0}
                                             <tr id="info_{$oSitemapReport->kSitemapReport}" style="display: none;">

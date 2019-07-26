@@ -153,7 +153,7 @@
                                     <label class="custom-control-label" for="ALLMSGS"></label>
                                 </div>
                             </td>
-                            <td colspan="4" class="tleft"><label for="ALLMSGS">{__('globalSelectAll')}</label></td>
+                            <td colspan="4" class="text-left"><label for="ALLMSGS">{__('globalSelectAll')}</label></td>
                         </tr>
                     </table>
                 </div>

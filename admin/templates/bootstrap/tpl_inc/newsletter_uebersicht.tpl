@@ -89,26 +89,26 @@
                                         <thead>
                                             <tr>
                                                 <th class="th-1">&nbsp;</th>
-                                                <th class="tleft">{__('firstName')}</th>
-                                                <th class="tleft">{__('lastName')}</th>
-                                                <th class="tleft">{__('customerGroup')}</th>
-                                                <th class="tleft">{__('email')}</th>
+                                                <th class="text-left">{__('firstName')}</th>
+                                                <th class="text-left">{__('lastName')}</th>
+                                                <th class="text-left">{__('customerGroup')}</th>
+                                                <th class="text-left">{__('email')}</th>
                                                 <th class="text-center">{__('newslettersubscriberdate')}</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                         {foreach $oNewsletterEmpfaenger_arr as $oNewsletterEmpfaenger}
                                             <tr>
-                                                <td class="tleft">
+                                                <td class="text-left">
                                                     <div class="custom-control custom-checkbox">
                                                         <input class="custom-control-input" name="kNewsletterEmpfaenger[]" type="checkbox" id="newsletter-recipient-id-{$oNewsletterEmpfaenger->kNewsletterEmpfaenger}" value="{$oNewsletterEmpfaenger->kNewsletterEmpfaenger}">
                                                         <label class="custom-control-label" for="newsletter-recipient-id-{$oNewsletterEmpfaenger->kNewsletterEmpfaenger}"></label>
                                                     </div>
                                                 </td>
-                                                <td class="tleft">{if $oNewsletterEmpfaenger->cVorname != ""}{$oNewsletterEmpfaenger->cVorname}{else}{$oNewsletterEmpfaenger->newsVorname}{/if}</td>
-                                                <td class="tleft">{if $oNewsletterEmpfaenger->cNachname != ""}{$oNewsletterEmpfaenger->cNachname}{else}{$oNewsletterEmpfaenger->newsNachname}{/if}</td>
-                                                <td class="tleft">{if isset($oNewsletterEmpfaenger->cName) && $oNewsletterEmpfaenger->cName|strlen > 0}{$oNewsletterEmpfaenger->cName}{else}{__('NotAvailable')}{/if}</td>
-                                                <td class="tleft">{$oNewsletterEmpfaenger->cEmail}{if $oNewsletterEmpfaenger->nAktiv == 0} *{/if}</td>
+                                                <td class="text-left">{if $oNewsletterEmpfaenger->cVorname != ""}{$oNewsletterEmpfaenger->cVorname}{else}{$oNewsletterEmpfaenger->newsVorname}{/if}</td>
+                                                <td class="text-left">{if $oNewsletterEmpfaenger->cNachname != ""}{$oNewsletterEmpfaenger->cNachname}{else}{$oNewsletterEmpfaenger->newsNachname}{/if}</td>
+                                                <td class="text-left">{if isset($oNewsletterEmpfaenger->cName) && $oNewsletterEmpfaenger->cName|strlen > 0}{$oNewsletterEmpfaenger->cName}{else}{__('NotAvailable')}{/if}</td>
+                                                <td class="text-left">{$oNewsletterEmpfaenger->cEmail}{if $oNewsletterEmpfaenger->nAktiv == 0} *{/if}</td>
                                                 <td class="text-center">{$oNewsletterEmpfaenger->Datum}</td>
                                             </tr>
                                         {/foreach}
@@ -180,30 +180,30 @@
                                         <thead>
                                             <tr>
                                                 <th class="th-1">&nbsp;</th>
-                                                <th class="tleft">{__('newslettersubscribername')}</th>
-                                                <th class="tleft">{__('customerGroup')}</th>
-                                                <th class="tleft">{__('email')}</th>
+                                                <th class="text-left">{__('newslettersubscribername')}</th>
+                                                <th class="text-left">{__('customerGroup')}</th>
+                                                <th class="text-left">{__('email')}</th>
                                                 <th class="text-center">{__('newslettersubscriberdate')}</th>
                                                 <th class="text-center">{__('newslettersubscriberLastNewsletter')}</th>
-                                                <th class="tleft">{__('newsletterOptInIp')}</th>
+                                                <th class="text-left">{__('newsletterOptInIp')}</th>
                                                 <th class="text-center">{__('newsletterOptInDate')}</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                         {foreach $oAbonnenten_arr as $oAbonnenten}
                                             <tr>
-                                                <td class="tleft">
+                                                <td class="text-left">
                                                     <div class="custom-control custom-checkbox">
                                                         <input class="custom-control-input" name="kNewsletterEmpfaenger[]" type="checkbox" id="newsletter-abo-id-{$oAbonnenten->kNewsletterEmpfaenger}" value="{$oAbonnenten->kNewsletterEmpfaenger}" />
                                                         <label class="custom-control-label" for="newsletter-abo-id-{$oAbonnenten->kNewsletterEmpfaenger}"></label>
                                                     </div>
                                                 </td>
-                                                <td class="tleft">{$oAbonnenten->cVorname} {$oAbonnenten->cNachname}</td>
-                                                <td class="tleft">{$oAbonnenten->cName}</td>
-                                                <td class="tleft">{$oAbonnenten->cEmail}</td>
+                                                <td class="text-left">{$oAbonnenten->cVorname} {$oAbonnenten->cNachname}</td>
+                                                <td class="text-left">{$oAbonnenten->cName}</td>
+                                                <td class="text-left">{$oAbonnenten->cEmail}</td>
                                                 <td class="text-center">{$oAbonnenten->dEingetragen_de}</td>
                                                 <td class="text-center">{$oAbonnenten->dLetzterNewsletter_de}</td>
-                                                <td class="tleft">{$oAbonnenten->cOptIp}</td>
+                                                <td class="text-left">{$oAbonnenten->cOptIp}</td>
                                                 <td class="text-center">{$oAbonnenten->optInDate}</td>
                                             </tr>
                                         {/foreach}
@@ -384,8 +384,8 @@
                                                 <th class="th-1">&nbsp;</th>
                                                 <th class="th-2">{__('newsletterdraftname')}</th>
                                                 <th class="th-3">{__('subject')}</th>
-                                                <th class="th-4">{__('newsletterdraftStdShort')}</th>
-                                                <th class="th-5" style="width: 385px;">{__('options')}</th>
+                                                <th class="th-4 text-center">{__('newsletterdraftStdShort')}</th>
+                                                <th class="th-5 text-center" style="width: 385px;">{__('options')}</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -399,14 +399,14 @@
                                                 </td>
                                                 <td>{$oNewsletterVorlage->cName}</td>
                                                 <td>{$oNewsletterVorlage->cBetreff}</td>
-                                                <td>
+                                                <td class="text-center">
                                                     {if $oNewsletterVorlage->kNewslettervorlageStd > 0}
                                                         {__('yes')}
                                                     {else}
                                                         {__('no')}
                                                     {/if}
                                                 </td>
-                                                <td>
+                                                <td class="text-center">
                                                     <div class="btn-group">
                                                         <a class="btn btn-link px-2"
                                                            href="newsletter.php?&vorschau={$oNewsletterVorlage->kNewsletterVorlage}&iframe=1&tab=newslettervorlagen&token={$smarty.session.jtl_token}"
@@ -555,26 +555,26 @@
                                         <thead>
                                             <tr>
                                                 <th class="th-1">&nbsp;</th>
-                                                <th class="tleft">{__('newsletterhistorysubject')}</th>
-                                                <th class="tleft">{__('newsletterhistorycount')}</th>
-                                                <th class="tleft">{__('newsletterqueuecustomergrp')}</th>
+                                                <th class="text-left">{__('newsletterhistorysubject')}</th>
+                                                <th class="text-left">{__('newsletterhistorycount')}</th>
+                                                <th class="text-left">{__('newsletterqueuecustomergrp')}</th>
                                                 <th class="text-center">{__('newsletterhistorydate')}</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                         {foreach $oNewsletterHistory_arr as $oNewsletterHistory}
                                             <tr>
-                                                <td class="tleft">
+                                                <td class="text-left">
                                                     <div class="custom-control custom-checkbox">
                                                         <input class="custom-control-input" name="kNewsletterHistory[]" type="checkbox" id="newsletter-history-id-{$oNewsletterHistory->kNewsletterHistory}" value="{$oNewsletterHistory->kNewsletterHistory}">
                                                         <label class="custom-control-label" for="newsletter-history-id-{$oNewsletterHistory->kNewsletterHistory}"></label>
                                                     </div>
                                                 </td>
-                                                <td class="tleft">
+                                                <td class="text-left">
                                                     <a href="newsletter.php?newsletterhistory=1&anzeigen={$oNewsletterHistory->kNewsletterHistory}&tab=newsletterhistory&token={$smarty.session.jtl_token}">{$oNewsletterHistory->cBetreff}</a>
                                                 </td>
-                                                <td class="tleft">{$oNewsletterHistory->nAnzahl}</td>
-                                                <td class="tleft">{$oNewsletterHistory->cKundengruppe}</td>
+                                                <td class="text-left">{$oNewsletterHistory->nAnzahl}</td>
+                                                <td class="text-left">{$oNewsletterHistory->cKundengruppe}</td>
                                                 <td class="text-center">{$oNewsletterHistory->Datum}</td>
                                             </tr>
                                         {/foreach}

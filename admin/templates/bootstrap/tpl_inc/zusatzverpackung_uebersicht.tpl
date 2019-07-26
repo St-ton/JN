@@ -16,7 +16,7 @@
                     <th class="th-4">{__('minOrderValue')}</th>
                     <th class="th-5">{__('zusatzverpackungExemptFromCharge')}</th>
                     <th class="th-6">{__('customerGroup')}</th>
-                    <th class="th-7">{__('active')}</th>
+                    <th class="th-7 text-center">{__('active')}</th>
                     <th class="th-8">&nbsp;</th>
                 </tr>
                 </thead>
@@ -38,14 +38,14 @@
                                 {$cKundengruppe}{if !$cKundengruppe@last},{/if}
                             {/foreach}
                         </td>
-                        <td>
+                        <td class="text-center">
                             <input name="nAktivTMP[]" type="hidden" value="{$oVerpackung->kVerpackung}" checked>
                             <div class="custom-control custom-checkbox">
                                 <input class="custom-control-input" name="nAktiv[]" type="checkbox" id="active-id-{$oVerpackung->kVerpackung}" value="{$oVerpackung->kVerpackung}"{if $oVerpackung->nAktiv == 1} checked{/if}>
                                 <label class="custom-control-label" for="active-id-{$oVerpackung->kVerpackung}"></label>
                             </div>
                         </td>
-                        <td>
+                        <td class="text-center">
                             <div class="btn-group">
                                 <a href="zusatzverpackung.php?kVerpackung={$oVerpackung->kVerpackung}&token={$smarty.session.jtl_token}"
                                    class="btn btn-link px-2" title="{__('modify')}">

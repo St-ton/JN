@@ -70,10 +70,10 @@
                                                     <th class="th-2">{__('checkboxLink')}</th>
                                                     <th class="th-3">{__('checkboxLocation')}</th>
                                                     <th class="th-4">{__('checkboxFunction')}</th>
-                                                    <th class="th-4">{__('requiredEntry')}</th>
-                                                    <th class="th-5">{__('active')}</th>
-                                                    <th class="th-5">{__('checkboxLogging')}</th>
-                                                    <th class="th-6">{__('sorting')}</th>
+                                                    <th class="th-4 text-center">{__('requiredEntry')}</th>
+                                                    <th class="th-5 text-center">{__('active')}</th>
+                                                    <th class="th-5 text-center">{__('checkboxLogging')}</th>
+                                                    <th class="th-6 text-center">{__('sorting')}</th>
                                                     <th class="th-7">{__('customerGroup')}</th>
                                                     <th class="th-8" colspan="2">{__('checkboxDate')}</th>
                                                 </tr>
@@ -96,10 +96,10 @@
                                                     </td>
                                                     <td>{if isset($oCheckBoxUebersicht->oCheckBoxFunktion->cName)}{$oCheckBoxUebersicht->oCheckBoxFunktion->cName}{/if}</td>
 
-                                                    <td>{if $oCheckBoxUebersicht->nPflicht}{__('yes')}{else}{__('no')}{/if}</td>
-                                                    <td>{if $oCheckBoxUebersicht->nAktiv}<i class="fal fa-check text-success"></i>{else}<i class="fal fa-times text-danger"></i>{/if}</td>
-                                                    <td>{if $oCheckBoxUebersicht->nLogging}{__('yes')}{else}{__('no')}{/if}</td>
-                                                    <td>{$oCheckBoxUebersicht->nSort}</td>
+                                                    <td class="text-center">{if $oCheckBoxUebersicht->nPflicht}{__('yes')}{else}{__('no')}{/if}</td>
+                                                    <td class="text-center">{if $oCheckBoxUebersicht->nAktiv}<i class="fal fa-check text-success"></i>{else}<i class="fal fa-times text-danger"></i>{/if}</td>
+                                                    <td class="text-center">{if $oCheckBoxUebersicht->nLogging}{__('yes')}{else}{__('no')}{/if}</td>
+                                                    <td class="text-center">{$oCheckBoxUebersicht->nSort}</td>
                                                     <td>
                                                         {foreach $oCheckBoxUebersicht->kKundengruppe_arr as $id}
                                                             {Kundengruppe::getNameByID($id)}{if !$id@last}, {/if}

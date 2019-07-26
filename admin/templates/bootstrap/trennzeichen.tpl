@@ -20,7 +20,7 @@
                     <table class="list table">
                     <thead>
                     <tr>
-                        <th class="tleft">{__('unit')}</th>
+                        <th class="text-left">{__('unit')}</th>
                         <th class="text-center">{__('countDecimals')}</th>
                         <th class="text-center">{__('decimalsDivider')}</th>
                         <th class="text-center">{__('thousandDivider')}</th>
@@ -34,7 +34,7 @@
                         {if isset($oTrennzeichenAssoc_arr[$smarty.const.JTL_SEPARATOR_WEIGHT])}
                             <input type="hidden" name="kTrennzeichen_{$smarty.const.JTL_SEPARATOR_WEIGHT}" value="{$oTrennzeichenAssoc_arr[$smarty.const.JTL_SEPARATOR_WEIGHT]->getTrennzeichen()}" />
                         {/if}
-                        <td class="tleft">{__('weight')}</td>
+                        <td class="text-left">{__('weight')}</td>
                         <td class="widthheight text-center">
                             <input size="2" type="number" name="nDezimal_{$smarty.const.JTL_SEPARATOR_WEIGHT}" class="form-control{if isset($xPlausiVar_arr[$nDezimal_weight])} fieldfillout{/if}" value="{if isset($xPostVar_arr[$nDezimal_weight])}{$xPostVar_arr[$nDezimal_weight]}{else}{if isset($oTrennzeichenAssoc_arr[$smarty.const.JTL_SEPARATOR_WEIGHT])}{$oTrennzeichenAssoc_arr[$smarty.const.JTL_SEPARATOR_WEIGHT]->getDezimalstellen()}{/if}{/if}" />
                         </td>
@@ -52,7 +52,7 @@
                         {if isset($oTrennzeichenAssoc_arr[$smarty.const.JTL_SEPARATOR_AMOUNT])}
                             <input type="hidden" name="kTrennzeichen_{$smarty.const.JTL_SEPARATOR_AMOUNT}" value="{$oTrennzeichenAssoc_arr[$smarty.const.JTL_SEPARATOR_AMOUNT]->getTrennzeichen()}" />
                         {/if}
-                        <td class="tleft">{__('quantity')}</td>
+                        <td class="text-left">{__('quantity')}</td>
                         <td class="widthheight text-center">
                             <input size="2" type="number" name="nDezimal_{$smarty.const.JTL_SEPARATOR_AMOUNT}" class="form-control{if isset($xPlausiVar_arr[$nDezimal_amount])} fieldfillout{/if}" value="{if isset($xPostVar_arr[$nDezimal_amount])}{$xPostVar_arr[$nDezimal_amount]}{else}{if isset($oTrennzeichenAssoc_arr[$smarty.const.JTL_SEPARATOR_AMOUNT])}{$oTrennzeichenAssoc_arr[$smarty.const.JTL_SEPARATOR_AMOUNT]->getDezimalstellen()}{/if}{/if}" />
                         </td>
@@ -70,7 +70,7 @@
                         {if isset($oTrennzeichenAssoc_arr[$smarty.const.JTL_SEPARATOR_LENGTH])}
                             <input type="hidden" name="kTrennzeichen_{$smarty.const.JTL_SEPARATOR_LENGTH}" value="{$oTrennzeichenAssoc_arr[$smarty.const.JTL_SEPARATOR_LENGTH]->getTrennzeichen()}" />
                         {/if}
-                        <td class="tleft">{__('length')}</td>
+                        <td class="text-left">{__('length')}</td>
                         <td class="widthheight text-center">
                             <input size="2" type="number" name="nDezimal_{$smarty.const.JTL_SEPARATOR_LENGTH}" class="form-control{if isset($xPlausiVar_arr[$nDezimal_length])} fieldfillout{/if}" value="{if isset($xPostVar_arr[$nDezimal_length])}{$xPostVar_arr[$nDezimal_length]}{else}{if isset($oTrennzeichenAssoc_arr[$smarty.const.JTL_SEPARATOR_LENGTH])}{$oTrennzeichenAssoc_arr[$smarty.const.JTL_SEPARATOR_LENGTH]->getDezimalstellen()}{/if}{/if}" />
                         </td>

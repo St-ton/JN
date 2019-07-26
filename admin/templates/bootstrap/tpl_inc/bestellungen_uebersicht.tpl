@@ -33,16 +33,16 @@
                         <thead>
                         <tr>
                             <th></th>
-                            <th class="tleft">{__('orderNumber')}</th>
-                            <th class="tleft">{__('customer')}</th>
-                            <th class="tleft">{__('orderCostumerRegistered')}</th>
-                            <th class="tleft">{__('orderShippingName')}</th>
-                            <th class="tleft">{__('orderPaymentName')}</th>
+                            <th class="text-center">{__('orderNumber')}</th>
+                            <th class="text-left">{__('customer')}</th>
+                            <th class="text-center">{__('orderCostumerRegistered')}</th>
+                            <th class="text-left">{__('orderShippingName')}</th>
+                            <th class="text-left">{__('orderPaymentName')}</th>
                             <th>{__('orderWawiPickedUp')}</th>
-                            <th>{__('status')}</th>
+                            <th class="text-center">{__('status')}</th>
                             <th>{__('orderSum')}</th>
-                            <th class="tright">{__('orderDate')}</th>
-                            <th class="tright">{__('orderIpAddress')}</th>
+                            <th class="text-right">{__('orderDate')}</th>
+                            <th class="text-right">{__('orderIpAddress')}</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -54,7 +54,7 @@
                                         <label class="custom-control-label" for="order-id-{$oBestellung->kBestellung}"></label>
                                     </div>
                                 </td>
-                                <td>{$oBestellung->cBestellNr}</td>
+                                <td class="text-center">{$oBestellung->cBestellNr}</td>
                                 <td>
                                     {if isset($oBestellung->oKunde->cVorname) || isset($oBestellung->oKunde->cNachname) || isset($oBestellung->oKunde->cFirma)}
                                         {$oBestellung->oKunde->cVorname} {$oBestellung->oKunde->cNachname}
@@ -65,10 +65,16 @@
                                         {__('noAccount')}
                                     {/if}
                                 </td>
-                                <td>{if isset($oBestellung->oKunde) && $oBestellung->oKunde->nRegistriert === 1}{__('yes')}{else}{__('no')}{/if}</td>
+                                <td class="text-center">{if isset($oBestellung->oKunde) && $oBestellung->oKunde->nRegistriert === 1}{__('yes')}{else}{__('no')}{/if}</td>
                                 <td>{$oBestellung->cVersandartName}</td>
                                 <td>{$oBestellung->cZahlungsartName}</td>
-                                <td class="text-center">{if $oBestellung->cAbgeholt === 'Y'}{__('yes')}{else}{__('no')}{/if}</td>
+                                <td class="text-center">
+                                    {if $oBestellung->cAbgeholt === 'Y'}
+                                        <i class="fal fa-check text-success"></i>
+                                    {else}
+                                        <i class="fal fa-times text-danger"></i>
+                                    {/if}
+                                </td>
                                 <td class="text-center">
                                     {if $oBestellung->cStatus == 1}
                                         {__('new')}
@@ -85,8 +91,8 @@
                                     {/if}
                                 </td>
                                 <td class="text-center">{$oBestellung->WarensummeLocalized[0]}</td>
-                                <td class="tright">{$oBestellung->dErstelldatum_de}</td>
-                                <td class="tright">{$oBestellung->cIP}</td>
+                                <td class="text-right">{$oBestellung->dErstelldatum_de}</td>
+                                <td class="text-right">{$oBestellung->cIP}</td>
                             </tr>
                         {/foreach}
                         </tbody>

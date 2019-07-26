@@ -87,11 +87,11 @@
                                     <thead>
                                     <tr>
                                         <th class="check">&nbsp;</th>
-                                        <th class="tleft">{__('visitors')}</th>
-                                        <th class="tleft">{__('headline')}</th>
-                                        <th class="tleft">{__('text')}</th>
-                                        <th class="th-5">{__('newsDate')}</th>
-                                        <th class="th-6" style="min-width: 140px;"></th>
+                                        <th class="text-left">{__('visitors')}</th>
+                                        <th class="text-left">{__('headline')}</th>
+                                        <th class="text-left">{__('text')}</th>
+                                        <th class="th-5 text-center">{__('newsDate')}</th>
+                                        <th class="th-6 text-center" style="min-width: 140px;"></th>
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -169,14 +169,14 @@
                                 <thead>
                                 <tr>
                                     <th class="check"></th>
-                                    <th class="tleft">{__('headline')}</th>
-                                    {*<th class="tleft">{__('category')}</th>*}
-                                    <th class="tleft">{__('customerGroup')}</th>
-                                    <th class="tleft">{__('newsValidation')}</th>
-                                    <th>{__('active')}</th>
-                                    <th>{__('newsComments')}</th>
-                                    <th>{__('newsCatLastUpdate')}</th>
-                                    <th style="min-width: 100px;"></th>
+                                    <th class="text-left">{__('headline')}</th>
+                                    {*<th class="text-left">{__('category')}</th>*}
+                                    <th class="text-left">{__('customerGroup')}</th>
+                                    <th class="text-center">{__('newsValidation')}</th>
+                                    <th class="text-center">{__('active')}</th>
+                                    <th class="text-center">{__('newsComments')}</th>
+                                    <th class="text-center">{__('newsCatLastUpdate')}</th>
+                                    <th class="text-center" style="min-width: 100px;"></th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -196,7 +196,7 @@
                                                     {if $customerGroupID === -1}Alle{else}{Kundengruppe::getNameByID($customerGroupID)}{/if}{if !$customerGroupID@last},{/if}
                                                 {/foreach}
                                             </td>
-                                            <td class="TD5">{$oNews->getDateValidFromLocalizedCompat()}</td>
+                                            <td class="text-center">{$oNews->getDateValidFromLocalizedCompat()}</td>
                                             <td class="text-center">
                                                 <i class="fal fa-{if $oNews->getIsActive()}check text-success{else}times text-danger{/if}"></i>
                                             </td>
@@ -282,11 +282,11 @@
                                 <thead>
                                 <tr>
                                     <th class="check"></th>
-                                    <th class="tleft">{__('name')}</th>
-                                    <th class="">{__('sorting')}</th>
-                                    <th class="th-4">{__('active')}</th>
-                                    <th class="th-5">{__('newsCatLastUpdate')}</th>
-                                    <th class="th-5">&nbsp;</th>
+                                    <th class="text-left">{__('name')}</th>
+                                    <th class=" text-center">{__('sorting')}</th>
+                                    <th class="th-4 text-center">{__('active')}</th>
+                                    <th class="th-5 text-center">{__('newsCatLastUpdate')}</th>
+                                    <th class="th-5 text-center">&nbsp;</th>
                                 </tr>
                                 </thead>
                                 <tbody>

@@ -46,12 +46,12 @@
                                     <thead>
                                     <tr>
                                         <th class="check">&nbsp;</th>
-                                        <th class="tleft">{__('productName')}</th>
-                                        <th class="tleft">{__('customerName')}</th>
-                                        <th class="tleft">{__('ratingText')}</th>
-                                        <th class="th-5">{__('ratingStars')}</th>
-                                        <th class="th-6">{__('date')}</th>
-                                        <th class="th-7">&nbsp;</th>
+                                        <th class="text-left">{__('productName')}</th>
+                                        <th class="text-left">{__('customerName')}</th>
+                                        <th class="text-left">{__('ratingText')}</th>
+                                        <th class="th-5 text-center">{__('ratingStars')}</th>
+                                        <th class="th-6 text-center">{__('date')}</th>
+                                        <th class="th-7 text-center">&nbsp;</th>
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -129,12 +129,12 @@
                                     <thead>
                                     <tr>
                                         <th class="check">&nbsp;</th>
-                                        <th class="tleft">{__('productName')}</th>
-                                        <th class="tleft">{__('customerName')}</th>
-                                        <th class="tleft">{__('ratingText')}</th>
-                                        <th class="th-5">{__('ratingStars')}</th>
-                                        <th class="th-6">{__('date')}</th>
-                                        <th class="th-7">&nbsp;</th>
+                                        <th class="text-left">{__('productName')}</th>
+                                        <th class="text-left">{__('customerName')}</th>
+                                        <th class="text-left">{__('ratingText')}</th>
+                                        <th class="th-5 text-center">{__('ratingStars')}</th>
+                                        <th class="th-6 text-center">{__('date')}</th>
+                                        <th class="th-7 text-center">&nbsp;</th>
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -164,7 +164,7 @@
                                             </td>
                                             <td class="text-center">{$review->nSterne}</td>
                                             <td class="text-center">{$review->Datum}</td>
-                                            <td class="text-center tright" style="min-width: 130px;">
+                                            <td class="text-center" style="min-width: 130px;">
                                                 {if !empty($review->cAntwort)}
                                                     <a href="bewertung.php?a=delreply&kBewertung={$review->kBewertung}&tab=letzten50&token={$smarty.session.jtl_token}"
                                                        class="btn btn-link px-2" title="{__('removeReply')}">
@@ -239,12 +239,12 @@
                                     <thead>
                                     <tr>
                                         <th class="th-1">&nbsp;</th>
-                                        <th class="tleft">{__('productName')}</th>
-                                        <th class="tleft">{__('customerName')}</th>
-                                        <th class="tleft">{__('ratingText')}</th>
-                                        <th class="th-5">{__('ratingStars')}</th>
-                                        <th class="th-6">{__('date')}</th>
-                                        <th class="th-7">&nbsp;</th>
+                                        <th class="text-left">{__('productName')}</th>
+                                        <th class="text-left">{__('customerName')}</th>
+                                        <th class="text-left">{__('ratingText')}</th>
+                                        <th class="th-5 text-center">{__('ratingStars')}</th>
+                                        <th class="th-6 text-center">{__('date')}</th>
+                                        <th class="th-7 text-center">&nbsp;</th>
                                     </tr>
                                     </thead>
                                     <tbody>

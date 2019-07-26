@@ -8,7 +8,7 @@
 
 {if isset($oBlaetterNavi->nAktiv) && $oBlaetterNavi->nAktiv == 1}
     <div class="block clearall">
-        <div class="pages tleft">
+        <div class="pages text-left">
             <span class="pageinfo">
                 {__('entry')}: <strong>{$oBlaetterNavi->nVon}</strong> - {$oBlaetterNavi->nBis} {__('of')} {$oBlaetterNavi->nAnzahl}
             </span>

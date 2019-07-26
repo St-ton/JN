@@ -53,7 +53,7 @@
             <input class="form-control text-right" type="number" size="3" name="sort[]" value="{$oBox->getSort()}"
                    autocomplete="off" id="{$oBox->getSort()}">
         </div>
-        <div class="col-sm-2 col-xs-6">
+        <div class="col-sm-2 col-xs-6 text-center">
             <div class="btn-group">
                 <a href="boxen.php?action=del&page={$nPage}&position={$position}&item={$oBox->getID()}&token={$smarty.session.jtl_token}"
                    onclick="return confirmDelete('{if $oBox->getBaseType() === $smarty.const.BOX_CONTAINER}Container #{$oBox->getID()}{else}{$oBox->getTitle()}{/if}');"

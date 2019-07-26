@@ -80,8 +80,8 @@
             <table class="table">
                 <thead>
                 <tr>
-                    <th class="tleft">{__('name')}</th>
-                    <th class="tleft" style="width:320px">{__('filename')}</th>
+                    <th class="text-left">{__('name')}</th>
+                    <th class="text-left" style="width:320px">{__('filename')}</th>
                     <th class="text-center">{__('language')}</th>
                     <th class="text-center">{__('currency')}</th>
                     <th class="text-center">{__('customerGroup')}</th>
@@ -94,8 +94,8 @@
                 {foreach $exportformate as $exportformat}
                     {if $exportformat->nSpecial == 0}
                         <tr>
-                            <td class="tleft"> {$exportformat->cName}</td>
-                            <td class="tleft" id="progress{$exportformat->kExportformat}">
+                            <td class="text-left"> {$exportformat->cName}</td>
+                            <td class="text-left" id="progress{$exportformat->kExportformat}">
                                 <p>{$exportformat->cDateiname}</p>
                                 <div></div>
                             </td>

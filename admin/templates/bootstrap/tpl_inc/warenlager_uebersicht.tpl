@@ -32,7 +32,7 @@
                                 <th class="checkext">{__('warenlagerActive')}</th>
                                 <th>{__('warenlagerIntern')}</th>
                                 <th>{__('description')}</th>
-                                <th>{__('options')}</th>
+                                <th class="text-center">{__('options')}</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -44,8 +44,8 @@
                                             <label class="custom-control-label" for="store-id-{$oWarenlager->kWarenlager}"></label>
                                         </div>
                                     </td>
-                                    <td class="text-center large">{$oWarenlager->cName}</td>
-                                    <td class="text-center">{$oWarenlager->cBeschreibung}</td>
+                                    <td class="large">{$oWarenlager->cName}</td>
+                                    <td>{$oWarenlager->cBeschreibung}</td>
                                     <td class="text-center">
                                         <div class="btn-group">
                                             <a class="btn btn-link px-2" data-toggle="collapse" href="#collapse-{$oWarenlager->kWarenlager}" title="{__('edit')}">

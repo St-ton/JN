@@ -53,18 +53,18 @@
                         <thead>
                         <tr>
                             <th></th>
-                            <th class="tleft">{__('subject')}</th>
-                            <th class="tleft">{__('fromname')}</th>
-                            <th class="tleft">{__('fromemail')}</th>
-                            <th class="tleft">{__('toname')}</th>
-                            <th class="tleft">{__('toemail')}</th>
-                            <th class="tleft">{__('date')}</th>
+                            <th class="text-left"></th>
+                            <th class="text-left">{__('fromname')}</th>
+                            <th class="text-left">{__('fromemail')}</th>
+                            <th class="text-left">{__('toname')}</th>
+                            <th class="text-left">{__('toemail')}</th>
+                            <th class="text-left">{__('date')}</th>
                         </tr>
                         </thead>
                         <tbody>
                         {foreach $oEmailhistory_arr as $oEmailhistory}
                             <tr>
-                                <td class="check">
+                                <td class="check text-center">
                                     <div class="custom-control custom-checkbox">
                                         <input class="custom-control-input" type="checkbox" name="kEmailhistory[]" id="email-history-id-{$oEmailhistory->getEmailhistory()}" value="{$oEmailhistory->getEmailhistory()}" />
                                         <label class="custom-control-label" for="email-history-id-{$oEmailhistory->getEmailhistory()}"></label>

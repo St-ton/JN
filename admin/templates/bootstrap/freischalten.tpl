@@ -86,11 +86,11 @@
                                     <thead>
                                     <tr>
                                         <th class="check"></th>
-                                        <th class="tleft">{__('product')}</th>
-                                        <th class="tleft">{__('freischaltenReviewsCustomer')}</th>
-                                        <th>{__('stars')}</th>
-                                        <th>{__('freischaltenReviewsDate')}</th>
-                                        <th>{__('actions')}</th>
+                                        <th class="text-left">{__('product')}</th>
+                                        <th class="text-left">{__('freischaltenReviewsCustomer')}</th>
+                                        <th class="text-center">{__('stars')}</th>
+                                        <th class="text-center">{__('freischaltenReviewsDate')}</th>
+                                        <th class="text-center">{__('actions')}</th>
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -179,10 +179,10 @@
                                     <thead>
                                     <tr>
                                         <th class="check">&nbsp;</th>
-                                        <th class="tleft">(<a href="freischalten.php?tab=livesearch&{$cSuchStr}nSort=1{if !isset($nSort) || $nSort != 11}1{/if}&token={$smarty.session.jtl_token}" style="text-decoration: underline;">{if !isset($nSort) || $nSort != 11}Z...A{else}A...Z{/if}</a>) {__('freischaltenLivesearchSearch')}</th>
-                                        <th>(<a href="freischalten.php?tab=livesearch&{$cSuchStr}nSort=2{if !isset($nSort) || $nSort != 22}2{/if}&token={$smarty.session.jtl_token}" style="text-decoration: underline;">{if !isset($nSort) || $nSort != 22}1...9{else}9...1{/if}</a>) {__('freischaltenLivesearchCount')}</th>
-                                        <th>(<a href="freischalten.php?tab=livesearch&{$cSuchStr}nSort=3{if !isset($nSort) || $nSort != 33}3{/if}&token={$smarty.session.jtl_token}" style="text-decoration: underline;">{if !isset($nSort) || $nSort != 33}0...1{else}1...0{/if}</a>) {__('freischaltenLivesearchHits')}</th>
-                                        <th>{__('freischaltenLiveseachDate')}</th>
+                                        <th class="text-left">(<a href="freischalten.php?tab=livesearch&{$cSuchStr}nSort=1{if !isset($nSort) || $nSort != 11}1{/if}&token={$smarty.session.jtl_token}" style="text-decoration: underline;">{if !isset($nSort) || $nSort != 11}Z...A{else}A...Z{/if}</a>) {__('freischaltenLivesearchSearch')}</th>
+                                        <th class="text-center">(<a href="freischalten.php?tab=livesearch&{$cSuchStr}nSort=2{if !isset($nSort) || $nSort != 22}2{/if}&token={$smarty.session.jtl_token}" style="text-decoration: underline;">{if !isset($nSort) || $nSort != 22}1...9{else}9...1{/if}</a>) {__('freischaltenLivesearchCount')}</th>
+                                        <th class="text-center">(<a href="freischalten.php?tab=livesearch&{$cSuchStr}nSort=3{if !isset($nSort) || $nSort != 33}3{/if}&token={$smarty.session.jtl_token}" style="text-decoration: underline;">{if !isset($nSort) || $nSort != 33}0...1{else}1...0{/if}</a>) {__('freischaltenLivesearchHits')}</th>
+                                        <th class="text-center">{__('freischaltenLiveseachDate')}</th>
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -194,7 +194,7 @@
                                                     <label class="custom-control-label" for="search-request-id-{$oSuchanfrage->kSuchanfrage}"></label>
                                                 </div>
                                             </td>
-                                            <td class="tleft">{$oSuchanfrage->cSuche}</td>
+                                            <td class="text-left">{$oSuchanfrage->cSuche}</td>
                                             <td class="text-center">{$oSuchanfrage->nAnzahlGesuche}</td>
                                             <td class="text-center">{$oSuchanfrage->nAnzahlTreffer}</td>
                                             <td class="text-center">{$oSuchanfrage->dZuletztGesucht_de}</td>
@@ -254,10 +254,10 @@
                                     <thead>
                                         <tr>
                                             <th class="check">&nbsp;</th>
-                                            <th class="tleft">{__('visitor')}</th>
-                                            <th class="tleft">{__('text')}</th>
-                                            <th>{__('freischaltenNewsCommentsDate')}</th>
-                                            <th>{__('actions')}</th>
+                                            <th class="text-left">{__('visitor')}</th>
+                                            <th class="text-left">{__('text')}</th>
+                                            <th class="text-center">{__('freischaltenNewsCommentsDate')}</th>
+                                            <th class="text-center">{__('actions')}</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -339,10 +339,10 @@
                                     <thead>
                                         <tr>
                                             <th class="check">&nbsp;</th>
-                                            <th class="tleft">{__('email')}</th>
-                                            <th class="tleft">{__('firstName')}</th>
-                                            <th class="tleft">{__('lastName')}</th>
-                                            <th>(<a href="freischalten.php?tab=newsletter&{$cSuchStr}nSort=4{if !isset($nSort) || $nSort != 44}4{/if}&token={$smarty.session.jtl_token}">{if !isset($nSort) || $nSort != 44}{__('old')}...{__('new')}{elseif isset($nSort) && $nSort == 44}{__('new')}...{__('old')}{/if}</a>) {__('date')}</th>
+                                            <th class="text-left">{__('email')}</th>
+                                            <th class="text-left">{__('firstName')}</th>
+                                            <th class="text-left">{__('lastName')}</th>
+                                            <th class="text-center">(<a href="freischalten.php?tab=newsletter&{$cSuchStr}nSort=4{if !isset($nSort) || $nSort != 44}4{/if}&token={$smarty.session.jtl_token}">{if !isset($nSort) || $nSort != 44}{__('old')}...{__('new')}{elseif isset($nSort) && $nSort == 44}{__('new')}...{__('old')}{/if}</a>) {__('date')}</th>
                                         </tr>
                                     </thead>
                                     <tbody>

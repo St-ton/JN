@@ -36,9 +36,9 @@
                                             <tr>
                                                 <th class="check" style="width:35px">&nbsp;</th>
                                                 <th class="text-center">{__('active')}</th>
-                                                <th class="tleft">{__('name')}</th>
-                                                <th class="text-center">{__('aaLocation')}</th>
-                                                <th class="tright">&nbsp;</th>
+                                                <th class="text-left">{__('name')}</th>
+                                                <th>{__('aaLocation')}</th>
+                                                <th class="text-center">&nbsp;</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -59,17 +59,17 @@
                                                             <i class="fal fa-check text-success"></i>
                                                         {/if}
                                                     </td>
-                                                    <td class="tleft">
+                                                    <td class="text-left">
                                                         <label for="group-{$oAuswahlAssistentGruppe->kAuswahlAssistentGruppe}">
                                                             {$oAuswahlAssistentGruppe->cName}
                                                         </label>
                                                     </td>
-                                                    <td class="text-center">
+                                                    <td>
                                                         {foreach $oAuswahlAssistentGruppe->oAuswahlAssistentOrt_arr as $oAuswahlAssistentOrt}
                                                             {$oAuswahlAssistentOrt->cOrt}{if !$oAuswahlAssistentOrt@last}, {/if}
                                                         {/foreach}
                                                     </td>
-                                                    <td class="tright" width="265">
+                                                    <td class="text-center" width="265">
                                                         <div class="btn-group">
                                                             {if isset($oAuswahlAssistentGruppe->oAuswahlAssistentFrage_arr) && $oAuswahlAssistentGruppe->oAuswahlAssistentFrage_arr|@count > 0}
                                                                 <a href="#" class="btn btn-link px-2 down"
@@ -93,7 +93,7 @@
                                                 </tr>
                                                 {if isset($oAuswahlAssistentGruppe->oAuswahlAssistentFrage_arr) && $oAuswahlAssistentGruppe->oAuswahlAssistentFrage_arr|@count > 0}
                                                     <tr>
-                                                        <td class="tleft" colspan="5"
+                                                        <td class="text-left" colspan="5"
                                                             id="row_toggle_{$oAuswahlAssistentGruppe->kAuswahlAssistentGruppe}"
                                                             style="display: none;">
                                                             <div id="rowdiv_toggle_{$oAuswahlAssistentGruppe->kAuswahlAssistentGruppe}"
@@ -102,20 +102,20 @@
                                                                     <thead>
                                                                         <tr>
                                                                             <th class="text-center"></th>
-                                                                            <th class="tleft">{__('question')}</th>
+                                                                            <th class="text-left">{__('question')}</th>
                                                                             <th class="text-center">{__('attribute')}</th>
                                                                             <th class="text-center">{__('sorting')}</th>
-                                                                            <th class="tright">&nbsp;</th>
+                                                                            <th class="text-center">&nbsp;</th>
                                                                         </tr>
                                                                     </thead>
                                                                     <tbody>
                                                                     {foreach $oAuswahlAssistentGruppe->oAuswahlAssistentFrage_arr as $oAuswahlAssistentFrage}
                                                                         <tr{if !$oAuswahlAssistentFrage->nAktiv} class="text-danger"{/if}>
                                                                             <td>{if !$oAuswahlAssistentFrage->nAktiv}<i class="fal fa-times"></i>{/if}</td>
-                                                                            <td class="tleft">{$oAuswahlAssistentFrage->cFrage}</td>
+                                                                            <td class="text-left">{$oAuswahlAssistentFrage->cFrage}</td>
                                                                             <td class="text-center">{$oAuswahlAssistentFrage->cName}</td>
                                                                             <td class="text-center">{$oAuswahlAssistentFrage->nSort}</td>
-                                                                            <td class="tright" style="width:250px">
+                                                                            <td class="text-center">
                                                                                 <div class="btn-group">
                                                                                     <a href="auswahlassistent.php?a=delQuest&q={$oAuswahlAssistentFrage->kAuswahlAssistentFrage}&token={$smarty.session.jtl_token}" class="btn btn-link px-2 remove">
                                                                                         <span class="icon-hover">

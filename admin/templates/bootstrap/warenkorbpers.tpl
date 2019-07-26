@@ -52,11 +52,11 @@
                                 <table class="table table-striped">
                                     <thead>
                                     <tr>
-                                        <th class="tleft">{__('warenkorbpersCompany')}</th>
-                                        <th class="tleft">{__('warenkorbpersClientName')}</th>
-                                        <th class="th-3">{__('warenkorbpersCount')}</th>
-                                        <th class="th-4">{__('warenkorbpersDate')}</th>
-                                        <th class="th-5">{__('warenkorbpersAction')}</th>
+                                        <th class="text-left">{__('warenkorbpersCompany')}</th>
+                                        <th class="text-left">{__('warenkorbpersClientName')}</th>
+                                        <th class="th-3 text-center">{__('warenkorbpersCount')}</th>
+                                        <th class="th-4 text-center">{__('warenkorbpersDate')}</th>
+                                        <th class="th-5 text-center">{__('warenkorbpersAction')}</th>
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -109,15 +109,15 @@
                 <table class="table table-striped">
                     <thead>
                     <tr>
-                        <th class="tleft">{__('warenkorbpersProduct')}</th>
-                        <th class="th-2">{__('warenkorbpersCount')}</th>
-                        <th class="th-3">{__('warenkorbpersDate')}</th>
+                        <th class="text-left">{__('warenkorbpersProduct')}</th>
+                        <th class="th-2 text-center">{__('warenkorbpersCount')}</th>
+                        <th class="th-3 text-center">{__('warenkorbpersDate')}</th>
                     </tr>
                     </thead>
                     <tbody>
                     {foreach $oWarenkorbPersPos_arr as $oWarenkorbPersPos}
                         <tr>
-                            <td class="tleft">
+                            <td class="text-left">
                                 <a href="{$shopURL}/index.php?a={$oWarenkorbPersPos->kArtikel}" target="_blank">{$oWarenkorbPersPos->cArtikelName}</a>
                             </td>
                             <td class="text-center">{$oWarenkorbPersPos->fAnzahl}</td>

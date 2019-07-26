@@ -41,22 +41,22 @@
                                 <thead>
                                     <tr>
                                         <th>{__('headingType')}</th>
-                                        <th>{__('headingStartTime')}</th>
-                                        <th>{__('headingLastStarted')}</th>
-                                        <th>{__('headingFrequency')}</th>
-                                        <th>{__('headingRunning')}</th>
-                                        <th>{__('action')}</th>
+                                        <th class="text-center">{__('headingStartTime')}</th>
+                                        <th class="text-center">{__('headingLastStarted')}</th>
+                                        <th class="text-center">{__('headingFrequency')}</th>
+                                        <th class="text-center">{__('headingRunning')}</th>
+                                        <th class="text-center">{__('action')}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {foreach $jobs as $job}
                                         <tr>
                                             <td>{__($job->getType())}</td>
-                                            <td>{$job->getStartTime()->format('H:i')}</td>
-                                            <td>{if $job->getDateLastStarted() === null}&dash;{else}{$job->getDateLastStarted()->format('d.m.Y H:i')}{/if}</td>
-                                            <td>{$job->getFrequency()}h</td>
-                                            <td>{if $job->isRunning()}<i class="fal fa-check text-success"></i>{else}<i class="fal fa-times text-danger"></i>{/if}</td>
-                                            <td>
+                                            <td class="text-center">{$job->getStartTime()->format('H:i')}</td>
+                                            <td class="text-center">{if $job->getDateLastStarted() === null}&dash;{else}{$job->getDateLastStarted()->format('d.m.Y H:i')}{/if}</td>
+                                            <td class="text-center">{$job->getFrequency()}h</td>
+                                            <td class="text-center">{if $job->isRunning()}<i class="fal fa-check text-success"></i>{else}<i class="fal fa-times text-danger"></i>{/if}</td>
+                                            <td class="text-center">
                                                 <div class="btn-group">
                                                     {if $job->isRunning()}
                                                         <button class="btn btn-link px-2" type="submit" name="reset" value="{$job->getQueueID()}">

@@ -25,8 +25,8 @@
                     <table class="list table">
                         <thead>
                         <tr>
-                            <th class="tleft">{__('pluginName')}</th>
-                            <th class="tleft">{__('description')}</th>
+                            <th class="text-left">{__('pluginName')}</th>
+                            <th class="text-left">{__('description')}</th>
                         </tr>
                         </thead>
                         <tbody>

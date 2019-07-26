@@ -38,9 +38,9 @@
                         <table class="table table-striped">
                             <thead>
                             <tr>
-                                <th class="tleft">{__('productName')}</th>
-                                <th class="th-2">{__('ggOrderValueMin')}</th>
-                                <th class="th-3">{__('ggDate')}</th>
+                                <th class="text-left">{__('productName')}</th>
+                                <th class="th-2 text-center">{__('ggOrderValueMin')}</th>
+                                <th class="th-3 text-center">{__('ggDate')}</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -67,11 +67,11 @@
                         <table class="table table-striped">
                             <thead>
                             <tr>
-                                <th class="tleft">{__('productName')}</th>
-                                <th class="th-2">{__('ggOrderValueMin')}</th>
-                                <th class="th-3">{__('ggCount')}</th>
-                                <th class="th-3">{__('ggOrderValueAverage')}</th>
-                                <th class="th-4">{__('gglastOrdered')}</th>
+                                <th class="text-left">{__('productName')}</th>
+                                <th class="th-2 text-center">{__('ggOrderValueMin')}</th>
+                                <th class="th-3 text-center">{__('ggCount')}</th>
+                                <th class="th-3 text-center">{__('ggOrderValueAverage')}</th>
+                                <th class="th-4 text-center">{__('gglastOrdered')}</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -100,10 +100,10 @@
                         <table class="table table-striped">
                             <thead>
                             <tr>
-                                <th class="tleft">{__('productName')}</th>
-                                <th class="th-2">{__('ggOrderValueMin')}</th>
-                                <th class="th-4">{__('ggOrderValue')}</th>
-                                <th class="th-4">{__('ggOrdered')}</th>
+                                <th class="text-left">{__('productName')}</th>
+                                <th class="th-2 text-center">{__('ggOrderValueMin')}</th>
+                                <th class="th-4 text-center">{__('ggOrderValue')}</th>
+                                <th class="th-4 text-center">{__('ggOrdered')}</th>
                             </tr>
                             </thead>
                             <tbody>

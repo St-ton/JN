@@ -73,10 +73,10 @@
                             <table class="list table">
                                 <thead>
                                 <tr>
-                                    <th class="tleft">{__('subject')}</th>
-                                    <th class="tleft">{__('mail')}</th>
+                                    <th class="text-left">{__('subject')}</th>
+                                    <th class="text-left">{__('mail')}</th>
                                     <th>{__('customerGroup')}</th>
-                                    <th>{__('actions')}</th>
+                                    <th class="text-center">{__('actions')}</th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -86,7 +86,7 @@
                                             <a href="kontaktformular.php?kKontaktBetreff={$Betreff->kKontaktBetreff}&token={$smarty.session.jtl_token}">{$Betreff->cName}</a>
                                         </td>
                                         <td>{$Betreff->cMail}</td>
-                                        <td class="text-center">{$Betreff->Kundengruppen}</td>
+                                        <td>{$Betreff->Kundengruppen}</td>
                                         <td class="text-center">
                                             <div class="btn-group">
                                                 <a href="kontaktformular.php?del={$Betreff->kKontaktBetreff}&token={$smarty.session.jtl_token}" class="btn btn-link px-2" title="{__('delete')}">

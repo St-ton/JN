@@ -297,11 +297,11 @@
                                     <thead>
                                     <tr>
                                         <th class="check"></th>
-                                        <th class="tleft">{__('kundenfeldNameShort')}</th>
-                                        <th class="tleft">{__('kundenfeldWawiShort')}</th>
-                                        <th class="tleft">{__('kundenfeldTyp')}</th>
-                                        <th class="tleft">{__('values')}</th>
-                                        <th class="th-6">{__('headingKundenfeldEdit')}</th>
+                                        <th class="text-left">{__('kundenfeldNameShort')}</th>
+                                        <th class="text-left">{__('kundenfeldWawiShort')}</th>
+                                        <th class="text-left">{__('kundenfeldTyp')}</th>
+                                        <th class="text-left">{__('values')}</th>
+                                        <th class="th-6 text-center">{__('headingKundenfeldEdit')}</th>
                                         <th class="th-7">{__('sorting')}</th>
                                         <th class="th-8"></th>
                                     </tr>

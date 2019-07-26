@@ -63,7 +63,7 @@
                     <thead>
                     <tr>
                         {foreach $cMember_arr[0] as $cMember}
-                            <th>{$cMember[1]}</th>
+                            <th class="text-center">{$cMember[1]}</th>
                         {/foreach}
                     </tr>
                     </thead>

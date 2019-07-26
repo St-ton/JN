@@ -33,7 +33,7 @@
                             <tr>
                                 <th>{__('url')}</th>
                                 <th>{__('pageID')}</th>
-                                <th></th>
+                                <th class="text-center">{__('actions')}</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -47,8 +47,8 @@
                                         <td>
                                             <a href="#page-{$pageIdHash}" data-toggle="collapse">{$page->cPageId}</a>
                                         </td>
-                                        <td>
-                                            <div class="btn-group float-right">
+                                        <td class="text-center">
+                                            <div class="btn-group">
                                                 <a class="btn btn-link px-2" title="{__('deleteDraftAll')}"
                                                    href="{strip}?token={$smarty.session.jtl_token}&
                                                          action=restore&pageId={$page->cPageId}{/strip}"

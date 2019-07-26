@@ -586,9 +586,6 @@ label .fillout {
   float: none;
   margin-left: 0;
 }
-.tright {
-  text-align: right;
-}
 .block {
   overflow: hidden;
 }

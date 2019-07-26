@@ -30,7 +30,7 @@
                 <table id="tableSlide" class="table">
                     <thead>
                     <tr>
-                        <th class="tleft"></th>
+                        <th class="text-left"></th>
                         <th width="10%">{__('Image')}</th>
                         <th width="40%">{__('title')} / {__('link')}</th>
                         <th width="40%">{__('text')}</th>

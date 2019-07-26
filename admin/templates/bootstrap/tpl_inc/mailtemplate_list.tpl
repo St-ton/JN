@@ -8,10 +8,10 @@
 			<table class="list table">
 				<thead>
 				<tr>
-					<th class="tleft">{__('template')}</th>
-					<th>{__('type')}</th>
-					<th>{__('active')}</th>
-					<th>{__('options')}</th>
+					<th class="text-left">{__('template')}</th>
+					<th class="text-center">{__('type')}</th>
+					<th class="text-center">{__('active')}</th>
+					<th class="text-center">{__('options')}</th>
 				</tr>
 				</thead>
 				<tbody>

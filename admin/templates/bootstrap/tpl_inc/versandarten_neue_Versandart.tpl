@@ -373,7 +373,7 @@
                                 <thead>
                                 <tr>
                                     <th class="check"></th>
-                                    <th class="tleft">{__('paymentType')}</th>
+                                    <th class="text-left">{__('paymentType')}</th>
                                     <th></th>
                                     <th>{__('amount')}</th>
                                     <th></th>

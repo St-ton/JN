@@ -31,9 +31,9 @@
                         <table class="table table-striped">
                             <thead>
                                 <tr>
-                                    <th class="th-1">{__('compareID')}</th>
-                                    <th class="tleft">{__('compareProducts')}</th>
-                                    <th class="th-3">{__('compareDate')}</th>
+                                    <th class="th-1 text-center">{__('compareID')}</th>
+                                    <th class="text-left">{__('compareProducts')}</th>
+                                    <th class="th-3 text-center">{__('compareDate')}</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -119,8 +119,8 @@
                             <table class="bottom table table-striped">
                                 <thead>
                                     <tr>
-                                        <th class="tleft">{__('compareProduct')}</th>
-                                        <th class="th-2">{__('compareCount')}</th>
+                                        <th class="text-left">{__('compareProduct')}</th>
+                                        <th class="th-2 text-center">{__('compareCount')}</th>
                                     </tr>
                                 </thead>
                                 <tbody>

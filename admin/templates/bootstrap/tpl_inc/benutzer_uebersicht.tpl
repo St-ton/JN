@@ -23,7 +23,7 @@
                     <table class="list table">
                         <thead>
                         <tr>
-                            <th class="tleft">#</th>
+                            <th class="text-left">#</th>
                             <th class="text-center">{__('username')}</th>
                             <th class="text-center">{__('benutzer2FA')}</th>
                             <th class="text-center">{__('email')}</th>
@@ -37,7 +37,7 @@
                         <tbody>
                         {foreach $oAdminList_arr as $oAdmin}
                             <tr>
-                                <td class="tleft">{$oAdmin->kAdminlogin}</td>
+                                <td class="text-left">{$oAdmin->kAdminlogin}</td>
                                 <td class="text-center">{$oAdmin->cLogin}</td>
                                 <td class="text-center">{if $oAdmin->b2FAauth}{__('stateON')}{else}{__('stateOFF')}{/if}</td>
                                 <td class="text-center">{$oAdmin->cMail}</td>
@@ -116,9 +116,9 @@
                     <table class="list table">
                         <thead>
                         <tr>
-                            <th class="tleft">#</th>
-                            <th class="tleft">{__('group')}</th>
-                            <th class="tleft">{__('description')}</th>
+                            <th class="text-left">#</th>
+                            <th class="text-left">{__('group')}</th>
+                            <th class="text-left">{__('description')}</th>
                             <th class="text-center">{__('user')}</th>
                             <th class="text-center">{__('action')}</th>
                         </tr>
@@ -126,9 +126,9 @@
                         <tbody>
                         {foreach $oAdminGroup_arr as $oGroup}
                             <tr>
-                                <td class="tleft">{$oGroup->kAdminlogingruppe}</td>
-                                <td class="tleft">{$oGroup->cGruppe}</td>
-                                <td class="tleft">{__($oGroup->cBeschreibung)}</td>
+                                <td class="text-left">{$oGroup->kAdminlogingruppe}</td>
+                                <td class="text-left">{$oGroup->cGruppe}</td>
+                                <td class="text-left">{__($oGroup->cBeschreibung)}</td>
                                 <td class="text-center">{$oGroup->nCount}</td>
                                 <td class="text-center">
                                     {if $oGroup->kAdminlogingruppe !== '1'}

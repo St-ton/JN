@@ -43,9 +43,9 @@
                                     <thead>
                                         <tr>
                                             <th class="check"></th>
-                                            <th class="tleft">{__('name')}</th>
-                                            <th class="tleft">{__('kundenwerbenkundenFromReg')}</th>
-                                            <th class="tleft">{__('credit')}</th>
+                                            <th class="text-left">{__('name')}</th>
+                                            <th class="text-left">{__('kundenwerbenkundenFromReg')}</th>
+                                            <th class="text-left">{__('credit')}</th>
                                             <th class="th-5">{__('kundenwerbenkundenDateInvite')}</th>
                                         </tr>
                                     </thead>
@@ -58,13 +58,13 @@
                                                     <label class="custom-control-label" for="customer-recruit-{$oKwKNichtReg->kKundenWerbenKunden}"></label>
                                                 </div>
                                             </td>
-                                            <td class="tleft">
+                                            <td class="text-left">
                                                 <b>{$oKwKNichtReg->cVorname} {$oKwKNichtReg->cNachname}</b><br />{$oKwKNichtReg->cEmail}
                                             </td>
-                                            <td class="tleft">
+                                            <td class="text-left">
                                                 <b>{$oKwKNichtReg->cBestandVorname} {$oKwKNichtReg->cBestandNachname}</b><br />{$oKwKNichtReg->cMail}
                                             </td>
-                                            <td class="tleft">{getCurrencyConversionSmarty fPreisBrutto=$oKwKNichtReg->fGuthaben}</td>
+                                            <td class="text-left">{getCurrencyConversionSmarty fPreisBrutto=$oKwKNichtReg->fGuthaben}</td>
                                             <td class="text-center">{$oKwKNichtReg->dErstellt_de}</td>
                                         </tr>
                                     {/foreach}
@@ -94,9 +94,9 @@
                             <table class="table table-striped">
                                 <thead>
                                     <tr>
-                                        <th class="tleft">{__('newCustomer')}</th>
-                                        <th class="tleft">{__('kundenwerbenkundenFromReg')}</th>
-                                        <th class="tleft">{__('credit')}</th>
+                                        <th class="text-left">{__('newCustomer')}</th>
+                                        <th class="text-left">{__('kundenwerbenkundenFromReg')}</th>
+                                        <th class="text-left">{__('credit')}</th>
                                         <th class="th-4">{__('kundenwerbenkundenDateInvite')}</th>
                                         <th class="th-5">{__('kundenwerbenkundenDateErstellt')}</th>
                                     </tr>
@@ -129,8 +129,8 @@
                             <table class="table table-striped">
                                 <thead>
                                     <tr>
-                                        <th class="tleft">{__('kundenwerbenkundenFromReg')}</th>
-                                        <th class="tleft">{__('credit')}</th>
+                                        <th class="text-left">{__('kundenwerbenkundenFromReg')}</th>
+                                        <th class="text-left">{__('credit')}</th>
                                         <th class="">{__('kundenwerbenkundenExtraPoints')}</th>
                                         <th class="th-4">{__('kundenwerbenkundenDateBoni')}</th>
                                     </tr>

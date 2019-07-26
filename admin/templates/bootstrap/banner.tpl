@@ -471,26 +471,24 @@
                     <table class="list table">
                         <thead>
                         <tr>
-                            <th class="tleft" width="25%">{__('name')}</th>
-                            <th width="20%">{__('status')}</th>
-                            <th class="tleft" width="25%">{__('runTime')}</th>
-                            <th width="30%">{__('action')}</th>
+                            <th class="text-left" width="25%">{__('name')}</th>
+                            <th width="20%" class="text-center">{__('active')}</th>
+                            <th class="text-left" width="25%">{__('runTime')}</th>
+                            <th width="30%" class="text-center">{__('action')}</th>
                         </tr>
                         </thead>
                         <tbody>
                         {foreach $oBanner_arr as $oBanner}
                             <tr>
-                                <td class="tleft">
+                                <td class="text-left">
                                     {$oBanner->cTitel}
                                 </td>
                                 <td class="text-center">
-                                    <h4 class="label-wrap">
-                                        {if (int)$oBanner->active === 1}
-                                            <span class="label success label-success">{__('active')}</span>
-                                        {else}
-                                            <span class="label success label-{if $oBanner->vDatum|date_format:'%d.%m.%Y' > {$smarty.now|date_format:'%d.%m.%Y'}}warning{else}danger{/if}">{__('inactive')}</span>
-                                        {/if}
-                                    </h4>
+                                    {if (int)$oBanner->active === 1}
+                                        <i class="fal fa-check text-success"></i>
+                                    {else}
+                                        <i class="fal fa-times text-danger"></i>
+                                    {/if}
                                 </td>
                                 <td>
                                     {if $oBanner->vDatum !== null}

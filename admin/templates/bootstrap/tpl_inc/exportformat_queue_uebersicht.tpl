@@ -27,9 +27,9 @@
                                 <table class="table table-striped">
                                     <thead>
                                         <tr>
-                                            <th class="tleft" style="width: 10px;">&nbsp;</th>
-                                            <th class="tleft">{__('exportformat')}</th>
-                                            <th class="tleft">{__('exportformatOptions')}</th>
+                                            <th class="text-left" style="width: 10px;">&nbsp;</th>
+                                            <th class="text-left">{__('exportformat')}</th>
+                                            <th class="text-left">{__('exportformatOptions')}</th>
                                             <th class="text-center">{__('exportformatStart')}</th>
                                             <th class="text-center">{__('repetition')}</th>
                                             <th class="text-center">{__('exportformatExported')}</th>
@@ -41,14 +41,14 @@
                                     <tbody>
                                     {foreach $oExportformatCron_arr as $oExportformatCron}
                                         <tr>
-                                            <td class="tleft">
+                                            <td class="text-left">
                                                 <div class="custom-control custom-checkbox">
                                                     <input class="custom-control-input" name="kCron[]" type="checkbox" value="{$oExportformatCron->cronID}" id="kCron-{$oExportformatCron->cronID}" />
                                                     <label class="custom-control-label" for="kCron-{$oExportformatCron->cronID}"></label>
                                                 </div>
                                             </td>
-                                            <td class="tleft"><label for="kCron-{$oExportformatCron->cronID}">{$oExportformatCron->cName}</label></td>
-                                            <td class="tleft">{$oExportformatCron->Sprache->getLocalizedName()}/{$oExportformatCron->Waehrung->cName}/{$oExportformatCron->Kundengruppe->cName}</td>
+                                            <td class="text-left"><label for="kCron-{$oExportformatCron->cronID}">{$oExportformatCron->cName}</label></td>
+                                            <td class="text-left">{$oExportformatCron->Sprache->getLocalizedName()}/{$oExportformatCron->Waehrung->cName}/{$oExportformatCron->Kundengruppe->cName}</td>
                                             <td class="text-center">{$oExportformatCron->dStart_de}</td>
                                             <td class="text-center">{$oExportformatCron->cAlleXStdToDays}</td>
                                             <td class="text-center">

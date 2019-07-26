@@ -13,8 +13,8 @@
             <table class="table table-striped">
                 <thead>
                 <tr>
-                    <th class="tleft">{__('customerGroup')}</th>
-                    <th>{__('action')}</th>
+                    <th class="text-left">{__('customerGroup')}</th>
+                    <th class="text-center">{__('action')}</th>
                 </tr>
                 </thead>
                 <tbody>

@@ -25,15 +25,15 @@
                         <table class="table">
                             <thead>
                             <tr>
-                                <th class="tleft" width="50%">{__('name')}</th>
+                                <th class="text-left" width="50%">{__('name')}</th>
                                 <th class="text-center" width="20%">{__('active')}</th>
-                                <th width="30%">{__('options')}</th>
+                                <th width="30%" class="text-center">{__('options')}</th>
                             </tr>
                             </thead>
                             <tbody>
                             {foreach $oSlider_arr as $oSlider}
                                 <tr>
-                                    <td class="tleft">{$oSlider->cName}</td>
+                                    <td class="text-left">{$oSlider->cName}</td>
                                     <td class="text-center">
                                         {if $oSlider->bAktiv == 1}
                                             <i class="fal fa-check text-success"></i>
@@ -41,7 +41,7 @@
                                             <i class="fal fa-times text-danger"></i>
                                         {/if}
                                     </td>
-                                    <td>
+                                    <td class="text-center">
                                         <div class="btn-group">
                                             <a class="btn btn-link px-2" href="slider.php?action=delete&id={$oSlider->kSlider}&token={$smarty.session.jtl_token}" title="{__('delete')}">
                                                 <span class="icon-hover">

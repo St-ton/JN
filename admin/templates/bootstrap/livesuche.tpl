@@ -84,10 +84,10 @@
                                 <thead>
                                     <tr>
                                         <th class="th-1"></th>
-                                        <th class="tleft">
+                                        <th class="text-left">
                                             (<a href="livesuche.php?{$cSuchStr}nSort=1{if $nSort == 1}1{/if}&tab=suchanfrage">{if $nSort == 1}Z...A{else}A...Z{/if}</a>) {__('search')}
                                         </th>
-                                        <th class="tleft">
+                                        <th class="text-left">
                                             (<a href="livesuche.php?{$cSuchStr}nSort=2{if $nSort == 2 || $nSort == -1}2{/if}&tab=suchanfrage">{if $nSort == 2 || $nSort == -1}1...9{else}9...1{/if}</a>) {__('searchcount')}
                                         </th>
                                         <th class="th-4">

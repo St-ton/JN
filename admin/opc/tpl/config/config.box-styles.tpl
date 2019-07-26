@@ -88,10 +88,10 @@
             propdesc=[
                 'label'   => __('Border style'),
                 'options' => [
-                    'hidden' => 'versteckt',
-                    'dotted' => 'gepunktet',
-                    'dashed' => 'gestrichelt',
-                    'solid'  => 'durchgezogen'
+                    'hidden' => __('hidden'),
+                    'dotted' => __('dotted'),
+                    'dashed' => __('dashed'),
+                    'solid'  => __('solid')
                 ]
             ]}
         {include file="./config.color.tpl"

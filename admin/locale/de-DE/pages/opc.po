@@ -373,6 +373,18 @@ msgstr "Lightbox"
 msgid "linked"
 msgstr "Verlinkung"
 
+msgid "hidden"
+msgstr "versteckt"
+
+msgid "dotted"
+msgstr "gepunktet"
+
+msgid "dashed"
+msgstr "gestrichelt"
+
+msgid "solid"
+msgstr "durchgezogen"
+
 msgid "mobileXS"
 msgstr "Mobil (XS)"
 

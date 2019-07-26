@@ -10,12 +10,12 @@
                     itemsChecked += $(this).prev().val();
                 });
                 if (itemsChecked === 'artikel' || itemsChecked === '') {
-                    $('#warningZuruecksetzen, #messageDataGetsLost').addClass('hide');
+                    $('#warningZuruecksetzen, #messageDataGetsLost').addClass('d-none');
                     $('button[data-target=".zuruecksetzen-modal"]').prop('disabled', itemsChecked === '');
-                    $('#backupDone').closest('div.checkbox').addClass('hide');
+                    $('#backupDone').closest('div.checkbox').addClass('d-none');
                 } else {
-                    $('#warningZuruecksetzen, #messageDataGetsLost').removeClass('hide');
-                    $('#backupDone').closest('div.checkbox').removeClass('hide');
+                    $('#warningZuruecksetzen, #messageDataGetsLost').removeClass('d-none');
+                    $('#backupDone').closest('div.checkbox').removeClass('d-none');
                     $('button[data-target=".zuruecksetzen-modal"]').prop('disabled', !$("#backupDone").is(':checked'));
                 }
             });
@@ -39,7 +39,7 @@
         });
     </script>
 {/literal}
-<div id="warningZuruecksetzen" class="alert alert-warning hide" >
+<div id="warningZuruecksetzen" class="alert alert-warning d-none" >
     <h3>{__('dangerStrong')}</h3>
     <p>{__('warningDeleteNotRestoreableData')}</p>
 </div>
@@ -167,7 +167,7 @@
         <div class="save-wrapper">
             <div class="row">
                 <div class="col-sm-6 col-xl-auto mb-3">
-                    <div class="checkbox hide">
+                    <div class="checkbox d-none">
                         <div class="custom-control custom-checkbox">
                             <input class="custom-control-input" id="backupDone" type="checkbox" value="" />
                             <label class="custom-control-label" for="backupDone">{__('yesBackupDone')}</label>

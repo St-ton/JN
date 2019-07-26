@@ -12,12 +12,10 @@
                     <form name="suche" method="post" action="freischalten.php">
                         <div class="row">
                             {$jtl_token}
-                            <div class="col-md-7">
-                                <div class="input-group">
-                                    <span class="input-group-addon">
-                                        <label for="search_type">{__('freischaltenSearchType')}:</label>
-                                    </span>
-                                    <span class="label-wrap">
+                            <div class="col-md-7 mb-3">
+                                <div class="form-row">
+                                    <label class="col-sm-auto col-form-label" for="search_type">{__('freischaltenSearchType')}:</label>
+                                    <span class="col-sm-auto">
                                         <select class="custom-select" name="cSuchTyp" id="search_type">
                                             <option value="Bewertung"{if isset($cSuchTyp) && $cSuchTyp === 'Bewertung'} selected{/if}>{__('reviews')}</option>
                                             <option value="Livesuche"{if isset($cSuchTyp) && $cSuchTyp === 'Livesuche'} selected{/if}>{__('freischaltenLivesearch')}</option>
@@ -29,13 +27,15 @@
                             </div>
                             <div class="col-md-5">
                                 <input type="hidden" name="Suche" value="1" />
-                                <div class="input-group">
-                                    <label for="search_key" class="sr-only">{__('freischaltenSearchItem')}</label>
-                                    <span class="label-wrap">
+                                <div class="form-row">
+                                    <label for="search_key" class="col-sm-auto col-form-label sr-only">{__('freischaltenSearchItem')}</label>
+                                    <span class="col-sm-auto mb-3">
                                         <input class="form-control" name="cSuche" type="text" value="{if isset($cSuche)}{$cSuche}{/if}"
                                                id="search_key" placeholder="{__('freischaltenSearchItem')}">
                                     </span>
-                                    <button name="submitSuche" type="submit" class="btn btn-primary ml-1"><i class="fal fa-search"></i></button>
+                                    <div class="col-sm-auto">
+                                        <button name="submitSuche" type="submit" class="btn btn-primary btn-block"><i class="fal fa-search"></i></button>
+                                    </div>
                                 </div>
                             </div>
                         </div>

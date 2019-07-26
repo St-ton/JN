@@ -82,9 +82,8 @@
                             <div class="card-header">
                                 <span class="subheading1">
                                     {$cnf->cName}
-                                    <span class="pull-right">{getHelpDesc cID=$cnf->kEinstellungenConf}</span>
                                     {if !empty($cnf->cSektionsPfad)}
-                                        <span class="path right">
+                                        <span class="path float-right">
                                             <strong>{__('settingspath')}:</strong> {$cnf->cSektionsPfad}
                                         </span>
                                     {/if}

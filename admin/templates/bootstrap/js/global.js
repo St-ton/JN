@@ -528,6 +528,7 @@ $(document).ready(function () {
     });
 
     checkSingleSettingCard();
+    onChangeFormSubmit();
 });
 
 $(window).on('load', () => {
@@ -754,4 +755,11 @@ function sprintf(format)
         format = format.replace( /%s/, arguments[i] );
     }
     return format;
+}
+
+function onChangeFormSubmit()
+{
+    $('.on-change-submit').on('change', function () {
+        $(this).closest('form').submit();
+    });
 }

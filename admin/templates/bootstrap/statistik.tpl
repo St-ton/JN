@@ -28,19 +28,17 @@
 <div id="content">
     <div class="card">
         <div class="card-body">
-            <div class="input-group">
-            <span class="input-group-addon">
-                <label for="statType">{__('statisticType')}:</label>
-            </span>
-                <span class="label-wrap last">
-                <select class="custom-select" name="statType" id="statType" onChange="changeStatType(this);">
-                    <option value="{$STATS_ADMIN_TYPE_BESUCHER}"{if $nTyp == $STATS_ADMIN_TYPE_BESUCHER} selected{/if}>{__('visitors')}</option>
-                    <option value="{$STATS_ADMIN_TYPE_KUNDENHERKUNFT}"{if $nTyp == $STATS_ADMIN_TYPE_KUNDENHERKUNFT} selected{/if}>{__('customerHeritage')}</option>
-                    <option value="{$STATS_ADMIN_TYPE_SUCHMASCHINE}"{if $nTyp == $STATS_ADMIN_TYPE_SUCHMASCHINE} selected{/if}>{__('searchEngines')}</option>
-                    <option value="{$STATS_ADMIN_TYPE_UMSATZ}"{if $nTyp == $STATS_ADMIN_TYPE_UMSATZ} selected{/if}>{__('sales')}</option>
-                    <option value="{$STATS_ADMIN_TYPE_EINSTIEGSSEITEN}"{if $nTyp == $STATS_ADMIN_TYPE_EINSTIEGSSEITEN} selected{/if}>{__('entryPages')}</option>
-                </select>
-            </span>
+            <div class="form-row">
+                <label class="col-sm-auto col-form-label" for="statType">{__('statisticType')}:</label>
+                <span class="col-sm-auto">
+                    <select class="custom-select" name="statType" id="statType" onChange="changeStatType(this);">
+                        <option value="{$STATS_ADMIN_TYPE_BESUCHER}"{if $nTyp == $STATS_ADMIN_TYPE_BESUCHER} selected{/if}>{__('visitors')}</option>
+                        <option value="{$STATS_ADMIN_TYPE_KUNDENHERKUNFT}"{if $nTyp == $STATS_ADMIN_TYPE_KUNDENHERKUNFT} selected{/if}>{__('customerHeritage')}</option>
+                        <option value="{$STATS_ADMIN_TYPE_SUCHMASCHINE}"{if $nTyp == $STATS_ADMIN_TYPE_SUCHMASCHINE} selected{/if}>{__('searchEngines')}</option>
+                        <option value="{$STATS_ADMIN_TYPE_UMSATZ}"{if $nTyp == $STATS_ADMIN_TYPE_UMSATZ} selected{/if}>{__('sales')}</option>
+                        <option value="{$STATS_ADMIN_TYPE_EINSTIEGSSEITEN}"{if $nTyp == $STATS_ADMIN_TYPE_EINSTIEGSSEITEN} selected{/if}>{__('entryPages')}</option>
+                    </select>
+                </span>
             </div>
         </div>
     </div>

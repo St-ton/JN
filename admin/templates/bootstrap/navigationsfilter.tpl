@@ -173,7 +173,6 @@
                     <div class="card-header">
                         <div class="subheading1">
                             {$oConfig->cName}
-                            <span class="pull-right">{getHelpDesc cID=$oConfig->kEinstellungenConf}</span>
                         </div>
                         <hr class="mb-n3">
                     </div>

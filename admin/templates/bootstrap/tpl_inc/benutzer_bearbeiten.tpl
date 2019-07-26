@@ -302,9 +302,17 @@ $(document).ready(function() {
                             {* Emergency-Code-Modal  END *}
                             {__('clickHereToCreateQR')}<br>
                             <br>
-                            <div class="btn-group">
-                                <button class="btn btn-primary" type="button" onclick="createNewSecret();">{__('codeCreate')}</button>
-                                <button class="btn btn-warning" type="button" onclick="showEmergencyCodes();">{__('emergencyCodeCreate')}</button>
+                            <div class="row">
+                                <div class="col-sm-auto mb-3">
+                                    <button class="btn btn-warning btn-block" type="button" onclick="showEmergencyCodes();">
+                                        {__('emergencyCodeCreate')}
+                                    </button>
+                                </div>
+                                <div class="col-sm-auto">
+                                    <button class="btn btn-primary btn-block" type="button" onclick="createNewSecret();">
+                                        {__('codeCreate')}
+                                    </button>
+                                </div>
                             </div>
                         </div>
 

@@ -13,22 +13,22 @@
                     <hr class="mb-n3">
                 </div>
                 <div class="table-responsive card-body">
-                    {include file='tpl_inc/pagination.tpl' pagination=$pagination cParam_arr=['cSuche'=>$cSuche]}
-                    <div class=" block clearall">
-                        <div class="right">
-                            <form name="bestellungen" method="post" action="bestellungen.php">
-                                {$jtl_token}
-                                <input type="hidden" name="Suche" value="1" />
-                                <div class="input-group">
-                                    <span class="input-group-addon">
-                                        <label for="orderSearch">{__('orderSearchItem')}:</label>
-                                    </span>
+                    <div class="search-toolbar mb-3">
+                        <form name="bestellungen" method="post" action="bestellungen.php">
+                            {$jtl_token}
+                            <input type="hidden" name="Suche" value="1" />
+                            <div class="form-row">
+                                <label class="col-sm-auto col-form-label" for="orderSearch">{__('orderSearchItem')}:</label>
+                                <div class="col-sm-auto mb-2">
                                     <input class="form-control" name="cSuche" type="text" value="{if isset($cSuche)}{$cSuche}{/if}" id="orderSearch" />
-                                    <button name="submitSuche" type="submit" class="btn btn-primary"><i class="fal fa-search"></i> {__('confSearch')}</button>
                                 </div>
-                            </form>
-                        </div>
+                                <span class="col-sm-auto">
+                                    <button name="submitSuche" type="submit" class="btn btn-primary btn-block"><i class="fal fa-search"></i></button>
+                                </span>
+                            </div>
+                        </form>
                     </div>
+                    {include file='tpl_inc/pagination.tpl' pagination=$pagination cParam_arr=['cSuche'=>$cSuche]}
                     <table class="list table table-striped">
                         <thead>
                         <tr>

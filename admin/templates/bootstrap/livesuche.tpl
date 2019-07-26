@@ -39,27 +39,26 @@
     <div class="tab-content">
         <div id="suchanfrage" class="tab-pane fade {if !isset($tab) || $tab === 'suchanfrage'} active show{/if}">
             {if isset($Suchanfragen) && $Suchanfragen|@count > 0}
-                {include file='tpl_inc/pagination.tpl' pagination=$oPagiSuchanfragen cAnchor='suchanfrage'}
-                <form name="suche" method="post" action="livesuche.php">
-                    {$jtl_token}
-                    <input type="hidden" name="Suche" value="1" />
-                    <input type="hidden" name="tab" value="suchanfrage" />
-                    {if isset($cSuche) && $cSuche|strlen > 0}
-                        <input name="cSuche" type="hidden" value="{$cSuche}" />
-                    {/if}
-
-                    <div class="block">
-                        <div class="input-group p25">
-                            <span class="input-group-addon">
-                                <label for="cSuche">{__('livesucheSearchItem')}:</label>
-                            </span>
-                            <input class="form-control" id="cSuche" name="cSuche" type="text" value="{if isset($cSuche) && $cSuche|strlen > 0}{$cSuche}{/if}" />
-                            <span class="input-group-btn">
-                                <button name="submitSuche" type="submit" value="{__('search')}" class="btn btn-primary ml-1"><i class="fal fa-search"></i></button>
+                <div class="search-toolbar mb-3">
+                    <form class="" name="suche" method="post" action="livesuche.php">
+                        {$jtl_token}
+                        <input type="hidden" name="Suche" value="1" />
+                        <input type="hidden" name="tab" value="suchanfrage" />
+                        {if isset($cSuche) && $cSuche|strlen > 0}
+                            <input name="cSuche" type="hidden" value="{$cSuche}" />
+                        {/if}
+                        <div class="form-row">
+                            <label class="col-sm-auto col-form-label" for="cSuche">{__('livesucheSearchItem')}:</label>
+                            <div class="col-sm-auto mb-3">
+                                <input class="form-control" id="cSuche" name="cSuche" type="text" value="{if isset($cSuche) && $cSuche|strlen > 0}{$cSuche}{/if}" />
+                            </div>
+                            <span class="col-sm-auto">
+                                <button name="submitSuche" type="submit" value="{__('search')}" class="btn btn-primary btn-block"><i class="fal fa-search"></i></button>
                             </span>
                         </div>
-                    </div>
-                </form>
+                    </form>
+                </div>
+                {include file='tpl_inc/pagination.tpl' pagination=$oPagiSuchanfragen cAnchor='suchanfrage'}
                 <form name="login" method="post" action="livesuche.php">
                     {$jtl_token}
                     <input type="hidden" name="livesuche" value="1" />

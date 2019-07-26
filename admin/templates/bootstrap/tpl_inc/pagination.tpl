@@ -105,7 +105,7 @@
 {/function}
 
 {if $bItemsAvailable}
-    <div class="container-fluid toolbar-container">
+    <div class="pagination-toolbar">
         <form action="{if isset($cAnchor)}#{$cAnchor}{/if}" method="get" name="{$pagination->getId()}" id="{$pagination->getId()}">
             <div class="row mb-5">
                 <div class="col-12 col-md-4">

@@ -110,7 +110,7 @@
                                                     <span style="display:none;"
                                                           id="cStandard_{$oWert->kSprachsektion}_{$oWert->cName}">{$oWert->cStandard|escape}</span>
                                                 </td>
-                                                <td style="width:6em;">
+                                                <td class="text-center">
                                                     <div class="btn-group">
                                                         {if $oWert->bSystem === '0'}
                                                             <a href="sprache.php?token={$smarty.session.jtl_token}&action=delvar&kSprachsektion={$oWert->kSprachsektion}&cName={$oWert->cName}"

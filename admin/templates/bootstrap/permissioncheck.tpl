@@ -2,46 +2,54 @@
 {config_load file="$lang.conf" section='permissioncheck'}
 {include file='tpl_inc/seite_header.tpl' cTitel=__('permissioncheck') cBeschreibung=__('permissioncheckDesc') cDokuURL=__('permissioncheckURL')}
 <div id="content">
-    <div id="pageCheck">
-        {if isset($cDirAssoc_arr) && $cDirAssoc_arr|@count > 0}
-            <div id="contentCheck">
-                <div class="alert alert-info">
-                    <strong>{__('dirCount')}</strong> {$oStat->nCount}<br />
-                    <strong>{__('dirCountNotWriteable')}</strong> {$oStat->nCountInValid}
+    {if isset($cDirAssoc_arr) && $cDirAssoc_arr|@count > 0}
+        <div class="alert alert-info">
+            <strong>{__('dirCount')}</strong> {$oStat->nCount}<br />
+            <strong>{__('dirCountNotWriteable')}</strong> {$oStat->nCountInValid}
+        </div>
+        <ul class="list-group">
+            {foreach name=dirs from=$cDirAssoc_arr key=cDir item=isValid}
+                <li class="filestate list-group-item mod{$smarty.foreach.dirs.iteration%2} {if $isValid}unmodified{else}modified{/if}">
+                    {if $isValid}
+                        <i class="fal fa-check text-success"></i>
+                    {else}
+                        <i class="fal fa-exclamation-triangle text-danger"></i>
+                    {/if}
+                    <span class="dir-check ml-2">{$cDir}</span>
+                </li>
+            {/foreach}
+        </ul>
+        {if $oStat->nCountInValid > 0}
+            <div class="save-wrapper">
+                <div class="row">
+                    <div class="ml-auto col-sm-6 col-xl-auto">
+                        <button id="viewAll" name="viewAll" type="button" class="btn btn-primary btn-block d-none" value="{__('showAll')}">
+                            <i class="fa fa-"></i> {__('showAll')}
+                        </button>
+                    </div>
+                    <div class="col-sm-6 col-xl-auto">
+                        <button id="viewModified" name="viewModified" type="button" class="btn btn-outline-primary btn-block viewModified" value="{__('showModified')}">
+                            <i class="fal fa-exclamation-triangle"></i> {__('showModified')}
+                        </button>
+                    </div>
                 </div>
-                {if $oStat->nCountInValid > 0}
-                    <p>
-                        <button id="viewAll" name="viewAll" type="button" class="btn btn-primary hide" value="{__('showAll')}"><i class="fa fa-"></i> {__('showAll')}</button>
-                        <button id="viewModified" name="viewModified" type="button" class="btn btn-default viewModified" value="{__('showModified')}"><i class="fal fa-exclamation-triangle"></i> {__('showModified')}</button>
-                    </p>
-                    <br />
-                {/if}
-                <ul class="list-group">
-                    {foreach name=dirs from=$cDirAssoc_arr key=cDir item=isValid}
-                        <li class="filestate list-group-item mod{$smarty.foreach.dirs.iteration%2} {if $isValid}unmodified{else}modified{/if}">
-                        {if $isValid}<i class="fal fa-check-circle text-success"></i>{else}<i class="fa fa-exclamation-circle error"></i>{/if}
-                        <span class="dir-check">{$cDir}</span>
-                        </li>
-                    {/foreach}
-                </ul>
             </div>
-        {else}
         {/if}
-    </div>
+    {/if}
 </div>
 <script>
     {literal}
     $(document).ready(function () {
         $('#viewAll').on('click', function () {
             $('#viewAll').hide();
-            $('#viewModified').show().removeClass('hide');
+            $('#viewModified').show().removeClass('d-none');
             $('.unmodified').show();
             $('.modified').show();
             colorLines();
         });
 
         $('#viewModified').on('click', function () {
-            $('#viewAll').show().removeClass('hide');
+            $('#viewAll').show().removeClass('d-none');
             $('#viewModified').hide();
             $('.unmodified').hide();
             $('.modified').show();

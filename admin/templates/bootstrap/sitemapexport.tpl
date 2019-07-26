@@ -81,30 +81,31 @@
                 </div>
             </div>
             <div id="downloads" class="tab-pane fade {if isset($cTab) && $cTab === 'downloads'} active show{/if}">
-                <div class="card-header">
-                    <div class="toolbar">
-                        <form id="formDeleteSitemapExport" method="post" action="sitemapexport.php" class="form-inline">
-                            <div class="form-group">
-                                {$jtl_token}
-                                <input type="hidden" name="action" value="">
-                                <input type="hidden" name="tab" value="downloads">
-                                <input type="hidden" name="SitemapDownload_nPage" value="0">
-                                <label for="nYear">{__('year')}:</label>
-                                <select id="nYear" name="nYear_downloads" class="custom-select">
+                <div class="toolbar">
+                    <form id="formDeleteSitemapExport" method="post" action="sitemapexport.php">
+                        {$jtl_token}
+                        <input type="hidden" name="action" value="">
+                        <input type="hidden" name="tab" value="downloads">
+                        <input type="hidden" name="SitemapDownload_nPage" value="0">
+                        <div class="form-row">
+                            <label class="col-sm-auto col-form-label" for="nYear-downloads">{__('year')}:</label>
+                            <div class="col-sm-auto mb-3">
+                                <select id="nYear-downloads" name="nYear_downloads" class="custom-select on-change-submit">
                                     {foreach $oSitemapDownloadYears_arr as $oSitemapDownloadYear}
                                         <option value="{$oSitemapDownloadYear->year}"{if isset($nSitemapDownloadYear) && $nSitemapDownloadYear == $oSitemapDownloadYear->year} selected="selected"{/if}>{$oSitemapDownloadYear->year}</option>
                                     {/foreach}
                                 </select>
                             </div>
-                            <button name="action[year_downloads]" type="submit" value="1" class="btn btn-primary"><i class="fal fa-search"></i>&nbsp;{__('show')}</button>
-                            <button type="button" class="btn btn-danger"
-                                    data-form="#formDeleteSitemapExport" data-action="year_downloads_delete" data-target="#confirmModal" data-toggle="modal" data-title="{__('sitemapDownload')} löschen">
-                                <i class="fas fa-trash-alt"></i>&nbsp;{__('delete')}
-                            </button>
-                        </form>
-                    </div>
-                    {include file='tpl_inc/pagination.tpl' pagination=$oSitemapDownloadPagination cParam_arr=['tab' => 'downloads', 'nYear_downloads' => {$nSitemapDownloadYear}]}
+                            <span class="col-sm-auto">
+                                <button type="button" class="btn btn-danger btn-block"
+                                        data-form="#formDeleteSitemapExport" data-action="year_downloads_delete" data-target="#confirmModal" data-toggle="modal" data-title="{__('sitemapDownload')} löschen">
+                                    <i class="fas fa-trash-alt"></i>&nbsp;{__('delete')}
+                                </button>
+                            </span>
+                        </div>
+                    </form>
                 </div>
+                {include file='tpl_inc/pagination.tpl' pagination=$oSitemapDownloadPagination cParam_arr=['tab' => 'downloads', 'nYear_downloads' => {$nSitemapDownloadYear}]}
                 {if isset($oSitemapDownload_arr) && $oSitemapDownload_arr|@count > 0}
                     <div>
                         <form name="sitemapdownload" method="post" action="sitemapexport.php">
@@ -179,28 +180,32 @@
                 {/if}
             </div>
             <div id="report" class="tab-pane fade {if isset($cTab) && $cTab === 'report'} active show{/if}">
-                <div class="card-header">
-                    <div class="toolbar">
-                        <form id="formDeleteSitemapReport" method="post" action="sitemapexport.php" class="form-inline">
-                            <div class="form-group">
-                                {$jtl_token}
-                                <input type="hidden" name="action" value="">
-                                <input type="hidden" name="tab" value="report">
-                                <input type="hidden" name="SitemapReport_nPage" value="0">
-                                <label for="nYear">{__('year')}</label>
-                                <select id="nYear" name="nYear_reports" class="custom-select">
+                <div class="toolbar">
+                    <form id="formDeleteSitemapReport" method="post" action="sitemapexport.php">
+                        {$jtl_token}
+                        <input type="hidden" name="action" value="">
+                        <input type="hidden" name="tab" value="report">
+                        <input type="hidden" name="SitemapReport_nPage" value="0">
+                        <div class="form-row">
+                            <label class="col-sm-auto col-form-label" for="nYear-reports">{__('year')}:</label>
+                            <div class="col-sm-auto mb-3">
+                                <select id="nYear-reports" name="nYear_reports" class="custom-select on-change-submit">
                                     {foreach $oSitemapReportYears_arr as $oSitemapReportYear}
                                         <option value="{$oSitemapReportYear->year}"{if isset($nSitemapReportYear) && $nSitemapReportYear == $oSitemapReportYear->year} selected="selected"{/if}>{$oSitemapReportYear->year}</option>
                                     {/foreach}
                                 </select>
                             </div>
-                            <button name="action[year_reports]" type="submit" value="1" class="btn btn-primary"><i class="fal fa-search"></i>&nbsp;{__('show')}</button>
-                            <button type="button" class="btn btn-danger"
-                                    data-form="#formDeleteSitemapReport" data-action="year_reports_delete" data-target="#confirmModal" data-toggle="modal" data-title="{__('sitemapReport')} löschen"><i class="fas fa-trash-alt"></i>&nbsp;{__('delete')}</button>
-                        </form>
-                    </div>
-                    {include file='tpl_inc/pagination.tpl' pagination=$oSitemapReportPagination cParam_arr=['tab' => 'report', 'nYear_reports' => {$nSitemapReportYear}]}
+                            <div class="col-sm-auto">
+                                <button type="button" class="btn btn-danger btn-block"
+                                                 data-form="#formDeleteSitemapReport" data-action="year_reports_delete" data-target="#confirmModal" data-toggle="modal" data-title="{__('sitemapReport')} löschen">
+                                    <i class="fas fa-trash-alt"></i>&nbsp;{__('delete')}
+                                </button>
+                            </div>
+                        </div>
+                    </form>
                 </div>
+                {include file='tpl_inc/pagination.tpl' pagination=$oSitemapReportPagination cParam_arr=['tab' => 'report', 'nYear_reports' => {$nSitemapReportYear}]}
+
                 {if isset($oSitemapReport_arr) && $oSitemapReport_arr|@count > 0}
                     <div>
                         <form name="sitemapreport" method="post" action="sitemapexport.php">

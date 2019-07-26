@@ -8,11 +8,9 @@
             <form name="branding" method="post" action="branding.php">
                 {$jtl_token}
                 <input type="hidden" name="branding" value="1" />
-                <div class="input-group p25 left">
-                    <span class="input-group-addon">
-                        <label for="{__('brandingActive')}">{__('brandingPictureKat')}:</label>
-                    </span>
-                    <span class="label-wrap">
+                <div class="form-row">
+                    <label class="col-sm-auto col-form-label" for="{__('brandingActive')}">{__('brandingPictureKat')}:</label>
+                    <span class="col-sm-auto">
                         <select name="kBranding" class="custom-select selectBox" id="{__('brandingActive')}" onchange="document.branding.submit();">
                             {foreach $oBranding_arr as $oBrandingTMP}
                                 <option value="{$oBrandingTMP->kBranding}" {if $oBrandingTMP->kBranding == $oBranding->kBrandingTMP}selected{/if}>{__($oBrandingTMP->cBildKategorie)}</option>

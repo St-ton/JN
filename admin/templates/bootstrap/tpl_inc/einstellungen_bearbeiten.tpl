@@ -59,7 +59,20 @@
                                 {elseif $cnf->cInputTyp === 'pass'}
                                     <input class="form-control" autocomplete="off" type="password" name="{$cnf->cWertName}" id="{$cnf->cWertName}" value="{$cnf->gesetzterWert}" tabindex="1" />
                                 {elseif $cnf->cInputTyp === 'number'}
+                                <div class="input-group form-counter">
+                                    <div class="input-group-prepend">
+                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-down>
+                                            <span class="fas fa-minus"></span>
+                                        </button>
+                                    </div>
                                     <input class="form-control" type="number" name="{$cnf->cWertName}" id="{$cnf->cWertName}" value="{if isset($cnf->gesetzterWert)}{$cnf->gesetzterWert}{/if}" tabindex="1" />
+                                    <div class="input-group-append">
+                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-up>
+                                            <span class="fas fa-plus"></span>
+                                        </button>
+                                    </div>
+                                </div>
+
                                 {else}
                                     <input class="form-control" type="text" name="{$cnf->cWertName}" id="{$cnf->cWertName}" value="{if isset($cnf->gesetzterWert)}{$cnf->gesetzterWert}{/if}" tabindex="1" />
                                 {/if}

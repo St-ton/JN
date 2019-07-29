@@ -106,7 +106,19 @@
                         <div class="form-group form-row align-items-center">
                             <label class="col col-sm-4 col-form-label text-sm-right" for="cron-freq">{__('headingFrequency')} ({__('hours')}):</label>
                             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                <input id="cron-freq" type="number" min="1" value="24" name="frequency" class="form-control" required>
+                                <div class="input-group form-counter">
+                                    <div class="input-group-prepend">
+                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-down>
+                                            <span class="fas fa-minus"></span>
+                                        </button>
+                                    </div>
+                                    <input id="cron-freq" type="number" min="1" value="24" name="frequency" class="form-control" required>
+                                    <div class="input-group-append">
+                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-up>
+                                            <span class="fas fa-plus"></span>
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div class="form-group form-row align-items-center">

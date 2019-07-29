@@ -72,9 +72,6 @@
   box-shadow: 0 0 4px #b7b9bc;
   background-color: #fff;
 }
-.backend-wrapper .input-group .form-control {
-  z-index: 0;
-}
 .backend-wrapper > .backend-sidebar > .backend-brandbar {
   background-color: #fff;
   flex: none;
@@ -486,30 +483,6 @@ h5.label-wrap {
   font-weight: 400;
   line-height: 1;
   border-radius: 0 4px 4px 0;
-}
-#settings .input-group-addon:first-child,
-.settings .input-group-addon:first-child {
-  width: 30%;
-  text-align: left;
-  white-space: normal;
-}
-#settings .input-group-addon:first-child label,
-.settings .input-group-addon:first-child label {
-  display: block;
-}
-#settings .input-group-addon:last-child,
-.settings .input-group-addon:last-child {
-  width: 52px;
-  text-align: right;
-}
-.settings-content .input-group-wrap textarea {
-  min-height: 90px;
-}
-.input-group {
-  margin-bottom: 15px;
-}
-table .input-group {
-  margin-bottom: 0;
 }
 .list-group-item.boxRow {
   overflow: hidden;
@@ -2648,5 +2621,8 @@ div.markdown thead tr td {
   position: absolute;
   top: -4px;
   right: -5px;
+}
+input[type=number] {
+  -moz-appearance: textfield;
 }
 /*# sourceMappingURL=custom.css.map */

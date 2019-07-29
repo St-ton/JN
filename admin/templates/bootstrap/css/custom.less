@@ -11,10 +11,6 @@
         background-color: #fff;
     }
 
-    .input-group .form-control {
-        z-index: 0;
-    }
-
     > .backend-sidebar {
         //flex: none;
         //width: @sidebar-width;
@@ -549,33 +545,6 @@ h1.label-wrap,h2.label-wrap,h3.label-wrap,h4.label-wrap,h5.label-wrap {
 //    font-size: 24px;
 //    margin: 10px 0 20px;
 //}
-
-#settings .input-group-addon:first-child,.settings .input-group-addon:first-child {
-    width: 30%;
-    text-align: left;
-    white-space: normal;
-}
-
-#settings .input-group-addon:first-child label,.settings .input-group-addon:first-child label {
-    display: block;
-}
-
-#settings .input-group-addon:last-child,.settings .input-group-addon:last-child {
-    width: 52px;
-    text-align: right;
-}
-
-.settings-content .input-group-wrap textarea {
-    min-height: 90px;
-}
-
-.input-group {
-    margin-bottom: 15px;
-}
-
-table .input-group {
-    margin-bottom: 0;
-}
 
 .list-group-item.boxRow {
     overflow: hidden;
@@ -3190,4 +3159,8 @@ div.markdown thead tr td {
         top: -4px;
         right: -5px;
     }
+}
+
+input[type=number] {
+    -moz-appearance:textfield;
 }

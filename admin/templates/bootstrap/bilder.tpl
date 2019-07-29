@@ -160,7 +160,19 @@
                         {elseif $cnf->cInputTyp === 'pass'}
                             <input class="form-control" type="password" name="{$cnf->cWertName}" id="{$cnf->cWertName}" value="{$cnf->gesetzterWert}" tabindex="1" />
                         {elseif $cnf->cInputTyp === 'number'}
-                            <input class="form-control" type="number" name="{$cnf->cWertName}" id="{$cnf->cWertName}" value="{$cnf->gesetzterWert}" tabindex="1" />
+                            <div class="input-group form-counter">
+                                <div class="input-group-prepend">
+                                    <button type="button" class="btn btn-outline-secondary border-0" data-count-down>
+                                        <span class="fas fa-minus"></span>
+                                    </button>
+                                </div>
+                                <input class="form-control" type="number" name="{$cnf->cWertName}" id="{$cnf->cWertName}" value="{$cnf->gesetzterWert}" tabindex="1" />
+                                <div class="input-group-append">
+                                    <button type="button" class="btn btn-outline-secondary border-0" data-count-up>
+                                        <span class="fas fa-plus"></span>
+                                    </button>
+                                </div>
+                            </div>
                         {elseif $cnf->cInputTyp === 'color'}
                             <span class="input-group-colorpicker-wrap">
                             <div id="{$cnf->cWertName}" style="display:inline-block">

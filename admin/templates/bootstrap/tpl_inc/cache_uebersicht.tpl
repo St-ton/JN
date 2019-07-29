@@ -331,13 +331,37 @@
                                 <div class="form-group form-row align-items-center">
                                     <label class="col col-sm-4 col-form-label text-sm-right" for="runcount">{__('runs')}:</label>
                                     <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                        <input class="form-control" type="number" name="runcount" id="runcount" value="{if isset($smarty.post.runcount) && is_numeric($smarty.post.runcount)}{$smarty.post.runcount}{else}1000{/if}" size="5" />
+                                        <div class="input-group form-counter">
+                                            <div class="input-group-prepend">
+                                                <button type="button" class="btn btn-outline-secondary border-0" data-count-down>
+                                                    <span class="fas fa-minus"></span>
+                                                </button>
+                                            </div>
+                                            <input class="form-control" type="number" name="runcount" id="runcount" value="{if isset($smarty.post.runcount) && is_numeric($smarty.post.runcount)}{$smarty.post.runcount}{else}1000{/if}" size="5" />
+                                            <div class="input-group-append">
+                                                <button type="button" class="btn btn-outline-secondary border-0" data-count-up>
+                                                    <span class="fas fa-plus"></span>
+                                                </button>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="form-group form-row align-items-center">
                                     <label class="col col-sm-4 col-form-label text-sm-right" for="repeat">{__('repeats')}:</label>
                                     <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                        <input class="form-control" type="number" name="repeat" id="repeat" value="{if isset($smarty.post.repeat) && is_numeric($smarty.post.repeat)}{$smarty.post.repeat}{else}1{/if}" size="5" />
+                                        <div class="input-group form-counter">
+                                            <div class="input-group-prepend">
+                                                <button type="button" class="btn btn-outline-secondary border-0" data-count-down>
+                                                    <span class="fas fa-minus"></span>
+                                                </button>
+                                            </div>
+                                            <input class="form-control" type="number" name="repeat" id="repeat" value="{if isset($smarty.post.repeat) && is_numeric($smarty.post.repeat)}{$smarty.post.repeat}{else}1{/if}" size="5" />
+                                            <div class="input-group-append">
+                                                <button type="button" class="btn btn-outline-secondary border-0" data-count-up>
+                                                    <span class="fas fa-plus"></span>
+                                                </button>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="form-group form-row align-items-center">
@@ -433,7 +457,19 @@
                                                     {/foreach}
                                                 </select>
                                             {elseif $setting->cInputTyp === 'number'}
-                                                <input class="form-control" type="number" name="{$setting->cWertName}" id="{$setting->cWertName}" value="{if isset($setting->gesetzterWert)}{$setting->gesetzterWert}{/if}" tabindex="1" />
+                                                <div class="input-group form-counter">
+                                                    <div class="input-group-prepend">
+                                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-down>
+                                                            <span class="fas fa-minus"></span>
+                                                        </button>
+                                                    </div>
+                                                    <input class="form-control" type="number" name="{$setting->cWertName}" id="{$setting->cWertName}" value="{if isset($setting->gesetzterWert)}{$setting->gesetzterWert}{/if}" tabindex="1" />
+                                                    <div class="input-group-append">
+                                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-up>
+                                                            <span class="fas fa-plus"></span>
+                                                        </button>
+                                                    </div>
+                                                </div>
                                             {else}
                                                 <input class="form-control" type="text" name="{$setting->cWertName}" id="{$setting->cWertName}" value="{if isset($setting->gesetzterWert)}{$setting->gesetzterWert}{/if}" tabindex="1" />
                                             {/if}
@@ -466,7 +502,19 @@
                                                         {/foreach}
                                                     </select>
                                                 {elseif $setting->cInputTyp === 'number'}
-                                                    <input class="form-control" type="number" name="{$setting->cWertName}" id="{$setting->cWertName}" value="{if isset($setting->gesetzterWert)}{$setting->gesetzterWert}{/if}" tabindex="1" />
+                                                    <div class="input-group form-counter">
+                                                        <div class="input-group-prepend">
+                                                            <button type="button" class="btn btn-outline-secondary border-0" data-count-down>
+                                                                <span class="fas fa-minus"></span>
+                                                            </button>
+                                                        </div>
+                                                        <input class="form-control" type="number" name="{$setting->cWertName}" id="{$setting->cWertName}" value="{if isset($setting->gesetzterWert)}{$setting->gesetzterWert}{/if}" tabindex="1" />
+                                                        <div class="input-group-append">
+                                                            <button type="button" class="btn btn-outline-secondary border-0" data-count-up>
+                                                                <span class="fas fa-plus"></span>
+                                                            </button>
+                                                        </div>
+                                                    </div>
                                                 {elseif $setting->cInputTyp === 'pass'}
                                                     <input class="form-control" type="password" name="{$setting->cWertName}" id="{$setting->cWertName}" value="{if isset($setting->gesetzterWert)}{$setting->gesetzterWert}{/if}" tabindex="1" />
                                                 {else}

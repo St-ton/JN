@@ -31,7 +31,19 @@
                                 {/foreach}
                                 </select>
                             {elseif $configItem->cInputTyp === 'number'}
-                                <input class="form-control" type="number" step="any" name="{$configItem->cWertName}" id="{$configItem->cWertName}" value="{if isset($configItem->gesetzterWert)}{$configItem->gesetzterWert}{/if}" tabindex="1"{if $configItem->cWertName|strpos:'_bestandskundenguthaben' || $configItem->cWertName|strpos:'_neukundenguthaben'} onKeyUp="setzePreisAjax(false, 'EinstellungAjax_{$configItem->cWertName}', this);"{/if} />
+                                <div class="input-group form-counter">
+                                    <div class="input-group-prepend">
+                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-down>
+                                            <span class="fas fa-minus"></span>
+                                        </button>
+                                    </div>
+                                    <input class="form-control" type="number" step="any" name="{$configItem->cWertName}" id="{$configItem->cWertName}" value="{if isset($configItem->gesetzterWert)}{$configItem->gesetzterWert}{/if}" tabindex="1"{if $configItem->cWertName|strpos:'_bestandskundenguthaben' || $configItem->cWertName|strpos:'_neukundenguthaben'} onKeyUp="setzePreisAjax(false, 'EinstellungAjax_{$configItem->cWertName}', this);"{/if} />
+                                    <div class="input-group-append">
+                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-up>
+                                            <span class="fas fa-plus"></span>
+                                        </button>
+                                    </div>
+                                </div>
                             {elseif $configItem->cInputTyp === 'selectkdngrp'}
                                 <select name="{$configItem->cWertName}[]" id="{$configItem->cWertName}" class="custom-select combo">
                                 {foreach $configItem->ConfWerte as $wert}

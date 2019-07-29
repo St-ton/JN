@@ -86,7 +86,19 @@
                     <div class="form-group form-row align-items-center">
                         <label class="col col-sm-4 col-form-label text-sm-right" for="numberOfCoupons">{__('numberCouponsDesc')}:</label>
                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                            <input class="form-control" type="number" name="numberOfCoupons" id="numberOfCoupons" min="2" step="1" {if isset($oKupon->massCreationCoupon->numberOfCoupons)}value="{$oKupon->massCreationCoupon->numberOfCoupons}"{else}value="2"{/if}/>
+                            <div class="input-group form-counter">
+                                <div class="input-group-prepend">
+                                    <button type="button" class="btn btn-outline-secondary border-0" data-count-down>
+                                        <span class="fas fa-minus"></span>
+                                    </button>
+                                </div>
+                                <input class="form-control" type="number" name="numberOfCoupons" id="numberOfCoupons" min="2" step="1" {if isset($oKupon->massCreationCoupon->numberOfCoupons)}value="{$oKupon->massCreationCoupon->numberOfCoupons}"{else}value="2"{/if}/>
+                                <div class="input-group-append">
+                                    <button type="button" class="btn btn-outline-secondary border-0" data-count-up>
+                                        <span class="fas fa-plus"></span>
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="form-group form-row align-items-center">
@@ -119,7 +131,19 @@
                     <div class="form-group form-row align-items-center">
                         <label class="col col-sm-4 col-form-label text-sm-right" for="hashLength">{__('hashLengthDesc')}:</label>
                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                            <input class="form-control" type="number" name="hashLength" id="hashLength" min="2" max="16" step="1" {if isset($oKupon->massCreationCoupon->hashLength)}value="{$oKupon->massCreationCoupon->hashLength}"{else}value="2"{/if} />
+                            <div class="input-group form-counter">
+                                <div class="input-group-prepend">
+                                    <button type="button" class="btn btn-outline-secondary border-0" data-count-down>
+                                        <span class="fas fa-minus"></span>
+                                    </button>
+                                </div>
+                                <input class="form-control" type="number" name="hashLength" id="hashLength" min="2" max="16" step="1" {if isset($oKupon->massCreationCoupon->hashLength)}value="{$oKupon->massCreationCoupon->hashLength}"{else}value="2"{/if} />
+                                <div class="input-group-append">
+                                    <button type="button" class="btn btn-outline-secondary border-0" data-count-up>
+                                        <span class="fas fa-plus"></span>
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="form-group form-row align-items-center">
@@ -232,14 +256,38 @@
                 <div class="form-group form-row align-items-center">
                     <label class="col col-sm-4 col-form-label text-sm-right" for="nVerwendungen">{__('uses')}:</label>
                     <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                        <input type="text" class="form-control" name="nVerwendungen" id="nVerwendungen" value="{$oKupon->nVerwendungen}">
-                    </div>
+                        <div class="input-group form-counter">
+                            <div class="input-group-prepend">
+                                <button type="button" class="btn btn-outline-secondary border-0" data-count-down>
+                                    <span class="fas fa-minus"></span>
+                                </button>
+                            </div>
+                            <input type="number" class="form-control" name="nVerwendungen" id="nVerwendungen" value="{$oKupon->nVerwendungen}">
+                            <div class="input-group-append">
+                                <button type="button" class="btn btn-outline-secondary border-0" data-count-up>
+                                    <span class="fas fa-plus"></span>
+                                </button>
+                            </div>
+                        </div>
+                     </div>
                 </div>
                 {if $oKupon->cKuponTyp === $couponTypes.standard || $oKupon->cKuponTyp === $couponTypes.shipping}
                     <div class="form-group form-row align-items-center">
                         <label class="col col-sm-4 col-form-label text-sm-right" for="nVerwendungenProKunde">{__('usesPerCustomer')}:</label>
                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                            <input type="text" class="form-control" name="nVerwendungenProKunde" id="nVerwendungenProKunde" value="{$oKupon->nVerwendungenProKunde}">
+                            <div class="input-group form-counter">
+                                <div class="input-group-prepend">
+                                    <button type="button" class="btn btn-outline-secondary border-0" data-count-down>
+                                        <span class="fas fa-minus"></span>
+                                    </button>
+                                </div>
+                                <input type="number" class="form-control" name="nVerwendungenProKunde" id="nVerwendungenProKunde" value="{$oKupon->nVerwendungenProKunde}">
+                                <div class="input-group-append">
+                                    <button type="button" class="btn btn-outline-secondary border-0" data-count-up>
+                                        <span class="fas fa-plus"></span>
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 {/if}

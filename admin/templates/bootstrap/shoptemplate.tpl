@@ -134,8 +134,20 @@
                                                             {rdelim});
                                                     </script>
                                                 {elseif $oSetting->cType === 'number'}
-                                                    <input class="form-control" type="number" name="cWert[]" id="{$oSection->cKey}-{$oSetting->cKey}" value="{$oSetting->cValue|escape:'html'}" placeholder="{$oSetting->cPlaceholder}" />
-                                                {elseif $oSetting->cType === 'text' || $oSetting->cType === 'float'}
+                                                    <div class="input-group form-counter">
+                                                        <div class="input-group-prepend">
+                                                            <button type="button" class="btn btn-outline-secondary border-0" data-count-down>
+                                                                <span class="fas fa-minus"></span>
+                                                            </button>
+                                                        </div>
+                                                        <input class="form-control" type="number" name="cWert[]" id="{$oSection->cKey}-{$oSetting->cKey}" value="{$oSetting->cValue|escape:'html'}" placeholder="{$oSetting->cPlaceholder}" />
+                                                        <div class="input-group-append">
+                                                            <button type="button" class="btn btn-outline-secondary border-0" data-count-up>
+                                                                <span class="fas fa-plus"></span>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                     {elseif $oSetting->cType === 'text' || $oSetting->cType === 'float'}
                                                     <input class="form-control" type="text" name="cWert[]" id="{$oSection->cKey}-{$oSetting->cKey}" value="{$oSetting->cValue|escape:'html'}" placeholder="{$oSetting->cPlaceholder}" />
                                                 {elseif $oSetting->cType === 'textarea' }
                                                     <div class="form-group">

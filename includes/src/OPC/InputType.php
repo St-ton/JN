@@ -61,4 +61,6 @@ class InputType extends Enum
     public const GALLERY_LAYOUT = 'gallery-layout';
 
     public const BOX_STYLES = 'box-styles';
+
+    public const ROW_LAYOUT = 'row-layout';
 }

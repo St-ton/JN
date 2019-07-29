@@ -1,8 +1,8 @@
 {if !isset($propid)}
     {$propid = $propname}
 {/if}
-<div class='form-group'>
-    <label for="config-{$propname}">{$propdesc.label}</label>
+<div class="form-group">
+    <label for="config-{$propid}">{$propdesc.label}</label>
     <div class="select-wrapper">
         <select class="form-control" id="config-{$propid}" name="{$propname}" {if $required === true}required{/if}>
             {foreach $propdesc.options as $value => $label}
@@ -28,18 +28,20 @@
 
 {if isset($propdesc.childrenFor)}
     <script>
-        var selectElm = $('#config-{$propid}');
-        var option = selectElm.find(':selected').val();
+        (function() {
+            let selectElm = $('#config-{$propid}');
+            let option = selectElm.find(':selected').val();
 
-        selectElm.on('change', function() {
-            var option = selectElm.find(':selected').val();
+            selectElm.on('change', () => {
+                let option = selectElm.find(':selected').val();
 
-            $('.childrenFor-{$propid}').collapse('hide');
-            $('#childrenFor-' + option + '-{$propid}').collapse('show');
-        });
+                $('.childrenFor-{$propid}').collapse('hide');
+                $('#childrenFor-' + option + '-{$propid}').collapse('show');
+            });
 
-        $(function() {
-            $('#childrenFor-' + option + '-{$propid}').collapse('show');
-        });
+            $(() => {
+                $('#childrenFor-' + option + '-{$propid}').collapse('show');
+            });
+        })();
     </script>
 {/if}

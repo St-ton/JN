@@ -347,22 +347,22 @@ msgid "columns"
 msgstr "Spalten"
 
 msgid "noAction"
-msgstr "Keine Aktion"
+msgstr "No Action"
 
 msgid "lightbox"
 msgstr "Lightbox"
 
 msgid "linked"
-msgstr "Verlinkung"
+msgstr "Link"
 
-msgid "hidden"
-msgstr "hidden"
+msgid "mobileXS"
+msgstr "Mobile (XS)"
 
-msgid "dotted"
-msgstr "dotted"
+msgid "tabletSM"
+msgstr "Tablet (SM)"
 
-msgid "dashed"
-msgstr "dashed"
+msgid "desktopMD"
+msgstr "Desktop (MD)"
 
-msgid "solid"
-msgstr "solid"
+msgid "desktopLG"
+msgstr "Large Desktop (LG)"

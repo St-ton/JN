@@ -5,14 +5,11 @@ msgstr ""
 msgid "Row"
 msgstr "Row"
 
-msgid "layoutXS"
-msgstr "Layout XS"
+msgid "Layout"
+msgstr "Aufteilung"
 
-msgid "layoutS"
-msgstr "Layout S"
+msgid "Column"
+msgstr "Spalte"
 
-msgid "layoutM"
-msgstr "Layout M"
-
-msgid "layoutL"
-msgstr "Layout L"
+msgid "Columns"
+msgstr "Spalten"

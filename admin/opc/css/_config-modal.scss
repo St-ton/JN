@@ -414,3 +414,62 @@
     height: 64px;
   }
 }
+
+#opc .row-layout-controls {
+  .row {
+    margin: 0 -8px;
+
+    .col-4,
+    .col-2 {
+      padding: 0 8px;
+    }
+  }
+}
+
+#opc .row-layout-previews {
+  text-align: center;
+  color: $muted-text;
+
+  > * {
+    display: inline-block;
+  }
+
+  .layout-preview {
+    margin: 10px 40px 20px 40px;
+
+    > * {
+      background-color: $primary-color;
+      height: 8px;
+      float: left;
+      margin: 1px;
+    }
+  }
+
+  .layout-preview-3 {
+    background-image: url(../gfx/row-preview-desktop.png);
+    width: 126px;
+    height: 94px;
+    padding: 7px 7px 29px 8px;
+  }
+
+  .layout-preview-2 {
+    background-image: url(../gfx/row-preview-laptop.png);
+    width: 118px;
+    height: 70px;
+    padding: 7px 11px 9px 11px;
+  }
+
+  .layout-preview-1 {
+    background-image: url(../gfx/row-preview-tablet.png);
+    width: 46px;
+    height: 66px;
+    padding: 3px 3px 11px 3px;
+  }
+
+  .layout-preview-0 {
+    background-image: url(../gfx/row-preview-phone.png);
+    width: 36px;
+    height: 56px;
+    padding: 2px 2px 7px 2px;
+  }
+}

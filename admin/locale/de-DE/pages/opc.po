@@ -384,3 +384,18 @@ msgstr "gestrichelt"
 
 msgid "solid"
 msgstr "durchgezogen"
+
+msgid "mobileXS"
+msgstr "Mobil (XS)"
+
+msgid "tabletSM"
+msgstr "Tablet (SM)"
+
+msgid "desktopMD"
+msgstr "Desktop (MD)"
+
+msgid "desktopLG"
+msgstr "Großer Desktop (LG)"
+
+msgid "Custom"
+msgstr "Benutzerdefiniert"

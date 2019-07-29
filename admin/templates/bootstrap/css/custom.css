@@ -551,9 +551,13 @@ label .fillout {
   bottom: 0;
   width: 100%;
   position: sticky;
-  padding: 15px 15px;
+  padding: 1rem;
   background: #fff;
   text-align: right;
+}
+.card .save-wrapper {
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
 }
 .pages .pageinfo {
   float: left;

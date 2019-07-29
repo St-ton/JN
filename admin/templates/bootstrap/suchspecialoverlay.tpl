@@ -8,7 +8,7 @@
                 <div class="col-md-4">
                     {include file='tpl_inc/language_switcher.tpl' action='suchspecialoverlay.php'}
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-auto">
                     <form name="suchspecialoverlay" method="post" action="suchspecialoverlay.php" class="inline_block">
                         {$jtl_token}
                         <div class="form-row">
@@ -38,7 +38,9 @@
             <div class="clearall">
                 <div class="no_overflow card" id="settings">
                     <div class="card-body">
-                        <img src="{$oSuchspecialOverlay->getURL($smarty.const.IMAGE_SIZE_SM)}?rnd={$cRnd}" style="margin-bottom: 15px;" />
+                        <div class="text-center">
+                            <img src="{$oSuchspecialOverlay->getURL($smarty.const.IMAGE_SIZE_SM)}?rnd={$cRnd}" style="margin-bottom: 15px;" />
+                        </div>
                         <div class="form-group form-row align-items-center">
                             <label class="col col-sm-4 col-form-label text-sm-right" for="nAktiv">{__('suchspecialoverlayActive')}:</label>
                             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
@@ -145,12 +147,10 @@
                         </div>
                     </div>
                     <div class="card-footer save-wrapper">
-                        <div class="row">
-                            <div class="ml-auto col-sm-6 col-xl-auto submit">
-                                <button type="submit" value="{__('save')}" class="btn btn-primary btn-block">
-                                    {__('saveWithIcon')}
-                                </button>
-                            </div>
+                        <div class="submit">
+                            <button type="submit" value="{__('save')}" class="btn btn-primary">
+                                {__('saveWithIcon')}
+                            </button>
                         </div>
                     </div>
                 </div>

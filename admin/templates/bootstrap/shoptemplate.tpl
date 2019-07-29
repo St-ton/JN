@@ -167,6 +167,12 @@
                                                             uploadUrl: '{$shopURL}/{$PFAD_ADMIN}shoptemplate.php?token={$smarty.session.jtl_token}',
                                                             allowedFileExtensions : {if !empty($oSetting->rawAttributes.allowedFileExtensions)}{$oSetting->rawAttributes.allowedFileExtensions}{else}['jpg', 'jpeg', 'jpe', 'gif', 'png', 'bmp']{/if},
                                                             overwriteInitial: true,
+                                                            browseOnZoneClick:     true,
+                                                            fileActionSettings:    {
+                                                                showZoom:   false,
+                                                                showDrag:   false,
+                                                                showRemove: false,
+                                                            },
                                                             deleteUrl: '{$shopURL}/{$PFAD_ADMIN}shoptemplate.php?token={$smarty.session.jtl_token}',
                                                             initialPreviewCount: 1,
                                                             showPreview: true,
@@ -251,7 +257,7 @@
                                         <p class="small">{$oTemplate->cDescription}</p>
                                     {/if}
                                     <span class="label label-default">
-                                     <i class="fa fa-folder-o" aria-hidden="true"></i> {$oTemplate->cOrdner}
+                                     <i class="far fa-folder" aria-hidden="true"></i> {$oTemplate->cOrdner}
                                     </span>
                                     {if $oTemplate->bChild === true}<span class="label label-info"><i class="fa fa-level-up" aria-hidden="true"></i> <abbr title="{{__('inheritsFrom')}|sprintf:{$oTemplate->cParent}}">{$oTemplate->cParent}</abbr></span>{/if}
 

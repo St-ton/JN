@@ -10,7 +10,7 @@
                 },
                 function(){
                     $(this).removeClass('active');
-                })on('click', function(){
+                }).on('click', function(){
                     document.location = $(this).attr('data-href');
                 }
             );

@@ -71,7 +71,7 @@
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td colspan="3">
+                                        <td colspan="3" class="border-top-0">
                                             <div  class="collapse" id="page-{$pageIdHash}">
                                             <table class="list table ">
                                                 <thead>

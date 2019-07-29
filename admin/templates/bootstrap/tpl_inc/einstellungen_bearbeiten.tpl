@@ -103,7 +103,7 @@
                     <div class="row">
                         <div class="ml-auto col-sm-6 col-xl-auto">
                             <button type="submit" value="{__('savePreferences')}" class="btn btn-primary btn-block">
-                                <i class="fa fa-save"></i> {__('savePreferences')}
+                                {__('saveWithIcon')}
                             </button>
                         </div>
                     </div>

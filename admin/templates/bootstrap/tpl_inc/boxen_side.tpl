@@ -16,47 +16,44 @@
                 </div>
                 <div class="card-body">
                 {if $oBox_arr|@count > 0}
-                    <ul class="list-group">
-                        <li class="list-group-item boxRow">
-                            <div class="row">
-                                <div class="col-sm-2">
-                                    <strong>{__('boxTitle')}</strong>
-                                </div>
-                                <div class="col-sm-1">
-                                    <strong>{__('boxType')}</strong>
-                                </div>
-                                <div class="col-sm-3">
-                                    <strong>{__('boxLabel')}</strong>
-                                </div>
-                                <div class="col-sm-2">
-                                    <strong>{__('status')}</strong>
-                                </div>
-                                <div class="col-sm-2">
-                                    <strong>{__('sorting')}</strong>
-                                </div>
-                                <div class="col-sm-2 text-center">
-                                    <strong>{__('actions')}</strong>
-                                </div>
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>{__('boxTitle')}</th>
+                                    <th>{__('boxType')}</th>
+                                    <th>{__('boxLabel')}</th>
+                                    <th>{__('status')}</th>
+                                    <th>{__('sorting')}</th>
+                                    <th class="text-center">{__('actions')}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {foreach $oBox_arr as $oBox}
+                                    {include file="tpl_inc/box_single.tpl" oBox=$oBox nPage=$nPage position=$direction}
+                                {/foreach}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="card-footer py-1">
+                        <input type="hidden" name="position" value="{$direction}" />
+                        <input type="hidden" name="page" value="{$nPage}" />
+                        <input type="hidden" name="action" value="resort" />
+                        <div class="row">
+                            <div class="ml-auto col-sm-6 col-xl-auto">
+                                <button type="submit" value="aktualisieren" class="btn btn-primary btn-block">
+                                    {__('saveWithIcon')}
+                                </button>
                             </div>
-                        </li>
-                        {foreach $oBox_arr as $oBox}
-                            {include file="tpl_inc/box_single.tpl" oBox=$oBox nPage=$nPage position=$direction}
-                        {/foreach}
-                        <li class="list-group-item boxSaveRow">
-                            <input type="hidden" name="position" value="{$direction}" />
-                            <input type="hidden" name="page" value="{$nPage}" />
-                            <input type="hidden" name="action" value="resort" />
-                            <button type="submit" value="aktualisieren" class="btn btn-primary">
-                                {__('saveWithIcon')}
-                            </button>
-                        </li>
-                    </ul>
+                        </div>
+                    </div>
                 {else}
                     <div class="alert alert-info" role="alert">
                         {__('noBoxesAvailableFor')|replace:'%s':$directionName}
                     </div>
                 {/if}
                 </div>
+
             </form>
             <div class="card-footer">
                 <form name="newBox_{$direction}" action="boxen.php" method="post" class="form-horizontal">

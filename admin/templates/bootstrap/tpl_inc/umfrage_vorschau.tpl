@@ -35,7 +35,7 @@
                             <input type="hidden" name="umfrage" value="1" />
                             <input type="hidden" name="kUmfrage" value="{$oUmfrage->kUmfrage}" />
                             <input type="hidden" name="umfrage_statistik" value="1" />
-                            <button class="btn btn-outline-primary btn-block mb-3" name="umfragestatistik" type="submit" value="{__('umfrageStatsView')}"><i class="fa fa-bar-chart"></i> {__('umfrageStatsView')}</button>
+                            <button class="btn btn-outline-primary btn-block mb-2" name="umfragestatistik" type="submit" value="{__('umfrageStatsView')}"><i class="fa fa-bar-chart"></i> {__('umfrageStatsView')}</button>
                         </form>
                     </div>
                     <div class="col-sm-6 col-xl-auto">
@@ -115,7 +115,7 @@
                 <div class="card-footer save-wrapper">
                     <div class="row">
                         <div class="ml-auto col-sm-6 col-xl-auto">
-                            <button class="btn btn-danger btn-block mb-3" name="umfragefrageloeschen" type="submit" value="{__('delete')}">
+                            <button class="btn btn-danger btn-block mb-2" name="umfragefrageloeschen" type="submit" value="{__('delete')}">
                                 <i class="fas fa-trash-alt"></i> {__('delete')}
                             </button>
                         </div>

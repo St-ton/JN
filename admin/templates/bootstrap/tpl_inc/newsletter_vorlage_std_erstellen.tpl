@@ -384,12 +384,24 @@
                 {/if}
             </div>
             <div class="card-footer save-wrapper">
-                {if (isset($oNewslettervorlageStd->kNewsletterVorlage) && $oNewslettervorlageStd->kNewsletterVorlage > 0) || (isset($cPostVar_arr.kNewslettervorlage) && $cPostVar_arr.kNewslettervorlage > 0)}
-                    <a class="btn btn-default" href="newsletter.php?tab=newslettervorlagen&token={$smarty.session.jtl_token}">{__('goBack')}</a>
-                {else}
-                    <a class="btn btn-default" href="newsletter.php?tab=newslettervorlagenstd&token={$smarty.session.jtl_token}">{__('goBack')}</a>
-                {/if}
-                <button class="btn btn-primary" name="speichern" type="submit" value="{__('save')}">{__('saveWithIcon')}</button>
+                <div class="row">
+                    <div class="ml-auto col-sm-6 col-xl-auto mb-2">
+                        {if (isset($oNewslettervorlageStd->kNewsletterVorlage) && $oNewslettervorlageStd->kNewsletterVorlage > 0) || (isset($cPostVar_arr.kNewslettervorlage) && $cPostVar_arr.kNewslettervorlage > 0)}
+                            <a class="btn btn-outline-primary btn-block" href="newsletter.php?tab=newslettervorlagen&token={$smarty.session.jtl_token}">
+                                {__('goBack')}
+                            </a>
+                        {else}
+                            <a class="btn btn-outline-primary btn-block" href="newsletter.php?tab=newslettervorlagenstd&token={$smarty.session.jtl_token}">
+                                {__('goBack')}
+                            </a>
+                        {/if}
+                    </div>
+                    <div class="col-sm-6 col-xl-auto">
+                        <button class="btn btn-primary btn-block" name="speichern" type="submit" value="{__('save')}">
+                            {__('saveWithIcon')}
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </form>

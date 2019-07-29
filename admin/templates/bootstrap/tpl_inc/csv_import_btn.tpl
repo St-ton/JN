@@ -92,6 +92,6 @@
         </div>
     </div>
 {/if}
-<button type="button" class="btn btn-outline-primary btn-block mb-3" onclick="onClickCsvImport_{$importerId}()">
+<button type="button" class="btn btn-outline-primary btn-block mb-2" onclick="onClickCsvImport_{$importerId}()">
     <i class="fal fa-upload"></i> {__('importCsv')}
 </button>

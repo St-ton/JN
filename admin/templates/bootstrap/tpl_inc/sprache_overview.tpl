@@ -1,18 +1,10 @@
 {function sprache_buttons}
     <div class="row">
         <div class="ml-auto col-sm-6 col-xl-auto">
-            <a class="btn btn-outline-primary btn-block mb-3" href="sprache.php?token={$smarty.session.jtl_token}&action=newvar">
+            <a class="btn btn-outline-primary btn-block mb-2" href="sprache.php?token={$smarty.session.jtl_token}&action=newvar">
                 <i class="fa fa-share"></i>
                 {__('btnAddVar')}
             </a>
-        </div>
-        {if $oWert_arr|@count > 0}
-            <div class="col-sm-6 col-xl-auto">
-                {include file='tpl_inc/csv_export_btn.tpl' exporterId="langvars"}
-            </div>
-        {/if}
-        <div class="col-sm-6 col-xl-auto">
-            {include file='tpl_inc/csv_import_btn.tpl' importerId="langvars" bCustomStrategy=true}
         </div>
         {if $oWert_arr|@count > 0}
             <div class="col-sm-6 col-xl-auto">
@@ -43,7 +35,19 @@
 <div id="content">
     <div class="card">
         <div class="card-body">
-            {include file='tpl_inc/language_switcher.tpl' id='kSprache' action='sprache.php'}
+            <div class="row">
+                <div class="col-sm-6 col-xl-auto mb-3">
+                    {include file='tpl_inc/language_switcher.tpl' id='kSprache' action='sprache.php'}
+                </div>
+                {if $oWert_arr|@count > 0}
+                    <div class="ml-auto col-sm-6 col-xl-auto">
+                        {include file='tpl_inc/csv_export_btn.tpl' exporterId="langvars"}
+                    </div>
+                {/if}
+                <div class="col-sm-6 col-xl-auto">
+                    {include file='tpl_inc/csv_import_btn.tpl' importerId="langvars" bCustomStrategy=true}
+                </div>
+            </div>
         </div>
     </div>
     <div class="tabs">
@@ -148,7 +152,7 @@
                 </div>
             </div>
             <div id="notfound" class="tab-pane fade {if $tab === 'notfound'}active show{/if}">
-                <div>
+                <div class="table-responsive">
                     {if $oNotFound_arr|@count > 0}
                         <table class="list table">
                             <thead>

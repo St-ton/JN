@@ -22,51 +22,53 @@
                     </div>
                     <div class="card-body">
                         {include file='tpl_inc/pagination.tpl' pagination=$pagination}
-                        <table class="table">
-                            <thead>
-                            <tr>
-                                <th class="text-left" width="50%">{__('name')}</th>
-                                <th class="text-center" width="20%">{__('active')}</th>
-                                <th width="30%" class="text-center">{__('options')}</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {foreach $oSlider_arr as $oSlider}
+                        <div class="table-responsive">
+                            <table class="table">
+                                <thead>
                                 <tr>
-                                    <td class="text-left">{$oSlider->cName}</td>
-                                    <td class="text-center">
-                                        {if $oSlider->bAktiv == 1}
-                                            <i class="fal fa-check text-success"></i>
-                                        {else}
-                                            <i class="fal fa-times text-danger"></i>
-                                        {/if}
-                                    </td>
-                                    <td class="text-center">
-                                        <div class="btn-group">
-                                            <a class="btn btn-link px-2" href="slider.php?action=delete&id={$oSlider->kSlider}&token={$smarty.session.jtl_token}" title="{__('delete')}">
-                                                <span class="icon-hover">
-                                                    <span class="fal fa-trash-alt"></span>
-                                                    <span class="fas fa-trash-alt"></span>
-                                                </span>
-                                            </a>
-                                            <a class="btn btn-link px-2 add" href="slider.php?action=slides&id={$oSlider->kSlider}&token={$smarty.session.jtl_token}" title="{__('slides')}">
-                                                <span class="icon-hover">
-                                                    <span class="fal fa-images"></span>
-                                                    <span class="fas fa-images"></span>
-                                                </span>
-                                            </a>
-                                            <a class="btn btn-link px-2" href="slider.php?action=edit&id={$oSlider->kSlider}&token={$smarty.session.jtl_token}" title="{__('modify')}">
-                                                <span class="icon-hover">
-                                                    <span class="fal fa-edit"></span>
-                                                    <span class="fas fa-edit"></span>
-                                                </span>
-                                            </a>
-                                        </div>
-                                    </td>
+                                    <th class="text-left" width="50%">{__('name')}</th>
+                                    <th class="text-center" width="20%">{__('active')}</th>
+                                    <th width="30%" class="text-center">{__('options')}</th>
                                 </tr>
-                            {/foreach}
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                {foreach $oSlider_arr as $oSlider}
+                                    <tr>
+                                        <td class="text-left">{$oSlider->cName}</td>
+                                        <td class="text-center">
+                                            {if $oSlider->bAktiv == 1}
+                                                <i class="fal fa-check text-success"></i>
+                                            {else}
+                                                <i class="fal fa-times text-danger"></i>
+                                            {/if}
+                                        </td>
+                                        <td class="text-center">
+                                            <div class="btn-group">
+                                                <a class="btn btn-link px-2" href="slider.php?action=delete&id={$oSlider->kSlider}&token={$smarty.session.jtl_token}" title="{__('delete')}">
+                                                    <span class="icon-hover">
+                                                        <span class="fal fa-trash-alt"></span>
+                                                        <span class="fas fa-trash-alt"></span>
+                                                    </span>
+                                                </a>
+                                                <a class="btn btn-link px-2 add" href="slider.php?action=slides&id={$oSlider->kSlider}&token={$smarty.session.jtl_token}" title="{__('slides')}">
+                                                    <span class="icon-hover">
+                                                        <span class="fal fa-images"></span>
+                                                        <span class="fas fa-images"></span>
+                                                    </span>
+                                                </a>
+                                                <a class="btn btn-link px-2" href="slider.php?action=edit&id={$oSlider->kSlider}&token={$smarty.session.jtl_token}" title="{__('modify')}">
+                                                    <span class="icon-hover">
+                                                        <span class="fal fa-edit"></span>
+                                                        <span class="fas fa-edit"></span>
+                                                    </span>
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {/foreach}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 {/if}
                 <div class="card-footer save-wrapper">

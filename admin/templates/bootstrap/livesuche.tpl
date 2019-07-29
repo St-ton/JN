@@ -131,9 +131,9 @@
                                         <label class="custom-control-label" for="ALLMSGS">{__('livesucheSelectAll')}</label>
                                     </div>
                                 </div>
-                                <div class="col-sm-6 col-xl-auto mb-3">
+                                <div class="col-sm-6 col-xl-auto">
                                     <div class="input-group">
-                                        <span class="input-group-addon">
+                                        <span class="input-group-addon d-none d-md-block">
                                             <label for="cMapping">{__('livesucheMappingOn')}:</label>
                                         </span>
                                         <input class="form-control" name="cMapping" type="text">
@@ -143,7 +143,7 @@
                                     </div>
                                 </div>
                                 <div class="ml-auto col-sm-6 col-xl-auto">
-                                    <button name="delete" type="submit" value="{__('delete')}" class="btn btn-danger btn-block mb-3">
+                                    <button name="delete" type="submit" value="{__('delete')}" class="btn btn-danger btn-block mb-2">
                                         <i class="fas fa-trash-alt"></i> {__('deleteSelected')}
                                     </button>
                                 </div>
@@ -219,12 +219,12 @@
                                     </div>
                                 </div>
                                 <div class="ml-auto col-sm-6 col-xl-auto">
-                                    <button class="btn btn-danger btn-block mb-3" name="erfolglosDelete" type="submit">
+                                    <button class="btn btn-danger btn-block mb-2" name="erfolglosDelete" type="submit">
                                         <i class="fas fa-trash-alt"></i> {__('delete')}
                                     </button>
                                 </div>
                                 <div class="col-sm-6 col-xl-auto">
-                                    <button class="btn btn-outline-primary btn-block mb-3" name="erfolglosEdit" type="submit">
+                                    <button class="btn btn-outline-primary btn-block mb-2" name="erfolglosEdit" type="submit">
                                         <i class="fal fa-edit"></i> {__('livesucheEdit')}
                                     </button>
                                 </div>
@@ -280,6 +280,12 @@
                         </div>
                         <div class="save-wrapper">
                             <div class="row">
+                                <div class="col-sm-6 col-xl-auto text-left mb-3">
+                                    <div class="custom-control custom-checkbox">
+                                        <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS3" type="checkbox" onclick="AllMessages(this.form);" />
+                                        <label class="custom-control-label" for="ALLMSGS3">{__('globalSelectAll')}</label>
+                                    </div>
+                                </div>
                                 <div class="ml-auto col-sm-6 col-xl-auto">
                                     <button name="delete" type="submit" class="btn btn-danger btn-block">
                                         <i class="fas fa-trash-alt"></i> {__('mappingDelete')}

@@ -10,32 +10,34 @@
             <div class="subheading1">{__('available')} {__('agbwrb')}</div>
         </div>
         <div class="card-body">
-            <table class="table table-striped">
-                <thead>
-                <tr>
-                    <th class="text-left">{__('customerGroup')}</th>
-                    <th class="text-center">{__('action')}</th>
-                </tr>
-                </thead>
-                <tbody>
-                {foreach $oKundengruppe_arr as $oKundengruppe}
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
                     <tr>
-                        <td class="">{$oKundengruppe->cName}</td>
-                        <td class="text-center">
-                            <div class="btn-group">
-                                <a href="agbwrb.php?agbwrb=1&agbwrb_edit=1&kKundengruppe={$oKundengruppe->kKundengruppe}&token={$smarty.session.jtl_token}"
-                                   class="btn btn-link px-2" title="{__('modify')}">
-                                    <span class="icon-hover">
-                                        <span class="fal fa-edit"></span>
-                                        <span class="fas fa-edit"></span>
-                                    </span>
-                                </a>
-                            </div>
-                        </td>
+                        <th class="text-left">{__('customerGroup')}</th>
+                        <th class="text-center">{__('action')}</th>
                     </tr>
-                {/foreach}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                    {foreach $oKundengruppe_arr as $oKundengruppe}
+                        <tr>
+                            <td class="">{$oKundengruppe->cName}</td>
+                            <td class="text-center">
+                                <div class="btn-group">
+                                    <a href="agbwrb.php?agbwrb=1&agbwrb_edit=1&kKundengruppe={$oKundengruppe->kKundengruppe}&token={$smarty.session.jtl_token}"
+                                       class="btn btn-link px-2" title="{__('modify')}">
+                                        <span class="icon-hover">
+                                            <span class="fal fa-edit"></span>
+                                            <span class="fas fa-edit"></span>
+                                        </span>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    {/foreach}
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>

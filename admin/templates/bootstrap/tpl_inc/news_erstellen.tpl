@@ -302,13 +302,13 @@
             <div class="card-footer save-wrapper">
                 <div class="row">
                     <div class="ml-auto col-sm-6 col-xl-auto">
-                        <a class="btn btn-outline-primary btn-block mb-3" href="news.php{if isset($cBackPage)}?{$cBackPage}{elseif isset($cTab)}?tab={$cTab}{/if}">
+                        <a class="btn btn-outline-primary btn-block mb-2" href="news.php{if isset($cBackPage)}?{$cBackPage}{elseif isset($cTab)}?tab={$cTab}{/if}">
                             <i class="fa fa-exclamation"></i> {__('Cancel')}
                         </a>
                     </div>
                     {if $oNews->getID() > 0}
                         <div class="col-sm-6 col-xl-auto">
-                            <button type="submit" name="continue" value="1" class="btn btn-outline-primary btn-block mb-3" id="save-and-continue">
+                            <button type="submit" name="continue" value="1" class="btn btn-outline-primary btn-block mb-2" id="save-and-continue">
                                 {__('save')} {__('goOnEdit')}
                             </button>
                         </div>

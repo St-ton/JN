@@ -141,7 +141,7 @@
                                     </div>
                                     <div class="ml-auto col-sm-6 col-xl-auto">
                                         <input name="kommentareloeschenSubmit" type="submit" data-id="loeschen" value="{__('delete')}" class="hidden-soft">
-                                        <button name="kommentareloeschenSubmit" type="button" data-toggle="modal" data-target=".delete-modal" value="{__('delete')}" class="btn btn-danger btn-block mb-3"><i class="fas fa-trash-alt"></i> {__('delete')}</button>
+                                        <button name="kommentareloeschenSubmit" type="button" data-toggle="modal" data-target=".delete-modal" value="{__('delete')}" class="btn btn-danger btn-block mb-2"><i class="fas fa-trash-alt"></i> {__('delete')}</button>
                                     </div>
                                     <div class="col-sm-6 col-xl-auto">
                                         <button name="freischalten" type="submit" value="{__('newsActivate')}" class="btn btn-primary btn-block"><i class="fa fa-thumbs-up"></i> {__('newsActivate')}</button>
@@ -251,7 +251,7 @@
                                 </div>
                                 <div class="ml-auto col-sm-6 col-xl-auto">
                                     <input name="loeschen" type="submit" data-id="loeschen" value="{__('delete')}" class="hidden-soft">
-                                    <button name="loeschen" type="button" data-toggle="modal" data-target=".delete-modal" value="{__('delete')}" class="btn btn-danger btn-block mb-3"><i class="fas fa-trash-alt"></i> {__('delete')}</button>
+                                    <button name="loeschen" type="button" data-toggle="modal" data-target=".delete-modal" value="{__('delete')}" class="btn btn-danger btn-block mb-2"><i class="fas fa-trash-alt"></i> {__('delete')}</button>
                                 </div>
                                 <div class="col-sm-6 col-xl-auto">
                                     <button name="news_erstellen" type="submit" value="{__('newAdd')}" class="btn btn-primary btn-block"><i class="fa fa-share"></i> {__('newAdd')}</button>
@@ -356,7 +356,7 @@
                                 </div>
                                 <div class="ml-auto col-sm-6 col-xl-auto">
                                     <input name="loeschen" type="submit" data-id="loeschen" value="{__('delete')}" class="hidden-soft">
-                                    <button name="loeschen" type="button" data-toggle="modal" data-target=".delete-modal" value="{__('delete')}" class="btn btn-danger btn-block mb-3">
+                                    <button name="loeschen" type="button" data-toggle="modal" data-target=".delete-modal" value="{__('delete')}" class="btn btn-danger btn-block mb-2">
                                         <i class="fas fa-trash-alt"></i> {__('delete')}
                                     </button>
                                 </div>

@@ -564,7 +564,7 @@ function checkSelect(selectBox) {ldelim}
         {*</div>*}
         {if isset($oUmfrageFrage_arr) && $oUmfrageFrage_arr|@count > 0}
         <div id="payment" class="card">
-            <div id="tabellenLivesuche" class="card-body">
+            <div id="tabellenLivesuche" class="table-responsive card-body">
                 <table class="table table-striped">
                     <thead>
                         <tr>
@@ -723,7 +723,7 @@ function checkSelect(selectBox) {ldelim}
                                 </div>
                             {else}
                                 <div class="ml-auto col-sm-6 col-xl-auto">
-                                    <button class="btn btn-outline-primary btn-block mb-3" name="nocheinefrage" type="submit" value="{__('umfrageAnotherQ')}">
+                                    <button class="btn btn-outline-primary btn-block mb-2" name="nocheinefrage" type="submit" value="{__('umfrageAnotherQ')}">
                                         <i class="fa fa-share"></i> {__('umfrageAnotherQ')}
                                     </button>
                                 </div>

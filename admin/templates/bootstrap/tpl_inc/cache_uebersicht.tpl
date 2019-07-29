@@ -108,18 +108,16 @@
                                         <label class="custom-control-label" for="massaction-main-switch">{__('globalSelectAll')}</label>
                                     </div>
                                 </div>
-                                <div class="col-sm-6 col-xl-auto mb-3">
+                                <div class="col-sm-6 col-xl-auto">
                                     <div class="input-group">
-                                        <span class="input-group-addon">
+                                        <span class="input-group-addon d-none d-md-block">
                                             <label for="cache-action">{__('action')}:</label>
                                         </span>
-                                        <span class="label-wrap">
-                                            <select class="custom-select" name="cache-action" id="cache-action">
-                                                <option name="flush" value="flush">{__('empty')}</option>
-                                                <option name="deaktivieren" value="deactivate">{__('deactivate')}</option>
-                                                <option name="aktivieren" value="activate">{__('activate')}</option>
-                                            </select>
-                                        </span>
+                                        <select class="custom-select" name="cache-action" id="cache-action">
+                                            <option name="flush" value="flush">{__('empty')}</option>
+                                            <option name="deaktivieren" value="deactivate">{__('deactivate')}</option>
+                                            <option name="aktivieren" value="activate">{__('activate')}</option>
+                                        </select>
                                         <span class="input-group-btn ml-1">
                                             <button type="submit" value="{__('submit')}" class="btn btn-primary">{__('submit')}</button>
                                         </span>
@@ -129,7 +127,7 @@
                                 <form method="post" action="cache.php" class="submit-form">
                                     {$jtl_token}
                                     <div class="ml-auto col-sm-6 col-xl-auto">
-                                        <button name="a" type="submit" value="flush_object_cache" class="btn btn-outline-primary btn-block mb-3 delete"{if !$cache_enabled} disabled="disabled"{/if}>
+                                        <button name="a" type="submit" value="flush_object_cache" class="btn btn-outline-primary btn-block mb-2 delete"{if !$cache_enabled} disabled="disabled"{/if}>
                                             <i class="fas fa-trash-alt"></i>&nbsp;{__('clearObjectCache')}
                                         </button>
                                     </div>

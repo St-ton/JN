@@ -140,7 +140,7 @@
                                         </div>
                                     </div>
                                     <div class="ml-auto col-sm-6 col-xl-auto">
-                                        <button name="freischaltenleoschen" type="submit" class="btn btn-danger btn-block mb-3">
+                                        <button name="freischaltenleoschen" type="submit" class="btn btn-danger btn-block mb-2">
                                             <i class="fas fa-trash-alt"></i> {__('deleteSelected')}
                                         </button>
                                     </div>
@@ -213,7 +213,7 @@
                                     </div>
                                     <div class="col-sm-6 col-xl-auto mb-3">
                                         <div class="input-group" data-toggle="tooltip" data-placement="bottom" title='{__('freischaltenMappingDesc')}'>
-                                            <span class="input-group-addon">
+                                            <span class="input-group-addon d-none d-md-block">
                                                 <label for="cMapping">{__('linkMarked')}:</label>
                                             </span>
                                             <input class="form-control" name="cMapping" id="cMapping" type="text" value="" />
@@ -222,12 +222,12 @@
                                             </span>
                                         </div>
                                     </div>
-                                    <div class="col-sm-6 col-xl-auto">
-                                        <button name="freischaltenleoschen" type="submit" value="Markierte löschen" class="btn btn-danger btn-block mb-3">
+                                    <div class="ml-auto col-sm-6 col-xl-auto">
+                                        <button name="freischaltenleoschen" type="submit" value="Markierte löschen" class="btn btn-danger btn-block mb-2">
                                             <i class="fas fa-trash-alt"></i> {__('deleteSelected')}
                                         </button>
                                     </div>
-                                    <div class="ml-auto col-sm-6 col-xl-auto">
+                                    <div class="col-sm-6 col-xl-auto">
                                         <button name="freischaltensubmit" type="submit" value="Markierte freischalten" class="btn btn-primary btn-block">
                                             <i class="fa fa-thumbs-up"></i> {__('unlockMarked')}
                                         </button>
@@ -305,7 +305,7 @@
                                         </div>
                                     </div>
                                     <div class="ml-auto col-sm-6 col-xl-auto">
-                                        <button name="freischaltenleoschen" type="submit" value="Markierte löschen" class="btn btn-danger btn-block mb-3">
+                                        <button name="freischaltenleoschen" type="submit" value="Markierte löschen" class="btn btn-danger btn-block mb-2">
                                             <i class="fas fa-trash-alt"></i> {__('deleteSelected')}
                                         </button>
                                     </div>
@@ -372,7 +372,7 @@
                                         </div>
                                     </div>
                                     <div class="ml-auto col-sm-6 col-xl-auto">
-                                        <button name="freischaltenleoschen" type="submit" value="Markierte löschen" class="btn btn-danger btn-block mb-3">
+                                        <button name="freischaltenleoschen" type="submit" value="Markierte löschen" class="btn btn-danger btn-block mb-2">
                                             <i class="fas fa-trash-alt"></i> {__('deleteSelected')}
                                         </button>
                                     </div>

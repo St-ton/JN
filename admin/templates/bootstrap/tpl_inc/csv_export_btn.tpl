@@ -7,6 +7,6 @@
         window.location = window.location.pathname + '?exportcsv={$exporterId}&token={$smarty.session.jtl_token}';
     }
 </script>
-<button type="button" class="btn btn-outline-primary btn-block mb-3" onclick="onClickCsvExport_{$exporterId}()">
+<button type="button" class="btn btn-outline-primary btn-block mb-2" onclick="onClickCsvExport_{$exporterId}()">
     <i class="fa fa-download"></i> {__('exportCsv')}
 </button>

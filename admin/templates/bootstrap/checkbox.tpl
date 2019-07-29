@@ -132,17 +132,17 @@
                                             </div>
                                         </div>
                                         <div class="ml-auto col-sm-6 col-xl-auto">
-                                            <button name="checkboxLoeschenSubmit" class="btn btn-danger btn-block mb-3" type="submit" value="{__('delete')}">
+                                            <button name="checkboxLoeschenSubmit" class="btn btn-danger btn-block mb-2" type="submit" value="{__('delete')}">
                                                 <i class="fas fa-trash-alt"></i> {__('delete')}
                                             </button>
                                         </div>
                                         <div class="col-sm-6 col-xl-auto">
-                                            <button name="checkboxDeaktivierenSubmit" class="btn btn-outline-primary btn-block mb-3" type="submit" value="{__('deactivate')}">
+                                            <button name="checkboxDeaktivierenSubmit" class="btn btn-outline-primary btn-block mb-2" type="submit" value="{__('deactivate')}">
                                                 <i class="fal fa-times text-danger"></i> {__('deactivate')}
                                             </button>
                                         </div>
                                         <div class="col-sm-6 col-xl-auto">
-                                            <button name="checkboxAktivierenSubmit" type="submit" class="btn btn-outline-primary btn-block mb-3" value="{__('activate')}">
+                                            <button name="checkboxAktivierenSubmit" type="submit" class="btn btn-outline-primary btn-block mb-2" value="{__('activate')}">
                                                 <i class="fal fa-check text-success"></i> {__('activate')}
                                             </button>
                                         </div>

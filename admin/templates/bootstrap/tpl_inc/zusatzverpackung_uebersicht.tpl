@@ -68,12 +68,12 @@
             <div class="row">
                 {if isset($oVerpackung_arr) && $oVerpackung_arr|@count > 0}
                     <div class="ml-auto col-sm-6 col-xl-auto">
-                        <button type="submit" name="action" value="delete" class="btn btn-danger btn-block mb-3">
+                        <button type="submit" name="action" value="delete" class="btn btn-danger btn-block mb-2">
                             <i class="fas fa-trash-alt"></i> {__('delete')}
                         </button>
                     </div>
                     <div class="col-sm-6 col-xl-auto">
-                        <button name="action" type="submit" value="refresh" class="btn btn-outline-primary btn-block mb-3">
+                        <button name="action" type="submit" value="refresh" class="btn btn-outline-primary btn-block mb-2">
                             <i class="fa fa-refresh"></i> {__('update')}
                         </button>
                     </div>

@@ -72,7 +72,7 @@
                 <div class="card-footer save-wrapper">
                     <div class="row">
                         <div class="ml-auto col-sm-6 col-xl-auto">
-                            <a class="btn btn-outline-primary btn-block mb-3" href="exportformat_queue.php">
+                            <a class="btn btn-outline-primary btn-block mb-2" href="exportformat_queue.php">
                                 <i class="fa fa-exclamation"></i> {__('cancel')}
                             </a>
                         </div>

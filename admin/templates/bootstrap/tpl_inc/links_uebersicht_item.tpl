@@ -15,7 +15,7 @@
                 {if $link->hasDuplicateSpecialLink()} <i title="{sprintf(__('hasDuplicateSpecialLink'), '')}" class="fal fa-exclamation-triangle text-danger"></i>{/if}
             </div>
         </td>
-        <td class="text-center floatforms" style="width: 60%">
+        <td class="text-center floatforms min-w-sm" style="width: 60%">
             <div class="row">
                 <form class="navbar-form2 col-lg-4 col-md-12 left px-1" method="post" action="links.php" name="aenderlinkgruppe_{$link->getID()}_{$id}">
                     {$jtl_token}

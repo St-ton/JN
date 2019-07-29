@@ -8,12 +8,19 @@
             <i class="btn btn-primary fa fa-bars"></i>
         </td>
         <td class="text-center"><img src="{if isset($oSlide)}{$oSlide->getAbsoluteImage()}{else}templates/bootstrap/gfx/layout/upload.png{/if}" id="img{$kSlide}" onclick="select_image('{$kSlide}');" alt="Slidergrafik" class="slide-image" role="button" /></td>
-        <td class="text-center">
+        <td class="text-center min-w-sm">
             <input class="form-control margin2" id="cTitel{$kSlide}" type="text" name="aSlide[{$kSlide}][cTitel]" value="{if isset($oSlide)}{$oSlide->getTitle()}{/if}" placeholder="{__('title')}" />
             <input class="form-control margin2" id="cLink{$kSlide}" type="text" name="aSlide[{$kSlide}][cLink]" value="{if isset($oSlide)}{$oSlide->getLink()}{/if}" placeholder="{__('link')}" />
         </td>
-        <td><textarea class="form-control vheight" id="cText{$kSlide}" name="aSlide[{$kSlide}][cText]" maxlength="255" placeholder="{__('text')}">{if isset($oSlide)}{$oSlide->getText()}{/if}</textarea></td>
-        <td class="vcenter"><button type="button" onclick="$(this).parent().parent().find('input[name*=\'delete\']').val('1'); $(this).parent().parent().css({ 'display':'none'});sortSlide();" class="slide_delete btn btn-danger btn-block fas fa-trash-alt" title="{__('delete')}"></button></td>
+        <td class="min-w-sm"><textarea class="form-control vheight" id="cText{$kSlide}" name="aSlide[{$kSlide}][cText]" maxlength="255" placeholder="{__('text')}">{if isset($oSlide)}{$oSlide->getText()}{/if}</textarea></td>
+        <td class="vcenter">
+            <button type="button" onclick="$(this).parent().parent().find('input[name*=\'delete\']').val('1'); $(this).parent().parent().css({ 'display':'none'});sortSlide();" class="slide_delete btn" title="{__('delete')}">
+                <span class="icon-hover">
+                    <span class="fal fa-trash-alt"></span>
+                    <span class="fas fa-trash-alt"></span>
+                </span>
+            </button>
+        </td>
     </tr>
 {/function}
 
@@ -48,17 +55,17 @@
             <div class="card-footer">
                 <div class="row">
                     <div class="ml-auto col-sm-6 col-xl-auto">
-                        <button type="button" class="btn btn-outline-primary btn-block mb-3" onclick="location.reload();">
+                        <button type="button" class="btn btn-outline-primary btn-block mb-2" onclick="location.reload();">
                             <i class="glyphicon glyphicon-remove"></i> {__('cancel')}
                         </button>
                     </div>
                     <div class="col-sm-6 col-xl-auto">
-                        <button type="button" class="btn btn-outline-primary btn-block mb-3" onclick="window.location.href = 'slider.php';">
+                        <button type="button" class="btn btn-outline-primary btn-block mb-2" onclick="window.location.href = 'slider.php';">
                             <i class="fa fa-angle-double-left"></i> {__('pageBack')}
                         </button>
                     </div>
                     <div class="col-sm-6 col-xl-auto">
-                        <button type="button" class="btn btn-outline-primary btn-block mb-3" onclick="addSlide();">
+                        <button type="button" class="btn btn-outline-primary btn-block mb-2" onclick="addSlide();">
                             <i class="glyphicon glyphicon-plus"></i> {__('add')}
                         </button>
                     </div>

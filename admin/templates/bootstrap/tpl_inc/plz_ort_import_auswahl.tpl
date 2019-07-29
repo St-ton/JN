@@ -10,28 +10,30 @@
             </div>
             <div class="modal-body">
                 {if isset($oLand_arr) && count($oLand_arr) > 0}
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>{__('iso')}</th>
-                            <th>{__('country')}</th>
-                            <th>{__('date')}</th>
-                            <th>{__('size')}</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {foreach $oLand_arr as $oLand}
-                        <tr>
-                            <td>{$oLand->cISO}</td>
-                            <td>{$oLand->cDeutsch}</td>
-                            <td>{$oLand->cDate}</td>
-                            <td>{$oLand->cSize}</td>
-                            <td><a href="#" data-callback="plz_ort_import" data-ref="{$oLand->cURL}"><i class="fa fa-download"></i></a></td>
-                        </tr>
-                        {/foreach}
-                    </tbody>
-                </table>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>{__('iso')}</th>
+                                    <th>{__('country')}</th>
+                                    <th>{__('date')}</th>
+                                    <th>{__('size')}</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {foreach $oLand_arr as $oLand}
+                                <tr>
+                                    <td>{$oLand->cISO}</td>
+                                    <td>{$oLand->cDeutsch}</td>
+                                    <td>{$oLand->cDate}</td>
+                                    <td>{$oLand->cSize}</td>
+                                    <td><a href="#" data-callback="plz_ort_import" data-ref="{$oLand->cURL}"><i class="fa fa-download"></i></a></td>
+                                </tr>
+                                {/foreach}
+                            </tbody>
+                        </table>
+                    </div>
                 {else}
                 <div class="alert alert-warning"><i class="fal fa-exclamation-triangle"></i> {__('plz_ort_import_select_failed')}</div>
                 {/if}

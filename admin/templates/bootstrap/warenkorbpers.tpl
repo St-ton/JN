@@ -104,28 +104,30 @@
                 <div class="subheading1">{__('warenkorbpersClient')} {$oWarenkorbPersPos_arr[0]->cVorname} {$oWarenkorbPersPos_arr[0]->cNachname}</div>
                 <hr class="mb-n3">
             </div>
-            <div class="table-responsive card-body">
+            <div class="card-body">
                 {include file='tpl_inc/pagination.tpl' pagination=$oPagiWarenkorb cParam_arr=['a'=>$kKunde]}
-                <table class="table table-striped">
-                    <thead>
-                    <tr>
-                        <th class="text-left">{__('warenkorbpersProduct')}</th>
-                        <th class="th-2 text-center">{__('warenkorbpersCount')}</th>
-                        <th class="th-3 text-center">{__('warenkorbpersDate')}</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {foreach $oWarenkorbPersPos_arr as $oWarenkorbPersPos}
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
                         <tr>
-                            <td class="text-left">
-                                <a href="{$shopURL}/index.php?a={$oWarenkorbPersPos->kArtikel}" target="_blank">{$oWarenkorbPersPos->cArtikelName}</a>
-                            </td>
-                            <td class="text-center">{$oWarenkorbPersPos->fAnzahl}</td>
-                            <td class="text-center">{$oWarenkorbPersPos->Datum}</td>
+                            <th class="text-left">{__('warenkorbpersProduct')}</th>
+                            <th class="th-2 text-center">{__('warenkorbpersCount')}</th>
+                            <th class="th-3 text-center">{__('warenkorbpersDate')}</th>
                         </tr>
-                    {/foreach}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                        {foreach $oWarenkorbPersPos_arr as $oWarenkorbPersPos}
+                            <tr>
+                                <td class="text-left">
+                                    <a href="{$shopURL}/index.php?a={$oWarenkorbPersPos->kArtikel}" target="_blank">{$oWarenkorbPersPos->cArtikelName}</a>
+                                </td>
+                                <td class="text-center">{$oWarenkorbPersPos->fAnzahl}</td>
+                                <td class="text-center">{$oWarenkorbPersPos->Datum}</td>
+                            </tr>
+                        {/foreach}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     {/if}

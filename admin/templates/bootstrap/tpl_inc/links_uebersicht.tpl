@@ -77,9 +77,11 @@
                         {*</div>*}
                     {*{/if}*}
                     {if $linkgruppe->getLinks()->count() > 0}
-                        <table class="table">
-                            {include file='tpl_inc/links_uebersicht_item.tpl' list=$linkgruppe->getLinks() id=$linkgruppe->getID()}
-                        </table>
+                        <div class="table-responsive">
+                            <table class="table">
+                                {include file='tpl_inc/links_uebersicht_item.tpl' list=$linkgruppe->getLinks() id=$linkgruppe->getID()}
+                            </table>
+                        </div>
                     {else}
                         <p class="alert alert-info" style="margin:10px;"><i class="fal fa-info-circle"></i> {__('noData')}</p>
                     {/if}

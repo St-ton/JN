@@ -124,7 +124,7 @@
                                             </div>
                                         </div>
                                         <div class="ml-auto col-sm-6 col-xl-auto">
-                                            <button class="btn btn-danger btn-block mb-3" name="abonnentloeschenSubmit" type="submit" value="{__('delete')}">
+                                            <button class="btn btn-danger btn-block mb-2" name="abonnentloeschenSubmit" type="submit" value="{__('delete')}">
                                                 <i class="fas fa-trash-alt"></i> {__('marked')} {__('delete')}
                                             </button>
                                         </div>
@@ -460,7 +460,7 @@
                                         </div>
                                         {if isset($oNewsletterVorlage_arr) && $oNewsletterVorlage_arr|@count > 0}
                                             <div class="ml-auto col-sm-6 col-xl-auto">
-                                                <button class="btn btn-danger btn-block mb-3" name="loeschen" type="submit" value="{__('delete')}">
+                                                <button class="btn btn-danger btn-block mb-2" name="loeschen" type="submit" value="{__('delete')}">
                                                     <i class="fas fa-trash-alt"></i> {__('delete')}
                                                 </button>
                                             </div>

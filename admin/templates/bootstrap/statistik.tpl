@@ -57,35 +57,37 @@
             <div class="card-body">
                 {include file='tpl_inc/filtertools.tpl' oFilter=$oFilter cParam_arr=['s' => $nTyp]}
                 {include file='tpl_inc/pagination.tpl' pagination=$pagination cParam_arr=['s' => $nTyp]}
-                <table class="list table">
-                    <thead>
-                    <tr>
-                        {foreach $cMember_arr[0] as $cMember}
-                            <th class="text-center">{$cMember[1]}</th>
+                <div class="table-responsive">
+                    <table class="list table">
+                        <thead>
+                        <tr>
+                            {foreach $cMember_arr[0] as $cMember}
+                                <th class="text-center">{$cMember[1]}</th>
+                            {/foreach}
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {foreach name=stats key=i from=$oStat_arr item=oStat}
+                            {if $i >= $nPosAb && $i < $nPosBis}
+                                <tr>
+                                    {foreach name=member from=$cMember_arr[$i] key=j item=cMember}
+                                        {assign var=cMemberVar value=$cMember[0]}
+                                        <td class="text-center">
+                                            {if $cMemberVar === 'nCount' && $nTyp == $STATS_ADMIN_TYPE_UMSATZ}
+                                                {$oStat->$cMemberVar|number_format:2:',':'.'} &euro;
+                                            {elseif $cMemberVar === 'nCount'}
+                                                {$oStat->$cMemberVar|number_format:0:',':'.'}
+                                            {else}
+                                                {$oStat->$cMemberVar}
+                                            {/if}
+                                        </td>
+                                    {/foreach}
+                                </tr>
+                            {/if}
                         {/foreach}
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {foreach name=stats key=i from=$oStat_arr item=oStat}
-                        {if $i >= $nPosAb && $i < $nPosBis}
-                            <tr>
-                                {foreach name=member from=$cMember_arr[$i] key=j item=cMember}
-                                    {assign var=cMemberVar value=$cMember[0]}
-                                    <td class="text-center">
-                                        {if $cMemberVar === 'nCount' && $nTyp == $STATS_ADMIN_TYPE_UMSATZ}
-                                            {$oStat->$cMemberVar|number_format:2:',':'.'} &euro;
-                                        {elseif $cMemberVar === 'nCount'}
-                                            {$oStat->$cMemberVar|number_format:0:',':'.'}
-                                        {else}
-                                            {$oStat->$cMemberVar}
-                                        {/if}
-                                    </td>
-                                {/foreach}
-                            </tr>
-                        {/if}
-                    {/foreach}
-                    </tbody>
-                </table>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     {else}

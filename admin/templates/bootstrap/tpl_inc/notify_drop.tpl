@@ -1,9 +1,9 @@
 {if $notifications->count() > 0}
     {$notifyTypes = [0 => 'info', 1 => 'warning', 2 => 'danger']}
     <a href="#" class="nav-link text-primary px-2" data-toggle="dropdown">
-        <span class="fa-layers fa-fw">
+        <span class="fa-layers fa-fw has-notify-icon">
             <span class="fas fa-bell"></span>
-            {if $notifications->count() > 0}<span class="fas fa-circle text-{$notifyTypes[$notifications->getHighestType()]}" data-fa-transform="shrink-8 right-9 up-6"></span>{/if}
+            {if $notifications->count() > 0}<span class="fas fa-circle text-{$notifyTypes[$notifications->getHighestType()]}"></span>{/if}
         </span>
     </a>
     <div class="dropdown-menu dropdown-menu-right dropdown-menu-lg" role="main">

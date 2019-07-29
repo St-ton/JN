@@ -2623,4 +2623,30 @@ div.markdown thead tr td {
   max-height: 75vh;
   overflow: auto;
 }
+.icon-hover span {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transition: opacity 0.2s;
+  width: inherit;
+  height: inherit;
+}
+.icon-hover span:nth-child(2) {
+  opacity: 0;
+}
+.icon-hover span:nth-child(2):hover {
+  opacity: 1;
+}
+.icon-hover span:nth-child(1):hover {
+  opacity: 0;
+}
+.has-notify-icon {
+  position: relative;
+}
+.has-notify-icon span:nth-child(2) {
+  transform: scale(0.5);
+  position: absolute;
+  top: -4px;
+  right: -5px;
+}
 /*# sourceMappingURL=custom.css.map */

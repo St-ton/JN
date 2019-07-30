@@ -50,6 +50,9 @@ msgstr "Revisionen löschen"
 msgid "deleteProductCategory"
 msgstr "Artikel, Kategorien und Merkmale löschen (Komplettabgleich mit JTL-Wawi füllt diese Daten wieder auf)"
 
+msgid "deleteTax"
+msgstr "Steuerklassen/-sätze/-zonen/-zonenländer löschen (Komplettabgleich der Globalen Daten mit JTL-Wawi füllt diese Daten wieder auf)"
+
 msgid "userGeneratedContent"
 msgstr "Benutzergenerierte Inhalte"
 

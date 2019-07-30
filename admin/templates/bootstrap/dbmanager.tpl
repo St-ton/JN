@@ -47,7 +47,6 @@ var $add_row_tpl = $({$filter_row_tpl_data|strip|json_encode});
 $(function() {
     var new_content = '<form action="dbmanager.php?command" method="POST">';
     new_content += '{$jtl_token}';
-    console.log('new content: ', new_content);
     $search = $('#db-search');
 
     $('table.table-sticky-header').stickyTableHeaders({

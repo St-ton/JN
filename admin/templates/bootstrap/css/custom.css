@@ -445,10 +445,6 @@ h6 {
 .container.right {
   padding-left: 0;
 }
-.settings .input-group,
-#settings .input-group {
-  width: 100%;
-}
 .documentation {
   float: right;
 }

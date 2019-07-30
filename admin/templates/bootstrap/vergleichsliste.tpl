@@ -62,52 +62,43 @@
                         {$jtl_token}
                         <input type="hidden" name="zeitfilter" value="1" />
                         <input type="hidden" name="tab" value="topartikel" />
-                        <div class="row">
-                            <div class="input-group col-md-3">
-                                <span class="input-group-addon">
-                                    <label for="nZeitFilter">{__('compareTimeFilter')}:</label>
-                                </span>
-                                <span class="label-wrap">
-                                    <select class="custom-select" id="nZeitFilter" name="nZeitFilter" onchange="document.postzeitfilter.submit();">
-                                        <option value="1"{if isset($smarty.session.Vergleichsliste->nZeitFilter) && $smarty.session.Vergleichsliste->nZeitFilter == 1} selected{/if}>
-                                            {__('last')} 24 {__('hours')}
-                                        </option>
-                                        <option value="7"{if isset($smarty.session.Vergleichsliste->nZeitFilter) && $smarty.session.Vergleichsliste->nZeitFilter == 7} selected{/if}>
-                                            {__('last')} 7 {__('days')}
-                                        </option>
-                                        <option value="30"{if isset($smarty.session.Vergleichsliste->nZeitFilter) && $smarty.session.Vergleichsliste->nZeitFilter == 30} selected{/if}>
-                                            {__('last')} 30 {__('days')}
-                                        </option>
-                                        <option value="365"{if isset($smarty.session.Vergleichsliste->nZeitFilter) && $smarty.session.Vergleichsliste->nZeitFilter == 365} selected{/if}>
-                                            {__('lastYear')}
-                                        </option>
-                                    </select>
-                                </span>
+                        <div class="form-row">
+                            <label class="col-sm-auto col-form-label" for="nZeitFilter">{__('compareTimeFilter')}:</label>
+                            <div class="col-sm-auto mb-3">
+                                <select class="custom-select" id="nZeitFilter" name="nZeitFilter" onchange="document.postzeitfilter.submit();">
+                                    <option value="1"{if isset($smarty.session.Vergleichsliste->nZeitFilter) && $smarty.session.Vergleichsliste->nZeitFilter == 1} selected{/if}>
+                                        {__('last')} 24 {__('hours')}
+                                    </option>
+                                    <option value="7"{if isset($smarty.session.Vergleichsliste->nZeitFilter) && $smarty.session.Vergleichsliste->nZeitFilter == 7} selected{/if}>
+                                        {__('last')} 7 {__('days')}
+                                    </option>
+                                    <option value="30"{if isset($smarty.session.Vergleichsliste->nZeitFilter) && $smarty.session.Vergleichsliste->nZeitFilter == 30} selected{/if}>
+                                        {__('last')} 30 {__('days')}
+                                    </option>
+                                    <option value="365"{if isset($smarty.session.Vergleichsliste->nZeitFilter) && $smarty.session.Vergleichsliste->nZeitFilter == 365} selected{/if}>
+                                        {__('lastYear')}
+                                    </option>
+                                </select>
                             </div>
-
-                            <div class="input-group col-md-3">
-                                <span class="input-group-addon">
-                                    <label for="nAnzahl">{__('compareTopCount')}:</label>
-                                </span>
-                                <span class="label-wrap">
-                                    <select class="custom-select" id="nAnzahl" name="nAnzahl" onchange="document.postzeitfilter.submit();">
-                                        <option value="10"{if isset($smarty.session.Vergleichsliste->nAnzahl) && $smarty.session.Vergleichsliste->nAnzahl == 10} selected{/if}>
-                                            10
-                                        </option>
-                                        <option value="20"{if isset($smarty.session.Vergleichsliste->nAnzahl) && $smarty.session.Vergleichsliste->nAnzahl == 20} selected{/if}>
-                                            20
-                                        </option>
-                                        <option value="50"{if isset($smarty.session.Vergleichsliste->nAnzahl) && $smarty.session.Vergleichsliste->nAnzahl == 50} selected{/if}>
-                                            50
-                                        </option>
-                                        <option value="100"{if isset($smarty.session.Vergleichsliste->nAnzahl) && $smarty.session.Vergleichsliste->nAnzahl == 100} selected{/if}>
-                                            100
-                                        </option>
-                                        <option value="-1"{if isset($smarty.session.Vergleichsliste->nAnzahl) && $smarty.session.Vergleichsliste->nAnzahl == -1} selected{/if}>
-                                            {__('all')}
-                                        </option>
-                                    </select>
-                                </span>
+                            <label class="col-sm-auto col-form-label" for="nAnzahl">{__('compareTopCount')}:</label>
+                            <div class="col-sm-auto mb-3 min-w-sm">
+                                <select class="custom-select" id="nAnzahl" name="nAnzahl" onchange="document.postzeitfilter.submit();">
+                                    <option value="10"{if isset($smarty.session.Vergleichsliste->nAnzahl) && $smarty.session.Vergleichsliste->nAnzahl == 10} selected{/if}>
+                                        10
+                                    </option>
+                                    <option value="20"{if isset($smarty.session.Vergleichsliste->nAnzahl) && $smarty.session.Vergleichsliste->nAnzahl == 20} selected{/if}>
+                                        20
+                                    </option>
+                                    <option value="50"{if isset($smarty.session.Vergleichsliste->nAnzahl) && $smarty.session.Vergleichsliste->nAnzahl == 50} selected{/if}>
+                                        50
+                                    </option>
+                                    <option value="100"{if isset($smarty.session.Vergleichsliste->nAnzahl) && $smarty.session.Vergleichsliste->nAnzahl == 100} selected{/if}>
+                                        100
+                                    </option>
+                                    <option value="-1"{if isset($smarty.session.Vergleichsliste->nAnzahl) && $smarty.session.Vergleichsliste->nAnzahl == -1} selected{/if}>
+                                        {__('all')}
+                                    </option>
+                                </select>
                             </div>
                         </div>
                     </form>

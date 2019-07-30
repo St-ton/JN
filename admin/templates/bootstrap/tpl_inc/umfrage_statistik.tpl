@@ -7,7 +7,7 @@
             </div>
             <div class="card-body">
                 <div class="row">
-                    <div class="col-3 text-right">
+                    <div class="col-sm-3">
                         <strong>{__('umfrageValidation')}:</strong>
                     </div>
                     <div class="col-auto">
@@ -15,7 +15,7 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-3 text-right">
+                    <div class="col-sm-3">
                         <strong>{__('customerGroup')}:</strong>
                     </div>
                     <div class="col-auto">
@@ -25,7 +25,7 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-3 text-right">
+                    <div class="col-sm-3">
                         <strong>{__('active')}:</strong>
                     </div>
                     <div class="col-auto">
@@ -33,7 +33,7 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-3 text-right">
+                    <div class="col-sm-3">
                         <strong>{__('umfrageTryCount')}:</strong>
                     </div>
                     <div class="col-auto">
@@ -41,7 +41,7 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-3 text-right">
+                    <div class="col-sm-3">
                         <strong>{__('description')}:</strong>
                     </div>
                     <div class="col-auto">
@@ -85,7 +85,7 @@
                                                             <td>{$oUmfrageFrageAntwort->cName}</td>
                                                             {foreach $oUmfrageFrage->oUmfrageMatrixOption_arr as $oUmfrageMatrixOption}
                                                                 {assign var=kUmfrageMatrixOption value=$oUmfrageMatrixOption->kUmfrageMatrixOption}
-                                                                <td align="center">
+                                                                <td class="min-w-sm text-center">
                                                                     {if $oUmfrageFrage->oErgebnisMatrix_arr[$kUmfrageFrageAntwort][$kUmfrageMatrixOption]->nBold == 1}
                                                                     <strong>{/if}
                                                                         {$oUmfrageFrage->oErgebnisMatrix_arr[$kUmfrageFrageAntwort][$kUmfrageMatrixOption]->fProzent}
@@ -119,8 +119,8 @@
                                                     <tr>
                                                         <th class="th-1" style="width: 20%;">{__('umfrageQASing')}</th>
                                                         <th class="th-2" style="width: 60%;"></th>
-                                                        <th class="th-3" style="width: 10%;">{__('umfrageQResPercent')}</th>
-                                                        <th class="th-4" style="width: 10%;">{__('umfrageQResCount')}</th>
+                                                        <th class="th-3 text-center" style="width: 10%;">{__('umfrageQResPercent')}</th>
+                                                        <th class="th-4 text-center" style="width: 10%;">{__('umfrageQResCount')}</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -130,7 +130,7 @@
                                                         <td style="width: 60%;">
                                                             <div class="freqbar" style="width: {$oUmfrageFrageAntwort->fProzent}%; height: 10px;"></div>
                                                         </td>
-                                                        <td style="width: 10%;">
+                                                        <td class="text-center" style="width: 10%;">
                                                             {if $oUmfrageFrageAntwort@first}
                                                                 <strong>{$oUmfrageFrageAntwort->fProzent} %</strong>
                                                             {elseif $oUmfrageFrageAntwort->nAnzahlAntwort == $oUmfrageFrage->oUmfrageFrageAntwort_arr[0]->nAnzahlAntwort}
@@ -139,7 +139,7 @@
                                                                 {$oUmfrageFrageAntwort->fProzent} %
                                                             {/if}
                                                         </td>
-                                                        <td style="width: 10%;">{$oUmfrageFrageAntwort->nAnzahlAntwort}</td>
+                                                        <td class="text-center" style="width: 10%;">{$oUmfrageFrageAntwort->nAnzahlAntwort}</td>
                                                     </tr>
                                                 {/foreach}
                                                 </tbody>
@@ -147,8 +147,8 @@
                                                     <tr>
                                                         <td style="width: 20%;"></td>
                                                         <td style="width: 60%;"></td>
-                                                        <td style="width: 10%;">{__('umfrageQMax')}</td>
-                                                        <td style="width: 10%;">{$oUmfrageFrage->nAnzahlAntworten}</td>
+                                                        <td class="text-center" style="width: 10%;">{__('umfrageQMax')}</td>
+                                                        <td class="text-center" style="width: 10%;">{$oUmfrageFrage->nAnzahlAntworten}</td>
                                                     </tr>
                                                 </tfoot>
                                             </table>

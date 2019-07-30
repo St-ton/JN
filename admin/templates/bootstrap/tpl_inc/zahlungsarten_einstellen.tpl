@@ -136,7 +136,7 @@
             {foreach $Conf as $cnf}
             {if $cnf->cConf === 'Y'}
             {if $hasBody === false}<div class="card-body">{assign var=hasBody value=true}{/if}
-                <div class="input-group">
+                <div class="form-group form-row align-items-center">
                     <label class="col col-sm-4 col-form-label text-sm-right" for="{$cnf->cWertName}">{$cnf->cName}:</label>
                     <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                     {if $cnf->cInputTyp === 'selectbox'}
@@ -167,9 +167,19 @@
             {/foreach}
                 </div>
             </div>
-        <p class="submit btn-group">
-            <button type="submit" value="{__('save')}" class="btn btn-primary">{__('saveWithIcon')}</button>
-            <a href="zahlungsarten.php" title="{__('cancel')}" class="btn btn-danger"><i class="fa fa-exclamation"></i> {__('cancel')}</a>
-        </p>
+        <div class="save-wrapper">
+            <div class="row">
+                <div class="ml-auto col-sm-6 col-xl-auto mb-2">
+                    <a href="zahlungsarten.php" title="{__('cancel')}" class="btn btn-outline-primary btn-block">
+                        <i class="fas fa-exclamation"></i> {__('cancel')}
+                    </a>
+                </div>
+                <div class="col-sm-6 col-xl-auto">
+                    <button type="submit" value="{__('save')}" class="btn btn-primary btn-block">
+                        {__('saveWithIcon')}
+                    </button>
+                </div>
+            </div>
+        </div>
     </form>
 </div>

@@ -31,7 +31,7 @@ function addInputRow() {ldelim}
 
     label2 = document.createElement('label');
     label2.setAttribute('for', 'nSortAntwort_' + i);
-    label2.innerHTML = '  {__('umfrageQSort')}';
+    label2.innerHTML = '  {__('umfrageQSort')}:';
     label2.style.paddingLeft = '5px';
     label2.style.paddingRight = '5px';
 
@@ -699,7 +699,7 @@ function checkSelect(selectBox) {ldelim}
                                             <input name="kUmfrageFrageAntwort[]" type="hidden" value="{$oUmfrageFrageAntwort->kUmfrageFrageAntwort}" />
                                             <label for="cNameAntwort-{$oUmfrageFrageAntwort@index}">{__('umfrageQASing')} {$oUmfrageFrageAntwort@iteration}:</label>
                                             <input class="form-control" id="cNameAntwort-{$oUmfrageFrageAntwort@index}" name="cNameAntwort[]"  type="text" value="{$oUmfrageFrageAntwort->cName}" />
-                                            <label for="nSortAntwort-{$oUmfrageFrageAntwort@index}">{__('umfrageQSort')}:</label>
+                                            <label class="pr-2" for="nSortAntwort-{$oUmfrageFrageAntwort@index}">{__('umfrageQSort')}:</label>
                                             <input id="nSortAntwort-{$oUmfrageFrageAntwort@index}" name="nSortAntwort[]"  type="text" class="form-control" value="{$oUmfrageFrageAntwort->nSort}" style="width: 40px;" />
                                         </p>
                                     </td>
@@ -711,19 +711,19 @@ function checkSelect(selectBox) {ldelim}
                     <div class="card-footer save-wrapper">
                         <div class="row">
                             {if isset($oUmfrageFrageTMP->kUmfrage)}
-                                <div class="ml-auto col-sm-6 col-xl-auto">
+                                <div class="ml-auto col-sm-6 col-xl-auto mb-2">
                                     <a class="btn btn-outline-primary btn-block"
                                        href="umfrage.php?umfrage=1&token={$smarty.session.jtl_token}&ud=1&kUmfrage={$oUmfrageFrageTMP->kUmfrage}&tab=umfrage">{__('goBack')}</a>
                                 </div>
                             {/if}
                             {if isset($oUmfrageFrage->kUmfrageFrage) && $oUmfrageFrage->kUmfrageFrage > 0}
-                                <div class="col-sm-6 col-xl-auto">
+                                <div class="col-sm-6 col-xl-auto mb-2">
                                     <button class="btn btn-primary btn-block" name="speichern" type="submit" value="{__('save')}">
                                         {__('saveWithIcon')}
                                     </button>
                                 </div>
                             {else}
-                                <div class="col-sm-6 col-xl-auto">
+                                <div class="col-sm-6 col-xl-auto mb-2">
                                     <button class="btn btn-outline-primary btn-block mb-2" name="nocheinefrage" type="submit" value="{__('umfrageAnotherQ')}">
                                         <i class="fa fa-share"></i> {__('umfrageAnotherQ')}
                                     </button>

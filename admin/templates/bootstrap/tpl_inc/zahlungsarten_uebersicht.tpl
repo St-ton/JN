@@ -76,13 +76,20 @@
                     </tbody>
                 </table>
             </div>
+            <div class="card-footer save-wrapper">
+                <form method="post" action="zahlungsarten.php" class="top" style="margin-bottom: 15px;">
+                    {$jtl_token}
+                    <input type="hidden" name="checkNutzbar" value="1"/>
+                    <div class="row">
+                        <div class="ml-auto col-sm-6 col-xl-auto">
+                            <button name="checkSubmit" type="submit" title="{__('paymentmethodsCheckAll')}" class="btn btn-outline-primary">
+                                <i class="fa fa-refresh"></i> {__('paymentmethodsCheckAll')}
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
         </div>
-        <form method="post" action="zahlungsarten.php" class="top" style="margin-bottom: 15px;">
-            {$jtl_token}
-            <input type="hidden" name="checkNutzbar" value="1"/>
-            <button name="checkSubmit" type="submit" value="{__('paymentmethodsCheckAll')}" class="btn btn-info button">
-                <i class="fa fa-refresh"></i> {__('paymentmethodsCheckAll')}</button>
-        </form>
     </div>
     <div class="col-md-5">
         {*<div class="card">*}

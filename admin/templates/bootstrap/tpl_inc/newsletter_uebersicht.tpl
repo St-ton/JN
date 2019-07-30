@@ -53,25 +53,27 @@
         <div class="tab-content">
             <div id="inaktiveabonnenten" class="tab-pane fade{if !isset($cTab) || $cTab === 'inaktiveabonnenten'} active show{/if}">
                 {if isset($oNewsletterEmpfaenger_arr) && $oNewsletterEmpfaenger_arr|@count > 0}
-                    <form name="suche" method="post" action="newsletter.php">
-                        {$jtl_token}
-                        <input type="hidden" name="inaktiveabonnenten" value="1" />
-                        <input type="hidden" name="tab" value="inaktiveabonnenten" />
-                        {if isset($cSucheInaktiv) && $cSucheInaktiv|strlen > 0}
-                            <input type="hidden" name="cSucheInaktiv" value="{$cSucheInaktiv}" />
-                        {/if}
-                        <div class="input-group">
-                            <span class="input-group-addon">
-                                <label for="cSucheInaktiv">{__('newslettersubscriberSearch')}:</label>
-                            </span>
-                            <input class="form-control" id="cSucheInaktiv" name="cSucheInaktiv" type="text" value="{if isset($cSucheInaktiv) && $cSucheInaktiv|strlen > 0}{$cSucheInaktiv}{/if}" />
-                            <span class="input-group-btn">
-                                <button name="submitInaktiveAbonnentenSuche" type="submit" class="btn btn-primary" value="{__('newsletterSearchBTN')}">
-                                    <i class="fal fa-search"></i> {__('newsletterSearchBTN')}
-                                </button>
-                            </span>
-                        </div>
-                    </form>
+                    <div class="search-toolbar mb-3">
+                        <form name="suche" method="post" action="newsletter.php">
+                            {$jtl_token}
+                            <input type="hidden" name="inaktiveabonnenten" value="1" />
+                            <input type="hidden" name="tab" value="inaktiveabonnenten" />
+                            {if isset($cSucheInaktiv) && $cSucheInaktiv|strlen > 0}
+                                <input type="hidden" name="cSucheInaktiv" value="{$cSucheInaktiv}" />
+                            {/if}
+                            <div class="form-row">
+                                <label class="col-sm-auto col-form-label" for="cSucheInaktiv">{__('newslettersubscriberSearch')}:</label>
+                                <div class="col-sm-auto mb-3">
+                                    <input class="form-control" id="cSucheInaktiv" name="cSucheInaktiv" type="text" value="{if isset($cSucheInaktiv) && $cSucheInaktiv|strlen > 0}{$cSucheInaktiv}{/if}" />
+                                </div>
+                                <span class="col-sm-auto">
+                                    <button name="submitInaktiveAbonnentenSuche" type="submit" class="btn btn-primary btn-block" value="{__('newsletterSearchBTN')}">
+                                        <i class="fal fa-search"></i>
+                                    </button>
+                                </span>
+                            </div>
+                        </form>
+                    </div>
                     {include file='tpl_inc/pagination.tpl' pagination=$oPagiInaktiveAbos cAnchor='inaktiveabonnenten'}
                     <div id="newsletter-inactive-content">
                         <form name="inaktiveabonnentenForm" method="post" action="newsletter.php">
@@ -144,27 +146,29 @@
             </div>
             <div id="alleabonnenten" class="tab-pane fade{if isset($cTab) && $cTab === 'alleabonnenten'} active show{/if}">
                 {if isset($oAbonnenten_arr) && $oAbonnenten_arr|@count > 0}
-                    <form name="suche" method="post" action="newsletter.php">
-                        {$jtl_token}
-                        <input type="hidden" name="Suche" value="1" />
-                        <input type="hidden" name="tab" value="alleabonnenten" />
-                        {if isset($cSucheAktiv) && $cSucheAktiv|strlen > 0}
-                            <input type="hidden" name="cSucheAktiv" value="{$cSucheAktiv}" />
-                        {/if}
-                        <div id="newsletter-all-search">
-                            <div class="input-group">
-                                <span class="input-group-addon">
-                                    <label for="cSucheAktiv">{__('newslettersubscriberSearch')}</label>
-                                </span>
-                                <input id="cSucheAktiv" name="cSucheAktiv" class="form-control" type="text" value="{if isset($cSucheAktiv) && $cSucheAktiv|strlen > 0}{$cSucheAktiv}{/if}" />
-                                <span class="input-group-btn">
-                                    <button name="submitSuche" type="submit" value="{__('newsletterSearchBTN')}" class="btn btn-primary">
-                                        <i class="fal fa-search"></i> {__('newsletterSearchBTN')}
-                                    </button>
-                                </span>
+                    <div class="search-toolbar mb-3">
+                        <form name="suche" method="post" action="newsletter.php">
+                            {$jtl_token}
+                            <input type="hidden" name="Suche" value="1" />
+                            <input type="hidden" name="tab" value="alleabonnenten" />
+                            {if isset($cSucheAktiv) && $cSucheAktiv|strlen > 0}
+                                <input type="hidden" name="cSucheAktiv" value="{$cSucheAktiv}" />
+                            {/if}
+                            <div id="newsletter-all-search">
+                                <div class="form-row">
+                                    <label class="col-sm-auto col-form-label" for="cSucheAktiv">{__('newslettersubscriberSearch')}:</label>
+                                    <div class="col-sm-auto mb-3">
+                                        <input id="cSucheAktiv" name="cSucheAktiv" class="form-control" type="text" value="{if isset($cSucheAktiv) && $cSucheAktiv|strlen > 0}{$cSucheAktiv}{/if}" />
+                                    </div>
+                                    <span class="col-sm-auto">
+                                        <button name="submitSuche" type="submit" value="{__('newsletterSearchBTN')}" class="btn btn-primary btn-block">
+                                            <i class="fal fa-search"></i>
+                                        </button>
+                                    </span>
+                                </div>
                             </div>
-                        </div>
-                    </form>
+                        </form>
+                    </div>
                     {include file='tpl_inc/pagination.tpl' pagination=$oPagiAlleAbos cAnchor='alleabonnenten'}
                     <!-- Uebersicht Newsletterhistory -->
                     <form method="post" action="newsletter.php">

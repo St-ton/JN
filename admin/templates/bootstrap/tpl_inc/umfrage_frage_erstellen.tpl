@@ -601,71 +601,66 @@ function checkSelect(selectBox) {ldelim}
                 <div class="card">
                     <div class="card-header">
                         <div class="subheading1">{__('umfrageEnterQ')}</div>
+                        <hr class="mb-n3">
                     </div>
                     <div class="card-body">
-                    <table class="kundenfeld table">
-                        <tr>
-                            <td><label for="cName">{__('umfrageQ')}:</label></td>
-                            <td><input class="form-control" id="cName" name="cName" type="text"  value="{if isset($oUmfrageFrage->cName)}{$oUmfrageFrage->cName}{/if}" /></td>
-                        </tr>
-
-
-                        <tr>
-                            <td><label for="cTypSelect">{__('umfrageType')}:</label></td>
-                            <td>
-                                <span class="label-wrap">
-                                    <select name="cTyp" id="cTypSelect" class="custom-select combo" onchange="checkSelect(this);">
-                                        <option {if isset($oUmfrageFrage->kUmfrageFrage) && $oUmfrageFrage->kUmfrageFrage > 0}{else}selected{/if}></option>
-                                        <option value="{\JTL\Survey\QuestionType::MULTI_SINGLE}"{if isset($oUmfrageFrage->cTyp) && $oUmfrageFrage->cTyp === \JTL\Survey\QuestionType::MULTI_SINGLE}selected{/if}>{__('questionTypeMultipleChoiceOne')}</option>
-                                        <option value="{\JTL\Survey\QuestionType::MULTI}"{if isset($oUmfrageFrage->cTyp) && $oUmfrageFrage->cTyp === \JTL\Survey\QuestionType::MULTI}selected{/if}>{__('questionTypeMultipleChoiceMany')}</option>
-                                        <option value="{\JTL\Survey\QuestionType::SELECT_SINGLE}"{if isset($oUmfrageFrage->cTyp) && $oUmfrageFrage->cTyp === \JTL\Survey\QuestionType::SELECT_SINGLE}selected{/if}>{__('questionTypeSelectboxOne')}</option>
-                                        <option value="{\JTL\Survey\QuestionType::SELECT_MULTI}"{if isset($oUmfrageFrage->cTyp) && $oUmfrageFrage->cTyp === \JTL\Survey\QuestionType::SELECT_MULTI}selected{/if}>{__('questionTypeSelectboxMany')}</option>
-                                        <option value="{\JTL\Survey\QuestionType::TEXT_SMALL}"{if isset($oUmfrageFrage->cTyp) && $oUmfrageFrage->cTyp === \JTL\Survey\QuestionType::TEXT_SMALL}selected{/if}>{__('questionTypeTextSmall')}</option>
-                                        <option value="{\JTL\Survey\QuestionType::TEXT_BIG}"{if isset($oUmfrageFrage->cTyp) && $oUmfrageFrage->cTyp === \JTL\Survey\QuestionType::TEXT_BIG}selected{/if}>{__('questionTypeTextBig')}</option>
-                                        <option value="{\JTL\Survey\QuestionType::MATRIX_SINGLE}"{if isset($oUmfrageFrage->cTyp) && $oUmfrageFrage->cTyp === \JTL\Survey\QuestionType::MATRIX_SINGLE}selected{/if}>{__('questionTypeMatrixOne')}</option>
-                                        <option value="{\JTL\Survey\QuestionType::MATRIX_MULTI}"{if isset($oUmfrageFrage->cTyp) && $oUmfrageFrage->cTyp === \JTL\Survey\QuestionType::MATRIX_MULTI}selected{/if}>{__('questionTypeMatrixMany')}</option>
-                                        <option value="{\JTL\Survey\QuestionType::TEXT_STATIC}"{if isset($oUmfrageFrage->cTyp) && $oUmfrageFrage->cTyp === \JTL\Survey\QuestionType::TEXT_STATIC}selected{/if}>{__('questionTypeDivider')}</option>
-                                        <option value="{\JTL\Survey\QuestionType::TEXT_PAGE_CHANGE}"{if isset($oUmfrageFrage->cTyp) && $oUmfrageFrage->cTyp === \JTL\Survey\QuestionType::TEXT_PAGE_CHANGE}selected{/if}>{__('questionTypeDividerNewPage')}</option>
-                                    </select>
-                                </span>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td><label for="nSort">{__('sorting')}:</label></td>
-                            <td>
-                                <div class="input-group">
-                                    <input class="form-control" id="nSort" name="nSort" type="text"  value="{if isset($oUmfrageFrage->nSort)}{$oUmfrageFrage->nSort}{/if}" />
-                                    <span class="input-group-addon">{getHelpDesc cDesc=__('pollSortHint')}</span>
-                                </div>
-                             </td>
-                        </tr>
-
-                        <tr>
-                            <td><label for="nFreifeld">{__('umfrageQFreeField')}:</label></td>
-                            <td>
+                        <div class="form-group form-row align-items-center">
+                            <label class="col col-sm-4 col-form-label text-sm-right" for="cName">{__('umfrageQ')}:</label>
+                            <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                <input class="form-control" id="cName" name="cName" type="text"  value="{if isset($oUmfrageFrage->cName)}{$oUmfrageFrage->cName}{/if}" />
+                            </div>
+                        </div>
+                        <div class="form-group form-row align-items-center">
+                            <label class="col col-sm-4 col-form-label text-sm-right" for="cTypSelect">{__('umfrageType')}:</label>
+                            <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                <select name="cTyp" id="cTypSelect" class="custom-select combo" onchange="checkSelect(this);">
+                                    <option {if isset($oUmfrageFrage->kUmfrageFrage) && $oUmfrageFrage->kUmfrageFrage > 0}{else}selected{/if}></option>
+                                    <option value="{\JTL\Survey\QuestionType::MULTI_SINGLE}"{if isset($oUmfrageFrage->cTyp) && $oUmfrageFrage->cTyp === \JTL\Survey\QuestionType::MULTI_SINGLE}selected{/if}>{__('questionTypeMultipleChoiceOne')}</option>
+                                    <option value="{\JTL\Survey\QuestionType::MULTI}"{if isset($oUmfrageFrage->cTyp) && $oUmfrageFrage->cTyp === \JTL\Survey\QuestionType::MULTI}selected{/if}>{__('questionTypeMultipleChoiceMany')}</option>
+                                    <option value="{\JTL\Survey\QuestionType::SELECT_SINGLE}"{if isset($oUmfrageFrage->cTyp) && $oUmfrageFrage->cTyp === \JTL\Survey\QuestionType::SELECT_SINGLE}selected{/if}>{__('questionTypeSelectboxOne')}</option>
+                                    <option value="{\JTL\Survey\QuestionType::SELECT_MULTI}"{if isset($oUmfrageFrage->cTyp) && $oUmfrageFrage->cTyp === \JTL\Survey\QuestionType::SELECT_MULTI}selected{/if}>{__('questionTypeSelectboxMany')}</option>
+                                    <option value="{\JTL\Survey\QuestionType::TEXT_SMALL}"{if isset($oUmfrageFrage->cTyp) && $oUmfrageFrage->cTyp === \JTL\Survey\QuestionType::TEXT_SMALL}selected{/if}>{__('questionTypeTextSmall')}</option>
+                                    <option value="{\JTL\Survey\QuestionType::TEXT_BIG}"{if isset($oUmfrageFrage->cTyp) && $oUmfrageFrage->cTyp === \JTL\Survey\QuestionType::TEXT_BIG}selected{/if}>{__('questionTypeTextBig')}</option>
+                                    <option value="{\JTL\Survey\QuestionType::MATRIX_SINGLE}"{if isset($oUmfrageFrage->cTyp) && $oUmfrageFrage->cTyp === \JTL\Survey\QuestionType::MATRIX_SINGLE}selected{/if}>{__('questionTypeMatrixOne')}</option>
+                                    <option value="{\JTL\Survey\QuestionType::MATRIX_MULTI}"{if isset($oUmfrageFrage->cTyp) && $oUmfrageFrage->cTyp === \JTL\Survey\QuestionType::MATRIX_MULTI}selected{/if}>{__('questionTypeMatrixMany')}</option>
+                                    <option value="{\JTL\Survey\QuestionType::TEXT_STATIC}"{if isset($oUmfrageFrage->cTyp) && $oUmfrageFrage->cTyp === \JTL\Survey\QuestionType::TEXT_STATIC}selected{/if}>{__('questionTypeDivider')}</option>
+                                    <option value="{\JTL\Survey\QuestionType::TEXT_PAGE_CHANGE}"{if isset($oUmfrageFrage->cTyp) && $oUmfrageFrage->cTyp === \JTL\Survey\QuestionType::TEXT_PAGE_CHANGE}selected{/if}>{__('questionTypeDividerNewPage')}</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group form-row align-items-center">
+                            <label class="col col-sm-4 col-form-label text-sm-right" for="nSort">{__('sorting')}:</label>
+                            <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                <input class="form-control" id="nSort" name="nSort" type="number"  value="{if isset($oUmfrageFrage->nSort)}{$oUmfrageFrage->nSort}{/if}" />
+                            </div>
+                            <div class="col-auto ml-sm-n4 order-2 order-sm-3">
+                                <span class="input-group-addon">{getHelpDesc cDesc=__('pollSortHint')}</span>
+                            </div>
+                        </div>
+                        <div class="form-group form-row align-items-center">
+                            <label class="col col-sm-4 col-form-label text-sm-right" for="nFreifeld">{__('umfrageQFreeField')}:</label>
+                            <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                 <select id="nFreifeld" name="nFreifeld" class="custom-select combo">
                                     <option value="1"{if isset($oUmfrageFrage->nFreifeld) && $oUmfrageFrage->nFreifeld == 1}selected{/if}>{__('yes')}</option>
                                     <option value="0"{if !isset($oUmfrageFrage->nFreifeld) || (isset($oUmfrageFrage->nFreifeld) && $oUmfrageFrage->nFreifeld == 0)}selected{/if}>{__('no')}</option>
                                 </select>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td><label for="nNotwendig">{__('umfrageQEssential')}:</label></td>
-                            <td>
+                            </div>
+                        </div>
+                        <div class="form-group form-row align-items-center">
+                            <label class="col col-sm-4 col-form-label text-sm-right" for="nNotwendig">{__('umfrageQEssential')}:</label>
+                            <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                 <select id="nNotwendig" name="nNotwendig" class="custom-select combo">
                                     <option value="1"{if isset($oUmfrageFrage->nNotwendig) && $oUmfrageFrage->nNotwendig == 1}selected{/if}>{__('yes')}</option>
                                     <option value="0"{if isset($oUmfrageFrage->nNotwendig) && $oUmfrageFrage->nNotwendig == 0}selected{/if}>{__('no')}</option>
                                 </select>
-                            </td>
-                        </tr>
-
-                        <tr>
-                            <td><label for="cBeschreibung">{__('description')}:</label></td>
-                            <td><textarea id="cBeschreibung" class="ckeditor" name="cBeschreibung" rows="15" cols="60">{if isset($oUmfrageFrage->cBeschreibung)}{$oUmfrageFrage->cBeschreibung}{/if}</textarea></td>
-                        </tr>
-                    </table>
+                            </div>
+                        </div>
+                        <div class="form-group form-row align-items-center">
+                            <label class="col col-sm-4 col-form-label text-sm-right" for="cBeschreibung">{__('description')}:</label>
+                            <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                <textarea id="cBeschreibung" class="ckeditor" name="cBeschreibung" rows="15" cols="60">{if isset($oUmfrageFrage->cBeschreibung)}{$oUmfrageFrage->cBeschreibung}{/if}</textarea>
+                            </div>
+                        </div>
                     </div>
                     <div id="question-options">
                         <table id="formtableOption" class="kundenfeld">
@@ -715,14 +710,20 @@ function checkSelect(selectBox) {ldelim}
                     </div>
                     <div class="card-footer save-wrapper">
                         <div class="row">
-                            {if isset($oUmfrageFrage->kUmfrageFrage) && $oUmfrageFrage->kUmfrageFrage > 0}
+                            {if isset($oUmfrageFrageTMP->kUmfrage)}
                                 <div class="ml-auto col-sm-6 col-xl-auto">
+                                    <a class="btn btn-outline-primary btn-block"
+                                       href="umfrage.php?umfrage=1&token={$smarty.session.jtl_token}&ud=1&kUmfrage={$oUmfrageFrageTMP->kUmfrage}&tab=umfrage">{__('goBack')}</a>
+                                </div>
+                            {/if}
+                            {if isset($oUmfrageFrage->kUmfrageFrage) && $oUmfrageFrage->kUmfrageFrage > 0}
+                                <div class="col-sm-6 col-xl-auto">
                                     <button class="btn btn-primary btn-block" name="speichern" type="submit" value="{__('save')}">
                                         {__('saveWithIcon')}
                                     </button>
                                 </div>
                             {else}
-                                <div class="ml-auto col-sm-6 col-xl-auto">
+                                <div class="col-sm-6 col-xl-auto">
                                     <button class="btn btn-outline-primary btn-block mb-2" name="nocheinefrage" type="submit" value="{__('umfrageAnotherQ')}">
                                         <i class="fa fa-share"></i> {__('umfrageAnotherQ')}
                                     </button>

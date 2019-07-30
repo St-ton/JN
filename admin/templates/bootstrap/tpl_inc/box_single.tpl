@@ -51,13 +51,13 @@
         {/if}
     </td>
     <td>
-        <div class="input-group form-counter min-w">
+        <div class="input-group form-counter min-w-sm">
             <div class="input-group-prepend">
                 <button type="button" class="btn btn-outline-secondary border-0" data-count-down>
                     <span class="fas fa-minus"></span>
                 </button>
             </div>
-            <input class="form-control text-right" type="number" size="3" name="sort[]" value="{$oBox->getSort()}"
+            <input class="form-control text-right" type="number" name="sort[]" value="{$oBox->getSort()}"
                    autocomplete="off" id="{$oBox->getSort()}">
             <div class="input-group-append">
                 <button type="button" class="btn btn-outline-secondary border-0" data-count-up>

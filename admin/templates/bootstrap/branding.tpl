@@ -88,14 +88,38 @@
                         <div class="form-group form-row align-items-center">
                             <label class="col col-sm-4 col-form-label text-sm-right" for="dTransparenz">{__('transparency')}:</label>
                             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                <input class="form-control" type="text" name="dTransparenz" id="dTransparenz" value="{$oBranding->dTransparenz}" tabindex="1" />
+                                <div class="input-group form-counter min-w-sm">
+                                    <div class="input-group-prepend">
+                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-down>
+                                            <span class="fas fa-minus"></span>
+                                        </button>
+                                    </div>
+                                    <input class="form-control" type="text" name="dTransparenz" id="dTransparenz" value="{$oBranding->dTransparenz}" tabindex="1" />
+                                    <div class="input-group-append">
+                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-up>
+                                            <span class="fas fa-plus"></span>
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
                             <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=__('brandingTransparencyDesc')}</div>
                         </div>
                         <div class="form-group form-row align-items-center">
                             <label class="col col-sm-4 col-form-label text-sm-right" for="dGroesse">{__('size')}:</label>
                             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                <input class="form-control" type="text" name="dGroesse" id="dGroesse" value="{$oBranding->dGroesse}" tabindex="1" />
+                                <div class="input-group form-counter min-w-sm">
+                                    <div class="input-group-prepend">
+                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-down>
+                                            <span class="fas fa-minus"></span>
+                                        </button>
+                                    </div>
+                                    <input class="form-control" type="number" name="dGroesse" id="dGroesse" value="{$oBranding->dGroesse}" tabindex="1" />
+                                    <div class="input-group-append">
+                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-up>
+                                            <span class="fas fa-plus"></span>
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
                             <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=__('brandingSizeDesc')}</div>
                         </div>

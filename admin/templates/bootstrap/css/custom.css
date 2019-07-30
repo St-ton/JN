@@ -508,9 +508,6 @@ tr.highlight {
   background: #d9534f;
   color: #fff;
 }
-.save-wrapper {
-  margin: 20px 0;
-}
 label {
   cursor: pointer;
 }
@@ -527,6 +524,8 @@ label .fillout {
   padding: 15px 15px;
   background: #fff;
   text-align: right;
+  margin: 20px 0;
+  z-index: 10;
 }
 .pages .pageinfo {
   float: left;
@@ -2627,5 +2626,11 @@ input[type=number] {
 }
 .tr-divider {
   border-bottom: 3px solid #bdbdbd;
+}
+.navbar-toggler {
+  z-index: 50;
+}
+.cursor-pointer {
+  cursor: pointer;
 }
 /*# sourceMappingURL=custom.css.map */

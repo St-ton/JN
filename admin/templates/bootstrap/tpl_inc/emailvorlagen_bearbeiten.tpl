@@ -149,65 +149,72 @@
                     {assign var=kSprache value=$language->getId()}
                     <div class="card-header">
                         <div class="subheading1">{__('content')} {$language->getLocalizedName()}</div>
+                        <hr class="mb-n2">
                     </div>
                     <div class="card-body">
                         {if $mailTemplate->getModuleID() !== 'core_jtl_anbieterkennzeichnung'}
-                            <div class="item well">
-                                <div class="name"><label for="cBetreff_{$kSprache}">{__('subject')}:</label></div>
-                                <div class="for">
-                                    <input class="form-control" style="width:400px" type="text" name="cBetreff_{$kSprache}" id="cBetreff_{$kSprache}"
+                            <div class="form-row">
+                                <label class="col-sm-auto col-form-label" for="cBetreff_{$kSprache}">{__('subject')}:</label>
+                                <div class="col-sm-auto">
+                                    <input class="form-control" type="text" name="cBetreff_{$kSprache}" id="cBetreff_{$kSprache}"
                                            value="{$mailTemplate->getSubject($kSprache)}" tabindex="1" />
                                 </div>
                             </div>
                         {/if}
-                        <div class="item well">
-                            <div class="name"><label for="cContentHtml_{$kSprache}">{__('mailHtml')}:</label></div>
-                            <div class="for">
-                                <textarea class="codemirror smarty" id="cContentHtml_{$kSprache}" name="cContentHtml_{$kSprache}"
-                                          style="width:99%" rows="20">{$mailTemplate->getHTML($kSprache)}</textarea>
-                            </div>
+                        <div class="mt-5">
+                            <label class="" for="cContentHtml_{$kSprache}">{__('mailHtml')}:</label>
+                            <textarea class="codemirror smarty" id="cContentHtml_{$kSprache}" name="cContentHtml_{$kSprache}"
+                                           rows="20">{$mailTemplate->getHTML($kSprache)}</textarea>
                         </div>
-                        <div class="item well">
-                            <div class="name"><label for="cContentText_{$kSprache}">{__('mailText')}:</label></div>
-                            <div class="for">
-                                <textarea class="codemirror smarty" id="cContentText_{$kSprache}" name="cContentText_{$kSprache}"
-                                          style="width:99%" rows="20">{$mailTemplate->getText($kSprache)}</textarea>
-                            </div>
+                        <div class="my-5">
+                            <label class="" for="cContentText_{$kSprache}">{__('mailText')}:</label>
+                            <textarea class="codemirror smarty" id="cContentText_{$kSprache}" name="cContentText_{$kSprache}"
+                                      rows="20">{$mailTemplate->getText($kSprache)}</textarea>
                         </div>
                         {if $mailTemplate->getAttachments($kSprache)|@count > 0}
-                            <div class="item">
-                                <div class="name">
-                                    {__('currentFiles')}
-                                    (<a href="emailvorlagen.php?kEmailvorlage={$mailTemplate->getID()}&kS={$kSprache}&a=pdfloeschen&token={$smarty.session.jtl_token}{if $mailTemplate->getPluginID() > 0}&kPlugin={$mailTemplate->getPluginID()}{/if}">{__('deleteAll')}</a>)
+                            <div class="row mt-4">
+                                <div class="col-sm-auto col-form-label">{__('currentFiles')}:</div>
+                                <div class="col-sm-auto">
+                                    <a href="emailvorlagen.php?kEmailvorlage={$mailTemplate->getID()}&kS={$kSprache}&a=pdfloeschen&token={$smarty.session.jtl_token}{if $mailTemplate->getPluginID() > 0}&kPlugin={$mailTemplate->getPluginID()}{/if}"
+                                       class="btn btn-danger">
+                                        {__('deleteAll')}
+                                    </a>
                                 </div>
-                                <div class="for">
-                                    {foreach $mailTemplate->getAttachmentNames($kSprache) as $cPDF}
-                                        {assign var=i value=$cPDF@iteration-1}
-                                        <div>
-                                            <span class="pdf">{$cPDF}.pdf</span>
-                                        </div>
-                                    {/foreach}
+                            </div>
+                            <div class="row mb-4 mt-2">
+                                <div class="col-sm-auto">{__('files')}:</div>
+                            {foreach $mailTemplate->getAttachmentNames($kSprache) as $cPDF}
+                                {assign var=i value=$cPDF@iteration-1}
+                                <div class="col-sm-auto">
+                                    <span class="badge badge-info p-2 my-1">{$cPDF}.pdf</span>
                                 </div>
+                            {/foreach}
                             </div>
                         {/if}
                         {if $mailTemplate->getModuleID() !== 'core_jtl_anbieterkennzeichnung'}
                             {$attachments = $mailTemplate->getAttachmentNames($kSprache)}
                             {section name=anhaenge loop=4 start=1 step=1}
-                                <div class="item well">
-                                    <div class="name">
-                                        <label for="cPDFS_{$smarty.section.anhaenge.index}_{$kSprache}">{__('pdf')} {$smarty.section.anhaenge.index}:</label>
-                                    </div>
+                                <hr class="my-2">
+                                <div class="mb-4">
+                                    <label for="cPDFS_{$smarty.section.anhaenge.index}_{$kSprache}">{__('pdf')} {$smarty.section.anhaenge.index}:</label>
                                     <div class="for">
                                         {math equation="x-y" x=$smarty.section.anhaenge.index y=1 assign=loopdekr}
-                                        <label for="cPDFNames_{$smarty.section.anhaenge.index}_{$kSprache}">{__('filename')}:</label>
-                                        <input id="cPDFNames_{$smarty.section.anhaenge.index}_{$kSprache}"
-                                           name="cPDFNames_{$kSprache}[]"
-                                           type="text"
-                                           value="{if isset($attachments[$loopdekr + 1])}{$attachments[$loopdekr + 1]}{/if}"
-                                           class="form-control{if count($cFehlerAnhang_arr) > 0}{if isset($cFehlerAnhang_arr[$kSprache][$smarty.section.anhaenge.index]) && $cFehlerAnhang_arr[$kSprache][$smarty.section.anhaenge.index] == 1} fieldfillout{/if}{/if}" />
+                                        <div class="form-row mb-2">
+                                            <div class="col-sm-auto col-form-label">
+                                                <label for="cPDFNames_{$smarty.section.anhaenge.index}_{$kSprache}">{__('filename')}:</label>
+                                            </div>
+                                            <div class="col-sm-auto">
+                                                <input id="cPDFNames_{$smarty.section.anhaenge.index}_{$kSprache}"
+                                                   name="cPDFNames_{$kSprache}[]"
+                                                   type="text"
+                                                   value="{if isset($attachments[$loopdekr + 1])}{$attachments[$loopdekr + 1]}{/if}"
+                                                   class="form-control{if count($cFehlerAnhang_arr) > 0}{if isset($cFehlerAnhang_arr[$kSprache][$smarty.section.anhaenge.index]) && $cFehlerAnhang_arr[$kSprache][$smarty.section.anhaenge.index] == 1} fieldfillout{/if}{/if}"
+                                                   size="50"/>
+                                            </div>
+                                        </div>
                                         <div class="input-group mb-3">
                                             <div class="custom-file">
-                                                <input id="cPDFS_{$smarty.section.anhaenge.index}_{$kSprache}" name="cPDFS_{$kSprache}[]" type="file" class="custom-file-input" maxlength="2097152" style="margin-top:5px;" />
+                                                <input id="cPDFS_{$smarty.section.anhaenge.index}_{$kSprache}" name="cPDFS_{$kSprache}[]" type="file" class="custom-file-input" maxlength="2097152"/>
                                                 <label class="custom-file-label" for="cPDFS_{$smarty.section.anhaenge.index}_{$kSprache}">
                                                     <span class="text-truncate">{__('fileSelect')}</span>
                                                 </label>

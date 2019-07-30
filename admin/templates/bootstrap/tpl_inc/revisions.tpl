@@ -36,18 +36,18 @@
                                         {foreach $revision->content->references as $secondaryKey => $ref}
                                             {foreach $show as $attribute}
                                                 {if isset($ref->$attribute)}
-                                                    <div class="h4">{$attribute|escape} ({$secondaryKey}):</div>
+                                                    <div class="subheading2 mt-4">{$attribute|escape} ({$secondaryKey}):</div>
                                                     <div id="diff-{$revision@iteration}-{$attribute|escape}-{$secondaryKey}"></div>
-                                                    <div class="hidden" data-references="{$attribute|escape}" data-references-secondary="{$secondaryKey}">{$ref->$attribute|escape}</div>
+                                                    <div class="d-none" data-references="{$attribute|escape}" data-references-secondary="{$secondaryKey}">{$ref->$attribute|escape}</div>
                                                 {/if}
                                             {/foreach}
                                         {/foreach}
                                     {else}
                                         {foreach $show as $attribute}
                                             {if isset($revision->content->$attribute)}
-                                                <div class="h4">{$attribute|escape}</div>
+                                                <div class="subheading2 mt-4">{$attribute|escape}</div>
                                                 <div id="diff-{$revision@iteration}-{$attribute|escape}"></div>
-                                                <div class="hidden" data-references="{$attribute|escape}" data-references-secondary="">{$revision->content->$attribute|escape}</div>
+                                                <div class="d-none" data-references="{$attribute|escape}" data-references-secondary="">{$revision->content->$attribute|escape}</div>
                                             {/if}
                                         {/foreach}
                                     {/if}
@@ -155,7 +155,7 @@
                 collapsedElement = $('#revision-' + id),
                 closed           = collapsedElement.hasClass('in'),
                 hasDiff          = false,
-                revisionContent  = collapsedElement.find('.revision-content .hidden');
+                revisionContent  = collapsedElement.find('.revision-content .d-none');
             revisionContent.each(function(idx, elem) {
                 var jelem,
                     reference,

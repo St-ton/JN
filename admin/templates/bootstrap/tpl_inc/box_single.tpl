@@ -71,7 +71,8 @@
             <a href="boxen.php?action=del&page={$nPage}&position={$position}&item={$oBox->getID()}&token={$smarty.session.jtl_token}"
                onclick="return confirmDelete('{if $oBox->getBaseType() === $smarty.const.BOX_CONTAINER}Container #{$oBox->getID()}{else}{$oBox->getTitle()}{/if}');"
                title="{__('remove')}"
-               class="btn btn-link px-2">
+               class="btn btn-link px-2"
+               data-toggle="tooltip">
                 <span class="icon-hover">
                     <span class="fal fa-trash-alt"></span>
                     <span class="fas fa-trash-alt"></span>
@@ -79,6 +80,7 @@
             </a>
             <a href="boxen.php?action=edit_mode&page={$nPage}&position={$position}&item={$oBox->getID()}&token={$smarty.session.jtl_token}"
                title="{__('edit')}"
+               data-toggle="tooltip"
                class="btn btn-link px-2{if empty($oBox->getType()) || ($oBox->getType() !== \JTL\Boxes\Type::TEXT && $oBox->getType() !== \JTL\Boxes\Type::LINK && $oBox->getType() !== \JTL\Boxes\Type::CATBOX)} disabled{/if}">
                 <span class="icon-hover">
                     <span class="fal fa-edit"></span>
@@ -103,7 +105,7 @@
                                value="{foreach $oBox->getFilter($nPage) as $pageID}{if !empty($pageID)}{$pageID}{/if}{if !$pageID@last},{/if}{/foreach}">
                     {/if}
                     <button type="button" class="btn btn-link px-2"
-                            onclick="openFilterPicker({$picker}, {$oBox->getID()})">
+                            onclick="openFilterPicker({$picker}, {$oBox->getID()})" data-toggle="tooltip">
                         <span class="icon-hover">
                             <span class="fal fa-filter"></span>
                             <span class="fas fa-filter"></span>

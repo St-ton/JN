@@ -44,19 +44,28 @@
                                         </td>
                                         <td class="text-center">
                                             <div class="btn-group">
-                                                <a class="btn btn-link px-2" href="slider.php?action=delete&id={$oSlider->kSlider}&token={$smarty.session.jtl_token}" title="{__('delete')}">
+                                                <a class="btn btn-link px-2"
+                                                   href="slider.php?action=delete&id={$oSlider->kSlider}&token={$smarty.session.jtl_token}"
+                                                   title="{__('delete')}"
+                                                   data-toggle="tooltip">
                                                     <span class="icon-hover">
                                                         <span class="fal fa-trash-alt"></span>
                                                         <span class="fas fa-trash-alt"></span>
                                                     </span>
                                                 </a>
-                                                <a class="btn btn-link px-2 add" href="slider.php?action=slides&id={$oSlider->kSlider}&token={$smarty.session.jtl_token}" title="{__('slides')}">
+                                                <a class="btn btn-link px-2 add"
+                                                   href="slider.php?action=slides&id={$oSlider->kSlider}&token={$smarty.session.jtl_token}"
+                                                   title="{__('slides')}"
+                                                   data-toggle="tooltip">
                                                     <span class="icon-hover">
                                                         <span class="fal fa-images"></span>
                                                         <span class="fas fa-images"></span>
                                                     </span>
                                                 </a>
-                                                <a class="btn btn-link px-2" href="slider.php?action=edit&id={$oSlider->kSlider}&token={$smarty.session.jtl_token}" title="{__('modify')}">
+                                                <a class="btn btn-link px-2"
+                                                   href="slider.php?action=edit&id={$oSlider->kSlider}&token={$smarty.session.jtl_token}"
+                                                   title="{__('modify')}"
+                                                   data-toggle="tooltip">
                                                     <span class="icon-hover">
                                                         <span class="fal fa-edit"></span>
                                                         <span class="fas fa-edit"></span>

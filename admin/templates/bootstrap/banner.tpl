@@ -504,19 +504,19 @@
                                             {$jtl_token}
                                             <input type="hidden" name="id" value="{$oBanner->kImageMap}" />
                                             <div class="btn-group">
-                                                <button class="btn btn-link px-2" name="action" value="delete" title="{__('delete')}">
+                                                <button class="btn btn-link px-2" name="action" value="delete" title="{__('delete')}" data-toggle="tooltip">
                                                     <span class="icon-hover">
                                                         <span class="fal fa-trash-alt"></span>
                                                         <span class="fas fa-trash-alt"></span>
                                                     </span>
                                                 </button>
-                                                <button class="btn btn-link px-2" name="action" value="area" title="{__('actionLink')}">
+                                                <button class="btn btn-link px-2" name="action" value="area" title="{__('actionLink')}" data-toggle="tooltip">
                                                     <span class="icon-hover">
                                                         <span class="fal fa-link"></span>
                                                         <span class="fas fa-link"></span>
                                                     </span>
                                                 </button>
-                                                <button class="btn btn-link px-2" name="action" value="edit" title="{__('edit')}">
+                                                <button class="btn btn-link px-2" name="action" value="edit" title="{__('edit')}" data-toggle="tooltip">
                                                     <span class="icon-hover">
                                                         <span class="fal fa-edit"></span>
                                                         <span class="fas fa-edit"></span>

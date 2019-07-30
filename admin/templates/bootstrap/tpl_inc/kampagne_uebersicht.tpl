@@ -68,7 +68,10 @@
                                             <td class="text-center">{$oKampagne->dErstellt_DE}</td>
                                             <td class="text-center">
                                                 <div class="btn-group">
-                                                    <a href="kampagne.php?kKampagne={$oKampagne->kKampagne}&editieren=1&token={$smarty.session.jtl_token}" title="{__('modify')}" class="btn btn-link px-2">
+                                                    <a href="kampagne.php?kKampagne={$oKampagne->kKampagne}&editieren=1&token={$smarty.session.jtl_token}"
+                                                       title="{__('modify')}"
+                                                       class="btn btn-link px-2"
+                                                       data-toggle="tooltip">
                                                         <span class="icon-hover">
                                                             <span class="fal fa-edit"></span>
                                                             <span class="fas fa-edit"></span>

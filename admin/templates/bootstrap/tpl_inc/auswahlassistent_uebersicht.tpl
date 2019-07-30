@@ -74,7 +74,8 @@
                                                             {if isset($oAuswahlAssistentGruppe->oAuswahlAssistentFrage_arr) && $oAuswahlAssistentGruppe->oAuswahlAssistentFrage_arr|@count > 0}
                                                                 <a href="#" class="btn btn-link px-2 down"
                                                                    id="btn_toggle_{$oAuswahlAssistentGruppe->kAuswahlAssistentGruppe}"
-                                                                   title="{__('showQuestions')}">
+                                                                   title="{__('showQuestions')}"
+                                                                   data-toggle="tooltip">
                                                                     <span class="icon-hover">
                                                                         <span class="fal fa-question-circle"></span>
                                                                         <span class="fas fa-question-circle"></span>
@@ -82,7 +83,9 @@
                                                                 </a>
                                                             {/if}
                                                             <a href="auswahlassistent.php?a=editGrp&g={$oAuswahlAssistentGruppe->kAuswahlAssistentGruppe}&token={$smarty.session.jtl_token}"
-                                                               class="btn btn-link px-2 edit" title="{__('modify')}">
+                                                               class="btn btn-link px-2 edit"
+                                                               title="{__('modify')}"
+                                                               data-toggle="tooltip">
                                                                 <span class="icon-hover">
                                                                     <span class="fal fa-edit"></span>
                                                                     <span class="fas fa-edit"></span>
@@ -117,13 +120,19 @@
                                                                             <td class="text-center">{$oAuswahlAssistentFrage->nSort}</td>
                                                                             <td class="text-center">
                                                                                 <div class="btn-group">
-                                                                                    <a href="auswahlassistent.php?a=delQuest&q={$oAuswahlAssistentFrage->kAuswahlAssistentFrage}&token={$smarty.session.jtl_token}" class="btn btn-link px-2 remove">
+                                                                                    <a href="auswahlassistent.php?a=delQuest&q={$oAuswahlAssistentFrage->kAuswahlAssistentFrage}&token={$smarty.session.jtl_token}"
+                                                                                       class="btn btn-link px-2 remove"
+                                                                                       data-toggle="tooltip"
+                                                                                       title="{__('delete')}">
                                                                                         <span class="icon-hover">
                                                                                             <span class="fal fa-trash-alt"></span>
                                                                                             <span class="fas fa-trash-alt"></span>
                                                                                         </span>
                                                                                     </a>
-                                                                                    <a href="auswahlassistent.php?a=editQuest&q={$oAuswahlAssistentFrage->kAuswahlAssistentFrage}&token={$smarty.session.jtl_token}" class="btn btn-link px-2 edit">
+                                                                                    <a href="auswahlassistent.php?a=editQuest&q={$oAuswahlAssistentFrage->kAuswahlAssistentFrage}&token={$smarty.session.jtl_token}"
+                                                                                       class="btn btn-link px-2 edit"
+                                                                                       data-toggle="tooltip"
+                                                                                       title="{__('edit')}">
                                                                                         <span class="icon-hover">
                                                                                             <span class="fal fa-edit"></span>
                                                                                             <span class="fas fa-edit"></span>

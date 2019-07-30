@@ -118,7 +118,9 @@
                                             <td class="text-center">
                                                 <div class="btn-group">
                                                     <a href="news.php?news=1&kNews={$oNewsKommentar->getNewsID()}&kNewsKommentar={$oNewsKommentar->getID()}&nkedit=1&tab=inaktiv&token={$smarty.session.jtl_token}"
-                                                       class="btn btn-link px-2" title="{__('modify')}">
+                                                       class="btn btn-link px-2"
+                                                       title="{__('modify')}"
+                                                       data-toggle="tooltip">
                                                         <span class="icon-hover">
                                                             <span class="fal fa-edit"></span>
                                                             <span class="fas fa-edit"></span>
@@ -211,14 +213,18 @@
                                             <td class="text-center">
                                                 <div class="btn-group">
                                                     <a href="news.php?news=1&nd=1&kNews={$oNews->getID()}&tab=aktiv&token={$smarty.session.jtl_token}"
-                                                       class="btn btn-link px-2" title="{__('preview')}">
+                                                       class="btn btn-link px-2"
+                                                       title="{__('preview')}"
+                                                       data-toggle="tooltip">
                                                         <span class="icon-hover">
                                                             <span class="fal fa-eye"></span>
                                                             <span class="fas fa-eye"></span>
                                                         </span>
                                                     </a>
                                                     <a href="news.php?news=1&news_editieren=1&kNews={$oNews->getID()}&tab=aktiv&token={$smarty.session.jtl_token}"
-                                                       class="btn btn-link px-2" title="{__('modify')}">
+                                                       class="btn btn-link px-2"
+                                                       title="{__('modify')}"
+                                                       data-toggle="tooltip">
                                                         <span class="icon-hover">
                                                             <span class="fal fa-edit"></span>
                                                             <span class="fas fa-edit"></span>
@@ -311,7 +317,9 @@
                                             <td class="text-center">
                                                 <div class="btn-group">
                                                     <a href="news.php?news=1&newskategorie_editieren=1&kNewsKategorie={$oNewsKategorie->getID()}&tab=kategorien&token={$smarty.session.jtl_token}"
-                                                       class="btn btn-link px-2" title="{__('modify')}">
+                                                       class="btn btn-link px-2"
+                                                       title="{__('modify')}"
+                                                       data-toggle="tooltip">
                                                         <span class="icon-hover">
                                                             <span class="fal fa-edit"></span>
                                                             <span class="fas fa-edit"></span>

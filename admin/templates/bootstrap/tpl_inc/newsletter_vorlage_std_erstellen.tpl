@@ -246,8 +246,10 @@
                                value="{if !empty($cPostVar_arr.cArtikel)}{$cPostVar_arr.cArtikel}{elseif isset($oNewslettervorlageStd->cArtikel)}{$oNewslettervorlageStd->cArtikel}{/if}">
                     </div>
                     <div class="col-auto ml-sm-n4 order-2 order-sm-3">
-                        <button type="button" class="btn btn-link px-2" data-toggle="modal"
-                                data-target="#articlePicker-modal" title="{__('labelSearchProduct')}">
+                        <button type="button" class="btn btn-link px-2"
+                                data-toggle="modal"
+                                data-target="#articlePicker-modal"
+                                title="{__('labelSearchProduct')}">
                             <span class="icon-hover">
                                 <span class="fal fa-edit"></span>
                                 <span class="fas fa-edit"></span>

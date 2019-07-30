@@ -89,14 +89,19 @@
                                         <td>{$Betreff->Kundengruppen}</td>
                                         <td class="text-center">
                                             <div class="btn-group">
-                                                <a href="kontaktformular.php?del={$Betreff->kKontaktBetreff}&token={$smarty.session.jtl_token}" class="btn btn-link px-2" title="{__('delete')}">
+                                                <a href="kontaktformular.php?del={$Betreff->kKontaktBetreff}&token={$smarty.session.jtl_token}"
+                                                   class="btn btn-link px-2"
+                                                   title="{__('delete')}"
+                                                   data-toggle="tooltip">
                                                     <span class="icon-hover">
                                                         <span class="fal fa-trash-alt"></span>
                                                         <span class="fas fa-trash-alt"></span>
                                                     </span>
                                                 </a>
                                                 <a href="kontaktformular.php?kKontaktBetreff={$Betreff->kKontaktBetreff}&token={$smarty.session.jtl_token}"
-                                                   class="btn btn-link px-2" title="{__('modify')}">
+                                                   class="btn btn-link px-2"
+                                                   title="{__('modify')}"
+                                                   data-toggle="tooltip">
                                                     <span class="icon-hover">
                                                         <span class="fal fa-edit"></span>
                                                         <span class="fas fa-edit"></span>

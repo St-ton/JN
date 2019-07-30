@@ -34,7 +34,7 @@
                 <div>
                     <div class="subheading1">{__('queueEntries')}</div>
                     <hr class="mb-3">
-                    <div>
+                    <div class="table-responsive">
                         <form method="post">
                             {$jtl_token}
                             <table class="table table-striped">
@@ -58,15 +58,15 @@
                                             <td class="text-center">{if $job->isRunning()}<i class="fal fa-check text-success"></i>{else}<i class="fal fa-times text-danger"></i>{/if}</td>
                                             <td class="text-center">
                                                 <div class="btn-group">
-                                                    {if $job->isRunning()}
-                                                        <button class="btn btn-link px-2" type="submit" name="reset" value="{$job->getQueueID()}">
+                                                    {*{if $job->isRunning()}*}
+                                                        <button class="btn btn-link px-2" type="submit" name="reset" value="{$job->getQueueID()}" title="{__('reset')}" data-toggle="tooltip">
                                                             <span class="icon-hover">
                                                                 <span class="fal fa-refresh"></span>
                                                                 <span class="fas fa-refresh"></span>
                                                             </span>
                                                         </button>
-                                                    {/if}
-                                                    <button class="btn btn-link px-2" type="submit" name="delete" value="{$job->getCronID()}">
+                                                    {*{/if}*}
+                                                    <button class="btn btn-link px-2" type="submit" name="delete" value="{$job->getCronID()}" title="{__('delete')}" data-toggle="tooltip">
                                                         <span class="icon-hover">
                                                             <span class="fal fa-trash-alt"></span>
                                                             <span class="fas fa-trash-alt"></span>

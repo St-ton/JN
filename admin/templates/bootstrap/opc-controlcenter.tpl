@@ -52,7 +52,8 @@
                                                 <a class="btn btn-link px-2" title="{__('deleteDraftAll')}"
                                                    href="{strip}?token={$smarty.session.jtl_token}&
                                                          action=restore&pageId={$page->cPageId}{/strip}"
-                                                   onclick="return confirm('{__('sureDeleteAll')}');">
+                                                   onclick="return confirm('{__('sureDeleteAll')}');"
+                                                   data-toggle="tooltip">
                                                     <span class="icon-hover">
                                                         <span class="fal fa-trash-alt"></span>
                                                         <span class="fas fa-trash-alt"></span>
@@ -116,7 +117,8 @@
                                                                    href="{strip}?token={$smarty.session.jtl_token}&
                                                                          action=discard&
                                                                          pageKey={$draft->getKey()}{/strip}"
-                                                                   onclick="return confirm('{__('sureDelete')}');">
+                                                                   onclick="return confirm('{__('sureDelete')}');"
+                                                                   data-toggle="tooltip">
                                                                     <span class="icon-hover">
                                                                         <span class="fal fa-trash-alt"></span>
                                                                         <span class="fas fa-trash-alt"></span>
@@ -126,7 +128,8 @@
                                                                    href="{strip}./opc.php?
                                                                         token={$smarty.session.jtl_token}&
                                                                         pageKey={$draft->getKey()}&
-                                                                        action=edit{/strip}">
+                                                                        action=edit{/strip}"
+                                                                   data-toggle="tooltip">
                                                                     <span class="icon-hover">
                                                                         <span class="fal fa-edit"></span>
                                                                         <span class="fas fa-edit"></span>

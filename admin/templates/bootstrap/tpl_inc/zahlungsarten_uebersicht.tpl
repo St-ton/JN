@@ -34,7 +34,8 @@
                                                   {else}
                                                         text-success disabled
                                                   {/if}"
-                                       title="{__('viewLog')}">
+                                       title="{__('viewLog')}"
+                                       data-toggle="tooltip">
                                         <span class="icon-hover">
                                             {if $zahlungsart->nLogCount > 0}
                                                 {if $zahlungsart->nErrorLogCount}
@@ -52,14 +53,17 @@
                                     </a>
                                     <a {if $zahlungsart->nEingangAnzahl > 0}href="zahlungsarten.php?a=payments&kZahlungsart={$zahlungsart->kZahlungsart}&token={$smarty.session.jtl_token}"{/if}
                                        class="btn btn-link sx-2 {if $zahlungsart->nEingangAnzahl === 0}disabled{/if}"
-                                       title="Zahlungseingänge">
+                                       title="Zahlungseingänge"
+                                       data-toggle="tooltip">
                                         <span class="icon-hover">
                                             <span class="fal fa-hand-holding-us"></span>
                                             <span class="fas fa-hand-holding-us"></span>
                                         </span>
                                     </a>
                                     <a href="zahlungsarten.php?kZahlungsart={$zahlungsart->kZahlungsart}&token={$smarty.session.jtl_token}"
-                                       class="btn btn-link sx-2" title="{__('edit')}">
+                                       class="btn btn-link sx-2"
+                                       title="{__('edit')}"
+                                       data-toggle="tooltip">
                                         <span class="icon-hover">
                                             <span class="fal fa-edit"></span>
                                             <span class="fas fa-edit"></span>

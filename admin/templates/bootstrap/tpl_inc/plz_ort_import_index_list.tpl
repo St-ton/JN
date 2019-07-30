@@ -21,7 +21,12 @@
         <td>
             <div class="btn-group">
             {if isset($oPlzOrt->nBackup) && $oPlzOrt->nBackup > 0}
-                <a class="btn btn-link px-2" title="{__('plz_ort_import_reset_desc')}" href="#" data-callback="plz_ort_import_reset" data-ref="{$oPlzOrt->cLandISO}">
+                <a class="btn btn-link px-2"
+                   title="{__('plz_ort_import_reset_desc')}"
+                   href="#"
+                   data-callback="plz_ort_import_reset"
+                   data-ref="{$oPlzOrt->cLandISO}"
+                   data-toggle="tooltip">
                     <span class="icon-hover">
                         <span class="fal fa-history"></span>
                         <span class="fas fa-history"></span>
@@ -29,7 +34,12 @@
                 </a>
             {/if}
             {if isset($oPlzOrt->cImportFile)}
-                <a class="btn btn-link px-2" title="{__('plz_ort_import_refresh_desc')}" href="#" data-callback="plz_ort_import_refresh" data-ref="{$oPlzOrt->cImportFile}">
+                <a class="btn btn-link px-2"
+                   title="{__('plz_ort_import_refresh_desc')}"
+                   href="#"
+                   data-callback="plz_ort_import_refresh"
+                   data-ref="{$oPlzOrt->cImportFile}"
+                   data-toggle="tooltip">
                     <span class="icon-hover">
                         <span class="fal fa-download"></span>
                         <span class="fas fa-download"></span>

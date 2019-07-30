@@ -115,33 +115,33 @@
                                     {$jtl_token}
                                     <input type="hidden" name="kExportformat" value="{$exportformat->kExportformat}" />
                                     <div class="btn-group">
-                                        <button name="action" value="delete" class="btn btn-link px-1 remove notext" title="{__('delete')}" onclick="return confirm('{__('sureDeleteFormat')}');">
+                                        <button name="action" value="delete" class="btn btn-link px-1 remove notext" title="{__('delete')}" onclick="return confirm('{__('sureDeleteFormat')}');" data-toggle="tooltip">
                                             <span class="icon-hover">
                                                 <span class="fal fa-trash-alt"></span>
                                                 <span class="fas fa-trash-alt"></span>
                                             </span>
                                         </button>
-                                        <button name="action" value="export" class="btn btn-link px-1 extract notext" title="{__('createExportFile')}">
+                                        <button name="action" value="export" class="btn btn-link px-1 extract notext" title="{__('createExportFile')}" data-toggle="tooltip">
                                             <span class="icon-hover">
                                                 <span class="fal fa-plus"></span>
                                                 <span class="fas fa-plus"></span>
                                             </span>
                                         </button>
-                                        <button name="action" value="download" class="btn btn-link px-1 download notext" title="{__('download')}">
+                                        <button name="action" value="download" class="btn btn-link px-1 download notext" title="{__('download')}" data-toggle="tooltip">
                                             <span class="icon-hover">
                                                 <span class="fal fa-download"></span>
                                                 <span class="fas fa-download"></span>
                                             </span>
                                         </button>
                                         {if !$exportformat->bPluginContentExtern}
-                                            <a href="#" onclick="return init_export('{$exportformat->kExportformat}');" class="btn btn-link px-1 extract_async notext" title="{__('createExportFileAsync')}">
+                                            <a href="#" onclick="return init_export('{$exportformat->kExportformat}');" class="btn btn-link px-1 extract_async notext" title="{__('createExportFileAsync')}" data-toggle="tooltip">
                                                 <span class="icon-hover">
                                                     <span class="fal fa-plus-square"></span>
                                                     <span class="fas fa-plus-square"></span>
                                                 </span>
                                             </a>
                                         {/if}
-                                        <button name="action" value="edit" class="btn btn-link px-1 edit notext" title="{__('edit')}">
+                                        <button name="action" value="edit" class="btn btn-link px-1 edit notext" title="{__('edit')}" data-toggle="tooltip">
                                             <span class="icon-hover">
                                                 <span class="fal fa-edit"></span>
                                                 <span class="fas fa-edit"></span>

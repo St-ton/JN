@@ -193,7 +193,8 @@
                                                 {if $oRedirect->nCount > 0}
                                                     <div class="btn-group">
                                                         <button type="button" class="btn btn-link px-2" title="{__('details')}"
-                                                                onclick="toggleReferer({$oRedirect->kRedirect});">
+                                                                onclick="toggleReferer({$oRedirect->kRedirect});"
+                                                                data-toggle="tooltip">
                                                             <span class="icon-hover">
                                                                 <span class="fal fa-list"></span>
                                                                 <span class="fas fa-list"></span>

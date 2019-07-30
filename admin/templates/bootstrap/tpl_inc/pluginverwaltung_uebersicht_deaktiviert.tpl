@@ -60,7 +60,9 @@
                                 <td class="text-center plugin-lang-vars">
                                     {if $plugin->getLocalization()->getTranslations()|@count > 0}
                                         <a href="pluginverwaltung.php?pluginverwaltung_uebersicht=1&sprachvariablen=1&kPlugin={$plugin->getID()}"
-                                           class="btn btn-link" title="{__('modify')}">
+                                           class="btn btn-link"
+                                           title="{__('modify')}"
+                                           data-toggle="tooltip">
                                             <span class="icon-hover">
                                                 <span class="fal fa-edit"></span>
                                                 <span class="fas fa-edit"></span>
@@ -70,7 +72,10 @@
                                 </td>
                                 <td class="text-center plugin-frontend-links">
                                     {if $plugin->getLinks()->getLinks()->count() > 0}
-                                        <a href="links.php?kPlugin={$plugin->getID()}" class="btn btn-link" title="{__('modify')}">
+                                        <a href="links.php?kPlugin={$plugin->getID()}"
+                                           class="btn btn-link"
+                                           title="{__('modify')}"
+                                           data-toggle="tooltip">
                                             <span class="icon-hover">
                                                 <span class="fal fa-edit"></span>
                                                 <span class="fas fa-edit"></span>
@@ -81,7 +86,7 @@
                                 <td class="text-center plugin-license">
                                     {if $plugin->getLicense()->hasLicenseCheck()}
                                         <button name="lizenzkey" type="submit" title="{__('modify')}"
-                                                class="btn btn-link" value="{$plugin->getID()}">
+                                                class="btn btn-link" value="{$plugin->getID()}" data-toggle="tooltip">
                                             <span class="icon-hover">
                                                 <span class="fal fa-edit"></span>
                                                 <span class="fas fa-edit"></span>
@@ -91,7 +96,10 @@
                                 </td>
                                 <td class="text-center">
                                     {if $plugin->getMeta()->isUpdateAvailable()}
-                                        <a onclick="ackCheck({$plugin->getID()}, 'deaktiviert'); return false;" class="btn btn-link" title="{__('pluginBtnUpdate')}">
+                                        <a onclick="ackCheck({$plugin->getID()}, 'deaktiviert'); return false;"
+                                           class="btn btn-link"
+                                           title="{__('pluginBtnUpdate')}"
+                                           data-toggle="tooltip">
                                             <span class="icon-hover">
                                                 <span class="fal fa-refresh"></span>
                                                 <span class="fas fa-refresh"></span>

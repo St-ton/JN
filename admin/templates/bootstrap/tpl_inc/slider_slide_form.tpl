@@ -14,7 +14,11 @@
         </td>
         <td class="min-w-sm"><textarea class="form-control vheight" id="cText{$kSlide}" name="aSlide[{$kSlide}][cText]" maxlength="255" placeholder="{__('text')}">{if isset($oSlide)}{$oSlide->getText()}{/if}</textarea></td>
         <td class="vcenter">
-            <button type="button" onclick="$(this).parent().parent().find('input[name*=\'delete\']').val('1'); $(this).parent().parent().css({ 'display':'none'});sortSlide();" class="slide_delete btn" title="{__('delete')}">
+            <button type="button"
+                    onclick="$(this).parent().parent().find('input[name*=\'delete\']').val('1'); $(this).parent().parent().css({ 'display':'none'});sortSlide();"
+                    class="slide_delete btn"
+                    title="{__('delete')}"
+                    data-toggle="tooltip">
                 <span class="icon-hover">
                     <span class="fal fa-trash-alt"></span>
                     <span class="fas fa-trash-alt"></span>

@@ -68,13 +68,19 @@
                                             <td class="text-center">{$oKunde->Datum}</td>
                                             <td class="text-center">
                                                 <div class="btn-group">
-                                                    <a href="warenkorbpers.php?l={$oKunde->kKunde}&token={$smarty.session.jtl_token}" class="btn btn-link px-2">
+                                                    <a href="warenkorbpers.php?l={$oKunde->kKunde}&token={$smarty.session.jtl_token}"
+                                                       class="btn btn-link px-2"
+                                                       data-toggle="tooltip"
+                                                        title="{__('delete')}">
                                                         <span class="icon-hover">
                                                             <span class="fal fa-trash-alt"></span>
                                                             <span class="fas fa-trash-alt"></span>
                                                         </span>
                                                     </a>
-                                                    <a href="warenkorbpers.php?a={$oKunde->kKunde}&token={$smarty.session.jtl_token}" class="btn btn-link px-2">
+                                                    <a href="warenkorbpers.php?a={$oKunde->kKunde}&token={$smarty.session.jtl_token}"
+                                                       class="btn btn-link px-2"
+                                                       data-toggle="tooltip"
+                                                       title="{__('preview')}">
                                                         <span class="icon-hover">
                                                             <span class="fal fa-eye"></span>
                                                             <span class="fas fa-eye"></span>

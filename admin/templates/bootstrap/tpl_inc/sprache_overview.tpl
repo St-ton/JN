@@ -118,16 +118,20 @@
                                                     <div class="btn-group">
                                                         {if $oWert->bSystem === '0'}
                                                             <a href="sprache.php?token={$smarty.session.jtl_token}&action=delvar&kSprachsektion={$oWert->kSprachsektion}&cName={$oWert->cName}"
-                                                               class="btn btn-link px-2">
+                                                               class="btn btn-link px-2"
+                                                               title="{__('delete')}"
+                                                               data-toggle="tooltip">
                                                                 <span class="icon-hover">
                                                                     <span class="fal fa-trash-alt"></span>
                                                                     <span class="fas fa-trash-alt"></span>
                                                                 </span>
                                                             </a>
                                                         {/if}
-                                                        <button type="button" class="btn btn-link px-2"
-                                                                onclick="resetVarText({$oWert->kSprachsektion},
-                                                                                      '{$oWert->cName}');">
+                                                        <button type="button"
+                                                                class="btn btn-link px-2"
+                                                                onclick="resetVarText({$oWert->kSprachsektion}, '{$oWert->cName}');"
+                                                                data-toggle="tooltip"
+                                                                title="{__('reset')}">
                                                             <span class="icon-hover">
                                                                 <span class="fal fa-refresh"></span>
                                                                 <span class="fas fa-refresh"></span>
@@ -170,7 +174,9 @@
                                         <td>
                                             <div class="btn-group right">
                                                 <a href="sprache.php?token={$smarty.session.jtl_token}&action=newvar&kSprachsektion={$oWert->kSprachsektion}&cName={$oWert->cName}&tab=notfound"
-                                                   class="btn btn-link px-2" title="{__('create')}">
+                                                   class="btn btn-link px-2"
+                                                   title="{__('create')}"
+                                                   data-toggle="tooltip">
                                                     <span class="icon-hover">
                                                         <span class="fal fa-plus"></span>
                                                         <span class="fas fa-plus"></span>

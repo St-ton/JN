@@ -111,7 +111,9 @@
                                             <td class="text-center">
                                                 <div class="btn-group">
                                                     <a class="btn btn-link px-2" title="{__('modify')}"
-                                                       href="bewertung.php?a=editieren&kBewertung={$oBewertung->kBewertung}&nFZ=1&token={$smarty.session.jtl_token}">
+                                                       href="bewertung.php?a=editieren&kBewertung={$oBewertung->kBewertung}&nFZ=1&token={$smarty.session.jtl_token}"
+                                                       data-toggle="tooltip"
+                                                    >
                                                         <span class="icon-hover">
                                                             <span class="fal fa-edit"></span>
                                                             <span class="fas fa-edit"></span>
@@ -283,7 +285,9 @@
                                                 <td class="text-center">
                                                     <div class="btn-group">
                                                         <a class="btn btn-link px-2" title="{__('modify')}"
-                                                           href="news.php?news=1&kNews={$oNewsKommentar->kNews}&kNewsKommentar={$oNewsKommentar->kNewsKommentar}&nkedit=1&nFZ=1&token={$smarty.session.jtl_token}">
+                                                           href="news.php?news=1&kNews={$oNewsKommentar->kNews}&kNewsKommentar={$oNewsKommentar->kNewsKommentar}&nkedit=1&nFZ=1&token={$smarty.session.jtl_token}"
+                                                           data-toggle="tooltip"
+                                                        >
                                                             <span class="icon-hover">
                                                                 <span class="fal fa-edit"></span>
                                                                 <span class="fas fa-edit"></span>

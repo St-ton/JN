@@ -75,13 +75,19 @@
                                                         <td class="text-center">{$oUmfrage->dErstellt_de}</td>
                                                         <td class="text-center">
                                                             <div class="btn-group">
-                                                                <a href="umfrage.php?umfrage=1&token={$smarty.session.jtl_token}&kUmfrage={$oUmfrage->kUmfrage}&umfrage_statistik=1" class="btn btn-link px-2" title="{__('umfrageStats')}">
+                                                                <a href="umfrage.php?umfrage=1&token={$smarty.session.jtl_token}&kUmfrage={$oUmfrage->kUmfrage}&umfrage_statistik=1"
+                                                                   class="btn btn-link px-2"
+                                                                   title="{__('umfrageStats')}"
+                                                                   data-toggle="tooltip">
                                                                     <span class="icon-hover">
                                                                         <span class="fal fa-bar-chart"></span>
                                                                         <span class="fas fa-bar-chart"></span>
                                                                     </span>
                                                                 </a>
-                                                                <a href="umfrage.php?umfrage=1&token={$smarty.session.jtl_token}&umfrage_editieren=1&kUmfrage={$oUmfrage->kUmfrage}&tab=umfrage" class="btn btn-link px-2" title="{__('modify')}">
+                                                                <a href="umfrage.php?umfrage=1&token={$smarty.session.jtl_token}&umfrage_editieren=1&kUmfrage={$oUmfrage->kUmfrage}&tab=umfrage"
+                                                                   class="btn btn-link px-2"
+                                                                   title="{__('modify')}"
+                                                                   data-toggle="tooltip">
                                                                     <span class="icon-hover">
                                                                         <span class="fal fa-edit"></span>
                                                                         <span class="fas fa-edit"></span>

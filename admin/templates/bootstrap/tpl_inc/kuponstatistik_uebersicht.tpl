@@ -42,8 +42,8 @@
             <div class="table-responsive">
                 <table class="table">
                     <tr>
-                        <td>{__('countUsedCoupons')}:</td>
-                        <td><strong>{$overview_arr.nCountUsedCouponsOrder} ({$overview_arr.nPercentCountUsedCoupons}%)</strong></td>
+                        <td class="min-w-sm">{__('countUsedCoupons')}:</td>
+                        <td class="min-w-sm"><strong>{$overview_arr.nCountUsedCouponsOrder} ({$overview_arr.nPercentCountUsedCoupons}%)</strong></td>
                     </tr>
                     <tr>
                         <td>{__('countOrders')}:</td>

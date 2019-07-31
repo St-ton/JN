@@ -124,16 +124,25 @@
                     </div>
                 </div>
                 {if !isset($Exportformat->bPluginContentFile)|| !$Exportformat->bPluginContentFile}
-                    <p><label for="cKopfzeile">{__('header')}:</label>
-                        {getHelpDesc placement='right' cDesc=__('onlyIfNeeded')}
+                    <p>
+                        <label for="cKopfzeile">
+                            {__('header')}:
+                            {getHelpDesc placement='right' cDesc=__('onlyIfNeeded')}
+                        </label>
                         <textarea name="cKopfzeile" id="cKopfzeile" class="codemirror smarty field">{if isset($cPostVar_arr.cKopfzeile)}{$cPostVar_arr.cKopfzeile|replace:"\t":"<tab>"}{elseif isset($Exportformat->cKopfzeile)}{$Exportformat->cKopfzeile}{/if}</textarea>
                     </p>
-                    <p><label for="cContent">{__('template')}:</label>
-                        {getHelpDesc placement='right' cDesc=__('smartyRules')}
+                    <p>
+                        <label for="cContent">
+                            {__('template')}:
+                            {getHelpDesc placement='right' cDesc=__('smartyRules')}
+                        </label>
                         <textarea name="cContent" id="cContent" class="codemirror smarty field{if isset($oSmartyError)}fillout{/if}">{if isset($cPostVar_arr.cContent)}{$cPostVar_arr.cContent|replace:"\t":"<tab>"}{elseif isset($Exportformat->cContent)}{$Exportformat->cContent}{/if}</textarea>
                     </p>
-                    <p><label for="cFusszeile">{__('footer')}:</label>
-                        {getHelpDesc placement='right' cDesc=__('onlyIfNeededFooter')}
+                    <p>
+                        <label for="cFusszeile">
+                            {__('footer')}:
+                            {getHelpDesc placement='right' cDesc=__('onlyIfNeededFooter')}
+                        </label>
                         <textarea name="cFusszeile" id="cFusszeile" class="codemirror smarty field">{if isset($cPostVar_arr.cFusszeile)}{$cPostVar_arr.cFusszeile|replace:"\t":"<tab>"}{elseif isset($Exportformat->cFusszeile)}{$Exportformat->cFusszeile}{/if}</textarea>
                     </p>
                 {else}

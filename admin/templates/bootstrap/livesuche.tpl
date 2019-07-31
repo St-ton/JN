@@ -131,7 +131,7 @@
                                         <label class="custom-control-label" for="ALLMSGS">{__('livesucheSelectAll')}</label>
                                     </div>
                                 </div>
-                                <div class="col-sm-6 col-xl-auto">
+                                <div class="col-sm-6 col-xl-auto mb-2">
                                     <div class="input-group">
                                         <span class="input-group-addon d-none d-md-block">
                                             <label for="cMapping">{__('livesucheMappingOn')}:</label>

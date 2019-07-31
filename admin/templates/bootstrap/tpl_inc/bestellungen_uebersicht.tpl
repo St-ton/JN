@@ -12,7 +12,7 @@
                     <div class="subheading1">{__('order')}</div>
                     <hr class="mb-n3">
                 </div>
-                <div class="table-responsive card-body">
+                <div class="card-body">
                     <div class="search-toolbar mb-3">
                         <form name="bestellungen" method="post" action="bestellungen.php">
                             {$jtl_token}
@@ -29,74 +29,76 @@
                         </form>
                     </div>
                     {include file='tpl_inc/pagination.tpl' pagination=$pagination cParam_arr=['cSuche'=>$cSuche]}
-                    <table class="list table table-striped">
-                        <thead>
-                        <tr>
-                            <th></th>
-                            <th class="text-center">{__('orderNumber')}</th>
-                            <th class="text-left">{__('customer')}</th>
-                            <th class="text-center">{__('orderCostumerRegistered')}</th>
-                            <th class="text-left">{__('orderShippingName')}</th>
-                            <th class="text-left">{__('orderPaymentName')}</th>
-                            <th>{__('orderWawiPickedUp')}</th>
-                            <th class="text-center">{__('status')}</th>
-                            <th>{__('orderSum')}</th>
-                            <th class="text-right">{__('orderDate')}</th>
-                            <th class="text-right">{__('orderIpAddress')}</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {foreach $oBestellung_arr as $oBestellung}
+                    <div class="table-responsive">
+                        <table class="list table table-striped">
+                            <thead>
                             <tr>
-                                <td class="check">{if $oBestellung->cAbgeholt === 'Y' && $oBestellung->cZahlungsartName !== 'Amazon Payment' && $oBestellung->oKunde !== null}
-                                    <div class="custom-control custom-checkbox">
-                                        <input class="custom-control-input" type="checkbox" name="kBestellung[]" id="order-id-{$oBestellung->kBestellung}" value="{$oBestellung->kBestellung}" />{/if}
-                                        <label class="custom-control-label" for="order-id-{$oBestellung->kBestellung}"></label>
-                                    </div>
-                                </td>
-                                <td class="text-center">{$oBestellung->cBestellNr}</td>
-                                <td>
-                                    {if isset($oBestellung->oKunde->cVorname) || isset($oBestellung->oKunde->cNachname) || isset($oBestellung->oKunde->cFirma)}
-                                        {$oBestellung->oKunde->cVorname} {$oBestellung->oKunde->cNachname}
-                                        {if isset($oBestellung->oKunde->cFirma) && $oBestellung->oKunde->cFirma|strlen > 0}
-                                            ({$oBestellung->oKunde->cFirma})
-                                        {/if}
-                                    {else}
-                                        {__('noAccount')}
-                                    {/if}
-                                </td>
-                                <td class="text-center">{if isset($oBestellung->oKunde) && $oBestellung->oKunde->nRegistriert === 1}{__('yes')}{else}{__('no')}{/if}</td>
-                                <td>{$oBestellung->cVersandartName}</td>
-                                <td>{$oBestellung->cZahlungsartName}</td>
-                                <td class="text-center">
-                                    {if $oBestellung->cAbgeholt === 'Y'}
-                                        <i class="fal fa-check text-success"></i>
-                                    {else}
-                                        <i class="fal fa-times text-danger"></i>
-                                    {/if}
-                                </td>
-                                <td class="text-center">
-                                    {if $oBestellung->cStatus == 1}
-                                        {__('new')}
-                                    {elseif $oBestellung->cStatus == 2}
-                                        {__('orderInProgress')}
-                                    {elseif $oBestellung->cStatus == 3}
-                                        {__('orderPayed')}
-                                    {elseif $oBestellung->cStatus == 4}
-                                        {__('orderShipped')}
-                                    {elseif $oBestellung->cStatus == 5}
-                                        {__('orderPartlyShipped')}
-                                    {elseif $oBestellung->cStatus == -1}
-                                        {__('orderCanceled')}
-                                    {/if}
-                                </td>
-                                <td class="text-center">{$oBestellung->WarensummeLocalized[0]}</td>
-                                <td class="text-right">{$oBestellung->dErstelldatum_de}</td>
-                                <td class="text-right">{$oBestellung->cIP}</td>
+                                <th></th>
+                                <th class="text-center">{__('orderNumber')}</th>
+                                <th class="text-left">{__('customer')}</th>
+                                <th class="text-center">{__('orderCostumerRegistered')}</th>
+                                <th class="text-left">{__('orderShippingName')}</th>
+                                <th class="text-left">{__('orderPaymentName')}</th>
+                                <th>{__('orderWawiPickedUp')}</th>
+                                <th class="text-center">{__('status')}</th>
+                                <th>{__('orderSum')}</th>
+                                <th class="text-right">{__('orderDate')}</th>
+                                <th class="text-right">{__('orderIpAddress')}</th>
                             </tr>
-                        {/foreach}
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                            {foreach $oBestellung_arr as $oBestellung}
+                                <tr>
+                                    <td class="check">{if $oBestellung->cAbgeholt === 'Y' && $oBestellung->cZahlungsartName !== 'Amazon Payment' && $oBestellung->oKunde !== null}
+                                        <div class="custom-control custom-checkbox">
+                                            <input class="custom-control-input" type="checkbox" name="kBestellung[]" id="order-id-{$oBestellung->kBestellung}" value="{$oBestellung->kBestellung}" />{/if}
+                                            <label class="custom-control-label" for="order-id-{$oBestellung->kBestellung}"></label>
+                                        </div>
+                                    </td>
+                                    <td class="text-center">{$oBestellung->cBestellNr}</td>
+                                    <td>
+                                        {if isset($oBestellung->oKunde->cVorname) || isset($oBestellung->oKunde->cNachname) || isset($oBestellung->oKunde->cFirma)}
+                                            {$oBestellung->oKunde->cVorname} {$oBestellung->oKunde->cNachname}
+                                            {if isset($oBestellung->oKunde->cFirma) && $oBestellung->oKunde->cFirma|strlen > 0}
+                                                ({$oBestellung->oKunde->cFirma})
+                                            {/if}
+                                        {else}
+                                            {__('noAccount')}
+                                        {/if}
+                                    </td>
+                                    <td class="text-center">{if isset($oBestellung->oKunde) && $oBestellung->oKunde->nRegistriert === 1}{__('yes')}{else}{__('no')}{/if}</td>
+                                    <td>{$oBestellung->cVersandartName}</td>
+                                    <td>{$oBestellung->cZahlungsartName}</td>
+                                    <td class="text-center">
+                                        {if $oBestellung->cAbgeholt === 'Y'}
+                                            <i class="fal fa-check text-success"></i>
+                                        {else}
+                                            <i class="fal fa-times text-danger"></i>
+                                        {/if}
+                                    </td>
+                                    <td class="text-center">
+                                        {if $oBestellung->cStatus == 1}
+                                            {__('new')}
+                                        {elseif $oBestellung->cStatus == 2}
+                                            {__('orderInProgress')}
+                                        {elseif $oBestellung->cStatus == 3}
+                                            {__('orderPayed')}
+                                        {elseif $oBestellung->cStatus == 4}
+                                            {__('orderShipped')}
+                                        {elseif $oBestellung->cStatus == 5}
+                                            {__('orderPartlyShipped')}
+                                        {elseif $oBestellung->cStatus == -1}
+                                            {__('orderCanceled')}
+                                        {/if}
+                                    </td>
+                                    <td class="text-center">{$oBestellung->WarensummeLocalized[0]}</td>
+                                    <td class="text-right">{$oBestellung->dErstelldatum_de}</td>
+                                    <td class="text-right">{$oBestellung->cIP}</td>
+                                </tr>
+                            {/foreach}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
                 <div class="card-footer save-wrapper">
                     <div class="row">

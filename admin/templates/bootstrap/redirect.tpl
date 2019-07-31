@@ -172,7 +172,7 @@
                                                     <span class="input-group-addon text-danger state-unavailable" style="display:none;">
                                                         <i class="fal fa-exclamation-triangle"></i>
                                                     </span>
-                                                    <input class="form-control" name="redirects[{$oRedirect->kRedirect}][cToUrl]"
+                                                    <input class="form-control min-w-sm" name="redirects[{$oRedirect->kRedirect}][cToUrl]"
                                                            value="{$oRedirect->cToUrl}" id="cToUrl-{$oRedirect->kRedirect}"
                                                            onblur="checkUrl({$oRedirect->kRedirect})">
                                                     <script>

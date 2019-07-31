@@ -94,7 +94,7 @@
                                             <span class="fas fa-minus"></span>
                                         </button>
                                     </div>
-                                    <input class="form-control" type="text" name="dTransparenz" id="dTransparenz" value="{$oBranding->dTransparenz}" tabindex="1" />
+                                    <input class="form-control" type="number" name="dTransparenz" id="dTransparenz" value="{$oBranding->dTransparenz}" tabindex="1" />
                                     <div class="input-group-append">
                                         <button type="button" class="btn btn-outline-secondary border-0" data-count-up>
                                             <span class="fas fa-plus"></span>

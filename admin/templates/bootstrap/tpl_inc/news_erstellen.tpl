@@ -100,7 +100,12 @@
                         <div class="form-group form-row align-items-center">
                             <label class="col col-sm-4 col-form-label text-sm-right" for="kkundengruppe">{__('customerGroup')} *:</label>
                             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                <select id="kkundengruppe" name="kKundengruppe[]" multiple="multiple" class="custom-select{if !empty($cPlausiValue_arr.kKundengruppe_arr)} error{/if}">
+                                <select id="kkundengruppe"
+                                        name="kKundengruppe[]"
+                                        multiple="multiple"
+                                        class="selectpicker custom-select{if !empty($cPlausiValue_arr.kKundengruppe_arr)} error{/if}"
+                                        data-selected-text-format="count > 2"
+                                        data-size="7">
                                     <option value="-1"
                                         {if isset($cPostVar_arr.kKundengruppe)}
                                             {foreach $cPostVar_arr.kKundengruppe as $kKundengruppe}
@@ -111,8 +116,9 @@
                                                 {if $kKundengruppe === -1}selected{/if}
                                             {/foreach}
                                         {/if}>
-                                        Alle
+                                        {__('all')}
                                     </option>
+                                    <option data-divider="true"></option>
                                     {foreach $oKundengruppe_arr as $oKundengruppe}
                                         <option value="{$oKundengruppe->kKundengruppe}"
                                             {if isset($cPostVar_arr.kKundengruppe)}
@@ -131,7 +137,14 @@
                         <div class="form-group form-row align-items-center">
                             <label class="col col-sm-4 col-form-label text-sm-right" for="kNewsKategorie">{__('category')} *:</label>
                             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                <select id="kNewsKategorie" class="custom-select{if !empty($cPlausiValue_arr.kNewsKategorie_arr)} error{/if}" name="kNewsKategorie[]" multiple="multiple">
+                                <select id="kNewsKategorie"
+                                        class="selectpicker custom-select{if !empty($cPlausiValue_arr.kNewsKategorie_arr)} error{/if}"
+                                        name="kNewsKategorie[]"
+                                        multiple="multiple"
+                                        data-selected-text-format="count > 2"
+                                        data-size="7"
+                                        data-live-search="true"
+                                        data-actions-box="true">
                                     {foreach $oNewsKategorie_arr as $category}
                                         <option value="{$category->getID()}"
                                             {if isset($cPostVar_arr.kNewsKategorie)}

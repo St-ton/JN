@@ -287,6 +287,7 @@
   flex: auto;
   display: flex;
   flex-direction: column;
+  min-height: 100vh;
 }
 .backend-wrapper > .backend-main > .backend-navbar {
   background-color: #fff;

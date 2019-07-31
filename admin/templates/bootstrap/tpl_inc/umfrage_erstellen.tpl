@@ -74,8 +74,14 @@ function clearInput(inputField) {ldelim}
                     <div class="form-group form-row align-items-center">
                         <label class="col col-sm-3 col-form-label text-sm-right" for="kKundengruppe">{__('customerGroup')}:</label>
                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                            <select id="kKundengruppe" name="kKundengruppe[]" multiple="multiple" class="combo custom-select">
+                            <select id="kKundengruppe"
+                                    name="kKundengruppe[]"
+                                    multiple="multiple"
+                                    class="selectpicker custom-select"
+                                    data-selected-text-format="count > 2"
+                                    data-size="7">
                                 <option value="-1" {if isset($oUmfrage->kKundengruppe_arr)}{foreach $oUmfrage->kKundengruppe_arr as $kKundengruppe}{if $kKundengruppe == '-1'}selected{/if}{/foreach}{/if}>{__('all')}</option>
+                                <option data-divider="true"></option>
                                 {foreach $oKundengruppe_arr as $oKundengruppe}
                                     <option value="{$oKundengruppe->kKundengruppe}" {if isset($oUmfrage->kKundengruppe_arr)}{foreach $oUmfrage->kKundengruppe_arr as $kKundengruppe}{if $oKundengruppe->kKundengruppe == $kKundengruppe}selected{/if}{/foreach}{/if}>{$oKundengruppe->cName}</option>
                                 {/foreach}

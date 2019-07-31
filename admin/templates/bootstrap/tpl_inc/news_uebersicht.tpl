@@ -403,7 +403,13 @@
                                                     {/foreach}
                                                 </select>
                                             {elseif $oConfig->cInputTyp === 'listbox'}
-                                                <select name="{$oConfig->cWertName}[]" id="{$oConfig->cWertName}" multiple="multiple" class="custom-select combo">
+                                                <select name="{$oConfig->cWertName}[]"
+                                                        id="{$oConfig->cWertName}"
+                                                        multiple="multiple"
+                                                        class="selectpicker custom-select"
+                                                        data-selected-text-format="count > 2"
+                                                        data-size="7"
+                                                        data-actions-box="true">
                                                     {foreach $oConfig->ConfWerte as $wert}
                                                         <option value="{$wert->kKundengruppe}" {foreach $oConfig->gesetzterWert as $gesetzterWert}{if $gesetzterWert->cWert == $wert->kKundengruppe}selected{/if}{/foreach}>{$wert->cName}</option>
                                                     {/foreach}

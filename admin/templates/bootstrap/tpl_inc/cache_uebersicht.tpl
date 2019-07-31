@@ -377,7 +377,13 @@
                                 <div class="form-group form-row align-items-center">
                                     <label class="col col-sm-4 col-form-label text-sm-right" for="methods">{__('methods')}:</label>
                                     <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                        <select class="custom-select" name="methods[]" id="methods" multiple>
+                                        <select class="selectpicker custom-select"
+                                                name="methods[]"
+                                                id="methods"
+                                                multiple="multiple"
+                                                data-selected-text-format="count > 2"
+                                                data-size="7"
+                                                data-actions-box="true">
                                             {foreach $all_methods as $method}
                                                 <option value="{$method}"{if !empty($smarty.post.methods) && $method|in_array:$smarty.post.methods}selected{/if}>{$method}</option>
                                             {/foreach}

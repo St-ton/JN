@@ -249,7 +249,13 @@
                                 <div class="form-group form-row align-items-center{if isset($cPlausi_arr.cAnzeigeOrt)} error{/if}">
                                     <label class="col col-sm-4 col-form-label text-sm-right" for="cAnzeigeOrt">{__('checkboxLocation')}{if isset($cPlausi_arr.cAnzeigeOrt)} <span class="fillout">{__('FillOut')}</span>{/if}:</label>
                                     <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                        <select id="cAnzeigeOrt" name="cAnzeigeOrt[]" class="custom-select{if isset($cPlausi_arr.cAnzeigeOrt)} fieldfillout{/if}" multiple onClick="checkFunctionDependency();">
+                                        <select id="cAnzeigeOrt"
+                                                name="cAnzeigeOrt[]"
+                                                class="selectpicker custom-select{if isset($cPlausi_arr.cAnzeigeOrt)} fieldfillout{/if}"
+                                                multiple="multiple"
+                                                onClick="checkFunctionDependency();"
+                                                data-selected-text-format="count > 2"
+                                                data-size="7">
                                             {foreach name=anzeigeortarr from=$cAnzeigeOrt_arr key=key item=cAnzeigeOrt}
                                                 {assign var=bAOSelect value=false}
                                                 {if !isset($cPost_arr.cAnzeigeOrt) && !isset($cPlausi_arr.cAnzeigeOrt) && !isset($oCheckBox->kAnzeigeOrt_arr) && $key == $CHECKBOX_ORT_REGISTRIERUNG}
@@ -346,7 +352,13 @@
                                     <div class="form-group form-row align-items-center{if isset($cPlausi_arr.kKundengruppe)} error{/if}">
                                         <label class="col col-sm-4 col-form-label text-sm-right" for="kKundengruppe">{__('customerGroup')}{if isset($cPlausi_arr.kKundengruppe)} <span class="fillout">{__('FillOut')}</span>{/if}:</label>
                                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                            <select id="kKundengruppe" name="kKundengruppe[]" class="custom-select{if isset($cPlausi_arr.kKundengruppe)} fieldfillout{/if}" multiple>
+                                            <select id="kKundengruppe"
+                                                    name="kKundengruppe[]"
+                                                    class="selectpicker custom-select{if isset($cPlausi_arr.kKundengruppe)} fieldfillout{/if}"
+                                                    multiple="multiple"
+                                                    data-selected-text-format="count > 2"
+                                                    data-size="7"
+                                                    data-actions-box="true">
                                             {foreach name=kundengruppen from=$oKundengruppe_arr key=key item=oKundengruppe}
                                                 {assign var=bKGSelect value=false}
                                                 {if !isset($cPost_arr.kKundengruppe) && !isset($cPlausi_arr.kKundengruppe) && !isset($oCheckBox->kKundengruppe_arr) && $oKundengruppe->cStandard === 'Y'}

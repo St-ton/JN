@@ -25,7 +25,12 @@
                                     {/foreach}
                                 </select>
                             {elseif $configItem->cInputTyp === 'listbox'}
-                                <select name="{$configItem->cWertName}[]" id="{$configItem->cWertName}" multiple="multiple" class="custom-select combo">
+                                <select name="{$configItem->cWertName}[]"
+                                        id="{$configItem->cWertName}"
+                                        multiple="multiple"
+                                        class="selectpicker custom-select combo"
+                                        data-selected-text-format="count > 2"
+                                        data-size="7">
                                 {foreach $configItem->ConfWerte as $wert}
                                     <option value="{$wert->kKundengruppe}" {foreach $configItem->gesetzterWert as $gesetzterWert}{if $gesetzterWert->cWert == $wert->kKundengruppe}selected{/if}{/foreach}>{$wert->cName}</option>
                                 {/foreach}

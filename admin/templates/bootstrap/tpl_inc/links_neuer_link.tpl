@@ -138,7 +138,13 @@
                         <label class="col col-sm-4 col-form-label text-sm-right" for="cKundengruppen">{__('restrictedToCustomerGroups')}{if isset($xPlausiVar_arr.cKundengruppen)} <span class="fillout">{__('FillOut')}</span>{/if}:</label>
                         {$activeGroups = $Link->getCustomerGroups()}
                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                            <select required name="cKundengruppen[]" class="custom-select{if isset($xPlausiVar_arr.cKundengruppen)} fieldfillout{/if}" multiple="multiple" size="6" id="cKundengruppen">
+                            <select required name="cKundengruppen[]"
+                                    class="selectpicker custom-select{if isset($xPlausiVar_arr.cKundengruppen)} fieldfillout{/if}"
+                                    multiple="multiple"
+                                    size="6"
+                                    id="cKundengruppen"
+                                    data-selected-text-format="count > 2"
+                                    data-size="7">
                                 <option value="-1"
                                     {if isset($Link->getID()) && $Link->getID() > 0 && count($activeGroups) === 0} selected
                                     {elseif isset($xPostVar_arr.cKundengruppen)}
@@ -147,7 +153,7 @@
                                         {/foreach}
                                     {elseif !$Link->getID() > 0} selected{/if}
                                 >{__('all')}</option>
-
+                                <option data-divider="true"></option>
                                 {foreach $kundengruppen as $kundengruppe}
                                     {assign var=kKundengruppe value=(int)$kundengruppe->kKundengruppe}
                                     {assign var=postkndgrp value=0}

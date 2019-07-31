@@ -38,8 +38,10 @@
                     <div class="item form-group form-row align-items-center">
                         <label class="col col-sm-4 col-form-label text-sm-right" for="cIntervall">{__('statusemailIntervall')}:</label>
                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                            <select name="cIntervall_arr[]" id="cIntervall" multiple="multiple" class="custom-select multiple"
-                                    size="3">
+                            <select name="cIntervall_arr[]"
+                                    id="cIntervall"
+                                    multiple="multiple"
+                                    class="selectpicker custom-select">
                                 {foreach $oStatusemailEinstellungen->cIntervallMoeglich_arr as $key => $nIntervallMoeglich}
                                     <option value="{$nIntervallMoeglich}"
                                             {if $nIntervallMoeglich|in_array:$oStatusemailEinstellungen->nIntervall_arr}selected{/if}>
@@ -56,8 +58,14 @@
                     <div class="item form-group form-row align-items-center">
                         <label class="col col-sm-4 col-form-label text-sm-right" for="cInhalt">{__('statusemailContent')}:</label>
                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                            <select name="cInhalt_arr[]" id="cInhalt" multiple="multiple" class="custom-select multiple"
-                                    size="15">
+                            <select name="cInhalt_arr[]"
+                                    id="cInhalt"
+                                    multiple="multiple"
+                                    class="selectpicker custom-select"
+                                    data-live-search="true"
+                                    data-actions-box="true"
+                                    data-selected-text-format="count > 1"
+                                    data-size="7">
                                 {foreach $oStatusemailEinstellungen->cInhaltMoeglich_arr as $key => $nInhaltMoeglich}
                                     <option value="{$nInhaltMoeglich}"
                                             {if $nInhaltMoeglich|in_array:$oStatusemailEinstellungen->nInhalt_arr}selected{/if}>

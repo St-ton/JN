@@ -60,7 +60,13 @@ function checkNewsletterSend() {ldelim}
                     <div class="form-group form-row align-items-center">
                         <label class="col col-sm-4 col-form-label text-sm-right" for="kKundengruppe">{__('newslettercustomergrp')}:</label>
                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                            <select id="kKundengruppe" name="kKundengruppe[]" multiple="multiple" class="custom-select {if isset($cPlausiValue_arr.kKundengruppe_arr)}fieldfillout{else}combo{/if}">
+                            <select id="kKundengruppe"
+                                    name="kKundengruppe[]"
+                                    multiple="multiple"
+                                    class="selectpicker custom-select {if isset($cPlausiValue_arr.kKundengruppe_arr)}fieldfillout{else}combo{/if}"
+                                    data-selected-text-format="count > 2"
+                                    data-size="7"
+                                    data-actions-box="true">
                                 <option value="0"
                                         {if isset($kKundengruppe_arr)}
                                             {foreach $kKundengruppe_arr as $kKundengruppe}

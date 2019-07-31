@@ -399,10 +399,18 @@
                 <div class="form-group form-row align-items-center">
                     <label class="col col-sm-4 col-form-label text-sm-right" for="kHersteller">{__('restrictedToManufacturers')}:</label>
                     <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                        <select multiple size="10" name="kHersteller[]" id="kHersteller" class="custom-select combo">
+                        <select multiple="multiple"
+                                name="kHersteller[]"
+                                id="kHersteller"
+                                class="selectpicker custom-select"
+                                data-selected-text-format="count > 2"
+                                data-size="7"
+                                data-live-search="true"
+                                data-actions-box="true">
                             <option value="-1"{if $oKupon->cHersteller === '-1'} selected{/if}>
-                                Alle Hersteller
+                                {__('all')}
                             </option>
+                            <option data-divider="true"></option>
                             {foreach $oHersteller_arr as $oHersteller}
                                 <option value="{$oHersteller->kHersteller}"{if $oHersteller->selected == 1} selected{/if}>
                                     {$oHersteller->cName}
@@ -439,10 +447,18 @@
                 <div class="form-group form-row align-items-center">
                     <label class="col col-sm-4 col-form-label text-sm-right" for="kKategorien">{__('restrictedToCategories')}:</label>
                     <span class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                        <select multiple size="10" name="kKategorien[]" id="kKategorien" class="custom-select combo">
+                        <select multiple="multiple"
+                                name="kKategorien[]"
+                                id="kKategorien"
+                                class="selectpicker custom-select"
+                                data-selected-text-format="count > 2"
+                                data-size="7"
+                                data-live-search="true"
+                                data-actions-box="true">
                             <option value="-1"{if $oKupon->cKategorien === '-1'} selected{/if}>
-                                Alle Kategorien
+                                {__('all')}
                             </option>
+                            <option data-divider="true"></option>
                             {foreach $oKategorie_arr as $oKategorie}
                                 <option value="{$oKategorie->kKategorie}"{if $oKategorie->selected == 1} selected{/if}>
                                     {$oKategorie->cName}

@@ -38,7 +38,12 @@
                         <label class="col col-sm-4 col-form-label text-sm-right" for="{$confItem->valueID}">{__($confItem->niceName)}:</label>
                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                         {if $confItem->inputType === JTL\Plugin\Admin\InputType::SELECT}
-                            <select id="{$confItem->valueID}" name="{$confItem->valueID}{if $confItem->confType === JTL\Plugin\Data\Config::TYPE_DYNAMIC}[]{/if}" class="custom-select combo"{if $confItem->confType === JTL\Plugin\Data\Config::TYPE_DYNAMIC} multiple{/if}>
+                            <select id="{$confItem->valueID}"
+                                    name="{$confItem->valueID}{if $confItem->confType === JTL\Plugin\Data\Config::TYPE_DYNAMIC}[]{/if}"
+                                    class="custom-select"{if $confItem->confType === JTL\Plugin\Data\Config::TYPE_DYNAMIC} multiple="multiple"{/if}
+                                    data-selected-text-format="count > 2"
+                                    data-size="7"
+                                    data-actions-box="true">
                                 {foreach $confItem->options as $option}
                                     {if $confItem->confType === JTL\Plugin\Data\Config::TYPE_DYNAMIC && $confItem->value|is_array}
                                         {assign var=selected value=($option->value|in_array:$confItem->value)}

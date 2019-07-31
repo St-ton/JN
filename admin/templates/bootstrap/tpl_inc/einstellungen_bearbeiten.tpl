@@ -51,7 +51,12 @@
                                         {/foreach}
                                     </select>
                                 {elseif $cnf->cInputTyp === 'listbox'}
-                                    <select name="{$cnf->cWertName}[]" id="{$cnf->cWertName}" multiple="multiple" class="custom-select combo">
+                                    <select name="{$cnf->cWertName}[]"
+                                    id="{$cnf->cWertName}"
+                                    multiple="multiple"
+                                    class="selectpicker custom-select combo"
+                                    data-selected-text-format="count > 2"
+                                    data-size="7">
                                         {foreach $cnf->ConfWerte as $wert}
                                             <option value="{$wert->cWert}" {foreach $cnf->gesetzterWert as $gesetzterWert}{if $gesetzterWert->cWert == $wert->cWert}selected{/if}{/foreach}>{$wert->cName}</option>
                                         {/foreach}

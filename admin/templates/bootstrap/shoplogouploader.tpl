@@ -63,8 +63,10 @@
                             console.log('File uploaded', data.previewId, data.index, data.fileId, msg);
                         });
                     </script>
-                    <div id="logo-upload-success" class="alert alert-info hidden">{__('successLogoUpload')}</div>
-                    <div id="logo-upload-error" class="alert alert-danger hidden">{{__('errorLogoUpload')}|sprintf:{$smarty.const.PFAD_SHOPLOGO}}</div>
+                    <div class="mt-3">
+                        <div id="logo-upload-success" class="alert alert-info hidden">{__('successLogoUpload')}</div>
+                        <div id="logo-upload-error" class="alert alert-danger hidden">{{__('errorLogoUpload')}|sprintf:{$smarty.const.PFAD_SHOPLOGO}}</div>
+                    </div>
                 </div>
             </div>
         </div>

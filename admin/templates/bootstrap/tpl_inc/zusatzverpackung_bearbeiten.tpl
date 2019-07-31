@@ -63,8 +63,15 @@
             <div class="form-group form-row align-items-center">
                 <label class="col col-sm-3 col-form-label text-sm-right" for="kKundengruppe">{__('customerGroup')}:</label>
                 <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                    <select id="kKundengruppe" name="kKundengruppe[]" multiple="multiple" class="custom-select combo" required>
+                    <select id="kKundengruppe"
+                            name="kKundengruppe[]"
+                            multiple="multiple"
+                            class="selectpicker custom-select combo"
+                            required
+                            data-selected-text-format="count > 2"
+                            data-size="7">
                         <option value="-1"{if isset($oVerpackungEdit) && $oVerpackungEdit->cKundengruppe == '-1'} selected{/if}>{__('all')}</option>
+                        <option data-divider="true"></option>
                         {foreach $oKundengruppe_arr as $oKundengruppe}
                             {if (isset($oVerpackungEdit->cKundengruppe) && $oVerpackungEdit->cKundengruppe == '-1') || !isset($oVerpackungEdit) || !$oVerpackungEdit}
                                 <option value="{$oKundengruppe->kKundengruppe}">{$oKundengruppe->cName}</option>
@@ -75,6 +82,7 @@
                                         {/foreach}>
                                     {$oKundengruppe->cName}
                                 </option>
+
                             {/if}
                         {/foreach}
                     </select>

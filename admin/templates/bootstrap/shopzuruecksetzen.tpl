@@ -9,7 +9,7 @@
                 $('input[type="checkbox"]:checked').next().each(function(i){
                     itemsChecked += $(this).prev().val();
                 });
-                if (itemsChecked === 'artikel' || itemsChecked === '') {
+                if (itemsChecked === 'artikel' || itemsChecked === 'steuern' || itemsChecked === '') {
                     $('#warningZuruecksetzen, #messageDataGetsLost').addClass('d-none');
                     $('button[data-target=".zuruecksetzen-modal"]').prop('disabled', itemsChecked === '');
                     $('#backupDone').closest('div.checkbox').addClass('d-none');
@@ -62,7 +62,13 @@
                 </div>
                 <div class="item">
                     <div class="custom-control custom-checkbox">
-                        <input class="custom-control-input" type="checkbox" name="cOption_arr[]" value="news" tabindex="4" id="News" />
+                        <input class="custom-control-input" type="checkbox" name="cOption_arr[]" value="steuern"
+                               tabindex="3" id="Steuern">
+                        <label class="custom-control-label" for="Steuern">{__('deleteTax')}</label>
+                    </div>
+                    <div class="custom-control custom-checkbox">
+                        <input class="custom-control-input" type="checkbox" name="cOption_arr[]" value="news"
+                               tabindex="4" id="News">
                         <label class="custom-control-label" for="News">{__('deleteNews')}</label>
                     </div>
                 </div>

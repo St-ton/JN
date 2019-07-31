@@ -36,7 +36,9 @@
         setJtlToken('{$smarty.session.jtl_token}');
     </script>
 
-    <script type="text/javascript" src="{$URL_SHOP}/{$PFAD_ADMIN}{$currentTemplateDir}js/fileinput/locales/{$language|mb_substr:0:2}.js"></script>
+    <script type="text/javascript"
+            src="{$URL_SHOP}/{$PFAD_ADMIN}{$currentTemplateDir}js/fileinput/locales/{$language|mb_substr:0:2}.js"></script>
+    <script type="module" src="{$URL_SHOP}/{$PFAD_ADMIN}{$currentTemplateDir}js/app/app.js"></script>
 </head>
 <body>
 {if $account !== false && isset($smarty.session.loginIsValid) && $smarty.session.loginIsValid === true}

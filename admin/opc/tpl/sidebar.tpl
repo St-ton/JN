@@ -116,16 +116,19 @@
             </label>
             <ul id="displayWidths">
                 <li>
-                    <button id="btnDisplayWidthMobile"><i class="fas fa-mobile-alt"></i></button>
+                    <button id="btnDisplayWidthXS"><i class="fas fa-mobile-alt"></i></button>
                 </li>
                 <li>
-                    <button id="btnDisplayWidthTablet"><i class="fas fa-tablet-alt"></i></button>
+                    <button id="btnDisplayWidthSM"><i class="fas fa-tablet-alt"></i></button>
                 </li>
                 <li>
-                    <button id="btnDisplayWidthLaptop"><i class="fas fa-laptop"></i></button>
+                    <button id="btnDisplayWidthMD"><i class="fas fa-laptop"></i></button>
+                </li>
+                <li>
+                    <button id="btnDisplayWidthLG"><i class="fas fa-desktop"></i></button>
                 </li>
                 <li class="active">
-                    <button id="btnDisplayWidthDesktop"><i class="fas fa-desktop"></i></button>
+                    <button id="btnDisplayWidthXL"><i class="fas fa-expand"></i></button>
                 </li>
             </ul>
         </div>

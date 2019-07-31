@@ -285,14 +285,14 @@ $(document).ready(function() {
                                         </div>
                                         <div class="modal-footer">
                                             <div class="row">
-                                                <div class="ml-auto col-sm-6 col-xl-auto">
-                                                    <button class="btn btn-outline-primary" type="button" data-dismiss="modal">Schließen</button>
+                                                <div class="ml-auto col-sm-6 col-xl-auto mb-2">
+                                                    <button class="btn btn-outline-primary btn-block" type="button" data-dismiss="modal">Schließen</button>
+                                                </div>
+                                                <div class="col-sm-6 col-xl-auto mb-2">
+                                                    <button class="btn btn-outline-primary btn-block" type="button" onclick="printframe.print();">Drucken</button>
                                                 </div>
                                                 <div class="col-sm-6 col-xl-auto">
-                                                    <button class="btn btn-outline-primary" type="button" onclick="printframe.print();">Drucken</button>
-                                                </div>
-                                                <div class="col-sm-6 col-xl-auto">
-                                                    <button class="btn btn-danger" type="button" onclick="showEmergencyCodes('forceReload');">{__('codeCreateAgain')}</button>
+                                                    <button class="btn btn-danger btn-block" type="button" onclick="showEmergencyCodes('forceReload');">{__('codeCreateAgain')}</button>
                                                 </div>
                                             </div>
                                         </div>

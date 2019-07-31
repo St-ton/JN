@@ -57,7 +57,7 @@
     {/if}
 </script>
 {if $bCustomStrategy === true}
-    <div class="modal fade" tabindex="-1" role="dialog" id="modal-{$importerId}">
+    <div class="modal" tabindex="-1" role="dialog" id="modal-{$importerId}">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -76,13 +76,13 @@
                 </div>
                 <div class="modal-footer">
                     <div class="row">
-                        <div class="ml-auto col-sm-6 col-xl-auto">
-                            <button type="button" class="btn btn-outline-primary" onclick="onModalCancel_{$importerId}();">
+                        <div class="ml-auto col-sm-6 col-xl-auto mb-2">
+                            <button type="button" class="btn btn-outline-primary btn-block" onclick="onModalCancel_{$importerId}();">
                                 {__('cancelWithIcon')}
                             </button>
                         </div>
                         <div class="col-sm-6 col-xl-auto">
-                            <button type="button" class="btn btn-primary" onclick="onModalSubmit_{$importerId}();">
+                            <button type="button" class="btn btn-primary btn-block" onclick="onModalSubmit_{$importerId}();">
                                 <i class="fa fa-upload"></i> {__('importCsv')}
                             </button>
                         </div>

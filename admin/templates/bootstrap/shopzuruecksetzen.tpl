@@ -193,11 +193,11 @@
             <div class="modal-footer">
                 <p>{__('sureContinue')}</p>
                 <div class="row">
-                    <div class="ml-auto col-sm-6 col-xl-auto">
-                        <button type="button" class="btn btn-outline-primary" data-dismiss="modal">{__('cancelWithIcon')}</button>
+                    <div class="ml-auto col-sm-6 col-xl-auto mb-2">
+                        <button type="button" class="btn btn-outline-primary btn-block" data-dismiss="modal">{__('cancelWithIcon')}</button>
                     </div>
                     <div class="col-sm-6 col-xl-auto">
-                        <button type="button" id="submitZuruecksetzen" class="btn btn-danger">{__('shopResetButton')}</button>
+                        <button type="button" id="submitZuruecksetzen" class="btn btn-danger btn-block">{__('shopResetButton')}</button>
                     </div>
                 </div>
             </div>

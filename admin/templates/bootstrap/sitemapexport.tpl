@@ -16,11 +16,11 @@
                 </div>
                 <div class="modal-footer">
                     <div class="row">
-                        <div class="ml-auto col-sm-6 col-xl-auto">
-                            <button type="button" class="btn btn-outline-primary" name="cancel" data-dismiss="modal">{__('cancelWithIcon')}</button>
+                        <div class="ml-auto col-sm-6 col-xl-auto mb-2">
+                            <button type="button" class="btn btn-outline-primary btn-block" name="cancel" data-dismiss="modal">{__('cancelWithIcon')}</button>
                         </div>
                         <div class="col-sm-6 col-xl-auto">
-                            <button id="formSubmit" type="button" class="btn btn-danger" name="delete" ><i class="fas fa-trash-alt"></i>&nbsp;{__('delete')}</button>
+                            <button id="formSubmit" type="button" class="btn btn-danger btn-block" name="delete" ><i class="fas fa-trash-alt"></i>&nbsp;{__('delete')}</button>
                         </div>
                     </div>
                 </div>

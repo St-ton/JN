@@ -12673,16 +12673,16 @@ body {
   visibility: visible;
 }
 
-#content {
+#content_wrapper {
   padding: 1rem 1.5rem;
 }
 @media (min-width: 768px) {
-  #content {
+  #content_wrapper {
     padding: 2rem 2.75rem;
   }
 }
 @media (min-width: 1600px) {
-  #content {
+  #content_wrapper {
     padding: 4rem 5.5rem;
   }
 }

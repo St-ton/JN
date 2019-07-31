@@ -1850,3 +1850,6 @@ msgstr "Favourites"
 
 msgid "saveWithIcon"
 msgstr "<i class=\"fal fa-save\"></i> Save"
+
+msgid "cancelWithIcon"
+msgstr "<i class=\"fas fa-exclamation\"></i> Cancel"

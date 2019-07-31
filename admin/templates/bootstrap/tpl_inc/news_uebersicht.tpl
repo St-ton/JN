@@ -469,7 +469,9 @@
                 <div class="modal-footer">
                     <div class="row">
                         <div class="ml-auto col-sm-6 col-xl-auto">
-                            <button type="button" class="btn btn-outline-primary" data-dismiss="modal">{__('cancel')}</button>
+                            <button type="button" class="btn btn-outline-primary" data-dismiss="modal">
+                                {__('cancelWithIcon')}
+                            </button>
                         </div>
                         <div class="col-sm-6 col-xl-auto">
                             <button type="button" id="submitDelete" data-name="" class="btn btn-danger">{__('delete')}</button>

@@ -45,8 +45,7 @@
                 <div class="row">
                     <div class="ml-auto col-sm-6 col-xl-auto">
                         <button type="button" class="btn btn-outline-primary" data-dismiss="modal" id="{$searchPickerName}-cancel-btn">
-                            <i class="fal fa-times"></i>
-                            {__('cancel')}
+                            {__('cancelWithIcon')}
                         </button>
                     </div>
                     <div class="col-sm-6 col-xl-auto">

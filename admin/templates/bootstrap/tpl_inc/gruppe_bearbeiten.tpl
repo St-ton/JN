@@ -79,7 +79,7 @@
                         {/if}
                         <input type="hidden" name="save" value="1" />
                         <a class="btn btn-outline-primary btn-block mb-2" href="benutzerverwaltung.php?tab=group_view">
-                            <i class="fa fa-exclamation"></i> {__('cancel')}
+                            {__('cancelWithIcon')}
                         </a>
                     </div>
                     <div class="col-sm-6 col-xl-auto">

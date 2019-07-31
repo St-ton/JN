@@ -252,7 +252,7 @@
                             <div class="row">
                                 <div class="ml-auto col-sm-6 col-xl-auto">
                                     <button type="button" onclick="window.location.href='boxen.php'" class="btn btn-outline-primary btn-block mb-2">
-                                        <i class="fa fa-angle-double-left"></i> {__('cancel')}
+                                        {__('cancelWithIcon')}
                                     </button>
                                 </div>
                                 <div class="col-sm-6 col-xl-auto">

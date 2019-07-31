@@ -65,7 +65,7 @@
                     </div>
                     <div class="col-sm-6 col-xl-auto">
                         <button type="button" class="btn btn-outline-primary btn-block mb-2" onclick="location.reload();">
-                            <i class="glyphicon glyphicon-remove"></i> {__('cancel')}
+                            {__('cancelWithIcon')}
                         </button>
                     </div>
                     <div class="col-sm-6 col-xl-auto">
@@ -75,7 +75,7 @@
                     </div>
                     <div class="col-sm-6 col-xl-auto">
                         <button type="submit" class="btn btn-primary btn-block" id="saveButton">
-                            <i class=" fa fa-save"></i> {__('save')}
+                            {__('saveWithIcon')}
                         </button>
                     </div>
                 </div>

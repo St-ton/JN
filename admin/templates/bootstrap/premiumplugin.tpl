@@ -257,7 +257,8 @@
             <div class="col-md-6" id="plugin-info-1">
                 <div class="card">
                     <div class="card-header">
-                        <div class="card-title">Ihre Vorteile</div>
+                        <div class="subheading1">Ihre Vorteile</div>
+                        <hr class="mb-n3">
                     </div>
                     <div class="card-body">
                         <ul class="advantages list-unstyled">
@@ -271,7 +272,8 @@
             <div class="col-md-6" id="plugin-info-2">
                 <div class="card">
                     <div class="card-header">
-                        <div class="card-title">So funktioniert's</div>
+                        <div class="subheading1">So funktioniert's</div>
+                        <hr class="mb-n3">
                     </div>
                     <div class="card-body">
                         <ul class="howtos list-unstyled">

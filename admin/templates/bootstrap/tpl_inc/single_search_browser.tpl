@@ -15,10 +15,8 @@
             <select size="15" class="ssb-search"></select>
         </div>
         <div class="text-center">
-            <div class="btn-group">
-                <a href="#" class="btn btn-primary button add">{__('save')}</a>
-                <a href="#" class="btn btn-danger button remove"><i class="fa fa-exclamation"></i> {__('cancel')}</a>
-            </div>
+            <a href="#" class="btn btn-outline-primary button remove">{__('cancelWithIcon')}</a>
+            <a href="#" class="btn btn-primary button add">{__('save')}</a>
         </div>
     </fieldset>
 </div>

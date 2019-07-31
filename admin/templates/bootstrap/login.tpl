@@ -98,7 +98,7 @@
                                 <div class="input-group-prepend"><span class="input-group-text"><i class="fa fa-user"></i></span></div>
                                 <input class="form-control" type="text" placeholder="{__('username')}" name="benutzer" id="user_login" value="" size="20" tabindex="10" />
                             </div>
-                            <div class="input-group">
+                            <div class="input-group mt-2">
                                 <div class="input-group-prepend"><span class="input-group-text"><i class="fa fa-lock"></i></span></div>
                                 <input class="form-control" type="password" placeholder="{__('password')}" name="passwort" id="user_pass" value="" size="20" tabindex="20" />
                             </div>
@@ -106,7 +106,7 @@
                                 {captchaMarkup getBody=true}
                             {/if}
                         {/if}
-                        <button type="submit" value="Anmelden" tabindex="100" class="btn btn-primary btn-block btn-md">{__('login')}</button>
+                        <button type="submit" value="Anmelden" tabindex="100" class="btn btn-primary btn-block mt-2">{__('login')}</button>
                         {if isset($smarty.session.AdminAccount->TwoFA_active) && true === $smarty.session.AdminAccount->TwoFA_active }
                             <button type="button" tabindex="110" class="btn btn-default btn-block btn-md" onclick="switchUser();">{__('changerUser')}</button>
                         {/if}

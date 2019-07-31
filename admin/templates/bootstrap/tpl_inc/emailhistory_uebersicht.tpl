@@ -31,7 +31,9 @@
                         <div class="modal-footer">
                             <div class="row">
                                 <div class="ml-auto col-sm-6 col-xl-auto">
-                                    <button type="button" class="btn btn-outline-primary" name="cancel" data-dismiss="modal"><i class="fa fa-close"></i>&nbsp;{__('cancel')}</button>
+                                    <button type="button" class="btn btn-outline-primary" name="cancel" data-dismiss="modal">
+                                        {__('cancelWithIcon')}
+                                    </button>
                                 </div>
                                 <div class="col-sm-6 col-xl-auto">
                                     <button type="button" class="btn btn-primary" name="ok" id="submitForm"><i class="fal fa-check text-success"></i>&nbsp;{__('ok')}</button>

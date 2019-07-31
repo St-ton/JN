@@ -73,7 +73,7 @@
                     <div class="row">
                         <div class="ml-auto col-sm-6 col-xl-auto">
                             <a class="btn btn-outline-primary btn-block mb-2" href="exportformat_queue.php">
-                                <i class="fa fa-exclamation"></i> {__('cancel')}
+                                {__('cancelWithIcon')}
                             </a>
                         </div>
                         <div class="col-sm-6 col-xl-auto">

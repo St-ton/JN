@@ -7,22 +7,24 @@
             <div class="alert alert-warning">
                 {__('errorCatsWithoutParents')}
             </div>
-            <table class="table table-striped table-hover">
-                <thead>
-                <tr>
-                    <th class="col-xs-3 text-center">ID</th>
-                    <th class="col-xs-9 text-center">Name</th>
-                </tr>
-                </thead>
-                <tbody>
-                {foreach $cateogries as $category}
-                    <tr>
-                        <td class="text-center">{$category->kKategorie}</td>
-                        <td class="text-center">{$category->cName}</td>
-                    </tr>
-                {/foreach}
-                </tbody>
-            </table>
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th class="col-xs-3 text-center">{__('id')}</th>
+                            <th class="col-xs-9 text-center">{__('name')}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {foreach $cateogries as $category}
+                        <tr>
+                            <td class="text-center">{$category->kKategorie}</td>
+                            <td class="text-center">{$category->cName}</td>
+                        </tr>
+                    {/foreach}
+                    </tbody>
+                </table>
+            </div>
         {else}
             <div class="alert alert-info">{__('infoNoOrphanedCats')}</div>
         {/if}

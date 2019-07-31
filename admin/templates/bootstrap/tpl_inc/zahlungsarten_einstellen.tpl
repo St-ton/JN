@@ -171,7 +171,7 @@
             <div class="row">
                 <div class="ml-auto col-sm-6 col-xl-auto mb-2">
                     <a href="zahlungsarten.php" title="{__('cancel')}" class="btn btn-outline-primary btn-block">
-                        <i class="fas fa-exclamation"></i> {__('cancel')}
+                        {__('cancelWithIcon')}
                     </a>
                 </div>
                 <div class="col-sm-6 col-xl-auto">

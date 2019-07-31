@@ -194,7 +194,7 @@
             </div>
             <div class="card-body">
                 <div class="form-group form-row align-items-center">
-                    <label class="col col-sm-4 col-form-label text-sm-right order-1" for="kSprache">{__('language')}</label>
+                    <label class="col col-sm-4 col-form-label text-sm-right order-1" for="kSprache">{__('language')}:</label>
                     <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                         <select id="kSprache" name="kSprache" class="custom-select">
                             <option value="0">{__('all')}</option>

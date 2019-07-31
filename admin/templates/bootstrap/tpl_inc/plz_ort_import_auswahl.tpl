@@ -39,7 +39,7 @@
                 {/if}
             </div>
             <div class="modal-footer text-right">
-                <a href="#" class="btn btn-outline-primary" data-dismiss="modal"><i class="fa fa-close"></i> {__('cancel')}</a>
+                <a href="#" class="btn btn-outline-primary" data-dismiss="modal">{__('cancelWithIcon')}</a>
             </div>
         </div>
     </div>

@@ -22,15 +22,6 @@ import './views/topbar.js'
 /* init plugins */
 
 $('[data-toggle="tooltip"]').tooltip()
-$('.selectpicker').selectpicker({
-	noneSelectedText: 'Nichts ausgewählt',
-	noneResultsText: '{0} ergab keine Treffer',
-	countSelectedText: '{0} ausgewählt',
-	maxOptionsText: () => ['Limit erreicht (max. {n})', 'Gruppenlimit erreicht (max. {n})'],
-	selectAllText: 'Alle aktivieren',
-	deselectAllText: 'Alle deaktivieren',
-	doneButtonText: 'Schließen'
-})
 $('.nav-tabs, .nav-pills').tabdrop()
 
 /* events */

@@ -23,6 +23,13 @@
 
 		&:not(.searching) .search-btn { opacity: 0; visibility: hidden; }
 
+		&:not(.searching) > div:nth-child(2), :not(.searching) > div:nth-child(3) {
+			display: initial;
+		}
+		&.searching > div:nth-child(2), .searching > div:nth-child(3) {
+			display: block;
+		}
+
 		&.searching {
 			.search { flex: 0 0 100%; max-width: 100%; }
 		}

@@ -7,7 +7,7 @@ const Tabdrop = function(element, options) {
 	this.element = element;
 	this.options = options;
 	this.tabdrop = $('<li class="nav-item tab-drop d-none">' +
-						'<a class="nav-link' + ((this.options.showCaret) ? ' dropdown-toggle' : '') + '" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false"></a>' +
+						'<a class="nav-link' + ((this.options.showCaret) ? ' dropdown-toggle' : '') + '" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false"><i class="fal fa-angle-down"></i></a>' +
 						'<div class="dropdown-menu dropdown-menu-right"></div>' +
 					'</li>').appendTo(this.element);
 	this.collection = [];

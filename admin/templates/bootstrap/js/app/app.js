@@ -21,7 +21,9 @@ import './views/topbar.js'
 
 /* init plugins */
 
-$('[data-toggle="tooltip"]').tooltip()
+$('[data-toggle="tooltip"]').tooltip({
+	placement: 'auto'
+});
 $('.nav-tabs, .nav-pills').tabdrop()
 
 /* events */

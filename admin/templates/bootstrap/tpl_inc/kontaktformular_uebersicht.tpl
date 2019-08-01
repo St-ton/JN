@@ -139,7 +139,9 @@
                                     {assign var=cISO value=$language->getIso()}
                                     {assign var=cISOcat value=$cISO|cat:'_titel'}
                                     <div class="form-group form-row align-items-center">
-                                        <label class="col col-sm-4 col-form-label text-sm-right" for="cTitle_{$cISO}">{__('title')} ({$language->getLocalizedName()}):</label>
+                                        <label class="col col-sm-4 col-form-label text-sm-right" for="cTitle_{$cISO}">
+                                            {__('title')} ({$language->getLocalizedName()}):
+                                        </label>
                                         <span class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                             <input class="form-control" type="text" name="cTitle_{$cISO}" id="cTitle_{$cISO}" value="{if !empty($Content[$cISOcat])}{$Content[$cISOcat]}{/if}" tabindex="1" />
                                         </span>
@@ -148,14 +150,26 @@
                                 {foreach $sprachen as $language}
                                     {assign var=cISO value=$language->getIso()}
                                     {assign var=cISOcat value=$cISO|cat:'_oben'}
-                                    <div class="category">{__('topContent')} ({$language->getLocalizedName()})</div>
-                                    <textarea class="ckeditor form-control" name="cContentTop_{$cISO}" id="cContentTop_{$cISO}">{if !empty($Content[$cISOcat])}{$Content[$cISOcat]}{/if}</textarea>
+                                    <div class="form-group form-row align-items-center">
+                                        <label class="col col-sm-4 col-form-label text-sm-right" for="cContentTop_{$cISO}">
+                                            {__('topContent')} ({$language->getLocalizedName()}):
+                                        </label>
+                                        <span class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                            <textarea class="ckeditor form-control" name="cContentTop_{$cISO}" id="cContentTop_{$cISO}">{if !empty($Content[$cISOcat])}{$Content[$cISOcat]}{/if}</textarea>
+                                        </span>
+                                    </div>
                                 {/foreach}
                                 {foreach $sprachen as $language}
                                     {assign var=cISO value=$language->getIso()}
                                     {assign var=cISOcat value=$cISO|cat:'_unten'}
-                                    <div class="category">{__('bottomContent')} ({$language->getLocalizedName()})</div>
-                                    <textarea class="ckeditor form-control" name="cContentBottom_{$cISO}" id="cContentBottom_{$cISO}">{if !empty($Content[$cISOcat])}{$Content[$cISOcat]}{/if}</textarea>
+                                    <div class="form-group form-row align-items-center">
+                                        <label class="col col-sm-4 col-form-label text-sm-right" for="cContentBottom_{$cISO}">
+                                            {__('bottomContent')} ({$language->getLocalizedName()}):
+                                        </label>
+                                        <span class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                            <textarea class="ckeditor form-control" name="cContentBottom_{$cISO}" id="cContentBottom_{$cISO}">{if !empty($Content[$cISOcat])}{$Content[$cISOcat]}{/if}</textarea>
+                                        </span>
+                                    </div>
                                 {/foreach}
                             </div>
                         </div>

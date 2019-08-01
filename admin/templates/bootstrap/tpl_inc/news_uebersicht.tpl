@@ -472,16 +472,14 @@
             <div class="modal-body py-5"></div>
             <div class="modal-footer">
                 <p>{__('wantToConfirm')}</p>
-                <div class="modal-footer">
-                    <div class="row">
-                        <div class="ml-auto col-sm-6 col-xl-auto">
-                            <button type="button" class="btn btn-outline-primary" data-dismiss="modal">
-                                {__('cancelWithIcon')}
-                            </button>
-                        </div>
-                        <div class="col-sm-6 col-xl-auto">
-                            <button type="button" id="submitDelete" data-name="" class="btn btn-danger">{__('delete')}</button>
-                        </div>
+                <div class="row">
+                    <div class="ml-auto col-sm-6 col-xl-auto">
+                        <button type="button" class="btn btn-outline-primary" data-dismiss="modal">
+                            {__('cancelWithIcon')}
+                        </button>
+                    </div>
+                    <div class="col-sm-6 col-xl-auto">
+                        <button type="button" id="submitDelete" data-name="" class="btn btn-danger">{__('delete')}</button>
                     </div>
                 </div>
             </div>

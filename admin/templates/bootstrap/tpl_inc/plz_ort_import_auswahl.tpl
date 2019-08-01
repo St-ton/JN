@@ -3,10 +3,10 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>{__('plz_ort_import_select')}</h2>
                 <button type="button" class="close" data-dismiss="modal">
                     <i class="fal fa-times"></i>
                 </button>
+                <h2>{__('plz_ort_import_select')}</h2>
             </div>
             <div class="modal-body">
                 {if isset($oLand_arr) && count($oLand_arr) > 0}
@@ -38,8 +38,14 @@
                 <div class="alert alert-warning"><i class="fal fa-exclamation-triangle"></i> {__('plz_ort_import_select_failed')}</div>
                 {/if}
             </div>
-            <div class="modal-footer text-right">
-                <a href="#" class="btn btn-outline-primary" data-dismiss="modal">{__('cancelWithIcon')}</a>
+            <div class="modal-footer">
+                <div class="row mt-3">
+                    <div class="ml-auto col-sm-6 col-xl-auto">
+                        <a href="#" class="btn btn-outline-primary btn-block" data-dismiss="modal">
+                            {__('cancelWithIcon')}
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

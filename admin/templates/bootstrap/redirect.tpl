@@ -137,7 +137,7 @@
                                     <tr>
                                         <th></th>
                                         <th>{__('redirectFrom')} {call sortControls pagination=$pagination nSortBy=0}</th>
-                                        <th>{__('redirectTo')} {call sortControls pagination=$pagination nSortBy=1}</th>
+                                        <th class="min-w">{__('redirectTo')} {call sortControls pagination=$pagination nSortBy=1}</th>
                                         <th class="text-center">{__('redirectRefererCount')} {call sortControls pagination=$pagination nSortBy=2}</th>
                                         <th class="text-center"></th>
                                     </tr>
@@ -162,19 +162,21 @@
                                                 </label>
                                             </td>
                                             <td>
-                                                <div class="input-group" id="input-group-{$oRedirect->kRedirect}">
-                                                    <span class="input-group-addon text-info state-checking">
+                                                <div class="form-group form-row align-items-center" id="input-group-{$oRedirect->kRedirect}">
+                                                    <span class="col col-lg-auto col-form-label text-info state-checking">
                                                         <i class="fa fa-spinner fa-pulse"></i>
                                                     </span>
-                                                    <span class="input-group-addon text-success state-available" style="display:none;">
+                                                    <span class="col col-lg-auto col-form-label text-success state-available" style="display:none;">
                                                         <i class="fal fa-check"></i>
                                                     </span>
-                                                    <span class="input-group-addon text-danger state-unavailable" style="display:none;">
+                                                    <span class="col col-lg-auto col-form-label text-danger state-unavailable" style="display:none;">
                                                         <i class="fal fa-exclamation-triangle"></i>
                                                     </span>
-                                                    <input class="form-control min-w-sm" name="redirects[{$oRedirect->kRedirect}][cToUrl]"
-                                                           value="{$oRedirect->cToUrl}" id="cToUrl-{$oRedirect->kRedirect}"
-                                                           onblur="checkUrl({$oRedirect->kRedirect})">
+                                                    <div class="col col-md-10">
+                                                        <input class="form-control min-w-sm" name="redirects[{$oRedirect->kRedirect}][cToUrl]"
+                                                               value="{$oRedirect->cToUrl}" id="cToUrl-{$oRedirect->kRedirect}"
+                                                               onblur="checkUrl({$oRedirect->kRedirect})">
+                                                    </div>
                                                     <script>
                                                         enableTypeahead(
                                                             '#cToUrl-{$oRedirect->kRedirect}', 'getSeos',
@@ -182,6 +184,7 @@
                                                             checkUrl.bind(null, {$oRedirect->kRedirect}, false)
                                                         );
                                                     </script>
+
                                                 </div>
                                             </td>
                                             <td class="text-center">

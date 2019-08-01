@@ -135,8 +135,12 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <div class="btn-group text-right">
-                    <button id="cancelWait" class="btn btn-danger"><i class="fa fa-close"></i>&nbsp;{__('migrationCancel')}</button>
+                <div class="row">
+                    <div class="ml-auto col-sm-6 col-xl-auto">
+                        <button id="cancelWait" class="btn btn-danger btn-block">
+                            <i class="fa fa-close"></i>&nbsp;{__('migrationCancel')}
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>

@@ -48,7 +48,7 @@
     <div id="page-wrapper" class="backend-wrapper hidden disable-transitions{if $currentPage === 'index' || $currentPage === 'status'} dashboard{/if}">
         {include file='tpl_inc/backend_sidebar.tpl'}
         <div class="backend-main sidebar-offset">
-            <div id="topbar" class="backend-navbar row mx-0 align-items-center topbar flex-nowrap searching">
+            <div id="topbar" class="backend-navbar row mx-0 align-items-center topbar flex-nowrap">
                 <div class="col search">
                     {include file='tpl_inc/backend_search.tpl'}
                 </div>

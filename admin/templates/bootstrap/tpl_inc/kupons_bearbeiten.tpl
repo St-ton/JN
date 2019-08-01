@@ -390,10 +390,7 @@
                         <input type="hidden" id="cArtikel" name="cArtikel" value="{$oKupon->cArtikel}">
                     </div>
                     <div class="col-auto ml-sm-n4 order-2 order-sm-3">
-                        <button type="button" class="btn btn-info btn-sm" data-toggle="modal"
-                                data-target="#articlePicker-modal">
-                            <i class="fal fa-edit"></i>
-                        </button>
+                        {include file='snippets/searchpicker_button.tpl' target='#articlePicker-modal'}
                     </div>
                 </div>
                 <div class="form-group form-row align-items-center">
@@ -511,10 +508,7 @@
                             <input type="hidden" id="cKunden" name="cKunden" value="{$oKupon->cKunden}">
                         </span>
                         <div class="col-auto ml-sm-n4 order-2 order-sm-3">
-                            <button type="button" class="btn btn-info btn-sm" data-toggle="modal"
-                                    data-target="#customerPicker-modal">
-                                <i class="fal fa-edit"></i>
-                            </button>
+                            {include file='snippets/searchpicker_button.tpl' target='#customerPicker-modal'}
                         </div>
                     </div>
                     <div class="form-group form-row align-items-center{if isset($oKupon->massCreationCoupon)} hidden{/if}" id="informCustomers">

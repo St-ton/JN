@@ -252,15 +252,7 @@
                                value="{if !empty($cPostVar_arr.cArtikel)}{$cPostVar_arr.cArtikel}{elseif isset($oNewslettervorlageStd->cArtikel)}{$oNewslettervorlageStd->cArtikel}{/if}">
                     </div>
                     <div class="col-auto ml-sm-n4 order-2 order-sm-3">
-                        <button type="button" class="btn btn-link px-2"
-                                data-toggle="modal"
-                                data-target="#articlePicker-modal"
-                                title="{__('labelSearchProduct')}">
-                            <span class="icon-hover">
-                                <span class="fal fa-edit"></span>
-                                <span class="fas fa-edit"></span>
-                            </span>
-                        </button>
+                        {include file='snippets/searchpicker_button.tpl' target='#articlePicker-modal'}
                     </div>
                 </div>
                 {include file='tpl_inc/searchpicker_modal.tpl'
@@ -296,10 +288,7 @@
                                value="{if !empty($cPostVar_arr.cHersteller)}{$cPostVar_arr.cHersteller}{elseif isset($oNewslettervorlageStd->cHersteller)}{$oNewslettervorlageStd->cHersteller}{/if}">
                     </div>
                     <div class="col-auto ml-sm-n4 order-2 order-sm-3">
-                        <button type="button" class="btn btn-link px-2" data-toggle="modal"
-                                data-target="#manufacturerPicker-modal" title="{__('labelSearchManufacturer')}">
-                            <i class="fal fa-edit"></i>
-                        </button>
+                        {include file='snippets/searchpicker_button.tpl' target='#manufacturerPicker-modal' title="{__('labelSearchManufacturer')}"}
                     </div>
                 </div>
                 {include file='tpl_inc/searchpicker_modal.tpl'
@@ -335,10 +324,7 @@
                                value="{if !empty($cPostVar_arr.cKategorie)}{$cPostVar_arr.cKategorie}{elseif isset($oNewslettervorlageStd->cKategorie)}{$oNewslettervorlageStd->cKategorie}{/if}">
                     </div>
                     <div class="col-auto ml-sm-n4 order-2 order-sm-3">
-                        <button type="button" class="btn btn-link px-2" data-toggle="modal"
-                                data-target="#categoryPicker-modal" title="{__('labelSearchCategory')}">
-                            <i class="fal fa-edit"></i>
-                        </button>
+                        {include file='snippets/searchpicker_button.tpl' target='#categoryPicker-modal' title="{__('labelSearchCategory')}"}
                     </div>
                 </div>
 
@@ -349,7 +335,7 @@
                                 <div class="form-group form-row align-items-center">
                                     <label class="col col-sm-4 col-form-label text-sm-right"></label>
                                     <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                        <img src="{$oNewslettervorlageStdVar->cInhalt}?={$nRand}" /><br /><br class="clear" />
+                                        <img class="img-fluid" src="{$oNewslettervorlageStdVar->cInhalt}?={$nRand}" />
                                     </div>
                                 </div>
                             {/if}

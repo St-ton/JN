@@ -20,13 +20,13 @@
 
 {function filter_row headers=[] col=null op=null val=null remove=true}
     <div class="fieldset-row" data-action="add-row">
-        <select name="filter[where][col][]" class="form-control input-xs">
+        <select name="filter[where][col][]" class="custom-select input-xs">
             <option value="">({__('any')})</option>
             {foreach $headers as $h}
                 <option value="{$h}"{if $col == $h} selected="selected"{/if}>{$h}</option>
             {/foreach}
         </select>
-        <select name="filter[where][op][]" class="form-control input-xs">
+        <select name="filter[where][op][]" class="custom-select input-xs">
             {filter_operator selected=$op}
         </select>
         <input type="text" name="filter[where][val][]" class="form-control input-xs" value="{$val|escape:'html'}">

@@ -12,7 +12,7 @@
             <input type="text" value="" autocomplete="off" class="form-control" />
         </div>
         <div class="search">
-            <select size="15" class="ssb-search"></select>
+            <select size="15" class="ssb-search custom-select"></select>
         </div>
         <div class="text-center">
             <a href="#" class="btn btn-outline-primary button remove">{__('cancelWithIcon')}</a>

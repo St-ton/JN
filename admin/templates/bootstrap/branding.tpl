@@ -37,7 +37,7 @@
                     <div class="card-body">
                         {if $oBranding->cBrandingBild|strlen > 0}
                             <div class="thumbnail">
-                                <img src="{$shopURL}/{$PFAD_BRANDINGBILDER}{$oBranding->cBrandingBild}?rnd={$cRnd}" alt="" />
+                                <img class="img-fluid" src="{$shopURL}/{$PFAD_BRANDINGBILDER}{$oBranding->cBrandingBild}?rnd={$cRnd}" alt="" />
                             </div>
                         {/if}
                         <div class="form-group form-row align-items-center">

@@ -4,12 +4,12 @@
     <div class="select_wrapper">
         <div class="search">
             <h2>{__('found')} {__('product')}</h2>
-            <select multiple="multiple" name="article_list_found">
+            <select class="custom-select" multiple="multiple" name="article_list_found">
             </select>
         </div>
         <div class="added">
             <h2>{__('selected')} {__('product')}</h2>
-            <select multiple="multiple" name="article_list_selected">
+            <select class="custom-select" multiple="multiple" name="article_list_selected">
             </select>
         </div>
         <div class="clear"></div>

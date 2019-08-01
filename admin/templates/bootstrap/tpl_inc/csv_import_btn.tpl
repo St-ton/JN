@@ -68,7 +68,7 @@
                 </div>
                 <div class="modal-body py-5">
                     <label for="importType-{$importerId}" class="sr-only">{__('importCsvChooseType')}</label>
-                    <select class="form-control" name="importType" id="importType-{$importerId}">
+                    <select class="custom-select" name="importType" id="importType-{$importerId}">
                         <option value="0">{__('importCsvType0')}</option>
                         <option value="1">{__('importCsvType1')}</option>
                         <option value="2">{__('importCsvType2')}</option>

@@ -20,25 +20,28 @@
             </nav>
             <div class="tab-content">
                 <div id="massaction" class="tab-pane fade {if !isset($tab) || $tab === 'massaction' || $tab === 'uebersicht'} active show{/if}">
-                    <form name="suche" method="post" action="warenkorbpers.php">
-                        {$jtl_token}
-                        <input type="hidden" name="Suche" value="1" />
-                        <input type="hidden" name="tab" value="warenkorbpers" />
-                        {if isset($cSuche) && $cSuche|strlen > 0}
-                            <input type="hidden" name="cSuche" value="{$cSuche}" />
-                        {/if}
+                    <div class="search-toolbar mb-3">
+                        <form name="suche" method="post" action="warenkorbpers.php">
+                            {$jtl_token}
+                            <input type="hidden" name="Suche" value="1" />
+                            <input type="hidden" name="tab" value="warenkorbpers" />
+                            {if isset($cSuche) && $cSuche|strlen > 0}
+                                <input type="hidden" name="cSuche" value="{$cSuche}" />
+                            {/if}
 
-                        <div class="input-group">
-                            <span class="input-group-addon">
-                                <label for="cSuche">{__('warenkorbpersClientName')}:</label>
-                            </span>
-                            <input class="form-control" id="cSuche" name="cSuche" type="text" value="{if isset($cSuche) && $cSuche|strlen > 0}{$cSuche}{/if}" />
-                            <span class="input-group-btn">
-                                <button name="submitSuche" type="submit" value="{__('warenkorbpersSearchBTN')}" class="btn btn-primary ml-1"><i class="fal fa-search"></i></button>
-                            </span>
-                        </div>
-                    </form>
-
+                            <div class="form-row">
+                                <label class="col-sm-auto col-form-label" for="cSuche">{__('warenkorbpersClientName')}:</label>
+                                <div class="col-sm-auto mb-2">
+                                    <input class="form-control" id="cSuche" name="cSuche" type="text" value="{if isset($cSuche) && $cSuche|strlen > 0}{$cSuche}{/if}" />
+                                </div>
+                                <span class="col-sm-auto">
+                                    <button name="submitSuche" type="submit" value="{__('warenkorbpersSearchBTN')}" class="btn btn-primary btn-block">
+                                        <i class="fal fa-search"></i>
+                                    </button>
+                                </span>
+                            </div>
+                        </form>
+                    </div>
                     {if isset($oKunde_arr) && $oKunde_arr|@count > 0}
                         {assign var=cParam_arr value=[]}
                         {if isset($cSuche)}

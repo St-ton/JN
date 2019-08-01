@@ -36,7 +36,7 @@
                                     </button>
                                 </div>
                                 <div class="col-sm-6 col-xl-auto">
-                                    <button type="button" class="btn btn-primary" name="ok" id="submitForm"><i class="fal fa-check text-success"></i>&nbsp;{__('ok')}</button>
+                                    <button type="button" class="btn btn-danger" name="ok" id="submitForm"><i class="fas fa-trash-alt"></i> {__('deleteAll')}</button>
                                 </div>
                             </div>
                         </div>

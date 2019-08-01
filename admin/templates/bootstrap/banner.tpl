@@ -437,7 +437,7 @@
             </div>
         </div>
         <div id="area_wrapper">
-            <img src="{$oBanner->cBildPfad}" title="" id="clickarea" />
+            <img class="img-fluid" src="{$oBanner->cBildPfad}" title="" id="clickarea" />
         </div>
     </div>
     <div class="save-wrapper">

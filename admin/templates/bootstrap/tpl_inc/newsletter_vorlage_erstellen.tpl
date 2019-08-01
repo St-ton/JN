@@ -204,10 +204,7 @@ function checkNewsletterSend() {ldelim}
                                    value="{if isset($cPostVar_arr.cArtikel) && $cPostVar_arr.cArtikel|strlen > 0}{$cPostVar_arr.cArtikel}{elseif isset($oNewsletterVorlage->cArtikel)}{$oNewsletterVorlage->cArtikel}{/if}">
                         </div>
                         <div class="col-auto ml-sm-n4 order-2 order-sm-3">
-                            <button type="button" class="btn btn-outline-primary btn-sm" data-toggle="modal"
-                                    data-target="#articlePicker-modal">
-                                <i class="fal fa-edit"></i>
-                            </button>
+                            {include file='snippets/searchpicker_button.tpl' target='#articlePicker-modal'}
                         </div>
                     </div>
                     {include file='tpl_inc/searchpicker_modal.tpl'
@@ -243,10 +240,7 @@ function checkNewsletterSend() {ldelim}
                                    value="{if isset($cPostVar_arr.cHersteller) && $cPostVar_arr.cHersteller|strlen > 0}{$cPostVar_arr.cHersteller}{elseif isset($oNewsletterVorlage->cHersteller)}{$oNewsletterVorlage->cHersteller}{/if}">
                         </div>
                         <div class="col-auto ml-sm-n4 order-2 order-sm-3">
-                            <button type="button" class="btn btn-outline-primary btn-sm" data-toggle="modal"
-                                    data-target="#manufacturerPicker-modal">
-                                <i class="fal fa-edit"></i>
-                            </button>
+                            {include file='snippets/searchpicker_button.tpl' target='#manufacturerPicker-modal'}
                         </div>
                     </div>
                     {include file='tpl_inc/searchpicker_modal.tpl'
@@ -282,10 +276,7 @@ function checkNewsletterSend() {ldelim}
                                    value="{if isset($cPostVar_arr.cKategorie) && $cPostVar_arr.cKategorie|strlen > 0}{$cPostVar_arr.cKategorie}{elseif isset($oNewsletterVorlage->cKategorie)}{$oNewsletterVorlage->cKategorie}{/if}">
                         </div>
                         <div class="col-auto ml-sm-n4 order-2 order-sm-3">
-                            <button type="button" class="btn btn-outline-primary btn-sm" data-toggle="modal"
-                                    data-target="#categoryPicker-modal">
-                                <i class="fal fa-edit"></i>
-                            </button>
+                            {include file='snippets/searchpicker_button.tpl' target='#categoryPicker-modal'}
                         </div>
                     </div>
                     <div class="form-group form-row align-items-center">

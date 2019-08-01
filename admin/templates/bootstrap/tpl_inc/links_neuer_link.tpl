@@ -195,7 +195,7 @@
                     <div class="form-group form-row align-items-center">
                         <label class="col col-sm-4 col-form-label text-sm-right" for="bSSL">SSL:</label>
                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                            <select id="bSSL" class="form-control" name="bSSL">
+                            <select id="bSSL" class="custom-select" name="bSSL">
                                 <option value="0"{if $Link->getSSL() === false || (isset($xPostVar_arr.bSSL) && ($xPostVar_arr.bSSL == 0 || $xPostVar_arr.bSSL == 1))} selected="selected"{/if}>{__('standard')}</option>
                                 <option value="2"{if $Link->getSSL() === true || (isset($xPostVar_arr.bSSL) && $xPostVar_arr.bSSL == 2)} selected="selected"{/if}>{__('forced')}</option>
                             </select>

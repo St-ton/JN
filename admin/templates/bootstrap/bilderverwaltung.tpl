@@ -48,8 +48,12 @@
                                 <i class="fa fa-spinner fa-spin"></i>
                             </td>
                             <td class="text-center action-buttons">
-                                <a class="btn btn-default btn-sm" href="#" data-callback="flush" data-type="{$item->type}"><i class="fas fa-trash-alt-o"></i>{__('deleteCachedPics')}</a>
-                                <a class="btn btn-primary btn-sm" href="#" data-callback="generate"><i class="fa fa-cog"></i>{__('generatePics')}</a>
+                                <a class="btn btn-outline-primary btn-sm mb-2" href="#" data-callback="flush" data-type="{$item->type}">
+                                    <i class="fas fa-trash-alt-o"></i>{__('deleteCachedPics')}
+                                </a>
+                                <a class="btn btn-primary btn-sm" href="#" data-callback="generate">
+                                    <i class="fa fa-cog"></i>{__('generatePics')}
+                                </a>
                             </td>
                         </tr>
                     {/foreach}

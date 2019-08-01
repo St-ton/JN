@@ -136,7 +136,7 @@
                                         <th class="text-left">{__('ratingText')}</th>
                                         <th class="th-5 text-center">{__('ratingStars')}</th>
                                         <th class="th-6 text-center">{__('date')}</th>
-                                        <th class="th-7 text-center">&nbsp;</th>
+                                        <th class="th-7 text-center min-w-sm">{__('actions')}</th>
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -151,7 +151,6 @@
                                             </td>
                                             <td>
                                                 <label for="l50-{$review->kBewertung}">{$review->ArtikelName}</label>
-                                                &nbsp;<a href="{$shopURL}/index.php?a={$review->kArtikel}" target="_blank"><i class="fas fa fa-external-link"></i></a>
                                             </td>
                                             <td>{$review->cName}.</td>
                                             <td>
@@ -166,7 +165,7 @@
                                             </td>
                                             <td class="text-center">{$review->nSterne}</td>
                                             <td class="text-center">{$review->Datum}</td>
-                                            <td class="text-center" style="min-width: 130px;">
+                                            <td class="text-center">
                                                 {if !empty($review->cAntwort)}
                                                     <a href="bewertung.php?a=delreply&kBewertung={$review->kBewertung}&tab=letzten50&token={$smarty.session.jtl_token}"
                                                        class="btn btn-link px-2"
@@ -178,6 +177,16 @@
                                                         </span>
                                                     </a>
                                                 {/if}
+                                                <a class="btn btn-link px-2"
+                                                   href="{$shopURL}/index.php?a={$review->kArtikel}"
+                                                   target="_blank"
+                                                   title="{__('linkItemShop')}"
+                                                   data-toggle="tooltip">
+                                                    <span class="icon-hover">
+                                                        <span class="fal fa-external-link"></span>
+                                                        <span class="fas fa-external-link"></span>
+                                                    </span>
+                                                </a>
                                                 <a href="bewertung.php?a=editieren&kBewertung={$review->kBewertung}&tab=letzten50&token={$smarty.session.jtl_token}"
                                                    class="btn btn-link px-2"
                                                    title="{__('modify')}"

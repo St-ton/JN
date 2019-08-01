@@ -38,7 +38,7 @@
             <div class="clearall">
                 <div class="no_overflow card" id="settings">
                     <div class="card-body">
-                        <img src="{$oSuchspecialOverlay->getURL($smarty.const.IMAGE_SIZE_SM)}?rnd={$cRnd}" style="margin-bottom: 15px;" />
+                        <img class="img-fluid mb-3" src="{$oSuchspecialOverlay->getURL($smarty.const.IMAGE_SIZE_SM)}?rnd={$cRnd}"/>
                         <div class="form-group form-row align-items-center">
                             <label class="col col-sm-4 col-form-label text-sm-right" for="nAktiv">{__('suchspecialoverlayActive')}:</label>
                             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">

@@ -106,7 +106,7 @@
                                     <label class="custom-control-label" for="ALLMSGS"></label>
                                 </div>
                             </span>
-                            <select name="action" class="form-control">
+                            <select name="action" class="custom-select">
                                 <option value="">{__('action')}</option>
                                 <option value="optimize">{__('optimize')}</option>
                                 <option value="repair">{__('repair')}</option>

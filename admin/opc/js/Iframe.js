@@ -35,6 +35,7 @@ class Iframe
             'btnBlueprint',
             'btnParent',
             'btnTrash',
+            'dropTargetBlueprint',
         ]);
 
         this.pagetree = pagetree;
@@ -95,7 +96,14 @@ class Iframe
         return new this.ctx.Popper(
             document.body,
             elm[0],
-            {placement: 'top-start', modifiers: {computeStyle: {gpuAcceleration: false }}}
+            {
+                placement: 'top-start',
+                modifiers: {computeStyle: {gpuAcceleration: false }, offset: {offset:"8,0"}},
+                onUpdate: data => {
+                    $(data.instance.popper).css('top', data.styles.top + 1 + "px");
+                    console.log(data);
+                },
+            }
         );
     }
 
@@ -110,8 +118,8 @@ class Iframe
     updateDropTargets()
     {
         this.stripDropTargets();
-        this.areas().append('<div class="opc-droptarget">');
-        this.portlets().before('<div class="opc-droptarget">');
+        this.areas().append(this.dropTargetBlueprint.clone().show());
+        this.portlets().before(this.dropTargetBlueprint.clone().show());
     }
 
     stripDropTargets()
@@ -224,6 +232,12 @@ class Iframe
     onPortletDragOver(e)
     {
         var elm = this.jq(e.target);
+
+        if(elm.parent().hasClass('opc-droptarget')) {
+            elm = elm.parent();
+        } else if(elm.parent().parent().hasClass('opc-droptarget')) {
+            elm = elm.parent().parent();
+        }
 
         if(elm.hasClass('opc-droptarget') && !this.isDescendant(elm, this.draggedElm)) {
             this.setDropTarget(elm);

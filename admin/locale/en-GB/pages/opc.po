@@ -172,9 +172,6 @@ msgstr "No, edit current version"
 msgid "yesRestore"
 msgstr "Yes, restore changes"
 
-msgid "portletLabel"
-msgstr "Portlet label"
-
 msgid "editSettings"
 msgstr "Edit settings"
 

@@ -172,9 +172,6 @@ msgstr "Nein, Änderungen verwerfen"
 msgid "yesRestore"
 msgstr "Ja, weiter bearbeiten"
 
-msgid "portletLabel"
-msgstr "Portlet-Label"
-
 msgid "editSettings"
 msgstr "Einstellungen bearbeiten"
 

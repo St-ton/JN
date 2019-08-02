@@ -12,7 +12,7 @@
     title=$imgAttribs.title
     data=$data|default:null
     fluid=$instance->getProperty('responsive')
-    style=$instance->getStyleString()
+    style=$instance->getStyleString()|cat:' display: block'
     rounded=$portlet->getRoundedProp($instance)
     thumbnail=$portlet->getThumbnailProp($instance)
 }

@@ -81,29 +81,36 @@
         {include file="./modals/tour.tpl"}
         {include file="./modals/restore_unsaved.tpl"}
 
-        <div id="portletToolbar" class="opc-portlet-toolbar btn-group" style="display:none">
-            <button type="button" class="btn btn-default btn-sm opc-label" id="portletLabel">
-                {__('portletLabel')}
+        <div id="portletToolbar" class="opc-portlet-toolbar" style="display:none">
+            <button type="button" class="opc-toolbar-btn opc-label" id="portletLabel">
+                portletLabel
             </button>
-            <button type="button" class="btn btn-default btn-sm" id="btnConfig" title="{__('editSettings')}">
-                <i class="fa fa-edit"></i>
+            <button type="button" class="opc-toolbar-btn" id="btnConfig" title="{__('editSettings')}">
+                <i class="fas fa-pen fa fa-pencil"></i>
             </button>
-            <button type="button" class="btn btn-default btn-sm" id="btnClone" title="{__('copySelect')}">
-                <i class="fa fa-clone"></i>
+            <button type="button" class="opc-toolbar-btn" id="btnClone" title="{__('copySelect')}">
+                <i class="far fa-clone"></i>
             </button>
-            <button type="button" class="btn btn-default btn-sm" id="btnBlueprint" title="{__('saveTemplate')}">
-                <i class="fa fa-star"></i>
+            <button type="button" class="opc-toolbar-btn" id="btnBlueprint" title="{__('saveTemplate')}">
+                <i class="far fa-star"></i>
             </button>
-            <button type="button" class="btn btn-default btn-sm" id="btnParent" title="{__('goUp')}">
-                <i class="fa fa-level-up fas fa-level-up-alt"></i>
+            <button type="button" class="opc-toolbar-btn" id="btnParent" title="{__('goUp')}">
+                <i class="fas fa-level-up fas fa-level-up-alt"></i>
             </button>
-            <button type="button" class="btn btn-default btn-sm" id="btnTrash" title="{__('deleteSelect')}">
-                <i class="fa fa-trash"></i>
+            <button type="button" class="opc-toolbar-btn" id="btnTrash" title="{__('deleteSelect')}">
+                <i class="fas fa-trash"></i>
             </button>
         </div>
 
         <div id="portletPreviewLabel" class="opc-label" style="display:none">
             {__('portletPreviewLabel')}
+        </div>
+
+        <div id="dropTargetBlueprint" class="opc-droptarget" style="display:none">
+            <div>
+                <img src="{$shopUrl}/admin/opc/gfx/icon-drop-target.svg" class="opc-droptarget-icon" alt="Drop Target">
+                <span>Portlet hier einfügen</span>
+            </div>
         </div>
     </div>
 </body>

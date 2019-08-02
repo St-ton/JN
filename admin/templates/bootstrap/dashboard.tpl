@@ -31,7 +31,8 @@
                 <div class="dropleft d-inline-block">
                     <button class="btn btn-link btn-lg px-0" type="button" id="helpcenter" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <span class="icon-hover">
-                            <span class="fa fa-cog"></span>
+                            <span class="fal fa-cog"></span>
+                            <span class="fas fa-cog"></span>
                         </span>
                     </button>
                     <div class="dropdown-menu dropdown-menu-right min-w-lg" aria-labelledby="helpcenter">

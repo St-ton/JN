@@ -1,4 +1,4 @@
-<tr>
+<tr class="{if isset($borderTop)}tr-divider-top {elseif isset($borderBottom) && $borderBottom}tr-divider-bottom{/if}">
     {assign var=isActive value=$oBox->getFilter($nPage) === true || is_array($oBox->getFilter($nPage))}
     {if $oBox->getBaseType() === $smarty.const.BOX_CONTAINER}
         <td class="{if !$isActive} inactive text-muted{/if}">

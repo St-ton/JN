@@ -29,12 +29,18 @@
                             <tbody>
                                 {foreach $oBox_arr as $oBox}
                                     {if $oBox->getBaseType() === $smarty.const.BOX_CONTAINER}
-                                        <tr class="tr-divider"></tr>
-                                        {include file='tpl_inc/box_single.tpl' oBox=$oBox nPage=$nPage position=$direction}
+                                        {include file='tpl_inc/box_single.tpl'
+                                            oBox=$oBox
+                                            nPage=$nPage
+                                            position=$direction
+                                            borderTop=true}
                                         {foreach $oBox->getChildren() as $oContainerBox}
-                                            {include file='tpl_inc/box_single.tpl' oBox=$oContainerBox nPage=$nPage position=$direction}
+                                            {include file='tpl_inc/box_single.tpl'
+                                                oBox=$oContainerBox
+                                                nPage=$nPage
+                                                position=$direction
+                                                borderBottom=$oContainerBox@last}
                                         {/foreach}
-                                        <tr class="tr-divider"></tr>
                                     {else}
                                         {include file='tpl_inc/box_single.tpl' oBox=$oBox nPage=$nPage position=$direction}
                                     {/if}

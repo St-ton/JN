@@ -185,7 +185,12 @@
         </div>
         <div class="save-wrapper">
             <div class="row">
-                <div class="ml-auto col-sm-6 col-xl-auto">
+                <div class="ml-auto col-sm-6 col-xl-auto mb-2">
+                    <a class="btn btn-outline-primary btn-block" href="exportformate.php">
+                        {__('goBack')}
+                    </a>
+                </div>
+                <div class="col-sm-6 col-xl-auto">
                     <button type="submit" class="btn btn-primary btn-block" value="{if !isset($Exportformat->kExportformat) || !$Exportformat->kExportformat}{__('newExportformatSave')}{else}{__('modifyExportformatSave')}{/if}">
                         <i class="fa fa-save"></i> {if !isset($Exportformat->kExportformat) || !$Exportformat->kExportformat}{__('newExportformatSave')}{else}{__('modifyExportformatSave')}{/if}
                     </button>

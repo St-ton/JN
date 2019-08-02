@@ -615,16 +615,16 @@ function checkSelect(selectBox) {ldelim}
                             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                 <select name="cTyp" id="cTypSelect" class="custom-select combo" onchange="checkSelect(this);">
                                     <option {if isset($oUmfrageFrage->kUmfrageFrage) && $oUmfrageFrage->kUmfrageFrage > 0}{else}selected{/if}></option>
-                                    <option value="{\JTL\Survey\QuestionType::MULTI_SINGLE}"{if isset($oUmfrageFrage->cTyp) && $oUmfrageFrage->cTyp === \JTL\Survey\QuestionType::MULTI_SINGLE}selected{/if}>{__('questionTypeMultipleChoiceOne')}</option>
-                                    <option value="{\JTL\Survey\QuestionType::MULTI}"{if isset($oUmfrageFrage->cTyp) && $oUmfrageFrage->cTyp === \JTL\Survey\QuestionType::MULTI}selected{/if}>{__('questionTypeMultipleChoiceMany')}</option>
-                                    <option value="{\JTL\Survey\QuestionType::SELECT_SINGLE}"{if isset($oUmfrageFrage->cTyp) && $oUmfrageFrage->cTyp === \JTL\Survey\QuestionType::SELECT_SINGLE}selected{/if}>{__('questionTypeSelectboxOne')}</option>
-                                    <option value="{\JTL\Survey\QuestionType::SELECT_MULTI}"{if isset($oUmfrageFrage->cTyp) && $oUmfrageFrage->cTyp === \JTL\Survey\QuestionType::SELECT_MULTI}selected{/if}>{__('questionTypeSelectboxMany')}</option>
-                                    <option value="{\JTL\Survey\QuestionType::TEXT_SMALL}"{if isset($oUmfrageFrage->cTyp) && $oUmfrageFrage->cTyp === \JTL\Survey\QuestionType::TEXT_SMALL}selected{/if}>{__('questionTypeTextSmall')}</option>
-                                    <option value="{\JTL\Survey\QuestionType::TEXT_BIG}"{if isset($oUmfrageFrage->cTyp) && $oUmfrageFrage->cTyp === \JTL\Survey\QuestionType::TEXT_BIG}selected{/if}>{__('questionTypeTextBig')}</option>
-                                    <option value="{\JTL\Survey\QuestionType::MATRIX_SINGLE}"{if isset($oUmfrageFrage->cTyp) && $oUmfrageFrage->cTyp === \JTL\Survey\QuestionType::MATRIX_SINGLE}selected{/if}>{__('questionTypeMatrixOne')}</option>
-                                    <option value="{\JTL\Survey\QuestionType::MATRIX_MULTI}"{if isset($oUmfrageFrage->cTyp) && $oUmfrageFrage->cTyp === \JTL\Survey\QuestionType::MATRIX_MULTI}selected{/if}>{__('questionTypeMatrixMany')}</option>
-                                    <option value="{\JTL\Survey\QuestionType::TEXT_STATIC}"{if isset($oUmfrageFrage->cTyp) && $oUmfrageFrage->cTyp === \JTL\Survey\QuestionType::TEXT_STATIC}selected{/if}>{__('questionTypeDivider')}</option>
-                                    <option value="{\JTL\Survey\QuestionType::TEXT_PAGE_CHANGE}"{if isset($oUmfrageFrage->cTyp) && $oUmfrageFrage->cTyp === \JTL\Survey\QuestionType::TEXT_PAGE_CHANGE}selected{/if}>{__('questionTypeDividerNewPage')}</option>
+                                    <option value="{\JTL\Survey\QuestionType::MULTI_SINGLE}" {if isset($oUmfrageFrage->cTyp) && $oUmfrageFrage->cTyp === \JTL\Survey\QuestionType::MULTI_SINGLE}selected{/if}>{__('questionTypeMultipleChoiceOne')}</option>
+                                    <option value="{\JTL\Survey\QuestionType::MULTI}" {if isset($oUmfrageFrage->cTyp) && $oUmfrageFrage->cTyp === \JTL\Survey\QuestionType::MULTI}selected{/if}>{__('questionTypeMultipleChoiceMany')}</option>
+                                    <option value="{\JTL\Survey\QuestionType::SELECT_SINGLE}" {if isset($oUmfrageFrage->cTyp) && $oUmfrageFrage->cTyp === \JTL\Survey\QuestionType::SELECT_SINGLE}selected{/if}>{__('questionTypeSelectboxOne')}</option>
+                                    <option value="{\JTL\Survey\QuestionType::SELECT_MULTI}" {if isset($oUmfrageFrage->cTyp) && $oUmfrageFrage->cTyp === \JTL\Survey\QuestionType::SELECT_MULTI}selected{/if}>{__('questionTypeSelectboxMany')}</option>
+                                    <option value="{\JTL\Survey\QuestionType::TEXT_SMALL}" {if isset($oUmfrageFrage->cTyp) && $oUmfrageFrage->cTyp === \JTL\Survey\QuestionType::TEXT_SMALL}selected{/if}>{__('questionTypeTextSmall')}</option>
+                                    <option value="{\JTL\Survey\QuestionType::TEXT_BIG}" {if isset($oUmfrageFrage->cTyp) && $oUmfrageFrage->cTyp === \JTL\Survey\QuestionType::TEXT_BIG}selected{/if}>{__('questionTypeTextBig')}</option>
+                                    <option value="{\JTL\Survey\QuestionType::MATRIX_SINGLE}" {if isset($oUmfrageFrage->cTyp) && $oUmfrageFrage->cTyp === \JTL\Survey\QuestionType::MATRIX_SINGLE}selected{/if}>{__('questionTypeMatrixOne')}</option>
+                                    <option value="{\JTL\Survey\QuestionType::MATRIX_MULTI}" {if isset($oUmfrageFrage->cTyp) && $oUmfrageFrage->cTyp === \JTL\Survey\QuestionType::MATRIX_MULTI}selected{/if}>{__('questionTypeMatrixMany')}</option>
+                                    <option value="{\JTL\Survey\QuestionType::TEXT_STATIC}" {if isset($oUmfrageFrage->cTyp) && $oUmfrageFrage->cTyp === \JTL\Survey\QuestionType::TEXT_STATIC}selected{/if}>{__('questionTypeDivider')}</option>
+                                    <option value="{\JTL\Survey\QuestionType::TEXT_PAGE_CHANGE}" {if isset($oUmfrageFrage->cTyp) && $oUmfrageFrage->cTyp === \JTL\Survey\QuestionType::TEXT_PAGE_CHANGE}selected{/if}>{__('questionTypeDividerNewPage')}</option>
                                 </select>
                             </div>
                         </div>
@@ -641,8 +641,8 @@ function checkSelect(selectBox) {ldelim}
                             <label class="col col-sm-4 col-form-label text-sm-right" for="nFreifeld">{__('umfrageQFreeField')}:</label>
                             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                 <select id="nFreifeld" name="nFreifeld" class="custom-select combo">
-                                    <option value="1"{if isset($oUmfrageFrage->nFreifeld) && $oUmfrageFrage->nFreifeld == 1}selected{/if}>{__('yes')}</option>
-                                    <option value="0"{if !isset($oUmfrageFrage->nFreifeld) || (isset($oUmfrageFrage->nFreifeld) && $oUmfrageFrage->nFreifeld == 0)}selected{/if}>{__('no')}</option>
+                                    <option value="1" {if isset($oUmfrageFrage->nFreifeld) && $oUmfrageFrage->nFreifeld == 1}selected{/if}>{__('yes')}</option>
+                                    <option value="0" {if !isset($oUmfrageFrage->nFreifeld) || (isset($oUmfrageFrage->nFreifeld) && $oUmfrageFrage->nFreifeld == 0)}selected{/if}>{__('no')}</option>
                                 </select>
                             </div>
                         </div>
@@ -650,8 +650,8 @@ function checkSelect(selectBox) {ldelim}
                             <label class="col col-sm-4 col-form-label text-sm-right" for="nNotwendig">{__('umfrageQEssential')}:</label>
                             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                 <select id="nNotwendig" name="nNotwendig" class="custom-select combo">
-                                    <option value="1"{if isset($oUmfrageFrage->nNotwendig) && $oUmfrageFrage->nNotwendig == 1}selected{/if}>{__('yes')}</option>
-                                    <option value="0"{if isset($oUmfrageFrage->nNotwendig) && $oUmfrageFrage->nNotwendig == 0}selected{/if}>{__('no')}</option>
+                                    <option value="1" {if isset($oUmfrageFrage->nNotwendig) && $oUmfrageFrage->nNotwendig == 1}selected{/if}>{__('yes')}</option>
+                                    <option value="0" {if isset($oUmfrageFrage->nNotwendig) && $oUmfrageFrage->nNotwendig == 0}selected{/if}>{__('no')}</option>
                                 </select>
                             </div>
                         </div>
@@ -723,7 +723,7 @@ function checkSelect(selectBox) {ldelim}
                                     </button>
                                 </div>
                             {else}
-                                <div class="col-sm-6 col-xl-auto mb-2">
+                                <div class="{if !isset($oUmfrageFrageTMP->kUmfrage)}ml-auto{/if} col-sm-6 col-xl-auto mb-2">
                                     <button class="btn btn-outline-primary btn-block mb-2" name="nocheinefrage" type="submit" value="{__('umfrageAnotherQ')}">
                                         <i class="fa fa-share"></i> {__('umfrageAnotherQ')}
                                     </button>

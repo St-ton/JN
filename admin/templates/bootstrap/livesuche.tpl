@@ -224,13 +224,13 @@
                                     </button>
                                 </div>
                                 <div class="col-sm-6 col-xl-auto">
-                                    <button class="btn btn-outline-primary btn-block mb-2" name="erfolglosEdit" type="submit">
-                                        <i class="fal fa-edit"></i> {__('livesucheEdit')}
+                                    <button class="btn btn-outline-primary btn-block" name="erfolglosUpdate" type="submit">
+                                        <i class="fa fa-refresh"></i> {__('update')}
                                     </button>
                                 </div>
                                 <div class="col-sm-6 col-xl-auto">
-                                    <button class="btn btn-primary btn-block" name="erfolglosUpdate" type="submit">
-                                        <i class="fa fa-refresh"></i> {__('update')}
+                                    <button class="btn btn-primary btn-block mb-2" name="erfolglosEdit" type="submit">
+                                        <i class="fal fa-edit"></i> {__('livesucheEdit')}
                                     </button>
                                 </div>
                             </div>

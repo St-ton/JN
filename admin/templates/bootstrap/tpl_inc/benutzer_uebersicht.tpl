@@ -140,7 +140,7 @@
                                                         class="delete btn btn-link px-2"
                                                         name="action" value="group_delete"
                                                         onclick="return confirm('{__('sureDeleteGroup')}');"
-                                                        {if (int)$oGroup->nCount > 0}title="{__('loeschenLabelDeaktiviert')}" disabled="disabled"{else}title="{__('loeschenLabel')}"{/if}
+                                                        {if (int)$oGroup->nCount > 0}title="{__('loeschenLabelDeaktiviert')}" disabled="disabled"{else}title="{__('delete')}"{/if}
                                                         data-toggle="tooltip">
                                                     <span class="icon-hover">
                                                         <span class="fal fa-trash-alt"></span>

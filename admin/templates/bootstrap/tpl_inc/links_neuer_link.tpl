@@ -351,10 +351,14 @@
             <div class="card-footer save-wrapper">
                 <div class="row">
                     <div class="ml-auto col-sm-6 col-xl-auto">
-                        <button type="submit" name="continue" value="1" class="btn btn-outline-primary btn-block mb-2" id="save-and-continue">{__('newLinksSaveContinueEdit')}</button>
+                        <button type="submit" name="continue" value="1" class="btn btn-outline-primary btn-block mb-2" id="save-and-continue">
+                            <i class="fal fa-save"></i> {__('newLinksSaveContinueEdit')}
+                        </button>
                     </div>
                     <div class="col-sm-6 col-xl-auto">
-                        <button type="submit" value="{__('newLinksSave')}" class="btn btn-primary btn-block"><i class="fa fa-save"></i> {__('newLinksSave')}</button>
+                        <button type="submit" value="{__('newLinksSave')}" class="btn btn-primary btn-block">
+                            <i class="fa fa-save"></i> {__('newLinksSave')}
+                        </button>
                     </div>
                 </div>
             </div>

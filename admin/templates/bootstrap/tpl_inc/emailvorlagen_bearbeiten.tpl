@@ -230,13 +230,13 @@
             <div class="card-footer save-wrapper">
                 <div class="row">
                     <div class="ml-auto col-sm-6 col-xl-auto">
-                        <a href="emailvorlagen.php" title="{__('cancel')}" class="btn btn-danger btn-block mb-2">
+                        <a href="emailvorlagen.php" title="{__('cancel')}" class="btn btn-outline-primary btn-block mb-2">
                             {__('cancelWithIcon')}
                         </a>
                     </div>
                     <div class="col-sm-6 col-xl-auto">
                         <button type="submit" name="continue" value="1" class="btn btn-outline-primary btn-block mb-2">
-                            {__('saveAndContinue')}
+                            <i class="fal fa-save"></i> {__('saveAndContinue')}
                         </button>
                     </div>
                     <div class="col-sm-6 col-xl-auto">

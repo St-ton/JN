@@ -238,7 +238,11 @@
                         <form method="post" action="newsletter.php">
                             {$jtl_token}
                             <input name="tab" type="hidden" value="alleabonnenten" />
-                            <input name="submitAbo" type="submit" value="{__('newsletterNewSearch')}" class="btn btn-primary" />
+                            <div class="row">
+                                <div class="col-sm-6 col-xl-auto">
+                                    <input name="submitAbo" type="submit" value="{__('newsletterNewSearch')}" class="btn btn-primary btn-block" />
+                                </div>
+                            </div>
                         </form>
                     {/if}
                 {/if}

@@ -634,7 +634,7 @@ function checkSelect(selectBox) {ldelim}
                                 <input class="form-control" id="nSort" name="nSort" type="number"  value="{if isset($oUmfrageFrage->nSort)}{$oUmfrageFrage->nSort}{/if}" />
                             </div>
                             <div class="col-auto ml-sm-n4 order-2 order-sm-3">
-                                <span class="input-group-addon">{getHelpDesc cDesc=__('pollSortHint')}</span>
+                                {getHelpDesc cDesc=__('pollSortHint')}
                             </div>
                         </div>
                         <div class="form-group form-row align-items-center">

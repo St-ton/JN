@@ -252,7 +252,7 @@
                                 </tr>
                                 <tr class="cache-row collapsed clickable" data-toggle="collapse" data-target="#hitRateDetail" style="cursor: pointer">
                                     <td>{__('hitRate')}:</td>
-                                    <td class="value">{$opcache_stats->hitRate}%&nbsp;<i class="fal fa-info-circle right"></i></td>
+                                    <td class="value">{$opcache_stats->hitRate}%&nbsp;<i class="fal fa-info-circle float-right"></i></td>
                                 </tr>
                                 <tr class="cache-row">
                                     <td colspan="2" style="padding: 0">
@@ -279,7 +279,7 @@
                             <table class="table cache-stats" id="tplcache-stats">
                                 <tr class="cache-row collapsed clickable" data-toggle="collapse" data-target="#cachefilesFrontendDetail" style="cursor: pointer">
                                     <td>{__('files')} {__('frontend')}</td>
-                                    <td class="value">{$tplcacheStats->frontend|count}&nbsp;<i class="fal fa-info-circle right"></i></td>
+                                    <td class="value">{$tplcacheStats->frontend|count}&nbsp;<i class="fal fa-info-circle float-right"></i></td>
                                 </tr>
                                 {if $tplcacheStats->frontend|count > 0}
                                 <tr class="cache-row">
@@ -298,7 +298,7 @@
                                 {/if}
                                 <tr class="cache-row collapsed clickable" data-toggle="collapse" data-target="#cachefilesBackendDetail" style="cursor: pointer">
                                     <td>{__('files')} {__('backend')}</td>
-                                    <td class="value">{$tplcacheStats->backend|count}&nbsp;<i class="fal fa-info-circle right"></i></td>
+                                    <td class="value">{$tplcacheStats->backend|count}&nbsp;<i class="fal fa-info-circle float-right"></i></td>
                                 </tr>
                                 {if $tplcacheStats->backend|count > 0}
                                 <tr class="cache-row">

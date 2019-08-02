@@ -74,7 +74,7 @@
                         {if $oUmfrageFrage->cTyp !== \JTL\Survey\QuestionType::TEXT_STATIC && $oUmfrageFrage->cTyp !== \JTL\Survey\QuestionType::TEXT_PAGE_CHANGE && $oUmfrageFrage->cTyp !== \JTL\Survey\QuestionType::TEXT_SMALL && $oUmfrageFrage->cTyp !== \JTL\Survey\QuestionType::TEXT_BIG}
                             <hr/>
                             <div class="row">
-                                <div class="col-md-{if $oUmfrageFrage->oUmfrageMatrixOption_arr|@count > 0}4{else}8{/if} col-md-offset-1">
+                                <div class="col-md-{if $oUmfrageFrage->oUmfrageMatrixOption_arr|@count > 0}4{else}8{/if} offset-md-1">
                                     <strong>{__('umfrageQA')}:</strong>
                                     <table  class="table">
                                         {foreach $oUmfrageFrage->oUmfrageFrageAntwort_arr as $oUmfrageFrageAntwort}

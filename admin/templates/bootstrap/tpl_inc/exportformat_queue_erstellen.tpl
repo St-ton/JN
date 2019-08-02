@@ -59,12 +59,14 @@
                                     24 {__('hours')}
                                 </option>
                                 <option value="48"{if (isset($oFehler->nAlleXStunden) && $oFehler->nAlleXStunden == 48) || (isset($oCron->frequency) && $oCron->frequency === 48)} selected{/if}>
-                                    48 {__('days')}
+                                    48 {__('hours')}
                                 </option>
                                 <option value="168"{if (isset($oFehler->nAlleXStunden) && $oFehler->nAlleXStunden == 168) || (isset($oCron->frequency) && $oCron->frequency === 168)} selected{/if}>
                                     1 {__('week')}
                                 </option>
-                                <option value="custom" id="custom-freq"{if $showCustomInput} selected{/if}>{__('own')}</option>
+                                <option value="custom" id="custom-freq"{if $showCustomInput} selected{/if}>
+                                    {__('own')}
+                                </option>
                             </select>
                         </div>
                     </div>

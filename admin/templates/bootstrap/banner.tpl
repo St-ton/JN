@@ -344,6 +344,11 @@
             <div class="save-wrapper">
                 <div class="row">
                     <div class="ml-auto col-sm-6 col-xl-auto">
+                        <a class="btn btn-outline-primary btn-block" href="banner.php">
+                            {__('goBack')}
+                        </a>
+                    </div>
+                    <div class="col-sm-6 col-xl-auto">
                         <button type="submit" class="btn btn-primary btn-block" value="Banner speichern">
                             <i class="fa fa-save"></i> {__('saveBanner')}
                         </button>

@@ -154,10 +154,17 @@ $(document).ready(function() {
                             </div>
                             <div class="col-auto ml-sm-n4 order-2 order-sm-3">
                                 <button type="button" onclick="ioCall('getRandomPassword');return false;"
-                                        class="btn btn-info btn-sm" title="{__('passwordGenerate')}">
-                                    <i class="fa fa-random"></i>
+                                        class="btn btn-link p-0" title="{__('passwordGenerate')}">
+                                    <span class="icon-hover">
+                                        <span class="fal fa-random"></span>
+                                        <span class="fas fa-random"></span>
+                                    </span>
                                 </button>
-                                {if isset($cError_arr.cPass)}<span class="input-group-addon error" title="{__('FillOut')}"><i class="fa fa-exclamation-triangle"></i></span>{else}<span class="input-group-addon"><i class="fa fa-wrench"></i></span>{/if}
+                                {if isset($cError_arr.cPass)}
+                                    <span class="input-group-addon error" title="{__('FillOut')}">
+                                        <i class="fa fa-exclamation-triangle"></i>
+                                    </span>
+                                {/if}
                             </div>
                         </div>
                     </div>

@@ -83,6 +83,25 @@ class Area implements \JsonSerializable
         return $result;
     }
 
+    public function getCssList($preview = false)
+    {
+        $list = [];
+
+        foreach ($this->content as $portletInstance) {
+            $cssFile = $portletInstance->getPortlet()->getCssFile($preview);
+
+            if (!empty($cssFile)) {
+                $list[$cssFile] = true;
+            }
+
+            foreach ($portletInstance->getSubareaList()->getAreas() as $area) {
+                $list = $list + $area->getCssList($preview);
+            }
+        }
+
+        return $list;
+    }
+
     /**
      * @param array $data
      * @return $this

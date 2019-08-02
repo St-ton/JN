@@ -13,6 +13,22 @@ namespace JTL\OPC;
 trait PortletStyles
 {
     /**
+     * @param bool $preview
+     * @return string|null
+     */
+    final public function getCssFile($preview = false)
+    {
+        $cssPath = $this->getTemplatePath() . ($preview ? 'preview' : $this->getClass()) . '.css';
+        $cssUrl  = $this->getTemplateUrl() . ($preview ? 'preview' : $this->getClass()) . '.css';
+
+        if (\file_exists($cssPath)) {
+            return $cssUrl;
+        }
+
+        return null;
+    }
+
+    /**
      * @return array
      */
     public function getStylesPropertyDesc(): array

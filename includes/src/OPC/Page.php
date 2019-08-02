@@ -315,6 +315,17 @@ class Page implements \JsonSerializable
         return -1;
     }
 
+    public function getCssList($preview = false)
+    {
+        $list = [];
+
+        foreach ($this->areaList->getAreas() as $area) {
+            $list = $list + $area->getCssList($preview);
+        }
+
+        return $list;
+    }
+
     /**
      * @param string $json
      * @return Page

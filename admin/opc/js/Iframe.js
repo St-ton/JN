@@ -101,7 +101,6 @@ class Iframe
                 modifiers: {computeStyle: {gpuAcceleration: false }, offset: {offset:"8,0"}},
                 onUpdate: data => {
                     $(data.instance.popper).css('top', data.styles.top + 1 + "px");
-                    console.log(data);
                 },
             }
         );

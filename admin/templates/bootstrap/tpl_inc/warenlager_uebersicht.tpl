@@ -58,7 +58,7 @@
                                     </td>
                                 </tr>
                                 <tr class="collapse" id="collapse-{$oWarenlager->kWarenlager}">
-                                    <td colspan="4">
+                                    <td colspan="4" class="border-top-0">
                                     {foreach $sprachen as $language}
                                         {assign var=kSprache value=$language->getId()}
                                         <div class="form-group form-row align-items-center mb-5 mb-md-3">

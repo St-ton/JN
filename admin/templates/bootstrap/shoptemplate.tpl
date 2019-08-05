@@ -180,6 +180,7 @@
                                                             allowedFileExtensions : {if !empty($oSetting->rawAttributes.allowedFileExtensions)}{$oSetting->rawAttributes.allowedFileExtensions}{else}['jpg', 'jpeg', 'jpe', 'gif', 'png', 'bmp']{/if},
                                                             overwriteInitial: true,
                                                             browseOnZoneClick:     true,
+                                                            cancelClass: 'btn btn-outline-primary',
                                                             fileActionSettings:    {
                                                                 showZoom:   false,
                                                                 showDrag:   false,

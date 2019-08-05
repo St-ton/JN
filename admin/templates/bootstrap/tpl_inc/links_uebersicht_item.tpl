@@ -15,7 +15,7 @@
                 {if $link->hasDuplicateSpecialLink()} <i title="{sprintf(__('hasDuplicateSpecialLink'), '')}" class="fal fa-exclamation-triangle text-danger"></i>{/if}
             </div>
         </td>
-        <td class="text-center floatforms" style="width: 60%">
+        <td class="text-center floatforms min-w-sm" style="width: 60%">
             <div class="row">
                 <form class="navbar-form2 col-lg-4 col-md-12 left px-1" method="post" action="links.php" name="aenderlinkgruppe_{$link->getID()}_{$id}">
                     {$jtl_token}
@@ -88,7 +88,8 @@
                             value="delete-link"
                             class="btn btn-link px-2{if $link->getPluginID() > 0} disabled{/if}"
                             {if $link->getPluginID() === 0} onclick="return confirmDelete();"{/if}
-                            title="{if $deleteCount > 1}{{__('dangerLinkWillGetDeleted')}|sprintf:{$deleteCount}}{else}{__('delete')}{/if}">
+                            title="{if $deleteCount > 1}{{__('dangerLinkWillGetDeleted')}|sprintf:{$deleteCount}}{else}{__('delete')}{/if}"
+                            data-toggle="tooltip">
                         <span class="icon-hover">
                             <span class="fal fa-trash-alt"></span>
                             <span class="fas fa-trash-alt"></span>
@@ -96,13 +97,17 @@
                         {if $deleteCount > 1} ({$deleteCount}){/if}
                     </button>
                     {if $id > 0}
-                        <button name="action" value="remove-linklfrom-linkgroup" class="btn btn-link px-2" title="{__('linkGroupRemove')}">
+                        <button name="action"
+                                value="remove-linklfrom-linkgroup"
+                                class="btn btn-link px-2"
+                                title="{__('linkGroupRemove')}"
+                                data-toggle="tooltip">
                             <span class="icon-hover">
                                 <span class="fal fa-unlink"></span>
                                 <span class="fas fa-unlink"></span>
                             </span>
                         </button>
-                        <button name="action" value="edit-link" class="btn btn-link px-2" title="{__('modify')}">
+                        <button name="action" value="edit-link" class="btn btn-link px-2" title="{__('modify')}" data-toggle="tooltip">
                             <span class="icon-hover">
                                 <span class="fal fa-edit"></span>
                                 <span class="fas fa-edit"></span>

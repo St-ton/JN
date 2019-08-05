@@ -60,7 +60,13 @@ function checkNewsletterSend() {ldelim}
                     <div class="form-group form-row align-items-center">
                         <label class="col col-sm-4 col-form-label text-sm-right" for="kKundengruppe">{__('newslettercustomergrp')}:</label>
                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                            <select id="kKundengruppe" name="kKundengruppe[]" multiple="multiple" class="custom-select {if isset($cPlausiValue_arr.kKundengruppe_arr)}fieldfillout{else}combo{/if}">
+                            <select id="kKundengruppe"
+                                    name="kKundengruppe[]"
+                                    multiple="multiple"
+                                    class="selectpicker custom-select {if isset($cPlausiValue_arr.kKundengruppe_arr)}fieldfillout{else}combo{/if}"
+                                    data-selected-text-format="count > 2"
+                                    data-size="7"
+                                    data-actions-box="true">
                                 <option value="0"
                                         {if isset($kKundengruppe_arr)}
                                             {foreach $kKundengruppe_arr as $kKundengruppe}
@@ -198,10 +204,7 @@ function checkNewsletterSend() {ldelim}
                                    value="{if isset($cPostVar_arr.cArtikel) && $cPostVar_arr.cArtikel|strlen > 0}{$cPostVar_arr.cArtikel}{elseif isset($oNewsletterVorlage->cArtikel)}{$oNewsletterVorlage->cArtikel}{/if}">
                         </div>
                         <div class="col-auto ml-sm-n4 order-2 order-sm-3">
-                            <button type="button" class="btn btn-outline-primary btn-sm" data-toggle="modal"
-                                    data-target="#articlePicker-modal">
-                                <i class="fal fa-edit"></i>
-                            </button>
+                            {include file='snippets/searchpicker_button.tpl' target='#articlePicker-modal'}
                         </div>
                     </div>
                     {include file='tpl_inc/searchpicker_modal.tpl'
@@ -237,10 +240,7 @@ function checkNewsletterSend() {ldelim}
                                    value="{if isset($cPostVar_arr.cHersteller) && $cPostVar_arr.cHersteller|strlen > 0}{$cPostVar_arr.cHersteller}{elseif isset($oNewsletterVorlage->cHersteller)}{$oNewsletterVorlage->cHersteller}{/if}">
                         </div>
                         <div class="col-auto ml-sm-n4 order-2 order-sm-3">
-                            <button type="button" class="btn btn-outline-primary btn-sm" data-toggle="modal"
-                                    data-target="#manufacturerPicker-modal">
-                                <i class="fal fa-edit"></i>
-                            </button>
+                            {include file='snippets/searchpicker_button.tpl' target='#manufacturerPicker-modal'}
                         </div>
                     </div>
                     {include file='tpl_inc/searchpicker_modal.tpl'
@@ -276,10 +276,7 @@ function checkNewsletterSend() {ldelim}
                                    value="{if isset($cPostVar_arr.cKategorie) && $cPostVar_arr.cKategorie|strlen > 0}{$cPostVar_arr.cKategorie}{elseif isset($oNewsletterVorlage->cKategorie)}{$oNewsletterVorlage->cKategorie}{/if}">
                         </div>
                         <div class="col-auto ml-sm-n4 order-2 order-sm-3">
-                            <button type="button" class="btn btn-outline-primary btn-sm" data-toggle="modal"
-                                    data-target="#categoryPicker-modal">
-                                <i class="fal fa-edit"></i>
-                            </button>
+                            {include file='snippets/searchpicker_button.tpl' target='#categoryPicker-modal'}
                         </div>
                     </div>
                     <div class="form-group form-row align-items-center">
@@ -297,21 +294,21 @@ function checkNewsletterSend() {ldelim}
                 </div>
                 <div class="card-footer save-wrapper">
                     <div class="row">
-                        <div class="ml-auto col-sm-6 col-xl-auto">
-                            <a class="btn btn-default" href="newsletter.php?tab=newslettervorlagen&token={$smarty.session.jtl_token}">
+                        <div class="ml-auto col-sm-6 col-xl-auto mb-2">
+                            <a class="btn btn-outline-primary btn-block" href="newsletter.php?tab=newslettervorlagen&token={$smarty.session.jtl_token}">
                                 {__('goBack')}
                             </a>
                         </div>
                         {if $cOption !== 'editieren'}
                             <div class="col-sm-6 col-xl-auto">
-                                <button class="btn btn-outline-primary" name="speichern_und_senden" type="button" value="{__('newsletterdraftsaveandsend')}" onclick="checkNewsletterSend();">{__('newsletterdraftsaveandsend')}</button>
+                                <button class="btn btn-outline-primary btn-block mb-2" name="speichern_und_senden" type="button" value="{__('newsletterdraftsaveandsend')}" onclick="checkNewsletterSend();">{__('newsletterdraftsaveandsend')}</button>
                             </div>
                         {/if}
                         <div class="col-sm-6 col-xl-auto">
-                            <button class="btn btn-outline-primary" name="speichern_und_testen" type="submit" value="{__('newsletterdraftsaveandtest')}">{__('newsletterdraftsaveandtest')}</button>
+                            <button class="btn btn-outline-primary btn-block mb-2" name="speichern_und_testen" type="submit" value="{__('newsletterdraftsaveandtest')}">{__('newsletterdraftsaveandtest')}</button>
                         </div>
                         <div class="col-sm-6 col-xl-auto">
-                            <button class="btn btn-primary" name="speichern" type="submit" value="{__('save')}">{__('saveWithIcon')}</button>
+                            <button class="btn btn-primary btn-block" name="speichern" type="submit" value="{__('save')}">{__('saveWithIcon')}</button>
                         </div>
                     </div>
                 </div>

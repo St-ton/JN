@@ -36,7 +36,10 @@
         setJtlToken('{$smarty.session.jtl_token}');
     </script>
 
-    <script type="text/javascript" src="{$URL_SHOP}/{$PFAD_ADMIN}{$currentTemplateDir}js/fileinput/locales/{$language|mb_substr:0:2}.js"></script>
+    <script type="text/javascript"
+            src="{$URL_SHOP}/{$PFAD_ADMIN}{$currentTemplateDir}js/fileinput/locales/{$language|mb_substr:0:2}.js"></script>
+    <script type="module" src="{$URL_SHOP}/{$PFAD_ADMIN}{$currentTemplateDir}js/app/app.js"></script>
+    {include file='snippets/selectpicker.tpl'}
 </head>
 <body>
 {if $account !== false && isset($smarty.session.loginIsValid) && $smarty.session.loginIsValid === true}
@@ -45,11 +48,11 @@
     <div id="page-wrapper" class="backend-wrapper hidden disable-transitions{if $currentPage === 'index' || $currentPage === 'status'} dashboard{/if}">
         {include file='tpl_inc/backend_sidebar.tpl'}
         <div class="backend-main sidebar-offset">
-            <div id="topbar" class="backend-navbar row mx-0 align-items-center topbar flex-nowrap searching">
+            <div id="topbar" class="backend-navbar row mx-0 align-items-center topbar flex-nowrap">
                 <div class="col search">
                     {include file='tpl_inc/backend_search.tpl'}
                 </div>
-                <div class="col-auto ml-auto">
+                <div class="col-auto ml-auto px-2">
                     <ul class="nav align-items-center">
                         <li class="nav-item dropdown mr-lg-4" id="favs-drop">
                             {include file="tpl_inc/favs_drop.tpl"}
@@ -81,7 +84,7 @@
                         <li class="nav-item dropdown" id="notify-drop">{include file="tpl_inc/notify_drop.tpl"}</li>
                         <li class="nav-item dropdown">
                             <a href="#" class="dropdown-toggle parent btn-toggle" data-toggle="dropdown">
-                                {$languageName}
+                                <i class="fal fa-language d-sm-none"></i> <span class="d-sm-block d-none">{$languageName}</span>
                             </a>
                             <div class="dropdown-menu dropdown-menu-right">
                                 {foreach $languages as $tag => $langName}

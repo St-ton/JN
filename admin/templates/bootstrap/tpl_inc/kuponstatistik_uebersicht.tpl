@@ -5,35 +5,45 @@
             <div class="form-group">
                 <form method="post" action="kuponstatistik.php" class="form-inline">
                     {$jtl_token}
-                    <div class="form-group">
-                        <input type="hidden" name="formFilter" value="1" class="form-control"/>
-                        <label for="SelectFromDay">{__('fromUntilDate')}:</label>
-                        <input type="text" size="21" name="daterange" class="form-control"/>
-                        {include
-                            file="snippets/daterange_picker.tpl"
-                            datepickerID='input[name="daterange"]'
-                            currentDate="{$startDate} - {$endDate}"
-                            format="YYYY-MM-DD"
-                            separator=" - "
-                        }
+                    <div class="row">
+                        <div class="col-sm-6 col-xl-auto mb-3">
+                            <div class="form-row">
+                                <label class="col-sm-auto col-form-label" for="SelectFromDay">{__('fromUntilDate')}:</label>
+                                <input type="hidden" name="formFilter" value="1" class="form-control"/>
+                                <div class="col-sm-auto">
+                                    <input type="text" size="21" name="daterange" class="form-control"/>
+                                    {include
+                                    file="snippets/daterange_picker.tpl"
+                                    datepickerID='input[name="daterange"]'
+                                    currentDate="{$startDate} - {$endDate}"
+                                    format="YYYY-MM-DD"
+                                    separator=" - "
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-xl-auto mb-3">
+                            <select id="kKupon" name="kKupon" class="combo custom-select">
+                                <option value="-1">{__('all')}</option>
+                                {foreach $coupons_arr as $coupon_arr}
+                                    <option value="{$coupon_arr.kKupon}"{if isset($coupon_arr.aktiv) && $coupon_arr.aktiv} selected{/if}>{$coupon_arr.cName}</option>
+                                {/foreach}
+                            </select>
+                        </div>
+                        <div class="col-sm-6 col-xl-auto mb-3">
+                            <button name="btnSubmit" type="submit" value="Filtern" class="btn btn-primary btn-block">
+                                <span class="fal fa-filter"></span> {__('filtering')}
+                            </button>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <select id="kKupon" name="kKupon" class="combo custom-select">
-                            <option value="-1">{__('all')}</option>
-                            {foreach $coupons_arr as $coupon_arr}
-                                <option value="{$coupon_arr.kKupon}"{if isset($coupon_arr.aktiv) && $coupon_arr.aktiv} selected{/if}>{$coupon_arr.cName}</option>
-                            {/foreach}
-                        </select>
-                    </div>
-                    <button name="btnSubmit" type="submit" value="Filtern" class="btn btn-primary">{__('filtering')}</button>
                 </form>
             </div>
 
             <div class="table-responsive">
                 <table class="table">
                     <tr>
-                        <td>{__('countUsedCoupons')}:</td>
-                        <td><strong>{$overview_arr.nCountUsedCouponsOrder} ({$overview_arr.nPercentCountUsedCoupons}%)</strong></td>
+                        <td class="min-w-sm">{__('countUsedCoupons')}:</td>
+                        <td class="min-w-sm"><strong>{$overview_arr.nCountUsedCouponsOrder} ({$overview_arr.nPercentCountUsedCoupons}%)</strong></td>
                     </tr>
                     <tr>
                         <td>{__('countOrders')}:</td>
@@ -99,40 +109,43 @@
                                     <div class="modal-dialog modal-lg" role="document">
                                         <div class="modal-content">
                                             <div class="modal-header">
-                                                <strong>{__('order')}: </strong><span class="value">{$usedCouponOrder.cBestellNr} ({$usedCouponOrder.cUserName})</span>
                                                 <button type="button" class="close" data-dismiss="modal">
                                                     <i class="fal fa-times"></i>
                                                 </button>
+                                                <span class="ml-2">{$usedCouponOrder.cBestellNr} ({$usedCouponOrder.cUserName})</span>
+                                                <strong>{__('order')}: </strong>
                                             </div>
                                             <div class="modal-body py-5">
-                                                <table class="table table-striped">
-                                                    <thead>
-                                                    <tr>
-                                                        <th>{__('orderPosition')}</th>
-                                                        <th>{__('count')}</th>
-                                                        <th>{__('unitPrice')}</th>
-                                                        <th>{__('totalPrice')}</th>
-                                                    </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                    {foreach $usedCouponOrder.cOrderPos_arr as $cOrderPos_arr}
+                                                <div class="table-responsive">
+                                                    <table class="table table-striped">
+                                                        <thead>
                                                         <tr>
-                                                            <td>{$cOrderPos_arr.cName}</td>
-                                                            <td>{$cOrderPos_arr.nAnzahl}</td>
-                                                            <td>{$cOrderPos_arr.nPreis}</td>
-                                                            <td>{$cOrderPos_arr.nGesamtPreis}</td>
+                                                            <th>{__('orderPosition')}</th>
+                                                            <th>{__('count')}</th>
+                                                            <th>{__('unitPrice')}</th>
+                                                            <th>{__('totalPrice')}</th>
                                                         </tr>
-                                                    {/foreach}
-                                                    </tbody>
-                                                    <tfoot>
-                                                    <tr>
-                                                        <td>{__('totalAmount')}:</td>
-                                                        <td></td>
-                                                        <td></td>
-                                                        <td>{$usedCouponOrder.nShoppingCartAmount}</td>
-                                                    </tr>
-                                                    </tfoot>
-                                                </table>
+                                                        </thead>
+                                                        <tbody>
+                                                        {foreach $usedCouponOrder.cOrderPos_arr as $cOrderPos_arr}
+                                                            <tr>
+                                                                <td>{$cOrderPos_arr.cName}</td>
+                                                                <td>{$cOrderPos_arr.nAnzahl}</td>
+                                                                <td>{$cOrderPos_arr.nPreis}</td>
+                                                                <td>{$cOrderPos_arr.nGesamtPreis}</td>
+                                                            </tr>
+                                                        {/foreach}
+                                                        </tbody>
+                                                        <tfoot>
+                                                        <tr>
+                                                            <td>{__('totalAmount')}:</td>
+                                                            <td></td>
+                                                            <td></td>
+                                                            <td>{$usedCouponOrder.nShoppingCartAmount}</td>
+                                                        </tr>
+                                                        </tfoot>
+                                                    </table>
+                                                </div>
                                             </div>
                                         </div>
 

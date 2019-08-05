@@ -59,12 +59,14 @@
                                     24 {__('hours')}
                                 </option>
                                 <option value="48"{if (isset($oFehler->nAlleXStunden) && $oFehler->nAlleXStunden == 48) || (isset($oCron->frequency) && $oCron->frequency === 48)} selected{/if}>
-                                    48 {__('days')}
+                                    48 {__('hours')}
                                 </option>
                                 <option value="168"{if (isset($oFehler->nAlleXStunden) && $oFehler->nAlleXStunden == 168) || (isset($oCron->frequency) && $oCron->frequency === 168)} selected{/if}>
                                     1 {__('week')}
                                 </option>
-                                <option value="custom" id="custom-freq"{if $showCustomInput} selected{/if}>{__('own')}</option>
+                                <option value="custom" id="custom-freq"{if $showCustomInput} selected{/if}>
+                                    {__('own')}
+                                </option>
                             </select>
                         </div>
                     </div>
@@ -72,8 +74,8 @@
                 <div class="card-footer save-wrapper">
                     <div class="row">
                         <div class="ml-auto col-sm-6 col-xl-auto">
-                            <a class="btn btn-outline-primary btn-block mb-3" href="exportformat_queue.php">
-                                <i class="fa fa-exclamation"></i> {__('cancel')}
+                            <a class="btn btn-outline-primary btn-block mb-2" href="exportformat_queue.php">
+                                {__('cancelWithIcon')}
                             </a>
                         </div>
                         <div class="col-sm-6 col-xl-auto">

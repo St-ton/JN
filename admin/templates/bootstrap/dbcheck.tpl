@@ -106,7 +106,7 @@
                                     <label class="custom-control-label" for="ALLMSGS"></label>
                                 </div>
                             </span>
-                            <select name="action" class="form-control">
+                            <select name="action" class="custom-select">
                                 <option value="">{__('action')}</option>
                                 <option value="optimize">{__('optimize')}</option>
                                 <option value="repair">{__('repair')}</option>
@@ -135,8 +135,12 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <div class="btn-group text-right">
-                    <button id="cancelWait" class="btn btn-danger"><i class="fa fa-close"></i>&nbsp;{__('migrationCancel')}</button>
+                <div class="row">
+                    <div class="ml-auto col-sm-6 col-xl-auto">
+                        <button id="cancelWait" class="btn btn-danger btn-block">
+                            <i class="fa fa-close"></i>&nbsp;{__('migrationCancel')}
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>

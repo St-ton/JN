@@ -20,25 +20,28 @@
             </nav>
             <div class="tab-content">
                 <div id="massaction" class="tab-pane fade {if !isset($tab) || $tab === 'massaction' || $tab === 'uebersicht'} active show{/if}">
-                    <form name="suche" method="post" action="warenkorbpers.php">
-                        {$jtl_token}
-                        <input type="hidden" name="Suche" value="1" />
-                        <input type="hidden" name="tab" value="warenkorbpers" />
-                        {if isset($cSuche) && $cSuche|strlen > 0}
-                            <input type="hidden" name="cSuche" value="{$cSuche}" />
-                        {/if}
+                    <div class="search-toolbar mb-3">
+                        <form name="suche" method="post" action="warenkorbpers.php">
+                            {$jtl_token}
+                            <input type="hidden" name="Suche" value="1" />
+                            <input type="hidden" name="tab" value="warenkorbpers" />
+                            {if isset($cSuche) && $cSuche|strlen > 0}
+                                <input type="hidden" name="cSuche" value="{$cSuche}" />
+                            {/if}
 
-                        <div class="input-group">
-                            <span class="input-group-addon">
-                                <label for="cSuche">{__('warenkorbpersClientName')}:</label>
-                            </span>
-                            <input class="form-control" id="cSuche" name="cSuche" type="text" value="{if isset($cSuche) && $cSuche|strlen > 0}{$cSuche}{/if}" />
-                            <span class="input-group-btn">
-                                <button name="submitSuche" type="submit" value="{__('warenkorbpersSearchBTN')}" class="btn btn-primary ml-1"><i class="fal fa-search"></i></button>
-                            </span>
-                        </div>
-                    </form>
-
+                            <div class="form-row">
+                                <label class="col-sm-auto col-form-label" for="cSuche">{__('warenkorbpersClientName')}:</label>
+                                <div class="col-sm-auto mb-2">
+                                    <input class="form-control" id="cSuche" name="cSuche" type="text" value="{if isset($cSuche) && $cSuche|strlen > 0}{$cSuche}{/if}" />
+                                </div>
+                                <span class="col-sm-auto">
+                                    <button name="submitSuche" type="submit" value="{__('warenkorbpersSearchBTN')}" class="btn btn-primary btn-block">
+                                        <i class="fal fa-search"></i>
+                                    </button>
+                                </span>
+                            </div>
+                        </form>
+                    </div>
                     {if isset($oKunde_arr) && $oKunde_arr|@count > 0}
                         {assign var=cParam_arr value=[]}
                         {if isset($cSuche)}
@@ -68,13 +71,19 @@
                                             <td class="text-center">{$oKunde->Datum}</td>
                                             <td class="text-center">
                                                 <div class="btn-group">
-                                                    <a href="warenkorbpers.php?l={$oKunde->kKunde}&token={$smarty.session.jtl_token}" class="btn btn-link px-2">
+                                                    <a href="warenkorbpers.php?l={$oKunde->kKunde}&token={$smarty.session.jtl_token}"
+                                                       class="btn btn-link px-2"
+                                                       data-toggle="tooltip"
+                                                        title="{__('delete')}">
                                                         <span class="icon-hover">
                                                             <span class="fal fa-trash-alt"></span>
                                                             <span class="fas fa-trash-alt"></span>
                                                         </span>
                                                     </a>
-                                                    <a href="warenkorbpers.php?a={$oKunde->kKunde}&token={$smarty.session.jtl_token}" class="btn btn-link px-2">
+                                                    <a href="warenkorbpers.php?a={$oKunde->kKunde}&token={$smarty.session.jtl_token}"
+                                                       class="btn btn-link px-2"
+                                                       data-toggle="tooltip"
+                                                       title="{__('preview')}">
                                                         <span class="icon-hover">
                                                             <span class="fal fa-eye"></span>
                                                             <span class="fas fa-eye"></span>
@@ -104,28 +113,39 @@
                 <div class="subheading1">{__('warenkorbpersClient')} {$oWarenkorbPersPos_arr[0]->cVorname} {$oWarenkorbPersPos_arr[0]->cNachname}</div>
                 <hr class="mb-n3">
             </div>
-            <div class="table-responsive card-body">
+            <div class="card-body">
                 {include file='tpl_inc/pagination.tpl' pagination=$oPagiWarenkorb cParam_arr=['a'=>$kKunde]}
-                <table class="table table-striped">
-                    <thead>
-                    <tr>
-                        <th class="text-left">{__('warenkorbpersProduct')}</th>
-                        <th class="th-2 text-center">{__('warenkorbpersCount')}</th>
-                        <th class="th-3 text-center">{__('warenkorbpersDate')}</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {foreach $oWarenkorbPersPos_arr as $oWarenkorbPersPos}
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
                         <tr>
-                            <td class="text-left">
-                                <a href="{$shopURL}/index.php?a={$oWarenkorbPersPos->kArtikel}" target="_blank">{$oWarenkorbPersPos->cArtikelName}</a>
-                            </td>
-                            <td class="text-center">{$oWarenkorbPersPos->fAnzahl}</td>
-                            <td class="text-center">{$oWarenkorbPersPos->Datum}</td>
+                            <th class="text-left">{__('warenkorbpersProduct')}</th>
+                            <th class="th-2 text-center">{__('warenkorbpersCount')}</th>
+                            <th class="th-3 text-center">{__('warenkorbpersDate')}</th>
                         </tr>
-                    {/foreach}
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody>
+                        {foreach $oWarenkorbPersPos_arr as $oWarenkorbPersPos}
+                            <tr>
+                                <td class="text-left">
+                                    <a href="{$shopURL}/index.php?a={$oWarenkorbPersPos->kArtikel}" target="_blank">{$oWarenkorbPersPos->cArtikelName}</a>
+                                </td>
+                                <td class="text-center">{$oWarenkorbPersPos->fAnzahl}</td>
+                                <td class="text-center">{$oWarenkorbPersPos->Datum}</td>
+                            </tr>
+                        {/foreach}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="card-footer save-wrapper">
+                <div class="row">
+                    <div class="ml-auto col-sm-6 col-xl-auto">
+                        <a class="btn btn-outline-primary btn-block" href="warenkorbpers.php">
+                            {__('goBack')}
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
     {/if}

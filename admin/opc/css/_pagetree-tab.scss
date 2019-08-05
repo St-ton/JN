@@ -1,0 +1,85 @@
+#pagetree {
+  height: 100%;
+
+  #pageTreeView {
+    padding: 1em 0;
+    background-color: $light-bg;
+    border-radius: 5px;
+    height: 100%;
+    overflow-y: auto;
+
+    ul {
+      list-style: none;
+      padding: 0;
+      padding-left: 1em;
+      margin: 0;
+    }
+
+    a {
+      display: inline-block;
+      text-decoration: none;
+      color: $text-color;
+    }
+
+    .area-item {
+      color: $text-lighter;
+      padding: 0 4px;
+      margin: 2px;
+    }
+
+    .portlet-item {
+      border-radius: 4px;
+      padding: 0 4px;
+      margin: 2px;
+    }
+
+    .item-expander {
+      > .fa-chevron-down {
+        display: none;
+      }
+
+      > .fa-chevron-right {
+        display: inline-block;
+      }
+    }
+
+    li {
+      > ul {
+        display: none;
+      }
+
+      &.expanded {
+        > .item-expander {
+          > .fa-chevron-down {
+            display: inline-block;
+          }
+
+          > .fa-chevron-right {
+            display: none;
+          }
+        }
+
+        > ul {
+          display: block;
+        }
+      }
+
+      &.leaf {
+        > .item-expander {
+          visibility: hidden;
+        }
+
+        > .area-item {
+          color: $muted-text;
+        }
+      }
+
+      &.selected {
+        > .item-label {
+          background-color: $gray-dark;
+          color: $light-bg;
+        }
+      }
+    }
+  }
+}

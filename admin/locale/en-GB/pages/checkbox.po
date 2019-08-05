@@ -51,7 +51,7 @@ msgid "hintInternalPage"
 msgstr "You can optionally link a custom page next to the check box."
 
 msgid "hintPlaceToShowCheckbox"
-msgstr "Specify the place in which the check box is to be displayed. You can select several pages by holding the Ctrl key."
+msgstr "Specify the place in which the check box is to be displayed. This setting and the setting \"Special shop function\" must not contain same values."
 
 msgid "hintCheckCheckboxActivation"
 msgstr "Specify whether the check box must be activated or whether it is optional."

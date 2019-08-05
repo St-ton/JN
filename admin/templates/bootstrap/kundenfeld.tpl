@@ -303,7 +303,7 @@
                                         <th class="text-left">{__('values')}</th>
                                         <th class="th-6 text-center">{__('headingKundenfeldEdit')}</th>
                                         <th class="th-7">{__('sorting')}</th>
-                                        <th class="th-8"></th>
+                                        <th class="th-8 min-w-sm"</th>
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -327,12 +327,25 @@
                                             </td>
                                             <td class="text-center">{if $oKundenfeld->nEditierbar == 1}{__('yes')}{else}{__('no')}{/if}</td>
                                             <td class="text-center">
-                                                <input class="form-control" name="nSort_{$oKundenfeld->kKundenfeld}" type="text" value="{$oKundenfeld->nSort}" size="5" />
+                                                <div class="input-group form-counter min-w-sm">
+                                                    <div class="input-group-prepend">
+                                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-down>
+                                                            <span class="fas fa-minus"></span>
+                                                        </button>
+                                                    </div>
+                                                    <input class="form-control" name="nSort_{$oKundenfeld->kKundenfeld}" type="number" value="{$oKundenfeld->nSort}"/>
+                                                    <div class="input-group-append">
+                                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-up>
+                                                            <span class="fas fa-plus"></span>
+                                                        </button>
+                                                    </div>
+                                                </div>
                                             </td>
                                             <td class="text-center">
                                                 <div class="btn-group">
                                                     <a href="kundenfeld.php?a=edit&kKundenfeld={$oKundenfeld->kKundenfeld}&tab=uebersicht&token={$smarty.session.jtl_token}"
-                                                       class="btn btn-link px-2" title="{__('modify')}">
+                                                       class="btn btn-link px-2" title="{__('modify')}"
+                                                       data-toggle="tooltip">
                                                         <span class="icon-hover">
                                                             <span class="fal fa-edit"></span>
                                                             <span class="fas fa-edit"></span>
@@ -351,7 +364,7 @@
                             <div class="card-footer">
                                 <div class="row">
                                     <div class="ml-auto col-sm-6 col-xl-auto">
-                                        <button name="loeschen" type="submit" value="{__('delete')}" class="btn btn-danger btn-block mb-3">
+                                        <button name="loeschen" type="submit" value="{__('delete')}" class="btn btn-danger btn-block mb-2">
                                             <i class="fas fa-trash-alt"></i> {__('deleteSelected')}
                                         </button>
                                     </div>

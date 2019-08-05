@@ -35,8 +35,14 @@
                     <div class="form-group form-row align-items-center">
                         <label class="col col-sm-4 col-form-label text-sm-right" for="cKundengruppen">{__('restrictedToCustomerGroups')}:</label>
                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                            <select class="custom-select" name="cKundengruppen[]" multiple="multiple" id="cKundengruppen">
+                            <select class="selectpicker custom-select"
+                                    name="cKundengruppen[]"
+                                    multiple="multiple"
+                                    id="cKundengruppen"
+                                    data-selected-text-format="count > 2"
+                                    data-size="7">
                                 <option value="0" {if isset($gesetzteKundengruppen[0]) && $gesetzteKundengruppen[0] === true}selected{/if}>{__('allCustomerGroups')}</option>
+                                <option data-divider="true"></option>
                                 {foreach $kundengruppen as $kundengruppe}
                                     {assign var=kKundengruppe value=$kundengruppe->kKundengruppe}
                                     <option value="{$kundengruppe->kKundengruppe}" {if isset($gesetzteKundengruppen[$kKundengruppe])}selected{/if}>{$kundengruppe->cName}</option>

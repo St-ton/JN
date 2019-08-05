@@ -23,6 +23,17 @@
             <div class="tab-content">
                 <div id="umfrage" class="tab-pane fade{if !isset($cTab) || $cTab === 'umfrage'} active show{/if}">
                     {if $oUmfrage_arr|@count > 0 && $oUmfrage_arr}
+                        <div class="row">
+                            <div class="col-sm-6 col-lg-auto mb-3">
+                                <form name="erstellen" method="post" action="umfrage.php">
+                                    {$jtl_token}
+                                    <input type="hidden" name="umfrage" value="1" />
+                                    <input type="hidden" name="umfrage_erstellen" value="1" />
+                                    <input type="hidden" name="tab" value="umfrage" />
+                                    <button name="umfrageerstellen" type="submit" value="1" title="{__('umfrageAdd')}" class="btn btn-primary btn-block"><i class="fa fa-share"></i> {__('umfrageAdd')}</button>
+                                </form>
+                            </div>
+                        </div>
                         {include file='tpl_inc/pagination.tpl' pagination=$pagination cAnchor='umfrage'}
                         <form name="umfrage" method="post" action="umfrage.php">
                             {$jtl_token}
@@ -75,13 +86,19 @@
                                                         <td class="text-center">{$oUmfrage->dErstellt_de}</td>
                                                         <td class="text-center">
                                                             <div class="btn-group">
-                                                                <a href="umfrage.php?umfrage=1&token={$smarty.session.jtl_token}&kUmfrage={$oUmfrage->kUmfrage}&umfrage_statistik=1" class="btn btn-link px-2" title="{__('umfrageStats')}">
+                                                                <a href="umfrage.php?umfrage=1&token={$smarty.session.jtl_token}&kUmfrage={$oUmfrage->kUmfrage}&umfrage_statistik=1"
+                                                                   class="btn btn-link px-2"
+                                                                   title="{__('umfrageStats')}"
+                                                                   data-toggle="tooltip">
                                                                     <span class="icon-hover">
                                                                         <span class="fal fa-bar-chart"></span>
                                                                         <span class="fas fa-bar-chart"></span>
                                                                     </span>
                                                                 </a>
-                                                                <a href="umfrage.php?umfrage=1&token={$smarty.session.jtl_token}&umfrage_editieren=1&kUmfrage={$oUmfrage->kUmfrage}&tab=umfrage" class="btn btn-link px-2" title="{__('modify')}">
+                                                                <a href="umfrage.php?umfrage=1&token={$smarty.session.jtl_token}&umfrage_editieren=1&kUmfrage={$oUmfrage->kUmfrage}&tab=umfrage"
+                                                                   class="btn btn-link px-2"
+                                                                   title="{__('modify')}"
+                                                                   data-toggle="tooltip">
                                                                     <span class="icon-hover">
                                                                         <span class="fal fa-edit"></span>
                                                                         <span class="fas fa-edit"></span>
@@ -97,16 +114,7 @@
                                         <div class="card-footer save-wrapper">
                                             <div class="row">
                                                 <div class="ml-auto col-sm-6 col-xl-auto">
-                                                    <button name="loeschen" type="submit" class="btn btn-danger btn-block mb-3"><i class="fas fa-trash-alt"></i> {__('deleteSelected')}</button>
-                                                </div>
-                                                <div class="col-sm-6 col-xl-auto">
-                                                    <form name="erstellen" method="post" action="umfrage.php">
-                                                        {$jtl_token}
-                                                        <input type="hidden" name="umfrage" value="1" />
-                                                        <input type="hidden" name="umfrage_erstellen" value="1" />
-                                                        <input type="hidden" name="tab" value="umfrage" />
-                                                        <button name="umfrageerstellen" type="submit" value="{__('umfrageAdd')}" class="btn btn-primary btn-block"><i class="fa fa-share"></i> {__('umfrageAdd')}</button>
-                                                    </form>
+                                                    <button name="loeschen" type="submit" class="btn btn-danger btn-block mb-2"><i class="fas fa-trash-alt"></i> {__('deleteSelected')}</button>
                                                 </div>
                                             </div>
                                         </div>

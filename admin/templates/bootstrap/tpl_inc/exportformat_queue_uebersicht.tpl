@@ -59,7 +59,9 @@
                                             <td class="text-center">
                                                 <div class="btn-group">
                                                     <a href="exportformat_queue.php?action=editieren&kCron={$oExportformatCron->cronID}&token={$smarty.session.jtl_token}"
-                                                       class="btn btn-link px-2" title="{__('modify')}">
+                                                       class="btn btn-link px-2"
+                                                       title="{__('modify')}"
+                                                       data-toggle="tooltip">
                                                         <span class="icon-hover">
                                                             <span class="fal fa-edit"></span>
                                                             <span class="fas fa-edit"></span>
@@ -81,17 +83,17 @@
                                         </div>
                                     </div>
                                     <div class="ml-auto col-sm-6 col-xl-auto">
-                                        <button name="action[loeschen]" type="submit" value="1" class="btn btn-danger btn-block mb-3">
+                                        <button name="action[loeschen]" type="submit" value="1" class="btn btn-danger btn-block mb-2">
                                             <i class="fas fa-trash-alt"></i> {__('exportformatDelete')}
                                         </button>
                                     </div>
                                     <div class="col-sm-6 col-xl-auto">
-                                        <button name="action[triggern]" type="submit" value="1" class="btn btn-outline-primary btn-block mb-3">
-                                            <i class="fa fa-play-circle-o"></i> {__('exportformatTriggerCron')}
+                                        <button name="action[triggern]" type="submit" value="1" class="btn btn-outline-primary btn-block mb-2">
+                                            <i class="fal fa-play-circle"></i> {__('exportformatTriggerCron')}
                                         </button>
                                     </div>
                                     <div class="col-sm-6 col-xl-auto">
-                                        <button name="action[uebersicht]" type="submit" value="1" class="btn btn-outline-primary btn-block mb-3">
+                                        <button name="action[uebersicht]" type="submit" value="1" class="btn btn-outline-primary btn-block mb-2">
                                             <i class="fa fa-refresh"></i> {__('refresh')}
                                         </button>
                                     </div>
@@ -105,24 +107,31 @@
                         {else}
                             <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                             <div class="card-footer save-wrapper">
-                                <button name="action[triggern]" type="submit" value="1" class="btn btn-default"><i class="fa fa-play-circle-o"></i> {__('exportformatTriggerCron')}</button>
-                                <button name="action[erstellen]" type="submit" value="1" class="btn btn-primary add"><i class="fa fa-share"></i> {__('exportformatAdd')}</button>
+                                <button name="action[triggern]" type="submit" value="1" class="btn btn-outline-primary btn-block">
+                                    <i class="fal fa-play-circle"></i> {__('exportformatTriggerCron')}
+                                </button>
+                                <button name="action[erstellen]" type="submit" value="1" class="btn btn-primary btn-block add">
+                                    <i class="fa fa-share"></i> {__('exportformatAdd')}
+                                </button>
                             </div>
                         {/if}
                     </div>
                 </form>
             </div>
             <div id="fertig" class="tab-pane fade{if isset($cTab) && $cTab === 'fertig'} active show{/if}">
-                <div class="mb-5">
-                    <form method="post" action="exportformat_queue.php" class="form-inline">
+                <div class="toolbar">
+                    <form method="post" action="exportformat_queue.php">
                         {$jtl_token}
-                        <div class="form-group">
-                            <label for="nStunden">{__('exportformatLastXHourPre')}</label>
-                            <input size="2" class="form-control" id="nStunden" name="nStunden" type="text" value="{$nStunden}" />
-                            <label>{__('hours')}</label>
-                        </div>
-                        <div class="btn-group">
-                            <button name="action[fertiggestellt]" type="submit" value="1" class="btn btn-primary"><i class="fal fa-search"></i></button>
+                        <div class="form-row">
+                            <label class="col-sm-auto col-form-label" for="nStunden">{__('exportformatLastXHourPre')} {__('hours')}:</label>
+                            <div class="col-sm-auto mb-3">
+                                <input size="2" class="form-control w-100" id="nStunden" name="nStunden" type="text" value="{$nStunden}" />
+                            </div>
+                            <span class="col-sm-auto">
+                                <button name="action[fertiggestellt]" type="submit" value="1" class="btn btn-primary btn-block">
+                                    <i class="fal fa-search"></i>
+                                </button>
+                            </span>
                         </div>
                     </form>
                 </div>

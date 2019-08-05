@@ -344,6 +344,11 @@
             <div class="save-wrapper">
                 <div class="row">
                     <div class="ml-auto col-sm-6 col-xl-auto">
+                        <a class="btn btn-outline-primary btn-block" href="banner.php">
+                            {__('goBack')}
+                        </a>
+                    </div>
+                    <div class="col-sm-6 col-xl-auto">
                         <button type="submit" class="btn btn-primary btn-block" value="Banner speichern">
                             <i class="fa fa-save"></i> {__('saveBanner')}
                         </button>
@@ -437,18 +442,18 @@
             </div>
         </div>
         <div id="area_wrapper">
-            <img src="{$oBanner->cBildPfad}" title="" id="clickarea" />
+            <img class="img-fluid" src="{$oBanner->cBildPfad}" title="" id="clickarea" />
         </div>
     </div>
     <div class="save-wrapper">
         <div class="row">
             <div class="ml-auto col-sm-6 col-xl-auto">
-                <a class="btn btn-danger btn-block mb-3" href="banner.php" id="cancel">
+                <a class="btn btn-outline-primary btn-block mb-2" href="banner.php" id="cancel">
                     {__('goBack')}
                 </a>
             </div>
             <div class="col-sm-6 col-xl-auto">
-                <a class="btn btn-outline-primary btn-block mb-3" href="#" id="area_new">
+                <a class="btn btn-outline-primary btn-block mb-2" href="#" id="area_new">
                     <i class="fa fa-share"></i> {__('new')} {__('zone')}
                 </a>
             </div>
@@ -468,67 +473,68 @@
                 </div>
                 <div class="card-body">
                     {include file='tpl_inc/pagination.tpl' pagination=$pagination}
-                    <table class="list table">
-                        <thead>
-                        <tr>
-                            <th class="text-left" width="25%">{__('name')}</th>
-                            <th width="20%" class="text-center">{__('active')}</th>
-                            <th class="text-left" width="25%">{__('runTime')}</th>
-                            <th width="30%" class="text-center">{__('action')}</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {foreach $oBanner_arr as $oBanner}
+                    <div class="table-responsive">
+                        <table class="list table">
+                            <thead>
                             <tr>
-                                <td class="text-left">
-                                    {$oBanner->cTitel}
-                                </td>
-                                <td class="text-center">
-                                    {if (int)$oBanner->active === 1}
-                                        <i class="fal fa-check text-success"></i>
-                                    {else}
-                                        <i class="fal fa-times text-danger"></i>
-                                    {/if}
-                                </td>
-                                <td>
-                                    {if $oBanner->vDatum !== null}
-                                        {$oBanner->vDatum|date_format:'%d.%m.%Y'}
-                                    {/if} -
-                                    {if $oBanner->bDatum !== null}
-                                        {$oBanner->bDatum|date_format:'%d.%m.%Y'}
-                                    {/if}
-                                </td>
-                                <td class="text-center">
-                                    <form action="banner.php" method="post">
-                                        {$jtl_token}
-                                        <input type="hidden" name="id" value="{$oBanner->kImageMap}" />
-                                        <div class="btn-group">
-                                            <button class="btn btn-link px-2" name="action" value="delete" title="{__('delete')}">
-                                                <span class="icon-hover">
-                                                    <span class="fal fa-trash-alt"></span>
-                                                    <span class="fas fa-trash-alt"></span>
-                                                </span>
-                                            </button>
-                                            <button class="btn btn-link px-2" name="action" value="area" title="{__('actionLink')}">
-                                                <span class="icon-hover">
-                                                    <span class="fal fa-link"></span>
-                                                    <span class="fas fa-link"></span>
-                                                </span>
-                                            </button>
-                                            <button class="btn btn-link px-2" name="action" value="edit" title="{__('edit')}">
-                                                <span class="icon-hover">
-                                                    <span class="fal fa-edit"></span>
-                                                    <span class="fas fa-edit"></span>
-                                                </span>
-                                            </button>
-                                        </div>
-                                    </form>
-                                </td>
+                                <th class="text-left" width="25%">{__('name')}</th>
+                                <th width="20%" class="text-center">{__('active')}</th>
+                                <th class="text-left" width="25%">{__('runTime')}</th>
+                                <th width="30%" class="text-center">{__('action')}</th>
                             </tr>
-                        {/foreach}
-                        </tbody>
-                    </table>
-
+                            </thead>
+                            <tbody>
+                            {foreach $oBanner_arr as $oBanner}
+                                <tr>
+                                    <td class="text-left">
+                                        {$oBanner->cTitel}
+                                    </td>
+                                    <td class="text-center">
+                                        {if (int)$oBanner->active === 1}
+                                            <i class="fal fa-check text-success"></i>
+                                        {else}
+                                            <i class="fal fa-times text-danger"></i>
+                                        {/if}
+                                    </td>
+                                    <td>
+                                        {if $oBanner->vDatum !== null}
+                                            {$oBanner->vDatum|date_format:'%d.%m.%Y'}
+                                        {/if} -
+                                        {if $oBanner->bDatum !== null}
+                                            {$oBanner->bDatum|date_format:'%d.%m.%Y'}
+                                        {/if}
+                                    </td>
+                                    <td class="text-center">
+                                        <form action="banner.php" method="post">
+                                            {$jtl_token}
+                                            <input type="hidden" name="id" value="{$oBanner->kImageMap}" />
+                                            <div class="btn-group">
+                                                <button class="btn btn-link px-2" name="action" value="delete" title="{__('delete')}" data-toggle="tooltip">
+                                                    <span class="icon-hover">
+                                                        <span class="fal fa-trash-alt"></span>
+                                                        <span class="fas fa-trash-alt"></span>
+                                                    </span>
+                                                </button>
+                                                <button class="btn btn-link px-2" name="action" value="area" title="{__('actionLink')}" data-toggle="tooltip">
+                                                    <span class="icon-hover">
+                                                        <span class="fal fa-link"></span>
+                                                        <span class="fas fa-link"></span>
+                                                    </span>
+                                                </button>
+                                                <button class="btn btn-link px-2" name="action" value="edit" title="{__('edit')}" data-toggle="tooltip">
+                                                    <span class="icon-hover">
+                                                        <span class="fal fa-edit"></span>
+                                                        <span class="fas fa-edit"></span>
+                                                    </span>
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </td>
+                                </tr>
+                            {/foreach}
+                            </tbody>
+                        </table>
+                    </div>
                 {if $oBanner_arr|@count === 0}
                     <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                 {/if}

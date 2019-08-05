@@ -154,10 +154,17 @@ $(document).ready(function() {
                             </div>
                             <div class="col-auto ml-sm-n4 order-2 order-sm-3">
                                 <button type="button" onclick="ioCall('getRandomPassword');return false;"
-                                        class="btn btn-info btn-sm" title="{__('passwordGenerate')}">
-                                    <i class="fa fa-random"></i>
+                                        class="btn btn-link p-0" title="{__('passwordGenerate')}">
+                                    <span class="icon-hover">
+                                        <span class="fal fa-random"></span>
+                                        <span class="fas fa-random"></span>
+                                    </span>
                                 </button>
-                                {if isset($cError_arr.cPass)}<span class="input-group-addon error" title="{__('FillOut')}"><i class="fa fa-exclamation-triangle"></i></span>{else}<span class="input-group-addon"><i class="fa fa-wrench"></i></span>{/if}
+                                {if isset($cError_arr.cPass)}
+                                    <span class="input-group-addon error" title="{__('FillOut')}">
+                                        <i class="fa fa-exclamation-triangle"></i>
+                                    </span>
+                                {/if}
                             </div>
                         </div>
                     </div>
@@ -285,14 +292,14 @@ $(document).ready(function() {
                                         </div>
                                         <div class="modal-footer">
                                             <div class="row">
-                                                <div class="ml-auto col-sm-6 col-xl-auto">
-                                                    <button class="btn btn-outline-primary" type="button" data-dismiss="modal">Schließen</button>
+                                                <div class="ml-auto col-sm-6 col-xl-auto mb-2">
+                                                    <button class="btn btn-outline-primary btn-block" type="button" data-dismiss="modal">Schließen</button>
+                                                </div>
+                                                <div class="col-sm-6 col-xl-auto mb-2">
+                                                    <button class="btn btn-outline-primary btn-block" type="button" onclick="printframe.print();">Drucken</button>
                                                 </div>
                                                 <div class="col-sm-6 col-xl-auto">
-                                                    <button class="btn btn-outline-primary" type="button" onclick="printframe.print();">Drucken</button>
-                                                </div>
-                                                <div class="col-sm-6 col-xl-auto">
-                                                    <button class="btn btn-danger" type="button" onclick="showEmergencyCodes('forceReload');">{__('codeCreateAgain')}</button>
+                                                    <button class="btn btn-danger btn-block" type="button" onclick="showEmergencyCodes('forceReload');">{__('codeCreateAgain')}</button>
                                                 </div>
                                             </div>
                                         </div>
@@ -353,8 +360,8 @@ $(document).ready(function() {
         <div class="card-footer save-wrapper">
             <div class="row">
                 <div class="ml-auto col-sm-6 col-xl-auto">
-                    <a class="btn btn-outline-primary btn-block mb-3" href="benutzerverwaltung.php">
-                        <i class="fa fa-exclamation"></i> {__('cancel')}
+                    <a class="btn btn-outline-primary btn-block mb-2" href="benutzerverwaltung.php">
+                        {__('cancelWithIcon')}
                     </a>
                 </div>
                 <div class="col-sm-6 col-xl-auto">

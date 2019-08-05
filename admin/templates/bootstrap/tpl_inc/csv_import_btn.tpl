@@ -57,7 +57,7 @@
     {/if}
 </script>
 {if $bCustomStrategy === true}
-    <div class="modal fade" tabindex="-1" role="dialog" id="modal-{$importerId}">
+    <div class="modal" tabindex="-1" role="dialog" id="modal-{$importerId}">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -68,7 +68,7 @@
                 </div>
                 <div class="modal-body py-5">
                     <label for="importType-{$importerId}" class="sr-only">{__('importCsvChooseType')}</label>
-                    <select class="form-control" name="importType" id="importType-{$importerId}">
+                    <select class="custom-select" name="importType" id="importType-{$importerId}">
                         <option value="0">{__('importCsvType0')}</option>
                         <option value="1">{__('importCsvType1')}</option>
                         <option value="2">{__('importCsvType2')}</option>
@@ -76,13 +76,13 @@
                 </div>
                 <div class="modal-footer">
                     <div class="row">
-                        <div class="ml-auto col-sm-6 col-xl-auto">
-                            <button type="button" class="btn btn-outline-primary" onclick="onModalCancel_{$importerId}();">
-                                <i class="fal fa-times"></i> {__('cancel')}
+                        <div class="ml-auto col-sm-6 col-xl-auto mb-2">
+                            <button type="button" class="btn btn-outline-primary btn-block" onclick="onModalCancel_{$importerId}();">
+                                {__('cancelWithIcon')}
                             </button>
                         </div>
                         <div class="col-sm-6 col-xl-auto">
-                            <button type="button" class="btn btn-primary" onclick="onModalSubmit_{$importerId}();">
+                            <button type="button" class="btn btn-primary btn-block" onclick="onModalSubmit_{$importerId}();">
                                 <i class="fa fa-upload"></i> {__('importCsv')}
                             </button>
                         </div>
@@ -92,6 +92,6 @@
         </div>
     </div>
 {/if}
-<button type="button" class="btn btn-outline-primary btn-block mb-3" onclick="onClickCsvImport_{$importerId}()">
+<button type="button" class="btn btn-outline-primary btn-block mb-2" onclick="onClickCsvImport_{$importerId}()">
     <i class="fal fa-upload"></i> {__('importCsv')}
 </button>

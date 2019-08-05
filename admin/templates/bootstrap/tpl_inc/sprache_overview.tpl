@@ -1,18 +1,10 @@
 {function sprache_buttons}
     <div class="row">
         <div class="ml-auto col-sm-6 col-xl-auto">
-            <a class="btn btn-outline-primary btn-block mb-3" href="sprache.php?token={$smarty.session.jtl_token}&action=newvar">
+            <a class="btn btn-outline-primary btn-block mb-2" href="sprache.php?token={$smarty.session.jtl_token}&action=newvar">
                 <i class="fa fa-share"></i>
                 {__('btnAddVar')}
             </a>
-        </div>
-        {if $oWert_arr|@count > 0}
-            <div class="col-sm-6 col-xl-auto">
-                {include file='tpl_inc/csv_export_btn.tpl' exporterId="langvars"}
-            </div>
-        {/if}
-        <div class="col-sm-6 col-xl-auto">
-            {include file='tpl_inc/csv_import_btn.tpl' importerId="langvars" bCustomStrategy=true}
         </div>
         {if $oWert_arr|@count > 0}
             <div class="col-sm-6 col-xl-auto">
@@ -43,7 +35,19 @@
 <div id="content">
     <div class="card">
         <div class="card-body">
-            {include file='tpl_inc/language_switcher.tpl' id='kSprache' action='sprache.php'}
+            <div class="row">
+                <div class="col-sm-6 col-xl-auto mb-3">
+                    {include file='tpl_inc/language_switcher.tpl' id='kSprache' action='sprache.php'}
+                </div>
+                {if $oWert_arr|@count > 0}
+                    <div class="ml-auto col-sm-6 col-xl-auto">
+                        {include file='tpl_inc/csv_export_btn.tpl' exporterId="langvars"}
+                    </div>
+                {/if}
+                <div class="col-sm-6 col-xl-auto">
+                    {include file='tpl_inc/csv_import_btn.tpl' importerId="langvars" bCustomStrategy=true}
+                </div>
+            </div>
         </div>
     </div>
     <div class="tabs">
@@ -114,16 +118,20 @@
                                                     <div class="btn-group">
                                                         {if $oWert->bSystem === '0'}
                                                             <a href="sprache.php?token={$smarty.session.jtl_token}&action=delvar&kSprachsektion={$oWert->kSprachsektion}&cName={$oWert->cName}"
-                                                               class="btn btn-link px-2">
+                                                               class="btn btn-link px-2"
+                                                               title="{__('delete')}"
+                                                               data-toggle="tooltip">
                                                                 <span class="icon-hover">
                                                                     <span class="fal fa-trash-alt"></span>
                                                                     <span class="fas fa-trash-alt"></span>
                                                                 </span>
                                                             </a>
                                                         {/if}
-                                                        <button type="button" class="btn btn-link px-2"
-                                                                onclick="resetVarText({$oWert->kSprachsektion},
-                                                                                      '{$oWert->cName}');">
+                                                        <button type="button"
+                                                                class="btn btn-link px-2"
+                                                                onclick="resetVarText({$oWert->kSprachsektion}, '{$oWert->cName}');"
+                                                                data-toggle="tooltip"
+                                                                title="{__('reset')}">
                                                             <span class="icon-hover">
                                                                 <span class="fal fa-refresh"></span>
                                                                 <span class="fas fa-refresh"></span>
@@ -148,7 +156,7 @@
                 </div>
             </div>
             <div id="notfound" class="tab-pane fade {if $tab === 'notfound'}active show{/if}">
-                <div>
+                <div class="table-responsive">
                     {if $oNotFound_arr|@count > 0}
                         <table class="list table">
                             <thead>
@@ -166,7 +174,9 @@
                                         <td>
                                             <div class="btn-group right">
                                                 <a href="sprache.php?token={$smarty.session.jtl_token}&action=newvar&kSprachsektion={$oWert->kSprachsektion}&cName={$oWert->cName}&tab=notfound"
-                                                   class="btn btn-link px-2" title="{__('create')}">
+                                                   class="btn btn-link px-2"
+                                                   title="{__('create')}"
+                                                   data-toggle="tooltip">
                                                     <span class="icon-hover">
                                                         <span class="fal fa-plus"></span>
                                                         <span class="fas fa-plus"></span>

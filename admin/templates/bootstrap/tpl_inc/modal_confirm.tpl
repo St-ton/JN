@@ -13,14 +13,16 @@
             <div class="modal-body py-5">{if isset($modalBody)}{$modalBody}{/if}</div>
             <div class="modal-footer">
                 <p>{__('wantToConfirm')}</p>
-                <div class="modal-footer">
-                    <div class="row">
-                        <div class="ml-auto col-sm-6 col-xl-auto">
-                            <button type="button" class="btn btn-outline-primary" data-dismiss="modal"><i class="fal fa-times"></i> {__('cancel')}</button>
-                        </div>
-                        <div class="col-sm-6 col-xl-auto">
-                            <button id="{$modalID}-confirm" type="button" class="btn btn-primary"><i class="fal fa-check text-success"></i> {__('confirm')}</button>
-                        </div>
+                <div class="row">
+                    <div class="ml-auto col-sm-6 col-xl-auto">
+                        <button type="button" class="btn btn-outline-primary" data-dismiss="modal">
+                            {__('cancelWithIcon')}
+                        </button>
+                    </div>
+                    <div class="col-sm-6 col-xl-auto">
+                        <button id="{$modalID}-confirm" type="button" class="btn btn-primary">
+                            <i class="fal fa-check text-success"></i> {__('confirm')}
+                        </button>
                     </div>
                 </div>
             </div>

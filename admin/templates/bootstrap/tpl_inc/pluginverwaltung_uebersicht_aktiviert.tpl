@@ -63,7 +63,9 @@
                                 <td class="text-center plugin-lang-vars">
                                     {if $plugin->getLocalization()->getLangVars()->count() > 0}
                                         <a href="pluginverwaltung.php?pluginverwaltung_uebersicht=1&sprachvariablen=1&kPlugin={$plugin->getID()}&token={$smarty.session.jtl_token}"
-                                           class="btn btn-link" title="{__('modify')}">
+                                           class="btn btn-link"
+                                           title="{__('modify')}"
+                                           data-toggle="tooltip">
                                            <span class="icon-hover">
                                                 <span class="fal fa-edit"></span>
                                                 <span class="fas fa-edit"></span>
@@ -74,7 +76,9 @@
                                 <td class="text-center plugin-frontend-links">
                                     {if $plugin->getLinks()->getLinks()->count() > 0}
                                         <a href="links.php?kPlugin={$plugin->getID()}"
-                                           class="btn btn-link" title="{__('modify')}">
+                                           class="btn btn-link"
+                                           title="{__('modify')}"
+                                           data-toggle="tooltip">
                                             <span class="icon-hover">
                                                 <span class="fal fa-edit"></span>
                                                 <span class="fas fa-edit"></span>
@@ -85,7 +89,7 @@
                                 <td class="text-center plugin-license">
                                     {if $plugin->getLicense()->hasLicenseCheck()}
                                         <button name="lizenzkey" type="submit" title="{__('modify')}"
-                                                class="btn btn-link" value="{$plugin->getID()}">
+                                                class="btn btn-link" value="{$plugin->getID()}" data-toggle="tooltip">
                                             <span class="icon-hover">
                                                 <span class="fal fa-edit"></span>
                                                 <span class="fas fa-edit"></span>
@@ -102,14 +106,14 @@
                                     {/if}
                                     <div class="btn-group">
                                         {if $plugin->getConfig()->getOptions()->count() || $plugin->getAdminMenu()->getItems()->count()}
-                                            <a class="btn btn-link px-1" href="plugin.php?kPlugin={$plugin->getID()}" title="Einstellungen">
+                                            <a class="btn btn-link px-1" href="plugin.php?kPlugin={$plugin->getID()}" title="{__('settings')}" data-toggle="tooltip">
                                                 <span class="icon-hover">
                                                     <span class="fal fa-cogs"></span>
                                                     <span class="fas fa-cogs"></span>
                                                 </span>
                                             </a>
                                         {elseif $plugin->getMeta()->getLicenseMD() || $plugin->getMeta()->getReadmeMD()}
-                                            <a class="btn btn-link px-1" href="plugin.php?kPlugin={$plugin->getID()}" title="Dokumentation">
+                                            <a class="btn btn-link px-1" href="plugin.php?kPlugin={$plugin->getID()}" title="{__('docu')}" data-toggle="tooltip">
                                                 <span class="icon-hover">
                                                     <span class="fal fa-copy"></span>
                                                     <span class="fas fa-copy"></span>
@@ -118,7 +122,7 @@
                                             {*<a class="btn btn-default btn-sm" href="plugin.php?kPlugin={$plugin->getID()}" title="Dokumentation"><i class="fa fa-file-text-o"></i></a>*}
                                         {/if}
                                         {if $plugin->getMeta()->isUpdateAvailable()}
-                                            <a onclick="ackCheck({$plugin->getID()});return false;" class="btn btn-link px-1" title="{__('pluginBtnUpdate')}">
+                                            <a onclick="ackCheck({$plugin->getID()});return false;" class="btn btn-link px-1" title="{__('pluginBtnUpdate')}" data-toggle="tooltip">
                                                 <span class="icon-hover">
                                                     <span class="fal fa-refresh"></span>
                                                     <span class="fas fa-refresh"></span>
@@ -141,7 +145,7 @@
                             </div>
                         </div>
                         <div class="ml-auto col-sm-6 col-xl-auto">
-                            <button name="deinstallieren" type="submit" class="btn btn-danger btn-block mb-3">
+                            <button name="deinstallieren" type="submit" class="btn btn-danger btn-block mb-2">
                                 <i class="fas fa-trash-alt"></i> {__('pluginBtnDeInstall')}
                             </button>
                         </div>

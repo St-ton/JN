@@ -7,13 +7,15 @@
             </div>
         </td>
         <td class="TD2{if $childCat->getLevel() === 1} hide-toggle-on{/if}" data-name="category">
-            <i class="fa fa-caret-down nav-toggle{if $childCat->getChildren()->count() === 0} invisible{/if}"></i>
+            <i class="fa fa-caret-down nav-toggle{if $childCat->getChildren()->count() === 0} invisible{/if} cursor-pointer"></i>
             <label for="newscat-{$childCat->getID()}">
-                {for $i=2 to $childCat->getLevel()}&nbsp;&nbsp;{/for}{$childCat->getName()}
+                {for $i=2 to $childCat->getLevel()}&bull;&nbsp;{/for}{$childCat->getName()}
             </label>
         </td>
         <td class="text-center">{$childCat->getSort()}</td>
-        <td class="text-center"><i class="fa fa-{if $childCat->getIsActive()}check{else}close{/if}"></i></td>
+        <td class="text-center">
+            <i class="fal fa-{if $childCat->getIsActive()}check text-success{else}times text-danger{/if}"></i>
+        </td>
         <td class="text-center">{$childCat->getDateLastModified()->format('d.m.Y H:i')}</td>
         <td class="text-center">
             <div class="btn-group">

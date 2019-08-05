@@ -11,10 +11,6 @@
         background-color: #fff;
     }
 
-    .input-group .form-control {
-        z-index: 0;
-    }
-
     > .backend-sidebar {
         //flex: none;
         //width: @sidebar-width;
@@ -25,7 +21,6 @@
         > .backend-brandbar {
             background-color: @brandbar-color;
             flex: none;
-            height: 64px;
             padding: 1em;
             z-index: 2;
             box-shadow: 1px 3px 4px rgba(46, 46, 46, 0.09);
@@ -303,11 +298,11 @@
         flex: auto;
         display: flex;
         flex-direction: column;
+        min-height: 100vh;
 
         > .backend-navbar {
             background-color: #fff;
             flex: none;
-            height: 64px;
             padding: 0.75em;
             z-index: 1;
             box-shadow: 2px 4px 4px #eef0f3;
@@ -504,10 +499,6 @@
 //    margin-right: 5px;
 //}
 
-.settings .input-group,#settings .input-group {
-    width: 100%;
-}
-
 .documentation {
     float: right;
 }
@@ -550,33 +541,6 @@ h1.label-wrap,h2.label-wrap,h3.label-wrap,h4.label-wrap,h5.label-wrap {
 //    margin: 10px 0 20px;
 //}
 
-#settings .input-group-addon:first-child,.settings .input-group-addon:first-child {
-    width: 30%;
-    text-align: left;
-    white-space: normal;
-}
-
-#settings .input-group-addon:first-child label,.settings .input-group-addon:first-child label {
-    display: block;
-}
-
-#settings .input-group-addon:last-child,.settings .input-group-addon:last-child {
-    width: 52px;
-    text-align: right;
-}
-
-.settings-content .input-group-wrap textarea {
-    min-height: 90px;
-}
-
-.input-group {
-    margin-bottom: 15px;
-}
-
-table .input-group {
-    margin-bottom: 0;
-}
-
 .list-group-item.boxRow {
     overflow: hidden;
 }
@@ -616,10 +580,6 @@ tr.highlight {
     color: #fff;
 }
 
-.save-wrapper {
-    margin: 20px 0;
-}
-
 //#content .block,#content .container {
 //    margin-bottom: 20px;
 //}
@@ -640,10 +600,12 @@ label .fillout {
     bottom: 0;
     width: 100%;
     position: sticky;
-    padding: 1rem;
+    padding: 1.5rem 1.5rem;
     background: #fff;
     //border: 1px solid #eee;
     text-align: right;
+    margin: 20px 0;
+    z-index: 10;
 }
 .card .save-wrapper {
     padding-left: 1.5rem;
@@ -3193,5 +3155,53 @@ div.markdown thead tr td {
         position: absolute;
         top: -4px;
         right: -5px;
+    }
+}
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+input[type=number] {
+    -moz-appearance:textfield;
+}
+
+.tr-divider-top {
+    border-top: 3px solid #bdbdbd;
+}
+
+.tr-divider-bottom {
+    border-bottom: 3px solid #bdbdbd;
+}
+
+.navbar-toggler {
+    z-index: 50;
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+.custom-select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+}
+
+.search-page {
+    overflow-x: auto;
+    .path {
+        margin-left: auto;
+        padding-left: 1rem;
+        color: #bdbdbd;
+        font-size: 0.703125rem;
+        line-height: 1.4375rem;
+    }
+    ul ul {
+        list-style: none;
+        padding-left: 0;
+    }
+    .dropdown-item {
+        display: flex;
+        flex-direction: row;
     }
 }

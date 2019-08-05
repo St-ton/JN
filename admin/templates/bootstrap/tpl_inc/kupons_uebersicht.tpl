@@ -95,7 +95,9 @@
                                         <td>
                                             <div class="btn-group">
                                                 <a href="kupons.php?kKupon={$oKupon->kKupon}&token={$smarty.session.jtl_token}"
-                                                   class="btn btn-link px-2" title="{__('modify')}">
+                                                   class="btn btn-link px-2"
+                                                   title="{__('modify')}"
+                                                   data-toggle="tooltip">
                                                     <span class="icon-hover">
                                                         <span class="fal fa-edit"></span>
                                                         <span class="fas fa-edit"></span>

@@ -13,7 +13,7 @@
                     {if $oField->isCustomTestOp()}
                         <div class="col-md-6 col-lg-3 col-xl-2">
                             <div class="form-group">
-                                <label for="{$oFilter->getId()}_{$oField->getId()}">{$oField->getTitle()}</label>
+                                <label for="{$oFilter->getId()}_{$oField->getId()}">{$oField->getTitle()}:</label>
                                 <select class="custom-select"
                                         name="{$oFilter->getId()}_{$oField->getId()}_op"
                                         id="{$oFilter->getId()}_{$oField->getId()}_op">
@@ -36,11 +36,10 @@
                         </div>
                         <div class="col-md-6 col-lg-3 col-xl-2">
                             <div class="form-group">
-                                <label>&nbsp;</label>
                     {else}
                         <div class="col-md-6 col-lg-3 col-xl-2">
                             <div class="form-group">
-                                <label for="{$oFilter->getId()}_{$oField->getId()}">{$oField->getTitle()}</label>
+                                <label for="{$oFilter->getId()}_{$oField->getId()}">{$oField->getTitle()}:</label>
                     {/if}
                                 <input type="{if $oField->getDataType() == 1}number{else}text{/if}"
                                        class="form-control" name="{$oFilter->getId()}_{$oField->getId()}"
@@ -53,7 +52,7 @@
                 {elseif $oField->getType() === 'select'}
                     <div class="col-md-6 col-lg-3 col-xl-2">
                         <div class="form-group">
-                            <label for="{$oFilter->getId()}_{$oField->getId()}">{$oField->getTitle()}</label>
+                            <label for="{$oFilter->getId()}_{$oField->getId()}">{$oField->getTitle()}:</label>
                             <select class="custom-select"
                                     name="{$oFilter->getId()}_{$oField->getId()}"
                                     id="{$oFilter->getId()}_{$oField->getId()}"
@@ -71,7 +70,7 @@
                 {elseif $oField->getType() === 'daterange'}
                     <div class="col-md-6 col-lg-3 col-xl-2">
                         <div class="form-group">
-                            <label for="{$oFilter->getId()}_{$oField->getId()}">{__($oField->getTitle())}</label>
+                            <label for="{$oFilter->getId()}_{$oField->getId()}">{__($oField->getTitle())}:</label>
                             <input type="text"  class="form-control"
                                    name="{$oFilter->getId()}_{$oField->getId()}"
                                    id="{$oFilter->getId()}_{$oField->getId()}">
@@ -87,7 +86,7 @@
                 {/if}
             {/foreach}
             <div class="col-md-auto">
-                <div class="form-group mt-3">
+                <div class="form-group mt-2">
                     <button type="submit" class="btn btn-outline-primary btn-block" name="action" value="{$oFilter->getId()}_resetfilter"
                             title="{__('resetFilter')}" id="{$oFilter->getId()}_btn_resetfilter">
                         <i class="fa fa-eraser"></i>
@@ -95,7 +94,7 @@
                 </div>
             </div>
             <div class="col-md-auto">
-                <div class="form-group mt-3">
+                <div class="form-group mt-2">
                     <button type="submit" class="btn btn-primary btn-block" name="action" value="{$oFilter->getId()}_filter"
                             title="{__('useFilter')}" id="{$oFilter->getId()}_btn_filter">
                         <i class="fal fa-search"></i>

@@ -1850,3 +1850,30 @@ msgstr "Favourites"
 
 msgid "saveWithIcon"
 msgstr "<i class=\"fal fa-save\"></i> Save"
+
+msgid "cancelWithIcon"
+msgstr "<i class=\"fas fa-exclamation\"></i> Cancel"
+
+msgid "selectPickerNoneSelectedText"
+msgstr "Nothing selected"
+
+msgid "selectPickerNoneResultsText"
+msgstr "{0} resulted in not hits"
+
+msgid "selectPickerCountSelectedText"
+msgstr "{0} selected"
+
+msgid "selectPickerLimitReached"
+msgstr "Limit reached (max. {n})"
+
+msgid "selectPickerGroupLimitReached"
+msgstr "Group limit reached (max. {n})"
+
+msgid "selectPickerSelectAllText"
+msgstr "Select all"
+
+msgid "selectPickerDeselectAllText"
+msgstr "Deselect all"
+
+msgid "selectPickerDoneButtonText"
+msgstr "Close"

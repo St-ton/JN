@@ -68,7 +68,10 @@
                                             <td class="text-center">{$oKampagne->dErstellt_DE}</td>
                                             <td class="text-center">
                                                 <div class="btn-group">
-                                                    <a href="kampagne.php?kKampagne={$oKampagne->kKampagne}&editieren=1&token={$smarty.session.jtl_token}" title="{__('modify')}" class="btn btn-link px-2">
+                                                    <a href="kampagne.php?kKampagne={$oKampagne->kKampagne}&editieren=1&token={$smarty.session.jtl_token}"
+                                                       title="{__('modify')}"
+                                                       class="btn btn-link px-2"
+                                                       data-toggle="tooltip">
                                                         <span class="icon-hover">
                                                             <span class="fal fa-edit"></span>
                                                             <span class="fas fa-edit"></span>
@@ -164,7 +167,7 @@
                                 </div>
                                 {if isset($nGroessterKey) && $nGroessterKey >= 1000}
                                     <div class="ml-auto col-sm-6 col-xl-auto">
-                                        <button name="submitDelete" type="submit" value="{__('delete')}" class="btn btn-danger btn-block mb-3"><i class="fas fa-trash-alt"></i> {__('deleteSelected')}</button>
+                                        <button name="submitDelete" type="submit" value="{__('delete')}" class="btn btn-danger btn-block mb-2"><i class="fas fa-trash-alt"></i> {__('deleteSelected')}</button>
                                     </div>
                                 {/if}
                                 <div class="{if !(isset($nGroessterKey) && $nGroessterKey >= 1000)}ml-auto{/if} col-sm-6 col-xl-auto">
@@ -239,7 +242,7 @@
                     <div class="card-footer save-wrapper">
                         <div class="row">
                             <div class="ml-auto col-sm-6 col-xl-auto">
-                                <a href="kampagne.php?tab=globalestats&nStamp=-1&token={$smarty.session.jtl_token}" class="btn btn-outline-primary btn-block mb-3">
+                                <a href="kampagne.php?tab=globalestats&nStamp=-1&token={$smarty.session.jtl_token}" class="btn btn-outline-primary btn-block mb-2">
                                     <i class="fa fa-angle-double-left"></i> {__('earlier')}
                                 </a>
                             </div>

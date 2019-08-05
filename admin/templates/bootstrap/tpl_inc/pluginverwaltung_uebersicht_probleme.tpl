@@ -50,7 +50,7 @@
                         <td class="text-center">
                             {if $plugin->getLocalization()->getTranslations()|@count > 0}
                                 <a href="pluginverwaltung.php?pluginverwaltung_uebersicht=1&sprachvariablen=1&kPlugin={$plugin->getID()}"
-                                   class="btn btn-link" title="{__('modify')}">
+                                   class="btn btn-link" title="{__('modify')}" data-toggle="tooltip">
                                     <span class="icon-hover">
                                         <span class="fal fa-edit"></span>
                                         <span class="fas fa-edit"></span>
@@ -61,7 +61,7 @@
                         <td class="text-center">
                             {if $plugin->getLinks()->getLinks()->count() > 0}
                                 <a href="links.php?kPlugin={$plugin->getID()}"
-                                   class="btn btn-link" title="{__('modify')}">
+                                   class="btn btn-link" title="{__('modify')}" data-toggle="tooltip">
                                     <span class="icon-hover">
                                         <span class="fal fa-edit"></span>
                                         <span class="fas fa-edit"></span>
@@ -73,14 +73,20 @@
                             {if $plugin->getLicense()->hasLicenseCheck()}
                                 {if $plugin->getLicense()->hasLicense()}
                                     <strong>{__('pluginBtnLicence')}:</strong> {$plugin->getLicense()->getKey()}
-                                    <button name="lizenzkey" type="submit" class="btn btn-link" value="{$plugin->getID()}">
+                                    <button name="lizenzkey"
+                                            type="submit"
+                                            class="btn btn-link"
+                                            value="{$plugin->getID()}"
+                                            title="{__('edit')}"
+                                            data-toggle="tooltip">
                                         <span class="icon-hover">
                                             <span class="fal fa-edit"></span>
                                             <span class="fas fa-edit"></span>
                                         </span> {__('pluginBtnLicenceChange')}
                                     </button>
                                 {else}
-                                    <button name="lizenzkey" type="submit" class="btn btn-link" value="{$plugin->getID()}">
+                                    <button name="lizenzkey" type="submit" class="btn btn-link"
+                                            value="{$plugin->getID()}" title="{__('edit')}" data-toggle="tooltip">
                                         <span class="icon-hover">
                                             <span class="fal fa-edit"></span>
                                             <span class="fas fa-edit"></span>
@@ -127,7 +133,10 @@
                         </td>
                         <td class="text-center">
                             {if $plugin->getLinks()->getLinks()->count() > 0}
-                                <a href="links.php?kPlugin={$plugin->getID()}" class="btn btn-link" title="{__('modify')}">
+                                <a href="links.php?kPlugin={$plugin->getID()}"
+                                   class="btn btn-link"
+                                   title="{__('modify')}"
+                                   data-toggle="tooltip">
                                     <span class="icon-hover">
                                         <span class="fal fa-edit"></span>
                                         <span class="fas fa-edit"></span>
@@ -183,7 +192,7 @@
                         <td class="text-center">
                             {if $plugin->getLocalization()->getTranslations()|@count > 0}
                                 <a href="pluginverwaltung.php?pluginverwaltung_uebersicht=1&sprachvariablen=1&kPlugin={$plugin->getID()}"
-                                   class="btn btn-link" title="{__('modify')}">
+                                   class="btn btn-link" title="{__('modify')}" data-toggle="tooltip">
                                     <span class="icon-hover">
                                         <span class="fal fa-edit"></span>
                                         <span class="fas fa-edit"></span>
@@ -193,7 +202,7 @@
                         </td>
                         <td class="text-center">
                             {if $plugin->getLinks()->getLinks()->count() > 0}
-                                <a href="links.php?kPlugin={$plugin->getID()}" class="btn btn-link" title="{__('modify')}">
+                                <a href="links.php?kPlugin={$plugin->getID()}" class="btn btn-link" title="{__('modify')}" data-toggle="tooltip">
                                     <span class="icon-hover">
                                         <span class="fal fa-edit"></span>
                                         <span class="fas fa-edit"></span>
@@ -251,7 +260,9 @@
                         <td class="text-center plugin-lang-vars">
                             {if $plugin->getLocalization()->getTranslations()|@count > 0}
                                 <a href="pluginverwaltung.php?pluginverwaltung_uebersicht=1&sprachvariablen=1&kPlugin={$plugin->getID()}"
-                                   class="btn btn-link" title="{__('modify')}">
+                                   class="btn btn-link"
+                                   title="{__('modify')}"
+                                   data-toggle="tooltip">
                                     <span class="icon-hover">
                                         <span class="fal fa-edit"></span>
                                         <span class="fas fa-edit"></span>
@@ -261,7 +272,10 @@
                         </td>
                         <td class="text-center plugin-frontend-links">
                             {if $plugin->getLinks()->getLinks()->count() > 0}
-                                <a href="links.php?kPlugin={$plugin->getID()}" class="btn btn-link" title="{__('modify')}">
+                                <a href="links.php?kPlugin={$plugin->getID()}"
+                                   class="btn btn-link"
+                                   title="{__('modify')}"
+                                   data-toggle="tooltip">
                                     <span class="icon-hover">
                                         <span class="fal fa-edit"></span>
                                         <span class="fas fa-edit"></span>
@@ -274,7 +288,7 @@
                                 {if $plugin->getLicense()->hasLicense()}
                                     <strong>{__('pluginBtnLicence')}:</strong> {$plugin->getLicense()->getKey()}
                                     <button name="lizenzkey" type="submit" class="btn btn-link"
-                                            value="{$plugin->getID()}" title="{__('modify')}">
+                                            value="{$plugin->getID()}" title="{__('modify')}" data-toggle="tooltip">
                                         <span class="icon-hover">
                                             <span class="fal fa-edit"></span>
                                             <span class="fas fa-edit"></span>
@@ -282,7 +296,7 @@
                                     </button>
                                 {else}
                                     <button name="lizenzkey" type="submit" class="btn btn-primary"
-                                            value="{$plugin->getID()}" title="{__('modify')}">
+                                            value="{$plugin->getID()}" title="{__('modify')}" data-toggle="tooltip">
                                         <span class="icon-hover">
                                             <span class="fal fa-edit"></span>
                                             <span class="fas fa-edit"></span>
@@ -310,7 +324,7 @@
                     </div>
                     </div>
                     <div class="ml-auto col-sm-6 col-xl-auto">
-                        <button name="deinstallieren" type="submit" class="btn btn-danger btn-block mb-3">
+                        <button name="deinstallieren" type="submit" class="btn btn-danger btn-block mb-2">
                             <i class="fas fa-trash-alt"></i> {__('pluginBtnDeInstall')}
                         </button>
                     </div>

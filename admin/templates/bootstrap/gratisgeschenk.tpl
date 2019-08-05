@@ -34,7 +34,7 @@
             <div id="aktivegeschenke" class="tab-pane fade {if !isset($cTab) || $cTab === 'aktivegeschenke'} active show{/if}">
                 {if isset($oAktiveGeschenk_arr) && $oAktiveGeschenk_arr|@count > 0}
                     {include file='tpl_inc/pagination.tpl' pagination=$oPagiAktiv cAnchor='aktivegeschenke'}
-                    <div class="settingstable-responsive">
+                    <div class="settings table-responsive">
                         <table class="table table-striped">
                             <thead>
                             <tr>

@@ -73,7 +73,7 @@
                                 </div>
                             </div>
                             <div class="ml-auto col-sm-6 col-xl-auto">
-                                <button name="action" value="delselected" class="btn btn-warning btn-block mb-3">
+                                <button name="action" value="delselected" class="btn btn-warning btn-block mb-2">
                                     <i class="fas fa-trash-alt"></i> {__('deleteSelected')}
                                 </button>
                             </div>

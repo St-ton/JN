@@ -118,7 +118,9 @@
                                             <td class="text-center">
                                                 <div class="btn-group">
                                                     <a href="news.php?news=1&kNews={$oNewsKommentar->getNewsID()}&kNewsKommentar={$oNewsKommentar->getID()}&nkedit=1&tab=inaktiv&token={$smarty.session.jtl_token}"
-                                                       class="btn btn-link px-2" title="{__('modify')}">
+                                                       class="btn btn-link px-2"
+                                                       title="{__('modify')}"
+                                                       data-toggle="tooltip">
                                                         <span class="icon-hover">
                                                             <span class="fal fa-edit"></span>
                                                             <span class="fas fa-edit"></span>
@@ -141,7 +143,7 @@
                                     </div>
                                     <div class="ml-auto col-sm-6 col-xl-auto">
                                         <input name="kommentareloeschenSubmit" type="submit" data-id="loeschen" value="{__('delete')}" class="hidden-soft">
-                                        <button name="kommentareloeschenSubmit" type="button" data-toggle="modal" data-target=".delete-modal" value="{__('delete')}" class="btn btn-danger btn-block mb-3"><i class="fas fa-trash-alt"></i> {__('delete')}</button>
+                                        <button name="kommentareloeschenSubmit" type="button" data-toggle="modal" data-target=".delete-modal" value="{__('delete')}" class="btn btn-danger btn-block mb-2"><i class="fas fa-trash-alt"></i> {__('delete')}</button>
                                     </div>
                                     <div class="col-sm-6 col-xl-auto">
                                         <button name="freischalten" type="submit" value="{__('newsActivate')}" class="btn btn-primary btn-block"><i class="fa fa-thumbs-up"></i> {__('newsActivate')}</button>
@@ -211,14 +213,18 @@
                                             <td class="text-center">
                                                 <div class="btn-group">
                                                     <a href="news.php?news=1&nd=1&kNews={$oNews->getID()}&tab=aktiv&token={$smarty.session.jtl_token}"
-                                                       class="btn btn-link px-2" title="{__('preview')}">
+                                                       class="btn btn-link px-2"
+                                                       title="{__('preview')}"
+                                                       data-toggle="tooltip">
                                                         <span class="icon-hover">
                                                             <span class="fal fa-eye"></span>
                                                             <span class="fas fa-eye"></span>
                                                         </span>
                                                     </a>
                                                     <a href="news.php?news=1&news_editieren=1&kNews={$oNews->getID()}&tab=aktiv&token={$smarty.session.jtl_token}"
-                                                       class="btn btn-link px-2" title="{__('modify')}">
+                                                       class="btn btn-link px-2"
+                                                       title="{__('modify')}"
+                                                       data-toggle="tooltip">
                                                         <span class="icon-hover">
                                                             <span class="fal fa-edit"></span>
                                                             <span class="fas fa-edit"></span>
@@ -251,7 +257,7 @@
                                 </div>
                                 <div class="ml-auto col-sm-6 col-xl-auto">
                                     <input name="loeschen" type="submit" data-id="loeschen" value="{__('delete')}" class="hidden-soft">
-                                    <button name="loeschen" type="button" data-toggle="modal" data-target=".delete-modal" value="{__('delete')}" class="btn btn-danger btn-block mb-3"><i class="fas fa-trash-alt"></i> {__('delete')}</button>
+                                    <button name="loeschen" type="button" data-toggle="modal" data-target=".delete-modal" value="{__('delete')}" class="btn btn-danger btn-block mb-2"><i class="fas fa-trash-alt"></i> {__('delete')}</button>
                                 </div>
                                 <div class="col-sm-6 col-xl-auto">
                                     <button name="news_erstellen" type="submit" value="{__('newAdd')}" class="btn btn-primary btn-block"><i class="fa fa-share"></i> {__('newAdd')}</button>
@@ -300,7 +306,7 @@
                                                 </div>
                                             </th>
                                             <td class="TD2{if $oNewsKategorie->getLevel() === 1} hide-toggle-on{/if}" data-name="category">
-                                                <i class="fa fa-caret-right nav-toggle{if $oNewsKategorie->getChildren()->count() === 0} hidden{/if}" style="cursor:pointer"></i>
+                                                <i class="fa fa-caret-right nav-toggle{if $oNewsKategorie->getChildren()->count() === 0} hidden{/if} cursor-pointer"></i>
                                                 <label for="newscat-{$oNewsKategorie->getID()}">{$oNewsKategorie->getName()|default:'???'}</label>
                                             </td>
                                             <td class="text-center">{$oNewsKategorie->getSort()}</td>
@@ -311,7 +317,9 @@
                                             <td class="text-center">
                                                 <div class="btn-group">
                                                     <a href="news.php?news=1&newskategorie_editieren=1&kNewsKategorie={$oNewsKategorie->getID()}&tab=kategorien&token={$smarty.session.jtl_token}"
-                                                       class="btn btn-link px-2" title="{__('modify')}">
+                                                       class="btn btn-link px-2"
+                                                       title="{__('modify')}"
+                                                       data-toggle="tooltip">
                                                         <span class="icon-hover">
                                                             <span class="fal fa-edit"></span>
                                                             <span class="fas fa-edit"></span>
@@ -356,7 +364,7 @@
                                 </div>
                                 <div class="ml-auto col-sm-6 col-xl-auto">
                                     <input name="loeschen" type="submit" data-id="loeschen" value="{__('delete')}" class="hidden-soft">
-                                    <button name="loeschen" type="button" data-toggle="modal" data-target=".delete-modal" value="{__('delete')}" class="btn btn-danger btn-block mb-3">
+                                    <button name="loeschen" type="button" data-toggle="modal" data-target=".delete-modal" value="{__('delete')}" class="btn btn-danger btn-block mb-2">
                                         <i class="fas fa-trash-alt"></i> {__('delete')}
                                     </button>
                                 </div>
@@ -395,13 +403,31 @@
                                                     {/foreach}
                                                 </select>
                                             {elseif $oConfig->cInputTyp === 'listbox'}
-                                                <select name="{$oConfig->cWertName}[]" id="{$oConfig->cWertName}" multiple="multiple" class="custom-select combo">
+                                                <select name="{$oConfig->cWertName}[]"
+                                                        id="{$oConfig->cWertName}"
+                                                        multiple="multiple"
+                                                        class="selectpicker custom-select"
+                                                        data-selected-text-format="count > 2"
+                                                        data-size="7"
+                                                        data-actions-box="true">
                                                     {foreach $oConfig->ConfWerte as $wert}
                                                         <option value="{$wert->kKundengruppe}" {foreach $oConfig->gesetzterWert as $gesetzterWert}{if $gesetzterWert->cWert == $wert->kKundengruppe}selected{/if}{/foreach}>{$wert->cName}</option>
                                                     {/foreach}
                                                 </select>
                                             {elseif $oConfig->cInputTyp === 'number'}
-                                                <input class="form-control" type="number" name="{$oConfig->cWertName}" id="{$oConfig->cWertName}" value="{if isset($oConfig->gesetzterWert)}{$oConfig->gesetzterWert}{/if}" tabindex="1" />
+                                                <div class="input-group form-counter">
+                                                    <div class="input-group-prepend">
+                                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-down>
+                                                            <span class="fas fa-minus"></span>
+                                                        </button>
+                                                    </div>
+                                                    <input class="form-control" type="number" name="{$oConfig->cWertName}" id="{$oConfig->cWertName}" value="{if isset($oConfig->gesetzterWert)}{$oConfig->gesetzterWert}{/if}" tabindex="1" />
+                                                    <div class="input-group-append">
+                                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-up>
+                                                            <span class="fas fa-plus"></span>
+                                                        </button>
+                                                    </div>
+                                                </div>
                                             {else}
                                                 <input class="form-control" type="text" name="{$oConfig->cWertName}" id="{$oConfig->cWertName}" value="{if isset($oConfig->gesetzterWert)}{$oConfig->gesetzterWert}{/if}" tabindex="1" />
                                             {/if}
@@ -446,14 +472,14 @@
             <div class="modal-body py-5"></div>
             <div class="modal-footer">
                 <p>{__('wantToConfirm')}</p>
-                <div class="modal-footer">
-                    <div class="row">
-                        <div class="ml-auto col-sm-6 col-xl-auto">
-                            <button type="button" class="btn btn-outline-primary" data-dismiss="modal">{__('cancel')}</button>
-                        </div>
-                        <div class="col-sm-6 col-xl-auto">
-                            <button type="button" id="submitDelete" data-name="" class="btn btn-danger">{__('delete')}</button>
-                        </div>
+                <div class="row">
+                    <div class="ml-auto col-sm-6 col-xl-auto">
+                        <button type="button" class="btn btn-outline-primary" data-dismiss="modal">
+                            {__('cancelWithIcon')}
+                        </button>
+                    </div>
+                    <div class="col-sm-6 col-xl-auto">
+                        <button type="button" id="submitDelete" data-name="" class="btn btn-danger">{__('delete')}</button>
                     </div>
                 </div>
             </div>

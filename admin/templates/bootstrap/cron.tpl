@@ -34,7 +34,7 @@
                 <div>
                     <div class="subheading1">{__('queueEntries')}</div>
                     <hr class="mb-3">
-                    <div>
+                    <div class="table-responsive">
                         <form method="post">
                             {$jtl_token}
                             <table class="table table-striped">
@@ -58,15 +58,15 @@
                                             <td class="text-center">{if $job->isRunning()}<i class="fal fa-check text-success"></i>{else}<i class="fal fa-times text-danger"></i>{/if}</td>
                                             <td class="text-center">
                                                 <div class="btn-group">
-                                                    {if $job->isRunning()}
-                                                        <button class="btn btn-link px-2" type="submit" name="reset" value="{$job->getQueueID()}">
+                                                    {*{if $job->isRunning()}*}
+                                                        <button class="btn btn-link px-2" type="submit" name="reset" value="{$job->getQueueID()}" title="{__('reset')}" data-toggle="tooltip">
                                                             <span class="icon-hover">
                                                                 <span class="fal fa-refresh"></span>
                                                                 <span class="fas fa-refresh"></span>
                                                             </span>
                                                         </button>
-                                                    {/if}
-                                                    <button class="btn btn-link px-2" type="submit" name="delete" value="{$job->getCronID()}">
+                                                    {*{/if}*}
+                                                    <button class="btn btn-link px-2" type="submit" name="delete" value="{$job->getCronID()}" title="{__('delete')}" data-toggle="tooltip">
                                                         <span class="icon-hover">
                                                             <span class="fal fa-trash-alt"></span>
                                                             <span class="fas fa-trash-alt"></span>
@@ -106,7 +106,19 @@
                         <div class="form-group form-row align-items-center">
                             <label class="col col-sm-4 col-form-label text-sm-right" for="cron-freq">{__('headingFrequency')} ({__('hours')}):</label>
                             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                <input id="cron-freq" type="number" min="1" value="24" name="frequency" class="form-control" required>
+                                <div class="input-group form-counter">
+                                    <div class="input-group-prepend">
+                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-down>
+                                            <span class="fas fa-minus"></span>
+                                        </button>
+                                    </div>
+                                    <input id="cron-freq" type="number" min="1" value="24" name="frequency" class="form-control" required>
+                                    <div class="input-group-append">
+                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-up>
+                                            <span class="fas fa-plus"></span>
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div class="form-group form-row align-items-center">

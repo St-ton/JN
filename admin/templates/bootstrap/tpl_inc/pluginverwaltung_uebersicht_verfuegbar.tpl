@@ -99,14 +99,14 @@
                                     </div>
                                     {if $listingItem->isShop5Compatible() === false}
                                         {if $listingItem->isShop4Compatible() === false}
-                                            <span title="{__('dangerPluginNotCompatibleShop4')}" class="label warning label-danger">
+                                            <span title="{__('dangerPluginNotCompatibleShop4')}" class="label warning label-danger" data-toggle="tooltip">
                                                 <span class="icon-hover">
                                                     <span class="fal fa-exclamation-triangle"></span>
                                                     <span class="fas fa-exclamation-triangle"></span>
                                                 </span>
                                             </span>
                                         {else}
-                                            <span title="{__('dangerPluginNotCompatibleShop5')}" class="label warning label-warning">
+                                            <span title="{__('dangerPluginNotCompatibleShop5')}" class="label warning label-warning" data-toggle="tooltip">
                                                 <span class="icon-hover">
                                                     <span class="fal fa-exclamation-triangle"></span>
                                                     <span class="fas fa-exclamation-triangle"></span>

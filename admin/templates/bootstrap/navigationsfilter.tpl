@@ -134,10 +134,22 @@
                                 {/foreach}
                             </select>
                         {elseif $oConfig->cInputTyp === 'number'}
-                            <input class="form-control" type="number" name="{$oConfig->cWertName}"
-                                   id="{$oConfig->cWertName}"
-                                   value="{if isset($oConfig->gesetzterWert)}{$oConfig->gesetzterWert}{/if}"
-                                   tabindex="1">
+                            <div class="input-group form-counter">
+                                <div class="input-group-prepend">
+                                    <button type="button" class="btn btn-outline-secondary border-0" data-count-down>
+                                        <span class="fas fa-minus"></span>
+                                    </button>
+                                </div>
+                                <input class="form-control" type="number" name="{$oConfig->cWertName}"
+                               id="{$oConfig->cWertName}"
+                               value="{if isset($oConfig->gesetzterWert)}{$oConfig->gesetzterWert}{/if}"
+                               tabindex="1">
+                                <div class="input-group-append">
+                                    <button type="button" class="btn btn-outline-secondary border-0" data-count-up>
+                                        <span class="fas fa-plus"></span>
+                                    </button>
+                                </div>
+                            </div>
                         {else}
                             <input class="form-control" type="text" name="{$oConfig->cWertName}"
                                    id="{$oConfig->cWertName}"

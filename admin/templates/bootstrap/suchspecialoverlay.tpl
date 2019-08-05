@@ -39,7 +39,7 @@
                 <div class="no_overflow card" id="settings">
                     <div class="card-body">
                         <div class="text-center">
-                            <img src="{$oSuchspecialOverlay->getURL($smarty.const.IMAGE_SIZE_SM)}?rnd={$cRnd}" style="margin-bottom: 15px;" />
+                            <img src="{$oSuchspecialOverlay->getURL($smarty.const.IMAGE_SIZE_SM)}?rnd={$cRnd}" class="mb-3" />
                         </div>
                         <div class="form-group form-row align-items-center">
                             <label class="col col-sm-4 col-form-label text-sm-right" for="nAktiv">{__('suchspecialoverlayActive')}:</label>
@@ -59,7 +59,7 @@
                         <div class="form-group form-row align-items-center file-input">
                             <label class="col col-sm-4 col-form-label text-sm-right" for="cSuchspecialOverlayBild">{__('suchspecialoverlayFileName')}:</label>
                             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                <div class="input-group mb-3">
+                                <div class="input-group">
                                     <div class="custom-file">
                                         <input class="custom-file-input" type="file" name="cSuchspecialOverlayBild" accept="image/jpeg,image/gif,image/png,image/bmp" id="cSuchspecialOverlayBild" value="" tabindex="1" />
                                         <label class="custom-file-label" for="cSuchspecialOverlayBild">
@@ -102,7 +102,19 @@
                         <div class="form-group form-row align-items-center">
                             <label class="col col-sm-4 col-form-label text-sm-right" for="nGroesse">{__('suchspecialoverlaySize')}:</label>
                             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                <input id="nGroesse" class="form-control" name="nGroesse" type="number" value="{$oSuchspecialOverlay->getSize()}" />
+                                <div class="input-group form-counter">
+                                    <div class="input-group-prepend">
+                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-down>
+                                            <span class="fas fa-minus"></span>
+                                        </button>
+                                    </div>
+                                    <input id="nGroesse" class="form-control" name="nGroesse" type="number" value="{$oSuchspecialOverlay->getSize()}" />
+                                    <div class="input-group-append">
+                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-up>
+                                            <span class="fas fa-plus"></span>
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
                             <div class="col-auto ml-sm-n4 order-2 order-sm-3">
                                 {getHelpDesc cDesc=__('suchspecialoverlaySizeDesc')}

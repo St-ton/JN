@@ -138,7 +138,13 @@
                         <label class="col col-sm-4 col-form-label text-sm-right" for="cKundengruppen">{__('restrictedToCustomerGroups')}{if isset($xPlausiVar_arr.cKundengruppen)} <span class="fillout">{__('FillOut')}</span>{/if}:</label>
                         {$activeGroups = $Link->getCustomerGroups()}
                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                            <select required name="cKundengruppen[]" class="custom-select{if isset($xPlausiVar_arr.cKundengruppen)} fieldfillout{/if}" multiple="multiple" size="6" id="cKundengruppen">
+                            <select required name="cKundengruppen[]"
+                                    class="selectpicker custom-select{if isset($xPlausiVar_arr.cKundengruppen)} fieldfillout{/if}"
+                                    multiple="multiple"
+                                    size="6"
+                                    id="cKundengruppen"
+                                    data-selected-text-format="count > 2"
+                                    data-size="7">
                                 <option value="-1"
                                     {if isset($Link->getID()) && $Link->getID() > 0 && count($activeGroups) === 0} selected
                                     {elseif isset($xPostVar_arr.cKundengruppen)}
@@ -147,7 +153,7 @@
                                         {/foreach}
                                     {elseif !$Link->getID() > 0} selected{/if}
                                 >{__('all')}</option>
-
+                                <option data-divider="true"></option>
                                 {foreach $kundengruppen as $kundengruppe}
                                     {assign var=kKundengruppe value=(int)$kundengruppe->kKundengruppe}
                                     {assign var=postkndgrp value=0}
@@ -189,7 +195,7 @@
                     <div class="form-group form-row align-items-center">
                         <label class="col col-sm-4 col-form-label text-sm-right" for="bSSL">SSL:</label>
                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                            <select id="bSSL" class="form-control" name="bSSL">
+                            <select id="bSSL" class="custom-select" name="bSSL">
                                 <option value="0"{if $Link->getSSL() === false || (isset($xPostVar_arr.bSSL) && ($xPostVar_arr.bSSL == 0 || $xPostVar_arr.bSSL == 1))} selected="selected"{/if}>{__('standard')}</option>
                                 <option value="2"{if $Link->getSSL() === true || (isset($xPostVar_arr.bSSL) && $xPostVar_arr.bSSL == 2)} selected="selected"{/if}>{__('forced')}</option>
                             </select>
@@ -345,10 +351,14 @@
             <div class="card-footer save-wrapper">
                 <div class="row">
                     <div class="ml-auto col-sm-6 col-xl-auto">
-                        <button type="submit" name="continue" value="1" class="btn btn-outline-primary btn-block mb-3" id="save-and-continue">{__('newLinksSaveContinueEdit')}</button>
+                        <button type="submit" name="continue" value="1" class="btn btn-outline-primary btn-block mb-2" id="save-and-continue">
+                            <i class="fal fa-save"></i> {__('newLinksSaveContinueEdit')}
+                        </button>
                     </div>
                     <div class="col-sm-6 col-xl-auto">
-                        <button type="submit" value="{__('newLinksSave')}" class="btn btn-primary btn-block"><i class="far fa-save"></i> {__('newLinksSave')}</button>
+                        <button type="submit" value="{__('newLinksSave')}" class="btn btn-primary btn-block">
+                            <i class="far fa-save"></i> {__('newLinksSave')}
+                        </button>
                     </div>
                 </div>
             </div>

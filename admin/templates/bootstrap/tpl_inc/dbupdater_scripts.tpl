@@ -166,7 +166,7 @@
 			if (!error) {
 				updateStatusTpl(plugin);
 				if (dir === 'up') {
-					pushEvent(sprintf('{/literal}{__('updateToSuccessfull')}{literal}', formatVersion(result.result)));
+					pushEvent(sprintf('{/literal}{__('updateTosuccessfull')}{literal}', formatVersion(result.result)));
 				}
 			}
 

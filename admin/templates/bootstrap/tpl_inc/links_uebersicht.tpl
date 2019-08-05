@@ -42,19 +42,19 @@
                             {/if}
                             <div class="btn-group float-right">
                                 {if $linkgruppe->getID() > 0}
-                                    <button name="action" value="delete-linkgroup" class="btn btn-link px-2" title="{__('linkGroup')} {__('delete')}">
+                                    <button name="action" value="delete-linkgroup" class="btn btn-link px-2" title="{__('linkGroup')} {__('delete')}" data-toggle="tooltip">
                                         <span class="icon-hover">
                                             <span class="fal fa-trash-alt"></span>
                                             <span class="fas fa-trash-alt"></span>
                                         </span>
                                     </button>
-                                    <button name="action" value="add-link-to-linkgroup" class="btn btn-link px-2 add" title="{__('addLink')}">
+                                    <button name="action" value="add-link-to-linkgroup" class="btn btn-link px-2 add" title="{__('addLink')}" data-toggle="tooltip">
                                         <span class="icon-hover">
                                             <span class="fal fa-plus"></span>
                                             <span class="fas fa-plus"></span>
                                         </span>
                                     </button>
-                                    <button name="action" value="edit-linkgroup" class="btn btn-link px-2" title="{__('modify')}">
+                                    <button name="action" value="edit-linkgroup" class="btn btn-link px-2" title="{__('modify')}" data-toggle="tooltip">
                                         <span class="icon-hover">
                                             <span class="fal fa-edit"></span>
                                             <span class="fas fa-edit"></span>
@@ -77,9 +77,11 @@
                         {*</div>*}
                     {*{/if}*}
                     {if $linkgruppe->getLinks()->count() > 0}
-                        <table class="table">
-                            {include file='tpl_inc/links_uebersicht_item.tpl' list=$linkgruppe->getLinks() id=$linkgruppe->getID()}
-                        </table>
+                        <div class="table-responsive">
+                            <table class="table">
+                                {include file='tpl_inc/links_uebersicht_item.tpl' list=$linkgruppe->getLinks() id=$linkgruppe->getID()}
+                            </table>
+                        </div>
                     {else}
                         <p class="alert alert-info" style="margin:10px;"><i class="fal fa-info-circle"></i> {__('noData')}</p>
                     {/if}

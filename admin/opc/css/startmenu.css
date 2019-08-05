@@ -44,8 +44,8 @@
 }
 #opc button.opc-btn-primary, #opc button.opc-btn-secondary {
   border-radius: 1000px;
-  border: none;
   background-color: #5cbcf6;
+  border: 1px solid #5cbcf6;
   color: #fff;
   text-align: center;
   padding: 12px;
@@ -67,6 +67,10 @@
 }
 #opc button.opc-small-btn {
   padding: 8px 10px;
+}
+#opc button.opc-medium-btn {
+  padding: 8px 18px;
+  margin-right: 8px;
 }
 #opc button.opc-btn-link:hover {
   text-decoration: underline;

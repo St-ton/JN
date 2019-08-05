@@ -55,7 +55,7 @@
             <i class="fal fa-arrows-v" aria-hidden="true"></i>
         </th>
         <td class="text-center">
-            <button type="button" class="btn btn-link btn-remove">
+            <button type="button" class="btn btn-link btn-remove" data-toggle="tooltip" title="{__('delete')}">
                 <span class="icon-hover">
                     <span class="fal fa-trash-alt"></span>
                     <span class="fas fa-trash-alt"></span>

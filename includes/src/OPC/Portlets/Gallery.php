@@ -21,17 +21,16 @@ class Gallery extends Portlet
     public function getPropertyDesc(): array
     {
         return [
-            'height' => [
-                'type'    => InputType::NUMBER,
-                'label'   => __('heightPreviewImages'),
-                'default' => 250,
-                'width'   => 50,
+            'galleryStyle' => [
+                'type'    => InputType::GALLERY_LAYOUT,
+                'label'   => 'Layout',
             ],
             'images' => [
-                'type'       => InputType::IMAGE_SET,
-                'label'      => __('imageList'),
-                'default'    => [],
-                'useColumns' => true,
+                'type'        => InputType::IMAGE_SET,
+                'label'       => __('imageList'),
+                'default'     => [],
+                'useLinks'    => true,
+                'useLightbox' => true,
             ],
         ];
     }
@@ -42,7 +41,6 @@ class Gallery extends Portlet
     public function getPropertyTabs(): array
     {
         return [
-            __('Images') => ['images'],
             __('Styles') => 'styles',
         ];
     }

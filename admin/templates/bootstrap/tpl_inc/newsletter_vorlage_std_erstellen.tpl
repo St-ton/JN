@@ -74,7 +74,13 @@
                 <div class="form-group form-row align-items-center{if isset($cPlausiValue_arr.kKundengruppe_arr)} error{/if}">
                     <label class="col col-sm-4 col-form-label text-sm-right" for="kKundengruppeSelect">{__('newslettercustomergrp')}:</label>
                     <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                        <select id="kKundengruppeSelect" name="kKundengruppe[]" multiple="multiple" class="custom-select {if isset($cPlausiValue_arr.kKundengruppe_arr)}fieldfillout{else}combo{/if}">
+                        <select id="kKundengruppeSelect"
+                                name="kKundengruppe[]"
+                                multiple="multiple"
+                                class="selectpicker custom-select {if isset($cPlausiValue_arr.kKundengruppe_arr)}fieldfillout{else}combo{/if}"
+                                data-selected-text-format="count > 2"
+                                data-size="7"
+                                data-actions-box="true">
                             <option value="0"
                                 {if isset($kKundengruppe_arr)}
                                     {foreach $kKundengruppe_arr as $kKundengruppe}
@@ -246,13 +252,7 @@
                                value="{if !empty($cPostVar_arr.cArtikel)}{$cPostVar_arr.cArtikel}{elseif isset($oNewslettervorlageStd->cArtikel)}{$oNewslettervorlageStd->cArtikel}{/if}">
                     </div>
                     <div class="col-auto ml-sm-n4 order-2 order-sm-3">
-                        <button type="button" class="btn btn-link px-2" data-toggle="modal"
-                                data-target="#articlePicker-modal" title="{__('labelSearchProduct')}">
-                            <span class="icon-hover">
-                                <span class="fal fa-edit"></span>
-                                <span class="fas fa-edit"></span>
-                            </span>
-                        </button>
+                        {include file='snippets/searchpicker_button.tpl' target='#articlePicker-modal'}
                     </div>
                 </div>
                 {include file='tpl_inc/searchpicker_modal.tpl'
@@ -288,10 +288,7 @@
                                value="{if !empty($cPostVar_arr.cHersteller)}{$cPostVar_arr.cHersteller}{elseif isset($oNewslettervorlageStd->cHersteller)}{$oNewslettervorlageStd->cHersteller}{/if}">
                     </div>
                     <div class="col-auto ml-sm-n4 order-2 order-sm-3">
-                        <button type="button" class="btn btn-link px-2" data-toggle="modal"
-                                data-target="#manufacturerPicker-modal" title="{__('labelSearchManufacturer')}">
-                            <i class="fal fa-edit"></i>
-                        </button>
+                        {include file='snippets/searchpicker_button.tpl' target='#manufacturerPicker-modal' title="{__('labelSearchManufacturer')}"}
                     </div>
                 </div>
                 {include file='tpl_inc/searchpicker_modal.tpl'
@@ -327,10 +324,7 @@
                                value="{if !empty($cPostVar_arr.cKategorie)}{$cPostVar_arr.cKategorie}{elseif isset($oNewslettervorlageStd->cKategorie)}{$oNewslettervorlageStd->cKategorie}{/if}">
                     </div>
                     <div class="col-auto ml-sm-n4 order-2 order-sm-3">
-                        <button type="button" class="btn btn-link px-2" data-toggle="modal"
-                                data-target="#categoryPicker-modal" title="{__('labelSearchCategory')}">
-                            <i class="fal fa-edit"></i>
-                        </button>
+                        {include file='snippets/searchpicker_button.tpl' target='#categoryPicker-modal' title="{__('labelSearchCategory')}"}
                     </div>
                 </div>
 
@@ -341,7 +335,7 @@
                                 <div class="form-group form-row align-items-center">
                                     <label class="col col-sm-4 col-form-label text-sm-right"></label>
                                     <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                        <img src="{$oNewslettervorlageStdVar->cInhalt}?={$nRand}" /><br /><br class="clear" />
+                                        <img class="img-fluid" src="{$oNewslettervorlageStdVar->cInhalt}?={$nRand}" />
                                     </div>
                                 </div>
                             {/if}
@@ -384,12 +378,24 @@
                 {/if}
             </div>
             <div class="card-footer save-wrapper">
-                {if (isset($oNewslettervorlageStd->kNewsletterVorlage) && $oNewslettervorlageStd->kNewsletterVorlage > 0) || (isset($cPostVar_arr.kNewslettervorlage) && $cPostVar_arr.kNewslettervorlage > 0)}
-                    <a class="btn btn-default" href="newsletter.php?tab=newslettervorlagen&token={$smarty.session.jtl_token}">{__('goBack')}</a>
-                {else}
-                    <a class="btn btn-default" href="newsletter.php?tab=newslettervorlagenstd&token={$smarty.session.jtl_token}">{__('goBack')}</a>
-                {/if}
-                <button class="btn btn-primary" name="speichern" type="submit" value="{__('save')}">{__('saveWithIcon')}</button>
+                <div class="row">
+                    <div class="ml-auto col-sm-6 col-xl-auto mb-2">
+                        {if (isset($oNewslettervorlageStd->kNewsletterVorlage) && $oNewslettervorlageStd->kNewsletterVorlage > 0) || (isset($cPostVar_arr.kNewslettervorlage) && $cPostVar_arr.kNewslettervorlage > 0)}
+                            <a class="btn btn-outline-primary btn-block" href="newsletter.php?tab=newslettervorlagen&token={$smarty.session.jtl_token}">
+                                {__('goBack')}
+                            </a>
+                        {else}
+                            <a class="btn btn-outline-primary btn-block" href="newsletter.php?tab=newslettervorlagenstd&token={$smarty.session.jtl_token}">
+                                {__('goBack')}
+                            </a>
+                        {/if}
+                    </div>
+                    <div class="col-sm-6 col-xl-auto">
+                        <button class="btn btn-primary btn-block" name="speichern" type="submit" value="{__('save')}">
+                            {__('saveWithIcon')}
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </form>

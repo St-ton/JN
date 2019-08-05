@@ -86,7 +86,19 @@
                     <div class="form-group form-row align-items-center">
                         <label class="col col-sm-4 col-form-label text-sm-right" for="numberOfCoupons">{__('numberCouponsDesc')}:</label>
                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                            <input class="form-control" type="number" name="numberOfCoupons" id="numberOfCoupons" min="2" step="1" {if isset($oKupon->massCreationCoupon->numberOfCoupons)}value="{$oKupon->massCreationCoupon->numberOfCoupons}"{else}value="2"{/if}/>
+                            <div class="input-group form-counter">
+                                <div class="input-group-prepend">
+                                    <button type="button" class="btn btn-outline-secondary border-0" data-count-down>
+                                        <span class="fas fa-minus"></span>
+                                    </button>
+                                </div>
+                                <input class="form-control" type="number" name="numberOfCoupons" id="numberOfCoupons" min="2" step="1" {if isset($oKupon->massCreationCoupon->numberOfCoupons)}value="{$oKupon->massCreationCoupon->numberOfCoupons}"{else}value="2"{/if}/>
+                                <div class="input-group-append">
+                                    <button type="button" class="btn btn-outline-secondary border-0" data-count-up>
+                                        <span class="fas fa-plus"></span>
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="form-group form-row align-items-center">
@@ -119,7 +131,19 @@
                     <div class="form-group form-row align-items-center">
                         <label class="col col-sm-4 col-form-label text-sm-right" for="hashLength">{__('hashLengthDesc')}:</label>
                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                            <input class="form-control" type="number" name="hashLength" id="hashLength" min="2" max="16" step="1" {if isset($oKupon->massCreationCoupon->hashLength)}value="{$oKupon->massCreationCoupon->hashLength}"{else}value="2"{/if} />
+                            <div class="input-group form-counter">
+                                <div class="input-group-prepend">
+                                    <button type="button" class="btn btn-outline-secondary border-0" data-count-down>
+                                        <span class="fas fa-minus"></span>
+                                    </button>
+                                </div>
+                                <input class="form-control" type="number" name="hashLength" id="hashLength" min="2" max="16" step="1" {if isset($oKupon->massCreationCoupon->hashLength)}value="{$oKupon->massCreationCoupon->hashLength}"{else}value="2"{/if} />
+                                <div class="input-group-append">
+                                    <button type="button" class="btn btn-outline-secondary border-0" data-count-up>
+                                        <span class="fas fa-plus"></span>
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="form-group form-row align-items-center">
@@ -232,14 +256,38 @@
                 <div class="form-group form-row align-items-center">
                     <label class="col col-sm-4 col-form-label text-sm-right" for="nVerwendungen">{__('uses')}:</label>
                     <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                        <input type="text" class="form-control" name="nVerwendungen" id="nVerwendungen" value="{$oKupon->nVerwendungen}">
-                    </div>
+                        <div class="input-group form-counter">
+                            <div class="input-group-prepend">
+                                <button type="button" class="btn btn-outline-secondary border-0" data-count-down>
+                                    <span class="fas fa-minus"></span>
+                                </button>
+                            </div>
+                            <input type="number" class="form-control" name="nVerwendungen" id="nVerwendungen" value="{$oKupon->nVerwendungen}">
+                            <div class="input-group-append">
+                                <button type="button" class="btn btn-outline-secondary border-0" data-count-up>
+                                    <span class="fas fa-plus"></span>
+                                </button>
+                            </div>
+                        </div>
+                     </div>
                 </div>
                 {if $oKupon->cKuponTyp === $couponTypes.standard || $oKupon->cKuponTyp === $couponTypes.shipping}
                     <div class="form-group form-row align-items-center">
                         <label class="col col-sm-4 col-form-label text-sm-right" for="nVerwendungenProKunde">{__('usesPerCustomer')}:</label>
                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                            <input type="text" class="form-control" name="nVerwendungenProKunde" id="nVerwendungenProKunde" value="{$oKupon->nVerwendungenProKunde}">
+                            <div class="input-group form-counter">
+                                <div class="input-group-prepend">
+                                    <button type="button" class="btn btn-outline-secondary border-0" data-count-down>
+                                        <span class="fas fa-minus"></span>
+                                    </button>
+                                </div>
+                                <input type="number" class="form-control" name="nVerwendungenProKunde" id="nVerwendungenProKunde" value="{$oKupon->nVerwendungenProKunde}">
+                                <div class="input-group-append">
+                                    <button type="button" class="btn btn-outline-secondary border-0" data-count-up>
+                                        <span class="fas fa-plus"></span>
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 {/if}
@@ -342,19 +390,24 @@
                         <input type="hidden" id="cArtikel" name="cArtikel" value="{$oKupon->cArtikel}">
                     </div>
                     <div class="col-auto ml-sm-n4 order-2 order-sm-3">
-                        <button type="button" class="btn btn-info btn-sm" data-toggle="modal"
-                                data-target="#articlePicker-modal">
-                            <i class="fal fa-edit"></i>
-                        </button>
+                        {include file='snippets/searchpicker_button.tpl' target='#articlePicker-modal'}
                     </div>
                 </div>
                 <div class="form-group form-row align-items-center">
                     <label class="col col-sm-4 col-form-label text-sm-right" for="kHersteller">{__('restrictedToManufacturers')}:</label>
                     <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                        <select multiple size="10" name="kHersteller[]" id="kHersteller" class="custom-select combo">
+                        <select multiple="multiple"
+                                name="kHersteller[]"
+                                id="kHersteller"
+                                class="selectpicker custom-select"
+                                data-selected-text-format="count > 2"
+                                data-size="7"
+                                data-live-search="true"
+                                data-actions-box="true">
                             <option value="-1"{if $oKupon->cHersteller === '-1'} selected{/if}>
-                                Alle Hersteller
+                                {__('all')}
                             </option>
+                            <option data-divider="true"></option>
                             {foreach $oHersteller_arr as $oHersteller}
                                 <option value="{$oHersteller->kHersteller}"{if $oHersteller->selected == 1} selected{/if}>
                                     {$oHersteller->cName}
@@ -391,10 +444,18 @@
                 <div class="form-group form-row align-items-center">
                     <label class="col col-sm-4 col-form-label text-sm-right" for="kKategorien">{__('restrictedToCategories')}:</label>
                     <span class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                        <select multiple size="10" name="kKategorien[]" id="kKategorien" class="custom-select combo">
+                        <select multiple="multiple"
+                                name="kKategorien[]"
+                                id="kKategorien"
+                                class="selectpicker custom-select"
+                                data-selected-text-format="count > 2"
+                                data-size="7"
+                                data-live-search="true"
+                                data-actions-box="true">
                             <option value="-1"{if $oKupon->cKategorien === '-1'} selected{/if}>
-                                Alle Kategorien
+                                {__('all')}
                             </option>
+                            <option data-divider="true"></option>
                             {foreach $oKategorie_arr as $oKategorie}
                                 <option value="{$oKategorie->kKategorie}"{if $oKategorie->selected == 1} selected{/if}>
                                     {$oKategorie->cName}
@@ -447,10 +508,7 @@
                             <input type="hidden" id="cKunden" name="cKunden" value="{$oKupon->cKunden}">
                         </span>
                         <div class="col-auto ml-sm-n4 order-2 order-sm-3">
-                            <button type="button" class="btn btn-info btn-sm" data-toggle="modal"
-                                    data-target="#customerPicker-modal">
-                                <i class="fal fa-edit"></i>
-                            </button>
+                            {include file='snippets/searchpicker_button.tpl' target='#customerPicker-modal'}
                         </div>
                     </div>
                     <div class="form-group form-row align-items-center{if isset($oKupon->massCreationCoupon)} hidden{/if}" id="informCustomers">

@@ -61,27 +61,27 @@
                                         <input type="hidden" name="id" value="{$oAdmin->kAdminlogin}" />
                                         <div class="btn-group">
                                             {if $oAdmin->bAktiv}
-                                                <button class="notext btn btn-link px-2" name="action" value="account_lock" title="{__('sperrenLabel')}">
+                                                <button class="notext btn btn-link px-2" name="action" value="account_lock" title="{__('sperrenLabel')}" data-toggle="tooltip">
                                                     <span class="icon-hover">
                                                         <span class="fal fa-lock"></span>
                                                         <span class="fas fa-lock"></span>
                                                     </span>
                                                 </button>
                                             {else}
-                                                <button class="notext btn btn-link px-2" name="action" value="account_unlock" title="{__('entsperrenLabel')}">
+                                                <button class="notext btn btn-link px-2" name="action" value="account_unlock" title="{__('entsperrenLabel')}" data-toggle="tooltip">
                                                     <span class="icon-hover">
                                                         <span class="fal fa-unlock"></span>
                                                         <span class="fas fa-unlock"></span>
                                                     </span>
                                                 </button>
                                             {/if}
-                                            <button class="notext btn btn-link px-2" name="action" value="account_delete" onclick="return confirm('{__('sureDeleteGroup')}');" title="{__('delete')}">
+                                            <button class="notext btn btn-link px-2" name="action" value="account_delete" onclick="return confirm('{__('sureDeleteGroup')}');" title="{__('delete')}" data-toggle="tooltip">
                                                 <span class="icon-hover">
                                                     <span class="fal fa-trash-alt"></span>
                                                     <span class="fas fa-trash-alt"></span>
                                                 </span>
                                             </button>
-                                            <button class="notext btn btn-link px-2" name="action" value="account_edit" title="{__('modify')}">
+                                            <button class="notext btn btn-link px-2" name="action" value="account_edit" title="{__('modify')}" data-toggle="tooltip">
                                                 <span class="icon-hover">
                                                     <span class="fal fa-edit"></span>
                                                     <span class="fas fa-edit"></span>
@@ -136,13 +136,18 @@
                                             {$jtl_token}
                                             <input type="hidden" value="{$oGroup->kAdminlogingruppe}" name="id" />
                                             <div class="btn-group">
-                                                <button type="submit" class="delete btn btn-link px-2" name="action" value="group_delete" onclick="return confirm('{__('sureDeleteGroup')}');" {if (int)$oGroup->nCount > 0}title="{__('loeschenLabelDeaktiviert')}" disabled="disabled"{else}title="{__('loeschenLabel')}"{/if}>
+                                                <button type="submit"
+                                                        class="delete btn btn-link px-2"
+                                                        name="action" value="group_delete"
+                                                        onclick="return confirm('{__('sureDeleteGroup')}');"
+                                                        {if (int)$oGroup->nCount > 0}title="{__('loeschenLabelDeaktiviert')}" disabled="disabled"{else}title="{__('delete')}"{/if}
+                                                        data-toggle="tooltip">
                                                     <span class="icon-hover">
                                                         <span class="fal fa-trash-alt"></span>
                                                         <span class="fas fa-trash-alt"></span>
                                                     </span>
                                                 </button>
-                                                <button type="submit" class="edit btn btn-link px-2" name="action" value="group_edit" title="{__('modify')}">
+                                                <button type="submit" class="edit btn btn-link px-2" name="action" value="group_edit" title="{__('modify')}" data-toggle="tooltip">
                                                     <span class="icon-hover">
                                                         <span class="fal fa-edit"></span>
                                                         <span class="fas fa-edit"></span>

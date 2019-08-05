@@ -38,7 +38,12 @@
                         <label class="col col-sm-4 col-form-label text-sm-right" for="{$confItem->valueID}">{__($confItem->niceName)}:</label>
                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                         {if $confItem->inputType === JTL\Plugin\Admin\InputType::SELECT}
-                            <select id="{$confItem->valueID}" name="{$confItem->valueID}{if $confItem->confType === JTL\Plugin\Data\Config::TYPE_DYNAMIC}[]{/if}" class="custom-select combo"{if $confItem->confType === JTL\Plugin\Data\Config::TYPE_DYNAMIC} multiple{/if}>
+                            <select id="{$confItem->valueID}"
+                                    name="{$confItem->valueID}{if $confItem->confType === JTL\Plugin\Data\Config::TYPE_DYNAMIC}[]{/if}"
+                                    class="custom-select"{if $confItem->confType === JTL\Plugin\Data\Config::TYPE_DYNAMIC} multiple="multiple"{/if}
+                                    data-selected-text-format="count > 2"
+                                    data-size="7"
+                                    data-actions-box="true">
                                 {foreach $confItem->options as $option}
                                     {if $confItem->confType === JTL\Plugin\Data\Config::TYPE_DYNAMIC && $confItem->value|is_array}
                                         {assign var=selected value=($option->value|in_array:$confItem->value)}
@@ -75,7 +80,19 @@
                         {elseif $confItem->inputType === JTL\Plugin\Admin\InputType::TEXTAREA}
                             <textarea class="form-control" id="{$confItem->valueID}" name="{$confItem->valueID}">{$confItem->value}</textarea>
                         {elseif $confItem->inputType === JTL\Plugin\Admin\InputType::NUMBER || $confItem->inputType === 'zahl'}
-                            <input class="form-control" type="number" name="{$confItem->valueID}" id="{$confItem->valueID}" value="{$confItem->value}" />
+                            <div class="input-group form-counter">
+                                <div class="input-group-prepend">
+                                    <button type="button" class="btn btn-outline-secondary border-0" data-count-down>
+                                        <span class="fas fa-minus"></span>
+                                    </button>
+                                </div>
+                                <input class="form-control" type="number" name="{$confItem->valueID}" id="{$confItem->valueID}" value="{$confItem->value}" />
+                                <div class="input-group-append">
+                                    <button type="button" class="btn btn-outline-secondary border-0" data-count-up>
+                                        <span class="fas fa-plus"></span>
+                                    </button>
+                                </div>
+                            </div>
                         {elseif $confItem->inputType === JTL\Plugin\Admin\InputType::CHECKBOX}
                             <div class="input-group-checkbox-wrap">
                                 <div class="custom-control custom-checkbox">

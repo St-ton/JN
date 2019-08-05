@@ -108,18 +108,16 @@
                                         <label class="custom-control-label" for="massaction-main-switch">{__('globalSelectAll')}</label>
                                     </div>
                                 </div>
-                                <div class="col-sm-6 col-xl-auto mb-3">
+                                <div class="col-sm-6 col-xl-auto">
                                     <div class="input-group">
-                                        <span class="input-group-addon">
+                                        <span class="input-group-addon d-none d-md-block">
                                             <label for="cache-action">{__('action')}:</label>
                                         </span>
-                                        <span class="label-wrap">
-                                            <select class="custom-select" name="cache-action" id="cache-action">
-                                                <option name="flush" value="flush">{__('empty')}</option>
-                                                <option name="deaktivieren" value="deactivate">{__('deactivate')}</option>
-                                                <option name="aktivieren" value="activate">{__('activate')}</option>
-                                            </select>
-                                        </span>
+                                        <select class="custom-select" name="cache-action" id="cache-action">
+                                            <option name="flush" value="flush">{__('empty')}</option>
+                                            <option name="deaktivieren" value="deactivate">{__('deactivate')}</option>
+                                            <option name="aktivieren" value="activate">{__('activate')}</option>
+                                        </select>
                                         <span class="input-group-btn ml-1">
                                             <button type="submit" value="{__('submit')}" class="btn btn-primary">{__('submit')}</button>
                                         </span>
@@ -129,7 +127,7 @@
                                 <form method="post" action="cache.php" class="submit-form">
                                     {$jtl_token}
                                     <div class="ml-auto col-sm-6 col-xl-auto">
-                                        <button name="a" type="submit" value="flush_object_cache" class="btn btn-outline-primary btn-block mb-3 delete"{if !$cache_enabled} disabled="disabled"{/if}>
+                                        <button name="a" type="submit" value="flush_object_cache" class="btn btn-outline-primary btn-block mb-2 delete"{if !$cache_enabled} disabled="disabled"{/if}>
                                             <i class="fas fa-trash-alt"></i>&nbsp;{__('clearObjectCache')}
                                         </button>
                                     </div>
@@ -254,7 +252,7 @@
                                 </tr>
                                 <tr class="cache-row collapsed clickable" data-toggle="collapse" data-target="#hitRateDetail" style="cursor: pointer">
                                     <td>{__('hitRate')}:</td>
-                                    <td class="value">{$opcache_stats->hitRate}%&nbsp;<i class="fal fa-info-circle right"></i></td>
+                                    <td class="value">{$opcache_stats->hitRate}%&nbsp;<i class="fal fa-info-circle float-right"></i></td>
                                 </tr>
                                 <tr class="cache-row">
                                     <td colspan="2" style="padding: 0">
@@ -281,7 +279,7 @@
                             <table class="table cache-stats" id="tplcache-stats">
                                 <tr class="cache-row collapsed clickable" data-toggle="collapse" data-target="#cachefilesFrontendDetail" style="cursor: pointer">
                                     <td>{__('files')} {__('frontend')}</td>
-                                    <td class="value">{$tplcacheStats->frontend|count}&nbsp;<i class="fal fa-info-circle right"></i></td>
+                                    <td class="value">{$tplcacheStats->frontend|count}&nbsp;<i class="fal fa-info-circle float-right"></i></td>
                                 </tr>
                                 {if $tplcacheStats->frontend|count > 0}
                                 <tr class="cache-row">
@@ -300,7 +298,7 @@
                                 {/if}
                                 <tr class="cache-row collapsed clickable" data-toggle="collapse" data-target="#cachefilesBackendDetail" style="cursor: pointer">
                                     <td>{__('files')} {__('backend')}</td>
-                                    <td class="value">{$tplcacheStats->backend|count}&nbsp;<i class="fal fa-info-circle right"></i></td>
+                                    <td class="value">{$tplcacheStats->backend|count}&nbsp;<i class="fal fa-info-circle float-right"></i></td>
                                 </tr>
                                 {if $tplcacheStats->backend|count > 0}
                                 <tr class="cache-row">
@@ -333,13 +331,37 @@
                                 <div class="form-group form-row align-items-center">
                                     <label class="col col-sm-4 col-form-label text-sm-right" for="runcount">{__('runs')}:</label>
                                     <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                        <input class="form-control" type="number" name="runcount" id="runcount" value="{if isset($smarty.post.runcount) && is_numeric($smarty.post.runcount)}{$smarty.post.runcount}{else}1000{/if}" size="5" />
+                                        <div class="input-group form-counter">
+                                            <div class="input-group-prepend">
+                                                <button type="button" class="btn btn-outline-secondary border-0" data-count-down>
+                                                    <span class="fas fa-minus"></span>
+                                                </button>
+                                            </div>
+                                            <input class="form-control" type="number" name="runcount" id="runcount" value="{if isset($smarty.post.runcount) && is_numeric($smarty.post.runcount)}{$smarty.post.runcount}{else}1000{/if}" size="5" />
+                                            <div class="input-group-append">
+                                                <button type="button" class="btn btn-outline-secondary border-0" data-count-up>
+                                                    <span class="fas fa-plus"></span>
+                                                </button>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="form-group form-row align-items-center">
                                     <label class="col col-sm-4 col-form-label text-sm-right" for="repeat">{__('repeats')}:</label>
                                     <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                        <input class="form-control" type="number" name="repeat" id="repeat" value="{if isset($smarty.post.repeat) && is_numeric($smarty.post.repeat)}{$smarty.post.repeat}{else}1{/if}" size="5" />
+                                        <div class="input-group form-counter">
+                                            <div class="input-group-prepend">
+                                                <button type="button" class="btn btn-outline-secondary border-0" data-count-down>
+                                                    <span class="fas fa-minus"></span>
+                                                </button>
+                                            </div>
+                                            <input class="form-control" type="number" name="repeat" id="repeat" value="{if isset($smarty.post.repeat) && is_numeric($smarty.post.repeat)}{$smarty.post.repeat}{else}1{/if}" size="5" />
+                                            <div class="input-group-append">
+                                                <button type="button" class="btn btn-outline-secondary border-0" data-count-up>
+                                                    <span class="fas fa-plus"></span>
+                                                </button>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="form-group form-row align-items-center">
@@ -355,7 +377,13 @@
                                 <div class="form-group form-row align-items-center">
                                     <label class="col col-sm-4 col-form-label text-sm-right" for="methods">{__('methods')}:</label>
                                     <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                        <select class="custom-select" name="methods[]" id="methods" multiple>
+                                        <select class="selectpicker custom-select"
+                                                name="methods[]"
+                                                id="methods"
+                                                multiple="multiple"
+                                                data-selected-text-format="count > 2"
+                                                data-size="7"
+                                                data-actions-box="true">
                                             {foreach $all_methods as $method}
                                                 <option value="{$method}"{if !empty($smarty.post.methods) && $method|in_array:$smarty.post.methods}selected{/if}>{$method}</option>
                                             {/foreach}
@@ -435,7 +463,19 @@
                                                     {/foreach}
                                                 </select>
                                             {elseif $setting->cInputTyp === 'number'}
-                                                <input class="form-control" type="number" name="{$setting->cWertName}" id="{$setting->cWertName}" value="{if isset($setting->gesetzterWert)}{$setting->gesetzterWert}{/if}" tabindex="1" />
+                                                <div class="input-group form-counter">
+                                                    <div class="input-group-prepend">
+                                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-down>
+                                                            <span class="fas fa-minus"></span>
+                                                        </button>
+                                                    </div>
+                                                    <input class="form-control" type="number" name="{$setting->cWertName}" id="{$setting->cWertName}" value="{if isset($setting->gesetzterWert)}{$setting->gesetzterWert}{/if}" tabindex="1" />
+                                                    <div class="input-group-append">
+                                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-up>
+                                                            <span class="fas fa-plus"></span>
+                                                        </button>
+                                                    </div>
+                                                </div>
                                             {else}
                                                 <input class="form-control" type="text" name="{$setting->cWertName}" id="{$setting->cWertName}" value="{if isset($setting->gesetzterWert)}{$setting->gesetzterWert}{/if}" tabindex="1" />
                                             {/if}
@@ -468,7 +508,19 @@
                                                         {/foreach}
                                                     </select>
                                                 {elseif $setting->cInputTyp === 'number'}
-                                                    <input class="form-control" type="number" name="{$setting->cWertName}" id="{$setting->cWertName}" value="{if isset($setting->gesetzterWert)}{$setting->gesetzterWert}{/if}" tabindex="1" />
+                                                    <div class="input-group form-counter">
+                                                        <div class="input-group-prepend">
+                                                            <button type="button" class="btn btn-outline-secondary border-0" data-count-down>
+                                                                <span class="fas fa-minus"></span>
+                                                            </button>
+                                                        </div>
+                                                        <input class="form-control" type="number" name="{$setting->cWertName}" id="{$setting->cWertName}" value="{if isset($setting->gesetzterWert)}{$setting->gesetzterWert}{/if}" tabindex="1" />
+                                                        <div class="input-group-append">
+                                                            <button type="button" class="btn btn-outline-secondary border-0" data-count-up>
+                                                                <span class="fas fa-plus"></span>
+                                                            </button>
+                                                        </div>
+                                                    </div>
                                                 {elseif $setting->cInputTyp === 'pass'}
                                                     <input class="form-control" type="password" name="{$setting->cWertName}" id="{$setting->cWertName}" value="{if isset($setting->gesetzterWert)}{$setting->gesetzterWert}{/if}" tabindex="1" />
                                                 {else}

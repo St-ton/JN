@@ -32,25 +32,24 @@
                 </div>
                 <div class="btn-group">
                     <button type="button" class="btn btn-sm btn-link" id="{$searchPickerName}-select-all-btn">
-                        <i class="fal fa-check-square-o"></i>
+                        <i class="fal fa-check-square"></i>
                         {__('selectAllShown')}
                     </button>
                     <button type="button" class="btn btn-sm btn-link" id="{$searchPickerName}-unselect-all-btn">
-                        <i class="fa fa-square-o"></i>
+                        <i class="fa fa-square"></i>
                         {__('unselectAllShown')}
                     </button>
                 </div>
             </div>
             <div class="modal-footer text-right">
                 <div class="row">
-                    <div class="ml-auto col-sm-6 col-xl-auto">
-                        <button type="button" class="btn btn-outline-primary" data-dismiss="modal" id="{$searchPickerName}-cancel-btn">
-                            <i class="fal fa-times"></i>
-                            {__('cancel')}
+                    <div class="ml-auto col-sm-6 col-xl-auto mb-2">
+                        <button type="button" class="btn btn-outline-primary btn-block" data-dismiss="modal" id="{$searchPickerName}-cancel-btn">
+                            {__('cancelWithIcon')}
                         </button>
                     </div>
                     <div class="col-sm-6 col-xl-auto">
-                        <button type="button" class="btn btn-primary" data-dismiss="modal" id="{$searchPickerName}-apply-btn">
+                        <button type="button" class="btn btn-primary btn-block" data-dismiss="modal" id="{$searchPickerName}-apply-btn">
                             <i class="fa fa-save"></i>
                             {__('apply')}
                         </button>

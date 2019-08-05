@@ -4,7 +4,7 @@
             $('.backend-sidebar').addClass('collapsed');
         }
     </script>
-    <div class="backend-brandbar">
+    <div class="backend-brandbar topbar">
         <a class="backend-brand" href="index.php" title="{__('dashboard')}">
             <img src="{$currentTemplateDir}gfx/JTL-Shop-Logo-rgb.png" alt="JTL-Shop">
         </a>

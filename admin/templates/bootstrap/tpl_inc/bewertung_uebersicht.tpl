@@ -75,7 +75,9 @@
                                                 <td class="text-center">
                                                     <div class="btn-group">
                                                         <a href="bewertung.php?a=editieren&kBewertung={$review->kBewertung}&tab=freischalten&token={$smarty.session.jtl_token}"
-                                                           class="btn btn-link px-2" title="{__('modify')}">
+                                                           class="btn btn-link px-2"
+                                                           title="{__('modify')}"
+                                                           data-toggle="tooltip">
                                                             <span class="icon-hover">
                                                                 <span class="fal fa-edit"></span>
                                                                 <span class="fas fa-edit"></span>
@@ -97,7 +99,7 @@
                                         </div>
                                     </div>
                                     <div class="ml-auto col-sm-6 col-xl-auto">
-                                        <button name="loeschen" type="submit" value="{__('delete')}" class="btn btn-danger btn-block mb-3">
+                                        <button name="loeschen" type="submit" value="{__('delete')}" class="btn btn-danger btn-block mb-2">
                                             <i class="fas fa-trash-alt"></i> {__('delete')}
                                         </button>
                                     </div>
@@ -134,7 +136,7 @@
                                         <th class="text-left">{__('ratingText')}</th>
                                         <th class="th-5 text-center">{__('ratingStars')}</th>
                                         <th class="th-6 text-center">{__('date')}</th>
-                                        <th class="th-7 text-center">&nbsp;</th>
+                                        <th class="th-7 text-center min-w-sm">{__('actions')}</th>
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -149,7 +151,6 @@
                                             </td>
                                             <td>
                                                 <label for="l50-{$review->kBewertung}">{$review->ArtikelName}</label>
-                                                &nbsp;<a href="{$shopURL}/index.php?a={$review->kArtikel}" target="_blank"><i class="fas fa fa-external-link"></i></a>
                                             </td>
                                             <td>{$review->cName}.</td>
                                             <td>
@@ -164,18 +165,32 @@
                                             </td>
                                             <td class="text-center">{$review->nSterne}</td>
                                             <td class="text-center">{$review->Datum}</td>
-                                            <td class="text-center" style="min-width: 130px;">
+                                            <td class="text-center">
                                                 {if !empty($review->cAntwort)}
                                                     <a href="bewertung.php?a=delreply&kBewertung={$review->kBewertung}&tab=letzten50&token={$smarty.session.jtl_token}"
-                                                       class="btn btn-link px-2" title="{__('removeReply')}">
+                                                       class="btn btn-link px-2"
+                                                       title="{__('removeReply')}"
+                                                       data-toggle="tooltip">
                                                         <span class="icon-hover">
                                                             <span class="fal fa-trash-alt"></span>
                                                             <span class="fas fa-trash-alt"></span>
                                                         </span>
                                                     </a>
                                                 {/if}
+                                                <a class="btn btn-link px-2"
+                                                   href="{$shopURL}/index.php?a={$review->kArtikel}"
+                                                   target="_blank"
+                                                   title="{__('linkItemShop')}"
+                                                   data-toggle="tooltip">
+                                                    <span class="icon-hover">
+                                                        <span class="fal fa-external-link"></span>
+                                                        <span class="fas fa-external-link"></span>
+                                                    </span>
+                                                </a>
                                                 <a href="bewertung.php?a=editieren&kBewertung={$review->kBewertung}&tab=letzten50&token={$smarty.session.jtl_token}"
-                                                   class="btn btn-link px-2" title="{__('modify')}">
+                                                   class="btn btn-link px-2"
+                                                   title="{__('modify')}"
+                                                   data-toggle="tooltip">
                                                     <span class="icon-hover">
                                                         <span class="fal fa-edit"></span>
                                                         <span class="fas fa-edit"></span>
@@ -208,19 +223,20 @@
             </div>
             <div id="artikelbewertung" class="tab-pane fade {if isset($cTab) && $cTab === 'artikelbewertung'} active show{/if}">
                 <form name="artikelbewertung" method="post" action="bewertung.php">
-                    <div>
-                        <div>
+                    <div class="mb-3">
                         {$jtl_token}
-                        <div class="input-group col-xs-6" style="float: none;">
-                            <span class="input-group-addon">
-                                <label for="content">{__('ratingcArtNr')}:</label>
-                            </span>
+                        <div class="form-row">
+                            <label class="col-sm-auto col-form-label" for="content">{__('ratingcArtNr')}:</label>
                             <input type="hidden" name="bewertung_aktiv" value="1" />
                             <input type="hidden" name="tab" value="artikelbewertung" />
-                            <input class="form-control" name="cArtNr" type="text" value="{$cArtNr|default:''}" />
-                            <button name="submitSearch" type="submit" value="{__('search')}" class="btn btn-link px-2 ml-1">
-                                <i class="fal fa-search"></i>
-                            </button>
+                            <div class="col-sm-auto mb-3">
+                                <input class="form-control" name="cArtNr" type="text" value="{$cArtNr|default:''}" />
+                            </div>
+                            <span class="col-sm-auto">
+                                <button name="submitSearch" type="submit" value="{__('search')}" class="btn btn-primary btn-block mb-3">
+                                    <i class="fal fa-search"></i>
+                                </button>
+                            </span>
                         </div>
                         {if isset($cArtNr) && $cArtNr|strlen > 0}
                             <div class="alert alert-info">{__('ratingSearchedFor')}: {$cArtNr}</div>
@@ -228,7 +244,6 @@
                         {if !(isset($filteredReviews) && $filteredReviews|@count > 0)}
                             <div class="alert alert-info" role="alert">{__('noDataAvailable')}</div>
                         {/if}
-                        </div>
                     </div>
                     {if isset($filteredReviews) && $filteredReviews|@count > 0}
                         <div>
@@ -267,7 +282,9 @@
                                             <td class="text-center">{$review->Datum}</td>
                                             <td class="text-center">
                                                 <a href="bewertung.php?a=editieren&kBewertung={$review->kBewertung}&tab=artikelbewertung"
-                                                   class="btn btn-link px-2" title="{__('modify')}">
+                                                   class="btn btn-link px-2"
+                                                   title="{__('modify')}"
+                                                   data-toggle="tooltip">
                                                     <span class="icon-hover">
                                                         <span class="fal fa-edit"></span>
                                                         <span class="fas fa-edit"></span>
@@ -319,13 +336,30 @@
                                                     {/foreach}
                                                 </select>
                                             {elseif $oConfig->cInputTyp === 'listbox'}
-                                                <select name="{$oConfig->cWertName}[]" id="{$oConfig->cWertName}" multiple="multiple" class="custom-select combo">
+                                                <select name="{$oConfig->cWertName}[]"
+                                                        id="{$oConfig->cWertName}"
+                                                        multiple="multiple"
+                                                        class="selectpicker custom-select combo"
+                                                        data-selected-text-format="count > 2"
+                                                        data-size="5">
                                                     {foreach $oConfig->ConfWerte as $wert}
                                                         <option value="{$wert->kKundengruppe}" {foreach $oConfig->gesetzterWert as $gesetzterWert}{if $gesetzterWert->cWert == $wert->kKundengruppe}selected{/if}{/foreach}>{$wert->cName}</option>
                                                     {/foreach}
                                                 </select>
                                             {elseif $oConfig->cInputTyp === 'number'}
-                                                <input class="form-control" type="number" name="{$oConfig->cWertName}" id="{$oConfig->cWertName}"  value="{if isset($oConfig->gesetzterWert)}{$oConfig->gesetzterWert}{/if}" tabindex="1"{if $oConfig->cWertName|strpos:"_guthaben"} onKeyUp="setzePreisAjax(false, 'EinstellungAjax_{$oConfig->cWertName}', this);"{/if} />
+                                                <div class="input-group form-counter">
+                                                    <div class="input-group-prepend">
+                                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-down>
+                                                            <span class="fas fa-minus"></span>
+                                                        </button>
+                                                    </div>
+                                                    <input class="form-control" type="number" name="{$oConfig->cWertName}" id="{$oConfig->cWertName}"  value="{if isset($oConfig->gesetzterWert)}{$oConfig->gesetzterWert}{/if}" tabindex="1"{if $oConfig->cWertName|strpos:"_guthaben"} onKeyUp="setzePreisAjax(false, 'EinstellungAjax_{$oConfig->cWertName}', this);"{/if} />
+                                                    <div class="input-group-append">
+                                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-up>
+                                                            <span class="fas fa-plus"></span>
+                                                        </button>
+                                                    </div>
+                                                </div>
                                             {else}
                                                 <input class="form-control" type="text" name="{$oConfig->cWertName}" id="{$oConfig->cWertName}"  value="{if isset($oConfig->gesetzterWert)}{$oConfig->gesetzterWert}{/if}" tabindex="1"{if $oConfig->cWertName|strpos:"_guthaben"} onKeyUp="setzePreisAjax(false, 'EinstellungAjax_{$oConfig->cWertName}', this);"{/if} />
                                             {/if}

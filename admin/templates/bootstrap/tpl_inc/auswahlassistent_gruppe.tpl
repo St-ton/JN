@@ -81,11 +81,7 @@
                                    value="{if isset($cPost_arr.cKategorie)}{$cPost_arr.cKategorie}{elseif isset($oGruppe->cKategorie)}{$oGruppe->cKategorie}{/if}">
                         </div>
                         <div class="col-auto ml-sm-n4 order-2 order-sm-3">
-                            <button type="button" class="btn btn-default btn-sm" data-toggle="modal"
-                                    data-target="#categoryPicker-modal"
-                                    title="{__('questionCatInGroup')}">
-                                <i class="fal fa-edit"></i>
-                            </button>
+                            {include file='snippets/searchpicker_button.tpl' target='#categoryPicker-modal' title="{__('questionCatInGroup')}"}
                         </div>
                     </div>
 
@@ -160,7 +156,7 @@
                 <div class="card-footer save-wrapper">
                     <div class="row">
                         <div class="ml-auto col-sm-6 col-xl-auto">
-                            <a href="auswahlassistent.php" class="btn btn-outline-primary btn-block mb-3">{__('goBack')}</a>
+                            <a href="auswahlassistent.php" class="btn btn-outline-primary btn-block mb-2">{__('goBack')}</a>
                         </div>
                         <div class="col-sm-6 col-xl-auto">
                             <button name="speicherGruppe" type="submit" value="save" class="btn btn-primary btn-block">

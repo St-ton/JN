@@ -41,7 +41,7 @@
                         {getHelpDesc cDesc=$setting->cBeschreibung}
                     {/if}
                 {if $setting->cInputTyp === 'selectbox'}
-                    <select name="{$setting->cWertName}" id="{$setting->cWertName}" class="combo">
+                    <select name="{$setting->cWertName}" id="{$setting->cWertName}" class="custom-select combo">
                     {foreach $setting->ConfWerte as $wert}
                         <option value="{$wert->cWert}" {if $setting->gesetzterWert == $wert->cWert}selected{/if}>{$wert->cName}</option>
                     {/foreach}

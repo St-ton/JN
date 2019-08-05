@@ -20,7 +20,7 @@
 
     <div {$instance->getAttributeString()}>
         {if $instance->getProperty('slides')|count > 0}
-            <div class="slider-wrapper theme-{$instance->getProperty('slider-theme')}">
+            <div class="theme-{$instance->getProperty('slider-theme')}">
                 <div id="{$uid}" class="nivoSlider">
                     {foreach $instance->getProperty('slides') as $i => $slide}
                         {if !empty($slide.desc)}

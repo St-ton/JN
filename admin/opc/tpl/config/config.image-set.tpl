@@ -1,86 +1,97 @@
-{$useColumns = $propdesc.useColumns|default:false}
-{$useLinks   = $propdesc.useLinks|default:false}
-{$useTitles  = $propdesc.useTitles|default:false}
-
-{function slideSize size='xs' fa='mobile'}
-    <div class="input-group" style="width: 24%">
-        <div class="input-group-addon" style="min-width:auto; padding: 0">
-            <i class="fa fa-{$fa} fa-fw"></i>
-        </div>
-        <input type="text" class="form-control" placeholder="{$size}" style="width: 100%"
-               name="{$propname}[#SORT#][{$size}]" value="{$slideData.$size}">
-    </div>
-{/function}
+{$useLinks    = $propdesc.useLinks|default:false}
+{$useLightbox = $propdesc.useLightbox|default:false}
+{$useTitles   = $propdesc.useTitles|default:false}
 
 {function slideEntry
-    slideData=['xs' => '', 'sm' => '', 'md' => '', 'lg' => '', 'desc' => '', 'url' => '', 'link' => '', 'title' => '']
+    slideData=['desc' => '', 'url' => '', 'link' => '', 'title' => '', 'action' => 'lightbox']
 }
-    <div class="row slide-entry" style="margin-bottom: 1em;">
-        <div class="col-xs-2" style="width: 17%">
-            <div class="btn-group">
-                <div type="button" class="btn btn-primary btn-sm btn-slide-mover"
-                     title="{__('entryMove')}" style="cursor: move">
-                    <i class="fa fa-bars"></i>
-                </div>
-                <button type="button" class="btn btn-danger btn-sm" onclick="removeSlide_{$propname}()"
-                        title="{__('entryDelete')}">
-                    <i class="fa fa-trash"></i>
-                </button>
-            </div>
+    <div class="slide-entry">
+        <div class="slide-btns">
+            <span class="btn-slide-mover"
+                 title="{__('entryMove')}" style="cursor: move">
+                <i class="fas fa-arrows-alt fa-fw"></i>
+            </span>
+            <button type="button" onclick="cloneSlide_{$propname}()" title="Copy">
+                <i class="far fa-clone fa-fw"></i>
+            </button>
+            <hr>
+            <button type="button" onclick="removeSlide_{$propname}()"
+                    title="{__('entryDelete')}">
+                <i class="far fa-trash-alt fa-fw"></i>
+            </button>
         </div>
-        <div class="col-xs-3" style="width: 24%">
-            {$imgUrl = $slideData.url|default:'templates/bootstrap/gfx/layout/upload.png'}
-            <img src="{$imgUrl}" alt="Bild-Wähler" class="img-responsive"
-                 onclick="opc.gui.openElFinder(elfinderCallback_{$propname}.bind(this), 'Bilder')"
-                 style="cursor: pointer" title="{__('imageSelect')}">
+        <div class="slide-image-col">
+            {$imgUrl = $slideData.url|default:'opc/gfx/upload-stub.png'}
+            <div style="background-image: url('{$imgUrl}')" class="slide-image-btn"
+                 onclick="opc.gui.openElFinder(elfinderCallback_{$propname}.bind(this), 'Bilder')">
+
+            </div>
             <input type="hidden" name="{$propname}[#SORT#][url]" value="{$slideData.url|default:''}">
         </div>
-        <div class="col-xs-7" style="width: 59%">
+        <div class="slide-props">
             {if $useTitles}
                 <input type="text" class="form-control" placeholder="{__('title')}"
                        name="{$propname}[#SORT#][title]" value="{$slideData.title|default:''}">
             {/if}
+            <input type="text" class="form-control" placeholder="{__('description')}"
+                   name="{$propname}[#SORT#][desc]" value="{$slideData.desc|default:''}"
+                   maxlength="256">
             <input type="text" class="form-control" placeholder="{__('alternativeText')}"
                    name="{$propname}[#SORT#][alt]" value="{$slideData.alt|default:''}">
-            <input type="text" class="form-control" placeholder="{__('description')}"
-                   name="{$propname}[#SORT#][desc]" value="{$slideData.desc|default:''}">
             {if $useLinks}
-                <input type="text" class="form-control" placeholder="{__('link')}"
-                       name="{$propname}[#SORT#][link]" value="{$slideData.link|default:''}">
-            {/if}
-            {if $useColumns}
-                <div class="form-inline">
-                    {slideSize size='xs' fa='mobile'}
-                    {slideSize size='sm' fa='tablet'}
-                    {slideSize size='md' fa='laptop'}
-                    {slideSize size='lg' fa='desktop'}
+                <div class="row">
+                    <div class="col-4">
+                        <label class="select-wrapper">
+                            <input type="hidden" name="{$propname}[#SORT#][action]" value="">
+                            <select class="form-control" onchange="onActionChange_{$propname}(this)">
+                                <option value="none" {if $slideData.action === 'none'}selected{/if}>
+                                    {__('noAction')}
+                                </option>
+                                {if $useLightbox}
+                                    <option value="lightbox" {if $slideData.action === 'lightbox'}selected{/if}>
+                                        {__('lightbox')}
+                                    </option>
+                                {/if}
+                                <option value="link" {if $slideData.action === 'link'}selected{/if}>
+                                    {__('linked')}
+                                </option>
+                            </select>
+                        </label>
+                    </div>
+                    <div class="col-8">
+                        <input type="text" class="form-control" placeholder="{__('link')}"
+                               name="{$propname}[#SORT#][link]" value="{$slideData.link|default:''}"
+                               {if $slideData.action !== 'link'}disabled{/if}>
+                    </div>
                 </div>
             {/if}
         </div>
     </div>
 {/function}
 
-<div class="panel panel-default">
-    <div class="panel-heading">
-        <h3 class="panel-title">{$propdesc.label}</h3>
-    </div>
-    <div class="panel-body" id="{$propname}-slides">
+<label>{$propdesc.label}</label>
+
+<div class="slides-container" id="{$propname}-slides-container">
+    <div id="{$propname}-slides">
         {foreach $propval as $slideData}
+            {if empty($slideData.action)}
+                {$slideData.action = 'lightbox'}
+            {/if}
             {slideEntry slideData=$slideData}
         {/foreach}
+        {if $propval|count === 0}
+            {slideEntry}
+        {/if}
     </div>
-    <div class="panel-footer">
-        <div class="btn-group">
-            <button type="button" class="btn btn-primary" onclick="addSlide_{$propname}()">
-                <i class="fa fa-plus"></i> {__('imageAdd')}
-            </button>
-        </div>
+    <div style="display: none" id="{$propname}-slide-blueprint">
+        {slideEntry}
     </div>
 </div>
 
-<div class="hidden" id="{$propname}-slide-blueprint">
-    {slideEntry}
-</div>
+<button type="button" class="opc-btn-primary opc-small-btn add-slide-btn" onclick="addSlide_{$propname}()"
+        title="{__('imageAdd')}">
+    <i class="fas fa-plus fa-fw"></i>
+</button>
 
 <script>
     opc.setConfigSaveCallback(saveImageSet_{$propname});
@@ -94,7 +105,7 @@
     function elfinderCallback_{$propname}(url)
     {
         var image = $(this);
-        image.attr('src', url);
+        image.css('background-image', 'url("' + url + '")');
         image.siblings('input').val(url);
     }
 
@@ -103,6 +114,8 @@
         $('#{$propname}-slides').append(
             $('#{$propname}-slide-blueprint').children().clone()
         );
+        let slideContainer = $('#{$propname}-slides-container');
+        slideContainer[0].scrollTo(0, slideContainer[0].scrollHeight);
     }
 
     function removeSlide_{$propname}()
@@ -110,13 +123,26 @@
         $(event.target).closest('.slide-entry').remove();
     }
 
+    function cloneSlide_{$propname}()
+    {
+        let slideEntry = $(event.target).closest('.slide-entry');
+        let copy = slideEntry.clone();
+
+        copy.insertAfter(slideEntry);
+    }
+
     function saveImageSet_{$propname}()
     {
-        $('#{$propname}-slides').children().each(function(i, slide)
-        {
+        $('#{$propname}-slides').children().each((i, slide) => {
             slide = $(slide);
-            slide.find('input').each(function(j, input)
-            {
+
+            slide.find('select').each((j, select) => {
+                $(select).siblings('input').attr('value',
+                    select.options[select.selectedIndex].value
+                );
+            });
+
+            slide.find('input').each((j, input) => {
                 input = $(input);
                 var name = input.attr('name');
                 if (name === '{$propname}[#SORT#][url]') {
@@ -131,5 +157,16 @@
             });
         });
         $('#{$propname}-slide-blueprint').remove();
+    }
+
+    function onActionChange_{$propname}(elm)
+    {
+        elm = $(elm);
+
+        if(elm.val() === 'link') {
+            elm.closest('.row').find('input[type=text]').prop('disabled', false);
+        } else {
+            elm.closest('.row').find('input[type=text]').prop('disabled', true);
+        }
     }
 </script>

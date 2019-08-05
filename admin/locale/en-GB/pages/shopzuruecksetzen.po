@@ -50,6 +50,9 @@ msgstr "Delete revisions"
 msgid "deleteProductCategory"
 msgstr "Delete items, categories and characteristics (complete synchronisation with JTL-Wawi restores data)"
 
+msgid "deleteTax"
+msgstr "Delete tax classes/rates/zones/zone countries (complete synchronisation of global data with JTL-Wawi restores data)"
+
 msgid "userGeneratedContent"
 msgstr "User-generated contents"
 

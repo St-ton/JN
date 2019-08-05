@@ -3,10 +3,10 @@
     {foreach $propval as $i => $text}
         <label class="sr-only" for="{$propname}-{$i}"></label>
         <div class="input-group">
-            <div class="input-group-addon">
-                <button type="button" class="btn btn-xs btn-danger"
+            <div class="input-group-prepend">
+                <button type="button" class="btn"
                         onclick="removeLine_{$propname}(this);">
-                    <i class="fa fa-remove fa-fw"></i>
+                    <i class="fas fa-times fa-fw"></i>
                 </button>
             </div>
             <input type="text" class="form-control" name="{$propname}[]" value="{$text}" id="{$propname}-{$i}">
@@ -14,10 +14,10 @@
     {/foreach}
     <label class="sr-only" for="{$propname}-new"></label>
     <div class="input-group" id="new-input-group-{$propname}">
-        <div class="input-group-addon">
-            <button type="button" class="btn btn-xs btn-primary"
+        <div class="input-group-prepend">
+            <button type="button" class="btn primary"
                     onclick="addNewLine_{$propname}()">
-                <i class="fa fa-asterisk fa-fw"></i>
+                <i class="fas fa-plus fa-fw"></i>
             </button>
         </div>
         <input type="text" class="form-control" id="{$propname}-new" disabled>
@@ -36,12 +36,11 @@
 
         newInputGroupClone.attr('id', '');
         newInputGroupClone.find('button')
-            .removeClass('btn-primary')
-            .addClass('btn-danger')
+            .removeClass('primary')
             .attr('onclick', 'removeLine_{$propname}(this);');
-        newInputGroupClone.find('i.fa')
-            .removeClass('fa-asterisk')
-            .addClass('fa-remove');
+        newInputGroupClone.find('i.fas')
+            .removeClass('fa-plus')
+            .addClass('fa-times');
         newInputGroupClone.find('input')
             .prop('disabled', false)
             .attr('name', '{$propname}[]');

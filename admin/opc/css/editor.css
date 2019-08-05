@@ -44,8 +44,8 @@
 }
 #opc button.opc-btn-primary, #opc button.opc-btn-secondary {
   border-radius: 1000px;
-  border: none;
   background-color: #5cbcf6;
+  border: 1px solid #5cbcf6;
   color: #fff;
   text-align: center;
   padding: 12px;
@@ -67,6 +67,10 @@
 }
 #opc button.opc-small-btn {
   padding: 8px 10px;
+}
+#opc button.opc-medium-btn {
+  padding: 8px 18px;
+  margin-right: 8px;
 }
 #opc button.opc-btn-link:hover {
   text-decoration: underline;
@@ -301,145 +305,195 @@
   color: #435A6B;
 }
 
-html, body {
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  box-sizing: border-box;
-  line-height: 1.5;
+#portlets hr {
+  margin-top: 0;
 }
-
-#opc select {
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  position: relative;
-}
-#opc .select-wrapper {
-  position: relative;
-}
-#opc .select-wrapper:after {
-  font-family: "Font Awesome 5 Free", FontAwesome, "Open Sans";
+#portlets .portletGroupBtn {
+  display: block;
   font-weight: 600;
+  width: 100%;
+  text-align: left;
+  margin-bottom: 16px;
+}
+#portlets .portletGroupBtn .fas {
+  float: right;
+  line-height: inherit;
+}
+#portlets .portletGroupBtn.collapsed .fas::before {
   content: "";
-  position: absolute;
-  right: 14px;
-  top: 10px;
-  pointer-events: none;
 }
-#opc .modal {
-  font-size: 14px;
-  color: #435A6B;
+#portlets .collapse {
+  width: 340px;
 }
-#opc .modal label {
-  margin-bottom: 8px;
-}
-#opc .modal .form-control {
-  margin-bottom: 16px;
-}
-#opc .modal .input-group .form-control {
-  border-bottom-right-radius: 0;
-  border-top-right-radius: 0;
-  border-right: none;
-}
-#opc .modal .input-group .input-group-text {
-  margin-bottom: 16px;
-  background: none;
-  border: 1px solid #435A6B;
-  border-left: none;
-  border-top-right-radius: 5px;
-  border-bottom-right-radius: 5px;
-}
-#opc .modal .alert-info {
-  background: #d5eefd;
-  border: 1px solid #5cbcf6;
-  border-radius: 5px;
-  color: #435A6B;
-  margin: 0;
-}
-#opc .modal .nav-tabs {
-  margin: -24px;
-  margin-bottom: 24px;
-}
-#opc .modal .modal-dialog {
-  max-width: 550px;
-}
-#opc .modal .modal-content {
-  border: none;
-  border-radius: 0;
-}
-#opc .modal .modal-header {
-  padding: 12px 24px;
-  background-color: #5cbcf6;
-  color: #fff;
-  border: none;
-  border-radius: 0;
-}
-#opc .modal .modal-header h5 {
-  font-size: 16px;
-  font-weight: normal;
-}
-#opc .modal .modal-header .opc-header-btn {
-  font-size: 16px;
-}
-#opc .modal .modal-header .opc-header-btn:hover {
-  color: #d5eefd;
-}
-#opc .modal .modal-body {
-  padding: 0;
-  margin: 24px;
-}
-#opc .modal .modal-body .form-group {
-  margin: 0;
-  padding: 0;
-  margin-bottom: 16px;
-}
-#opc .modal .modal-footer {
-  border: none;
-  padding: 24px;
-  padding-top: 0;
-  margin-top: 24px;
-}
-#opc .modal .modal-footer button {
-  padding: 8px 32px;
-}
-#opc .modal .modal-footer > :not(:last-child) {
-  margin-right: 16px;
-}
-#opc .modal .progress-bar {
-  background-color: #5cbcf6;
-}
-#opc .modal #iconpicker .popover-title:after {
-  content: "";
+#portlets .collapse:after {
+  content: " ";
   display: block;
   clear: both;
 }
-#opc .modal #iconpicker .popover-title i {
-  font-size: 38px;
+#portlets .collapsing {
+  width: 340px;
+}
+#portlets .portletButton {
   display: block;
   float: left;
-  min-width: 52px;
-  min-height: 16px;
+  width: 96px;
+  height: 96px;
+  margin-right: 22px;
+  margin-bottom: 22px;
+  background-color: #F5F7FA;
+  border-radius: 5px;
 }
-#opc .modal #iconpicker .popover-title .iconpicker-search {
-  width: calc(100% - 52px);
-  float: left;
-  margin-bottom: 0;
+#portlets .portletButton:hover {
+  box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.125);
 }
-#opc .modal #iconpicker .form-control {
-  float: none;
+#portlets .portletButton:nth-child(3n) {
+  margin-right: 0;
 }
-#opc .modal #iconpicker .iconpicker-popover {
+#portlets .portletButton > .portletBtnInner {
+  display: block;
+  width: 96px;
+  height: 96px;
+  position: relative;
+}
+#portlets .portletButton > .portletBtnInner > img {
+  position: absolute;
+  left: 50%;
+  top: 36%;
+  transform: translate(-50%, -50%);
+}
+#portlets .portletButton > .portletBtnInner > i {
+  display: block;
+  position: absolute;
+  left: 50%;
+  top: 36%;
+  transform: translate(-50%, -50%);
+  font-size: 32px;
+  color: #5cbcf6;
+}
+#portlets .portletButton > .portletBtnInner > span {
+  position: absolute;
+  left: 0;
+  bottom: 8px;
   width: 100%;
+  line-height: 16px;
 }
-#opc #loaderModal .modal-dialog {
-  top: 50%;
-  transform: translate(0, -75%);
-  margin: 0 auto;
+#portlets .collapseGroup {
+  display: block;
+  color: #435A6B;
+  font-size: 16px;
+  padding: 8px 25px;
+  margin: 0 -15px 5px -15px;
+  text-decoration: none;
+}
+#portlets .collapse .row {
+  padding-bottom: 14px;
+}
+
+#blueprints #blueprintList {
+  padding-bottom: 60px;
+}
+#blueprints .blueprintButton {
+  cursor: pointer;
+}
+#blueprints .blueprintButton:hover {
+  box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.125);
+}
+#blueprints .blueprintButton .blueprint-icon {
+  color: #5cbcf6;
+  font-size: 22px;
+  vertical-align: bottom;
+  margin-right: 8px;
+}
+#blueprints .blueprintButton .blueprint-btn-actions {
+  float: right;
+  display: none;
+}
+#blueprints .blueprintButton .blueprint-btn-actions button {
+  padding: 0 4px;
+  margin-top: -4px;
+  font-size: 16px;
+  width: 28px;
+  height: 28px;
+  border-radius: 100px;
+}
+#blueprints .blueprintButton .blueprint-btn-actions button:hover {
+  background-color: #dfe1e2;
+}
+#blueprints .blueprintButton:hover .blueprint-btn-actions {
+  display: block;
+}
+#blueprints #btnImportBlueprint {
+  position: fixed;
+  bottom: 212px;
+  width: 334px;
+  box-shadow: none;
+}
+
+#pagetree {
+  height: 100%;
+}
+#pagetree #pageTreeView {
+  padding: 1em 0;
+  background-color: #F5F7FA;
+  border-radius: 5px;
+  height: 100%;
+  overflow-y: auto;
+}
+#pagetree #pageTreeView ul {
+  list-style: none;
+  padding: 0;
+  padding-left: 1em;
+  margin: 0;
+}
+#pagetree #pageTreeView a {
+  display: inline-block;
+  text-decoration: none;
+  color: #435A6B;
+}
+#pagetree #pageTreeView .area-item {
+  color: #63849d;
+  padding: 0 4px;
+  margin: 2px;
+}
+#pagetree #pageTreeView .portlet-item {
+  border-radius: 4px;
+  padding: 0 4px;
+  margin: 2px;
+}
+#pagetree #pageTreeView .item-expander > .fa-chevron-down {
+  display: none;
+}
+#pagetree #pageTreeView .item-expander > .fa-chevron-right {
+  display: inline-block;
+}
+#pagetree #pageTreeView li > ul {
+  display: none;
+}
+#pagetree #pageTreeView li.expanded > .item-expander > .fa-chevron-down {
+  display: inline-block;
+}
+#pagetree #pageTreeView li.expanded > .item-expander > .fa-chevron-right {
+  display: none;
+}
+#pagetree #pageTreeView li.expanded > ul {
+  display: block;
+}
+#pagetree #pageTreeView li.leaf > .item-expander {
+  visibility: hidden;
+}
+#pagetree #pageTreeView li.leaf > .area-item {
+  color: #BDBDBD;
+}
+#pagetree #pageTreeView li.selected > .item-label {
+  background-color: #525252;
+  color: #F5F7FA;
+}
+
+#opc #configModal #configModalBody {
+  overflow: initial;
 }
 #opc #configModal .modal-dialog {
-  width: 700px;
+  width: 786px;
   max-width: none;
 }
 #opc #configModal .modal-dialog .checkbox-standalone {
@@ -503,6 +557,470 @@ html, body {
 #opc #configModal .product-filter-config .filters-section .filters-section-inner .filter-option i {
   margin-right: 4px;
 }
+
+#opc .slides-container {
+  padding-right: 8px;
+  max-height: calc(100vh - 494px);
+  overflow-y: auto;
+}
+
+#opc .slide-entry {
+  background-color: #F5F7FA;
+  padding: 16px;
+  margin-bottom: 16px;
+  display: flex;
+}
+#opc .slide-entry:last-child {
+  margin-bottom: 0;
+}
+#opc .slide-entry .slide-btns > button,
+#opc .slide-entry .slide-btns > span {
+  display: block;
+  padding: 4px;
+  margin-bottom: 8px;
+}
+#opc .slide-entry .slide-btns > button:last-child,
+#opc .slide-entry .slide-btns > span:last-child {
+  margin-bottom: 0;
+}
+#opc .slide-entry .slide-btns i {
+  font-size: 16px;
+}
+#opc .slide-entry .slide-btns hr {
+  margin: 8px 4px;
+  margin-top: 0;
+  width: 20px;
+  border-width: 2px;
+}
+#opc .slide-entry .slide-image-col .slide-image-btn {
+  width: 128px;
+  height: 128px;
+  margin: 0 16px;
+  border-radius: 5px;
+  background-size: cover;
+  background-position: center;
+  cursor: pointer;
+}
+#opc .slide-entry .slide-props {
+  flex: auto;
+}
+#opc .slide-entry .slide-props .row {
+  margin: 0 -8px;
+  margin-bottom: -16px;
+}
+#opc .slide-entry .slide-props .row .col-4, #opc .slide-entry .slide-props .row .col-8 {
+  padding: 0 8px;
+}
+#opc .slide-entry .slide-props .form-control {
+  height: 32px;
+  padding: 4px 8px;
+  margin-bottom: 16px;
+}
+#opc .slide-entry .slide-props .select-wrapper {
+  margin: 0;
+  display: block;
+}
+#opc .slide-entry .slide-props .select-wrapper:after {
+  top: 6px;
+}
+
+#opc button.add-slide-btn {
+  position: relative;
+  margin: auto;
+  display: block;
+  margin-top: -16px;
+  width: 48px;
+  height: 48px;
+  background-color: #435A6B;
+  border-color: #435A6B;
+}
+#opc button.add-slide-btn:hover {
+  background-color: #63849d;
+}
+#opc button.add-slide-btn i {
+  font-size: 18px;
+}
+
+#opc .conf-gallery-layout {
+  margin-bottom: 16px;
+}
+#opc .conf-gallery-layout:after {
+  content: "";
+  display: block;
+  clear: both;
+}
+#opc .conf-gallery-layout label {
+  display: block;
+  float: left;
+  text-align: center;
+  margin: 0 12px;
+}
+#opc .conf-gallery-layout label input {
+  display: block;
+  -webkit-appearance: none;
+  width: 90px;
+  height: 90px;
+  border: 2px solid #F5F7FA;
+  background-color: #F5F7FA;
+  position: relative;
+  color: #BDBDBD;
+  cursor: pointer;
+  margin: auto;
+  margin-bottom: 4px;
+}
+#opc .conf-gallery-layout label input:before, #opc .conf-gallery-layout label input:after {
+  content: "";
+  display: block;
+  background-color: currentColor;
+  color: #BDBDBD;
+  position: absolute;
+}
+#opc .conf-gallery-layout label input:checked {
+  color: #5cbcf6;
+  border: 2px solid #5cbcf6;
+}
+#opc .conf-gallery-layout label input:checked:before, #opc .conf-gallery-layout label input:checked:after {
+  color: #5cbcf6;
+}
+#opc .conf-gallery-layout label input.gallery-layout-option-grid:before {
+  width: 20px;
+  height: 20px;
+  left: 9px;
+  top: 9px;
+  box-shadow: 24px 0 currentColor, 48px 0 currentColor, 0 24px currentColor, 24px 24px currentColor, 48px 24px currentColor, 0 48px currentColor, 24px 48px currentColor, 48px 48px currentColor;
+}
+#opc .conf-gallery-layout label input.gallery-layout-option-alternate:before {
+  width: 44px;
+  height: 20px;
+  left: 9px;
+  top: 9px;
+  box-shadow: 24px 24px currentColor, 0 48px currentColor;
+}
+#opc .conf-gallery-layout label input.gallery-layout-option-alternate:after {
+  width: 20px;
+  height: 20px;
+  left: 57px;
+  top: 9px;
+  box-shadow: -48px 24px currentColor, 0 48px currentColor;
+}
+#opc .conf-gallery-layout label input.gallery-layout-option-columns:before {
+  width: 20px;
+  height: 20px;
+  left: 9px;
+  top: 9px;
+  box-shadow: 24px 48px currentColor, 48px 0 currentColor;
+}
+#opc .conf-gallery-layout label input.gallery-layout-option-columns:after {
+  width: 20px;
+  height: 44px;
+  left: 9px;
+  top: 33px;
+  box-shadow: 24px -24px currentColor, 48px 0 currentColor;
+}
+
+#opc .image-btn {
+  min-width: 64px;
+  min-height: 64px;
+  display: block;
+}
+#opc .image-btn img {
+  min-width: 64px;
+  min-height: 64px;
+  max-width: 100%;
+  max-height: 100%;
+}
+#opc .image-btn img.thumb {
+  max-width: 128px;
+  max-height: 128px;
+  object-fit: contain;
+}
+
+#opc .zone-props textarea {
+  height: 60px;
+}
+#opc .zone-props .row {
+  margin: 0 -8px;
+}
+#opc .zone-props .row .col-6 {
+  padding: 0 8px;
+}
+
+#opc .modal .box-config {
+  font-size: 12px;
+  line-height: 0.9;
+}
+#opc .modal .box-config .form-control {
+  width: 36px;
+  display: inline;
+  margin: 0;
+  padding: 0;
+  height: 22px;
+  text-align: center;
+  font-size: 12px;
+}
+#opc .modal .box-config label {
+  display: block;
+  margin-bottom: 0;
+}
+#opc .modal .box-config .top-row:after {
+  content: "";
+  display: block;
+  clear: both;
+}
+#opc .modal .box-config .top-row > * {
+  float: left;
+  display: block;
+  width: 33.33%;
+}
+#opc .modal .box-config .top-row > .mid-top-col {
+  text-align: center;
+}
+#opc .modal .box-config .mid-row {
+  display: flex;
+  align-items: center;
+}
+#opc .modal .box-config .mid-row > label {
+  flex: none;
+}
+#opc .modal .box-config .mid-row > div {
+  flex: auto;
+}
+#opc .modal .box-config .bottom-row {
+  text-align: center;
+}
+#opc .modal .box-config .outer-box,
+#opc .modal .box-config .padding-box,
+#opc .modal .box-config .border-box,
+#opc .modal .box-config .content-box {
+  padding: 5px;
+  margin: 5px;
+}
+#opc .modal .box-config .outer-box,
+#opc .modal .box-config .padding-box {
+  border: 1px dashed #BDBDBD;
+  background-color: #F5F7FA;
+}
+#opc .modal .box-config .border-box,
+#opc .modal .box-config .content-box {
+  background-color: #e3e3e3;
+}
+#opc .modal .box-config .content-box {
+  height: 64px;
+}
+
+#opc .row-layout-controls .row {
+  margin: 0 -8px;
+}
+#opc .row-layout-controls .row .col-4,
+#opc .row-layout-controls .row .col-2 {
+  padding: 0 8px;
+}
+
+#opc .row-layout-previews {
+  text-align: center;
+  color: #BDBDBD;
+}
+#opc .row-layout-previews > * {
+  display: inline-block;
+}
+#opc .row-layout-previews .layout-preview {
+  margin: 10px 40px 20px 40px;
+}
+#opc .row-layout-previews .layout-preview > * {
+  background-color: #5cbcf6;
+  height: 8px;
+  float: left;
+  margin: 1px;
+}
+#opc .row-layout-previews .layout-preview-3 {
+  background-image: url(../gfx/row-preview-desktop.png);
+  width: 126px;
+  height: 94px;
+  padding: 7px 7px 29px 8px;
+}
+#opc .row-layout-previews .layout-preview-2 {
+  background-image: url(../gfx/row-preview-laptop.png);
+  width: 118px;
+  height: 70px;
+  padding: 7px 11px 9px 11px;
+}
+#opc .row-layout-previews .layout-preview-1 {
+  background-image: url(../gfx/row-preview-tablet.png);
+  width: 46px;
+  height: 66px;
+  padding: 3px 3px 11px 3px;
+}
+#opc .row-layout-previews .layout-preview-0 {
+  background-image: url(../gfx/row-preview-phone.png);
+  width: 36px;
+  height: 56px;
+  padding: 2px 2px 7px 2px;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
+  line-height: 1.5;
+}
+
+#opc select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  position: relative;
+}
+#opc .select-wrapper {
+  position: relative;
+}
+#opc .select-wrapper:after {
+  font-family: "Font Awesome 5 Free", FontAwesome, "Open Sans";
+  font-weight: 600;
+  content: "";
+  position: absolute;
+  right: 14px;
+  top: 10px;
+  pointer-events: none;
+}
+#opc .modal {
+  font-size: 14px;
+  color: #435A6B;
+}
+#opc .modal label {
+  margin-bottom: 8px;
+}
+#opc .modal .form-control,
+#opc .modal .input-group-append,
+#opc .modal .input-group-prepend {
+  margin-bottom: 16px;
+}
+#opc .modal .form-control button,
+#opc .modal .input-group-append button,
+#opc .modal .input-group-prepend button {
+  border: 1px solid #435A6B;
+  padding: 4px 12px;
+  height: 38px;
+}
+#opc .modal .form-control button.primary,
+#opc .modal .input-group-append button.primary,
+#opc .modal .input-group-prepend button.primary {
+  border: 1px solid #5cbcf6;
+  background-color: #5cbcf6;
+  color: #F5F7FA;
+}
+#opc .modal .input-group .form-control:not(:last-child) {
+  border-bottom-right-radius: 0;
+  border-top-right-radius: 0;
+  border-right: none;
+}
+#opc .modal .input-group .form-control:not(:first-child):not(.tt-input) {
+  border-bottom-left-radius: 0;
+  border-top-left-radius: 0;
+  border-left: none;
+}
+#opc .modal .input-group .twitter-typeahead {
+  flex: 1 1 auto;
+  width: 1%;
+}
+#opc .modal .input-group .input-group-text {
+  background: none;
+  border: 1px solid #435A6B;
+  border-left: none;
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+}
+#opc .modal .alert-info {
+  background: #d5eefd;
+  border: 1px solid #5cbcf6;
+  border-radius: 5px;
+  color: #435A6B;
+  margin: 0;
+}
+#opc .modal .nav-tabs {
+  margin: -24px;
+  margin-bottom: 24px;
+}
+#opc .modal .modal-dialog {
+  max-width: 550px;
+}
+#opc .modal .modal-content {
+  border: none;
+  border-radius: 0;
+}
+#opc .modal .modal-header {
+  padding: 12px 24px;
+  background-color: #5cbcf6;
+  color: #fff;
+  border: none;
+  border-radius: 0;
+}
+#opc .modal .modal-header h5 {
+  font-size: 16px;
+  font-weight: normal;
+}
+#opc .modal .modal-header .opc-header-btn {
+  font-size: 16px;
+}
+#opc .modal .modal-header .opc-header-btn:hover {
+  color: #d5eefd;
+}
+#opc .modal .modal-body {
+  padding: 0;
+  margin: 24px;
+}
+#opc .modal .modal-body .form-group {
+  margin: 0;
+  padding: 0;
+  margin-bottom: 16px;
+}
+#opc .modal .modal-body .form-group.no-pb {
+  margin-bottom: 0;
+}
+#opc .modal .modal-footer {
+  border: none;
+  padding: 24px;
+  padding-top: 0;
+  margin-top: 24px;
+}
+#opc .modal .modal-footer button {
+  padding: 8px 32px;
+}
+#opc .modal .modal-footer > :not(:last-child) {
+  margin-right: 16px;
+}
+#opc .modal .progress-bar {
+  background-color: #5cbcf6;
+}
+#opc .modal #iconpicker .popover-title:after {
+  content: "";
+  display: block;
+  clear: both;
+}
+#opc .modal #iconpicker .popover-title i {
+  font-size: 38px;
+  display: block;
+  float: left;
+  min-width: 52px;
+  min-height: 16px;
+}
+#opc .modal #iconpicker .popover-title .iconpicker-search {
+  width: calc(100% - 52px);
+  float: left;
+  margin-bottom: 0;
+}
+#opc .modal #iconpicker .form-control {
+  float: none;
+}
+#opc .modal #iconpicker .iconpicker-popover {
+  width: 100%;
+}
+#opc #loaderModal .modal-dialog {
+  top: 50%;
+  transform: translate(0, -75%);
+  margin: 0 auto;
+}
 #opc #opcSidebar {
   width: 380px;
   height: 100%;
@@ -535,89 +1053,6 @@ html, body {
   overflow: visible;
   height: 100%;
 }
-#opc #opcSidebar #sidebarInnerPanel #portlets hr {
-  margin-top: 0;
-}
-#opc #opcSidebar #sidebarInnerPanel #portlets .portletGroupBtn {
-  display: block;
-  font-weight: 600;
-  width: 100%;
-  text-align: left;
-  margin-bottom: 16px;
-}
-#opc #opcSidebar #sidebarInnerPanel #portlets .portletGroupBtn .fas {
-  float: right;
-  line-height: inherit;
-}
-#opc #opcSidebar #sidebarInnerPanel #portlets .portletGroupBtn.collapsed .fas::before {
-  content: "";
-}
-#opc #opcSidebar #sidebarInnerPanel #portlets .collapse {
-  width: 340px;
-}
-#opc #opcSidebar #sidebarInnerPanel #portlets .collapse:after {
-  content: " ";
-  display: block;
-  clear: both;
-}
-#opc #opcSidebar #sidebarInnerPanel #portlets .collapsing {
-  width: 340px;
-}
-#opc #opcSidebar #sidebarInnerPanel #portlets .portletButton {
-  display: block;
-  float: left;
-  width: 96px;
-  height: 96px;
-  margin-right: 22px;
-  margin-bottom: 22px;
-  background-color: #F5F7FA;
-  border-radius: 5px;
-}
-#opc #opcSidebar #sidebarInnerPanel #portlets .portletButton:hover {
-  box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.125);
-}
-#opc #opcSidebar #sidebarInnerPanel #portlets .portletButton:nth-child(3n) {
-  margin-right: 0;
-}
-#opc #opcSidebar #sidebarInnerPanel #portlets .portletButton > .portletBtnInner {
-  display: block;
-  width: 96px;
-  height: 96px;
-  position: relative;
-}
-#opc #opcSidebar #sidebarInnerPanel #portlets .portletButton > .portletBtnInner > img {
-  position: absolute;
-  left: 50%;
-  top: 36%;
-  transform: translate(-50%, -50%);
-}
-#opc #opcSidebar #sidebarInnerPanel #portlets .portletButton > .portletBtnInner > i {
-  display: block;
-  position: absolute;
-  left: 50%;
-  top: 36%;
-  transform: translate(-50%, -50%);
-  font-size: 32px;
-  color: #5cbcf6;
-}
-#opc #opcSidebar #sidebarInnerPanel #portlets .portletButton > .portletBtnInner > span {
-  position: absolute;
-  left: 0;
-  bottom: 8px;
-  width: 100%;
-  line-height: 16px;
-}
-#opc #opcSidebar #sidebarInnerPanel #portlets .collapseGroup {
-  display: block;
-  color: #435A6B;
-  font-size: 16px;
-  padding: 8px 25px;
-  margin: 0 -15px 5px -15px;
-  text-decoration: none;
-}
-#opc #opcSidebar #sidebarInnerPanel #portlets .collapse .row {
-  padding-bottom: 14px;
-}
 #opc #opcSidebar #sidebarInnerPanel #revisions .revisionBtn,
 #opc #opcSidebar #sidebarInnerPanel #blueprints .blueprintButton {
   display: block;
@@ -634,104 +1069,6 @@ html, body {
 }
 #opc #opcSidebar #sidebarInnerPanel #revisions .revisionBtn:hover {
   background-color: #dfe1e2;
-}
-#opc #opcSidebar #sidebarInnerPanel #blueprints #blueprintList {
-  padding-bottom: 60px;
-}
-#opc #opcSidebar #sidebarInnerPanel #blueprints .blueprintButton {
-  cursor: pointer;
-}
-#opc #opcSidebar #sidebarInnerPanel #blueprints .blueprintButton:hover {
-  box-shadow: 4px 4px 4px rgba(0, 0, 0, 0.125);
-}
-#opc #opcSidebar #sidebarInnerPanel #blueprints .blueprintButton .blueprint-icon {
-  color: #5cbcf6;
-  font-size: 22px;
-  vertical-align: bottom;
-  margin-right: 8px;
-}
-#opc #opcSidebar #sidebarInnerPanel #blueprints .blueprintButton .blueprint-btn-actions {
-  float: right;
-  display: none;
-}
-#opc #opcSidebar #sidebarInnerPanel #blueprints .blueprintButton .blueprint-btn-actions button {
-  padding: 0 4px;
-  margin-top: -4px;
-  font-size: 16px;
-  width: 28px;
-  height: 28px;
-  border-radius: 100px;
-}
-#opc #opcSidebar #sidebarInnerPanel #blueprints .blueprintButton .blueprint-btn-actions button:hover {
-  background-color: #dfe1e2;
-}
-#opc #opcSidebar #sidebarInnerPanel #blueprints .blueprintButton:hover .blueprint-btn-actions {
-  display: block;
-}
-#opc #opcSidebar #sidebarInnerPanel #blueprints #btnImportBlueprint {
-  position: fixed;
-  bottom: 212px;
-  width: 334px;
-  box-shadow: none;
-}
-#opc #opcSidebar #sidebarInnerPanel #pagetree {
-  height: 100%;
-}
-#opc #opcSidebar #sidebarInnerPanel #pagetree #pageTreeView {
-  padding: 1em 0;
-  background-color: #F5F7FA;
-  border-radius: 5px;
-  height: 100%;
-  overflow-y: auto;
-}
-#opc #opcSidebar #sidebarInnerPanel #pagetree #pageTreeView ul {
-  list-style: none;
-  padding: 0;
-  padding-left: 1em;
-  margin: 0;
-}
-#opc #opcSidebar #sidebarInnerPanel #pagetree #pageTreeView a {
-  display: inline-block;
-  text-decoration: none;
-  color: #435A6B;
-}
-#opc #opcSidebar #sidebarInnerPanel #pagetree #pageTreeView .area-item {
-  color: #63849d;
-  padding: 0 4px;
-  margin: 2px;
-}
-#opc #opcSidebar #sidebarInnerPanel #pagetree #pageTreeView .portlet-item {
-  border-radius: 4px;
-  padding: 0 4px;
-  margin: 2px;
-}
-#opc #opcSidebar #sidebarInnerPanel #pagetree #pageTreeView .item-expander > .fa-chevron-down {
-  display: none;
-}
-#opc #opcSidebar #sidebarInnerPanel #pagetree #pageTreeView .item-expander > .fa-chevron-right {
-  display: inline-block;
-}
-#opc #opcSidebar #sidebarInnerPanel #pagetree #pageTreeView li > ul {
-  display: none;
-}
-#opc #opcSidebar #sidebarInnerPanel #pagetree #pageTreeView li.expanded > .item-expander > .fa-chevron-down {
-  display: inline-block;
-}
-#opc #opcSidebar #sidebarInnerPanel #pagetree #pageTreeView li.expanded > .item-expander > .fa-chevron-right {
-  display: none;
-}
-#opc #opcSidebar #sidebarInnerPanel #pagetree #pageTreeView li.expanded > ul {
-  display: block;
-}
-#opc #opcSidebar #sidebarInnerPanel #pagetree #pageTreeView li.leaf > .item-expander {
-  visibility: hidden;
-}
-#opc #opcSidebar #sidebarInnerPanel #pagetree #pageTreeView li.leaf > .area-item {
-  color: #BDBDBD;
-}
-#opc #opcSidebar #sidebarInnerPanel #pagetree #pageTreeView li.selected > .item-label {
-  background-color: #525252;
-  color: #F5F7FA;
 }
 #opc #opcSidebar #sidebarFooter {
   position: absolute;
@@ -868,16 +1205,6 @@ html, body {
   background-image: none;
   color: #F5F7FA;
 }
-#opc .image-btn {
-  min-width: 64px;
-  min-height: 64px;
-}
-#opc .image-btn img {
-  min-width: 64px;
-  min-height: 64px;
-  max-width: 100%;
-  max-height: 100%;
-}
 #opc #publishModal .modal-body {
   overflow: inherit;
 }
@@ -893,9 +1220,6 @@ html, body {
 #opc .popover[class*=tour-] .popover-title {
   color: #fff;
   background-color: #5cbcf6;
-}
-#opc #configModalBody {
-  overflow: initial;
 }
 #opc .banner-zones {
   position: absolute;

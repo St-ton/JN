@@ -3,7 +3,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "Row"
-msgstr "Row"
+msgstr "Grid layout"
 
 msgid "layoutXS"
 msgstr "Layout XS"

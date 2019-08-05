@@ -187,9 +187,6 @@ msgstr "Nächsthöhere Ebene auswählen"
 msgid "deleteSelect"
 msgstr "Auswahl löschen [Entf]"
 
-msgid "portletPreviewLabel"
-msgstr "Portlet-Preview-Label"
-
 msgid "templateTitle"
 msgstr "Name der Vorlage"
 

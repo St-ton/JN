@@ -82,9 +82,7 @@
         {include file="./modals/restore_unsaved.tpl"}
 
         <div id="portletToolbar" class="opc-portlet-toolbar" style="display:none">
-            <button type="button" class="opc-toolbar-btn opc-label" id="portletLabel">
-                portletLabel
-            </button>
+            <button type="button" class="opc-toolbar-btn opc-label" id="portletLabel"></button>
             <button type="button" class="opc-toolbar-btn" id="btnConfig" title="{__('editSettings')}">
                 <i class="fas fa-pen fa fa-pencil"></i>
             </button>
@@ -102,9 +100,7 @@
             </button>
         </div>
 
-        <div id="portletPreviewLabel" class="opc-label" style="display:none">
-            {__('portletPreviewLabel')}
-        </div>
+        <div id="portletPreviewLabel" class="opc-label" style="display:none"></div>
 
         <div id="dropTargetBlueprint" class="opc-droptarget" style="display:none">
             <div>

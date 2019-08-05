@@ -187,9 +187,6 @@ msgstr "Select next higher level"
 msgid "deleteSelect"
 msgstr "Delete selection [Del]"
 
-msgid "portletPreviewLabel"
-msgstr "Portlet preview label"
-
 msgid "templateTitle"
 msgstr "Template name"
 

@@ -6,6 +6,7 @@
 
 namespace JTL\Catalog;
 
+use Exception;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\Merkmal;
 use JTL\DB\ReturnType;
@@ -151,22 +152,21 @@ class ComparisonList
     }
 
     /**
-     * @param ComparisonList $compareList
      * @return array
      * @former baueMerkmalundVariation()
      * @since 5.0.0
      */
-    public static function buildAttributeAndVariation(ComparisonList $compareList): array
+    public function buildAttributeAndVariation(): array
     {
         $attributes = [];
         $variations = [];
-        foreach ($compareList->oArtikel_arr as $product) {
+        foreach ($this->oArtikel_arr as $product) {
             /** @var Artikel $product */
             if (\count($product->oMerkmale_arr) > 0) {
                 // Falls das Merkmal Array nicht leer ist
                 if (\count($attributes) > 0) {
                     foreach ($product->oMerkmale_arr as $oMerkmale) {
-                        if (!self::containsAttribute($attributes, $oMerkmale->kMerkmal)) {
+                        if (!$this->containsAttribute($attributes, $oMerkmale->kMerkmal)) {
                             $attributes[] = $oMerkmale;
                         }
                     }
@@ -178,7 +178,7 @@ class ComparisonList
             if (\count($product->Variationen) > 0) {
                 if (\count($variations) > 0) {
                     foreach ($product->Variationen as $oVariationen) {
-                        if (!self::containsVariation($variations, $oVariationen->cName)) {
+                        if (!$this->containsVariation($variations, $oVariationen->cName)) {
                             $variations[] = $oVariationen;
                         }
                     }
@@ -203,7 +203,7 @@ class ComparisonList
      * @former istMerkmalEnthalten()
      * @since 5.0.0
      */
-    public static function containsAttribute(array $attributes, int $id): bool
+    public function containsAttribute(array $attributes, int $id): bool
     {
         return some($attributes, function ($e) use ($id) {
             return (int)$e->kMerkmal === $id;
@@ -217,7 +217,7 @@ class ComparisonList
      * @former istVariationEnthalten()
      * @since 5.0.0
      */
-    public static function containsVariation(array $variations, string $name): bool
+    public function containsVariation(array $variations, string $name): bool
     {
         return some($variations, function ($e) use ($name) {
             return $e->cName === $name;
@@ -229,8 +229,9 @@ class ComparisonList
      * @param array $config
      * @return string
      * @since 5.0.0
+     * @former gibMaxPrioSpalteV()
      */
-    public static function gibMaxPrioSpalteV(array $exclude, array $config): string
+    public function getMaxPrioCol(array $exclude, array $config): string
     {
         $max  = 0;
         $col  = '';
@@ -275,7 +276,7 @@ class ComparisonList
      * @param bool $newStandard
      * @return array
      */
-    public static function getPrioRows(bool $keysOnly = false, bool $newStandard = true): array
+    public function getPrioRows(bool $keysOnly = false, bool $newStandard = true): array
     {
         $conf               = Shop::getSettings([\CONF_VERGLEICHSLISTE]);
         $possibleRowsToView = [
@@ -296,7 +297,7 @@ class ComparisonList
         $ignoreRow = 0;
         foreach ($possibleRowsToView as $row) {
             if ($conf['vergleichsliste'][$row] > $ignoreRow) {
-                $prioRows[$row] = self::getMappedRowNames($row);
+                $prioRows[$row] = $this->getMappedRowNames($row);
             }
         }
         $prioRows = sort($prioRows, function (array $left, array $right) {
@@ -312,7 +313,7 @@ class ComparisonList
      * @param string $confName
      * @return array
      */
-    public static function getMappedRowNames(string $confName): array
+    public function getMappedRowNames(string $confName): array
     {
         $conf = Shop::getSettings([\CONF_VERGLEICHSLISTE])['vergleichsliste'];
         switch ($confName) {
@@ -399,12 +400,10 @@ class ComparisonList
     /**
      * Fügt nach jedem Preisvergleich eine Statistik in die Datenbank.
      * Es sind allerdings nur 3 Einträge pro IP und Tag möglich
-     *
-     * @param ComparisonList $compareList
      */
-    public static function setComparison(ComparisonList $compareList): void
+    public function save(): void
     {
-        if (\count($compareList->oArtikel_arr) === 0) {
+        if (\count($this->oArtikel_arr) === 0) {
             return;
         }
         $data = Shop::Container()->getDB()->queryPrepared(
@@ -420,7 +419,7 @@ class ComparisonList
             $ins->cIP   = Request::getRealIP();
             $ins->dDate = \date('Y-m-d H:i:s');
             $id         = Shop::Container()->getDB()->insert('tvergleichsliste', $ins);
-            foreach ($compareList->oArtikel_arr as $product) {
+            foreach ($this->oArtikel_arr as $product) {
                 $item                   = new stdClass();
                 $item->kVergleichsliste = $id;
                 $item->kArtikel         = $product->kArtikel;

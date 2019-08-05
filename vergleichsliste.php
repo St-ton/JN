@@ -20,11 +20,9 @@ $linkHelper    = Shop::Container()->getLinkService();
 $kLink         = $linkHelper->getSpecialPageLinkKey(LINKTYP_VERGLEICHSLISTE);
 $link          = $linkHelper->getPageLink($kLink);
 $compareList   = new ComparisonList();
-$attrVar       = ComparisonList::buildAttributeAndVariation($compareList);
-$prioRowsArray = ComparisonList::getPrioRows();
-$prioRows      = ComparisonList::getPrioRows(true, false);
+$attrVar       = $compareList->buildAttributeAndVariation();
 $alertHelper   = Shop::Container()->getAlertService();
-ComparisonList::setComparison($compareList);
+$compareList->save();
 
 if (Request::verifyGPCDataInt('addToCart') !== 0) {
     CartHelper::addProductIDToCart(
@@ -45,8 +43,8 @@ $nBreiteArtikel  = ($conf['vergleichsliste']['vergleichsliste_spaltengroesse'] >
     ? (int)$conf['vergleichsliste']['vergleichsliste_spaltengroesse']
     : 200;
 Shop::Smarty()->assign('nBreiteTabelle', $nBreiteArtikel * count($compareList->oArtikel_arr) + $nBreiteAttribut)
-    ->assign('cPrioSpalten_arr', $prioRows)
-    ->assign('prioRows', $prioRowsArray)
+    ->assign('cPrioSpalten_arr', $compareList->getPrioRows(true, false))
+    ->assign('prioRows', $compareList->getPrioRows())
     ->assign('Link', $link)
     ->assign('oMerkmale_arr', $attrVar[0])
     ->assign('oVariationen_arr', $attrVar[1])

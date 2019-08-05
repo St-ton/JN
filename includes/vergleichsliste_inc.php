@@ -14,7 +14,7 @@ use JTL\Catalog\ComparisonList;
 function baueMerkmalundVariation($compareList)
 {
     trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
-    return ComparisonList::buildAttributeAndVariation($compareList);
+    return $compareList->buildAttributeAndVariation();
 }
 
 /**
@@ -26,7 +26,7 @@ function baueMerkmalundVariation($compareList)
 function istMerkmalEnthalten($attributes, $attributeID)
 {
     trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
-    return ComparisonList::containsAttribute($attributes, $attributeID);
+    return (new ComparisonList())->containsAttribute($attributes, $attributeID);
 }
 
 /**
@@ -38,7 +38,7 @@ function istMerkmalEnthalten($attributes, $attributeID)
 function istVariationEnthalten($variations, $name)
 {
     trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
-    return ComparisonList::containsVariation($variations, $name);
+    return (new ComparisonList())->containsVariation($variations, $name);
 }
 
 /**
@@ -50,7 +50,7 @@ function istVariationEnthalten($variations, $name)
 function gibMaxPrioSpalteV($exclude, $config)
 {
     trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
-    return ComparisonList::gibMaxPrioSpalteV($exclude, $config);
+    return (new ComparisonList())->getMaxPrioCol($exclude, $config);
 }
 
 /**
@@ -63,5 +63,5 @@ function gibMaxPrioSpalteV($exclude, $config)
 function setzeVergleich($compareList)
 {
     trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
-    ComparisonList::setComparison($compareList);
+    $compareList->save();
 }

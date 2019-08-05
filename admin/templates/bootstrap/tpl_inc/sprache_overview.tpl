@@ -9,8 +9,7 @@
         {if $oWert_arr|@count > 0}
             <div class="col-sm-6 col-xl-auto">
                 <button type="submit" class="btn btn-primary btn-block" name="action" value="saveall">
-                    <i class="fa fa-save"></i>
-                    {__('save')}
+                    {__('saveWithIcon')}
                 </button>
             </div>
         {/if}

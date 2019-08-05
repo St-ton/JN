@@ -41,7 +41,7 @@
                 <div class="row">
                     <div class="ml-auto col-sm-6 col-xl-auto">
                         <a class="btn btn-outline-primary btn-block mb-2" href="news.php{if isset($cBackPage)}?{$cBackPage}{elseif isset($cTab)}?tab={$cTab}{/if}">
-                            <i class="fal fa-exclamation-triangle"></i> {__('Cancel')}
+                            {__('cancelWithIcon')}
                         </a>
                     </div>
                     <div class="col-sm-6 col-xl-auto">

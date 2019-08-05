@@ -126,6 +126,7 @@ function ackCheck(kPlugin, hash)
                                 allowedFileExtensions : ['zip'],
                                 overwriteInitial: false,
                                 showPreview: false,
+                                cancelClass: 'btn btn-outline-primary',
                                 language: '{$language|mb_substr:0:2}',
                                 maxFileSize: 100000,
                                 maxFilesNum: 1

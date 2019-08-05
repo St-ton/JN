@@ -35,11 +35,6 @@
                         <hr class="mb-n3">
                     </div>
                     <div class="card-body">
-                        {if $oBranding->cBrandingBild|strlen > 0}
-                            <div class="thumbnail">
-                                <img class="img-fluid" src="{$shopURL}/{$PFAD_BRANDINGBILDER}{$oBranding->cBrandingBild}?rnd={$cRnd}" alt="" />
-                            </div>
-                        {/if}
                         <div class="form-group form-row align-items-center">
                             <label class="col col-sm-4 col-form-label text-sm-right" for="nAktiv">{__('brandingActive')}:</label>
                             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
@@ -126,14 +121,7 @@
                         <div class="form-group form-row align-items-center">
                             <label class="col col-sm-4 col-form-label text-sm-right" for="cBrandingBild">{__('brandingFileName')}:</label>
                             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                <div class="input-group mb-3">
-                                    <div class="custom-file">
-                                        <input class="custom-file-input" type="file" name="cBrandingBild" maxlength="2097152" accept="image/*" id="cBrandingBild" value="" tabindex="1" {if !$oBranding->cBrandingBild|strlen > 0}required{/if}/>
-                                        <label class="custom-file-label" for="cBrandingBild">
-                                            <span class="text-truncate">{__('fileSelect')}</span>
-                                        </label>
-                                    </div>
-                                </div>
+                                <input name="cBrandingBild" id="cBrandingBild" type="file" class="file" accept="image/*" {if !$oBranding->cBrandingBild|strlen > 0}required{/if}>
                             </div>
                             <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=__('brandingFileNameDesc')}</div>
                         </div>
@@ -152,4 +140,37 @@
         </div>
     {/if}
 </div>
+<script>
+    $('#cBrandingBild').fileinput({
+        showUpload: false,
+        showRemove: false,
+        showCancel: false,
+        uploadAsync: false,
+        showPreview: true,
+        fileActionSettings: {
+            showZoom: false,
+            showRemove: false,
+            showDrag: false
+        },
+        allowedFileExtensions : ['jpg', 'jpeg', 'jpe', 'gif', 'png', 'bmp'],
+        overwriteInitial: true,
+        initialPreviewCount: 1,
+        theme: 'fas',
+        language: '{$language|mb_substr:0:2}',
+        browseOnZoneClick:     true,
+        maxFileSize: 256,
+        maxFilesNum: 1,
+        {if $oBranding->cBrandingBild|strlen > 0}
+        initialPreviewConfig: [
+            {
+                url: '{$shopURL}/{$PFAD_BRANDINGBILDER}{$oBranding->cBrandingBild}?rnd={$cRnd}',
+                extra: { logo: '{$oBranding->cBrandingBild}' }
+            }
+        ],
+        initialPreview: [
+            '<img src="{$shopURL}/{$PFAD_BRANDINGBILDER}{$oBranding->cBrandingBild}?rnd={$cRnd}" class="file-preview-image img-fluid" alt="branding" title="brnading" />'
+        ]
+        {/if}
+    })
+</script>
 {include file='tpl_inc/footer.tpl'}

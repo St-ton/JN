@@ -137,7 +137,7 @@
                             <div class="row">
                                 <div class="ml-auto col-sm-6 col-xl-auto">
                                     <button type="submit" class="btn btn-primary btn-block" name="add-cron" value="1">
-                                        <i class="fa fa-save"></i> {__('create')}
+                                        <i class="fal fa-save"></i> {__('create')}
                                     </button>
                                 </div>
                             </div>
@@ -149,7 +149,7 @@
 
         <div id="config" class="settings tab-pane fade{if $tab === 'settings'} active show{/if}">
             {include file='tpl_inc/config_section.tpl' config=$oConfig_arr name='einstellen' a='saveSettings'
-            action='cron.php' buttonCaption=__('save') tab='einstellungen' title=__('settings')}
+            action='cron.php' buttonCaption=__('saveWithIcon') tab='einstellungen' title=__('settings')}
         </div>
     </div>
 </div>

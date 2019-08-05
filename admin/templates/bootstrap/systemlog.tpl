@@ -34,7 +34,7 @@
                     {else}
                         <div class="listgroup">
                             {foreach $oLog_arr as $oLog}
-                                <div class="list-group-item">
+                                <div class="list-group-item {cycle values="bg-secondary,"}">
                                     <div class="row">
                                         <div class="col-md-3 col-xs-12">
                                             <label class="custom-control custom-checkbox">
@@ -53,10 +53,7 @@
                                             </label>
                                         </div>
                                         <div class="col-md-9 col-xs-12">
-                                            <pre class="logtext p-1
-                                                {if $oLog->nLevel >= $smarty.const.JTLLOG_LEVEL_WARNING}bg-danger
-                                                {elseif $oLog->nLevel > $smarty.const.JTLLOG_LEVEL_DEBUG}bg-success
-                                                {else}bg-info{/if}">{$oLog->cLog}</pre>
+                                            <pre class="logtext p-1">{$oLog->cLog}</pre>
                                         </div>
                                     </div>
                                 </div>

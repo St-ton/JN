@@ -12,7 +12,6 @@
                     name='einstellen'
                     a='saveSettings'
                     action='preisverlauf.php'
-                    buttonCaption=__('save')
                     title=__('settings')
                     tab='einstellungen'}
         </div>

@@ -1,38 +1,83 @@
 <script type="text/javascript">
-    var i = 10,
-        j = 2,
-        file2large = false;
-
-    function addInputRow() {ldelim}
-        var row = document.getElementById('formtable').insertRow(i),
-                cell_1,
-                cell_2,
-                input1,
-                label,
-                myText;
-        row.id = '' + i;
-        row.valign = 'top';
-
-        cell_1 = row.insertCell(0);
-        cell_2 = row.insertCell(1);
-        input1 = document.createElement('input');
-        input1.type = 'file';
-        input1.name = 'Bilder[]';
-        input1.className = 'field';
-        input1.id = 'Bilder_' + i;
-        input1.maxlength = '2097152';
-        input1.accept = 'image/*';
-        label = document.createElement('label');
-        label.setAttribute('for', 'Bilder_' + i);
-        myText = document.createTextNode('Bild ' + j + ':');
-        label.appendChild(myText);
-        cell_1.appendChild(label);
-        cell_2.appendChild(input1);
-        i += 1;
-        j += 1;
-    {rdelim}
+    $(function () {
+        var $el = $('#images');
+        $el.fileinput({
+            uploadAsync:           false,
+            showPreview:           true,
+            showUpload:            false,
+            showRemove:            false,
+            showDrag:              false,
+            browseClass:           'btn btn-default',
+            cancelClass:           'btn btn-outline-primary',
+            cancelIcon:            '<i class="fas fa-exclamation"></i>',
+            fileActionSettings:    {
+                showZoom:   false,
+                showDrag:   false,
+                showRemove: false,
+            },
+            theme:                 'fas',
+            language:              '{$language|mb_substr:0:2}',
+            allowedFileExtensions: ['jpg', 'jpeg', 'jpe', 'gif', 'png', 'bmp'],
+            browseOnZoneClick:     true,
+            maxFileSize:           {$nMaxFileSize},
+            initialPreview:        [
+                {if !empty($oDatei_arr)}
+                {foreach $oDatei_arr as $oDatei}
+                '<img src="{$oDatei->cURLFull}" class="file-preview-image img-fluid"/><a href="news.php?news=1&news_editieren=1&kNews={$oNews->getID()}&delpic={$oDatei->cName}&token={$smarty.session.jtl_token}" title="{__('delete')}"><i class="fas fa-trash-alt"></i></a>',
+                {/foreach}
+                {/if}
+            ],
+            initialPreviewConfig:  [
+                {if !empty($oDatei_arr)}
+                {foreach $oDatei_arr as $oDatei}
+                {
+                    caption: '$#{$oDatei->cName}#$',
+                    width:   '120px'
+                },
+                {/foreach}
+                {/if}
+            ]
+        }).on("filebatchselected", function(event, files) {
+            $('#images').fileinput("upload");
+        });
+        var $preview = $('#previewImage');
+        $preview.fileinput({
+            uploadAsync:           false,
+            showPreview:           true,
+            showUpload:            false,
+            showRemove:            false,
+            showDrag:              false,
+            browseClass:           'btn btn-default',
+            cancelClass:           'btn btn-outline-primary',
+            cancelIcon:            '<i class="fas fa-exclamation"></i>',
+            fileActionSettings:    {
+                showZoom:   false,
+                showDrag:   false,
+                showRemove: false,
+            },
+            theme:                 'fas',
+            language:              '{$language|mb_substr:0:2}',
+            allowedFileExtensions: ['jpg', 'jpeg', 'jpe', 'gif', 'png', 'bmp'],
+            browseOnZoneClick:     true,
+            maxFileSize:           {$nMaxFileSize},
+            initialPreview:        [
+                {if !empty($oNews->getPreviewImage())}
+                '<img src="{$shopURL}/{$oNews->getPreviewImage()}" class="preview-image left"/>',
+                {/if}
+            ],
+            initialPreviewConfig:  [
+                {if !empty($oNews->getPreviewImage())}
+                {
+                    caption: '{__('preview')}',
+                    width:   '120px'
+                }
+                {/if}
+            ]
+        }).on("filebatchselected", function(event, files) {
+            $('#preview').fileinput("upload");
+        });
+    });
     {literal}
-
     $(document).ready(function () {
         $('#lang').on('change', function () {
             var iso = $('#lang option:selected').val();
@@ -50,29 +95,7 @@
                 $('#option_isActive select').val(1);
             }
         }).trigger('change');
-        $('form input[type=file]').on('change', function(e){
-            $('form div.alert').slideUp();
-            var filesize= this.files[0].size;
-            {/literal}
-            var maxsize = {$nMaxFileSize};
-            {literal}
-            if (filesize >= maxsize) {
-                $(this).after('<div class="alert alert-danger"><i class="fal fa-exclamation-triangle"></i>{/literal}{__('errorUploadSizeLimit')}{literal}</div>').slideDown();
-                file2large = true;
-            } else {
-                $(this).closest('div.alert').slideUp();
-                file2large = false;
-            }
-        });
-
     });
-
-    function checkfile(e){
-        e.preventDefault();
-        if (!file2large){
-            document.news.submit();
-        }
-    }
     {/literal}
 </script>
 {include file='tpl_inc/seite_header.tpl' cTitel=__('news') cBeschreibung=__('newsDesc')}
@@ -204,43 +227,15 @@
                         <div class="form-group form-row align-items-center">
                             <label class="col col-sm-4 col-form-label text-sm-right"for="previewImage">{__('preview')}:</label>
                             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                <div class="input-group mb-3">
-                                    {if !empty($oNews->getPreviewImage())}
-                                        <div class="input-group-prepend">
-                                            <div class="input-group-text">
-                                                <img src="{$shopURL}/{$oNews->getPreviewImage()}" alt="" height="20" width="20" class="preview-image left"/>
-                                            </div>
-                                        </div>
-                                    {/if}
-                                    <div class="custom-file">
-                                        <input class="custom-file-input" id="previewImage" name="previewImage" type="file" maxlength="2097152" accept="image/*" />
-                                        <label class="custom-file-label" for="previewImage">
-                                            <span class="text-truncate">{__('fileSelect')}</span>
-                                        </label>
-                                    </div>
-                                </div>
-                                <input name="previewImage" type="hidden" value="{if !empty($oNews->getPreviewImage())}{$oNews->getPreviewImage()}{/if}" />
+                                <input class="form-control-upload" name="previewImage" id="previewImage" type="file"/>
                             </div>
                         </div>
-                        {if isset($oDatei_arr) && $oDatei_arr|@count > 0}
                         <div class="form-group form-row align-items-center">
                             <label class="col col-sm-4 col-form-label text-sm-right">{__('newsPics')}:</label>
                             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                {foreach $oDatei_arr as $oDatei}
-                                    <div class="well col-xs-3">
-                                        <div class="thumbnail"><img src="{$oDatei->cURLFull}" alt=""></div>
-                                        <label>Link: :</label>
-                                        <div class="input-group">
-                                            <input class="form-control" type="text" disabled="disabled" value="$#{$oDatei->cName}#$">
-                                            <div class="input-group-addon">
-                                                <a href="news.php?news=1&news_editieren=1&kNews={$oNews->getID()}&delpic={$oDatei->cName}&token={$smarty.session.jtl_token}" title="{__('delete')}"><i class="fas fa-trash-alt"></i></a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                {/foreach}
+                                <input class="form-control-upload" id="images" name="Bilder[]" type="file" multiple/>
                             </div>
                         </div>
-                        {/if}
                         <div class="form-group form-row align-items-center">
                             <label class="col col-sm-4 col-form-label text-sm-right" for="lang">{__('language')}:</label>
                             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
@@ -322,7 +317,7 @@
                     {if $oNews->getID() > 0}
                         <div class="col-sm-6 col-xl-auto">
                             <button type="submit" name="continue" value="1" class="btn btn-outline-primary btn-block mb-2" id="save-and-continue">
-                                {__('save')} {__('goOnEdit')}
+                                <i class="fal fa-save"></i> {__('saveAndContinue')}
                             </button>
                         </div>
                     {/if}

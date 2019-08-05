@@ -39,7 +39,7 @@
                             {/if}
                             {if $oVisitor->cNewsletter === 'Y'}
                                 <a href="#" data-toggle="tooltip" data-placement="top" title="Newsletter-Abonnent">
-                                    <i class="fa fa-envelope-o"></i><span class="sr-only">{__('newsletterSubscriber')}</span>
+                                    <i class="far fa-envelope"></i><span class="sr-only">{__('newsletterSubscriber')}</span>
                                 </a>
                             {/if}
                         </td>

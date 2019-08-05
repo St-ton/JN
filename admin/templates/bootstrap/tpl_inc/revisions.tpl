@@ -60,13 +60,13 @@
                                     <input type="hidden" value="{$revision->type}" name="revision-type" />
                                     <input type="hidden" value="{if $secondary === true}1{else}0{/if}" name="revision-secondary" />
                                     <div class="row">
-                                        <div class="ml-auto col-sm-6 col-xl-auto mb-3">
-                                            <button type="submit" class="btn btn-danger btn-block" name="revision-action" value="delete">
+                                        <div class="ml-auto col-sm-6 col-xl-auto">
+                                            <button type="submit" class="btn btn-danger" name="revision-action" value="delete">
                                                 <i class="fas fa-trash-alt"></i> {__('revisionDelete')}
                                             </button>
                                         </div>
                                         <div class="col-sm-6 col-xl-auto">
-                                            <button type="submit" class="btn btn-primary btn-block" name="revision-action" value="restore">
+                                            <button type="submit" class="btn btn-primary" name="revision-action" value="restore">
                                                 <i class="fa fa-refresh"></i> {__('revisionRestore')}
                                             </button>
                                         </div>

@@ -150,7 +150,7 @@
                         <div class="subheading1">{if isset($oKundenfeld->kKundenfeld) && $oKundenfeld->kKundenfeld > 0}{__('headingKundenfeldEdit')}{else}{__('headingKundenfeldCreate')}{/if}</div>
                         <hr class="mb-3">
                         <div class="table-responsive">
-                            <table class="table list table-bordered" id="formtable">
+                            <table class="table list table-borderless" id="formtable">
                                 <tr>
                                     <td><label for="cName">{__('kundenfeldName')}</label></td>
                                     <td>

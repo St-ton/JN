@@ -104,13 +104,19 @@
                     {/if}
                 </tbody>
             </table>
-            <div class="card-footer">
+            <div class="card-footer text-right">
                 <form method="post" action="versandarten.php">
                     {$jtl_token}
-                    <div class="btn-group">
-                        <button name="edit" value="{$versandart->kVersandart}" class="btn btn-primary"><i class="fal fa-edit"></i> {__('edit')}</button>
-                        <button name="clone" value="{$versandart->kVersandart}" class="btn btn-default clone">{__('duplicate')}</button>
-                        <button name="del" value="{$versandart->kVersandart}" class="btn btn-danger" onclick="return confirmDelete('{$versandart->cName}');"><i class="fas fa-trash-alt"></i> {__('delete')}</button>
+                    <div class="row">
+                        <div class="ml-auto col-sm-6 col-xl-auto text-right">
+                            <button name="del" value="{$versandart->kVersandart}" class="btn btn-danger" onclick="return confirmDelete('{$versandart->cName}');"><i class="fas fa-trash-alt"></i> {__('delete')}</button>
+                        </div>
+                        <div class="col-sm-6 col-xl-auto">
+                            <button name="clone" value="{$versandart->kVersandart}" class="btn btn-default clone">{__('duplicate')}</button>
+                        </div>
+                        <div class="col-sm-6 col-xl-auto">
+                            <button name="edit" value="{$versandart->kVersandart}" class="btn btn-primary"><i class="fal fa-edit"></i> {__('edit')}</button>
+                        </div>
                     </div>
                 </form>
             </div>
@@ -135,7 +141,7 @@
                         </div>
                     {/foreach}
                 </div>
-                <div class="card-footer">
+                <div class="card-footer text-right">
                     <button type="submit" value="{__('createShippingMethod')}" class="btn btn-primary"><i class="fa fa-share"></i> {__('createShippingMethod')}</button>
                 </div>
             </form>

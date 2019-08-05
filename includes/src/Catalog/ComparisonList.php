@@ -10,7 +10,6 @@ use Exception;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\Merkmal;
 use JTL\DB\ReturnType;
-use JTL\Extensions\Config\Item;
 use JTL\Helpers\Request;
 use JTL\Session\Frontend;
 use JTL\Shop;
@@ -38,17 +37,7 @@ class ComparisonList
     public function __construct(int $productID = 0, array $variations = [])
     {
         if ($productID > 0) {
-            $product           = new stdClass();
-            $tmpProduct        = (new Artikel())->fuelleArtikel($productID);
-            $product->kArtikel = $productID;
-            $product->cName    = $tmpProduct !== null ? $tmpProduct->cName : '';
-            $product->cURLFull = $tmpProduct !== null ? $tmpProduct->cURLFull : '';
-            if (\is_array($variations) && \count($variations) > 0) {
-                $product->Variationen = $variations;
-            }
-            $this->oArtikel_arr[] = $product;
-
-            \executeHook(\HOOK_VERGLEICHSLISTE_CLASS_EINFUEGEN);
+            $this->addProduct($productID, $variations);
         } elseif (isset($_SESSION['Vergleichsliste'])) {
             $this->loadFromSession();
         }
@@ -57,16 +46,16 @@ class ComparisonList
     /**
      * load comparelist from session
      */
-    public function loadFromSession(): void
+    private function loadFromSession(): void
     {
         $compareList = Frontend::get('Vergleichsliste');
         if ($compareList !== null) {
-            $defaultOptions = Artikel::getDefaultOptions();
-            $linkHelper     = Shop::Container()->getLinkService();
-            $baseURL        = $linkHelper->getStaticRoute('vergleichsliste.php');
+            $options    = Artikel::getDefaultOptions();
+            $linkHelper = Shop::Container()->getLinkService();
+            $baseURL    = $linkHelper->getStaticRoute('vergleichsliste.php');
             foreach ($compareList->oArtikel_arr as $item) {
                 $product = new Artikel();
-                $product->fuelleArtikel($item->kArtikel, $defaultOptions);
+                $product->fuelleArtikel($item->kArtikel, $options);
                 $product->cURLDEL = $baseURL . '?vlplo=' . $item->kArtikel;
                 if (isset($item->oVariationen_arr) && \count($item->oVariationen_arr) > 0) {
                     $product->Variationen = $item->oVariationen_arr;
@@ -81,9 +70,12 @@ class ComparisonList
      */
     public function umgebungsWechsel(): self
     {
-        $options        = new stdClass();
-        $options->nMain = 1;
-        foreach ($_SESSION['Vergleichsliste']->oArtikel_arr as $i => $item) {
+        $options     = Artikel::getDefaultOptions();
+        $compareList = Frontend::get('Vergleichsliste');
+        if ($compareList === null) {
+            return $this;
+        }
+        foreach ($compareList->oArtikel_arr as $i => $item) {
             $product    = new stdClass();
             $tmpProduct = new Artikel();
             try {
@@ -91,51 +83,32 @@ class ComparisonList
             } catch (Exception $e) {
                 continue;
             }
-            $product->kArtikel                             = $item->kArtikel;
-            $product->cName                                = $tmpProduct !== null ? $tmpProduct->cName : '';
-            $product->cURLFull                             = $tmpProduct !== null ? $tmpProduct->cURLFull : '';
-            $_SESSION['Vergleichsliste']->oArtikel_arr[$i] = $product;
+            $product->kArtikel             = $item->kArtikel;
+            $product->cName                = $tmpProduct->cName ?? '';
+            $product->cURLFull             = $tmpProduct->cURLFull ?? '';
+            $compareList->oArtikel_arr[$i] = $product;
         }
 
         return $this;
     }
 
     /**
-     * @param int  $productID
-     * @param bool $saveToSession
-     * @param int  $configItemID
-     * @return $this
+     * @param int   $productID
+     * @param array $variations
+     * @return ComparisonList
      */
-    public function fuegeEin(int $productID, bool $saveToSession = true, int $configItemID = 0): self
+    public function addProduct(int $productID, array $variations = []): self
     {
-        // Existiert der Key und ist er noch nicht vorhanden?
-        if ($productID > 0 && !$this->artikelVorhanden($productID)) {
-            //new slim variant for compare list
-            $product           = new Artikel();
-            $product->kArtikel = $productID;
-            if ($configItemID > 0) {
-                // Falls Konfigitem gesetzt Preise + Name überschreiben
-                $configItem = new Item($configItemID);
-                if ($configItem->getKonfigitem() > 0) {
-                    $product->Preise->cVKLocalized[0] = $configItem->getPreisLocalized(true, false);
-                    $product->Preise->cVKLocalized[1] = $configItem->getPreisLocalized(true, false, true);
-                    $product->kSteuerklasse           = $configItem->getSteuerklasse();
-                    unset($product->cLocalizedVPE);
-
-                    if ($configItem->getUseOwnName()) {
-                        $product->cName             = $configItem->getName();
-                        $product->cBeschreibung     = $configItem->getBeschreibung();
-                        $product->cKurzBeschreibung = $configItem->getBeschreibung();
-                    }
-                }
-            }
-            if ($product->kArtikel > 0) {
-                $this->oArtikel_arr[] = $product;
-            }
-            if ($saveToSession) {
-                $_SESSION['Vergleichsliste']->oArtikel_arr = $this->oArtikel_arr;
-            }
+        $product           = new stdClass();
+        $tmpProduct        = (new Artikel())->fuelleArtikel($productID);
+        $product->kArtikel = $productID;
+        $product->cName    = $tmpProduct !== null ? $tmpProduct->cName : '';
+        $product->cURLFull = $tmpProduct !== null ? $tmpProduct->cURLFull : '';
+        if (\is_array($variations) && \count($variations) > 0) {
+            $product->Variationen = $variations;
         }
+        $this->oArtikel_arr[] = $product;
+        \executeHook(\HOOK_VERGLEICHSLISTE_CLASS_EINFUEGEN);
 
         return $this;
     }
@@ -144,7 +117,7 @@ class ComparisonList
      * @param int $productID
      * @return bool
      */
-    public function artikelVorhanden(int $productID): bool
+    public function productExists(int $productID): bool
     {
         return some($this->oArtikel_arr, function ($e) use ($productID) {
             return (int)$e->kArtikel === $productID;
@@ -278,8 +251,8 @@ class ComparisonList
      */
     public function getPrioRows(bool $keysOnly = false, bool $newStandard = true): array
     {
-        $conf               = Shop::getSettings([\CONF_VERGLEICHSLISTE]);
-        $possibleRowsToView = [
+        $conf = Shop::getSettings([\CONF_VERGLEICHSLISTE])['vergleichsliste'];
+        $rows = [
             'vergleichsliste_artikelnummer',
             'vergleichsliste_hersteller',
             'vergleichsliste_beschreibung',
@@ -290,14 +263,14 @@ class ComparisonList
             'vergleichsliste_variationen'
         ];
         if ($newStandard) {
-            $possibleRowsToView[] = 'vergleichsliste_verfuegbarkeit';
-            $possibleRowsToView[] = 'vergleichsliste_lieferzeit';
+            $rows[] = 'vergleichsliste_verfuegbarkeit';
+            $rows[] = 'vergleichsliste_lieferzeit';
         }
         $prioRows  = [];
         $ignoreRow = 0;
-        foreach ($possibleRowsToView as $row) {
-            if ($conf['vergleichsliste'][$row] > $ignoreRow) {
-                $prioRows[$row] = $this->getMappedRowNames($row);
+        foreach ($rows as $row) {
+            if ($conf[$row] > $ignoreRow) {
+                $prioRows[$row] = $this->getMappedRowNames($row, $conf);
             }
         }
         $prioRows = sort($prioRows, function (array $left, array $right) {
@@ -311,11 +284,11 @@ class ComparisonList
 
     /**
      * @param string $confName
+     * @param array  $conf
      * @return array
      */
-    public function getMappedRowNames(string $confName): array
+    private function getMappedRowNames(string $confName, array $conf): array
     {
-        $conf = Shop::getSettings([\CONF_VERGLEICHSLISTE])['vergleichsliste'];
         switch ($confName) {
             case 'vergleichsliste_artikelnummer':
                 return [
@@ -323,77 +296,66 @@ class ComparisonList
                     'name'     => Shop::Lang()->get('productNumber', 'comparelist'),
                     'priority' => $conf[$confName]
                 ];
-                break;
             case 'vergleichsliste_hersteller':
                 return [
                     'key'      => 'cHersteller',
                     'name'     => Shop::Lang()->get('manufacturer', 'comparelist'),
                     'priority' => $conf[$confName]
                 ];
-                break;
             case 'vergleichsliste_beschreibung':
                 return [
                     'key'      => 'cBeschreibung',
                     'name'     => Shop::Lang()->get('description', 'comparelist'),
                     'priority' => $conf[$confName]
                 ];
-                break;
             case 'vergleichsliste_kurzbeschreibung':
                 return [
                     'key'      => 'cKurzBeschreibung',
                     'name'     => Shop::Lang()->get('shortDescription', 'comparelist'),
                     'priority' => $conf[$confName]
                 ];
-                break;
             case 'vergleichsliste_artikelgewicht':
                 return [
                     'key'      => 'fArtikelgewicht',
                     'name'     => Shop::Lang()->get('productWeight', 'comparelist'),
                     'priority' => $conf[$confName]
                 ];
-                break;
             case 'vergleichsliste_versandgewicht':
                 return [
                     'key'      => 'fGewicht',
                     'name'     => Shop::Lang()->get('shippingWeight', 'comparelist'),
                     'priority' => $conf[$confName]
                 ];
-                break;
             case 'vergleichsliste_merkmale':
                 return [
                     'key'      => 'Merkmale',
                     'name'     => Shop::Lang()->get('characteristics', 'comparelist'),
                     'priority' => $conf[$confName]
                 ];
-                break;
             case 'vergleichsliste_variationen':
                 return [
                     'key'      => 'Variationen',
                     'name'     => Shop::Lang()->get('variations', 'comparelist'),
                     'priority' => $conf[$confName]
                 ];
-                break;
             case 'vergleichsliste_verfuegbarkeit':
                 return [
                     'key'      => 'verfuegbarkeit',
                     'name'     => Shop::Lang()->get('availability', 'productOverview'),
                     'priority' => $conf[$confName]
                 ];
-                break;
             case 'vergleichsliste_lieferzeit':
                 return [
                     'key'      => 'lieferzeit',
                     'name'     => Shop::Lang()->get('shippingTime'),
                     'priority' => $conf[$confName]
                 ];
-                break;
             default:
                 return [
                     'key'      => '',
                     'name'     => '',
                     'priority' => 0
                 ];
-                break;
         }
     }
 

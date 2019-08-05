@@ -565,9 +565,8 @@ class CartHelper
     {
         $alertHelper = Shop::Container()->getAlertService();
         // Prüfen ob nicht schon die maximale Anzahl an Artikeln auf der Vergleichsliste ist
-        if (isset($_SESSION['Vergleichsliste']->oArtikel_arr)
-            && $maxItems <= \count($_SESSION['Vergleichsliste']->oArtikel_arr)
-        ) {
+        $products = $_SESSION['Vergleichsliste']->oArtikel_arr ?? [];
+        if ($maxItems <= \count($products)) {
             Shop::Container()->getAlertService()->addAlert(
                 Alert::TYPE_ERROR,
                 Shop::Lang()->get('compareMaxlimit', 'errorMessages'),
@@ -577,7 +576,6 @@ class CartHelper
 
             return false;
         }
-        // Prüfe auf kArtikel
         $productExists = Shop::Container()->getDB()->select(
             'tartikel',
             'kArtikel',
@@ -589,70 +587,53 @@ class CartHelper
             false,
             'kArtikel, cName'
         );
-        // Falls Artikel vorhanden
-        if ($productExists !== null && $productExists->kArtikel > 0) {
-            // Sichtbarkeit Prüfen
-            $vis = Shop::Container()->getDB()->select(
-                'tartikelsichtbarkeit',
-                'kArtikel',
-                $productID,
-                'kKundengruppe',
-                Frontend::getCustomerGroup()->getID(),
-                null,
-                null,
-                false,
-                'kArtikel'
-            );
-            if ($vis === null || !isset($vis->kArtikel) || !$vis->kArtikel) {
-                // Prüfe auf Vater Artikel
-                $variations = [];
-                if (Product::isParent($productID)) {
-                    $productID  = Product::getArticleForParent($productID);
-                    $variations = Product::getSelectedPropertiesForVarCombiArticle($productID, 1);
-                }
-                $compareList = new ComparisonList($productID, $variations);
-                // Falls es eine Vergleichsliste in der Session gibt
-                if (isset($_SESSION['Vergleichsliste'])) {
-                    // Falls Artikel vorhanden sind
-                    if (\is_array($_SESSION['Vergleichsliste']->oArtikel_arr)
-                        && \count($_SESSION['Vergleichsliste']->oArtikel_arr) > 0
-                    ) {
-                        $exists = false;
-                        foreach ($_SESSION['Vergleichsliste']->oArtikel_arr as $product) {
-                            if ($product->kArtikel === $compareList->oArtikel_arr[0]->kArtikel) {
-                                $exists = true;
-                                break;
-                            }
-                        }
-                        // Wenn der Artikel der eingetragen werden soll, nicht schon in der Session ist
-                        if (!$exists) {
-                            foreach ($_SESSION['Vergleichsliste']->oArtikel_arr as $product) {
-                                $compareList->oArtikel_arr[] = $product;
-                            }
-                            $_SESSION['Vergleichsliste'] = $compareList;
-                            $alertHelper->addAlert(
-                                Alert::TYPE_NOTE,
-                                Shop::Lang()->get('comparelistProductadded', 'messages'),
-                                'comparelistProductadded'
-                            );
-                        } else {
-                            $alertHelper->addAlert(
-                                Alert::TYPE_ERROR,
-                                Shop::Lang()->get('comparelistProductexists', 'messages'),
-                                'comparelistProductexists',
-                                ['dismissable' => false]
-                            );
-                        }
-                    }
+        if ($productExists === null) {
+            return true;
+        }
+        $vis = Shop::Container()->getDB()->select(
+            'tartikelsichtbarkeit',
+            'kArtikel',
+            $productID,
+            'kKundengruppe',
+            Frontend::getCustomerGroup()->getID(),
+            null,
+            null,
+            false,
+            'kArtikel'
+        );
+        if ($vis === null || !isset($vis->kArtikel) || !$vis->kArtikel) {
+            // Prüfe auf Vater Artikel
+            $variations = [];
+            if (Product::isParent($productID)) {
+                $productID  = Product::getArticleForParent($productID);
+                $variations = Product::getSelectedPropertiesForVarCombiArticle($productID, 1);
+            }
+            $compareList = $_SESSION['Vergleichsliste'] ?? null;
+            /** @var ComparisonList $compareList */
+            if ($compareList !== null) {
+                if ($compareList->productExists($productID)) {
+                    $alertHelper->addAlert(
+                        Alert::TYPE_ERROR,
+                        Shop::Lang()->get('comparelistProductexists', 'messages'),
+                        'comparelistProductexists',
+                        ['dismissable' => false]
+                    );
                 } else {
-                    // Vergleichsliste neu in der Session anlegen
-                    $_SESSION['Vergleichsliste'] = $compareList;
+                    $compareList->addProduct($productID);
                     $alertHelper->addAlert(
                         Alert::TYPE_NOTE,
                         Shop::Lang()->get('comparelistProductadded', 'messages'),
                         'comparelistProductadded'
                     );
                 }
+            } else {
+                // Vergleichsliste neu in der Session anlegen
+                new ComparisonList($productID, $variations);
+                $alertHelper->addAlert(
+                    Alert::TYPE_NOTE,
+                    Shop::Lang()->get('comparelistProductadded', 'messages'),
+                    'comparelistProductadded'
+                );
             }
         }
 

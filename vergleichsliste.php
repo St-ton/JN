@@ -13,15 +13,15 @@ require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'vergleichsliste_inc.php';
 
 Shop::setPageType(PAGE_VERGLEICHSLISTE);
-$compareList   = null;
-$conf          = Shop::getSettings([CONF_VERGLEICHSLISTE, CONF_ARTIKELDETAILS]);
-$attrVar       = [[], []];
-$linkHelper    = Shop::Container()->getLinkService();
-$kLink         = $linkHelper->getSpecialPageLinkKey(LINKTYP_VERGLEICHSLISTE);
-$link          = $linkHelper->getPageLink($kLink);
-$compareList   = new ComparisonList();
-$attrVar       = $compareList->buildAttributeAndVariation();
-$alertHelper   = Shop::Container()->getAlertService();
+$compareList = null;
+$conf        = Shop::getSettings([CONF_VERGLEICHSLISTE, CONF_ARTIKELDETAILS]);
+$attrVar     = [[], []];
+$linkHelper  = Shop::Container()->getLinkService();
+$kLink       = $linkHelper->getSpecialPageLinkKey(LINKTYP_VERGLEICHSLISTE);
+$link        = $linkHelper->getPageLink($kLink);
+$compareList = new ComparisonList();
+$attrVar     = $compareList->buildAttributeAndVariation();
+$alertHelper = Shop::Container()->getAlertService();
 $compareList->save();
 
 if (Request::verifyGPCDataInt('addToCart') !== 0) {

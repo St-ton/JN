@@ -84,8 +84,6 @@
                         padding-bottom: 1em;
 
                         > a {
-                            color: @sidebar-highlight-color;
-                            font-weight: bold;
                             padding: 0.75em 0;
                             border-bottom: 1.5px solid @brand-primary-color;
                             text-transform: uppercase;
@@ -125,6 +123,7 @@
                         > a {
                             font-weight: bold;
                         }
+                        background-color: @sidebar-accent-color;
                     }
 
                     > a {
@@ -139,7 +138,7 @@
 
                         > .fa {
                             font-size: 0.75em;
-                            color: @sidebar-highlight-color;
+                            color: #fff;
                             &:before { content: "\f078"; }
                         }
                     }
@@ -151,11 +150,11 @@
 
                     &.expanded {
                         > a {
-                            background-color: @brand-primary-color;
-                            border-left: 6px solid @sidebar-accent-color;
+                            background-color: @sidebar-accent-color;
+                            border-left: 6px solid @brand-primary-color;
 
                             > .fa {
-                                color: @sidebar-accent-color;
+                                color: #fff;
                                 &:before { content: "\f077"; }
                             }
                         }
@@ -175,12 +174,11 @@
 
                     &.current {
                         > a {
-                            color: @sidebar-accent-color;
                             font-weight: bold;
                         }
                     }
 
-                    background-color: @brand-primary-color;
+                    background-color: @sidebar-accent-color;
                     font-size: 0.85em;
                     list-style-type: disc;
                 }
@@ -1187,11 +1185,6 @@ li.filestate {
     box-shadow: none;
     border-radius: 0;
     border: inherit;
-}
-
-.nav > li > a {
-    padding-left: 10px;
-    padding-right: 10px;
 }
 
 .navbar-form.navbar-right:last-child {
@@ -3207,4 +3200,12 @@ input[type=number] {
         display: flex;
         flex-direction: row;
     }
+}
+[aria-expanded="true"] .rotate-180{
+    -webkit-transform:rotate(180deg);
+    transform:rotate(180deg);
+    font-size: 10px;
+}
+.rotate-180 {
+    font-size: 10px;
 }

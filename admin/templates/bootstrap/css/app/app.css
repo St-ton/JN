@@ -13117,11 +13117,11 @@ body {
     opacity: 0;
     visibility: hidden;
   }
-  #topbar:not(.searching) > div:nth-child(2), #topbar :not(.searching) > div:nth-child(3) {
+  #topbar:not(.searching) > div:nth-child(2), #topbar:not(.searching) > div:nth-child(3) {
     display: initial;
   }
-  #topbar.searching > div:nth-child(2), #topbar .searching > div:nth-child(3) {
-    display: block;
+  #topbar.searching > div:nth-child(2), #topbar.searching > div:nth-child(3) {
+    display: none;
   }
   #topbar.searching .search {
     flex: 0 0 100%;

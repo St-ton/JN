@@ -527,7 +527,7 @@
             <div class="row">
                 <div class="ml-auto col-sm-6 col-xl-auto">
                     <button type="submit" class="btn btn-primary btn-block" name="action" value="speichern">
-                        <i class="fa fa-share"></i> {__('save')}
+                        {__('saveWithIcon')}
                     </button>
                 </div>
             </div>

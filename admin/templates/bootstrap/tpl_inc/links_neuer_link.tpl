@@ -26,6 +26,8 @@
             showRemove:            false,
             showDrag:              false,
             browseClass:           'btn btn-default',
+            cancelClass:           'btn btn-outline-primary',
+            cancelIcon:            '<i class="fas fa-exclamation"></i>',
             fileActionSettings:    {
                 showZoom:   false,
                 showDrag:   false,
@@ -218,40 +220,10 @@
                     </div>
                     <div class="form-group form-row align-items-center">
                         <label class="col col-sm-4 col-form-label text-sm-right" for="Bilder_0">{__('images')}:</label>
-                        {*<div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                            <div id="file_input_wrapper">
-                                <p class="multi_input">
-                                    <input class="form-control-upload" id="Bilder_0" name="Bilder[]" type="file" maxlength="2097152" accept="image/*" />
-                                </p>
-                            </div>
-                        </div>
-                        <div class="input-group-btn col-auto ml-sm-n4 order-2 order-sm-3">
-                            <button type="button" title="{__('linkPicAdd')}" name="hinzufuegen" value="{__('linkPicAdd')}"
-                                    onclick="return append_file_selector();" class="btn btn-info">
-                                <i class="fal fa-plus"></i>
-                            </button>
-                        </div>*}
                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                             <input class="form-control-upload" id="Bilder_0" name="Bilder[]" type="file" multiple/>
                         </div>
-
                     </div>
-                    {*<div class="form-group form-row align-items-center">
-                        <label class="col col-sm-4 col-form-label text-sm-right">{__('linkPics')}:</label>
-                        <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                        {if isset($cDatei_arr)}
-                            {foreach $cDatei_arr as $cDatei}
-                                <span class="block text-center vmiddle">
-                                    <a href="links.php?kLink={$Link->getID()}&token={$smarty.session.jtl_token}&delpic=1&cName={$cDatei->cNameFull}{if isset($Link->getPluginID()) && $Link->getPluginID() > 0}{$Link->getPluginID()}{/if}">
-                                        <img src="{$currentTemplateDir}/gfx/layout/remove.png" alt="delete">
-                                    </a>
-                                    $#{$cDatei->cName}#$
-                                    <div>{$cDatei->cURL}</div>
-                                </span>
-                            {/foreach}
-                        {/if}
-                        </div>
-                    </div>*}
                     <div class="form-group form-row align-items-center">
                         <label class="col col-sm-4 col-form-label text-sm-right" for="bIsFluid">{__('bIsFluidText')}:</label>
                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">

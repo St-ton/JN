@@ -345,7 +345,7 @@
                         <div class="form-group form-row align-items-center">
                             <label class="col col-sm-4 col-form-label text-sm-right" for="cFile">{__('file')}:</label>
                             <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
-                                <div class="input-group mb-3">
+                                <div class="input-group">
                                     <div class="custom-file">
                                         <input class="custom-file-input" name="cFile" type="file" id="csv-import" required>
                                         <label class="custom-file-label" for="csv-import">

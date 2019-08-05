@@ -83,7 +83,7 @@
                     <div class="row">
                         <div class="ml-auto col-sm-6 col-xl-auto">
                             <button type="submit" class="btn btn-outline-primary btn-block mb-2" name="action" value="sendnow">
-                                <i class="fa fa-envelope-o"></i> {__('sendEmail')}
+                                <i class="far fa-envelope"></i> {__('sendEmail')}
                             </button>
                         </div>
                         <div class="col-sm-6 col-xl-auto">

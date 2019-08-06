@@ -158,9 +158,10 @@
                             {col sm=12 md=6}
                                 {form method="post" id='request-plz' action="{get_static_route}" class="evo-validate label-slide"}
                                     {input type="hidden" name="uid" value="{$uid}"}
+                                <p>{lang key='enter_plz_for_details' section='account data'}</p>
                                 {formgroup
                                     label-for="postcode"
-                                    label={lang key='enter_plz_for_details' section='account data'}
+                                    label={lang key='plz' section='account data'}
                                 }
                                     {input
                                         type="text"

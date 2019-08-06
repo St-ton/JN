@@ -10,22 +10,23 @@
     }
 </script>
 {include file='tpl_inc/seite_header.tpl' cTitel=__('pluginverwaltung') cBeschreibung=__('pluginverwaltungDesc')}
-<div id="content" class="container-fluid">
+<div id="content">
     {if $plugin->getLocalization()->getLangVars()->count() > 0}
         <form name="pluginverwaltung" method="post" action="pluginverwaltung.php">
             {$jtl_token}
             <input type="hidden" name="pluginverwaltung_sprachvariable" value="1" />
             <input type="hidden" name="kPlugin" value="{$kPlugin}" />
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">{__('pluginverwaltungLocales')}</h3>
+            <div class="card">
+                <div class="card-header">
+                    <div class="subheading1">{__('pluginverwaltungLocales')}</div>
+                    <hr class="mb-n3">
                 </div>
-                <div class="table-responsive">
+                <div class="table-responsive card-body">
                     <table class="list table">
                         <thead>
                         <tr>
-                            <th class="tleft">{__('pluginName')}</th>
-                            <th class="tleft">{__('description')}</th>
+                            <th class="text-left">{__('pluginName')}</th>
+                            <th class="text-left">{__('description')}</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -49,14 +50,18 @@
                             {/foreach}
                             <tr>
                                 <td>&nbsp;</td>
-                                <td><a onclick="ackCheck({$var->id}, {$kPlugin}); return false;" class="btn btn-danger button reset"><i class="fa fa-warning"></i> {__('pluginLocalesStd')}</a></td>
+                                <td><button onclick="ackCheck({$var->id}, {$kPlugin}); return false;" class="btn btn-danger"><i class="fal fa-exclamation-triangle"></i> {__('pluginLocalesStd')}</button></td>
                             </tr>
                         {/foreach}
                         </tbody>
                     </table>
                 </div>
-                <div class="panel-footer">
-                    <button name="speichern" type="submit" value="{__('save')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
+                <div class=" ard-footer save-wrapper">
+                    <div class="row">
+                        <div class="ml-auto col-sm-6 col-xl-auto">
+                            <button name="speichern" type="submit" value="{__('save')}" class="btn btn-primary btn-block">{__('saveWithIcon')}</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </form>

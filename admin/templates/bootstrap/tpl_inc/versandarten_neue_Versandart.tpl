@@ -2,7 +2,7 @@
     {assign var=addOne value=1}
     var i = {if isset($VersandartStaffeln) && $VersandartStaffeln|@count > 0}Number({$VersandartStaffeln|@count}) + 1{else}2{/if};
     function addInputRow() {ldelim}
-        $('#price_range tbody').append('<tr><td><div class="input-group"><span class="input-group-addon"><label>{__('upTo')}</label></span><input type="text" name="bis[]"  id="bis' + i + '" class="form-control kilogram"><span class="input-group-addon"><label>{if isset($einheit)}{$einheit}{/if}</label></span></div></td><td class="tcenter"><div class="input-group"><span class="input-group-addon"><label>{__('amount')}</label></span><input type="text" name="preis[]"  id="preis' + i + '" class="form-control price_large"></div></td></tr>');
+        $('#price_range tbody').append('<tr><td><div class="input-group"><span class="input-group-addon"><label>{__('upTo')}</label></span><input type="text" name="bis[]"  id="bis' + i + '" class="form-control kilogram"><span class="input-group-addon"><label>{if isset($einheit)}{$einheit}{/if}</label></span></div></td><td class="text-center"><div class="input-group"><span class="input-group-addon"><label>{__('amount')}</label></span><input type="text" name="preis[]"  id="preis' + i + '" class="form-control price_large"></div></td></tr>');
         i += 1;
         {rdelim}
 
@@ -78,7 +78,7 @@
 {/if}
 
 {include file='tpl_inc/seite_header.tpl' cTitel=$cTitel cBeschreibung=$cBeschreibung}
-<div id="content" class="container-fluid">
+<div id="content">
     <form name="versandart_neu" method="post" action="versandarten.php">
         {$jtl_token}
         <input type="hidden" name="neueVersandart" value="1" />
@@ -135,7 +135,6 @@
                                     </li>
                                 {/if}
                             {/foreach}
-
                             {foreach $sprachen as $language}
                                 {assign var=cISO value=$language->getIso()}
                                 {if isset($oVersandartSpracheAssoc_arr[$cISO])}
@@ -224,7 +223,6 @@
                                 </span>
                                 <span class="input-group-addon">{getHelpDesc cDesc=__('taxshippingcostsDesc')}</span>
                             </li>
-
                             <li class="input-group">
                                 <span class="input-group-addon">
                                     <label for="cSendConfirmationMail">{__('sendShippingNotification')}</label>
@@ -302,7 +300,7 @@
                                                 <span class="input-group-addon"><label>{$einheit}</label></span>
                                             </div>
                                         </td>
-                                        <td class="tcenter">
+                                        <td class="text-center">
                                             <div class="input-group">
                                                 <span class="input-group-addon"><label>{__('amount')}:</label></span>
                                                 <input type="text" id="preis1" name="preis[]" value="" class="form-control price_large">{* onKeyUp="setzePreisAjax(false, 'ajaxpreis1', this)" /> <span id="ajaxpreis1"></span>*}
@@ -315,7 +313,7 @@
                             </table>
                             <div class="btn-group">
                                 <button name="addRow" type="button" value="{__('addPriceScale')}" onclick="addInputRow();" class="btn btn-primary"><i class="fa fa-share"></i> {__('addPriceScale')}</button>
-                                <button name="delRow" type="button" value="{__('delPriceScale')}" onclick="delInputRow();" class="btn btn-danger"><i class="fa fa-trash"></i> {__('delPriceScale')}</button>
+                                <button name="delRow" type="button" value="{__('delPriceScale')}" onclick="delInputRow();" class="btn btn-danger"><i class="fas fa-trash-alt"></i> {__('delPriceScale')}</button>
                             </div>
                         </li>
                     </ul>
@@ -461,7 +459,6 @@
                         </div>
                     {/if}
                 </div>
-
                 <div class="panel panel-default">
                     <div class="panel-heading">
                         <h3 class="panel-title">{__('acceptedPaymentMethods')}</h3>

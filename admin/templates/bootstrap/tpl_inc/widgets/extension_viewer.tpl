@@ -1,7 +1,7 @@
 <div class="widget-custom-data">
-    <ul class="infolist clearall">
+    <ul class="infolist list-group list-group-flush">
         {foreach $oModul_arr as $module}
-            <li class="{if $module@first}first{elseif $module@last}last{/if}">
+            <li class="list-group-item {if $module@first}first{elseif $module@last}last{/if}">
                 <p class="key">{$module->cName}
                     <span class="value {if $module->bActive}success{/if}">
                         {if $module->bActive}

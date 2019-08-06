@@ -48,8 +48,6 @@
                 }
             });
 
-            console.log(searcherInput);
-
             updateFilterList();
 
             function updateFilterList()

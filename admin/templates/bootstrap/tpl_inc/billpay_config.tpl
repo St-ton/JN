@@ -2,9 +2,9 @@
 {if isset($oItem->cFehler) && $oItem->cFehler|strlen > 0}
     <div class="alert alert-danger">{$oItem->cFehler}</div>
 {else}
-    <div class="panel panel-default">
-        <div class="panel-heading"><h3 class="panel-title">{__('buyInvoice')}</h3></div>
-        <div class="panel-body">
+    <div class="card">
+        <div class="card-header"><div class="card-title">{__('buyInvoice')}</div></div>
+        <div class="card-body">
             <dl class="dl-horizontal">
                 <dt>{__('status')}</dt>
                 <dd>
@@ -24,9 +24,9 @@
             </dl>
         </div>
     </div>
-    <div class="panel panel-default">
-        <div class="panel-heading"><h3 class="panel-title">{__('buyInvoiceB2B')}</h3></div>
-        <div class="panel-body">
+    <div class="card">
+        <div class="card-header"><div class="card-title">{__('buyInvoiceB2B')}</div></div>
+        <div class="card-body">
             <dl class="dl-horizontal">
                 <dt>{__('status')}</dt>
                 <dd>
@@ -46,9 +46,9 @@
             </dl>
         </div>
     </div>
-    <div class="panel panel-default">
-        <div class="panel-heading"><h3 class="panel-title">{__('directDebit')}</h3></div>
-        <div class="panel-body">
+    <div class="card">
+        <div class="card-header"><div class="card-title">{__('directDebit')}</div></div>
+        <div class="card-body">
             <dl class="dl-horizontal">
                 <dt>{__('status')}</dt>
                 <dd>
@@ -68,9 +68,9 @@
             </dl>
         </div>
     </div>
-    <div class="panel panel-default">
-        <div class="panel-heading"><h3 class="panel-title">{__('payTimely')}</h3></div>
-        <div class="panel-body">
+    <div class="card">
+        <div class="card-header"><div class="card-title">{__('payTimely')}</div></div>
+        <div class="card-body">
             <dl class="dl-horizontal">
                 <dt>{__('status')}</dt>
                 <dd>
@@ -92,9 +92,9 @@
     </div>
 
 
-    <div class="panel panel-default">
-        <div class="panel-heading"><h3 class="panel-title">{__('payLater')}</h3></div>
-        <div class="panel-body">
+    <div class="card">
+        <div class="card-header"><div class="card-title">{__('payLater')}</div></div>
+        <div class="card-body">
             <dl class="dl-horizontal">
                 <dt>{__('status')}</dt>
                 <dd>
@@ -114,9 +114,9 @@
             </dl>
         </div>
     </div>
-    <div class="panel panel-default">
-        <div class="panel-heading"><h3 class="panel-title">{__('payLaterB2B')}</h3></div>
-        <div class="panel-body">
+    <div class="card">
+        <div class="card-header"><div class="card-title">{__('payLaterB2B')}</div></div>
+        <div class="card-body">
             <dl class="dl-horizontal">
                 <dt>{__('status')}</dt>
                 <dd>

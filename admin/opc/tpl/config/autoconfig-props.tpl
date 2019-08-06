@@ -1,7 +1,7 @@
 {foreach $props as $propname => $propdesc}
     {$type = $propdesc.type|default:'text'}
     {$required = $required|default:false}
-    {$width = floor(($propdesc.width|default:100) * 12 / 100)}
+    {$width = round(($propdesc.width|default:100) * 12 / 100)}
     {$rowWidthAccu = $rowWidthAccu + $width}
 
     {if !empty($propdesc.order)}

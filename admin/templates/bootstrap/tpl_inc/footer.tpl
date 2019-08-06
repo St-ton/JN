@@ -1,4 +1,8 @@
 {if $account}
+        <button class="navbar-toggler sidebar-toggler collapsed" type="button" data-toggle="collapse" data-target="#sidebar" aria-controls="sidebar" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
         </div>
     </div>
 </div>{* /backend-wrapper *}

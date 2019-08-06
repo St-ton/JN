@@ -7,7 +7,7 @@
     <input class="form-control" type="text" name="captcha" tabindex="30" id="captcha_text" placeholder="{__('enterCode')}" />
 </p>
 {if isset($bAnti_spam_failed) && $bAnti_spam_failed}
-    <div class="form-error-msg text-danger"><i class="fa fa-warning"></i>
+    <div class="form-error-msg text-danger"><i class="fal fa-exclamation-triangle"></i>
         {__('invalidToken')}
     </div>
 {/if}

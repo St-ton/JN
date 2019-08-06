@@ -12,13 +12,11 @@
             <input type="text" value="" autocomplete="off" class="form-control" />
         </div>
         <div class="search">
-            <select size="15" class="ssb-search"></select>
+            <select size="15" class="ssb-search custom-select"></select>
         </div>
-        <div class="tcenter">
-            <div class="btn-group">
-                <a href="#" class="btn btn-primary button add">{__('save')}</a>
-                <a href="#" class="btn btn-danger button remove"><i class="fa fa-exclamation"></i> {__('cancel')}</a>
-            </div>
+        <div class="text-center">
+            <a href="#" class="btn btn-outline-primary button remove">{__('cancelWithIcon')}</a>
+            <a href="#" class="btn btn-primary button add">{__('save')}</a>
         </div>
     </fieldset>
 </div>

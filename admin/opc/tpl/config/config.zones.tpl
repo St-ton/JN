@@ -8,59 +8,43 @@
         <label for="config-{$propname}">{$propdesc.label}</label>
         <div style="position: relative">
             <img src="{$src}" alt="Banner Zones"
-                 id="banner-image-{$propname}" class="img-responsive">
+                 id="banner-image-{$propname}" class="img-fluid">
             <div id="banner-zones-{$propname}" class="banner-zones"></div>
         </div>
     </div>
 
     <div class="form-group">
-        <button type="button" class="btn btn-primary" id="banner-add-zone">{__('zoneNew')}</button>
-        <button type="button" class="btn btn-danger" id="banner-del-zone" style="display: none">
+        <button type="button" class="opc-btn-primary opc-medium-btn" id="banner-add-zone">{__('zoneNew')}</button>
+        <button type="button" class="opc-btn-secondary opc-medium-btn" id="banner-del-zone" style="display: none">
             {__('zoneDelete')}
         </button>
     </div>
 
-    <div id="zone-props-{$propname}" style="display: none">
-        <div class="form-group">
-            <div class="input-group">
-                <label for="zone-title-{$propname}" class="sr-only">{__('title')}</label>
-                <span class="input-group-addon">{__('title')}</span>
-                <input type="text" class="form-control" id="zone-title-{$propname}">
+    <div id="zone-props-{$propname}" style="display: none" class="zone-props">
+        <div class="row">
+            <div class="col-6">
+                <input type="text" class="form-control" id="zone-title-{$propname}" placeholder="{__('title')}">
+            </div>
+            <div class="col-6">
+                <input type="text" class="form-control" id="zone-url-{$propname}" placeholder="{__('url')}">
             </div>
         </div>
-        <div class="form-group">
-            <div class="input-group">
-                <label for="zone-desc-{$propname}" class="sr-only">{__('description')}</label>
-                <span class="input-group-addon">{__('description')}</span>
-                <textarea class="form-control" id="zone-desc-{$propname}"></textarea>
+        <div class="row">
+            <div class="col-6">
+                <input type="text" class="form-control" id="zone-class-{$propname}" placeholder="{__('cssClass')}">
+            </div>
+            <div class="col-6">
+                <div class="input-group">
+                    <input type="text" class="form-control" id="zone-product-{$propname}" placeholder="{__('products')}">
+                    <div class="input-group-append">
+                        <button type="button" class="btn primary" id="banner-del-product">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
-        <div class="form-group">
-            <div class="input-group">
-                <label for="zone-url-{$propname}" class="sr-only">{__('url')}</label>
-                <span class="input-group-addon">{__('url')}</span>
-                <input type="text" class="form-control" id="zone-url-{$propname}">
-            </div>
-        </div>
-        <div class="form-group">
-            <div class="input-group">
-                <label for="zone-class-{$propname}" class="sr-only">{__('cssClass')}</label>
-                <span class="input-group-addon">{__('cssClass')}</span>
-                <input type="text" class="form-control" id="zone-class-{$propname}">
-            </div>
-        </div>
-        <div class="form-group">
-            <div class="input-group">
-                <label for="zone-product-{$propname}" class="sr-only">{__('products')}</label>
-                <span class="input-group-addon">{__('products')}</span>
-                <input type="text" class="form-control" id="zone-product-{$propname}">
-                <span class="input-group-btn">
-                    <button type="button" class="btn btn-sm btn-danger" id="banner-del-product">
-                        <i class="fa fa-times"></i>
-                    </button>
-                </span>
-            </div>
-        </div>
+        <textarea class="form-control" id="zone-desc-{$propname}" placeholder="{__('description')}"></textarea>
     </div>
 </div>
 

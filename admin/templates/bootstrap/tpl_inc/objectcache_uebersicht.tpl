@@ -1,6 +1,6 @@
 {include file='tpl_inc/seite_header.tpl' cTitel=__('objectcache') cBeschreibung=__('objectcacheDesc') cDokuURL=__('objectcacheURL')}
 
-<div id="content" class="container-fluid">
+<div id="content">
     <div class="tabber">
         <div class="tabbertab{if $tab === 'clearall'} tabbertabdefault{/if}">
             <h2>Cache leeren</h2>
@@ -10,7 +10,7 @@
             <form method="post" action="objectcache.php">
                 {$jtl_token}
                 <input name="a" type="hidden" value="clearAll" />
-                <button name="submit" type="submit" value="Kompletten Cache löschen" class="btn btn-primary"><i class="fa fa-trash"></i> Kompletten Cache löschen</button>
+                <button name="submit" type="submit" value="Kompletten Cache löschen" class="btn btn-primary"><i class="fas fa-trash-alt"></i> Kompletten Cache löschen</button>
             </form>
         </div>
 
@@ -41,7 +41,7 @@
                         {getHelpDesc cDesc=$setting->cBeschreibung}
                     {/if}
                 {if $setting->cInputTyp === 'selectbox'}
-                    <select name="{$setting->cWertName}" id="{$setting->cWertName}" class="combo">
+                    <select name="{$setting->cWertName}" id="{$setting->cWertName}" class="custom-select combo">
                     {foreach $setting->ConfWerte as $wert}
                         <option value="{$wert->cWert}" {if $setting->gesetzterWert == $wert->cWert}selected{/if}>{$wert->cName}</option>
                     {/foreach}

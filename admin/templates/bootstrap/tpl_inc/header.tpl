@@ -35,97 +35,90 @@
         $.fn.bootstrapBtn = bootstrapButton;
         setJtlToken('{$smarty.session.jtl_token}');
     </script>
-    <script type="text/javascript" src="{$URL_SHOP}/{$PFAD_ADMIN}{$currentTemplateDir}js/fileinput/fileinput_locale_{$language}.js"></script>
+
+    <script type="text/javascript"
+            src="{$URL_SHOP}/{$PFAD_ADMIN}{$currentTemplateDir}js/fileinput/locales/{$language|mb_substr:0:2}.js"></script>
+    <script type="module" src="{$URL_SHOP}/{$PFAD_ADMIN}{$currentTemplateDir}js/app/app.js"></script>
+    {include file='snippets/selectpicker.tpl'}
 </head>
 <body>
 {if $account !== false && isset($smarty.session.loginIsValid) && $smarty.session.loginIsValid === true}
     {getCurrentPage assign='currentPage'}
-    <div class="backend-wrapper container-fluid{if $currentPage === 'index' || $currentPage === 'status'} dashboard{/if}">
+    <div class="spinner"></div>
+    <div id="page-wrapper" class="backend-wrapper hidden disable-transitions{if $currentPage === 'index' || $currentPage === 'status'} dashboard{/if}">
         {include file='tpl_inc/backend_sidebar.tpl'}
-        <div class="backend-main">
-            <nav class="backend-navbar">
-                <ul class="backend-navbar-left">
-                    <li class="dropdown">
-                        {include file='tpl_inc/backend_search.tpl'}
-                    </li>
-                </ul>
-                <ul class="backend-navbar-right">
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle parent" data-toggle="dropdown" title="{__('help')}">
-                            <i class="fa fa-question-circle"></i>
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-right">
-                            <li>
-                                <a href="https://jtl-url.de/shopschritte" target="_blank" rel="noopener">
+        <div class="backend-main sidebar-offset">
+            <div id="topbar" class="backend-navbar row mx-0 align-items-center topbar flex-nowrap">
+                <div class="col search">
+                    {include file='tpl_inc/backend_search.tpl'}
+                </div>
+                <div class="col-auto ml-auto px-2">
+                    <ul class="nav align-items-center">
+                        <li class="nav-item dropdown mr-3" id="favs-drop">
+                            {include file="tpl_inc/favs_drop.tpl"}
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a href="#" class="nav-link text-dark-gray px-2" data-toggle="dropdown">
+                                <span class="fal fa-map-marker-question fa-fw"></span>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right">
+                                <span class="dropdown-header">Hilfecenter</span>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item" href="https://jtl-url.de/shopschritte" target="_blank" rel="noopener">
                                     {__('firstSteps')}
                                 </a>
-                                <a href="https://jtl-url.de/shopguide" target="_blank" rel="noopener">
+                                <a class="dropdown-item" href="https://jtl-url.de/shopguide" target="_blank" rel="noopener">
                                     {__('jtlGuide')}
                                 </a>
-                                <a href="https://forum.jtl-software.de" target="_blank" rel="noopener">
+                                <a class="dropdown-item" href="https://forum.jtl-software.de" target="_blank" rel="noopener">
                                     {__('jtlForum')}
                                 </a>
-                                <a href="https://www.jtl-software.de/Training" target="_blank" rel="noopener">
+                                <a class="dropdown-item" href="https://www.jtl-software.de/Training" target="_blank" rel="noopener">
                                     {__('training')}
                                 </a>
-                                <a href="https://www.jtl-software.de/Servicepartner" target="_blank" rel="noopener">
+                                <a class="dropdown-item" href="https://www.jtl-software.de/Servicepartner" target="_blank" rel="noopener">
                                     {__('servicePartners')}
                                 </a>
-                            </li>
-                        </ul>
-                    </li>
-                    {if $currentPage === 'index'}
-                        <li class="dropdown">
-                            <a href="#" class="dropdown-toggle parent btn-toggle" data-toggle="dropdown">
-                                <i class="fa fa-gear"></i>
-                            </a>
-                            <ul class="dropdown-menu dropdown-menu-right">
-                                <li class="widget-selector-menu">
-                                    {include file='tpl_inc/widget_selector.tpl' oAvailableWidget_arr=$oAvailableWidget_arr}
-                                </li>
-                            </ul>
+                            </div>
                         </li>
-                    {/if}
-                    <li class="dropdown" id="favs-drop">{include file="tpl_inc/favs_drop.tpl"}</li>
-                    <li class="dropdown" id="notify-drop">{include file="tpl_inc/notify_drop.tpl"}</li>
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle parent btn-toggle" data-toggle="dropdown">
-                            <i class="fa fa-language"></i>
-                            {$languageName}
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-right">
-                            {foreach $languages as $tag => $langName}
-                                {if $language !== $tag}
-                                    <li>
-                                        <a href="{strip}benutzerverwaltung.php
+                        <li class="nav-item dropdown" id="notify-drop">{include file="tpl_inc/notify_drop.tpl"}</li>
+                        <li class="nav-item dropdown">
+                            <a href="#" class="nav-link dropdown-toggle parent btn-toggle" data-toggle="dropdown">
+                                <i class="fal fa-language d-sm-none"></i> <span class="d-sm-block d-none">{$languageName}</span>
+                            </a>
+                            <div class="dropdown-menu dropdown-menu-right">
+                                {foreach $languages as $tag => $langName}
+                                    {if $language !== $tag}
+                                        <a class="dropdown-item" href="{strip}benutzerverwaltung.php
                                                 ?token={$smarty.session.jtl_token}
                                                 &action=quick_change_language
                                                 &language={$tag}{/strip}">
                                             {$langName}
                                         </a>
-                                    </li>
-                                {/if}
-                            {/foreach}
-                        </ul>
-                    </li>
-                    <li class="dropdown avatar">
-                        <a href="#" class="dropdown-toggle parent" data-toggle="dropdown">
-                            <img src="{gravatarImage email=$account->cMail}" title="{$account->cMail}" class="img-circle">
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-right">
-                            <li>
-                                <a class="link-shop" href="{$URL_SHOP}" title="Zum Shop">
-                                    <i class="fa fa-shopping-cart"></i> {__('goShop')}
-                                </a>
-                                <a class="link-logout" href="logout.php?token={$smarty.session.jtl_token}"
-                                   title="{__('logout')}">
-                                    <i class="fa fa-sign-out"></i> {__('logout')}
-                                </a>
-                            </li>
-                        </ul>
-                    </li>
-                </ul>
-            </nav>
+                                    {/if}
+                                {/foreach}
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-auto border-left border-dark-gray">
+                    <div class="dropdown avatar">
+                        <button class="btn btn-link text-decoration-none dropdown-toggle p-0" data-toggle="dropdown">
+                            <img src="{gravatarImage email=$account->cMail}" class="img-circle">
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-right">
+                            <a class="dropdown-item link-shop" href="{$URL_SHOP}" title="Zum Shop">
+                                <i class="fa fa-shopping-cart"></i> {__('goShop')}
+                            </a>
+                            <a class="dropdown-item link-logout" href="logout.php?token={$smarty.session.jtl_token}"
+                               title="{__('logout')}">
+                                <i class="fa fa-sign-out"></i> {__('logout')}
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
             <div class="backend-content" id="content_wrapper">
 
             {include file='snippets/alert_list.tpl'}

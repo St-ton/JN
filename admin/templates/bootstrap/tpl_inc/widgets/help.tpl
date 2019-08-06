@@ -9,7 +9,7 @@
         </div>
         <div class="col-auto">
             <a href="https://forum.jtl-software.de" target="_blank" rel="noopener">
-                <i class="fa fa-comments-o text-four-times text-info"></i>
+                <i class="far fa-comments text-four-times text-info"></i>
                 <h4>{__('communityForum')}</h4>
             </a>
         </div>

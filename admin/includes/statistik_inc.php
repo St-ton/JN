@@ -516,7 +516,7 @@ function prepareLineChartStats($stats, $name, $axis, $mod = 1)
         $x    = $axis->x;
         foreach ($stats as $j => $stat) {
             $obj    = new stdClass();
-            $obj->y = (float)$stat->$y;
+            $obj->y = round((float)$stat->$y, 2, 1);
 
             if ($j % $mod === 0) {
                 $chart->addAxis($stat->$x);
@@ -570,7 +570,7 @@ function preparePieChartStats($stats, $name, $axis, $maxEntries = 6)
         }
 
         foreach ($stats as $stat) {
-            $value  = (float)$stat->$y;
+            $value  = round((float)$stat->$y, 2, 1);
             $data[] = [$stat->$x, $value];
         }
 
@@ -600,7 +600,7 @@ function prepareLineChartStatsMulti($series, $axis, $mod = 1)
                 $x    = $axis->x;
                 foreach ($Serie as $j => $stat) {
                     $obj    = new stdClass();
-                    $obj->y = (float)$stat->$y;
+                    $obj->y = round((float)$stat->$y, 2, 1);
 
                     if ($j % $mod === 0) {
                         $chart->addAxis($stat->$x);
@@ -612,7 +612,7 @@ function prepareLineChartStatsMulti($series, $axis, $mod = 1)
                 }
 
                 $colors = GetLineChartColors($i);
-                $chart->addSerie($Name, $data, $colors[0], $colors[1]);
+                $chart->addSerie($Name, $data, $colors[0], $colors[1], $colors[2]);
                 $chart->memberToJSON();
             }
 
@@ -630,8 +630,8 @@ function prepareLineChartStatsMulti($series, $axis, $mod = 1)
 function GetLineChartColors($number)
 {
     $colors = [
-        ['#EDEDED', '#EDEDED'],
-        ['#989898', '#F78D23']
+        ['#435a6b', '#a168f2', '#435a6b'],
+        ['#5cbcf6', '#5cbcf6', '#5cbcf6']
     ];
 
     return $colors[$number] ?? $colors[0];

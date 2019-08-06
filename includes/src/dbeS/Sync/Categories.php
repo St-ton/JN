@@ -12,6 +12,7 @@ use JTL\dbeS\Starter;
 use JTL\Helpers\Seo;
 use JTL\Language\LanguageHelper;
 use stdClass;
+use function Functional\map;
 
 /**
  * Class Categories
@@ -25,6 +26,7 @@ final class Categories extends AbstractSync
      */
     public function handle(Starter $starter)
     {
+        $categoryIDs = [];
         $this->db->query('START TRANSACTION', ReturnType::DEFAULT);
         foreach ($starter->getXML() as $i => $item) {
             [$file, $xml] = [\key($item), \reset($item)];
@@ -34,9 +36,12 @@ final class Categories extends AbstractSync
             if (\strpos($file, 'katdel.xml') !== false) {
                 $this->handleDeletes($xml);
             } else {
-                $this->handleInserts($xml);
+                $categoryIDs[] = $this->handleInserts($xml);
             }
         }
+        $this->cache->flushTags(map($categoryIDs, function ($categoryID) {
+            return \CACHING_GROUP_CATEGORY . '_' . $categoryID;
+        }));
         $lastJob = new LastJob($this->db, $this->logger);
         $lastJob->run(\LASTJOBS_KATEGORIEUPDATE, 'Kategorien_xml');
         $this->db->query('COMMIT', ReturnType::DEFAULT);
@@ -49,28 +54,27 @@ final class Categories extends AbstractSync
      */
     private function handleDeletes(array $xml): void
     {
-        if (!isset($xml['del_kategorien']['kKategorie'])) {
+        $source = $xml['del_kategorien']['kKategorie'] ?? null;
+        if ($source === null) {
             return;
         }
-        if (!\is_array($xml['del_kategorien']['kKategorie']) && (int)$xml['del_kategorien']['kKategorie'] > 0) {
-            $xml['del_kategorien']['kKategorie'] = [$xml['del_kategorien']['kKategorie']];
+        if (!\is_array($source) && \is_numeric($source)) {
+            $source = [$source];
         }
-        if (!\is_array($xml['del_kategorien']['kKategorie'])) {
+        if (!\is_array($source)) {
             return;
         }
-        foreach ($xml['del_kategorien']['kKategorie'] as $categoryID) {
-            $categoryID = (int)$categoryID;
-            if ($categoryID > 0) {
-                $this->deleteCategory($categoryID);
-                \executeHook(\HOOK_KATEGORIE_XML_BEARBEITEDELETES, ['kKategorie' => $categoryID]);
-            }
+        foreach (\array_filter(\array_map('\intval', $source)) as $categoryID) {
+            $this->deleteCategory($categoryID);
+            \executeHook(\HOOK_KATEGORIE_XML_BEARBEITEDELETES, ['kKategorie' => $categoryID]);
         }
     }
 
     /**
      * @param array $xml
+     * @return int
      */
-    private function handleInserts(array $xml): void
+    private function handleInserts(array $xml): int
     {
         $category                 = new stdClass();
         $category->kKategorie     = 0;
@@ -82,29 +86,25 @@ final class Categories extends AbstractSync
         if (!$category->kKategorie) {
             $this->logger->error('kKategorie fehlt! XML: ' . \print_r($xml, true));
 
-            return;
+            return 0;
         }
         if (!\is_array($xml['tkategorie'])) {
-            return;
+            return 0;
         }
         // Altes SEO merken => falls sich es bei der aktualisierten Kategorie ändert => Eintrag in tredirect
         $oldData    = $this->db->queryPrepared(
             'SELECT cSeo, lft, rght, nLevel
                 FROM tkategorie
                 WHERE kKategorie = :categoryID',
-            [
-                'categoryID' => $category->kKategorie,
-            ],
+            ['categoryID' => $category->kKategorie],
             ReturnType::SINGLE_OBJECT
         );
-        $seoData    = $this->getSeoFromDB($category->kKategorie, 'kKategorie', null, 'kSprache');
         $categories = $this->mapper->mapArray($xml, 'tkategorie', 'mKategorie');
         if ($categories[0]->kKategorie > 0) {
             if (!$categories[0]->cSeo) {
                 $categories[0]->cSeo = Seo::getFlatSeoPath($categories[0]->cName);
             }
-            $categories[0]->cSeo                  = Seo::getSeo($categories[0]->cSeo);
-            $categories[0]->cSeo                  = Seo::checkSeo($categories[0]->cSeo);
+            $categories[0]->cSeo                  = Seo::checkSeo(Seo::getSeo($categories[0]->cSeo));
             $categories[0]->dLetzteAktualisierung = 'NOW()';
             $categories[0]->lft                   = $oldData->lft ?? 0;
             $categories[0]->rght                  = $oldData->rght ?? 0;
@@ -120,58 +120,77 @@ final class Categories extends AbstractSync
                         WHERE tkategorie.kKategorie = :categoryID
                             AND tsprache.cStandard = 'Y'
                             AND tkategorie.cSeo != ''
-                ON DUPLICATE KEY UPDATE
-                    cSeo = (SELECT tkategorie.cSeo
-                            FROM tkategorie, tsprache
-                            WHERE tkategorie.kKategorie = :categoryID
-                                    AND tsprache.cStandard = 'Y'
-                                    AND tkategorie.cSeo != '')",
-                [
-                    'categoryID' => (int)$categories[0]->kKategorie
-                ],
+                    ON DUPLICATE KEY UPDATE cSeo = (SELECT tkategorie.cSeo
+                        FROM tkategorie, tsprache
+                        WHERE tkategorie.kKategorie = :categoryID
+                            AND tsprache.cStandard = 'Y'
+                            AND tkategorie.cSeo != '')",
+                ['categoryID' => (int)$categories[0]->kKategorie],
                 ReturnType::DEFAULT
             );
 
             \executeHook(\HOOK_KATEGORIE_XML_BEARBEITEINSERT, ['oKategorie' => $categories[0]]);
         }
+        $this->setLanguages($xml, $category->kKategorie, $categories[0]);
+        $this->setCustomerGroups($xml, $category->kKategorie);
+        $this->setCategoryDiscount($category->kKategorie);
+        $this->setVisibility($xml, $category->kKategorie);
+        $this->setAttributes($xml, $category->kKategorie);
+
+        return $category->kKategorie;
+    }
+
+    /**
+     * @param array  $xml
+     * @param int    $categoryID
+     * @param object $category
+     */
+    private function setLanguages(array $xml, int $categoryID, $category): void
+    {
+        $seoData      = $this->getSeoFromDB($categoryID, 'kKategorie', null, 'kSprache');
         $catLanguages = $this->mapper->mapArray($xml['tkategorie'], 'tkategoriesprache', 'mKategorieSprache');
         $langIDs      = [];
         $allLanguages = LanguageHelper::getAllLanguages(1);
-        $lCount       = \count($catLanguages);
-        for ($i = 0; $i < $lCount; ++$i) {
+        foreach ($catLanguages as $language) {
             // Sprachen die nicht im Shop vorhanden sind überspringen
-            if (!LanguageHelper::isShopLanguage($catLanguages[$i]->kSprache, $allLanguages)) {
+            if (!LanguageHelper::isShopLanguage($language->kSprache, $allLanguages)) {
                 continue;
             }
-            if (!$catLanguages[$i]->cSeo) {
-                $catLanguages[$i]->cSeo = $catLanguages[$i]->cName;
+            if (!$language->cSeo) {
+                $language->cSeo = $language->cName;
             }
-            if (!$catLanguages[$i]->cSeo) {
-                $catLanguages[$i]->cSeo = $categories[0]->cSeo;
+            if (!$language->cSeo) {
+                $language->cSeo = $category->cSeo;
             }
-            if (!$catLanguages[$i]->cSeo) {
-                $catLanguages[$i]->cSeo = $categories[0]->cName;
+            if (!$language->cSeo) {
+                $language->cSeo = $category->cName;
             }
-            $catLanguages[$i]->cSeo = Seo::getSeo($catLanguages[$i]->cSeo);
-            $catLanguages[$i]->cSeo = Seo::checkSeo($catLanguages[$i]->cSeo);
-            $this->insertOnExistUpdate('tkategoriesprache', [$catLanguages[$i]], ['kKategorie', 'kSprache']);
+            $language->cSeo = Seo::checkSeo(Seo::getSeo($language->cSeo));
+            $this->insertOnExistUpdate('tkategoriesprache', [$language], ['kKategorie', 'kSprache']);
 
             $ins           = new stdClass();
-            $ins->cSeo     = $catLanguages[$i]->cSeo;
+            $ins->cSeo     = $language->cSeo;
             $ins->cKey     = 'kKategorie';
-            $ins->kKey     = $catLanguages[$i]->kKategorie;
-            $ins->kSprache = $catLanguages[$i]->kSprache;
+            $ins->kKey     = $language->kKategorie;
+            $ins->kSprache = $language->kSprache;
             $this->db->upsert('tseo', $ins);
-            if (isset($seoData[$catLanguages[$i]->kSprache])) {
+            if (isset($seoData[$language->kSprache])) {
                 $this->checkDbeSXmlRedirect(
-                    $seoData[$catLanguages[$i]->kSprache]->cSeo,
-                    $catLanguages[$i]->cSeo
+                    $seoData[$language->kSprache]->cSeo,
+                    $language->cSeo
                 );
             }
-            $langIDs[] = (int)$catLanguages[$i]->kSprache;
+            $langIDs[] = (int)$language->kSprache;
         }
-        $this->deleteByKey('tkategoriesprache', ['kKategorie' => $category->kKategorie], 'kSprache', $langIDs);
+        $this->deleteByKey('tkategoriesprache', ['kKategorie' => $categoryID], 'kSprache', $langIDs);
+    }
 
+    /**
+     * @param array $xml
+     * @param int   $categoryID
+     */
+    private function setCustomerGroups(array $xml, int $categoryID): void
+    {
         $pkValues = $this->insertOnExistsUpdateXMLinDB(
             $xml['tkategorie'],
             'tkategoriekundengruppe',
@@ -180,25 +199,18 @@ final class Categories extends AbstractSync
         );
         $this->deleteByKey(
             'tkategoriekundengruppe',
-            ['kKategorie' => $category->kKategorie],
+            ['kKategorie' => $categoryID],
             'kKundengruppe',
             $pkValues['kKundengruppe']
         );
-        $this->setCategoryDiscount((int)$categories[0]->kKategorie);
+    }
 
-        $pkValues = $this->insertOnExistsUpdateXMLinDB(
-            $xml['tkategorie'],
-            'tkategoriesichtbarkeit',
-            'mKategorieSichtbarkeit',
-            ['kKundengruppe', 'kKategorie']
-        );
-        $this->deleteByKey(
-            'tkategoriesichtbarkeit',
-            ['kKategorie' => $category->kKategorie],
-            'kKundengruppe',
-            $pkValues['kKundengruppe']
-        );
-
+    /**
+     * @param array $xml
+     * @param int   $categoryID
+     */
+    private function setAttributes(array $xml, int $categoryID): void
+    {
         // Wawi sends category attributes in tkategorieattribut (function attributes)
         // and tattribut (localized attributes) nodes
         $pkValues   = $this->insertOnExistsUpdateXMLinDB(
@@ -224,10 +236,30 @@ final class Categories extends AbstractSync
                 FROM tkategorieattribut
                 LEFT JOIN tkategorieattributsprache
                     ON tkategorieattributsprache.kAttribut = tkategorieattribut.kKategorieAttribut
-                WHERE tkategorieattribut.kKategorie = :categoryID' .(\count($attribPKs) > 0 ? '
+                WHERE tkategorieattribut.kKategorie = :categoryID' . (\count($attribPKs) > 0 ? '
                     AND tkategorieattribut.kKategorieAttribut NOT IN (' . \implode(', ', $attribPKs) . ')' : ''),
-            ['categoryID' => $category->kKategorie],
+            ['categoryID' => $categoryID],
             ReturnType::DEFAULT
+        );
+    }
+
+    /**
+     * @param array $xml
+     * @param int   $categoryID
+     */
+    private function setVisibility(array $xml, int $categoryID): void
+    {
+        $pkValues = $this->insertOnExistsUpdateXMLinDB(
+            $xml['tkategorie'],
+            'tkategoriesichtbarkeit',
+            'mKategorieSichtbarkeit',
+            ['kKundengruppe', 'kKategorie']
+        );
+        $this->deleteByKey(
+            'tkategoriesichtbarkeit',
+            ['kKategorie' => $categoryID],
+            'kKundengruppe',
+            $pkValues['kKundengruppe']
         );
     }
 
@@ -310,6 +342,5 @@ final class Categories extends AbstractSync
             ['categoryID' => $categoryID],
             ReturnType::DEFAULT
         );
-        $this->cache->flushTags([\CACHING_GROUP_CATEGORY . '_' . $categoryID]);
     }
 }

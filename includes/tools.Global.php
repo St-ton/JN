@@ -15,6 +15,7 @@ use JTL\Checkout\Kupon;
 use JTL\Checkout\Versandart;
 use JTL\Checkout\Zahlungsart;
 use JTL\Customer\Kunde;
+use JTL\GeneralDataProtection\IpAnonymizer;
 use JTL\Helpers\Cart;
 use JTL\Helpers\Category;
 use JTL\Helpers\Date;
@@ -206,7 +207,7 @@ function writeLog($logfile, $entry, $level)
         fwrite(
             $logfile,
             "\n[" . date('m.d.y H:i:s') . '] ' .
-            '[' . (new \JTL\GeneralDataProtection\IpAnonymizer(Request::getRealIP()))->anonymize() . "]\n" .
+            '[' . (new IpAnonymizer(Request::getRealIP()))->anonymize() . "]\n" .
             $entry
         );
         fclose($logfile);
@@ -1822,10 +1823,10 @@ function gibKeyArrayFuerKeyString($cKeys, $seperator)
 function setzeMerkmalFilter($filter = [])
 {
     trigger_error(
-        __FUNCTION__ . ' is deprecated. Use ProductFilter::initAttributeFilter() instead.',
+        __FUNCTION__ . ' is deprecated. Use ProductFilter::initCharacteristicFilter() instead.',
         E_USER_DEPRECATED
     );
-    return JTL\Filter\ProductFilter::initAttributeFilter($filter);
+    return JTL\Filter\ProductFilter::initCharacteristicFilter($filter);
 }
 
 /**

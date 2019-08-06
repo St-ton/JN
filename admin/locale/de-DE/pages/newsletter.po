@@ -215,6 +215,9 @@ msgstr "Die Newsletter-Vorlage %s wurde erfolgreich gespeichert."
 msgid "successNewsletterPrepared"
 msgstr "Der Newsletter %s wurde zum Versenden vorbereitet."
 
+msgid "newsletterCronjobNotFound"
+msgstr "Der Newsletter cron-job wurde nicht gefunden. Es ist kein Newsletterversand möglich."
+
 msgid "errorTestTemplateEmpty"
 msgstr "Die Empfänger-Adresse für den Test ist leer."
 

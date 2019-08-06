@@ -69,13 +69,13 @@ class Heading extends Portlet
                 ],
                 'default'    => '1',
                 'required'   => true,
-                'dspl_width' => 50,
+                'width'      => 17,
             ],
             'text'  => [
                 'label'      => __('Text'),
                 'type'       => InputType::TEXT,
                 'default'    => __('Heading'),
-                'dspl_width' => 50,
+                'width'      => 84,
             ],
         ];
     }

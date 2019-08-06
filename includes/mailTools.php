@@ -770,14 +770,12 @@ function getPDFAttachments($pdfString, $nameString)
     $pdfData   = Text::parseSSK(trim($pdfString, ";\t\n\r\0"));
     $names     = Text::parseSSK(trim($nameString, ";\t\n\r\0"));
     $uploadDir = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_EMAILPDFS;
-    if (is_array($pdfData)) {
-        foreach ($pdfData as $key => $pdfFile) {
-            if (!empty($pdfFile) && file_exists($uploadDir . $pdfFile)) {
-                $result[] = (object)[
-                    'fileName'   => $pdfFile,
-                    'publicName' => $names[$key] ?? $pdfFile,
-                ];
-            }
+    foreach ($pdfData as $key => $pdfFile) {
+        if (!empty($pdfFile) && file_exists($uploadDir . $pdfFile)) {
+            $result[] = (object)[
+                'fileName'   => $pdfFile,
+                'publicName' => $names[$key] ?? $pdfFile,
+            ];
         }
     }
 

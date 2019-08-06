@@ -336,3 +336,33 @@ msgstr "vertical"
 
 msgid "horizontal"
 msgstr "horizontal"
+
+msgid "grid"
+msgstr "Gitter"
+
+msgid "alternate"
+msgstr "Abwechselnd"
+
+msgid "columns"
+msgstr "Spalten"
+
+msgid "noAction"
+msgstr "No Action"
+
+msgid "lightbox"
+msgstr "Lightbox"
+
+msgid "linked"
+msgstr "Link"
+
+msgid "mobileXS"
+msgstr "Mobile (XS)"
+
+msgid "tabletSM"
+msgstr "Tablet (SM)"
+
+msgid "desktopMD"
+msgstr "Desktop (MD)"
+
+msgid "desktopLG"
+msgstr "Large Desktop (LG)"

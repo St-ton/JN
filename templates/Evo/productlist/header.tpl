@@ -52,9 +52,9 @@
             <div class="item_desc custom_content">{$oNavigationsinfo->getManufacturer()->cBeschreibung}</div>
         {/if}
         {if $Einstellungen.navigationsfilter.merkmalwert_beschreibung_anzeigen === 'Y'
-            && $oNavigationsinfo->getAttributeValue() !== null
-            && $oNavigationsinfo->getAttributeValue()->cBeschreibung|strlen > 0}
-            <div class="item_desc custom_content">{$oNavigationsinfo->getAttributeValue()->cBeschreibung}</div>
+            && $oNavigationsinfo->getCharacteristicValue() !== null
+            && $oNavigationsinfo->getCharacteristicValue()->cBeschreibung|strlen > 0}
+            <div class="item_desc custom_content">{$oNavigationsinfo->getCharacteristicValue()->cBeschreibung}</div>
         {/if}
     </div>
 {/if}

@@ -1,105 +1,117 @@
-<h2>{__('availableFilters')}</h2>
-<div id="filters-available"></div>
+<div id="filter-{$propname}" class="product-filter-config">
+    <input type="hidden" id="config-{$propname}" name="{$propname}" value="" data-prop-type="json">
 
-<h2>{__('activeFilters')}</h2>
-<div id="filters-enabled"></div>
+    <div class="active-filters">
+        <label>{__('activeFilters')}</label>
+        <div class="filters-enabled"></div>
+    </div>
 
-<input type="hidden" id="config-{$propname}" name="{$propname}" value="{$propval|json_encode|htmlentities}"
-       data-prop-type="json">
+    <div>
+        <div class="available-filters"></div>
+    </div>
 
-<script>
-    var $filtersAvailable = $('#filters-available');
-    var $filtersEnabled   = $('#filters-enabled');
+    <script>
+        $(() => {
+            let root          = $('#filter-{$propname}');
+            let configInput   = $('#config-{$propname}');
+            let activeSection = root.find('.active-filters');
+            let enabledList   = root.find('.filters-enabled');
+            let availableList = root.find('.available-filters');
+            let searcherInput = $('#config-{$propdesc.searcher}');
+            let filters       = {$propval|json_encode};
+            let lastRequest   = null;
 
-    enableFilters(JSON.parse($('[name="{$propname}"]').val()));
-    opc.setConfigSaveCallback(saveFilterProperties);
-
-    function enableFilters(filters)
-    {
-        filters.forEach(enableFilter.bind(this, false));
-        updateFiltersAvailable();
-    }
-
-    function enableFilter(doPostUpdate, filter)
-    {
-        $('<button class="btn btn-xs btn-danger" type="button">')
-            .data('filter', filter)
-            .html(filter.name)
-            .click(disableFilter)
-            .appendTo($filtersEnabled);
-
-        if(doPostUpdate) {
-            updateFiltersAvailable();
-        }
-    }
-
-    function disableFilter()
-    {
-        $(this).remove();
-        updateFiltersAvailable();
-    }
-
-    function updateFiltersAvailable()
-    {
-        showFilterLoaderSpinner();
-        loadFiltersAvailable();
-    }
-
-    function showFilterLoaderSpinner()
-    {
-        $filtersAvailable.html('<div><i class="fa fa-spinner fa-pulse fa-2x"></i></div>');
-    }
-
-    function loadFiltersAvailable()
-    {
-        opc.io.getFilterOptions(getFiltersEnabled()).then(renderFiltersAvailable);
-    }
-
-    function getFiltersEnabled()
-    {
-        return $filtersEnabled.find('button').map(getElementFilterData).toArray();
-    }
-
-    function getElementFilterData()
-    {
-        return $(this).data('filter');
-    }
-
-    function renderFiltersAvailable(filters)
-    {
-        clearFiltersAvailable();
-
-        if(filters.length === 0) {
-            $filtersAvailable.html('{__('noMoreFilters')}');
-        } else {
-            filters.forEach(function(filter) {
-                if (filter.options.length > 0) {
-                    var $filterSubCat = $('<div>').append('<h3>' + filter.name + '</h3>').appendTo($filtersAvailable);
-
-                    filter.options.forEach(function(option) {
-                        addFilterAvailableButton(option, $filterSubCat);
+            searcherInput.on('input', () => {
+                let searchTerm = searcherInput.val().toLowerCase();
+                root.find('.filters-section').each((i, sectionItem) => {
+                    let count = 0;
+                    sectionItem = $(sectionItem);
+                    sectionItem.find('.filter-option').each((i, item) => {
+                        item = $(item);
+                        let text = item.text().toLowerCase();
+                        if (text.indexOf(searchTerm) === -1) {
+                            item.hide();
+                        } else {
+                            item.show();
+                            count++;
+                        }
                     });
+                    if(count === 0) {
+                        sectionItem.find('.no-options').show()
+                    } else {
+                        sectionItem.find('.no-options').hide()
+                    }
+                });
+            }).on('keydown', e => {
+                if (e.key === 'Escape') {
+                    e.stopPropagation();
                 }
             });
-        }
-    }
 
-    function clearFiltersAvailable()
-    {
-        $filtersAvailable.empty();
-    }
+            updateFilterList();
 
-    function addFilterAvailableButton(filter, target)
-    {
-        $('<button class="btn btn-xs btn-primary" type="button">')
-            .data('filter', filter)
-            .html(filter.name + ' (' + filter.count + ')')
-            .click(enableFilter.bind(this, true, filter))
-            .appendTo(target);
-    }
+            function updateFilterList()
+            {
+                configInput.val(JSON.stringify(filters));
+                enabledList.empty();
+                searcherInput.val('');
 
-    function saveFilterProperties()
-    {
-        $('[name="{$propname}"]').val(JSON.stringify(getFiltersEnabled()));
-    }
-</script>
+                filters.forEach(filter => {
+                    enabledList.append(
+                        $('<button type="button">' + filter.name + ' <i class="fas fa-trash-alt"></i></button>')
+                            .on('click', () => unselectFilter(filter))
+                    );
+                });
+
+                if (filters.length === 0) {
+                    activeSection.hide();
+                } else {
+                    if (filters.length > 1) {
+                        enabledList.prepend(
+                            $(
+                                '<button type="button" class="restore-all">' +
+                                'Alle zurücksetzen <i class="fas fa-trash-alt"></i></button>'
+                            ).on('click', resetAll)
+                        );
+                    }
+
+                    activeSection.show();
+                }
+
+                if (lastRequest) {
+                    lastRequest.jqxhr.abort();
+                }
+
+                root.find('button').prop('disabled', true);
+                lastRequest = opc.io.getFilterList('{$propname}', filters);
+
+                lastRequest.then(html => {
+                    availableList.html(html);
+                    root.find('.filter-option').each((i, optionBtn) => {
+                        optionBtn = $(optionBtn);
+                        optionBtn.on('click', () => selectFilter(optionBtn.data('filter')));
+                    });
+                    root.find('button').prop('disabled', false);
+                });
+            }
+
+            function selectFilter(filter)
+            {
+                filters.push(filter);
+                updateFilterList();
+            }
+
+            function unselectFilter(filter)
+            {
+                filters = filters.filter(elm => elm !== filter);
+                updateFilterList();
+            }
+
+            function resetAll()
+            {
+                filters = [];
+                updateFilterList();
+            }
+        });
+    </script>
+</div>

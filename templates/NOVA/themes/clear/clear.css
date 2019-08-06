@@ -15201,7 +15201,7 @@ ul.partlist-items {
   text-align: center;
 }
 .slick-slide img {
-  display: inherit;
+  display: block;
   margin: 0 auto;
 }
 
@@ -16810,21 +16810,10 @@ table caption {
   transform: rotateY(0deg);
 }
 
-.img-gallery {
-  margin-left: -4px;
-  margin-right: -4px;
-}
-.img-gallery .img-gallery-item {
-  overflow: hidden;
-  padding-right: 4px;
-  padding-left: 4px;
-  margin-bottom: 8px;
-}
-.img-gallery .img-gallery-item .img-gallery-btn {
-  display: block;
+.img-gallery-btn {
   position: relative;
 }
-.img-gallery .img-gallery-item .img-gallery-btn:after {
+.img-gallery-btn.img-gallery-active-btn:after {
   content: " ";
   opacity: 0;
   background-color: rgba(0, 0, 0, 0.75);
@@ -16835,10 +16824,10 @@ table caption {
   height: 100%;
   transition: all 0.5s ease-in-out 0s;
 }
-.img-gallery .img-gallery-item .img-gallery-btn:hover:after {
+.img-gallery-btn.img-gallery-active-btn:hover:after {
   opacity: 0.75;
 }
-.img-gallery .img-gallery-item .img-gallery-btn .img-gallery-zoom {
+.img-gallery-btn .img-gallery-zoom {
   opacity: 0;
   color: #fff;
   position: absolute;
@@ -16847,15 +16836,71 @@ table caption {
   transform: translate(-50%, -50%);
   transition: all 0.5s ease-in-out 0s;
 }
-.img-gallery .img-gallery-item .img-gallery-btn:hover .img-gallery-zoom {
+.img-gallery-btn.img-gallery-active-btn:hover .img-gallery-zoom {
   opacity: 1;
 }
+
+.img-gallery {
+  margin-left: -4px;
+  margin-right: -4px;
+}
+.img-gallery.img-gallery-grid .img-gallery-item .img-gallery-btn {
+  height: 0;
+  padding-top: 100%;
+}
+.img-gallery .img-gallery-item {
+  overflow: hidden;
+  padding-right: 4px;
+  padding-left: 4px;
+  margin-bottom: 8px;
+}
+.img-gallery .img-gallery-item .img-gallery-btn {
+  display: block;
+  width: 100%;
+  height: 220px;
+}
 .img-gallery .img-gallery-item .img-gallery-img {
+  display: block;
   height: 100%;
   width: 100%;
   object-fit: cover;
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
 }
 
+.gallery-columns {
+  columns: 1;
+  column-gap: 8px;
+  margin-bottom: 8px;
+}
+.gallery-columns .img-gallery-btn {
+  width: 100%;
+  display: block;
+  margin-bottom: 8px;
+}
+.gallery-columns .img-gallery-img {
+  width: 100%;
+  display: block;
+}
+
+@media (min-width: 576px) {
+  .gallery-columns {
+    columns: 2;
+  }
+}
+@media (min-width: 768px) {
+  .gallery-columns {
+    columns: 3;
+  }
+}
+@media (min-width: 1200px) {
+  .gallery-columns {
+    columns: 4;
+  }
+}
 .img-gallery-modal .modal-dialog {
   transform: scale(0.1);
   top: 50px;

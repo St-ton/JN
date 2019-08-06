@@ -71,13 +71,13 @@ abstract class OptinBase extends OptinFactory
     }
 
     /**
-     * @param $optinCode
+     * @param $optinCodeWithPrefix
      * @return Optin
      */
-    public function setCode(string $optinCode): self
+    public function setCode(string $optinCodeWithPrefix): self
     {
-        $this->actionPrefix = \substr($optinCode, 0, 2);
-        $this->optCode      = \substr($optinCode, 2);
+        $this->actionPrefix = \substr($optinCodeWithPrefix, 0, 2);
+        $this->optCode      = \substr($optinCodeWithPrefix, 2);
 
         return $this;
     }
@@ -96,6 +96,17 @@ abstract class OptinBase extends OptinFactory
         if (!empty($this->foundOptinTupel)) {
             $this->refData = \unserialize($this->foundOptinTupel->cRefData, ['OptinRefData']);
         }
+    }
+
+    /**
+     * @param string $implementationClass
+     * @return array
+     */
+    protected function loadOptinsByImplementation(string $implementationClass): array
+    {
+        $optins = $this->dbHandler->selectArray('toptin', 'kOptinClass', $implementationClass);
+
+        return $optins;
     }
 
     /**
@@ -130,5 +141,63 @@ abstract class OptinBase extends OptinFactory
         $newRow->cRefData    = \serialize($this->refData);
         $newRow->dCreated    = $this->nowDataTime->format('Y-m-d H:i:s');
         $this->dbHandler->insert('toptin', $newRow);
+    }
+
+    /**
+     * @throws \Exception
+     */
+    public function activateOptin(): void
+    {
+        $rowData = new \stdClass();
+        if (empty($this->foundOptinTupel->dActivated)) {
+            $rowData->dActivated = $this->nowDataTime->format('Y-m-d H:i:s');
+            $this->dbHandler->update('toptin', 'kOptinCode', $this->optCode, $rowData);
+        }
+    }
+
+    /**
+     * deactivate and cleanup this optin
+     */
+    public function deactivateOptin(): void
+    {
+        $this->finishOptin();
+    }
+
+    /**
+     * only move the optin-tupel to the history
+     */
+    public function finishOptin(): void
+    {
+        $newRow               = new \stdClass();
+        $newRow->kOptinCode   = $this->foundOptinTupel->kOptinCode;
+        $newRow->kOptinClass  = $this->foundOptinTupel->kOptinClass;
+        $newRow->cMail        = 'anonym'; // anonymized for history
+        $newRow->cRefData     = \serialize($this->refData->anonymized()); // anonymized for history
+        $newRow->dCreated     = $this->foundOptinTupel->dCreated;
+        $newRow->dActivated   = $this->foundOptinTupel->dActivated;
+        $newRow->dDeActivated = $this->nowDataTime->format('Y-m-d H:i:s');
+        foreach (\array_keys(\get_object_vars($newRow)) as $element) {
+            if (empty($newRow->$element)) {
+                unset($newRow->$element);
+            }
+        }
+        $this->dbHandler->insert('toptinhistory', $newRow);
+        $this->dbHandler->delete('toptin', 'kOptinCode', $this->foundOptinTupel->kOptinCode);
+    }
+
+    /**
+     * '$optins' is a array of objects, where each object must contain at least one field with a opt-in code
+     * (note: "bulkActivateOptins()" is dependent on the specified optin-implementation)
+     *
+     * @param array  $optins
+     * @param string $optCodeField
+     */
+    public function bulkDeleteOptins(array $optins, string $optCodeField): void
+    {
+        foreach ($optins as $singleOptin) {
+            $this->setCode($singleOptin->$optCodeField);
+            $this->loadOptin();
+            $this->deactivateOptin(); // "shift" to history
+        }
     }
 }

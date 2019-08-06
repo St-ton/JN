@@ -127,7 +127,6 @@ class ImageSlider extends Portlet
                 'label'      => __('images'),
                 'type'       => InputType::IMAGE_SET,
                 'default'    => [],
-                'useColumns' => false,
                 'useLinks'   => true,
                 'useTitles'  => true,
             ],

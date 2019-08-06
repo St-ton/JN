@@ -43,7 +43,7 @@ final class Orders extends AbstractSync
             } elseif (\strpos($file, 'storno_bestellung.xml') !== false) {
                 $this->handleCancelation($xml);
             } elseif (\strpos($file, 'reaktiviere_bestellung.xml') !== false) {
-                $this->handleReactivated($xml);
+                $this->handleReactivation($xml);
             } elseif (\strpos($file, 'ack_zahlungseingang.xml') !== false) {
                 $this->handlePaymentACK($xml);
             } elseif (\strpos($file, 'set_bestellung.xml') !== false) {
@@ -190,7 +190,7 @@ final class Orders extends AbstractSync
     /**
      * @param array $xml
      */
-    private function handleReactivated(array $xml): void
+    private function handleReactivation(array $xml): void
     {
         $source = $xml['reaktiviere_bestellungen']['kBestellung'] ?? [];
         if (\is_numeric($source)) {
@@ -247,13 +247,12 @@ final class Orders extends AbstractSync
      */
     private function handleUpdate(array $xml): void
     {
-        $customer = null;
-        $order    = new stdClass;
-        $orders   = $this->mapper->mapArray($xml, 'tbestellung', 'mBestellung');
+        $order  = new stdClass;
+        $orders = $this->mapper->mapArray($xml, 'tbestellung', 'mBestellung');
         if (\count($orders) === 1) {
             $order = $orders[0];
         }
-        if (!$order->kBestellung) {
+        if (empty($order->kBestellung)) {
             \syncException(
                 'Keine kBestellung in tbestellung! XML:' . \print_r($xml, true),
                 \FREIDEFINIERBARER_FEHLER
@@ -267,19 +266,7 @@ final class Orders extends AbstractSync
                 \FREIDEFINIERBARER_FEHLER
             );
         }
-        $billingAddress = new Rechnungsadresse($oldOrder->kRechnungsadresse);
-        $this->mapper->mapObject($billingAddress, $xml['tbestellung']['trechnungsadresse'], 'mRechnungsadresse');
-        if (!empty($billingAddress->cAnrede)) {
-            $billingAddress->cAnrede = $this->mapSalutation($billingAddress->cAnrede);
-        }
-        $this->extractStreet($billingAddress);
-        if (!$billingAddress->cNachname && !$billingAddress->cFirma && !$billingAddress->cStrasse) {
-            \syncException(
-                'Error Bestellung Update. Rechnungsadresse enthält keinen Nachnamen, Firma und Strasse! XML:' .
-                \print_r($xml, true),
-                \FREIDEFINIERBARER_FEHLER
-            );
-        }
+        $billingAddress = $this->getBillingAddress($oldOrder, $xml);
         if (!$oldOrder->kBestellung || \trim($order->cBestellNr) !== \trim($oldOrder->cBestellNr)) {
             \syncException(
                 'Fehler: Zur Bestellung ' . $order->cBestellNr .
@@ -287,66 +274,40 @@ final class Orders extends AbstractSync
                 \FREIDEFINIERBARER_FEHLER
             );
         }
-        $paymentMethod = new stdClass;
-        if (isset($xml['tbestellung']['cZahlungsartName']) && \strlen($xml['tbestellung']['cZahlungsartName']) > 0) {
-            // Von Wawi kommt in $xml['tbestellung']['cZahlungsartName'] nur der deutsche Wert,
-            // deshalb immer Abfrage auf tzahlungsart.cName
-            $paymentMethodName = $xml['tbestellung']['cZahlungsartName'];
-            $paymentMethod     = $this->db->executeQueryPrepared(
-                'SELECT tzahlungsart.kZahlungsart, IFNULL(tzahlungsartsprache.cName, tzahlungsart.cName) AS cName
-                FROM tzahlungsart
-                LEFT JOIN tzahlungsartsprache
-                    ON tzahlungsartsprache.kZahlungsart = tzahlungsart.kZahlungsart
-                    AND tzahlungsartsprache.cISOSprache = :iso
-                WHERE tzahlungsart.cName LIKE :search
-                ORDER BY CASE
-                    WHEN tzahlungsart.cName = :name1 THEN 1
-                    WHEN tzahlungsart.cName LIKE :name2 THEN 2
-                    WHEN tzahlungsart.cName LIKE :name3 THEN 3
-                    END, kZahlungsart',
-                [
-                    'iso'    => LanguageHelper::getLanguageDataByType('', (int)$order->kSprache),
-                    'search' => '%' . $paymentMethodName . '%',
-                    'name1'  => $paymentMethodName,
-                    'name2'  => $paymentMethodName . '%',
-                    'name3'  => '%' . $paymentMethodName . '%',
-                ],
-                ReturnType::SINGLE_OBJECT
+        $paymentMethod    = $this->getPaymentMethodFromXML($order, $xml);
+        $correctionFactor = $this->applyCorrectionFactor($order);
+        // Die Wawi schickt in fGesamtsumme die Rechnungssumme (Summe aller Positionen), der Shop erwartet hier
+        // aber tatsächlich eine Gesamtsumme oder auch den Zahlungsbetrag (Rechnungssumme abzgl. evtl. Guthaben)
+        $order->fGesamtsumme -= $order->fGuthaben;
+
+        $this->updateOrderData($oldOrder, $order, $paymentMethod);
+        $this->updateAddresses($oldOrder, $billingAddress, $xml);
+        $this->updateCartItems($oldOrder, $correctionFactor, $xml);
+        if (isset($xml['tbestellung']['tbestellattribut'])) {
+            $this->editAttributes(
+                $order->kBestellung,
+                $this->mapper->isAssoc($xml['tbestellung']['tbestellattribut'])
+                    ? [$xml['tbestellung']['tbestellattribut']]
+                    : $xml['tbestellung']['tbestellattribut']
             );
         }
-        $updateSql = '';
-        if (isset($paymentMethod->kZahlungsart) && $paymentMethod->kZahlungsart > 0) {
-            $updateSql = ' , kZahlungsart = ' . (int)$paymentMethod->kZahlungsart .
-                ", cZahlungsartName = '" . $paymentMethod->cName . "' ";
-        }
-        $correctionFactor = 1.0;
-        if (isset($order->kWaehrung)) {
-            $currentCurrency = $this->db->select('twaehrung', 'kWaehrung', $order->kWaehrung);
-            $defaultCurrency = $this->db->select('twaehrung', 'cStandard', 'Y');
-            if (isset($currentCurrency->kWaehrung, $defaultCurrency->kWaehrung)) {
-                $correctionFactor     = (float)$currentCurrency->fFaktor;
-                $order->fGesamtsumme /= $correctionFactor;
-                $order->fGuthaben    /= $correctionFactor;
-            }
-        }
-        // Die Wawi schickt in fGesamtsumme die Rechnungssumme (Summe aller Positionen),
-        // der Shop erwartet hier aber tatsächlich eine Gesamtsumme oder auch den Zahlungsbetrag
-        // (Rechnungssumme abzgl. evtl. Guthaben)
-        $order->fGesamtsumme -= $order->fGuthaben;
-        $this->db->queryPrepared(
-            'UPDATE tbestellung SET
-            fGuthaben = :fg,
-            fGesamtsumme = :total,
-            cKommentar = :cmt ' . $updateSql . '
-            WHERE kBestellung = :oid',
-            [
-                'fg'    => $order->fGuthaben,
-                'total' => $order->fGesamtsumme,
-                'cmt'   => $order->cKommentar,
-                'oid'   => $oldOrder->kBestellung
-            ],
-            ReturnType::DEFAULT
-        );
+        $customer = new Kunde((int)$oldOrder->kKunde);
+        $this->sendMail($oldOrder, $order, $customer);
+
+        \executeHook(\HOOK_BESTELLUNGEN_XML_BEARBEITEUPDATE, [
+            'oBestellung'    => &$order,
+            'oBestellungAlt' => &$oldOrder,
+            'oKunde'         => &$customer
+        ]);
+    }
+
+    /**
+     * @param stdClass         $oldOrder
+     * @param Rechnungsadresse $billingAddress
+     * @param array            $xml
+     */
+    private function updateAddresses($oldOrder, $billingAddress, array $xml)
+    {
         $deliveryAddress = new Lieferadresse($oldOrder->kLieferadresse);
         $this->mapper->mapObject($deliveryAddress, $xml['tbestellung']['tlieferadresse'], 'mLieferadresse');
         if (isset($deliveryAddress->cAnrede)) {
@@ -384,6 +345,153 @@ final class Orders extends AbstractSync
             );
         }
         $billingAddress->updateInDB();
+    }
+
+    /**
+     * @param stdClass $order
+     * @return float
+     */
+    private function applyCorrectionFactor($order): float
+    {
+        $correctionFactor = 1.0;
+        if (isset($order->kWaehrung)) {
+            $currentCurrency = $this->db->select('twaehrung', 'kWaehrung', $order->kWaehrung);
+            $defaultCurrency = $this->db->select('twaehrung', 'cStandard', 'Y');
+            if (isset($currentCurrency->kWaehrung, $defaultCurrency->kWaehrung)) {
+                $correctionFactor     = (float)$currentCurrency->fFaktor;
+                $order->fGesamtsumme /= $correctionFactor;
+                $order->fGuthaben    /= $correctionFactor;
+            }
+        }
+
+        return $correctionFactor;
+    }
+
+    /**
+     * @param stdClass $order
+     * @param array    $xml
+     * @return stdClass|null
+     */
+    private function getPaymentMethodFromXML($order, array $xml): ?stdClass
+    {
+        if (empty($xml['tbestellung']['cZahlungsartName'])) {
+            return new stdClass();
+        }
+        // Von Wawi kommt in $xml['tbestellung']['cZahlungsartName'] nur der deutsche Wert,
+        // deshalb immer Abfrage auf tzahlungsart.cName
+        $paymentMethodName = $xml['tbestellung']['cZahlungsartName'];
+
+        return $this->db->executeQueryPrepared(
+            'SELECT tzahlungsart.kZahlungsart, IFNULL(tzahlungsartsprache.cName, tzahlungsart.cName) AS cName
+            FROM tzahlungsart
+            LEFT JOIN tzahlungsartsprache
+                ON tzahlungsartsprache.kZahlungsart = tzahlungsart.kZahlungsart
+                AND tzahlungsartsprache.cISOSprache = :iso
+            WHERE tzahlungsart.cName LIKE :search
+            ORDER BY CASE
+                WHEN tzahlungsart.cName = :name1 THEN 1
+                WHEN tzahlungsart.cName LIKE :name2 THEN 2
+                WHEN tzahlungsart.cName LIKE :name3 THEN 3
+                END, kZahlungsart',
+            [
+                'iso'    => LanguageHelper::getLanguageDataByType('', (int)$order->kSprache),
+                'search' => '%' . $paymentMethodName . '%',
+                'name1'  => $paymentMethodName,
+                'name2'  => $paymentMethodName . '%',
+                'name3'  => '%' . $paymentMethodName . '%',
+            ],
+            ReturnType::SINGLE_OBJECT
+        );
+    }
+
+    /**
+     * @param stdClass $oldOrder
+     * @param array    $xml
+     * @return Rechnungsadresse
+     */
+    private function getBillingAddress($oldOrder, array $xml): Rechnungsadresse
+    {
+        $billingAddress = new Rechnungsadresse($oldOrder->kRechnungsadresse);
+        $this->mapper->mapObject($billingAddress, $xml['tbestellung']['trechnungsadresse'], 'mRechnungsadresse');
+        if (!empty($billingAddress->cAnrede)) {
+            $billingAddress->cAnrede = $this->mapSalutation($billingAddress->cAnrede);
+        }
+        $this->extractStreet($billingAddress);
+        if (!$billingAddress->cNachname && !$billingAddress->cFirma && !$billingAddress->cStrasse) {
+            \syncException(
+                'Error Bestellung Update. Rechnungsadresse enthält keinen Nachnamen, Firma und Strasse! XML:' .
+                \print_r($xml, true),
+                \FREIDEFINIERBARER_FEHLER
+            );
+        }
+
+        return $billingAddress;
+    }
+
+    /**
+     * @param stdClass $oldOrder
+     * @param stdClass $order
+     * @param stdClass $paymentMethod
+     */
+    private function updateOrderData($oldOrder, $order, $paymentMethod): void
+    {
+        $updateSql = '';
+        if (isset($paymentMethod->kZahlungsart) && $paymentMethod->kZahlungsart > 0) {
+            $updateSql = ' , kZahlungsart = ' . (int)$paymentMethod->kZahlungsart .
+                ", cZahlungsartName = '" . $paymentMethod->cName . "' ";
+        }
+        $this->db->queryPrepared(
+            'UPDATE tbestellung SET
+            fGuthaben = :fg,
+            fGesamtsumme = :total,
+            cKommentar = :cmt ' . $updateSql . '
+            WHERE kBestellung = :oid',
+            [
+                'fg'    => $order->fGuthaben,
+                'total' => $order->fGesamtsumme,
+                'cmt'   => $order->cKommentar,
+                'oid'   => $oldOrder->kBestellung
+            ],
+            ReturnType::DEFAULT
+        );
+    }
+
+    /**
+     * @param stdClass $oldOrder
+     * @param stdClass $order
+     * @param Kunde    $customer
+     */
+    private function sendMail($oldOrder, $order, $customer): void
+    {
+        $module = $this->getPaymentMethod($oldOrder->kBestellung);
+        $mail   = new Mail();
+        $test   = $mail->createFromTemplateID(\MAILTEMPLATE_BESTELLUNG_AKTUALISIERT);
+        $tpl    = $test->getTemplate();
+        if ($tpl !== null
+            && $tpl->getModel() !== null
+            && $tpl->getModel()->getActive() === true
+            && ($order->cSendeEMail === 'Y' || !isset($order->cSendeEMail))
+        ) {
+            if ($module) {
+                $module->sendMail($oldOrder->kBestellung, \MAILTEMPLATE_BESTELLUNG_AKTUALISIERT);
+            } else {
+                $data              = new stdClass;
+                $data->tkunde      = $customer;
+                $data->tbestellung = new Bestellung((int)$oldOrder->kBestellung, true);
+
+                $mailer = Shop::Container()->get(Mailer::class);
+                $mailer->send($mail->createFromTemplateID(\MAILTEMPLATE_BESTELLUNG_AKTUALISIERT, $data));
+            }
+        }
+    }
+
+    /**
+     * @param stdClass $oldOrder
+     * @param float    $correctionFactor
+     * @param array    $xml
+     */
+    private function updateCartItems($oldOrder, $correctionFactor, array $xml): void
+    {
         $oldItems = $this->db->selectAll(
             'twarenkorbpos',
             'kWarenkorb',
@@ -442,43 +550,6 @@ final class Orders extends AbstractSync
                 $this->db->insert('twarenkorbposeigenschaft', $posAttribute);
             }
         }
-
-        if (isset($xml['tbestellung']['tbestellattribut'])) {
-            $this->editAttributes(
-                $order->kBestellung,
-                $this->mapper->isAssoc($xml['tbestellung']['tbestellattribut'])
-                    ? [$xml['tbestellung']['tbestellattribut']]
-                    : $xml['tbestellung']['tbestellattribut']
-            );
-        }
-        $module = $this->getPaymentMethod($oldOrder->kBestellung);
-        // neues flag 'cSendeEMail' ab JTL-Wawi 099781 damit die email nur versandt wird,
-        // wenn es auch wirklich für den kunden interessant ist
-        // ab JTL-Wawi 099781 wird das Flag immer gesendet und ist entweder "Y" oder "N"
-        // bei JTL-Wawi Version <= 099780 ist dieses Flag nicht gesetzt, Mail soll hier immer versendet werden.
-        $customer = new Kunde((int)$oldOrder->kKunde);
-        $mail     = new Mail();
-        $test     = $mail->createFromTemplateID(\MAILTEMPLATE_BESTELLUNG_AKTUALISIERT);
-        if ($test->getTemplate() !== null
-            && $test->getTemplate()->getModel()->getActive() === true
-            && ($order->cSendeEMail === 'Y' || !isset($order->cSendeEMail))
-        ) {
-            if ($module) {
-                $module->sendMail($oldOrder->kBestellung, \MAILTEMPLATE_BESTELLUNG_AKTUALISIERT);
-            } else {
-                $data              = new stdClass;
-                $data->tkunde      = $customer;
-                $data->tbestellung = new Bestellung((int)$oldOrder->kBestellung, true);
-
-                $mailer = Shop::Container()->get(Mailer::class);
-                $mailer->send($mail->createFromTemplateID(\MAILTEMPLATE_BESTELLUNG_AKTUALISIERT, $data));
-            }
-        }
-        \executeHook(\HOOK_BESTELLUNGEN_XML_BEARBEITEUPDATE, [
-            'oBestellung'    => &$order,
-            'oBestellungAlt' => &$oldOrder,
-            'oKunde'         => &$customer
-        ]);
     }
 
     /**
@@ -513,23 +584,20 @@ final class Orders extends AbstractSync
     private function getOrderState(stdClass $shopOrder, stdClass $order): int
     {
         if ($shopOrder->cStatus === \BESTELLUNG_STATUS_STORNO) {
-            $state = \BESTELLUNG_STATUS_STORNO;
-        } else {
-            $state = \BESTELLUNG_STATUS_IN_BEARBEITUNG;
-            if (isset($order->cBezahlt) && $order->cBezahlt === 'Y') {
-                $state = \BESTELLUNG_STATUS_BEZAHLT;
-            }
-            if (isset($order->dVersandt) && \strlen($order->dVersandt) > 0) {
-                $state = \BESTELLUNG_STATUS_VERSANDT;
-            }
-            $updatedOrder = new Bestellung($shopOrder->kBestellung, true);
-            if ((\is_array($updatedOrder->oLieferschein_arr)
-                    && \count($updatedOrder->oLieferschein_arr) > 0)
-                && (isset($order->nKomplettAusgeliefert)
-                    && (int)$order->nKomplettAusgeliefert === 0)
-            ) {
-                $state = \BESTELLUNG_STATUS_TEILVERSANDT;
-            }
+            return \BESTELLUNG_STATUS_STORNO;
+        }
+        $state = \BESTELLUNG_STATUS_IN_BEARBEITUNG;
+        if (isset($order->cBezahlt) && $order->cBezahlt === 'Y') {
+            $state = \BESTELLUNG_STATUS_BEZAHLT;
+        }
+        if (isset($order->dVersandt) && \strlen($order->dVersandt) > 0) {
+            $state = \BESTELLUNG_STATUS_VERSANDT;
+        }
+        $updatedOrder = new Bestellung($shopOrder->kBestellung, true);
+        if ((\count($updatedOrder->oLieferschein_arr) > 0)
+            && (isset($order->nKomplettAusgeliefert) && (int)$order->nKomplettAusgeliefert === 0)
+        ) {
+            $state = \BESTELLUNG_STATUS_TEILVERSANDT;
         }
 
         return $state;
@@ -610,9 +678,9 @@ final class Orders extends AbstractSync
     private function sendStatusMail(Bestellung $updatedOrder, stdClass $shopOrder, int $state, $customer): void
     {
         $doSend = false;
-        foreach ($updatedOrder->oLieferschein_arr as $slip) {
-            /** @var Lieferschein $slip */
-            if ($slip->getEmailVerschickt() === false) {
+        foreach ($updatedOrder->oLieferschein_arr as $note) {
+            /** @var Lieferschein $note */
+            if ($note->getEmailVerschickt() === false) {
                 $doSend = true;
                 break;
             }
@@ -639,9 +707,9 @@ final class Orders extends AbstractSync
                     $mailer->send($mail->createFromTemplateID($mailType, $data));
                 }
             }
-            /** @var Lieferschein $slip */
-            foreach ($updatedOrder->oLieferschein_arr as $slip) {
-                $slip->setEmailVerschickt(true)->update();
+            /** @var Lieferschein $note */
+            foreach ($updatedOrder->oLieferschein_arr as $note) {
+                $note->setEmailVerschickt(true)->update();
             }
             // Guthaben an Bestandskunden verbuchen, Email rausschicken:
             $oKwK = new KundenwerbenKunden();

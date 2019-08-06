@@ -109,8 +109,8 @@ class Lieferschein
                 'kLieferscheinPos'
             );
             foreach ($items as $deliveryItem) {
-                $slip                           = new Lieferscheinpos((int)$deliveryItem->kLieferscheinPos);
-                $slip->oLieferscheinPosInfo_arr = [];
+                $lineItem                           = new Lieferscheinpos((int)$deliveryItem->kLieferscheinPos);
+                $lineItem->oLieferscheinPosInfo_arr = [];
 
                 $infos = $db->selectAll(
                     'tlieferscheinposinfo',
@@ -118,12 +118,10 @@ class Lieferschein
                     (int)$deliveryItem->kLieferscheinPos,
                     'kLieferscheinPosInfo'
                 );
-                if (!empty($infos)) {
-                    foreach ($infos as $info) {
-                        $slip->oLieferscheinPosInfo_arr[] = new Lieferscheinposinfo((int)$info->kLieferscheinPosInfo);
-                    }
+                foreach ($infos as $info) {
+                    $lineItem->oLieferscheinPosInfo_arr[] = new Lieferscheinposinfo((int)$info->kLieferscheinPosInfo);
                 }
-                $this->oLieferscheinPos_arr[] = $slip;
+                $this->oLieferscheinPos_arr[] = $lineItem;
             }
 
             $shippings = $db->selectAll(

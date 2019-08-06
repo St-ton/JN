@@ -522,12 +522,12 @@ label .fillout {
   margin: 20px 0;
   z-index: 10;
 }
-.save-wrapper > .row {
-  align-items: baseline;
+.save-wrapper .row {
+  align-items: center;
 }
-.card .save-wrapper {
-  padding-left: 1.5rem;
-  padding-right: 1.5rem;
+.tab-content .save-wrapper,
+.card .save-wrapper:not(.card-footer) {
+  padding: 1.5rem 0;
 }
 .pages .pageinfo {
   float: left;

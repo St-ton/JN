@@ -93,13 +93,13 @@
                             <div class="card-footer save-wrapper">
                                 <div class="row">
                                     <div class="col-sm-6 col-xl-auto text-left">
-                                        <div class="custom-control custom-checkbox mb-3">
+                                        <div class="custom-control custom-checkbox">
                                             <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);">
                                             <label class="custom-control-label" for="ALLMSGS">{__('globalSelectAll')}</label>
                                         </div>
                                     </div>
                                     <div class="ml-auto col-sm-6 col-xl-auto">
-                                        <button name="loeschen" type="submit" value="{__('delete')}" class="btn btn-danger btn-block mb-2">
+                                        <button name="loeschen" type="submit" value="{__('delete')}" class="btn btn-danger btn-block">
                                             <i class="fas fa-trash-alt"></i> {__('delete')}
                                         </button>
                                     </div>
@@ -205,7 +205,7 @@
                             <div class="card-footer save-wrapper">
                                 <div class="row">
                                     <div class="col-sm-6 col-xl-auto text-left">
-                                        <div class="custom-control custom-checkbox mb-3">
+                                        <div class="custom-control custom-checkbox">
                                             <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS3" type="checkbox" onclick="AllMessages(this.form);">
                                             <label class="custom-control-label" for="ALLMSGS3">{__('globalSelectAll')}</label>
                                         </div>
@@ -299,7 +299,7 @@
                             <div class="card-footer save-wrapper">
                                 <div class="row">
                                     <div class="col-sm-6 col-xl-auto text-left">
-                                        <div class="custom-control custom-checkbox mb-3">
+                                        <div class="custom-control custom-checkbox">
                                             <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS2" type="checkbox" onclick="AllMessages(this.form);">
                                             <label class="custom-control-label" for="ALLMSGS2">{__('globalSelectAll')}</label>
                                         </div>

@@ -62,7 +62,7 @@
                     {/if}
                     <div class="save-wrapper">
                         <div class="row">
-                            <div class="col-sm-6 col-xl-auto text-left mb-3">
+                            <div class="col-sm-6 col-xl-auto text-left">
                                 <div class="custom-control custom-checkbox">
                                     <input class="custom-control-input" type="checkbox" id="select-all-2" name="aaa" value="bbb"
                                            onchange="selectAllItems(this, $(this).prop('checked'))">
@@ -70,7 +70,7 @@
                                 </div>
                             </div>
                             <div class="ml-auto col-sm-6 col-xl-auto">
-                                <button name="action" value="delselected" class="btn btn-warning btn-block mb-2">
+                                <button name="action" value="delselected" class="btn btn-warning btn-block">
                                     <i class="fas fa-trash-alt"></i> {__('deleteSelected')}
                                 </button>
                             </div>

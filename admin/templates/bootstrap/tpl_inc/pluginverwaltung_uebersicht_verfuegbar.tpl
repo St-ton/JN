@@ -131,7 +131,7 @@
                 </div>
                 <div class="card-footer save-wrapper">
                     <div class="row">
-                        <div class="col-sm-6 col-xl-auto text-left mb-3">
+                        <div class="col-sm-6 col-xl-auto text-left">
                             <div class="custom-control custom-checkbox">
                                 <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS4" type="checkbox" onclick="AllMessagesExcept(this.form, vLicenses);" />
                                 <label class="custom-control-label" for="ALLMSGS4">{__('selectAll')}</label>

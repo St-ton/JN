@@ -604,13 +604,13 @@ label .fillout {
     text-align: right;
     margin: 20px 0;
     z-index: 10;
-    >.row  {
-        align-items: baseline;
+    .row {
+        align-items: center;
     }
 }
-.card .save-wrapper {
-    padding-left: 1.5rem;
-    padding-right: 1.5rem;
+.tab-content .save-wrapper,
+.card .save-wrapper:not(.card-footer) {
+    padding: 1.5rem 0;
 }
 
 .pages .pageinfo {

@@ -102,7 +102,7 @@
                         </div>
                         <div class="card-footer save-wrapper">
                             <div class="row">
-                                <div class="col-sm-6 col-xl-auto text-left mb-3">
+                                <div class="col-sm-6 col-xl-auto text-left">
                                     <div class="custom-control custom-checkbox">
                                         <input type="checkbox" class="massaction-checkbox custom-control-input" id="massaction-main-switch" />
                                         <label class="custom-control-label" for="massaction-main-switch">{__('globalSelectAll')}</label>
@@ -127,7 +127,7 @@
                                 <form method="post" action="cache.php" class="submit-form">
                                     {$jtl_token}
                                     <div class="ml-auto col-sm-6 col-xl-auto">
-                                        <button name="a" type="submit" value="flush_object_cache" class="btn btn-outline-primary btn-block mb-2 delete"{if !$cache_enabled} disabled="disabled"{/if}>
+                                        <button name="a" type="submit" value="flush_object_cache" class="btn btn-outline-primary btn-block delete"{if !$cache_enabled} disabled="disabled"{/if}>
                                             <i class="fas fa-trash-alt"></i>&nbsp;{__('clearObjectCache')}
                                         </button>
                                     </div>
@@ -546,7 +546,7 @@
                     </div>
                     <div class="save-wrapper submit">
                         <div class="row">
-                            <div class="col-sm-6 col-xl-auto mb-3">
+                            <div class="col-sm-6 col-xl-auto">
                                 <a id="btn_toggle_cache" class="btn btn-outline-primary btn-block down">{__('showAdvanced')}</a>
                             </div>
                             <div class="ml-auto col-sm-6 col-xl-auto">

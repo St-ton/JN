@@ -158,7 +158,7 @@
                                 </div>
                                 <div class="card-footer save-wrapper">
                                     <div class="row">
-                                        <div class="col-sm-6 col-xl-auto text-left mb-3">
+                                        <div class="col-sm-6 col-xl-auto text-left">
                                             <div class="custom-control custom-checkbox">
                                                 <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);">
                                                 <label class="custom-control-label" for="ALLMSGS">{__('sitemapSelectAll')}</label>
@@ -279,7 +279,7 @@
                             </div>
                             <div class="card-footer save-wrapper">
                                 <div class="row">
-                                    <div class="col-sm-6 col-xl-auto text-left mb-3">
+                                    <div class="col-sm-6 col-xl-auto text-left">
                                         <div class="custom-control custom-checkbox">
                                             <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS2" type="checkbox" onclick="AllMessages(this.form);">
                                             <label class="custom-control-label" for="ALLMSGS2">{__('sitemapSelectAll')}</label>

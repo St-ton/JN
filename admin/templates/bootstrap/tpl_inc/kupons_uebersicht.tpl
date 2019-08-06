@@ -127,7 +127,7 @@
                         </div>
                         {if $oKupon_arr|@count > 0}
                             <div class="ml-auto col-sm-6 col-xl-auto">
-                                <button type="submit" class="btn btn-danger btn-block mb-3" name="action" value="loeschen">
+                                <button type="submit" class="btn btn-danger btn-block" name="action" value="loeschen">
                                     <i class="fas fa-trash-alt"></i> {__('delete')}
                                 </button>
                             </div>

@@ -135,14 +135,14 @@
                             </div>
                             <div class="save-wrapper">
                                 <div class="row">
-                                    <div class="col-sm-6 col-xl-auto text-left mb-3">
+                                    <div class="col-sm-6 col-xl-auto text-left">
                                         <div class="custom-control custom-checkbox">
                                             <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS1" type="checkbox" onclick="AllMessages(this.form);" />
                                             <label class="custom-control-label" for="ALLMSGS1">{__('globalSelectAll')}</label>
                                         </div>
                                     </div>
                                     <div class="ml-auto col-sm-6 col-xl-auto">
-                                        <button name="freischaltenleoschen" type="submit" class="btn btn-danger btn-block mb-2">
+                                        <button name="freischaltenleoschen" type="submit" class="btn btn-danger btn-block">
                                             <i class="fas fa-trash-alt"></i> {__('deleteSelected')}
                                         </button>
                                     </div>
@@ -207,13 +207,13 @@
                             </div>
                             <div class="save-wrapper">
                                 <div class="row">
-                                    <div class="col-sm-6 col-xl-auto text-left mb-3">
+                                    <div class="col-sm-6 col-xl-auto text-left">
                                         <div class="custom-control custom-checkbox">
                                             <input class="custom-control-input"  name="ALLMSGS" id="ALLMSGS2" type="checkbox" onclick="AllMessages(this.form);" />
                                             <label class="custom-control-label" for="ALLMSGS2">{__('globalSelectAll')}</label>
                                         </div>
                                     </div>
-                                    <div class="col-sm-6 col-xl-auto mb-3">
+                                    <div class="col-sm-6 col-xl-auto">
                                         <div class="input-group" data-toggle="tooltip" data-placement="bottom" title='{__('freischaltenMappingDesc')}'>
                                             <span class="input-group-addon d-none d-md-block">
                                                 <label for="cMapping">{__('linkMarked')}:</label>
@@ -225,7 +225,7 @@
                                         </div>
                                     </div>
                                     <div class="ml-auto col-sm-6 col-xl-auto">
-                                        <button name="freischaltenleoschen" type="submit" value="Markierte löschen" class="btn btn-danger btn-block mb-2">
+                                        <button name="freischaltenleoschen" type="submit" value="Markierte löschen" class="btn btn-danger btn-block">
                                             <i class="fas fa-trash-alt"></i> {__('deleteSelected')}
                                         </button>
                                     </div>
@@ -302,14 +302,14 @@
                             </div>
                             <div class="save-wrapper">
                                 <div class="row">
-                                    <div class="col-sm-6 col-xl-auto text-left mb-3">
+                                    <div class="col-sm-6 col-xl-auto text-left">
                                         <div class="custom-control custom-checkbox">
                                             <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS4" type="checkbox" onclick="AllMessages(this.form);" />
                                             <label class="custom-control-label" for="ALLMSGS4">{__('globalSelectAll')}</label>
                                         </div>
                                     </div>
                                     <div class="ml-auto col-sm-6 col-xl-auto">
-                                        <button name="freischaltenleoschen" type="submit" value="Markierte löschen" class="btn btn-danger btn-block mb-2">
+                                        <button name="freischaltenleoschen" type="submit" value="Markierte löschen" class="btn btn-danger btn-block">
                                             <i class="fas fa-trash-alt"></i> {__('deleteSelected')}
                                         </button>
                                     </div>
@@ -369,14 +369,14 @@
                             </div>
                             <div class="save-wrapper">
                                 <div class="row">
-                                    <div class="col-sm-6 col-xl-auto text-left mb-3">
+                                    <div class="col-sm-6 col-xl-auto text-left">
                                         <div class="custom-control custom-checkbox">
                                             <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS5" type="checkbox" onclick="AllMessages(this.form);" />
                                             <label class="custom-control-label" for="ALLMSGS5">{__('globalSelectAll')}</label>
                                         </div>
                                     </div>
                                     <div class="ml-auto col-sm-6 col-xl-auto">
-                                        <button name="freischaltenleoschen" type="submit" value="Markierte löschen" class="btn btn-danger btn-block mb-2">
+                                        <button name="freischaltenleoschen" type="submit" value="Markierte löschen" class="btn btn-danger btn-block">
                                             <i class="fas fa-trash-alt"></i> {__('deleteSelected')}
                                         </button>
                                     </div>

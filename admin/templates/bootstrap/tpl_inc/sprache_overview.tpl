@@ -1,7 +1,7 @@
 {function sprache_buttons}
     <div class="row">
         <div class="ml-auto col-sm-6 col-xl-auto">
-            <a class="btn btn-outline-primary btn-block mb-2" href="sprache.php?token={$smarty.session.jtl_token}&action=newvar">
+            <a class="btn btn-outline-primary btn-block" href="sprache.php?token={$smarty.session.jtl_token}&action=newvar">
                 <i class="fa fa-share"></i>
                 {__('btnAddVar')}
             </a>

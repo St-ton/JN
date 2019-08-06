@@ -50,13 +50,13 @@
                             {/foreach}
                             <tr>
                                 <td>&nbsp;</td>
-                                <td><a onclick="ackCheck({$var->id}, {$kPlugin}); return false;" class="btn btn-danger button reset"><i class="fal fa-exclamation-triangle"></i> {__('pluginLocalesStd')}</a></td>
+                                <td><button onclick="ackCheck({$var->id}, {$kPlugin}); return false;" class="btn btn-danger"><i class="fal fa-exclamation-triangle"></i> {__('pluginLocalesStd')}</button></td>
                             </tr>
                         {/foreach}
                         </tbody>
                     </table>
                 </div>
-                <div class="card-footer save-wrapper">
+                <div class=" ard-footer save-wrapper">
                     <div class="row">
                         <div class="ml-auto col-sm-6 col-xl-auto">
                             <button name="speichern" type="submit" value="{__('save')}" class="btn btn-primary btn-block">{__('saveWithIcon')}</button>

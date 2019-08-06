@@ -47,6 +47,7 @@ function clearInput(inputField) {ldelim}
         <div id="welcome" class="card post">
             <div class="card-header">
                 <div class="subheading1">{__('umfrageEnter')}</div>
+                <hr class="mb-n3">
             </div>
             <div class="card-body">
                 <form name="umfrage" method="post" action="umfrage.php">

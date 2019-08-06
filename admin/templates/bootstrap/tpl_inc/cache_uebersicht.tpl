@@ -66,8 +66,8 @@
                                 <th class="text-left"></th>
                                 <th class="text-left"><label style="margin-bottom:0;" for="massaction-main-switch">{__('type')}</label></th>
                                 <th class="text-left">{__('description')}</th>
-                                <th class="text-left">{__('entries')}</th>
-                                <th class="text-left">{__('active')}</th>
+                                <th class="text-center">{__('entries')}</th>
+                                <th class="text-center">{__('active')}</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -87,8 +87,8 @@
                                         {assign var=description value=$cg.description}
                                         {__($description)}
                                     </td>
-                                    <td>{$cg.key_count}</td>
-                                    <td>
+                                    <td class="text-center">{$cg.key_count}</td>
+                                    <td class="text-center">
                                         {if $cache_enabled === false || $cg.value|in_array:$disabled_caches}
                                             <span class="fal fa-times text-danger"></span>
                                         {else}
@@ -252,7 +252,9 @@
                                 </tr>
                                 <tr class="cache-row collapsed clickable" data-toggle="collapse" data-target="#hitRateDetail" style="cursor: pointer">
                                     <td>{__('hitRate')}:</td>
-                                    <td class="value">{$opcache_stats->hitRate}%&nbsp;<i class="fal fa-info-circle float-right"></i></td>
+                                    <td class="value">
+                                        {$opcache_stats->hitRate}%&nbsp;<span class="fal fa-chevron-circle-down rotate-180 font-size-lg float-right"></span>
+                                    </td>
                                 </tr>
                                 <tr class="cache-row">
                                     <td colspan="2" style="padding: 0">
@@ -279,7 +281,9 @@
                             <table class="table cache-stats" id="tplcache-stats">
                                 <tr class="cache-row collapsed clickable" data-toggle="collapse" data-target="#cachefilesFrontendDetail" style="cursor: pointer">
                                     <td>{__('files')} {__('frontend')}</td>
-                                    <td class="value">{$tplcacheStats->frontend|count}&nbsp;<i class="fal fa-info-circle float-right"></i></td>
+                                    <td class="value">
+                                        {$tplcacheStats->frontend|count}&nbsp;<span class="fal fa-chevron-circle-down rotate-180 font-size-lg float-right"></span>
+                                    </td>
                                 </tr>
                                 {if $tplcacheStats->frontend|count > 0}
                                 <tr class="cache-row">
@@ -298,7 +302,9 @@
                                 {/if}
                                 <tr class="cache-row collapsed clickable" data-toggle="collapse" data-target="#cachefilesBackendDetail" style="cursor: pointer">
                                     <td>{__('files')} {__('backend')}</td>
-                                    <td class="value">{$tplcacheStats->backend|count}&nbsp;<i class="fal fa-info-circle float-right"></i></td>
+                                    <td class="value">
+                                        {$tplcacheStats->backend|count}&nbsp;<span class="fal fa-chevron-circle-down rotate-180 font-size-lg float-right"></span>
+                                    </td>
                                 </tr>
                                 {if $tplcacheStats->backend|count > 0}
                                 <tr class="cache-row">

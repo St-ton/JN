@@ -66,7 +66,13 @@ var pies = [];
                                     <form class="delete-run" action="profiler.php" method="post">
                                         {$jtl_token}
                                         <input type="hidden" value="{$profile->runID}" name="run-id" />
-                                        <button type="submit" class="btn btn-default" name="delete-run-submit"><i class="fas fa-trash-alt"></i> {__('deleteEntry')}</button>
+                                        <div class="row">
+                                            <div class="ml-auto col-sm-6 col-xl-auto">
+                                                <button type="submit" class="btn btn-danger btn-block" name="delete-run-submit">
+                                                    <i class="fas fa-trash-alt"></i> {__('deleteEntry')}
+                                                </button>
+                                            </div>
+                                        </div>
                                     </form>
                                 </div>
                             </div>
@@ -119,11 +125,17 @@ var pies = [];
                                             {/foreach}
                                         </ul>
                                     </div>
-                                    <div class="card-footer">
+                                    <div class="card-footer save-wrapper">
                                         <form class="delete-run" action="profiler.php" method="post">
                                             {$jtl_token}
                                             <input type="hidden" value="{$run->runID}" name="run-id" />
-                                            <button type="submit" class="btn btn-default" name="delete-run-submit">{__('deleteEntry')}</button>
+                                            <div class="row">
+                                                <div class="ml-auto col-sm-6 col-xl-auto">
+                                                    <button type="submit" class="btn btn-danger btn-block" name="delete-run-submit">
+                                                        {__('deleteEntry')}
+                                                    </button>
+                                                </div>
+                                            </div>
                                         </form>
                                     </div>
                                 </div>

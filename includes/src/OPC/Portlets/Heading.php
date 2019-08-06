@@ -17,32 +17,6 @@ use JTL\OPC\PortletInstance;
 class Heading extends Portlet
 {
     /**
-     * @param PortletInstance $instance
-     * @return string
-     */
-    public function getPreviewHtml(PortletInstance $instance): string
-    {
-        return $this->getPreviewRootHtml(
-            $instance,
-            'h' . $instance->getProperty('level'),
-            $instance->getProperty('text')
-        );
-    }
-
-    /**
-     * @param PortletInstance $instance
-     * @return string
-     */
-    public function getFinalHtml(PortletInstance $instance): string
-    {
-        return $this->getFinalRootHtml(
-            $instance,
-            'h' . $instance->getProperty('level'),
-            $instance->getProperty('text')
-        );
-    }
-
-    /**
      * @return string
      */
     public function getButtonHtml(): string

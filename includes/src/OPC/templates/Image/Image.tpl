@@ -2,17 +2,28 @@
     {assign var=data value=['portlet' => $instance->getDataAttribute()]}
 {/if}
 
-{assign var=imgAttribs value=$instance->getImageAttributes()}
+{$imgAttribs = $instance->getImageAttributes()}
 
-{image
-    src=$imgAttribs.src
-    srcset=$imgAttribs.srcset
-    sizes=$imgAttribs.srcsizes
-    alt=$imgAttribs.alt
-    title=$imgAttribs.title
-    data=$data|default:null
-    fluid=$instance->getProperty('responsive')
-    style=$instance->getStyleString()|cat:' display: block'
-    rounded=$portlet->getRoundedProp($instance)
-    thumbnail=$portlet->getThumbnailProp($instance)
-}
+{if $isPreview}
+    <div data-portlet="{$instance->getDataAttribute()}"
+         class="opc-Image {if !empty($imgAttribs.src)}opc-Image-with-image{/if}"
+         {if !empty($imgAttribs.src)}style="background-image: url('{$imgAttribs.src}')"{/if}>
+        <div>
+            <i class="far fa-image"></i>
+            <span>Bild</span>
+        </div>
+    </div>
+{else}
+    {image
+        src=$imgAttribs.src
+        srcset=$imgAttribs.srcset
+        sizes=$imgAttribs.srcsizes
+        alt=$imgAttribs.alt
+        title=$imgAttribs.title
+        data=$data|default:null
+        fluid=$instance->getProperty('responsive')
+        style=$instance->getStyleString()|cat:' display: block'
+        rounded=$portlet->getRoundedProp($instance)
+        thumbnail=$portlet->getThumbnailProp($instance)
+    }
+{/if}

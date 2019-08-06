@@ -117,8 +117,8 @@ class Iframe
     updateDropTargets()
     {
         this.stripDropTargets();
-        this.areas().append(this.dropTargetBlueprint.clone().show());
-        this.portlets().before(this.dropTargetBlueprint.clone().show());
+        this.areas().append(this.dropTargetBlueprint.clone().attr('id', '').show());
+        this.portlets().before(this.dropTargetBlueprint.clone().attr('id', '').show());
     }
 
     stripDropTargets()

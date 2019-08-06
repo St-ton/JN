@@ -1,0 +1,23 @@
+.opc-Image {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 64px;
+  text-align: center;
+  color: #5cbcf6;
+  text-transform: uppercase;
+  font-weight: bold;
+  font-size: 12px;
+
+  &.opc-Image-with-image {
+    background-size: cover;
+    background-position: center;
+    height: 100px;
+    color: #fff;
+  }
+
+  i {
+    font-size: 28px;
+    margin-right: 6px;
+  }
+}

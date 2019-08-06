@@ -10,6 +10,7 @@ if (!file_exists(PFAD_ROOT . PFAD_INCLUDES . 'vendor/autoload.php')) {
 }
 
 require PFAD_ROOT . PFAD_INCLUDES . 'vendor/autoload.php';
+class_alias('\PHPMailer\PHPMailer\PHPMailer', 'PHPMailer', true);
 
 /**
  * @param string $class

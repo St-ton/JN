@@ -238,7 +238,9 @@
                                             <td class="text-center">{$oSitemapReport->dErstellt_DE}</td>
                                             <td>
                                                 {if isset($oSitemapReport->oSitemapReportFile_arr) && $oSitemapReport->oSitemapReportFile_arr|@count > 0}
-                                                    <a href="#" onclick="$('#info_{$oSitemapReport->kSitemapReport}').toggle();return false;"><i class="fal fa-plus-circle"></i></a>
+                                                    <a href="#" onclick="$('#info_{$oSitemapReport->kSitemapReport}').toggle();return false;">
+                                                        <span class="fal fa-chevron-circle-down rotate-180 font-size-lg"></span>
+                                                    </a>
                                                 {else}
                                                     &nbsp;
                                                 {/if}

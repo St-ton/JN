@@ -198,10 +198,7 @@
                                                         <button type="button" class="btn btn-link px-2" title="{__('details')}"
                                                                 onclick="toggleReferer({$oRedirect->kRedirect});"
                                                                 data-toggle="tooltip">
-                                                            <span class="icon-hover">
-                                                                <span class="fal fa-list"></span>
-                                                                <span class="fas fa-list"></span>
-                                                            </span>
+                                                            <span class="fal fa-chevron-circle-down rotate-180 font-size-lg"></span>
                                                         </button>
                                                     </div>
                                                 {/if}

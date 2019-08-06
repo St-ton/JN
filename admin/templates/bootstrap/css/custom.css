@@ -128,8 +128,6 @@
   padding-bottom: 1em;
 }
 .backend-wrapper > .backend-sidebar > .backend-navigation .backend-menu.toplevel > li > .backend-root-label > a {
-  color: #7dcdfe;
-  font-weight: bold;
   padding: 0.75em 0;
   border-bottom: 1.5px solid #5cbcf6;
   text-transform: uppercase;
@@ -154,6 +152,9 @@
   color: #fff;
   border-bottom: none;
 }
+.backend-wrapper > .backend-sidebar > .backend-navigation .backend-menu.secondlevel > li.current {
+  background-color: #0b6aa2;
+}
 .backend-wrapper > .backend-sidebar > .backend-navigation .backend-menu.secondlevel > li.current > a {
   font-weight: bold;
 }
@@ -168,7 +169,7 @@
 }
 .backend-wrapper > .backend-sidebar > .backend-navigation .backend-menu.secondlevel > li > a > .fa {
   font-size: 0.75em;
-  color: #7dcdfe;
+  color: #fff;
 }
 .backend-wrapper > .backend-sidebar > .backend-navigation .backend-menu.secondlevel > li > a > .fa:before {
   content: "\f078";
@@ -178,11 +179,11 @@
   overflow: hidden;
 }
 .backend-wrapper > .backend-sidebar > .backend-navigation .backend-menu.secondlevel > li.expanded > a {
-  background-color: #5cbcf6;
-  border-left: 6px solid #0b6aa2;
+  background-color: #0b6aa2;
+  border-left: 6px solid #5cbcf6;
 }
 .backend-wrapper > .backend-sidebar > .backend-navigation .backend-menu.secondlevel > li.expanded > a > .fa {
-  color: #0b6aa2;
+  color: #fff;
 }
 .backend-wrapper > .backend-sidebar > .backend-navigation .backend-menu.secondlevel > li.expanded > a > .fa:before {
   content: "\f077";
@@ -191,7 +192,7 @@
   height: auto;
 }
 .backend-wrapper > .backend-sidebar > .backend-navigation .backend-menu.thirdlevel > li {
-  background-color: #5cbcf6;
+  background-color: #0b6aa2;
   font-size: 0.85em;
   list-style-type: disc;
 }
@@ -199,7 +200,6 @@
   padding-left: 1.5em;
 }
 .backend-wrapper > .backend-sidebar > .backend-navigation .backend-menu.thirdlevel > li.current > a {
-  color: #0b6aa2;
   font-weight: bold;
 }
 .backend-wrapper > .backend-sidebar > .backend-navigation .backend-root-menu-icon-0:before {
@@ -992,10 +992,6 @@ li.filestate {
   box-shadow: none;
   border-radius: 0;
   border: inherit;
-}
-.nav > li > a {
-  padding-left: 10px;
-  padding-right: 10px;
 }
 .navbar-form.navbar-right:last-child {
   margin-right: 0;
@@ -1940,7 +1936,7 @@ pre#debug b {
   right: 0;
   bottom: 0;
   left: 0;
-  z-index: 1040;
+  z-index: 1030;
   transition: opacity 300ms ease-in-out;
   -webkit-transition: opacity 300ms ease-in-out;
   background-color: #000;
@@ -2664,5 +2660,13 @@ input[type=number] {
 .search-page .dropdown-item {
   display: flex;
   flex-direction: row;
+}
+[aria-expanded="true"] .rotate-180 {
+  -webkit-transform: rotate(180deg);
+  transform: rotate(180deg);
+  font-size: 10px;
+}
+.rotate-180 {
+  font-size: 10px;
 }
 /*# sourceMappingURL=custom.css.map */

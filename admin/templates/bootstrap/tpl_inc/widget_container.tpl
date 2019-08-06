@@ -5,6 +5,7 @@
                 <div class="widget-head card-header">
                     <span class="widget-title">{$oWidget->cTitle}</span>
                     <span class="options"></span>
+                    <hr class="mb-n3">
                 </div>
                 <div class="widget-content
                             {if $oWidget->hasBody === true}card-body{/if}

@@ -155,7 +155,7 @@
                         {if $mailTemplate->getModuleID() !== 'core_jtl_anbieterkennzeichnung'}
                             <div class="form-row">
                                 <label class="col-sm-auto col-form-label" for="cBetreff_{$kSprache}">{__('subject')}:</label>
-                                <div class="col-sm-auto">
+                                <div class="cols-12 col-md-6">
                                     <input class="form-control" type="text" name="cBetreff_{$kSprache}" id="cBetreff_{$kSprache}"
                                            value="{$mailTemplate->getSubject($kSprache)}" tabindex="1" />
                                 </div>

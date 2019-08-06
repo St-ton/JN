@@ -26,7 +26,7 @@
                         {foreach $oKampagneStat_arr as $oKampagneStat}
                             <tr>
                                 {foreach name='kampagnendefs' from=$cMember_arr key=cMember item=cMemberAnzeige}
-                                    <td style="text-align: center;">{$oKampagneStat->$cMember|wordwrap:40:'<br />':true}</td>
+                                    <td>{$oKampagneStat->$cMember|wordwrap:40:'<br />':true}</td>
                                 {/foreach}
                             </tr>
                         {/foreach}

@@ -48,11 +48,12 @@
                                     <td>{$oWarenlager->cBeschreibung}</td>
                                     <td class="text-center">
                                         <div class="btn-group">
-                                            <a class="btn btn-link px-2" data-toggle="collapse" href="#collapse-{$oWarenlager->kWarenlager}" title="{__('edit')}">
-                                                <span class="icon-hover">
-                                                    <span class="fal fa-edit"></span>
-                                                    <span class="fas fa-edit"></span>
-                                                </span>
+                                            <a class="btn btn-link px-2"
+                                               data-toggle="collapse"
+                                               href="#collapse-{$oWarenlager->kWarenlager}"
+                                               title="{__('edit')}"
+                                               aria-expanded="false">
+                                                <span class="fal fa-chevron-circle-down rotate-180 font-size-lg"></span>
                                             </a>
                                         </div>
                                     </td>

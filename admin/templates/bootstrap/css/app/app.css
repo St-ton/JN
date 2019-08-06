@@ -12674,7 +12674,7 @@ body {
 }
 
 #content_wrapper {
-  padding: .5rem .75rem;
+  padding: 1rem 0.5rem;
 }
 @media (min-width: 768px) {
   #content_wrapper {
@@ -12790,7 +12790,6 @@ body {
   width: 15.625rem;
   transition: all 0.2s ease-in-out;
   display: block;
-  white-space: nowrap;
   z-index: 1030;
   position: fixed;
   top: 0;
@@ -13117,11 +13116,11 @@ body {
     opacity: 0;
     visibility: hidden;
   }
-  #topbar:not(.searching) > div:nth-child(2), #topbar :not(.searching) > div:nth-child(3) {
+  #topbar:not(.searching) > div:nth-child(2), #topbar:not(.searching) > div:nth-child(3) {
     display: initial;
   }
-  #topbar.searching > div:nth-child(2), #topbar .searching > div:nth-child(3) {
-    display: block;
+  #topbar.searching > div:nth-child(2), #topbar.searching > div:nth-child(3) {
+    display: none;
   }
   #topbar.searching .search {
     flex: 0 0 100%;

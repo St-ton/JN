@@ -19,8 +19,7 @@
     {/if}
     <td>
         <div class="custom-control custom-checkbox d-inline-block">
-            <input class="custom-control-input" class="left{if ($nPage !== 0 && is_array($oBox->getFilter($nPage))) || ($nPage === 0 && !\Functional\true($oBox->getFilter()) && !\Functional\false($oBox->getFilter()))} tristate{/if}"
-                   style="margin-right: 5px;"
+            <input class="custom-control-input {if ($nPage !== 0 && is_array($oBox->getFilter($nPage))) || ($nPage === 0 && !\Functional\true($oBox->getFilter()) && !\Functional\false($oBox->getFilter()))} tristate{/if}"
                    type="checkbox"
                    name="aktiv[]"
                    id="box-id-{$oBox->getID()}"

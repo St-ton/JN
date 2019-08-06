@@ -190,7 +190,7 @@
                                             {/if}
                                             {foreach name='kampagnendefs' from=$oKampagneStatDef_arr key=kKampagneDef item=oKampagneStatDef_arrItem}
                                                 {if $kKampagneDef !== 'cDatum'}
-                                                    <td style="text-align: center;">
+                                                    <td>
                                                         <a href="kampagne.php?kKampagne={$oKampagne->kKampagne}&defdetail=1&kKampagneDef={$kKampagneDef}&cStamp={$kKey}&token={$smarty.session.jtl_token}">
                                                             {$oKampagneStat_arr[$kKey][$kKampagneDef]}
                                                         </a>

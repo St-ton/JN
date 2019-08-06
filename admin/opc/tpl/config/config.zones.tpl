@@ -38,7 +38,7 @@
                     <input type="text" class="form-control" id="zone-product-{$propname}" placeholder="{__('products')}">
                     <div class="input-group-append">
                         <button type="button" class="btn primary" id="banner-del-product">
-                            <i class="fa fa-times"></i>
+                            <i class="fas fa-times"></i>
                         </button>
                     </div>
                 </div>

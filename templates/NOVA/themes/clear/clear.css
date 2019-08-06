@@ -17385,7 +17385,7 @@ a.nice-deco::after {
 .attr-characteristica::before,
 .content-wrapper a::before,
 a.nice-deco::before {
-  width: 0%;
+  width: 0;
   left: 0;
   bottom: 0;
   transition: width ease 0.4s;

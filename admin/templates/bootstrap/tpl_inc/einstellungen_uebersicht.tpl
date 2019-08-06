@@ -8,7 +8,7 @@
 {/if}
 
 {include file='tpl_inc/seite_header.tpl' cTitel=__('settings') cBeschreibung=__('preferencesDesc') cDokuURL=__('preferencesURL')}
-<div id="content" class="container-fluid">
+<div id="content">
     <div class="table-responsive">
         <table class="list table">
             <tbody>

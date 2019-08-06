@@ -77,44 +77,39 @@ $(document).ready(function() {
 {/if}
 
 {include file='tpl_inc/seite_header.tpl' cTitel=$cTitel cBeschreibung=__('benutzerDesc')}
-<div id="content" class="container-fluid">
+<div id="content">
     <form class="navbar-form" action="benutzerverwaltung.php" method="post">
         {$jtl_token}
         <div id="settings" class="settings">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">{__('general')}</h3>
+            <div class="card">
+                <div class="card-header">
+                    <div class="subheading1">{__('general')}</div>
+                    <hr class="mb-n3">
                 </div>
-                <div class="panel-body">
+                <div class="card-body">
                     <div class="item">
-                        <div class="input-group{if isset($cError_arr.cName)} error{/if}">
-                            <span class="input-group-addon">
-                                <label for="cName">{__('preSurName')}</label>
-                            </span>
-                            <span class="input-group-wrap">
+                        <div class="form-group form-row align-items-center{if isset($cError_arr.cName)} error{/if}">
+                            <label class="col col-sm-4 col-form-label text-sm-right" for="cName">{__('preSurName')}:</label>
+                            <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                 <input id="cName" class="form-control" type="text" name="cName" value="{if isset($oAccount->cName)}{$oAccount->cName}{/if}" />
-                            </span>
+                            </div>
                             {if isset($cError_arr.cName)}<span class="input-group-addon error" title="{__('FillOut')}"><i class="fa fa-exclamation-triangle"></i></span>{/if}
                         </div>
                     </div>
                     <div class="item">
-                        <div class="input-group{if isset($cError_arr.cMail)} error{/if}">
-                            <span class="input-group-addon">
-                                <label for="cMail">{__('emailAddress')}</label>
-                            </span>
-                            <span class="input-group-wrap">
+                        <div class="form-group form-row align-items-center{if isset($cError_arr.cMail)} error{/if}">
+                            <label class="col col-sm-4 col-form-label text-sm-right" for="cMail">{__('emailAddress')}:</label>
+                            <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                 <input id="cMail" class="form-control" type="text" name="cMail" value="{if isset($oAccount->cMail)}{$oAccount->cMail}{/if}" />
-                            </span>
+                            </div>
                             {if isset($cError_arr.cMail)}<span class="input-group-addon error" title="{__('FillOut')}"><i class="fa fa-exclamation-triangle"></i></span>{/if}
                         </div>
                     </div>
                     <div class="item">
-                        <div class="input-group{if isset($cError_arr.kSprache)} error{/if}">
-                            <span class="input-group-addon">
-                                <label for="language">{__('language')}</label>
-                            </span>
-                            <span class="input-group-wrap">
-                                <select id="language" class="form-control" name="language">
+                        <div class="form-group form-row align-items-center{if isset($cError_arr.kSprache)} error{/if}">
+                            <label class="col col-sm-4 col-form-label text-sm-right" for="language">{__('language')}:</label>
+                            <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                <select id="language" class="custom-select" name="language">
                                     {foreach $languages as $langTag => $langName}
                                         <option value="{$langTag}"
                                                 {if isset($oAccount->language) && $oAccount->language === $langTag}
@@ -124,25 +119,24 @@ $(document).ready(function() {
                                         </option>
                                     {/foreach}
                                 </select>
-                            </span>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">{__('logindata')}</h3>
+            <div class="card">
+                <div class="card-header">
+                    <div class="subheading1">{__('logindata')}</div>
+                    <hr class="mb-n3">
                 </div>
-                <div class="panel-body">
+                <div class="card-body">
                     <div class="item">
-                        <div class="input-group{if isset($cError_arr.cLogin)} error{/if}">
-                            <span class="input-group-addon">
-                                <label for="cLogin">{__('username')}</label>
-                            </span>
-                            <span class="input-group-wrap">
+                        <div class="form-group form-row align-items-center{if isset($cError_arr.cLogin)} error{/if}">
+                            <label class="col col-sm-4 col-form-label text-sm-right" for="cLogin">{__('username')}:</label>
+                            <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                 <input id="cLogin" class="form-control" type="text" name="cLogin" value="{if isset($oAccount->cLogin)}{$oAccount->cLogin}{/if}">
-                            </span>
+                            </div>
                             {if isset($cError_arr.cLogin) && $cError_arr.cLogin == 1}
                                 <span class="input-group-addon error" title="{__('FillOut')}"><i class="fa fa-exclamation-triangle"></i></span>
                             {elseif isset($cError_arr.cLogin) && $cError_arr.cLogin == 2}
@@ -153,65 +147,70 @@ $(document).ready(function() {
                     </div>
 
                     <div class="item">
-                        <div class="input-group{if isset($cError_arr.cPass)} error{/if}">
-                            <span class="input-group-addon">
-                                <label for="cPass">{__('password')}</label>
-                            </span>
-                            <span class="input-group-wrap">
+                        <div class="form-group form-row align-items-center{if isset($cError_arr.cPass)} error{/if}">
+                            <label class="col col-sm-4 col-form-label text-sm-right" for="cPass">{__('password')}:</label>
+                            <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                 <input id="cPass" class="form-control" type="text" name="cPass" autocomplete="off" />
-                            </span>
-                            <span class="input-group-addon">
+                            </div>
+                            <div class="col-auto ml-sm-n4 order-2 order-sm-3">
                                 <button type="button" onclick="ioCall('getRandomPassword');return false;"
-                                        class="btn btn-info btn-xs" title="{__('passwordGenerate')}">
-                                    <i class="fa fa-random"></i>
+                                        class="btn btn-link p-0" title="{__('passwordGenerate')}">
+                                    <span class="icon-hover">
+                                        <span class="fal fa-random"></span>
+                                        <span class="fas fa-random"></span>
+                                    </span>
                                 </button>
-                            </span>
-                            {if isset($cError_arr.cPass)}<span class="input-group-addon error" title="{__('FillOut')}"><i class="fa fa-exclamation-triangle"></i></span>{else}<span class="input-group-addon"><i class="fa fa-wrench"></i></span>{/if}
+                                {if isset($cError_arr.cPass)}
+                                    <span class="input-group-addon error" title="{__('FillOut')}">
+                                        <i class="fa fa-exclamation-triangle"></i>
+                                    </span>
+                                {/if}
+                            </div>
                         </div>
                     </div>
 
                     {if isset($oAccount->kAdminlogingruppe) && $oAccount->kAdminlogingruppe > 1}
                         <div class="item">
-                            <div class="input-group">
-                            <span class="input-group-addon">
-                                <label for="tmp_check">{__('temporaryAccess')}</label>
-                            </span>
-                            <span class="input-group-wrap">
-                                <span class="input-group-checkbox-wrap">
-                                    <input class="" type="checkbox" id="tmp_check" name="dGueltigBisAktiv" value="1"{if (isset($oAccount->dGueltigBis) && $oAccount->dGueltigBis !== null)} checked="checked"{/if} />
-                                </span>
-                            </span>
+                            <div class="form-group form-row align-items-center">
+                                <label class="col col-sm-4 col-form-label text-sm-right" for="tmp_check">{__('temporaryAccess')}:</label>
+                                <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                    <span class="input-group-checkbox-wrap">
+                                        <div class="custom-control custom-checkbox">
+                                            <input class="custom-control-input" class="" type="checkbox" id="tmp_check" name="dGueltigBisAktiv" value="1"{if (isset($oAccount->dGueltigBis) && $oAccount->dGueltigBis !== null)} checked="checked"{/if} />
+                                            <label class="custom-control-label" for="tmp_check"></label>
+                                        </div>
+                                    </span>
+                                </div>
                             </div>
                         </div>
 
                         <div class="item{if !empty($cError_arr.dGueltigBis)} error{/if}"{if !$oAccount->dGueltigBis || $oAccount->dGueltigBis == null} style="display: none;"{/if} id="tmp_date">
-                            <div class="input-group">
-                                <span class="input-group-addon">
-                                    <label for="dGueltigBis">{__('tillInclusive')}</label>
-                                </span>
-                                <input class="form-control" type="text" name="dGueltigBis" value="{if $oAccount->dGueltigBis}{$oAccount->dGueltigBis|date_format:'%d.%m.%Y %H:%M:%S'}{/if}" id="dGueltigBis" />
-                                {if !empty($cError_arr.dGueltigBis)}<span class="input-group-addon error" title="{__('FillOut')}"><i class="fa fa-exclamation-triangle"></i></span>{/if}
+                            <div class="form-group form-row align-items-center">
+                                <label class="col col-sm-4 col-form-label text-sm-right" for="dGueltigBis">{__('tillInclusive')}</label>
+                                <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                    <input class="form-control" type="text" name="dGueltigBis" value="{if $oAccount->dGueltigBis}{$oAccount->dGueltigBis|date_format:'%d.%m.%Y %H:%M:%S'}{/if}" id="dGueltigBis" />
+                                    {if !empty($cError_arr.dGueltigBis)}<span class="input-group-addon error" title="{__('FillOut')}"><i class="fa fa-exclamation-triangle"></i></span>{/if}
+                                </div>
                             </div>
                         </div>
                     {/if}
                 </div>
             </div>
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">{__('twoFactorAuth')}</h3>
+            <div class="card">
+                <div class="card-header">
+                    <div class="subheading1">{__('twoFactorAuth')}</div>
+                    <hr class="mb-n3">
                 </div>
-                <div class="panel-body">
+                <div class="card-body">
                     <div class="item">
-                        <div class="input-group">
-                            <span class="input-group-addon">
-                                <label for="b2FAauth">{__('activate')}</label>
-                            </span>
-                            <span class="input-group-wrap">
-                                <select id="b2FAauth" class="form-control" name="b2FAauth">
+                        <div class="form-group form-row align-items-center">
+                            <label class="col col-sm-4 col-form-label text-sm-right" for="b2FAauth">{__('activate')}:</label>
+                            <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                <select id="b2FAauth" class="custom-select" name="b2FAauth">
                                     <option value="0"{if !isset($oAccount->b2FAauth) || (isset($oAccount->b2FAauth) && (bool)$oAccount->b2FAauth === false)} selected="selected"{/if}>{__('no')}</option>
                                     <option value="1"{if isset($oAccount->b2FAauth) && (bool)$oAccount->b2FAauth === true} selected="selected"{/if}>{__('yes')}</option>
                                 </select>
-                            </span>
+                            </div>
                         </div>
 
                         {literal}
@@ -279,10 +278,12 @@ $(document).ready(function() {
                                 <div class="modal-dialog">
                                     <div class="modal-content">
                                         <div class="modal-header">
-                                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                                            <h4 class="modal-title">{__('emergencyCode')}</h4>
+                                            <button type="button" class="close" data-dismiss="modal">
+                                                <i class="fal fa-times"></i>
+                                            </button>
+                                            <h2 class="modal-title">{__('emergencyCode')}</h2>
                                         </div>
-                                        <div class="modal-body">
+                                        <div class="modal-body py-5">
                                             <div id="EmergencyCodes">
                                                 <div class="iframewrapper">
                                                     <iframe src="" id="printframe" name="printframe" frameborder="0" width="100%" height="300" align="middle"></iframe>
@@ -290,10 +291,16 @@ $(document).ready(function() {
                                             </div>
                                         </div>
                                         <div class="modal-footer">
-                                            <div class="btn-group">
-                                                <button class="btn btn-default" type="button" data-dismiss="modal">Schließen</button>
-                                                <button class="btn btn-primary" type="button" onclick="printframe.print();">Drucken</button>
-                                                <button class="btn btn-danger" type="button" onclick="showEmergencyCodes('forceReload');">{__('codeCreateAgain')}</button>
+                                            <div class="row">
+                                                <div class="ml-auto col-sm-6 col-xl-auto mb-2">
+                                                    <button class="btn btn-outline-primary btn-block" type="button" data-dismiss="modal">Schließen</button>
+                                                </div>
+                                                <div class="col-sm-6 col-xl-auto mb-2">
+                                                    <button class="btn btn-outline-primary btn-block" type="button" onclick="printframe.print();">Drucken</button>
+                                                </div>
+                                                <div class="col-sm-6 col-xl-auto">
+                                                    <button class="btn btn-danger btn-block" type="button" onclick="showEmergencyCodes('forceReload');">{__('codeCreateAgain')}</button>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -302,9 +309,17 @@ $(document).ready(function() {
                             {* Emergency-Code-Modal  END *}
                             {__('clickHereToCreateQR')}<br>
                             <br>
-                            <div class="btn-group">
-                                <button class="btn btn-primary" type="button" onclick="createNewSecret();">{__('codeCreate')}</button>
-                                <button class="btn btn-warning" type="button" onclick="showEmergencyCodes();">{__('emergencyCodeCreate')}</button>
+                            <div class="row">
+                                <div class="col-sm-auto mb-3">
+                                    <button class="btn btn-warning btn-block" type="button" onclick="showEmergencyCodes();">
+                                        {__('emergencyCodeCreate')}
+                                    </button>
+                                </div>
+                                <div class="col-sm-auto">
+                                    <button class="btn btn-primary btn-block" type="button" onclick="createNewSecret();">
+                                        {__('codeCreate')}
+                                    </button>
+                                </div>
                             </div>
                         </div>
 
@@ -312,25 +327,24 @@ $(document).ready(function() {
                 </div>
             </div>
             {if !isset($oAccount->kAdminlogingruppe) || (isset($nAdminCount) && !($oAccount->kAdminlogingruppe == 1 && $nAdminCount <= 1))}
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">{__('permissions')}</h3>
+                <div class="card">
+                    <div class="card-header">
+                        <div class="subheading1">{__('permissions')}</div>
+                        <hr class="mb-n3">
                     </div>
-                    <div class="panel-body">
+                    <div class="card-body">
                         <div class="item">
-                            <div class="input-group">
-                                <span class="input-group-addon">
-                                    <label for="kAdminlogingruppe">{__('userGroup')}</label>
-                                </span>
-                                <span class="input-group-wrap">
-                                    <select id="kAdminlogingruppe" class="form-control" name="kAdminlogingruppe">
+                            <div class="form-group form-row align-items-center">
+                                <label class="col col-sm-4 col-form-label text-sm-right" for="kAdminlogingruppe">{__('userGroup')}:</label>
+                                <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                    <select id="kAdminlogingruppe" class="custom-select" name="kAdminlogingruppe">
                                         {foreach $oAdminGroup_arr as $oGroup}
                                             <option value="{$oGroup->kAdminlogingruppe}" {if isset($oAccount->kAdminlogingruppe) && $oAccount->kAdminlogingruppe == $oGroup->kAdminlogingruppe}selected="selected"{/if}>
                                                 {$oGroup->cGruppe} ({$oGroup->nCount})
                                             </option>
                                         {/foreach}
                                     </select>
-                                </span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -343,15 +357,23 @@ $(document).ready(function() {
                 {$extContent}
             {/if}
         </div>
-        <div class="panel-footer">
-            <div class="btn-group">
-                <input type="hidden" name="action" value="account_edit" />
-                {if isset($oAccount->kAdminlogin) && $oAccount->kAdminlogin > 0}
-                    <input type="hidden" name="kAdminlogin" value="{$oAccount->kAdminlogin}" />
-                {/if}
-                <input type="hidden" name="save" value="1" />
-                <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
-                <a class="btn btn-danger" href="benutzerverwaltung.php"><i class="fa fa-exclamation"></i> {__('cancel')}</a>
+        <div class="card-footer save-wrapper">
+            <div class="row">
+                <div class="ml-auto col-sm-6 col-xl-auto">
+                    <a class="btn btn-outline-primary btn-block mb-2" href="benutzerverwaltung.php">
+                        {__('cancelWithIcon')}
+                    </a>
+                </div>
+                <div class="col-sm-6 col-xl-auto">
+                    <input type="hidden" name="action" value="account_edit" />
+                    {if isset($oAccount->kAdminlogin) && $oAccount->kAdminlogin > 0}
+                        <input type="hidden" name="kAdminlogin" value="{$oAccount->kAdminlogin}" />
+                    {/if}
+                    <input type="hidden" name="save" value="1" />
+                    <button type="submit" class="btn btn-primary btn-block">
+                        {__('saveWithIcon')}
+                    </button>
+                </div>
             </div>
         </div>
     </form>

@@ -36,7 +36,7 @@
         <div class="btn-group">
             <a href="zahlungsarten.php" class="btn btn-default"><i class="fa fa-angle-double-left"></i> {__('pageBack')}</a>
             <button class="btn btn-danger reset" data-toggle="modal" data-target="#reset-payment-modal" data-href="zahlungsarten.php?a=logreset&kZahlungsart={$paymentData->kZahlungsart}&token={$smarty.session.jtl_token}">
-            <i class="fa fa-trash"></i> {__('logReset')}</button>
+            <i class="fas fa-trash-alt"></i> {__('logReset')}</button>
         </div>
     {else}
         <div class="alert alert-info">

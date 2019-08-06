@@ -85,3 +85,6 @@ msgstr " Bewertung(en) wurde(n) erfolgreich gelöscht."
 
 msgid "successRatingCommentDelete"
 msgstr "Die Antwort wurde erfolgreich gelöscht."
+
+msgid "linkItemShop"
+msgstr "Artikel im Shop ansehen."

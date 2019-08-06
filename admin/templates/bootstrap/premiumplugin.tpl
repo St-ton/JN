@@ -144,7 +144,7 @@
                                     <input type="hidden" name="pluginverwaltung_uebersicht" value="1"/>
                                     <input type="hidden" name="cVerzeichnis[]" value="{$pp->getPluginID()}"/>
                                     <button type="submit" class="btn btn-primary">
-                                        <i class="fa fa-plus"></i> Jetzt dieses Plugin installieren
+                                        <i class="fal fa-plus"></i> Jetzt dieses Plugin installieren
                                     </button>
                                 </form>
                             {elseif !$pp->getIsActivated()}
@@ -154,7 +154,7 @@
                                     <input type="hidden" name="pluginverwaltung_uebersicht" value="1"/>
                                     <input type="hidden" name="kPlugin[]" value="{$pp->getKPlugin()}"/>
                                     <button type="submit" class="btn btn-primary">
-                                        <i class="fa fa-plus"></i> Jetzt dieses Plugin aktivieren
+                                        <i class="fal fa-plus"></i> Jetzt dieses Plugin aktivieren
                                     </button>
                                 </form>
                             {else}
@@ -188,10 +188,12 @@
                             <div class="modal-dialog modal-lg" role="document">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                                        <h4 class="modal-title">Screenshot {$screenShot@iteration}</h4>
+                                        <button type="button" class="close" data-dismiss="modal">
+                                            <i class="fal fa-times"></i>
+                                        </button>
+                                        <h2 class="modal-title">Screenshot {$screenShot@iteration}</h2>
                                     </div>
-                                    <div class="modal-body">
+                                    <div class="modal-body py-5">
                                         <img class="img-responsive" src="{$screenShot->preview}" />
                                     </div>
                                 </div>
@@ -253,33 +255,35 @@
         <hr>
         <div class="row">
             <div class="col-md-6" id="plugin-info-1">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">Ihre Vorteile</h3>
+                <div class="card">
+                    <div class="card-header">
+                        <div class="subheading1">Ihre Vorteile</div>
+                        <hr class="mb-n3">
                     </div>
-                    <div class="panel-body">
+                    <div class="card-body">
                         <ul class="advantages list-unstyled">
                             {foreach $pp->getAdvantages() as $advantage}
-                                <li class="advantage"><i class="fa fa-check fake-list-style-image"></i> {$advantage}</li>
+                                <li class="advantage"><i class="fal fa-check text-success fake-list-style-image"></i> {$advantage}</li>
                             {/foreach}
                         </ul>
                     </div>
                 </div>
             </div>
             <div class="col-md-6" id="plugin-info-2">
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">So funktioniert's</h3>
+                <div class="card">
+                    <div class="card-header">
+                        <div class="subheading1">So funktioniert's</div>
+                        <hr class="mb-n3">
                     </div>
-                    <div class="panel-body">
+                    <div class="card-body">
                         <ul class="howtos list-unstyled">
                             {foreach $pp->getHowTos() as $howTo}
-                                <li class="howto"><i class="fa fa-check fake-list-style-image"></i> {$howTo}
+                                <li class="howto"><i class="fal fa-check text-success fake-list-style-image"></i> {$howTo}
                                 </li>
                             {/foreach}
                         </ul>
                     </div>
-                    <div class="panel-footer">
+                    <div class="card-footer">
                         <span class="btn-group">
                             {if $pp->getExists()}
                                 {if !$pp->getIsInstalled()}
@@ -288,7 +292,7 @@
                                         <input type="hidden" name="installieren" value="1"/>
                                         <input type="hidden" name="pluginverwaltung_uebersicht" value="1"/>
                                         <input type="hidden" name="cVerzeichnis[]" value="{$pp->getPluginID()}"/>
-                                        <button type="submit" class="btn btn-primary"><i class="fa fa-plus"></i> Plugin installieren</button>
+                                        <button type="submit" class="btn btn-primary"><i class="fal fa-plus"></i> Plugin installieren</button>
                                     </form>
                                 {elseif !$pp->getIsActivated()}
                                     <form method="post" action="pluginverwaltung.php" class="form-inline">
@@ -296,7 +300,7 @@
                                         <input type="hidden" name="aktivieren" value="1"/>
                                         <input type="hidden" name="pluginverwaltung_uebersicht" value="1"/>
                                         <input type="hidden" name="kPlugin[]" value="{$pp->getKPlugin()}"/>
-                                        <button type="submit" class="btn btn-primary"><i class="fa fa-plus"></i> Plugin aktivieren</button>
+                                        <button type="submit" class="btn btn-primary"><i class="fal fa-plus"></i> Plugin aktivieren</button>
                                     </form>
                                 {else}
                                     <button class="btn btn-default disabled">bereits aktiviert</button>

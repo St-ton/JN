@@ -1,5 +1,5 @@
 <div id="page">
-    <div id="content" class="container-fluid">
+    <div id="content">
         <form method="post" action="newsletter.php">
             {$jtl_token}
             <div id="welcome" class="post">
@@ -22,7 +22,7 @@
             <h3>{__('newsletterHtml')}:</h3>
             <p>{$oNewsletterHistory->cHTMLStatic}</p>
             <p class="submit-wrapper">
-                <button class="btn btn-primary" name="back" type="submit" value="{__('back')}"><i class="fa fa-angle-double-left"></i> {__('back')}</button>
+                <button class="btn btn-primary" name="back" type="submit" value="{__('back')}">{__('goBack')}</button>
             </p>
         </form>
     </div>

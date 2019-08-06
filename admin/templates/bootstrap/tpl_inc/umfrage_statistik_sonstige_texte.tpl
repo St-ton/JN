@@ -1,5 +1,5 @@
 <div id="page">
-    <div id="content" class="container-fluid">
+    <div id="content">
         <div id="welcome" class="post">
             <h2 class="title"><span>{__('poll')}</span></h2>
             <div class="content">

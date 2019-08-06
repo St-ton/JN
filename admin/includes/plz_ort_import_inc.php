@@ -296,6 +296,7 @@ function plzimportActionIndex(JTLSmarty $smarty, array &$messages): void
  */
 function plzimportActionUpdateIndex(): array
 {
+    Shop::Container()->getGetText()->loadAdminLocale('pages/plz_ort_import');
     Shop::Smarty()->assign('oPlzOrt_arr', plzimportGetPLZOrt());
 
     return ['listHTML' => Shop::Smarty()->fetch('tpl_inc/plz_ort_import_index_list.tpl')];

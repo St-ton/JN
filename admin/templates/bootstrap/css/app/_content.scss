@@ -1,4 +1,3 @@
-
 #content_wrapper { padding: map-get($spacers, 1) * 4 map-get($spacers, 1) * 2;
 	@include media-breakpoint-up(md) { padding: map-get($spacers, 1) * 8 map-get($spacers, 1) * 11; }
 	@include media-breakpoint-up(xxl) { padding: map-get($spacers, 1) * 16 map-get($spacers, 1) * 22; }

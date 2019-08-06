@@ -46,11 +46,11 @@
     {if isset($linechart)}
         <br>
         {include file='tpl_inc/linechart_inc.tpl' linechart=$linechart headline=$headline id='linechart' width='100%'
-            height='400px' ylabel=$ylabel href=false legend=false ymin='0'}
+            height='400px' ylabel=$ylabel href=false legend=false ymin='0' chartpad='1.5rem'}
     {elseif isset($piechart)}
         <br>
         {include file='tpl_inc/piechart_inc.tpl' piechart=$piechart headline=$headline id='piechart' width='100%'
-            height='400px'}
+            height='400px' chartpad='1.5rem'}
     {/if}
     {if isset($oStat_arr) && $oStat_arr|@count > 0}
         <div class="card">

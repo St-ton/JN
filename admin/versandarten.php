@@ -510,4 +510,3 @@ $smarty->assign('fSteuersatz', $_SESSION['Steuersatz'][$taxRateKeys[0]])
     ->assign('step', $step)
     ->assign('sprachen', Sprache::getAllLanguages())
     ->display('versandarten.tpl');
-

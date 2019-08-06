@@ -94,7 +94,7 @@ if (Shop::$kVariKindArtikel > 0) {
         return;
     }
     $bCanonicalURL = $conf['artikeldetails']['artikeldetails_canonicalurl_varkombikind'] !== 'N';
-    $cCanonicalURL = $AktuellerArtikel->baueVariKombiKindCanonicalURL(SHOP_SEO, $AktuellerArtikel, $bCanonicalURL);
+    $cCanonicalURL = $AktuellerArtikel->baueVariKombiKindCanonicalURL($AktuellerArtikel, $bCanonicalURL);
 }
 if ($conf['preisverlauf']['preisverlauf_anzeigen'] === 'Y' && Frontend::getCustomerGroup()->mayViewPrices()) {
     Shop::$kArtikel = Shop::$kVariKindArtikel > 0

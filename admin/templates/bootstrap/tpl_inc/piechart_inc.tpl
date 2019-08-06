@@ -8,7 +8,7 @@
 *}
 
 {if $piechart->getActive()}
-    <div id="{$id}" style="background: {$chartbg|default:'#fff'}; width: {$width}; height: {$height}; padding: {$chartpad|default:'0'};"></div>/
+    <div id="{$id}" style="background: {$chartbg|default:'#fff'}; width: {$width}; height: {$height}; padding: {$chartpad|default:'0'};"></div>
 
 
     <script type="text/javascript">

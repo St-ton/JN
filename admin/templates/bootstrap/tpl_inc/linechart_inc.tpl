@@ -14,7 +14,7 @@
 {config_load file="$lang.conf" section='statistics'}
  
 {if $linechart->getActive()}
-    <div id="{$id}" style="background: {$chartbg|default:'#fff'}; width: {$width}; height: {$height}; padding: {$chartpad|default:'0'};"></div>/
+    <div id="{$id}" style="background: {$chartbg|default:'#fff'}; width: {$width}; height: {$height}; padding: {$chartpad|default:'0'};"></div>
     
     <script type="text/javascript">
         var chart;

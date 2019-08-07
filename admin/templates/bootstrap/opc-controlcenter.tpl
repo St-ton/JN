@@ -42,10 +42,20 @@
                                     {assign var=publicPageRow value=$opcPageDB->getPublicPageRow($page->cPageId)}
                                     <tr>
                                         <td>
-                                            <a href="{$URL_SHOP}{$page->cPageUrl}" target="_blank">{$page->cPageUrl}</a>
+                                            <a href="{$URL_SHOP}{$page->cPageUrl}" target="_blank">
+                                                <span class="icon-hover">
+                                                    <span class="far fa-link"></span><span class="fas fa-link"></span>
+                                                </span>
+                                                {$page->cPageUrl}
+                                            </a>
                                         </td>
                                         <td>
-                                            <a href="#page-{$pageIdHash}" data-toggle="collapse">{$page->cPageId}</a>
+                                            <a href="#page-{$pageIdHash}" data-toggle="collapse">
+                                                <span class="icon-hover">
+                                                    <span class="far fa-info"></span><span class="fas fa-info"></span>
+                                                </span>
+                                                {$page->cPageId}
+                                            </a>
                                         </td>
                                         <td class="text-center">
                                             <div class="btn-group">
@@ -158,7 +168,7 @@
         <div class="tab-pane fade" id="portlets">
             <div>
                 <div class="table-responsive">
-                    <table class="list table">
+                    <table class="list table table-striped">
                         <thead>
                         <tr>
                             <th>{__('name')}</th>
@@ -190,7 +200,7 @@
                 {assign var=blueprints value=$opc->getBlueprints()}
                 {if $blueprints|@count > 0}
                     <div class="table-responsive">
-                        <table class="list table">
+                        <table class="list table table-striped">
                             <thead>
                             <tr>
                                 <th>{__('name')}</th>

@@ -82,7 +82,7 @@
                             <div class="subheading1">{__('reviews')}</div>
                             <hr class="mb-3">
                             <div class="table-responsive">
-                                <table class="list table">
+                                <table class="table">
                                     <thead>
                                     <tr>
                                         <th class="check"></th>
@@ -123,8 +123,8 @@
                                             </td>
                                         </tr>
                                         <tr>
-                                            <td>&nbsp;</td>
-                                            <td colspan="6">
+                                            <td class="border-top-0">&nbsp;</td>
+                                            <td class="border-top-0" colspan="6">
                                                 <strong>{$oBewertung->cTitel}</strong>
                                                 <p>{$oBewertung->cText}</p>
                                             </td>

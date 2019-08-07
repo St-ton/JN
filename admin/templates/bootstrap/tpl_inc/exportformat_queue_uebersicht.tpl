@@ -24,7 +24,7 @@
                         <hr class="mb-3">
                         {if $oExportformatCron_arr && $oExportformatCron_arr|@count > 0}
                             <div id="tabellenLivesuche" class="table-responsive">
-                                <table class="table table-striped">
+                                <table class="table table-striped table-align-top">
                                     <thead>
                                         <tr>
                                             <th class="text-left" style="width: 10px;">&nbsp;</th>
@@ -141,7 +141,7 @@
                     <div>
                     {if $oExportformatQueueBearbeitet_arr && $oExportformatQueueBearbeitet_arr|@count > 0}
                         <div id="tabellenLivesuche" class="table-responsive">
-                            <table class="table table-striped">
+                            <table class="table table-striped table-align-top">
                                 <thead>
                                     <tr>
                                         <th class="th-1">{__('exportformat')}</th>

@@ -42,7 +42,7 @@
                             <div class="subheading1">{__('ratingsInaktive')}</div>
                             <hr class="mb-3">
                             <div class="table-responsive">
-                                <table  class="table table-striped">
+                                <table  class="table table-striped table-align-top">
                                     <thead>
                                     <tr>
                                         <th class="check">&nbsp;</th>
@@ -127,7 +127,7 @@
                             <div class="subheading1">{__('ratingLast50')}</div>
                             <hr class="mb-3">
                             <div class="table-responsive">
-                                <table class="table table-striped">
+                                <table class="table table-striped table-align-top">
                                     <thead>
                                     <tr>
                                         <th class="check">&nbsp;</th>
@@ -250,7 +250,7 @@
                             <div class="subheading1">{$cArtNr}</div>
                             <hr class="mb-3">
                             <div class="table-responsive">
-                                <table class="table table-striped">
+                                <table class="table table-striped table-align-top">
                                     <thead>
                                     <tr>
                                         <th class="th-1">&nbsp;</th>

@@ -52,7 +52,7 @@
                     </div>
                     <input name="a" type="hidden" value="delete" />
                     <div class="table-responsive">
-                        <table class="list table table-striped">
+                        <table class="list table table-striped table-align-top">
                             <thead>
                             <tr>
                                 <th></th>

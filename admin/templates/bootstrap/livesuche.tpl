@@ -206,8 +206,8 @@
                                             {/if}
                                         </td>
                                     </tr>
-                                </tbody>
                                 {/foreach}
+                                </tbody>
                             </table>
                         </div>
                         <div class="save-wrapper">

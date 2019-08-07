@@ -1310,6 +1310,16 @@ ul.fluid-list .item-extension.item .item-inner {
 .card-header .btn-tooltip.btn-heading {
   margin-right: 16px;
 }
+.table td {
+  vertical-align: middle;
+}
+.table td label {
+  margin-bottom: 0;
+}
+.table-align-top td,
+.table-align-top thead th {
+  vertical-align: top;
+}
 .table-images {
   overflow: hidden;
 }

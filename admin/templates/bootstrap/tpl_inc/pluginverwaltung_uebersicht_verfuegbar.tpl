@@ -80,7 +80,7 @@
                         </div>
                     </div>
 
-                    <table class="list table">
+                    <table class="table table-striped table-align-top">
                         <thead>
                             <tr>
                                 <th></th>

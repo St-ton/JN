@@ -29,7 +29,7 @@
                     <hr class="mb-3">
                     {if $oKampagne_arr|count > 0}
                         <div class="table-responsive">
-                            <table class="table table-striped">
+                            <table class="table table-striped table-align-top">
                                 <thead>
                                     <tr>
                                         <th class="text-left">{__('kampagneName')}</th>
@@ -98,7 +98,7 @@
                             <input type="hidden" name="tab" value="uebersicht" />
                             <input type="hidden" name="delete" value="1" />
                             <div class="table-responsive">
-                                <table class="table table-striped">
+                                <table class="table table-striped table-align-top">
                                     <thead>
                                         <tr>
                                             <th class="check"></th>
@@ -197,7 +197,7 @@
                 </div>
                 {if isset($oKampagne_arr) && $oKampagne_arr|@count > 0 && isset($oKampagneDef_arr) && $oKampagneDef_arr|@count > 0}
                     <div class="table-responsive">
-                        <table class="table table-striped">
+                        <table class="table table-striped table-align-top">
                             <thead>
                                 <tr>
                                     <th class="th-1"></th>

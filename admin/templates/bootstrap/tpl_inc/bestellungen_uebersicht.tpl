@@ -30,7 +30,7 @@
                         <input type="hidden" name="cSuche" value="{$cSuche}" />
                     {/if}
                     <div class="table-responsive">
-                        <table class="list table table-striped">
+                        <table class="table table-striped table-align-top">
                             <thead>
                                 <tr>
                                     <th></th>

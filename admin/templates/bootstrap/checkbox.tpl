@@ -62,7 +62,7 @@
                                 <hr class="mb-3">
                                 <div>
                                     <div class="table-responsive">
-                                        <table class="table table-striped">
+                                        <table class="table table-striped table-align-top">
                                             <thead>
                                                 <tr>
                                                     <th class="th-1">&nbsp;</th>

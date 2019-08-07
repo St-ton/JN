@@ -23,7 +23,7 @@
                     <div class="card-body">
                         {include file='tpl_inc/pagination.tpl' pagination=$pagination}
                         <div class="table-responsive">
-                            <table class="table">
+                            <table class="table table-sm">
                                 <thead>
                                 <tr>
                                     <th class="text-left" width="50%">{__('name')}</th>

@@ -7,7 +7,7 @@
                 {include file='tpl_inc/pagination.tpl' pagination=$pagination}
             {/if}
 
-            <table class="list table table-striped">
+            <table class="list table table-striped table-align-top">
                 <thead>
                 <tr>
                     <th class="th-1"></th>

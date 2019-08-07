@@ -7,7 +7,7 @@
                 <div class="subheading1">{__('pluginListNotActivated')}</div>
                 <hr class="mb-3">
                 <div class="table-responsive">
-                    <table class="list table">
+                    <table class="table table-striped table-align-top">
                         <thead>
                         <tr>
                             <th></th>

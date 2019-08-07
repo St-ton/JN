@@ -77,7 +77,7 @@
             <hr class="mb-n3">
         </div>
         <div class="table-responsive card-body">
-            <table class="table">
+            <table class="table table-align-top">
                 <thead>
                 <tr>
                     <th class="text-left">{__('name')}</th>

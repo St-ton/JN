@@ -60,7 +60,7 @@
                         <div class="subheading1">{__('management')}</div>
                         <hr class="mb-3">
                         <div class="table-responsive">
-                        <table id="cache-type-status" class="table list">
+                        <table id="cache-type-status" class="table table-striped">
                             <thead>
                             <tr>
                                 <th class="text-left"></th>

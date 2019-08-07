@@ -108,7 +108,7 @@
                     <div class="subheading1">{__('invisibleBoxes')}</div>
                 </div>
                 <div class="table-responsive card-body">
-                    <table class="table">
+                    <table class="table table-align-top">
                         <tr class="boxRow">
                             <th class="check">&nbsp;</th>
                             <th>

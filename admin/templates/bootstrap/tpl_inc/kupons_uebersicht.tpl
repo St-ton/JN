@@ -15,7 +15,7 @@
                 <input type="hidden" name="cKuponTyp" id="cKuponTyp" value="{$cKuponTyp}">
                 {if $oKupon_arr|@count > 0}
                     <div class="table-responsive">
-                        <table class="list table">
+                        <table class="list table table-align-top">
                             <thead>
                                 <tr>
                                     <th title="{__('active')}"></th>

@@ -21,6 +21,7 @@ class Iframe
         this.dropTarget         = null;
         this.dragNewPortletCls  = null;
         this.dragNewBlueprintId = 0;
+        this.loadedStylesheets  = [];
     }
 
     init(pagetree)
@@ -143,9 +144,12 @@ class Iframe
 
     loadStylesheet(url, isLess)
     {
-        this
-            .jq('<link rel="stylesheet' + (isLess ? '/less' : '') + '" href="' + url + '">')
-            .appendTo(this.head);
+        if (this.loadedStylesheets.indexOf(url) === -1) {
+            this.loadedStylesheets.push(url);
+            this
+                .jq('<link rel="stylesheet' + (isLess ? '/less' : '') + '" href="' + url + '">')
+                .appendTo(this.head);
+        }
     }
 
     loadScript(url, callback)
@@ -258,12 +262,20 @@ class Iframe
             this.setSelected(this.draggedElm);
 
             if(this.dragNewPortletCls) {
+                let portletCls = this.dragNewPortletCls;
+
                 this.newPortletDropTarget = this.draggedElm;
                 this.setSelected();
                 this.io.createPortlet(this.dragNewPortletCls)
                     .catch(er => {
                         this.newPortletDropTarget.remove();
                         return this.gui.showError(er.error.message);
+                    })
+                    .then(data => {
+                        this.loadStylesheet(
+                            this.shopUrl + '/includes/src/OPC/templates/' + portletCls + '/preview.css'
+                        );
+                        return data;
                     })
                     .then(this.onNewPortletCreated)
                     .then(() => {

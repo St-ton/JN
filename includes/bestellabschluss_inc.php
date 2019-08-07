@@ -1001,7 +1001,8 @@ function setzeSmartyWeiterleitung(Bestellung $order): void
     if ($pluginID > 0) {
         $loader             = Helper::getLoaderByPluginID($pluginID);
         $plugin             = $loader->init($pluginID);
-        $GLOBALS['oPlugin'] = $plugin;
+        global $oPlugin;
+        $oPlugin = $plugin;
         if ($plugin !== null) {
             $methods = $plugin->getPaymentMethods()->getMethodsAssoc();
             require_once $plugin->getPaths()->getVersionedPath() . PFAD_PLUGIN_PAYMENTMETHOD .

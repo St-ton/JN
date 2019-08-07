@@ -4,11 +4,19 @@
 {/if}
 
 {$galleryStyle = $instance->getProperty('galleryStyle')}
+{$images = $instance->getProperty('images')}
 
-{if $galleryStyle === 'columns'}
+{if empty($images)}
+    <div data-portlet="{$instance->getDataAttribute()}" class="opc-Gallery">
+        <div>
+            <img src="{$portlet->getTemplateUrl()|cat:'icon.svg'}" class="opc-Gallery-icon">
+            <span>{__('Gallery')}</span>
+        </div>
+    </div>
+{elseif $galleryStyle === 'columns'}
     <div class="gallery-columns" {$dataStr|default:''}
          id="{$instance->getUid()}">
-        {foreach $instance->getProperty('images') as $key => $image}
+        {foreach $images as $key => $image}
             {$imgAttribs = $instance->getImageAttributes($image.url, $image.alt, '')}
             <a {if $isPreview === false}
                     {if $image.action === 'link'}
@@ -41,7 +49,7 @@
         {$smSum = 0}
         {$mdSum = 0}
         {$xlSum = 0}
-        {foreach $instance->getProperty('images') as $key => $image}
+        {foreach $images as $key => $image}
             {$imgAttribs = $instance->getImageAttributes($image.url, $image.alt, '')}
 
             {if $galleryStyle === 'alternate'}

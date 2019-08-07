@@ -314,6 +314,7 @@
   width: 100%;
   text-align: left;
   margin-bottom: 16px;
+  text-transform: capitalize;
 }
 #portlets .portletGroupBtn .fas {
   float: right;

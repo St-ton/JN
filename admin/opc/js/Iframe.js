@@ -251,7 +251,7 @@ class Iframe
     onPortletDrop(e)
     {
         if(this.dropTarget !== null) {
-            var oldArea = this.draggedElm.parent();
+            let oldArea = this.draggedElm.parent();
 
             this.dropTarget.replaceWith(this.draggedElm);
             this.updateDropTargets();
@@ -265,7 +265,12 @@ class Iframe
                         this.newPortletDropTarget.remove();
                         return this.gui.showError(er.error.message);
                     })
-                    .then(this.onNewPortletCreated);
+                    .then(this.onNewPortletCreated)
+                    .then(() => {
+                        if (this.dragNewPortletGroup && this.dragNewPortletGroup === 'content') {
+                            this.gui.openConfigurator(this.selectedElm);
+                        }
+                    });
             } else if(this.dragNewBlueprintId > 0) {
                 this.newPortletDropTarget = this.draggedElm;
                 this.setSelected();
@@ -284,11 +289,11 @@ class Iframe
 
     onNewPortletCreated(data)
     {
-        var newElement = this.createPortletElm(data);
+        let newElement = this.createPortletElm(data);
 
         this.newPortletDropTarget.replaceWith(newElement);
 
-        var newArea = newElement.parent();
+        let newArea = newElement.parent();
 
         this.pagetree.updateArea(newArea);
         this.setSelected(newElement);
@@ -396,9 +401,14 @@ class Iframe
         this.dropTarget = elm;
     }
 
-    dragNewPortlet(cls)
+    dragNewPortlet(cls, group)
     {
-        this.dragNewPortletCls = cls || null;
+        this.dragNewPortletCls   = cls || null;
+
+        if (group) {
+            this.dragNewPortletGroup = group;
+        }
+
         this.setDragged(this.jq('<i class="fa fa-spinner fa-pulse"></i>'));
     }
 

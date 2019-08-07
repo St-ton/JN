@@ -44,7 +44,7 @@
         <div class="tab-content">
             <div class="tab-pane show active" id="portlets">
                 {foreach $opc->getPortletGroups() as $group}
-                    {assign var="groupId" value=$group->getName()|regex_replace:'/[^a-zA-Z0-9]/':'-'|lower}
+                    {$groupId = $group->getName()|regex_replace:'/[^a-zA-Z0-9]/':'-'|lower}
                     <button class="portletGroupBtn" type="button"
                             data-toggle="collapse" data-target="#collapse-{$groupId}">
                         {$group->getName()} <i class="fas fa-chevron-up"></i>
@@ -52,7 +52,8 @@
                     <div class="collapse show" id="collapse-{$groupId}">
                         {foreach $group->getPortlets() as $i => $portlet}
                             <button type="button" class="portletButton" draggable="true"
-                                    data-portlet-class="{$portlet->getClass()}">
+                                    data-portlet-class="{$portlet->getClass()}"
+                                    data-portlet-group="{$groupId}">
                                 <span class="portletBtnInner">
                                     {$portlet->getButtonHtml()}
                                 </span>

@@ -307,9 +307,12 @@ class GUI
     {
         initDragStart(e);
 
-        var portletBtn = $(e.target).closest('.portletButton');
+        let portletBtn = $(e.target).closest('.portletButton');
 
-        this.iframe.dragNewPortlet(portletBtn.data('portlet-class'));
+        this.iframe.dragNewPortlet(
+            portletBtn.data('portlet-class'),
+            portletBtn.data('portlet-group'),
+        );
     }
 
     onPortletButtonDragEnd(e)

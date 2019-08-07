@@ -2,14 +2,8 @@ msgid ""
 msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
-msgid "The OPC update is not installed properly. Please update your migrations."
+msgid "opcNotInstalled"
 msgstr "Das Update für den OnPage Composer wurde nicht ordnungsgemäß installiert. Bitte aktualisieren Sie die Migrationen."
-
-msgid "Draft"
-msgstr "Entwurf"
-
-msgid "replaced"
-msgstr "ersetzt"
 
 # OPC GUI
 
@@ -251,7 +245,7 @@ msgid "pastUpper"
 msgstr "VERGANGEN"
 
 msgid "publicSince"
-msgstr "öffentlich seit"
+msgstr "veröffentlicht am"
 
 msgid "publicUntil"
 msgstr "öffentlich bis"
@@ -267,9 +261,6 @@ msgstr "bis"
 
 msgid "noPublicationPlanned"
 msgstr "keine Veröffentlichung geplant"
-
-msgid "expiredOn"
-msgstr "abgelaufen am"
 
 msgid "duplicate"
 msgstr "Duplizieren"
@@ -393,3 +384,31 @@ msgstr "Großer Desktop (LG)"
 
 msgid "Custom"
 msgstr "Benutzerdefiniert"
+
+
+msgid "active"
+msgstr "aktiv"
+
+msgid "planned"
+msgstr "geplant"
+
+msgid "draft"
+msgstr "Entwurf"
+
+msgid "past"
+msgstr "vergangen"
+
+msgid "activeSince"
+msgstr "Aktiv seit"
+
+msgid "activeUntil"
+msgstr "Aktiv bis"
+
+msgid "scheduledFor"
+msgstr "Geplant ab"
+
+msgid "notScheduled"
+msgstr "Unveröffentlicht"
+
+msgid "expiredOn"
+msgstr "Abgelaufen am"

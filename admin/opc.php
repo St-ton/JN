@@ -40,7 +40,7 @@ $smarty->assign('shopUrl', $shopUrl)
 
 if ($opc->isOPCInstalled() === false) {
     // OPC not installed correctly
-    $smarty->assign('error', __('The OPC update is not installed properly. Please update your migrations.'))
+    $smarty->assign('error', __('opcNotInstalled'))
            ->display(PFAD_ROOT . PFAD_ADMIN . '/opc/tpl/editor.tpl');
 } elseif ($action === 'edit') {
     // Enter OPC to edit a page
@@ -59,7 +59,7 @@ if ($opc->isOPCInstalled() === false) {
 } elseif ($action === 'extend') {
     // Create a new OPC page draft
     try {
-        $newName = __('Draft') . ' ' . ($opcPageDB->getDraftCount($pageId) + 1);
+        $newName = __('draft') . ' ' . ($opcPageDB->getDraftCount($pageId) + 1);
         $page    = $opcPage
             ->createDraft($pageId)
             ->setUrl($pageUrl)

@@ -77,7 +77,7 @@ class CartHelper
             switch ($item->nPosTyp) {
                 case \C_WARENKORBPOS_TYP_ARTIKEL:
                 case \C_WARENKORBPOS_TYP_GRATISGESCHENK:
-                    $item = (object)[
+                    $data = (object)[
                         'name'     => '',
                         'quantity' => 1,
                         'amount'   => []
@@ -85,35 +85,35 @@ class CartHelper
 
                     if (\is_array($item->cName)) {
                         $langIso    = $_SESSION['cISOSprache'];
-                        $item->name = $item->cName[$langIso];
+                        $data->name = $item->cName[$langIso];
                     } else {
-                        $item->name = $item->cName;
+                        $data->name = $item->cName;
                     }
 
-                    $item->name   = \html_entity_decode($item->name);
-                    $item->amount = [
+                    $data->name   = \html_entity_decode($data->name);
+                    $data->amount = [
                         self::NET   => $amount,
                         self::GROSS => $amountGross
                     ];
 
                     if ((int)$item->nAnzahl != $item->nAnzahl) {
-                        $item->amount[self::NET]   *= $item->nAnzahl;
-                        $item->amount[self::GROSS] *= $item->nAnzahl;
+                        $data->amount[self::NET]   *= $item->nAnzahl;
+                        $data->amount[self::GROSS] *= $item->nAnzahl;
 
-                        $item->name = \sprintf(
+                        $data->name = \sprintf(
                             '%g %s %s',
                             (float)$item->nAnzahl,
                             $item->Artikel->cEinheit ?: 'x',
-                            $item->name
+                            $data->name
                         );
                     } else {
-                        $item->quantity = (int)$item->nAnzahl;
+                        $data->quantity = (int)$item->nAnzahl;
                     }
 
-                    $info->article[self::NET]   += $item->amount[self::NET] * $item->quantity;
-                    $info->article[self::GROSS] += $item->amount[self::GROSS] * $item->quantity;
+                    $info->article[self::NET]   += $data->amount[self::NET] * $data->quantity;
+                    $info->article[self::GROSS] += $data->amount[self::GROSS] * $data->quantity;
 
-                    $info->items[] = $item;
+                    $info->items[] = $data;
                     break;
 
                 case \C_WARENKORBPOS_TYP_VERSANDPOS:

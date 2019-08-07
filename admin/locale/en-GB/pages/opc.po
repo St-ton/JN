@@ -379,3 +379,6 @@ msgstr "not scheduled"
 
 msgid "expiredOn"
 msgstr "expired on"
+
+msgid "dropPortletHere"
+msgstr "Drop Portlet here"

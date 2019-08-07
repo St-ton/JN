@@ -105,7 +105,7 @@
         <div id="dropTargetBlueprint" class="opc-droptarget" style="display:none">
             <div>
                 <img src="{$shopUrl}/admin/opc/gfx/icon-drop-target.svg" class="opc-droptarget-icon" alt="Drop Target">
-                <span>Portlet hier einfügen</span>
+                <span>{__('dropPortletHere')}</span>
             </div>
         </div>
     </div>

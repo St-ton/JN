@@ -10,7 +10,7 @@
          {if !empty($imgAttribs.src)}style="background-image: url('{$imgAttribs.src}')"{/if}>
         <div>
             <i class="far fa-image"></i>
-            <span>Bild</span>
+            <span>{__('Image')}</span>
         </div>
     </div>
 {else}

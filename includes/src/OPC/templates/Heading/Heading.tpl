@@ -2,7 +2,7 @@
     <div data-portlet="{$instance->getDataAttribute()}" class="opc-Heading">
         <div class="opc-Heading-label">
             <i class="fas fa-heading opc-Heading-icon"></i>
-            <span class="opc-Heading-label-text">Heading</span>
+            <span class="opc-Heading-label-text">{__('Heading')}</span>
         </div>
         <div class="opc-Heading-propinfo">
             {if !empty($instance->getProperty('text'))}

@@ -1101,11 +1101,6 @@ function fakeBestellung()
     if (isset($_SESSION['Bestellung']->GuthabenNutzen) && (int)$_SESSION['Bestellung']->GuthabenNutzen === 1) {
         $order->fGuthaben = -$_SESSION['Bestellung']->fGuthabenGenutzt;
     }
-    $conf = Shop::getSettings([CONF_KAUFABWICKLUNG]);
-    if ($conf['kaufabwicklung']['bestellabschluss_ip_speichern'] === 'Y') {
-        // non-anonymized IP (! we got a contract)
-        $order->cIP = Request::getRealIP();
-    }
 
     return $order->fuelleBestellung(false, true);
 }

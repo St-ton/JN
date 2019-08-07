@@ -3379,7 +3379,6 @@ class Artikel
         if (!$productID) {
             return null;
         }
-        $cacheID = null;
         if ($options === null) {
             $options = self::getDefaultOptions();
         }
@@ -3420,7 +3419,7 @@ class Artikel
                 'cached'    => false
             ]);
             if ($noCache === false) {
-                Shop::Container()->getCache()->set($cacheID, null, $cacheTags);
+                Shop::Container()->getCache()->set($this->cacheID, null, $cacheTags);
             }
 
             return null;
@@ -3624,9 +3623,8 @@ class Artikel
         $taxClass      = isset($_SESSION['Steuersatz']) ? \implode('_', $_SESSION['Steuersatz']) : '';
         $customerID    = isset($_SESSION['Kunde']) ? (int)$_SESSION['Kunde']->kKunde : 0;
         $productHash   = \md5($baseID . $this->getOptionsHash($options) . $taxClass . $customerID);
-        $cacheID       = 'fa_' . $productID . '_' . $productHash;
-        $this->cacheID = $cacheID;
-        $product       = Shop::Container()->getCache()->get($cacheID);
+        $this->cacheID = 'fa_' . $productID . '_' . $productHash;
+        $product       = Shop::Container()->getCache()->get($this->cacheID);
         if ($product === false) {
             return false;
         }

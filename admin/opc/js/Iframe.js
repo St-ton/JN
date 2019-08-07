@@ -295,6 +295,10 @@ class Iframe
         this.updateDropTargets();
         this.gui.setUnsaved(true, true);
         this.page.updateFlipcards();
+
+        if(this.dragNewPortletGroup === 'content') {
+            this.gui.openConfigurator(newElement);
+        }
     }
 
     createPortletElm(previewHtml)
@@ -396,9 +400,10 @@ class Iframe
         this.dropTarget = elm;
     }
 
-    dragNewPortlet(cls)
+    dragNewPortlet(cls, groupId)
     {
-        this.dragNewPortletCls = cls || null;
+        this.dragNewPortletCls   = cls || null;
+        this.dragNewPortletGroup = groupId || null;
         this.setDragged(this.jq('<i class="fa fa-spinner fa-pulse"></i>'));
     }
 

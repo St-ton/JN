@@ -52,7 +52,8 @@
                     <div class="collapse show" id="collapse-{$groupId}">
                         {foreach $group->getPortlets() as $i => $portlet}
                             <button type="button" class="portletButton" draggable="true"
-                                    data-portlet-class="{$portlet->getClass()}">
+                                    data-portlet-class="{$portlet->getClass()}"
+                                    data-portlet-group="{$groupId}">
                                 <span class="portletBtnInner">
                                     {$portlet->getButtonHtml()}
                                 </span>

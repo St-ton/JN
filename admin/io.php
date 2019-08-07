@@ -94,6 +94,7 @@ $io->register('getPages', [$jsonApi, 'getPages'])
    ->register('saveZuschlagsListe', 'saveZuschlagsListe', $versandartenInc, 'ORDER_SHIPMENT_VIEW')
    ->register('deleteZuschlagsListe', 'deleteZuschlagsListe', $versandartenInc, 'ORDER_SHIPMENT_VIEW')
    ->register('deleteZuschlagsListeZIP', 'deleteZuschlagsListeZIP', $versandartenInc, 'ORDER_SHIPMENT_VIEW')
-   ->register('createZuschlagsListeZIP', 'createZuschlagsListeZIP', $versandartenInc, 'ORDER_SHIPMENT_VIEW');
+   ->register('createZuschlagsListeZIP', 'createZuschlagsListeZIP', $versandartenInc, 'ORDER_SHIPMENT_VIEW')
+   ->register('getSurcharge', 'getSurcharge', $versandartenInc, 'ORDER_SHIPMENT_VIEW');
 
 $io->respondAndExit($io->handleRequest($_REQUEST['io']));

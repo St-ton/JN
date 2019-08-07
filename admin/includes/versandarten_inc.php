@@ -439,9 +439,11 @@ function saveZuschlagsListe(array $surcharge)
     Shop::Container()->getCache()->flushTags([CACHING_GROUP_OBJECT, CACHING_GROUP_OPTION, CACHING_GROUP_ARTICLE]);
 
     return (object)[
-        'surcharges' => isset($post['kVersandzuschlag']) ? '' : getZuschlagsListen($post['kVersandart'], $post['cISO']),
-        'message'    => $message,
-        'error'      => $alertHelper->alertTypeExists(Alert::TYPE_ERROR)
+        'title'          => isset($surchargeTMP) ? $surchargeTMP->getTitle() : '',
+        'priceLocalized' => isset($surchargeTMP) ? $surchargeTMP->getPriceLocalized() : '',
+        'id'             => isset($surchargeTMP) ? $surchargeTMP->getID() : '',
+        'message'        => $message,
+        'error'          => $alertHelper->alertTypeExists(Alert::TYPE_ERROR)
     ];
 }
 
@@ -527,6 +529,10 @@ function createZuschlagsListeZIP(array $data)
     $ZuschlagPLZ    = new stdClass();
 
     $ZuschlagPLZ->kVersandzuschlag = $surcharge->getID();
+    $ZuschlagPLZ->cPLZ             = '';
+    $ZuschlagPLZ->cPLZAb           = '';
+    $ZuschlagPLZ->cPLZBis          = '';
+
     if (!empty($post['cPLZ'])) {
         $ZuschlagPLZ->cPLZ = $oZipValidator->validateZip($post['cPLZ']);
     } elseif (!empty($post['cPLZAb']) && !empty($post['cPLZBis'])) {
@@ -575,7 +581,7 @@ function createZuschlagsListeZIP(array $data)
 
     $message = $smarty->assign('alertList', $alertHelper)
                       ->fetch('snippets/alert_list.tpl');
-    $badges  = $smarty->assign('zuschlagliste', new Versandzuschlag($surcharge->getID()))
+    $badges  = $smarty->assign('surcharge', new Versandzuschlag($surcharge->getID()))
                       ->fetch('snippets/zuschlagliste_plz_badges.tpl');
 
     return (object)['message' => $message, 'badges' => $badges, 'surchargeID' => $surcharge->getID()];
@@ -601,4 +607,22 @@ function getShippingTypes(int $shippingTypeID = null)
     /** @var Collection $shippingTypes */
 
     return $shippingTypeID === null ? $shippingTypes->toArray() : $shippingTypes->first();
+}
+
+/**
+ * @param $id
+ * @return stdClass
+ * @throws SmartyException
+ */
+function getSurcharge($id)
+{
+    Shop::Container()->getGetText()->loadAdminLocale('pages/versandarten');
+
+    $smarty       = JTLSmarty::getInstance(false, ContextType::BACKEND);
+    $result       = new stdClass();
+    $result->body = $smarty->assign('sprachen', Sprache::getAllLanguages())
+        ->assign('surchargeNew', new Versandzuschlag($id))
+        ->assign('surchargeID', $id)
+        ->fetch('snippets/zuschlagliste_form.tpl');
+    return $result;
 }

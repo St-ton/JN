@@ -43,16 +43,13 @@
                 {foreach $versandarten as $versandart}
                     <tr>
                         <td>{$versandart->cName}
-                            <span class="small text-muted d-block">
+                            <span class="d-block">
                             {foreach $versandart->land_arr as $land}
-                                <a href="#"
-                                   data-toggle="modal"
-                                   data-target="#zuschlagliste-modal"
-                                   data-shipping-method="{$versandart->kVersandart}"
-                                   data-iso="{$land}"
-                                   data-shipping-method-name="{$versandart->cName}"
-                                >
-                                    <span class="label label-{if isset($versandart->zuschlag_arr[$land])}success{else}default{/if}">{$land},</span>
+                                <a href="versandarten.php?zuschlag=1&kVersandart={$versandart->kVersandart}&cISO={$land}&token={$smarty.session.jtl_token}">
+                                    <span class="small text-muted">
+                                        {if isset($versandart->zuschlag_arr[$land])}<u>{$land}*</u>{else}{$land}{/if}
+                                    </span>
+                                    {if !$land@last},{/if}
                                 </a>
                             {/foreach}
                             </span>
@@ -153,57 +150,18 @@
     </div>
 </div>
 <div class="modal fade" id="zuschlagliste-modal" tabindex="-1">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal">
                     <i class="fa fa-times"></i>
                 </button>
-                <h4 class="modal-title">{__('surchargeListFor')} <span id="surcharge-modal-title"></span></h4>
+                <div class="subheading1">{__('surchargeListFor')} <span id="surcharge-modal-title"></span></div>
+                <hr class="mb-3">
             </div>
             <div class="modal-body">
-                <form id="zuschlag-new" method="post" action="versandarten.php">
-                    {$jtl_token}
-                    <input type="hidden" name="neuerZuschlag" value="1" />
-                    <input type="hidden" name="kVersandart" value="0" />
-                    <input type="hidden" name="cISO" value="" />
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <h3 class="panel-title">{__('createNewList')}</h3>
-                        </div>
-                        <div class="panel-body">
-                            <div class="input-group">
-                                <span class="input-group-addon">
-                                    <label for="cName">{__('isleList')}</label>
-                                </span>
-                                <input class="form-control" type="text" id="cName" name="cName" value="{if isset($oVersandzuschlag->cName)}{$oVersandzuschlag->cName}{/if}" tabindex="1" required/>
-                            </div>
-                            {foreach $sprachen as $sprache}
-                                <div class="input-group">
-                                    <span class="input-group-addon">
-                                        <label for="cName_{$sprache->cISO}">{__('showedName')} ({$sprache->cNameDeutsch})</label>
-                                    </span>
-                                    <input class="form-control" type="text" id="cName_{$sprache->cISO}" name="cName_{$sprache->cISO}" value=""/>
-                                </div>
-                            {/foreach}
-                            <div class="input-group">
-                                <span class="input-group-addon">
-                                    <label for="fZuschlag">{__('additionalFee')} ({__('amount')})</label>
-                                </span>
-                                <input type="text" id="fZuschlag" name="fZuschlag" value="" class="form-control price_large" required>
-                            </div>
-                        </div>
-                        <div class="panel-footer">
-                            <div class="btn-group">
-                                <button id="zuschlag-new-submit" type="submit" value="" class="btn btn-primary">
-                                    <i class="fa fa-save"></i> {__('createNew')}
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </form>
-                <div id="zuschlaglisten">
-
+                <div id="new-surcharge-form-wrapper">
+                    {include file='snippets/zuschlagliste_form.tpl'}
                 </div>
                 <button type="button" class="btn btn-danger" data-dismiss="modal" id="zuschlagliste-cancel-btn">
                     <i class="fa fa-times"></i>

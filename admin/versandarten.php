@@ -93,6 +93,15 @@ if (isset($_POST['clone']) && (int)$_POST['clone'] > 0 && Form::validateToken())
     }
 }
 
+if (isset($_GET['cISO'], $_GET['zuschlag'], $_GET['kVersandart'])
+    && (int)$_GET['zuschlag'] === 1
+    && (int)$_GET['kVersandart'] > 0 && Form::validateToken()
+) {
+    $step = 'Zuschlagsliste';
+
+    $smarty->assign('surcharges', (new Versandart($_GET['kVersandart']))->getSurchargesForCountry($_GET['cISO']));
+}
+
 if (isset($_POST['neueVersandart']) && (int)$_POST['neueVersandart'] > 0 && Form::validateToken()) {
     $shippingMethod                           = new stdClass();
     $shippingMethod->cName                    = htmlspecialchars($_POST['cName'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);

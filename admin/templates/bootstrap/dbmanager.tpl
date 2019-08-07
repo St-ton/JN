@@ -20,13 +20,13 @@
 
 {function filter_row headers=[] col=null op=null val=null remove=true}
     <div class="fieldset-row" data-action="add-row">
-        <select name="filter[where][col][]" class="form-control input-xs">
+        <select name="filter[where][col][]" class="custom-select input-xs">
             <option value="">({__('any')})</option>
             {foreach $headers as $h}
                 <option value="{$h}"{if $col == $h} selected="selected"{/if}>{$h}</option>
             {/foreach}
         </select>
-        <select name="filter[where][op][]" class="form-control input-xs">
+        <select name="filter[where][op][]" class="custom-select input-xs">
             {filter_operator selected=$op}
         </select>
         <input type="text" name="filter[where][val][]" class="form-control input-xs" value="{$val|escape:'html'}">
@@ -47,7 +47,6 @@ var $add_row_tpl = $({$filter_row_tpl_data|strip|json_encode});
 $(function() {
     var new_content = '<form action="dbmanager.php?command" method="POST">';
     new_content += '{$jtl_token}';
-    console.log('new content: ', new_content);
     $search = $('#db-search');
 
     $('table.table-sticky-header').stickyTableHeaders({
@@ -379,7 +378,7 @@ $(function() {
 */
 </script>
 
-<div id="content" class="container-fluid">
+<div id="content">
     <div class="row">
 
         <div class="col-md-2">
@@ -570,7 +569,7 @@ $(function() {
                         <fieldset>
                             <legend>{__('action')}</legend>
                             <div class="fieldset-body">
-                                <button type="submit" class="btn btn-xs btn-primary">{__('showData')}</button>
+                                <button type="submit" class="btn btn-sm btn-primary">{__('showData')}</button>
                             </div>
                         </fieldset>
                     </form>

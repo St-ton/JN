@@ -415,9 +415,6 @@ class Tutorial
 
     startTour_ht4()
     {
-        console.log(this.iframe);
-        console.log(this.gui);
-
         var tour4 = new Tour({
            name: "tSettings",
            debug: true,

@@ -212,15 +212,15 @@ class Merkmal
     }
 
     /**
-     * @param array $attributeIDs
+     * @param array $ids
      * @param bool  $getValues
      * @return array
      */
-    public function holeMerkmale(array $attributeIDs, bool $getValues = false): array
+    public function holeMerkmale(array $ids, bool $getValues = false): array
     {
-        $attributes = [];
-        if (!\is_array($attributeIDs) || \count($attributeIDs) === 0) {
-            return $attributes;
+        $characteristics = [];
+        if (!\is_array($ids) || \count($ids) === 0) {
+            return $characteristics;
         }
         $languageID = Shop::getLanguage();
         if (!$languageID) {
@@ -246,33 +246,33 @@ class Merkmal
                             AND tmerkmalsprache.kSprache = ' . $languageID;
         }
 
-        $attributes = Shop::Container()->getDB()->query(
+        $characteristics = Shop::Container()->getDB()->query(
             'SELECT tmerkmal.kMerkmal, tmerkmal.nSort, tmerkmal.cBildpfad, tmerkmal.cTyp, ' .
                 $select . ' 
                 FROM tmerkmal ' .
-                $join . ' WHERE tmerkmal.kMerkmal IN(' . \implode(', ', \array_filter($attributeIDs, '\intval')) .
+                $join . ' WHERE tmerkmal.kMerkmal IN(' . \implode(', ', \array_filter($ids, '\intval')) .
                 ') ORDER BY tmerkmal.nSort',
             ReturnType::ARRAY_OF_OBJECTS
         );
 
-        if ($getValues && GeneralObject::hasCount($attributes)) {
+        if ($getValues && GeneralObject::hasCount($characteristics)) {
             $imageBaseURL = Shop::getImageBaseURL();
-            foreach ($attributes as $attribute) {
-                $attrValue                   = new MerkmalWert(0, $this->kSprache);
-                $attribute->oMerkmalWert_arr = $attrValue->holeAlleMerkmalWerte($attribute->kMerkmal);
+            foreach ($characteristics as $characteristic) {
+                $value                            = new MerkmalWert(0, $this->kSprache);
+                $characteristic->oMerkmalWert_arr = $value->holeAlleMerkmalWerte($characteristic->kMerkmal);
 
-                if (\mb_strlen($attribute->cBildpfad) > 0) {
-                    $attribute->cBildpfadKlein  = \PFAD_MERKMALBILDER_KLEIN . $attribute->cBildpfad;
-                    $attribute->cBildpfadNormal = \PFAD_MERKMALBILDER_NORMAL . $attribute->cBildpfad;
+                if (\mb_strlen($characteristic->cBildpfad) > 0) {
+                    $characteristic->cBildpfadKlein  = \PFAD_MERKMALBILDER_KLEIN . $characteristic->cBildpfad;
+                    $characteristic->cBildpfadNormal = \PFAD_MERKMALBILDER_NORMAL . $characteristic->cBildpfad;
                 } else {
-                    $attribute->cBildpfadKlein  = \BILD_KEIN_MERKMALBILD_VORHANDEN;
-                    $attribute->cBildpfadNormal = \BILD_KEIN_MERKMALBILD_VORHANDEN;
+                    $characteristic->cBildpfadKlein  = \BILD_KEIN_MERKMALBILD_VORHANDEN;
+                    $characteristic->cBildpfadNormal = \BILD_KEIN_MERKMALBILD_VORHANDEN;
                 }
-                $attribute->cBildURLKlein  = $imageBaseURL . $attribute->cBildpfadKlein;
-                $attribute->cBildURLNormal = $imageBaseURL . $attribute->cBildpfadNormal;
+                $characteristic->cBildURLKlein  = $imageBaseURL . $characteristic->cBildpfadKlein;
+                $characteristic->cBildURLNormal = $imageBaseURL . $characteristic->cBildpfadNormal;
             }
         }
 
-        return $attributes;
+        return $characteristics;
     }
 }

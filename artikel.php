@@ -132,14 +132,13 @@ if ($ratingPage === 0) {
 }
 if ($AktuellerArtikel->Bewertungen === null || $ratingStars > 0) {
     $AktuellerArtikel->holeBewertung(
-        Shop::getLanguageID(),
         $conf['bewertung']['bewertung_anzahlseite'],
         $ratingPage,
         $ratingStars,
         $conf['bewertung']['bewertung_freischalten'],
         $sorting
     );
-    $AktuellerArtikel->holehilfreichsteBewertung(Shop::getLanguageID());
+    $AktuellerArtikel->holehilfreichsteBewertung();
 }
 
 if (isset($AktuellerArtikel->HilfreichsteBewertung->oBewertung_arr[0]->nHilfreich)

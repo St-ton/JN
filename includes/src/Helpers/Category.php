@@ -163,17 +163,12 @@ class Category
             $nameSelect           = $isDefaultLang === true
                 ? ', node.cName'
                 : ', node.cName, tkategoriesprache.cName AS cName_spr';
-            $seoSelect            = $isDefaultLang === true
-                ? ', node.cSeo'
-                : ', tseo.cSeo';
             $langJoin             = $isDefaultLang === true
                 ? ''
                 : ' LEFT JOIN tkategoriesprache
                         ON tkategoriesprache.kKategorie = node.kKategorie
                             AND tkategoriesprache.kSprache = ' . self::$languageID . ' ';
-            $seoJoin              = $isDefaultLang === true
-                ? ''
-                : " LEFT JOIN tseo
+            $seoJoin              = " LEFT JOIN tseo
                         ON tseo.cKey = 'kKategorie'
                         AND tseo.kKey = node.kKategorie
                         AND tseo.kSprache = " . self::$languageID . ' ';
@@ -201,8 +196,8 @@ class Category
                 $visibilityWhere      = '';
             }
             $nodes         = Shop::Container()->getDB()->query(
-                'SELECT node.kKategorie, node.kOberKategorie' . $nameSelect .
-                $descriptionSelect . $imageSelect . $seoSelect . $countSelect . '
+                'SELECT node.kKategorie, node.kOberKategorie, tseo.cSeo' . $nameSelect .
+                $descriptionSelect . $imageSelect . $countSelect . '
                     FROM tkategorie AS node INNER JOIN tkategorie AS parent ' . $langJoin . '                    
                     LEFT JOIN tkategoriesichtbarkeit
                         ON node.kKategorie = tkategoriesichtbarkeit.kKategorie

@@ -264,7 +264,7 @@ final class ReviewAdminController extends BaseController
     public function getReview(int $id): ?ReviewModel
     {
         try {
-            return new ReviewModel(['id' => $id], $this->db);
+            return ReviewModel::load(['id' => $id], $this->db, ReviewModel::ON_NOTEXISTS_FAIL);
         } catch (Exception $e) {
             return null;
         }
@@ -278,7 +278,7 @@ final class ReviewAdminController extends BaseController
     {
         $id = Request::verifyGPCDataInt('kBewertung');
         try {
-            $review = new ReviewModel(['id' => $id], $this->db);
+            $review = ReviewModel::load(['id' => $id], $this->db, ReviewModel::ON_NOTEXISTS_FAIL);
         } catch (Exception $e) {
             return false;
         }
@@ -307,7 +307,7 @@ final class ReviewAdminController extends BaseController
         $cacheTags = [];
         foreach (\array_map('\intval', $ids) as $id) {
             try {
-                $model = new ReviewModel(['id' => $id], $this->db);
+                $model = ReviewModel::load(['id' => $id], $this->db, ReviewModel::ON_NOTEXISTS_FAIL);
             } catch (Exception $e) {
                 continue;
             }
@@ -332,7 +332,7 @@ final class ReviewAdminController extends BaseController
         $cacheTags = [];
         foreach (\array_map('\intval', $ids) as $i => $id) {
             try {
-                $model = new ReviewModel(['id' => $id], $this->db);
+                $model = ReviewModel::load(['id' => $id], $this->db, ReviewModel::ON_NOTEXISTS_FAIL);
             } catch (Exception $e) {
                 continue;
             }
@@ -355,7 +355,7 @@ final class ReviewAdminController extends BaseController
     private function removeReply(int $id): void
     {
         try {
-            $model = new ReviewModel(['id' => $id], $this->db);
+            $model = ReviewModel::load(['id' => $id], $this->db, ReviewModel::ON_NOTEXISTS_FAIL);
         } catch (Exception $e) {
             return;
         }

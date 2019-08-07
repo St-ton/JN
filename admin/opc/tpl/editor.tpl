@@ -98,7 +98,7 @@
                 <i class="fa fa-level-up fas fa-level-up-alt"></i>
             </button>
             <button type="button" class="btn btn-default btn-sm" id="btnTrash" title="{__('deleteSelect')}">
-                <i class="fa fa-trash"></i>
+                <i class="fa fa-trash-alt"></i>
             </button>
         </div>
 

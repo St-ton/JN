@@ -24,7 +24,7 @@
 {/literal}
 </style>
 
-<div id="content" class="container-fluid">
+<div id="content">
     {if !empty($phpinfo)}
         <div class="phpinfo">{$phpinfo}</div>
     {/if}

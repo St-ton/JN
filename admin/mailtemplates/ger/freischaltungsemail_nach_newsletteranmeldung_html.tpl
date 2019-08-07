@@ -1,13 +1,15 @@
 {includeMailTemplate template=header type=html}
 
-Guten Tag,<br><br>
-
-wir freuen uns, Sie als Newsletter-Abonnent bei {$Firma->cName} begrüßen zu dürfen.<br>
+Guten Tag,<br>
 <br>
-Bitte klicken Sie auf den folgenden Freischaltcode, um Newsletter zu empfangen:<br>
+wir freuen uns, Sie als Newsletter-Abonnent bei {$Firma->cName} begrüßen zu können.<br>
+<br>
+Bitte klicken Sie den folgenden Freischalt-Link, um Newsletter zu empfangen:<br>
 <a href="{$NewsletterEmpfaenger->cFreischaltURL}">{$NewsletterEmpfaenger->cFreischaltURL}</a><br>
 <br>
-Sie können sich jederzeit vom Newsletter abmelden, indem Sie entweder den Löschcode <a href="{$NewsletterEmpfaenger->cLoeschURL}">{$NewsletterEmpfaenger->cLoeschURL}</a> eingeben oder den Link Newsletter im Shop besuchen.<br>
+Sie können sich ebenso jederzeit vom Newsletter abmelden, indem Sie entweder den Lösch-Link klicken:<br>
+<a href="{$NewsletterEmpfaenger->cLoeschURL}">{$NewsletterEmpfaenger->cLoeschURL}</a><br>
+oder sich im Shop anmelden und den "Newsletter"-Link besuchen.<br>
 <br>
 Mit freundlichem Gruß<br>
 Ihr Team von {$Firma->cName}

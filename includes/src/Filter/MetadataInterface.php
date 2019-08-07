@@ -86,13 +86,13 @@ interface MetadataInterface
     /**
      * @return MerkmalWert|null
      */
-    public function getAttributeValue(): ?MerkmalWert;
+    public function getCharacteristicValue(): ?MerkmalWert;
 
     /**
-     * @param MerkmalWert $attributeValue
+     * @param MerkmalWert $value
      * @return MetadataInterface
      */
-    public function setAttributeValue(MerkmalWert $attributeValue): MetadataInterface;
+    public function setCharacteristicValue(MerkmalWert $value): MetadataInterface;
 
     /**
      * @return string

@@ -129,7 +129,7 @@ abstract class AbstractFilter implements FilterInterface
     protected $frontendName = '';
 
     /**
-     * list of filter options for AttributeFilters etc. that consist of multiple different filter options
+     * list of filter options for CharacteristicFilters etc. that consist of multiple different filter options
      *
      * @var array
      */

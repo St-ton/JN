@@ -73,7 +73,7 @@ abstract class AbstractPush
             $keys     = \array_keys($arr);
             $keyCount = \count($keys);
             for ($i = 0; $i < $keyCount; $i++) {
-                if (!\in_array($keys[$i], $excludes) && $keys[$i]{0} === 'k') {
+                if (!\in_array($keys[$i], $excludes, true) && $keys[$i]{0} === 'k') {
                     $attributes[$keys[$i]] = $arr[$keys[$i]];
                     unset($arr[$keys[$i]]);
                 }

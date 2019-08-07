@@ -780,6 +780,35 @@ class Cart
         if ($mbw > 0 && $this->gibGesamtsummeWaren(true, false) < $mbw) {
             return 9;
         }
+        if ((!isset($_SESSION['bAnti_spam_already_checked']) || $_SESSION['bAnti_spam_already_checked'] !== true)
+            && $this->config['kaufabwicklung']['bestellabschluss_spamschutz_nutzen'] === 'Y'
+            && ($ip = Request::getRealIP())
+        ) {
+            $cnt = Shop::Container()->getDB()->executeQueryPrepared(
+                'SELECT COUNT(*) AS anz
+                    FROM tbestellung
+                    WHERE cIP = :ip
+                        AND dErstellt > NOW() - INTERVAL 1 DAY',
+                ['ip' => $ip],
+                ReturnType::SINGLE_OBJECT
+            );
+            if ($cnt->anz > 0) {
+                $min                = 2 ** $cnt->anz;
+                $min                = \min([$min, 1440]);
+                $bestellungMoeglich = Shop::Container()->getDB()->executeQueryPrepared(
+                    'SELECT dErstellt+INTERVAL ' . $min . ' MINUTE < NOW() AS moeglich
+                        FROM tbestellung
+                        WHERE cIP = :ip
+                            AND dErstellt > NOW()-INTERVAL 1 DAY
+                        ORDER BY kBestellung DESC',
+                    ['ip' => $ip],
+                    ReturnType::SINGLE_OBJECT
+                );
+                if (!$bestellungMoeglich->moeglich) {
+                    return 8;
+                }
+            }
+        }
 
         return 10;
     }

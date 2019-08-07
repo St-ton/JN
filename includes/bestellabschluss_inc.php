@@ -1101,6 +1101,7 @@ function fakeBestellung()
     if (isset($_SESSION['Bestellung']->GuthabenNutzen) && (int)$_SESSION['Bestellung']->GuthabenNutzen === 1) {
         $order->fGuthaben = -$_SESSION['Bestellung']->fGuthabenGenutzt;
     }
+    $order->cIP = Request::getRealIP();
 
     return $order->fuelleBestellung(false, true);
 }

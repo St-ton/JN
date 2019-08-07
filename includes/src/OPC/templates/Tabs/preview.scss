@@ -1,6 +1,11 @@
 .opc-Tabs {
+  .pt-3 {
+    padding-top: 0 !important;
+  }
+
   > ul {
     margin: 8px;
+    margin-bottom: 16px;
     border-bottom: none;
 
     > li {

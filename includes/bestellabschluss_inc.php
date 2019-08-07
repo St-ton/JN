@@ -999,8 +999,8 @@ function setzeSmartyWeiterleitung(Bestellung $order): void
     }
     $pluginID = Helper::getIDByModuleID($_SESSION['Zahlungsart']->cModulId);
     if ($pluginID > 0) {
-        $loader             = Helper::getLoaderByPluginID($pluginID);
-        $plugin             = $loader->init($pluginID);
+        $loader = Helper::getLoaderByPluginID($pluginID);
+        $plugin = $loader->init($pluginID);
         global $oPlugin;
         $oPlugin = $plugin;
         if ($plugin !== null) {

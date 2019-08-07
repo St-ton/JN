@@ -85,3 +85,6 @@ msgstr " Review(s) deleted successfully."
 
 msgid "successRatingCommentDelete"
 msgstr "Response deleted successfully."
+
+msgid "linkItemShop"
+msgstr "See item in shop."

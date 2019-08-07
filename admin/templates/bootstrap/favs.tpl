@@ -52,19 +52,24 @@
             <input class="form-control" type="text" name="url[]" value="{$url}">
         </td>
         <th class="text-muted text-center" scope="row">
-            <i class="fa fa-arrows-v" aria-hidden="true"></i>
+            <i class="fal fa-arrows-v" aria-hidden="true"></i>
         </th>
         <td class="text-center">
-            <button type="button" class="btn btn-xs btn-danger btn-remove"><i class="fa fa-times"></i></button>
+            <button type="button" class="btn btn-link btn-remove" data-toggle="tooltip" title="{__('delete')}">
+                <span class="icon-hover">
+                    <span class="fal fa-trash-alt"></span>
+                    <span class="fas fa-trash-alt"></span>
+                </span>
+            </button>
         </td>
     </tr>
 {/function}
 
-<div id="content" class="container-fluid">
+<div id="content">
     <form method="post">
         {$jtl_token}
-        <div class="panel panel-default">
-            <div class="table-responsive">
+        <div class="card">
+            <div class="table-responsive card-body">
                 <table class="list table table-hover" id="favs">
                     <thead>
                     <tr>
@@ -83,11 +88,13 @@
                     </tbody>
                 </table>
             </div>
-            <div class="panel-footer">
-                <div class="save btn-group">
-                    <button type="submit" name="action" value="save" class="btn btn-primary">
-                        <i class="fa fa-save"></i> {__('save')}
-                    </button>
+            <div class="card-footer save-wrapper">
+                <div class="row">
+                    <div class="ml-auto col-sm-6 col-xl-auto">
+                        <button type="submit" name="action" value="save" class="btn btn-primary btn-block">
+                        {__('saveWithIcon')}
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>

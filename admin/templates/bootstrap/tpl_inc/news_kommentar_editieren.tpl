@@ -15,34 +15,41 @@
         {/if}
         <input type="hidden" name="kNews" value="{$oNewsKommentar->getNewsID()}" />
         <input type="hidden" name="kNewsKommentar" value="{$oNewsKommentar->getID()}" />
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">{$oNewsKommentar->getName()} - {__('newsCommentEdit')}</h3>
+        <div class="card">
+            <div class="card-header">
+                <div class="subheading1">{$oNewsKommentar->getName()} - {__('newsCommentEdit')}</div>
+                <hr class="mb-n3">
             </div>
-            <div class="table-responsive">
-                <table class="list table" id="formtable">
-                    <tr>
-                        <td><label for="cName">{__('visitors')}</label></td>
-                        <td>
-                            <input id="cName" name="cName" class="form-control" type="text" value="{$oNewsKommentar->getName()}" />
-                            {if $oNewsKommentar->getCustomerID() === 0}
-                                &nbsp;({$oNewsKommentar->getMail()})
-                            {/if}
-                        </td>
-                    </tr>
-                    <tr>
-                        <td><label for="cKommentar">{__('text')}</label></td>
-                        <td>
-                            <textarea id="cKommentar" class="ckeditor form-control" name="cKommentar" rows="15" cols="60">{$oNewsKommentar->getText()}</textarea>
-                        </td>
-                    </tr>
-                </table>
+            <div class="card-body">
+                <div class="form-group form-row align-items-center">
+                    <label class="col col-sm-4 col-form-label text-sm-right" for="cName">{__('visitors')}:</label>
+                    <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                        <input id="cName" name="cName" class="form-control" type="text" value="{$oNewsKommentar->getName()}" />
+                        {if $oNewsKommentar->getCustomerID() === 0}
+                            &nbsp;({$oNewsKommentar->getMail()})
+                        {/if}
+                    </div>
+                </div>
+                <div class="form-group form-row align-items-center">
+                    <label class="col col-sm-4 col-form-label text-sm-right" for="cKommentar">{__('text')}:</label>
+                    <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                        <textarea id="cKommentar" class="ckeditor form-control" name="cKommentar" rows="15" cols="60">{$oNewsKommentar->getText()}</textarea>
+                    </div>
+                </div>
             </div>
-            <div class="panel-footer">
-                <span class="btn-group">
-                    <button name="newskommentarsavesubmit" type="submit" value="{__('save')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
-                    <a class="btn btn-danger" href="news.php{if isset($cBackPage)}?{$cBackPage}{elseif isset($cTab)}?tab={$cTab}{/if}"><i class="fa fa-exclamation"></i> {__('Cancel')}</a>
-                </span>
+            <div class="card-footer save-wrapper">
+                <div class="row">
+                    <div class="ml-auto col-sm-6 col-xl-auto">
+                        <a class="btn btn-outline-primary btn-block mb-2" href="news.php{if isset($cBackPage)}?{$cBackPage}{elseif isset($cTab)}?tab={$cTab}{/if}">
+                            {__('cancelWithIcon')}
+                        </a>
+                    </div>
+                    <div class="col-sm-6 col-xl-auto">
+                        <button name="newskommentarsavesubmit" type="submit" value="{__('save')}" class="btn btn-primary btn-block">
+                            {__('saveWithIcon')}
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </form>

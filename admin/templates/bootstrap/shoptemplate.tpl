@@ -15,7 +15,7 @@
 {include file='tpl_inc/seite_header.tpl' cTitel=$cTitel cBeschreibung=$cBeschreibung cDokuURL=$cDokuURL}
 {*workaround: no async uploads (the fileinput option uploadAsync does not work correctly... *}
 <style>.fileinput-upload-button, .kv-file-upload{ldelim}display:none!important;{rdelim}</style>
-<div id="content" class="container-fluid">
+<div id="content">
 {if isset($oEinstellungenXML) && $oEinstellungenXML}
     <form action="shoptemplate.php" method="post" enctype="multipart/form-data" id="form_settings">
         {$jtl_token}
@@ -23,20 +23,19 @@
             {if isset($oTemplate->eTyp) && ($oTemplate->eTyp === 'admin' || ($oTemplate->eTyp !== 'mobil' && $oTemplate->bResponsive))}
                 <input type="hidden" name="eTyp" value="{if !empty($oTemplate->eTyp)}{$oTemplate->eTyp}{else}standard{/if}" />
             {else}
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">{__('mobile')}</h3>
+                <div class="card">
+                    <div class="card-header">
+                        <div class="subheading1">{__('mobile')}</div>
+                        <hr class="mb-n3">
                     </div>
-                    <div class="panel-body">
+                    <div class="card-body">
                         {if $oTemplate->eTyp === 'mobil' && $oTemplate->bResponsive}
                             <div class="alert alert-warning">{__('warning_responsive_mobile')}</div>
                         {/if}
-                        <div class="item input-group">
-                            <span class="input-group-addon">
-                                <label for="eTyp">{__('standardTemplateMobil')}</label>
-                            </span>
-                            <span class="input-group-wrap">
-                                <select class="form-control" name="eTyp" id="eTyp">
+                        <div class="item form-group form-row align-items-center">
+                            <label class="col col-sm-4 col-form-label text-sm-right" for="eTyp">{__('standardTemplateMobil')}</label>
+                            <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                <select class="custom-select" name="eTyp" id="eTyp">
                                     <option value="standard" {if $oTemplate->eTyp === 'standard'}selected="selected"{/if}>
                                         {__('optimizeBrowser')}
                                     </option>
@@ -44,23 +43,24 @@
                                         {__('optimizeMobile')}
                                     </option>
                                 </select>
-                            </span>
+                            </div>
                         </div>
                     </div>
                 </div>
             {/if}
 
             {foreach $oEinstellungenXML as $oSection}
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">{$oSection->cName}</h3>
+                <div class="card">
+                    <div class="card-header">
+                        <div class="subheading1">{$oSection->cName}</div>
+                        <hr class="mb-n3">
                     </div>
-                    <div class="panel-body">
+                    <div class="card-body">
                         <div class="row">
                             {foreach $oSection->oSettings_arr as $oSetting}
                                 {if $oSetting->cKey === 'theme_default' && isset($themePreviews) && $themePreviews !== null}
                                     <div class="col-xs-12">
-                                        <div class="item input-group" id="theme-preview-wrap" style="display: none;">
+                                        <div class="item form-group form-row align-items-center" id="theme-preview-wrap" style="display: none;">
                                             <span class="input-group-addon"><strong>{__('preview')}</strong></span>
                                             <img id="theme-preview" alt="" />
                                         </div>
@@ -91,20 +91,18 @@
                                 <div class="col-xs-12 col-md-12">
                                     <input type="hidden" name="cSektion[]" value="{$oSection->cKey}" />
                                     <input type="hidden" name="cName[]" value="{$oSetting->cKey}" />
-                                    <div class="item input-group">
+                                    <div class="item form-group form-row align-items-center">
                                         {if $oSetting->bEditable}
-                                            <span class="input-group-addon">
-                                                <label for="{$oSection->cKey}-{$oSetting->cKey}">{$oSetting->cName}</label>
-                                            </span>
-                                            <span class="input-group-wrap">
+                                            <label class="col col-sm-4 col-form-label text-sm-right" for="{$oSection->cKey}-{$oSetting->cKey}">{$oSetting->cName}:</label>
+                                            <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
                                                 {if $oSetting->cType === 'select'}
-                                                    <select class="form-control" name="cWert[]" id="{$oSection->cKey}-{$oSetting->cKey}">
+                                                    <select class="custom-select" name="cWert[]" id="{$oSection->cKey}-{$oSetting->cKey}">
                                                         {foreach $oSetting->oOptions_arr as $oOption}
                                                             <option value="{$oOption->cValue}" {if $oOption->cValue == $oSetting->cValue}selected="selected"{/if}>{$oOption->cName}</option>
                                                         {/foreach}
                                                     </select>
                                                 {elseif $oSetting->cType === 'optgroup'}
-                                                    <select class="form-control" name="cWert[]" id="{$oSection->cKey}-{$oSetting->cKey}">
+                                                    <select class="custom-select" name="cWert[]" id="{$oSection->cKey}-{$oSetting->cKey}">
                                                         {foreach $oSetting->oOptgroup_arr as $oOptgroup}
                                                             <optgroup label="{$oOptgroup->cName}">
                                                             {foreach $oOptgroup->oValues_arr as $oOption}
@@ -136,8 +134,20 @@
                                                             {rdelim});
                                                     </script>
                                                 {elseif $oSetting->cType === 'number'}
-                                                    <input class="form-control" type="number" name="cWert[]" id="{$oSection->cKey}-{$oSetting->cKey}" value="{$oSetting->cValue|escape:'html'}" placeholder="{$oSetting->cPlaceholder}" />
-                                                {elseif $oSetting->cType === 'text' || $oSetting->cType === 'float'}
+                                                    <div class="input-group form-counter">
+                                                        <div class="input-group-prepend">
+                                                            <button type="button" class="btn btn-outline-secondary border-0" data-count-down>
+                                                                <span class="fas fa-minus"></span>
+                                                            </button>
+                                                        </div>
+                                                        <input class="form-control" type="number" name="cWert[]" id="{$oSection->cKey}-{$oSetting->cKey}" value="{$oSetting->cValue|escape:'html'}" placeholder="{$oSetting->cPlaceholder}" />
+                                                        <div class="input-group-append">
+                                                            <button type="button" class="btn btn-outline-secondary border-0" data-count-up>
+                                                                <span class="fas fa-plus"></span>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                     {elseif $oSetting->cType === 'text' || $oSetting->cType === 'float'}
                                                     <input class="form-control" type="text" name="cWert[]" id="{$oSection->cKey}-{$oSetting->cKey}" value="{$oSetting->cValue|escape:'html'}" placeholder="{$oSetting->cPlaceholder}" />
                                                 {elseif $oSetting->cType === 'textarea' }
                                                     <div class="form-group">
@@ -169,10 +179,17 @@
                                                             uploadUrl: '{$shopURL}/{$PFAD_ADMIN}shoptemplate.php?token={$smarty.session.jtl_token}',
                                                             allowedFileExtensions : {if !empty($oSetting->rawAttributes.allowedFileExtensions)}{$oSetting->rawAttributes.allowedFileExtensions}{else}['jpg', 'jpeg', 'jpe', 'gif', 'png', 'bmp']{/if},
                                                             overwriteInitial: true,
+                                                            browseOnZoneClick:     true,
+                                                            cancelClass: 'btn btn-outline-primary',
+                                                            fileActionSettings:    {
+                                                                showZoom:   false,
+                                                                showDrag:   false,
+                                                                showRemove: false,
+                                                            },
                                                             deleteUrl: '{$shopURL}/{$PFAD_ADMIN}shoptemplate.php?token={$smarty.session.jtl_token}',
                                                             initialPreviewCount: 1,
                                                             showPreview: true,
-                                                            language: 'de',
+                                                            language: '{$language|mb_substr:0:2}',
                                                             maxFileSize: {if !empty($oSetting->rawAttributes.maxFileSize)}{$oSetting->rawAttributes.maxFileSize}{else}1000{/if},
                                                             maxFilesNum: 1{if !empty($oSetting->cValue)}, initialPreview: [
                                                                 '<img src="{$shopURL}/templates/{$oTemplate->cOrdner}/{$oSetting->rawAttributes.target}{$oSetting->cValue}?v={$smarty.now}" class="file-preview-image" alt="" title="" />'
@@ -198,7 +215,7 @@
                                                         {rdelim});
                                                     </script>
                                                 {/if}
-                                            </span>
+                                            </div>
                                         {else}
                                             <input type="hidden" name="cWert[]" value="{$oSetting->cValue|escape:'html'}" />
                                         {/if}
@@ -209,96 +226,104 @@
                     </div>
                 </div>
             {/foreach}
-            <div class="save_wrapper">
-                {if isset($smarty.get.activate)}<input type="hidden" name="activate" value="1" />{/if}
-                <input type="hidden" name="type" value="settings" />
-                <input type="hidden" name="ordner" value="{$oTemplate->cOrdner}" />
-                <input type="hidden" name="admin" value="{$admin}" />
-                <button type="submit" class="btn btn-primary">{if isset($smarty.get.activate)}<i class="fa fa-share"></i> {__('activateTemplate')}{else}<i class="fa fa-save"></i> {__('save')}{/if}</button>
+            <div class="save-wrapper">
+                <div class="row">
+                    <div class="ml-auto col-sm-6 col-xl-auto">
+                        {if isset($smarty.get.activate)}<input type="hidden" name="activate" value="1" />{/if}
+                        <input type="hidden" name="type" value="settings" />
+                        <input type="hidden" name="ordner" value="{$oTemplate->cOrdner}" />
+                        <input type="hidden" name="admin" value="{$admin}" />
+                        <button type="submit" class="btn btn-primary btn-block">
+                            {if isset($smarty.get.activate)}<i class="fa fa-share"></i> {__('activateTemplate')}{else}{__('saveWithIcon')}{/if}
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </form>
 {else}
-    <div class="table-responsive">
-        <table class="table">
-            <thead>
-            <tr>
-                <th></th>
-                <th></th>
-                <th class="text-center">{__('status')}</th>
-                <th class="text-center">{__('version')}</th>
-                <th></th>
-            </tr>
-            </thead>
-            <tbody>
-            {foreach $oTemplate_arr as $oTemplate}
+    <div class="card">
+        <div class="table-responsive card-body">
+            <table class="table">
+                <thead>
                 <tr>
-                    <td class="text-vcenter text-center" width="140">
-                        <div class="thumb-box thumb-sm">
-                            <div class="thumb" style="background-image:url({if $oTemplate->cPreview|strlen > 0}{$shopURL}/templates/{$oTemplate->cOrdner}/{$oTemplate->cPreview}{else}{$shopURL}/gfx/keinBild.gif{/if})"></div>
-                        </div>
-                    </td>
-                    <td>
-                        <ul class="list-unstyled">
-                            <li>
-                                <h3 style="margin:0">{$oTemplate->cName}</h3>
-                                {if !empty($oTemplate->cDescription)}
-                                    <p class="small">{$oTemplate->cDescription}</p>
-                                {/if}
-                                <span class="label label-default">
-                                 <i class="fa fa-folder-o" aria-hidden="true"></i> {$oTemplate->cOrdner}
-                                </span>
-                                {if $oTemplate->bChild === true}<span class="label label-info"><i class="fa fa-level-up" aria-hidden="true"></i> <abbr title="{{__('inheritsFrom')}|sprintf:{$oTemplate->cParent}}">{$oTemplate->cParent}</abbr></span>{/if}
+                    <th></th>
+                    <th></th>
+                    <th class="text-center">{__('status')}</th>
+                    <th class="text-center">{__('version')}</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                {foreach $oTemplate_arr as $oTemplate}
+                    <tr>
+                        <td class="text-vcenter text-center" width="140">
+                            <div class="thumb-box thumb-sm">
+                                <div class="thumb" style="background-image:url({if $oTemplate->cPreview|strlen > 0}{$shopURL}/templates/{$oTemplate->cOrdner}/{$oTemplate->cPreview}{else}{$shopURL}/gfx/keinBild.gif{/if})"></div>
+                            </div>
+                        </td>
+                        <td>
+                            <ul class="list-unstyled">
+                                <li>
+                                    <h3 style="margin:0">{$oTemplate->cName}</h3>
+                                    {if !empty($oTemplate->cDescription)}
+                                        <p class="small">{$oTemplate->cDescription}</p>
+                                    {/if}
+                                    <span class="label label-default">
+                                     <i class="far fa-folder" aria-hidden="true"></i> {$oTemplate->cOrdner}
+                                    </span>
+                                    {if $oTemplate->bChild === true}<span class="label label-info"><i class="fa fa-level-up" aria-hidden="true"></i> <abbr title="{{__('inheritsFrom')}|sprintf:{$oTemplate->cParent}}">{$oTemplate->cParent}</abbr></span>{/if}
 
-                                {if isset($oStoredTemplate_arr[$oTemplate->cOrdner])}
-                                    {foreach $oStoredTemplate_arr[$oTemplate->cOrdner] as $oStored}
-                                        <span class="label label-warning"><i class="fa fa-info-circle" aria-hidden="true"></i> <abbr title="{__('originalExists')} ({$oStored->cVersion})">{$oStored->cVersion}</abbr></span>
-                                    {/foreach}
-                                {/if}
-                                <!--
-                                {if !empty($oTemplate->cURL)}<a href="{$oTemplate->cURL}">{/if}
-                                    {$oTemplate->cAuthor}
-                                    {if !empty($oTemplate->cURL)}</a>
-                                {/if}
-                                -->
-                            </li>
-                        </ul>
-                    </td>
-                    <td class="text-vcenter text-center">
-                        {if !empty($oTemplate->bHasError) && $oTemplate->bHasError === true}
-                            <h4 class="label-wrap">
-                                <span class="label label-danger">{__('faulty')}</span>
-                            </h4>
-                        {elseif $oTemplate->bAktiv}
-                            <h4 class="label-wrap">
-                                <span class="label label-success">{__('activated')} {if $oTemplate->eTyp === 'mobil'} ({__('mobileDevices')}{/if}</span>
-                            </h4>
-                        {/if}
-                    </td>
-                    <td class="text-vcenter text-center">
-                        {$oTemplate->cVersion}
-                    </td>
-                    <td class="text-vcenter text-center">
-                        {if !empty($oTemplate->bHasError) && $oTemplate->bHasError === true}
-                            <span class="error"><strong>{__('danger')}:</strong><br />{__('parentTemplateMissing')}.</span>
-                        {else}
-                            {if !$oTemplate->bAktiv}
-                                {if $oTemplate->bEinstellungen}
-                                    <a class="btn btn-primary" href="shoptemplate.php?settings={$oTemplate->cOrdner}&activate=1&token={$smarty.session.jtl_token}"><i class="fa fa-share"></i> {__('activate')}</a>
-                                {else}
-                                    <a class="btn btn-primary" href="shoptemplate.php?switch={$oTemplate->cOrdner}&token={$smarty.session.jtl_token}"><i class="fa fa-share"></i> {__('activate')}</a>
-                                {/if}
+                                    {if isset($oStoredTemplate_arr[$oTemplate->cOrdner])}
+                                        {foreach $oStoredTemplate_arr[$oTemplate->cOrdner] as $oStored}
+                                            <span class="label label-warning"><i class="fal fa-info-circle" aria-hidden="true"></i> <abbr title="{__('originalExists')} ({$oStored->cVersion})">{$oStored->cVersion}</abbr></span>
+                                        {/foreach}
+                                    {/if}
+                                    <!--
+                                    {if !empty($oTemplate->cURL)}<a href="{$oTemplate->cURL}">{/if}
+                                        {$oTemplate->cAuthor}
+                                        {if !empty($oTemplate->cURL)}</a>
+                                    {/if}
+                                    -->
+                                </li>
+                            </ul>
+                        </td>
+                        <td class="text-vcenter text-center">
+                            {if !empty($oTemplate->bHasError) && $oTemplate->bHasError === true}
+                                <h4 class="label-wrap">
+                                    <span class="label label-danger">{__('faulty')}</span>
+                                </h4>
+                            {elseif $oTemplate->bAktiv}
+                                <h4 class="label-wrap">
+                                    <span class="label label-success">{__('activated')} {if $oTemplate->eTyp === 'mobil'} ({__('mobileDevices')}{/if}</span>
+                                </h4>
+                            {/if}
+                        </td>
+                        <td class="text-vcenter text-center">
+                            {$oTemplate->cVersion}
+                        </td>
+                        <td class="text-vcenter text-center">
+                            {if !empty($oTemplate->bHasError) && $oTemplate->bHasError === true}
+                                <span class="error"><strong>{__('danger')}:</strong><br />{__('parentTemplateMissing')}.</span>
                             {else}
-                                {if $oTemplate->bEinstellungen}
-                                    <a class="btn btn-default" href="shoptemplate.php?settings={$oTemplate->cOrdner}&token={$smarty.session.jtl_token}"><i class="fa fa-edit"></i> {__('settings')}</a>
+                                {if !$oTemplate->bAktiv}
+                                    {if $oTemplate->bEinstellungen}
+                                        <a class="btn btn-primary" href="shoptemplate.php?settings={$oTemplate->cOrdner}&activate=1&token={$smarty.session.jtl_token}"><i class="fal fa-share"></i> {__('activate')}</a>
+                                    {else}
+                                        <a class="btn btn-primary" href="shoptemplate.php?switch={$oTemplate->cOrdner}&token={$smarty.session.jtl_token}"><i class="fal fa-share"></i> {__('activate')}</a>
+                                    {/if}
+                                {else}
+                                    {if $oTemplate->bEinstellungen}
+                                        <a class="btn btn-outline-primary" href="shoptemplate.php?settings={$oTemplate->cOrdner}&token={$smarty.session.jtl_token}"><i class="fal fa-edit"></i> {__('settings')}</a>
+                                    {/if}
                                 {/if}
                             {/if}
-                        {/if}
-                    </td>
-                </tr>
-            {/foreach}
-            </tbody>
-        </table>
+                        </td>
+                    </tr>
+                {/foreach}
+                </tbody>
+            </table>
+        </div>
     </div>
 {/if}
 </div>

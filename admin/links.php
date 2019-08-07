@@ -250,6 +250,31 @@ if ($action !== '' && Form::validateToken()) {
                         }
                     }
                 }
+                $dirName = $uploadDir . $link->getID();
+                if (is_dir($dirName)) {
+                    $dirHandle = opendir($dirName);
+                    $shopURL   = Shop::getURL() . '/';
+                    while (($file = readdir($dirHandle)) !== false) {
+                        if ($file === '.' || $file === '..') {
+                            continue;
+                        }
+                        $newFile            = new stdClass();
+                        $newFile->cName     = mb_substr($file, 0, mb_strpos($file, '.'));
+                        $newFile->cNameFull = $file;
+                        $newFile->cURL      = '<img class="link_image" src="' .
+                            $shopURL . PFAD_BILDER . PFAD_LINKBILDER . $link->getID() . '/' . $file . '" />';
+                        $newFile->nBild     = (int)mb_substr(
+                            str_replace('Bild', '', $file),
+                            0,
+                            mb_strpos(str_replace('Bild', '', $file), '.')
+                        );
+                        $files[]            = $newFile;
+                    }
+                    usort($files, function ($a, $b) {
+                        return $a->nBild <=> $b->nBild;
+                    });
+                    $smarty->assign('cDatei_arr', $files);
+                }
             } else {
                 $step = 'neuer Link';
                 $link = new Link($db);

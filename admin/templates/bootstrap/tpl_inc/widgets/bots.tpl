@@ -4,7 +4,7 @@
             <thead>
                 <tr>
                     <th>{__('name')} / {__('userAgent')}</th>
-                    <th class="tright">{__('count')}</th>
+                    <th class="text-right">{__('count')}</th>
                 </tr>
             </thead>
             <tbody>
@@ -19,7 +19,7 @@
                                 {__('unknown')}
                             {/if}
                         </td>
-                        <td class="tright">{$oBots->nCount}</td>
+                        <td class="text-right">{$oBots->nCount}</td>
                     </tr>
                 {/foreach}
             </tbody>

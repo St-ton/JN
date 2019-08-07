@@ -1,5 +1,5 @@
 {include file='tpl_inc/seite_header.tpl' cTitel=__('emailTemplates') cBeschreibung=__('emailTemplatesHint') cDokuURL=__('emailTemplateURL')}
-<div id="content" class="container-fluid">
+<div id="content">
     <div class="alert alert-info">
         {__('testmailsGoToEmail')}
         <strong>

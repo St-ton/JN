@@ -1,20 +1,24 @@
 {if $notifications->count() > 0}
     {$notifyTypes = [0 => 'info', 1 => 'warning', 2 => 'danger']}
-    <a href="#" class="dropdown-toggle parent" data-toggle="dropdown">
-        <span class="badge-notify btn-{$notifyTypes[$notifications->getHighestType()]}">{$notifications->count()}</span>
-        <i class="fa fa-bell"></i>
+    <a href="#" class="nav-link text-primary px-2" data-toggle="dropdown">
+        <span class="fa-layers fa-fw has-notify-icon">
+            <span class="fas fa-bell"></span>
+            {if $notifications->count() > 0}<span class="fas fa-circle text-{$notifyTypes[$notifications->getHighestType()]}"></span>{/if}
+        </span>
     </a>
-    <ul class="dropdown-menu dropdown-menu-right" role="main">
+    <div class="dropdown-menu dropdown-menu-right dropdown-menu-lg" role="main">
+        <span class="dropdown-header">{__('notificationsHeader')}</span>
+        <div class="dropdown-divider"></div>
         {foreach $notifications as $notify}
-            <li class="nag">
-                <div class="nag-split btn-{$notifyTypes[$notify->getType()]}"><i class="fa fa-angle-right" aria-hidden="true"></i></div>
-                <div class="nag-content">
+            <div class="dropdown-item-text">
+                <span class="icon-text-indent">
+                    <div><i class="fa fa-circle text-{$notifyTypes[$notify->getType()]}" aria-hidden="true"></i></div>
                     <a href="{$notify->getUrl()}">
-                        <div class="nag-title">{$notify->getTitle()}</div>
-                        <div class="nag-text">{$notify->getDescription()}</div>
+                        <div class="font-weight-bold">{$notify->getTitle()}: </div>
+                        {$notify->getDescription()}
                     </a>
-                </div>
-            </li>
+                </span>
+            </div>
         {/foreach}
-    </ul>
+    </div>
 {/if}

@@ -292,7 +292,7 @@ function createNotify(options, settings) {
     options = $.extend({}, {
         message: '...',
         title: 'Notification',
-        icon: 'fa fa-info-circle'
+        icon: 'fal fa-info-circle'
     }, options);
 
     settings = $.extend({}, {
@@ -301,8 +301,8 @@ function createNotify(options, settings) {
         allow_dismiss: false,
         placement: {from: 'bottom', align: 'center'},
         animate: {enter: 'animated fadeInDown', exit: 'animated fadeOutUp'},
-        template: '<div data-notify="container" class="col-xs-11 col-sm-4 alert alert-{0} alert-custom" role="alert">' +
-        '  <button type="button" aria-hidden="true" class="close" data-notify="dismiss"><i class="fa fa-times alert-{0}"></i></button>' +
+        template: '<div data-notify="container" class="col-xs-11 col-sm-4 alert alert-{0} alert-custom alert-dismissible" role="alert">' +
+        '  <button type="button" aria-hidden="true" class="close" data-notify="dismiss"><i class="fal fa-times alert-{0}"></i></button>' +
         '  <div>' +
         '    <div style="float:left;margin-right:10px">' +
         '      <i data-notify="icon"></i>' +
@@ -384,6 +384,12 @@ function tristateInit() {
 function tristate(cb) {
     if (cb.readOnly) cb.checked=cb.readOnly=false;
     else if (!cb.checked) cb.readOnly=cb.indeterminate=true;
+}
+
+function checkSingleSettingCard() {
+    if ($('#settings .card').length === 1) {
+        $('#settings .card').addClass('single');
+    }
 }
 
 /**
@@ -507,7 +513,7 @@ $(document).ready(function () {
      * alert actions
      */
     $('.alert .close').on('click', function (){
-        $(this).parent().fadeOut(1000);
+        $(this).closest('.alert').fadeOut(1000);
     });
 
     $('.alert').each(function(){
@@ -520,6 +526,21 @@ $(document).ready(function () {
     $("input[type=checkbox].tristate").on('change', function(e){
         tristate(e.target);
     });
+
+    checkSingleSettingCard();
+    onChangeFormSubmit();
+});
+
+$(window).on('load', () => {
+    $('#page-wrapper').removeClass('hidden disable-transitions');
+    $('html').addClass('ready');
+    $('body > .spinner').remove();
+
+    document.dispatchEvent(new CustomEvent('ready', {
+        detail: {
+            jquery : $
+        }
+    }))
 });
 
 function showBackdrop() {
@@ -734,4 +755,11 @@ function sprintf(format)
         format = format.replace( /%s/, arguments[i] );
     }
     return format;
+}
+
+function onChangeFormSubmit()
+{
+    $('.on-change-submit').on('change', function () {
+        $(this).closest('form').submit();
+    });
 }

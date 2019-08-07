@@ -744,6 +744,7 @@ class PaymentMethod
     public static function create($moduleId)
     {
         global $plugin;
+        global $oPlugin;
         $tmpPlugin    = $plugin;
         $paymentMethod = null;
         $pluginID      = PluginHelper::getIDByModuleID($moduleId);
@@ -754,14 +755,14 @@ class PaymentMethod
             } catch (InvalidArgumentException $e) {
                 $plugin = null;
             }
-            $GLOBALS['oPlugin'] = $plugin;
-
-            if ($plugin !== null && isset($plugin->oPluginZahlungsKlasseAssoc_arr[$moduleId]->cClassPfad)) {
+            $oPlugin = $plugin;
+            if ($plugin !== null) {
+                $method    = $plugin->getPaymentMethods()->getMethodsAssoc()[$moduleId];
                 $classFile = $plugin->getPaths()->getVersionedPath() . PFAD_PLUGIN_PAYMENTMETHOD .
-                    $plugin->oPluginZahlungsKlasseAssoc_arr[$moduleId]->cClassPfad;
+                    $method->cClassPfad;
                 if (file_exists($classFile)) {
                     require_once $classFile;
-                    $className               = $plugin->oPluginZahlungsKlasseAssoc_arr[$moduleId]->cClassName;
+                    $className               = $method->cClassName;
                     $paymentMethod           = new $className($moduleId);
                     $paymentMethod->cModulId = $moduleId;
                 }

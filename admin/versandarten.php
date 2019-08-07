@@ -12,6 +12,7 @@ use JTL\Helpers\Request;
 use JTL\Helpers\Tax;
 use JTL\Helpers\Text;
 use JTL\Language\LanguageHelper;
+use JTL\Pagination\Pagination;
 use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
@@ -99,7 +100,13 @@ if (isset($_GET['cISO'], $_GET['zuschlag'], $_GET['kVersandart'])
 ) {
     $step = 'Zuschlagsliste';
 
-    $smarty->assign('surcharges', (new Versandart($_GET['kVersandart']))->getSurchargesForCountry($_GET['cISO']));
+    $pagination = (new Pagination('surchargeList'))
+        ->setRange(4)
+        ->setItemArray((new Versandart($_GET['kVersandart']))->getSurchargesForCountry($_GET['cISO']))
+        ->assemble();
+
+    $smarty->assign('surcharges', $pagination->getPageItems())
+           ->assign('pagination', $pagination);
 }
 
 if (isset($_POST['neueVersandart']) && (int)$_POST['neueVersandart'] > 0 && Form::validateToken()) {

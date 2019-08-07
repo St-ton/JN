@@ -391,18 +391,18 @@ function getZuschlagsListen($shippingType, $ISO)
 }
 
 /**
- * @param $surcharge
+ * @param $data
  * @return stdClass
  * @throws SmartyException
  */
-function saveZuschlagsListe(array $surcharge)
+function saveZuschlagsListe(array $data)
 {
     Shop::Container()->getGetText()->loadAdminLocale('pages/versandarten');
 
     $alertHelper = Shop::Container()->getAlertService();
     $smarty      = JTLSmarty::getInstance(false, ContextType::BACKEND);
     $post        = [];
-    foreach ($surcharge as $item) {
+    foreach ($data as $item) {
         $post[$item['name']] = $item['value'];
     }
     $surcharge = (float)str_replace(',', '.', $post['fZuschlag']);
@@ -415,7 +415,7 @@ function saveZuschlagsListe(array $surcharge)
     }
     if (!$alertHelper->alertTypeExists(Alert::TYPE_ERROR)) {
         $languages = Sprache::getAllLanguages();
-        if (isset($post['kVersandzuschlag'])) {
+        if (!empty($post['kVersandzuschlag'])) {
             $surchargeTMP = (new Versandzuschlag((int)$post['kVersandzuschlag']))
                 ->setTitle($post['cName'])
                 ->setSurcharge($post['fZuschlag']);
@@ -431,7 +431,8 @@ function saveZuschlagsListe(array $surcharge)
                 $surchargeTMP->setName($post['cName_' . $lang->cISO] ?: $post['cName'], $lang->kSprache);
             }
         }
-        $surchargeTMP->save(isset($post['kVersandzuschlag']));
+        $surchargeTMP->save(!empty($post['kVersandzuschlag']));
+        $surchargeTMP = new Versandzuschlag($surchargeTMP->getId());
     }
     $message = $smarty->assign('alertList', $alertHelper)
                       ->fetch('snippets/alert_list.tpl');
@@ -442,6 +443,7 @@ function saveZuschlagsListe(array $surcharge)
         'title'          => isset($surchargeTMP) ? $surchargeTMP->getTitle() : '',
         'priceLocalized' => isset($surchargeTMP) ? $surchargeTMP->getPriceLocalized() : '',
         'id'             => isset($surchargeTMP) ? $surchargeTMP->getID() : '',
+        'reload'         => empty($post['kVersandzuschlag']),
         'message'        => $message,
         'error'          => $alertHelper->alertTypeExists(Alert::TYPE_ERROR)
     ];

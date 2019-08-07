@@ -2,6 +2,8 @@
 <form id="new-surcharge-form">
     {$jtl_token}
     <input type="hidden" name="neuerZuschlag" value="1" />
+    <input type="hidden" name="cISO" value="1" />
+    <input type="hidden" name="kVersandart" value="1" />
     <input type="hidden" name="kVersandzuschlag" value="{if isset($surchargeID)}{$surchargeID}{else}0{/if}" />
 
     <div class="form-group form-row align-items-center">
@@ -48,11 +50,14 @@
             if (data.error) {
                 $('#new-surcharge-notice').html(data.message);
             } else{
-                $('.surcharge-box[data-surcharge-id="' + data.id + '"] .surcharge-title').html(data.title);
-                $('.surcharge-box[data-surcharge-id="' + data.id + '"] .surcharge-surcharge').html(data.priceLocalized);
-                $('#new-surcharge-modal').modal('hide');
+                if (data.reload) {
+                    location.reload();
+                } else {
+                    $('.surcharge-box[data-surcharge-id="' + data.id + '"] .surcharge-title').html(data.title);
+                    $('.surcharge-box[data-surcharge-id="' + data.id + '"] .surcharge-surcharge').html(data.priceLocalized);
+                    $('#new-surcharge-modal').modal('hide');
+                }
             }
-            console.log(data);
         });
     });
 </script>

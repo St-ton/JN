@@ -6,12 +6,13 @@
 {include file='tpl_inc/seite_header.tpl'
          cTitel=$isleListFor|cat: ' '|cat:$cVersandartName|cat:', '|cat:$cLandName|cat:'('|cat:$cLandISO|cat:')'
          cBeschreibung=__('isleListsDesc')}
-
 <div class="card">
     <div class="card-body">
-        <button id="zuschlag-new-submit"
+        <button id="surcharge-create"
                 type="submit"
                 class="btn btn-primary"
+                data-iso="{$cLandISO}"
+                data-versandart-id="{$Versandart->kVersandart}"
                 data-toggle="modal"
                 data-target="#new-surcharge-modal">
             <i class="fa fa-save"></i> {__('create')}
@@ -20,6 +21,14 @@
 </div>
 <div class="card">
     <div class="card-body">
+        {include file='tpl_inc/pagination.tpl'
+                 pagination=$pagination
+                 cParam_arr=[
+                    'zuschlag'    => 1,
+                    'kVersandart' => {$Versandart->kVersandart},
+                    'cISO'        => {$cLandISO},
+                    'token'       => {$smarty.session.jtl_token}
+                 ]}
         <div class="table-responsive list-unstyled-inden">
             <table class="table">
                 <thead>
@@ -140,14 +149,16 @@
         $('#add-zip-modal-id').val($(this).data('surcharge-id'));
     });
     $('.surcharge-box button[data-target="#new-surcharge-modal"]').click(function () {
-        console.log('gsodihj');
         $('#new-surcharge-modal-title').html($(this).data('surcharge-name'));
         $('#new-surcharge-form-wrapper').html('');
-        // $('#new-surcharge-modal-id').val($(this).data('surcharge-id'));
         ioCall('getSurcharge', [$(this).data('surcharge-id')], function (data) {
             $('#new-surcharge-form-wrapper').html(data.body);
-            console.log(data);
         });
+    });
+    $('#surcharge-create').click(function () {
+        $('#new-surcharge-form-wrapper input').val('');
+        $('#new-surcharge-form-wrapper input[name="kVersandart"]').val($(this).data('versandart-id'));
+        $('#new-surcharge-form-wrapper input[name="cISO"]').val($(this).data('iso'));
     });
 
     $('#add-zip-modal button[type="submit"]').click(function(e){
@@ -176,10 +187,14 @@
         }
         $('.zip-badge' + surchargeIDText).click(function(e){
             e.preventDefault();
+            console.log('gsdfpaogjk');
             ioCall('deleteZuschlagsListeZIP', [$(this).data('surcharge-id'), $(this).data('zip')], function (data) {
+                console.log('aaaaa');
                 $('.zip-badge[data-surcharge-id="' + data.surchargeID + '"][data-zip="' + data.ZIP + '"]').remove();
             });
         });
     }
-    setBadgeClick(0);
+    $(window).on('load', function () {
+        setBadgeClick(0);
+    });
 </script>

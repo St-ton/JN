@@ -1,20 +1,13 @@
 {$imgAttribs = $instance->getImageAttributes(null, null, null, 1, $portlet->getPlaceholderImgUrl())}
 
 {if $isPreview}
-    <div style="text-align: center; {$instance->getStyleString()}"
-         class="{$instance->getAnimationClass()}"
-         {$instance->getAnimationDataAttributeString()}
-         {$instance->getDataAttributeString()}>
-        {image
-            src=$imgAttribs.src
-            srcset=$imgAttribs.srcset
-            sizes=$imgAttribs.srcsizes
-            alt=$imgAttribs.alt
-            style='filter: grayscale(50%) opacity(60%)'
-            title=$imgAttribs.title
-            fluid=true
-        }
-        <p style="color: #5cbcf6; font-size: 40px; font-weight: bold; margin-top: -56px;">Banner</p>
+    <div data-portlet="{$instance->getDataAttribute()}"
+         class="opc-Banner {if !empty($imgAttribs.src)}opc-Banner-with-image{/if}"
+         {if !empty($imgAttribs.src)}style="background-image: url('{$imgAttribs.src}')"{/if}>
+        <div>
+            <img src="{$portlet->getTemplateUrl()|cat:'icon.svg'}" class="opc-Banner-icon">
+            <span>{__('Banner')}</span>
+        </div>
     </div>
 {else}
     <div style="{$instance->getStyleString()}"

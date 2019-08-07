@@ -536,12 +536,6 @@ msgstr "Maximum number of Ajax search proposals"
 msgid "suche_ajax_anzahl_desc"
 msgstr "Specify the maximum number of search proposals to be made to your customers during input. For this purpose, a mapping must exist."
 
-msgid "artikeluebersicht_varikombi_anzahl_name"
-msgstr "Number of thumbnails for child items"
-
-msgid "artikeluebersicht_varikombi_anzahl_desc"
-msgstr "Specify how many thumbnails are to be displayed with child items in the item overview."
-
 msgid "artikeluebersicht_lagerbestandsanzeige_name"
 msgstr "Stock level display"
 
@@ -835,18 +829,6 @@ msgstr "Show savings in comparison to RRP"
 
 msgid "sie_sparen_x_anzeigen_desc"
 msgstr "Specify whether to show the value or percentage that the customer saves on items in comparison to the RRP."
-
-msgid "artikeldetails_varikombi_anzahl_name"
-msgstr "Number of thumbnails for parent-child relationships"
-
-msgid "artikeldetails_varikombi_anzahl_desc"
-msgstr "Specify how many thumbnails are to be displayed with child items in the item overview."
-
-msgid "artikeldetails_varikombi_vorschautext_name"
-msgstr "Title of variation preview"
-
-msgid "artikeldetails_varikombi_vorschautext_desc"
-msgstr "Specify what is to be displayed above the variation preview."
 
 msgid "artikeldetails_anzahl_pfeile_name"
 msgstr "Arrow button for item quantity"

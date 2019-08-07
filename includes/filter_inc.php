@@ -4282,8 +4282,7 @@ function baueSeitenNaviURL($NaviFilter, $bSeo, $oSeitenzahlen, $nMaxAnzeige = 7,
             for ($i = $nVon; $i <= $nBis; $i++) {
                 $oSeite         = new stdClass();
                 $oSeite->nSeite = $i;
-
-                if ($i === $oSeitenzahlen->AktuelleSeite) {
+                if ((int)$i === (int)$oSeitenzahlen->AktuelleSeite) {
                     $oSeite->cURL = '';
                 } else {
                     if ($oSeite->nSeite === 1) {

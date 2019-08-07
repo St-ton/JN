@@ -647,13 +647,19 @@ function fuelleArtikelKategorieRabatt($oArtikel, $oKundengruppe_arr)
             );
 
             if (isset($oMaxRabatt->fRabatt) && $oMaxRabatt->fRabatt > 0) {
-                $oArtikelKategorieRabatt                = new stdClass();
-                $oArtikelKategorieRabatt->kArtikel      = $oArtikel->kArtikel;
-                $oArtikelKategorieRabatt->kKundengruppe = $oKundengruppe->kKundengruppe;
-                $oArtikelKategorieRabatt->kKategorie    = $oMaxRabatt->kKategorie;
-                $oArtikelKategorieRabatt->fRabatt       = $oMaxRabatt->fRabatt;
-
-                Shop::DB()->insert('tartikelkategorierabatt', $oArtikelKategorieRabatt);
+                Shop::DB()->queryPrepared(
+                    'INSERT INTO tartikelkategorierabatt (kArtikel, kKundengruppe, kKategorie, fRabatt)
+                        VALUES (:kArtikel, :kKundengruppe, :kKategorie, :fRabatt) ON DUPLICATE KEY UPDATE
+                            kKategorie = IF(fRabatt < :fRabatt, :kKategorie, kKategorie),
+                            fRabatt    = IF(fRabatt < :fRabatt, :fRabatt, fRabatt)',
+                    [
+                        'kArtikel'      => $oArtikel->kArtikel,
+                        'kKundengruppe' => $oKundengruppe->kKundengruppe,
+                        'kKategorie'    => $oMaxRabatt->kKategorie,
+                        'fRabatt'       => $oMaxRabatt->fRabatt,
+                    ],
+                    3
+                );
                 // Clear Artikel Cache
                 $cache = Shop::Cache();
                 $cache->flushTags([CACHING_GROUP_ARTICLE . '_' . $oArtikel->kArtikel]);
@@ -669,7 +675,7 @@ function fuelleKategorieRabatt($kKategorie)
 {
     Shop::DB()->delete('tartikelkategorierabatt', 'kKategorie', (int)$kKategorie);
     Shop::DB()->queryPrepared(
-        "INSERT INTO tartikelkategorierabatt (
+        'INSERT INTO tartikelkategorierabatt SELECT * FROM (
             SELECT tkategorieartikel.kArtikel, tkategoriekundengruppe.kKundengruppe, tkategorieartikel.kKategorie,
                    MAX(tkategoriekundengruppe.fRabatt) fRabatt
             FROM tkategoriekundengruppe
@@ -679,8 +685,13 @@ function fuelleKategorieRabatt($kKategorie)
             WHERE tkategoriekundengruppe.kKategorie = :categoryID
                 AND tkategoriesichtbarkeit.kKategorie IS NULL
             GROUP BY tkategorieartikel.kArtikel, tkategoriekundengruppe.kKundengruppe, tkategorieartikel.kKategorie
-            HAVING MAX(tkategoriekundengruppe.fRabatt) > 0
-        )",
+            HAVING MAX(tkategoriekundengruppe.fRabatt) > 0) AS tNew ON DUPLICATE KEY UPDATE
+                kKategorie = IF(tartikelkategorierabatt.fRabatt < tNew.fRabatt,
+                    tNew.kKategorie,
+                    tartikelkategorierabatt.kKategorie),
+                fRabatt    = IF(tartikelkategorierabatt.fRabatt < tNew.fRabatt,
+                    tNew.fRabatt,
+                    tartikelkategorierabatt.fRabatt)',
         [
             'categoryID' => (int)$kKategorie
         ],

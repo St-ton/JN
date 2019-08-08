@@ -128,23 +128,23 @@ msgstr "Zuschlagsliste"
 msgid "additionalFee"
 msgstr "Zuschlag"
 
-msgid "plz"
+msgid "zip"
 msgstr "PLZ"
 
 msgid "additionalFeeDelete"
 msgstr "Zuschlagsliste löschen"
 
-msgid "additionalFeeEdit"
-msgstr "Zuschlagsliste bearbeiten"
-
-msgid "createNewList"
+msgid "createList"
 msgstr "Neue Zuschlagsliste erstellen"
 
-msgid "createEditList"
+msgid "editList"
 msgstr "Zuschlagsliste bearbeiten"
 
-msgid "orPlzRange"
+msgid "orZipRange"
 msgstr "oder PLZ-Bereich"
+
+msgid "zipRange"
+msgstr "PLZ-Bereich"
 
 msgid "add"
 msgstr "Hinzufügen"
@@ -354,8 +354,11 @@ msgstr "Zuschlagliste"
 msgid "surcharge"
 msgstr "Zuschlag"
 
-msgid "addZIP"
+msgid "addZip"
 msgstr "PLZ hinzufügen"
+
+msgid "deleteZip"
+msgstr "PLZ löschen"
 
 msgid "countriesSelected"
 msgstr "ausgewählt"

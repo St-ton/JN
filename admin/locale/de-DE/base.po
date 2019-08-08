@@ -1886,3 +1886,6 @@ msgstr "Alle deaktivieren"
 
 msgid "selectPickerDoneButtonText"
 msgstr "Schließen"
+
+msgid "none"
+msgstr "Keine"

@@ -128,23 +128,23 @@ msgstr "Surcharge list"
 msgid "additionalFee"
 msgstr "Surcharge"
 
-msgid "plz"
+msgid "zip"
 msgstr "Postal code"
 
 msgid "additionalFeeDelete"
 msgstr "Delete surcharge list"
 
-msgid "additionalFeeEdit"
-msgstr "Edit surcharge list"
-
-msgid "createNewList"
+msgid "createList"
 msgstr "Create new surcharge list"
 
-msgid "createEditList"
+msgid "editList"
 msgstr "Edit surcharge list"
 
-msgid "orPlzRange"
+msgid "orZipRange"
 msgstr "or postal code area"
+
+msgid "zipRange"
+msgstr "Postal code area"
 
 msgid "add"
 msgstr "Add"
@@ -354,8 +354,11 @@ msgstr "Surcharge list"
 msgid "surcharge"
 msgstr "Surcharge"
 
-msgid "addZIP"
+msgid "addZip"
 msgstr "Add ZIP"
+
+msgid "deleteZip"
+msgstr "Delete zip code/zip area"
 
 msgid "countriesSelected"
 msgstr "selected"

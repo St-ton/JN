@@ -1886,3 +1886,6 @@ msgstr "Deselect all"
 
 msgid "selectPickerDoneButtonText"
 msgstr "Close"
+
+msgid "none"
+msgstr "None"

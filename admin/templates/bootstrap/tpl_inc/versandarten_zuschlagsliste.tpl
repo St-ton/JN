@@ -35,7 +35,7 @@
                     <tr>
                         <th>{__('name')}</th>
                         <th class="text-center">{__('additionalFee')}</th>
-                        <th>{__('zip')}</th>
+                        <th>{__('zip')}, {__('zipRange')}</th>
                         <th class="text-center">{__('actions')}</th>
                     </tr>
                 </thead>
@@ -48,28 +48,30 @@
                             <td class="text-center">
                                 <div class="btn-group">
                                     <button class="btn btn-sm surcharge-remove"
-                                            data-surcharge-id="{$surcharge->getID()}">
+                                            data-surcharge-id="{$surcharge->getID()}"
+                                            data-toggle="tooltip"
+                                            title="{__('additionalFeeDelete')}">
                                         <span class="icon-hover">
                                             <span class="fal fa-trash-alt"></span>
                                             <span class="fas fa-trash-alt"></span>
                                         </span>
                                     </button>
-                                    <button class="btn btn-link px-2" title="{__('add')}"
+                                    <button class="btn btn-link px-2"
                                             data-toggle="modal"
                                             data-target="#add-zip-modal"
                                             data-surcharge-name="{$surcharge->getName()}"
                                             data-surcharge-id="{$surcharge->getID()}">
-                                        <span class="icon-hover">
+                                        <span class="icon-hover" title="{__('addZip')}" data-toggle="tooltip">
                                             <span class="fal fa-plus"></span>
                                             <span class="fas fa-plus"></span>
                                         </span>
                                     </button>
-                                    <button class="btn btn-link px-2" title="{__('modify')}"
+                                    <button class="btn btn-link px-2"
                                             data-toggle="modal"
                                             data-target="#new-surcharge-modal"
                                             data-surcharge-name="{$surcharge->getName()}"
                                             data-surcharge-id="{$surcharge->getID()}">
-                                        <span class="icon-hover">
+                                        <span class="icon-hover" title="{__('modify')}" data-toggle="tooltip">
                                             <span class="fal fa-edit"></span>
                                             <span class="fas fa-edit"></span>
                                         </span>
@@ -91,7 +93,7 @@
                 <button type="button" class="close" data-dismiss="modal">
                     <i class="fa fa-times"></i>
                 </button>
-                <div class="subheading1">{__('surchargeListFor')} <span id="add-zip-modal-title"></span></div>
+                <div class="subheading1">{__('addZip')} - <span id="add-zip-modal-title"></span></div>
             </div>
             <div class="modal-body">
                 <hr class="mb-3">
@@ -100,20 +102,20 @@
                     <div class="form-group">
                         <div class="custom-control custom-radio">
                             <input type="radio" class="custom-control-input" id="zip-type-simple" name="zip-type" value="simple" checked>
-                            <label class="custom-control-label" for="zip-type-simple">{__('plz')}</label>
+                            <label class="custom-control-label" for="zip-type-simple">{__('zip')}</label>
                         </div>
                         <div class="custom-control custom-radio">
                             <input type="radio" class="custom-control-input" id="zip-type-area" name="zip-type" value="area">
-                            <label class="custom-control-label" for="zip-type-area">{__('orPlzRange')}</label>
+                            <label class="custom-control-label" for="zip-type-area">{__('orZipRange')}</label>
                         </div>
                     </div>
                     <input type="hidden" id="add-zip-modal-id" name="kVersandzuschlag" value="">
                     <div id="zip-container" class="form-row">
-                        <label class="" for="cPLZ">{__('plz')}:</label>
+                        <label class="" for="cPLZ">{__('zip')}:</label>
                         <input type="text" id="cPLZ" name="cPLZ" class="form-control zipcode" />
                     </div>
                     <div id="zip-area-container" class="form-row d-none">
-                        <label class="" for="cPLZ">{__('orPlzRange')}:</label>
+                        <label class="" for="cPLZ">{__('zipRange')}:</label>
                         <div class="input-group">
                             <input type="number" name="cPLZAb" class="form-control zipcode" />
                             <span class="input-group-addon">&ndash;</span>
@@ -128,7 +130,7 @@
                         </div>
                         <div class="col-sm-6 col-lg-auto">
                             <button type="submit" class="btn btn-outline-primary btn-block">
-                                {__('addZIP')}
+                                {__('addZip')}
                             </button>
                         </div>
                     </div>
@@ -145,7 +147,7 @@
                 <button type="button" class="close" data-dismiss="modal">
                     <i class="fa fa-times"></i>
                 </button>
-                <div class="subheading1">{__('createNewList')}</div>
+                <div id="new-surcharge-modal-title" class="subheading1">{__('createList')}</div>
             </div>
             <div class="modal-body">
                 <hr class="mb-3">
@@ -172,7 +174,6 @@
         }
     });
 
-
     $('button[data-target="#add-zip-modal"]').on('click', function () {
         $('#add-zip-modal-title').html($(this).data('surcharge-name'));
         $('#add-zip-modal-id').val($(this).data('surcharge-id'));
@@ -182,7 +183,7 @@
     });
 
     $('.surcharge-box button[data-target="#new-surcharge-modal"]').on('click', function () {
-        $('#new-surcharge-modal-title').html($(this).data('surcharge-name'));
+        $('#new-surcharge-modal-title').html('{__("editList")} - ' + $(this).data('surcharge-name'));
         $('#new-surcharge-form-wrapper').html('');
         ioCall('getSurcharge', [$(this).data('surcharge-id')], function (data) {
             $('#new-surcharge-form-wrapper').html(data.body);
@@ -193,6 +194,7 @@
         $('#new-surcharge-form-wrapper input').val('');
         $('#new-surcharge-form-wrapper input[name="kVersandart"]').val($(this).data('versandart-id'));
         $('#new-surcharge-form-wrapper input[name="cISO"]').val($(this).data('iso'));
+        $('#new-surcharge-modal-title').html('{__("createList")}');
     });
 
     $('#add-zip-modal button[type="submit"]').on('click', function(e){

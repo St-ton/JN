@@ -66,7 +66,7 @@
             </div>
             <div class="card-footer save-wrapper">
                 <div class="row">
-                    <div class="col-sm-6 col-xl-auto text-left mb-3">
+                    <div class="col-sm-6 col-xl-auto text-left">
                         <div class="custom-control custom-checkbox">
                             <input class="custom-control-input" type="checkbox" onclick="AllMessages(this.form);" id="ALLMSGS" name="ALLMSGS" />
                             <label class="custom-control-label" for="ALLMSGS">{__('globalSelectAll')}</label>
@@ -78,7 +78,7 @@
                             <input type="hidden" name="kAdminlogingruppe" value="{$oAdminGroup->kAdminlogingruppe}" />
                         {/if}
                         <input type="hidden" name="save" value="1" />
-                        <a class="btn btn-outline-primary btn-block mb-2" href="benutzerverwaltung.php?tab=group_view">
+                        <a class="btn btn-outline-primary btn-block" href="benutzerverwaltung.php?tab=group_view">
                             {__('cancelWithIcon')}
                         </a>
                     </div>

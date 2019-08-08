@@ -30,7 +30,7 @@
                         <input type="hidden" name="cSuche" value="{$cSuche}" />
                     {/if}
                     <div class="table-responsive">
-                        <table class="list table table-striped">
+                        <table class="table table-striped table-align-top">
                             <thead>
                                 <tr>
                                     <th></th>
@@ -101,9 +101,9 @@
                             </tbody>
                         </table>
                     </div>
-                    <div class="save-wrapper p-0">
+                    <div class="save-wrapper">
                         <div class="row">
-                            <div class="col-sm-6 col-xl-auto text-left ml-3 mb-3">
+                            <div class="col-sm-6 col-xl-auto text-left ml-3">
                                 <div class="custom-control custom-checkbox">
                                     <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);" />
                                     <label class="custom-control-label" for="ALLMSGS">{__('globalSelectAll')}</label>

@@ -35,7 +35,7 @@
                 {if isset($oAktiveGeschenk_arr) && $oAktiveGeschenk_arr|@count > 0}
                     {include file='tpl_inc/pagination.tpl' pagination=$oPagiAktiv cAnchor='aktivegeschenke'}
                     <div class="settings table-responsive">
-                        <table class="table table-striped">
+                        <table class="table table-striped table-align-top">
                             <thead>
                             <tr>
                                 <th class="text-left">{__('productName')}</th>
@@ -64,7 +64,7 @@
                 {if isset($oHaeufigGeschenk_arr) && $oHaeufigGeschenk_arr|@count > 0}
                     {include file='tpl_inc/pagination.tpl' pagination=$oPagiHaeufig cAnchor='haeufigegeschenke'}
                     <div class="settings table-responsive">
-                        <table class="table table-striped">
+                        <table class="table table-striped table-align-top">
                             <thead>
                             <tr>
                                 <th class="text-left">{__('productName')}</th>
@@ -97,7 +97,7 @@
                 {if isset($oLetzten100Geschenk_arr) && $oLetzten100Geschenk_arr|@count > 0}
                     {include file='tpl_inc/pagination.tpl' pagination=$oPagiLetzte100 cAnchor='letzten100geschenke'}
                     <div class="settings table-responsive">
-                        <table class="table table-striped">
+                        <table class="table table-striped table-align-top">
                             <thead>
                             <tr>
                                 <th class="text-left">{__('productName')}</th>

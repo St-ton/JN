@@ -19,7 +19,6 @@ Shop::setPageType(PAGE_BESTELLSTATUS);
 $smarty     = Shop::Smarty();
 $linkHelper = Shop::Container()->getLinkService();
 $uid        = Request::verifyGPDataString('uid');
-
 if (!empty($uid)) {
     $conf   = Shop::getSettings([CONF_KUNDEN]);
     $db     = Shop::Container()->getDB();

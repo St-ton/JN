@@ -17,7 +17,7 @@
     }
 
     function addShippingCombination() {
-        var newCombi = '<li class=\'input-group\'>'+$('#ulVK #liVKneu').html()+'</li>';
+        var newCombi = '<div class=\'input-group align-baseline mt-2\'>'+$('#ulVK #liVKneu').html()+'</div>';
         newCombi = newCombi.replace(/selectX/gi,'select');
         if ($("select[name='Versandklassen']").length >= 1) {
             newCombi = newCombi.replace(/<option value="-1">/gi, '<option value="-1" disabled="disabled">');
@@ -246,183 +246,164 @@
             </div>
             <div class="col-md-6">
                 <div class="card">
-                {if $versandberechnung->cModulId === 'vm_versandberechnung_gewicht_jtl' || $versandberechnung->cModulId === 'vm_versandberechnung_warenwert_jtl' || $versandberechnung->cModulId === 'vm_versandberechnung_artikelanzahl_jtl'}
-                    <div class="card-header">
-                        <div class="subheading1">{__('priceScale')}</div>
-                        <hr class="mb-n3">
-                    </div>
                     <div class="card-body">
+                    {if $versandberechnung->cModulId === 'vm_versandberechnung_gewicht_jtl' || $versandberechnung->cModulId === 'vm_versandberechnung_warenwert_jtl' || $versandberechnung->cModulId === 'vm_versandberechnung_artikelanzahl_jtl'}
+                        <div class="subheading1">{__('priceScale')}</div>
+                        <hr class="mb-3">
                         <ul class="jtl-list-group">
-                        <li class="input-group">
-                            <table id="price_range" class="table">
-                                <thead></thead>
-                                <tbody>
-                                {if isset($VersandartStaffeln) && $VersandartStaffeln|@count > 0}
-                                    {foreach $VersandartStaffeln as $oPreisstaffel}
-                                        {if $oPreisstaffel->fBis != 999999999}
-                                            <tr>
-                                                <td>
-                                                    <div class="input-group">
-                                                        <span class="input-group-addon"><label>{__('upTo')}</label></span>
-                                                        <input type="text" id="bis{$oPreisstaffel@index}" name="bis[]" value="{if isset($VersandartStaffeln[$oPreisstaffel@index]->fBis)}{$VersandartStaffeln[$oPreisstaffel@index]->fBis}{/if}" class="form-control kilogram" />
-                                                        <span class="input-group-addon"><label>{$einheit}</label></span>
-                                                    </div>
-                                                </td>
-                                                <td>
-                                                    <div class="input-group">
-                                                        <span class="input-group-addon"><label>{__('amount')}:</label></span>
-                                                        <input type="text" id="preis{$oPreisstaffel@index}" name="preis[]" value="{if isset($VersandartStaffeln[$oPreisstaffel@index]->fPreis)}{$VersandartStaffeln[$oPreisstaffel@index]->fPreis}{/if}" class="form-control price_large">{* onKeyUp="setzePreisAjax(false, 'ajaxpreisstaffel{$oPreisstaffel@index}', this)" /> <span id="ajaxpreisstaffel{$oPreisstaffel@index}"></span>*}
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        {/if}
+                            <li class="input-group">
+                                <table id="price_range" class="table">
+                                    <thead></thead>
+                                    <tbody>
+                                    {if isset($VersandartStaffeln) && $VersandartStaffeln|@count > 0}
+                                        {foreach $VersandartStaffeln as $oPreisstaffel}
+                                            {if $oPreisstaffel->fBis != 999999999}
+                                                <tr>
+                                                    <td>
+                                                        <div class="input-group">
+                                                            <span class="input-group-addon"><label>{__('upTo')}</label></span>
+                                                            <input type="text" id="bis{$oPreisstaffel@index}" name="bis[]" value="{if isset($VersandartStaffeln[$oPreisstaffel@index]->fBis)}{$VersandartStaffeln[$oPreisstaffel@index]->fBis}{/if}" class="form-control kilogram" />
+                                                            <span class="input-group-addon"><label>{$einheit}</label></span>
+                                                        </div>
+                                                    </td>
+                                                    <td>
+                                                        <div class="input-group">
+                                                            <span class="input-group-addon"><label>{__('amount')}:</label></span>
+                                                            <input type="text" id="preis{$oPreisstaffel@index}" name="preis[]" value="{if isset($VersandartStaffeln[$oPreisstaffel@index]->fPreis)}{$VersandartStaffeln[$oPreisstaffel@index]->fPreis}{/if}" class="form-control price_large">{* onKeyUp="setzePreisAjax(false, 'ajaxpreisstaffel{$oPreisstaffel@index}', this)" /> <span id="ajaxpreisstaffel{$oPreisstaffel@index}"></span>*}
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            {/if}
+                                        {/foreach}
+                                    {else}
+                                        <tr>
+                                            <td>
+                                                <div class="input-group">
+                                                    <span class="input-group-addon"><label>{__('upTo')}</label></span>
+                                                    <input type="text" id="bis1" name="bis[]" value="" class="form-control kilogram" />
+                                                    <span class="input-group-addon"><label>{$einheit}</label></span>
+                                                </div>
+                                            </td>
+                                            <td class="text-center">
+                                                <div class="input-group">
+                                                    <span class="input-group-addon"><label>{__('amount')}:</label></span>
+                                                    <input type="text" id="preis1" name="preis[]" value="" class="form-control price_large">{* onKeyUp="setzePreisAjax(false, 'ajaxpreis1', this)" /> <span id="ajaxpreis1"></span>*}
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {/if}
+                                    </tbody>
+                                </table>
+                            </li>
+                        </ul>
+                        <div class="row">
+                            <div class="ml-auto col-sm-6 col-lg-auto mb-2">
+                                <button name="delRow" type="button" value="{__('delPriceScale')}" onclick="delInputRow();" class="btn btn-outline-primary btn-block">
+                                    <i class="fas fa-trash-alt"></i> {__('delPriceScale')}
+                                </button>
+                            </div>
+                            <div class="col-sm-6 col-lg-auto">
+                                <button name="addRow" type="button" value="{__('addPriceScale')}" onclick="addInputRow();" class="btn btn-primary btn-block">
+                                    <i class="fas fa-share"></i> {__('addPriceScale')}
+                                </button>
+                            </div>
+                        </div>
+                        <hr class="mb-3">
+                    {elseif $versandberechnung->cModulId === 'vm_versandkosten_pauschale_jtl'}
+                        <div class="subheading1">{__('shippingPrice')}</div>
+                        <hr class="mb-3">
+                        <div class="form-group form-row align-items-center">
+                            <label class="col col-sm-4 col-form-label text-sm-right">
+                                {__('shippingPrice')} {__('amount')}:
+                            </label>
+                            <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                <input type="text" id="fPreisNetto" name="fPreis" value="{if isset($Versandart->fPreis)}{$Versandart->fPreis}{/if}" class="form-control price_large">{* onKeyUp="setzePreisAjax(false, 'ajaxfPreisNetto', this)" /> <span id="ajaxfPreisNetto"></span>*}
+                            </div>
+                        </div>
+                    {/if}
+                        <div class="form-group form-row align-items-center">
+                            <label class="col col-sm-4 col-form-label text-sm-right">
+                                {__('freeShipping')}:
+                            </label>
+                            <div class="col-sm-2 pl-sm-3 order-last order-sm-2">
+                                <select id="versandkostenfreiAktiv" name="versandkostenfreiAktiv" class="custom-select">
+                                    <option value="0">{__('no')}</option>
+                                    <option value="1" {if isset($Versandart->fVersandkostenfreiAbX) && $Versandart->fVersandkostenfreiAbX > 0}selected{/if}>{__('yes')}</option>
+                                </select>
+                            </div>
+                            <div class="col-sm pr-sm-5 order-last order-sm-2">
+                                <input type="text" id="fVersandkostenfreiAbX" name="fVersandkostenfreiAbX" class="form-control price_large" value="{if isset($Versandart->fVersandkostenfreiAbX)}{$Versandart->fVersandkostenfreiAbX}{/if}">{* onKeyUp="setzePreisAjax(false, 'ajaxversandkostenfrei', this)" /> <span id="ajaxversandkostenfrei"></span>*}
+                            </div>
+                        </div>
+                        <div class="form-group form-row align-items-center">
+                            <label class="col col-sm-4 col-form-label text-sm-right">
+                                {__('maxCosts')}:
+                            </label>
+                            <div class="col-sm-2 pl-sm-3 order-last order-sm-2">
+                                <select id="versanddeckelungAktiv" name="versanddeckelungAktiv" class="combo custom-select">
+                                    <option value="0">{__('no')}</option>
+                                    <option value="1" {if isset($Versandart->fDeckelung) && $Versandart->fDeckelung > 0}selected{/if}>{__('yes')}</option>
+                                </select>
+                            </div>
+                            <div class="col-sm pr-sm-5 order-last order-sm-2">
+                                <input type="text" id="fDeckelung" name="fDeckelung" value="{if isset($Versandart->fDeckelung)}{$Versandart->fDeckelung}{/if}" class="form-control price_large">{* onKeyUp="setzePreisAjax(false, 'ajaxdeckelung', this)" /> <span id="ajaxdeckelung"></span>*}
+                            </div>
+                        </div>
+                        <div class="mt-7">
+                            <div class="subheading1">{__('validOnShippingClasses')} {getHelpDesc cDesc=__('shippingclassDesc')}</div>
+                            <hr class="mb-3">
+                            <input name="kVersandklasse" type="hidden" value="{if !empty($Versandart->cVersandklassen)}{$Versandart->cVersandklassen}{else}-1{/if}">
+                            <div id="ulVK" class="jtl-list-group">
+                                <div id='liVKneu' class="input-group al" style="display:none;">
+                                    <div class="col-sm">
+                                        <selectX class="selectX2 custom-select" name="Versandklassen"
+                                                 onchange="checkCombination();updateVK();"
+                                                 multiple>
+                                            <option value="-1">{__('allCombinations')}</option>
+                                            {foreach $versandKlassen as $vk}
+                                                <option value="{$vk->kVersandklasse}">{$vk->cName}</option>
+                                            {/foreach}
+                                        </selectX>
+                                    </div>
+                                    <div class="col-sm-auto3 pr-sm-5 order-last order-sm-2">
+                                        <button class="btn btn-link" type="button"
+                                                onclick="$(this).parent().parent().detach(); updateVK();">
+                                            <span class="far fa-trash-alt"></span>
+                                        </button>
+                                    </div>
+                                </div>
+                                {if !empty($Versandart->cVersandklassen)}
+                                    {$aVK = ' '|explode:$Versandart->cVersandklassen}
+                                    {foreach $aVK as $VK}
+                                        <div class="input-group align-baseline mt-2">
+                                            <div class="col-sm">
+                                                <select class="select2 custom-select" name="Versandklassen"
+                                                        onchange="checkCombination();updateVK();" multiple="multiple">
+                                                    <option value="-1"{if $VK@iteration > 1} disabled="disabled"{/if}{if $VK === '-1'} selected{/if}>{__('allCombinations')}</option>
+                                                    {if $VK === '-1'}
+                                                        {foreach $versandKlassen as $vclass}
+                                                            <option value="{$vclass->kVersandklasse}">{$vclass->cName}</option>
+                                                        {/foreach}
+                                                    {else}
+                                                        {$vkID = '-'|explode:$VK}
+                                                        {foreach $versandKlassen as $vclass}
+                                                        <option value="{$vclass->kVersandklasse}"{if $vclass->kVersandklasse|in_array:$vkID} selected{/if}>{$vclass->cName}</option>
+                                                    {/foreach}
+                                                    {/if}
+                                                </select>
+                                            </div>
+                                            {if $VK@iteration != 1}
+                                                <div class="col-sm-auto3 pr-sm-5 order-last order-sm-2">
+                                                    <button class="btn btn-link" type="button"
+                                                            onclick="$(this).parent().parent().detach(); updateVK();">
+                                                        <span class="far fa-trash-alt"></span>
+                                                    </button>
+                                                </div>
+                                            {/if}
+                                        </div>
                                     {/foreach}
                                 {else}
-                                    <tr>
-                                        <td>
-                                            <div class="input-group">
-                                                <span class="input-group-addon"><label>{__('upTo')}</label></span>
-                                                <input type="text" id="bis1" name="bis[]" value="" class="form-control kilogram" />
-                                                <span class="input-group-addon"><label>{$einheit}</label></span>
-                                            </div>
-                                        </td>
-                                        <td class="text-center">
-                                            <div class="input-group">
-                                                <span class="input-group-addon"><label>{__('amount')}:</label></span>
-                                                <input type="text" id="preis1" name="preis[]" value="" class="form-control price_large">{* onKeyUp="setzePreisAjax(false, 'ajaxpreis1', this)" /> <span id="ajaxpreis1"></span>*}
-                                            </div>
-                                        </td>
-                                    </tr>
-                                {/if}
-
-                                </tbody>
-                            </table>
-                            <div class="row">
-                                <div class="col-sm-6 col-lg-auto mb-2">
-                                    <button name="delRow" type="button" value="{__('delPriceScale')}" onclick="delInputRow();" class="btn btn-danger btn-block">
-                                        <i class="fas fa-trash-alt"></i> {__('delPriceScale')}
-                                    </button>
-                                </div>
-                                <div class="col-sm-6 col-lg-auto">
-                                    <button name="addRow" type="button" value="{__('addPriceScale')}" onclick="addInputRow();" class="btn btn-primary btn-block">
-                                        <i class="fas fa-share"></i> {__('addPriceScale')}
-                                    </button>
-                                </div>
-                            </div>
-                        </li>
-                    </ul>
-                    </div>
-                {elseif $versandberechnung->cModulId === 'vm_versandkosten_pauschale_jtl'}
-                    <div class="card-header">
-                        <div class="subheading1">{__('shippingPrice')}</div>
-                        <hr class="mb-n3">
-                    </div>
-                    <div class="row">
-                        <div class="col-md-4 text-right">
-                            {__('shippingPrice')} {__('amount')}
-                        </div>
-                        <div class="col-md-8">
-                            <input type="text" id="fPreisNetto" name="fPreis" value="{if isset($Versandart->fPreis)}{$Versandart->fPreis}{/if}" class="form-control price_large">{* onKeyUp="setzePreisAjax(false, 'ajaxfPreisNetto', this)" /> <span id="ajaxfPreisNetto"></span>*}
-                        </div>
-                    </div>
-                {/if}
-                    <div class="form-group form-row align-items-center">
-                        <label class="col col-sm-4 col-form-label text-sm-right">
-                            {__('freeShipping')}:
-                        </label>
-                        <div class="col-sm-2 pl-sm-3 order-last order-sm-2">
-                            <select id="versandkostenfreiAktiv" name="versandkostenfreiAktiv" class="custom-select">
-                                <option value="0">{__('no')}</option>
-                                <option value="1" {if isset($Versandart->fVersandkostenfreiAbX) && $Versandart->fVersandkostenfreiAbX > 0}selected{/if}>{__('yes')}</option>
-                            </select>
-                        </div>
-                        <div class="col-sm pr-sm-5 order-last order-sm-2">
-                            <input type="text" id="fVersandkostenfreiAbX" name="fVersandkostenfreiAbX" class="form-control price_large" value="{if isset($Versandart->fVersandkostenfreiAbX)}{$Versandart->fVersandkostenfreiAbX}{/if}">{* onKeyUp="setzePreisAjax(false, 'ajaxversandkostenfrei', this)" /> <span id="ajaxversandkostenfrei"></span>*}
-                        </div>
-                    </div>
-                    <div class="form-group form-row align-items-center">
-                        <label class="col col-sm-4 col-form-label text-sm-right">
-                            {__('maxCosts')}:
-                        </label>
-                        <div class="col-sm-2 pl-sm-3 order-last order-sm-2">
-                            <select id="versanddeckelungAktiv" name="versanddeckelungAktiv" class="combo custom-select">
-                                <option value="0">{__('no')}</option>
-                                <option value="1" {if isset($Versandart->fDeckelung) && $Versandart->fDeckelung > 0}selected{/if}>{__('yes')}</option>
-                            </select>
-                        </div>
-                        <div class="col-sm pr-sm-5 order-last order-sm-2">
-                            <input type="text" id="fDeckelung" name="fDeckelung" value="{if isset($Versandart->fDeckelung)}{$Versandart->fDeckelung}{/if}" class="form-control price_large">{* onKeyUp="setzePreisAjax(false, 'ajaxdeckelung', this)" /> <span id="ajaxdeckelung"></span>*}
-                        </div>
-                    </div>
-
-                    <div class="card-header">
-                        <div class="subheading1">{__('validOnShippingClasses')} {getHelpDesc cDesc=__('shippingclassDesc')}</div>
-                        <hr class="mb-n3">
-                    </div>
-                    <div class="card-body">
-                        <input name="kVersandklasse" type="hidden" value="{if !empty($Versandart->cVersandklassen)}{$Versandart->cVersandklassen}{else}-1{/if}">
-                        <div id="ulVK">
-                            <div id='liVKneu' class="form-group form-row align-items-center d-none">
-                                <div class="col-sm">
-                                    <select class="selectpicker custom-select"
-                                            name="Versandklassen"
-                                            onchange="checkCombination();updateVK();"
-                                            multiple="multiple"
-                                            data-selected-text-format="count > 2"
-                                            data-size="7"
-                                            data-actions-box="true">
-                                        {foreach $versandKlassen as $vk}
-                                            <option value="{$vk->kVersandklasse}">{$vk->cName}</option>
-                                        {/foreach}
-                                    </select>
-                                </div>
-                                <div class="col-sm-auto3 pr-sm-5 order-last order-sm-2">
-                                    <button class="btn btn-link"
-                                            type="button"
-                                            onclick="$(this).parent().parent().detach(); updateVK();">
-                                        <span class="fal fa-trash-alt"></span>
-                                    </button>
-                                </div>
-                            </div>
-                            {if !empty($Versandart->cVersandklassen)}
-                                {$aVK = ' '|explode:$Versandart->cVersandklassen}
-                                {foreach $aVK as $VK}
-                                    <div class="form-group form-row align-items-center">
-                                        <div class="col-sm">
-                                            <select class="selectpicker custom-select"
-                                                    name="Versandklassen"
-                                                    onchange="checkCombination();updateVK();"
-                                                    multiple="multiple"
-                                                    data-selected-text-format="count > 2"
-                                                    data-size="7"
-                                                    data-actions-box="true">
-                                                <option value="-1"{if $VK@iteration > 1} disabled="disabled"{/if}{if $VK === '-1'} selected{/if}>{__('allCombinations')}</option>
-                                                {if $VK === '-1'}
-                                                    {foreach $versandKlassen as $vclass}
-                                                        <option value="{$vclass->kVersandklasse}">{$vclass->cName}</option>
-                                                    {/foreach}
-                                                {else}
-                                                    {$vkID = '-'|explode:$VK}
-                                                    {foreach $versandKlassen as $vclass}
-                                                    <option value="{$vclass->kVersandklasse}"{if $vclass->kVersandklasse|in_array:$vkID} selected{/if}>{$vclass->cName}</option>
-                                                {/foreach}
-                                                {/if}
-                                            </select>
-                                        </div>
-                                        {if $VK@iteration != 1}
-                                            <div class="col-sm-auto3 pr-sm-5 order-last order-sm-2">
-                                                <button class="btn btn-link"
-                                                        type="button"
-                                                        onclick="$(this).parent().parent().detach(); updateVK();">
-                                                    <span class="fal fa-trash-alt"></span>
-                                                </button>
-                                            </div>
-                                        {/if}
-                                    </div>
-                                {/foreach}
-                            {else}
-                                <li class="input-group">
-                                    <span class="input-group-wrap">
+                                    <div class="input-group">
                                         <select class="select2 custom-select" name="Versandklassen"
                                                 onchange="checkCombination();updateVK();" multiple="multiple">
                                             <option value="-1">{__('allCombinations')}</option>
@@ -430,41 +411,43 @@
                                                 <option value="{$vclass->kVersandklasse}">{$vclass->cName}</option>
                                             {/foreach}
                                         </select>
-                                    </span>
-                                    <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=__('shippingclassDesc')}</div>
-                                </li>
+                                        <span class="input-group-addon">{getHelpDesc cDesc=__('shippingclassDesc')}</span>
+                                    </div>
+                                {/if}
+                            </div>
+                            <div class="row mt-4">
+                                {if !empty($missingShippingClassCombis)}
+                                    <div class="ml-auto col-sm-6 col-lg-auto">
+                                        <button class="btn btn-warning btn-block" type="button" data-toggle="collapse" data-target="#collapseShippingClasses" aria-expanded="false" aria-controls="collapseShippingClasses">
+                                            {__('showMissingCombinations')}
+                                        </button>
+                                    </div>
+                                {/if}
+                                <div class="{if empty($missingShippingClassCombis)}ml-auto{/if} col-sm-6 col-lg-auto mb-2">
+                                    <button id="addNewShippingClassCombi" class="btn btn-primary btn-block" type="button"
+                                            onclick="addShippingCombination();$('.select2').select2();">
+                                        <span class="far fa-plus"></span> {__('addShippingClass')}
+                                    </button>
+                                </div>
+                            </div>
+                            {if !empty($missingShippingClassCombis)}
+                                <div class="collapse row" id="collapseShippingClasses">
+                                    {if $missingShippingClassCombis === -1}
+                                        <div class="col-xs-12">
+                                            {__('coverageShippingClassCombination')}
+                                            {__('noShipClassCombiValidation')|replace:'%s':$smarty.const.SHIPPING_CLASS_MAX_VALIDATION_COUNT}
+                                        </div>
+                                    {else}
+                                        {foreach $missingShippingClassCombis as $mscc}
+                                            <div class="col-auto">
+                                                <span class="badge badge-info">{$mscc}</span>
+                                            </div>
+                                        {/foreach}
+                                    {/if}
+                                </div>
                             {/if}
                         </div>
                     </div>
-                    <div role="group">
-                        <button id="addNewShippingClassCombi"
-                                class="btn btn-outline-primary"
-                                type="button"
-                                onclick="addShippingCombination();$('.select2').select2();">
-                            <span class="fal fa-plus"></span> {__('addShippingClass')}
-                        </button>
-                        {*{if !empty($missingShippingClassCombis)}*}
-                            <button class="btn btn-warning" type="button" data-toggle="collapse" data-target="#collapseShippingClasses" aria-expanded="false" aria-controls="collapseShippingClasses">
-                                {__('showMissingCombinations')}
-                            </button>
-                        {*{/if}*}
-                    </div>
-                    {*{if !empty($missingShippingClassCombis)}*}
-                        <div class="collapse" id="collapseShippingClasses">
-                            <div class="row">
-                                {if $missingShippingClassCombis === -1}
-                                    <div class="col-xs-12">
-                                        {__('coverageShippingClassCombination')}
-                                        {__('noShipClassCombiValidation')|replace:'%s':$smarty.const.SHIPPING_CLASS_MAX_VALIDATION_COUNT}
-                                    </div>
-                                {else}
-                                    {foreach $missingShippingClassCombis as $mscc}
-                                        <div class="col-xs-12 col-sm-6">[{$mscc}]</div>
-                                    {/foreach}
-                                {/if}
-                            </div>
-                        </div>
-                    {*{/if}*}
                 </div>
                 <div class="card">
                     <div class="card-header">

@@ -8,8 +8,8 @@
 
 {include file='tpl_inc/seite_header.tpl' cTitel=__('shippingmethods') cBeschreibung=__('isleListsHint') cDokuURL=__('shippingmethodsURL')}
 
-<div id="content" class="container-fluid">
-    <div class="dropdown">
+<div id="content">
+    <div class="dropdown mb-4">
         <button class="btn btn-primary" type="button" id="versandart" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             <span class="fal fa-plus mr-2"></span>{__('createShippingMethod')}
         </button>
@@ -20,7 +20,7 @@
                         {$jtl_token}
                         <input type="hidden" name="neu" value="1" />
                         <input type="hidden" id="l{$versandberechnung@index}" name="kVersandberechnung" value="{$versandberechnung->kVersandberechnung}" {if $versandberechnung@index == 0}checked="checked"{/if} />
-                        <button type="submit" class="btn btn-link">{$versandberechnung->cName}</button>
+                        <button type="submit" class="btn btn-link p-0">{$versandberechnung->cName}</button>
                     </form>
                 </a>
             {/foreach}

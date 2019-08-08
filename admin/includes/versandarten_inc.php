@@ -419,7 +419,7 @@ function saveZuschlagsListe(array $data)
         if (!empty($post['kVersandzuschlag'])) {
             $surchargeTMP = (new Versandzuschlag((int)$post['kVersandzuschlag']))
                 ->setTitle($post['cName'])
-                ->setSurcharge($post['fZuschlag']);
+                ->setSurcharge($surcharge);
         } else {
             $surchargeTMP = (new Versandzuschlag())
                 ->setISO($post['cISO'])

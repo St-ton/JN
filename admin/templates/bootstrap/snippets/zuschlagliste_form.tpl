@@ -31,12 +31,12 @@
     </div>
     <div class="row">
         <div class="ml-auto col-sm-6 col-lg-auto mb-2">
-            <button type="button" class="btn btn-outline-primary" data-dismiss="modal">
+            <button type="button" class="btn btn-outline-primary btn-block" data-dismiss="modal">
                 {__('cancelWithIcon')}
             </button>
         </div>
         <div class="col-sm-6 col-lg-auto ">
-            <button type="submit" class="btn btn-primary">
+            <button type="submit" class="btn btn-primary btn-block">
                 {__('saveWithIcon')}
             </button>
         </div>

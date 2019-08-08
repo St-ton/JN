@@ -122,12 +122,12 @@
                     </div>
                     <div class="row mt-3">
                         <div class="ml-auto col-sm-6 col-lg-auto mb-2">
-                            <button type="button" class="btn btn-outline-primary" data-dismiss="modal">
+                            <button type="button" class="btn btn-outline-primary btn-block" data-dismiss="modal">
                                 {__('cancelWithIcon')}
                             </button>
                         </div>
                         <div class="col-sm-6 col-lg-auto">
-                            <button type="submit" class="btn btn-outline-primary">
+                            <button type="submit" class="btn btn-outline-primary btn-block">
                                 {__('addZIP')}
                             </button>
                         </div>
@@ -147,8 +147,8 @@
                 </button>
                 <div class="subheading1">{__('createNewList')}</div>
             </div>
-            <hr class="mb-3">
             <div class="modal-body">
+                <hr class="mb-3">
                 <div id="new-surcharge-form-wrapper">
                     {include file='snippets/zuschlagliste_form.tpl'}
                 </div>

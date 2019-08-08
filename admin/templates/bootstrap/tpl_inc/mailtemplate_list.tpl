@@ -5,7 +5,7 @@
 			<hr class="mb-n3">
 		</div>
 		<div class="card-body table-responsive">
-			<table class="list table">
+			<table class="list table table-sm table-hover">
 				<thead>
 				<tr>
 					<th class="text-left">{__('template')}</th>

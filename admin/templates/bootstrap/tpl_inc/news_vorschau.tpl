@@ -56,7 +56,7 @@
                 <div class="card-footer save-wrapper">
                     <div class="row">
                         <div class="ml-auto col-sm-6 col-xl-auto">
-                            <button name="kommentar_loeschen" type="submit" value="{__('delete')}" class="btn btn-danger btn-block mb-2">
+                            <button name="kommentar_loeschen" type="submit" value="{__('delete')}" class="btn btn-danger btn-block">
                                 <i class="fas fa-trash-alt"></i> {__('delete')}
                             </button>
                         </div>

@@ -185,7 +185,7 @@
         </div>
         <div class="save-wrapper">
             <div class="row">
-                <div class="ml-auto col-sm-6 col-xl-auto mb-2">
+                <div class="ml-auto col-sm-6 col-xl-auto">
                     <a class="btn btn-outline-primary btn-block" href="exportformate.php">
                         {__('goBack')}
                     </a>

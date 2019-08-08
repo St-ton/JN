@@ -2957,7 +2957,7 @@ class Artikel
                 }
                 // GrundPreis nicht vom Vater => Ticket #1228
                 if ($varCombChildren[$i]->fVPEWert > 0) {
-                    $nGenauigkeit = isset($varCombChildren[$i]->FunktionsAttribute[\FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT])
+                    $precision = isset($varCombChildren[$i]->FunktionsAttribute[\FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT])
                     && (int)$varCombChildren[$i]->FunktionsAttribute[\FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT] > 0
                         ? (int)$varCombChildren[$i]->FunktionsAttribute[\FKT_ATTRIBUT_GRUNDPREISGENAUIGKEIT]
                         : 2;
@@ -2969,13 +2969,13 @@ class Artikel
                         ),
                         $currency,
                         true,
-                        $nGenauigkeit
+                        $precision
                     ) . $per . $varCombChildren[$i]->cVPEEinheit;
                     $varCombChildren[$i]->Preise->cPreisVPEWertInklAufpreis[1] = Preise::getLocalizedPriceString(
                         $varCombChildren[$i]->Preise->fVKNetto / $varCombChildren[$i]->fVPEWert,
                         $currency,
                         true,
-                        $nGenauigkeit
+                        $precision
                     ) . $per . $varCombChildren[$i]->cVPEEinheit;
                 }
                 // Lieferbar?

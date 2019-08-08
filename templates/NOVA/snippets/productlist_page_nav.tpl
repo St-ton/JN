@@ -34,6 +34,7 @@
                                     {/dropdownitem}
                                 {/foreach}
                             {/dropdown}
+                            {include file='productlist/layout_options.tpl'}
                         {/if}
                     {/col}
                 {/block}

@@ -75,9 +75,10 @@
                                                                 {link href=$sub->cURLFull title=$sub->cSeo}
                                                                     {if $Einstellungen.template.megamenu.show_category_images !== 'N'}
                                                                         <div class="d-none d-md-block">
-                                                                            {image fluid-grow=true lazy=true src="{$imageBaseURL}gfx/trans.png"
+                                                                            {image fluid-grow=false lazy=true src="{$imageBaseURL}gfx/trans.png"
                                                                                 alt=$category->cKurzbezeichnung|escape:'html'
-                                                                                data=["src" => $sub->cBildURLFull]}
+                                                                                data=["src" => $sub->cBildURLFull]
+                                                                                class="img-fluid"}
                                                                         </div>
                                                                     {/if}
                                                                     <div class="title pt-2">

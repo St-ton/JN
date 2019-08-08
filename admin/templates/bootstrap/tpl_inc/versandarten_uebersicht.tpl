@@ -176,7 +176,7 @@
 <script>
     $(document).ready(function () {
         activateAjaxLoadingSpinner();
-        $('a[data-target="#zuschlagliste-modal"]').click(function () {
+        $('a[data-target="#zuschlagliste-modal"]').on('click', function () {
             $('#zuschlaglisten').html('');
             $('#surcharge-modal-title').html($(this).data('shipping-method-name') + ', ' + $(this).data('iso'));
             $('#zuschlag-new input[name="kVersandart"').val($(this).data('shipping-method'));
@@ -185,7 +185,7 @@
                 $('#zuschlaglisten').html(data.body);
             });
         });
-        $('#zuschlag-new-submit').click(function(e){
+        $('#zuschlag-new-submit').on('click', function(e){
             e.preventDefault();
             ioCall('saveZuschlagsListe', [$('#zuschlag-new').serializeArray()], function (data) {
                 if (data.error) {

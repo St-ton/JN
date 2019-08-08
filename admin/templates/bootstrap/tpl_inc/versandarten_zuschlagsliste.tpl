@@ -93,18 +93,34 @@
                 </button>
                 <div class="subheading1">{__('surchargeListFor')} <span id="add-zip-modal-title"></span></div>
             </div>
-            <hr class="mb-3">
             <div class="modal-body">
+                <hr class="mb-3">
                 <div id="add-zip-notice"></div>
                 <form id="add-zip-form">
-                    <input type="hidden" id="add-zip-modal-id" name="kVersandzuschlag" value="">
-                    {__('plz')} <input type="text" name="cPLZ" class="form-control zipcode" /> {__('orPlzRange')}
-                    <div class="input-group">
-                        <input type="number" name="cPLZAb" class="form-control zipcode" />
-                        <span class="input-group-addon">&ndash;</span>
-                        <input type="number" name="cPLZBis" class="form-control zipcode" />
+                    <div class="form-group">
+                        <div class="custom-control custom-radio">
+                            <input type="radio" class="custom-control-input" id="zip-type-simple" name="zip-type" value="simple" checked>
+                            <label class="custom-control-label" for="zip-type-simple">{__('plz')}</label>
+                        </div>
+                        <div class="custom-control custom-radio">
+                            <input type="radio" class="custom-control-input" id="zip-type-area" name="zip-type" value="area">
+                            <label class="custom-control-label" for="zip-type-area">{__('orPlzRange')}</label>
+                        </div>
                     </div>
-                    <div class="row mt-2">
+                    <input type="hidden" id="add-zip-modal-id" name="kVersandzuschlag" value="">
+                    <div id="zip-container" class="form-row">
+                        <label class="" for="cPLZ">{__('plz')}:</label>
+                        <input type="text" id="cPLZ" name="cPLZ" class="form-control zipcode" />
+                    </div>
+                    <div id="zip-area-container" class="form-row d-none">
+                        <label class="" for="cPLZ">{__('orPlzRange')}:</label>
+                        <div class="input-group">
+                            <input type="number" name="cPLZAb" class="form-control zipcode" />
+                            <span class="input-group-addon">&ndash;</span>
+                            <input type="number" name="cPLZBis" class="form-control zipcode" />
+                        </div>
+                    </div>
+                    <div class="row mt-3">
                         <div class="ml-auto col-sm-6 col-lg-auto mb-2">
                             <button type="button" class="btn btn-outline-primary" data-dismiss="modal">
                                 {__('cancelWithIcon')}
@@ -144,24 +160,42 @@
 
 
 <script>
-    $('button[data-target="#add-zip-modal"]').click(function () {
+    $('input[name="zip-type"]').on('change', function () {
+        if ($(this).val() === 'simple') {
+            $('#zip-container').removeClass('d-none');
+            $('#zip-area-container').addClass('d-none');
+            $('#zip-area-container input').val('');
+        } else {
+            $('#zip-container').addClass('d-none');
+            $('#zip-area-container').removeClass('d-none');
+            $('#zip-container input').val('');
+        }
+    });
+
+
+    $('button[data-target="#add-zip-modal"]').on('click', function () {
         $('#add-zip-modal-title').html($(this).data('surcharge-name'));
         $('#add-zip-modal-id').val($(this).data('surcharge-id'));
+        $('#zip-area-container input').val('');
+        $('#zip-container input').val('');
+        $('#add-zip-notice').html('');
     });
-    $('.surcharge-box button[data-target="#new-surcharge-modal"]').click(function () {
+
+    $('.surcharge-box button[data-target="#new-surcharge-modal"]').on('click', function () {
         $('#new-surcharge-modal-title').html($(this).data('surcharge-name'));
         $('#new-surcharge-form-wrapper').html('');
         ioCall('getSurcharge', [$(this).data('surcharge-id')], function (data) {
             $('#new-surcharge-form-wrapper').html(data.body);
         });
     });
-    $('#surcharge-create').click(function () {
+
+    $('#surcharge-create').on('click', function () {
         $('#new-surcharge-form-wrapper input').val('');
         $('#new-surcharge-form-wrapper input[name="kVersandart"]').val($(this).data('versandart-id'));
         $('#new-surcharge-form-wrapper input[name="cISO"]').val($(this).data('iso'));
     });
 
-    $('#add-zip-modal button[type="submit"]').click(function(e){
+    $('#add-zip-modal button[type="submit"]').on('click', function(e){
         e.preventDefault();
         ioCall('createZuschlagsListeZIP', [$('#add-zip-form').serializeArray()], function (data) {
             $('#add-zip-notice').html(data.message);
@@ -170,7 +204,7 @@
         });
     });
 
-    $('.surcharge-remove').click(function (e) {
+    $('.surcharge-remove').on('click', function (e) {
         e.preventDefault();
         ioCall('deleteZuschlagsListe', [$(this).data('surcharge-id')], function (data) {
             if (data.surchargeID > 0) {
@@ -179,17 +213,14 @@
         });
     });
 
-
     function setBadgeClick(surchargeID) {
         let surchargeIDText = '';
         if  (surchargeID !== 0) {
             surchargeIDText = '[data-surcharge-id="' + surchargeID + '"]';
         }
-        $('.zip-badge' + surchargeIDText).click(function(e){
+        $('.zip-badge' + surchargeIDText).on('click', function(e){
             e.preventDefault();
-            console.log('gsdfpaogjk');
             ioCall('deleteZuschlagsListeZIP', [$(this).data('surcharge-id'), $(this).data('zip')], function (data) {
-                console.log('aaaaa');
                 $('.zip-badge[data-surcharge-id="' + data.surchargeID + '"][data-zip="' + data.ZIP + '"]').remove();
             });
         });

@@ -524,5 +524,4 @@ if ($step === 'Zuschlagsliste') {
 $smarty->assign('fSteuersatz', $_SESSION['Steuersatz'][$taxRateKeys[0]])
     ->assign('oWaehrung', $db->select('twaehrung', 'cStandard', 'Y'))
     ->assign('step', $step)
-    ->assign('sprachen', Sprache::getAllLanguages())
     ->display('versandarten.tpl');

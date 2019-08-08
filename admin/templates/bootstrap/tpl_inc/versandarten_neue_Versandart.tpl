@@ -587,32 +587,6 @@
                 </div>
             </div>
         </div>
-
-        {literal}
-            <script type="text/javascript">
-                <!--
-                $('.country-collapse [data-toggle="collapse"]').click(function () {
-                   $(this).closest('.country-collapse').toggleClass('active');
-                });
-                $('.select-all-continent').click(function(){
-                    $(this).toggleClass('all-selected');
-                    var continent = $(this).data('continent');
-                    if ($(this).hasClass('all-selected')) {
-                        $('#collapse-' + continent + ' input[name="land[]"]').each(function () {
-                            $('input[data-id="' + $(this).data('id') + '"]').prop('checked', true);
-                        });
-                    } else {
-                        $('#collapse-' + continent + ' input[name="land[]"]').each(function () {
-                            $('input[data-id="' + $(this).data('id') + '"]').prop('checked', false);
-                        })
-                    }
-                });
-                $('input[name="land[]"]').change(function () {
-                    $('input[data-id="' + $(this).data('id') + '"]').prop('checked', $(this).prop('checked'));
-                });
-                //-->
-            </script>
-        {/literal}
         <div class="save-wrapper">
             <div class="row">
                 <div class="ml-auto col-sm-6 col-lg-auto">
@@ -635,3 +609,10 @@
         </div>
     </form>
 </div>
+{literal}
+    <script type="text/javascript">
+        $('input[name="land[]"]').on('change', function () {
+            $('input[data-id="' + $(this).data('id') + '"]').prop('checked', $(this).prop('checked'));
+        });
+    </script>
+{/literal}

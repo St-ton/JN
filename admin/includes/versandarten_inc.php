@@ -11,6 +11,7 @@ use JTL\Checkout\Versandzuschlag;
 use JTL\Checkout\ZipValidator;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Text;
+use JTL\Language\LanguageHelper;
 use JTL\Shop;
 use JTL\Smarty\ContextType;
 use JTL\Smarty\JTLSmarty;
@@ -385,7 +386,7 @@ function getZuschlagsListen($shippingType, $ISO)
 
     $result       = new stdClass();
     $result->body = $smarty->assign('zuschlaglisten', $zuschlaege)
-                           ->assign('sprachen', Sprache::getAllLanguages())
+                           ->assign('sprachen', LanguageHelper::getAllLanguages())
                            ->fetch('tpl_inc/zuschlaglisten.tpl');
     return $result;
 }
@@ -622,7 +623,7 @@ function getSurcharge($id)
 
     $smarty       = JTLSmarty::getInstance(false, ContextType::BACKEND);
     $result       = new stdClass();
-    $result->body = $smarty->assign('sprachen', Sprache::getAllLanguages())
+    $result->body = $smarty->assign('sprachen', LanguageHelper::getAllLanguages())
         ->assign('surchargeNew', new Versandzuschlag($id))
         ->assign('surchargeID', $id)
         ->fetch('snippets/zuschlagliste_form.tpl');

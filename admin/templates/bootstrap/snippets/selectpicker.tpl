@@ -10,7 +10,7 @@
             ],
             selectAllText: {/literal}'{__('selectPickerSelectAllText')}'{literal},
             deselectAllText: {/literal}'{__('selectPickerDeselectAllText')}'{literal},
-            doneButtonText: {/literal}'{__('selectPickerDoneButtonText')}'{literal},
+            doneButtonText: {/literal}'{__('close')}'{literal},
         });
     {/literal}
 </script>

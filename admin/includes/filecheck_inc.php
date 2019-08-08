@@ -11,21 +11,20 @@ use Symfony\Component\Finder\Finder;
 use function Functional\map;
 
 /**
+ * @param string $filePath
  * @param array $files
- * @param int   $errorsCount
+ * @param int $errorsCount
  * @return int
  */
-function getAllModifiedFiles(&$files, &$errorsCount): int
+function validateCsvFile(string $filePath, array &$files, int &$errorsCount): int
 {
-
-    $md5file = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_SHOPMD5 . getVersionString() . '.csv';
     if (!is_array($files)) {
         return 4;
     }
-    if (!file_exists($md5file)) {
+    if (!file_exists($filePath)) {
         return 2;
     }
-    $hashes = file_get_contents($md5file);
+    $hashes = file_get_contents($filePath);
     if (mb_strlen($hashes) === 0) {
         return 3;
     }
@@ -38,18 +37,29 @@ function getAllModifiedFiles(&$files, &$errorsCount): int
                 continue;
             }
 
-            [$hash, $file] = explode(';', $shopFile);
+            if (count(explode(';', $shopFile)) === 1) {
+                if (file_exists(PFAD_ROOT . $shopFile)) {
+                    $files[] = $shopFile;
 
-            $currentHash = '';
-            $path        = PFAD_ROOT . $file;
-            if (file_exists($path)) {
-                $currentHash = md5_file($path);
-            }
+                    $errorsCount++;
+                }
+            } else {
+                [$hash, $file] = explode(';', $shopFile);
 
-            if ($currentHash !== $hash) {
-                $files[] = $file;
+                $currentHash = '';
+                $path        = PFAD_ROOT . $file;
+                if (file_exists($path)) {
+                    $currentHash = md5_file($path);
+                }
 
-                $errorsCount++;
+                if ($currentHash !== $hash) {
+                    $files[] = (object)[
+                        'name'         => $file,
+                        'lastModified' => date('d.m.Y H:i:s', filemtime($path))
+                    ];
+
+                    $errorsCount++;
+                }
             }
         }
     }
@@ -74,44 +84,6 @@ function getVersionString(): string
     }
 
     return $versionStr;
-}
-
-/**
- * @param array $files
- * @param int   $errorsCount
- * @return int
- */
-function getAllOrphanedFiles(&$files, &$errorsCount)
-{
-    $csvFile = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_SHOPMD5 . 'deleted_files_' . getVersionString() . '.csv';
-    if (!is_array($files)) {
-        return 4;
-    }
-    if (!file_exists($csvFile)) {
-        return 2;
-    }
-    $fileData = file_get_contents($csvFile);
-    if (mb_strlen($fileData) === 0) {
-        return 3;
-    }
-    $shopFiles = explode("\n", $fileData);
-    if (is_array($shopFiles) && count($shopFiles) > 0) {
-        $errorsCount = 0;
-
-        array_multisort($shopFiles);
-        foreach ($shopFiles as $shopFile) {
-            if (mb_strlen($shopFile) === 0) {
-                continue;
-            }
-            if (file_exists(PFAD_ROOT . $shopFile)) {
-                $files[] = $shopFile;
-
-                $errorsCount++;
-            }
-        }
-    }
-
-    return 1;
 }
 
 /**

@@ -331,6 +331,8 @@ class Template
             if ($parentConfig !== false && empty($template->cVersion)) {
                 $template->cVersion = $parentConfig->cVersion;
             }
+        } else {
+            $template->checksums = $this->checksums((string)$cOrdner);
         }
 
         $templates = Shop::Container()->getDB()->query(
@@ -354,5 +356,58 @@ class Template
         }
 
         return $template;
+    }
+
+    /**
+     * @param $folder
+     * @return array|bool|null
+     */
+    private function checksums($folder)
+    {
+        $files       = [];
+        $errorsCount = 0;
+        $md5File     = PFAD_ROOT . PFAD_TEMPLATES . $folder . '/checksums.csv';
+
+        if (file_exists($md5File)) {
+            $hashes = file_get_contents($md5File);
+            if (mb_strlen($hashes) === 0) {
+                return null;
+            }
+            $tplFiles = explode("\n", $hashes);
+            if (is_array($tplFiles) && count($tplFiles) > 0) {
+                $errorsCount = 0;
+                array_multisort($tplFiles);
+                foreach ($tplFiles as $tplFile) {
+                    if (mb_strlen($tplFile) === 0) {
+                        continue;
+                    }
+
+                    [$hash, $file] = explode(';', $tplFile);
+
+                    $currentHash = '';
+                    $path        = PFAD_ROOT . PFAD_TEMPLATES . $folder . '/' . $file;
+                    if (file_exists($path)) {
+                        $currentHash = md5_file($path);
+                    }
+
+                    if ($currentHash !== $hash) {
+                        $files[] = (object)[
+                            'name'         => $file,
+                            'lastModified' => date('d.m.Y H:i:s', filemtime($path))
+                        ];
+
+                        $errorsCount++;
+                    }
+                }
+            }
+
+            if ($errorsCount === 0) {
+                return true;
+            } else {
+                return $files;
+            }
+        } else {
+            return null;
+        }
     }
 }

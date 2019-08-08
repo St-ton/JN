@@ -105,10 +105,11 @@ class Status
     {
         require_once \PFAD_ROOT . \PFAD_ADMIN . \PFAD_INCLUDES . 'filecheck_inc.php';
 
-        $files = [];
-        $stats = 0;
+        $files   = [];
+        $stats   = 0;
+        $md5file = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_SHOPMD5 . getVersionString() . '.csv';
 
-        return \getAllModifiedFiles($files, $stats) === 1
+        return \validateCsvFile($md5file, $files, $stats) === 1
             ? $stats === 0
             : false;
     }
@@ -122,10 +123,11 @@ class Status
     {
         require_once \PFAD_ROOT . \PFAD_ADMIN . \PFAD_INCLUDES . 'filecheck_inc.php';
 
-        $files = [];
-        $stats = 0;
+        $files             = [];
+        $stats             = 0;
+        $orphanedFilesFile = PFAD_ROOT.PFAD_ADMIN.PFAD_INCLUDES.PFAD_SHOPMD5.'deleted_files_'.getVersionString().'.csv';
 
-        return \getAllOrphanedFiles($files, $stats) === 1
+        return \validateCsvFile($orphanedFilesFile, $files, $stats) === 1
             ? $stats === 0
             : false;
     }

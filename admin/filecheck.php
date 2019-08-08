@@ -19,12 +19,14 @@ $zipArchiveError            = '';
 $backupMessage              = '';
 $modifiedFilesError         = '';
 $orphanedFilesError         = '';
+$coreMD5HashFile            = PFAD_ROOT.PFAD_ADMIN.PFAD_INCLUDES.PFAD_SHOPMD5.getVersionString().'.csv';
+$orphanedFilesFile          = PFAD_ROOT.PFAD_ADMIN.PFAD_INCLUDES.PFAD_SHOPMD5.'deleted_files_'.getVersionString().'.csv';
 $modifiedFiles              = [];
 $orphanedFiles              = [];
-$errorsCounModifiedFiles    = 0;
+$errorsCountModifiedFiles   = 0;
 $errorsCountOrphanedFiles   = 0;
-$validateModifiedFilesState = getAllModifiedFiles($modifiedFiles, $errorsCounModifiedFiles);
-$validateOrphanedFilesState = getAllOrphanedFiles($orphanedFiles, $errorsCountOrphanedFiles);
+$validateModifiedFilesState = validateCsvFile($coreMD5HashFile, $modifiedFiles, $errorsCountModifiedFiles);
+$validateOrphanedFilesState = validateCsvFile($orphanedFilesFile, $orphanedFiles, $errorsCountOrphanedFiles);
 $alertHelper                = Shop::Container()->getAlertService();
 if ($validateModifiedFilesState !== 1) {
     switch ($validateModifiedFilesState) {
@@ -104,7 +106,7 @@ $smarty->assign('modifiedFilesError', $modifiedFilesError !== '')
     ->assign('orphanedFiles', $orphanedFiles)
     ->assign('modifiedFilesCheck', $modifiedFilesCheck)
     ->assign('orphanedFilesCheck', $orphanedFilesCheck)
-    ->assign('errorsCounModifiedFiles', $errorsCounModifiedFiles)
+    ->assign('errorsCountModifiedFiles', $errorsCountModifiedFiles)
     ->assign('errorsCountOrphanedFiles', $errorsCountOrphanedFiles)
     ->assign('deleteScript', generateBashScript())
     ->display('filecheck.tpl');

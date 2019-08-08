@@ -28,14 +28,14 @@
     </div>
     <div class="card">
         <div class="card-body">
-            <table class="table">
+            <table class="table table-responsive">
                 <thead>
                     <tr>
                         <th>{__('shippingTypeName')}</th>
                         <th>{__('shippingclasses')}</th>
                         <th>{__('customerclass')}</th>
                         <th>{__('paymentMethods')}</th>
-                        <th>{__('shippingPrice')}</th>
+                        <th class="text-center min-w">{__('shippingPrice')}</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -44,12 +44,16 @@
                     <tr>
                         <td>{$versandart->cName}
                             <span class="d-block">
-                            {foreach $versandart->land_arr as $land}
-                                <a href="versandarten.php?zuschlag=1&kVersandart={$versandart->kVersandart}&cISO={$land}&token={$smarty.session.jtl_token}">
+                            {foreach $versandart->countries as $country}
+                                <a href="versandarten.php?zuschlag=1&kVersandart={$versandart->kVersandart}&cISO={$country->getISO()}&token={$smarty.session.jtl_token}">
                                     <span class="small text-muted">
-                                        {if isset($versandart->zuschlag_arr[$land])}<u>{$land}*</u>{else}{$land}{/if}
+                                        {if in_array($country->getISO(), $versandart->surcharges)}
+                                            <u>{$country->getName()}*</u>
+                                        {else}
+                                            {$country->getName()}
+                                        {/if}
                                     </span>
-                                    {if !$land@last},{/if}
+                                    {if !$country@last},{/if}
                                 </a>
                             {/foreach}
                             </span>
@@ -91,16 +95,22 @@
                             {/foreach}
                             </ul>
                         </td>
-                        <td>
+                        <td class="text-center">
                             <ul class="list-unstyled">
                             {if $versandart->versandberechnung->cModulId === 'vm_versandberechnung_gewicht_jtl' || $versandart->versandberechnung->cModulId === 'vm_versandberechnung_warenwert_jtl' || $versandart->versandberechnung->cModulId === 'vm_versandberechnung_artikelanzahl_jtl'}
                                 {foreach $versandart->versandartstaffeln as $versandartstaffel}
                                     {if $versandartstaffel->fBis != 999999999}
-                                        <li>{__('upTo')} {$versandartstaffel->fBis} {$versandart->einheit} {getCurrencyConversionSmarty fPreisBrutto=$versandartstaffel->fPreis bSteuer=false}</li>
+                                        <li>
+                                            {__('upTo')} {$versandartstaffel->fBis} {$versandart->einheit} {$versandartstaffel->fPreis}
+                                            {getHelpDesc cDesc="{getCurrencyConversionSmarty fPreisBrutto=$versandartstaffel->fPreis bSteuer=false}"}
+                                        </li>
                                     {/if}
                                 {/foreach}
                             {elseif $versandart->versandberechnung->cModulId === 'vm_versandkosten_pauschale_jtl'}
-                                <li>{getCurrencyConversionSmarty fPreisBrutto=$versandart->fPreis bSteuer=false}</li>
+                                <li>
+                                    {$versandart->fPreis}
+                                    {getHelpDesc cDesc="{getCurrencyConversionSmarty fPreisBrutto=$versandart->fPreis bSteuer=false}"}
+                                </li>
                             {/if}
                             </ul>
                         </td>

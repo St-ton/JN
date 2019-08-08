@@ -4,8 +4,10 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use Illuminate\Support\Collection;
 use JTL\Alert\Alert;
 use JTL\Checkout\Versandart;
+use JTL\Country\Country;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
@@ -443,20 +445,22 @@ if ($step === 'uebersicht') {
         if ($method->versandberechnung->cModulId === 'vm_versandberechnung_artikelanzahl_jtl') {
             $method->einheit = 'Stück';
         }
-        $method->land_arr = explode(' ', $method->cLaender);
-        $count            = count($method->land_arr);
-        foreach ($method->land_arr as $country) {
-            $zuschlag = $db->select(
-                'tversandzuschlag',
-                'cISO',
-                $country,
-                'kVersandart',
-                (int)$method->kVersandart
-            );
-            if (isset($zuschlag->kVersandart) && $zuschlag->kVersandart > 0) {
-                $method->zuschlag_arr[$country] = '(Zuschlag)';
-            }
+        $countries          = explode(' ', trim($method->cLaender));
+        $method->countries  = new Collection();
+        $method->surcharges = $db->queryPrepared(
+            'SELECT DISTINCT cISO FROM tversandzuschlag WHERE kVersandart = :shippingMethodID',
+            ['shippingMethodID' => (int)$method->kVersandart],
+            ReturnType::COLLECTION
+        )->map(function ($country) {
+            return $country->cISO;
+        })->toArray();
+
+        foreach ($countries as $country) {
+            $method->countries->push($countryHelper->getCountry($country));
         }
+        $method->countries               = $method->countries->sortBy(function (Country $country) {
+            return $country->getName();
+        });
         $method->cKundengruppenName_arr  = [];
         $method->oVersandartSprachen_arr = $db->selectAll(
             'tversandartsprache',

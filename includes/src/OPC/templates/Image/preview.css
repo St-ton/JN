@@ -15,8 +15,10 @@
   height: 100px;
   color: #fff;
 }
-.opc-Image > div {
+.opc-Image.opc-Image-with-image > div {
   text-shadow: 1px 1px 4px #000;
+}
+.opc-Image > div {
   font-size: 14px;
 }
 .opc-Image i {

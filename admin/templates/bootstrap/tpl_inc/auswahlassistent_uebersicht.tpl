@@ -164,25 +164,25 @@
                             <div class="card-footer save-wrapper">
                                 <div class="row">
                                     <div class="col-sm-6 col-xl-auto text-left">
-                                        <div class="custom-control custom-checkbox mb-3">
+                                        <div class="custom-control custom-checkbox">
                                             <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);">
                                             <label class="custom-control-label" for="ALLMSGS">{__('globalSelectAll')}</label>
                                         </div>
                                     </div>
                                     {if isset($oAuswahlAssistentGruppe_arr) && $oAuswahlAssistentGruppe_arr|@count > 0}
                                         <div class="ml-auto col-sm-6 col-xl-auto submit">
-                                            <button type="submit" name="a" value="delGrp" class="btn btn-danger btn-block mb-2">
+                                            <button type="submit" name="a" value="delGrp" class="btn btn-danger btn-block">
                                                 <i class="fas fa-trash-alt"></i> {__('delete')}
                                             </button>
                                         </div>
                                     {/if}
                                     <div class="{if !(isset($oAuswahlAssistentGruppe_arr) && $oAuswahlAssistentGruppe_arr|@count > 0)}ml-auto{/if} col-sm-6 col-xl-auto submit">
-                                        <button type="submit" name="a" value="newQuest" class="btn btn-outline-primary btn-block mb-2">
+                                        <button type="submit" name="a" value="newQuest" class="btn btn-outline-primary btn-block">
                                             <i class="fa fa-share"></i> {__('aaQuestion')}
                                         </button>
                                     </div>
                                     <div class="col-sm-6 col-xl-auto submit">
-                                        <button type="submit" name="a" value="newGrp" class="btn btn-primary btn-block mb-2">
+                                        <button type="submit" name="a" value="newGrp" class="btn btn-primary btn-block">
                                             <i class="fa fa-share"></i> {__('aaGroup')}
                                         </button>
                                     </div>

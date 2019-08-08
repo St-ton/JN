@@ -378,7 +378,7 @@
         <div class="card-footer save-wrapper">
             <div class="row">
                 <div class="ml-auto col-sm-6 col-xl-auto">
-                    <button type="button" class="btn btn-default btn-block mb-2" onclick="window.location.href = 'slider.php';" value="zurück">
+                    <button type="button" class="btn btn-default btn-block" onclick="window.location.href = 'slider.php';" value="zurück">
                         {__('goBack')}
                     </button>
                 </div>

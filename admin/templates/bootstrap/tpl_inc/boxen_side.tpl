@@ -17,7 +17,7 @@
                 <div class="card-body">
                 {if $oBox_arr|@count > 0}
                     <div class="table-responsive">
-                        <table class="table table-hover">
+                        <table class="table table-hover table-align-top">
                             <thead>
                                 <tr>
                                     <th>{__('boxTitle')}</th>

@@ -58,7 +58,7 @@
                 {include file='tpl_inc/filtertools.tpl' oFilter=$oFilter cParam_arr=['s' => $nTyp]}
                 {include file='tpl_inc/pagination.tpl' pagination=$pagination cParam_arr=['s' => $nTyp]}
                 <div class="table-responsive">
-                    <table class="list table">
+                    <table class="table table-striped table-sm">
                         <thead>
                         <tr>
                             {foreach $cMember_arr[0] as $cMember}

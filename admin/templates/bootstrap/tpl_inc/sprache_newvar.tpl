@@ -69,7 +69,7 @@
             </div>
             <div class="card-footer save-wrapper">
                 <div class="row">
-                    <div class="ml-auto col-sm-6 col-xl-auto mb-2">
+                    <div class="ml-auto col-sm-6 col-xl-auto">
                         <a href="sprache.php?tab={$tab}" class="btn btn-outline-primary btn-block">{__('goBack')}</a>
                     </div>
                     <div class="col-sm-6 col-xl-auto">

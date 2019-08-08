@@ -2,7 +2,7 @@
 
 {include file='tpl_inc/seite_header.tpl' cTitel=__('store') cBeschreibung=__('storeDesc') cDokuURL=__('storeUrl')}
 
-<div id="content" class="container-fluid">
+<div id="content">
 {if isset($error)}
     <div class="alert alert-danger">{$error}</div>
 {/if}

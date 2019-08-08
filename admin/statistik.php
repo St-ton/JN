@@ -53,9 +53,9 @@ if ($statsType === STATS_ADMIN_TYPE_KUNDENHERKUNFT
     || $statsType === STATS_ADMIN_TYPE_SUCHMASCHINE
     || $statsType === STATS_ADMIN_TYPE_EINSTIEGSSEITEN
 ) {
-    $smarty->assign('Piechart', preparePieChartStats($stats, $statsTypeName, $axisNames));
+    $smarty->assign('piechart', preparePieChartStats($stats, $statsTypeName, $axisNames));
 } else {
-    $smarty->assign('Linechart', prepareLineChartStats($stats, $statsTypeName, $axisNames));
+    $smarty->assign('linechart', prepareLineChartStats($stats, $statsTypeName, $axisNames));
     $members = gibMappingDaten($statsType);
     $smarty->assign('ylabel', $members['nCount']);
 }

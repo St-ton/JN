@@ -74,7 +74,7 @@ function adminMenuSearch($query)
     $results = [];
 
     foreach ($adminMenu as $menuName => $menu) {
-        foreach ($menu as $subMenuName => $subMenu) {
+        foreach ($menu->items as $subMenuName => $subMenu) {
             if (is_array($subMenu)) {
                 foreach ($subMenu as $itemName => $item) {
                     if (is_object($item) && (
@@ -90,6 +90,7 @@ function adminMenuSearch($query)
                             'title' => $itemName,
                             'path'  => $path,
                             'link'  => $item->link,
+                            'icon'  => $menu->icon
                         ];
                     }
                 }

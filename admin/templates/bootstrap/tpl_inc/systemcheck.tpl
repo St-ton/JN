@@ -6,13 +6,13 @@
                 {if $state !== null && $state|strlen > 0}
                     {$state}
                 {else}
-                    <i class="fa fa-check" aria-hidden="true"></i>
+                    <i class="fal fa-check text-success" aria-hidden="true"></i>
                 {/if}
             </span></h4>
         </div>
         <div class="visible-xs">
             <h4 class="label-wrap">
-                <span class="label label-success"> <i class="fa fa-check" aria-hidden="true"></i></span>
+                <span class="label label-success"> <i class="fal fa-check text-success" aria-hidden="true"></i></span>
             </h4>
         </div>
     {elseif $test->getResult() === Systemcheck_Tests_Test::RESULT_FAILED}
@@ -36,7 +36,7 @@
                             {if $state !== null && $state|strlen > 0}
                                 {$state}
                             {else}
-                                <i class="fa fa-times" aria-hidden="true"></i>
+                                <i class="fal fa-times" aria-hidden="true"></i>
                             {/if}
                         </span>
                     </h4>
@@ -51,7 +51,7 @@
                     </h4>
                 {else}
                     <h4 class="label-wrap"><span class="label label-primary">
-                        <i class="fa fa-times" aria-hidden="true"></i>
+                        <i class="fal fa-times" aria-hidden="true"></i>
                     </span></h4>
                 {/if}
             </div>
@@ -63,7 +63,7 @@
                         {if $state !== null && $state|strlen > 0}
                             {$state}
                         {else}
-                            <i class="fa fa-times" aria-hidden="true"></i>
+                            <i class="fal fa-times" aria-hidden="true"></i>
                         {/if}
                     </span>
                 </h4>
@@ -71,7 +71,7 @@
             <div class="visible-xs">
                 <h4 class="label-wrap">
                     <span class="label label-danger">
-                        <i class="fa fa-times" aria-hidden="true"></i>
+                        <i class="fal fa-times" aria-hidden="true"></i>
                     </span>
                 </h4>
             </div>

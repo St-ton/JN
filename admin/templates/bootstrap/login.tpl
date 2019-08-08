@@ -15,8 +15,8 @@
             <p class="text-center">
                 <img src="{$currentTemplateDir}gfx/shop-login.png" alt="JTL-Shop" class="logo" />
             </p>
-            <div id="login_outer" class="panel panel-default">
-                <div class="panel-body">
+            <div id="login_outer" class="card">
+                <div class="card-body">
                     {if $alertError}
                         {include file='snippets/alert_list.tpl'}
                         <script type="text/javascript">
@@ -27,7 +27,7 @@
                             {/literal}
                         </script>
                     {elseif isset($pw_updated) && $pw_updated === true}
-                        <div class="alert alert-success" role="alert"><i class="fa fa-info-circle"></i> {__('successPasswordChange')}</div>
+                        <div class="alert alert-success" role="alert"><i class="fal fa-info-circle"></i> {__('successPasswordChange')}</div>
                     {else}
                         {if !isset($smarty.session.AdminAccount->TwoFA_active) || false === $smarty.session.AdminAccount->TwoFA_active }  {* added for 2FA *}
                             <p class="text-muted">{__('loginLong')}</p>
@@ -95,18 +95,18 @@
                             {/literal}
                         {else}
                             <div class="input-group">
-                                <span class="input-group-addon"><i class="fa fa-user"></i></span>
+                                <div class="input-group-prepend"><span class="input-group-text"><i class="fa fa-user"></i></span></div>
                                 <input class="form-control" type="text" placeholder="{__('username')}" name="benutzer" id="user_login" value="" size="20" tabindex="10" />
                             </div>
-                            <div class="input-group">
-                                <span class="input-group-addon"><i class="fa fa-lock"></i></span>
+                            <div class="input-group mt-2">
+                                <div class="input-group-prepend"><span class="input-group-text"><i class="fa fa-lock"></i></span></div>
                                 <input class="form-control" type="password" placeholder="{__('password')}" name="passwort" id="user_pass" value="" size="20" tabindex="20" />
                             </div>
                             {if isset($code_adminlogin) && $code_adminlogin}
                                 {captchaMarkup getBody=true}
                             {/if}
                         {/if}
-                        <button type="submit" value="Anmelden" tabindex="100" class="btn btn-primary btn-block btn-md">{__('login')}</button>
+                        <button type="submit" value="Anmelden" tabindex="100" class="btn btn-primary btn-block mt-2">{__('login')}</button>
                         {if isset($smarty.session.AdminAccount->TwoFA_active) && true === $smarty.session.AdminAccount->TwoFA_active }
                             <button type="button" tabindex="110" class="btn btn-default btn-block btn-md" onclick="switchUser();">{__('changerUser')}</button>
                         {/if}

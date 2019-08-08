@@ -2,7 +2,7 @@
     {assign var=addOne value=1}
     var i = {if isset($VersandartStaffeln) && $VersandartStaffeln|@count > 0}Number({$VersandartStaffeln|@count}) + 1{else}2{/if};
     function addInputRow() {ldelim}
-        $('#price_range tbody').append('<tr><td><div class="input-group"><span class="input-group-addon"><label>{__('upTo')}</label></span><input type="text" name="bis[]"  id="bis' + i + '" class="form-control kilogram"><span class="input-group-addon"><label>{if isset($einheit)}{$einheit}{/if}</label></span></div></td><td class="tcenter"><div class="input-group"><span class="input-group-addon"><label>{__('amount')}</label></span><input type="text" name="preis[]"  id="preis' + i + '" class="form-control price_large"></div></td></tr>');
+        $('#price_range tbody').append('<tr><td><div class="input-group"><span class="input-group-addon"><label>{__('upTo')}</label></span><input type="text" name="bis[]"  id="bis' + i + '" class="form-control kilogram"><span class="input-group-addon"><label>{if isset($einheit)}{$einheit}{/if}</label></span></div></td><td class="text-center"><div class="input-group"><span class="input-group-addon"><label>{__('amount')}</label></span><input type="text" name="preis[]"  id="preis' + i + '" class="form-control price_large"></div></td></tr>');
         i += 1;
     {rdelim}
 
@@ -78,7 +78,7 @@
 {/if}
 
 {include file='tpl_inc/seite_header.tpl' cTitel=$cTitel cBeschreibung=$cBeschreibung}
-<div id="content" class="container-fluid">
+<div id="content">
     <form name="versandart_neu" method="post" action="versandarten.php">
         {$jtl_token}
         <input type="hidden" name="neueVersandart" value="1" />
@@ -86,11 +86,11 @@
         <input type="hidden" name="kVersandart" value="{if isset($Versandart->kVersandart)}{$Versandart->kVersandart}{/if}" />
         <input type="hidden" name="cModulId" value="{$versandberechnung->cModulId}" />
         <div class="settings">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">{__('general')}</h3>
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">{__('general')}</div>
                 </div>
-                <div class="panel-body">
+                <div class="card-body">
                     <ul class="jtl-list-group">
                         <li class="input-group">
                             <span class="input-group-addon">
@@ -257,11 +257,11 @@
                 </div>
             </div>
 
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">{__('validOnShippingClasses')}</h3>
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">{__('validOnShippingClasses')}</div>
                 </div>
-                <div class="panel-body">
+                <div class="card-body">
                     <input name="kVersandklasse" type="hidden" value="{if !empty($Versandart->cVersandklassen)}{$Versandart->cVersandklassen}{else}-1{/if}">
                     <ul id="ulVK" class="jtl-list-group">
                         <li id='liVKneu' class="input-group" style="display:none;">
@@ -330,7 +330,7 @@
                         {/if}
                     </ul>
                 </div>
-                <div class="panel-footer">
+                <div class="card-footer">
                     <div class="btn-group" role="group">
                         <button id="addNewShippingClassCombi" class="btn btn-success" type="button"
                                 onclick="addShippingCombination();$('.select2').select2();">
@@ -361,11 +361,11 @@
                 </div>
             </div>
 
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">{__('acceptedPaymentMethods')}</h3>
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">{__('acceptedPaymentMethods')}</div>
                 </div>
-                <div class="panel-body">
+                <div class="card-body">
                     <ul class="jtl-list-group">
 
                         <li class="input-group2 table-responsive">
@@ -373,7 +373,7 @@
                                 <thead>
                                 <tr>
                                     <th class="check"></th>
-                                    <th class="tleft">{__('paymentType')}</th>
+                                    <th class="text-left">{__('paymentType')}</th>
                                     <th></th>
                                     <th>{__('amount')}</th>
                                     <th></th>
@@ -384,7 +384,10 @@
                                     {assign var=kZahlungsart value=$zahlungsart->kZahlungsart}
                                     <tr>
                                         <td class="check">
-                                            <input type="checkbox" id="kZahlungsart{$zahlungsart@index}" name="kZahlungsart[]" class="boxen" value="{$kZahlungsart}" {if isset($VersandartZahlungsarten[$kZahlungsart]->checked)}{$VersandartZahlungsarten[$kZahlungsart]->checked}{/if} />
+                                            <div class="custom-control custom-checkbox">
+                                                <input class="custom-control-input" type="checkbox" id="kZahlungsart{$zahlungsart@index}" name="kZahlungsart[]" class="boxen" value="{$kZahlungsart}" {if isset($VersandartZahlungsarten[$kZahlungsart]->checked)}{$VersandartZahlungsarten[$kZahlungsart]->checked}{/if} />
+                                                <label class="custom-control-label" for="kZahlungsart{$zahlungsart@index}"></label>
+                                            </div>
                                         </td>
                                         <td>
                                             <label for="kZahlungsart{$zahlungsart@index}">
@@ -392,7 +395,7 @@
                                             </label>
                                         </td>
                                         <td>{__('discount')}</td>
-                                        <td class="tcenter">
+                                        <td class="text-center">
                                             <input type="text" id="Netto_{$kZahlungsart}" name="fAufpreis_{$kZahlungsart}" value="{if isset($VersandartZahlungsarten[$kZahlungsart]->fAufpreis)}{$VersandartZahlungsarten[$kZahlungsart]->fAufpreis}{/if}" class="form-control price_large"{* onKeyUp="setzePreisAjax(false, 'ZahlungsartAufpreis_{$zahlungsart->kZahlungsart}', this)"*} />
                                         </td>
                                         <td>
@@ -414,11 +417,11 @@
                     </ul>
                 </div>
             </div>
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">{__('freeShipping')}</h3>
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">{__('freeShipping')}</div>
                 </div>
-                <div class="panel-body">
+                <div class="card-body">
                     <ul class="jtl-list-group">
                         <li class="input-group">
                             <span class="input-group-addon"><label for="versandkostenfreiAktiv">{__('activate')}</label></span>
@@ -436,11 +439,11 @@
                     </ul>
                 </div>
             </div>
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">{__('maxCosts')}</h3>
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">{__('maxCosts')}</div>
                 </div>
-                <div class="panel-body">
+                <div class="card-body">
                     <ul class="jtl-list-group">
                         <li class="input-group2 table-responsive">
                             <table class="list table">
@@ -454,10 +457,13 @@
                                 <tbody>
                                 <tr>
                                     <td class="check">
-                                        <input type="checkbox" id="versanddeckelungAktiv" name="versanddeckelungAktiv" class="boxen" value="1" {if isset($Versandart->fDeckelung) && $Versandart->fDeckelung > 0}checked{/if} />
+                                        <div class="custom-control custom-checkbox">
+                                            <input class="custom-control-input boxen" type="checkbox" id="versanddeckelungAktiv" name="versanddeckelungAktiv" value="1" {if isset($Versandart->fDeckelung) && $Versandart->fDeckelung > 0}checked{/if} />
+                                            <label class="custom-control-label" for="versanddeckelungAktiv"></label>
+                                        </div>
                                     </td>
                                     <td><label for="versanddeckelungAktiv">{__('activate')}</label></td>
-                                    <td class="tcenter">
+                                    <td class="text-center">
                                         <input type="text" id="fDeckelung" name="fDeckelung" value="{if isset($Versandart->fDeckelung)}{$Versandart->fDeckelung}{/if}" class="form-control price_large">{* onKeyUp="setzePreisAjax(false, 'ajaxdeckelung', this)" /> <span id="ajaxdeckelung"></span>*}
                                     </td>
                                 </tr>
@@ -468,11 +474,11 @@
                 </div>
             </div>
             {if $versandberechnung->cModulId === 'vm_versandberechnung_gewicht_jtl' || $versandberechnung->cModulId === 'vm_versandberechnung_warenwert_jtl' || $versandberechnung->cModulId === 'vm_versandberechnung_artikelanzahl_jtl'}
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">{__('priceScale')}</h3>
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">{__('priceScale')}</div>
                 </div>
-                <div class="panel-body">
+                <div class="card-body">
                     <ul class="jtl-list-group">
                         <li class="input-group2 table-responsive">
                             <table id="price_range" class="table">
@@ -513,7 +519,7 @@
                                                 <span class="input-group-addon"><label>{$einheit}</label></span>
                                             </div>
                                         </td>
-                                        <td class="tcenter">
+                                        <td class="text-center">
                                             <div class="input-group">
                                                 <span class="input-group-addon"><label>{__('amount')}:</label></span>
                                                 <input type="text" id="preis1" name="preis[]" value="" class="form-control price_large">{* onKeyUp="setzePreisAjax(false, 'ajaxpreis1', this)" /> <span id="ajaxpreis1"></span>*}
@@ -526,18 +532,18 @@
                             </table>
                             <div class="btn-group">
                                 <button name="addRow" type="button" value="{__('addPriceScale')}" onclick="addInputRow();" class="btn btn-primary"><i class="fa fa-share"></i> {__('addPriceScale')}</button>
-                                <button name="delRow" type="button" value="{__('delPriceScale')}" onclick="delInputRow();" class="btn btn-danger"><i class="fa fa-trash"></i> {__('delPriceScale')}</button>
+                                <button name="delRow" type="button" value="{__('delPriceScale')}" onclick="delInputRow();" class="btn btn-danger"><i class="fas fa-trash-alt"></i> {__('delPriceScale')}</button>
                             </div>
                         </li>
                     </ul>
                 </div>
             </div>
             {elseif $versandberechnung->cModulId === 'vm_versandkosten_pauschale_jtl'}
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">{__('shippingPrice')}</h3>
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">{__('shippingPrice')}</div>
                 </div>
-                <div class="panel-body">
+                <div class="card-body">
                     <ul class="jtl-list-group">
                         <li class="input-group2 table-responsive">
                             <table class="list table">
@@ -552,7 +558,7 @@
                                 <tr>
                                     <td class="check"></td>
                                     <td></td>
-                                    <td class="tcenter">
+                                    <td class="text-center">
                                         <input type="text" id="fPreisNetto" name="fPreis" value="{if isset($Versandart->fPreis)}{$Versandart->fPreis}{/if}" class="form-control price_large">{* onKeyUp="setzePreisAjax(false, 'ajaxfPreisNetto', this)" /> <span id="ajaxfPreisNetto"></span>*}
                                     </td>
                                 </tr>
@@ -643,11 +649,11 @@
                     //-->
                 </script>
             {/literal}
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">{__('shipToCountries')}</h3>
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title">{__('shipToCountries')}</div>
                 </div>
-                <div class="panel-body">
+                <div class="card-body">
                     <div class="btn-group">
                         <a onclick="toggle('Europa_EU');" class="btn btn-default">{__('checkEU')}</a>
                         <a onclick="toggle('Europa_nichtEU');" class="btn btn-default">{__('checkNonEU')}</a>
@@ -667,8 +673,10 @@
                         <tr>
                             {/if}
                             <td>
-                                <input type="checkbox" name="land[]" id="country_{$versandland->getISO()}" value="{$versandland->getISO()}" {if isset($gewaehlteLaender) && is_array($gewaehlteLaender) && in_array($versandland->getISO(),$gewaehlteLaender)} checked="checked"{/if} />
-                                <label for="country_{$versandland->getISO()}">{$versandland->getName()}</label>
+                                <div class="custom-control custom-checkbox">
+                                    <input class="custom-control-input" type="checkbox" name="land[]" id="country_{$versandland->getISO()}" value="{$versandland->getISO()}" {if isset($gewaehlteLaender) && is_array($gewaehlteLaender) && in_array($versandland->getISO(),$gewaehlteLaender)} checked="checked"{/if} />
+                                    <label class="custom-control-label" for="country_{$versandland->getISO()}">{$versandland->getName()}</label>
+                                </div>
                             </td>
                             {/foreach}
                         </tr>
@@ -676,16 +684,18 @@
                     </table>
                 </div>
             </div>
-            <div class="save_wrapper btn-group">
+            <div class="save-wrapper btn-group">
                 <button type="submit" value="{if !isset($Versandart->kVersandart) || !$Versandart->kVersandart}{__('createShippingType')}{else}{__('modifyedShippingType')}{/if}"
                         class="btn btn-primary">
                     {if !isset($Versandart->kVersandart) || !$Versandart->kVersandart}
                         <i class="fa fa-share"></i> {__('createShippingType')}
                     {else}
-                        <i class="fa fa-edit"></i> {__('modifyedShippingType')}
+                        <i class="fal fa-edit"></i> {__('modifyedShippingType')}
                     {/if}
                 </button>
-                <a href="versandarten.php" title="{__('cancel')}" class="btn btn-danger"><i class="fa fa-exclamation"></i> {__('cancel')}</a>
+                <a href="versandarten.php" title="{__('cancel')}" class="btn btn-danger">
+                    {__('cancelWithIcon')}
+                </a>
             </div>
         </div>
     </form>

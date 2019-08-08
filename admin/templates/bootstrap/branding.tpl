@@ -2,24 +2,24 @@
 {include file='tpl_inc/header.tpl'}
 
 {include file='tpl_inc/seite_header.tpl' cTitel=__('branding') cBeschreibung=__('brandingDesc') cDokuURL=__('brandingUrl')}
-<div id="content" class="container-fluid">
-    <div class="block">
-        <form name="branding" method="post" action="branding.php">
-            {$jtl_token}
-            <input type="hidden" name="branding" value="1" />
-            <div class="input-group p25 left">
-                <span class="input-group-addon">
-                    <label for="{__('brandingActive')}">{__('brandingPictureKat')}:</label>
-                </span>
-                <span class="input-group-wrap">
-                    <select name="kBranding" class="form-control selectBox" id="{__('brandingActive')}" onchange="document.branding.submit();">
-                        {foreach $oBranding_arr as $oBrandingTMP}
-                            <option value="{$oBrandingTMP->kBranding}" {if $oBrandingTMP->kBranding == $oBranding->kBrandingTMP}selected{/if}>{__($oBrandingTMP->cBildKategorie)}</option>
-                        {/foreach}
-                    </select>
-                </span>
-            </div>
-        </form>
+<div id="content">
+    <div class="card">
+        <div class="card-body">
+            <form name="branding" method="post" action="branding.php">
+                {$jtl_token}
+                <input type="hidden" name="branding" value="1" />
+                <div class="form-row">
+                    <label class="col-sm-auto col-form-label" for="{__('brandingActive')}">{__('brandingPictureKat')}:</label>
+                    <span class="col-sm-auto">
+                        <select name="kBranding" class="custom-select selectBox" id="{__('brandingActive')}" onchange="document.branding.submit();">
+                            {foreach $oBranding_arr as $oBrandingTMP}
+                                <option value="{$oBrandingTMP->kBranding}" {if $oBrandingTMP->kBranding == $oBranding->kBrandingTMP}selected{/if}>{__($oBrandingTMP->cBildKategorie)}</option>
+                            {/foreach}
+                        </select>
+                    </span>
+                </div>
+            </form>
+        </div>
     </div>
 
     {if $oBranding->kBrandingTMP > 0}
@@ -29,34 +29,26 @@
                 <input type="hidden" name="branding" value="1" />
                 <input type="hidden" name="kBranding" value="{$oBranding->kBrandingTMP}" />
                 <input type="hidden" name="speicher_einstellung" value="1" />
-                <div class="panel panel-default">
-                    <div class="panel-heading">
-                        <h3 class="panel-title">{{__('headingEditBrandingForProduct')}|sprintf:{$oBranding->cBildKategorie}}</h3>
+                <div class="card">
+                    <div class="card-header">
+                        <div class="subheading1">{{__('headingEditBrandingForProduct')}|sprintf:{$oBranding->cBildKategorie}}</div>
+                        <hr class="mb-n3">
                     </div>
-                    <div class="panel-body">
-                        {if $oBranding->cBrandingBild|strlen > 0}
-                            <div class="thumbnail">
-                                <img src="{$shopURL}/{$PFAD_BRANDINGBILDER}{$oBranding->cBrandingBild}?rnd={$cRnd}" alt="" />
-                            </div>
-                        {/if}
-                        <div class="input-group">
-                            <span class="input-group-addon">
-                                <label for="nAktiv">{__('brandingActive')}</label>
-                            </span>
-                            <span class="input-group-wrap">
-                                <select name="nAktiv" id="nAktiv" class="form-control combo">
+                    <div class="card-body">
+                        <div class="form-group form-row align-items-center">
+                            <label class="col col-sm-4 col-form-label text-sm-right" for="nAktiv">{__('brandingActive')}:</label>
+                            <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                <select name="nAktiv" id="nAktiv" class="custom-select combo">
                                     <option value="1"{if $oBranding->nAktiv == 1} selected{/if}>{__('yes')}</option>
                                     <option value="0"{if $oBranding->nAktiv == 0} selected{/if}>{__('no')}</option>
                                 </select>
-                            </span>
-                            <span class="input-group-addon">{getHelpDesc cDesc=__('brandingActiveDesc')}</span>
+                            </div>
+                            <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=__('brandingActiveDesc')}</div>
                         </div>
-                        <div class="input-group">
-                            <span class="input-group-addon">
-                                <label for="cPosition">{__('position')}</label>
-                            </span>
-                            <span class="input-group-wrap">
-                                <select name="cPosition" id="cPosition" class="form-control combo">
+                        <div class="form-group form-row align-items-center">
+                            <label class="col col-sm-4 col-form-label text-sm-right" for="cPosition">{__('position')}:</label>
+                            <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                <select name="cPosition" id="cPosition" class="custom-select combo">
                                     <option value="oben"{if $oBranding->cPosition === 'oben'} selected{/if}>
                                         {__('top')}
                                     </option>
@@ -85,43 +77,100 @@
                                         {__('centered')}
                                     </option>
                                 </select>
-                            </span>
-                            <span class="input-group-addon">{getHelpDesc cDesc=__('brandingPositionDesc')}</span>
+                            </div>
+                            <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=__('brandingPositionDesc')}</div>
                         </div>
-                        <div class="input-group">
-                            <span class="input-group-addon">
-                                <label for="dTransparenz">{__('transparency')}</label>
-                            </span>
-                            <span class="input-group-wrap">
-                                <input class="form-control" type="text" name="dTransparenz" id="dTransparenz" value="{$oBranding->dTransparenz}" tabindex="1" />
-                            </span>
-                            <span class="input-group-addon">{getHelpDesc cDesc=__('brandingTransparencyDesc')}</span>
+                        <div class="form-group form-row align-items-center">
+                            <label class="col col-sm-4 col-form-label text-sm-right" for="dTransparenz">{__('transparency')}:</label>
+                            <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                <div class="input-group form-counter min-w-sm">
+                                    <div class="input-group-prepend">
+                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-down>
+                                            <span class="fas fa-minus"></span>
+                                        </button>
+                                    </div>
+                                    <input class="form-control" type="number" name="dTransparenz" id="dTransparenz" value="{$oBranding->dTransparenz}" tabindex="1" />
+                                    <div class="input-group-append">
+                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-up>
+                                            <span class="fas fa-plus"></span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=__('brandingTransparencyDesc')}</div>
                         </div>
-                        <div class="input-group">
-                            <span class="input-group-addon">
-                                <label for="dGroesse">{__('size')}</label>
-                            </span>
-                            <span class="input-group-wrap">
-                                <input class="form-control" type="text" name="dGroesse" id="dGroesse" value="{$oBranding->dGroesse}" tabindex="1" />
-                            </span>
-                            <span class="input-group-addon">{getHelpDesc cDesc=__('brandingSizeDesc')}</span>
+                        <div class="form-group form-row align-items-center">
+                            <label class="col col-sm-4 col-form-label text-sm-right" for="dGroesse">{__('size')}:</label>
+                            <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                <div class="input-group form-counter min-w-sm">
+                                    <div class="input-group-prepend">
+                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-down>
+                                            <span class="fas fa-minus"></span>
+                                        </button>
+                                    </div>
+                                    <input class="form-control" type="number" name="dGroesse" id="dGroesse" value="{$oBranding->dGroesse}" tabindex="1" />
+                                    <div class="input-group-append">
+                                        <button type="button" class="btn btn-outline-secondary border-0" data-count-up>
+                                            <span class="fas fa-plus"></span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=__('brandingSizeDesc')}</div>
                         </div>
-                        <div class="input-group">
-                            <span class="input-group-addon">
-                                <label for="cBrandingBild">{__('brandingFileName')}</label>
-                            </span>
-                            <span class="input-group-wrap">
-                                <input class="form-control" type="file" name="cBrandingBild" maxlength="2097152" accept="image/jpeg,image/gif,image/png,image/bmp" id="cBrandingBild" value="" tabindex="1" {if !$oBranding->cBrandingBild|strlen > 0}required{/if}/>
-                            </span>
-                            <span class="input-group-addon">{getHelpDesc cDesc=__('brandingFileNameDesc')}</span>
+                        <div class="form-group form-row align-items-center">
+                            <label class="col col-sm-4 col-form-label text-sm-right" for="cBrandingBild">{__('brandingFileName')}:</label>
+                            <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                <input name="cBrandingBild" id="cBrandingBild" type="file" class="file" accept="image/*" {if !$oBranding->cBrandingBild|strlen > 0}required{/if}>
+                            </div>
+                            <div class="col-auto ml-sm-n4 order-2 order-sm-3">{getHelpDesc cDesc=__('brandingFileNameDesc')}</div>
                         </div>
                     </div>
-                    <div class="panel-footer">
-                        <button type="submit" value="{__('save')}" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
+                    <div class="card-footer save-wrapper">
+                        <div class="row">
+                            <div class="ml-auto col-sm-6 col-xl-auto submit">
+                                <button type="submit" value="{__('save')}" class="btn btn-primary btn-block">
+                                    {__('saveWithIcon')}
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </form>
         </div>
     {/if}
 </div>
+<script>
+    $('#cBrandingBild').fileinput({
+        showUpload: false,
+        showRemove: false,
+        showCancel: false,
+        uploadAsync: false,
+        showPreview: true,
+        fileActionSettings: {
+            showZoom: false,
+            showRemove: false,
+            showDrag: false
+        },
+        allowedFileExtensions : ['jpg', 'jpeg', 'jpe', 'gif', 'png', 'bmp'],
+        overwriteInitial: true,
+        initialPreviewCount: 1,
+        theme: 'fas',
+        language: '{$language|mb_substr:0:2}',
+        browseOnZoneClick:     true,
+        maxFileSize: 256,
+        maxFilesNum: 1,
+        {if $oBranding->cBrandingBild|strlen > 0}
+        initialPreviewConfig: [
+            {
+                url: '{$shopURL}/{$PFAD_BRANDINGBILDER}{$oBranding->cBrandingBild}?rnd={$cRnd}',
+                extra: { logo: '{$oBranding->cBrandingBild}' }
+            }
+        ],
+        initialPreview: [
+            '<img src="{$shopURL}/{$PFAD_BRANDINGBILDER}{$oBranding->cBrandingBild}?rnd={$cRnd}" class="file-preview-image img-fluid" alt="branding" title="brnading" />'
+        ]
+        {/if}
+    })
+</script>
 {include file='tpl_inc/footer.tpl'}

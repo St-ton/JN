@@ -43,6 +43,10 @@
                                 {block name='account-my-account-orders'}
                                     {foreach $Bestellungen as $order}
                                         {if $order@index === 5}{break}{/if}
+                                        {link href="$cCanonicalURL?bestellung={$order->kBestellung}"
+                                            title="{lang key='showOrder' section='login'}: {lang key='orderNo' section='login'} {$order->cBestellNr}"
+                                            data=["toggle" => "tooltip", "placement" => "bottom"]
+                                            class="no-deco"}
                                             {row no-gutters=true class="mb-2"}
                                                 {col cols=3}
                                                     {$order->dBestelldatum}
@@ -54,13 +58,10 @@
                                                     {$order->Status}
                                                 {/col}
                                                 {col cols=1}
-                                                    {link href="$cCanonicalURL?bestellung={$order->kBestellung}"
-                                                        title="{lang key='showOrder' section='login'}: {lang key='orderNo' section='login'} {$order->cBestellNr}"
-                                                        data=["toggle" => "tooltip", "placement" => "bottom"]}
-                                                        <i class="fa fa-eye"></i>
-                                                    {/link}
+                                                    <i class="fa fa-eye"></i>
                                                 {/col}
                                             {/row}
+                                        {/link}
                                     {/foreach}
                                 {/block}
                                 </div>
@@ -128,6 +129,7 @@
                                                             name="wlAction"
                                                             value="setPrivate"
                                                             data=["toggle" => "tooltip", "placement" => "bottom"]
+                                                            aria=["label"=>"{lang key='wishlistPrivat' section='login'}"]
                                                             title="{lang key='wishlistPrivat' section='login'}"}
                                                             <i class="fa fa-eye-slash"></i></span>
                                                         {/button}
@@ -138,6 +140,7 @@
                                                             name="wlAction"
                                                             value="setPublic"
                                                             data=["toggle" => "tooltip", "placement" => "bottom"]
+                                                            aria=["label"=>"{lang key='wishlistNotPrivat' section='login'}"]
                                                             title="{lang key='wishlistNotPrivat' section='login'}"}
                                                             <i class="fa fa-eye"></i></span>
                                                         {/button}

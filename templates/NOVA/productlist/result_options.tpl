@@ -14,7 +14,7 @@
                 {col cols=12 md=4 class="filter-collapsible-control order-1 order-md-0 d-flex justify-content-between"}
                     {button variant="light"
                         data=["toggle" => "collapse", "target" => "#filter-collapsible"]
-                        aria=["expanded" => {$Einstellungen.template.productlist.initial_display_filter === 'Y'},
+                        aria=["expanded" => "{if $Einstellungen.template.productlist.initial_display_filter === 'Y'}true{else}false{/if}",
                             "controls" => "filter-collapsible"]
                         role="button"
                     }
@@ -48,7 +48,7 @@
             {/block}
             {/row}
             {block name='productlist-result-options-filter-collapsible'}
-                {collapse id="filter-collapsible" class="mt-2 {if $Einstellungen.template.productlist.initial_display_filter === 'Y'}show{/if}" aria=["expanded" => ($Einstellungen.template.productlist.initial_display_filter === 'Y')]}
+                {collapse id="filter-collapsible" class="mt-2 {if $Einstellungen.template.productlist.initial_display_filter === 'Y'}show{/if}" aria=["expanded" => "{if $Einstellungen.template.productlist.initial_display_filter === 'Y'}true{else}false{/if}"]}
                     {row id="navbar-filter" class="d-flex flex-wrap flex-md-row"}
                         {if $show_filters}
                             {if count($contentFilters) > 0}

@@ -17,8 +17,8 @@
     {button name="Wunschliste"
         type="submit"
         class="{$classes|default:''} wishlist badge badge-circle-1 action-tip-animation-b {if $isOnWishList}on-list{/if}"
-        title="{lang key='addToWishlist' section='productDetails'}"
-        data=["toggle"=>"tooltip", "placement"=>"top", "wl-pos" => $wishlistPos, "product-id-wl" => $Artikel->kArtikel]
+        aria=["label" => {lang key='addToWishlist' section='productDetails'}]
+        data=["wl-pos" => $wishlistPos, "product-id-wl" => $Artikel->kArtikel]
     }
         <span class="far fa-heart"></span>
     {/button}

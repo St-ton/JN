@@ -34,6 +34,29 @@
                                     {/dropdownitem}
                                 {/foreach}
                             {/dropdown}
+                            {if isset($oErweiterteDarstellung->nDarstellung)
+                            && $Einstellungen.artikeluebersicht.artikeluebersicht_erw_darstellung === 'Y'
+                            && empty($AktuelleKategorie->categoryFunctionAttributes['darstellung'])
+                            && $navid === 'header'}
+                                {buttongroup class="ml-2"}
+                                {link href=$oErweiterteDarstellung->cURL_arr[$smarty.const.ERWDARSTELLUNG_ANSICHT_LISTE]
+                                id="ed_list"
+                                class="btn btn-light btn-option ed list{if $oErweiterteDarstellung->nDarstellung === $smarty.const.ERWDARSTELLUNG_ANSICHT_LISTE} active{/if}"
+                                role="button"
+                                title="{lang key='list' section='productOverview'}"
+                                }
+                                    <span class="fa fa-th-list d-none d-md-inline-flex"></span><span class="fa fa-square d-inline-flex d-md-none"></span>
+                                {/link}
+                                {link href=$oErweiterteDarstellung->cURL_arr[$smarty.const.ERWDARSTELLUNG_ANSICHT_GALERIE]
+                                id="ed_gallery"
+                                class="btn btn-light btn-option ed gallery{if $oErweiterteDarstellung->nDarstellung === $smarty.const.ERWDARSTELLUNG_ANSICHT_GALERIE} active{/if}"
+                                role="button"
+                                title="{lang key='gallery' section='productOverview'}"
+                                }
+                                    <span class="fa fa-th-large"></span>
+                                {/link}
+                                {/buttongroup}
+                            {/if}
                         {/if}
                     {/col}
                 {/block}
@@ -50,7 +73,7 @@
                             <ul class="pagination">
                                 {block name='snippets-productlist-page-nav-first-page'}
                                     <li class="page-item{if $Suchergebnisse->getPages()->getCurrentPage() == 1} disabled{/if}">
-                                        {link class="page-link" href=$filterPagination->getPrev()->getURL()}<span aria-hidden="true">&#8592;</span>{/link}
+                                        {link class="page-link" href=$filterPagination->getPrev()->getURL() aria=['label' => {lang key='previous' section='productOverview'}]}<span aria-hidden="true">&#8592;</span>{/link}
                                     </li>
                                 {/block}
                                 <li class="page-item dropdown">
@@ -69,7 +92,7 @@
                                 </li>
                                 {block name='snippets-productlist-page-nav-last-page'}
                                     <li class="page-item{if $Suchergebnisse->getPages()->getCurrentPage() == $Suchergebnisse->getPages()->getMaxPage()} disabled{/if}">
-                                        {link class="page-link" href=$filterPagination->getNext()->getURL()}<span aria-hidden="true">&#8594;</span>{/link}
+                                        {link class="page-link" href=$filterPagination->getNext()->getURL() aria=['label' => {lang key='next' section='productOverview'}]}<span aria-hidden="true">&#8594;</span>{/link}
                                     </li>
                                 {/block}
                             </ul>

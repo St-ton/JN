@@ -27,7 +27,6 @@
                                     {block name='basket-index-form-cart'}
                                         {form id="cart-form" method="post" action="{get_static_route id='warenkorb.php'}" class="evo-validate"}
                                             {input type="hidden" name="wka" value="1"}
-                                            {input type="hidden" name="a" value=''}
                                             <div class="mb-7">
                                                 {block name='basket-index-include-order-items'}
                                                     {include file='checkout/inc_order_items.tpl' tplscope='cart'}

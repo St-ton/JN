@@ -5,16 +5,22 @@
 {block name='snippets-uploads'}
     {if !empty($oUploadSchema_arr)}
         {block name='snippets-uploads-include-scripts'}
-            <script type="text/javascript" src="{if empty($parentTemplateDir)}{$currentTemplateDir}{else}{$parentTemplateDir}{/if}js/fileinput/fileinput.min.js"></script>
-            <script src="{if empty($parentTemplateDir)}{$currentTemplateDir}{else}{$parentTemplateDir}{/if}js/fileinput/themes/fas/theme.min.js"></script>
             {assign var=availableLocale value=array('ar','az', 'bg','ca', 'cr', 'cs', 'da', 'de', 'el', 'es','et', 'fa','fi', 'fr', 'gl',
             'he','hu','id','it','ja','ka','kr','kz', 'lt', 'nl','no', 'pl', 'pt', 'ro','ru','sk','sl','sv','th','tr', 'uk','uz','vi','zh')}
             {if isset($smarty.session.currentLanguage->cISO639) && $smarty.session.currentLanguage->cISO639|in_array:$availableLocale}
                 {assign var=uploaderLang value=$smarty.session.currentLanguage->cISO639}
             {else}
-                {assign var=uploaderLang value='en'}
+                {assign var=uploaderLang value='LANG'}
             {/if}
-            <script type="text/javascript" src="{if empty($parentTemplateDir)}{$currentTemplateDir}{else}{$parentTemplateDir}{/if}js/fileinput/locales/{$uploaderLang}.js"></script>
+
+            <script>
+                var deferredTasks = window.deferredTasks || [];
+                deferredTasks.push([function (){
+                    loadScript("{if empty($parentTemplateDir)}{$currentTemplateDir}{else}{$parentTemplateDir}{/if}js/fileinput/fileinput.min.js");
+                    loadScript("{if empty($parentTemplateDir)}{$currentTemplateDir}{else}{$parentTemplateDir}{/if}js/fileinput/themes/fas/theme.min.js");
+                    loadScript("{if empty($parentTemplateDir)}{$currentTemplateDir}{else}{$parentTemplateDir}{/if}js/fileinput/locales/{$uploaderLang}.js");
+                }]);
+            </script>
         {/block}
         {if $tplscope === 'product'}
             {block name='snippets-uploads-subheading-product'}
@@ -55,60 +61,63 @@
                                 {/block}
                                 {block name='snippets-uploads-scheme-product-script'}
                                     <script type="text/javascript">
-                                        $(function () {
-                                            var $el =  $('#fileinput{$oUploadSchema@index}');
-                                            $el.fileinput({
-                                                uploadUrl:             '{$ShopURL}/{$smarty.const.PFAD_UPLOAD_CALLBACK}',
-                                                uploadAsync:           false,
-                                                showPreview:           true,
-                                                showUpload:            false,
-                                                showRemove:            false,
-                                                browseClass:           'btn btn-light',
-                                                fileActionSettings:    {
-                                                    showZoom: false,
-                                                    showRemove: false
-                                                },
-                                                allowedFileExtensions: [{$oUploadSchema->cDateiListe|replace:'*.':'\''|replace:';':'\','|cat:'\''}],
-                                                language:              '{$uploaderLang}',
-                                                theme:                 'fas',
-                                                browseOnZoneClick:     true,
-                                                uploadExtraData:       {
-                                                    sid:        "{$cSessionID}",
-                                                    jtl_token:  "{$smarty.session.jtl_token}",
-                                                    uniquename: "{$oUploadSchema->cUnique}",
-                                                    uploader:   "4.00",
-                                                    prodID:     "{$oUploadSchema->prodID}",
-                                                    cname:      "{$oUploadSchema->cName|replace:" ":"_"}"
-                                                    {if !empty($oUploadSchema->WarenkorbPosEigenschaftArr)},
-                                                    variation:  "{strip}
-                                                    {foreach name=variationen from=$oUploadSchema->WarenkorbPosEigenschaftArr item=Variation}_{$Variation->cEigenschaftWertName|trans|replace:" ":"_"}{/foreach}
-                                                        "{/strip}
-                                                    {/if}
-                                                },
-                                                maxFileSize:           {$nMaxUploadSize/1024},
-                                                elErrorContainer:      '#kv-error-{$oUploadSchema@index}',
-                                                maxFilesNum:           1
-                                            }).on("filebrowse", function(event, files) {
-                                                $el.fileinput('clear');
-                                            }).on("filebatchselected", function(event, files) {
-                                                $el.fileinput("upload");
-                                            }).on('filebatchuploadsuccess', function(event, data) {
-                                                var msgField = $('#queue{$oUploadSchema@index} .current-upload'),
-                                                    uploadMsgField = $('.uploadifyMsg');
-                                                if (typeof data.response !== 'undefined' && typeof data.response.cName !== 'undefined') {
-                                                    msgField.html('<i class="fas fa-check" aria-hidden="true"></i>' + data.response.cName + ' (' + data.response.cKB + ' KB)');
-                                                } else {
-                                                    msgField.html('{lang key='uploadError'}');
-                                                }
-                                                $('#msgWarning').hide();
-                                                uploadMsgField.find('.alert-danger').hide();
-                                                $('#buy-form').find('.upload-error').removeClass('upload-error');
-                                            }).on('fileuploaderror', function() {
-                                                $('#upload-{$oUploadSchema@index} .fileinput-upload').addClass('disabled');
-                                            }).on('fileloaded', function() {
-                                                $('#upload-{$oUploadSchema@index} .fileinput-upload').removeClass('disabled');
+                                        var deferredTasks = window.deferredTasks || [];
+                                        deferredTasks.push(["ready",function () {
+                                            $(function () {
+                                                var $el =  $('#fileinput{$oUploadSchema@index}');
+                                                $el.fileinput({
+                                                    uploadUrl:             '{$ShopURL}/{$smarty.const.PFAD_UPLOAD_CALLBACK}',
+                                                    uploadAsync:           false,
+                                                    showPreview:           true,
+                                                    showUpload:            false,
+                                                    showRemove:            false,
+                                                    browseClass:           'btn btn-light',
+                                                    fileActionSettings:    {
+                                                        showZoom: false,
+                                                        showRemove: false
+                                                    },
+                                                    allowedFileExtensions: [{$oUploadSchema->cDateiListe|replace:'*.':'\''|replace:';':'\','|cat:'\''}],
+                                                    language:              '{$uploaderLang}',
+                                                    theme:                 'fas',
+                                                    browseOnZoneClick:     true,
+                                                    uploadExtraData:       {
+                                                        sid:        "{$cSessionID}",
+                                                        jtl_token:  "{$smarty.session.jtl_token}",
+                                                        uniquename: "{$oUploadSchema->cUnique}",
+                                                        uploader:   "4.00",
+                                                        prodID:     "{$oUploadSchema->prodID}",
+                                                        cname:      "{$oUploadSchema->cName|replace:" ":"_"}"
+                                                        {if !empty($oUploadSchema->WarenkorbPosEigenschaftArr)},
+                                                        variation:  "{strip}
+                                                        {foreach name=variationen from=$oUploadSchema->WarenkorbPosEigenschaftArr item=Variation}_{$Variation->cEigenschaftWertName|trans|replace:" ":"_"}{/foreach}
+                                                            "{/strip}
+                                                        {/if}
+                                                    },
+                                                    maxFileSize:           {$nMaxUploadSize/1024},
+                                                    elErrorContainer:      '#kv-error-{$oUploadSchema@index}',
+                                                    maxFilesNum:           1
+                                                }).on("filebrowse", function(event, files) {
+                                                    $el.fileinput('clear');
+                                                }).on("filebatchselected", function(event, files) {
+                                                    $el.fileinput("upload");
+                                                }).on('filebatchuploadsuccess', function(event, data) {
+                                                    var msgField = $('#queue{$oUploadSchema@index} .current-upload'),
+                                                        uploadMsgField = $('.uploadifyMsg');
+                                                    if (typeof data.response !== 'undefined' && typeof data.response.cName !== 'undefined') {
+                                                        msgField.html('<i class="fas fa-check" aria-hidden="true"></i>' + data.response.cName + ' (' + data.response.cKB + ' KB)');
+                                                    } else {
+                                                        msgField.html('{lang key='uploadError'}');
+                                                    }
+                                                    $('#msgWarning').hide();
+                                                    uploadMsgField.find('.alert-danger').hide();
+                                                    $('#buy-form').find('.upload-error').removeClass('upload-error');
+                                                }).on('fileuploaderror', function() {
+                                                    $('#upload-{$oUploadSchema@index} .fileinput-upload').addClass('disabled');
+                                                }).on('fileloaded', function() {
+                                                    $('#upload-{$oUploadSchema@index} .fileinput-upload').removeClass('disabled');
+                                                });
                                             });
-                                        });
+                                        }]);
                                     </script>
                                 {/block}
                             {/col}

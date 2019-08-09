@@ -7,8 +7,8 @@
 namespace JTL;
 
 use InvalidArgumentException;
-use JTL\Customer\Kunde;
-use JTL\Customer\Kundengruppe;
+use JTL\Customer\Customer;
+use JTL\Customer\CustomerGroup;
 use JTL\DB\ReturnType;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Request;
@@ -243,7 +243,7 @@ class CheckBox
             if (isset($_SESSION['Kundengruppe']->kKundengruppe)) {
                 $customerGroupID = Frontend::getCustomerGroup()->getID();
             } else {
-                $customerGroupID = Kundengruppe::getDefaultGroupID();
+                $customerGroupID = CustomerGroup::getDefaultGroupID();
             }
         }
         $sql = '';
@@ -578,7 +578,7 @@ class CheckBox
     }
 
     /**
-     * @param Kunde|object $customer
+     * @param Customer|object $customer
      * @return bool
      * @throws Exceptions\CircularReferenceException
      * @throws Exceptions\ServiceNotFoundException

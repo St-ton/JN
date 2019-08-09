@@ -6,12 +6,12 @@
 
 namespace JTL;
 
-use function Functional\group;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Template as TemplateHelper;
 use JTL\Plugin\State;
 use SimpleXMLElement;
 use stdClass;
+use function Functional\group;
 
 /**
  * Class Template

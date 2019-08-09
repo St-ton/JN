@@ -124,11 +124,12 @@
     {block name='snippets-pagination-script'}
         {literal}
             <script type="text/javascript">
-                $(document).ready(function() {
+                var deferredTasks = window.deferredTasks || [];
+                deferredTasks.push(["ready",function (){
                     $('.pagination-wrapper select').on('change', function () {
                         this.form.submit();
                     });
-                } );
+                }]);
             </script>
         {/literal}
     {/block}

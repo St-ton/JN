@@ -108,7 +108,7 @@
                     <div class="subheading1">{__('invisibleBoxes')}</div>
                 </div>
                 <div class="table-responsive card-body">
-                    <table class="table">
+                    <table class="table table-align-top">
                         <tr class="boxRow">
                             <th class="check">&nbsp;</th>
                             <th>
@@ -251,7 +251,7 @@
                         <div class="card-footer save-wrapper">
                             <div class="row">
                                 <div class="ml-auto col-sm-6 col-xl-auto">
-                                    <button type="button" onclick="window.location.href='boxen.php'" class="btn btn-outline-primary btn-block mb-2">
+                                    <button type="button" onclick="window.location.href='boxen.php'" class="btn btn-outline-primary btn-block">
                                         {__('cancelWithIcon')}
                                     </button>
                                 </div>

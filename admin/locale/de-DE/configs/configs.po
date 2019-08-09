@@ -536,12 +536,6 @@ msgstr "Maximale Anzahl Ajax-Suchvorschläge"
 msgid "suche_ajax_anzahl_desc"
 msgstr "Hier legen Sie fest, wie viele Suchvorschläge Ihren Kunden maximal bereits während der Eingabe gemacht werden. Dazu muss jeweils ein Mapping existieren."
 
-msgid "artikeluebersicht_varikombi_anzahl_name"
-msgstr "Anzahl Vorschaubilder bei Varkombis"
-
-msgid "artikeluebersicht_varikombi_anzahl_desc"
-msgstr "Hier legen Sie fest, wie viele Vorschaubilder bei Variationskombinationen in der Artikelübersicht angezeigt werden sollen."
-
 msgid "artikeluebersicht_lagerbestandsanzeige_name"
 msgstr "Lagerbestandsanzeige"
 
@@ -835,18 +829,6 @@ msgstr "UVP-Ersparnis anzeigen"
 
 msgid "sie_sparen_x_anzeigen_desc"
 msgstr "Hier legen Sie fest, ob bei Artikeln mit UVP der Betrag und Prozentsatz angezeigt werden soll, den der Kunde spart."
-
-msgid "artikeldetails_varikombi_anzahl_name"
-msgstr "Anzahl Vorschaubilder bei Varkombis"
-
-msgid "artikeldetails_varikombi_anzahl_desc"
-msgstr "Hier legen Sie fest, wie viele Vorschaubilder bei Variationskombinationen in der Artikelübersicht angezeigt werden sollen."
-
-msgid "artikeldetails_varikombi_vorschautext_name"
-msgstr "Beschriftung der Variationsvorschau"
-
-msgid "artikeldetails_varikombi_vorschautext_desc"
-msgstr "Hier legen Sie fest, was über der Variationsvorschau angezeigt werden soll."
 
 msgid "artikeldetails_anzahl_pfeile_name"
 msgstr "Pfeil-Schaltflächen für die Artikelanzahl"

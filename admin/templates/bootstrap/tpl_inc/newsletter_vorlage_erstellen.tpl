@@ -294,7 +294,7 @@ function checkNewsletterSend() {ldelim}
                 </div>
                 <div class="card-footer save-wrapper">
                     <div class="row">
-                        <div class="ml-auto col-sm-6 col-xl-auto mb-2">
+                        <div class="ml-auto col-sm-6 col-xl-auto">
                             <a class="btn btn-outline-primary btn-block" href="newsletter.php?tab=newslettervorlagen&token={$smarty.session.jtl_token}">
                                 {__('goBack')}
                             </a>

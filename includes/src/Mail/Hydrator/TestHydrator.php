@@ -11,7 +11,7 @@ use JTL\CheckBox;
 use JTL\Checkout\Kupon;
 use JTL\Checkout\Lieferschein;
 use JTL\Checkout\Versand;
-use JTL\Customer\Kundengruppe;
+use JTL\Customer\CustomerGroup;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Date;
 use JTL\Helpers\ShippingMethod;
@@ -38,7 +38,7 @@ class TestHydrator extends DefaultsHydrator
         $langID        = (int)$language->kSprache;
         $msg           = $this->getMessage();
         $customerBonus = $this->getBonus();
-        $customerGroup = (new Kundengruppe())->loadDefaultGroup();
+        $customerGroup = (new CustomerGroup())->loadDefaultGroup();
         $order         = $this->getOrder($langID);
         $customer      = $this->getCustomer($langID, $customerGroup->getID());
         $checkbox      = $this->getCheckbox();

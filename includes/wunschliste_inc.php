@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use JTL\Catalog\Wishlist\Wunschliste;
+use JTL\Catalog\Wishlist\Wishlist;
 
 /**
  * Holt für einen Kunden die aktive Wunschliste (falls vorhanden) aus der DB und fügt diese in die Session
@@ -13,7 +13,7 @@ use JTL\Catalog\Wishlist\Wunschliste;
 function setzeWunschlisteInSession()
 {
     trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
-    Wunschliste::persistInSession();
+    Wishlist::persistInSession();
 }
 
 /**
@@ -24,7 +24,7 @@ function setzeWunschlisteInSession()
 function wunschlisteLoeschen(int $id)
 {
     trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
-    return Wunschliste::delete($id);
+    return Wishlist::delete($id);
 }
 
 /**
@@ -35,7 +35,7 @@ function wunschlisteLoeschen(int $id)
 function wunschlisteAktualisieren(int $id)
 {
     trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
-    return Wunschliste::update($id);
+    return Wishlist::update($id);
 }
 
 /**
@@ -46,7 +46,7 @@ function wunschlisteAktualisieren(int $id)
 function wunschlisteStandard(int $id)
 {
     trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
-    return Wunschliste::setDefault($id);
+    return Wishlist::setDefault($id);
 }
 
 /**
@@ -57,7 +57,7 @@ function wunschlisteStandard(int $id)
 function wunschlisteSpeichern($name)
 {
     trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
-    return Wunschliste::save($name);
+    return Wishlist::save($name);
 }
 
 /**
@@ -69,7 +69,7 @@ function wunschlisteSpeichern($name)
 function wunschlisteSenden(array $recipients, int $id)
 {
     trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
-    return Wunschliste::send($recipients, $id);
+    return Wishlist::send($recipients, $id);
 }
 
 /**
@@ -81,7 +81,7 @@ function wunschlisteSenden(array $recipients, int $id)
 function gibEigenschaftenZuWunschliste(int $wishListID, int $itemID)
 {
     trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
-    return Wunschliste::getAttributesByID($wishListID, $itemID);
+    return Wishlist::getAttributesByID($wishListID, $itemID);
 }
 
 /**
@@ -92,7 +92,7 @@ function gibEigenschaftenZuWunschliste(int $wishListID, int $itemID)
 function giboWunschlistePos(int $itemID)
 {
     trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
-    return Wunschliste::getWishListPositionDataByID($itemID);
+    return Wishlist::getWishListPositionDataByID($itemID);
 }
 
 /**
@@ -104,7 +104,7 @@ function giboWunschlistePos(int $itemID)
 function giboWunschliste(int $id = 0, string $cURLID = '')
 {
     trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
-    return Wunschliste::getWishListDataByID($id, $cURLID);
+    return Wishlist::getWishListDataByID($id, $cURLID);
 }
 
 /**
@@ -115,7 +115,7 @@ function giboWunschliste(int $id = 0, string $cURLID = '')
 function bauecPreis($wishList)
 {
     trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
-    return Wunschliste::buildPrice($wishList);
+    return Wishlist::buildPrice($wishList);
 }
 
 /**
@@ -126,5 +126,5 @@ function bauecPreis($wishList)
 function mappeWunschlisteMSG(int $code)
 {
     trigger_error(__METHOD__ . ' is deprecated.', E_USER_DEPRECATED);
-    return Wunschliste::mapMessage($code);
+    return Wishlist::mapMessage($code);
 }

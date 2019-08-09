@@ -6,7 +6,7 @@
 
 use JTL\Alert\Alert;
 use JTL\CheckBox;
-use JTL\Customer\Kunde;
+use JTL\Customer\Customer;
 use JTL\Helpers\Form;
 use JTL\Helpers\Text;
 use JTL\Mail\Mail\Mail;
@@ -83,8 +83,8 @@ function pruefeNLHistoryKundengruppe(int $groupID, string $groupKeys): bool
 }
 
 /**
- * @param Kunde|stdClass $customer
- * @param bool           $validate
+ * @param Customer|stdClass $customer
+ * @param bool              $validate
  * @return stdClass
  * @throws Exception
  * @deprecated since 5.0.0

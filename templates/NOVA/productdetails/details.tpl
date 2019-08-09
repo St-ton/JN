@@ -236,11 +236,9 @@
     {/block}
 
     {block name='productdetails-details-content-not-quickview'}
-        <div class="clearfix"></div>
-            {block name='productdetails-details-include-tabs'}
-                {include file='productdetails/tabs.tpl'}
-            {/block}
-        <div class="clearfix"></div>
+        {block name='productdetails-details-include-tabs'}
+            {include file='productdetails/tabs.tpl'}
+        {/block}
 
         {*SLIDERS*}
         {if isset($Einstellungen.artikeldetails.artikeldetails_stueckliste_anzeigen) && $Einstellungen.artikeldetails.artikeldetails_stueckliste_anzeigen === 'Y' && isset($Artikel->oStueckliste_arr) && $Artikel->oStueckliste_arr|@count > 0
@@ -248,7 +246,6 @@
         || isset($Xselling->Standard->XSellGruppen) && count($Xselling->Standard->XSellGruppen) > 0
         || isset($Xselling->Kauf->Artikel) && count($Xselling->Kauf->Artikel) > 0
         || isset($oAehnlicheArtikel_arr) && count($oAehnlicheArtikel_arr) > 0}
-            <hr>
             {container}
                 {if isset($Einstellungen.artikeldetails.artikeldetails_stueckliste_anzeigen) && $Einstellungen.artikeldetails.artikeldetails_stueckliste_anzeigen === 'Y' && isset($Artikel->oStueckliste_arr) && $Artikel->oStueckliste_arr|@count > 0}
                     {block name='productdetails-details-include-product-slider-partslist'}

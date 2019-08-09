@@ -383,7 +383,7 @@ $(document).ready(function () {
 
     $('.dropdown .dropdown-menu.keepopen').on('click touchstart', function(e) {
         e.stopPropagation();
-    });
+    },{passive: true});
 
     if (typeof $.fn.jtl_search === 'undefined') {
         var productSearch = new Bloodhound({

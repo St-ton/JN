@@ -4,15 +4,15 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Alert\Alert;
+use JTL\Cart\PersistentCart;
+use JTL\Customer\Customer;
+use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
-use JTL\Customer\Kunde;
-use JTL\Shop;
 use JTL\Helpers\Text;
-use JTL\Cart\WarenkorbPers;
 use JTL\Pagination\Pagination;
-use JTL\DB\ReturnType;
-use JTL\Alert\Alert;
+use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
@@ -50,7 +50,7 @@ if (isset($_POST['einstellungen'])
 
 if (isset($_GET['l']) && (int)$_GET['l'] > 0 && Form::validateToken()) {
     $customerID = (int)$_GET['l'];
-    $persCart   = new WarenkorbPers($customerID);
+    $persCart   = new PersistentCart($customerID);
     if ($persCart->entferneSelf()) {
         $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successCartPersPosDelete'), 'successCartPersPosDelete');
     }
@@ -94,7 +94,7 @@ $customers = Shop::Container()->getDB()->query(
 );
 
 foreach ($customers as $item) {
-    $customer = new Kunde($item->kKunde);
+    $customer = new Customer($item->kKunde);
 
     $item->cNachname = $customer->cNachname;
     $item->cFirma    = $customer->cFirma;
@@ -134,7 +134,7 @@ if (isset($_GET['a']) && (int)$_GET['a'] > 0) {
         ReturnType::ARRAY_OF_OBJECTS
     );
     foreach ($carts as $cart) {
-        $customer = new Kunde($cart->kKundeTMP);
+        $customer = new Customer($cart->kKundeTMP);
 
         $cart->cNachname = $customer->cNachname;
         $cart->cFirma    = $customer->cFirma;

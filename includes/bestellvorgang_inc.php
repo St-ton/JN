@@ -10,11 +10,11 @@ use JTL\CheckBox;
 use JTL\Checkout\Kupon;
 use JTL\Checkout\Lieferadresse;
 use JTL\Checkout\Zahlungsart;
+use JTL\Customer\Customer;
 use JTL\Customer\CustomerAttribute;
 use JTL\Customer\CustomerAttributes;
 use JTL\Customer\CustomerField;
 use JTL\Customer\CustomerFields;
-use JTL\Customer\Kunde;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Date;
 use JTL\Helpers\Form;
@@ -26,6 +26,7 @@ use JTL\Helpers\Tax;
 use JTL\Helpers\Text;
 use JTL\Language\LanguageHelper;
 use JTL\Plugin\Helper as PluginHelper;
+use JTL\Plugin\PluginInterface;
 use JTL\Plugin\State;
 use JTL\Session\Frontend;
 use JTL\Shop;
@@ -592,7 +593,7 @@ function gibStepAccountwahl(): void
  */
 function gibStepUnregistriertBestellen(): void
 {
-    /** @var Kunde $Kunde */
+    /** @var Customer $Kunde */
     global $Kunde;
     $herkunfte       = Shop::Container()->getDB()->query(
         'SELECT *
@@ -1382,7 +1383,7 @@ function getPaymentSurchageDiscount($paymentMethod)
 
 /**
  * @param string $moduleID
- * @return bool|\JTL\Plugin\PluginInterface
+ * @return bool|PluginInterface
  */
 function gibPluginZahlungsart($moduleID)
 {
@@ -1652,16 +1653,18 @@ function zahlungsartGueltig($paymentMethod): bool
     if (!isset($paymentMethod->cModulId)) {
         return false;
     }
-    $kPlugin = PluginHelper::getIDByModuleID($paymentMethod->cModulId);
-    if ($kPlugin > 0) {
-        $loader  = PluginHelper::getLoaderByPluginID($kPlugin);
-        $oPlugin = $loader->init($kPlugin);
-        if ($oPlugin !== null) {
-            if ($oPlugin->getState() !== State::ACTIVATED) {
+    $pluginID = PluginHelper::getIDByModuleID($paymentMethod->cModulId);
+    if ($pluginID > 0) {
+        $loader = PluginHelper::getLoaderByPluginID($pluginID);
+        $plugin = $loader->init($pluginID);
+        if ($plugin !== null) {
+            global $oPlugin;
+            $oPlugin = $plugin;
+            if ($plugin->getState() !== State::ACTIVATED) {
                 return false;
             }
-            $methods = $oPlugin->getPaymentMethods()->getMethodsAssoc();
-            require_once $oPlugin->getPaths()->getVersionedPath() . PFAD_PLUGIN_PAYMENTMETHOD
+            $methods = $plugin->getPaymentMethods()->getMethodsAssoc();
+            require_once $plugin->getPaths()->getVersionedPath() . PFAD_PLUGIN_PAYMENTMETHOD
                 . $methods[$paymentMethod->cModulId]->cClassPfad;
             $className        = $methods[$paymentMethod->cModulId]->cClassName;
             $method           = new $className($paymentMethod->cModulId);
@@ -1679,16 +1682,15 @@ function zahlungsartGueltig($paymentMethod): bool
 
                 return false;
             }
-            if (!PluginHelper::licenseCheck($oPlugin, ['cModulId' => $paymentMethod->cModulId])) {
+            if (!PluginHelper::licenseCheck($plugin, ['cModulId' => $paymentMethod->cModulId])) {
                 return false;
             }
 
             return $method->isValid(Frontend::getCustomer(), Frontend::getCart());
         }
     } else {
-        $oPaymentMethod = new PaymentMethod($paymentMethod->cModulId);
-        $method         = $oPaymentMethod::create($paymentMethod->cModulId);
-
+        $instance = new PaymentMethod($paymentMethod->cModulId);
+        $method   = $instance::create($paymentMethod->cModulId);
         if ($method && $method->isSelectable() === false) {
             return false;
         }
@@ -2421,7 +2423,7 @@ function warenkorbKuponFaehigKategorien($coupon, array $items): bool
  * @param array $post
  * @param int   $kundenaccount
  * @param int   $htmlentities
- * @return Kunde
+ * @return Customer
  */
 function getKundendaten(array $post, $kundenaccount, $htmlentities = 1)
 {
@@ -2453,7 +2455,7 @@ function getKundendaten(array $post, $kundenaccount, $htmlentities = 1)
         $mapping['pass'] = 'cPasswort';
     }
     $customerID = Frontend::getCustomer()->kKunde;
-    $customer   = new Kunde($customerID);
+    $customer   = new Customer($customerID);
     foreach ($mapping as $external => $internal) {
         if (isset($post[$external])) {
             $val = Text::filterXSS($post[$external]);
@@ -2889,7 +2891,7 @@ function plausiAccountwahlLogin($cUserLogin, $cUserPass): int
 {
     global $Kunde;
     if (mb_strlen($cUserLogin) > 0 && mb_strlen($cUserPass) > 0) {
-        $Kunde = new Kunde();
+        $Kunde = new Customer();
         $Kunde->holLoginKunde($cUserLogin, $cUserPass);
         if ($Kunde->kKunde > 0) {
             return 10;
@@ -2902,7 +2904,7 @@ function plausiAccountwahlLogin($cUserLogin, $cUserPass): int
 }
 
 /**
- * @param Kunde $customer
+ * @param Customer $customer
  * @return bool
  */
 function setzeSesssionAccountwahlLogin($customer): bool

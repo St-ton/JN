@@ -12,16 +12,16 @@
                 {assign var=limit value=3}
             {/if}
             {if !isset($activeId)}
-                {assign var=activeId value='0'}
+                {assign var=activeId value=0}
                 {if $NaviFilter->hasCategory()}
                     {assign var=activeId value=$NaviFilter->getCategory()->getValue()}
-                {elseif $nSeitenTyp == 1 && isset($Artikel)}
+                {elseif $nSeitenTyp === $smarty.const.PAGE_ARTIKEL && isset($Artikel)}
                     {assign var=activeId value=$Artikel->gibKategorie()}
-                {elseif $nSeitenTyp == 1 && isset($smarty.session.LetzteKategorie)}
+                {elseif $nSeitenTyp === $smarty.const.PAGE_ARTIKEL && isset($smarty.session.LetzteKategorie)}
                     {assign var=activeId value=$smarty.session.LetzteKategorie}
                 {/if}
             {/if}
-            {if !isset($activeParents) && ($nSeitenTyp == 1 || $nSeitenTyp == 2)}
+            {if !isset($activeParents) && ($nSeitenTyp === $smarty.const.PAGE_ARTIKEL || $nSeitenTyp === $smarty.const.PAGE_ARTIKELLISTE)}
                 {get_category_parents categoryId=$activeId assign='activeParents'}
             {/if}
             {if !isset($activeParents)}
@@ -37,7 +37,7 @@
                 {block name='snippets-categories-recursive-categories'}
                     {foreach $categories as $category}
                         {assign var=hasItems value=false}
-                        {if isset($category->bUnterKategorien) && $category->bUnterKategorien && (($i+1) < $limit)}
+                        {if $category->hasChildren() && (($i+1) < $limit)}
                             {assign var=hasItems value=true}
                         {/if}
                         {if isset($activeParents) && is_array($activeParents) && isset($activeParents[$i])}
@@ -45,10 +45,10 @@
                         {/if}
                         {if $hasItems}
                             {block name='snippets-categories-recursive-categories-has-items'}
-                                <li class="nav-item {if $hasItems}dropdown{/if} {if $category->kKategorie == $activeId
+                                <li class="nav-item {if $hasItems}dropdown{/if} {if $category->getID() == $activeId
                                     || ((isset($activeParent)
                                             && isset($activeParent->kKategorie))
-                                        && $activeParent->kKategorie == $category->kKategorie)}active{/if}">
+                                        && $activeParent->kKategorie == $category->getID())}active{/if}">
                                 {*{navitem class="{if $hasItems}dropdown{/if} {if $category->kKategorie == $activeId
                                         || ((isset($activeParent)
                                             && isset($activeParent->kKategorie))
@@ -56,25 +56,25 @@
                                     href="{$category->cURLFull}"
                                     router-data=["toggle"=>"collapse","target"=>"#category_box_{$category->kKategorie}_{$i}"]
                                 }*}
-                                    <a class="nav-link py-3 px-2" target="_self" href="{$category->cURLFull}" data-toggle="collapse"
-                                       data-target="#category_box_{$category->kKategorie}_{$i}"
-                                       aria-expanded="{if $category->kKategorie == $activeId
+                                    <a class="nav-link py-3 px-2" target="_self" href="{$category->getURL()}" data-toggle="collapse"
+                                       data-target="#category_box_{$category->getID()}_{$i}"
+                                       aria-expanded="{if $category->getID() == $activeId
                                        || ((isset($activeParent)
                                        && isset($activeParent->kKategorie))
-                                       && $activeParent->kKategorie == $category->kKategorie)}true{else}false{/if}">
+                                       && $activeParent->kKategorie == $category->getID())}true{else}false{/if}">
                                         <i class="fa fa-chevron-down float-right pointer mx-2"></i>
-                                        {$category->cKurzbezeichnung}
+                                        {$category->getShortName()}
                                     </a>
-                                    {nav vertical=true class="collapse {if $category->kKategorie == $activeId
+                                    {nav vertical=true class="collapse {if $category->getID() == $activeId
                                         || ((isset($activeParent)
                                         && isset($activeParent->kKategorie))
-                                        && $activeParent->kKategorie == $category->kKategorie)}show{/if}" id="category_box_{$category->kKategorie}_{$i}"
+                                        && $activeParent->kKategorie == $category->getID())}show{/if}" id="category_box_{$category->getID()}_{$i}"
                                     }
                                         {block name='snippets-categories-recursive-include-categories-recursive'}
-                                            {if !empty($category->Unterkategorien)}
-                                                {include file='snippets/categories_recursive.tpl' i=$i+1 categories=$category->Unterkategorien limit=$limit activeId=$activeId activeParents=$activeParents}
+                                            {if $category->hasChildren()}
+                                                {include file='snippets/categories_recursive.tpl' i=$i+1 categories=$category->getChildren() limit=$limit activeId=$activeId activeParents=$activeParents}
                                             {else}
-                                                {include file='snippets/categories_recursive.tpl' i=$i+1 categoryId=$category->kKategorie limit=$limit categories=null activeId=$activeId activeParents=$activeParents}
+                                                {include file='snippets/categories_recursive.tpl' i=$i+1 categoryId=$category->getID() limit=$limit categories=null activeId=$activeId activeParents=$activeParents}
                                             {/if}
                                         {/block}
                                     {/nav}
@@ -83,14 +83,14 @@
                             {/block}
                         {else}
                             {block name='snippets-categories-recursive-has-not-items'}
-                                {navitem class="{if $category->kKategorie == $activeId
+                                {navitem class="{if $category->getID() == $activeId
                                         || ((isset($activeParent)
                                             && isset($activeParent->kKategorie))
-                                        && $activeParent->kKategorie == $category->kKategorie)} active{/if}"
-                                    href=$category->cURLFull
+                                        && $activeParent->kKategorie == $category->getID())} active{/if}"
+                                    href=$category->getURL()
                                     router-class="px-2"
                                 }
-                                    {$category->cKurzbezeichnung}
+                                    {$category->getShortName()}
                                 {/navitem}
                             {/block}
                         {/if}

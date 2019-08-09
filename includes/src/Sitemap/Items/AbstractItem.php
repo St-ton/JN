@@ -6,8 +6,8 @@
 
 namespace JTL\Sitemap\Items;
 
-use function Functional\first;
 use JTL\Language\LanguageModel;
+use function Functional\first;
 
 /**
  * Class AbstractItem

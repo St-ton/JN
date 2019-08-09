@@ -17,7 +17,7 @@
         <div id="voting_overview">
             {block name='poll-overview-content'}
                 {foreach $oUmfrage_arr as $oUmfrage}
-                    {card}
+                    {card class="mb-3"}
                         <div class="h3 survey-title{if $oUmfrage@first} nospacing{/if}">
                             {link href="{$ShopURL}/{$oUmfrage->getURL()}"}{$oUmfrage->getName()}{/link}
                         </div>

@@ -10,7 +10,7 @@
             {/if}
 
             <div class="table-responsive">
-                <table class="table table-hover">
+                <table class="table table-striped table-align-top">
                     <thead>
                     <tr>
                         <th width="5%">#</th>
@@ -25,8 +25,8 @@
                       {foreach $manager->getMigrations()|@array_reverse as $m}
                           {$executed = $m->getId()|in_array:$executedMigrations}
                           {if $filter == 0 || ($filter == 1 && $executed) || ($filter == 2 && !$executed)}
-                              <tr class="text-vcenter">
-                                  <th scope="row">{$migrationIndex++}</th>
+                              <tr>
+                                  <td>{$migrationIndex++}</td>
                                   <td>
                                     {$m->getDescription()}<br>
                                     {if $m->getCreated()}

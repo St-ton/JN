@@ -4,7 +4,7 @@
  * @license       http://jtl-url.de/jtlshoplicense
  */
 
-use JTL\Extensions\UploadDatei;
+use JTL\Extensions\Upload\File;
 use JTL\Helpers\Form;
 use JTL\Session\Frontend;
 use JTL\Shop;
@@ -95,7 +95,7 @@ if (!empty($_REQUEST['action'])) {
             break;
 
         case 'preview':
-            $uploadFile = new UploadDatei();
+            $uploadFile = new File();
             $customerID = (int)($_SESSION['Kunde']->kKunde ?? 0);
             $filePath   = PFAD_ROOT . BILD_UPLOAD_ZUGRIFF_VERWEIGERT;
             $uploadID   = (int)Shop::Container()->getCryptoService()->decryptXTEA(rawurldecode($_REQUEST['secret']));

@@ -226,6 +226,7 @@ class PageService
     }
 
     /**
+     * @param int $langId
      * @return string
      */
     public function createCurrentPageId(int $langId = 0): string
@@ -283,7 +284,7 @@ class PageService
             $drafts         = $this->pageDB->getDrafts($id);
             $publicDraft    = $this->getPublicPage($id);
             $publicDraftKey = $publicDraft === null ? 0 : $publicDraft->getKey();
-            usort($drafts, function ($a, $b) use ($publicDraftKey) {
+            \usort($drafts, function ($a, $b) use ($publicDraftKey) {
                 /**
                  * @var Page $a
                  * @var Page $b
@@ -441,7 +442,7 @@ class PageService
 
         $draftStatusHtml = $smarty
             ->assign('page', $draft)
-            ->fetch(PFAD_ROOT . PFAD_ADMIN . 'opc/tpl/draftstatus.tpl');
+            ->fetch(\PFAD_ROOT . \PFAD_ADMIN . 'opc/tpl/draftstatus.tpl');
 
         $response->assign('opcDraftStatus', 'innerHTML', $draftStatusHtml);
 

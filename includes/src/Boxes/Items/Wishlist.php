@@ -6,8 +6,8 @@
 
 namespace JTL\Boxes\Items;
 
-use JTL\Helpers\Text;
 use JTL\Catalog\Product\Preise;
+use JTL\Helpers\Text;
 use JTL\Session\Frontend;
 
 /**
@@ -70,16 +70,16 @@ final class Wishlist extends AbstractBox
                     $wishlistItem->kWunschlistePos .
                     $additionalParams;
                 if (Frontend::getCustomerGroup()->isMerchant()) {
-                    $fPreis = isset($wishlistItem->Artikel->Preise->fVKNetto)
+                    $price = isset($wishlistItem->Artikel->Preise->fVKNetto)
                         ? (int)$wishlistItem->fAnzahl * $wishlistItem->Artikel->Preise->fVKNetto
                         : 0;
                 } else {
-                    $fPreis = isset($wishlistItem->Artikel->Preise->fVKNetto)
+                    $price = isset($wishlistItem->Artikel->Preise->fVKNetto)
                         ? (int)$wishlistItem->fAnzahl * ($wishlistItem->Artikel->Preise->fVKNetto *
                             (100 + $_SESSION['Steuersatz'][$wishlistItem->Artikel->kSteuerklasse]) / 100)
                         : 0;
                 }
-                $wishlistItem->cPreis = Preise::getLocalizedPriceString($fPreis, Frontend::getCurrency());
+                $wishlistItem->cPreis = Preise::getLocalizedPriceString($price, Frontend::getCurrency());
             }
             $this->setItemCount((int)$this->config['boxen']['boxen_wunschzettel_anzahl']);
             $this->setItems(\array_reverse($wishlistItems));

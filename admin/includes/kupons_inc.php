@@ -9,7 +9,7 @@ use JTL\Catalog\Hersteller;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\Preise;
 use JTL\Checkout\Kupon;
-use JTL\Customer\Kunde;
+use JTL\Customer\Customer;
 use JTL\DB\ReturnType;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Text;
@@ -654,7 +654,7 @@ function informCouponCustomers($coupon)
         }, $productData);
     }
     foreach ($customerData as $item) {
-        $customer = new Kunde((int)$item->kKunde);
+        $customer = new Customer((int)$item->kKunde);
         $language = Shop::Lang()->getIsoFromLangID($customer->kSprache);
         if (!$language) {
             $language = $defaultLang;

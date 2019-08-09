@@ -7,15 +7,15 @@
 namespace JTL\Helpers;
 
 use Exception;
-use function Functional\none;
+use JTL\Customer\CustomerGroup;
 use JTL\DB\ReturnType;
-use JTL\Customer\Kundengruppe;
 use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\SimpleMail;
 use stdClass;
+use function Functional\none;
 
 /**
  * Class Form
@@ -243,7 +243,7 @@ class Form
         if (!$customerGroupID) {
             $customerGroupID = (int)$_SESSION['Kunde']->kKundengruppe;
             if (!$customerGroupID) {
-                $customerGroupID = Kundengruppe::getDefaultGroupID();
+                $customerGroupID = CustomerGroup::getDefaultGroupID();
             }
         }
 

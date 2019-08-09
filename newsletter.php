@@ -5,7 +5,7 @@
  */
 
 use JTL\Alert\Alert;
-use JTL\Customer\Kunde;
+use JTL\Customer\Customer;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Newsletter\Helper;
@@ -92,7 +92,7 @@ if (Request::verifyGPCDataInt('abonnieren') > 0) {
     }
 }
 if (($customerID = Frontend::getCustomer()->getID()) > 0) {
-    $customer = new Kunde($customerID);
+    $customer = new Customer($customerID);
     $smarty->assign('bBereitsAbonnent', Helper::customerIsSubscriber($customer->kKunde))
         ->assign('oKunde', $customer);
 }

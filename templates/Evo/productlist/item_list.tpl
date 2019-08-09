@@ -138,13 +138,6 @@
                             </li>
                         {/if}
                     </ul>
-                    {if $Einstellungen.artikeluebersicht.artikeluebersicht_varikombi_anzahl > 0 && $Artikel->oVariationKombiVorschau_arr !== null && $Artikel->oVariationKombiVorschau_arr|@count > 0}
-                        <div class="varikombis-thumbs hidden-md hidden-sm">
-                            {foreach $Artikel->oVariationKombiVorschau_arr as $oVariationKombiVorschau}
-                                <a href="{$oVariationKombiVorschau->cURL}" class="thumbnail pull-left"><img src="{$oVariationKombiVorschau->cBildMini}" alt="" /></a>
-                            {/foreach}
-                        </div>
-                    {/if}
                 {/block}
             </div>
         </div>

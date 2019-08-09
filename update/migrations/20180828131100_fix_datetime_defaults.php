@@ -59,6 +59,7 @@ class Migration_20180828131100 extends Migration implements IMigration
         $this->execute("UPDATE `tartikel` SET `dZulaufDatum` = NULL WHERE `dZulaufDatum` = '0000-00-00'");
         $this->execute("UPDATE `tartikel` SET `dMHD` = NULL WHERE `dMHD` = '0000-00-00'");
         $this->execute("UPDATE `tartikel` SET `dLetzteAktualisierung` = NULL WHERE `dLetzteAktualisierung` = '0000-00-00 00:00:00'");
+        $this->execute("UPDATE `texportformat` SET `dZuletztErstellt` = NULL WHERE `dZuletztErstellt` = '0000-00-00 00:00:00'");
         $this->execute("UPDATE `texportformatqueuebearbeitet` SET `dStartZeit` = NULL WHERE `dStartZeit` = '0000-00-00 00:00:00'");
         $this->execute("UPDATE `texportformatqueuebearbeitet` SET `dZuletztGelaufen` = NULL WHERE `dZuletztGelaufen` = '0000-00-00 00:00:00'");
         $this->execute("UPDATE `tnewsletterempfaengerhistory` SET `dOptCode` = NULL WHERE `dOptCode` = '0000-00-00 00:00:00'");

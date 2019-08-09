@@ -10,12 +10,11 @@ use Exception;
 use JTL\Alert\Alert;
 use JTL\Cache\JTLCacheInterface;
 use JTL\Catalog\Product\Artikel;
-use JTL\Customer\Kunde;
+use JTL\Customer\Customer;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
-use JTL\Model\DataModel;
 use JTL\Services\JTL\AlertServiceInterface;
 use JTL\Session\Frontend;
 use JTL\Shop;
@@ -137,7 +136,11 @@ class ReviewController extends BaseController
         if ($this->checkProductWasPurchased($productID, Frontend::getCustomer()) === false) {
             return $url . 'bewertung_anzeigen=1&cFehler=f03';
         }
-        $review = ReviewModel::loadByAttributes(['productID' => $productID, 'customerID' => $customerID], $this->db);
+        $review = ReviewModel::loadByAttributes(
+            ['productID' => $productID, 'customerID' => $customerID],
+            $this->db,
+            ReviewHelpfulModel::ON_NOTEXISTS_NEW
+        );
         /** @var ReviewModel $review */
         $review->productID  = $productID;
         $review->customerID = $customerID;
@@ -168,11 +171,11 @@ class ReviewController extends BaseController
     }
 
     /**
-     * @param Kunde $customer
-     * @param array $params
+     * @param Customer $customer
+     * @param array    $params
      * @return bool|void
      */
-    private function reviewPreCheck(Kunde $customer, array $params): bool
+    private function reviewPreCheck(Customer $customer, array $params): bool
     {
         $reviewAllowed = true;
         if (!$customer->isLoggedIn()) {
@@ -218,7 +221,8 @@ class ReviewController extends BaseController
                 'oBewertung',
                 ReviewModel::loadByAttributes(
                     ['productID' => $product->kArtikel, 'customerID' => $customer->getID()],
-                    $this->db
+                    $this->db,
+                    ReviewHelpfulModel::ON_NOTEXISTS_NEW
                 )
             );
 
@@ -226,11 +230,11 @@ class ReviewController extends BaseController
     }
 
     /**
-     * @param int   $productID
-     * @param Kunde $customer
+     * @param int      $productID
+     * @param Customer $customer
      * @return bool
      */
-    private function checkProductWasPurchased(int $productID, Kunde $customer): bool
+    private function checkProductWasPurchased(int $productID, Customer $customer): bool
     {
         if ($this->config['bewertung']['bewertung_artikel_gekauft'] !== 'Y') {
             return true;
@@ -296,7 +300,8 @@ class ReviewController extends BaseController
         }
         $helpfulReview = ReviewHelpfulModel::loadByAttributes(
             ['reviewID' => $reviewID, 'customerID' => $customerID],
-            $this->db
+            $this->db,
+            ReviewHelpfulModel::ON_NOTEXISTS_NEW
         );
         /** @var $helpfulReview ReviewHelpfulModel */
         $baseURL = $this->getProductURL($productID) . 'bewertung_anzeigen=1&btgseite=' . $page . '&btgsterne=' . $stars;

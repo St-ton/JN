@@ -418,8 +418,7 @@ class Newsletter
             }
             $product->cURL = $shopURL . $product->cURL;
             if (isset($campaign->cParameter) && mb_strlen($campaign->cParameter) > 0) {
-                $product->cURL = $product->cURL .
-                    (mb_strpos($product->cURL, '.php') !== false ? '&' : '?') .
+                $product->cURL .= (mb_strpos($product->cURL, '.php') !== false ? '&' : '?') .
                     $campaign->cParameter . '=' . $campaign->cWert;
             }
             foreach ($product->Bilder as $image) {
@@ -462,8 +461,8 @@ class Newsletter
                 $manufacturer->cURL = $manufacturer->cURL = $shopURL . $manufacturer->cURL;
             }
             if (isset($campaign->cParameter) && mb_strlen($campaign->cParameter) > 0) {
-                $sep                = mb_strpos($manufacturer->cURL, '.php') !== false ? '&' : '?';
-                $manufacturer->cURL = $manufacturer->cURL . $sep . $campaign->cParameter . '=' . $campaign->cWert;
+                $sep                 = mb_strpos($manufacturer->cURL, '.php') !== false ? '&' : '?';
+                $manufacturer->cURL .= $sep . $campaign->cParameter . '=' . $campaign->cWert;
             }
             $manufacturer->cBildpfadKlein  = $imageBaseURL . $manufacturer->cBildpfadKlein;
             $manufacturer->cBildpfadNormal = $imageBaseURL . $manufacturer->cBildpfadNormal;
@@ -500,7 +499,7 @@ class Newsletter
                     if (\strpos($category->cURL, '.php') !== false) {
                         $sep = '&';
                     }
-                    $category->cURL = $category->cURL . $sep . $campaign->cParameter . '=' . $campaign->cWert;
+                    $category->cURL .= $sep . $campaign->cParameter . '=' . $campaign->cWert;
                 }
                 $categories[] = $category;
             }

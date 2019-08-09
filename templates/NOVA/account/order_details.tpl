@@ -18,13 +18,13 @@
             {cardheader}
                 {row}
                 {block name='account-order-details-order-heading'}
-                    {col md=3 class='border-right'}
+                    {col cols=12 md=3 class='border-md-right'}
                         <strong><i class="far fa-calendar-alt"></i> {$Bestellung->dErstelldatum_de}</strong>
                     {/col}
-                    {col md=5}
+                    {col cols=12 md=5}
                         {lang key='yourOrderId' section='checkout'}: {$Bestellung->cBestellNr}
                     {/col}
-                    {col md=4}
+                    {col cols=12 md=4}
                         {lang key='orderStatus' section='login'}: {$Bestellung->Status}
                     {/col}
                 {/block}
@@ -33,14 +33,14 @@
             {if isset($Kunde) && $Kunde->kKunde > 0}
                 {cardbody}
                     {row}
-                        {col md=3 class='border-right'}
+                        {col cols=12 md=3 class='border-md-right'}
                             {block name='account-order-details-total'}
-                                {row class='mb-3'}<strong class='mb-3'>{lang key='orderOverview' section='account data'}</strong>{/row}
-                                {row}
-                                    {col md=8 class='p-0'}<span class="price_label">{lang key='subtotal' section='account data'}:</span>{/col}
-                                    {col md=4 class='p-0 pr-2 text-right'}<span>{$Bestellung->WarensummeLocalized[1]}</span>{/col}
-                                {/row}
-                                {if $Bestellung->GuthabenNutzen == 1}
+                            {row class='mb-3'}<strong class='mb-3'>{lang key='orderOverview' section='account data'}</strong>{/row}
+                            {row}
+                                {col md=8 class='p-0'}<span class="price_label">{lang key='subtotal' section='account data'}:</span>{/col}
+                                {col md=4 class='p-0 pr-2 text-right'}<span>{$Bestellung->WarensummeLocalized[1]}</span>{/col}
+                            {/row}
+                            {if $Bestellung->GuthabenNutzen == 1}
                                     {row}
                                         {col md=8  class='p-0'}<span class="price_label">{lang key='useCredit' section='account data'}:</span>{/col}
                                         {col md=4  class='p-0 pr-2 text-right'}<span>{$Bestellung->GutscheinLocalized}</span>{/col}
@@ -178,6 +178,12 @@
                                         {lang key='view' section='global'}
                                     {/button}
                                 {/form}
+                            {/col}
+                            {col cols=12 md=9}
+                                <strong>{lang key='basket'}</strong>
+                                {block name='account-order-details-include-order-item'}
+                                    {include file='account/order_item.tpl' tplscope='confirmation'}
+                                {/block}
                             {/col}
                         {/row}
                     {/block}

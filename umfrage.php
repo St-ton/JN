@@ -4,15 +4,15 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use JTL\Helpers\Request;
 use JTL\Alert\Alert;
-use JTL\Nice;
-use JTL\Shop;
+use JTL\Helpers\Request;
 use JTL\Link\Link;
+use JTL\Nice;
+use JTL\Session\Frontend;
+use JTL\Shop;
 use JTL\Survey\Controller;
 use JTL\Survey\Survey;
 use JTL\Survey\SurveyQuestionFactory;
-use JTL\Session\Frontend;
 
 require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES_EXT . 'umfrage_inc.php';

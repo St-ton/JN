@@ -6,9 +6,9 @@
 
 namespace JTL;
 
+use JTL\DB\ReturnType;
 use stdClass;
 use XTEA;
-use JTL\DB\ReturnType;
 
 /**
  * Class Nice

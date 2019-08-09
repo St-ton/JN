@@ -4,8 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use JTL\Shop;
 use JTL\DB\ReturnType;
+use JTL\Shop;
 
 /**
  * @param int   $customerGroupID

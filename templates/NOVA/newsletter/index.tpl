@@ -19,12 +19,12 @@
                 {if empty($bBereitsAbonnent)}
                     {block name='newsletter-index-newsletter-subscribe-form'}
                         {include file='snippets/opc_mount_point.tpl' id='opc_before_newsletter_subscribe'}
-                        <div id="newsletter-subscribe">
+                        <div id="newsletter-subscribe" class="mb-8">
                             {block name='newsletter-index-newsletter-subscribe-subheading'}
                                 <div class="h3">{lang key='newsletterSubscribe' section='newsletter'}</div>
                             {/block}
                                 <p>{lang key='newsletterSubscribeDesc' section='newsletter'}</p>
-                            {form method="post" action="{get_static_route id='newsletter.php'}" role="form" class="evo-validate"}
+                            {form method="post" action="{get_static_route id='newsletter.php'}" role="form" class="evo-validate label-slide"}
                             {block name='newsletter-index-newsletter-subscribe-form-content'}
                                 <fieldset>
                                     {if !empty($oPlausi->cPost_arr.cEmail)}
@@ -45,7 +45,6 @@
                                     {if (!isset($smarty.session.bAnti_spam_already_checked) || $smarty.session.bAnti_spam_already_checked !== true) &&
                                     isset($Einstellungen.newsletter.newsletter_sicherheitscode) && $Einstellungen.newsletter.newsletter_sicherheitscode !== 'N' && empty($smarty.session.Kunde->kKunde)}
                                         {block name='newsletter-index-form-captcha'}
-                                            <hr>
                                             <div class="form-group{if !empty($plausiArr.captcha) && $plausiArr.captcha === true} has-error{/if}">
                                                 {captchaMarkup getBody=true}
                                             </div>
@@ -54,18 +53,16 @@
                                     {hasCheckBoxForLocation nAnzeigeOrt=$nAnzeigeOrt cPlausi_arr=$plausiArr cPost_arr=$cPost_arr bReturn="bHasCheckbox"}
                                     {if $bHasCheckbox}
                                         {block name='newsletter-index-form-include-checkbox'}
-                                            <hr>
                                             {include file='snippets/checkbox.tpl' nAnzeigeOrt=$nAnzeigeOrt cPlausi_arr=$plausiArr cPost_arr=$cPost_arr}
-                                            <hr>
                                         {/block}
                                     {/if}
 
                                     {block name='newsletter-index-newsletter-subscribe-form-content-submit'}
                                         {formgroup}
-                                        {input type="hidden" name="abonnieren" value="1"}
-                                        {button type="submit" variant="primary"}
-                                            <span>{lang key='newsletterSendSubscribe' section='newsletter'}</span>
-                                        {/button}
+                                            {input type="hidden" name="abonnieren" value="1"}
+                                            {button type="submit" variant="primary"}
+                                                <span>{lang key='newsletterSendSubscribe' section='newsletter'}</span>
+                                            {/button}
                                             <p class="info small">
                                                 {lang key='unsubscribeAnytime' section='newsletter'}
                                             </p>
@@ -85,7 +82,7 @@
                             <div class="h3">{lang key='newsletterUnsubscribe' section='newsletter'}</div>
                         {/block}
                             <p>{lang key='newsletterUnsubscribeDesc' section='newsletter'}</p>
-                        {form method="post" action="{get_static_route id='newsletter.php'}" name="newsletterabmelden" class="evo-validate"}
+                        {form method="post" action="{get_static_route id='newsletter.php'}" name="newsletterabmelden" class="evo-validate label-slide"}
                         {block name='newsletter-index-newsletter-unsubscribe-form-content'}
                             <fieldset>
                                 {include file='snippets/form_group_simple.tpl'

@@ -6,6 +6,7 @@
 
 namespace JTL\Helpers;
 
+use JTL\Catalog\Category\MenuItem;
 use JTL\Language\LanguageHelper;
 use JTL\Link\LinkInterface;
 use JTL\News\Item;
@@ -287,6 +288,11 @@ class URL
                         : $prefix . '?a=' . $obj->kArtikel . $lang;
 
                 case \URLART_KATEGORIE:
+                    if ($obj instanceof MenuItem) {
+                        return !empty($obj->getURL())
+                            ? $prefix . $obj->getURL()
+                            : $prefix . '?k=' . $obj->getID() . $lang;
+                    }
                     return !empty($obj->cSeo)
                         ? $prefix . $obj->cSeo
                         : $prefix . '?k=' . $obj->kKategorie . $lang;

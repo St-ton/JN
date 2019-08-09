@@ -77,7 +77,7 @@
             <hr class="mb-n3">
         </div>
         <div class="table-responsive card-body">
-            <table class="table">
+            <table class="table table-align-top">
                 <thead>
                 <tr>
                     <th class="text-left">{__('name')}</th>
@@ -159,7 +159,7 @@
         <div class="card-footer save-wrapper">
             <div class="row">
                 <div class="ml-auto col-sm-6 col-xl-auto">
-                    <a class="btn btn-outline-primary btn-block mb-2" href="#" id="exportall">
+                    <a class="btn btn-outline-primary btn-block" href="#" id="exportall">
                         {__('exportAll')}
                     </a>
                 </div>

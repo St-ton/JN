@@ -190,7 +190,7 @@
                         <div class="card-footer save-wrapper">
                             <div class="row">
                                 <div class="ml-auto col-sm-6 col-xl-auto">
-                                    <a class="btn btn-outline-primary btn-block mb-2" href="news.php{if isset($cBackPage)}?{$cBackPage}{elseif isset($cTab)}?tab={$cTab}{/if}">
+                                    <a class="btn btn-outline-primary btn-block" href="news.php{if isset($cBackPage)}?{$cBackPage}{elseif isset($cTab)}?tab={$cTab}{/if}">
                                         <i class="fa fa-exclamation"></i> {__('Cancel')}
                                     </a>
                                 </div>

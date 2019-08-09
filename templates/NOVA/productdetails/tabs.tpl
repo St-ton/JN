@@ -75,11 +75,11 @@
             {if $tabanzeige}
                 {block name='productdetails-tabs-tabs'}
                     {include file='snippets/opc_mount_point.tpl' id='opc_before_tabs'}
-                    {container}
+                    {container class="mb-7"}
                         {tabs id="product-tabs"}
                         {if $useDescription}
                             {block name='productdetails-tabs-tab-description'}
-                                {tab title="{lang key="description" section="productDetails"}" active=$setActiveClass.description id="tb-dsc" class="nav-item" swipeable=true}
+                                {tab title="{lang key="description" section="productDetails"}" active=$setActiveClass.description id="tb-dsc"}
                                     <div id="tab-description">
                                         {block name='productdetails-tabs-tab-content'}
                                             {block name='tab-description-media-types'}
@@ -131,7 +131,7 @@
 
                         {if $useVotes}
                             {block name='productdetails-tabs-tab-votes'}
-                                {tab title="{lang key='Votes'}" active=$setActiveClass.votes id="tb-vts" class="nav-item" swipeable=true}
+                                {tab title="{lang key='Votes'}" active=$setActiveClass.votes id="tb-vts"}
                                     <div id="tab-votes">
                                         {include file='productdetails/reviews.tpl' stars=$Artikel->Bewertungen->oBewertungGesamt->fDurchschnitt}
                                     </div>
@@ -173,7 +173,7 @@
                             {block name='productdetails-tabs-tab-mediagroup'}
                                 {foreach $Artikel->getMediaTypes() as $mediaType}
                                     {$cMedienTypId = $mediaType->name|@seofy}
-                                    {tab title="{$mediaType->name} ({$mediaType->count})" active=$setActiveClass.mediaGroup && $mediaType@first id="tb-{$cMedienTypId}" class="nav-item" swipeable=true}
+                                    {tab title="{$mediaType->name} ({$mediaType->count})" active=$setActiveClass.mediaGroup && $mediaType@first id="tb-{$cMedienTypId}"}
                                         <div id="tab-{$cMedienTypId}">
                                             {include file='productdetails/mediafile.tpl'}
                                         </div>

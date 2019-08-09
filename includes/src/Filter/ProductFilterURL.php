@@ -6,8 +6,8 @@
 
 namespace JTL\Filter;
 
-use JTL\Filter\Items\Characteristic;
 use JTL\Filter\Items\Category;
+use JTL\Filter\Items\Characteristic;
 use JTL\Filter\Items\Manufacturer;
 use JTL\Filter\Items\PriceRange;
 use JTL\Filter\Items\Rating;
@@ -271,11 +271,11 @@ class ProductFilterURL
 
         $additionalFilter = (new Characteristic($this->productFilter))->setDoUnset(true);
         foreach ($this->productFilter->getCharacteristicFilter() as $filter) {
-            if ($filter->getId() > 0) {
+            if ($filter->getID() > 0) {
                 $url->addCharacteristic(
-                    $filter->getId(),
+                    $filter->getID(),
                     $this->getURL(
-                        $additionalFilter->init($filter->getId())
+                        $additionalFilter->init($filter->getID())
                                          ->setSeo($this->productFilter->getFilterConfig()->getLanguages())
                     )
                 );

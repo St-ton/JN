@@ -7,7 +7,7 @@
 namespace JTL\Review;
 
 use JTL\Cache\JTLCacheInterface;
-use JTL\Customer\Kunde;
+use JTL\Customer\Customer;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
 use JTL\Mail\Mail\Mail;
@@ -168,7 +168,7 @@ abstract class BaseController
     public function sendRewardMail(ReviewBonusModel $reviewBonus): bool
     {
         $obj                          = new stdClass();
-        $obj->tkunde                  = new Kunde($reviewBonus->customerID);
+        $obj->tkunde                  = new Customer($reviewBonus->customerID);
         $obj->oBewertungGuthabenBonus = $reviewBonus->rawObject();
         $mailer                       = Shop::Container()->get(Mailer::class);
         $mail                         = new Mail();

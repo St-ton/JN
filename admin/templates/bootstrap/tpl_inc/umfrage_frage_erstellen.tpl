@@ -711,20 +711,20 @@ function checkSelect(selectBox) {ldelim}
                     <div class="card-footer save-wrapper">
                         <div class="row">
                             {if isset($oUmfrageFrageTMP->kUmfrage)}
-                                <div class="ml-auto col-sm-6 col-xl-auto mb-2">
+                                <div class="ml-auto col-sm-6 col-xl-auto">
                                     <a class="btn btn-outline-primary btn-block"
                                        href="umfrage.php?umfrage=1&token={$smarty.session.jtl_token}&ud=1&kUmfrage={$oUmfrageFrageTMP->kUmfrage}&tab=umfrage">{__('goBack')}</a>
                                 </div>
                             {/if}
                             {if isset($oUmfrageFrage->kUmfrageFrage) && $oUmfrageFrage->kUmfrageFrage > 0}
-                                <div class="col-sm-6 col-xl-auto mb-2">
+                                <div class="col-sm-6 col-xl-auto">
                                     <button class="btn btn-primary btn-block" name="speichern" type="submit" value="{__('save')}">
                                         {__('saveWithIcon')}
                                     </button>
                                 </div>
                             {else}
-                                <div class="{if !isset($oUmfrageFrageTMP->kUmfrage)}ml-auto{/if} col-sm-6 col-xl-auto mb-2">
-                                    <button class="btn btn-outline-primary btn-block mb-2" name="nocheinefrage" type="submit" value="{__('umfrageAnotherQ')}">
+                                <div class="{if !isset($oUmfrageFrageTMP->kUmfrage)}ml-auto{/if} col-sm-6 col-xl-auto">
+                                    <button class="btn btn-outline-primary btn-block" name="nocheinefrage" type="submit" value="{__('umfrageAnotherQ')}">
                                         <i class="fa fa-share"></i> {__('umfrageAnotherQ')}
                                     </button>
                                 </div>

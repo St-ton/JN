@@ -5,7 +5,7 @@
  */
 
 use JTL\Alert\Alert;
-use JTL\Catalog\Trennzeichen;
+use JTL\Catalog\Separator;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\PlausiTrennzeichen;
@@ -50,5 +50,5 @@ if (Request::verifyGPCDataInt('save') === 1 && Form::validateToken()) {
 }
 
 $smarty->assign('step', $step)
-    ->assign('oTrennzeichenAssoc_arr', Trennzeichen::getAll($_SESSION['kSprache']))
+    ->assign('oTrennzeichenAssoc_arr', Separator::getAll($_SESSION['kSprache']))
     ->display('trennzeichen.tpl');

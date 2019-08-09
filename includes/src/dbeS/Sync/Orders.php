@@ -10,8 +10,8 @@ use JTL\Checkout\Bestellung;
 use JTL\Checkout\Lieferadresse;
 use JTL\Checkout\Lieferschein;
 use JTL\Checkout\Rechnungsadresse;
-use JTL\Customer\Kunde;
-use JTL\Customer\KundenwerbenKunden;
+use JTL\Customer\Customer;
+use JTL\Customer\Referral;
 use JTL\DB\ReturnType;
 use JTL\dbeS\Starter;
 use JTL\Language\LanguageHelper;
@@ -158,7 +158,7 @@ final class Orders extends AbstractSync
         foreach (\array_filter(\array_map('\intval', $source)) as $orderID) {
             $module   = $this->getPaymentMethod($orderID);
             $tmpOrder = new Bestellung($orderID);
-            $customer = new Kunde($tmpOrder->kKunde);
+            $customer = new Customer($tmpOrder->kKunde);
             $tmpOrder->fuelleBestellung();
             if ($module) {
                 $module->cancelOrder($orderID);
@@ -202,7 +202,7 @@ final class Orders extends AbstractSync
                 $module->reactivateOrder($orderID);
             } else {
                 $tmpOrder = new Bestellung($orderID);
-                $customer = new Kunde($tmpOrder->kKunde);
+                $customer = new Customer($tmpOrder->kKunde);
                 $tmpOrder->fuelleBestellung();
                 if (($tmpOrder->Zahlungsart->nMailSenden & \ZAHLUNGSART_MAIL_STORNO) && \strlen($customer->cMail) > 0) {
                     $data              = new stdClass;
@@ -291,7 +291,7 @@ final class Orders extends AbstractSync
                     : $xml['tbestellung']['tbestellattribut']
             );
         }
-        $customer = new Kunde((int)$oldOrder->kKunde);
+        $customer = new Customer((int)$oldOrder->kKunde);
         $this->sendMail($oldOrder, $order, $customer);
 
         \executeHook(\HOOK_BESTELLUNGEN_XML_BEARBEITEUPDATE, [
@@ -459,7 +459,7 @@ final class Orders extends AbstractSync
     /**
      * @param stdClass $oldOrder
      * @param stdClass $order
-     * @param Kunde    $customer
+     * @param Customer $customer
      */
     private function sendMail($oldOrder, $order, $customer): void
     {
@@ -625,7 +625,7 @@ final class Orders extends AbstractSync
                     $trackingURL = \str_replace('#PLZ#', $deliveryAddress->cPLZ, $trackingURL);
                 }
             } else {
-                $customer    = new Kunde($shopOrder->kKunde);
+                $customer    = new Customer($shopOrder->kKunde);
                 $trackingURL = \str_replace('#PLZ#', $customer->cPLZ, $trackingURL);
             }
             $trackingURL = \str_replace('#IdentCode#', $order->cIdentCode, $trackingURL);
@@ -673,7 +673,7 @@ final class Orders extends AbstractSync
      * @param Bestellung $updatedOrder
      * @param stdClass   $shopOrder
      * @param int        $state
-     * @param Kunde      $customer
+     * @param Customer   $customer
      */
     private function sendStatusMail(Bestellung $updatedOrder, stdClass $shopOrder, int $state, $customer): void
     {
@@ -712,7 +712,7 @@ final class Orders extends AbstractSync
                 $note->setEmailVerschickt(true)->update();
             }
             // Guthaben an Bestandskunden verbuchen, Email rausschicken:
-            $oKwK = new KundenwerbenKunden();
+            $oKwK = new Referral();
             $oKwK->verbucheBestandskundenBoni($customer->cMail);
         }
     }
@@ -720,7 +720,7 @@ final class Orders extends AbstractSync
     /**
      * @param stdClass $shopOrder
      * @param stdClass $order
-     * @param Kunde    $customer
+     * @param Customer $customer
      */
     private function sendPaymentMail(stdClass $shopOrder, stdClass $order, $customer): void
     {
@@ -772,10 +772,10 @@ final class Orders extends AbstractSync
                     'SELECT kKunde FROM tbestellung WHERE kBestellung = ' . $order->kBestellung,
                     ReturnType::SINGLE_OBJECT
                 );
-                $customer = new Kunde((int)$tmp->kKunde);
+                $customer = new Customer((int)$tmp->kKunde);
             }
             if ($customer === null) {
-                $customer = new Kunde($shopOrder->kKunde);
+                $customer = new Customer($shopOrder->kKunde);
             }
             $this->sendStatusMail($updatedOrder, $shopOrder, $state, $customer);
             $this->sendPaymentMail($shopOrder, $order, $customer);

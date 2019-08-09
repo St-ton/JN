@@ -4,10 +4,10 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use JTL\Cart\Warenkorb;
+use JTL\Cart\Cart;
 use JTL\Checkout\Bestellung;
 use JTL\Checkout\ZahlungsLog;
-use JTL\Customer\Kunde;
+use JTL\Customer\Customer;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Request;
 use JTL\Mail\Mail\Mail;
@@ -451,8 +451,8 @@ class PaymentMethod
 
     /**
      *
-     * @param object    $customer
-     * @param Warenkorb $cart
+     * @param object $customer
+     * @param Cart   $cart
      * @return bool - true, if $customer with $cart may use Payment Method
      */
     public function isValid($customer, $cart)
@@ -668,7 +668,7 @@ class PaymentMethod
     {
         $order = new Bestellung($orderID);
         $order->fuelleBestellung(false);
-        $customer = new Kunde($order->kKunde);
+        $customer = new Customer($order->kKunde);
         $data     = new stdClass();
         $mailer   = Shop::Container()->get(Mailer::class);
         $mail     = new Mail();
@@ -744,6 +744,7 @@ class PaymentMethod
     public static function create($moduleId)
     {
         global $plugin;
+        global $oPlugin;
         $tmpPlugin    = $plugin;
         $paymentMethod = null;
         $pluginID      = PluginHelper::getIDByModuleID($moduleId);
@@ -754,14 +755,14 @@ class PaymentMethod
             } catch (InvalidArgumentException $e) {
                 $plugin = null;
             }
-            $GLOBALS['oPlugin'] = $plugin;
-
-            if ($plugin !== null && isset($plugin->oPluginZahlungsKlasseAssoc_arr[$moduleId]->cClassPfad)) {
+            $oPlugin = $plugin;
+            if ($plugin !== null) {
+                $method    = $plugin->getPaymentMethods()->getMethodsAssoc()[$moduleId];
                 $classFile = $plugin->getPaths()->getVersionedPath() . PFAD_PLUGIN_PAYMENTMETHOD .
-                    $plugin->oPluginZahlungsKlasseAssoc_arr[$moduleId]->cClassPfad;
+                    $method->cClassPfad;
                 if (file_exists($classFile)) {
                     require_once $classFile;
-                    $className               = $plugin->oPluginZahlungsKlasseAssoc_arr[$moduleId]->cClassName;
+                    $className               = $method->cClassName;
                     $paymentMethod           = new $className($moduleId);
                     $paymentMethod->cModulId = $moduleId;
                 }

@@ -199,11 +199,11 @@
     <div id="content-wrapper">
     {/block}
     {block name='header-fluid-banner'}
-        {assign var="isFluidBanner" value=isset($Einstellungen.template.theme.banner_full_width) && $Einstellungen.template.theme.banner_full_width === 'Y' &&  isset($Einstellungen.template.theme.pagelayout) && $Einstellungen.template.theme.pagelayout === 'fluid' && isset($oImageMap)}
+        {assign var="isFluidBanner" value=isset($Einstellungen.template.theme.banner_full_width, $Einstellungen.template.theme.pagelayout, $oImageMap) && $Einstellungen.template.theme.banner_full_width === 'Y' && $Einstellungen.template.theme.pagelayout === 'fluid'}
         {if $isFluidBanner}
             {include file='snippets/banner.tpl'}
         {/if}
-        {assign var='isFluidSlider' value=isset($Einstellungen.template.theme.slider_full_width) && $Einstellungen.template.theme.slider_full_width === 'Y' &&  isset($Einstellungen.template.theme.pagelayout) && $Einstellungen.template.theme.pagelayout === 'fluid' && isset($oSlider) && count($oSlider->getSlides()) > 0}
+        {assign var='isFluidSlider' value=isset($Einstellungen.template.theme.slider_full_width, $Einstellungen.template.theme.pagelayout, $oSlider) && $Einstellungen.template.theme.slider_full_width === 'Y' &&  $Einstellungen.template.theme.pagelayout === 'fluid' && count($oSlider->getSlides()) > 0}
         {if $isFluidSlider}
             {include file='snippets/slider.tpl'}
         {/if}
@@ -233,7 +233,7 @@
     {/block}
 
     {block name='content-starttag'}
-    <div id="content" class="col-xs-12{if !$bExclusive && !empty($boxes.left|strip_tags|trim)} {if $nSeitenTyp === 2} col-md-8 col-md-push-4 {/if} col-lg-9 col-lg-push-3{/if}">
+    <div id="content" class="col-xs-12{if !$bExclusive && !empty($boxes.left|strip_tags|trim)} {if $nSeitenTyp === $smarty.const.PAGE_ARTIKELLISTE} col-md-8 col-md-push-4 {/if} col-lg-9 col-lg-push-3{/if}">
     {/block}
 
     {block name='header-breadcrumb'}

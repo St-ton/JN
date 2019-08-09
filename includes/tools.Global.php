@@ -4,19 +4,19 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use JTL\Cart\WarenkorbPers;
+use JTL\Cart\CartHelper;
+use JTL\Cart\PersistentCart;
 use JTL\Catalog\Category\Kategorie;
 use JTL\Catalog\Category\KategorieListe;
 use JTL\Catalog\Currency;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\Preise;
-use JTL\Catalog\Wishlist\Wunschliste;
+use JTL\Catalog\Wishlist\Wishlist;
 use JTL\Checkout\Kupon;
 use JTL\Checkout\Versandart;
 use JTL\Checkout\Zahlungsart;
-use JTL\Customer\Kunde;
+use JTL\Customer\Customer;
 use JTL\GeneralDataProtection\IpAnonymizer;
-use JTL\Helpers\Cart;
 use JTL\Helpers\Category;
 use JTL\Helpers\Date;
 use JTL\Helpers\FileSystem;
@@ -154,7 +154,7 @@ function gibUID(int $length = 40, string $seed = '')
 function optionaleRundung($sum)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use WarenkorbHelper::roundOptional() instead', E_USER_DEPRECATED);
-    return Cart::roundOptional($sum);
+    return CartHelper::roundOptional($sum);
 }
 
 /**
@@ -252,7 +252,7 @@ function holePreisanzeigeEinstellungen()
 function checkeWarenkorbEingang()
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use WarenkorbHelper::checkAdditions() instead.', E_USER_DEPRECATED);
-    Cart::checkAdditions();
+    CartHelper::checkAdditions();
 }
 
 /**
@@ -266,7 +266,7 @@ function checkeWarenkorbEingang()
 function pruefeFuegeEinInWarenkorb($product, $qty, $attributeValues, $precision = 2)
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return Cart::addToCartCheck($product, $qty, $attributeValues, $precision);
+    return CartHelper::addToCartCheck($product, $qty, $attributeValues, $precision);
 }
 
 /**
@@ -587,15 +587,12 @@ function getSytemlogFlag($cache = true)
 }
 
 /**
- * @param object $startKat
- * @param object $AufgeklappteKategorien
- * @param object $AktuelleKategorie
  * @deprecated since 5.0.0
  */
-function baueKategorieListenHTML($startKat, $AufgeklappteKategorien, $AktuelleKategorie)
+function baueKategorieListenHTML()
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    Category::buildCategoryListHTML($startKat, $AktuelleKategorie, $AktuelleKategorie);
+    Shop::Smarty()->assign('cKategorielistenHTML_arr', []);
 }
 
 /**
@@ -640,7 +637,7 @@ function gibLagerfilter()
 function pruefeVariBoxAnzahl($variBoxAnzahl_arr = [])
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    return Cart::checkVariboxAmount($variBoxAnzahl_arr);
+    return CartHelper::checkVariboxAmount($variBoxAnzahl_arr);
 }
 
 /**
@@ -763,7 +760,7 @@ function setzeKampagnenVorgang(int $definitionID, int $key, $value, $customData 
 function mappeKundenanrede($salutation, int $languageID, int $customerID = 0)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use Kunde::mapSalutation() instead.', E_USER_DEPRECATED);
-    return Kunde::mapSalutation($salutation, $languageID, $customerID);
+    return Customer::mapSalutation($salutation, $languageID, $customerID);
 }
 
 /**
@@ -832,7 +829,7 @@ function parseNewsText($text)
 function checkeWunschlisteParameter()
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use Wunschliste::checkeParameters() instead.', E_USER_DEPRECATED);
-    return Wunschliste::checkeParameters();
+    return Wishlist::checkeParameters();
 }
 
 /**
@@ -982,7 +979,7 @@ function truncateMetaDescription($description)
 function gibStuecklistenKomponente(int $kStueckliste, $assoc = false)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use WarenkorbHelper::getPartComponent() instead.', E_USER_DEPRECATED);
-    return Cart::getPartComponent($kStueckliste, $assoc);
+    return CartHelper::getPartComponent($kStueckliste, $assoc);
 }
 
 /**
@@ -1060,7 +1057,7 @@ function checkeKuponWKPos($item, $coupon)
         __FUNCTION__ . ' is deprecated. Use WarenkorbHelper::checkCouponCartPositions() instead.',
         E_USER_DEPRECATED
     );
-    return Cart::checkCouponCartItems($item, $coupon);
+    return CartHelper::checkCouponCartItems($item, $coupon);
 }
 
 /**
@@ -1075,7 +1072,7 @@ function checkSetPercentCouponWKPos($item, $coupon)
         __FUNCTION__ . ' is deprecated. Use WarenkorbHelper::checkSetPercentCouponWKPos() instead.',
         E_USER_DEPRECATED
     );
-    return Cart::checkSetPercentCouponWKPos($item, $coupon);
+    return CartHelper::checkSetPercentCouponWKPos($item, $coupon);
 }
 
 /**
@@ -1346,7 +1343,7 @@ function generateCSRFToken()
 function fuegeVariBoxInWK($variBoxAnzahl_arr, $productID, $bIstVater, $bExtern = false)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use WarenkorbHelper::fuegeVariBoxInWK() instead.', E_USER_DEPRECATED);
-    Cart::addVariboxToCart($variBoxAnzahl_arr, (int)$productID, (bool)$bIstVater, (bool)$bExtern);
+    CartHelper::addVariboxToCart($variBoxAnzahl_arr, (int)$productID, (bool)$bIstVater, (bool)$bExtern);
 }
 
 /**
@@ -1369,7 +1366,7 @@ function fuegeEinInWarenkorbPers(
     $cResponsibility = 'core'
 ) {
     trigger_error(__FUNCTION__ . ' is deprecated. Use WarenkorbPers::addToCheck() instead.', E_USER_DEPRECATED);
-    WarenkorbPers::addToCheck(
+    PersistentCart::addToCheck(
         $productID,
         $fAnzahl,
         $oEigenschaftwerte_arr,
@@ -1470,7 +1467,7 @@ function fuegeEinInWarenkorb(
         __FUNCTION__ . ' is deprecated. Use WarenkorbHelper::addProductIDToCart() instead.',
         E_USER_DEPRECATED
     );
-    return Cart::addProductIDToCart(
+    return CartHelper::addProductIDToCart(
         $productID,
         $qty,
         $attrValues,

@@ -84,6 +84,15 @@
             </table>
         </div>
     </div>
+    <div class="card-footer save-wrapper">
+        <div class="row">
+            <div class="ml-auto col-sm-6 col-lg-auto">
+                <a class="btn btn-outline-primary btn-block" href="versandarten.php">
+                    {__('goBack')}
+                </a>
+            </div>
+        </div>
+    </div>
 </div>
 
 <div class="modal fade" id="add-zip-modal" tabindex="-1">
@@ -192,6 +201,7 @@
 
     $('#surcharge-create').on('click', function () {
         $('#new-surcharge-form-wrapper input').val('');
+        $('#new-surcharge-notice').html('');
         $('#new-surcharge-form-wrapper input[name="kVersandart"]').val($(this).data('versandart-id'));
         $('#new-surcharge-form-wrapper input[name="cISO"]').val($(this).data('iso'));
         $('#new-surcharge-modal-title').html('{__("createList")}');

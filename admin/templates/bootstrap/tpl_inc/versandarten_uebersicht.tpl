@@ -28,7 +28,7 @@
     </div>
     <div class="card">
         <div class="card-body">
-            <table class="table table-responsive">
+            <table class="table table-responsive table-align-top">
                 <thead>
                     <tr>
                         <th>{__('shippingTypeName')}</th>
@@ -44,18 +44,28 @@
                     <tr>
                         <td>{$versandart->cName}
                             <span class="d-block">
-                            {foreach $versandart->countries as $country}
-                                <a href="versandarten.php?zuschlag=1&kVersandart={$versandart->kVersandart}&cISO={$country->getISO()}&token={$smarty.session.jtl_token}">
-                                    <span class="small text-muted">
-                                        {if in_array($country->getISO(), $versandart->surcharges)}
-                                            <u>{$country->getName()}*</u>
-                                        {else}
-                                            {$country->getName()}
-                                        {/if}
-                                    </span>
-                                    {if !$country@last},{/if}
-                                </a>
-                            {/foreach}
+                                {foreach $versandart->countries as $country}
+                                    {if $country@iteration == 20}
+                                        <span class="collapse" aria-expanded="false" id="show-all-countries-{$versandart->kVersandart}">
+                                        {$collapse=1}
+                                    {/if}
+                                    <a href="versandarten.php?zuschlag=1&kVersandart={$versandart->kVersandart}&cISO={$country->getISO()}&token={$smarty.session.jtl_token}">
+                                        <span class="small text-muted">
+                                            {if in_array($country->getISO(), $versandart->surcharges)}
+                                                <u>{$country->getName()}*</u>
+                                            {else}
+                                                {$country->getName()}
+                                            {/if}
+                                        </span>
+                                        {if !$country@last},{/if}
+                                    </a>
+                                    {if $country@iteration > 20 && $country@last}
+                                        </span>
+                                        <button class="btn btn-link float-right" data-toggle="collapse" data-target="#show-all-countries-{$versandart->kVersandart}">
+                                            {__('showAll')} <span class="far fa-chevron-down"></span>
+                                        </button>
+                                    {/if}
+                                {/foreach}
                             </span>
                         </td>
                         <td>

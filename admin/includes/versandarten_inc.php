@@ -373,25 +373,6 @@ function getMissingShippingClassCombi()
 }
 
 /**
- * @param $shippingType
- * @param $ISO
- * @return stdClass
- * @throws SmartyException
- */
-function getZuschlagsListen($shippingType, $ISO)
-{
-    Shop::Container()->getGetText()->loadAdminLocale('pages/versandarten');
-    $smarty     = JTLSmarty::getInstance(false, ContextType::BACKEND);
-    $zuschlaege = (new Versandart($shippingType))->getSurchargesForCountry($ISO);
-
-    $result       = new stdClass();
-    $result->body = $smarty->assign('zuschlaglisten', $zuschlaege)
-                           ->assign('sprachen', LanguageHelper::getAllLanguages())
-                           ->fetch('tpl_inc/zuschlaglisten.tpl');
-    return $result;
-}
-
-/**
  * @param $data
  * @return stdClass
  * @throws SmartyException

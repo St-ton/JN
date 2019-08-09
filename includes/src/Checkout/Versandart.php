@@ -6,10 +6,10 @@
 
 namespace JTL\Checkout;
 
+use Illuminate\Support\Collection;
 use JTL\DB\ReturnType;
 use JTL\Helpers\GeneralObject;
 use JTL\Shop;
-use Illuminate\Support\Collection;
 
 /**
  * Class Versandart

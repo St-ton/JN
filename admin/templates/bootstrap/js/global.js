@@ -749,18 +749,6 @@ function openElFinder(callback, type)
     );
 }
 
-function activateAjaxLoadingSpinner() {
-    var $loading = $('#loadingSpinner');
-    $(document)
-    .ajaxStart(function () {
-        $('#alert-list').remove();
-        $loading.removeClass('hide');
-    })
-    .ajaxStop(function () {
-        $loading.addClass('hide');
-    });
-}
-
 function sprintf(format)
 {
     for( var i=1; i < arguments.length; i++ ) {

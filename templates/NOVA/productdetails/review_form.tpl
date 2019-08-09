@@ -11,11 +11,11 @@
     {/block}
 
     {block name='productdetails-review-form-content'}
-        {block name='productdetails-review-form-heading'}
-            <h1>{lang key='productRating' section='product rating'}</h1>
-        {/block}
-        {block name='productdetails-review-form-form'}
-            <div class="panel-wrap">
+        {container}
+            {block name='productdetails-review-form-heading'}
+                <h1>{lang key='productRating' section='product rating'}</h1>
+            {/block}
+            {block name='productdetails-review-form-form'}
                 {form action="{get_static_route id='bewertung.php'}#tab-votes" class="evo-validate label-slide"}
                     {block name='productdetails-review-form-alerts'}
                         {$alertList->displayAlertByKey('productNotBuyed')}
@@ -60,8 +60,8 @@
                         {/block}
                     {/if}
                 {/form}
-            </div>
-        {/block}
+            {/block}
+        {/container}
     {/block}
 
     {block name='productdetails-review-form-include-footer'}

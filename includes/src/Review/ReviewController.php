@@ -136,7 +136,11 @@ class ReviewController extends BaseController
         if ($this->checkProductWasPurchased($productID, Frontend::getCustomer()) === false) {
             return $url . 'bewertung_anzeigen=1&cFehler=f03';
         }
-        $review = ReviewModel::loadByAttributes(['productID' => $productID, 'customerID' => $customerID], $this->db);
+        $review = ReviewModel::loadByAttributes(
+            ['productID' => $productID, 'customerID' => $customerID],
+            $this->db,
+            ReviewHelpfulModel::ON_NOTEXISTS_NEW
+        );
         /** @var ReviewModel $review */
         $review->productID  = $productID;
         $review->customerID = $customerID;
@@ -217,7 +221,8 @@ class ReviewController extends BaseController
                 'oBewertung',
                 ReviewModel::loadByAttributes(
                     ['productID' => $product->kArtikel, 'customerID' => $customer->getID()],
-                    $this->db
+                    $this->db,
+                    ReviewHelpfulModel::ON_NOTEXISTS_NEW
                 )
             );
 
@@ -295,7 +300,8 @@ class ReviewController extends BaseController
         }
         $helpfulReview = ReviewHelpfulModel::loadByAttributes(
             ['reviewID' => $reviewID, 'customerID' => $customerID],
-            $this->db
+            $this->db,
+            ReviewHelpfulModel::ON_NOTEXISTS_NEW
         );
         /** @var $helpfulReview ReviewHelpfulModel */
         $baseURL = $this->getProductURL($productID) . 'bewertung_anzeigen=1&btgseite=' . $page . '&btgsterne=' . $stars;

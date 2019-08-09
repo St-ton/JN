@@ -67,7 +67,7 @@ final class CompareList extends AbstractBox
                 }
                 $product = new Artikel();
                 $product->fuelleArtikel($_prod->kArtikel, $defaultOptions);
-                $product->cURLDEL = $requestURI . $del . $_prod->kArtikel . $extra;
+                $product->cURLDEL = Shop::getURL() . $requestURI . $del . $_prod->kArtikel . $extra;
                 if (isset($_prod->oVariationen_arr) && \count($_prod->oVariationen_arr) > 0) {
                     $product->Variationen = $_prod->oVariationen_arr;
                 }

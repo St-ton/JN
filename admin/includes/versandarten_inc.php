@@ -437,7 +437,6 @@ function saveZuschlagsListe(array $data)
  */
 function deleteZuschlagsListe($surchargeID)
 {
-    Shop::Container()->getCache()->flushTags([CACHING_GROUP_OBJECT, CACHING_GROUP_OPTION, CACHING_GROUP_ARTICLE]);
     Shop::Container()->getDB()->queryPrepared(
         'DELETE tversandzuschlag, tversandzuschlagsprache, tversandzuschlagplz
             FROM tversandzuschlag
@@ -447,6 +446,7 @@ function deleteZuschlagsListe($surchargeID)
         ['surchargeID' => $surchargeID],
         ReturnType::DEFAULT
     );
+    Shop::Container()->getCache()->flushTags([CACHING_GROUP_OBJECT, CACHING_GROUP_OPTION, CACHING_GROUP_ARTICLE]);
 
     return (object)['surchargeID' => $surchargeID];
 }
@@ -458,7 +458,6 @@ function deleteZuschlagsListe($surchargeID)
  */
 function deleteZuschlagsListeZIP($surchargeID, $ZIP)
 {
-    Shop::Container()->getCache()->flushTags([CACHING_GROUP_OBJECT, CACHING_GROUP_OPTION, CACHING_GROUP_ARTICLE]);
     $partsZIP = explode('-', $ZIP);
     if (count($partsZIP) === 1) {
         Shop::Container()->getDB()->queryPrepared(
@@ -487,6 +486,7 @@ function deleteZuschlagsListeZIP($surchargeID, $ZIP)
             ReturnType::DEFAULT
         );
     }
+    Shop::Container()->getCache()->flushTags([CACHING_GROUP_OBJECT, CACHING_GROUP_OPTION, CACHING_GROUP_ARTICLE]);
 
     return (object)['surchargeID' => $surchargeID, 'ZIP' => $ZIP];
 }
@@ -560,7 +560,6 @@ function createZuschlagsListeZIP(array $data)
     } elseif ($db->insert('tversandzuschlagplz', $ZuschlagPLZ)) {
         $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successZIPAdd'), 'successZIPAdd');
     }
-
     Shop::Container()->getCache()->flushTags([CACHING_GROUP_OBJECT, CACHING_GROUP_OPTION, CACHING_GROUP_ARTICLE]);
 
     $message = $smarty->assign('alertList', $alertHelper)
@@ -608,5 +607,6 @@ function getSurcharge($id)
         ->assign('surchargeNew', new Versandzuschlag($id))
         ->assign('surchargeID', $id)
         ->fetch('snippets/zuschlagliste_form.tpl');
+
     return $result;
 }

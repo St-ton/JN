@@ -5,7 +5,7 @@
 {$imgAttribs = $instance->getImageAttributes()}
 
 {if $isPreview}
-    <div data-portlet="{$instance->getDataAttribute()}"
+    <div {$instance->getDataAttributeString()}
          class="opc-Image {if !empty($imgAttribs.src)}opc-Image-with-image{/if}"
          {if !empty($imgAttribs.src)}style="background-image: url('{$imgAttribs.src}')"{/if}>
         <div>

@@ -1,22 +1,15 @@
 {if $isPreview}
-    <div {$instance->getAttributeString()} {$instance->getDataAttributeString()} class="text-center opc-ImageSlider">
-        {$slides = $instance->getProperty('slides')}
-        {if $slides|count === 0}
-            <div>
-                {file_get_contents($portlet->getTemplateUrl()|cat:'icon.svg')}
-                <span>{__('Bilder-Slider')}</span>
-            </div>
-        {else}
-            {$imgAttribs = $instance->getImageAttributes($slides[0].url, '', '')}
-            {image
-                style='width: 98%; filter: grayscale(50%) opacity(60%)'
-                srcset=$imgAttribs.srcset
-                sizes=$imgAttribs.srcsizes
-                src=$imgAttribs.src
-                alt=$imgAttribs.alt
-                data=['desc' => $slides[0].desc]}
-            <p style="color: #5cbcf6; font-size: 40px; font-weight: bold; margin-top: -65px;">Slider</p>
-        {/if}
+    {$slides = $instance->getProperty('slides')}
+    {if $slides|count > 0}
+        {$imgAttribs = $instance->getImageAttributes($slides[0].url, '', '')}
+    {/if}
+    <div {$instance->getDataAttributeString()}
+         class="text-center opc-ImageSlider {if $slides|count > 0}opc-ImageSlider-with-image{/if}"
+         {if $slides|count > 0}style="background-image: url('{$imgAttribs.src}')"{/if}>
+        <div>
+            {file_get_contents($portlet->getTemplateUrl()|cat:'icon.svg')}
+            <span>{__('Bilder-Slider')}</span>
+        </div>
     </div>
 {else}
     {$uid = $instance->getUid()}

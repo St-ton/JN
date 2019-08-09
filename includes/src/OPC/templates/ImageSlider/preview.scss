@@ -9,6 +9,21 @@
   font-weight: bold;
   font-size: 12px;
 
+  &.opc-ImageSlider-with-image {
+    background-size: cover;
+    background-position: center;
+    height: 100px;
+    color: #fff;
+
+    > div {
+      text-shadow: 1px 1px 4px #000;
+    }
+  }
+
+  > div {
+    font-size: 14px;
+  }
+
   svg {
     margin-right: 6px;
   }

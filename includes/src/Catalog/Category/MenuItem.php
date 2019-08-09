@@ -222,9 +222,9 @@ class MenuItem
 
     /**
      * @param string $name
-     * @return string
+     * @return mixed|null
      */
-    public function getAttribute(string $name): ?string
+    public function getAttribute(string $name)
     {
         return $this->attributes[$name] ?? null;
     }

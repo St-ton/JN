@@ -190,3 +190,29 @@ $ribbon-color-8:                    #fff;
 //PREORDER, 9
 $ribbon-bg-9:                       #f78e26;
 $ribbon-color-9:                    #fff;
+
+$ribbon-colors				: ();
+$ribbon-colors: map-merge((
+        '1' : $ribbon-color-1,
+        '2' : $ribbon-color-2,
+        '3' : $ribbon-color-3,
+        '4' : $ribbon-color-4,
+        '5' : $ribbon-color-5,
+        '6' : $ribbon-color-6,
+        '7' : $ribbon-color-7,
+        '8' : $ribbon-color-8,
+        '9' : $ribbon-color-9
+), $ribbon-colors);
+
+$ribbon-bg-colors				: ();
+$ribbon-bg-colors: map-merge((
+        '1' : $ribbon-bg-1,
+        '2' : $ribbon-bg-2,
+        '3' : $ribbon-bg-3,
+        '4' : $ribbon-bg-4,
+        '5' : $ribbon-bg-5,
+        '6' : $ribbon-bg-6,
+        '7' : $ribbon-bg-7,
+        '8' : $ribbon-bg-8,
+        '9' : $ribbon-bg-9
+), $ribbon-bg-colors);

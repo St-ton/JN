@@ -51,3 +51,20 @@
     background: white;
   }
 }
+
+@mixin text-truncate-fade() {
+  position: relative;
+  display: inline-block;
+  height: ($headings-line-height * 2rem);
+  overflow: hidden;
+  &::after {
+    content: "";
+    text-align: right;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 70%;
+    height: ($headings-line-height * 1rem);
+    background: linear-gradient(to right, rgba(255, 255, 255, 0), rgba(255, 255, 255, 1) 50%);
+  }
+}

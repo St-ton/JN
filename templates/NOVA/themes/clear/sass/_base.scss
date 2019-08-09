@@ -58,7 +58,8 @@ html {
 .text-wrap              { white-space: normal !important; }
 .text-nowrap            { white-space: nowrap !important; }
 .text-truncate          { @include text-truncate; }
-.text-truncate-overflow { @include text-truncate-overflow; }
+//.text-truncate-overflow { @include text-truncate-overflow; }
+.text-truncate-fade     { @include text-truncate-fade; }
 
 .w-maxcon {
   width: max-content;

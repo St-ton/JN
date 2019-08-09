@@ -12,8 +12,7 @@
         {block name='layout-footer-aside'}
             {has_boxes position='left' assign='hasLeftBox'}
 
-            {if ($Einstellungen.template.sidebar_settings.show_sidebar_product_list === 'Y' && $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp
-                    || $Einstellungen.template.sidebar_settings.show_sidebar_product_list === 'N')
+            {if $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp
                 && !$bExclusive
                 && $hasLeftBox
                 && !empty($boxes.left|strip_tags|trim)
@@ -250,22 +249,6 @@
 
     {* JavaScripts *}
     {block name='layout-footer-js'}
-        {*{assign var=isFluidContent value=isset($Einstellungen.template.theme.pagelayout) && $Einstellungen.template.theme.pagelayout === 'fluid' && isset($Link) && $Link->getIsFluid()}
-        {assign var=isFluidContent value=$Link->getIsFluid()}*}
-        {*{if !$bExclusive && !$isFluidTemplate && isset($Einstellungen.template.theme.background_image) && $Einstellungen.template.theme.background_image !== ''}
-            {if $Einstellungen.template.theme.background_image === 'custom'}
-            {assign var='backstretchImgPath' value=$ShopURL|cat:'/'|cat:$currentTemplateDir|cat:'themes/'|cat:$Einstellungen.template.theme.theme_default|cat:'/background.jpg'}
-        {else}
-            {assign var='backstretchImgPath' value=$ShopURL|cat:'/'|cat:$currentTemplateDir|cat:'themes/base/images/backgrounds/background_'|cat:$Einstellungen.template.theme.background_image|cat:'.jpg'}
-        {/if}
-            {block name='layout-footer-script-backstretch'}
-                <script>
-                    $(window).on("load", function (e) {
-                        $.backstretch('{$backstretchImgPath}');
-                    });
-                </script>
-            {/block}
-        {/if}*}
         {$dbgBarBody}
         {block name='layout-footer-script-jtl-load'}
             <script>
@@ -303,9 +286,6 @@
                         "{$ShopURL}/{$customJSPath}?v={$nTemplateVersion}",
                     {/if}
                 ]{/strip});
-                {if (!isset($Einstellungen.template.general.use_cron) || $Einstellungen.template.general.use_cron === 'Y') && $smarty.now % 10 === 0}
-                    $.get('includes/cron_inc.php');
-                {/if}
             </script>
         {/block}
         {captchaMarkup getBody=false}

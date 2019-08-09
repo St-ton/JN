@@ -95,11 +95,6 @@
             {/block}
         {/if}
 
-        {*{if !empty($Einstellungen.template.theme.backgroundcolor) && $Einstellungen.template.theme.backgroundcolor|strlen > 1}
-            <style>
-                body { background-color: {$Einstellungen.template.theme.backgroundcolor}!important; }
-            </style>
-        {/if}*}
         {block name='layout-header-head-resources-jquery'}
             <script src="{$ShopURL}/{if empty($parentTemplateDir)}{$currentTemplateDir}{else}{$parentTemplateDir}{/if}js/jquery-3.3.1.min.js"></script>
         {/block}
@@ -255,8 +250,7 @@
         {/block}
 
         {block name='layout-header-content-starttag'}
-            <div id="content" class="col-12{if !$bExclusive && !empty($boxes.left|strip_tags|trim) && ($Einstellungen.template.sidebar_settings.show_sidebar_product_list === 'Y' && $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp
-            || $Einstellungen.template.sidebar_settings.show_sidebar_product_list === 'N')} col-lg-9{/if} order-lg-1 mb-6">
+            <div id="content" class="col-12{if !$bExclusive && !empty($boxes.left|strip_tags|trim) && $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp} col-lg-9{/if} order-lg-1 mb-6">
         {/block}
 
         {block name='layout-header-alert'}

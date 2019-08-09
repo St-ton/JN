@@ -59,7 +59,7 @@
         {/block}
         {block name='productlist-item-box-caption'}
             <div class="caption mt-2 text-left">
-                <div class="h4 title" itemprop="name">{link href=$Artikel->cURLFull class="text-truncate-overflow"}{$Artikel->cKurzbezeichnung}{/link}</div>
+                <div class="h4 title" itemprop="name">{link href=$Artikel->cURLFull class="text-truncate-fade"}{$Artikel->cKurzbezeichnung}{/link}</div>
                 {if $Artikel->cName !== $Artikel->cKurzbezeichnung}<meta itemprop="alternateName" content="{$Artikel->cName}">{/if}
                 <meta itemprop="url" content="{$Artikel->cURLFull}">
                 {if $Einstellungen.bewertung.bewertung_anzeigen === 'Y' && $Artikel->fDurchschnittsBewertung > 0}

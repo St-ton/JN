@@ -35,7 +35,7 @@ class PaymentMethods
      */
     public function load(array $data, PluginInterface $plugin): self
     {
-        $path = $plugin->getPaths()->getVersionedPath();
+        $path          = $plugin->getPaths()->getVersionedPath();
         $this->methods = [];
         foreach ($data as $method) {
             $method->kZahlungsart           = (int)$method->kZahlungsart;

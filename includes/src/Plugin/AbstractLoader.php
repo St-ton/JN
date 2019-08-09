@@ -433,7 +433,7 @@ abstract class AbstractLoader implements LoaderInterface
             ReturnType::ARRAY_OF_OBJECTS
         );
         foreach ($methods as $method) {
-            $moduleID                               = Helper::getModuleIDByPluginID(
+            $moduleID                                = Helper::getModuleIDByPluginID(
                 $plugin->getID(),
                 $method->cName
             );

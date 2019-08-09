@@ -9,7 +9,7 @@
 {if empty($images)}
     <div data-portlet="{$instance->getDataAttribute()}" class="opc-Gallery">
         <div>
-            <img src="{$portlet->getTemplateUrl()|cat:'icon.svg'}" class="opc-Gallery-icon">
+            {file_get_contents($portlet->getTemplateUrl()|cat:'icon.svg')}
             <span>{__('Gallery')}</span>
         </div>
     </div>

@@ -5,7 +5,7 @@
          class="opc-Banner {if !empty($imgAttribs.src)}opc-Banner-with-image{/if}"
          {if !empty($imgAttribs.src)}style="background-image: url('{$imgAttribs.src}')"{/if}>
         <div>
-            <img src="{$portlet->getTemplateUrl()|cat:'icon.svg'}" class="opc-Banner-icon">
+            {file_get_contents($portlet->getTemplateUrl()|cat:'icon.svg')}
             <span>{__('Banner')}</span>
         </div>
     </div>

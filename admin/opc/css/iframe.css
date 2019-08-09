@@ -62,6 +62,11 @@
   justify-content: center;
   opacity: 0.66;
 }
+.opc-droptarget .opc-droptarget-info {
+  position: absolute;
+  right: 8px;
+  top: 8px;
+}
 
 .opc-active-droptarget {
   background-color: rgba(92, 188, 246, 0.35);

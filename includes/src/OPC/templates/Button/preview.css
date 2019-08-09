@@ -29,7 +29,7 @@
   white-space: nowrap;
   z-index: 1;
 }
-.opc-Button .opc-Button-label .opc-Button-icon {
+.opc-Button .opc-Button-label svg {
   margin-right: 6px;
   margin-top: 4px;
 }

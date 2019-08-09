@@ -1,7 +1,7 @@
 {if $isPreview}
     <div data-portlet="{$instance->getDataAttribute()}" class="opc-Button">
         <div class="opc-Button-label">
-            <img src="{$portlet->getTemplateUrl()|cat:'icon.svg'}" class="opc-Button-icon">
+            {file_get_contents($portlet->getTemplateUrl()|cat:'icon.svg')}
             <span>Button</span>
         </div>
         <div class="opc-Button-propinfo">

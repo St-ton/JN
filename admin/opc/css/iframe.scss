@@ -60,6 +60,12 @@
     flex-direction: column;
     justify-content: center;
     opacity: 0.66;
+
+    .opc-droptarget-info {
+        position: absolute;
+        right: 8px;
+        top: 8px;
+    }
 }
 
 .opc-active-droptarget {

@@ -7,6 +7,8 @@
 namespace JTL\Media;
 
 use Exception;
+use JTL\Shop;
+use function Functional\some;
 
 /**
  * Class Media
@@ -20,7 +22,7 @@ class Media
     private static $instance;
 
     /**
-     * @var MediaImage[]|MediaImageCompatibility[]
+     * @var IMedia[]
      */
     private $types = [];
 
@@ -57,15 +59,11 @@ class Media
      * @param string $requestUri
      * @return bool
      */
-    public function isValidRequest($requestUri): bool
+    public function isValidRequest(string $requestUri): bool
     {
-        foreach ($this->types as $type) {
-            if ($type->isValid($requestUri)) {
-                return true;
-            }
-        }
-
-        return false;
+        return some($this->types, function (IMedia $e) use ($requestUri) {
+            return $e->isValid($requestUri);
+        });
     }
 
     /**
@@ -73,7 +71,7 @@ class Media
      * @return bool|mixed
      * @throws Exception
      */
-    public function handleRequest($requestUri)
+    public function handleRequest(string $requestUri)
     {
         foreach ($this->types as $type) {
             if ($type->isValid($requestUri)) {

@@ -14,13 +14,13 @@ interface IMedia
 {
     /**
      * @param string $request
-     * @return mixed
+     * @return bool
      */
-    public function isValid($request);
+    public function isValid(string $request): bool;
 
     /**
      * @param string $request
      * @return mixed
      */
-    public function handle($request);
+    public function handle(string $request);
 }

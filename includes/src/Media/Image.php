@@ -92,55 +92,6 @@ class Image
     private static $settings;
 
     /**
-     * Get image key by filepath
-     *
-     * @todo Support all types and map to the according table
-     * @param string $path filepath
-     * @param string $type produkt, hersteller, ..
-     * @param int    $number
-     * @return stdClass|null
-     */
-    public static function getByPath($path, $type, int $number = 1): ?stdClass
-    {
-        $item = Shop::Container()->getDB()->queryPrepared(
-            'SELECT kArtikel AS id, nNr AS number, cPfad AS path 
-                FROM tartikelpict 
-                WHERE cPfad = :path 
-                    AND nNr = :nr 
-                LIMIT 1',
-            ['path' => $path, 'nr' => $number],
-            ReturnType::SINGLE_OBJECT
-        );
-
-        return \is_object($item) ? $item : null;
-    }
-
-    /**
-     * Get image key by id
-     *
-     * @TODO: Support all types and map to the according table
-     * @todo: unsed param $type
-     * @param int    $id
-     * @param string $type produkt, hersteller, ..
-     * @param int    $number
-     * @return stdClass|null
-     */
-    public static function getById(int $id, $type, int $number = 1): ?stdClass
-    {
-        $item = Shop::Container()->getDB()->queryPrepared(
-            'SELECT kArtikel AS id, nNr AS number, cPfad AS path 
-                FROM tartikelpict 
-                WHERE kArtikel = :aid 
-                    AND nNr = :num 
-                ORDER BY nNr LIMIT 1',
-            ['aid' => $id, 'num' => $number],
-            ReturnType::SINGLE_OBJECT
-        );
-
-        return \is_object($item) ? $item : null;
-    }
-
-    /**
      *  Global image settings
      *
      * @return array
@@ -324,6 +275,9 @@ class Image
                         break;
                 }
                 break;
+            case self::TYPE_MANUFACTURER:
+                $result = empty($mixed->cSeo) ? $mixed->cName : $mixed->cSeo;
+                break;
             case self::TYPE_VARIATION:
                 // todo..
                 break;
@@ -368,6 +322,7 @@ class Image
         $background   = $settings['format'] === 'png' ? 'rgba(0,0,0,0)' : $settings['background'];
         $thumbnail    = $req->getThumb(null, true);
         $directory    = \pathinfo($thumbnail, \PATHINFO_DIRNAME);
+
         if (!\is_dir($directory) && !\mkdir($directory, 0777, true)) {
             $error = \error_get_last();
             if (empty($error)) {

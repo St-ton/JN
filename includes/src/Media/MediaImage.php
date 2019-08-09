@@ -179,7 +179,7 @@ class MediaImage implements IMedia
      * @param string $request
      * @return bool
      */
-    public function isValid($request): bool
+    public function isValid(string $request): bool
     {
         return $this->parse($request) !== null;
     }
@@ -200,22 +200,12 @@ class MediaImage implements IMedia
      * @return mixed|void
      * @throws Exception
      */
-    public function handle($request)
+    public function handle(string $request)
     {
         try {
             $request  = '/' . \ltrim($request, '/');
             $mediaReq = $this->create($request);
-            $imgNames = Shop::Container()->getDB()->queryPrepared(
-                'SELECT kArtikel, cName, cSeo, cArtNr, cBarcode
-                    FROM tartikel AS a
-                    WHERE kArtikel = :kArtikel
-                    UNION SELECT asp.kArtikel, asp.cName, asp.cSeo, a.cArtNr, a.cBarcode
-                        FROM tartikelsprache AS asp JOIN tartikel AS a ON asp.kArtikel = a.kArtikel
-                        WHERE asp.kArtikel = :kArtikel',
-                ['kArtikel' => (int)$mediaReq->id],
-                ReturnType::ARRAY_OF_OBJECTS
-            );
-
+            $imgNames = $this->getImageNames($mediaReq);
             if (\count($imgNames) === 0) {
                 throw new Exception('No such product id: ' . (int)$mediaReq->id);
             }
@@ -237,12 +227,10 @@ class MediaImage implements IMedia
                     break;
                 }
             }
-
             if ($matchFound === false) {
                 \header('Location: ' . Shop::getURL() . '/' . $imgNames[0]->imgPath, true, 301);
                 exit;
             }
-
             if (!\is_file($imgFilePath)) {
                 Image::render($mediaReq, true);
             }
@@ -254,6 +242,45 @@ class MediaImage implements IMedia
             \http_response_code(404);
         }
         exit;
+    }
+
+    /**
+     * @param MediaImageRequest $req
+     * @return array
+     */
+    private function getImageNames(MediaImageRequest $req): array
+    {
+        switch ($req->type) {
+            case Image::TYPE_PRODUCT:
+                $names = Shop::Container()->getDB()->queryPrepared(
+                    'SELECT kArtikel, cName, cSeo, cArtNr, cBarcode
+                    FROM tartikel AS a
+                    WHERE kArtikel = :pid
+                    UNION SELECT asp.kArtikel, asp.cName, asp.cSeo, a.cArtNr, a.cBarcode
+                        FROM tartikelsprache AS asp JOIN tartikel AS a ON asp.kArtikel = a.kArtikel
+                        WHERE asp.kArtikel = :pid',
+                    ['pid' => $req->id],
+                    ReturnType::ARRAY_OF_OBJECTS
+                );
+                break;
+            case Image::TYPE_MANUFACTURER:
+                $names = Shop::Container()->getDB()->queryPrepared(
+                    'SELECT kHersteller, cName, cSeo, cBildpfad
+                    FROM thersteller
+                    WHERE kHersteller = :mid',
+                    ['mid' => $req->id],
+                    ReturnType::ARRAY_OF_OBJECTS
+                );
+                if (!empty($names[0]->cBildpfad)) {
+                    $req->path = $names[0]->cBildpfad;
+                }
+                break;
+            default:
+                $names = [];
+                break;
+        }
+
+        return $names;
     }
 
     /**
@@ -334,8 +361,6 @@ class MediaImage implements IMedia
     {
         $cols = '';
         switch (Image::getSettings()['naming']['product']) {
-            case 0:
-                break;
             case 1:
                 $cols = ', tartikel.cArtNr';
                 break;
@@ -348,6 +373,7 @@ class MediaImage implements IMedia
             case 4:
                 $cols = ', tartikel.cBarcode';
                 break;
+            case 0:
             default:
                 break;
         }
@@ -451,9 +477,9 @@ class MediaImage implements IMedia
     public static function isCached(MediaImageRequest $req): bool
     {
         return \file_exists($req->getThumb(Image::SIZE_XS, true))
-        && \file_exists($req->getThumb(Image::SIZE_SM, true))
-        && \file_exists($req->getThumb(Image::SIZE_MD, true))
-        && \file_exists($req->getThumb(Image::SIZE_LG, true));
+            && \file_exists($req->getThumb(Image::SIZE_SM, true))
+            && \file_exists($req->getThumb(Image::SIZE_MD, true))
+            && \file_exists($req->getThumb(Image::SIZE_LG, true));
     }
 
     /**

@@ -251,24 +251,31 @@ class MediaImageRequest
      */
     public function getPathById(): ?string
     {
-        $id = $this->getId();
-//        $type   = $this->getType();
-        $number = $this->getNumber();
-
         if (($path = $this->cachedPath()) !== null) {
             return $path;
         }
-
-        $item = Shop::Container()->getDB()->queryPrepared(
-            'SELECT kArtikel AS id, nNr AS number, cPfad AS path
-                FROM tartikelpict
-                WHERE kArtikel = :pid AND nNr = :no ORDER BY nNr LIMIT 1',
-            ['pid' => $id, 'no' => $number],
-            ReturnType::SINGLE_OBJECT
-        );
+        $id     = $this->getId();
+        $type   = $this->getType();
+        $number = $this->getNumber();
+        if ($type === Image::TYPE_PRODUCT) {
+            $item = Shop::Container()->getDB()->queryPrepared(
+                'SELECT cPfad AS path
+                    FROM tartikelpict
+                    WHERE kArtikel = :pid AND nNr = :no ORDER BY nNr LIMIT 1',
+                ['pid' => $id, 'no' => $number],
+                ReturnType::SINGLE_OBJECT
+            );
+        } elseif ($type === Image::TYPE_MANUFACTURER) {
+            $item = Shop::Container()->getDB()->queryPrepared(
+                'SELECT cBildpfad AS path
+                    FROM thersteller
+                    WHERE kHersteller = :mid LIMIT 1',
+                ['mid' => $id],
+                ReturnType::SINGLE_OBJECT
+            );
+        }
 
         $path = $item->path ?? null;
-
         $this->cachedPath($path);
 
         return $path;
@@ -278,7 +285,7 @@ class MediaImageRequest
      * @param string|null $path
      * @return string|null
      */
-    protected function cachedPath($path = null): ?string
+    protected function cachedPath(string $path = null): ?string
     {
         $hash = \sprintf('%s-%s-%s', $this->getId(), $this->getNumber(), $this->getType());
         if ($path === null) {

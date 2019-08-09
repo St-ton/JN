@@ -118,9 +118,8 @@ class Iframe
     updateDropTargets()
     {
         this.stripDropTargets();
-        let d = this.dropTargetBlueprint.clone().attr('id', '').show();
-        this.areas().append(d);
-        this.portlets().before(d);
+        this.areas().append(this.dropTargetBlueprint.clone().attr('id', '').show());
+        this.portlets().before(this.dropTargetBlueprint.clone().attr('id', '').show());
         this.dropTargets().find('.opc-droptarget-info').each((i, droptarget) => {
             droptarget = this.jq(droptarget);
             droptarget.attr('title', droptarget.closest('.opc-area').data('area-id'));

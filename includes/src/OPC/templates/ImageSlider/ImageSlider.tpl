@@ -1,8 +1,11 @@
 {if $isPreview}
-    <div {$instance->getAttributeString()} {$instance->getDataAttributeString()} class="text-center">
+    <div {$instance->getAttributeString()} {$instance->getDataAttributeString()} class="text-center opc-ImageSlider">
         {$slides = $instance->getProperty('slides')}
         {if $slides|count === 0}
-            Slider
+            <div>
+                {file_get_contents($portlet->getTemplateUrl()|cat:'icon.svg')}
+                <span>{__('Bilder-Slider')}</span>
+            </div>
         {else}
             {$imgAttribs = $instance->getImageAttributes($slides[0].url, '', '')}
             {image

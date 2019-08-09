@@ -1,0 +1,15 @@
+.opc-ImageSlider {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 64px;
+  text-align: center;
+  color: #5cbcf6;
+  text-transform: uppercase;
+  font-weight: bold;
+  font-size: 12px;
+
+  svg {
+    margin-right: 6px;
+  }
+}

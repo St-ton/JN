@@ -114,12 +114,13 @@ if ($pluginID > 0) {
     $loader = Helper::getLoaderByPluginID($pluginID, $db);
     $plugin = $loader->init($pluginID);
     if ($plugin !== null) {
-        $methods = $plugin->getPaymentMethods()->getMethodsAssoc();
-        require_once $plugin->getPaths()->getVersionedPath() . PFAD_PLUGIN_PAYMENTMETHOD .
-            $methods[$moduleID]->cClassPfad;
+        $pluginPaymentMethod = $plugin->getPaymentMethods()->getMethodByID($moduleID);
+        if ($pluginPaymentMethod === null) {
+            return false;
+        }
+        $className = $pluginPaymentMethod->getClassName();
         /** @var PaymentMethod $paymentMethod */
-        $pluginName              = $methods[$moduleID]->cClassName;
-        $paymentMethod           = new $pluginName($moduleID);
+        $paymentMethod           = new $className($moduleID);
         $paymentMethod->cModulId = $moduleID;
         $paymentMethod->preparePaymentProcess($order);
         Shop::Smarty()->assign('oPlugin', $plugin);

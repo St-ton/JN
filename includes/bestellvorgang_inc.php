@@ -1653,61 +1653,57 @@ function zahlungsartGueltig($paymentMethod): bool
     if (!isset($paymentMethod->cModulId)) {
         return false;
     }
-    $pluginID = PluginHelper::getIDByModuleID($paymentMethod->cModulId);
+    $moduleID = $paymentMethod->cModulId;
+    $pluginID = PluginHelper::getIDByModuleID($moduleID);
     if ($pluginID > 0) {
         $loader = PluginHelper::getLoaderByPluginID($pluginID);
         $plugin = $loader->init($pluginID);
-        if ($plugin !== null) {
-            global $oPlugin;
-            $oPlugin = $plugin;
-            if ($plugin->getState() !== State::ACTIVATED) {
-                return false;
-            }
-            $methods = $plugin->getPaymentMethods()->getMethodsAssoc();
-            require_once $plugin->getPaths()->getVersionedPath() . PFAD_PLUGIN_PAYMENTMETHOD
-                . $methods[$paymentMethod->cModulId]->cClassPfad;
-            $className        = $methods[$paymentMethod->cModulId]->cClassName;
-            $method           = new $className($paymentMethod->cModulId);
-            $method->cModulId = $paymentMethod->cModulId;
-            /** @var PaymentMethod $method */
-            if ($method && $method->isSelectable() === false) {
-                return false;
-            }
-            if ($method && !$method->isValidIntern()) {
-                Shop::Container()->getLogService()->withName('cModulId')->debug(
-                    'Die Zahlungsartprüfung (' . $paymentMethod->cModulId .
-                    ') wurde nicht erfolgreich validiert (isValidIntern).',
-                    [$paymentMethod->cModulId]
-                );
-
-                return false;
-            }
-            if (!PluginHelper::licenseCheck($plugin, ['cModulId' => $paymentMethod->cModulId])) {
-                return false;
-            }
-
-            return $method->isValid(Frontend::getCustomer(), Frontend::getCart());
+        if ($plugin === null || $plugin->getState() !== State::ACTIVATED) {
+            return false;
         }
-    } else {
-        $instance = new PaymentMethod($paymentMethod->cModulId);
-        $method   = $instance::create($paymentMethod->cModulId);
+        global $oPlugin;
+        $oPlugin = $plugin;
+
+        $pluginPaymentMethod = $plugin->getPaymentMethods()->getMethodByID($moduleID);
+        if ($pluginPaymentMethod === null) {
+            return false;
+        }
+        $className        = $pluginPaymentMethod->getClassName();
+        $method           = new $className($moduleID);
+        $method->cModulId = $moduleID;
+        /** @var PaymentMethod $method */
         if ($method && $method->isSelectable() === false) {
             return false;
         }
         if ($method && !$method->isValidIntern()) {
             Shop::Container()->getLogService()->withName('cModulId')->debug(
-                'Die Zahlungsartprüfung (' .
-                    $paymentMethod->cModulId . ') wurde nicht erfolgreich validiert (isValidIntern).',
-                [$paymentMethod->cModulId]
+                'Die Zahlungsartprüfung (' . $moduleID . ') wurde nicht erfolgreich validiert (isValidIntern).',
+                [$moduleID]
             );
 
             return false;
         }
+        if (!PluginHelper::licenseCheck($plugin, ['cModulId' => $moduleID])) {
+            return false;
+        }
 
-        return Helper::shippingMethodWithValidPaymentMethod($paymentMethod);
+        return $method->isValid(Frontend::getCustomer(), Frontend::getCart());
+    }
+    $instance = new PaymentMethod($moduleID);
+    $method   = $instance::create($moduleID);
+    if ($method && $method->isSelectable() === false) {
+        return false;
+    }
+    if ($method && !$method->isValidIntern()) {
+        Shop::Container()->getLogService()->withName('cModulId')->debug(
+            'Die Zahlungsartprüfung (' . $moduleID . ') wurde nicht erfolgreich validiert (isValidIntern).',
+            [$moduleID]
+        );
+
+        return false;
     }
 
-    return false;
+    return Helper::shippingMethodWithValidPaymentMethod($paymentMethod);
 }
 
 /**
@@ -1719,25 +1715,24 @@ function pruefeZahlungsartMinBestellungen($minOrders): bool
     if ($minOrders <= 0) {
         return true;
     }
-    if (Frontend::getCustomer()->kKunde > 0) {
-        $count = Shop::Container()->getDB()->query(
-            'SELECT COUNT(*) AS anz
-                FROM tbestellung
-                WHERE kKunde = ' . Frontend::getCustomer()->kKunde . '
-                    AND (cStatus = ' . BESTELLUNG_STATUS_BEZAHLT . '
-                    OR cStatus = ' . BESTELLUNG_STATUS_VERSANDT . ')',
-            ReturnType::SINGLE_OBJECT
-        );
-        if ($count->anz < $minOrders) {
-            Shop::Container()->getLogService()->debug(
-                'pruefeZahlungsartMinBestellungen Bestellanzahl zu niedrig: Anzahl ' .
-                $count->anz . ' < ' . $minOrders
-            );
-
-            return false;
-        }
-    } else {
+    if (Frontend::getCustomer()->kKunde <= 0) {
         Shop::Container()->getLogService()->debug('pruefeZahlungsartMinBestellungen erhielt keinen kKunden');
+
+        return false;
+    }
+    $count = Shop::Container()->getDB()->query(
+        'SELECT COUNT(*) AS anz
+            FROM tbestellung
+            WHERE kKunde = ' . Frontend::getCustomer()->kKunde . '
+                AND (cStatus = ' . BESTELLUNG_STATUS_BEZAHLT . '
+                OR cStatus = ' . BESTELLUNG_STATUS_VERSANDT . ')',
+        ReturnType::SINGLE_OBJECT
+    );
+    if ($count->anz < $minOrders) {
+        Shop::Container()->getLogService()->debug(
+            'pruefeZahlungsartMinBestellungen Bestellanzahl zu niedrig: Anzahl ' .
+            $count->anz . ' < ' . $minOrders
+        );
 
         return false;
     }

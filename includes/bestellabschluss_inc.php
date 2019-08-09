@@ -988,35 +988,35 @@ function speicherUploads($order): void
  */
 function setzeSmartyWeiterleitung(Bestellung $order): void
 {
+    $moduleID = $_SESSION['Zahlungsart']->cModulId;
     speicherUploads($order);
     $logger = Shop::Container()->getLogService();
     if ($logger->isHandling(JTLLOG_LEVEL_DEBUG)) {
         $logger->withName('cModulId')->debug(
             'setzeSmartyWeiterleitung wurde mit folgender Zahlungsart ausgefuehrt: ' .
             print_r($_SESSION['Zahlungsart'], true),
-            [$_SESSION['Zahlungsart']->cModulId]
+            [$moduleID]
         );
     }
-    $pluginID = Helper::getIDByModuleID($_SESSION['Zahlungsart']->cModulId);
+    $pluginID = Helper::getIDByModuleID($moduleID);
     if ($pluginID > 0) {
         $loader = Helper::getLoaderByPluginID($pluginID);
         $plugin = $loader->init($pluginID);
         global $oPlugin;
         $oPlugin = $plugin;
         if ($plugin !== null) {
-            $methods = $plugin->getPaymentMethods()->getMethodsAssoc();
-            require_once $plugin->getPaths()->getVersionedPath() . PFAD_PLUGIN_PAYMENTMETHOD .
-                $methods[$_SESSION['Zahlungsart']->cModulId]->cClassPfad;
-            $pluginClass = $methods[$_SESSION['Zahlungsart']->cModulId]->cClassName;
+            $pluginPaymentMethod = $plugin->getPaymentMethods()->getMethodByID($moduleID);
+            if ($pluginPaymentMethod === null) {
+                return;
+            }
+            $className = $pluginPaymentMethod->getClassName();
             /** @var PaymentMethod $paymentMethod */
-            $paymentMethod           = new $pluginClass($_SESSION['Zahlungsart']->cModulId);
-            $paymentMethod->cModulId = $_SESSION['Zahlungsart']->cModulId;
+            $paymentMethod           = new $className($moduleID);
+            $paymentMethod->cModulId = $moduleID;
             $paymentMethod->preparePaymentProcess($order);
             Shop::Smarty()->assign('oPlugin', $plugin);
         }
-    } elseif ($_SESSION['Zahlungsart']->cModulId === 'za_kreditkarte_jtl'
-        || $_SESSION['Zahlungsart']->cModulId === 'za_lastschrift_jtl'
-    ) {
+    } elseif ($moduleID === 'za_kreditkarte_jtl' || $moduleID === 'za_lastschrift_jtl') {
         Shop::Smarty()->assign('abschlussseite', 1);
     }
 

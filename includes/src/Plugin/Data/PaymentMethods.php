@@ -6,6 +6,10 @@
 
 namespace JTL\Plugin\Data;
 
+use JTL\Plugin\PluginInterface;
+use JTL\Shop;
+use stdClass;
+use function Functional\first;
 use function Functional\reindex;
 
 /**
@@ -25,12 +29,14 @@ class PaymentMethods
     private $classes = [];
 
     /**
-     * @param array  $data
-     * @param string $path
-     * @return $this
+     * @param array $data
+     * @param PluginInterface $plugin
+     * @return PaymentMethods
      */
-    public function load(array $data, string $path): self
+    public function load(array $data, PluginInterface $plugin): self
     {
+        $path = $plugin->getPaths()->getVersionedPath();
+        $this->methods = [];
         foreach ($data as $method) {
             $method->kZahlungsart           = (int)$method->kZahlungsart;
             $method->nSort                  = (int)$method->nSort;
@@ -64,8 +70,9 @@ class PaymentMethods
             $class->cTemplatePfad            = $method->cTemplatePfad;
             $class->cZusatzschrittTemplate   = $method->cZusatzschrittTemplate;
             $this->classes[$class->cModulId] = $class;
+
+            $this->methods[] = new PaymentMethod($method, $plugin);
         }
-        $this->methods = $data;
 
         return $this;
     }
@@ -81,7 +88,7 @@ class PaymentMethods
     }
 
     /**
-     * @return array
+     * @return PaymentMethod[]
      */
     public function getMethods(): array
     {
@@ -89,7 +96,18 @@ class PaymentMethods
     }
 
     /**
-     * @param array $methods
+     * @param string $id
+     * @return stdClass|null
+     */
+    public function getMethodByID(string $id): ?PaymentMethod
+    {
+        return first($this->methods, function ($method) use ($id) {
+            return $method->cModulId === $id;
+        });
+    }
+
+    /**
+     * @param PaymentMethod[] $methods
      */
     public function setMethods(array $methods): void
     {

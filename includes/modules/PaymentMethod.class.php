@@ -738,16 +738,16 @@ class PaymentMethod
     }
 
     /**
-     * @param string $moduleId
+     * @param string $moduleID
      * @return PaymentMethod
      */
-    public static function create($moduleId)
+    public static function create($moduleID)
     {
         global $plugin;
         global $oPlugin;
         $tmpPlugin    = $plugin;
         $paymentMethod = null;
-        $pluginID      = PluginHelper::getIDByModuleID($moduleId);
+        $pluginID      = PluginHelper::getIDByModuleID($moduleID);
         if ($pluginID > 0) {
             $loader = PluginHelper::getLoaderByPluginID($pluginID);
             try {
@@ -757,17 +757,19 @@ class PaymentMethod
             }
             $oPlugin = $plugin;
             if ($plugin !== null) {
-                $method    = $plugin->getPaymentMethods()->getMethodsAssoc()[$moduleId];
-                $classFile = $plugin->getPaths()->getVersionedPath() . PFAD_PLUGIN_PAYMENTMETHOD .
-                    $method->cClassPfad;
+                $pluginPaymentMethod = $plugin->getPaymentMethods()->getMethodByID($moduleID);
+                if ($pluginPaymentMethod === null) {
+                    return $paymentMethod;
+                }
+                $classFile = $pluginPaymentMethod->getClassFilePath();
                 if (file_exists($classFile)) {
                     require_once $classFile;
-                    $className               = $method->cClassName;
-                    $paymentMethod           = new $className($moduleId);
-                    $paymentMethod->cModulId = $moduleId;
+                    $className               = $pluginPaymentMethod->getClassName();
+                    $paymentMethod           = new $className($moduleID);
+                    $paymentMethod->cModulId = $moduleID;
                 }
             }
-        } elseif ($moduleId === 'za_null_jtl') {
+        } elseif ($moduleID === 'za_null_jtl') {
             require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'fallback/FallBackPayment.php';
             $paymentMethod = new FallBackPayment('za_null_jtl');
         }

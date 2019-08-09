@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use JTL\Customer\Kundengruppe;
+use JTL\Customer\CustomerGroup;
 use JTL\Language\LanguageHelper;
 use JTL\Shop;
 use JTL\Sitemap\Config\DefaultConfig;
@@ -30,7 +30,7 @@ $exporter     = new Export(
     $config
 );
 $exporter->generate(
-    [Kundengruppe::getDefaultGroupID()],
+    [CustomerGroup::getDefaultGroupID()],
     LanguageHelper::getAllLanguages(),
     $exportConfig->getFactories()
 );

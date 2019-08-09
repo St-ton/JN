@@ -1,7 +1,7 @@
 {function sprache_buttons}
     <div class="row">
         <div class="ml-auto col-sm-6 col-xl-auto">
-            <a class="btn btn-outline-primary btn-block mb-2" href="sprache.php?token={$smarty.session.jtl_token}&action=newvar">
+            <a class="btn btn-outline-primary btn-block" href="sprache.php?token={$smarty.session.jtl_token}&action=newvar">
                 <i class="fa fa-share"></i>
                 {__('btnAddVar')}
             </a>
@@ -72,7 +72,7 @@
                         {$jtl_token}
                         {if $oWert_arr|@count > 0}
                             <div class="table-responsive">
-                                <table class="list table">
+                                <table class="table table-hover">
                                     <thead>
                                         <tr>
                                             {if $bAllSections}<th>{__('section')}</th>{/if}
@@ -157,7 +157,7 @@
             <div id="notfound" class="tab-pane fade {if $tab === 'notfound'}active show{/if}">
                 <div class="table-responsive">
                     {if $oNotFound_arr|@count > 0}
-                        <table class="list table">
+                        <table class="table table-hover">
                             <thead>
                                 <tr>
                                     <th>{__('section')}</th>

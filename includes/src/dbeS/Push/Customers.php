@@ -6,7 +6,7 @@
 
 namespace JTL\dbeS\Push;
 
-use JTL\Customer\Kunde;
+use JTL\Customer\Customer;
 use JTL\DB\ReturnType;
 use JTL\Shop;
 
@@ -42,7 +42,7 @@ final class Customers extends AbstractPush
         $crypto     = Shop::Container()->getCryptoService();
         $attributes = [];
         foreach ($customers as &$customer) {
-            $customer['cAnrede']   = Kunde::mapSalutation($customer['cAnrede'], (int)$customer['kSprache']);
+            $customer['cAnrede']   = Customer::mapSalutation($customer['cAnrede'], (int)$customer['kSprache']);
             $customer['cNachname'] = \trim($crypto->decryptXTEA($customer['cNachname']));
             $customer['cFirma']    = \trim($crypto->decryptXTEA($customer['cFirma']));
             $customer['cStrasse']  = \trim($crypto->decryptXTEA($customer['cStrasse']));

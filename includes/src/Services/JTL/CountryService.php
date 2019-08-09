@@ -6,11 +6,11 @@
 
 namespace JTL\Services\JTL;
 
-use JTL\Country\Country;
 use Illuminate\Support\Collection;
+use JTL\Cache\JTLCacheInterface;
+use JTL\Country\Country;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
-use JTL\Cache\JTLCacheInterface;
 
 /**
  * Class CountryService

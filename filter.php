@@ -9,7 +9,7 @@ use JTL\Catalog\Category\Kategorie;
 use JTL\Catalog\Category\KategorieListe;
 use JTL\Catalog\Product\ArtikelListe;
 use JTL\Catalog\Product\Bestseller;
-use JTL\Extensions\AuswahlAssistent;
+use JTL\Extensions\SelectionWizard\Wizard;
 use JTL\Filter\ProductFilter;
 use JTL\Helpers\Category;
 use JTL\Helpers\Product;
@@ -130,8 +130,8 @@ if ($oSuchergebnisse->getProducts()->count() === 0) {
         $categoryContent->Unterkategorien = new KategorieListe();
         $h                                = Category::getInstance();
         $children                         = $h->getCategoryById($NaviFilter->getCategory()->getValue());
-        if ($children !== false && isset($children->Unterkategorien)) {
-            $categoryContent->Unterkategorien->elemente = $children->Unterkategorien;
+        if ($children !== false && $children->hasChildren()) {
+            $categoryContent->Unterkategorien->elemente = $children->getChildren();
         }
 
         $tb = $conf['artikeluebersicht']['topbest_anzeigen'];
@@ -156,7 +156,7 @@ if (mb_strpos(basename($NaviFilter->getFilterURL()->getURL()), '.php') === false
         ? SEP_SEITE . $pages->getCurrentPage()
         : '');
 }
-AuswahlAssistent::startIfRequired(
+Wizard::startIfRequired(
     AUSWAHLASSISTENT_ORT_KATEGORIE,
     $params['kKategorie'],
     Shop::getLanguageID(),

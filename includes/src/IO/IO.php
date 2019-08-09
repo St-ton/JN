@@ -190,12 +190,6 @@ class IO
             $browserAgent = 'opera';
         } elseif (\preg_match('/MSIE ([0-9].[0-9]{1,2})/', $userAgent, $m)) {
             $browserAgent = 'ie';
-        } elseif (\preg_match('/OmniWeb\/([0-9].[0-9]{1,2})/', $userAgent, $m)) {
-            $browserAgent = 'omniweb';
-        } elseif (\preg_match('/Mozilla\/([0-9].[0-9]{1,2})/', $userAgent, $m)) {
-            $browserAgent = 'mozilla';
-        } elseif (\preg_match('/Konqueror\/([0-9].[0-9]{1,2})/', $userAgent, $m)) {
-            $browserAgent = 'konqueror';
         }
 
         if (($mimetype === 'application/octet-stream') || ($mimetype === 'application/octetstream')) {

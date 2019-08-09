@@ -176,17 +176,6 @@
                                 {/row}
                             {/if}
                         </div>
-                        {if $Einstellungen.artikeluebersicht.artikeluebersicht_varikombi_anzahl > 0
-                            && $Artikel->oVariationKombiVorschau_arr !== null
-                            && $Artikel->oVariationKombiVorschau_arr|@count > 0}
-                            <div class="varikombis-thumbs d-sm-none d-md-none d-lg-block">
-                                {foreach $Artikel->oVariationKombiVorschau_arr as $oVariationKombiVorschau}
-                                    {link href=$oVariationKombiVorschau->cURL class="thumbnail float-left"}
-                                        {image src=$oVariationKombiVorschau->cBildMini alt=$oVariationKombiVorschau->cName}
-                                    {/link}
-                                {/foreach}
-                            </div>
-                        {/if}
                     </div>
                 {/block}
             {/col}

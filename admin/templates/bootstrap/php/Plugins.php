@@ -6,10 +6,10 @@
 
 namespace AdminTemplate;
 
+use DateTime;
 use JTL\Backend\Revision;
 use JTL\Catalog\Currency;
 use JTL\Shop;
-use DateTime;
 use JTL\Smarty\JTLSmarty;
 
 /**

@@ -6,10 +6,10 @@
 
 namespace JTL\Helpers;
 
+use JTL\Alert\Alert;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
 use JTL\Shop;
-use JTL\Alert\Alert;
 
 /**
  * Class Overlay

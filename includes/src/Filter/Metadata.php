@@ -9,6 +9,7 @@ namespace JTL\Filter;
 use Illuminate\Support\Collection;
 use JTL\Catalog\Category\Kategorie;
 use JTL\Catalog\Category\KategorieListe;
+use JTL\Catalog\Category\MenuItem;
 use JTL\Catalog\Hersteller;
 use JTL\Catalog\Product\MerkmalWert;
 use JTL\DB\ReturnType;
@@ -430,14 +431,6 @@ class Metadata implements MetadataInterface
                     $maxLength
                 );
             }
-            if (!empty($category->KategorieAttribute['meta_description'])) {
-                /** @deprecated since 4.05 - this is for compatibilty only! */
-                return self::prepareMeta(
-                    \strip_tags($category->KategorieAttribute['meta_description']),
-                    null,
-                    $maxLength
-                );
-            }
             // Hat die aktuelle Kategorie eine Beschreibung?
             if (!empty($category->cBeschreibung)) {
                 $catDescription = \strip_tags(\str_replace(['<br>', '<br />'], [' ', ' '], $category->cBeschreibung));
@@ -445,9 +438,9 @@ class Metadata implements MetadataInterface
                 // Hat die aktuelle Kategorie Unterkategorien?
                 $helper = Category::getInstance();
                 $sub    = $helper->getCategoryById($category->kKategorie);
-                if ($sub !== false && !empty($sub->Unterkategorien) && \count($sub->Unterkategorien) > 0) {
-                    $catNames       = map($sub->Unterkategorien, function ($e) {
-                        return \strip_tags($e->cName);
+                if ($sub !== false && $sub->hasChildren()) {
+                    $catNames       = map($sub->getChildren(), function (MenuItem $e) {
+                        return \strip_tags($e->getName());
                     });
                     $catDescription = \implode(', ', \array_filter($catNames));
                 }
@@ -528,11 +521,6 @@ class Metadata implements MetadataInterface
                 // Hat die aktuelle Kategorie als Kategorieattribut einen Meta Keywords gesetzt?
                 return \strip_tags($category->categoryAttributes['meta_keywords']->cWert);
             }
-            if (!empty($category->KategorieAttribute['meta_keywords'])) {
-                /** @deprecated since 4.05 - this is for compatibilty only! */
-
-                return \strip_tags($category->KategorieAttribute['meta_keywords']);
-            }
         }
         // Keine eingestellten Metas vorhanden => baue Standard Metas
         $keywordsMeta = '';
@@ -544,9 +532,9 @@ class Metadata implements MetadataInterface
             if ($category->bUnterKategorien) {
                 $helper = Category::getInstance();
                 $sub    = $helper->getCategoryById($category->kKategorie);
-                if ($sub !== false && !empty($sub->Unterkategorien) && \count($sub->Unterkategorien) > 0) {
-                    $catNames     = map($sub->Unterkategorien, function ($e) {
-                        return \strip_tags($e->cName);
+                if ($sub !== false && $sub->hasChildren()) {
+                    $catNames     = map($sub->getChildren(), function (MenuItem $e) {
+                        return \strip_tags($e->getName());
                     });
                     $keywordsMeta = \implode(' ', \array_filter($catNames));
                 }
@@ -641,11 +629,6 @@ class Metadata implements MetadataInterface
             } elseif (!empty($category->categoryAttributes['meta_title']->cWert)) {
                 // Hat die aktuelle Kategorie als Kategorieattribut einen Meta Title gesetzt?
                 $metaTitle = \strip_tags($category->categoryAttributes['meta_title']->cWert);
-                $metaTitle = \str_replace('"', "'", $metaTitle);
-                $metaTitle = Text::htmlentitydecode($metaTitle, \ENT_NOQUOTES);
-            } elseif (!empty($category->KategorieAttribute['meta_title'])) {
-                /** @deprecated since 4.05 - this is for compatibilty only! */
-                $metaTitle = \strip_tags($category->KategorieAttribute['meta_title']);
                 $metaTitle = \str_replace('"', "'", $metaTitle);
                 $metaTitle = Text::htmlentitydecode($metaTitle, \ENT_NOQUOTES);
             }
@@ -969,7 +952,7 @@ class Metadata implements MetadataInterface
      */
     public static function prepareMeta(string $metaProposal, ?string $metaSuffix = null, ?int $maxLength = null): string
     {
-        $metaStr = trim(preg_replace('/\s\s+/', ' ', Text::htmlentitiesOnce($metaProposal)));
+        $metaStr = \trim(\preg_replace('/\s\s+/', ' ', Text::htmlentitiesOnce($metaProposal)));
 
         return Text::htmlentitiesSubstr($metaStr, $maxLength ?? 0) . ($metaSuffix ?? '');
     }

@@ -85,7 +85,7 @@ class CustomerAttributes implements ArrayAccess, IteratorAggregate, Countable
                 $attribute->save();
                 $usedIDs[] = $attribute->getID();
             } else {
-                $this->attributes[$attribute->getCustomerFieldID()] = CustomerAttribute::load($attribute->getId());
+                $this->attributes[$attribute->getCustomerFieldID()] = CustomerAttribute::load($attribute->getID());
             }
         }
 

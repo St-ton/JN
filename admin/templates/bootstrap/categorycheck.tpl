@@ -8,7 +8,7 @@
                 {__('errorCatsWithoutParents')}
             </div>
             <div class="table-responsive">
-                <table class="table table-striped table-hover">
+                <table class="table table-striped">
                     <thead>
                         <tr>
                             <th class="col-xs-3 text-center">{__('id')}</th>

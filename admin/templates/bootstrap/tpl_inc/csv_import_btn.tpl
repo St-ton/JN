@@ -76,7 +76,7 @@
                 </div>
                 <div class="modal-footer">
                     <div class="row">
-                        <div class="ml-auto col-sm-6 col-xl-auto mb-2">
+                        <div class="ml-auto col-sm-6 col-xl-auto">
                             <button type="button" class="btn btn-outline-primary btn-block" onclick="onModalCancel_{$importerId}();">
                                 {__('cancelWithIcon')}
                             </button>
@@ -92,6 +92,6 @@
         </div>
     </div>
 {/if}
-<button type="button" class="btn btn-outline-primary btn-block mb-2" onclick="onClickCsvImport_{$importerId}()">
+<button type="button" class="btn btn-outline-primary btn-block" onclick="onClickCsvImport_{$importerId}()">
     <i class="fal fa-upload"></i> {__('importCsv')}
 </button>

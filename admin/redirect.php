@@ -4,16 +4,16 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Alert\Alert;
+use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
+use JTL\Pagination\DataType;
+use JTL\Pagination\Filter;
+use JTL\Pagination\Operation;
+use JTL\Pagination\Pagination;
 use JTL\Redirect;
 use JTL\Shop;
-use JTL\Pagination\Filter;
-use JTL\Pagination\Pagination;
-use JTL\DB\ReturnType;
-use JTL\Pagination\Operation;
-use JTL\Pagination\DataType;
-use JTL\Alert\Alert;
 
 /**
  * @global \JTL\Smarty\JTLSmarty     $smarty

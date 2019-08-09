@@ -6,7 +6,7 @@
 
 namespace JTL\Checkout;
 
-use JTL\Customer\Kunde;
+use JTL\Customer\Customer;
 use JTL\Language\LanguageHelper;
 use JTL\Shop;
 
@@ -73,7 +73,7 @@ class Rechnungsadresse extends Adresse
         $this->kKunde            = (int)$this->kKunde;
         $this->kRechnungsadresse = (int)$this->kRechnungsadresse;
 
-        $this->cAnredeLocalized = Kunde::mapSalutation($this->cAnrede, 0, $this->kKunde);
+        $this->cAnredeLocalized = Customer::mapSalutation($this->cAnrede, 0, $this->kKunde);
         $this->angezeigtesLand  = LanguageHelper::getCountryCodeByCountryName($this->cLand);
         if ($this->kRechnungsadresse > 0) {
             $this->decrypt();

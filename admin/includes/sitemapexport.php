@@ -6,7 +6,7 @@
 
 use JTL\Catalog\Category\KategorieListe;
 use JTL\Catalog\Product\Artikel;
-use JTL\Customer\Kundengruppe;
+use JTL\Customer\CustomerGroup;
 use JTL\DB\ReturnType;
 use JTL\Filter\Config;
 use JTL\Filter\ProductFilter;
@@ -217,7 +217,7 @@ function generateSitemapXML()
     // W3C Datetime formats:
     //  YYYY-MM-DD (eg 1997-07-16)
     //  YYYY-MM-DDThh:mmTZD (eg 1997-07-16T19:20+01:00)
-    $defaultCustomerGroupID  = Kundengruppe::getDefaultGroupID();
+    $defaultCustomerGroupID  = CustomerGroup::getDefaultGroupID();
     $languages               = LanguageHelper::getAllLanguages();
     $languageAssoc           = gibAlleSprachenAssoc($languages);
     $defaultLang             = LanguageHelper::getDefaultLanguage(true);
@@ -226,7 +226,7 @@ function generateSitemapXML()
     $_SESSION['cISOSprache'] = $defaultLang->cISO;
     Tax::setTaxRates();
     if (!isset($_SESSION['Kundengruppe'])) {
-        $_SESSION['Kundengruppe'] = new Kundengruppe();
+        $_SESSION['Kundengruppe'] = new CustomerGroup();
     }
     $_SESSION['Kundengruppe']->setID($defaultCustomerGroupID);
     // Stat Array

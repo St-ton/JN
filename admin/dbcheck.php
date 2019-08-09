@@ -6,11 +6,11 @@
  * @global \JTL\Smarty\JTLSmarty     $smarty
  */
 
-use JTL\Helpers\Form;
-use JTL\Update\DBMigrationHelper;
-use JTL\Shop;
-use JTL\Helpers\Text;
 use JTL\Alert\Alert;
+use JTL\Helpers\Form;
+use JTL\Helpers\Text;
+use JTL\Shop;
+use JTL\Update\DBMigrationHelper;
 
 require_once __DIR__ . '/includes/admininclude.php';
 

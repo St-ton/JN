@@ -4,8 +4,8 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Catalog\Separator;
 use JTL\Shop;
-use JTL\Catalog\Trennzeichen;
 
 /**
  * @param array $post
@@ -19,7 +19,7 @@ function speicherTrennzeichen(array $post): bool
             $post['cDezZeichen_' . $nEinheit],
             $post['cTausenderZeichen_' . $nEinheit]
         )) {
-            $trennzeichen = new Trennzeichen();
+            $trennzeichen = new Separator();
             $trennzeichen->setSprache($_SESSION['kSprache'])
                           ->setEinheit($nEinheit)
                           ->setDezimalstellen($post['nDezimal_' . $nEinheit])

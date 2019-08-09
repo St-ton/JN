@@ -7,8 +7,8 @@
 namespace JTL\Checkout;
 
 use JTL\Alert\Alert;
+use JTL\Cart\CartHelper;
 use JTL\DB\ReturnType;
-use JTL\Helpers\Cart;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Product;
 use JTL\Session\Frontend;
@@ -1039,9 +1039,9 @@ class Kupon
                 if (GeneralObject::hasCount('PositionenArr', $cart)) {
                     $productPrice = 0;
                     foreach ($cart->PositionenArr as $item) {
-                        $productPrice += Cart::checkSetPercentCouponWKPos($item, $coupon)->fPreis;
-                        if (!empty(Cart::checkSetPercentCouponWKPos($item, $coupon)->cName)) {
-                            $productNames[] = Cart::checkSetPercentCouponWKPos(
+                        $productPrice += CartHelper::checkSetPercentCouponWKPos($item, $coupon)->fPreis;
+                        if (!empty(CartHelper::checkSetPercentCouponWKPos($item, $coupon)->cName)) {
+                            $productNames[] = CartHelper::checkSetPercentCouponWKPos(
                                 $item,
                                 $coupon
                             )->cName;

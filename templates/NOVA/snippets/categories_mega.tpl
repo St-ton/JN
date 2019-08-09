@@ -11,9 +11,7 @@
 
     {block name='snippets-categories-mega-categories'}
     {if $Einstellungen.template.megamenu.show_categories !== 'N'
-        && ($Einstellungen.global.global_sichtbarkeit != 3
-            || isset($smarty.session.Kunde->kKunde)
-            && $smarty.session.Kunde->kKunde != 0)}
+        && ($Einstellungen.global.global_sichtbarkeit != 3 || \JTL\Session\Frontend::getCustomer()->getID() > 0)}
         {assign var=show_subcategories value=false}
         {if $Einstellungen.template.megamenu.show_subcategories !== 'N'}
             {assign var=show_subcategories value=true}
@@ -23,36 +21,37 @@
             {if !isset($activeId)}
                 {if $NaviFilter->hasCategory()}
                     {$activeId = $NaviFilter->getCategory()->getValue()}
-                {elseif $nSeitenTyp == 1 && isset($Artikel)}
+                {elseif $nSeitenTyp === $smarty.const.PAGE_ARTIKEL && isset($Artikel)}
                     {assign var=activeId value=$Artikel->gibKategorie()}
-                {elseif $nSeitenTyp == 1 && isset($smarty.session.LetzteKategorie)}
+                {elseif $nSeitenTyp === $smarty.const.PAGE_ARTIKEL && isset($smarty.session.LetzteKategorie)}
                     {$activeId = $smarty.session.LetzteKategorie}
                 {else}
                     {$activeId = 0}
                 {/if}
             {/if}
-            {if !isset($activeParents) && ($nSeitenTyp == 1 || $nSeitenTyp == 2)}
+            {if !isset($activeParents)
+            && ($nSeitenTyp === $smarty.const.PAGE_ARTIKEL || $nSeitenTyp === $smarty.const.PAGE_ARTIKELLISTE)}
                 {get_category_parents categoryId=$activeId assign='activeParents'}
             {/if}
             {block name='snippets-categories-mega-categories'}
             {foreach $categories as $category}
-                {assign var=isDropdown value=$category->bUnterKategorien}
+                {assign var=isDropdown value=$category->hasChildren()}
                 {if isset($activeParents) && is_array($activeParents) && isset($activeParents[$i])}
                     {assign var=activeParent value=$activeParents[$i]}
                 {/if}
                 {if $isDropdown}
-                    <li class="nav-item dropdown{if $category->kKategorie == $activeId
+                    <li class="nav-item dropdown{if $category->getID() === $activeId
                     || ((isset($activeParent)
-                    && isset($activeParent->kKategorie))
-                    && $activeParent->kKategorie == $category->kKategorie)} active{/if}">
+                        && isset($activeParent->kKategorie))
+                        && $activeParent->kKategorie == $category->getID())} active{/if}">
                         {if $category@first}
                             <div class="wee d-none d-md-block"></div>
                         {/if}
-                        {link href=$category->cURLFull title=$category->cSeo class="float-right subcat-link d-inline-block d-md-none"}
+                        {link href=$category->getURL() title=$category->getName() class="float-right subcat-link d-inline-block d-md-none"}
                             <i class="fas fa-arrow-alt-circle-right"></i>
                         {/link}
-                        {link href=$category->cURLFull title=$category->cSeo class="nav-link" data=["toggle"=>"dropdown"] target="_self"}
-                            {$category->cName}
+                        {link href=$category->getURL() title=$category->getName() class="nav-link" data=["toggle"=>"dropdown"] target="_self"}
+                            {$category->getName()}
                         {/link}
                         <div class="dropdown-menu">
                         {container class="pt-md-2"}
@@ -62,46 +61,46 @@
                                 {block name='snippets-categories-mega-sub-categories'}
                                     {col lg="{if $hasInfoColumn}9{else}12{/if}" class="mega-categories{if $hasInfoColumn} hasInfoColumn{/if} pt-md-3"}
                                         {row}
-                                            {if $category->bUnterKategorien}
-                                                {if !empty($category->Unterkategorien)}
-                                                    {assign var=sub_categories value=$category->Unterkategorien}
+                                            {if $category->hasChildren()}
+                                                {if !empty($category->getChildren())}
+                                                    {assign var=sub_categories value=$category->getChildren()}
                                                 {else}
-                                                    {get_category_array categoryId=$category->kKategorie assign='sub_categories'}
+                                                    {get_category_array categoryId=$category->getID() assign='sub_categories'}
                                                 {/if}
                                                 {foreach $sub_categories as $sub}
                                                     {col cols=12 md=6 lg=3}
-                                                        {dropdownitem tag="div" active=$sub->kKategorie == $activeId || (isset($activeParents[1]) && $activeParents[1]->kKategorie == $sub->kKategorie) class="p-3 mb-md-6"}
+                                                        {dropdownitem tag="div" active=$sub->getID() === $activeId || (isset($activeParents[1]) && $activeParents[1]->kKategorie === $sub->getID()) class="p-3 mb-md-6"}
                                                             <div class="category-wrapper">
-                                                                {link href=$sub->cURLFull title=$sub->cSeo}
+                                                                {link href=$sub->getURL() title=$sub->getName()}
                                                                     {if $Einstellungen.template.megamenu.show_category_images !== 'N'}
                                                                         <div class="d-none d-md-block">
                                                                             {image fluid-grow=true lazy=true src="{$imageBaseURL}gfx/trans.png"
-                                                                                alt=$category->cKurzbezeichnung|escape:'html'
-                                                                                data=["src" => $sub->cBildURLFull]}
+                                                                                alt=$category->getShortName()|escape:'html'
+                                                                                data=["src" => $sub->getImageURL()]}
                                                                         </div>
                                                                     {/if}
                                                                     <div class="title pt-2">
-                                                                            {$sub->cKurzbezeichnung}
+                                                                            {$sub->getShortName()}
                                                                     </div>
                                                                 {/link}
-                                                                {if $show_subcategories && $sub->bUnterKategorien}
-                                                                    {if !empty($sub->Unterkategorien)}
-                                                                        {assign var=subsub_categories value=$sub->Unterkategorien}
+                                                                {if $show_subcategories && $sub->hasChildren()}
+                                                                    {if !empty($sub->getChildren())}
+                                                                        {assign var=subsub_categories value=$sub->getChildren()}
                                                                     {else}
-                                                                        {get_category_array categoryId=$sub->kKategorie assign='subsub_categories'}
+                                                                        {get_category_array categoryId=$sub->getID() assign='subsub_categories'}
                                                                     {/if}
                                                                     <hr class="my-1 d-none d-md-block">
                                                                     <ul class="list-unstyled small subsub py-2">
                                                                         {foreach $subsub_categories as $subsub}
                                                                             {if $subsub@iteration <= $max_subsub_items}
-                                                                                <li{if $subsub->kKategorie == $activeId || (isset($activeParents[2]) && $activeParents[2]->kKategorie == $subsub->kKategorie)} class="active"{/if}>
-                                                                                    {link href=$subsub->cURLFull title=$subsub->cSeo}
-                                                                                        {$subsub->cKurzbezeichnung}
+                                                                                <li{if $subsub->getID() === $activeId || (isset($activeParents[2]) && $activeParents[2]->kKategorie == $subsub->getID())} class="active"{/if}>
+                                                                                    {link href=$subsub->getURL() title=$subsub->getName()}
+                                                                                        {$subsub->getShortName()}
                                                                                     {/link}
                                                                                 </li>
                                                                             {else}
                                                                                 <li class="more">
-                                                                                    {link href=$sub->cURLFull title=$sub->cSeo}
+                                                                                    {link href=$sub->getURL() title=$sub->getName()}
                                                                                         <i class="fa fa-chevron-circle-right"></i> {lang key='more'} <span class="remaining">({math equation='total - max' total=$subsub_categories|count max=$max_subsub_items})</span>
                                                                                     {/link}
                                                                                 </li>
@@ -130,12 +129,12 @@
                     </li>
                     {*{/navitemdropdown}*}
                 {else}
-                    {navitem href=$category->cURLFull title=$category->cSeo
-                        class="{if $category->kKategorie == $activeId}active{/if}"}
+                    {navitem href=$category->getURL() title=$category->getName()
+                        class="{if $category->getID() === $activeId}active{/if}"}
                         {if $category@first}
                             <div class="wee d-none d-md-block"></div>
                         {/if}
-                        {$category->cKurzbezeichnung}
+                        {$category->getShortName()}
                     {/navitem}
                 {/if}
             {/foreach}

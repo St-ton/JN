@@ -70,30 +70,30 @@
         {if $Einstellungen.navigationsfilter.artikeluebersicht_bild_anzeigen !== 'N' && $oUnterKategorien_arr|@count > 0}
             {include file='snippets/opc_mount_point.tpl' id='opc_before_subcategories'}
             {row class="row-eq-height content-cats-small clearfix"}
-                {foreach $oUnterKategorien_arr as $Unterkat}
+                {foreach $oUnterKategorien_arr as $subCategory}
                     {col cols=6 md=4 lg=3}
                         {if $Einstellungen.navigationsfilter.artikeluebersicht_bild_anzeigen !== 'Y'}
-                            {link href=$Unterkat->cURLFull}
-                                {image fluid-grow=true lazy=true src=$Unterkat->cBildURLFull alt=$Unterkat->cName class="mb-2"}
+                            {link href=$subCategory->getURL()}
+                                {image fluid-grow=true lazy=true src=$subCategory->getImageURL() alt=$subCategory->getName() class="mb-2"}
                             {/link}
                         {/if}
                         {if $Einstellungen.navigationsfilter.artikeluebersicht_bild_anzeigen !== 'B'}
                             <div class="caption text-center mb-2">
-                                {link href=$Unterkat->cURLFull}
-                                    {$Unterkat->cName}
+                                {link href=$subCategory->getURL()}
+                                    {$subCategory->getName()}
                                 {/link}
                             </div>
                         {/if}
-                        {if $Einstellungen.navigationsfilter.unterkategorien_beschreibung_anzeigen === 'Y' && !empty($Unterkat->cBeschreibung)}
-                            <p class="item_desc small text-muted">{$Unterkat->cBeschreibung|strip_tags|truncate:68}</p>
+                        {if $Einstellungen.navigationsfilter.unterkategorien_beschreibung_anzeigen === 'Y' && !empty($subCategory->getDescription())}
+                            <p class="item_desc small text-muted">{$subCategory->getDescription()|strip_tags|truncate:68}</p>
                         {/if}
                         {if $Einstellungen.navigationsfilter.unterkategorien_lvl2_anzeigen === 'Y'}
-                            {if isset($Unterkat->Unterkategorien) && $Unterkat->Unterkategorien|@count > 0}
+                            {if $subCategory->hasChildren()}
                                 <hr class="my-3">
                                 <ul class="list-unstyled small subsub">
-                                    {foreach $Unterkat->Unterkategorien as $UnterUnterKat}
+                                    {foreach $subCategory->getChildren() as $UnterUnterKat}
                                         <li>
-                                            {link href=$UnterUnterKat->cURLFull title=$UnterUnterKat->cName}{$UnterUnterKat->cName}{/link}
+                                            {link href=$UnterUnterKat->getURL() title=$UnterUnterKat->getName()}{$UnterUnterKat->getName()}{/link}
                                         </li>
                                     {/foreach}
                                 </ul>

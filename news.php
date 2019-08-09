@@ -4,16 +4,16 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use JTL\Helpers\URL;
 use JTL\Alert\Alert;
-use JTL\Shop;
-use JTL\Shopsetting;
-use JTL\Pagination\Pagination;
-use JTL\Session\Frontend;
+use JTL\Helpers\URL;
+use JTL\News\Category;
 use JTL\News\Controller;
 use JTL\News\Item;
 use JTL\News\ViewType;
-use JTL\News\Category;
+use JTL\Pagination\Pagination;
+use JTL\Session\Frontend;
+use JTL\Shop;
+use JTL\Shopsetting;
 
 require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'news_inc.php';

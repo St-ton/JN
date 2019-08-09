@@ -47,7 +47,7 @@ if (isset($_GET['kExportformat'])
 }
 if (isset($_POST['neu_export']) && (int)$_POST['neu_export'] === 1 && Form::validateToken()) {
     $ef          = new Exportformat(0, $db);
-    $checkResult = $ef->check(StringHandler::filterXSS($_POST));
+    $checkResult = $ef->check($_POST);
     if ($checkResult === true) {
         unset($_SESSION['exportSyntaxErrorCount']);
         $kExportformat = $ef->getExportformat();

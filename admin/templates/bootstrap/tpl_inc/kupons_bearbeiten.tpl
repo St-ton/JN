@@ -75,14 +75,18 @@
                     <div class="subheading1">
                         <label>
                             <div class="custom-control custom-checkbox">
-                                <input class="custom-control-input" type="checkbox" name="couponCreation" id="couponCreation" class="checkfield"{if isset($oKupon->massCreationCoupon->cActiv) && $oKupon->massCreationCoupon->cActiv == 1} checked{/if} value="1" />{__('couponsCreation')}
                                 <label class="custom-control-label" for="couponCreation"></label>
+                                <input class="custom-control-input" type="checkbox" name="couponCreation"
+                                       id="couponCreation" class="checkfield"{if isset($oKupon->massCreationCoupon->cActiv) && $oKupon->massCreationCoupon->cActiv == 1} checked{/if}
+                                       value="1" data-toggle="collapse" data-target="#massCreationCouponsBody"
+                                       aria-expanded="{if isset($oKupon->massCreationCoupon->cActiv) && $oKupon->massCreationCoupon->cActiv == 1}true{else}false{/if}"
+                                       aria-controls="massCreationCouponsBody"/>{__('couponsCreation')}
                             </div>
                         </label>
                     </div>
                     <hr class="mb-n3">
                 </div>
-                <div class="card-body{if !isset($oKupon->massCreationCoupon)} hidden{/if}" id="massCreationCouponsBody">
+                <div class="card-body collapse{if !empty($oKupon->massCreationCoupon)} show{/if}" id="massCreationCouponsBody">
                     <div class="form-group form-row align-items-center">
                         <label class="col col-sm-4 col-form-label text-sm-right" for="numberOfCoupons">{__('numberCouponsDesc')}:</label>
                         <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">

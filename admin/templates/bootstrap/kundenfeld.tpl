@@ -150,7 +150,7 @@
                         <div class="subheading1">{if isset($oKundenfeld->kKundenfeld) && $oKundenfeld->kKundenfeld > 0}{__('headingKundenfeldEdit')}{else}{__('headingKundenfeldCreate')}{/if}</div>
                         <hr class="mb-3">
                         <div class="table-responsive">
-                            <table class="table list table-borderless" id="formtable">
+                            <table class="table list table-borderless table-align-top" id="formtable">
                                 <tr>
                                     <td><label for="cName">{__('kundenfeldName')}</label></td>
                                     <td>
@@ -293,7 +293,7 @@
                             <input name="kundenfelder" type="hidden" value="1">
                             <input name="tab" type="hidden" value="uebersicht">
                             <div class="table-responsive">
-                                <table class="table table-striped">
+                                <table class="table table-striped table-align-top">
                                     <thead>
                                     <tr>
                                         <th class="check"></th>

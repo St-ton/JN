@@ -6,8 +6,8 @@
 
 namespace JTL\Widgets;
 
-use JTL\DB\ReturnType;
 use JTL\Catalog\Product\Preise;
+use JTL\DB\ReturnType;
 use JTL\Shop;
 use JTL\Visitor;
 

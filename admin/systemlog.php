@@ -4,14 +4,14 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Alert\Alert;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Jtllog;
-use JTL\Shop;
 use JTL\Pagination\Filter;
-use JTL\Pagination\Pagination;
 use JTL\Pagination\Operation;
-use JTL\Alert\Alert;
+use JTL\Pagination\Pagination;
+use JTL\Shop;
 
 /**
  * @global \JTL\Smarty\JTLSmarty     $smarty

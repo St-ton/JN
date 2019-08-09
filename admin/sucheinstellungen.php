@@ -4,15 +4,15 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Alert\Alert;
 use JTL\Backend\Notification;
 use JTL\Backend\NotificationEntry;
+use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
+use JTL\Helpers\Text;
 use JTL\Shop;
 use JTL\Shopsetting;
-use JTL\Helpers\Text;
-use JTL\DB\ReturnType;
-use JTL\Alert\Alert;
 
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'suche_inc.php';

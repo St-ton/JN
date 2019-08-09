@@ -29,7 +29,7 @@
                     <hr class="mb-3">
                     {if $oKampagne_arr|count > 0}
                         <div class="table-responsive">
-                            <table class="table table-striped">
+                            <table class="table table-striped table-align-top">
                                 <thead>
                                     <tr>
                                         <th class="text-left">{__('kampagneName')}</th>
@@ -98,7 +98,7 @@
                             <input type="hidden" name="tab" value="uebersicht" />
                             <input type="hidden" name="delete" value="1" />
                             <div class="table-responsive">
-                                <table class="table table-striped">
+                                <table class="table table-striped table-align-top">
                                     <thead>
                                         <tr>
                                             <th class="check"></th>
@@ -159,7 +159,7 @@
                         {/if}
                         <div class="card-footer save-wrapper">
                             <div class="row">
-                                <div class="col-sm-6 col-xl-auto text-left mb-3">
+                                <div class="col-sm-6 col-xl-auto text-left">
                                     <div class="custom-control custom-checkbox">
                                         <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);" />
                                         <label class="custom-control-label" for="ALLMSGS">{__('globalSelectAll')}</label>
@@ -167,7 +167,7 @@
                                 </div>
                                 {if isset($nGroessterKey) && $nGroessterKey >= 1000}
                                     <div class="ml-auto col-sm-6 col-xl-auto">
-                                        <button name="submitDelete" type="submit" value="{__('delete')}" class="btn btn-danger btn-block mb-2"><i class="fas fa-trash-alt"></i> {__('deleteSelected')}</button>
+                                        <button name="submitDelete" type="submit" value="{__('delete')}" class="btn btn-danger btn-block"><i class="fas fa-trash-alt"></i> {__('deleteSelected')}</button>
                                     </div>
                                 {/if}
                                 <div class="{if !(isset($nGroessterKey) && $nGroessterKey >= 1000)}ml-auto{/if} col-sm-6 col-xl-auto">
@@ -197,7 +197,7 @@
                 </div>
                 {if isset($oKampagne_arr) && $oKampagne_arr|@count > 0 && isset($oKampagneDef_arr) && $oKampagneDef_arr|@count > 0}
                     <div class="table-responsive">
-                        <table class="table table-striped">
+                        <table class="table table-striped table-align-top">
                             <thead>
                                 <tr>
                                     <th class="th-1"></th>
@@ -242,7 +242,7 @@
                     <div class="card-footer save-wrapper">
                         <div class="row">
                             <div class="ml-auto col-sm-6 col-xl-auto">
-                                <a href="kampagne.php?tab=globalestats&nStamp=-1&token={$smarty.session.jtl_token}" class="btn btn-outline-primary btn-block mb-2">
+                                <a href="kampagne.php?tab=globalestats&nStamp=-1&token={$smarty.session.jtl_token}" class="btn btn-outline-primary btn-block">
                                     <i class="fa fa-angle-double-left"></i> {__('earlier')}
                                 </a>
                             </div>

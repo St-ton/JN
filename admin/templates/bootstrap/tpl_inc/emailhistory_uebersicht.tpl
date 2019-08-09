@@ -52,7 +52,7 @@
                     </div>
                     <input name="a" type="hidden" value="delete" />
                     <div class="table-responsive">
-                        <table class="list table table-striped">
+                        <table class="list table table-striped table-align-top">
                             <thead>
                             <tr>
                                 <th></th>
@@ -86,14 +86,14 @@
                     </div>
                     <div class="save-wrapper">
                         <div class="row">
-                            <div class="col-sm-6 col-xl-auto text-left mb-3">
+                            <div class="col-sm-6 col-xl-auto text-left">
                                 <div class="custom-control custom-checkbox">
                                     <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);" />
                                     <label class="custom-control-label" for="ALLMSGS">{__('globalSelectAll')}</label>
                                 </div>
                             </div>
                             <div class="ml-auto col-sm-6 col-xl-auto">
-                                <button name="remove_all" type="button" class="btn btn-danger btn-block mb-2" data-target="#confirmModal" data-toggle="modal"><i class="fas fa-trash-alt"></i> {__('deleteAll')}</button>
+                                <button name="remove_all" type="button" class="btn btn-danger btn-block" data-target="#confirmModal" data-toggle="modal"><i class="fas fa-trash-alt"></i> {__('deleteAll')}</button>
                             </div>
                             <div class="col-sm-6 col-xl-auto">
                                 <button name="zuruecksetzenBTN" type="submit" class="btn btn-warning btn-block">

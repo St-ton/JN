@@ -24,7 +24,7 @@
                         <hr class="mb-3">
                         {if $oExportformatCron_arr && $oExportformatCron_arr|@count > 0}
                             <div id="tabellenLivesuche" class="table-responsive">
-                                <table class="table table-striped">
+                                <table class="table table-striped table-align-top">
                                     <thead>
                                         <tr>
                                             <th class="text-left" style="width: 10px;">&nbsp;</th>
@@ -76,24 +76,24 @@
                             </div>
                             <div class="card-footer save-wrapper">
                                 <div class="row">
-                                    <div class="col-sm-6 col-xl-auto text-left mb-3">
+                                    <div class="col-sm-6 col-xl-auto text-left">
                                         <div class="custom-control custom-checkbox">
                                             <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);">
                                             <label class="custom-control-label" for="ALLMSGS">{__('globalSelectAll')}</label>
                                         </div>
                                     </div>
                                     <div class="ml-auto col-sm-6 col-xl-auto">
-                                        <button name="action[loeschen]" type="submit" value="1" class="btn btn-danger btn-block mb-2">
+                                        <button name="action[loeschen]" type="submit" value="1" class="btn btn-danger btn-block">
                                             <i class="fas fa-trash-alt"></i> {__('exportformatDelete')}
                                         </button>
                                     </div>
                                     <div class="col-sm-6 col-xl-auto">
-                                        <button name="action[triggern]" type="submit" value="1" class="btn btn-outline-primary btn-block mb-2">
+                                        <button name="action[triggern]" type="submit" value="1" class="btn btn-outline-primary btn-block">
                                             <i class="fal fa-play-circle"></i> {__('exportformatTriggerCron')}
                                         </button>
                                     </div>
                                     <div class="col-sm-6 col-xl-auto">
-                                        <button name="action[uebersicht]" type="submit" value="1" class="btn btn-outline-primary btn-block mb-2">
+                                        <button name="action[uebersicht]" type="submit" value="1" class="btn btn-outline-primary btn-block">
                                             <i class="fa fa-refresh"></i> {__('refresh')}
                                         </button>
                                     </div>
@@ -141,7 +141,7 @@
                     <div>
                     {if $oExportformatQueueBearbeitet_arr && $oExportformatQueueBearbeitet_arr|@count > 0}
                         <div id="tabellenLivesuche" class="table-responsive">
-                            <table class="table table-striped">
+                            <table class="table table-striped table-align-top">
                                 <thead>
                                     <tr>
                                         <th class="th-1">{__('exportformat')}</th>

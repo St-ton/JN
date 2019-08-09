@@ -7,8 +7,8 @@
 namespace JTL\Sitemap\Factories;
 
 use Generator;
-use stdClass;
 use JTL\Sitemap\Items\Base as BaseItem;
+use stdClass;
 
 /**
  * Class Base

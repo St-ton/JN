@@ -10,9 +10,9 @@
 
 require_once __DIR__ . '/includes/admininclude.php';
 
+use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Shop;
-use JTL\DB\ReturnType;
 
 $action = $_POST['action'] ?? null;
 

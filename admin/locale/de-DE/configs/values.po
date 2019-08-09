@@ -608,12 +608,6 @@ msgstr "Ja"
 msgid "sie_sparen_x_anzeigen_value(0)"
 msgstr "Nein"
 
-msgid "artikeldetails_varikombi_vorschautext_value(W)"
-msgstr "„Weitere Variationen“"
-
-msgid "artikeldetails_varikombi_vorschautext_value(S)"
-msgstr "Variation mit kleinster Sortiernummer"
-
 msgid "artikeldetails_anzahl_pfeile_value(Y)"
 msgstr "Immer"
 

@@ -4,16 +4,16 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Alert\Alert;
+use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\Overlay;
 use JTL\Helpers\Request;
 use JTL\Helpers\Template as TemplateHelper;
 use JTL\LessParser;
-use JTL\SimpleCSS;
 use JTL\Shop;
+use JTL\SimpleCSS;
 use JTL\Template;
-use JTL\DB\ReturnType;
-use JTL\Alert\Alert;
 
 /**
  * @global \JTL\Smarty\JTLSmarty $smarty

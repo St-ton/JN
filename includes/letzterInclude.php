@@ -5,14 +5,14 @@
  */
 
 use JTL\Alert\Alert;
-use JTL\Cart\Warenkorb;
+use JTL\Cart\Cart;
 use JTL\Catalog\Category\Kategorie;
 use JTL\Catalog\Category\KategorieListe;
 use JTL\Catalog\Navigation;
 use JTL\Catalog\NavigationEntry;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\Preise;
-use JTL\Catalog\Wishlist\Wunschliste;
+use JTL\Catalog\Wishlist\Wishlist;
 use JTL\DB\ReturnType;
 use JTL\ExtensionPoint;
 use JTL\Filter\Metadata;
@@ -36,7 +36,7 @@ $smarty     = Shop::Smarty();
 $template   = Template::getInstance();
 $tplDir     = PFAD_TEMPLATES . $template->getDir() . '/';
 $shopURL    = Shop::getURL();
-$cart       = $_SESSION['Warenkorb'] ?? new Warenkorb();
+$cart       = $_SESSION['Warenkorb'] ?? new Cart();
 $conf       = Shopsetting::getInstance()->getAll();
 $linkHelper = Shop::Container()->getLinkService();
 $link       = $linkHelper->getLinkByID(Shop::$kLink ?? 0);
@@ -176,8 +176,8 @@ $smarty->assign('linkgroups', $linkHelper->getLinkGroups())
        ->assign('Einstellungen', $conf)
        ->assign('isFluidTemplate', isset($conf['template']['theme']['pagelayout'])
            && $conf['template']['theme']['pagelayout'] === 'fluid')
-       ->assign('deletedPositions', Warenkorb::$deletedPositions)
-       ->assign('updatedPositions', Warenkorb::$updatedPositions)
+       ->assign('deletedPositions', Cart::$deletedPositions)
+       ->assign('updatedPositions', Cart::$updatedPositions)
        ->assign('cCanonicalURL', $cCanonicalURL ?? null)
        ->assign('Firma', new Firma())
        ->assign('AktuelleKategorie', $AktuelleKategorie)
@@ -188,7 +188,7 @@ $smarty->assign('linkgroups', $linkHelper->getLinkGroups())
        ->assign('opc', Shop::Container()->getOPC())
        ->assign('opcPageService', Shop::Container()->getOPCPageService())
        ->assign('shopFaviconURL', Shop::getFaviconURL())
-       ->assign('wishlists', Wunschliste::getWishlists())
+       ->assign('wishlists', Wishlist::getWishlists())
        ->assign('robotsContent', $smarty->get_template_vars('robotsContent'))
        ->assign('device', $device);
 

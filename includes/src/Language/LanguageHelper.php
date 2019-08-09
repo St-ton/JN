@@ -1131,7 +1131,7 @@ class LanguageHelper
                     $url = $productFilter->getFilterURL()->getURL($oZusatzFilter);
                 }
                 if ($currency->getID() !== $currentCurrencyCode) {
-                    $url = $url . (\mb_strpos($url, '?') === false ? '?' : '&') . 'curr=' . $currency->getCode();
+                    $url .= (\mb_strpos($url, '?') === false ? '?' : '&') . 'curr=' . $currency->getCode();
                 }
                 $currency->setURL($url);
                 $currency->setURLFull(\mb_strpos($url, Shop::getURL()) === false

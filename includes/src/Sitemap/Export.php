@@ -6,7 +6,7 @@
 
 namespace JTL\Sitemap;
 
-use JTL\Customer\Kundengruppe;
+use JTL\Customer\CustomerGroup;
 use JTL\DB\DbInterface;
 use JTL\Helpers\Request;
 use JTL\Helpers\Tax;
@@ -179,7 +179,7 @@ final class Export
         $_SESSION['cISOSprache'] = $defaultLang->cISO;
         Tax::setTaxRates();
         if (!isset($_SESSION['Kundengruppe'])) {
-            $_SESSION['Kundengruppe'] = new Kundengruppe();
+            $_SESSION['Kundengruppe'] = new CustomerGroup();
         }
         $_SESSION['Kundengruppe']->setID(first($customerGroupIDs));
     }

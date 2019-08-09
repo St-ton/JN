@@ -148,7 +148,7 @@ class Characteristic extends BaseCharacteristic
         $this->isInitialized = true;
         if (\is_object($value)) {
             $this->setValue($value->kMerkmalWert)
-                ->setId($value->kMerkmal)
+                ->setID($value->kMerkmal)
                 ->setIsMultiSelect($value->nMehrfachauswahl === 1);
 
             return $this->setType($this->isMultiSelect() ? Type::OR : Type::AND)
@@ -183,7 +183,7 @@ class Characteristic extends BaseCharacteristic
                 if ($language->kSprache === $seo->kSprache) {
                     $this->cSeo[$language->kSprache] = $seo->cSeo;
                     if ($language->kSprache === $currentLangID) {
-                        $this->setId($seo->kMerkmal)
+                        $this->setID($seo->kMerkmal)
                             ->setName($seo->cWert)
                             ->setFrontendName($seo->cWert);
                     }
@@ -332,11 +332,6 @@ class Characteristic extends BaseCharacteristic
             $activeAndFilterIDs = [];
             foreach ($this->productFilter->getCharacteristicFilter() as $filter) {
                 $values = $filter->getValue();
-                if (\is_array($values)) {
-                    $activeValues = $values;
-                } else {
-                    $activeValues[] = $values;
-                }
                 if ($filter->getType() === Type::OR) {
                     if (\is_array($values)) {
                         $activeOrFilterIDs = $values;

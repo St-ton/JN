@@ -4,14 +4,14 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use JTL\Checkout\Bestellung;
 use JTL\Alert\Alert;
-use JTL\Customer\Kunde;
+use JTL\Checkout\Bestellung;
+use JTL\Customer\Customer;
+use JTL\DB\ReturnType;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
-use JTL\Shop;
-use JTL\DB\ReturnType;
 use JTL\Session\Frontend;
+use JTL\Shop;
 
 require_once __DIR__ . '/includes/globalinclude.php';
 
@@ -19,7 +19,6 @@ Shop::setPageType(PAGE_BESTELLSTATUS);
 $smarty     = Shop::Smarty();
 $linkHelper = Shop::Container()->getLinkService();
 $uid        = Request::verifyGPDataString('uid');
-
 if (!empty($uid)) {
     $conf   = Shop::getSettings([CONF_KUNDEN]);
     $db     = Shop::Container()->getDB();
@@ -49,8 +48,7 @@ if (!empty($uid)) {
     $order    = new Bestellung($status->kBestellung, true);
     $plzValid = false;
 
-    if (isset($_POST['plz']) && $order->oRechnungsadresse->cPLZ === Text::filterXSS($_POST['plz'])
-    ) {
+    if (isset($_POST['plz']) && $order->oRechnungsadresse->cPLZ === Text::filterXSS($_POST['plz'])) {
         $plzValid = true;
     } elseif (!empty($_POST['plz'])) {
         $db->update('tbestellstatus', 'cUID', $uid, (object)[
@@ -71,7 +69,7 @@ if (!empty($uid)) {
         $db->update('tbestellstatus', 'cUID', $uid, (object)[
             'failedAttempts' => 0,
         ]);
-        $smarty->assign('Kunde', new Kunde($order->kKunde))
+        $smarty->assign('Kunde', new Customer($order->kKunde))
                ->assign('Lieferadresse', $order->Lieferadresse)
                ->assign('billingAddress', $order->oRechnungsadresse);
     }

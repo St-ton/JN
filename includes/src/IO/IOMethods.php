@@ -8,38 +8,38 @@ namespace JTL\IO;
 
 use Exception;
 use JTL\Alert\Alert;
-use JTL\Boxes\Renderer\DefaultRenderer;
-use JTL\Boxes\Type;
-use JTL\Catalog\Product\Artikel;
 use JTL\Boxes\Items\BoxInterface;
 use JTL\Boxes\Items\CompareList;
-use JTL\Boxes\Items\Wishlist;
-use JTL\Cart\Warenkorb;
-use JTL\Cart\WarenkorbPers;
-use JTL\DB\ReturnType;
+use JTL\Boxes\Items\Wishlist as WishlistBox;
+use JTL\Boxes\Renderer\DefaultRenderer;
+use JTL\Boxes\Type;
+use JTL\Cart\Cart;
+use JTL\Cart\CartHelper;
+use JTL\Cart\PersistentCart;
+use JTL\Catalog\Category\Kategorie;
+use JTL\Catalog\Category\KategorieListe;
+use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\EigenschaftWert;
-use JTL\Extensions\AuswahlAssistent;
-use JTL\Helpers\Cart;
+use JTL\Catalog\Product\Preise;
+use JTL\Catalog\Separator;
+use JTL\Catalog\Wishlist\Wishlist;
+use JTL\Checkout\Kupon;
+use JTL\Customer\CustomerGroup;
+use JTL\DB\ReturnType;
+use JTL\Extensions\SelectionWizard\Wizard;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Product;
 use JTL\Helpers\ShippingMethod;
-use JTL\Helpers\Text;
 use JTL\Helpers\Tax;
+use JTL\Helpers\Text;
 use JTL\Helpers\URL;
 use JTL\Kampagne;
-use JTL\Catalog\Category\Kategorie;
-use JTL\Catalog\Category\KategorieListe;
-use JTL\Customer\Kundengruppe;
-use JTL\Checkout\Kupon;
-use JTL\Catalog\Product\Preise;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Shopsetting;
 use JTL\Staat;
-use JTL\Catalog\Trennzeichen;
 use SmartyException;
 use stdClass;
-use JTL\Catalog\Wishlist\Wunschliste;
 
 require_once \PFAD_ROOT . \PFAD_INCLUDES . 'artikel_inc.php';
 
@@ -199,7 +199,7 @@ class IOMethods
             $amount = \max((int)$amount, 1);
         }
         // Prüfung
-        $errors = Cart::addToCartCheck($product, $amount, $properties);
+        $errors = CartHelper::addToCartCheck($product, $amount, $properties);
 
         if (\count($errors) > 0) {
             $localizedErrors = Product::getProductMessages($errors, true, $product, $amount);
@@ -212,8 +212,8 @@ class IOMethods
             return $objResponse;
         }
         $cart = Frontend::getCart();
-        Cart::addVariationPictures($cart);
-        /** @var Warenkorb $cart */
+        CartHelper::addVariationPictures($cart);
+        /** @var Cart $cart */
         $cart->fuegeEin($productID, $amount, $properties)
              ->loescheSpezialPos(\C_WARENKORBPOS_TYP_VERSANDPOS)
              ->loescheSpezialPos(\C_WARENKORBPOS_TYP_VERSANDZUSCHLAG)
@@ -235,7 +235,7 @@ class IOMethods
         Kupon::reCheck();
         // Persistenter Warenkorb
         if (!isset($_POST['login'])) {
-            WarenkorbPers::addToCheck($productID, $amount, $properties);
+            PersistentCart::addToCheck($productID, $amount, $properties);
         }
         $pageType    = Shop::getPageType();
         $boxes       = Shop::Container()->getBoxService();
@@ -306,7 +306,7 @@ class IOMethods
         $_POST['Vergleichsliste'] = 1;
         $_POST['a']               = $productID;
 
-        Cart::checkAdditions();
+        CartHelper::checkAdditions();
         $response->nType  = 2;
         $response->nCount = \count($_SESSION['Vergleichsliste']->oArtikel_arr);
         $response->cTitle = Shop::Lang()->get('compare');
@@ -467,7 +467,7 @@ class IOMethods
         $_POST['a']           = $productID;
         $_POST['n']           = (int)$qty;
 
-        Cart::checkAdditions();
+        CartHelper::checkAdditions();
 
         foreach ($_SESSION['Wunschliste']->CWunschlistePos_arr as $wlPos) {
             if ($wlPos->kArtikel === $productID) {
@@ -514,12 +514,12 @@ class IOMethods
             foreach ($boxes as $box) {
                 if ($box->getType() === Type::CONTAINER) {
                     foreach ($box->getChildren() as $childBox) {
-                        if (\get_class($childBox) === Wishlist::class) {
+                        if (\get_class($childBox) === WishlistBox::class) {
                             $renderer                                    = new DefaultRenderer($smarty, $childBox);
                             $response->cBoxContainer[$childBox->getID()] = $renderer->render();
                         }
                     }
-                } elseif (\get_class($box) === Wishlist::class) {
+                } elseif (\get_class($box) === WishlistBox::class) {
                     $renderer                               = new DefaultRenderer($smarty, $box);
                     $response->cBoxContainer[$box->getID()] = $renderer->render();
                 }
@@ -569,12 +569,12 @@ class IOMethods
             foreach ($boxes as $box) {
                 if ($box->getType() === Type::CONTAINER) {
                     foreach ($box->getChildren() as $childBox) {
-                        if ($childBox->getType() === Wishlist::class) {
+                        if ($childBox->getType() === WishlistBox::class) {
                             $renderer                                    = new DefaultRenderer($smarty, $childBox);
                             $response->cBoxContainer[$childBox->getID()] = $renderer->render();
                         }
                     }
-                } elseif (\get_class($box) === Wishlist::class) {
+                } elseif (\get_class($box) === WishlistBox::class) {
                     $renderer                               = new DefaultRenderer($smarty, $box);
                     $response->cBoxContainer[$box->getID()] = $renderer->render();
                 }
@@ -595,7 +595,7 @@ class IOMethods
         $objResponse = new IOResponse();
         $smarty      = Shop::Smarty();
 
-        $smarty->assign('wishlists', Wunschliste::getWishlists());
+        $smarty->assign('wishlists', Wishlist::getWishlists());
 
         $response->content         = $smarty->fetch('snippets/wishlist_dropdown.tpl');
         $response->currentPosCount = \count(Frontend::getWishList()->CWunschlistePos_arr);
@@ -617,7 +617,7 @@ class IOMethods
         $response    = new stdClass();
         $objResponse = new IOResponse();
 
-        Cart::addVariationPictures($cart);
+        CartHelper::addVariationPictures($cart);
         switch ($type) {
             default:
             case 0:
@@ -746,7 +746,7 @@ class IOMethods
             $product->fuelleArtikel(
                 $productID,
                 $options,
-                Kundengruppe::getCurrent(),
+                CustomerGroup::getCurrent(),
                 Shop::getLanguageID()
             );
 
@@ -814,12 +814,12 @@ class IOMethods
                 ? $currentValue->cArtNr
                 : $product->cArtNr;
         }
-        $weightTotal        = Trennzeichen::getUnit(
+        $weightTotal        = Separator::getUnit(
             \JTL_SEPARATOR_WEIGHT,
             Shop::getLanguage(),
             $product->fGewicht + $weightDiff
         );
-        $weightProductTotal = Trennzeichen::getUnit(
+        $weightProductTotal = Separator::getUnit(
             \JTL_SEPARATOR_WEIGHT,
             Shop::getLanguage(),
             $product->fArtikelgewicht + $weightDiff
@@ -915,23 +915,23 @@ class IOMethods
     }
 
     /**
-     * @param array $aValues
-     * @param int   $kEigenschaft
-     * @param int   $kEigenschaftWert
+     * @param array $values
+     * @param int   $propertyID
+     * @param int   $propertyValueID
      * @return IOResponse
      */
-    public function checkVarkombiDependencies($aValues, $kEigenschaft = 0, $kEigenschaftWert = 0): IOResponse
+    public function checkVarkombiDependencies($values, $propertyID = 0, $propertyValueID = 0): IOResponse
     {
-        $kEigenschaft             = (int)$kEigenschaft;
-        $kEigenschaftWert         = (int)$kEigenschaftWert;
+        $propertyID               = (int)$propertyID;
+        $propertyValueID          = (int)$propertyValueID;
         $product                  = null;
         $objResponse              = new IOResponse();
-        $parentProductID          = (int)$aValues['a'];
-        $childProductID           = isset($aValues['VariKindArtikel']) ? (int)$aValues['VariKindArtikel'] : 0;
-        $idx                      = isset($aValues['eigenschaftwert']) ? (array)$aValues['eigenschaftwert'] : [];
+        $parentProductID          = (int)$values['a'];
+        $childProductID           = isset($values['VariKindArtikel']) ? (int)$values['VariKindArtikel'] : 0;
+        $idx                      = isset($values['eigenschaftwert']) ? (array)$values['eigenschaftwert'] : [];
         $kFreifeldEigeschaftWerte = [];
         $kGesetzteEigeschaftWerte = \array_filter($idx);
-        $wrapper                  = isset($aValues['wrapper']) ? Text::filterXSS($aValues['wrapper']) : '';
+        $wrapper                  = isset($values['wrapper']) ? Text::filterXSS($values['wrapper']) : '';
 
         if ($parentProductID > 0) {
             $options                            = new stdClass();
@@ -968,11 +968,11 @@ class IOMethods
             if ($hasInvalidSelection) {
                 $objResponse->jsfunc('$.evo.article().variationResetAll', $wrapper);
 
-                $kGesetzteEigeschaftWerte = [$kEigenschaft => $kEigenschaftWert];
+                $kGesetzteEigeschaftWerte = [$propertyID => $propertyValueID];
                 $invalidVariations        = $product->getVariationsBySelection($kGesetzteEigeschaftWerte, true);
 
                 // Auswählter EigenschaftWert ist ebenfalls nicht vorhanden
-                if (\in_array($kEigenschaftWert, $invalidVariations[$kEigenschaft])) {
+                if (\in_array($propertyValueID, $invalidVariations[$propertyID])) {
                     $kGesetzteEigeschaftWerte = [];
 
                     // Wir befinden uns im Kind-Artikel -> Weiterleitung auf Vater-Artikel
@@ -1171,27 +1171,27 @@ class IOMethods
     }
 
     /**
-     * @param int $categoryId
+     * @param int $categoryID
      * @return IOResponse
      * @throws SmartyException
      */
-    public function getCategoryMenu(int $categoryId): IOResponse
+    public function getCategoryMenu(int $categoryID): IOResponse
     {
         $smarty = Shop::Smarty();
-        $auto   = $categoryId === 0;
+        $auto   = $categoryID === 0;
 
         if ($auto) {
-            $categoryId = Shop::$kKategorie;
+            $categoryID = Shop::$kKategorie;
         }
 
         $response   = new IOResponse();
         $list       = new KategorieListe();
-        $category   = new Kategorie($categoryId);
-        $categories = $list->holUnterkategorien($category->kKategorie, 0, 0);
+        $category   = new Kategorie($categoryID);
+        $categories = $list->getChildCategories($category->kKategorie, 0, 0);
 
         if ($auto && \count($categories) === 0) {
             $category   = new Kategorie($category->kOberKategorie);
-            $categories = $list->holUnterkategorien($category->kKategorie, 0, 0);
+            $categories = $list->getChildCategories($category->kKategorie, 0, 0);
         }
 
         $result = (object)['current' => $category, 'items' => $categories];
@@ -1252,7 +1252,7 @@ class IOMethods
     {
         $smarty   = Shop::Smarty();
         $response = new IOResponse();
-        $AWA      = AuswahlAssistent::startIfRequired($keyName, $id, $languageID, $smarty, $selection);
+        $AWA      = Wizard::startIfRequired($keyName, $id, $languageID, $smarty, $selection);
 
         if ($AWA !== null) {
             $oLastSelectedValue = $AWA->getLastSelectedValue();
@@ -1304,7 +1304,7 @@ class IOMethods
             ->assign('opcPageService', $opcPageService)
             ->assign('publicDraftKey', $publicDraftkey)
             ->assign('opcStartUrl', Shop::getURL() . '/admin/opc.php')
-            ->fetch(PFAD_ROOT . PFAD_ADMIN . 'opc/tpl/draftlist.tpl');
+            ->fetch(\PFAD_ROOT . \PFAD_ADMIN . 'opc/tpl/draftlist.tpl');
 
         $response->assign('opc-draft-list', 'innerHTML', $newDraftListHtml);
 

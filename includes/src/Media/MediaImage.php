@@ -8,7 +8,6 @@ namespace JTL\Media;
 
 use Exception;
 use FilesystemIterator;
-use function Functional\select;
 use Generator;
 use InvalidArgumentException;
 use JTL\DB\ReturnType;
@@ -17,6 +16,7 @@ use PDO;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use stdClass;
+use function Functional\select;
 
 /**
  * Class MediaImage
@@ -154,7 +154,7 @@ class MediaImage implements IMedia
     {
         $directory = \PFAD_ROOT . MediaImageRequest::getCachePath($type);
         if ($id !== null) {
-            $directory = $directory . '/' . (int)$id;
+            $directory .= '/' . (int)$id;
         }
 
         try {

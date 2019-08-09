@@ -11,8 +11,6 @@ use Exception;
 use InvalidArgumentException;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
-use JTL\Filesystem\Filesystem;
-use JTL\Filesystem\LocalFilesystem;
 use JTL\Shop;
 use JTLShop\SemVer\Version;
 use PDOException;

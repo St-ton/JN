@@ -4,13 +4,13 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use JTL\Update\DBMigrationHelper;
-use JTL\Shop;
-use JTL\Helpers\Text;
-use JTL\Template;
-use JTL\DB\ReturnType;
-use JTL\Session\Backend;
 use JTL\Backend\DirManager;
+use JTL\DB\ReturnType;
+use JTL\Helpers\Text;
+use JTL\Session\Backend;
+use JTL\Shop;
+use JTL\Template;
+use JTL\Update\DBMigrationHelper;
 
 /**
  * @param bool $extended

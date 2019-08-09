@@ -23,11 +23,11 @@ use JTL\OPC\Service;
 use JTL\Services\JTL\AlertServiceInterface;
 use JTL\Services\JTL\BoxServiceInterface;
 use JTL\Services\JTL\CaptchaServiceInterface;
+use JTL\Services\JTL\CountryServiceInterface;
 use JTL\Services\JTL\CryptoServiceInterface;
 use JTL\Services\JTL\LinkServiceInterface;
 use JTL\Services\JTL\NewsServiceInterface;
 use JTL\Services\JTL\PasswordServiceInterface;
-use JTL\Services\JTL\CountryServiceInterface;
 use Monolog\Logger;
 use Psr\Log\LoggerInterface;
 

@@ -7,7 +7,7 @@
 namespace JTL\Helpers;
 
 use JTL\Alert\Alert;
-use JTL\Cart\Warenkorb;
+use JTL\Cart\Cart;
 use JTL\Catalog\Currency;
 use JTL\Catalog\Product\Preise;
 use JTL\DB\ReturnType;
@@ -178,7 +178,7 @@ class Tax
                 }
             }
         }
-        if (isset($_SESSION['Warenkorb']) && $_SESSION['Warenkorb'] instanceof Warenkorb) {
+        if (isset($_SESSION['Warenkorb']) && $_SESSION['Warenkorb'] instanceof Cart) {
             Frontend::getCart()->setzePositionsPreise();
         }
     }

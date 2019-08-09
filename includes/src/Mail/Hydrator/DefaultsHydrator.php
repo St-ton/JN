@@ -6,8 +6,8 @@
 
 namespace JTL\Mail\Hydrator;
 
-use JTL\Customer\Kunde;
-use JTL\Customer\Kundengruppe;
+use JTL\Customer\Customer;
+use JTL\Customer\CustomerGroup;
 use JTL\DB\DbInterface;
 use JTL\Firma;
 use JTL\Helpers\GeneralObject;
@@ -66,14 +66,14 @@ class DefaultsHydrator implements HydratorInterface
     public function hydrate(?object $data, object $lang): void
     {
         $data         = $data ?? new stdClass();
-        $data->tkunde = $data->tkunde ?? new Kunde();
+        $data->tkunde = $data->tkunde ?? new Customer();
 
         if (!isset($data->tkunde->kKundengruppe) || !$data->tkunde->kKundengruppe) {
-            $data->tkunde->kKundengruppe = Kundengruppe::getDefaultGroupID();
+            $data->tkunde->kKundengruppe = CustomerGroup::getDefaultGroupID();
         }
         $data->tfirma        = new Firma();
-        $data->tkundengruppe = new Kundengruppe($data->tkunde->kKundengruppe);
-        $customer            = $data->tkunde instanceof Kunde
+        $data->tkundengruppe = new CustomerGroup($data->tkunde->kKundengruppe);
+        $customer            = $data->tkunde instanceof Customer
             ? $data->tkunde->localize($lang)
             : $this->localizeCustomer($lang, $data->tkunde);
 
@@ -89,8 +89,8 @@ class DefaultsHydrator implements HydratorInterface
     }
 
     /**
-     * @param object         $lang
-     * @param stdClass|Kunde $customer
+     * @param object            $lang
+     * @param stdClass|Customer $customer
      * @return mixed
      */
     private function localizeCustomer($lang, $customer)

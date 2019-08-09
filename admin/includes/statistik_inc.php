@@ -4,11 +4,11 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\DB\ReturnType;
 use JTL\Linechart;
 use JTL\Piechart;
 use JTL\Shop;
 use JTL\Statistik;
-use JTL\DB\ReturnType;
 
 /**
  * @param int    $type

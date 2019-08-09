@@ -4,30 +4,28 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Cart\CartHelper;
+use JTL\Catalog\ComparisonList;
 use JTL\Helpers\Request;
 use JTL\Shop;
-use JTL\Catalog\Vergleichsliste;
-use JTL\Helpers\Cart;
 
 require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'vergleichsliste_inc.php';
 
 Shop::setPageType(PAGE_VERGLEICHSLISTE);
-$compareList   = null;
-$conf          = Shop::getSettings([CONF_VERGLEICHSLISTE, CONF_ARTIKELDETAILS]);
-$attrVar       = [[], []];
-$linkHelper    = Shop::Container()->getLinkService();
-$kLink         = $linkHelper->getSpecialPageLinkKey(LINKTYP_VERGLEICHSLISTE);
-$link          = $linkHelper->getPageLink($kLink);
-$compareList   = new Vergleichsliste();
-$attrVar       = Vergleichsliste::buildAttributeAndVariation($compareList);
-$prioRowsArray = Vergleichsliste::getPrioRows();
-$prioRows      = Vergleichsliste::getPrioRows(true, false);
-$alertHelper   = Shop::Container()->getAlertService();
-Vergleichsliste::setComparison($compareList);
+$compareList = null;
+$conf        = Shop::getSettings([CONF_VERGLEICHSLISTE, CONF_ARTIKELDETAILS]);
+$attrVar     = [[], []];
+$linkHelper  = Shop::Container()->getLinkService();
+$kLink       = $linkHelper->getSpecialPageLinkKey(LINKTYP_VERGLEICHSLISTE);
+$link        = $linkHelper->getPageLink($kLink);
+$compareList = new ComparisonList();
+$attrVar     = $compareList->buildAttributeAndVariation();
+$alertHelper = Shop::Container()->getAlertService();
+$compareList->save();
 
 if (Request::verifyGPCDataInt('addToCart') !== 0) {
-    Cart::addProductIDToCart(
+    CartHelper::addProductIDToCart(
         Request::verifyGPCDataInt('addToCart'),
         Request::verifyGPDataString('anzahl')
     );
@@ -45,8 +43,8 @@ $nBreiteArtikel  = ($conf['vergleichsliste']['vergleichsliste_spaltengroesse'] >
     ? (int)$conf['vergleichsliste']['vergleichsliste_spaltengroesse']
     : 200;
 Shop::Smarty()->assign('nBreiteTabelle', $nBreiteArtikel * count($compareList->oArtikel_arr) + $nBreiteAttribut)
-    ->assign('cPrioSpalten_arr', $prioRows)
-    ->assign('prioRows', $prioRowsArray)
+    ->assign('cPrioSpalten_arr', $compareList->getPrioRows(true, false))
+    ->assign('prioRows', $compareList->getPrioRows())
     ->assign('Link', $link)
     ->assign('oMerkmale_arr', $attrVar[0])
     ->assign('oVariationen_arr', $attrVar[1])

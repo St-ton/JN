@@ -6,10 +6,10 @@
 
 namespace JTL;
 
-use function Functional\first;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
 use stdClass;
+use function Functional\first;
 
 /**
  * Class Slider

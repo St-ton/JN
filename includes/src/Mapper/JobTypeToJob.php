@@ -6,17 +6,17 @@
 
 namespace JTL\Mapper;
 
-use JTL\Cron\JobInterface;
+use InvalidArgumentException;
 use JTL\Cron\Job\Export;
 use JTL\Cron\Job\GeneralDataProtect;
 use JTL\Cron\Job\ImageCache;
 use JTL\Cron\Job\Newsletter;
 use JTL\Cron\Job\Statusmail;
 use JTL\Cron\Job\Store;
+use JTL\Cron\JobInterface;
 use JTL\Cron\Type;
 use JTL\Events\Dispatcher;
 use JTL\Events\Event;
-use InvalidArgumentException;
 
 /**
  * Class JobTypeToJob

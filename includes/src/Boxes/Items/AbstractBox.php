@@ -6,10 +6,10 @@
 
 namespace JTL\Boxes\Items;
 
-use JTL\Catalog\Product\Artikel;
-use JTL\Catalog\Product\ArtikelListe;
 use JTL\Boxes\Renderer\DefaultRenderer;
 use JTL\Boxes\Type;
+use JTL\Catalog\Product\Artikel;
+use JTL\Catalog\Product\ArtikelListe;
 use JTL\Helpers\GeneralObject;
 use JTL\MagicCompatibilityTrait;
 use JTL\Plugin\PluginInterface;

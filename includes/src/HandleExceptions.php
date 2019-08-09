@@ -6,8 +6,8 @@
 
 namespace JTL;
 
-use Exception;
 use ErrorException;
+use Exception;
 use JTL\Exceptions\FatalErrorException;
 use JTL\Exceptions\FatalThrowableError;
 

@@ -4,9 +4,9 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use JTL\Shop;
-use JTL\Helpers\Text;
 use JTL\DB\ReturnType;
+use JTL\Helpers\Text;
+use JTL\Shop;
 
 /**
  * @deprecated since 4.05

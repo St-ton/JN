@@ -679,7 +679,7 @@ if ($step === 'uebersicht') {
 
     $missingShippingClassCombis = getMissingShippingClassCombi();
     if (!empty($missingShippingClassCombis)) {
-        $errorMissingShippingClassCombis .= $smarty->assign('missingShippingClassCombis', $missingShippingClassCombis)
+        $errorMissingShippingClassCombis = $smarty->assign('missingShippingClassCombis', $missingShippingClassCombis)
             ->fetch('tpl_inc/versandarten_fehlende_kombis.tpl');
         $alertHelper->addAlert(Alert::TYPE_ERROR, $errorMissingShippingClassCombis, 'errorMissingShippingClassCombis');
     }

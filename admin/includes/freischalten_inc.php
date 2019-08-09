@@ -4,7 +4,7 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use JTL\Customer\Kunde;
+use JTL\Customer\Customer;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Seo;
 use JTL\Review\ReviewAdminController;
@@ -81,7 +81,7 @@ function gibNewskommentarFreischalten(string $sql, $searchSQL, bool $checkLangua
         ReturnType::ARRAY_OF_OBJECTS
     );
     foreach ($newsComments as $comment) {
-        $customer = new Kunde($comment->kKunde ?? 0);
+        $customer = new Customer($comment->kKunde ?? 0);
 
         $comment->cNachname = $customer->cNachname;
     }

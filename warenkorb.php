@@ -4,16 +4,16 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use JTL\Helpers\ShippingMethod;
-use JTL\Helpers\Cart;
 use JTL\Alert\Alert;
-use JTL\Checkout\Kupon;
+use JTL\Cart\CartHelper;
+use JTL\Cart\PersistentCart;
 use JTL\Catalog\Product\Preise;
-use JTL\Shop;
-use JTL\Cart\WarenkorbPers;
+use JTL\Checkout\Kupon;
 use JTL\DB\ReturnType;
+use JTL\Extensions\Upload\Upload;
+use JTL\Helpers\ShippingMethod;
 use JTL\Session\Frontend;
-use JTL\Extensions\Upload;
+use JTL\Shop;
 
 require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'warenkorb_inc.php';
@@ -37,8 +37,8 @@ $kLink           = $linkHelper->getSpecialPageLinkKey(LINKTYP_WARENKORB);
 $link            = $linkHelper->getPageLink($kLink);
 $alertHelper     = Shop::Container()->getAlertService();
 // Warenkorbaktualisierung?
-Cart::applyCartChanges();
-Cart::validateCartConfig();
+CartHelper::applyCartChanges();
+CartHelper::validateCartConfig();
 pruefeGuthabenNutzen();
 if (isset($_POST['land'], $_POST['plz'])
     && !ShippingMethod::getShippingCosts($_POST['land'], $_POST['plz'], $warning)
@@ -109,7 +109,7 @@ if (isset($_POST['gratis_geschenk'], $_POST['gratisgeschenk']) && (int)$_POST['g
             executeHook(HOOK_WARENKORB_PAGE_GRATISGESCHENKEINFUEGEN);
             $cart->loescheSpezialPos(C_WARENKORBPOS_TYP_GRATISGESCHENK)
                  ->fuegeEin($giftID, 1, [], C_WARENKORBPOS_TYP_GRATISGESCHENK);
-            WarenkorbPers::addToCheck($giftID, 1, [], '', 0, C_WARENKORBPOS_TYP_GRATISGESCHENK);
+            PersistentCart::addToCheck($giftID, 1, [], '', 0, C_WARENKORBPOS_TYP_GRATISGESCHENK);
         }
     }
 }
@@ -123,7 +123,7 @@ if (isset($_GET['fillOut'])) {
         $warning = Shop::Lang()->get('yourbasketisempty', 'checkout');
     } elseif ((int)$_GET['fillOut'] === 10) {
         $warning = Shop::Lang()->get('missingProducts', 'checkout');
-        Cart::deleteAllSpecialItems();
+        CartHelper::deleteAllSpecialItems();
     } elseif ((int)$_GET['fillOut'] === UPLOAD_ERROR_NEED_UPLOAD) {
         $warning = Shop::Lang()->get('missingFilesUpload', 'checkout');
     }
@@ -136,7 +136,7 @@ $uploads         = Upload::gibWarenkorbUploads($cart);
 $maxSize         = Upload::uploadMax();
 
 //alerts
-if (($quickBuyNote = Cart::checkQuickBuy()) !== '') {
+if (($quickBuyNote = CartHelper::checkQuickBuy()) !== '') {
     $alertHelper->addAlert(Alert::TYPE_INFO, $quickBuyNote, 'quickBuyNote');
 }
 if (!empty($_SESSION['Warenkorbhinweise'])) {
@@ -148,11 +148,11 @@ if (!empty($_SESSION['Warenkorbhinweise'])) {
 if ($warning !== '') {
     $alertHelper->addAlert(Alert::TYPE_DANGER, $warning, 'cartWarning', ['id' => 'msgWarning']);
 }
-if (($orderAmountStock = Cart::checkOrderAmountAndStock($conf)) !== '') {
+if (($orderAmountStock = CartHelper::checkOrderAmountAndStock($conf)) !== '') {
     $alertHelper->addAlert(Alert::TYPE_WARNING, $orderAmountStock, 'orderAmountStock');
 }
 
-Cart::addVariationPictures($cart);
+CartHelper::addVariationPictures($cart);
 $smarty->assign('MsgWarning', $warning)
        ->assign('nMaxUploadSize', $maxSize)
        ->assign('cMaxUploadSize', Upload::formatGroesse($maxSize))
@@ -167,8 +167,8 @@ $smarty->assign('MsgWarning', $warning)
        ->assign('currentShippingCouponName', (!empty($_SESSION['oVersandfreiKupon']->translationList)
            ? $_SESSION['oVersandfreiKupon']->translationList
            : null))
-       ->assign('xselling', Cart::getXSelling())
-       ->assign('oArtikelGeschenk_arr', Cart::getFreeGifts($conf))
+       ->assign('xselling', CartHelper::getXSelling())
+       ->assign('oArtikelGeschenk_arr', CartHelper::getFreeGifts($conf))
        ->assign('C_WARENKORBPOS_TYP_ARTIKEL', C_WARENKORBPOS_TYP_ARTIKEL)
        ->assign('C_WARENKORBPOS_TYP_GRATISGESCHENK', C_WARENKORBPOS_TYP_GRATISGESCHENK)
        ->assign('KuponcodeUngueltig', !$couponCodeValid)

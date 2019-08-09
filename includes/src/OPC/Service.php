@@ -16,7 +16,6 @@ use JTL\Filter\ProductFilter;
 use JTL\Filter\Type;
 use JTL\Helpers\Request;
 use JTL\Helpers\Tax;
-use JTL\IO\IOResponse;
 use JTL\OPC\Portlets\MissingPortlet;
 use JTL\Shop;
 
@@ -49,7 +48,7 @@ class Service
     {
         $this->db = $db;
 
-        Shop::Container()->getGetText()->loadAdminLocale("pages/opc");
+        Shop::Container()->getGetText()->loadAdminLocale('pages/opc');
     }
 
     /**
@@ -284,7 +283,7 @@ class Service
         $html    = $smarty
             ->assign('propname', $propname)
             ->assign('filters', $filters)
-            ->fetch(PFAD_ROOT . PFAD_ADMIN . 'opc/tpl/config/filter-list.tpl');
+            ->fetch(PFAD_ROOT . \PFAD_ADMIN . 'opc/tpl/config/filter-list.tpl');
 
         return $html;
     }

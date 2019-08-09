@@ -6,8 +6,8 @@
 
 namespace JTL;
 
-use stdClass;
 use JTL\DB\ReturnType;
+use stdClass;
 
 /**
  * Class Profiler

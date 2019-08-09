@@ -10,7 +10,6 @@ use Exception;
 use FilesystemIterator;
 use Generator;
 use JTL\Path;
-use JTL\Shop;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use SplFileInfo;

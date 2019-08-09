@@ -115,7 +115,7 @@
                 <div class="card-footer save-wrapper">
                     <div class="row">
                         <div class="ml-auto col-sm-6 col-xl-auto">
-                            <button class="btn btn-danger btn-block mb-2" name="umfragefrageloeschen" type="submit" value="{__('delete')}">
+                            <button class="btn btn-danger btn-block" name="umfragefrageloeschen" type="submit" value="{__('delete')}">
                                 <i class="fas fa-trash-alt"></i> {__('delete')}
                             </button>
                         </div>

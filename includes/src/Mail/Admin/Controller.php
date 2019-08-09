@@ -7,7 +7,7 @@
 namespace JTL\Mail\Admin;
 
 use InvalidArgumentException;
-use JTL\Customer\Kundengruppe;
+use JTL\Customer\CustomerGroup;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Text;
@@ -419,7 +419,7 @@ final class Controller
         $templates   = [];
         $templateIDs = $this->db->selectAll('temailvorlage', [], [], 'cModulId, kPlugin');
         $langID      = LanguageHelper::getDefaultLanguage()->kSprache;
-        $cgroupID    = Kundengruppe::getDefaultGroupID();
+        $cgroupID    = CustomerGroup::getDefaultGroupID();
         foreach ($templateIDs as $templateID) {
             $module = $templateID->cModulId;
             if ($templateID->kPlugin > 0) {

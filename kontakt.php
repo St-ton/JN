@@ -4,13 +4,13 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use JTL\Helpers\Form;
 use JTL\Alert\Alert;
 use JTL\CheckBox;
-use JTL\Shop;
-use JTL\Helpers\Text;
 use JTL\DB\ReturnType;
+use JTL\Helpers\Form;
+use JTL\Helpers\Text;
 use JTL\Session\Frontend;
+use JTL\Shop;
 
 require_once __DIR__ . '/includes/globalinclude.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'kontakt_inc.php';

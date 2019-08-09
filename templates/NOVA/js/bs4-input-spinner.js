@@ -46,12 +46,12 @@
 
         var html = '<div class="nmbr-cfg-group ' + config.groupClass + '">' +
             '<div class="input-group-prepend">' +
-            '<button style="min-width: ' + config.buttonsWidth + '" class="btn btn-decrement ' + config.buttonsClass + '" type="button">' + config.decrementButton + '</button>' +
+            '<button style="min-width: ' + config.buttonsWidth + '" class="btn btn-decrement ' + config.buttonsClass + '" type="button" aria-label="minus">' + config.decrementButton + '</button>' +
             '</div>' +
             '<input type="text" style="text-align: ' + config.textAlign + '" class="form-control"/>' +
             '<div class="input-group-append">' +
             unit +
-            '<button style="min-width: ' + config.buttonsWidth + '" class="btn btn-increment ' + config.buttonsClass + '" type="button">' + config.incrementButton + '</button>' +
+            '<button style="min-width: ' + config.buttonsWidth + '" class="btn btn-increment ' + config.buttonsClass + '" type="button" aria-label="plus">' + config.incrementButton + '</button>' +
             '</div>' +
             '</div>'
 
@@ -219,11 +219,13 @@
                 $input.prop("required", $original.prop("required"))
                 $input.prop("readonly", $original.prop("readonly"))
                 $input.prop("placeholder", $original.prop("placeholder"))
+                $input.prop("aria-label", $original.prop("aria-label"))
                 var disabled = $original.prop("disabled")
                 $input.prop("disabled", disabled)
                 $buttonIncrement.prop("disabled", disabled || $original.prop("readonly"))
                 $buttonDecrement.prop("disabled", disabled || $original.prop("readonly"))
                 $input.prop("class", $original.prop("class"))
+                $input.prop("aria-label", $original.prop("aria-label"))
                 // $inputGroup.prop("class", "input-group " + $original.prop("class") + " " + config.groupClass)
             }
 
@@ -256,7 +258,7 @@
                 e.preventDefault()
             }
             callback(e)
-        })
+        },{passive: true})
         element.addEventListener("keydown", function (e) {
             if (e.keyCode === 32 && !spacePressed) {
                 spacePressed = true

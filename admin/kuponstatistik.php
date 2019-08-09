@@ -6,7 +6,7 @@
 
 use JTL\Catalog\Product\Preise;
 use JTL\Checkout\KuponBestellung;
-use JTL\Customer\Kunde;
+use JTL\Customer\Customer;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
@@ -91,7 +91,7 @@ $couponAmountAll       = 0;
 $tmpUser               = [];
 $date                  = [];
 foreach ($usedCouponsOrder as $key => $usedCouponOrder) {
-    $customer                            = new Kunde($usedCouponOrder['kKunde'] ?? 0);
+    $customer                            = new Customer($usedCouponOrder['kKunde'] ?? 0);
     $usedCouponsOrder[$key]['cUserName'] = $customer->cVorname . ' ' . $customer->cNachname;
     unset($customer);
     $usedCouponsOrder[$key]['nCouponValue']        =

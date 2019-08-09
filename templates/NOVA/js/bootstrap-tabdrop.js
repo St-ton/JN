@@ -117,6 +117,7 @@
             }
 
             function checkOffsetAndPush(recursion) {
+                self.dropdown.find('a.active').removeClass('active');
                 self.element.find('> li:not(.tabdrop)')
                     .each(function () {
                         if (this.offsetTop > self.options.offsetTop) {
@@ -135,6 +136,7 @@
                         self.dropdown.addClass('active');
                         setDropdownText(self.dropdown.find('.active > a').html());
                     } else {
+                        self.dropdown.find('a.active').removeClass('active');
                         self.dropdown.removeClass('active');
                         setDropdownDefaultText(collection);
                     }

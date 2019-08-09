@@ -4,22 +4,22 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use JTL\Catalog\Product\Artikel;
-use JTL\Checkout\Bestellung;
-use JTL\Catalog\Product\Bewertung;
-use JTL\CheckBox;
-use JTL\Emailvorlage;
-use JTL\Firma;
-use JTL\Catalog\Hersteller;
-use JTL\IO\IO;
+use JTL\Cart\Cart;
+use JTL\Cart\CartItem;
 use JTL\Catalog\Category\Kategorie;
-use JTL\Customer\Kunde;
-use JTL\Checkout\Lieferadresse;
+use JTL\Catalog\Hersteller;
+use JTL\Catalog\Product\Artikel;
+use JTL\Catalog\Product\Bewertung;
 use JTL\Catalog\Product\Merkmal;
 use JTL\Catalog\Product\MerkmalWert;
 use JTL\Catalog\Product\Preise;
-use JTL\Cart\Warenkorb;
-use JTL\Cart\WarenkorbPos;
+use JTL\CheckBox;
+use JTL\Checkout\Bestellung;
+use JTL\Checkout\Lieferadresse;
+use JTL\Customer\Customer;
+use JTL\Emailvorlage;
+use JTL\Firma;
+use JTL\IO\IO;
 
 /**
  * Ende Artikeldetail
@@ -576,7 +576,7 @@ define('HOOK_BESTELLABSCHLUSS_INC_BESTELLUNGINDB', 75);
  * @file bestellvorgang_inc.php
  * @param nReturnValue
  * @param fehlendeAngaben
- * @param Kunde
+ * @param Customer
  * @param cPost_arr
  */
 define('HOOK_BESTELLVORGANG_INC_UNREGISTRIERTBESTELLEN_PLAUSI', 76);
@@ -1604,9 +1604,9 @@ define('HOOK_SHOP_SET_PAGE_TYPE', 214);
 /**
  * immediately before storing kunde in DB
  *
- * @since 4.03
+ * @param Customer - oKunde
+ *@since 4.03
  * @file Kunde.php
- * @param Kunde - oKunde
  */
 define('HOOK_KUNDE_DB_INSERT', 215);
 
@@ -1716,9 +1716,9 @@ define('HOOK_GET_MANUFACTURERS', 226);
 define('HOOK_BACKEND_FUNCTIONS_GRAVATAR', 227);
 
 /**
- * @since 4.06
+ * @param Cart - oWarenkorb
+ *@since 4.06
  * @file includes/bestellabschluss_inc.php
- * @param Warenkorb - oWarenkorb
  */
 define('HOOK_BESTELLABSCHLUSS_INC_WARENKORBINDB', 228);
 
@@ -1733,10 +1733,10 @@ define('HOOK_BACKEND_SHOP_RESET_AFTER', 229);
 /**
  * on removing a cart position that has been deactivated / deleted in the meantime
  *
- * @since 5.0.0
- * @file classes/Warenkorb.php
- * @param WarenkorbPos - oPosition
+ * @param CartItem - oPosition
  * @param bool         - &delete
+ *@since 5.0.0
+ * @file classes/Warenkorb.php
  */
 define('HOOK_WARENKORB_CLASS_LOESCHEDEAKTIVIERTEPOS', 230);
 

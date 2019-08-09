@@ -8,16 +8,17 @@ namespace JTL\Helpers;
 
 use Illuminate\Support\Collection;
 use JTL\Alert\Alert;
-use JTL\Cart\WarenkorbPos;
+use JTL\Cart\CartHelper;
+use JTL\Cart\CartItem;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\Preise;
 use JTL\Catalog\UnitsOfMeasure;
 use JTL\CheckBox;
-use JTL\Customer\Kundengruppe;
+use JTL\Customer\CustomerGroup;
 use JTL\DB\ReturnType;
-use JTL\Extensions\Konfiggruppe;
-use JTL\Extensions\Konfigitem;
-use JTL\Extensions\Konfigurator;
+use JTL\Extensions\Config\Configurator;
+use JTL\Extensions\Config\Group;
+use JTL\Extensions\Config\Item;
 use JTL\Kampagne;
 use JTL\Language\LanguageHelper;
 use JTL\Mail\Mail\Mail;
@@ -187,7 +188,7 @@ class Product
         bool $group = false
     ): array {
         if (!$customerGroupID) {
-            $customerGroupID = Kundengruppe::getDefaultGroupID();
+            $customerGroupID = CustomerGroup::getDefaultGroupID();
         }
         $cGroupBy = $group ? 'GROUP BY teigenschaftkombiwert.kEigenschaftWert ' : '';
 
@@ -291,7 +292,7 @@ class Product
         $attrVal          = new stdClass();
         $attrVal->cSELECT = '';
         $attrVal->cJOIN   = '';
-        foreach ($propertyValues as $i => $kEigenschaftWertProEigenschaft) {
+        foreach ($propertyValues as $i => $_u) {
             $attributes[]      = $i;
             $attributeValues[] = $propertyValues[$i];
         }
@@ -825,24 +826,24 @@ class Product
 
     /**
      * @param array $variations
-     * @param int   $kEigenschaft
-     * @param int   $kEigenschaftWert
+     * @param int   $propertyID
+     * @param int   $propertyValueID
      * @return bool|object
      * @former findeVariation()
      * @since 5.0.0
      */
-    public static function findVariation(array $variations, int $kEigenschaft, int $kEigenschaftWert): bool
+    public static function findVariation(array $variations, int $propertyID, int $propertyValueID): bool
     {
-        foreach ($variations as $oVariation) {
-            $oVariation->kEigenschaft = (int)$oVariation->kEigenschaft;
-            if ($oVariation->kEigenschaft === $kEigenschaft
-                && isset($oVariation->Werte)
-                && \is_array($oVariation->Werte)
-                && \count($oVariation->Werte) > 0
+        foreach ($variations as $variation) {
+            $variation->kEigenschaft = (int)$variation->kEigenschaft;
+            if ($variation->kEigenschaft === $propertyID
+                && isset($variation->Werte)
+                && \is_array($variation->Werte)
+                && \count($variation->Werte) > 0
             ) {
-                foreach ($oVariation->Werte as $oWert) {
+                foreach ($variation->Werte as $oWert) {
                     $oWert->kEigenschaftWert = (int)$oWert->kEigenschaftWert;
-                    if ($oWert->kEigenschaftWert === $kEigenschaftWert) {
+                    if ($oWert->kEigenschaftWert === $propertyValueID) {
                         return $oWert;
                     }
                 }
@@ -1905,7 +1906,7 @@ class Product
         $options->nArtikelAttribute          = 1;
         $options->nKeineSichtbarkeitBeachten = 1;
 
-        return Cart::addProductIDToCart($productID, 1, [], 0, false, 0, $options);
+        return CartHelper::addProductIDToCart($productID, 1, [], 0, false, 0, $options);
     }
 
     /**
@@ -1934,7 +1935,7 @@ class Product
         $config->cPreisLocalized = [];
         $config->cPreisString    = Shop::Lang()->get('priceAsConfigured', 'productDetails');
 
-        if (!Konfigurator::checkLicense() || !Konfigurator::validateKonfig($productID)) {
+        if (!Configurator::checkLicense() || !Configurator::validateKonfig($productID)) {
             return null;
         }
         foreach ($variations as $i => $nVariation) {
@@ -1981,13 +1982,13 @@ class Product
         foreach ($configGroups as $i => $data) {
             $configGroups[$i] = (array)$data;
         }
-        /** @var Konfiggruppe $configGroup */
+        /** @var Group $configGroup */
         foreach ($config->oKonfig_arr as $i => &$configGroup) {
             $configGroup->bAktiv = false;
             $configGroupID       = $configGroup->getKonfiggruppe();
             $configItems         = $configGroups[$configGroupID] ?? [];
             foreach ($configGroup->oItem_arr as $j => &$configItem) {
-                /** @var Konfigitem $configItem */
+                /** @var Item $configItem */
                 $configItemID        = $configItem->getKonfigitem();
                 $configItem->fAnzahl = (float)(
                     $configGroupAmounts[$configItem->getKonfiggruppe()] ?? $configItem->getInitial()
@@ -2048,22 +2049,22 @@ class Product
     public static function getEditConfigMode($configID, $smarty): void
     {
         $cart = Frontend::getCart();
-        if (!isset($cart->PositionenArr[$configID]) || !Konfigitem::checkLicense()) {
+        if (!isset($cart->PositionenArr[$configID]) || !Item::checkLicense()) {
             return;
         }
-        /** @var WarenkorbPos $baseItem */
+        /** @var CartItem $baseItem */
         $baseItem = $cart->PositionenArr[$configID];
-        /** @var WarenkorbPos $basePosition */
+        /** @var CartItem $basePosition */
         if ($baseItem->istKonfigVater()) {
             $configItems        = [];
             $configItemAmounts  = [];
             $configGroupAmounts = [];
-            /** @var WarenkorbPos $item */
+            /** @var CartItem $item */
             foreach ($cart->PositionenArr as &$item) {
                 if ($item->cUnique !== $baseItem->cUnique || !$item->istKonfigKind()) {
                     continue;
                 }
-                $configItem                                      = new Konfigitem($item->kKonfigitem);
+                $configItem                                      = new Item($item->kKonfigitem);
                 $configItems[]                                   = $configItem->getKonfigitem();
                 $configItemAmounts[$configItem->getKonfigitem()] = $item->nAnzahl / $baseItem->nAnzahl;
                 if ($configItem->ignoreMultiplier()) {

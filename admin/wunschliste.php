@@ -5,7 +5,7 @@
  */
 
 use JTL\Alert\Alert;
-use JTL\Customer\Kunde;
+use JTL\Customer\Customer;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Request;
 use JTL\Pagination\Pagination;
@@ -71,7 +71,7 @@ $sentWishLists = Shop::Container()->getDB()->query(
 );
 foreach ($sentWishLists as $wishList) {
     if ($wishList->kKunde !== null) {
-        $customer            = new Kunde($wishList->kKunde);
+        $customer            = new Customer($wishList->kKunde);
         $wishList->cNachname = $customer->cNachname;
     }
 }
@@ -91,7 +91,7 @@ $wishLists = Shop::Container()->getDB()->query(
 );
 foreach ($wishLists as $wishList) {
     if ($wishList->kKunde !== null) {
-        $customer            = new Kunde($wishList->kKunde);
+        $customer            = new Customer($wishList->kKunde);
         $wishList->cNachname = $customer->cNachname;
     }
 }

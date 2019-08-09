@@ -5,10 +5,10 @@
  */
 
 use JTL\CheckBox;
+use JTL\Customer\Customer;
 use JTL\Customer\CustomerAttributes;
 use JTL\Customer\CustomerFields;
-use JTL\Customer\Kunde;
-use JTL\Customer\Kundendatenhistory;
+use JTL\Customer\DataHistory;
 use JTL\DB\ReturnType;
 use JTL\Helpers\ShippingMethod;
 use JTL\Helpers\Tax;
@@ -89,13 +89,13 @@ function kundeSpeichern(array $post)
             unset($knd->cPasswort);
             $knd->updateInDB();
             // Kundendatenhistory
-            Kundendatenhistory::saveHistory($_SESSION['Kunde'], $knd, Kundendatenhistory::QUELLE_BESTELLUNG);
+            DataHistory::saveHistory($_SESSION['Kunde'], $knd, DataHistory::QUELLE_BESTELLUNG);
 
             $_SESSION['Kunde'] = $knd;
             // Update Kundenattribute
             $customerAttributes->save();
 
-            $_SESSION['Kunde'] = new Kunde($_SESSION['Kunde']->kKunde);
+            $_SESSION['Kunde'] = new Customer($_SESSION['Kunde']->kKunde);
             $_SESSION['Kunde']->getCustomerAttributes()->load($_SESSION['Kunde']->kKunde);
         } else {
             // Guthaben des Neukunden aufstocken insofern er geworben wurde
@@ -146,7 +146,7 @@ function kundeSpeichern(array $post)
             // Insert Kundenattribute
             $customerAttributes->save();
             if ($conf['global']['global_kundenkonto_aktiv'] !== 'A') {
-                $_SESSION['Kunde'] = new Kunde($knd->kKunde);
+                $_SESSION['Kunde'] = new Customer($knd->kKunde);
                 $_SESSION['Kunde']->getCustomerAttributes()->load($knd->kKunde);
             } else {
                 $step = 'formular eingegangen';
@@ -216,7 +216,7 @@ function kundeSpeichern(array $post)
  */
 function gibFormularDaten(int $nCheckout = 0)
 {
-    /** @var Kunde $Kunde */
+    /** @var Customer $Kunde */
     global $Kunde;
 
     $herkunfte = Shop::Container()->getDB()->query(
@@ -228,7 +228,7 @@ function gibFormularDaten(int $nCheckout = 0)
 
     Shop::Smarty()->assign('herkunfte', $herkunfte)
         ->assign('Kunde', $Kunde)
-        ->assign('customerAttributes', is_a($Kunde, Kunde::class)
+        ->assign('customerAttributes', is_a($Kunde, Customer::class)
             ? $Kunde->getCustomerAttributes()
             : new CustomerAttributes())
         ->assign(

@@ -23,7 +23,7 @@
     $src: append($src, url(quote($path + '.' + $extmod)) format(quote($format)), comma);
   }
 
-  @font-face { font-family: quote($name); font-style: $style; font-weight: $weight; src: $src; unicode-range: unquote($ucrange); }
+  @font-face { font-family: quote($name); font-style: $style; font-weight: $weight; src: $src; unicode-range: unquote($ucrange); font-display: swap;}
 }
 
 @mixin text-truncate-overflow() {

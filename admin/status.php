@@ -4,9 +4,9 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use JTL\Shop;
 use JTL\Backend\Status;
 use JTL\Network\JTLApi;
+use JTL\Shop;
 
 /**
  * @global \JTL\Smarty\JTLSmarty     $smarty

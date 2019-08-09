@@ -4,10 +4,10 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use JTL\Shop;
 use JTL\DB\ReturnType;
 use JTL\News\Controller;
 use JTL\Session\Frontend;
+use JTL\Shop;
 
 /**
  * @param bool $bActiveOnly

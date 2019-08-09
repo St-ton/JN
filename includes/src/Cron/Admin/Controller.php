@@ -8,10 +8,9 @@ namespace JTL\Cron\Admin;
 
 use DateTime;
 use InvalidArgumentException;
-use JTL\Cron\Job\Newsletter;
+use JTL\Cron\Job\Statusmail;
 use JTL\Cron\JobHydrator;
 use JTL\Cron\JobInterface;
-use JTL\Cron\Job\Statusmail;
 use JTL\Cron\Type;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;

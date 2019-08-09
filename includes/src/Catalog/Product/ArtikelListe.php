@@ -7,6 +7,7 @@
 namespace JTL\Catalog\Product;
 
 use JTL\Catalog\Category\KategorieListe;
+use JTL\Catalog\Category\MenuItem;
 use JTL\DB\ReturnType;
 use JTL\Helpers\GeneralObject;
 use JTL\Session\Frontend;
@@ -197,10 +198,11 @@ class ArtikelListe
         $categoryIDs = [];
         if (!empty($categoryList->elemente)) {
             foreach ($categoryList->elemente as $i => $category) {
-                $categoryIDs[] = (int)$category->kKategorie;
-                if (GeneralObject::isCountable('Unterkategorien', $category)) {
-                    foreach ($category->Unterkategorien as $level2) {
-                        $categoryIDs[] = (int)$level2->kKategorie;
+                /** @var MenuItem $category */
+                $categoryIDs[] = $category->getID();
+                if ($category->hasChildren()) {
+                    foreach ($category->getChildren() as $level2) {
+                        $categoryIDs[] = $level2->getID();
                     }
                 }
             }
@@ -260,10 +262,11 @@ class ArtikelListe
         $categoryIDs = [];
         if (GeneralObject::isCountable('elemente', $categoryList)) {
             foreach ($categoryList->elemente as $i => $category) {
-                $categoryIDs[] = (int)$category->kKategorie;
-                if (GeneralObject::isCountable('Unterkategorien', $category)) {
-                    foreach ($category->Unterkategorien as $level2) {
-                        $categoryIDs[] = (int)$level2->kKategorie;
+                /** @var MenuItem $category */
+                $categoryIDs[] = $category->getID();
+                if ($category->hasChildren()) {
+                    foreach ($category->getChildren() as $level2) {
+                        $categoryIDs[] = $level2->getID();
                     }
                 }
             }

@@ -4,10 +4,10 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\DB\ReturnType;
+use JTL\Helpers\Text;
 use JTL\Helpers\URL;
 use JTL\Shop;
-use JTL\Helpers\Text;
-use JTL\DB\ReturnType;
 
 /**
  * @return bool

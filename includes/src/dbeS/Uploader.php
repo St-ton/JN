@@ -6,8 +6,8 @@
 
 namespace JTL\dbeS;
 
-use JTL\Extensions\Upload;
-use JTL\Extensions\UploadDatei;
+use JTL\Extensions\Upload\File;
+use JTL\Extensions\Upload\Upload;
 
 /**
  * Class Uploader
@@ -57,7 +57,7 @@ class Uploader extends NetSyncHandler
             case NetSyncRequest::UPLOADFILEDATA:
                 $uploadID = (int)$_GET['kFileID'];
                 if ($uploadID > 0) {
-                    $uploadFile = new UploadDatei();
+                    $uploadFile = new File();
                     if ($uploadFile->loadFromDB($uploadID)) {
                         $path = \PFAD_UPLOADS . $uploadFile->cPfad;
                         if (\file_exists($path)) {

@@ -4,18 +4,18 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use JTL\Cart\Warenkorb;
+use JTL\Cart\Cart;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\Preise;
-use JTL\Extensions\Konfigitem;
+use JTL\Extensions\Config\Item;
 use JTL\Session\Frontend;
 use JTL\Shop;
 
 /**
- * @param Warenkorb $cart
+ * @param Cart $cart
  * @return string
  */
-function lang_warenkorb_warenkorbEnthaeltXArtikel(Warenkorb $cart): string
+function lang_warenkorb_warenkorbEnthaeltXArtikel(Cart $cart): string
 {
     if ($cart->hatTeilbareArtikel()) {
         $nPositionen = $cart->gibAnzahlPositionenExt([C_WARENKORBPOS_TYP_ARTIKEL]);
@@ -46,10 +46,10 @@ function lang_warenkorb_warenkorbEnthaeltXArtikel(Warenkorb $cart): string
 }
 
 /**
- * @param Warenkorb $cart
+ * @param Cart $cart
  * @return string,
  */
-function lang_warenkorb_warenkorbLabel(Warenkorb $cart)
+function lang_warenkorb_warenkorbLabel(Cart $cart)
 {
     return Shop::Lang()->get('basket', 'checkout') .
         ' (' .
@@ -62,10 +62,10 @@ function lang_warenkorb_warenkorbLabel(Warenkorb $cart)
 }
 
 /**
- * @param Warenkorb $cart
+ * @param Cart $cart
  * @return string
  */
-function lang_warenkorb_bestellungEnthaeltXArtikel(Warenkorb $cart)
+function lang_warenkorb_bestellungEnthaeltXArtikel(Cart $cart)
 {
     $ret = Shop::Lang()->get('yourordercontains', 'checkout') . ' ' . count($cart->PositionenArr) . ' ';
     if (count($cart->PositionenArr) === 1) {
@@ -165,7 +165,7 @@ function lang_mindestbestellmenge($product, $amount, int $configItemID = 0)
     }
     $name = $product->cName;
     if ($configItemID > 0 && class_exists('Konfigitem')) {
-        $name = (new Konfigitem($configItemID))->getName();
+        $name = (new Item($configItemID))->getName();
     }
 
     return Shop::Lang()->get('product') . ' &quot;' . $name . '&quot; ' .

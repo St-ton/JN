@@ -257,7 +257,7 @@
                     {/if}
                     <div class="save-wrapper">
                         <div class="row">
-                            <div class="col-sm-6 col-xl-auto text-left mb-3">
+                            <div class="col-sm-6 col-xl-auto text-left">
                                 <div class="custom-control custom-checkbox">
                                     <input class="custom-control-input" type="checkbox" name="ALLMSGS" id="ALLMSGS" onclick="AllMessages(this.form);">
                                     <label class="custom-control-label" for="ALLMSGS">{__('globalSelectAll')}</label>
@@ -265,12 +265,12 @@
                             </div>
                             {if $oRedirect_arr|@count > 0}
                                 <div class="ml-auto col-sm-6 col-xl-auto">
-                                    <button name="action" value="delete" class="btn btn-danger btn-block mb-2">
+                                    <button name="action" value="delete" class="btn btn-danger btn-block">
                                         <i class="fas fa-trash-alt"></i> {__('deleteSelected')}
                                     </button>
                                 </div>
                                 <div class="col-sm-6 col-xl-auto">
-                                    <button name="action" value="delete_all" class="btn btn-warning btn-block mb-2">
+                                    <button name="action" value="delete_all" class="btn btn-warning btn-block">
                                         {__('redirectDelUnassigned')}
                                     </button>
                                 </div>

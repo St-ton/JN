@@ -55,26 +55,158 @@
         {/block}
 
         {block name='layout-header-head-resources'}
+            {include file='layout/header_inline_css.tpl'}
             {* css *}
             {if !isset($Einstellungen.template.general.use_minify) || $Einstellungen.template.general.use_minify === 'N'}
                 {foreach $cCSS_arr as $cCSS}
-                    <link type="text/css" href="{$ShopURL}/{$cCSS}?v={$nTemplateVersion}" rel="stylesheet">
+                    <link rel="preload" href="{$ShopURL}/{$cCSS}?v={$nTemplateVersion}" as="style"
+                          onload="this.onload=null;this.rel='stylesheet'">
                 {/foreach}
-
                 {if isset($cPluginCss_arr)}
                     {foreach $cPluginCss_arr as $cCSS}
-                        <link type="text/css" href="{$ShopURL}/{$cCSS}?v={$nTemplateVersion}" rel="stylesheet">
+                        <link rel="preload" href="{$ShopURL}/{$cCSS}?v={$nTemplateVersion}" as="style"
+                              onload="this.onload=null;this.rel='stylesheet'">
                     {/foreach}
                 {/if}
+
+                <noscript>
+                    {foreach $cCSS_arr as $cCSS}
+                        <link rel="stylesheet" href="{$ShopURL}/{$cCSS}?v={$nTemplateVersion}">
+                    {/foreach}
+                    {if isset($cPluginCss_arr)}
+                        {foreach $cPluginCss_arr as $cCSS}
+                            <link href="{$ShopURL}/{$cCSS}?v={$nTemplateVersion}" rel="stylesheet">
+                        {/foreach}
+                    {/if}
+                </noscript>
             {else}
-                <link type="text/css" href="{$ShopURL}/asset/{$Einstellungen.template.theme.theme_default}.css{if isset($cPluginCss_arr) && $cPluginCss_arr|@count > 0},plugin_css{/if}?v={$nTemplateVersion}" rel="stylesheet">
+                <link rel="preload" href="{$ShopURL}/asset/{$Einstellungen.template.theme.theme_default}.css{if isset($cPluginCss_arr) && $cPluginCss_arr|@count > 0},plugin_css{/if}?v={$nTemplateVersion}" as="style" onload="this.onload=null;this.rel='stylesheet'">
+                <noscript>
+                    <link href="{$ShopURL}/asset/{$Einstellungen.template.theme.theme_default}.css{if isset($cPluginCss_arr) && $cPluginCss_arr|@count > 0},plugin_css{/if}?v={$nTemplateVersion}" rel="stylesheet">
+                </noscript>
             {/if}
+
             {if \JTL\Shop::isAdmin() && $opc->isEditMode() === false && $opc->isPreviewMode() === false}
-                <link type="text/css" href="{$ShopURL}/admin/opc/css/startmenu.css" rel="stylesheet">
+                <link rel="preload" href="{$ShopURL}/admin/opc/css/startmenu.css" as="style"
+                      onload="this.onload=null;this.rel='stylesheet'">
+                <noscript>
+                    <link type="text/css" href="{$ShopURL}/admin/opc/css/startmenu.css" rel="stylesheet">
+                </noscript>
             {/if}
+
+            <script>
+
+                /*! loadCSS rel=preload polyfill. [c]2017 Filament Group, Inc. MIT License */
+                (function( w ){
+                    "use strict";
+                    // rel=preload support test
+                    if( !w.loadCSS ){
+                        w.loadCSS = function(){};
+                    }
+                    // define on the loadCSS obj
+                    var rp = loadCSS.relpreload = {};
+                    // rel=preload feature support test
+                    // runs once and returns a function for compat purposes
+                    rp.support = (function(){
+                        var ret;
+                        try {
+                            ret = w.document.createElement( "link" ).relList.supports( "preload" );
+                        } catch (e) {
+                            ret = false;
+                        }
+                        return function(){
+                            return ret;
+                        };
+                    })();
+
+                    // if preload isn't supported, get an asynchronous load by using a non-matching media attribute
+                    // then change that media back to its intended value on load
+                    rp.bindMediaToggle = function( link ){
+                        // remember existing media attr for ultimate state, or default to 'all'
+                        var finalMedia = link.media || "all";
+
+                        function enableStylesheet(){
+                            // unbind listeners
+                            if( link.addEventListener ){
+                                link.removeEventListener( "load", enableStylesheet );
+                            } else if( link.attachEvent ){
+                                link.detachEvent( "onload", enableStylesheet );
+                            }
+                            link.setAttribute( "onload", null );
+                            link.media = finalMedia;
+                        }
+
+                        // bind load handlers to enable media
+                        if( link.addEventListener ){
+                            link.addEventListener( "load", enableStylesheet );
+                        } else if( link.attachEvent ){
+                            link.attachEvent( "onload", enableStylesheet );
+                        }
+
+                        // Set rel and non-applicable media type to start an async request
+                        // note: timeout allows this to happen async to let rendering continue in IE
+                        setTimeout(function(){
+                            link.rel = "stylesheet";
+                            link.media = "only x";
+                        });
+                        // also enable media after 3 seconds,
+                        // which will catch very old browsers (android 2.x, old firefox) that don't support onload on link
+                        setTimeout( enableStylesheet, 3000 );
+                    };
+
+                    // loop through link elements in DOM
+                    rp.poly = function(){
+                        // double check this to prevent external calls from running
+                        if( rp.support() ){
+                            return;
+                        }
+                        var links = w.document.getElementsByTagName( "link" );
+                        for( var i = 0; i < links.length; i++ ){
+                            var link = links[ i ];
+                            // qualify links to those with rel=preload and as=style attrs
+                            if( link.rel === "preload" && link.getAttribute( "as" ) === "style" && !link.getAttribute( "data-loadcss" ) ){
+                                // prevent rerunning on link
+                                link.setAttribute( "data-loadcss", true );
+                                // bind listeners to toggle media back
+                                rp.bindMediaToggle( link );
+                            }
+                        }
+                    };
+
+                    // if unsupported, run the polyfill
+                    if( !rp.support() ){
+                        // run once at least
+                        rp.poly();
+
+                        // rerun poly on an interval until onload
+                        var run = w.setInterval( rp.poly, 500 );
+                        if( w.addEventListener ){
+                            w.addEventListener( "load", function(){
+                                rp.poly();
+                                w.clearInterval( run );
+                            } );
+                        } else if( w.attachEvent ){
+                            w.attachEvent( "onload", function(){
+                                rp.poly();
+                                w.clearInterval( run );
+                            } );
+                        }
+                    }
+
+                    // commonjs
+                    if( typeof exports !== "undefined" ){
+                        exports.loadCSS = loadCSS;
+                    }
+                    else {
+                        w.loadCSS = loadCSS;
+                    }
+                }( typeof global !== "undefined" ? global : this ) );
+            </script>
+
             {* RSS *}
             {if isset($Einstellungen.rss.rss_nutzen) && $Einstellungen.rss.rss_nutzen === 'Y'}
-                <link rel="alternate" type="application/rss+xml" title="Newsfeed {$Einstellungen.global.global_shopname}" href="{$ShopURL}/rss.xml">
+                <link rel="alternate" type="application/rss+xml" title="Newsfeed {$Einstellungen.global.global_shopname}"
+                      href="{$ShopURL}/rss.xml">
             {/if}
             {* Languages *}
             {if !empty($smarty.session.Sprachen) && count($smarty.session.Sprachen) > 1}
@@ -94,11 +226,6 @@
                 {/if}
             {/block}
         {/if}
-
-        {block name='layout-header-head-resources-jquery'}
-            <script src="{$ShopURL}/{if empty($parentTemplateDir)}{$currentTemplateDir}{else}{$parentTemplateDir}{/if}js/jquery-3.3.1.min.js"></script>
-        {/block}
-        {include file='layout/header_inline_js.tpl'}
         {$dbgBarHead}
     </head>
     {/block}
@@ -166,20 +293,21 @@
                                 {*categories*}
                                 {block name='layout-header-include-categories-mega'}
                                     <div id="navbarToggler" class="collapse navbar-collapse" data-parent="#evo-main-nav-wrapper">
-                                        {button id="scrollMenuLeft"  variant="light" class="d-none"}
+                                        {button id="scrollMenuLeft"  variant="light" class="d-none" aria=["label" => {lang key="scrollMenuLeft" section="aria"}]}
                                             <i class="fas fa-chevron-left"></i>
                                         {/button}
                                         {navbarnav class="megamenu show"}
                                             {include file='snippets/categories_mega.tpl'}
                                         {/navbarnav}
-                                        {button id="scrollMenuRight" variant="light" class="d-none"}
+                                        {button id="scrollMenuRight" variant="light" class="d-none" aria=["label" => {lang key="scrollMenuRight" section="aria"}]}
                                             <i class="fas fa-chevron-right"></i>
                                         {/button}
                                     </div>
                                 {/block}
                             {/col}
 
-                            {col order=6 order-md=2 cols=12 order-lg=3 class="col-md-auto bg-white {if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG}d-none{/if}"}
+                            {col order=6 order-md=2 cols=12 order-lg=3
+                                 class="col-md-auto bg-white{if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG} d-none{/if}"}
                                 {block name='layout-header-include-header-nav-search'}
                                     {collapse id="nav-search-collapse" tag="div" data=["parent"=>"#evo-main-nav-wrapper"] class="d-md-flex mx-auto float-md-right"}
                                         {include file='layout/header_nav_search.tpl'}
@@ -222,7 +350,7 @@
     {/block}
     {block name='layout-header-content-all-starttags'}
         {block name='layout-header-content-wrapper-starttag'}
-            <div id="content-wrapper" class="container-fluid mt-0 pt-4 {if $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp}px-4 px-lg-7{else}px-0{/if}">
+            <div id="content-wrapper" class="container-fluid mt-0 pt-4 {if $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp}px-4 px-xl-7{else}px-0{/if}">
         {/block}
 
         {block name='layout-header-breadcrumb'}
@@ -246,7 +374,7 @@
         {/block}
 
         {block name='layout-header-content-row-starttag'}
-            <div class="row no-gutters px-xl-8">
+            <div class="row no-gutters">
         {/block}
 
         {block name='layout-header-content-starttag'}

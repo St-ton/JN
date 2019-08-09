@@ -3,6 +3,11 @@
 html {
   scroll-behavior: smooth;
 }
+#pushed-success {
+  border: 1px solid $gray-lighter;
+  margin-bottom: 5rem;
+  box-shadow: 0 2px 16px 0 rgba(0,0,0,.06);
+}
 
 .alert {
   .alert-heading {
@@ -64,6 +69,11 @@ html {
 .w-maxcon {
   width: max-content;
 }
+@include media-breakpoint-up(md) {
+  .border-md-right {
+      border-right: 1px solid #dee2e6;
+  }
+}
 
 .evo-slider {
   padding-bottom: $spacer;
@@ -78,7 +88,7 @@ html {
 .dropdown-toggle {
   &::after {
     display: inline-block;
-    font-family: 'Font Awesome 5 Free';
+    font-family: 'Font Awesome 5 Free', Arial, sans-serif;
     font-style: normal;
     font-weight: 900;
     /*text-rendering: auto;
@@ -400,7 +410,7 @@ ul.partlist-items {
   .cfg-toggle{
     &::before {
       display: inline-block;
-      font-family: "Font Awesome 5 Free";
+      font-family: "Font Awesome 5 Free", Arial, sans-serif;
       font-style: normal;
       font-weight: 900;
       content: "\f078";
@@ -624,7 +634,7 @@ ul.partlist-items {
   }
 
   &::before {
-    font-family: "Font Awesome 5 Free", Helvetica, Arial, sans-serif;
+    font-family: "Font Awesome 5 Free", Arial, sans-serif;
     font-weight: 900;
     font-size: 20px;
     line-height: 1;
@@ -712,7 +722,7 @@ ul.partlist-items {
         content: '\f111';
         width: 20px;
         height: 20px;
-        font-family: "Font Awesome 5 Free", Helvetica, Arial, sans-serif;
+        font-family: "Font Awesome 5 Free", Arial, sans-serif;
         font-size: 6px;
         line-height: 20px;
         text-align: center;
@@ -1093,7 +1103,7 @@ ul.partlist-items {
 
 @include media-breakpoint-up(lg) {
   #content.col-lg-9.order-lg-1 {
-    padding-left: map_get($spacers, 4);
+    padding-left: map_get($spacers, 5);
   }
 }
 @include media-breakpoint-up(xl) {
@@ -1244,6 +1254,10 @@ hr {
 // sidebar
 
 aside {
+  h4 {
+    margin-bottom: map_get($spacers, 3);
+  }
+
   .card {
     border: none;
     box-shadow: none;
@@ -1293,6 +1307,14 @@ aside {
     }
     .nav-link, .nav-item {
       clear: left;
+    }
+  }
+
+  .box {
+    .nav-link,
+    .nav a ,
+    .dropdown-menu .dropdown-item {
+        text-decoration: none;
     }
   }
 
@@ -1352,6 +1374,10 @@ aside {
     }
   }
 }
+.box-slider .more {
+  padding: $nav-link-padding-x;
+  margin-top: -$nav-link-padding-x;
+}
 
 //searchcloud
 $jqcloud-classes: 7;
@@ -1394,7 +1420,7 @@ $jqcloud-classes: 7;
   }
   .breadcrumb-item + .breadcrumb-item::before,
   .breadcrumb-item.back::before {
-    font-family: 'Font Awesome 5 Free';
+    font-family: 'Font Awesome 5 Free', Arial, sans-serif;
     font-style: normal;
     font-weight: 900;
   }
@@ -1713,10 +1739,8 @@ footer {
       color: $gray-dark;
     }
     a {
-      color: $gray;
       &:hover {
         font-weight: 600;
-        color: $gray-dark;
       }
     }
     .card-body {
@@ -1859,6 +1883,7 @@ footer {
     width: auto;
     border: none;
     margin: 0;
+    margin-top: -6px;
     li {
       width: 100%;
     }
@@ -1881,7 +1906,7 @@ footer {
   > .nav-item {
     .wee {
       height: 6px;
-      width: 100%;
+      width: 0%;
       background-color: #F8BF00;
       position: absolute;
       left: 0;
@@ -1895,7 +1920,7 @@ footer {
       font-size: 14px;
       font-weight: 500;
       color: #525252;
-      transition: 0.75s;
+      transition: 0.75s background-color;
       &.subcat-link {
         padding: 1.2rem $nav-link-padding-x/2;
       }
@@ -2488,6 +2513,11 @@ input.form-control[name="wishlist-url"] {
     height: 100%;
     justify-content: space-between;
   }
+}
+
+#filter-checkboxes .custom-checkbox label,
+#filter-checkboxes .custom-checkbox ::after {
+  cursor: pointer;
 }
 
 .cfg-group {

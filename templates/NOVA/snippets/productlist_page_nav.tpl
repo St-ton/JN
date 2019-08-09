@@ -51,7 +51,7 @@
                             <ul class="pagination">
                                 {block name='snippets-productlist-page-nav-first-page'}
                                     <li class="page-item{if $Suchergebnisse->getPages()->getCurrentPage() == 1} disabled{/if}">
-                                        {link class="page-link" href=$filterPagination->getPrev()->getURL()}<span aria-hidden="true">&#8592;</span>{/link}
+                                        {link class="page-link" href=$filterPagination->getPrev()->getURL() aria=['label' => {lang key='previous' section='productOverview'}]}<span aria-hidden="true">&#8592;</span>{/link}
                                     </li>
                                 {/block}
                                 <li class="page-item dropdown">
@@ -70,7 +70,7 @@
                                 </li>
                                 {block name='snippets-productlist-page-nav-last-page'}
                                     <li class="page-item{if $Suchergebnisse->getPages()->getCurrentPage() == $Suchergebnisse->getPages()->getMaxPage()} disabled{/if}">
-                                        {link class="page-link" href=$filterPagination->getNext()->getURL()}<span aria-hidden="true">&#8594;</span>{/link}
+                                        {link class="page-link" href=$filterPagination->getNext()->getURL() aria=['label' => {lang key='next' section='productOverview'}]}<span aria-hidden="true">&#8594;</span>{/link}
                                     </li>
                                 {/block}
                             </ul>

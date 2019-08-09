@@ -4,10 +4,10 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Shop;
-use JTL\DB\ReturnType;
 
 /**
  * If the "Import CSV" button was clicked with the id $importerId, try to insert entries from the CSV file uploaded

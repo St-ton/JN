@@ -73,7 +73,7 @@ class SimpleCaptchaService implements CaptchaServiceInterface
         try {
             $token = $cryptoService->randomString(8);
             $code  = $cryptoService->randomString(12);
-            $code  = $code . ':' . \time();
+            $code .= ':' . \time();
         } catch (Exception $e) {
             $token = 'token';
             $code  = \rand() . ':' . \time();

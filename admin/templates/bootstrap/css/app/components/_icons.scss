@@ -3,7 +3,7 @@
 	> :first-child { float: left; margin-left: -1.5em; }
 }
 
-.icon-hover { display: inline-block; width: 1.25em; height: 1.25em; vertical-align: -0.125em; position: relative;
+.icon-hover { display: inline-block; width: 1.25em; height: 1.25em; vertical-align: middle; position: relative;
 	> [data-fa-i2svg] { position: absolute; left: 0; top: 0; transition: opacity .2s; width: inherit; height: inherit;
 		&:last-child { opacity: 0; }
 	}

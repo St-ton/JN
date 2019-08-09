@@ -111,7 +111,7 @@ class CustomerAttribute
         );
 
         if ($res > 0) {
-            $this->setId($res);
+            $this->setID($res);
         }
 
         return $this;
@@ -120,7 +120,7 @@ class CustomerAttribute
     /**
      * @return int
      */
-    public function getId(): int
+    public function getID(): int
     {
         return $this->id;
     }
@@ -128,7 +128,7 @@ class CustomerAttribute
     /**
      * @param int $id
      */
-    public function setId(?int $id): void
+    public function setID(?int $id): void
     {
         $this->id = $id ?? 0;
     }
@@ -260,7 +260,7 @@ class CustomerAttribute
     public function setRecord($record): self
     {
         if (!\is_object($record) && !\is_array($record)) {
-            $this->setId(0);
+            $this->setID(0);
             $this->setCustomerFieldID(0);
             $this->setCustomerID(0);
             $this->setLabel('');

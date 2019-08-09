@@ -167,12 +167,6 @@ class NetSyncHandler
             $browser = 'opera';
         } elseif (\preg_match('/^MSIE ([0-9].[0-9]{1,2})/', $userAgent) === 1) {
             $browser = 'ie';
-        } elseif (\preg_match('/^OmniWeb\/([0-9].[0-9]{1,2})/', $userAgent) === 1) {
-            $browser = 'omniweb';
-        } elseif (\preg_match('/^Mozilla\/([0-9].[0-9]{1,2})/', $userAgent) === 1) {
-            $browser = 'mozilla';
-        } elseif (\preg_match('/^Konqueror\/([0-9].[0-9]{1,2})/', $userAgent) === 1) {
-            $browser = 'konqueror';
         }
 
         return $browser;

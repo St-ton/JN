@@ -4,10 +4,10 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use JTL\Shop;
-use JTL\DB\ReturnType;
-use JTL\Template;
 use JTL\Alert\Alert;
+use JTL\DB\ReturnType;
+use JTL\Shop;
+use JTL\Template;
 
 /**
  * @return array

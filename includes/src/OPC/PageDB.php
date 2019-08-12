@@ -216,7 +216,7 @@ class PageDB
             $page = $this->getPageFromRow($publicRow);
         }
 
-        Shop::fire('jtl.opc.pagedb.getPublicPage', [
+        Shop::fire('shop.OPC.PageDB.getPublicPage', [
             'id' => $id,
             'page' => &$page
         ]);
@@ -239,7 +239,7 @@ class PageDB
             throw new Exception('The OPC page data to be saved is incomplete or invalid.');
         }
 
-        Shop::fire('jtl.opc.pagedb.beforeSaveDraft', [
+        Shop::fire('shop.OPC.PageDB.saveDraft:afterValidate', [
             'page' => &$page
         ]);
 
@@ -387,7 +387,8 @@ class PageDB
             $page->getAreaList()->deserialize($areaData);
         }
 
-        Shop::fire('jtl.opc.pagedb.getPageRow', [
+        Shop::fire('shop.OPC.PageDB.getPageRow', [
+            'row' => &$row,
             'page' => &$page
         ]);
 

@@ -228,7 +228,7 @@ function pruefeLieferdaten($post, &$fehlendeAngaben = null): void
     ) {
         $delVersand = mb_stripos($_SESSION['Versandart']->cLaender, $_SESSION['Lieferadresse']->cLand) === false;
         // ist die plz im zuschlagsbereich?
-        if (!empty((new Versandart((int)$_SESSION['Versandart']->kVersandart))->getSurchargeForZip(
+        if (!empty((new Versandart((int)$_SESSION['Versandart']->kVersandart))->getShippingSurchargeForZip(
             $_SESSION['Lieferadresse']->cPLZ,
             $_SESSION['Lieferadresse']->cLand
         ))) {

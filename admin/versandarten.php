@@ -104,7 +104,7 @@ if (isset($_GET['cISO'], $_GET['zuschlag'], $_GET['kVersandart'])
 
     $pagination = (new Pagination('surchargeList'))
         ->setRange(4)
-        ->setItemArray((new Versandart($_GET['kVersandart']))->getSurchargesForCountry($_GET['cISO']))
+        ->setItemArray((new Versandart($_GET['kVersandart']))->getShippingSurchargesForCountry($_GET['cISO']))
         ->assemble();
 
     $smarty->assign('surcharges', $pagination->getPageItems())

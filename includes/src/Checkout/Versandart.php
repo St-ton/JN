@@ -199,7 +199,7 @@ class Versandart
             ['kVersandart' => $this->kVersandart],
             ReturnType::COLLECTION
         )->map(function ($surcharge) {
-               return new Surcharge($surcharge->kVersandzuschlag);
+               return new ShippingSurcharge($surcharge->kVersandzuschlag);
         });
 
         $cache->set($cacheID, $this->surcharges, [\CACHING_GROUP_OBJECT]);
@@ -209,9 +209,9 @@ class Versandart
      * @param string $ISO
      * @return Collection
      */
-    public function getSurchargesForCountry(string $ISO): Collection
+    public function getShippingSurchargesForCountry(string $ISO): Collection
     {
-        return $this->surcharges->filter(function (Surcharge $surcharge) use ($ISO) {
+        return $this->surcharges->filter(function (ShippingSurcharge $surcharge) use ($ISO) {
             return $surcharge->getISO() === $ISO;
         });
     }
@@ -219,11 +219,11 @@ class Versandart
     /**
      * @param string $zip
      * @param string $ISO
-     * @return Surcharge|null
+     * @return ShippingSurcharge|null
      */
-    public function getSurchargeForZip(string $zip, string $ISO): ?Surcharge
+    public function getShippingSurchargeForZip(string $zip, string $ISO): ?ShippingSurcharge
     {
-        return $this->getSurchargesForCountry($ISO)->filter(function (Surcharge $surcharge) use ($zip) {
+        return $this->getShippingSurchargesForCountry($ISO)->filter(function (ShippingSurcharge $surcharge) use ($zip) {
             return $surcharge->hasZIPCode($zip);
         })->pop();
     }

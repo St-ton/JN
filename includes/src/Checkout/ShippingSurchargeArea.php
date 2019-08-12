@@ -10,7 +10,7 @@ namespace JTL\Checkout;
  * Class SurchargeArea
  * @package JTL\Checkout
  */
-class SurchargeArea
+class ShippingSurchargeArea
 {
     /**
      * @var string
@@ -43,7 +43,7 @@ class SurchargeArea
 
     /**
      * @param string $ZIPFrom
-     * @return SurchargeArea
+     * @return ShippingSurchargeArea
      */
     public function setZIPFrom(string $ZIPFrom): self
     {
@@ -62,7 +62,7 @@ class SurchargeArea
 
     /**
      * @param string $ZIPTo
-     * @return SurchargeArea
+     * @return ShippingSurchargeArea
      */
     public function setZIPTo(string $ZIPTo): self
     {

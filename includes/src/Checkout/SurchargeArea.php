@@ -7,10 +7,10 @@
 namespace JTL\Checkout;
 
 /**
- * Class VersandzuschlagBereich
+ * Class SurchargeArea
  * @package JTL\Checkout
  */
-class VersandzuschlagBereich
+class SurchargeArea
 {
     /**
      * @var string
@@ -23,7 +23,7 @@ class VersandzuschlagBereich
     public $ZIPTo;
 
     /**
-     * VersandzuschlagBereich constructor.
+     * SurchargeArea constructor.
      * @param string $ZIPFrom
      * @param string $ZIPTo
      */
@@ -43,7 +43,7 @@ class VersandzuschlagBereich
 
     /**
      * @param string $ZIPFrom
-     * @return VersandzuschlagBereich
+     * @return SurchargeArea
      */
     public function setZIPFrom(string $ZIPFrom): self
     {
@@ -62,7 +62,7 @@ class VersandzuschlagBereich
 
     /**
      * @param string $ZIPTo
-     * @return VersandzuschlagBereich
+     * @return SurchargeArea
      */
     public function setZIPTo(string $ZIPTo): self
     {

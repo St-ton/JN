@@ -12,10 +12,10 @@ use JTL\MagicCompatibilityTrait;
 use JTL\Catalog\Product\Preise;
 
 /**
- * Class Versandzuschlag
+ * Class Surcharge
  * @package JTL\Checkout
  */
-class Versandzuschlag
+class Surcharge
 {
     use MagicCompatibilityTrait;
 
@@ -75,8 +75,9 @@ class Versandzuschlag
      * @var string
      */
     public $priceLocalized;
+
     /**
-     * Versandzuschlag constructor.
+     * Surcharge constructor.
      * @param int $id
      */
     public function __construct(int $id = 0)
@@ -211,7 +212,7 @@ class Versandzuschlag
         if ($zipFrom === null || $zipTo === null) {
             return false;
         }
-        $area = new VersandzuschlagBereich($zipFrom, $zipTo);
+        $area = new SurchargeArea($zipFrom, $zipTo);
 
         foreach ($this->getZIPCodes() ?? [] as $zipTMP) {
             if ($area->isInArea($zipTMP)) {
@@ -232,7 +233,7 @@ class Versandzuschlag
 
     /**
      * @param int $id
-     * @return Versandzuschlag
+     * @return Surcharge
      */
     public function setID(int $id): self
     {
@@ -251,7 +252,7 @@ class Versandzuschlag
 
     /**
      * @param string $ISO
-     * @return Versandzuschlag
+     * @return Surcharge
      */
     public function setISO(string $ISO): self
     {
@@ -270,7 +271,7 @@ class Versandzuschlag
 
     /**
      * @param string $title
-     * @return Versandzuschlag
+     * @return Surcharge
      */
     public function setTitle(string $title): self
     {
@@ -289,7 +290,7 @@ class Versandzuschlag
 
     /**
      * @param float $surcharge
-     * @return Versandzuschlag
+     * @return Surcharge
      */
     public function setSurcharge(float $surcharge): self
     {
@@ -308,7 +309,7 @@ class Versandzuschlag
 
     /**
      * @param int $shippingMethod
-     * @return Versandzuschlag
+     * @return Surcharge
      */
     public function setShippingMethod(int $shippingMethod): self
     {
@@ -327,7 +328,7 @@ class Versandzuschlag
 
     /**
      * @param array $ZIPCodes
-     * @return Versandzuschlag
+     * @return Surcharge
      */
     public function setZIPCodes(array $ZIPCodes): self
     {
@@ -338,7 +339,7 @@ class Versandzuschlag
 
     /**
      * @param string $ZIPCode
-     * @return Versandzuschlag
+     * @return Surcharge
      */
     public function setZIPCode(string $ZIPCode): self
     {
@@ -357,7 +358,7 @@ class Versandzuschlag
 
     /**
      * @param array $ZIPAreas
-     * @return Versandzuschlag
+     * @return Surcharge
      */
     public function setZIPAreas(array $ZIPAreas): self
     {
@@ -369,11 +370,11 @@ class Versandzuschlag
     /**
      * @param string $ZIPFrom
      * @param string $ZIPTo
-     * @return Versandzuschlag
+     * @return Surcharge
      */
     public function setZIPArea(string $ZIPFrom, string $ZIPTo): self
     {
-        $this->ZIPAreas[] = new VersandzuschlagBereich($ZIPFrom, $ZIPTo);
+        $this->ZIPAreas[] = new SurchargeArea($ZIPFrom, $ZIPTo);
 
         return $this;
     }
@@ -425,7 +426,7 @@ class Versandzuschlag
 
     /**
      * @param string $priceLocalized
-     * @return Versandzuschlag
+     * @return Surcharge
      */
     public function setPriceLocalized(string $priceLocalized = null): self
     {

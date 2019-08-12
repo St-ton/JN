@@ -7,7 +7,7 @@
 use Illuminate\Support\Collection;
 use JTL\Alert\Alert;
 use JTL\Checkout\Versandart;
-use JTL\Checkout\Versandzuschlag;
+use JTL\Checkout\Surcharge;
 use JTL\Checkout\ZipValidator;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Text;
@@ -398,11 +398,11 @@ function saveSurchargeList(array $data)
     if (!$alertHelper->alertTypeExists(Alert::TYPE_ERROR)) {
         $languages = Sprache::getAllLanguages();
         if (!empty($post['kVersandzuschlag'])) {
-            $surchargeTMP = (new Versandzuschlag((int)$post['kVersandzuschlag']))
+            $surchargeTMP = (new Surcharge((int)$post['kVersandzuschlag']))
                 ->setTitle($post['cName'])
                 ->setSurcharge($surcharge);
         } else {
-            $surchargeTMP = (new Versandzuschlag())
+            $surchargeTMP = (new Surcharge())
                 ->setISO($post['cISO'])
                 ->setSurcharge($surcharge)
                 ->setShippingMethod($post['kVersandart'])
@@ -414,7 +414,7 @@ function saveSurchargeList(array $data)
             }
         }
         $surchargeTMP->save(!empty($post['kVersandzuschlag']));
-        $surchargeTMP = new Versandzuschlag($surchargeTMP->getId());
+        $surchargeTMP = new Surcharge($surchargeTMP->getId());
     }
     $message = $smarty->assign('alertList', $alertHelper)
                       ->fetch('snippets/alert_list.tpl');
@@ -507,7 +507,7 @@ function createSurchargeListZIP(array $data)
     $alertHelper    = Shop::Container()->getAlertService();
     $db             = Shop::Container()->getDB();
     $smarty         = JTLSmarty::getInstance(false, ContextType::BACKEND);
-    $surcharge      = new Versandzuschlag((int)$post['kVersandzuschlag']);
+    $surcharge      = new Surcharge((int)$post['kVersandzuschlag']);
     $shippingMethod = new Versandart($surcharge->getShippingMethod());
     $oZipValidator  = new ZipValidator($surcharge->getISO());
     $ZuschlagPLZ    = new stdClass();
@@ -532,7 +532,7 @@ function createSurchargeListZIP(array $data)
     }
 
     $zipMatchSurcharge = $shippingMethod->getSurchargesForCountry($surcharge->getISO())
-        ->filter(function (Versandzuschlag $surchargeTMP) use ($ZuschlagPLZ) {
+        ->filter(function (Surcharge $surchargeTMP) use ($ZuschlagPLZ) {
             return ($surchargeTMP->hasZIPCode($ZuschlagPLZ->cPLZ)
                 || $surchargeTMP->hasZIPCode($ZuschlagPLZ->cPLZAb)
                 || $surchargeTMP->hasZIPCode($ZuschlagPLZ->cPLZBis)
@@ -564,7 +564,7 @@ function createSurchargeListZIP(array $data)
 
     $message = $smarty->assign('alertList', $alertHelper)
                       ->fetch('snippets/alert_list.tpl');
-    $badges  = $smarty->assign('surcharge', new Versandzuschlag($surcharge->getID()))
+    $badges  = $smarty->assign('surcharge', new Surcharge($surcharge->getID()))
                       ->fetch('snippets/zuschlagliste_plz_badges.tpl');
 
     return (object)['message' => $message, 'badges' => $badges, 'surchargeID' => $surcharge->getID()];
@@ -604,7 +604,7 @@ function getSurcharge($id)
     $smarty       = JTLSmarty::getInstance(false, ContextType::BACKEND);
     $result       = new stdClass();
     $result->body = $smarty->assign('sprachen', LanguageHelper::getAllLanguages())
-        ->assign('surchargeNew', new Versandzuschlag($id))
+        ->assign('surchargeNew', new Surcharge($id))
         ->assign('surchargeID', $id)
         ->fetch('snippets/zuschlagliste_form.tpl');
 

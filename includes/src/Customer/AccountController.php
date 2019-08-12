@@ -163,7 +163,7 @@ class AccountController
     {
         Shop::setPageType(\PAGE_MEINKONTO);
         $ratings = [];
-        $kLink   = $this->linkService->getSpecialPageLinkKey(\LINKTYP_LOGIN);
+        $linkID  = $this->linkService->getSpecialPageLinkKey(\LINKTYP_LOGIN);
         $step    = 'mein Konto';
         $valid   = Form::validateToken();
         if (Request::verifyGPCDataInt('logout') === 1) {
@@ -304,7 +304,7 @@ class AccountController
         $this->smarty->assign('Kunde', $_SESSION['Kunde'])
             ->assign('customerAttributes', $_SESSION['Kunde']->getCustomerAttributes())
             ->assign('bewertungen', $ratings)
-            ->assign('Link', $this->linkService->getPageLink($kLink))
+            ->assign('Link', $this->linkService->getPageLink($linkID))
             ->assign('BESTELLUNG_STATUS_BEZAHLT', \BESTELLUNG_STATUS_BEZAHLT)
             ->assign('BESTELLUNG_STATUS_VERSANDT', \BESTELLUNG_STATUS_VERSANDT)
             ->assign('BESTELLUNG_STATUS_OFFEN', \BESTELLUNG_STATUS_OFFEN)

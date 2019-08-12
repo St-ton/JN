@@ -675,30 +675,9 @@ class PaymentMethod
 
         switch ($type) {
             case MAILTEMPLATE_BESTELLBESTAETIGUNG:
-                $data->tkunde      = $customer;
-                $data->tbestellung = $order;
-                if (strlen($customer->cMail) > 0) {
-                    $mailer->send($mail->createFromTemplateID($type, $data));
-                }
-                break;
-
-            case MAILTEMPLATE_BESTELLUNG_AKTUALISIERT:
-                $data->tkunde      = $customer;
-                $data->tbestellung = $order;
-                if (strlen($customer->cMail) > 0) {
-                    $mailer->send($mail->createFromTemplateID($type, $data));
-                }
-                break;
-
-            case MAILTEMPLATE_BESTELLUNG_VERSANDT:
-                $data->tkunde      = $customer;
-                $data->tbestellung = $order;
-                if (strlen($customer->cMail) > 0) {
-                    $mailer->send($mail->createFromTemplateID($type, $data));
-                }
-                break;
-
             case MAILTEMPLATE_BESTELLUNG_TEILVERSANDT:
+            case MAILTEMPLATE_BESTELLUNG_AKTUALISIERT:
+            case MAILTEMPLATE_BESTELLUNG_VERSANDT:
                 $data->tkunde      = $customer;
                 $data->tbestellung = $order;
                 if (strlen($customer->cMail) > 0) {

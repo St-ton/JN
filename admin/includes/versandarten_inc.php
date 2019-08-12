@@ -377,7 +377,7 @@ function getMissingShippingClassCombi()
  * @return stdClass
  * @throws SmartyException
  */
-function saveZuschlagsListe(array $data)
+function saveSurchargeList(array $data)
 {
     Shop::Container()->getGetText()->loadAdminLocale('pages/versandarten');
 
@@ -435,7 +435,7 @@ function saveZuschlagsListe(array $data)
  * @param $surchargeID
  * @return object
  */
-function deleteZuschlagsListe($surchargeID)
+function deleteSurchargeList($surchargeID)
 {
     Shop::Container()->getDB()->queryPrepared(
         'DELETE tversandzuschlag, tversandzuschlagsprache, tversandzuschlagplz
@@ -456,7 +456,7 @@ function deleteZuschlagsListe($surchargeID)
  * @param $ZIP
  * @return string
  */
-function deleteZuschlagsListeZIP($surchargeID, $ZIP)
+function deleteSurchargeListZIP($surchargeID, $ZIP)
 {
     $partsZIP = explode('-', $ZIP);
     if (count($partsZIP) === 1) {
@@ -496,7 +496,7 @@ function deleteZuschlagsListeZIP($surchargeID, $ZIP)
  * @return string
  * @throws SmartyException
  */
-function createZuschlagsListeZIP(array $data)
+function createSurchargeListZIP(array $data)
 {
     Shop::Container()->getGetText()->loadAdminLocale('pages/versandarten');
 

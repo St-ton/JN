@@ -90,10 +90,10 @@ $io->register('getPages', [$jsonApi, 'getPages'])
    ->register('createSearchIndex', 'createSearchIndex', $sucheinstellungInc, 'SETTINGS_ARTICLEOVERVIEW_VIEW')
    ->register('clearSearchCache', 'clearSearchCache', $sucheinstellungInc, 'SETTINGS_ARTICLEOVERVIEW_VIEW')
    ->register('adminSearch', 'adminSearch', $sucheInc, 'SETTINGS_SEARCH_VIEW')
-   ->register('saveZuschlagsListe', 'saveZuschlagsListe', $versandartenInc, 'ORDER_SHIPMENT_VIEW')
-   ->register('deleteZuschlagsListe', 'deleteZuschlagsListe', $versandartenInc, 'ORDER_SHIPMENT_VIEW')
-   ->register('deleteZuschlagsListeZIP', 'deleteZuschlagsListeZIP', $versandartenInc, 'ORDER_SHIPMENT_VIEW')
-   ->register('createZuschlagsListeZIP', 'createZuschlagsListeZIP', $versandartenInc, 'ORDER_SHIPMENT_VIEW')
+   ->register('saveSurchargeList', 'saveSurchargeList', $versandartenInc, 'ORDER_SHIPMENT_VIEW')
+   ->register('deleteSurchargeList', 'deleteSurchargeList', $versandartenInc, 'ORDER_SHIPMENT_VIEW')
+   ->register('deleteSurchargeListZIP', 'deleteSurchargeListZIP', $versandartenInc, 'ORDER_SHIPMENT_VIEW')
+   ->register('createSurchargeListZIP', 'createSurchargeListZIP', $versandartenInc, 'ORDER_SHIPMENT_VIEW')
    ->register('getSurcharge', 'getSurcharge', $versandartenInc, 'ORDER_SHIPMENT_VIEW');
 
 $io->respondAndExit($io->handleRequest($_REQUEST['io']));

@@ -209,7 +209,7 @@
 
     $('#add-zip-modal button[type="submit"]').on('click', function(e){
         e.preventDefault();
-        ioCall('createZuschlagsListeZIP', [$('#add-zip-form').serializeArray()], function (data) {
+        ioCall('createSurchargeListZIP', [$('#add-zip-form').serializeArray()], function (data) {
             $('#add-zip-notice').html(data.message);
             $('.surcharge-box[data-surcharge-id="' + data.surchargeID + '"] .zip-badge-row').html(data.badges);
             setBadgeClick(data.surchargeID);
@@ -218,7 +218,7 @@
 
     $('.surcharge-remove').on('click', function (e) {
         e.preventDefault();
-        ioCall('deleteZuschlagsListe', [$(this).data('surcharge-id')], function (data) {
+        ioCall('deleteSurchargeList', [$(this).data('surcharge-id')], function (data) {
             if (data.surchargeID > 0) {
                 $('.surcharge-box[data-surcharge-id="' + data.surchargeID + '"]').remove();
             }
@@ -232,7 +232,7 @@
         }
         $('.zip-badge' + surchargeIDText).on('click', function(e){
             e.preventDefault();
-            ioCall('deleteZuschlagsListeZIP', [$(this).data('surcharge-id'), $(this).data('zip')], function (data) {
+            ioCall('deleteSurchargeListZIP', [$(this).data('surcharge-id'), $(this).data('zip')], function (data) {
                 $('.zip-badge[data-surcharge-id="' + data.surchargeID + '"][data-zip="' + data.ZIP + '"]').remove();
             });
         });

@@ -191,18 +191,16 @@ class Versandart
             return;
         }
 
-        $this->surcharges = new Collection();
-        $surcharges       = Shop::Container()->getDB()->queryPrepared(
+        $this->surcharges = Shop::Container()->getDB()->queryPrepared(
             'SELECT kVersandzuschlag
                 FROM tversandzuschlag
                 WHERE kVersandart = :kVersandart
                 ORDER BY kVersandzuschlag DESC',
             ['kVersandart' => $this->kVersandart],
-            ReturnType::ARRAY_OF_OBJECTS
-        );
-        foreach ($surcharges as $surcharge) {
-            $this->surcharges->push(new Versandzuschlag($surcharge->kVersandzuschlag));
-        }
+            ReturnType::COLLECTION
+        )->map(function ($surcharge) {
+               return new Versandzuschlag($surcharge->kVersandzuschlag);
+        });
 
         $cache->set($cacheID, $this->surcharges, [\CACHING_GROUP_OBJECT]);
     }

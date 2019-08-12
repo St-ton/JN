@@ -46,7 +46,7 @@
 <script>
     $('#new-surcharge-form button[type="submit"]').on('click', function(e){
         e.preventDefault();
-        ioCall('saveZuschlagsListe', [$('#new-surcharge-form').serializeArray()], function (data) {
+        ioCall('saveSurchargeList', [$('#new-surcharge-form').serializeArray()], function (data) {
             if (data.error) {
                 $('#new-surcharge-notice').html(data.message);
             } else{

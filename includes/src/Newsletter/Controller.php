@@ -9,7 +9,7 @@ namespace JTL\Newsletter;
 use DateTime;
 use JTL\Alert\Alert;
 use JTL\CheckBox;
-use JTL\Customer\Kunde;
+use JTL\Customer\Customer;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
@@ -76,8 +76,8 @@ final class Controller
     }
 
     /**
-     * @param Kunde|stdClass $customer
-     * @param bool           $validate
+     * @param Customer|stdClass $customer
+     * @param bool              $validate
      * @return stdClass
      */
     public function addSubscriber($customer, $validate = false): stdClass

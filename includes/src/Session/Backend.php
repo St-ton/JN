@@ -7,7 +7,7 @@
 namespace JTL\Session;
 
 use JTL\Catalog\Currency;
-use JTL\Customer\Kundengruppe;
+use JTL\Customer\CustomerGroup;
 use JTL\Language\LanguageHelper;
 use JTL\Shop;
 
@@ -51,7 +51,7 @@ class Backend extends AbstractSession
         }
         Shop::setLanguage($_SESSION['kSprache'], $_SESSION['cISOSprache']);
         if (isset($_SESSION['Kundengruppe']) && \get_class($_SESSION['Kundengruppe']) === \stdClass::class) {
-            $_SESSION['Kundengruppe'] = new Kundengruppe($_SESSION['Kundengruppe']->kKundengruppe);
+            $_SESSION['Kundengruppe'] = new CustomerGroup($_SESSION['Kundengruppe']->kKundengruppe);
         }
         if (isset($_SESSION['Waehrung']) && \get_class($_SESSION['Waehrung']) === \stdClass::class) {
             $_SESSION['Waehrung'] = new Currency($_SESSION['Waehrung']->kWaehrung);

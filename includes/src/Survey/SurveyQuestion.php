@@ -6,11 +6,11 @@
 
 namespace JTL\Survey;
 
+use Illuminate\Support\Collection;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
 use JTL\MagicCompatibilityTrait;
 use stdClass;
-use Illuminate\Support\Collection;
 use function Functional\first;
 use function Functional\map;
 

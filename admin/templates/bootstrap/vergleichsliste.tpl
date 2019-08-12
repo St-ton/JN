@@ -28,7 +28,7 @@
                 {if $Letzten20Vergleiche && $Letzten20Vergleiche|@count > 0}
                     {include file='tpl_inc/pagination.tpl' pagination=$pagination cAnchor='letztenvergleiche'}
                     <div class="settings table-responsive">
-                        <table class="table table-striped">
+                        <table class="table table-striped table-align-top">
                             <thead>
                                 <tr>
                                     <th class="th-1 text-center">{__('compareID')}</th>
@@ -107,7 +107,7 @@
                 <div>
                     {if isset($TopVergleiche) && $TopVergleiche|@count > 0}
                         <div class="settings table-responsive">
-                            <table class="bottom table table-striped">
+                            <table class="bottom table table-striped table-align-top">
                                 <thead>
                                     <tr>
                                         <th class="text-left">{__('compareProduct')}</th>

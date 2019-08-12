@@ -8,8 +8,8 @@ namespace JTL\Sitemap\Factories;
 
 use Generator;
 use JTL\DB\ReturnType;
-use PDO;
 use JTL\Sitemap\Items\NewsItem as Item;
+use PDO;
 use function Functional\first;
 use function Functional\map;
 

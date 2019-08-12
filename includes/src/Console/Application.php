@@ -85,6 +85,7 @@ class Application extends BaseApplication
         });
 
         foreach ($filteredPlugins as $plugin) {
+            /** @var ListingItem $plugin */
             if (!\is_dir($plugin->getPath() . '/Commands')) {
                 continue;
             }

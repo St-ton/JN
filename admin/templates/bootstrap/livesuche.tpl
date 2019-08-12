@@ -125,13 +125,13 @@
                         </div>
                         <div class="save-wrapper">
                             <div class="row">
-                                <div class="col-sm-6 col-xl-auto text-left mb-3">
+                                <div class="col-sm-6 col-xl-auto text-left">
                                     <div class="custom-control custom-checkbox">
                                         <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessagesExcept(this.form, 'nAktiv_');" />
                                         <label class="custom-control-label" for="ALLMSGS">{__('livesucheSelectAll')}</label>
                                     </div>
                                 </div>
-                                <div class="col-sm-6 col-xl-auto mb-2">
+                                <div class="col-sm-6 col-xl-auto">
                                     <div class="input-group">
                                         <span class="input-group-addon d-none d-md-block">
                                             <label for="cMapping">{__('livesucheMappingOn')}:</label>
@@ -143,12 +143,12 @@
                                     </div>
                                 </div>
                                 <div class="ml-auto col-sm-6 col-xl-auto">
-                                    <button name="delete" type="submit" value="{__('delete')}" class="btn btn-danger btn-block mb-2">
+                                    <button name="delete" type="submit" value="{__('delete')}" class="btn btn-danger btn-block">
                                         <i class="fas fa-trash-alt"></i> {__('deleteSelected')}
                                     </button>
                                 </div>
                                 <div class="col-sm-6 col-xl-auto">
-                                    <button name="suchanfragenUpdate" type="submit" value="{__('update')}" class="btn btn-primary  btn-block reset">
+                                    <button name="suchanfragenUpdate" type="submit" value="{__('update')}" class="btn btn-primary btn-block reset">
                                         <i class="fa fa-refresh"></i> {__('update')}
                                     </button>
                                 </div>
@@ -206,20 +206,20 @@
                                             {/if}
                                         </td>
                                     </tr>
-                                </tbody>
                                 {/foreach}
+                                </tbody>
                             </table>
                         </div>
                         <div class="save-wrapper">
                             <div class="row">
-                                <div class="col-sm-6 col-xl-auto text-left mb-3">
+                                <div class="col-sm-6 col-xl-auto text-left">
                                     <div class="custom-control custom-checkbox">
                                         <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS2" type="checkbox" onclick="AllMessagesExcept(this.form, 'nAktiv_');" />
                                         <label class="custom-control-label" for="ALLMSGS2">{__('livesucheSelectAll')}</label>
                                     </div>
                                 </div>
                                 <div class="ml-auto col-sm-6 col-xl-auto">
-                                    <button class="btn btn-danger btn-block mb-2" name="erfolglosDelete" type="submit">
+                                    <button class="btn btn-danger btn-block" name="erfolglosDelete" type="submit">
                                         <i class="fas fa-trash-alt"></i> {__('delete')}
                                     </button>
                                 </div>
@@ -229,7 +229,7 @@
                                     </button>
                                 </div>
                                 <div class="col-sm-6 col-xl-auto">
-                                    <button class="btn btn-primary btn-block mb-2" name="erfolglosEdit" type="submit">
+                                    <button class="btn btn-primary btn-block" name="erfolglosEdit" type="submit">
                                         <i class="fal fa-edit"></i> {__('livesucheEdit')}
                                     </button>
                                 </div>
@@ -280,7 +280,7 @@
                         </div>
                         <div class="save-wrapper">
                             <div class="row">
-                                <div class="col-sm-6 col-xl-auto text-left mb-3">
+                                <div class="col-sm-6 col-xl-auto text-left">
                                     <div class="custom-control custom-checkbox">
                                         <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS3" type="checkbox" onclick="AllMessages(this.form);" />
                                         <label class="custom-control-label" for="ALLMSGS3">{__('globalSelectAll')}</label>

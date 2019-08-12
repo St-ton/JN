@@ -6,16 +6,16 @@
 
 namespace JTL\Helpers;
 
-use function Functional\map;
+use Illuminate\Support\Collection;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\ArtikelListe;
+use JTL\Catalog\Product\Preise;
 use JTL\DB\ReturnType;
 use JTL\News;
-use JTL\Catalog\Product\Preise;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use stdClass;
-use Illuminate\Support\Collection;
+use function Functional\map;
 
 /**
  * Class CMS

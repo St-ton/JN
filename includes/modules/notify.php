@@ -98,10 +98,10 @@ if (strlen($cSh) > 0) {
             if ($logger->isHandling(JTLLOG_LEVEL_DEBUG)) {
                 $logger->debug('Session Hash: ' . $cSh . ' ergab Methode: ' . print_r($paymentMethod, true));
             }
-            $kPlugin = Helper::getIDByModuleID($_SESSION['Zahlungsart']->cModulId);
-            if ($kPlugin > 0) {
-                $loader             = Helper::getLoaderByPluginID($kPlugin);
-                $oPlugin            = $loader->init($kPlugin);
+            $pluginID = Helper::getIDByModuleID($_SESSION['Zahlungsart']->cModulId);
+            if ($pluginID > 0) {
+                $loader             = Helper::getLoaderByPluginID($pluginID);
+                $oPlugin            = $loader->init($pluginID);
                 $GLOBALS['oPlugin'] = $oPlugin;
             }
 

@@ -13,7 +13,7 @@
                     <div class="form-row">
                         {block name='snippets-shipping-calculator-countries'}
                             {col cols=12 md=6 class="mb-3"}
-                                {select name="land" id="country" placeholder=""}
+                                {select name="land" id="country" placeholder="" aria=["label"=>"{lang key='country' section='account data'}"]}
                                     {foreach $laender as $land}
                                         <option value="{$land->getISO()}" {if ($Einstellungen.kunden.kundenregistrierung_standardland === $land->getISO() && (!isset($smarty.session.Kunde->cLand) || !$smarty.session.Kunde->cLand)) || (isset($smarty.session.Kunde->cLand) && $smarty.session.Kunde->cLand==$land->getISO())}selected{/if}>{$land->getName()}</option>
                                     {/foreach}
@@ -23,7 +23,10 @@
                         {block name='snippets-shipping-calculator-submit'}
                             {col cols=12 md=6}
                                 {inputgroup label-for="plz" label="{lang key='plz' section='forgot password'}"}
-                                    {input type="text" name="plz" size="8" maxlength="8" value="{if isset($smarty.session.Kunde->cPLZ)}{$smarty.session.Kunde->cPLZ}{elseif isset($VersandPLZ)}{$VersandPLZ}{/if}" id="plz" placeholder="{lang key='plz' section='forgot password'}"}
+                                    {input type="text" name="plz" size="8" maxlength="8"
+                                        value="{if isset($smarty.session.Kunde->cPLZ)}{$smarty.session.Kunde->cPLZ}{elseif isset($VersandPLZ)}{$VersandPLZ}{/if}" id="plz" placeholder="{lang key='plz' section='forgot password'}"
+                                        aria=["label"=>"{lang key='plz' section='account data'}"]
+                                    }
                                     {inputgroupaddon append=true}
                                         {button name="versandrechnerBTN" type="submit"}{lang key='estimateShipping' section='checkout'}{/button}
                                     {/inputgroupaddon}

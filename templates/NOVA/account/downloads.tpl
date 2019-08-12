@@ -9,14 +9,14 @@
         {/block}
         {block name='account-downloads-order-downloads'}
             {foreach $Bestellung->oDownload_arr as $oDownload}
-                {card no-body=true}
+                {card no-body=true class="cols-12 col-md-8"}
                     {cardheader id="download-{$oDownload@iteration}" class="p-2 bg-white"}
                         {button
                             variant="link"
                             role="button"
                             block=true
                             class="text-left"
-                            aria=["expanded"=>false,"controls"=>"#collapse-download-{$oDownload@iteration}"]
+                            aria=["expanded"=>"false","controls"=>"collapse-download-{$oDownload@iteration}"]
                             data=["toggle"=> "collapse", "target"=>"#collapse-download-{$oDownload@iteration}"]
                         }
                             {$oDownload->oDownloadSprache->getName()}
@@ -74,7 +74,7 @@
                                                     role="button"
                                                     block=true
                                                     class="text-left"
-                                                    aria=["expanded"=>false,"controls"=>"#collapse-download-{$oDownload@iteration}"]
+                                                    aria=["expanded"=>"false","controls"=>"collapse-download-{$oDownload@iteration}"]
                                                     data=["toggle"=> "collapse", "target"=>"#collapse-download-{$oDownload@iteration}"]
                                                 }
                                                     {$oDownload->oDownloadSprache->getName()}

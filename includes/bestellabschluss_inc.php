@@ -4,10 +4,10 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use JTL\Cart\WarenkorbPos;
+use JTL\Cart\CartItem;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\EigenschaftWert;
-use JTL\Catalog\Wishlist\Wunschliste;
+use JTL\Catalog\Wishlist\Wishlist;
 use JTL\CheckBox;
 use JTL\Checkout\Bestellung;
 use JTL\Checkout\Kupon;
@@ -16,9 +16,9 @@ use JTL\Checkout\Lieferadresse;
 use JTL\Checkout\Nummern;
 use JTL\Checkout\Rechnungsadresse;
 use JTL\Checkout\ZahlungsInfo;
-use JTL\Customer\Kunde;
+use JTL\Customer\Customer;
 use JTL\DB\ReturnType;
-use JTL\Extensions\Upload;
+use JTL\Extensions\Upload\Upload;
 use JTL\Helpers\Date;
 use JTL\Helpers\Product;
 use JTL\Helpers\Request;
@@ -159,7 +159,7 @@ function bestellungInDB($cleared = 0, $orderNo = '')
     //füge alle Warenkorbpositionen ein
     if (is_array($cart->PositionenArr) && count($cart->PositionenArr) > 0) {
         $productFilter = (int)$conf['global']['artikel_artikelanzeigefilter'];
-        /** @var WarenkorbPos $item */
+        /** @var CartItem $item */
         foreach ($cart->PositionenArr as $item) {
             if ($item->nPosTyp === C_WARENKORBPOS_TYP_ARTIKEL) {
                 $item->fLagerbestandVorAbschluss = $item->Artikel->fLagerbestand !== null
@@ -235,7 +235,7 @@ function bestellungInDB($cleared = 0, $orderNo = '')
         // Falls die Einstellung global_wunschliste_artikel_loeschen_nach_kauf auf Y (Ja) steht und
         // Artikel vom aktuellen Wunschzettel gekauft wurden, sollen diese vom Wunschzettel geloescht werden
         if (isset($_SESSION['Wunschliste']->kWunschliste) && $_SESSION['Wunschliste']->kWunschliste > 0) {
-            Wunschliste::pruefeArtikelnachBestellungLoeschen(
+            Wishlist::pruefeArtikelnachBestellungLoeschen(
                 $_SESSION['Wunschliste']->kWunschliste,
                 $cartItems
             );
@@ -443,7 +443,7 @@ function speicherKundenKontodaten($paymentInfo): void
  */
 function unhtmlSession(): void
 {
-    $customer        = new Kunde();
+    $customer        = new Customer();
     $sessionCustomer = Frontend::getCustomer();
     if ($sessionCustomer->kKunde > 0) {
         $customer->kKunde = $sessionCustomer->kKunde;
@@ -999,9 +999,10 @@ function setzeSmartyWeiterleitung(Bestellung $order): void
     }
     $pluginID = Helper::getIDByModuleID($_SESSION['Zahlungsart']->cModulId);
     if ($pluginID > 0) {
-        $loader             = Helper::getLoaderByPluginID($pluginID);
-        $plugin             = $loader->init($pluginID);
-        $GLOBALS['oPlugin'] = $plugin;
+        $loader = Helper::getLoaderByPluginID($pluginID);
+        $plugin = $loader->init($pluginID);
+        global $oPlugin;
+        $oPlugin = $plugin;
         if ($plugin !== null) {
             $methods = $plugin->getPaymentMethods()->getMethodsAssoc();
             require_once $plugin->getPaths()->getVersionedPath() . PFAD_PLUGIN_PAYMENTMETHOD .
@@ -1087,7 +1088,7 @@ function fakeBestellung()
     if (is_array($cart->PositionenArr) && count($cart->PositionenArr) > 0) {
         $order->Positionen = [];
         foreach ($cart->PositionenArr as $i => $item) {
-            $order->Positionen[$i] = new WarenkorbPos();
+            $order->Positionen[$i] = new CartItem();
             foreach (array_keys(get_object_vars($item)) as $member) {
                 $order->Positionen[$i]->$member = $item->$member;
             }
@@ -1100,11 +1101,7 @@ function fakeBestellung()
     if (isset($_SESSION['Bestellung']->GuthabenNutzen) && (int)$_SESSION['Bestellung']->GuthabenNutzen === 1) {
         $order->fGuthaben = -$_SESSION['Bestellung']->fGuthabenGenutzt;
     }
-    $conf = Shop::getSettings([CONF_KAUFABWICKLUNG]);
-    if ($conf['kaufabwicklung']['bestellabschluss_ip_speichern'] === 'Y') {
-        // non-anonymized IP (! we got a contract)
-        $order->cIP = Request::getRealIP();
-    }
+    $order->cIP = Request::getRealIP();
 
     return $order->fuelleBestellung(false, true);
 }
@@ -1198,7 +1195,7 @@ function finalisiereBestellung($orderNo = '', bool $sendMail = true): Bestellung
         )->format('d.m.Y') . ' - ' .
         Date::dateAddWeekday($order->dErstellt, $order->oEstimatedDelivery->longestMax)->format('d.m.Y');
     }
-    $customer = new Kunde();
+    $customer = new Customer();
     $customer->kopiereSession();
     if ($sendMail === true) {
         $mailer = Shop::Container()->get(Mailer::class);

@@ -173,8 +173,8 @@
             </div>
         </div>
         <div class="save-wrapper">
-            <div class="row">
-                <div class="col-sm-6 col-xl-auto mb-3">
+            <div class="row align-items-center">
+                <div class="col-sm-6 col-xl-auto">
                     <div class="checkbox d-none">
                         <div class="custom-control custom-checkbox">
                             <input class="custom-control-input" id="backupDone" type="checkbox" value="" />

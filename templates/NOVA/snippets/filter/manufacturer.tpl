@@ -16,9 +16,9 @@
             {block name='snippets-filter-manufacturer-item'}
                 <span class="value">
                     {link href="{if !empty($filterOption->getURL())}{$filterOption->getURL()}{else}#{/if}"
-                    title="{$filterOption->getName()}: {$filterOption->getCount()}"
-                    data=["toggle"=>"tooltip"]
-                    class="{if $filterOption->isActive()}active{/if}"
+                        title="{$filterOption->getName()}: {$filterOption->getCount()}"
+                        data=["toggle"=>"tooltip", "placement"=>"auto"]
+                        class="{if $filterOption->isActive()}active{/if}"
                     }
                         {if $Einstellungen.navigationsfilter.hersteller_anzeigen_als == 'B'}
                                 {image src=$filterOption->getData('cBildpfadKlein') class="vmiddle filter-img"}
@@ -37,10 +37,10 @@
                 </ul>
             </div>
             {button
-            variant="link"
-            role="button"
-            class="text-right pr-0"
-            data=["toggle"=> "collapse", "target"=>"#box-collps-filter{$filter->getNiceName()}"]
+                variant="link"
+                role="button"
+                class="text-right pr-0"
+                data=["toggle"=> "collapse", "target"=>"#box-collps-filter{$filter->getNiceName()}"]
             }
             {lang key='showAll'} <i class="fas fa-chevron-down"></i>
             {/button}

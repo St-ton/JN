@@ -55,7 +55,7 @@ trait PortletHtml
     }
 
     /**
-     * @param string $faType
+     * @param string $faClasses
      * @return string
      */
     public function getFontAwesomeButtonHtml(string $faClasses): string

@@ -115,7 +115,7 @@
                             <input type="hidden" name="nYear_downloads" value="{$nSitemapDownloadYear}" />
                             <div id="payment">
                                 <div id="tabellenBewertung" class="table-responsive">
-                                    <table class="table table-striped">
+                                    <table class="table table-striped table-align-top">
                                         <thead>
                                             <tr>
                                                 <th>&nbsp;</th>
@@ -158,7 +158,7 @@
                                 </div>
                                 <div class="card-footer save-wrapper">
                                     <div class="row">
-                                        <div class="col-sm-6 col-xl-auto text-left mb-3">
+                                        <div class="col-sm-6 col-xl-auto text-left">
                                             <div class="custom-control custom-checkbox">
                                                 <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS" type="checkbox" onclick="AllMessages(this.form);">
                                                 <label class="custom-control-label" for="ALLMSGS">{__('sitemapSelectAll')}</label>
@@ -214,7 +214,7 @@
                             <input type="hidden" name="tab" value="report">
                             <input type="hidden" name="nYear_reports" value="{$nSitemapReportYear}" />
                             <div class="table-responsive">
-                                <table class="table">
+                                <table class="table table-align-top">
                                     <thead>
                                         <tr>
                                             <th class="check"></th>
@@ -248,15 +248,15 @@
                                         </tr>
                                         {if isset($oSitemapReport->oSitemapReportFile_arr) && $oSitemapReport->oSitemapReportFile_arr|@count > 0}
                                             <tr id="info_{$oSitemapReport->kSitemapReport}" style="display: none;">
-                                                <td>&nbsp;</td>
-                                                <td colspan="4">
+                                                <td class="border-top-0">&nbsp;</td>
+                                                <td class="border-top-0" colspan="4">
 
                                                     <table class="table-striped" border="0" cellspacing="1" cellpadding="0" width="100%">
                                                         <thead>
                                                             <tr>
-                                                                <th class="tleft">{__('sitemapName')}</th>
-                                                                <th class="th-2">{__('sitemapCountURL')}</th>
-                                                                <th class="th-3">{__('sitemapSize')}</th>
+                                                                <th>{__('sitemapName')}</th>
+                                                                <th class="th-2 text-center">{__('sitemapCountURL')}</th>
+                                                                <th class="th-3 text-center">{__('sitemapSize')}</th>
                                                             </tr>
                                                         </thead>
                                                         <tbody>
@@ -279,7 +279,7 @@
                             </div>
                             <div class="card-footer save-wrapper">
                                 <div class="row">
-                                    <div class="col-sm-6 col-xl-auto text-left mb-3">
+                                    <div class="col-sm-6 col-xl-auto text-left">
                                         <div class="custom-control custom-checkbox">
                                             <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS2" type="checkbox" onclick="AllMessages(this.form);">
                                             <label class="custom-control-label" for="ALLMSGS2">{__('sitemapSelectAll')}</label>

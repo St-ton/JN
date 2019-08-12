@@ -5,7 +5,7 @@
  */
 
 use JTL\Catalog\Product\Preise;
-use JTL\Customer\Kundengruppe;
+use JTL\Customer\CustomerGroup;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Date;
 use JTL\Helpers\GeneralObject;
@@ -810,7 +810,7 @@ function holeKampagneDefDetailStats($campaignID, $definition, $cStamp, &$text, &
                 }
                 break;
             case KAMPAGNE_DEF_WARENKORB:    // WARENKORB
-                $customerGroupID = Kundengruppe::getDefaultGroupID();
+                $customerGroupID = CustomerGroup::getDefaultGroupID();
 
                 $data = Shop::Container()->getDB()->query(
                     'SELECT tkampagnevorgang.kKampagne, tkampagnevorgang.kKampagneDef, tkampagnevorgang.kKey ' .

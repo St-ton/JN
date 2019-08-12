@@ -22,7 +22,7 @@
                     {include file='snippets/filter/price_slider.tpl' id='price-slider-box'}
                 {/block}
             {/collapse}
-            <hr class="mt-0 mb-4">
+            <hr class="mt-0 mb-3">
         {/block}
     {/if}
 {/block}

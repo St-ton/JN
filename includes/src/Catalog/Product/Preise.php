@@ -417,24 +417,20 @@ class Preise
      */
     public function localizePreise(): self
     {
-        $currency = Frontend::getCurrency();
-
+        $currency                  = Frontend::getCurrency();
         $this->cPreisLocalized_arr = [];
-        foreach ($this->fPreis_arr as $fPreis) {
+        foreach ($this->fPreis_arr as $price) {
             $this->cPreisLocalized_arr[] = [
-                self::getLocalizedPriceString(Tax::getGross($fPreis, $this->fUst, 4), $currency),
-                self::getLocalizedPriceString($fPreis, $currency)
+                self::getLocalizedPriceString(Tax::getGross($price, $this->fUst, 4), $currency),
+                self::getLocalizedPriceString($price, $currency)
             ];
         }
-
         $this->cVKLocalized[0] = self::getLocalizedPriceString(
             Tax::getGross($this->fVKNetto, $this->fUst, 4),
             $currency
         );
         $this->cVKLocalized[1] = self::getLocalizedPriceString($this->fVKNetto, $currency);
-
-        $this->fVKBrutto = Tax::getGross($this->fVKNetto, $this->fUst);
-
+        $this->fVKBrutto       = Tax::getGross($this->fVKNetto, $this->fUst);
         if ($this->alterVKNetto) {
             $this->alterVKLocalized[0] = self::getLocalizedPriceString(
                 Tax::getGross($this->alterVKNetto, $this->fUst, 4),
@@ -462,10 +458,10 @@ class Preise
         $this->alterVK[1] = $this->alterVKNetto * $factor;
 
         $this->fStaffelpreis_arr = [];
-        foreach ($this->fPreis_arr as $fPreis) {
+        foreach ($this->fPreis_arr as $price) {
             $this->fStaffelpreis_arr[] = [
-                Tax::getGross($fPreis * $factor, $this->fUst),
-                $fPreis * $factor
+                Tax::getGross($price * $factor, $this->fUst),
+                $price * $factor
             ];
         }
         if (!empty($this->alterVKNetto)) {
@@ -534,12 +530,12 @@ class Preise
         $this->fPreis3 = 0;
         $this->fPreis4 = 0;
         $this->fPreis5 = 0;
-        foreach ($this->fPreis_arr as $key => $fPreis) {
+        foreach ($this->fPreis_arr as $key => $price) {
             $this->fPreis_arr[$key] = 0;
         }
         foreach ($this->fStaffelpreis_arr as $fStaffelpreisKey => $fStaffelpreis) {
-            foreach ($fStaffelpreis as $fPreisKey => $fPreis) {
-                $this->fStaffelpreis_arr[$fStaffelpreisKey][$fPreisKey] = 0;
+            foreach ($fStaffelpreis as $pKey => $price) {
+                $this->fStaffelpreis_arr[$fStaffelpreisKey][$pKey] = 0;
             }
         }
     }

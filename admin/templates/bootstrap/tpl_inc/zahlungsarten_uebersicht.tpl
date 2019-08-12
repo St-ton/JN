@@ -77,7 +77,7 @@
                 </table>
             </div>
             <div class="card-footer save-wrapper">
-                <form method="post" action="zahlungsarten.php" class="top" style="margin-bottom: 15px;">
+                <form method="post" action="zahlungsarten.php" class="top">
                     {$jtl_token}
                     <input type="hidden" name="checkNutzbar" value="1"/>
                     <div class="row">

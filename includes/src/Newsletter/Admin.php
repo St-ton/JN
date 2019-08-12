@@ -12,7 +12,6 @@ use JTL\Backend\Revision;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
 use JTL\Exceptions\EmptyResultSetException;
-use JTL\Exceptions\InvalidInputException;
 use JTL\Optin\Optin;
 use JTL\Optin\OptinNewsletter;
 use JTL\Shop;

@@ -4,16 +4,16 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Alert\Alert;
+use JTL\Backend\AdminLoginStatus;
 use JTL\Helpers\Form;
-use JTL\Profiler;
-use JTL\Shop;
 use JTL\Helpers\Text;
+use JTL\Profiler;
+use JTL\Session\Backend;
+use JTL\Shop;
 use JTL\Template;
 use JTL\Update\Updater;
 use JTLShop\SemVer\Version;
-use JTL\Backend\AdminLoginStatus;
-use JTL\Session\Backend;
-use JTL\Alert\Alert;
 
 require_once __DIR__ . '/includes/admininclude.php';
 /** @global \JTL\Smarty\JTLSmarty     $smarty */

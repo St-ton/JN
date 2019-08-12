@@ -6,8 +6,8 @@
 
 namespace JTL\Widgets;
 
-use JTL\Linechart;
 use JTL\Catalog\Product\Preise;
+use JTL\Linechart;
 
 /**
  * Class SalesVolume

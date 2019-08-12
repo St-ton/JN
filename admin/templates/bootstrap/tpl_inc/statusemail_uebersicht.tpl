@@ -82,7 +82,7 @@
                 <div class="card-footer save-wrapper">
                     <div class="row">
                         <div class="ml-auto col-sm-6 col-xl-auto">
-                            <button type="submit" class="btn btn-outline-primary btn-block mb-2" name="action" value="sendnow">
+                            <button type="submit" class="btn btn-outline-primary btn-block" name="action" value="sendnow">
                                 <i class="far fa-envelope"></i> {__('sendEmail')}
                             </button>
                         </div>

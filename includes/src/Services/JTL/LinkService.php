@@ -6,6 +6,7 @@
 
 namespace JTL\Services\JTL;
 
+use Illuminate\Support\Collection;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
 use JTL\Link\Link;
@@ -15,7 +16,6 @@ use JTL\Link\LinkGroupList;
 use JTL\Link\LinkGroupListInterface;
 use JTL\Link\LinkInterface;
 use JTL\Shop;
-use Illuminate\Support\Collection;
 use function Functional\first;
 use function Functional\first_index_of;
 

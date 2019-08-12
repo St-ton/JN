@@ -55,7 +55,7 @@
                     <hr class="mb-n3">
                 </div>
                 <div class="card-body">
-                    <table class="table table-hover table-striped table-blank text-x1 last-child">
+                    <table class="table table-striped text-x1 last-child">
                         <tbody>
                         {render_item title=__('databaseStructure') val=$status->validDatabaseStruct() more='dbcheck.php'}
                         {render_item title=__('fileStructure') val=($status->validModifiedFileStruct()&&$status->validOrphanedFilesStruct()) more='filecheck.php'}
@@ -152,7 +152,7 @@
                             </div>
                             {if intval($sub->bUpdate) === 0}
                                 <div class="col-md-9">
-                                    <table class="table table-hover table-striped table-blank text-x1 last-child">
+                                    <table class="table table-blank text-x1 last-child">
                                         <tbody>
                                             <tr>
                                                 <td class="text-muted text-right"><strong>{__('version')}</strong></td>
@@ -188,7 +188,7 @@
                             {__('paymentTypesWithError')}
                         </div>
 
-                        <table class="table table-condensed table-hover table-striped table-blank last-child">
+                        <table class="table table-condensed table-striped table-blank last-child">
                             <tbody>
                             {foreach $incorrectPaymentMethods as $s}
                                 <tr class="text-vcenter">
@@ -221,7 +221,7 @@
                             {__('pluginsWithSameHook')}
                         </div>
 
-                        <table class="table table-condensed table-hover table-striped table-blank last-child">
+                        <table class="table table-condensed table-striped table-blank last-child">
                             <tbody>
                             {foreach $shared as $s}
                                 {if count($s) > 1}
@@ -260,7 +260,7 @@
                 </div>
                 <div class="card-body">
                     {if $tests.recommendations|count > 0}
-                        <table class="table table-condensed table-hover table-striped table-blank">
+                        <table class="table table-condensed table-striped table-blank">
                             <thead>
                             <tr>
                                 <th class="col-xs-7">&nbsp;</th>

@@ -14,7 +14,6 @@ use JTL\Plugin\Data\Config;
 use JTL\Plugin\Helper;
 use JTL\Plugin\Plugin;
 use JTL\Shop;
-use JTLShop\SemVer\Version;
 
 require_once __DIR__ . '/includes/admininclude.php';
 

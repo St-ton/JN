@@ -25,7 +25,7 @@
                                 {/button}
                             </div>
 
-                            {collapse visible=true id="cfg-grp-cllps-{$kKonfiggruppe}" aria=["labelledby"=>"#crd-hdr-{$oGruppe@iteration}"]}
+                            {collapse visible=true id="cfg-grp-cllps-{$kKonfiggruppe}" aria=["labelledby"=>"crd-hdr-{$oGruppe@iteration}"]}
                                 <div class="text-center mb-5">
                                     {badge variant="light"}
                                         {if $oGruppe->getMin() === 1 && $oGruppe->getMax() === 1}
@@ -121,7 +121,7 @@
                                                                                 data=["toggle"=>"collapse","target"=>"#desc_{$kKonfigitem}"]
                                                                                 size="sm"
                                                                                 role="button"
-                                                                                aria=["expanded"=>false, "controls"=>"desc_{$kKonfigitem}"]
+                                                                                aria=["expanded"=>"false", "controls"=>"desc_{$kKonfigitem}"]
                                                                             }
                                                                                 {lang key='showDescription'} <i class="fas fa-chevron-down"></i></span>
                                                                             {/button}
@@ -186,7 +186,7 @@
                                                                                 data=["toggle"=>"collapse","target"=>"#desc_{$kKonfigitem}"]
                                                                                 size="sm"
                                                                                 role="button"
-                                                                                aria=["expanded"=>false, "controls"=>"desc_{$kKonfigitem}"]
+                                                                                aria=["expanded"=>"false", "controls"=>"desc_{$kKonfigitem}"]
                                                                             }
                                                                                 {lang key='showDescription'} <i class="fas fa-chevron-down"></i></span>
                                                                             {/button}
@@ -314,7 +314,7 @@
                 {/foreach}
                 {/block}
             </div>
-            {link variant="light" href="#cfg-top" class="float-right m-2 btn btn-link"}
+            {link variant="light" href="#cfg-top" class="float-right m-2 btn btn-link" title="{lang key='goTop'}"}
                 <i class="fas fa-angle-double-up"></i>
             {/link}
         {/col}

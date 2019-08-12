@@ -448,12 +448,12 @@
     <div class="save-wrapper">
         <div class="row">
             <div class="ml-auto col-sm-6 col-xl-auto">
-                <a class="btn btn-outline-primary btn-block mb-2" href="banner.php" id="cancel">
+                <a class="btn btn-outline-primary btn-block" href="banner.php" id="cancel">
                     {__('goBack')}
                 </a>
             </div>
             <div class="col-sm-6 col-xl-auto">
-                <a class="btn btn-outline-primary btn-block mb-2" href="#" id="area_new">
+                <a class="btn btn-outline-primary btn-block" href="#" id="area_new">
                     <i class="fa fa-share"></i> {__('new')} {__('zone')}
                 </a>
             </div>
@@ -474,7 +474,7 @@
                 <div class="card-body">
                     {include file='tpl_inc/pagination.tpl' pagination=$pagination}
                     <div class="table-responsive">
-                        <table class="list table">
+                        <table class="table table-sm">
                             <thead>
                             <tr>
                                 <th class="text-left" width="25%">{__('name')}</th>

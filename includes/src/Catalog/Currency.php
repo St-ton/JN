@@ -391,8 +391,8 @@ class Currency
                     $priceLocalized = $currency->getHtmlEntity() . ' ' . $priceLocalized;
                     $grossLocalized = $currency->getHtmlEntity() . ' ' . $grossLocalized;
                 } else {
-                    $priceLocalized = $priceLocalized . ' ' . $currency->getHtmlEntity();
-                    $grossLocalized = $grossLocalized . ' ' . $currency->getHtmlEntity();
+                    $priceLocalized .= ' ' . $currency->getHtmlEntity();
+                    $grossLocalized .= ' ' . $currency->getHtmlEntity();
                 }
                 // Wurde geändert weil der Preis nun als Betrag gesehen wird
                 // und die Steuer direkt in der Versandart als eSteuer Flag eingestellt wird

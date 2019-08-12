@@ -4,12 +4,12 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Catalog\Category\KategorieListe;
 use JTL\Helpers\Category;
 use JTL\Helpers\CMS;
-use JTL\Catalog\Category\KategorieListe;
+use JTL\Link\LinkInterface;
 use JTL\Shop;
 use JTL\Sitemap\Sitemap;
-use JTL\Link\LinkInterface;
 
 /**
  * @return array

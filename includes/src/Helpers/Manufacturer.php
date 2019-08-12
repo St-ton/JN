@@ -6,9 +6,9 @@
 
 namespace JTL\Helpers;
 
-use JTL\DB\ReturnType;
 use JTL\Catalog\Hersteller;
-use JTL\Customer\Kundengruppe;
+use JTL\Customer\CustomerGroup;
+use JTL\DB\ReturnType;
 use JTL\Language\LanguageHelper;
 use JTL\Shop;
 
@@ -105,7 +105,7 @@ class Manufacturer
                 [
                     'skey' => 'kHersteller',
                     'lid'  => self::$langID,
-                    'cgid' => Kundengruppe::getDefaultGroupID()
+                    'cgid' => CustomerGroup::getDefaultGroupID()
                 ],
                 ReturnType::ARRAY_OF_OBJECTS
             );

@@ -4,10 +4,10 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use JTL\Cart\Warenkorb;
+use JTL\Cart\Cart;
+use JTL\Cart\CartHelper;
 use JTL\Checkout\Bestellung;
 use JTL\DB\ReturnType;
-use JTL\Helpers\Cart;
 use JTL\Plugin\Helper;
 use JTL\Session\Frontend;
 use JTL\Shop;
@@ -65,12 +65,12 @@ if (isset($_GET['i'])) {
     }
     if (empty($_SESSION['Zahlungsart']->nWaehrendBestellung)) {
         $cart->loescheDeaktiviertePositionen();
-        $wkChecksum = Warenkorb::getChecksum($cart);
+        $wkChecksum = Cart::getChecksum($cart);
         if (!empty($cart->cChecksumme)
             && $wkChecksum !== $cart->cChecksumme
         ) {
             if (!$cart->posTypEnthalten(C_WARENKORBPOS_TYP_ARTIKEL)) {
-                Cart::deleteAllSpecialItems();
+                CartHelper::deleteAllSpecialItems();
             }
             $_SESSION['Warenkorbhinweise'][] = Shop::Lang()->get('yourbasketismutating', 'checkout');
             header('Location: ' . $linkHelper->getStaticRoute('warenkorb.php'), true, 303);

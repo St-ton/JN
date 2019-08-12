@@ -18,29 +18,30 @@
                 {foreach $orderPagination->getPageItems() as $order}
                         {card no-body=true class='mb-3'}
                             {cardheader class="bg-info"}
-                                {row}
-                                    {col md=3}
-                                        <strong><i class="far fa-calendar-alt"></i> {$order->dBestelldatum}</strong>
-                                    {/col}
-                                    {col md=2}
-                                        {$order->cBestellwertLocalized}
-                                    {/col}
-                                    {col md=2}
-                                        {$order->cBestellNr}
-                                    {/col}
-                                    {col md=4}
-                                        <span class="{if $order->cStatus == BESTELLUNG_STATUS_IN_BEARBEITUNG}text-success{/if}">
-                                            {lang key='orderStatus' section='login'}: {$order->Status}
-                                        </span>
-                                    {/col}
-                                    {col md=1}
-                                        {link href="{get_static_route id='jtl.php'}?bestellung={$order->kBestellung}"
-                                            title="{lang key='showOrder' section='login'}: {lang key='orderNo' section='login'} {$order->cBestellNr}"
-                                            data=["toggle" => "tooltip", "placement" => "bottom"]}
+                                {link href="{get_static_route id='jtl.php'}?bestellung={$order->kBestellung}"
+                                    title="{lang key='showOrder' section='login'}: {lang key='orderNo' section='login'} {$order->cBestellNr}"
+                                    data=["toggle" => "tooltip", "placement" => "bottom"]
+                                    class="no-deco"}
+                                    {row}
+                                        {col cols=6 md=3 order=1}
+                                            <strong><i class="far fa-calendar-alt"></i> {$order->dBestelldatum}</strong>
+                                        {/col}
+                                        {col cols=6 md=2 order=4 order-md=2}
+                                            {$order->cBestellwertLocalized}
+                                        {/col}
+                                        {col cols=4 md=2 order=2 order-md=3}
+                                            {$order->cBestellNr}
+                                        {/col}
+                                        {col cols=6 md=4 order=5 order-md=4}
+                                            <span class="{if $order->cStatus == BESTELLUNG_STATUS_IN_BEARBEITUNG}text-success{/if}">
+                                                {lang key='orderStatus' section='login'}: {$order->Status}
+                                            </span>
+                                        {/col}
+                                        {col cols=2 md=1 order=3 order-md=5 class="text-right"}
                                             <i class="fa fa-eye"></i>
-                                        {/link}
-                                    {/col}
-                                {/row}
+                                        {/col}
+                                    {/row}
+                                {/link}
                             {/cardheader}
                         {/card}
                 {/foreach}

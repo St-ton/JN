@@ -4,20 +4,20 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use JTL\Helpers\Product;
-use JTL\Helpers\Request;
 use JTL\Alert\Alert;
-use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Category\Kategorie;
 use JTL\Catalog\Category\KategorieListe;
+use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\Preise;
 use JTL\Catalog\Product\Preisverlauf;
-use JTL\Shop;
-use JTL\Shopsetting;
+use JTL\Extensions\Upload\Upload;
+use JTL\Helpers\Product;
+use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Pagination\Pagination;
 use JTL\Session\Frontend;
-use JTL\Extensions\Upload;
+use JTL\Shop;
+use JTL\Shopsetting;
 
 if (!defined('PFAD_ROOT')) {
     http_response_code(400);
@@ -94,7 +94,7 @@ if (Shop::$kVariKindArtikel > 0) {
         return;
     }
     $bCanonicalURL = $conf['artikeldetails']['artikeldetails_canonicalurl_varkombikind'] !== 'N';
-    $cCanonicalURL = $AktuellerArtikel->baueVariKombiKindCanonicalURL(SHOP_SEO, $AktuellerArtikel, $bCanonicalURL);
+    $cCanonicalURL = $AktuellerArtikel->baueVariKombiKindCanonicalURL($AktuellerArtikel, $bCanonicalURL);
 }
 if ($conf['preisverlauf']['preisverlauf_anzeigen'] === 'Y' && Frontend::getCustomerGroup()->mayViewPrices()) {
     Shop::$kArtikel = Shop::$kVariKindArtikel > 0

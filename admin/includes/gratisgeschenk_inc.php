@@ -4,10 +4,10 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use JTL\Helpers\Date;
 use JTL\Catalog\Product\Artikel;
-use JTL\Shop;
 use JTL\DB\ReturnType;
+use JTL\Helpers\Date;
+use JTL\Shop;
 
 /**
  * @param string $sql

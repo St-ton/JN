@@ -6,11 +6,12 @@
 
 namespace JTL\Helpers;
 
-use JTL\Checkout\Bestellung;
+use JTL\Cart\CartHelper;
 use JTL\Catalog\Currency;
-use JTL\Customer\Kunde;
+use JTL\Checkout\Bestellung;
 use JTL\Checkout\Lieferadresse;
 use JTL\Checkout\Rechnungsadresse;
+use JTL\Customer\Customer;
 use JTL\DB\ReturnType;
 use JTL\Shop;
 use stdClass;
@@ -19,7 +20,7 @@ use stdClass;
  * Class Order
  * @package JTL\Helpers
  */
-class Order extends Cart
+class Order extends CartHelper
 {
     /**
      * @var Bestellung
@@ -182,9 +183,9 @@ class Order extends Cart
     }
 
     /**
-     * @return Kunde
+     * @return Customer
      */
-    public function getCustomer(): ?Kunde
+    public function getCustomer(): ?Customer
     {
         return $this->object->oKunde;
     }

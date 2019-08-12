@@ -36,6 +36,8 @@ class InputType extends Enum
 
     public const TEXT = 'text';
 
+    public const SEARCH = 'search';
+
     public const TEXT_LIST = 'textlist';
 
     public const IMAGE = 'image';
@@ -55,4 +57,10 @@ class InputType extends Enum
     public const FILTER = 'filter';
 
     public const ZONES = 'zones';
+
+    public const GALLERY_LAYOUT = 'gallery-layout';
+
+    public const BOX_STYLES = 'box-styles';
+
+    public const ROW_LAYOUT = 'row-layout';
 }

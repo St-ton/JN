@@ -48,7 +48,7 @@ class Service
     {
         $this->db = $db;
 
-        Shop::Container()->getGetText()->loadAdminLocale("pages/opc");
+        Shop::Container()->getGetText()->loadAdminLocale('pages/opc');
     }
 
     /**
@@ -69,6 +69,7 @@ class Service
             'getConfigPanelHtml',
             'getFilteredProductIds',
             'getFilterOptions',
+            'getFilterList',
         ];
     }
 
@@ -267,6 +268,24 @@ class Service
     public function getEditedPageKey(): int
     {
         return Request::verifyGPCDataInt('opcEditedPageKey');
+    }
+
+    /**
+     * @param string $propname
+     * @param array $enabledFilters
+     * @return string
+     * @throws \SmartyException
+     */
+    public function getFilterList(string $propname, array $enabledFilters = [])
+    {
+        $filters = $this->getFilterOptions($enabledFilters);
+        $smarty  = Shop::Smarty();
+        $html    = $smarty
+            ->assign('propname', $propname)
+            ->assign('filters', $filters)
+            ->fetch(PFAD_ROOT . \PFAD_ADMIN . 'opc/tpl/config/filter-list.tpl');
+
+        return $html;
     }
 
     /**

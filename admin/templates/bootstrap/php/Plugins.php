@@ -6,10 +6,10 @@
 
 namespace AdminTemplate;
 
+use DateTime;
 use JTL\Backend\Revision;
 use JTL\Catalog\Currency;
 use JTL\Shop;
-use DateTime;
 use JTL\Smarty\JTLSmarty;
 
 /**
@@ -74,7 +74,7 @@ class Plugins
             return '';
         }
         $inputId  = $params['inputId'];
-        $button   = '<button type="button" class="btn btn-tooltip btn-info" id="' .
+        $button   = '<button type="button" class="btn btn-tooltip btn-link px-1" id="' .
             $inputId . 'Tooltip" data-html="true"';
         $button  .= ' data-toggle="tooltip" data-placement="' . $placement . '">';
         $button  .= '<i class="fa fa-eur"></i></button>';

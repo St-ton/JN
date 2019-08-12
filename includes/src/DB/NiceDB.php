@@ -6,6 +6,7 @@
 
 namespace JTL\DB;
 
+use Illuminate\Support\Collection;
 use InvalidArgumentException;
 use JTL\Exceptions\InvalidEntityNameException;
 use JTL\Profiler;
@@ -13,7 +14,6 @@ use JTL\Shop;
 use PDO;
 use PDOException;
 use PDOStatement;
-use Illuminate\Support\Collection;
 
 /**
  * Class NiceDB

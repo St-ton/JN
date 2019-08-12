@@ -6,7 +6,7 @@
 
 namespace JTL\News;
 
-use function Functional\pluck;
+use Illuminate\Support\Collection;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
@@ -19,9 +19,9 @@ use JTL\Shop;
 use JTL\SimpleMail;
 use JTL\Smarty\JTLSmarty;
 use stdClass;
-use Illuminate\Support\Collection;
 use function Functional\every;
 use function Functional\map;
+use function Functional\pluck;
 
 /**
  * Class Controller

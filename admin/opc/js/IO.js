@@ -25,9 +25,12 @@ class IO
     generateIoFunction(publicName)
     {
         return function(...args) {
-            return new Promise((res, rej) => {
-                ioCall(publicName, args, res, rej);
-            })
+            let jqxhr   = null;
+            let promise = new Promise((res, rej) => {
+                jqxhr = ioCall(publicName, args, res, rej);
+            });
+            promise.jqxhr = jqxhr;
+            return promise;
         };
     }
 

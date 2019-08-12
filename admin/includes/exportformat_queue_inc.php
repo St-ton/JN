@@ -7,7 +7,7 @@
 use JTL\Alert\Alert;
 use JTL\Catalog\Currency;
 use JTL\Cron\LegacyCron;
-use JTL\Customer\Kundengruppe;
+use JTL\Customer\CustomerGroup;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
@@ -131,7 +131,7 @@ function holeAlleExportformate(): array
     foreach ($formats as $format) {
         $format->Sprache      = Shop::Lang()->getLanguageByID((int)$format->kSprache);
         $format->Waehrung     = new Currency((int)$format->kWaehrung);
-        $format->Kundengruppe = new Kundengruppe((int)$format->kKundengruppe);
+        $format->Kundengruppe = new CustomerGroup((int)$format->kKundengruppe);
     }
 
     return $formats;

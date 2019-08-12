@@ -326,7 +326,7 @@ final class Categories extends AbstractSync
     {
         $this->db->delete('tartikelkategorierabatt', 'kKategorie', $categoryID);
         $this->db->queryPrepared(
-            'INSERT INTO tartikelkategorierabatt (
+            'INSERT INTO tartikelkategorierabatt SELECT * FROM (
                 SELECT tkategorieartikel.kArtikel, tkategoriekundengruppe.kKundengruppe, tkategorieartikel.kKategorie,
                        MAX(tkategoriekundengruppe.fRabatt) fRabatt
                 FROM tkategoriekundengruppe
@@ -338,7 +338,13 @@ final class Categories extends AbstractSync
                 WHERE tkategoriekundengruppe.kKategorie = :categoryID
                     AND tkategoriesichtbarkeit.kKategorie IS NULL
                 GROUP BY tkategorieartikel.kArtikel, tkategoriekundengruppe.kKundengruppe, tkategorieartikel.kKategorie
-                HAVING MAX(tkategoriekundengruppe.fRabatt) > 0)',
+                HAVING MAX(tkategoriekundengruppe.fRabatt) > 0) AS tNew ON DUPLICATE KEY UPDATE
+                    kKategorie = IF(tartikelkategorierabatt.fRabatt < tNew.fRabatt,
+                        tNew.kKategorie,
+                        tartikelkategorierabatt.kKategorie),
+                    fRabatt    = IF(tartikelkategorierabatt.fRabatt < tNew.fRabatt,
+                        tNew.fRabatt,
+                        tartikelkategorierabatt.fRabatt)',
             ['categoryID' => $categoryID],
             ReturnType::DEFAULT
         );

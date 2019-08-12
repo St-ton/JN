@@ -4,7 +4,7 @@
  *}
 {block name='layout-header-nav-icons'}
     {block name='layout-header-nav-icons-search'}
-        {navitem tag="div" class="d-flex d-md-none mr-1" aria=['expanded' => 'false'] role='button'
+        {navitem tag="div" class="d-flex d-md-none mr-1" aria=['expanded' => 'false', 'label' => {lang key='search'}] role='button'
             data=['toggle' => 'collapse', 'target' => '#nav-search-collapse'] router-tag='div'}
             <i class="fas fa-search"></i>
         {/navitem}

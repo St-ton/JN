@@ -1224,7 +1224,7 @@ msgid "customer"
 msgstr "Kunde"
 
 msgid "search"
-msgstr "Suchen"
+msgstr "Suche"
 
 msgid "more"
 msgstr "Mehr"
@@ -1835,3 +1835,45 @@ msgstr "Passwort generieren"
 
 msgid "shopTitle"
 msgstr "Administration von JTL-Shop"
+
+msgid "fileSelect"
+msgstr "Datei auswählen"
+
+msgid "helpCenterHeader"
+msgstr "Hilfecenter"
+
+msgid "notificationsHeader"
+msgstr "Mitteilungen"
+
+msgid "favouritesHeader"
+msgstr "Favoriten"
+
+msgid "saveWithIcon"
+msgstr "<i class=\"fal fa-save\"></i> Speichern"
+
+msgid "cancelWithIcon"
+msgstr "<i class=\"fas fa-exclamation\"></i> Abbrechen"
+
+msgid "selectPickerNoneSelectedText"
+msgstr "Nichts ausgewählt"
+
+msgid "selectPickerNoneResultsText"
+msgstr "{0} ergab keine Treffer"
+
+msgid "selectPickerCountSelectedText"
+msgstr "{0} ausgewählt"
+
+msgid "selectPickerLimitReached"
+msgstr "Limit erreicht (max. {n})"
+
+msgid "selectPickerGroupLimitReached"
+msgstr "Gruppenlimit erreicht (max. {n})"
+
+msgid "selectPickerSelectAllText"
+msgstr "Alle aktivieren"
+
+msgid "selectPickerDeselectAllText"
+msgstr "Alle deaktivieren"
+
+msgid "selectPickerDoneButtonText"
+msgstr "Schließen"

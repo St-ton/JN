@@ -5,7 +5,7 @@
  */
 
 use JTL\Catalog\Product\Preise;
-use JTL\Customer\Kundengruppe;
+use JTL\Customer\CustomerGroup;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Date;
 use JTL\Helpers\GeneralObject;
@@ -810,7 +810,7 @@ function holeKampagneDefDetailStats($campaignID, $definition, $cStamp, &$text, &
                 }
                 break;
             case KAMPAGNE_DEF_WARENKORB:    // WARENKORB
-                $customerGroupID = Kundengruppe::getDefaultGroupID();
+                $customerGroupID = CustomerGroup::getDefaultGroupID();
 
                 $data = Shop::Container()->getDB()->query(
                     'SELECT tkampagnevorgang.kKampagne, tkampagnevorgang.kKampagneDef, tkampagnevorgang.kKey ' .
@@ -1510,16 +1510,16 @@ function mappeENGMonat($month)
 function GetTypes()
 {
     return [
-        1  => __('globalReportHit'),
-        2  => __('globalReportSale'),
-        3  => __('globalReportRegister'),
-        4  => __('globalReportAmount'),
-        5  => __('globalReportProductQuestion'),
-        6  => __('globalReportAvailabilityRequest'),
-        7  => __('globalReportLogin'),
-        8  => __('globalReportWishlistProducts'),
-        9  => __('globalReportComaprelistProducts'),
-        10 => __('globalReportNewsletterViewed')
+        1  => __('Hit'),
+        2  => __('Verkauf'),
+        3  => __('Anmeldung'),
+        4  => __('Verkaufssumme'),
+        5  => __('Frage zum Produkt'),
+        6  => __('Verfügbarkeits-Anfrage'),
+        7  => __('Login'),
+        8  => __('Produkt auf Wunschliste'),
+        9  => __('Produkt in den Warenkorb'),
+        10 => __('Angeschaute Newsletter')
     ];
 }
 

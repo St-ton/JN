@@ -7,11 +7,11 @@
 </script>
 
 {include file='tpl_inc/seite_header.tpl' cTitel=__('shippingmethods') cBeschreibung=__('isleListsHint') cDokuURL=__('shippingmethodsURL')}
-<div id="content" class="container-fluid">
+<div id="content">
     {foreach $versandarten as $versandart}
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">{$versandart->cName}</h3>
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">{$versandart->cName}</div>
             </div>
             <table class="table table-list">
                 <tbody>
@@ -104,13 +104,19 @@
                     {/if}
                 </tbody>
             </table>
-            <div class="panel-footer">
+            <div class="card-footer text-right">
                 <form method="post" action="versandarten.php">
                     {$jtl_token}
-                    <div class="btn-group">
-                        <button name="edit" value="{$versandart->kVersandart}" class="btn btn-primary"><i class="fa fa-edit"></i> {__('edit')}</button>
-                        <button name="clone" value="{$versandart->kVersandart}" class="btn btn-default clone">{__('duplicate')}</button>
-                        <button name="del" value="{$versandart->kVersandart}" class="btn btn-danger" onclick="return confirmDelete('{$versandart->cName}');"><i class="fa fa-trash"></i> {__('delete')}</button>
+                    <div class="row">
+                        <div class="ml-auto col-sm-6 col-xl-auto text-right">
+                            <button name="del" value="{$versandart->kVersandart}" class="btn btn-danger" onclick="return confirmDelete('{$versandart->cName}');"><i class="fas fa-trash-alt"></i> {__('delete')}</button>
+                        </div>
+                        <div class="col-sm-6 col-xl-auto">
+                            <button name="clone" value="{$versandart->kVersandart}" class="btn btn-default clone">{__('duplicate')}</button>
+                        </div>
+                        <div class="col-sm-6 col-xl-auto">
+                            <button name="edit" value="{$versandart->kVersandart}" class="btn btn-primary"><i class="fal fa-edit"></i> {__('edit')}</button>
+                        </div>
                     </div>
                 </form>
             </div>
@@ -118,13 +124,13 @@
     {/foreach}
 
     <div id="settings">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <h3 class="panel-title">{__('createShippingMethod')}</h3>
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">{__('createShippingMethod')}</div>
             </div>
             <form name="versandart_neu" method="post" action="versandarten.php">
                 {$jtl_token}
-                <div class="panel-body">
+                <div class="card-body">
                     <input type="hidden" name="neu" value="1" />
                     {foreach $versandberechnungen as $versandberechnung}
                         <div class="item">
@@ -135,7 +141,7 @@
                         </div>
                     {/foreach}
                 </div>
-                <div class="panel-footer">
+                <div class="card-footer text-right">
                     <button type="submit" value="{__('createShippingMethod')}" class="btn btn-primary"><i class="fa fa-share"></i> {__('createShippingMethod')}</button>
                 </div>
             </form>

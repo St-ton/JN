@@ -5,9 +5,8 @@
  */
 
 use JTL\Alert\Alert;
-use JTL\Newsletter\NewsletterCronDAO;
-use JTL\Customer\Kunde;
-use JTL\Customer\Kundengruppe;
+use JTL\Customer\Customer;
+use JTL\Customer\CustomerGroup;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
@@ -15,6 +14,7 @@ use JTL\Helpers\Text;
 use JTL\Kampagne;
 use JTL\Newsletter\Admin;
 use JTL\Newsletter\Newsletter;
+use JTL\Newsletter\NewsletterCronDAO;
 use JTL\Pagination\Pagination;
 use JTL\Session\Frontend;
 use JTL\Shop;
@@ -40,7 +40,7 @@ $activeSearchSQL           = new stdClass();
 $activeSearchSQL->cJOIN    = '';
 $activeSearchSQL->cWHERE   = '';
 $customerGroup             = $db->select('tkundengruppe', 'cStandard', 'Y');
-$_SESSION['Kundengruppe']  = new Kundengruppe($customerGroup->kKundengruppe);
+$_SESSION['Kundengruppe']  = new CustomerGroup($customerGroup->kKundengruppe);
 
 setzeSprache();
 if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
@@ -724,7 +724,7 @@ if ($step === 'uebersicht') {
         ReturnType::ARRAY_OF_OBJECTS
     );
     foreach ($inactiveRecipients as $recipient) {
-        $customer             = new Kunde($recipient->kKunde ?? null);
+        $customer             = new Customer($recipient->kKunde ?? null);
         $recipient->cNachname = $customer->cNachname;
     }
 

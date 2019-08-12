@@ -152,7 +152,7 @@ class SettingsLinks extends AbstractItem
                         // Ist der Typ eine Selectbox => Es müssen SelectboxOptionen vorhanden sein
                         if ($type === InputType::SELECT) {
                             $optNode = $setting['SelectboxOptions'][0] ?? [];
-                            if (GeneralObject::hasCount('OptionsSource', $setting['OptionsSource'])) {
+                            if (GeneralObject::hasCount('OptionsSource', $setting)) {
                                 //do nothing for now
                             } elseif (\count($optNode) === 1) { // Es gibt mehr als eine Option
                                 foreach ($optNode['Option'] as $y => $option) {
@@ -183,7 +183,7 @@ class SettingsLinks extends AbstractItem
                             }
                         } elseif ($type === InputType::RADIO) {
                             $optNode = $setting['RadioOptions'][0] ?? [];
-                            if (GeneralObject::hasCount('OptionsSource', $setting['OptionsSource'])) {
+                            if (GeneralObject::hasCount('OptionsSource', $setting)) {
                             } elseif (\count($optNode) === 1) { // Es gibt mehr als eine Option
                                 foreach ($optNode['Option'] as $y => $option) {
                                     $y = (string)$y;

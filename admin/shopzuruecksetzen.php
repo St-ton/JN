@@ -4,10 +4,10 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
+use JTL\Alert\Alert;
+use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Shop;
-use JTL\DB\ReturnType;
-use JTL\Alert\Alert;
 
 require_once __DIR__ . '/includes/admininclude.php';
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'news_inc.php';
@@ -84,10 +84,6 @@ if (isset($_POST['zuruecksetzen']) && (int)$_POST['zuruecksetzen'] === 1 && Form
                     $db->query('TRUNCATE tuploadschemasprache', ReturnType::DEFAULT);
                     $db->query('TRUNCATE tmasseinheit', ReturnType::DEFAULT);
                     $db->query('TRUNCATE tmasseinheitsprache', ReturnType::DEFAULT);
-                    $db->query('TRUNCATE tsteuerklasse', ReturnType::DEFAULT);
-                    $db->query('TRUNCATE tsteuersatz', ReturnType::DEFAULT);
-                    $db->query('TRUNCATE tsteuerzone', ReturnType::DEFAULT);
-                    $db->query('TRUNCATE tsteuerzoneland', ReturnType::DEFAULT);
 
                     $db->query(
                         "DELETE FROM tseo
@@ -97,6 +93,13 @@ if (isset($_POST['zuruecksetzen']) && (int)$_POST['zuruecksetzen'] === 1 && Form
                             OR cKey = 'kHersteller'",
                         ReturnType::DEFAULT
                     );
+                    break;
+
+                case 'steuern':
+                    $db->query('TRUNCATE tsteuerklasse', ReturnType::DEFAULT);
+                    $db->query('TRUNCATE tsteuersatz', ReturnType::DEFAULT);
+                    $db->query('TRUNCATE tsteuerzone', ReturnType::DEFAULT);
+                    $db->query('TRUNCATE tsteuerzoneland', ReturnType::DEFAULT);
                     break;
 
                 case 'revisions':

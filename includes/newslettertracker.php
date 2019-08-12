@@ -6,8 +6,8 @@
 
 use JTL\Helpers\Request;
 use JTL\Kampagne;
-use JTL\Shop;
 use JTL\Session\Frontend;
+use JTL\Shop;
 
 require_once __DIR__ . '/globalinclude.php';
 

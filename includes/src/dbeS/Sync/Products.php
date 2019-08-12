@@ -1277,12 +1277,19 @@ final class Products extends AbstractSync
             );
 
             if (isset($maxDiscount->fRabatt) && $maxDiscount->fRabatt > 0) {
-                $discount                = new stdClass();
-                $discount->kArtikel      = $productID;
-                $discount->kKundengruppe = $item->kKundengruppe;
-                $discount->kKategorie    = $maxDiscount->kKategorie;
-                $discount->fRabatt       = $maxDiscount->fRabatt;
-                $this->db->insert('tartikelkategorierabatt', $discount);
+                $this->db->queryPrepared(
+                    'INSERT INTO tartikelkategorierabatt (kArtikel, kKundengruppe, kKategorie, fRabatt)
+                        VALUES (:productID, :customerGroup, :categoryID, :discount) ON DUPLICATE KEY UPDATE
+                            kKategorie = IF(fRabatt < :discount, :categoryID, kKategorie),
+                            fRabatt    = IF(fRabatt < :discount, :discount, fRabatt)',
+                    [
+                        'productID'     => $productID,
+                        'customerGroup' => $item->kKundengruppe,
+                        'categoryID'    => $maxDiscount->kKategorie,
+                        'discount'      => $maxDiscount->fRabatt,
+                    ],
+                    ReturnType::DEFAULT
+                );
                 $affectedProductIDs[] = $productID;
             }
         }

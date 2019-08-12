@@ -7,7 +7,7 @@
 namespace JTL\dbeS\Sync;
 
 use JTL\dbeS\Starter;
-use JTL\Extensions\Konfiggruppe;
+use JTL\Extensions\Config\Group;
 
 /**
  * Class Configurations
@@ -82,11 +82,11 @@ final class ConfigGroups extends AbstractSync
      */
     private function handleDeletes($xml): void
     {
-        foreach ($xml->kKonfiggruppe as $item) {
-            $groupID = (int)$item;
-            if ($groupID > 0) {
-                $this->deleteGroup($groupID);
-            }
+        if (!Group::checkLicense()) {
+            return;
+        }
+        foreach (\array_map('\intval', $xml->kKonfiggruppe) as $groupID) {
+            $this->deleteGroup($groupID);
         }
     }
 
@@ -95,11 +95,7 @@ final class ConfigGroups extends AbstractSync
      */
     private function deleteGroup(int $id): void
     {
-        if ($id > 0 && Konfiggruppe::checkLicense()) {
-            $config = new Konfiggruppe($id);
-            $rows   = $config->delete();
-            $this->logger->debug($rows . ' Konfiggruppen gelöscht');
-        }
+        $this->db->delete('tkonfiggruppe', 'kKonfiggruppe', $id);
     }
 
     /**
@@ -107,8 +103,6 @@ final class ConfigGroups extends AbstractSync
      */
     private function deleteConfigItem(int $id): void
     {
-        if ($id > 0) {
-            $this->db->delete('tkonfigitem', 'kKonfiggruppe', $id);
-        }
+        $this->db->delete('tkonfigitem', 'kKonfiggruppe', $id);
     }
 }

@@ -40,59 +40,78 @@
 </script>
 {/literal}
 
-<div id="verfuegbar" class="tab-pane fade {if isset($cTab) && $cTab === 'verfuegbar'} active in{/if}">
+<div id="verfuegbar" class="tab-pane fade {if isset($cTab) && $cTab === 'verfuegbar'} active show{/if}">
     {if $pluginsAvailable->count() > 0}
         <form name="pluginverwaltung" method="post" action="pluginverwaltung.php">
             {$jtl_token}
             <input type="hidden" name="pluginverwaltung_uebersicht" value="1" />
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">{__('pluginListNotInstalled')}</h3>
-                </div>
+            <div>
+                <div class="subheading1">{__('pluginListNotInstalled')}</div>
+                <hr class="mb-n3">
                 <div class="table-responsive">
-
                     <!-- license-modal definition -->
                     <div id="licenseModal" class="modal fade" role="dialog">
                         <div class="modal-dialog modal-lg">
-
                             <div class="modal-content">
                                 <div class="modal-header">
-                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                    <h4 class="modal-title">{__('licensePlugin')}</h4>
+                                    <button type="button" class="close" data-dismiss="modal">
+                                        <i class="fal fa-times"></i>
+                                    </button>
+                                    <h2 class="modal-title">{__('licensePlugin')}</h2>
                                 </div>
-                                <div class="modal-body">
+                                <div class="modal-body py-5">
                                     {* license.md content goes here via js *}
                                 </div>
                                 <div class="modal-footer">
-                                    <div class="btn-group">
-                                        <button type="button" class="btn btn-success" name="ok" data-dismiss="modal"><i class="fa fa-check"></i>&nbsp;{__('ok')}</button>
-                                        <button type="button" class="btn btn-danger" name="cancel" data-dismiss="modal"><i class="fa fa-close"></i>&nbsp;{__('Cancel')}</button>
+                                    <div class="row">
+                                        <div class="ml-auto col-sm-6 col-xl-auto">
+                                            <button type="button" class="btn btn-outline-primary" name="cancel" data-dismiss="modal">
+                                                <i class="fa fa-close"></i>&nbsp;{__('Cancel')}
+                                            </button>
+                                        </div>
+                                        <div class="col-sm-6 col-xl-auto">
+                                            <button type="button" class="btn btn-primary" name="ok" data-dismiss="modal">
+                                                <i class="fal fa-check text-success"></i>&nbsp;{__('ok')}
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-
                         </div>
                     </div>
 
-                    <table class="list table">
+                    <table class="table table-striped table-align-top">
                         <thead>
-                        <tr>
-                            <th></th>
-                            <th class="tleft">{__('pluginName')}</th>
-                            <th>{__('pluginVersion')}</th>
-                            <th>{__('pluginFolder')}</th>
-                        </tr>
+                            <tr>
+                                <th></th>
+                                <th class="text-left">{__('pluginName')}</th>
+                                <th class="text-center">{__('pluginVersion')}</th>
+                                <th>{__('pluginFolder')}</th>
+                            </tr>
                         </thead>
                         <tbody>
                         {foreach $pluginsAvailable->toArray() as $listingItem}
                             <tr class="plugin">
                                 <td class="check">
-                                    <input type="checkbox" name="cVerzeichnis[]" id="plugin-check-{$listingItem->getDir()}" value="{$listingItem->getDir()}" />
+                                    <div class="custom-control custom-checkbox">
+                                        <input class="custom-control-input" type="checkbox" name="cVerzeichnis[]" id="plugin-check-{$listingItem->getDir()}" value="{$listingItem->getDir()}" />
+                                        <label class="custom-control-label" for="plugin-check-{$listingItem->getDir()}"></label>
+                                    </div>
                                     {if $listingItem->isShop5Compatible() === false}
                                         {if $listingItem->isShop4Compatible() === false}
-                                            <span title="{__('dangerPluginNotCompatibleShop4')}" class="label warning label-danger"><i class="fa fa-warning"></i></span>
+                                            <span title="{__('dangerPluginNotCompatibleShop4')}" class="label warning label-danger" data-toggle="tooltip">
+                                                <span class="icon-hover">
+                                                    <span class="fal fa-exclamation-triangle"></span>
+                                                    <span class="fas fa-exclamation-triangle"></span>
+                                                </span>
+                                            </span>
                                         {else}
-                                            <span title="{__('dangerPluginNotCompatibleShop5')}" class="label warning label-warning"><i class="fa fa-warning"></i></span>
+                                            <span title="{__('dangerPluginNotCompatibleShop5')}" class="label warning label-warning" data-toggle="tooltip">
+                                                <span class="icon-hover">
+                                                    <span class="fal fa-exclamation-triangle"></span>
+                                                    <span class="fas fa-exclamation-triangle"></span>
+                                                </span>
+                                            </span>
                                         {/if}
                                     {/if}
                                 </td>
@@ -103,21 +122,27 @@
                                         <div class="alert alert-info">{__('dangerPluginNotCompatibleShop4')}</div>
                                     {/if}
                                 </td>
-                                <td class="tcenter">{$listingItem->getVersion()}</td>
-                                <td class="tcenter">{$listingItem->getDir()}</td>
+                                <td class="text-center">{$listingItem->getVersion()}</td>
+                                <td>{$listingItem->getDir()}</td>
                             </tr>
                         {/foreach}
                         </tbody>
-                        <tfoot>
-                        <tr>
-                            <td class="check"><input name="ALLMSGS" id="ALLMSGS4" type="checkbox" onclick="AllMessagesExcept(this.form, vLicenses);" /></td>
-                            <td colspan="5"><label for="ALLMSGS4">{__('selectAll')}</label></td>
-                        </tr>
-                        </tfoot>
                     </table>
                 </div>
-                <div class="panel-footer">
-                    <button name="installieren" type="submit" class="btn btn-primary"><i class="fa fa-share"></i> {__('pluginBtnInstall')}</button>
+                <div class="card-footer save-wrapper">
+                    <div class="row">
+                        <div class="col-sm-6 col-xl-auto text-left">
+                            <div class="custom-control custom-checkbox">
+                                <input class="custom-control-input" name="ALLMSGS" id="ALLMSGS4" type="checkbox" onclick="AllMessagesExcept(this.form, vLicenses);" />
+                                <label class="custom-control-label" for="ALLMSGS4">{__('selectAll')}</label>
+                            </div>
+                        </div>
+                        <div class="ml-auto col-sm-6 col-xl-auto">
+                            <button name="installieren" type="submit" class="btn btn-primary btn-block">
+                                <i class="fa fa-share"></i> {__('pluginBtnInstall')}
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </form>

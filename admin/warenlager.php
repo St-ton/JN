@@ -5,7 +5,7 @@
  */
 
 use JTL\Alert\Alert;
-use JTL\Catalog\Warenlager;
+use JTL\Catalog\Warehouse;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\GeneralObject;
@@ -53,7 +53,7 @@ if ($action === 'update') {
 }
 
 if ($step === 'uebersicht') {
-    $smarty->assign('oWarenlager_arr', Warenlager::getAll(false, true));
+    $smarty->assign('oWarenlager_arr', Warehouse::getAll(false, true));
 }
 
 $smarty->assign('step', $step)

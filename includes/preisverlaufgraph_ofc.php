@@ -5,8 +5,8 @@
  */
 
 use JTL\Catalog\Product\Preisverlauf;
-use JTL\Shop;
 use JTL\Session\Frontend;
+use JTL\Shop;
 
 require_once __DIR__ . '/globalinclude.php';
 require_once PFAD_ROOT . PFAD_FLASHCHART . 'php-ofc-library/open-flash-chart.php';

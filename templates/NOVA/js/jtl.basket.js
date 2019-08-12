@@ -117,6 +117,10 @@
             var that = this,
                 t = parseInt(type);
 
+            if (type === undefined) {
+                t=0;
+            }
+
             $.evo.io().call('getBasketItems', [t], this, function(error, data) {
                 if (error) {
                     return;

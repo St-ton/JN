@@ -5,7 +5,7 @@
 {/capture}
 {capture name='testpassed'}
     <span class="label label-success">
-        <i class="fa fa-check" aria-hidden="true"></i><span class="sr-only">{__('ok')}</span>
+        <i class="fal fa-check text-success" aria-hidden="true"></i><span class="sr-only">{__('ok')}</span>
     </span>
 {/capture}
 

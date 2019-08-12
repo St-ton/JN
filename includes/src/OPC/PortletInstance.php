@@ -6,9 +6,9 @@
 
 namespace JTL\OPC;
 
+use Intervention\Image\ImageManager;
 use JTL\Helpers\GeneralObject;
 use JTL\Media\Image;
-use Intervention\Image\ImageManager;
 use JTL\Shop;
 
 /**
@@ -265,7 +265,15 @@ class PortletInstance implements \JsonSerializable
     {
         foreach ($this->portlet->getStylesPropertyDesc() as $propname => $propdesc) {
             if ($this->hasProperty($propname)) {
-                $this->setStyle($propname, $this->getProperty($propname));
+                if ($propname === 'box-styles') {
+                    $boxStyles = $this->getProperty($propname);
+
+                    foreach ($boxStyles as $styleName => $styleValue) {
+                        $this->setStyle($styleName, $styleValue);
+                    }
+                } else {
+                    $this->setStyle($propname, $this->getProperty($propname));
+                }
             }
         }
 
@@ -319,9 +327,8 @@ class PortletInstance implements \JsonSerializable
 
         foreach ($this->getStyles() as $styleName => $styleValue) {
             if (!empty($styleValue)) {
-                if (\mb_stripos($styleName, 'margin-') !== false
-                    || \mb_stripos($styleName, 'padding-') !== false
-                    || \mb_stripos($styleName, 'border-width') !== false
+                if (\mb_stripos($styleName, 'margin-') === 0
+                    || \mb_stripos($styleName, 'padding-') === 0
                     || \mb_stripos($styleName, '-width') !== false
                     || \mb_stripos($styleName, '-height') !== false
                 ) {

@@ -5,7 +5,7 @@
 {block name='boxes-box-filter-characteristics'}
     {if $nSeitenTyp === $smarty.const.PAGE_ARTIKELLISTE && (!$device->isMobile() || $device->isTablet())}
         {foreach $oBox->getItems() as $Merkmal}
-            <div class="{if $Merkmal@last} mb-7{/if}">
+            <div{if $Merkmal@last} class="mb-7"{/if}>
                 <div class="h4">
                     {button
                     variant="link"

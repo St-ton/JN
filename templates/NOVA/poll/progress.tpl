@@ -22,7 +22,7 @@
                         {foreach $oUmfrage->getQuestions() as $question}
                             {assign var=questionID value=$question->getID()}
                             {input name="kUmfrageFrage[]" type="hidden" value=$questionID}
-                            {card no-body=true class="border-0 mb-7"}
+                            {card no-body=true class="border-0 mb-8"}
                                 {cardheader}
                                     <div id="poll-question-label-{$questionID}" class="h3">{$question->getName()} {if !$question->isRequired()}<span class="optional"> - {lang key='optional'}</span>{/if}</div>
                                 {/cardheader}

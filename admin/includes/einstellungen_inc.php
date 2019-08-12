@@ -4,9 +4,9 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use JTL\Shop;
-use JTL\Helpers\Text;
 use JTL\DB\ReturnType;
+use JTL\Helpers\Text;
+use JTL\Shop;
 
 require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'admin_menu.php';
 

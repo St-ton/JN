@@ -539,10 +539,12 @@
 
             $('*[data-toggle="product-actions"] button', $wrapper)
                 .on('click', function(event) {
-                    if ($wrapper === '#cart-form') {
-                        $('#cart-form input[name="a"]').prop('value', $(this).data('product-id-wl'));
-                    }
                     var data = $(this.form).serializeObject();
+
+                    if ($wrapper === '#cart-form') {
+                        data.wlPos = $(this).data('wl-pos');
+                        data.a = $(this).data('product-id-wl');
+                    }
 
                     if (that.handleProductAction(this, data)) {
                         event.preventDefault();
@@ -852,6 +854,7 @@
             }
             if (data.wlPosAdd) {
                 $('button[data-product-id-wl="' + data.productID + '"]').attr('data-wl-pos', data.wlPosAdd);
+                $('button[data-product-id-wl="' + data.productID + '"]').data('wl-pos', data.wlPosAdd);
                 $('button[data-product-id-wl="' + data.productID + '"]').closest('form').find('input[name="wlPos"]').val(data.wlPosAdd)
             }
             $.evo.io().call('updateWishlistDropdown', [$navContainerWish, $navBadgeWish], this, function(error, data) {

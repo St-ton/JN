@@ -16,7 +16,7 @@
             var maxsize = {$nMaxFileSize};
             {literal}
             if (filesize >= maxsize) {
-                $(this).after('<div class="alert alert-danger"><i class="fa fa-warning"></i> {/literal}{__('errorUploadSizeLimit')}{literal}</div>').slideDown();
+                $(this).after('<div class="alert alert-danger"><i class="fal fa-exclamation-triangle"></i> {/literal}{__('errorUploadSizeLimit')}{literal}</div>').slideDown();
                 file2large = true;
             } else {
                 $(this).closest('div.alert').slideUp();
@@ -50,62 +50,70 @@
             {/if}
         {/if}
         <div class="settings">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">{if $oNewsKategorie->getID() > 0}{__('newsCatEdit')} ({__('id')} {$oNewsKategorie->getID()}){else}{__('newsCatCreate')}{/if}</h3>
+            <div class="card">
+                <div class="card-header">
+                    <div class="subheading1">{if $oNewsKategorie->getID() > 0}{__('newsCatEdit')} ({__('id')} {$oNewsKategorie->getID()}){else}{__('newsCatCreate')}{/if}</div>
+                    <hr class="mb-n3">
                 </div>
                 <div class="table-responsive">
-                    <div class="panel-body" id="formtable">
-                        <div class="input-group">
-                            <span class="input-group-addon">
-                                <label for="kParent">{__('newsCatParent')}</label>
-                            </span>
-                            <select class="form-control" id="kParent" name="kParent">
-                                <option value="0"> - {__('mainCategory')} - </option>
-                                {if $oNewsKategorie->getParentID()}
-                                    {assign var=selectedCat value=$oNewsKategorie->getParentID()}
-                                {else}
-                                    {assign var=selectedCat value=0}
-                                {/if}
-                                {include file='snippets/newscategories_recursive.tpl' i=0 selectedCat=$selectedCat}
-                            </select>
+                    <div class="card-body" id="formtable">
+                        <div class="form-group form-row align-items-center">
+                            <label class="col col-sm-4 col-form-label text-sm-right" for="kParent">{__('newsCatParent')}:</label>
+                            <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                <select class="custom-select" id="kParent" name="kParent">
+                                    <option value="0"> - {__('mainCategory')} - </option>
+                                    {if $oNewsKategorie->getParentID()}
+                                        {assign var=selectedCat value=$oNewsKategorie->getParentID()}
+                                    {else}
+                                        {assign var=selectedCat value=0}
+                                    {/if}
+                                    {include file='snippets/newscategories_recursive.tpl' i=0 selectedCat=$selectedCat}
+                                </select>
+                            </div>
                         </div>
-                        <div class="input-group">
-                            <span class="input-group-addon">
-                                <label for="nSort">{__('newsCatSort')}</label>
-                            </span>
-                            <input class="form-control{if !empty($cPlausiValue_arr.nSort)} error{/if}" id="nSort" name="nSort" type="text" value="{$oNewsKategorie->getSort()}" />
+                        <div class="form-group form-row align-items-center">
+                            <label class="col col-sm-4 col-form-label text-sm-right" for="nSort">{__('newsCatSort')}:</label>
+                            <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                <input class="form-control{if !empty($cPlausiValue_arr.nSort)} error{/if}" id="nSort" name="nSort" type="text" value="{$oNewsKategorie->getSort()}" />
+                            </div>
                         </div>
-                        <div class="input-group">
-                            <span class="input-group-addon">
-                                <label for="nAktiv">{__('active')}</label>
-                            </span>
-                            <select class="form-control" id="nAktiv" name="nAktiv">
-                                <option value="1"{if $oNewsKategorie->getIsActive() === true} selected{/if}>
-                                    {__('yes')}
-                                </option>
-                                <option value="0"{if $oNewsKategorie->getIsActive() === false} selected{/if}>
-                                    {__('no')}
-                                </option>
-                            </select>
+                        <div class="form-group form-row align-items-center">
+                            <label class="col col-sm-4 col-form-label text-sm-right" for="nAktiv">{__('active')}:</label>
+                            <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                <select class="custom-select" id="nAktiv" name="nAktiv">
+                                    <option value="1"{if $oNewsKategorie->getIsActive() === true} selected{/if}>
+                                        {__('yes')}
+                                    </option>
+                                    <option value="0"{if $oNewsKategorie->getIsActive() === false} selected{/if}>
+                                        {__('no')}
+                                    </option>
+                                </select>
+                            </div>
                         </div>
-                        <div class="input-group">
-                            <span class="input-group-addon">
-                                <label for="previewImage">{__('preview')}</label>
-                            </span>
-                            <div class="input-group-wrap">
-                                {if !empty($oNewsKategorie->getPreviewImage())}
-                                    <img src="{$shopURL}/{$oNewsKategorie->getPreviewImage()}" alt="" height="20" width="20" class="preview-image left" style="margin: 0 10px;" />
-                                {/if}
-                                <input id="previewImage" name="previewImage" type="file" maxlength="2097152" accept="image/*" />
+                        <div class="form-group form-row align-items-center">
+                            <label class="col col-sm-4 col-form-label text-sm-right" for="previewImage">{__('preview')}:</label>
+                            <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                <div class="input-group mb-3">
+                                    {if !empty($oNewsKategorie->getPreviewImage())}
+                                        <div class="input-group-prepend">
+                                            <div class="input-group-text">
+                                                <img src="{$shopURL}/{$oNewsKategorie->getPreviewImage()}" alt="" height="20" width="20" class="preview-image left"/>
+                                            </div>
+                                        </div>
+                                    {/if}
+                                    <div class="custom-file">
+                                        <input class="custom-file-input" id="previewImage" name="previewImage" type="file" maxlength="2097152" accept="image/*" />
+                                        <label class="custom-file-label" for="previewImage">
+                                            <span class="text-truncate">{__('fileSelect')}</span>
+                                        </label>
+                                    </div>
+                                </div>
                                 <input name="previewImage" type="hidden" value="{if !empty($oNewsKategorie->getPreviewImage())}{$oNewsKategorie->getPreviewImage()}{/if}" />
                             </div>
                         </div>
                         {if isset($oDatei_arr) && $oDatei_arr|@count > 0}
-                            <div class="input-group">
-                                <span class="input-group-addon">
-                                    <label>{__('newsPics')}</label>
-                                </span>
+                            <div class="form-group form-row align-items-center">
+                                <label class="col col-sm-4 col-form-label text-sm-right">{__('newsPics')}:</label>
                                 <div>
                                     {foreach $oDatei_arr as $oDatei}
                                         <div class="well col-xs-3">
@@ -114,7 +122,7 @@
                                             <div class="input-group">
                                                 <input class="form-control" type="text" disabled="disabled" value="$#{$oDatei->cName}#$">
                                                 <div class="input-group-addon">
-                                                    <a href="news.php?news=1&newskategorie_editieren=1&kNewsKategorie={$oNewsKategorie->getID()}&delpic={$oDatei->cName}&token={$smarty.session.jtl_token}" title="{__('delete')}"><i class="fa fa-trash"></i></a>
+                                                    <a href="news.php?news=1&newskategorie_editieren=1&kNewsKategorie={$oNewsKategorie->getID()}&delpic={$oDatei->cName}&token={$smarty.session.jtl_token}" title="{__('delete')}"><i class="fas fa-trash-alt"></i></a>
                                                 </div>
                                             </div>
                                         </div>
@@ -122,17 +130,15 @@
                                 </div>
                             </div>
                         {/if}
-                        <div class="input-group">
-                            <span class="input-group-addon">
-                                <label for="lang">{__('language')}</label>
-                            </span>
-                            <span class="input-group-wrap">
-                                <select class="form-control" name="cISO" id="lang">
+                        <div class="form-group form-row align-items-center">
+                            <label class="col col-sm-4 col-form-label text-sm-right" for="lang">{__('language')}:</label>
+                            <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                <select class="custom-select" name="cISO" id="lang">
                                     {foreach $sprachen as $language}
                                         <option value="{$language->getIso()}" {if $language->getShopDefault() === 'Y'}selected="selected"{/if}>{$language->getLocalizedName()} {if $language->getShopDefault() === 'Y'}({__('standard')}){/if}</option>
                                     {/foreach}
                                 </select>
-                            </span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -142,49 +148,58 @@
                 {assign var=langID value=$language->getId()}
                 <input type="hidden" name="lang_{$cISO}" value="{$langID}">
                 <div id="iso_{$cISO}" class="iso_wrapper{if !$language->isShopDefault()} hidden-soft{/if}">
-                    <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <h3 class="panel-title">{__('metaSeo')} ({$language->getLocalizedName()})</h3>
+                    <div class="card">
+                        <div class="card-header">
+                            <div class=subheading1>{__('metaSeo')} ({$language->getLocalizedName()})</div>
+                            <hr class="mb-n3">
                         </div>
                         <div class="table-responsive">
-                            <div class="panel-body" id="formtable">
-                                <div class="input-group">
-                                    <span class="input-group-addon">
-                                        <label for="cName_{$cISO}">{__('name')}</label>
-                                    </span>
-                                    <input class="form-control{if !empty($cPlausiValue_arr.cName)} error{/if}" id="cName_{$cISO}" name="cName_{$cISO}" type="text" value="{if $oNewsKategorie->getName($langID) !== ''}{$oNewsKategorie->getName($langID)}{/if}" />{if isset($cPlausiValue_arr.cName) && $cPlausiValue_arr.cName == 2} {__('newsAlreadyExists')}{/if}
+                            <div class="card-body" id="formtable">
+                                <div class="form-group form-row align-items-center">
+                                    <label class="col col-sm-4 col-form-label text-sm-right" for="cName_{$cISO}">{__('name')}:</label>
+                                    <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                        <input class="form-control{if !empty($cPlausiValue_arr.cName)} error{/if}" id="cName_{$cISO}" name="cName_{$cISO}" type="text" value="{if $oNewsKategorie->getName($langID) !== ''}{$oNewsKategorie->getName($langID)}{/if}" />{if isset($cPlausiValue_arr.cName) && $cPlausiValue_arr.cName == 2} {__('newsAlreadyExists')}{/if}
+                                    </div>
                                 </div>
-                                <div class="input-group">
-                                    <span class="input-group-addon">
-                                        <label for="cSeo_{$cISO}">{__('newsSeo')}</label>
-                                    </span>
-                                    <input class="form-control{if !empty($cPlausiValue_arr.cSeo)} error{/if}" id="cSeo_{$cISO}" name="cSeo_{$cISO}" type="text" value="{if $oNewsKategorie->getSEO($langID) !== ''}{$oNewsKategorie->getSEO($langID)}{/if}" />
+                                <div class="form-group form-row align-items-center">
+                                    <label class="col col-sm-4 col-form-label text-sm-right" for="cSeo_{$cISO}">{__('newsSeo')}:</label>
+                                    <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                        <input class="form-control{if !empty($cPlausiValue_arr.cSeo)} error{/if}" id="cSeo_{$cISO}" name="cSeo_{$cISO}" type="text" value="{if $oNewsKategorie->getSEO($langID) !== ''}{$oNewsKategorie->getSEO($langID)}{/if}" />
+                                    </div>
                                 </div>
-                                <div class="input-group">
-                                    <span class="input-group-addon">
-                                        <label for="cMetaTitle_{$cISO}">{__('newsMetaTitle')}</label>
-                                    </span>
-                                    <input class="form-control{if !empty($cPlausiValue_arr.cMetaTitle)} error{/if}" id="cMetaTitle_{$cISO}" name="cMetaTitle_{$cISO}" type="text" value="{$oNewsKategorie->getMetaTitle($langID)}" />
+                                <div class="form-group form-row align-items-center">
+                                    <label class="col col-sm-4 col-form-label text-sm-right" for="cMetaTitle_{$cISO}">{__('newsMetaTitle')}:</label>
+                                    <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                        <input class="form-control{if !empty($cPlausiValue_arr.cMetaTitle)} error{/if}" id="cMetaTitle_{$cISO}" name="cMetaTitle_{$cISO}" type="text" value="{$oNewsKategorie->getMetaTitle($langID)}" />
+                                    </div>
                                 </div>
-                                <div class="input-group">
-                                    <span class="input-group-addon">
-                                        <label for="cMetaDescription_{$cISO}">{__('newsMetaDescription')}</label>
-                                    </span>
-                                    <input class="form-control{if !empty($cPlausiValue_arr.cMetaDescription)} error{/if}" id="cMetaDescription_{$cISO}" name="cMetaDescription_{$cISO}" type="text" value="{$oNewsKategorie->getMetaDescription($langID)}" />
+                                <div class="form-group form-row align-items-center">
+                                    <label class="col col-sm-4 col-form-label text-sm-right" for="cMetaDescription_{$cISO}">{__('newsMetaDescription')}:</label>
+                                    <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                        <input class="form-control{if !empty($cPlausiValue_arr.cMetaDescription)} error{/if}" id="cMetaDescription_{$cISO}" name="cMetaDescription_{$cISO}" type="text" value="{$oNewsKategorie->getMetaDescription($langID)}" />
+                                    </div>
                                 </div>
-                                <div class="input-group">
-                                    <span class="input-group-addon">
-                                        <label for="cBeschreibung_{$cISO}">{__('description')}</label>
-                                    </span>
-                                    <textarea id="cBeschreibung_{$cISO}" class="ckeditor" name="cBeschreibung_{$cISO}" rows="15" cols="60">{$oNewsKategorie->getDescription($langID)}</textarea>
+                                <div class="form-group form-row align-items-center">
+                                    <label class="col col-sm-4 col-form-label text-sm-right" for="cBeschreibung_{$cISO}">{__('description')}:</label>
+                                    <div class="col-sm pl-sm-3 pr-sm-5 order-last order-sm-2">
+                                        <textarea id="cBeschreibung_{$cISO}" class="ckeditor" name="cBeschreibung_{$cISO}" rows="15" cols="60">{$oNewsKategorie->getDescription($langID)}</textarea>
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="panel-footer">
-                            <span class="btn-group">
-                                <button name="speichern" type="button" value="{__('save')}" onclick="document.news.submit();" class="btn btn-primary"><i class="fa fa-save"></i> {__('save')}</button>
-                                <a class="btn btn-danger" href="news.php{if isset($cBackPage)}?{$cBackPage}{elseif isset($cTab)}?tab={$cTab}{/if}"><i class="fa fa-exclamation"></i> {__('Cancel')}</a>
-                            </span>
+                        <div class="card-footer save-wrapper">
+                            <div class="row">
+                                <div class="ml-auto col-sm-6 col-xl-auto">
+                                    <a class="btn btn-outline-primary btn-block" href="news.php{if isset($cBackPage)}?{$cBackPage}{elseif isset($cTab)}?tab={$cTab}{/if}">
+                                        <i class="fa fa-exclamation"></i> {__('Cancel')}
+                                    </a>
+                                </div>
+                                <div class=" col-sm-6 col-xl-auto">
+                                    <button name="speichern" type="button" value="{__('save')}" onclick="document.news.submit();" class="btn btn-primary btn-block">
+                                        {__('saveWithIcon')}
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

@@ -4,12 +4,12 @@
  * @license http://jtl-url.de/jtlshoplicense
  */
 
-use JTL\Helpers\Request;
-use JTL\Shop;
-use JTL\Helpers\Text;
-use JTL\DB\ReturnType;
-use JTL\Smarty\JTLSmarty;
 use JTL\Alert\Alert;
+use JTL\DB\ReturnType;
+use JTL\Helpers\Request;
+use JTL\Helpers\Text;
+use JTL\Shop;
+use JTL\Smarty\JTLSmarty;
 
 defined('PLZIMPORT_HOST') || define('PLZIMPORT_HOST', 'www.fa-technik.adfc.de');
 defined('PLZIMPORT_URL') || define('PLZIMPORT_URL', 'http://' . PLZIMPORT_HOST . '/code/opengeodb/');
@@ -296,6 +296,7 @@ function plzimportActionIndex(JTLSmarty $smarty, array &$messages): void
  */
 function plzimportActionUpdateIndex(): array
 {
+    Shop::Container()->getGetText()->loadAdminLocale('pages/plz_ort_import');
     Shop::Smarty()->assign('oPlzOrt_arr', plzimportGetPLZOrt());
 
     return ['listHTML' => Shop::Smarty()->fetch('tpl_inc/plz_ort_import_index_list.tpl')];

@@ -6,8 +6,9 @@
 
 namespace JTL\dbeS\Sync;
 
+use JTL\DB\ReturnType;
 use JTL\dbeS\Starter;
-use JTL\Extensions\Download;
+use JTL\Extensions\Download\Download;
 
 /**
  * Class Downloads
@@ -38,6 +39,9 @@ final class Downloads extends AbstractSync
      */
     private function handleDeletes(array $xml): void
     {
+        if (!Download::checkLicense()) {
+            return;
+        }
         $source = $xml['del_downloads']['kDownload'] ?? [];
         if (\is_numeric($source)) {
             $source = [$source];
@@ -87,10 +91,18 @@ final class Downloads extends AbstractSync
      */
     private function delete(int $id): void
     {
-        if ($id > 0 && Download::checkLicense()) {
-            $download = new Download($id);
-            $rows     = $download->delete();
-            $this->logger->debug($rows . ' Downloads geloescht');
-        }
+        $this->db->queryPrepared(
+            'DELETE tdownload, tdownloadhistory, tdownloadsprache, tartikeldownload
+            FROM tdownload
+            JOIN tdownloadsprache 
+                ON tdownloadsprache.kDownload = tdownload.kDownload
+            LEFT JOIN tartikeldownload 
+                ON tartikeldownload.kDownload = tdownload.kDownload
+            LEFT JOIN tdownloadhistory 
+                ON tdownloadhistory.kDownload = tdownload.kDownload
+            WHERE tdownload.kDownload = :dlid',
+            ['dlid' => $id],
+            ReturnType::DEFAULT
+        );
     }
 }

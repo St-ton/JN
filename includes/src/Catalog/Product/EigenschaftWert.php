@@ -62,23 +62,23 @@ class EigenschaftWert
 
     /**
      * EigenschaftWert constructor.
-     * @param int $kEigenschaftWert
+     * @param int $id
      */
-    public function __construct(int $kEigenschaftWert = 0)
+    public function __construct(int $id = 0)
     {
-        if ($kEigenschaftWert > 0) {
-            $this->loadFromDB($kEigenschaftWert);
+        if ($id > 0) {
+            $this->loadFromDB($id);
         }
     }
 
     /**
-     * @param int $kEigenschaftWert
+     * @param int $id
      * @return $this
      */
-    public function loadFromDB(int $kEigenschaftWert): self
+    public function loadFromDB(int $id): self
     {
-        if ($kEigenschaftWert > 0) {
-            $obj = Shop::Container()->getDB()->select('teigenschaftwert', 'kEigenschaftWert', $kEigenschaftWert);
+        if ($id > 0) {
+            $obj = Shop::Container()->getDB()->select('teigenschaftwert', 'kEigenschaftWert', $id);
             if (isset($obj->kEigenschaftWert) && $obj->kEigenschaftWert > 0) {
                 foreach (\get_object_vars($obj) as $k => $v) {
                     $this->$k = $v;

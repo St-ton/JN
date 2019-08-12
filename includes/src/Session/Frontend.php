@@ -6,14 +6,14 @@
 
 namespace JTL\Session;
 
-use JTL\Cart\Warenkorb;
-use JTL\Cart\WarenkorbPers;
+use JTL\Cart\Cart;
+use JTL\Cart\PersistentCart;
 use JTL\Catalog\Currency;
-use JTL\Catalog\Vergleichsliste;
-use JTL\Catalog\Wishlist\Wunschliste;
+use JTL\Catalog\ComparisonList;
+use JTL\Catalog\Wishlist\Wishlist;
 use JTL\Checkout\Lieferadresse;
-use JTL\Customer\Kunde;
-use JTL\Customer\Kundengruppe;
+use JTL\Customer\Customer;
+use JTL\Customer\CustomerGroup;
 use JTL\DB\ReturnType;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Manufacturer;
@@ -80,7 +80,7 @@ class Frontend extends AbstractSession
     {
         LanguageHelper::getInstance()->autoload();
         $_SESSION['FremdParameter'] = [];
-        $_SESSION['Warenkorb']      = $_SESSION['Warenkorb'] ?? new Warenkorb();
+        $_SESSION['Warenkorb']      = $_SESSION['Warenkorb'] ?? new Cart();
 
         $updateGlobals  = $this->checkGlobals();
         $updateLanguage = $this->checkLanguageUpdate();
@@ -145,7 +145,7 @@ class Frontend extends AbstractSession
             ReturnType::SINGLE_OBJECT
         );
         if (isset($data->kKunde) && $data->kKunde > 0) {
-            $this->setCustomer(new Kunde($_SESSION['Kunde']->kKunde));
+            $this->setCustomer(new Customer($_SESSION['Kunde']->kKunde));
             $_SESSION['kundendaten_aktualisiert'] = 1;
         }
 
@@ -197,10 +197,8 @@ class Frontend extends AbstractSession
     private function updateGlobals(): void
     {
         unset($_SESSION['cTemplate'], $_SESSION['template'], $_SESSION['oKategorie_arr_new']);
-        $_SESSION['oKategorie_arr']                   = [];
-        $_SESSION['kKategorieVonUnterkategorien_arr'] = [];
-        $_SESSION['ks']                               = [];
-        $_SESSION['Sprachen']                         = LanguageHelper::getInstance()->gibInstallierteSprachen();
+        $_SESSION['ks']       = [];
+        $_SESSION['Sprachen'] = LanguageHelper::getInstance()->gibInstallierteSprachen();
         Currency::setCurrencies(true);
 
         if (!isset($_SESSION['jtl_token'])) {
@@ -270,7 +268,7 @@ class Frontend extends AbstractSession
         if (!isset($_SESSION['Kunde']->kKunde, $_SESSION['Kundengruppe']->kKundengruppe)
             || \get_class($_SESSION['Kundengruppe']) === 'stdClass'
         ) {
-            $_SESSION['Kundengruppe'] = (new Kundengruppe())
+            $_SESSION['Kundengruppe'] = (new CustomerGroup())
                 ->setLanguageID((int)$_SESSION['kSprache'])
                 ->loadDefaultGroup();
         }
@@ -294,7 +292,7 @@ class Frontend extends AbstractSession
     {
         $index = Request::verifyGPCDataInt('wlplo');
         if ($index !== 0) {
-            $wl = new Wunschliste();
+            $wl = new Wishlist();
             $wl->entfernePos($index);
         }
 
@@ -397,9 +395,9 @@ class Frontend extends AbstractSession
             $_SESSION['IP'],
             $_SESSION['kommentar']
         );
-        $_SESSION['Warenkorb'] = new Warenkorb();
+        $_SESSION['Warenkorb'] = new Cart();
         // WarenkorbPers loeschen
-        $oWarenkorbPers = new WarenkorbPers($_SESSION['Kunde']->kKunde ?? 0);
+        $oWarenkorbPers = new PersistentCart($_SESSION['Kunde']->kKunde ?? 0);
         $oWarenkorbPers->entferneAlles();
 
         return $this;
@@ -422,14 +420,14 @@ class Frontend extends AbstractSession
     }
 
     /**
-     * @param Kunde $customer
+     * @param Customer $customer
      * @return $this
      */
-    public function setCustomer(Kunde $customer): self
+    public function setCustomer(Customer $customer): self
     {
         $customer->angezeigtesLand = LanguageHelper::getCountryCodeByCountryName($customer->cLand);
         $_SESSION['Kunde']         = $customer;
-        $_SESSION['Kundengruppe']  = new Kundengruppe((int)$customer->kKundengruppe);
+        $_SESSION['Kundengruppe']  = new CustomerGroup((int)$customer->kKundengruppe);
         $_SESSION['Kundengruppe']->setMayViewCategories(1)
                                      ->setMayViewPrices(1)
                                      ->initAttributes();
@@ -441,36 +439,36 @@ class Frontend extends AbstractSession
     }
 
     /**
-     * @return Kunde
+     * @return Customer
      */
-    public static function getCustomer(): Kunde
+    public static function getCustomer(): Customer
     {
-        return $_SESSION['Kunde'] ?? new Kunde();
+        return $_SESSION['Kunde'] ?? new Customer();
     }
 
     /**
-     * @return Kunde
+     * @return Customer
      * @deprecated since 5.0.0
      */
-    public static function customer(): Kunde
+    public static function customer(): Customer
     {
         \trigger_error(__METHOD__. ' is deprecated.', \E_USER_DEPRECATED);
         return self::getCustomer();
     }
 
     /**
-     * @return Kundengruppe
+     * @return CustomerGroup
      */
-    public static function getCustomerGroup(): Kundengruppe
+    public static function getCustomerGroup(): CustomerGroup
     {
-        return $_SESSION['Kundengruppe'] ?? (new Kundengruppe())->loadDefaultGroup();
+        return $_SESSION['Kundengruppe'] ?? (new CustomerGroup())->loadDefaultGroup();
     }
 
     /**
-     * @return Kundengruppe
+     * @return CustomerGroup
      * @deprecated since 5.0.0
      */
-    public static function customerGroup(): Kundengruppe
+    public static function customerGroup(): CustomerGroup
     {
         \trigger_error(__METHOD__. ' is deprecated.', \E_USER_DEPRECATED);
         return self::getCustomerGroup();
@@ -564,18 +562,18 @@ class Frontend extends AbstractSession
     }
 
     /**
-     * @return Warenkorb
+     * @return Cart
      */
-    public static function getCart(): Warenkorb
+    public static function getCart(): Cart
     {
-        return $_SESSION['Warenkorb'] ?? new Warenkorb();
+        return $_SESSION['Warenkorb'] ?? new Cart();
     }
 
     /**
-     * @return Warenkorb
+     * @return Cart
      * @deprecated since 5.0.0
      */
-    public static function cart(): Warenkorb
+    public static function cart(): Cart
     {
         \trigger_error(__METHOD__. ' is deprecated.', \E_USER_DEPRECATED);
         return self::getCart();
@@ -600,46 +598,46 @@ class Frontend extends AbstractSession
     }
 
     /**
-     * @return Warenkorb
+     * @return Cart
      * @deprecated since 5.0.0
      */
-    public function basket(): Warenkorb
+    public function basket(): Cart
     {
         \trigger_error(__METHOD__. ' is deprecated.', \E_USER_DEPRECATED);
-        return $_SESSION['Warenkorb'] ?? new Warenkorb();
+        return $_SESSION['Warenkorb'] ?? new Cart();
     }
 
     /**
-     * @return Wunschliste
+     * @return Wishlist
      */
-    public static function getWishList(): Wunschliste
+    public static function getWishList(): Wishlist
     {
-        return $_SESSION['Wunschliste'] ?? new Wunschliste();
+        return $_SESSION['Wunschliste'] ?? new Wishlist();
     }
 
     /**
-     * @return Wunschliste
+     * @return Wishlist
      * @deprecated since 5.0.0
      */
-    public static function wishList(): Wunschliste
+    public static function wishList(): Wishlist
     {
         \trigger_error(__METHOD__. ' is deprecated.', \E_USER_DEPRECATED);
         return self::getWishList();
     }
 
     /**
-     * @return Vergleichsliste
+     * @return ComparisonList
      */
-    public static function getCompareList(): Vergleichsliste
+    public static function getCompareList(): ComparisonList
     {
-        return $_SESSION['Vergleichsliste'] ?? new Vergleichsliste();
+        return $_SESSION['Vergleichsliste'] ?? new ComparisonList();
     }
 
     /**
-     * @return Vergleichsliste
+     * @return ComparisonList
      * @deprecated since 5.0.0
      */
-    public static function compareList(): Vergleichsliste
+    public static function compareList(): ComparisonList
     {
         \trigger_error(__METHOD__. ' is deprecated.', \E_USER_DEPRECATED);
         return self::getCompareList();

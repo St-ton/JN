@@ -69,27 +69,27 @@
             <div class="col-xs-6 col-md-4 col-lg-3">
                 <div class="thumbnail">
                     {if $Einstellungen.navigationsfilter.artikeluebersicht_bild_anzeigen !== 'Y'}
-                        <a href="{$Unterkat->cURLFull}">
-                            <img src="{$Unterkat->cBildURLFull}" alt="{$Unterkat->cName}"/>
+                        <a href="{$Unterkat->getURL()}">
+                            <img src="{$Unterkat->getImageURL()}" alt="{$Unterkat->getName()}"/>
                         </a>
                     {/if}
                     {if $Einstellungen.navigationsfilter.artikeluebersicht_bild_anzeigen !== 'B'}
                         <div class="caption text-center">
-                            <a href="{$Unterkat->cURLFull}">
-                                {$Unterkat->cName}
+                            <a href="{$Unterkat->getURL()}">
+                                {$Unterkat->getName()}
                             </a>
                         </div>
                     {/if}
-                    {if $Einstellungen.navigationsfilter.unterkategorien_beschreibung_anzeigen === 'Y' && !empty($Unterkat->cBeschreibung)}
-                        <p class="item_desc small text-muted">{$Unterkat->cBeschreibung|strip_tags|truncate:68}</p>
+                    {if $Einstellungen.navigationsfilter.unterkategorien_beschreibung_anzeigen === 'Y' && !empty($Unterkat->getDescription())}
+                        <p class="item_desc small text-muted">{$Unterkat->getDescription()|strip_tags|truncate:68}</p>
                     {/if}
                     {if $Einstellungen.navigationsfilter.unterkategorien_lvl2_anzeigen === 'Y'}
-                        {if isset($Unterkat->Unterkategorien) && $Unterkat->Unterkategorien|@count > 0}
+                        {if $Unterkat->hasChildren()}
                             <hr class="hr-sm">
                             <ul class="list-unstyled small subsub">
-                                {foreach $Unterkat->Unterkategorien as $UnterUnterKat}
+                                {foreach $Unterkat->getChildren() as $UnterUnterKat}
                                     <li>
-                                        <a href="{$UnterUnterKat->cURLFull}" title="{$UnterUnterKat->cName}">{$UnterUnterKat->cName}</a>
+                                        <a href="{$UnterUnterKat->getURL()}" title="{$UnterUnterKat->getName()}">{$UnterUnterKat->getName()}</a>
                                     </li>
                                 {/foreach}
                             </ul>

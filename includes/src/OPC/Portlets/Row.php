@@ -6,6 +6,7 @@
 
 namespace JTL\OPC\Portlets;
 
+use JTL\OPC\InputType;
 use JTL\OPC\Portlet;
 use JTL\OPC\PortletInstance;
 
@@ -29,22 +30,46 @@ class Row extends Portlet
     public function getPropertyDesc(): array
     {
         return [
-            'layout-xs' => [
-                'label'   => '<i class="fa fa-mobile"></i>' . __('layoutXS'),
-                'default' => '6+6',
-                'width'   => 25,
-            ],
-            'layout-sm' => [
-                'label' => '<i class="fa fa-tablet"></i>' . __('layoutS'),
-                'width' => 25,
-            ],
-            'layout-md' => [
-                'label' => '<i class="fa fa-laptop"></i>' . __('layoutM'),
-                'width' => 25,
-            ],
-            'layout-lg' => [
-                'label' => '<i class="fa fa-desktop"></i>' . __('layoutL'),
-                'width' => 25,
+            'layout' => [
+                'type'    => InputType::ROW_LAYOUT,
+                'label'   => __('Layout'),
+                'presets' => [
+                    [
+                        'name' => '1 ' . __('Column'),
+                        'layout' => ['12', '12', '12', '12'],
+                    ],
+                    [
+                        'name' => '2 ' . __('Columns'),
+                        'layout' => ['12+12', '6+6', '6+6', '6+6'],
+                    ],
+                    [
+                        'name' => '3 ' . __('Columns'),
+                        'layout' => ['12+12+12', '6+6+12', '4+4+4', '4+4+4'],
+                    ],
+                    [
+                        'name' => '4 ' . __('Columns'),
+                        'layout' => ['12+12+12+12', '6+6+6+6', '3+3+3+3', '3+3+3+3'],
+                    ],
+                    [
+                        'name' => '6 ' . __('Columns'),
+                        'layout' => ['6+6+6+6+6+6', '4+4+4+4+4+4', '4+4+4+4+4+4', '2+2+2+2+2+2'],
+                    ],
+                    [
+                        'name' => '2 ' . __('Columns') . ' (2:1)',
+                        'layout' => ['12+12', '6+6', '8+4', '8+4'],
+                    ],
+                    [
+                        'name' => '2 ' . __('Columns') . ' (1:2)',
+                        'layout' => ['12+12', '6+6', '4+8', '4+8'],
+                    ],
+                ],
+                'default' => [
+                    'preset' => 1,
+                    'xs' => '12+12',
+                    'sm' => '6+6',
+                    'md' => '6+6',
+                    'lg' => '6+6',
+                ]
             ],
         ];
     }
@@ -66,10 +91,11 @@ class Row extends Portlet
      */
     public function getLayouts(PortletInstance $instance): array
     {
-        $layoutXS = \explode('+', $instance->getProperty('layout-xs'));
-        $layoutSM = \explode('+', $instance->getProperty('layout-sm'));
-        $layoutMD = \explode('+', $instance->getProperty('layout-md'));
-        $layoutLG = \explode('+', $instance->getProperty('layout-lg'));
+        $layouts  = $instance->getProperty('layout');
+        $layoutXS = \explode('+', $layouts['xs']);
+        $layoutSM = \explode('+', $layouts['sm']);
+        $layoutMD = \explode('+', $layouts['md']);
+        $layoutLG = \explode('+', $layouts['lg']);
         $colCount = \max(\count($layoutXS), \count($layoutSM), \count($layoutMD), \count($layoutLG));
 
         $colLayouts = \array_fill(0, $colCount, '');
@@ -102,21 +128,5 @@ class Row extends Portlet
         }
 
         return $colLayouts;
-    }
-
-    /**
-     * @param array $colLayout
-     * @return string
-     */
-    public function getColClasses(array $colLayout): string
-    {
-        $result = '';
-        foreach ($colLayout as $size => $value) {
-            if (!empty($value) && \is_array($value) === false) {
-                $result .= 'col-' . $size . '-' . $value . ' ';
-            }
-        }
-
-        return $result;
     }
 }

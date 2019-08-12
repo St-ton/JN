@@ -9,7 +9,7 @@
 namespace JTL\Catalog\Product;
 
 use JTL\DB\ReturnType;
-use JTL\Extensions\Konfigurator;
+use JTL\Extensions\Config\Configurator;
 use JTL\Helpers\Tax;
 use JTL\Session\Frontend;
 use JTL\Shop;
@@ -133,7 +133,7 @@ class PriceRange
             $this->maxNettoPrice = $this->productData->fNettoPreis;
         }
 
-        if (Konfigurator::hasKonfig($this->productData->kArtikel)) {
+        if (Configurator::hasKonfig($this->productData->kArtikel)) {
             $this->loadConfiguratorRange();
         }
 

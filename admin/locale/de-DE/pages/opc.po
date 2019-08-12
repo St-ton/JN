@@ -164,13 +164,13 @@ msgid "restoreChanges"
 msgstr "Lokale Änderungen wiederherstellen"
 
 msgid "restoreUnsaved"
-msgstr "Dieser Entwurf hat nicht gespeicherte lokale Änderungen. Möchten Sie diese wiederherstellen?"
+msgstr "Dieser Entwurf wurde während der letzten Sitzung nicht gespeichert. Letzte Änderungen weiter bearbeiten?"
 
 msgid "noCurrent"
-msgstr "Nein, aktuelle Version bearbeiten"
+msgstr "Nein, Änderungen verwerfen"
 
 msgid "yesRestore"
-msgstr "Ja, wiederherstellen"
+msgstr "Ja, weiter bearbeiten"
 
 msgid "portletLabel"
 msgstr "Portlet-Label"
@@ -336,3 +336,66 @@ msgstr "vertikal"
 
 msgid "horizontal"
 msgstr "horizontal"
+
+msgid "grid"
+msgstr "Gitter"
+
+msgid "alternate"
+msgstr "Abwechselnd"
+
+msgid "columns"
+msgstr "Spalten"
+
+msgid "margin"
+msgstr "Außenabstand"
+
+msgid "border"
+msgstr "Rahmen"
+
+msgid "padding"
+msgstr "Innenabstand"
+
+msgid "Border style"
+msgstr "Rahmenstil"
+
+msgid "Border color"
+msgstr "Rahmenfarbe"
+
+msgid "Border radius"
+msgstr "Rahmenabrundung"
+
+msgid "noAction"
+msgstr "Keine Aktion"
+
+msgid "lightbox"
+msgstr "Lightbox"
+
+msgid "linked"
+msgstr "Verlinkung"
+
+msgid "hidden"
+msgstr "versteckt"
+
+msgid "dotted"
+msgstr "gepunktet"
+
+msgid "dashed"
+msgstr "gestrichelt"
+
+msgid "solid"
+msgstr "durchgezogen"
+
+msgid "mobileXS"
+msgstr "Mobil (XS)"
+
+msgid "tabletSM"
+msgstr "Tablet (SM)"
+
+msgid "desktopMD"
+msgstr "Desktop (MD)"
+
+msgid "desktopLG"
+msgstr "Großer Desktop (LG)"
+
+msgid "Custom"
+msgstr "Benutzerdefiniert"

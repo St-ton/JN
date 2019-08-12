@@ -71,7 +71,7 @@
                 {if $isCurrenctCustomer === true}
                     {block name='snippets-wishlist-actions'}
                         {col cols=2 md=1 class="mb-2"}
-                        {dropdown variant="link" class="no-chevron wishlist-options" text="<i class='fas fa-ellipsis-v'></i>"}
+                        {dropdown variant="link" class="no-chevron wishlist-options" text="<i class='fas fa-ellipsis-v'></i>" aria=["label"=>"{lang key='rename' section='wishlistOptions'}"]}
                         {dropdownitem class="text-center"}
                         {block name='snippets-wishlist-actions-rename'}
                             {button type="submit" variant="link" data=["toggle" => "collapse", "target"=>"#edit-wishlist-name"]}
@@ -185,7 +185,7 @@
                             {/block}
                             {block name='snippets-wishlist-search-form-inputs'}
                                 {inputgroup}
-                                {input name="cSuche" size="35" type="text" value=$wlsearch placeholder="{lang key='wishlistSearch' section='login'}"}
+                                {input name="cSuche" size="35" type="text" value=$wlsearch placeholder="{lang key='wishlistSearch' section='login'}" aria=["label"=>"{lang key='wishlistSearch' section='login'}"]}
                                 {inputgroupaddon append=true}
                                 {block name='snippets-wishlist-search-form-submit'}
                                     {button name="action" value="search" type="submit"}
@@ -414,6 +414,7 @@
                                                 type="submit"
                                                 variant="link"
                                                 name="remove" value=$wlPosition->kWunschlistePos
+                                                aria=["label"=>"{lang key='wishlistremoveItem' section='login'}"]
                                                 title="{lang key='wishlistremoveItem' section='login'}"
                                                 class="wishlist-pos-delete float-right text-decoration-none mb-2 fs-large"
                                                 data=["toggle"=>"tooltip"]

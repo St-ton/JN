@@ -6,13 +6,13 @@
     {/if}
 {/if}
 <div class="alert alert-warning">
-    <h3 class="panel-title">{__('structureMigrationNeeded')}</h3>
+    <div class="card-title">{__('structureMigrationNeeded')}</div>
     {{__('structureMigrationNeededLong')}|sprintf:{$engineUpdate->tableCount}:{$engineUpdate->dataSize|formatByteSize:'%.0f'|upper|strip:'&nbsp;'}}
 </div>
 {if $DB_Version->collation_utf8 && $DB_Version->innodb->support}
     {if $DB_Version->innodb->support && $DB_Version->innodb->version|version_compare:'5.6' < 0}
         <div class="alert alert-warning">
-            <h3 class="panel-title">{__('warningOldDBVersion')}</h3>
+            <div class="card-title">{__('warningOldDBVersion')}</div>
             {{__('warningOldDBVersionLong')}|sprintf:{$DB_Version->server}}
             {if (isset($Einstellungen.artikeluebersicht.suche_fulltext) && $Einstellungen.artikeluebersicht.suche_fulltext !== 'N') || $FulltextIndizes !== false}
                 <ul>
@@ -30,15 +30,15 @@
     {/if}
     {if $DB_Version->innodb->size !== 'auto' && $engineUpdate->dataSize > $DB_Version->innodb->size}
         <div class="alert alert-warning">
-            <h3 class="panel-title">{__('notEnoughTableSpace')}</h3>
+            <div class="card-title">{__('notEnoughTableSpace')}</div>
             {{__('notEnoughTableSpaceLong')}|sprintf:{$DB_Version->innodb->size|formatByteSize:'%.0f'|upper|strip:'&nbsp;'}}
         </div>
     {/if}
-    <div class="panel panel-default">
-        <div class="panel-heading">
-            <h3 class="panel-title">{{__('structureMigration')}|sprintf:{$engineUpdate->tableCount}}</h3>
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title">{{__('structureMigration')}|sprintf:{$engineUpdate->tableCount}}</div>
         </div>
-        <div class="panel-body">
+        <div class="card-body">
             <ul class="nav nav-tabs">
                 <li{if $tab === 'update_individual'} class="active"{/if}><a data-toggle="tab" href="#update_individual">{__('soloStructureTable')}</a></li>
                 <li{if $tab === 'update_automatic'} class="active"{/if}><a data-toggle="tab" href="#update_automatic">{__('automatic')}</a></li>
@@ -76,14 +76,17 @@
                     </p>
                     <div class="alert alert-warning">{__('warningDoBackup')}</div>
                     <form method="post" action="dbcheck.php">
-                        <div id="settings" class="panel panel-default">
-                            <div class="panel-body">
+                        <div id="settings" class="card">
+                            <div class="card-body">
                                 <div class="input-group">
                                     <span class="input-group-addon">
                                         <label for="update_auto_backup">{__('yesBackup')}</label>
                                     </span>
                                     <span class="input-group-wrap">
-                                        <input id="update_auto_backup" class="form-control" type="checkbox" name="update_auto_backup" value="1" required>
+                                        <div class="custom-control custom-checkbox">
+                                            <input id="update_auto_backup" class="custom-control-input form-control" type="checkbox" name="update_auto_backup" value="1" required>
+                                            <label class="custom-control-label" for="update_auto_backup"></label>
+                                        </div>
                                     </span>
                                 </div>
                                 {if isset($Einstellungen.global.wartungsmodus_aktiviert) && $Einstellungen.global.wartungsmodus_aktiviert === 'Y'}
@@ -97,7 +100,10 @@
                                         <label for="update_auto_wartungsmodus_reject">{__('noMaintenance')}</label>
                                     </span>
                                     <span class="input-group-wrap">
-                                        <input id="update_auto_wartungsmodus_reject" class="form-control" type="checkbox" name="update_auto_wartungsmodus_reject" value="1" required>
+                                        <div class="custom-control custom-checkbox">
+                                            <input id="update_auto_wartungsmodus_reject" class="custom-control-input form-control" type="checkbox" name="update_auto_wartungsmodus_reject" value="1" required>
+                                            <label class="custom-control-label" for="update_auto_wartungsmodus_reject"></label>
+                                        </div>
                                     </span>
                                 </div>
                                 {/if}
@@ -106,8 +112,11 @@
                                     <span class="input-group-addon">
                                         <label for="update_auto_size_skip">{__('yesEnoughSpace')}</label>
                                     </span>
-                                        <span class="input-group-wrap">
-                                        <input id="update_auto_size_skip" class="form-control" type="checkbox" name="update_auto_size_skip" value="1" required>
+                                    <span class="input-group-wrap">
+                                        <div class="custom-control custom-checkbox">
+                                            <input id="update_auto_size_skip" class="custom-control-input form-control" type="checkbox" name="update_auto_size_skip" value="1" required>
+                                            <label class="custom-control-label" for="update_auto_size_skip"></label>
+                                        </div>
                                     </span>
                                 </div>
                                 {else}
@@ -258,13 +267,13 @@
 {else}
     {if !$DB_Version->innodb->support}
     <div class="alert alert-danger">
-        <h3 class="panel-title">{__('errorNoInnoDBSupport')}</h3>
+        <div class="card-title">{__('errorNoInnoDBSupport')}</div>
         {{__('errorNoInnoDBSupportDesc')}|sprintf:{$DB_Version->server}}
     </div>
     {/if}
     {if !$DB_Version->collation_utf8}
         <div class="alert alert-danger">
-            <h3 class="panel-title">{__('errorNoUTF8Support')}</h3>
+            <div class="card-title">{__('errorNoUTF8Support')}</div>
             {{__('errorNoUTF8SupportDesc')}|sprintf:{$DB_Version->server}}
         </div>
     {/if}

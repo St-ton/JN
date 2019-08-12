@@ -19,7 +19,7 @@
                 class="d-md-flex"
                 visible=false
                 id="crd-cllps-{$oBox->getID()}"
-                aria=["labelledby"=>"#crd-hdr-{$oBox->getID()}"]}
+                aria=["labelledby"=>"crd-hdr-{$oBox->getID()}"]}
                     {nav vertical=true}
                     {block name='boxes-box-linkgroups-include-linkgroups-recursive'}
                         {include file='snippets/linkgroup_recursive.tpl' linkgroupIdentifier=$oBox->getLinkGroupTemplate() dropdownSupport=true  tplscope='box'}

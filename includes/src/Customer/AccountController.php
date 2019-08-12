@@ -8,22 +8,22 @@ namespace JTL\Customer;
 
 use Exception;
 use JTL\Alert\Alert;
-use JTL\Cart\WarenkorbPers;
-use JTL\Cart\WarenkorbPersPos;
+use JTL\Cart\CartHelper;
+use JTL\Cart\PersistentCart;
+use JTL\Cart\PersistentCartItem;
 use JTL\Catalog\Product\Artikel;
 use JTL\Catalog\Product\Preise;
-use JTL\Catalog\Wishlist\Wunschliste;
+use JTL\Catalog\Wishlist\Wishlist;
 use JTL\CheckBox;
 use JTL\Checkout\Bestellung;
 use JTL\Checkout\Kupon;
 use JTL\Checkout\Lieferadresse;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
-use JTL\Extensions\Download;
-use JTL\Extensions\Konfigitem;
-use JTL\Extensions\UploadDatei;
+use JTL\Extensions\Config\Item;
+use JTL\Extensions\Download\Download;
+use JTL\Extensions\Upload\File;
 use JTL\GeneralDataProtection\Journal;
-use JTL\Helpers\Cart;
 use JTL\Helpers\Date;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
@@ -105,7 +105,7 @@ class AccountController
         $customerID = Frontend::getCustomer()->getID();
         $step       = 'login';
         if (isset($_SESSION['Kunde']->kKunde) && $_SESSION['Kunde']->kKunde > 0) {
-            $customer = new Kunde($_SESSION['Kunde']->kKunde);
+            $customer = new Customer($_SESSION['Kunde']->kKunde);
             if ($customer->kKunde > 0) {
                 $customer->angezeigtesLand = LanguageHelper::getCountryCodeByCountryName($customer->cLand);
                 Frontend::getInstance()->setCustomer($customer);
@@ -114,7 +114,7 @@ class AccountController
         if (Request::verifyGPCDataInt('wlidmsg') > 0) {
             $this->alertService->addAlert(
                 Alert::TYPE_NOTE,
-                Wunschliste::mapMessage(Request::verifyGPCDataInt('wlidmsg')),
+                Wishlist::mapMessage(Request::verifyGPCDataInt('wlidmsg')),
                 'wlidmsg'
             );
         }
@@ -170,9 +170,9 @@ class AccountController
             $this->logout();
         }
         if ($valid && ($uploadID = Request::verifyGPCDataInt('kUpload')) > 0) {
-            $file = new UploadDatei($uploadID);
+            $file = new File($uploadID);
             if ($file->validateOwner($customerID)) {
-                UploadDatei::send_file_to_browser(
+                File::send_file_to_browser(
                     \PFAD_UPLOADS . $file->cPfad,
                     'application/octet-stream',
                     $file->cName
@@ -209,7 +209,7 @@ class AccountController
             $step = 'mein Konto';
             $this->alertService->addAlert(
                 Alert::TYPE_NOTE,
-                Wunschliste::delete(Request::verifyGPCDataInt('wllo')),
+                Wishlist::delete(Request::verifyGPCDataInt('wllo')),
                 'wllo'
             );
         }
@@ -217,7 +217,7 @@ class AccountController
             $step = 'mein Konto';
             $this->alertService->addAlert(
                 Alert::TYPE_NOTE,
-                Wunschliste::setDefault(Request::verifyGPCDataInt('wls')),
+                Wishlist::setDefault(Request::verifyGPCDataInt('wls')),
                 'wls'
             );
         }
@@ -228,7 +228,7 @@ class AccountController
         if (isset($_POST['wlh']) && (int)$_POST['wlh'] > 0) {
             $step = 'mein Konto';
             $name = Text::htmlentities(Text::filterXSS($_POST['cWunschlisteName']));
-            $this->alertService->addAlert(Alert::TYPE_NOTE, Wunschliste::save($name), 'saveWL');
+            $this->alertService->addAlert(Alert::TYPE_NOTE, Wishlist::save($name), 'saveWL');
         }
         $wishlistID = Request::verifyGPCDataInt('wl');
         if ($wishlistID > 0) {
@@ -266,7 +266,7 @@ class AccountController
             $this->viewOrders($customerID);
         }
         if ($step === 'mein Konto' || $step === 'wunschliste') {
-            $this->smarty->assign('oWunschliste_arr', Wunschliste::getWishlists());
+            $this->smarty->assign('oWunschliste_arr', Wishlist::getWishlists());
         }
         if ($step === 'mein Konto') {
             $deliveryAddresses = [];
@@ -316,11 +316,11 @@ class AccountController
     /**
      * @param string $userLogin
      * @param string $passLogin
-     * @return Kunde
+     * @return Customer
      */
-    public function login(string $userLogin, string $passLogin): Kunde
+    public function login(string $userLogin, string $passLogin): Customer
     {
-        $customer = new Kunde();
+        $customer = new Customer();
         if (Form::validateToken() === false) {
             $this->alertService->addAlert(
                 Alert::TYPE_NOTE,
@@ -336,14 +336,14 @@ class AccountController
             $returnCode = $customer->holLoginKunde($userLogin, $passLogin);
             $tries      = $customer->nLoginversuche;
         } else {
-            $returnCode = Kunde::ERROR_CAPTCHA;
+            $returnCode = Customer::ERROR_CAPTCHA;
             $tries      = $captchaState;
         }
         if ($customer->kKunde > 0) {
             $this->initCustomer($customer);
-        } elseif ($returnCode === Kunde::ERROR_LOCKED) {
+        } elseif ($returnCode === Customer::ERROR_LOCKED) {
             $this->alertService->addAlert(Alert::TYPE_NOTE, Shop::Lang()->get('accountLocked'), 'accountLocked');
-        } elseif ($returnCode === Kunde::ERROR_INACTIVE) {
+        } elseif ($returnCode === Customer::ERROR_INACTIVE) {
             $this->alertService->addAlert(Alert::TYPE_NOTE, Shop::Lang()->get('accountInactive'), 'accountInactive');
         } else {
             $this->checkLoginCaptcha($tries);
@@ -365,10 +365,10 @@ class AccountController
     }
 
     /**
-     * @param Kunde $customer
+     * @param Customer $customer
      * @throws Exception
      */
-    private function initCustomer(Kunde $customer): void
+    private function initCustomer(Customer $customer): void
     {
         unset($_SESSION['showLoginCaptcha']);
         $coupons   = [];
@@ -402,8 +402,6 @@ class AccountController
             $_SESSION['VersandKupon'],
             $_SESSION['NeukundenKupon'],
             $_SESSION['Kupon'],
-            $_SESSION['kKategorieVonUnterkategorien_arr'],
-            $_SESSION['oKategorie_arr'],
             $_SESSION['oKategorie_arr_new']
         );
         if (isset($_SESSION['Kampagnenbesucher'])) {
@@ -411,12 +409,12 @@ class AccountController
         }
         $session = Frontend::getInstance();
         $session->setCustomer($customer);
-        Wunschliste::persistInSession();
+        Wishlist::persistInSession();
         $persCartLoaded = $this->config['global']['warenkorbpers_nutzen'] === 'Y'
             && $this->loadPersistentCart($customer);
         $this->pruefeWarenkorbArtikelSichtbarkeit($_SESSION['Kunde']->kKundengruppe);
         \executeHook(\HOOK_JTL_PAGE_REDIRECT);
-        Cart::checkAdditions();
+        CartHelper::checkAdditions();
         $url = Text::filterXSS(Request::verifyGPDataString('cURL'));
         if (\mb_strlen($url) > 0) {
             if (\mb_strpos($url, 'http') !== 0) {
@@ -429,7 +427,7 @@ class AccountController
             if ($this->config['kaufabwicklung']['warenkorb_warenkorb2pers_merge'] === 'Y') {
                 $this->setzeWarenkorbPersInWarenkorb($_SESSION['Kunde']->kKunde);
             } elseif ($this->config['kaufabwicklung']['warenkorb_warenkorb2pers_merge'] === 'P') {
-                $persCart = new WarenkorbPers($customer->kKunde);
+                $persCart = new PersistentCart($customer->kKunde);
                 if (\count($persCart->oWarenkorbPersPos_arr) > 0) {
                     $this->smarty->assign('nWarenkorb2PersMerge', 1);
                 }
@@ -482,16 +480,16 @@ class AccountController
     }
 
     /**
-     * @param Kunde $customer
+     * @param Customer $customer
      * @return bool
      */
-    private function loadPersistentCart(Kunde $customer): bool
+    private function loadPersistentCart(Customer $customer): bool
     {
         $cart = Frontend::getCart();
         if (\count($cart->PositionenArr) > 0) {
             return false;
         }
-        $persCart = new WarenkorbPers($customer->kKunde);
+        $persCart = new PersistentCart($customer->kKunde);
         $persCart->ueberpruefePositionen(true);
         if (\count($persCart->oWarenkorbPersPos_arr) === 0) {
             return false;
@@ -530,7 +528,7 @@ class AccountController
                 }
                 // Konfigitems ohne Artikelbezug
             } elseif ($item->kArtikel === 0 && !empty($item->kKonfigitem)) {
-                $configItem = new Konfigitem($item->kKonfigitem);
+                $configItem = new Item($item->kKonfigitem);
                 $cart->erstelleSpezialPos(
                     $configItem->getName(),
                     $item->fAnzahl,
@@ -545,7 +543,7 @@ class AccountController
                     $item->kArtikel
                 );
             } else {
-                Cart::addProductIDToCart(
+                CartHelper::addProductIDToCart(
                     $item->kArtikel,
                     $item->fAnzahl,
                     $item->oWarenkorbPersPosEigenschaft_arr,
@@ -634,10 +632,10 @@ class AccountController
                     ReturnType::SINGLE_OBJECT
                 );
                 if (isset($present->kArtikel) && $present->kArtikel > 0) {
-                    WarenkorbPers::addToCheck($productID, 1, [], null, 0, \C_WARENKORBPOS_TYP_GRATISGESCHENK);
+                    PersistentCart::addToCheck($productID, 1, [], null, 0, \C_WARENKORBPOS_TYP_GRATISGESCHENK);
                 }
             } else {
-                WarenkorbPers::addToCheck(
+                PersistentCart::addToCheck(
                     $item->kArtikel,
                     $item->nAnzahl,
                     $item->WarenkorbPosEigenschaftArr,
@@ -650,8 +648,8 @@ class AccountController
         }
         $cart->PositionenArr = [];
 
-        $persCart = new WarenkorbPers($customerID);
-        /** @var WarenkorbPersPos $item */
+        $persCart = new PersistentCart($customerID);
+        /** @var PersistentCartItem $item */
         foreach ($persCart->oWarenkorbPersPos_arr as $item) {
             if ($item->nPosTyp === \C_WARENKORBPOS_TYP_GRATISGESCHENK) {
                 $productID = (int)$item->kArtikel;
@@ -686,12 +684,12 @@ class AccountController
                 $tmpProduct = new Artikel();
                 $tmpProduct->fuelleArtikel($item->kArtikel, Artikel::getDefaultOptions());
 
-                if ((int)$tmpProduct->kArtikel > 0 && \count(Cart::addToCartCheck(
+                if ((int)$tmpProduct->kArtikel > 0 && \count(CartHelper::addToCartCheck(
                     $tmpProduct,
                     $item->fAnzahl,
                     $item->oWarenkorbPersPosEigenschaft_arr
                 )) === 0) {
-                    Cart::addProductIDToCart(
+                    CartHelper::addProductIDToCart(
                         $item->kArtikel,
                         $item->fAnzahl,
                         $item->oWarenkorbPersPosEigenschaft_arr,
@@ -813,12 +811,7 @@ class AccountController
         $languageID   = Shop::getLanguageID();
         $languageCode = Shop::getLanguageCode();
         $currency     = Frontend::getCurrency();
-        unset(
-            $_SESSION['kKategorieVonUnterkategorien_arr'],
-            $_SESSION['oKategorie_arr'],
-            $_SESSION['oKategorie_arr_new'],
-            $_SESSION['Warenkorb']
-        );
+        unset($_SESSION['oKategorie_arr_new'], $_SESSION['Warenkorb']);
 
         $params = \session_get_cookie_params();
         \setcookie(
@@ -857,8 +850,8 @@ class AccountController
                 Shop::Lang()->get('kwkEmailblocked', 'errorMessages') . '<br />',
                 'kwkEmailblocked'
             );
-        } elseif (KundenwerbenKunden::checkInputData($data)) {
-            if (KundenwerbenKunden::saveToDB($data, $this->config)) {
+        } elseif (Referral::checkInputData($data)) {
+            if (Referral::saveToDB($data, $this->config)) {
                 $this->alertService->addAlert(
                     Alert::TYPE_NOTE,
                     \sprintf(
@@ -927,7 +920,7 @@ class AccountController
             && $_POST['neuesPasswort1'] === $_POST['neuesPasswort2']
             && \mb_strlen($_POST['neuesPasswort1']) >= $minLength
         ) {
-            $customer = new Kunde($customerID);
+            $customer = new Customer($customerID);
             $user     = $this->db->select(
                 'tkunde',
                 'kKunde',
@@ -1137,21 +1130,21 @@ class AccountController
     private function modifyWishlist(int $customerID, int $wishlistID): string
     {
         $step     = 'mein Konto';
-        $wishlist = new Wunschliste($wishlistID);
+        $wishlist = new Wishlist($wishlistID);
         if ($wishlist->kKunde !== $customerID) {
             return $step;
         }
         if (isset($_REQUEST['wlAction']) && Form::validateToken()) {
             $action = Request::verifyGPDataString('wlAction');
             if ($action === 'setPrivate') {
-                Wunschliste::setPrivate($wishlist->kWunschliste);
+                Wishlist::setPrivate($wishlist->kWunschliste);
                 $this->alertService->addAlert(
                     Alert::TYPE_NOTE,
                     Shop::Lang()->get('wishlistSetPrivate', 'messages'),
                     'wishlistSetPrivate'
                 );
             } elseif ($action === 'setPublic') {
-                Wunschliste::setPublic($wishlist->kWunschliste);
+                Wishlist::setPublic($wishlist->kWunschliste);
                 $this->alertService->addAlert(
                     Alert::TYPE_NOTE,
                     Shop::Lang()->get('wishlistSetPublic', 'messages'),
@@ -1194,7 +1187,7 @@ class AccountController
                 $postData,
                 ['oKunde' => $customerData]
             )->checkLogging(\CHECKBOX_ORT_KUNDENDATENEDITIEREN, $customerGroupID, $postData, true);
-            Kundendatenhistory::saveHistory($_SESSION['Kunde'], $customerData, Kundendatenhistory::QUELLE_MEINKONTO);
+            DataHistory::saveHistory($_SESSION['Kunde'], $customerData, DataHistory::QUELLE_MEINKONTO);
             $customerAttributes->save();
             $customerData->getCustomerAttributes()->load($customerData->getID());
             $_SESSION['Kunde'] = $customerData;

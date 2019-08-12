@@ -7,8 +7,8 @@
 use JTL\Catalog\Product\Preise;
 use JTL\Checkout\Kupon;
 use JTL\Checkout\Lieferadresse;
-use JTL\Customer\Kunde;
-use JTL\Customer\Kundengruppe;
+use JTL\Customer\Customer;
+use JTL\Customer\CustomerGroup;
 use JTL\DB\ReturnType;
 use JTL\Emailhistory;
 use JTL\Helpers\GeneralObject;
@@ -43,7 +43,7 @@ function sendeMail($moduleID, $data, $mail = null)
         $data->tkunde = new stdClass();
     }
     if (!isset($data->tkunde->kKundengruppe) || !$data->tkunde->kKundengruppe) {
-        $data->tkunde->kKundengruppe = Kundengruppe::getDefaultGroupID();
+        $data->tkunde->kKundengruppe = CustomerGroup::getDefaultGroupID();
     }
     $data->tfirma        = $db->query('SELECT * FROM tfirma', ReturnType::SINGLE_OBJECT);
     $data->tkundengruppe = $db->select(
@@ -703,8 +703,8 @@ function lokalisiereInhalt($object)
 }
 
 /**
- * @param object         $lang
- * @param stdClass|Kunde $customer
+ * @param object            $lang
+ * @param stdClass|Customer $customer
  * @return mixed
  * @deprecated since 5.0.0
  */

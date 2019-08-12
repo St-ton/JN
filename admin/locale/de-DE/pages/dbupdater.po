@@ -75,7 +75,7 @@ msgid "putOnServer"
 msgstr "Auf Server ablegen"
 
 msgid "infoUpdateNow"
-msgstr "Klicken Sie auf <a href=\"dbupdater.php?action=update\" data-callback=\"update\">jetzt aktualisieren</a>, um die Datenbankaktualisierung durchzuführen."
+msgstr "Klicken Sie auf „Datenbank-Update starten“ um die Datenbankaktualisierung durchzuführen."
 
 msgid "dbUpdate"
 msgstr "Datenbankaktualisierung"

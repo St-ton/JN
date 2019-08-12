@@ -7,15 +7,15 @@
 {$alertList->displayAlertByKey('backupMessage')}
 {$alertList->displayAlertByKey('zipArchiveError')}
 
-<div class="panel collapsed">
-    <div class="panel-heading{if $modifiedFiles|count > 0} accordion-toggle" data-toggle="collapse" data-target="#pageCheckModifiedFiles" style="cursor:pointer"{else}"{/if}>
-        <h3 class="panel-title">
+<div class="card collapsed">
+    <div class="card-header{if $modifiedFiles|count > 0} accordion-toggle" data-toggle="collapse" data-target="#pageCheckModifiedFiles" style="cursor:pointer"{else}"{/if}>
+        <div class="card-title">
             {if $modifiedFiles|count > 0}<i class="fa fas fa-plus"></i> {/if}
             {__('fileCheckNumberModifiedFiles')}: {$modifiedFiles|count}
-        </h3>
+        </div>
     </div>
     {if $modifiedFiles|count > 0}
-        <div class="panel-body panel-collapse collapse" id="pageCheckModifiedFiles">
+        <div class="card-body  collapse" id="pageCheckModifiedFiles">
             <p class="small text-muted">{__('fileCheckModifiedFilesNote')}</p>
             <div id="contentModifiedFilesCheck">
                 <table class="table req">
@@ -34,15 +34,15 @@
         </div>
     {/if}
 </div>
-<div class="panel collapsed">
-    <div class="panel-heading{if $orphanedFiles|count > 0} accordion-toggle" data-toggle="collapse" data-target="#pageCheckOrphanedFiles" style="cursor:pointer"{else}"{/if}>
-        <h3 class="panel-title">
+<div class="card collapsed">
+    <div class="card-header{if $orphanedFiles|count > 0} accordion-toggle" data-toggle="collapse" data-target="#pageCheckOrphanedFiles" style="cursor:pointer"{else}"{/if}>
+        <div class="card-title">
             {if $orphanedFiles|count > 0}<i class="fa fas fa-plus"></i> {/if}
             {__('fileCheckNumberOrphanedFiles')}: {$orphanedFiles|count}
-        </h3>
+        </div>
     </div>
     {if $orphanedFiles|count > 0}
-        <div class="panel-body panel-collapse collapse" id="pageCheckOrphanedFiles">
+        <div class="card-body  collapse" id="pageCheckOrphanedFiles">
             <p class="small text-muted">{__('fileCheckOrphanedFilesNote')}</p>
             <div id="contentOrphanedFilesCheck">
                 <table class="table req">

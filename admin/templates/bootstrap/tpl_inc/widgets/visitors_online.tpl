@@ -1,17 +1,16 @@
 <div class="widget-custom-data widget-visitors">
     {if $oVisitorsInfo->nAll > 0}
-        <div class="row">
-            <div class="col-xs-4"><strong><i class="fa fa-users" aria-hidden="true"></i> {__('customers')}:</strong> <span class="value">{$oVisitorsInfo->nCustomer}</span></div>
-            <div class="col-xs-4"><strong><i class="fa fa-user-secret" aria-hidden="true"></i> {__('guests')}:</strong> <span class="value">{$oVisitorsInfo->nUnknown}</span></div>
-            <div class="col-xs-4 text-right"><strong>{__('overall')}:</strong> <span class="value">{$oVisitorsInfo->nAll}</span></div>
+        <div class="row mb-3">
+            <div class="col-auto mr-auto"><i class="fa fa-users" aria-hidden="true"></i> {__('customers')}: <span class="value">{$oVisitorsInfo->nCustomer}</span></div>
+            <div class="col-auto mr-auto"><i class="fa fa-user-secret mr-2" aria-hidden="true"></i> {__('guests')}: <span class="value">{$oVisitorsInfo->nUnknown}</span></div>
+            <div class="col-auto text-right">{__('overall')}: <span class="value">{$oVisitorsInfo->nAll}</span></div>
         </div>
-        <hr>
     {else}
         <div class="widget-container"><div class="alert alert-info">{__('noVisitorsATM')}</div></div>
     {/if}
 
     {if is_array($oVisitors_arr) && $oVisitors_arr|@count > 0}
-        <table class="table table-condensed table-hover table-blank">
+        <table class="table table-border-light table-sm">
             <thead>
                 <tr>
                     <th>{__('customer')}</th>
@@ -40,7 +39,7 @@
                             {/if}
                             {if $oVisitor->cNewsletter === 'Y'}
                                 <a href="#" data-toggle="tooltip" data-placement="top" title="Newsletter-Abonnent">
-                                    <i class="fa fa-envelope-o"></i><span class="sr-only">{__('newsletterSubscriber')}</span>
+                                    <i class="far fa-envelope"></i><span class="sr-only">{__('newsletterSubscriber')}</span>
                                 </a>
                             {/if}
                         </td>

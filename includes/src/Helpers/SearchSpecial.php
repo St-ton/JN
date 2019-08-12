@@ -6,8 +6,8 @@
 
 namespace JTL\Helpers;
 
+use JTL\Customer\CustomerGroup;
 use JTL\DB\ReturnType;
-use JTL\Customer\Kundengruppe;
 use JTL\Media\Image\Overlay;
 use JTL\Shop;
 use stdClass;
@@ -155,7 +155,7 @@ class SearchSpecial
     public static function getTopOffers(int $limit = 20, int $customerGroupID = 0): array
     {
         if (!$customerGroupID) {
-            $customerGroupID = Kundengruppe::getDefaultGroupID();
+            $customerGroupID = CustomerGroup::getDefaultGroupID();
         }
         $top = Shop::Container()->getDB()->query(
             'SELECT tartikel.kArtikel
@@ -183,7 +183,7 @@ class SearchSpecial
     public static function getBestsellers(int $limit = 20, int $customerGroupID = 0): array
     {
         if (!$customerGroupID) {
-            $customerGroupID = Kundengruppe::getDefaultGroupID();
+            $customerGroupID = CustomerGroup::getDefaultGroupID();
         }
         $config      = Shop::getSettings([\CONF_GLOBAL]);
         $minAmount   = isset($config['global']['global_bestseller_minanzahl'])
@@ -217,7 +217,7 @@ class SearchSpecial
     public static function getSpecialOffers(int $limit = 20, int $customerGroupID = 0): array
     {
         if (!$customerGroupID) {
-            $customerGroupID = Kundengruppe::getDefaultGroupID();
+            $customerGroupID = CustomerGroup::getDefaultGroupID();
         }
         $specialOffers = Shop::Container()->getDB()->query(
             'SELECT tartikel.kArtikel, tsonderpreise.fNettoPreis
@@ -257,7 +257,7 @@ class SearchSpecial
             $limit = 20;
         }
         if (!$customerGroupID) {
-            $customerGroupID = Kundengruppe::getDefaultGroupID();
+            $customerGroupID = CustomerGroup::getDefaultGroupID();
         }
         $config = Shop::getSettings([\CONF_BOXEN]);
         $days   = ($config['boxen']['box_neuimsortiment_alter_tage'] > 0)

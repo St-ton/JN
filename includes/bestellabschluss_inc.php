@@ -714,7 +714,7 @@ function aktualisiereStuecklistenLagerbestand($bomProduct, $amount)
 
     if (is_array($components) && count($components) > 0) {
         // wenn ja, dann wird für diese auch der Bestand aktualisiert
-        $options = Artikel::getDefaultOptions();
+        $options                             = Artikel::getDefaultOptions();
         $options->nKeineSichtbarkeitBeachten = 1;
         foreach ($components as $component) {
             $tmpArtikel = new Artikel();
@@ -866,15 +866,15 @@ function KuponVerwendungen($order): void
     $couponGross = 0;
     if (isset($_SESSION['VersandKupon']->kKupon) && $_SESSION['VersandKupon']->kKupon > 0) {
         $couponID    = (int)$_SESSION['VersandKupon']->kKupon;
-        $couponType   = Kupon::TYPE_SHIPPING;
+        $couponType  = Kupon::TYPE_SHIPPING;
         $couponGross = $_SESSION['Versandart']->fPreis;
     }
     if (isset($_SESSION['NeukundenKupon']->kKupon) && $_SESSION['NeukundenKupon']->kKupon > 0) {
-        $couponID  = (int)$_SESSION['NeukundenKupon']->kKupon;
+        $couponID   = (int)$_SESSION['NeukundenKupon']->kKupon;
         $couponType = Kupon::TYPE_NEWCUSTOMER;
     }
     if (isset($_SESSION['Kupon']->kKupon) && $_SESSION['Kupon']->kKupon > 0) {
-        $couponID  = (int)$_SESSION['Kupon']->kKupon;
+        $couponID   = (int)$_SESSION['Kupon']->kKupon;
         $couponType = Kupon::TYPE_STANDARD;
     }
     foreach ($cart->PositionenArr as $item) {

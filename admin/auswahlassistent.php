@@ -29,12 +29,13 @@ if ($nice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
     $group    = new Group();
     $question = new Question();
     $step     = 'uebersicht';
+    $csrfOK   = Form::validateToken();
     setzeSprache();
 
     if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
         $tab = Request::verifyGPDataString('tab');
     }
-    if (isset($_POST['a']) && Form::validateToken()) {
+    if (isset($_POST['a']) && $csrfOK) {
         if ($_POST['a'] === 'newGrp') {
             $step = 'edit-group';
         } elseif ($_POST['a'] === 'newQuest') {
@@ -71,19 +72,19 @@ if ($nice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
     } elseif (isset($_GET['a'], $_GET['q'])
         && $_GET['a'] === 'delQuest'
         && (int)$_GET['q'] > 0
-        && Form::validateToken()
+        && $csrfOK
     ) {
         if ($question->deleteQuestion([$_GET['q']])) {
             $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successQuestionDeleted'), 'successQuestionDeleted');
         } else {
             $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorQuestionDeleted'), 'errorQuestionDeleted');
         }
-    } elseif (isset($_GET['a']) && $_GET['a'] === 'editQuest' && (int)$_GET['q'] > 0 && Form::validateToken()) {
+    } elseif (isset($_GET['a']) && $_GET['a'] === 'editQuest' && (int)$_GET['q'] > 0 && $csrfOK) {
         $step = 'edit-question';
         $smarty->assign('oFrage', new Question((int)$_GET['q'], false));
     }
 
-    if (isset($_POST['a']) && Form::validateToken()) {
+    if (isset($_POST['a']) && $csrfOK) {
         if ($_POST['a'] === 'addGrp') {
             $group->kSprache      = (int)$_SESSION['kSprache'];
             $group->cName         = htmlspecialchars(
@@ -131,7 +132,7 @@ if ($nice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
     } elseif (isset($_GET['a'], $_GET['g'])
         && $_GET['a'] === 'editGrp'
         && (int)$_GET['g'] > 0
-        && Form::validateToken()
+        && $csrfOK
     ) {
         $step = 'edit-group';
         $smarty->assign('oGruppe', new Group((int)$_GET['g'], false, false, true));

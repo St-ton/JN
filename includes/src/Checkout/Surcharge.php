@@ -101,79 +101,69 @@ class Surcharge
             ['id' => $id],
             ReturnType::SINGLE_OBJECT
         );
+        if (!\is_object($surcharge)) {
+            return;
+        }
 
-        if ($surcharge !== 0) {
-            $this->setTitle($surcharge->cName)
-                 ->setISO($surcharge->cISO)
-                 ->setSurcharge((float)$surcharge->fZuschlag)
-                 ->setShippingMethod((int)$surcharge->kVersandart)
-                 ->setPriceLocalized();
+        $this->setTitle($surcharge->cName)
+             ->setISO($surcharge->cISO)
+             ->setSurcharge((float)$surcharge->fZuschlag)
+             ->setShippingMethod((int)$surcharge->kVersandart)
+             ->setPriceLocalized();
 
-            $zips = $db->queryPrepared(
-                'SELECT vzp.cPLZ, vzp.cPLZAb, vzp.cPLZBis 
-                    FROM tversandzuschlag AS vz
-                    JOIN tversandzuschlagplz AS vzp USING(kVersandzuschlag) 
-                    WHERE vz.kVersandzuschlag = :id',
-                ['id' => $id],
-                ReturnType::ARRAY_OF_OBJECTS
-            );
-
-            foreach ($zips as $zip) {
-                if (!empty($zip->cPLZ)) {
-                    $this->setZIPCode($zip->cPLZ);
-                } elseif (!empty($zip->cPLZAb) && !empty($zip->cPLZBis)) {
-                    $this->setZIPArea($zip->cPLZAb, $zip->cPLZBis);
-                }
+        $zips = $db->queryPrepared(
+            'SELECT vzp.cPLZ, vzp.cPLZAb, vzp.cPLZBis 
+                FROM tversandzuschlag AS vz
+                JOIN tversandzuschlagplz AS vzp USING(kVersandzuschlag) 
+                WHERE vz.kVersandzuschlag = :id',
+            ['id' => $id],
+            ReturnType::ARRAY_OF_OBJECTS
+        );
+        foreach ($zips as $zip) {
+            if (!empty($zip->cPLZ)) {
+                $this->setZIPCode($zip->cPLZ);
+            } elseif (!empty($zip->cPLZAb) && !empty($zip->cPLZBis)) {
+                $this->setZIPArea($zip->cPLZAb, $zip->cPLZBis);
             }
+        }
 
-            $names = $db->queryPrepared(
-                'SELECT vzs.cName, s.kSprache 
-                    FROM tversandzuschlag AS vz
-                    JOIN tversandzuschlagsprache AS vzs USING(kVersandzuschlag) 
-                    JOIN tsprache as s ON s.cISO = vzs.cISOSprache
-                    WHERE vz.kVersandzuschlag = :id',
-                ['id' => $id],
-                ReturnType::ARRAY_OF_OBJECTS
-            );
-            foreach ($names as $name) {
-                $this->setName($name->cName, (int)$name->kSprache);
-            }
+        $names = $db->queryPrepared(
+            'SELECT vzs.cName, s.kSprache 
+                FROM tversandzuschlag AS vz
+                JOIN tversandzuschlagsprache AS vzs USING(kVersandzuschlag) 
+                JOIN tsprache as s ON s.cISO = vzs.cISOSprache
+                WHERE vz.kVersandzuschlag = :id',
+            ['id' => $id],
+            ReturnType::ARRAY_OF_OBJECTS
+        );
+        foreach ($names as $name) {
+            $this->setName($name->cName, (int)$name->kSprache);
         }
     }
 
     /**
-     * @param bool $update
+     * update or insert new surcharge
      */
-    public function save(bool $update = false): void
+    public function save(): void
     {
-        $db                     = Shop::Container()->getDB();
-        $surcharge              = new \stdClass();
-        $surcharge->cName       = $this->getTitle();
-        $surcharge->kVersandart = $this->getShippingMethod();
-        $surcharge->cIso        = $this->getISO();
-        $surcharge->fZuschlag   = $this->getSurcharge();
+        $db                          = Shop::Container()->getDB();
+        $surcharge                   = new \stdClass();
+        $surcharge->cName            = $this->getTitle();
+        $surcharge->kVersandart      = $this->getShippingMethod();
+        $surcharge->cIso             = $this->getISO();
+        $surcharge->fZuschlag        = $this->getSurcharge();
+        $surcharge->kVersandzuschlag = $this->getID();
 
-        if ($update) {
-            $db->update('tversandzuschlag', 'kVersandzuschlag', $this->getID(), $surcharge);
-        } else {
-            $this->setID($db->insert('tversandzuschlag', $surcharge));
+        if (($newInsertID = $db->upsert('tversandzuschlag', $surcharge)) > 0) {
+            $this->setID($newInsertID);
         }
-        if ($this->getID() !== 0) {
+        if ($this->getID() > 0) {
             foreach ($this->getNames() as $key => $name) {
                 $surchargeLang                   = new \stdClass();
                 $surchargeLang->cName            = $name;
                 $surchargeLang->cISOSprache      = Shop::Lang()->getIsoFromLangID($key)->cISO;
                 $surchargeLang->kVersandzuschlag = $this->getID();
-                if ($update) {
-                    $db->update(
-                        'tversandzuschlagsprache',
-                        ['kVersandzuschlag', 'cISOSprache'],
-                        [$this->getID(), $surchargeLang->cISOSprache],
-                        $surchargeLang
-                    );
-                } else {
-                    $db->insert('tversandzuschlagsprache', $surchargeLang);
-                }
+                $db->upsert('tversandzuschlagsprache', $surchargeLang);
             }
         }
     }
@@ -224,9 +214,9 @@ class Surcharge
     }
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getID(): int
+    public function getID(): ?int
     {
         return $this->ID;
     }

@@ -397,24 +397,24 @@ function saveSurchargeList(array $data): object
     }
     if (!$alertHelper->alertTypeExists(Alert::TYPE_ERROR)) {
         $languages = Sprache::getAllLanguages();
-        if (!empty($post['kVersandzuschlag'])) {
-            $surchargeTMP = (new Surcharge((int)$post['kVersandzuschlag']))
-                ->setTitle($post['cName'])
-                ->setSurcharge($surcharge);
-        } else {
+        if (empty($post['kVersandzuschlag'])) {
             $surchargeTMP = (new Surcharge())
                 ->setISO($post['cISO'])
                 ->setSurcharge($surcharge)
                 ->setShippingMethod($post['kVersandart'])
                 ->setTitle($post['cName']);
+        } else {
+            $surchargeTMP = (new Surcharge((int)$post['kVersandzuschlag']))
+                ->setTitle($post['cName'])
+                ->setSurcharge($surcharge);
         }
         foreach ($languages as $lang) {
             if (isset($post['cName_' . $lang->cISO])) {
                 $surchargeTMP->setName($post['cName_' . $lang->cISO] ?: $post['cName'], $lang->kSprache);
             }
         }
-        $surchargeTMP->save(!empty($post['kVersandzuschlag']));
-        $surchargeTMP = new Surcharge($surchargeTMP->getId());
+        $surchargeTMP->save();
+        $surchargeTMP = new Surcharge($surchargeTMP->getID());
     }
     $message = $smarty->assign('alertList', $alertHelper)
                       ->fetch('snippets/alert_list.tpl');

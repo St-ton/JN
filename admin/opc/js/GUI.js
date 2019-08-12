@@ -345,7 +345,10 @@ class GUI
 
         this.page.loadRev(revId)
             .catch(er => this.showError('Error while loading draft preview: ' + er.error.message))
-            .then(this.iframe.onPageLoad);
+            .then(this.iframe.onPageLoad)
+            .then(() => {
+                this.iframe.loadMissingPortletPreviewStyles();
+            });
 
         this.setUnsaved(revId !== 0);
     }

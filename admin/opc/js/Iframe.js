@@ -157,6 +157,20 @@ class Iframe
         }
     }
 
+    loadPortletPreviewCss(portletCls)
+    {
+        this.loadStylesheet(
+            this.shopUrl + '/includes/src/OPC/templates/' + portletCls + '/preview.css'
+        );
+    }
+
+    loadMissingPortletPreviewStyles()
+    {
+        this.portlets().each((i, elm) => {
+            this.loadPortletPreviewCss($(elm).data('portlet').class);
+        });
+    }
+
     loadScript(url, callback)
     {
         var script = this.ctx.document.createElement('script');
@@ -276,12 +290,6 @@ class Iframe
                         this.newPortletDropTarget.remove();
                         return this.gui.showError(er.error.message);
                     })
-                    .then(data => {
-                        this.loadStylesheet(
-                            this.shopUrl + '/includes/src/OPC/templates/' + portletCls + '/preview.css'
-                        );
-                        return data;
-                    })
                     .then(this.onNewPortletCreated)
                     .then(() => {
                         if (this.dragNewPortletGroup && this.dragNewPortletGroup === 'content') {
@@ -317,6 +325,7 @@ class Iframe
         this.updateDropTargets();
         this.gui.setUnsaved(true, true);
         this.page.updateFlipcards();
+        this.loadMissingPortletPreviewStyles();
     }
 
     createPortletElm(previewHtml)

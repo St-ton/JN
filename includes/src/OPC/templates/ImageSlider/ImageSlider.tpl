@@ -135,7 +135,7 @@
                         }, 10);
                     }
 
-                    jtl.ready(function () {
+                    var initImageSlider = function () {
                         var slider   = $('#{$uid}');
                         var endSlide = $('#{$uid}  img').length - 1;
 
@@ -167,9 +167,9 @@
                                 slider.addClass('loaded');
                             }
                         });
-                    });
+                    };
                 {else}
-                    jtl.ready(function () {
+                    var initImageSlider = function () {
                         var slider = $('#{$uid}');
 
                         $('a.slide').click(function () {
@@ -209,8 +209,14 @@
                                 slider.addClass('loaded');
                             }
                         });
-                    });
+                    };
                 {/if}
+
+                if(window.JTL_SHOP_NOVA) {
+                    pushDeferredTask("ready", initImageSlider);
+                } else {
+                    $(initImageSlider);
+                }
             </script>
         {/if}
     </div>

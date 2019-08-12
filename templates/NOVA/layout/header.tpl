@@ -9,6 +9,15 @@
           {else}itemtype="http://schema.org/WebPage"{/if}{/block}>
     {block name='layout-header-head'}
     <head>
+        <script>
+            window.JTL_SHOP_NOVA = true;
+            window.JTL_SHOP_NOVA_READY = false;
+            window.deferredTasks = [];
+
+            function pushDeferredTask(when, cb) {
+                window.deferredTasks.push([when, cb]);
+            }
+        </script>
         {block name='layout-header-head-meta'}
             <meta http-equiv="content-type" content="text/html; charset={$smarty.const.JTL_CHARSET}">
             <meta name="description" itemprop="description" content={block name='layout-header-head-meta-description'}"{$meta_description|truncate:1000:"":true}{/block}">

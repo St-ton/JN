@@ -29,6 +29,12 @@
             id: {$currentLanguage->id},
         };
 
+        if(window.JTL_SHOP_NOVA) {
+            pushDeferredTask("ready", updateTooltips);
+        } else {
+            $(updateTooltips);
+        }
+
         function openOpcStartMenu()
         {
             $('#opcSidebar').addClass('opc-open');
@@ -172,6 +178,7 @@
                             { },
                             () => {
                                 opcDraftCheckboxChanged();
+                                updateTooltips();
                             }
                         );
                     }
@@ -199,6 +206,7 @@
                             { },
                             () => {
                                 opcDraftCheckboxChanged();
+                                updateTooltips();
                             }
                         );
                     }
@@ -210,6 +218,23 @@
         {
             let draftKeys = getSelectedOpcDraftkeys();
             $('#opc-bulk-actions').attr('disabled', draftKeys.length === 0);
+        }
+
+        function updateTooltips()
+        {
+            $('.tooltip').remove();
+
+            $('.opc-draft-actions [data-toggle="tooltip"]').tooltip({
+                placement: 'bottom',
+                trigger: 'hover',
+            });
+
+            $('.opc-draft-actions [data-toggle="dropdown"]').tooltip({
+                placement: 'bottom',
+                trigger: 'hover',
+            }).on('click', function() {
+                $(this).tooltip('hide');
+            });
         }
     </script>
     <div id="opc">

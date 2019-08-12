@@ -6,7 +6,7 @@
 {$galleryStyle = $instance->getProperty('galleryStyle')}
 {$images = $instance->getProperty('images')}
 
-{if empty($images)}
+{if $isPreview && empty($images)}
     <div data-portlet="{$instance->getDataAttribute()}" class="opc-Gallery">
         <div>
             {file_get_contents($portlet->getTemplateUrl()|cat:'icon.svg')}
@@ -120,12 +120,18 @@
 
 {if $isPreview === false}
     <script>
-        $(function() {
+        var initGallery = function() {
             $('#{$instance->getUid()}').slickLightbox({
                 itemSelector: '.img-gallery-active-btn',
                 caption: 'caption',
                 lazy: true,
             });
-        });
+        };
+
+        if(window.JTL_SHOP_NOVA) {
+            pushDeferredTask("ready", initGallery);
+        } else {
+            $(initGallery);
+        }
     </script>
 {/if}

@@ -30,7 +30,8 @@
         </div>
     </div>
     <script>
-        $(function() {
+        function initFlipcard_{$uid}()
+        {
             var flipcard      = $('#{$uid}');
             var flipcardInner = flipcard.find('.flipcard-inner');
 
@@ -49,9 +50,15 @@
                 flipcard.find('.opc-Flipcard-label-back').toggleClass('active');
                 updateHeight_{$uid}();
             }
-        });
+        }
 
-        $('#{$uid}')[0].updateFlipcardHeight = updateHeight_{$uid};
+        if(window.JTL_SHOP_NOVA) {
+            pushDeferredTask("ready", initFlipcard_{$uid});
+        } else {
+            $(initFlipcard_{$uid});
+        }
+
+        document.getElementById('{$uid}').updateFlipcardHeight = updateHeight_{$uid};
 
         function updateHeight_{$uid}()
         {

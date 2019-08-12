@@ -63,16 +63,6 @@
                             data-toggle="dropdown" title="{__('useForOtherLang')}" data-container="#opc">
                         <img src="{$ShopURL}/admin/opc/gfx/icon-copysprache.svg" alt="{__('useForOtherLang')}">
                     </button>
-                    <script>
-                        $(function() {
-                            $('#opc-draft-{$draft->getKey()} .opc-draft-actions [data-toggle="dropdown"]').tooltip({
-                                placement: 'bottom',
-                                trigger: 'hover',
-                            }).on('click', function() {
-                                $(this).tooltip('hide');
-                            });
-                        });
-                    </script>
                     <div class="dropdown-menu opc-dropdown-menu">
                         {foreach $languages as $lang}
                             {if $lang->id !== $currentLanguage->id}

@@ -221,6 +221,7 @@
         ioCall('deleteSurchargeList', [$(this).data('surcharge-id')], function (data) {
             if (data.surchargeID > 0) {
                 $('.surcharge-box[data-surcharge-id="' + data.surchargeID + '"]').remove();
+                closeTooltips();
             }
         });
     });
@@ -234,6 +235,7 @@
             e.preventDefault();
             ioCall('deleteSurchargeListZIP', [$(this).data('surcharge-id'), $(this).data('zip')], function (data) {
                 $('.zip-badge[data-surcharge-id="' + data.surchargeID + '"][data-zip="' + data.ZIP + '"]').remove();
+                closeTooltips();
             });
         });
     }

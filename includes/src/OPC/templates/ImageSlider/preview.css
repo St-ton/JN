@@ -8,6 +8,7 @@
   text-transform: uppercase;
   font-weight: bold;
   font-size: 12px;
+  background-color: #fff;
 }
 .opc-ImageSlider.opc-ImageSlider-with-image {
   background-size: cover;

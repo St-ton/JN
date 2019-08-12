@@ -1,6 +1,7 @@
 .opc-Heading {
   display: flex;
   overflow: hidden;
+  background-color: #fff;
 }
 .opc-Heading:after {
   display: block;

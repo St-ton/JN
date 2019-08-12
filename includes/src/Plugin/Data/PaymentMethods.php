@@ -101,8 +101,8 @@ class PaymentMethods
      */
     public function getMethodByID(string $id): ?PaymentMethod
     {
-        return first($this->methods, function ($method) use ($id) {
-            return $method->cModulId === $id;
+        return first($this->methods, function (PaymentMethod $method) use ($id) {
+            return $method->getModuleID() === $id;
         });
     }
 

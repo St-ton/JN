@@ -368,7 +368,7 @@ class AccountController
      * @param Customer $customer
      * @throws Exception
      */
-    private function initCustomer(Customer $customer): void
+    public function initCustomer(Customer $customer): void
     {
         unset($_SESSION['showLoginCaptcha']);
         $coupons   = [];

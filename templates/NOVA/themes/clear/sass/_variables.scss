@@ -216,3 +216,6 @@ $ribbon-bg-colors: map-merge((
         '8' : $ribbon-bg-8,
         '9' : $ribbon-bg-9
 ), $ribbon-bg-colors);
+
+$navbar-nav-link-padding-x: map-get($spacers, 4);
+$navbar-nav-link-padding-y: map-get($spacers, 4);

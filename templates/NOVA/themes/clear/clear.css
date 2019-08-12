@@ -15922,11 +15922,8 @@ aside .badge-light {
 .input-group .nmbr-cfg-group {
   display: flex;
   position: relative;
-  /*flex: 1 1 auto;
-  width: 1%;*/
-  flex: 0 1 auto;
+  flex: 1 1 auto;
   width: auto;
-  max-width: 250px;
   margin-bottom: 0;
 }
 .choose_quantity .nmbr-cfg-group input.quantity,
@@ -16167,16 +16164,6 @@ footer .list-group-item {
   border-right: none;
 }
 
-.megamenu > .nav-item .wee {
-  height: 6px;
-  width: 0%;
-  background-color: #F8BF00;
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  z-index: 0;
-  transition: 0.75s;
-}
 .megamenu > .nav-item > a {
   padding: 16px;
   margin: 0;
@@ -16193,6 +16180,66 @@ footer .list-group-item {
   background: #F5F7FA;
 }
 
+/* megamneu style */
+@media (min-width: 992px) {
+  .navbar-dropdowns .megamenu.dropdown-menu {
+    display: block;
+    white-space: normal;
+    visibility: hidden;
+    opacity: 0;
+    transition: all 0.2s ease-in-out;
+    width: 100%;
+    margin: 0;
+    padding: 2rem;
+    box-shadow: inset 0 rem(16px) rem(9px) rem(-12px) rgba(0, 0, 0, 0.06), 0 rem(16px) rem(9px) rem(-12px) rgba(0, 0, 0, 0.06);
+  }
+  .navbar-dropdowns .active.dropdown-menu {
+    visibility: visible;
+    opacity: 1;
+  }
+}
+/* navigation style */
+@media (min-width: 992px) {
+  .navbar-nav .nav-item .nav-link {
+    position: relative;
+  }
+  .navbar-nav .nav-item .nav-link::before {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 0 0 6px;
+    border-color: #F8BF00;
+    border-style: solid;
+    transition: width 0.4s;
+    width: 0;
+  }
+  .navbar-nav .nav-item.active .nav-link::before, .navbar-nav .nav-item:hover .nav-link::before, .navbar-nav .nav-item.hover .nav-link::before {
+    width: 100%;
+  }
+
+  .navbar-nav .nav-link {
+    padding: 0.5rem;
+  }
+
+  .nav-right, .navbar-brand {
+    flex-shrink: 0;
+  }
+
+  .nav-right .nav-link {
+    padding: 0rem;
+  }
+
+  .navbar .navbar-brand {
+    padding-bottom: 1.6rem;
+  }
+}
+@media (max-width: 991.98px) {
+  .navbar .navbar-brand {
+    max-width: 110px;
+  }
+}
 .ns-ScrollWrapper {
   overflow-x: scroll;
   overflow-y: hidden;

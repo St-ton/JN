@@ -723,7 +723,6 @@
                 var width = parseInt(Math.round($(menu).outerWidth() + 2));
                 var btnLeft = $('#scrollMenuLeft');
                 var btnRight = $('#scrollMenuRight');
-                var wee = document.querySelector('.wee').style;
                 // reset
                 btnLeft.off("click.menuScroll");
                 btnRight.off("click.menuScroll");
@@ -733,14 +732,10 @@
                     btnLeft.on("click.menuScroll",function () {
                         var leftPos = parseInt(Math.round($('#navbarToggler').scrollLeft()));
                         var newLeft = leftPos-250;
-                        var weeMove = 250;
 
-                        if (newLeft < 0) {
-                            weeMove = leftPos;
-                        }
                         $('#navbarToggler').animate({scrollLeft: newLeft},{
                             duration: 600,
-                            start: checkButtonsAndWee(newLeft, weeMove)
+                            start: checkButtons(newLeft)
                         });
                     });
 
@@ -748,22 +743,13 @@
                         var leftPos2 = parseInt(Math.round($('#navbarToggler').scrollLeft()));
                         var newLeft = leftPos2+250;
                         var y = parseInt(Math.round(scrollWidth-(width+newLeft)));
-                        var weeMove = -250;
 
-                        if (y < 0) {
-                            weeMove = -(250+y);
-                        }
                         $('#navbarToggler').animate({scrollLeft: newLeft},{
                             duration: 600,
-                            start: checkButtonsAndWee(newLeft, weeMove)
+                            start: checkButtons(newLeft)
                         });
                     });
                 }
-            }
-
-            function checkButtonsAndWee(scrollLeft, weeMove) {
-                wee['left'] = parseInt(wee.left) + weeMove + 'px';
-                checkButtons(scrollLeft);
             }
 
             function checkButtons(scrollLeft) {
@@ -794,42 +780,6 @@
             $(sticky).css('top', navHeight);
         },
 
-        setPositionForWee: function() {
-            function ready(fn) {
-                if (document.attachEvent ? document.readyState === "complete" : document.readyState !== "loading"){
-                    fn();
-                } else {
-                    document.addEventListener('DOMContentLoaded', fn);
-                }
-            };
-
-            function setupNav() {
-                var wee = document.querySelector('.wee').style,
-                    navList = document.querySelectorAll('.megamenu .nav-item'),
-                    currentNav = document.querySelector('.megamenu .nav-item.active');
-
-                if (currentNav != undefined) {
-                    wee['left'] = currentNav.offsetLeft + 'px';
-                    wee['width'] = currentNav.offsetWidth + 'px';
-                } else {
-                    wee['width'] = 0 + 'px';
-                }
-
-                // note: The addEventListener() method is not supported in Internet Explorer 8 and earlier versions//
-                navList.forEach(function(nav){
-                    nav.addEventListener('click', function() {
-                        var leftPos = parseInt(Math.round($('#navbarToggler').scrollLeft()));
-                        wee['left'] = this.offsetLeft - leftPos + 'px';
-                        wee['width'] = this.offsetWidth + 'px';
-                    });
-                });
-            };
-
-            ready(function(){
-                setupNav();
-            });
-        },
-
         /**
          * $.evo.extended() is deprecated, please use $.evo instead
          */
@@ -857,7 +807,6 @@
             this.setCompareListHeight();
             this.checkMenuScroll();
             this.fixStickyElements();
-            this.setPositionForWee();
         }
     };
 

@@ -240,7 +240,7 @@ function checkInputError(event)
     if (event.target.validity.valid) {
         $target.closest('.form-group').removeClass('has-error');
     } else {
-        $target.closest('.form-group').addClass('has-error').append('<div class="form-error-msg text-danger"><i class="fas fa-exclamation-triangle"></i> ' + event.target.validationMessage + '</div>');
+        $target.closest('.form-group').addClass('has-error').append('<div class="form-error-msg text-danger"><i class="fa fa-exclamation-triangle"></i> ' + event.target.validationMessage + '</div>');
     }
 }
 

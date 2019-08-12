@@ -138,7 +138,7 @@ class CountryService implements CountryServiceInterface
      * @param array|null $selectedCountries
      * @return array
      */
-    public function getCountriesByContinent(bool $getEU = false, array $selectedCountries = []): array
+    public function getCountriesGroupedByContinent(bool $getEU = false, array $selectedCountries = []): array
     {
         $continentsTMP                = [];
         $continentsSelectedCountryTMP = [];

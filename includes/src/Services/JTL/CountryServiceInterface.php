@@ -50,5 +50,5 @@ interface CountryServiceInterface
      * @param array $selectedCountries
      * @return array
      */
-    public function getCountriesByContinent(bool $getEU = false, array $selectedCountries = []): array;
+    public function getCountriesGroupedByContinent(bool $getEU = false, array $selectedCountries = []): array;
 }

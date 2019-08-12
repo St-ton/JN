@@ -359,7 +359,7 @@ if ($step === 'neue Versandart') {
     }
     $smarty->assign('zahlungsarten', $zahlungsarten)
            ->assign('versandlaender', $versandlaender)
-           ->assign('continents', $countryHelper->getCountriesByContinent(
+           ->assign('continents', $countryHelper->getCountriesGroupedByContinent(
                true,
                explode(' ', $shippingMethod->cLaender ?? '')
            ))
@@ -447,14 +447,11 @@ if ($step === 'uebersicht') {
         }
         $countries          = explode(' ', trim($method->cLaender));
         $method->countries  = new Collection();
-        $method->surcharges = $db->queryPrepared(
+        $method->surcharges = array_column($db->queryPrepared(
             'SELECT DISTINCT cISO FROM tversandzuschlag WHERE kVersandart = :shippingMethodID',
             ['shippingMethodID' => (int)$method->kVersandart],
-            ReturnType::COLLECTION
-        )->map(function ($country) {
-            return $country->cISO;
-        })->toArray();
-
+            ReturnType::ARRAY_OF_ASSOC_ARRAYS
+        ), 'cISO');
         foreach ($countries as $country) {
             $method->countries->push($countryHelper->getCountry($country));
         }

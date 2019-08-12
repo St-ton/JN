@@ -51,7 +51,7 @@
                                     {/if}
                                     <a href="versandarten.php?zuschlag=1&kVersandart={$versandart->kVersandart}&cISO={$country->getISO()}&token={$smarty.session.jtl_token}">
                                         <span class="small text-muted">
-                                            {if in_array($country->getISO(), $versandart->surcharges)}
+                                            {if in_array($country->getISO(), $versandart->shippingSurchargeCountries)}
                                                 <u>{$country->getName()}*</u>
                                             {else}
                                                 {$country->getName()}

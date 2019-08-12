@@ -67,7 +67,7 @@ class Area implements \JsonSerializable
             $result .= $portletInstance->getPreviewHtml();
         }
 
-        Shop::fire('shop.OPC.Area.getFinalHtml', [
+        Shop::fire('shop.OPC.Area.getPreviewHtml', [
             'area' => $this,
             'result' => &$result
         ]);

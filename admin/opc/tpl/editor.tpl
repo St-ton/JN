@@ -106,8 +106,7 @@
             <div>
                 <img src="{$shopUrl}/admin/opc/gfx/icon-drop-target.svg" class="opc-droptarget-icon" alt="Drop Target">
                 <span>{__('dropPortletHere')}</span>
-                <i class="opc-droptarget-info fas fa-info-circle" data-toggle="tooltip"
-                   data-placement="left" title="Tooltip on left"></i>
+                <i class="opc-droptarget-info fas fa-info-circle" data-toggle="tooltip" data-placement="left"></i>
             </div>
         </div>
     </div>

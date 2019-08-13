@@ -119,13 +119,16 @@ class Iframe
     updateDropTargets()
     {
         this.stripDropTargets();
-        this.areas().append(this.dropTargetBlueprint.clone().attr('id', '').show());
-        this.portlets().before(this.dropTargetBlueprint.clone().attr('id', '').show());
-        this.dropTargets().find('.opc-droptarget-info').each((i, droptarget) => {
-            droptarget = this.jq(droptarget);
-            droptarget.attr('title', droptarget.closest('.opc-area').data('area-id'));
-            droptarget.tooltip();
+
+        this.areas().each((i, area) => {
+            area = this.jq(area);
+            let droptarget = this.dropTargetBlueprint.clone().attr('id', '').show();
+            droptarget.find('.opc-droptarget-info').attr('title', area.data('title') || area.data('area-id'));
+            area.append(droptarget.clone());
+            area.children('[data-portlet]').before(droptarget.clone());
         });
+
+        this.areas().find('.opc-droptarget-info').tooltip();
     }
 
     stripDropTargets()

@@ -52,6 +52,7 @@ class Iframe
             this.body = this.jq('body');
 
             this.loadStylesheet(this.shopUrl + '/admin/opc/css/iframe.css');
+            this.loadStylesheet(this.shopUrl + '/templates/NOVA/themes/base/fontawesome/css/all.min.css');
 
             this.loadScript(
                 this.shopUrl + '/templates/NOVA/js/popper.min.js',

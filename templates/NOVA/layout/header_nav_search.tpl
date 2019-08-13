@@ -11,7 +11,7 @@
                         {input name="qs" type="text" class="ac_input" placeholder="{lang key='search'}" autocomplete="off" aria=["label"=>"{lang key='search'}"]}
                         {inputgroupaddon append=true}
                             {button type="submit" variant="light" name="search" id="search-submit-button" aria=["label"=>"{lang key='search'}"]}
-                                <span class="fa fa-search"></span>
+                                <span class="fas fa-search"></span>
                             {/button}
                         {/inputgroupaddon}
                     {/inputgroup}

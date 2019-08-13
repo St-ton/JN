@@ -84,7 +84,7 @@
         <div id="portletToolbar" class="opc-portlet-toolbar" style="display:none">
             <button type="button" class="opc-toolbar-btn opc-label" id="portletLabel"></button>
             <button type="button" class="opc-toolbar-btn" id="btnConfig" title="{__('editSettings')}">
-                <i class="fas fa-pen fa fa-pencil"></i>
+                <i class="fas fa-pen"></i>
             </button>
             <button type="button" class="opc-toolbar-btn" id="btnClone" title="{__('copySelect')}">
                 <i class="far fa-clone"></i>
@@ -93,7 +93,7 @@
                 <i class="far fa-star"></i>
             </button>
             <button type="button" class="opc-toolbar-btn" id="btnParent" title="{__('goUp')}">
-                <i class="fas fa-level-up fas fa-level-up-alt"></i>
+                <i class="fas fa-level-up-alt"></i>
             </button>
             <button type="button" class="opc-toolbar-btn" id="btnTrash" title="{__('deleteSelect')}">
                 <i class="fas fa-trash"></i>

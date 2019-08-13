@@ -167,7 +167,7 @@
                                     id="language-dropdown-footer"
                                     variant="link btn-sm"
                                     class="d-block d-md-none col-6 text-center language-dropdown"
-                                    text="<i class='fa fa-language'></i> {lang key='language'}"}
+                                    text="<i class='fas fa-language'></i> {lang key='language'}"}
                                     {foreach $smarty.session.Sprachen as $oSprache}
                                         {dropdownitem href="{$oSprache->url}" rel="nofollow" }
                                             {$oSprache->displayLanguage}

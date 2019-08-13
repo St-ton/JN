@@ -1,5 +1,16 @@
 @import "variables";
 
+// Compatibility for Evo with FontAwesome 5 included in the page preview
+.fa {
+    font-family: FontAwesome !important;
+    font-style: normal !important;
+    font-weight: normal !important;
+
+    &.fa-youtube-square:before {
+        content: "\f166" !important;
+    }
+}
+
 [data-portlet] {
     margin: 8px;
     min-height: 2em;

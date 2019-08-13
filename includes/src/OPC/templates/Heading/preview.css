@@ -33,6 +33,7 @@
 .opc-Heading .opc-Heading-label .opc-Heading-icon {
   font-size: 20px;
   margin-right: 6px;
+  vertical-align: middle;
 }
 .opc-Heading .opc-Heading-label .opc-Heading-label-text {
   display: inline-block;

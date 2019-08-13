@@ -33,11 +33,13 @@
 .opc-Button .opc-Button-label svg {
   margin-right: 6px;
   margin-top: 4px;
+  vertical-align: middle;
 }
 .opc-Button .opc-Button-propinfo {
   padding: 10px 2px;
   font-size: 13px;
   white-space: nowrap;
+  line-height: 1.6;
 }
 .opc-Button .opc-Button-propinfo i {
   margin-right: 4px;

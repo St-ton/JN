@@ -23,6 +23,7 @@
   font-size: 14px;
 }
 .opc-ImageSlider svg {
+  vertical-align: middle;
   margin-right: 6px;
 }
 

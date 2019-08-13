@@ -117,7 +117,7 @@
                                 </td>
                                 <td>
                                     <label for="plugin-check-{$listingItem->getDir()}">{$listingItem->getName()}</label>
-                                    <p>{$listingItem->getDescription()}</p>
+                                    <p><small>{$listingItem->getDescription()}</small></p>
                                     {if $listingItem->isShop4Compatible() === false && $listingItem->isShop5Compatible() === false}
                                         <div class="alert alert-info">{__('dangerPluginNotCompatibleShop4')}</div>
                                     {/if}

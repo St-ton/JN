@@ -19,6 +19,7 @@ if ((int)$_GET['kArtikel'] > 0 && (int)$_GET['kKundengruppe'] > 0 && (int)$_GET[
     $priceConfig->Netto    = Frontend::getCustomerGroup()->isMerchant()
         ? 0
         : $_SESSION['Steuersatz'][(int)$_GET['kSteuerklasse']];
+    $month                 = Shop::getSettingValue(CONF_PREISVERLAUF, 'preisverlauf_anzahl_monate');
     $history               = Shop::Container()->getDB()->queryPrepared(
         'SELECT kPreisverlauf
             FROM tpreisverlauf
@@ -29,7 +30,7 @@ if ((int)$_GET['kArtikel'] > 0 && (int)$_GET['kKundengruppe'] > 0 && (int)$_GET[
         [
             'pid'  => $productID,
             'cgid' => $cgID,
-            'mth'  => Shop::getSettingValue(CONF_PREISVERLAUF, 'preisverlauf_anzahl_monate')
+            'mth'  => $month
         ],
         ReturnType::SINGLE_OBJECT
     );
@@ -38,7 +39,7 @@ if ((int)$_GET['kArtikel'] > 0 && (int)$_GET['kKundengruppe'] > 0 && (int)$_GET[
         $graph                      = new PreisverlaufGraph(
             $productID,
             $cgID,
-            $nMonat,
+            $month,
             $conf,
             $priceConfig
         );

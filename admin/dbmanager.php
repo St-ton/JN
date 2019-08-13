@@ -6,6 +6,7 @@
 
 use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
+use JTL\Helpers\Request;
 use JTL\Shop;
 use JTL\Update\DBManager;
 
@@ -85,7 +86,7 @@ switch (true) {
         $filter        = array_merge($defaultFilter, $filter);
         // validate filter
         $filter['limit'] = (int)$filter['limit'];
-        $page            = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+        $page            = Request::getInt('page', 1);
         if ($page < 1) {
             $page = 1;
         }

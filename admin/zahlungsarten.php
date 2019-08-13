@@ -61,17 +61,18 @@ if ($action !== 'logreset' && Request::verifyGPCDataInt('kZahlungsart') > 0 && F
     }
 }
 
-if (isset($_POST['einstellungen_bearbeiten'], $_POST['kZahlungsart'])
-    && (int)$_POST['einstellungen_bearbeiten'] === 1 && (int)$_POST['kZahlungsart'] > 0 && Form::validateToken()
+if (Request::postInt('einstellungen_bearbeiten') === 1
+    && Request::postInt('kZahlungsart') > 0
+    && Form::validateToken()
 ) {
     $step              = 'uebersicht';
     $paymentMethod     = $db->select(
         'tzahlungsart',
         'kZahlungsart',
-        (int)$_POST['kZahlungsart']
+        Request::postInt('kZahlungsart')
     );
-    $nMailSenden       = (int)$_POST['nMailSenden'];
-    $nMailSendenStorno = (int)$_POST['nMailSendenStorno'];
+    $nMailSenden       = Request::postInt('nMailSenden');
+    $nMailSendenStorno = Request::postInt('nMailSendenStorno');
     $nMailBits         = 0;
     if (is_array($_POST['kKundengruppe'])) {
         $cKundengruppen = Text::createSSK($_POST['kKundengruppe']);
@@ -89,13 +90,11 @@ if (isset($_POST['einstellungen_bearbeiten'], $_POST['kZahlungsart'])
         $cKundengruppen = '';
     }
 
-    $nWaehrendBestellung = isset($_POST['nWaehrendBestellung'])
-        ? (int)$_POST['nWaehrendBestellung']
-        : $paymentMethod->nWaehrendBestellung;
+    $nWaehrendBestellung = Request::postInt('nWaehrendBestellung', $paymentMethod->nWaehrendBestellung);
 
     $upd                      = new stdClass();
     $upd->cKundengruppen      = $cKundengruppen;
-    $upd->nSort               = (int)$_POST['nSort'];
+    $upd->nSort               = Request::postInt('nSort');
     $upd->nMailSenden         = $nMailBits;
     $upd->cBild               = $_POST['cBild'];
     $upd->nWaehrendBestellung = $nWaehrendBestellung;
@@ -178,7 +177,7 @@ if (isset($_POST['einstellungen_bearbeiten'], $_POST['kZahlungsart'])
     if (!isset($localized)) {
         $localized = new stdClass();
     }
-    $localized->kZahlungsart = (int)$_POST['kZahlungsart'];
+    $localized->kZahlungsart = Request::postInt('kZahlungsart');
     foreach (LanguageHelper::getAllLanguages() as $lang) {
         $langCode               = $lang->getCode();
         $localized->cISOSprache = $langCode;
@@ -193,7 +192,7 @@ if (isset($_POST['einstellungen_bearbeiten'], $_POST['kZahlungsart'])
         $db->delete(
             'tzahlungsartsprache',
             ['kZahlungsart', 'cISOSprache'],
-            [(int)$_POST['kZahlungsart'], $langCode]
+            [Request::postInt('kZahlungsart'), $langCode]
         );
         $db->insert('tzahlungsartsprache', $localized);
     }

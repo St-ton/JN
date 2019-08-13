@@ -54,7 +54,7 @@ class ReviewController extends BaseController
         $this->checkRedirect();
         $params   = Shop::getParameters();
         $customer = Frontend::getCustomer();
-        if (isset($_POST['bfh']) && (int)$_POST['bfh'] === 1) {
+        if (Request::postInt('bfh') === 1) {
             $message = $this->save(
                 $params['kArtikel'],
                 $customer->getID(),
@@ -66,7 +66,7 @@ class ReviewController extends BaseController
             \header('Location: ' . $message . '#alert-list', true, 303);
             exit;
         }
-        if (isset($_POST['bhjn']) && (int)$_POST['bhjn'] === 1) {
+        if (Request::postInt('bhjn') === 1) {
             $this->updateWasHelpful(
                 $params['kArtikel'],
                 $customer->getID(),

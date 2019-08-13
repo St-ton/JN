@@ -35,7 +35,7 @@ $linkService  = Shop::Container()->getLinkService();
 $controller   = new AccountController(Shop::Container()->getDB(), $alertService, $linkService, $smarty);
 
 unset($_SESSION['ajaxcheckout']);
-if (isset($_POST['login']) && (int)$_POST['login'] === 1) {
+if (Request::postInt('login') === 1) {
     $controller->login($_POST['email'], $_POST['passwort']);
 }
 if (Request::verifyGPCDataInt('basket2Pers') === 1) {
@@ -61,7 +61,7 @@ if ($conf['kaufabwicklung']['bestellvorgang_kaufabwicklungsmethode'] === 'NO'
 ) {
     $customerID = Frontend::getCustomer()->getID();
     $persCart   = new PersistentCart($customerID);
-    if (!(isset($_POST['login']) && (int)$_POST['login'] === 1
+    if (!(Request::postInt('login') === 1
         && $conf['global']['warenkorbpers_nutzen'] === 'Y'
         && $conf['kaufabwicklung']['warenkorb_warenkorb2pers_merge'] === 'P'
         && count($persCart->oWarenkorbPersPos_arr) > 0)
@@ -72,40 +72,26 @@ if ($conf['kaufabwicklung']['bestellvorgang_kaufabwicklungsmethode'] === 'NO'
 if (Request::verifyGPCDataInt('wk') === 1) {
     Kupon::resetNewCustomerCoupon();
 }
-if (isset($_POST['unreg_form'])
-    && (int)$_POST['unreg_form'] === 1
-    && $conf['kaufabwicklung']['bestellvorgang_unregistriert'] === 'Y'
-) {
+if (Request::postInt('unreg_form') === 1 && $conf['kaufabwicklung']['bestellvorgang_unregistriert'] === 'Y') {
     pruefeUnregistriertBestellen($_POST);
 }
 if (isset($_GET['editLieferadresse'])) {
     // Shipping address and customer address are now on same site
     $_GET['editRechnungsadresse'] = $_GET['editLieferadresse'];
 }
-if (isset($_POST['unreg_form']) && (int)$_POST['unreg_form'] === 0) {
+if (Request::postInt('unreg_form', -1) === 0) {
     $_POST['checkout'] = 1;
     $_POST['form']     = 1;
     include PFAD_ROOT . 'registrieren.php';
 }
-if (isset($_GET['kZahlungsart']) && (int)$_GET['kZahlungsart'] > 0) {
-    zahlungsartKorrekt((int)$_GET['kZahlungsart']);
+if (($paymentMethodID = Request::getInt('kZahlungsart')) > 0) {
+    zahlungsartKorrekt($paymentMethodID);
 }
-if ((isset($_POST['versandartwahl']) && (int)$_POST['versandartwahl'] === 1) || isset($_GET['kVersandart'])) {
+if (Request::postInt('versandartwahl') === 1 || isset($_GET['kVersandart'])) {
     unset($_SESSION['Zahlungsart']);
-    $kVersandart = null;
-
-    if (isset($_GET['kVersandart'])) {
-        $kVersandart = (int)$_GET['kVersandart'];
-    } elseif (isset($_POST['Versandart'])) {
-        $kVersandart = (int)$_POST['Versandart'];
-    }
-
-    pruefeVersandartWahl($kVersandart);
+    pruefeVersandartWahl(Request::verifyGPCDataInt('kVersandart'));
 }
-if (isset($_GET['unreg'])
-    && (int)$_GET['unreg'] === 1
-    && $conf['kaufabwicklung']['bestellvorgang_unregistriert'] === 'Y'
-) {
+if (Request::getInt('unreg') === 1 && $conf['kaufabwicklung']['bestellvorgang_unregistriert'] === 'Y') {
     $step = 'edit_customer_address';
 }
 //autom. step ermitteln
@@ -216,7 +202,7 @@ if ($step === 'Bestaetigung' && $cart->gibGesamtsummeWaren(true) === 0.0) {
     zahlungsartKorrekt($oPaymentMethod->kZahlungsart);
 
     if ((isset($_SESSION['Bestellung']->GuthabenNutzen) && (int)$_SESSION['Bestellung']->GuthabenNutzen === 1)
-        || (isset($_POST['guthabenVerrechnen']) && (int)$_POST['guthabenVerrechnen'] === 1)
+        || Request::postInt('guthabenVerrechnen') === 1
     ) {
         $_SESSION['Bestellung']->GuthabenNutzen   = 1;
         $_SESSION['Bestellung']->fGuthabenGenutzt = min(

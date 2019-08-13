@@ -123,14 +123,14 @@ class AccountController
             \executeHook(\HOOK_JTL_PAGE_REDIRECT_DATEN);
         }
         unset($_SESSION['JTL_REDIRECT']);
-        if (isset($_GET['updated_pw']) && $_GET['updated_pw'] === 'true') {
+        if (Request::getVar('updated_pw') === 'true') {
             $this->alertService->addAlert(
                 Alert::TYPE_NOTE,
                 Shop::Lang()->get('changepasswordSuccess', 'login'),
                 'changepasswordSuccess'
             );
         }
-        if (isset($_POST['login'], $_POST['email'], $_POST['passwort']) && (int)$_POST['login'] === 1) {
+        if (isset($_POST['email'], $_POST['passwort']) && Request::postInt('login') === 1) {
             $customerID = $this->login($_POST['email'], $_POST['passwort'])->getID();
         }
         if (isset($_GET['loggedout'])) {
@@ -210,7 +210,7 @@ class AccountController
                 'wllo'
             );
         }
-        if ($valid && isset($_POST['wls']) && (int)$_POST['wls'] > 0) {
+        if ($valid && Request::postInt('wls') > 0) {
             $step = 'mein Konto';
             $this->alertService->addAlert(
                 Alert::TYPE_NOTE,
@@ -222,7 +222,7 @@ class AccountController
             $step = 'kunden_werben_kunden';
             $this->checkPromotion($_POST);
         }
-        if (isset($_POST['wlh']) && (int)$_POST['wlh'] > 0) {
+        if (Request::postInt('wlh') > 0) {
             $step = 'mein Konto';
             $name = Text::htmlentities(Text::filterXSS($_POST['cWunschlisteName']));
             $this->alertService->addAlert(Alert::TYPE_NOTE, Wishlist::save($name), 'saveWL');
@@ -231,18 +231,16 @@ class AccountController
         if ($wishlistID > 0) {
             $step = $this->modifyWishlist($customerID, $wishlistID);
         }
-        if ((isset($_GET['editRechnungsadresse']) && (int)$_GET['editRechnungsadresse'] > 0)
-            || (isset($_POST['editRechnungsadresse']) && (int)$_POST['editRechnungsadresse'] > 0)
-        ) {
+        if (Request::verifyGPCDataInt('editRechnungsadresse') > 0) {
             $step = 'rechnungsdaten';
         }
-        if (isset($_GET['pass']) && (int)$_GET['pass'] === 1) {
+        if (Request::getInt('pass') === 1) {
             $step = 'passwort aendern';
         }
-        if ($valid && isset($_POST['edit']) && (int)$_POST['edit'] === 1) {
+        if ($valid && Request::postInt('edit') === 1) {
             $this->changeCustomerData();
         }
-        if ($valid && isset($_POST['pass_aendern']) && (int)$_POST['pass_aendern']) {
+        if ($valid && Request::postInt('pass_aendern') > 0) {
             $step = $this->changePassword($customerID);
         }
         if (Request::verifyGPCDataInt('bestellungen') > 0) {
@@ -257,7 +255,7 @@ class AccountController
         if (Request::verifyGPCDataInt('bestellung') > 0) {
             $step = $this->viewOrder($customerID);
         }
-        if ($valid && isset($_POST['del_acc']) && (int)$_POST['del_acc'] === 1) {
+        if ($valid && Request::postInt('del_acc') === 1) {
             $this->deleteAccount($customerID);
         }
         if ($step === 'mein Konto' || $step === 'bestellungen') {
@@ -1137,7 +1135,7 @@ class AccountController
     private function getCustomerFields(): void
     {
         $customer = $_SESSION['Kunde'];
-        if (isset($_POST['edit']) && (int)$_POST['edit'] === 1) {
+        if (Request::postInt('edit') === 1) {
             $customer           = \getKundendaten($_POST, 0, 0);
             $customerAttributes = \getKundenattribute($_POST);
         } else {

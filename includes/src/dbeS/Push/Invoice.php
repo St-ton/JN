@@ -7,6 +7,7 @@
 namespace JTL\dbeS\Push;
 
 use JTL\DB\ReturnType;
+use JTL\Helpers\Request;
 use PaymentMethod;
 use stdClass;
 
@@ -24,8 +25,8 @@ final class Invoice extends AbstractPush
         if (!isset($_POST['kBestellung'], $_POST['kSprache'])) {
             return [];
         }
-        $orderID = (int)$_POST['kBestellung'];
-        $langID  = (int)$_POST['kSprache'];
+        $orderID = Request::postInt('kBestellung');
+        $langID  = Request::postInt('kSprache');
         if ($orderID <= 0 || $langID <= 0) {
             return $this->pushError('Wrong params (kBestellung: ' . $orderID . ', kSprache: ' . $langID . ').');
         }

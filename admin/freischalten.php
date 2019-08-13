@@ -184,13 +184,13 @@ if (Request::verifyGPCDataInt('freischalten') === 1 && Form::validateToken()) {
         }
 
         if (isset($_POST['freischaltensubmit'])) {
-            if (isset($_POST['kSuchanfrage']) && schalteSuchanfragenFrei($_POST['kSuchanfrage'])) {
+            if (schalteSuchanfragenFrei(Request::postVar('kSuchanfrage', []))) {
                 $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successSearchUnlock'), 'successSearchUnlock');
             } else {
                 $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorAtLeastOneSearch'), 'errorAtLeastOneSearch');
             }
         } elseif (isset($_POST['freischaltenleoschen'])) {
-            if (isset($_POST['kSuchanfrage']) && loescheSuchanfragen($_POST['kSuchanfrage'])) {
+            if (loescheSuchanfragen(Request::postVar('kSuchanfrage', []))) {
                 $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successSearchDelete'), 'successSearchDelete');
             } else {
                 $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorAtLeastOneSearch'), 'errorAtLeastOneSearch');
@@ -198,7 +198,7 @@ if (Request::verifyGPCDataInt('freischalten') === 1 && Form::validateToken()) {
         }
     } elseif (Request::verifyGPCDataInt('newskommentare') === 1 && Form::validateToken()) {
         if (isset($_POST['freischaltensubmit'])) {
-            if (isset($_POST['kNewsKommentar']) && schalteNewskommentareFrei($_POST['kNewsKommentar'])) {
+            if (schalteNewskommentareFrei(Request::postVar('kNewsKommentar', []))) {
                 $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successNewsCommentUnlock'), 'successNewsCommentUnlock');
             } else {
                 $alertHelper->addAlert(
@@ -208,7 +208,7 @@ if (Request::verifyGPCDataInt('freischalten') === 1 && Form::validateToken()) {
                 );
             }
         } elseif (isset($_POST['freischaltenleoschen'])) {
-            if (isset($_POST['kNewsKommentar']) && loescheNewskommentare($_POST['kNewsKommentar'])) {
+            if (loescheNewskommentare(Request::postVar('kNewsKommentar', []))) {
                 $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successNewsCommentDelete'), 'successNewsCommentDelete');
             } else {
                 $alertHelper->addAlert(
@@ -220,17 +220,13 @@ if (Request::verifyGPCDataInt('freischalten') === 1 && Form::validateToken()) {
         }
     } elseif (Request::verifyGPCDataInt('newsletterempfaenger') === 1 && Form::validateToken()) {
         if (isset($_POST['freischaltensubmit'])) {
-            if (isset($_POST['kNewsletterEmpfaenger'])
-                && schalteNewsletterempfaengerFrei($_POST['kNewsletterEmpfaenger'])
-            ) {
+            if (schalteNewsletterempfaengerFrei(Request::postVar('kNewsletterEmpfaenger', []))) {
                 $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successNewsletterUnlock'), 'successNewsletterUnlock');
             } else {
                 $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorAtLeastOneNewsletter'), 'errorAtLeastOneNewsletter');
             }
         } elseif (isset($_POST['freischaltenleoschen'])) {
-            if (isset($_POST['kNewsletterEmpfaenger'])
-                && loescheNewsletterempfaenger($_POST['kNewsletterEmpfaenger'])
-            ) {
+            if (loescheNewsletterempfaenger(Request::postVar('kNewsletterEmpfaenger', []))) {
                 $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successNewsletterDelete'), 'successNewsletterDelete');
             } else {
                 $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorAtLeastOneNewsletter'), 'errorAtLeastOneNewsletter');

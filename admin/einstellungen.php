@@ -8,6 +8,7 @@ use JTL\Alert\Alert;
 use JTL\Backend\Settings\Manager;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
+use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Shop;
 use JTL\Shopsetting;
@@ -82,11 +83,7 @@ $getText->localizeConfigSection($section);
 if ($bSuche) {
     $step = 'einstellungen bearbeiten';
 }
-if (isset($_POST['einstellungen_bearbeiten'])
-    && (int)$_POST['einstellungen_bearbeiten'] === 1
-    && $sectionID > 0
-    && Form::validateToken()
-) {
+if (Request::postInt('einstellungen_bearbeiten') === 1 && $sectionID > 0 && Form::validateToken()) {
     // Einstellungssuche
     $sql = new stdClass();
     if ($bSuche) {

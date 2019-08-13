@@ -20,10 +20,7 @@ $alertHelper = Shop::Container()->getAlertService();
 
 if (Request::verifyGPCDataInt('branding') === 1) {
     $step = 'branding_detail';
-    if (isset($_POST['speicher_einstellung'])
-        && (int)$_POST['speicher_einstellung'] === 1
-        && Form::validateToken()
-    ) {
+    if (Request::postInt('speicher_einstellung') === 1 && Form::validateToken()) {
         if (speicherEinstellung(Request::verifyGPCDataInt('kBranding'), $_POST, $_FILES)) {
             $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successConfigSave'), 'successConfigSave');
         } else {

@@ -46,7 +46,7 @@ if ($step === 'plugin_uebersicht' && $pluginID > 0) {
                             AND kPlugin = :plgn
                             AND cConf != 'N'
                             AND kPluginAdminMenu = :kpm",
-                    ['plgn' => $pluginID, 'kpm' => (int)$_POST['kPluginAdminMenu']],
+                    ['plgn' => $pluginID, 'kpm' => Request::postInt('kPluginAdminMenu')],
                     ReturnType::ARRAY_OF_OBJECTS
                 )
                 : [];

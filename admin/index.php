@@ -7,6 +7,7 @@
 use JTL\Alert\Alert;
 use JTL\Backend\AdminLoginStatus;
 use JTL\Helpers\Form;
+use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Profiler;
 use JTL\Session\Backend;
@@ -21,7 +22,7 @@ require_once __DIR__ . '/includes/admininclude.php';
 $db          = Shop::Container()->getDB();
 $alertHelper = Shop::Container()->getAlertService();
 $oUpdater    = new Updater($db);
-if (isset($_POST['adminlogin']) && (int)$_POST['adminlogin'] === 1) {
+if (Request::postInt('adminlogin') === 1) {
     $csrfOK = true;
     // Check if shop version is new enough for csrf validation
     if (Shop::getShopDatabaseVersion()->equals(Version::parse('4.0.0'))
@@ -128,7 +129,7 @@ switch ($profilerState) {
 }
 $smarty->assign('bProfilerActive', $profilerState !== 0)
        ->assign('profilerType', $type)
-       ->assign('pw_updated', isset($_GET['pw_updated']) && $_GET['pw_updated'] === 'true')
+       ->assign('pw_updated', Request::getVar('pw_updated') === 'true')
        ->assign('alertError', $alertHelper->alertTypeExists(Alert::TYPE_ERROR))
        ->assign('alertList', $alertHelper)
        ->assign('updateMessage', $updateMessage ?? null);
@@ -155,7 +156,7 @@ function openDashboard()
 
         $smarty->assign('bDashboard', true)
                ->assign('oPermissionStat', $fsCheck->getFolderStats())
-               ->assign('bUpdateError', ((isset($_POST['shopupdate']) && $_POST['shopupdate'] === '1') ? '1' : false))
+               ->assign('bUpdateError', (Request::postInt('shopupdate') === 1 ? '1' : false))
                ->assign('bTemplateDiffers', Template::getInstance()->getVersion() !== APPLICATION_VERSION)
                ->assign('oActiveWidget_arr', getWidgets())
                ->assign('oAvailableWidget_arr', getWidgets(false))
@@ -183,7 +184,7 @@ if ($oAccount->getIsAuthenticated()) {
         $_SESSION['AdminAccount']->TwoFA_active = true;
         // restore first generated token from POST
         $_SESSION['jtl_token'] = $_POST['jtl_token'] ?? '';
-        if (isset($_POST['TwoFA_code']) && $_POST['TwoFA_code'] !== '') {
+        if (Request::postVar('TwoFA_code', '') !== '') {
             if ($oAccount->doTwoFA()) {
                 Backend::getInstance()->reHash();
                 $_SESSION['AdminAccount']->TwoFA_expired = false;
@@ -205,7 +206,7 @@ if ($oAccount->getIsAuthenticated()) {
     openDashboard();
 } else {
     $oAccount->redirectOnUrl();
-    if (isset($_GET['errCode']) && (int)$_GET['errCode'] === AdminLoginStatus::ERROR_SESSION_INVALID) {
+    if (Request::getInt('errCode', null) === AdminLoginStatus::ERROR_SESSION_INVALID) {
         $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorSessionExpired'), 'errorSessionExpired');
     }
     Shop::Container()->getGetText()->loadAdminLocale('pages/login');

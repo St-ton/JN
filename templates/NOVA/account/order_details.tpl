@@ -60,7 +60,7 @@
                                     {/if}
                                 </ul>
                             {/block}
-                            <ul class="list-unstyled mt-lg-5 border-bottom border-lg-bottom-0">
+                            <ul class="list-unstyled mt-lg-5">
                                 <li class="mb-4">
                                     {block name='account-order-details-payment'}
                                         {lang key='paymentOptions' section='global'}:

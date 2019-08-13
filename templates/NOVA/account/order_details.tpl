@@ -19,7 +19,7 @@
                 {row class='align-items-center'}
                 {block name='account-order-details-order-heading'}
                     {col cols=12 lg=3 class='border-lg-right'}
-                        <span class="font-weight-bold font-size-lg">
+                        <span class="font-weight-bold">
                             <span class="far fa-calendar mr-2"></span>{$Bestellung->dErstelldatum_de}
                         </span>
                     {/col}

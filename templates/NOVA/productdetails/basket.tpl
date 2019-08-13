@@ -25,7 +25,7 @@
                 {if !$showMatrix}
                     {block name='productdetails-basket-form-inline'}
                         {row class="align-items-center"}
-                            {col sm=6}
+                            {col cols=12 sm=6 class="mb-3 mb-md-0"}
                                 {inputgroup id="quantity-grp" class="choose_quantity"}
                                     {input type="{if $Artikel->cTeilbar === 'Y' && $Artikel->fAbnahmeintervall == 0}text{else}number{/if}"
                                         min="{if $Artikel->fMindestbestellmenge}{$Artikel->fMindestbestellmenge}{else}0{/if}"
@@ -45,7 +45,7 @@
                                     {/if}
                                 {/inputgroup}
                             {/col}
-                            {col sm=6}
+                            {col cols=12 sm=6}
                                 {button aria=["label"=>"{lang key='addToCart'}"] block=true name="inWarenkorb" type="submit" value="{lang key='addToCart'}" variant="primary"}
                                     <span class="btn-basket-check">
                                         <span class="fas fa-shopping-cart d-sm-none"></span><span class="d-none d-sm-block">{lang key='addToCart'}</span>

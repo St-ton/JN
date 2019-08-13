@@ -354,7 +354,7 @@
         {/block}
 
         {block name='layout-header-breadcrumb'}
-            {container class="px-xl-0"}
+            {container}
                 {block name='layout-header-product-pagination'}
                     {if $Einstellungen.artikeldetails.artikeldetails_navi_blaettern === 'Y' && isset($NavigationBlaettern)}
                         <div class="d-none d-xl-block product-pagination next">

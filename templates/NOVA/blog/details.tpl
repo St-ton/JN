@@ -47,6 +47,23 @@
                                 <time itemprop="datePublished" datetime="{$dDate}" class="d-none">{$dDate}</time>
                                 {if isset($oNewsArchiv->getDateCreated()->format('Y-m-d H:i:s'))}<time itemprop="dateModified" class="d-none">{$oNewsArchiv->getDateCreated()->format('Y-m-d H:i:s')}</time>{/if}
 
+                                {if isset($Einstellungen.news.news_kategorie_unternewsanzeigen) && $Einstellungen.news.news_kategorie_unternewsanzeigen === 'Y' && !empty($oNewsKategorie_arr)}
+                                    {block name='blog-details-sub-news'}
+                                        <span class="news-categorylist mb-4">
+                                            /
+                                            {foreach $oNewsKategorie_arr as $oNewsKategorie}
+                                                {link itemprop="articleSection"
+                                                    href="{$oNewsKategorie->cURLFull}"
+                                                    title="{$oNewsKategorie->cBeschreibung|strip_tags|escape:'html'|truncate:60}"
+                                                    class="mr-2"
+                                                }
+                                                    {$oNewsKategorie->cName}
+                                                {/link}
+                                            {/foreach}
+                                        </span>
+                                    {/block}
+                                {/if}
+
                                 {link class="align-middle no-deco" href="#comments" title="{lang key='readComments' section='news'}"}
                                     /
                                     <span class="fas fa-comments"></span>
@@ -80,16 +97,6 @@
                             {/row}
                             {include file='snippets/opc_mount_point.tpl' id='opc_after_content'}
                         {/block}
-
-                        {if isset($Einstellungen.news.news_kategorie_unternewsanzeigen) && $Einstellungen.news.news_kategorie_unternewsanzeigen === 'Y' && !empty($oNewsKategorie_arr)}
-                            {block name='blog-details-sub-news'}
-                                <div class="news-categorylist mb-4">
-                                    {foreach $oNewsKategorie_arr as $oNewsKategorie}
-                                        {link itemprop="articleSection" href="{$oNewsKategorie->cURLFull}" title="{$oNewsKategorie->cBeschreibung|strip_tags|escape:'html'|truncate:60}" class="badge"}{$oNewsKategorie->cName}{/link}
-                                    {/foreach}
-                                </div>
-                            {/block}
-                        {/if}
                     </p>
                     {if isset($Einstellungen.news.news_kommentare_nutzen) && $Einstellungen.news.news_kommentare_nutzen === 'Y'}
                         {block name='blog-details-article-comments'}

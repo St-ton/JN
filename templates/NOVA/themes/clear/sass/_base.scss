@@ -1843,7 +1843,6 @@ footer {
 }
 
 
-//moving underline
 .megamenu {
   @include media-breakpoint-down(sm) {
     max-height: 400px;
@@ -1889,14 +1888,14 @@ footer {
       .mega-categories{
         max-height: 600px;
         overflow-y: auto;
-        &.hasInfoColumn {
-          border-right: 1px solid $sand;
-        }
       }
     }
     @include media-breakpoint-up(md) {
       &:hover>.dropdown-menu {
         display: block;
+        position: fixed;
+        top: auto;
+        margin-top: 1rem;
       }
     }
   }
@@ -1912,9 +1911,6 @@ footer {
     border: none;
     margin: 0;
     margin-top: -6px;
-    li {
-      width: 100%;
-    }
     @include media-breakpoint-up(md) {
       @include box-shadow($dropdown-box-shadow);
     }

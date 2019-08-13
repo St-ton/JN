@@ -32,7 +32,7 @@
   --breakpoint-md: 768px;
   --breakpoint-lg: 992px;
   --breakpoint-xl: 1200px;
-  --font-family-sans-serif: "Open Sans", Helvetica, Arial, sans-serif;
+  --font-family-sans-serif: "Open Sans", sans-serif;
   --font-family-monospace: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
 }
 
@@ -55,7 +55,7 @@ article, aside, figcaption, figure, footer, header, hgroup, main, nav, section {
 
 body {
   margin: 0;
-  font-family: "Open Sans", Helvetica, Arial, sans-serif;
+  font-family: "Open Sans", sans-serif;
   font-size: 0.9375rem;
   font-weight: 400;
   line-height: 1.5;
@@ -365,27 +365,27 @@ h1, h2, h3, h4, h5, h6,
 }
 
 h1, .h1 {
-  font-size: 1.35717rem;
+  font-size: 1.4286rem;
 }
 
 h2, .h2 {
-  font-size: 1.085755rem;
+  font-size: 1.1429rem;
 }
 
 h3, .h3 {
-  font-size: 0.95rem;
+  font-size: 1rem;
 }
 
 h4, .h4 {
-  font-size: 0.95rem;
+  font-size: 1rem;
 }
 
 h5, .h5 {
-  font-size: 0.95rem;
+  font-size: 1rem;
 }
 
 h6, .h6 {
-  font-size: 0.95rem;
+  font-size: 1rem;
 }
 
 .lead {
@@ -1997,7 +1997,7 @@ textarea.form-control {
   max-width: 100%;
   padding: 0.25rem 0.5rem;
   margin-top: 0.1rem;
-  font-size: 0.8260869565rem;
+  font-size: 0.8695652174rem;
   line-height: 1.5;
   color: #fff;
   background-color: rgba(8, 131, 25, 0.9);
@@ -2108,7 +2108,7 @@ textarea.form-control {
   max-width: 100%;
   padding: 0.25rem 0.5rem;
   margin-top: 0.1rem;
-  font-size: 0.8260869565rem;
+  font-size: 0.8695652174rem;
   line-height: 1.5;
   color: #fff;
   background-color: rgba(185, 0, 0, 0.9);
@@ -5288,7 +5288,7 @@ a.close.disabled {
   z-index: 1070;
   display: block;
   margin: 0.25rem;
-  font-family: "Open Sans", Helvetica, Arial, sans-serif;
+  font-family: "Open Sans", sans-serif;
   font-style: normal;
   font-weight: 400;
   line-height: 1.5;
@@ -5302,7 +5302,7 @@ a.close.disabled {
   word-spacing: normal;
   white-space: normal;
   line-break: auto;
-  font-size: 0.8260869565rem;
+  font-size: 0.8695652174rem;
   word-wrap: break-word;
   opacity: 0;
 }
@@ -5390,7 +5390,7 @@ a.close.disabled {
   z-index: 1060;
   display: block;
   max-width: 276px;
-  font-family: "Open Sans", Helvetica, Arial, sans-serif;
+  font-family: "Open Sans", sans-serif;
   font-style: normal;
   font-weight: 400;
   line-height: 1.5;
@@ -15313,7 +15313,7 @@ ul.partlist-items {
     text-align: right;
   }
   .list .product-cell .price_wrapper .price {
-    font-size: 1.085755rem;
+    font-size: 1.1429rem;
     font-weight: bold;
   }
 }
@@ -15524,7 +15524,7 @@ aside .card {
 }
 aside .card .card-title {
   margin-bottom: 0.5rem;
-  font-size: 1.085755rem;
+  font-size: 1.1429rem;
   font-weight: 600;
 }
 aside .card.card-default .card-heading {
@@ -15757,7 +15757,7 @@ aside .badge-light {
 }
 
 .product-cell .h4.title {
-  font-family: "Open Sans", Helvetica, Arial, sans-serif;
+  font-family: "Open Sans", sans-serif;
   font-weight: 400;
 }
 .product-cell .h4.title a {
@@ -15997,13 +15997,13 @@ a[data-toggle=collapse][aria-expanded=true] i.fa-chevron-down,
 
 .price {
   font-family: "Montserrat", Helvetica, Arial, sans-serif;
-  font-size: 1.085755rem;
+  font-size: 1.1429rem;
   font-weight: bold;
   color: #525252;
 }
 
 .product-offer .price {
-  font-size: 1.764321rem;
+  font-size: 1.85718rem;
 }
 
 .price-note {
@@ -17181,6 +17181,147 @@ a.nice-deco:focus::after {
   left: 100%;
   width: 0%;
   transition: all ease 0.2s;
+}
+
+/* utilities */
+.min-w-sm {
+  min-width: rem(150px) !important;
+}
+
+.min-w {
+  min-width: rem(250px) !important;
+}
+
+.min-w-lg {
+  min-width: rem(350px) !important;
+}
+
+.min-w-100 {
+  min-width: 100% !important;
+}
+
+.max-w-sm {
+  max-width: rem(150px) !important;
+}
+
+.max-w {
+  max-width: rem(350px) !important;
+}
+
+.max-w-lg {
+  max-width: rem(650px) !important;
+}
+
+.min-h-sm {
+  min-height: rem(150px) !important;
+}
+
+.min-h {
+  min-height: rem(250px) !important;
+}
+
+.min-h-lg {
+  min-height: rem(350px) !important;
+}
+
+.min-h-100 {
+  min-height: 100% !important;
+}
+
+.max-h-sm {
+  max-height: rem(150px) !important;
+}
+
+.max-h {
+  max-height: rem(350px) !important;
+}
+
+.max-h-lg {
+  max-height: rem(650px) !important;
+}
+
+.font-size-base {
+  font-size: 0.9375rem !important;
+}
+
+.font-size-sm {
+  font-size: 0.8203125rem !important;
+}
+
+.font-size-lg {
+  font-size: 1.171875rem !important;
+}
+
+.font-size-1\.5x {
+  font-size: 1.40625rem !important;
+}
+
+.font-size-2x {
+  font-size: 1.875rem !important;
+}
+
+.font-size-2\.5x {
+  font-size: 2.34375rem !important;
+}
+
+.font-size-3x {
+  font-size: 2.8125rem !important;
+}
+
+.text-accent {
+  font-family: Montserrat, sans-serif !important;
+  font-weight: 600 !important;
+}
+
+.text-stroke {
+  text-decoration: line-through !important;
+}
+
+.text-decoration-underline {
+  text-decoration: underline !important;
+}
+a.text-decoration-underline:hover, .btn-link.text-decoration-underline:hover {
+  text-decoration: none !important;
+}
+
+@media (max-width: 1199.98px) {
+  .font-size-2x {
+    font-size: 1.4423076923rem !important;
+  }
+
+  .font-size-2\.5x {
+    font-size: 1.8028846154rem !important;
+  }
+
+  .font-size-3x {
+    font-size: 2.1634615385rem !important;
+  }
+}
+@media (max-width: 991.98px) {
+  .font-size-2x {
+    font-size: 1.3392857143rem !important;
+  }
+
+  .font-size-2\.5x {
+    font-size: 1.6741071429rem !important;
+  }
+
+  .font-size-3x {
+    font-size: 2.0089285714rem !important;
+  }
+}
+@media (max-width: 767.98px) {
+  .font-size-2x {
+    font-size: 1.25rem !important;
+  }
+
+  .font-size-2\.5x {
+    font-size: 1.5625rem !important;
+  }
+
+  .font-size-3x {
+    font-size: 1.875rem !important;
+  }
 }
 
 /*# sourceMappingURL=clear.css.map */

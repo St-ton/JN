@@ -1,0 +1,35 @@
+
+.font-size-base { font-size: $font-size-base !important; }
+.font-size-sm { font-size: $font-size-sm !important; }
+.font-size-lg { font-size: $font-size-lg !important; }
+.font-size-1\.5x { font-size: $font-size-base * 1.5 !important; }
+.font-size-2x { font-size: $font-size-base * 2 !important; }
+.font-size-2\.5x { font-size: $font-size-base * 2.5 !important; }
+.font-size-3x { font-size: $font-size-base * 3 !important; }
+
+.text-accent { font-family: $font-accent !important; font-weight: $font-weight-semibold !important; }
+
+.text-stroke { text-decoration: line-through !important; }
+.text-decoration-underline { text-decoration: underline !important;
+	@at-root {
+		a#{&}:hover, .btn-link#{&}:hover { text-decoration: $link-hover-decoration !important; }
+	}
+}
+
+@include media-breakpoint-down(lg) {
+	.font-size-2x { font-size: $font-size-base * 2 / 1.3 !important; }
+	.font-size-2\.5x { font-size: $font-size-base * 2.5 / 1.3 !important; }
+	.font-size-3x { font-size: $font-size-base * 3 / 1.3 !important; }
+}
+
+@include media-breakpoint-down(md) {
+	.font-size-2x { font-size: $font-size-base * 2 / 1.4 !important; }
+	.font-size-2\.5x { font-size: $font-size-base * 2.5 / 1.4 !important; }
+	.font-size-3x { font-size: $font-size-base * 3 / 1.4 !important; }
+}
+
+@include media-breakpoint-down(sm) {
+	.font-size-2x { font-size: $font-size-base * 2 / 1.5 !important; }
+	.font-size-2\.5x { font-size: $font-size-base * 2.5 / 1.5 !important; }
+	.font-size-3x { font-size: $font-size-base * 3 / 1.5 !important; }
+}

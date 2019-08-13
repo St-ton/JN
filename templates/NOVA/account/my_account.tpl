@@ -110,7 +110,7 @@
                                 </tr>
                                 <tr>
                                     <td class="min-w-sm">
-                                        {lang key='contactInformation' section='account data'}, {lang key='email' section='account data'} {lang key='and'}
+                                        {lang key='contactInformation' section='account data'} {lang key='and'} {lang key='email' section='account data'}
                                         <small class="text-muted d-block">{$Kunde->cMail}</small>
                                     </td>
                                     <td class="text-right">

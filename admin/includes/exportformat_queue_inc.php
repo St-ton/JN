@@ -411,7 +411,7 @@ function exportformatQueueActionErstellenEintragen(JTLSmarty $smarty, array &$me
     if ($id > 0) {
         if (dStartPruefen($start)) {
             if ($freq >= 1) {
-                $state  = erstelleExportformatCron($id, $start, $freq, Request::postInt('kCron'));
+                $state = erstelleExportformatCron($id, $start, $freq, Request::postInt('kCron'));
                 if ($state === 1) {
                     $messages['notice'] .= __('successQueueCreate');
                     $step                = 'erstellen_success';

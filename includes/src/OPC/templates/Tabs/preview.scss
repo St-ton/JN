@@ -18,13 +18,33 @@
         font-size: 14px !important;
         font-weight: normal !important;
         margin-right: 32px !important;
-        color: #999;
+        color: #999 !important;
+        background: none;
 
         &.active {
           border-bottom: 2px solid #435A6B !important;
-          color: #435A6B;
+          color: #435A6B !important;
+        }
+
+        &:hover {
+          color: #435A6B !important;
+          background: none;
         }
       }
+    }
+
+    > li.active {
+      > a {
+        border-bottom: 2px solid #435A6B !important;
+        color: #435A6B !important;
+      }
+    }
+  }
+
+  > .tab-content {
+    > .tab-pane {
+      padding: 0;
+      border: none;
     }
   }
 }

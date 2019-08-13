@@ -5,7 +5,7 @@
 {$title = $title|default:$id}
 
 {if $opc->isEditMode()}
-    <div class="opc-area opc-rootarea" data-area-id="{$id}" title="{$title}"></div>
+    <div class="opc-area opc-rootarea" data-area-id="{$id}" data-title="{$title}"></div>
 {elseif $opcPageService->getCurPage()->getAreaList()->hasArea($id)}
     {$opcPageService->getCurPage()->getAreaList()->getArea($id)->getFinalHtml()}
 {/if}

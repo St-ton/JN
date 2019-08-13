@@ -35,7 +35,7 @@ use JTL\Staat;
 use JTL\VerificationVAT\VATCheck;
 use function Functional\none;
 
-require_once __DIR__ . 'bestellvorgang_inc.deprecated.php';
+require_once __DIR__ . '/bestellvorgang_inc.deprecated.php';
 
 /**
  *

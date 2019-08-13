@@ -14416,19 +14416,20 @@ body.unboxed-layout header, body.unboxed-layout #main-wrapper {
 
   #scrollMenuRight,
 #scrollMenuLeft {
-    background: #f5f7fa;
     color: #707070;
     border: 0;
     position: absolute;
-    padding: 0.5rem 0.2rem !important;
+    padding: 0.5rem 0.4rem !important;
     z-index: 1;
   }
 
   #scrollMenuRight {
+    background: linear-gradient(270deg, #ffffff, rgba(255, 255, 255, 0.65));
     right: 0;
   }
 
   #scrollMenuLeft {
+    background: linear-gradient(90deg, #ffffff, rgba(255, 255, 255, 0.65));
     left: 0;
   }
 }
@@ -16349,6 +16350,10 @@ a.no-deco {
   object-fit: cover;
   width: 100%;
   height: 100%;
+}
+
+#comments .pagination-wrapper > .text-muted {
+  display: none;
 }
 
 blockquote {

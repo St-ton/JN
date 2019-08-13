@@ -136,19 +136,20 @@ body.unboxed-layout {
 
   #scrollMenuRight,
   #scrollMenuLeft {
-    background: $gray-lighter;
     color: $gray;
     border: 0;
     position: absolute;
-    padding: 0.5rem 0.2rem !important;
+    padding: 0.5rem 0.4rem !important;
     z-index: 1;
   }
 
   #scrollMenuRight {
+    background: linear-gradient(270deg, #ffffff, rgba(255, 255, 255, 0.65));
     right: 0;
   }
 
   #scrollMenuLeft {
+    background: linear-gradient(90deg, #ffffff, rgba(255, 255, 255, 0.65));
     left: 0;
   }
 }
@@ -2101,7 +2102,10 @@ a.no-deco {
   }
 }
 
-blockquote {
+#comments .pagination-wrapper > .text-muted {
+  display: none;
+}
+/*blockquote {
   background: #f9f9f9;
   border-left: 8px solid #ccc;
   margin: 1.5em 10px;
@@ -2118,7 +2122,7 @@ blockquote {
   p {
     display: inline;
   }
-}
+}*/
 
 .parallax-window > * {
   z-index: 2;

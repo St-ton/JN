@@ -267,7 +267,7 @@
                                 <li>
                                     <h3 style="margin:0">{$oTemplate->cName}</h3>
                                     {if !empty($oTemplate->cDescription)}
-                                        <p class="small">{$oTemplate->cDescription}</p>
+                                        <div class="small">{$oTemplate->cDescription}</div>
                                     {/if}
                                     <span class="label label-default">
                                      <i class="far fa-folder" aria-hidden="true"></i> {$oTemplate->cOrdner}
@@ -279,12 +279,11 @@
                                             <span class="label label-warning"><i class="fal fa-info-circle" aria-hidden="true"></i> <abbr title="{__('originalExists')} ({$oStored->cVersion})">{$oStored->cVersion}</abbr></span>
                                         {/foreach}
                                     {/if}
-                                    <!--
-                                    {if !empty($oTemplate->cURL)}<a href="{$oTemplate->cURL}">{/if}
-                                        {$oTemplate->cAuthor}
-                                        {if !empty($oTemplate->cURL)}</a>
-                                    {/if}
-                                    -->
+                                    <div class="font-size-sm">
+                                        {if !empty($oTemplate->cURL)}<a href="{$oTemplate->cURL}" target="_blank">{/if}
+                                            {$oTemplate->cAuthor}
+                                        {if !empty($oTemplate->cURL)}</a>{/if}
+                                    </div>
                                 </li>
                             </ul>
                         </td>

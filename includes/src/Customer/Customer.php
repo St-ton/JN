@@ -864,6 +864,22 @@ class Customer
     }
 
     /**
+     * @return int
+     */
+    public function getGroupID(): int
+    {
+        return (int)$this->kKundengruppe;
+    }
+
+    /**
+     * @return int
+     */
+    public function getLanguageID(): int
+    {
+        return (int)$this->kSprache;
+    }
+
+    /**
      * @return bool
      */
     public function isLoggedIn(): bool
@@ -970,9 +986,7 @@ class Customer
                 (object)['kKunde' => $customerID]
             );
         }
-
         Shop::Container()->getLogService()->notice($logMessage);
-
         if ($confirmationMail) {
             $mailer = Shop::Container()->get(Mailer::class);
             $mail   = new Mail();

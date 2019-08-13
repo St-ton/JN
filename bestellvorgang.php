@@ -41,7 +41,7 @@ if (isset($_POST['login']) && (int)$_POST['login'] === 1) {
 if (Request::verifyGPCDataInt('basket2Pers') === 1) {
     require_once PFAD_ROOT . PFAD_INCLUDES . 'jtl_inc.php';
 
-    $controller->setzeWarenkorbPersInWarenkorb($_SESSION['Kunde']->kKunde);
+    $controller->setzeWarenkorbPersInWarenkorb(Frontend::getCustomer()->getID());
     header('Location: bestellvorgang.php?wk=1');
     exit();
 }
@@ -59,7 +59,7 @@ if (Download::hasDownloads($cart)) {
 if ($conf['kaufabwicklung']['bestellvorgang_kaufabwicklungsmethode'] === 'NO'
     && Request::verifyGPCDataInt('wk') === 1
 ) {
-    $customerID = $_SESSION['Kunde']->kKunde ?? 0;
+    $customerID = Frontend::getCustomer()->getID();
     $persCart   = new PersistentCart($customerID);
     if (!(isset($_POST['login']) && (int)$_POST['login'] === 1
         && $conf['global']['warenkorbpers_nutzen'] === 'Y'
@@ -112,7 +112,7 @@ if (isset($_GET['unreg'])
 if (isset($_SESSION['Kunde']) && $_SESSION['Kunde']) {
     if (!isset($_SESSION['Lieferadresse'])) {
         pruefeLieferdaten([
-            'kLieferadresse' => Order::getLastOrderRefIDs((int)$_SESSION['Kunde']->kKunde)->kLieferadresse
+            'kLieferadresse' => Order::getLastOrderRefIDs(Frontend::getCustomer()->getID())->kLieferadresse
         ]);
         if (isset($_SESSION['Lieferadresse']) && $_SESSION['Lieferadresse']->kLieferadresse > 0) {
             $_GET['editLieferadresse'] = 1;

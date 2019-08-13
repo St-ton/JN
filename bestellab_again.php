@@ -24,7 +24,7 @@ $order      = new Bestellung($orderID, true);
 //bei Gastbestellungen ist ggf das Kundenobjekt bereits entfernt bzw nRegistriert = 0
 if ($order->oKunde !== null
     && (int)$order->oKunde->nRegistriert === 1
-    && (int)$order->kKunde !== (int)$_SESSION['Kunde']->kKunde
+    && (int)$order->kKunde !== Frontend::getCustomer()->getID()
 ) {
     header('Location: ' . $linkHelper->getStaticRoute('jtl.php'), true, 303);
     exit;
@@ -126,7 +126,7 @@ if ($pluginID > 0) {
         Shop::Smarty()->assign('oPlugin', $plugin);
     }
 } elseif ($moduleID === 'za_lastschrift_jtl') {
-    $customerAccountData = gibKundenKontodaten($_SESSION['Kunde']->kKunde);
+    $customerAccountData = gibKundenKontodaten(Frontend::getCustomer()->getID());
     if ($customerAccountData->kKunde > 0) {
         Shop::Smarty()->assign('oKundenKontodaten', $customerAccountData);
     }

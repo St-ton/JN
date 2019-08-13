@@ -56,7 +56,7 @@ if (Request::postInt('einstellungen') > 0) {
     }
     $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successSitemapDLDelete'), 'successSitemapDLDelete');
 } elseif (Request::verifyGPCDataInt('report_edit') === 1) {
-    $reports = array_map('\intval', Request::postVar('kSitemapReport',[]));
+    $reports = array_map('\intval', Request::postVar('kSitemapReport', []));
     if (count($reports) > 0) {
         Shop::Container()->getDB()->query(
             'DELETE

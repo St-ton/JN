@@ -143,7 +143,7 @@ if (Request::getVar('action') === 'createIndex') {
 }
 
 if (Request::postInt('einstellungen_bearbeiten') === 1 && $kSektion > 0 && Form::validateToken()) {
-    $sucheFulltext = in_array(Request::postVar('suche_fulltext',[]), ['Y', 'B'], true);
+    $sucheFulltext = in_array(Request::postVar('suche_fulltext', []), ['Y', 'B'], true);
     if ($sucheFulltext) {
         if (version_compare($mysqlVersion, '5.6', '<')) {
             //Volltextindizes werden von MySQL mit InnoDB erst ab Version 5.6 unterstützt

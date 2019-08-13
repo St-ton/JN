@@ -4,7 +4,7 @@
     "homepage": "http://www.jtl-software.de",
     "require": {
         "php": ">=5.4",
-        "Imanee/Imanee": "dev-master",
+        "imanee/imanee": "dev-master",
         "ifsnop/mysqldump-php": "^2.1",
         "symfony/var-dumper": "^3.0",
         "jtlshop/shop4-systemcheck": "^1.0",

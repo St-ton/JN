@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "79435aac684579e98100a537ca5a3a10",
+    "content-hash": "c4b0639d9b4b5a767202e0f688fb9100",
     "packages": [
         {
             "name": "andyftw/image-faker",
@@ -120,16 +120,16 @@
         },
         {
             "name": "foxy/foxy",
-            "version": "v1.0.5",
+            "version": "v1.0.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/fxpio/foxy.git",
-                "reference": "619679404d04cbd50a50df0b028430413c86c665"
+                "reference": "b4a2124dc2a31c7885a08254243dd974a1bcefd3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/fxpio/foxy/zipball/619679404d04cbd50a50df0b028430413c86c665",
-                "reference": "619679404d04cbd50a50df0b028430413c86c665",
+                "url": "https://api.github.com/repos/fxpio/foxy/zipball/b4a2124dc2a31c7885a08254243dd974a1bcefd3",
+                "reference": "b4a2124dc2a31c7885a08254243dd974a1bcefd3",
                 "shasum": ""
             },
             "require": {
@@ -176,7 +176,7 @@
                 "package",
                 "yarn"
             ],
-            "time": "2019-05-01T12:06:25+00:00"
+            "time": "2019-08-08T18:47:17+00:00"
         },
         {
             "name": "fzaninotto/faker",
@@ -290,12 +290,18 @@
             "time": "2015-11-20T02:04:09+00:00"
         },
         {
-            "name": "jtlshop/shop-wizard",
+            "name": "jtlshop/wizard",
             "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "https://gitlab.jtl-software.de/jtlshop/wizard.git",
-                "reference": "c27d1f6d425b641e7f3a49e57ffd42bcb6d47cbb"
+                "url": "https://gitlab.com/jtl-software/jtl-shop/tools/wizard.git",
+                "reference": "5da2a22d17f9550589e00404ca76214e3e3f3cf3"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://gitlab.com/api/v4/projects/jtl-software%2Fjtl-shop%2Ftools%2Fwizard/repository/archive.zip?sha=5da2a22d17f9550589e00404ca76214e3e3f3cf3",
+                "reference": "5da2a22d17f9550589e00404ca76214e3e3f3cf3",
+                "shasum": ""
             },
             "require": {
                 "php": ">=5.4"
@@ -322,7 +328,7 @@
                 "jtl",
                 "jtl-shop"
             ],
-            "time": "2018-11-23T15:54:47+00:00"
+            "time": "2019-06-18T09:47:27+00:00"
         }
     ],
     "packages-dev": [],
@@ -330,7 +336,7 @@
     "minimum-stability": "stable",
     "stability-flags": {
         "imanee/imanee": 20,
-        "jtlshop/shop-wizard": 20
+        "jtlshop/wizard": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,

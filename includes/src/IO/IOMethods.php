@@ -794,6 +794,7 @@ class IOMethods
         $options->nDownload                 = 0;
         $options->nMain                     = 1;
         $options->nWarenlager               = 1;
+        $options->nVariationen              = 1;
         $product                            = new Artikel();
         $product->fuelleArtikel($kVaterArtikel, $options, Frontend::getCustomerGroup()->getID());
         $weightDiff   = 0;
@@ -945,6 +946,7 @@ class IOMethods
             $options->nDownload                 = 0;
             $options->nMain                     = 1;
             $options->nWarenlager               = 1;
+            $options->nVariationen              = 1;
             $product                            = new Artikel();
             $product->fuelleArtikel($parentProductID, $options);
             // Alle Variationen ohne Freifeld

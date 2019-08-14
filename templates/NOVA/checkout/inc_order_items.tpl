@@ -272,9 +272,7 @@
 
                                         {/if}
                                     {else}
-                                        <div class="text-muted small">
-                                            <strong>{lang key='quantity'}: </strong>{$oPosition->nAnzahl|replace_delim} {if !empty($oPosition->Artikel->cEinheit)}{$oPosition->Artikel->cEinheit}{/if}
-                                        </div>
+                                        {$oPosition->nAnzahl|replace_delim} {if !empty($oPosition->Artikel->cEinheit)}{$oPosition->Artikel->cEinheit}{/if}
                                     {/if}
                                 {/block}
                             {/col}

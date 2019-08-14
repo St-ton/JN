@@ -42,15 +42,19 @@
                 <tbody>
                 {foreach $versandarten as $versandart}
                     <tr>
-                        <td>{$versandart->cName}
+                        <td>
+                            {$versandart->cName}
+                            <hr class="my-1">
                             <span class="d-block">
                                 {foreach $versandart->countries as $country}
                                     {if $country@iteration == 20}
                                         <span class="collapse" aria-expanded="false" id="show-all-countries-{$versandart->kVersandart}">
                                         {$collapse=1}
                                     {/if}
-                                    <a href="versandarten.php?zuschlag=1&kVersandart={$versandart->kVersandart}&cISO={$country->getISO()}&token={$smarty.session.jtl_token}">
-                                        <span class="small text-muted">
+                                    <a href="versandarten.php?zuschlag=1&kVersandart={$versandart->kVersandart}&cISO={$country->getISO()}&token={$smarty.session.jtl_token}"
+                                        data-toggle="tooltip"
+                                        title="{__('isleListsDesc')}">
+                                        <span class="small">
                                             {if in_array($country->getISO(), $versandart->shippingSurchargeCountries)}
                                                 <u>{$country->getName()}*</u>
                                             {else}

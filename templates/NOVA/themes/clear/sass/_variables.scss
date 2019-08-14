@@ -51,7 +51,7 @@ $line-height-base:                  1.5;
 $font-family-sans-serif:            'Open Sans', sans-serif;
 $font-accent :                      Montserrat, sans-serif;
 
-$font-size-base:                    .9375rem;
+$font-size-base:                    .95rem;
 $font-size-lg:                      $font-size-base * 1.25;
 $font-size-sm:                      $font-size-base * .875;
 $font-size-xs:                      $font-size-base * .75;
@@ -62,9 +62,9 @@ $font-weight-bold:                  600;
 
 // heading
 
-$h1-font-size:                      $font-size-base * (30 / $font-size-base);
-$h2-font-size:                      $font-size-base * (24 / $font-size-base);
-$h3-font-size:                      $font-size-base * (16 / $font-size-base);
+$h1-font-size:                      $font-size-base * 1.7;
+$h2-font-size:                      $font-size-base * 1.5;
+$h3-font-size:                      $font-size-base * 1.125;
 $h4-font-size:                      $font-size-base;
 $h5-font-size:                      $font-size-base;
 $h6-font-size:                      $font-size-base;

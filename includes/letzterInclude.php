@@ -62,7 +62,7 @@ $customerGroupID    = ($id = Frontend::getCustomer()->kKundengruppe) > 0
     ? $id
     : Frontend::getCustomerGroup()->getID();
 $globalMetaData     = $globalMetaData[Shop::getLanguageID()] ?? null;
-$pageType          = Shop::getPageType();
+$pageType           = Shop::getPageType();
 $specialPageTypes   = [
     PAGE_REGISTRIERUNG,
     PAGE_WARENKORB,

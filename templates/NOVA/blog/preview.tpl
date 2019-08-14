@@ -70,7 +70,7 @@
                         {else}
                             {$oNewsUebersicht->getContent()|strip_tags|truncate:200:''}
                         {/if}
-                        <div class="mt-2">
+                        <div class="mt-4">
                             {link class="news-more-link" href=$oNewsUebersicht->getURL()}{lang key='moreLink' section='news'} <i class="fas fa-long-arrow-alt-right"></i>{/link}
                         </div>
                     </div>

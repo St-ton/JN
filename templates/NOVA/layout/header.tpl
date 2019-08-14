@@ -258,7 +258,7 @@
                     {block name='layout-header-category-nav'}
 
                         {navbar id="evo-main-nav-wrapper" toggleable=true fill=true class="navbar-expand-md accordion row py-2 py-md-0 px-0"}
-                            {col id="logo" md="auto" order=2 order-md=1 class="col-auto mr-auto bg-white" style="z-index: 1;"}
+                            {col id="logo" cols=4 md="auto" order=2 order-md=1 class="mr-auto bg-white" style="z-index: 1;"}
                                 {block name='layout-header-logo'}
                                     <div class="navbar-brand ml-lg-2" itemprop="publisher" itemscope itemtype="http://schema.org/Organization" itemid="">
                                         <span itemprop="name" class="d-none">{$meta_publisher}</span>
@@ -294,13 +294,13 @@
                                 {block name='layout-header-include-categories-mega'}
                                     <div id="navbarToggler" class="collapse navbar-collapse" data-parent="#evo-main-nav-wrapper">
                                         {button id="scrollMenuLeft"  variant="light" class="d-none" aria=["label" => {lang key="scrollMenuLeft" section="aria"}]}
-                                            <i class="fas fa-chevron-left"></i>
+                                            <i class="fas fa-arrow-left"></i>
                                         {/button}
                                         {navbarnav class="megamenu show"}
                                             {include file='snippets/categories_mega.tpl'}
                                         {/navbarnav}
                                         {button id="scrollMenuRight" variant="light" class="d-none" aria=["label" => {lang key="scrollMenuRight" section="aria"}]}
-                                            <i class="fas fa-chevron-right"></i>
+                                            <i class="fas fa-arrow-right"></i>
                                         {/button}
                                     </div>
                                 {/block}
@@ -354,7 +354,7 @@
         {/block}
 
         {block name='layout-header-breadcrumb'}
-            {container class="px-xl-0"}
+            {container}
                 {block name='layout-header-product-pagination'}
                     {if $Einstellungen.artikeldetails.artikeldetails_navi_blaettern === 'Y' && isset($NavigationBlaettern)}
                         <div class="d-none d-xl-block product-pagination next">

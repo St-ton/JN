@@ -19,7 +19,7 @@
                                             <span class="value">{link href=$oMerkmalWert->cURLFull class="badge badge-light"}{$oMerkmalWert->cWert|escape:'html'}{/link} </span>
                                         {else}
                                             <span class="value">
-                                            {link href=$oMerkmalWert->cURLFull data=['toggle'=>'tooltip', 'placement'=>'top'] title=$oMerkmalWert->cWert|escape:'html'}
+                                            {link href=$oMerkmalWert->cURLFull class="text-decoration-none" data=['toggle'=>'tooltip', 'placement'=>'top'] title=$oMerkmalWert->cWert|escape:'html'}
                                                 {if $oMerkmalWert->cBildpfadKlein !== 'gfx/keinBild_kl.gif'}
                                                     {image src=$oMerkmalWert->cBildURLKlein title=$oMerkmalWert->cWert|escape:'html' alt=$oMerkmalWert->cWert|escape:'html'}
                                                 {else}

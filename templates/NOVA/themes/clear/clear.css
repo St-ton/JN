@@ -366,15 +366,15 @@ h1, h2, h3, h4, h5, h6,
 }
 
 h1, .h1 {
-  font-size: 1.3393125rem;
+  font-size: 1.875rem;
 }
 
 h2, .h2 {
-  font-size: 1.07146875rem;
+  font-size: 1.5rem;
 }
 
 h3, .h3 {
-  font-size: 0.9375rem;
+  font-size: 1rem;
 }
 
 h4, .h4 {
@@ -15344,7 +15344,7 @@ ul.partlist-items {
     text-align: right;
   }
   .list .product-cell .price_wrapper .price {
-    font-size: 1.07146875rem;
+    font-size: 24;
     font-weight: bold;
   }
 }
@@ -15555,7 +15555,7 @@ aside .card {
 }
 aside .card .card-title {
   margin-bottom: 0.5rem;
-  font-size: 1.07146875rem;
+  font-size: 24;
   font-weight: 600;
 }
 aside .card.card-default .card-heading {
@@ -16028,13 +16028,13 @@ a[data-toggle=collapse][aria-expanded=true] i.fa-chevron-down,
 
 .price {
   font-family: "Montserrat", Helvetica, Arial, sans-serif;
-  font-size: 1.07146875rem;
+  font-size: 24;
   font-weight: bold;
   color: #525252;
 }
 
 .product-offer .price {
-  font-size: 1.74110625rem;
+  font-size: 39;
 }
 
 .price-note {

@@ -85,7 +85,11 @@ if (Form::validateToken()) {
             );
             Shop::Container()->getCache()->flushTags([CACHING_GROUP_OPTION]);
         } else {
-            $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorShippingMethodDuplicated'), 'errorShippingMethodDuplicated');
+            $alertHelper->addAlert(
+                Alert::TYPE_ERROR,
+                __('errorShippingMethodDuplicated'),
+                'errorShippingMethodDuplicated'
+            );
         }
     }
 
@@ -103,7 +107,11 @@ if (Form::validateToken()) {
 
     if (Request::postInt('neueVersandart') > 0) {
         $shippingMethod                           = new stdClass();
-        $shippingMethod->cName                    = htmlspecialchars($_POST['cName'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
+        $shippingMethod->cName                    = htmlspecialchars(
+            $_POST['cName'],
+            ENT_COMPAT | ENT_HTML401,
+            JTL_CHARSET
+        );
         $shippingMethod->kVersandberechnung       = Request::postInt('kVersandberechnung');
         $shippingMethod->cAnzeigen                = $_POST['cAnzeigen'];
         $shippingMethod->cBild                    = $_POST['cBild'];
@@ -479,7 +487,7 @@ if ($step === 'uebersicht') {
         ->assign('waehrung', $defaultCurrency->cName);
 }
 if ($step === 'Zuschlagsliste') {
-    $cISO = $_GET['cISO'] ?? $_POST['cISO'] ?? null;
+    $cISO        = $_GET['cISO'] ?? $_POST['cISO'] ?? null;
     $kVersandart = Request::getInt('kVersandart');
     if (isset($_POST['kVersandart'])) {
         $kVersandart = Request::postInt('kVersandart');

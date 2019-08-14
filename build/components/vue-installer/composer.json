@@ -19,7 +19,7 @@
         "andyftw/image-faker": "^1.1",
         "imanee/imanee": "dev-master",
         "cocur/slugify": "^2.5",
-        "jtlshop/shop-wizard": "dev-master",
+        "jtlshop/wizard": "dev-master",
         "foxy/foxy": "^1.0"
     },
     "repositories": [

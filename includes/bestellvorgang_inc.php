@@ -9,6 +9,7 @@ use JTL\Catalog\Product\Preise;
 use JTL\CheckBox;
 use JTL\Checkout\Kupon;
 use JTL\Checkout\Lieferadresse;
+use JTL\Checkout\Versandart;
 use JTL\Checkout\Zahlungsart;
 use JTL\Customer\Customer;
 use JTL\Customer\CustomerAttribute;
@@ -230,18 +231,10 @@ function pruefeLieferdaten($post, &$missingData = null): void
     ) {
         $delShip = mb_stripos($_SESSION['Versandart']->cLaender, $_SESSION['Lieferadresse']->cLand) === false;
         // ist die plz im zuschlagsbereich?
-        $poCode = Shop::Container()->getDB()->executeQueryPrepared(
-            'SELECT kVersandzuschlagPlz
-                FROM tversandzuschlagplz, tversandzuschlag
-                WHERE tversandzuschlag.kVersandart = :id
-                    AND tversandzuschlag.kVersandzuschlag = tversandzuschlagplz.kVersandzuschlag
-                    AND ((tversandzuschlagplz.cPLZAb <= :plz
-                    AND tversandzuschlagplz.cPLZBis >= :plz)
-                    OR tversandzuschlagplz.cPLZ = :plz)',
-            ['plz' => $_SESSION['Lieferadresse']->cPLZ, 'id' => (int)$_SESSION['Versandart']->kVersandart],
-            ReturnType::SINGLE_OBJECT
-        );
-        if (!empty($poCode->kVersandzuschlagPlz)) {
+        if (!empty((new Versandart((int)$_SESSION['Versandart']->kVersandart))->getShippingSurchargeForZip(
+            $_SESSION['Lieferadresse']->cPLZ,
+            $_SESSION['Lieferadresse']->cLand
+        ))) {
             $delShip = true;
         }
         if ($delShip) {

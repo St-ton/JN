@@ -9,6 +9,7 @@ namespace JTL\Boxes\Items;
 use JTL\Catalog\Product\Artikel;
 use JTL\Helpers\Text;
 use JTL\Services\JTL\LinkService;
+use JTL\Session\Frontend;
 use JTL\Shop;
 
 /**
@@ -26,11 +27,8 @@ final class CompareList extends AbstractBox
         parent::__construct($config);
         $this->addMapping('cAnzeigen', 'ShowBox');
         $this->setShow(true);
-        $productList = [];
+        $productList = Frontend::get('Vergleichsliste')->oArtikel_arr ?? [];
         $products    = [];
-        if (isset($_SESSION['Vergleichsliste']->oArtikel_arr)) {
-            $productList = $_SESSION['Vergleichsliste']->oArtikel_arr;
-        }
         if (\count($productList) > 0) {
             $validParams = ['a', 'k', 's', 'h', 'l', 'm', 't', 'hf', 'kf', 'show', 'suche'];
             $extra       = '';

@@ -2912,3 +2912,9 @@ a.nice-deco {
     }
   }
 }
+
+.sticky-bottom {
+  position: sticky;
+  bottom: 0;
+  z-index: 999;
+}

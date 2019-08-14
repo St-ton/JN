@@ -15,50 +15,49 @@
         {if $step === 'wunschliste versenden' && $Einstellungen.global.global_wunschliste_freunde_aktiv === 'Y'}
             {container}
             {block name='snippets-wishlist-content-heading-email'}
-                <h1>{lang key='wishlistViaEmail' section='login'}</h1>
+                <div class="h2">{lang key='wishlistViaEmail' section='login'}</div>
             {/block}
             {block name='snippets-wishlist-content-form-outer'}
                 {row}
-                {col cols=12}
-                {block name='snippets-wishlist-form-subheading'}
-                    <div class="h3">{$CWunschliste->cName}</div>
-                {/block}
-                {block name='snippets-wishlist-form'}
-                    {form method="post" action="{get_static_route id='wunschliste.php'}" name="Wunschliste"}
-                    {block name='snippets-wishlist-form-inner'}
-                        {block name='snippets-wishlist-form-inputs-hidden'}
-                            {input type="hidden" name="wlvm" value="1"}
-                            {input type="hidden" name="kWunschliste" value=$CWunschliste->kWunschliste}
-                            {input type="hidden" name="send" value="1"}
-                        {/block}
-                        {block name='snippets-wishlist-form-textarea'}
-                            {formgroup
-                            label-for="wishlist-email"
-                            label="{lang key='wishlistEmails' section='login'}{if $Einstellungen.global.global_wunschliste_max_email > 0} | {lang key='wishlistEmailCount' section='login'}: {$Einstellungen.global.global_wunschliste_max_email}{/if}"
-                            }
-                            {textarea id="wishlist-email" name="email" rows="5" style="width:100%"}{/textarea}
-                            {/formgroup}
-                        {/block}
-                        {block name='snippets-wishlist-form-submit'}
-                            {row}
-                            {col cols=12}
-                            {button name="action" type="submit" value="sendViaMail" variant="primary"}
-                            {lang key='wishlistSend' section='login'}
-                            {/button}
-                            {/col}
-                            {/row}
-                        {/block}
+                    {col cols=12}
+                    {block name='snippets-wishlist-form-subheading'}
+                        <div class="h3">{$CWunschliste->cName}</div>
                     {/block}
-                    {/form}
-                {/block}
-                {/col}
+                    {block name='snippets-wishlist-form'}
+                        {form method="post" action="{get_static_route id='wunschliste.php'}" name="Wunschliste"}
+                        {block name='snippets-wishlist-form-inner'}
+                            {block name='snippets-wishlist-form-inputs-hidden'}
+                                {input type="hidden" name="wlvm" value="1"}
+                                {input type="hidden" name="kWunschliste" value=$CWunschliste->kWunschliste}
+                                {input type="hidden" name="send" value="1"}
+                            {/block}
+                            {block name='snippets-wishlist-form-textarea'}
+                                {formgroup
+                                    label-for="wishlist-email"
+                                    label="{lang key='wishlistEmails' section='login'}{if $Einstellungen.global.global_wunschliste_max_email > 0} | {lang key='wishlistEmailCount' section='login'}: {$Einstellungen.global.global_wunschliste_max_email}{/if}"}
+                                    {textarea id="wishlist-email" name="email" rows="5" style="width:100%"}{/textarea}
+                                {/formgroup}
+                            {/block}
+                            {block name='snippets-wishlist-form-submit'}
+                                {row}
+                                    {col md=4 xl=3 class='ml-auto'}
+                                        {button name='action' type='submit' value='sendViaMail' variant='primary' class='btn-block'}
+                                            {lang key='wishlistSend' section='login'}
+                                        {/button}
+                                    {/col}
+                                {/row}
+                            {/block}
+                        {/block}
+                        {/form}
+                    {/block}
+                    {/col}
                 {/row}
             {/block}
             {/container}
         {else}
             {container}
             {block name='snippets-wishlist-content-heading'}
-                <div class="h1">
+                <div class="h2">
                     {if $isCurrenctCustomer === false && isset($CWunschliste->oKunde->cVorname)}
                         {$CWunschliste->cName} {lang key='from' section='product rating' alt_section='login,productDetails,productOverview,global,'} {$CWunschliste->oKunde->cVorname}
                     {else}
@@ -67,115 +66,112 @@
                 </div>
             {/block}
 
-            {row}
+            {row class='align-items-center'}
                 {if $isCurrenctCustomer === true}
                     {block name='snippets-wishlist-actions'}
-                        {col cols=2 md=1 class="mb-2"}
-                        {dropdown variant="link" class="no-chevron wishlist-options" text="<i class='fas fa-ellipsis-v'></i>" aria=["label"=>"{lang key='rename' section='wishlistOptions'}"]}
-                        {dropdownitem class="text-center"}
-                        {block name='snippets-wishlist-actions-rename'}
-                            {button type="submit" variant="link" data=["toggle" => "collapse", "target"=>"#edit-wishlist-name"]}
-                            {lang key='rename'}
-                            {/button}
-                        {/block}
-                        {/dropdownitem}
-                        {dropdownitem class="text-center"}
-                        {block name='snippets-wishlist-actions-remove-products'}
-                            {form
-                            method="post"
-                            action="{get_static_route id='wunschliste.php'}{if $CWunschliste->nStandard != 1}?wl={$CWunschliste->kWunschliste}{/if}"
-                            name="Wunschliste"
-                            }
-                            {input type="hidden" name="wla" value="1"}
-                            {input type="hidden" name="kWunschliste" value=$CWunschliste->kWunschliste}
-                            {input type="hidden" name="action" value="removeAll"}
-                            {button type="submit" variant="link"}
-                            {lang key='wlRemoveAllProducts' section='wishlist'}
-                            {/button}
-                            {/form}
-                        {/block}
-                        {/dropdownitem}
-                        {dropdownitem class="text-center"}
-                        {block name='snippets-wishlist-actions-add-all-cart'}
-                            {form
-                            method="post"
-                            action="{get_static_route id='wunschliste.php'}{if $CWunschliste->nStandard != 1}?wl={$CWunschliste->kWunschliste}{/if}"
-                            name="Wunschliste"
-                            }
-                            {input type="hidden" name="wla" value="1"}
-                            {input type="hidden" name="kWunschliste" value=$CWunschliste->kWunschliste}
-                            {input type="hidden" name="action" value="addAllToCart"}
-                            {button type="submit" variant="link"}
-                            {lang key='wishlistAddAllToCart' section='login'}
-                            {/button}
-                            {/form}
-                        {/block}
-                        {/dropdownitem}
-                        {dropdownitem class="text-center"}
-                        {block name='snippets-wishlist-actions-delete-wl'}
-                            {form method="post" action="{get_static_route id='wunschliste.php'}"}
-                            {input type="hidden" name="kWunschliste" value=$CWunschliste->kWunschliste}
-                            {input type="hidden" name="kWunschlisteTarget" value=$CWunschliste->kWunschliste}
-                            {input type="hidden" name="action" value="delete"}
-                            {button type="submit" variant="link"}
-                            {lang key='wlDelete' section='wishlist'}
-                            {/button}
-                            {/form}
-                        {/block}
-                        {/dropdownitem}
-                        {if $CWunschliste->nStandard != 1}
-                            {dropdownitem class="text-center"}
-                            {block name='snippets-wishlist-actions-set-active'}
-                                {form method="post" action="{get_static_route id='wunschliste.php'}"}
-                                {input type="hidden" name="kWunschliste" value=$CWunschliste->kWunschliste}
-                                {input type="hidden" name="kWunschlisteTarget" value=$CWunschliste->kWunschliste}
-                                {input type="hidden" name="action" value="setAsDefault"}
-                                {button type="submit"
-                                variant="link"
-                                title="{lang key='setAsStandardWishlist' section='wishlist'}"
-                                data=["toggle" => "tooltip", "placement" => "bottom"]
-                                }
-                                {lang key='activate'}
-                                {/button}
-                                {/form}
-                            {/block}
-                            {/dropdownitem}
-                        {/if}
-                        {dropdownitem class="text-center"}
-                        {block name='snippets-wishlist-actions-add-new'}
-                            {button type="submit"
-                            variant="link"
-                            data=["toggle" => "collapse", "target"=>"#create-new-wishlist"]
-                            }
-                            {lang key='wishlistAddNew' section='login'}
-                            {/button}
-                        {/block}
-                        {/dropdownitem}
-                        {/dropdown}
+                        {col class="col-auto"}
+                            {dropdown variant="link" class="no-chevron wishlist-options" text="<i class='fas fa-ellipsis-v'></i>" aria=["label"=>"{lang key='rename' section='wishlistOptions'}"]}
+                                {dropdownitem class="text-center"}
+                                {block name='snippets-wishlist-actions-rename'}
+                                    {button type="submit" variant="link" data=["toggle" => "collapse", "target"=>"#edit-wishlist-name"]}
+                                    {lang key='rename'}
+                                    {/button}
+                                {/block}
+                                {/dropdownitem}
+                                {dropdownitem class="text-center"}
+                                {block name='snippets-wishlist-actions-remove-products'}
+                                    {form
+                                    method="post"
+                                    action="{get_static_route id='wunschliste.php'}{if $CWunschliste->nStandard != 1}?wl={$CWunschliste->kWunschliste}{/if}"
+                                    name="Wunschliste"
+                                    }
+                                    {input type="hidden" name="wla" value="1"}
+                                    {input type="hidden" name="kWunschliste" value=$CWunschliste->kWunschliste}
+                                    {input type="hidden" name="action" value="removeAll"}
+                                    {button type="submit" variant="link"}
+                                    {lang key='wlRemoveAllProducts' section='wishlist'}
+                                    {/button}
+                                    {/form}
+                                {/block}
+                                {/dropdownitem}
+                                {dropdownitem class="text-center"}
+                                {block name='snippets-wishlist-actions-add-all-cart'}
+                                    {form
+                                    method="post"
+                                    action="{get_static_route id='wunschliste.php'}{if $CWunschliste->nStandard != 1}?wl={$CWunschliste->kWunschliste}{/if}"
+                                    name="Wunschliste"
+                                    }
+                                    {input type="hidden" name="wla" value="1"}
+                                    {input type="hidden" name="kWunschliste" value=$CWunschliste->kWunschliste}
+                                    {input type="hidden" name="action" value="addAllToCart"}
+                                    {button type="submit" variant="link"}
+                                    {lang key='wishlistAddAllToCart' section='login'}
+                                    {/button}
+                                    {/form}
+                                {/block}
+                                {/dropdownitem}
+                                {dropdownitem class="text-center"}
+                                {block name='snippets-wishlist-actions-delete-wl'}
+                                    {form method="post" action="{get_static_route id='wunschliste.php'}"}
+                                    {input type="hidden" name="kWunschliste" value=$CWunschliste->kWunschliste}
+                                    {input type="hidden" name="kWunschlisteTarget" value=$CWunschliste->kWunschliste}
+                                    {input type="hidden" name="action" value="delete"}
+                                    {button type="submit" variant="link"}
+                                    {lang key='wlDelete' section='wishlist'}
+                                    {/button}
+                                    {/form}
+                                {/block}
+                                {/dropdownitem}
+                                {if $CWunschliste->nStandard != 1}
+                                    {dropdownitem class="text-center"}
+                                    {block name='snippets-wishlist-actions-set-active'}
+                                        {form method="post" action="{get_static_route id='wunschliste.php'}"}
+                                        {input type="hidden" name="kWunschliste" value=$CWunschliste->kWunschliste}
+                                        {input type="hidden" name="kWunschlisteTarget" value=$CWunschliste->kWunschliste}
+                                        {input type="hidden" name="action" value="setAsDefault"}
+                                        {button type="submit"
+                                        variant="link"
+                                        title="{lang key='setAsStandardWishlist' section='wishlist'}"
+                                        data=["toggle" => "tooltip", "placement" => "bottom"]
+                                        }
+                                        {lang key='activate'}
+                                        {/button}
+                                        {/form}
+                                    {/block}
+                                    {/dropdownitem}
+                                {/if}
+                                {dropdownitem class="text-center"}
+                                {block name='snippets-wishlist-actions-add-new'}
+                                    {button type="submit"
+                                    variant="link"
+                                    data=["toggle" => "collapse", "target"=>"#create-new-wishlist"]
+                                    }
+                                    {lang key='wishlistAddNew' section='login'}
+                                    {/button}
+                                {/block}
+                                {/dropdownitem}
+                            {/dropdown}
                         {/col}
                     {/block}
                     {block name='snippets-wishlist-wishlists'}
-                        {col cols=10 md=5 class="mb-2"}
-                        {dropdown id='wlName' variant='light' text=$CWunschliste->cName}
-                        {foreach $oWunschliste_arr as $wishlist}
-                            {dropdownitem href="{get_static_route id='wunschliste.php'}{if $wishlist->nStandard != 1}?wl={$wishlist->kWunschliste}{/if}" rel="nofollow" }
-                            {$wishlist->cName}
-                            {/dropdownitem}
-                        {/foreach}
-                        {/dropdown}
+                        {col class="col-auto"}
+                            {dropdown id='wlName' variant='light' text=$CWunschliste->cName}
+                            {foreach $oWunschliste_arr as $wishlist}
+                                {dropdownitem href="{get_static_route id='wunschliste.php'}{if $wishlist->nStandard != 1}?wl={$wishlist->kWunschliste}{/if}" rel="nofollow" }
+                                    {$wishlist->cName}
+                                {/dropdownitem}
+                            {/foreach}
+                            {/dropdown}
                         {/col}
                     {/block}
                 {/if}
                 {block name='snippets-wishlist-search'}
-                    {col cols=12 md=6 class="mb-2"}
+                    {col class="col-md"}
                     {if $hasItems === true || !empty($wlsearch)}
                         <div id="wishlist-search">
-                            {form
-                            method="post"
-                            action="{get_static_route id='wunschliste.php'}"
-                            name="WunschlisteSuche"
-                            class="form-inline"
-                            }
+                            {form method="post"
+                                action="{get_static_route id='wunschliste.php'}"
+                                name="WunschlisteSuche"}
                             {block name='snippets-wishlist-search-form-inputs-hidden'}
                                 {if $CWunschliste->nOeffentlich == 1 && !empty($cURLID)}
                                     {input type="hidden" name="wlid" value=$cURLID}
@@ -185,23 +181,24 @@
                             {/block}
                             {block name='snippets-wishlist-search-form-inputs'}
                                 {inputgroup}
-                                {input name="cSuche" size="35" type="text" value=$wlsearch placeholder="{lang key='wishlistSearch' section='login'}" aria=["label"=>"{lang key='wishlistSearch' section='login'}"]}
-                                {inputgroupaddon append=true}
-                                {block name='snippets-wishlist-search-form-submit'}
-                                    {button name="action" value="search" type="submit"}
-                                        <i class="fa fa-search"></i> {lang key='wishlistSearchBTN' section='login'}
-                                    {/button}
-                                {/block}
-                                {/inputgroupaddon}
-                                {if !empty($wlsearch)}
-                                    {block name='snippets-wishlist-search-form-remove-search'}
-                                        {inputgroupaddon append=true}
-                                        {button type="submit" name="cSuche" value=""}
-                                            <i class="fa fa-undo"></i> {lang key='wishlistRemoveSearch' section='login'}
+                                    {input name="cSuche" size="35" type="text" value=$wlsearch placeholder="{lang key='wishlistSearch' section='login'}" aria=["label"=>"{lang key='wishlistSearch' section='login'}"]}
+                                    {inputgroupaddon append=true}
+                                    {block name='snippets-wishlist-search-form-submit'}
+                                        {button name="action" value="search" type="submit"}
+                                            <i class="fa fa-search"></i>
+                                            <span class="d-none d-md-inline-block">{lang key='wishlistSearchBTN' section='login'}</span>
                                         {/button}
-                                        {/inputgroupaddon}
                                     {/block}
-                                {/if}
+                                    {/inputgroupaddon}
+                                    {if !empty($wlsearch)}
+                                        {block name='snippets-wishlist-search-form-remove-search'}
+                                            {inputgroupaddon append=true}
+                                            {button type="submit" name="cSuche" value=""}
+                                                <i class="fa fa-undo"></i> {lang key='wishlistRemoveSearch' section='login'}
+                                            {/button}
+                                            {/inputgroupaddon}
+                                        {/block}
+                                    {/if}
                                 {/inputgroup}
                             {/block}
                             {/form}
@@ -213,49 +210,49 @@
             {if $isCurrenctCustomer === true}
                 {block name='snippets-wishlist-visibility'}
                     {block name='snippets-wishlist-visibility-hr-top'}
-                        <hr class="mt-2 mb-2">
+                        <hr class="mb-3">
                     {/block}
-                    {row}
+                    {row class='align-items-center'}
                     {block name='snippets-wishlist-visibility-form'}
-                        {col cols=8 md=10}
-                        {form method="post" action="{get_static_route id='wunschliste.php'}"}
-                        {block name='snippets-wishlist-visibility-inputs-hidden'}
-                            {input type="hidden" name="kWunschliste" value=$CWunschliste->kWunschliste}
-                            {input type="hidden" name="kWunschlisteTarget" value=$CWunschliste->kWunschliste}
-                        {/block}
-                        {if $CWunschliste->nOeffentlich == 1}
-                            {block name='snippets-wishlist-visibility-public'}
-                                {button
-                                type="submit"
-                                name="action"
-                                value="setPrivate"
-                                title="{lang key='wishlistSetPrivate' section='login'}"
-                                data=["toggle" => "tooltip", "placement" => "bottom"]
-                                }
-                                    <i class="fa fa-eye-slash"></i>
-                                {/button}
-                                <span class="d-none d-sm-inline">{lang key='wishlistNoticePublic' section='login'}</span>
+                        {col class='col-xl'}
+                            {form method="post" action="{get_static_route id='wunschliste.php'}"}
+                            {block name='snippets-wishlist-visibility-inputs-hidden'}
+                                {input type="hidden" name="kWunschliste" value=$CWunschliste->kWunschliste}
+                                {input type="hidden" name="kWunschlisteTarget" value=$CWunschliste->kWunschliste}
                             {/block}
-                        {elseif $CWunschliste->nOeffentlich == 0}
-                            {block name='snippets-wishlist-visibility-private'}
-                                {button
-                                type="submit"
-                                name="action"
-                                value="setPublic"
-                                title="{lang key='wishlistSetPublic' section='login'}"
-                                data=["toggle" => "tooltip", "placement" => "bottom"]
-                                }
-                                    <i class="fa fa-eye"></i>
-                                {/button}
-                                <span class="d-none d-sm-inline">{lang key='wishlistNoticePrivate' section='login'}</span>
-                            {/block}
-                        {/if}
-                        {/form}
+                            {if $CWunschliste->nOeffentlich == 1}
+                                {block name='snippets-wishlist-visibility-public'}
+                                    {button
+                                    type="submit"
+                                    name="action"
+                                    value="setPrivate"
+                                    title="{lang key='wishlistSetPrivate' section='login'}"
+                                    data=["toggle" => "tooltip", "placement" => "bottom"]
+                                    }
+                                        <i class="fa fa-eye-slash"></i>
+                                    {/button}
+                                    <span class="d-none d-sm-inline">{lang key='wishlistNoticePublic' section='login'}</span>
+                                {/block}
+                            {elseif $CWunschliste->nOeffentlich == 0}
+                                {block name='snippets-wishlist-visibility-private'}
+                                    {button
+                                    type="submit"
+                                    name="action"
+                                    value="setPublic"
+                                    title="{lang key='wishlistSetPublic' section='login'}"
+                                    data=["toggle" => "tooltip", "placement" => "bottom"]
+                                    }
+                                        <i class="fa fa-eye"></i>
+                                    {/button}
+                                    <span class="d-none d-sm-inline">{lang key='wishlistNoticePrivate' section='login'}</span>
+                                {/block}
+                            {/if}
+                            {/form}
                         {/col}
                     {/block}
                     {block name='snippets-wishlist-visibility-count'}
-                        {col cols=4 md=2 class='align-bottom text-right'}
-                        {count($CWunschliste->CWunschlistePos_arr)} {lang key='products'}
+                        {col class='col-auto ml-auto'}
+                            {count($CWunschliste->CWunschlistePos_arr)} {lang key='products'}
                         {/col}
                     {/block}
                     {/row}
@@ -271,43 +268,41 @@
                         {block name='snippets-wishlist-link-inputs'}
                             {inputgroup}
                             {block name='snippets-wishlist-link-name'}
-                                {input
-                                type="text"
-                                id="wishlist-url"
-                                name="wishlist-url"
-                                readonly=true
-                                value="{get_static_route id='wunschliste.php'}?wlid={$CWunschliste->cURLID}"
-                                }
+                                {input type="text"
+                                    id="wishlist-url"
+                                    name="wishlist-url"
+                                    readonly=true
+                                    value="{get_static_route id='wunschliste.php'}?wlid={$CWunschliste->cURLID}"}
                             {/block}
                             {if $Einstellungen.global.global_wunschliste_freunde_aktiv === 'Y'}
                                 {block name='snippets-wishlist-link-copy'}
                                     {inputgroupaddon append=true}
-                                    {button
-                                    class="copyToClipboard input-like"
-                                    name="copy"
-                                    variant="light"
-                                    value="copyToClipboard"
-                                    disabled=(!$hasItems)
-                                    title="{lang key='copied'}"
-                                    data=["clipboard-target"=>"#wishlist-url"]
-                                    }
-                                        <i class="far fa-copy"></i>
-                                    {/button}
+                                        {button
+                                        class="copyToClipboard input-like"
+                                        name="copy"
+                                        variant="light"
+                                        value="copyToClipboard"
+                                        disabled=(!$hasItems)
+                                        title="{lang key='copied'}"
+                                        data=["clipboard-target"=>"#wishlist-url"]
+                                        }
+                                            <i class="far fa-copy"></i>
+                                        {/button}
                                     {/inputgroupaddon}
                                 {/block}
                                 {block name='snippets-wishlist-link-envelop'}
                                     {inputgroupaddon append=true}
-                                    {button
-                                    type="submit"
-                                    name="action"
-                                    variant="light"
-                                    class="input-like"
-                                    value="sendViaMail"
-                                    disabled=(!$hasItems)
-                                    title="{lang key='wishlistViaEmail' section='login'}"
-                                    }
-                                        <i class="far fa-envelope"></i>
-                                    {/button}
+                                        {button
+                                        type="submit"
+                                        name="action"
+                                        variant="light"
+                                        class="input-like"
+                                        value="sendViaMail"
+                                        disabled=(!$hasItems)
+                                        title="{lang key='wishlistViaEmail' section='login'}"
+                                        }
+                                            <i class="far fa-envelope"></i>
+                                        {/button}
                                     {/inputgroupaddon}
                                 {/block}
                             {/if}
@@ -384,12 +379,14 @@
             {/if}
 
             {block name='snippets-wishlist-form-basket'}
-                {form
-                method="post"
-                action="{get_static_route id='wunschliste.php'}{if $CWunschliste->nStandard != 1}?wl={$CWunschliste->kWunschliste}{/if}"
-                name="Wunschliste"
-                class="basket_wrapper{if $hasItems === true} mt-3{/if}"
-                }
+                {include file='snippets/pagination.tpl'
+                    cThisUrl="wunschliste.php"
+                    oPagination=$pagination
+                    cParam_arr=['wl' => {$CWunschliste->kWunschliste}]}
+                {form method="post"
+                    action="{get_static_route id='wunschliste.php'}{if $CWunschliste->nStandard != 1}?wl={$CWunschliste->kWunschliste}{/if}"
+                    name="Wunschliste"
+                    class="basket_wrapper{if $hasItems === true} mt-3{/if}"}
                 {block name='snippets-wishlist-form-basket-content'}
                     {block name='snippets-wishlist-form-basket-inputs-hidden'}
                         {input type="hidden" name="wla" value="1"}
@@ -405,8 +402,8 @@
                     {if !empty($CWunschliste->CWunschlistePos_arr)}
                         {block name='snippets-wishlist-form-basket-products'}
                             {row class="gallery"}
-                            {foreach $CWunschliste->CWunschlistePos_arr as $wlPosition}
-                                {col cols=12 md=4 class="product-wrapper mb-5"}
+                            {foreach $wishlistItems as $wlPosition}
+                                {col cols=12 sm=6 md=4 xl=3 class="product-wrapper mb-7"}
                                     <div id="result-wrapper_buy_form_{$wlPosition->kWunschlistePos}" class="product-cell text-center hover-enabled">
                                         {if $isCurrenctCustomer === true}
                                             {block name='snippets-wishlist-form-basket-remove'}
@@ -471,54 +468,53 @@
                                                 {/block}
                                                 {if !($wlPosition->Artikel->Preise->fVKNetto == 0 && $Einstellungen.global.global_preis0 === 'N')}
                                                     {block name='snippets-wishlist-form-basket-input-group-details'}
-                                                        {inputgroup}
-                                                        {block name='snippets-wishlist-form-basket-quantity'}
-                                                            {input readonly=($isCurrenctCustomer !== true)
-                                                            type="{if $wlPosition->Artikel->cTeilbar === 'Y' && $wlPosition->Artikel->fAbnahmeintervall == 0}text{else}number{/if}"
-                                                            min="{if $wlPosition->Artikel->fMindestbestellmenge}{$wlPosition->Artikel->fMindestbestellmenge}{else}0{/if}"
-                                                            required=($wlPosition->Artikel->fAbnahmeintervall > 0)
-                                                            step="{if $wlPosition->Artikel->fAbnahmeintervall > 0}{$wlPosition->Artikel->fAbnahmeintervall}{/if}"
-                                                            class="quantity wunschliste_anzahl" name="Anzahl_{$wlPosition->kWunschlistePos}"
-                                                            aria=["label"=>"{lang key='quantity'}"]
-                                                            value="{$wlPosition->fAnzahl}"
-                                                            data=["decimals"=>"{if $wlPosition->Artikel->fAbnahmeintervall > 0}2{else}0{/if}"]
-                                                            }
-                                                        {/block}
-                                                        {if $wlPosition->Artikel->cEinheit}
-                                                            {block name='snippets-wishlist-form-basket-unit'}
-                                                                {inputgroupappend}
-                                                                {inputgrouptext class="unit form-control"}
-                                                                {$wlPosition->Artikel->cEinheit}
-                                                                {/inputgrouptext}
-                                                                {/inputgroupappend}
-                                                            {/block}
-                                                        {/if}
-                                                        {inputgroupaddon append=true}
-                                                        {if $wlPosition->Artikel->bHasKonfig}
-                                                            {block name='snippets-wishlist-form-basket-has-config'}
-                                                                {link href=$wlPosition->Artikel->cURLFull
-                                                                class="btn btn-primary ml-3"
-                                                                title="{lang key='product' section='global'} {lang key='configure' section='global'}"
-                                                                }
-                                                                    <span class="fa fa-cogs"></span>
-                                                                {/link}
-                                                            {/block}
-                                                        {else}
-                                                            {block name='snippets-wishlist-form-basket-add-to-cart'}
-                                                                {button
-                                                                type="submit"
-                                                                name="addToCart"
-                                                                value=$wlPosition->kWunschlistePos
-                                                                variant="primary"
-                                                                class="ml-3"
-                                                                title="{lang key='wishlistaddToCart' section='login'}"
-                                                                }
-                                                                    <span class="fas fa-shopping-cart"></span>
-                                                                {/button}
-                                                            {/block}
-                                                        {/if}
-                                                        {/inputgroupaddon}
-                                                        {/inputgroup}
+                                                        <div class="form-row productbox-actions">
+                                                            {col cols=12}
+                                                                {block name='snippets-wishlist-form-basket-quantity'}
+                                                                    {input readonly=($isCurrenctCustomer !== true)
+                                                                    type="{if $wlPosition->Artikel->cTeilbar === 'Y' && $wlPosition->Artikel->fAbnahmeintervall == 0}text{else}number{/if}"
+                                                                    min="{if $wlPosition->Artikel->fMindestbestellmenge}{$wlPosition->Artikel->fMindestbestellmenge}{else}0{/if}"
+                                                                    required=($wlPosition->Artikel->fAbnahmeintervall > 0)
+                                                                    step="{if $wlPosition->Artikel->fAbnahmeintervall > 0}{$wlPosition->Artikel->fAbnahmeintervall}{/if}"
+                                                                    class="quantity wunschliste_anzahl" name="Anzahl_{$wlPosition->kWunschlistePos}"
+                                                                    aria=["label"=>"{lang key='quantity'}"]
+                                                                    value="{$wlPosition->fAnzahl}"
+                                                                    data=["decimals"=>"{if $wlPosition->Artikel->fAbnahmeintervall > 0}2{else}0{/if}"]
+                                                                    }
+                                                                {/block}
+                                                                {if $wlPosition->Artikel->cEinheit}
+                                                                    {block name='snippets-wishlist-form-basket-unit'}
+                                                                        {inputgroupappend}
+                                                                        {inputgrouptext class="unit form-control"}
+                                                                        {$wlPosition->Artikel->cEinheit}
+                                                                        {/inputgrouptext}
+                                                                        {/inputgroupappend}
+                                                                    {/block}
+                                                                {/if}
+                                                            {/col}
+                                                            {col cols=12}
+                                                                {if $wlPosition->Artikel->bHasKonfig}
+                                                                    {block name='snippets-wishlist-form-basket-has-config'}
+                                                                        {link href=$wlPosition->Artikel->cURLFull
+                                                                            class="btn btn-primary btn-block mt-3"
+                                                                            title="{lang key='product' section='global'} {lang key='configure' section='global'}"}
+                                                                            <span class="fa fa-cogs"></span> {lang key='configure'}
+                                                                        {/link}
+                                                                    {/block}
+                                                                {else}
+                                                                    {block name='snippets-wishlist-form-basket-add-to-cart'}
+                                                                        {button type="submit"
+                                                                            name="addToCart"
+                                                                            value=$wlPosition->kWunschlistePos
+                                                                            variant="primary"
+                                                                            class="btn-block mt-3 align-items-center"
+                                                                            title="{lang key='wishlistaddToCart' section='login'}"}
+                                                                            <span class="fas fa-shopping-cart"></span> {lang key='addToCart'}
+                                                                        {/button}
+                                                                    {/block}
+                                                                {/if}
+                                                            {/col}
+                                                        </div>
                                                     {/block}
                                                 {/if}
                                             </div>
@@ -529,17 +525,21 @@
                             {/row}
                         {/block}
                         {block name='snippets-wishlist-form-basket-submit'}
+                            <div class="sticky-bottom">
                             {row}
-                            {col cols=12}
-                            {buttongroup class="float-right mb-3"}
-                            {if $isCurrenctCustomer === true}
-                                {button type="submit" title="{lang key='wishlistUpdate' section='login'}" name="action" value="update"}
-                                    <i class="fa fa-sync"></i> <span class="d-none d-sm-inline-block">{lang key='wishlistUpdate' section='login'}</span>
-                                {/button}
-                            {/if}
-                            {/buttongroup}
-                            {/col}
+                                {col md=4 xl=3 class='ml-auto'}
+                                    {if $isCurrenctCustomer === true}
+                                        {button type="submit"
+                                            title="{lang key='wishlistUpdate' section='login'}"
+                                            name="action"
+                                            value="update"
+                                            class="btn-block bg-white"}
+                                            <i class="fa fa-sync"></i> {lang key='wishlistUpdate' section='login'}
+                                        {/button}
+                                    {/if}
+                                {/col}
                             {/row}
+                            </div>
                         {/block}
                     {else}
                         {block name='snippets-wishlist-alert'}

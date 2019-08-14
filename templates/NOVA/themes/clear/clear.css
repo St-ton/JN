@@ -17184,4 +17184,10 @@ a.nice-deco:focus::after {
   transition: all ease 0.2s;
 }
 
+.sticky-bottom {
+  position: sticky;
+  bottom: 0;
+  z-index: 999;
+}
+
 /*# sourceMappingURL=clear.css.map */

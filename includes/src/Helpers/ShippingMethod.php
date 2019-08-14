@@ -685,10 +685,10 @@ class ShippingMethod
             WHERE cIgnoreShippingProposal != 'Y'
                 AND cNurAbhaengigeVersandart = :depOnly
                 AND cLaender LIKE :iso
-                AND (cVersandklassen = '-1' 
+                AND (cVersandklassen = '-1'
                     OR cVersandklassen RLIKE :sClasses)
-                AND (cKundengruppen = '-1' 
-                    OR FIND_IN_SET(:cGroupID, REPLACE(cKundengruppen, ';', ',')) > 0) 
+                AND (cKundengruppen = '-1'
+                    OR FIND_IN_SET(:cGroupID, REPLACE(cKundengruppen, ';', ',')) > 0)
             ORDER BY nSort",
             [
                 'depOnly'  => $depOnly,
@@ -1149,7 +1149,7 @@ class ShippingMethod
         }
         \executeHook(\HOOK_TOOLSGLOBAL_INC_BERECHNEVERSANDPREIS, [
             'fPreis'         => &$price,
-            'ersandart'      => $shippingMethod,
+            'versandart'     => $shippingMethod,
             'cISO'           => $iso,
             'oZusatzArtikel' => $additionalProduct,
             'Artikel'        => $product,

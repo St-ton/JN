@@ -45,23 +45,27 @@
                             {/row}
                         {/cardheader}
                         {if count($Bestellungen) > 0}
-                            <div class="text-center">
+                            <div class="table-responsive">
                             {block name='account-my-account-orders'}
                                 <table class="table table-vertical-middle table-hover">
                                     <tbody>
                                     {foreach $Bestellungen as $order}
                                         {if $order@index === 5}{break}{/if}
-                                        <tr>
+                                        <tr title="{lang key='showOrder' section='login'}: {lang key='orderNo' section='login'} {$order->cBestellNr}"
+                                            class="clickable-row"
+                                            data-toggle="tooltip"
+                                            data-href="{$cCanonicalURL}?bestellung={$order->kBestellung}">
                                             <td>{$order->dBestelldatum}</td>
                                             <td class="text-right">{$order->cBestellwertLocalized}</td>
-                                            <td>{$order->Status}</td>
                                             <td class="text-right">
-                                                {link href="$cCanonicalURL?bestellung={$order->kBestellung}"
-                                                    title="{lang key='showOrder' section='login'}: {lang key='orderNo' section='login'} {$order->cBestellNr}"
-                                                    data=["toggle" => "tooltip", "placement" => "bottom"]
-                                                    class="no-deco"}
-                                                    <i class="fa fa-eye"></i>
-                                                {/link}
+                                                <span class="{if $order->cStatus === $smarty.const.BESTELLUNG_STATUS_OFFEN ||$order->cStatus === $smarty.const.BESTELLUNG_STATUS_IN_BEARBEITUNG }text-warning
+                                                    {elseif $order->cStatus === $smarty.const.BESTELLUNG_STATUS_BEZAHLT || $order->cStatus === $smarty.const.BESTELLUNG_STATUS_VERSANDT}text-success
+                                                    {elseif $order->cStatus === $smarty.const.BESTELLUNG_STATUS_STORNO}text-warning{/if}">
+                                                    {$order->Status}
+                                                </span>
+                                            </td>
+                                            <td class="text-right d-none d-md-block">
+                                                <i class="fa fa-eye"></i>
                                             </td>
                                         </tr>
                                     {/foreach}
@@ -147,52 +151,44 @@
                                 {/link}
                             </span>
                         {/cardheader}
-                        {cardbody}
-                            {if count($oWunschliste_arr) >0}
-                                {block name='account-my-account-wishlists'}
+                        {if count($oWunschliste_arr) >0}
+                            {block name='account-my-account-wishlists'}
+                            <div class="table-responsive">
+                                <table class="table table-vertical-middle table-hover">
+                                    <tbody>
                                     {foreach $oWunschliste_arr as $wishlist}
-                                            {row}
-                                                {col md=6}
-                                                    <p>{link href="{get_static_route id='wunschliste.php'}?wl={$wishlist->kWunschliste}"}{$wishlist->cName}{/link}<br />
-                                                    <small>{$wishlist->productCount} {lang key='products'}</small>
-                                                    </p>
-                                                {/col}
-                                                {col md=6}
-                                                    {lang key='currently'}: {if (int)$wishlist->nOeffentlich === 1}{lang key='public'}{else}{lang key='private'}{/if}
-                                                    {form method='post' class='float-right' action=$cCanonicalURL}
-                                                    {input type='hidden' name='wl' value=$wishlist->kWunschliste}
-                                                    {input type='hidden' name='accountPage' value=1}
-                                                    {if $wishlist->nOeffentlich == 1}
-                                                        {button size="sm"
-                                                            type="submit"
-                                                            name="wlAction"
-                                                            value="setPrivate"
-                                                            data=["toggle" => "tooltip", "placement" => "bottom"]
-                                                            aria=["label"=>"{lang key='wishlistPrivat' section='login'}"]
-                                                            title="{lang key='wishlistPrivat' section='login'}"}
-                                                            <i class="fa fa-eye-slash"></i></span>
-                                                        {/button}
-                                                    {/if}
-                                                    {if $wishlist->nOeffentlich == 0}
-                                                        {button size="sm"
-                                                            type="submit"
-                                                            name="wlAction"
-                                                            value="setPublic"
-                                                            data=["toggle" => "tooltip", "placement" => "bottom"]
-                                                            aria=["label"=>"{lang key='wishlistNotPrivat' section='login'}"]
-                                                            title="{lang key='wishlistNotPrivat' section='login'}"}
-                                                            <i class="fa fa-eye"></i></span>
-                                                        {/button}
-                                                    {/if}
-                                                    {/form}
-                                                {/col}
-                                            {/row}
+                                        <tr>
+                                            <td>
+                                                {link href="{get_static_route id='wunschliste.php'}?wl={$wishlist->kWunschliste}"}{$wishlist->cName}{/link}<br />
+                                                <small>{$wishlist->productCount} {lang key='products'}</small>
+                                            </td>
+                                            <td class="text-right">
+                                                <div class="d-inline-flex flex-nowrap">
+                                                    <span data-switch-label-state="public-{$wishlist->kWunschliste}" class="{if $wishlist->nOeffentlich != 1}d-none{/if}">
+                                                        {lang key='public'}
+                                                    </span>
+                                                    <span data-switch-label-state="private-{$wishlist->kWunschliste}" class="{if $wishlist->nOeffentlich == 1}d-none{/if}">
+                                                        {lang key='private'}
+                                                    </span>
+                                                    <div class="custom-control custom-switch ml-2" data-toggle="tooltip" title="Wunschzettel privat machen">
+                                                        <input type='checkbox'
+                                                               class='custom-control-input wl-visibility-switch'
+                                                               id="wl-visibility-{$wishlist->kWunschliste}"
+                                                               data-wl-id="{$wishlist->kWunschliste}"
+                                                               {if $wishlist->nOeffentlich == 1}checked{/if}>
+                                                        <label class="custom-control-label" for="wl-visibility-{$wishlist->kWunschliste}"></label>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
                                     {/foreach}
-                                {/block}
-                            {else}
-                                {lang key='noWishlist' section='account data'}
-                            {/if}
-                        {/cardbody}
+                                    </tbody>
+                                </table>
+                            </div>
+                            {/block}
+                        {else}
+                            {lang key='noWishlist' section='account data'}
+                        {/if}
                     {/card}
                 {/block}
             {/col}

@@ -2912,3 +2912,13 @@ a.nice-deco {
     }
   }
 }
+
+.clickable-row {
+  cursor: pointer;
+}
+
+.subheadline {
+  font-weight: $font-weight-bold;
+  margin-bottom: $spacer;
+  display: block;
+}

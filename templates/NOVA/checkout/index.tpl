@@ -38,7 +38,8 @@
         {if (isset($nWarenkorb2PersMerge) && $nWarenkorb2PersMerge === 1)}
             {block name='checkout-index-script-basket-merge'}
                 <script type="text/javascript">
-                    $(window).on('load', function() {
+                    var deferredTasks = window.deferredTasks || [];
+                    deferredTasks.push(["ready", function () {
                         $(function() {
                             eModal.addLabel('{lang key='yes' section='global'}', '{lang key='no' section='global'}');
                             var options = {
@@ -52,7 +53,7 @@
                                 }
                             );
                         });
-                    });
+                    }]);
                 </script>
             {/block}
         {/if}

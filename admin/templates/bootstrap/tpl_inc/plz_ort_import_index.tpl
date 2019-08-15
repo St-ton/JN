@@ -133,7 +133,7 @@
         $('[data-callback]').attr('disabled', true);
         ioCall('plzimportActionUpdateIndex', [], function(result) {
             if (result) {
-                $('#importForm .card-body').html(result.listHTML);
+                window.location.reload();
             }
             $('[data-callback]').attr('disabled', false);
         });

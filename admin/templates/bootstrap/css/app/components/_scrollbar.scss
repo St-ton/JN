@@ -1,0 +1,31 @@
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+  background-color: transparent;
+}
+::-webkit-scrollbar-track {
+  border-radius: 0;
+  background: $light-gray;
+  border: 1px solid $light-gray;
+}
+::-webkit-scrollbar-thumb {
+  border-radius: 4px;
+  background: map-get($primary-palette, 'darker');
+  border: 0;
+}
+
+#sidebar .navigation::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+  background-color: transparent;
+}
+#sidebar .navigation::-webkit-scrollbar-track {
+  border-radius: 0;
+  background: transparent;
+  border: 1px solid transparent;
+}
+#sidebar .navigation::-webkit-scrollbar-thumb {
+  border-radius: 4px;
+  background: map-get($primary-palette, 'light');
+  border: 0;
+}

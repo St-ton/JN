@@ -12314,6 +12314,42 @@ ul li:last-child, ol li:last-child {
   border-left-color: #435a6b;
 }
 
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+  background-color: transparent;
+}
+
+::-webkit-scrollbar-track {
+  border-radius: 0;
+  background: #f5f7fa;
+  border: 1px solid #f5f7fa;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 4px;
+  background: #435a6b;
+  border: 0;
+}
+
+#sidebar .navigation::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+  background-color: transparent;
+}
+
+#sidebar .navigation::-webkit-scrollbar-track {
+  border-radius: 0;
+  background: transparent;
+  border: 1px solid #3098d6;
+}
+
+#sidebar .navigation::-webkit-scrollbar-thumb {
+  border-radius: 4px;
+  background: #7dcdfe;
+  border: 0;
+}
+
 .min-w-sm {
   min-width: 9.375rem !important;
 }

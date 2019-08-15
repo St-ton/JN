@@ -1308,7 +1308,7 @@ class Warenkorb
         }
 
         if ($bRedirect) {
-            $this->setzePositionsPreise();
+            loescheAlleSpezialPos();
             $linkHelper = LinkHelper::getInstance();
             header('Location: ' . $linkHelper->getStaticRoute('warenkorb.php') . '?fillOut=10', true, 303);
             exit;

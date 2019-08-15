@@ -8,9 +8,9 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'warenkorb_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'bestellvorgang_inc.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'smartyInclude.php';
 /** @global JTLSmarty $smarty */
-$AktuelleSeite = 'WARENKORB';
-$MsgWarning    = '';
-$Einstellungen = Shop::getSettings([
+$AktuelleSeite            = 'WARENKORB';
+$MsgWarning               = '';
+$Einstellungen            = Shop::getSettings([
     CONF_GLOBAL,
     CONF_RSS,
     CONF_KAUFABWICKLUNG,
@@ -88,12 +88,12 @@ if (isset($_POST['gratis_geschenk'], $_POST['gratishinzufuegen']) && (int)$_POST
     $kArtikelGeschenk = (int)$_POST['gratisgeschenk'];
     // Pruefen ob der Artikel wirklich ein Gratis Geschenk ist
     $oArtikelGeschenk = Shop::DB()->query(
-        "SELECT tartikelattribut.kArtikel, tartikel.fLagerbestand, 
+        'SELECT tartikelattribut.kArtikel, tartikel.fLagerbestand,
             tartikel.cLagerKleinerNull, tartikel.cLagerBeachten
             FROM tartikelattribut
                 JOIN tartikel 
                     ON tartikel.kArtikel = tartikelattribut.kArtikel
-                WHERE tartikelattribut.kArtikel = " . $kArtikelGeschenk . "
+                WHERE tartikelattribut.kArtikel = ' . $kArtikelGeschenk . "
                 AND tartikelattribut.cName = '" . FKT_ATTRIBUT_GRATISGESCHENK . "'
                 AND CAST(tartikelattribut.cWert AS DECIMAL) <= "
         . $cart->gibGesamtsummeWarenExt([C_WARENKORBPOS_TYP_ARTIKEL], true), 1
@@ -132,7 +132,6 @@ if (isset($_GET['fillOut'])) {
         $MsgWarning = Shop::Lang()->get('yourbasketisempty', 'checkout');
     } elseif ((int)$_GET['fillOut'] === 10) {
         $MsgWarning = Shop::Lang()->get('missingProducts', 'checkout');
-        loescheAlleSpezialPos();
     } elseif ((int)$_GET['fillOut'] === UPLOAD_ERROR_NEED_UPLOAD) {
         $MsgWarning = Shop::Lang()->get('missingFilesUpload', 'checkout');
     }

@@ -115,7 +115,7 @@
                                                 <span class="ml-2">{$usedCouponOrder.cBestellNr} ({$usedCouponOrder.cUserName})</span>
                                                 <strong>{__('order')}: </strong>
                                             </div>
-                                            <div class="modal-body py-5">
+                                            <div class="modal-body">
                                                 <div class="table-responsive">
                                                     <table class="table table-striped">
                                                         <thead>

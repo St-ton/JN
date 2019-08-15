@@ -12020,8 +12020,9 @@ ul li:last-child, ol li:last-child {
 }
 
 .modal-body {
-  padding: 0 1rem 0 0;
+  padding: 1rem 1rem 1rem 0;
   margin: 0 1rem 0 0;
+  border-top: 1px solid #F1F1F3;
 }
 
 .modal-footer {

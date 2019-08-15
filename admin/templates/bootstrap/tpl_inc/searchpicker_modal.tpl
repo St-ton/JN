@@ -13,7 +13,7 @@
                 </button>
                 <h2 class="modal-title">{$modalTitle}</h2>
             </div>
-            <div class="modal-body py-5">
+            <div class="modal-body">
                 <div class="input-group">
                     <label for="{$searchPickerName}-search-input" class="sr-only">
                         {$searchInputLabel}:

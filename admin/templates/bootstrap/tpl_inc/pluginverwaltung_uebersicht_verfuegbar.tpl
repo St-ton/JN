@@ -59,7 +59,7 @@
                                     </button>
                                     <h2 class="modal-title">{__('licensePlugin')}</h2>
                                 </div>
-                                <div class="modal-body py-5">
+                                <div class="modal-body">
                                     {* license.md content goes here via js *}
                                 </div>
                                 <div class="modal-footer">

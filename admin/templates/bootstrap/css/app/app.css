@@ -12341,7 +12341,7 @@ ul li:last-child, ol li:last-child {
 #sidebar .navigation::-webkit-scrollbar-track {
   border-radius: 0;
   background: transparent;
-  border: 1px solid #3098d6;
+  border: 1px solid transparent;
 }
 
 #sidebar .navigation::-webkit-scrollbar-thumb {
@@ -12710,7 +12710,7 @@ body {
 }
 
 #content_wrapper {
-  padding: 1rem 0.5rem;
+  padding-top: 0.5rem;
 }
 @media (min-width: 768px) {
   #content_wrapper {
@@ -12725,6 +12725,7 @@ body {
 
 .content-header {
   margin-bottom: 3rem;
+  padding: 0 0.5rem;
 }
 .content-header .breadcrumb {
   font-size: 0.8203125rem;
@@ -12735,11 +12736,27 @@ body {
 @media (min-width: 768px) {
   .content-header {
     margin-top: -1rem;
+    padding: 0;
   }
 }
 @media (min-width: 1600px) {
   .content-header {
     margin-top: -3rem;
+  }
+}
+
+#content > .row, .content-header > .row {
+  margin-right: 0;
+}
+#content > .row > div:last-child, .content-header > .row > div:last-child {
+  padding-right: 0;
+}
+@media (min-width: 768px) {
+  #content > .row, .content-header > .row {
+    margin-right: -1.5rem;
+  }
+  #content > .row > div:last-child, .content-header > .row > div:last-child {
+    padding-right: 1.5rem;
   }
 }
 

@@ -347,7 +347,6 @@
   min-width: 256px;
 }
 .backend-wrapper > .backend-main > .backend-content {
-  padding: 32px;
   background: #f5f7fa;
   flex: auto;
 }

@@ -67,6 +67,11 @@ class Area implements \JsonSerializable
             $result .= $portletInstance->getPreviewHtml();
         }
 
+        Shop::fire('shop.OPC.Area.getPreviewHtml', [
+            'area' => $this,
+            'result' => &$result
+        ]);
+
         return $result;
     }
 
@@ -79,6 +84,11 @@ class Area implements \JsonSerializable
         foreach ($this->content as $portletInstance) {
             $result .= $portletInstance->getFinalHtml();
         }
+
+        Shop::fire('shop.OPC.Area.getFinalHtml', [
+            'area' => $this,
+            'result' => &$result
+        ]);
 
         return $result;
     }

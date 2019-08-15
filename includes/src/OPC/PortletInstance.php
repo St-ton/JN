@@ -98,7 +98,14 @@ class PortletInstance implements \JsonSerializable
      */
     public function getPreviewHtml(): string
     {
-        return $this->portlet->getPreviewHtml($this);
+        $result = $this->portlet->getPreviewHtml($this);
+
+        Shop::fire('shop.OPC.PortletInstance.getPreviewHtml', [
+            'portletInstance' => $this,
+            'result' => &$result
+        ]);
+
+        return $result;
     }
 
     /**
@@ -107,7 +114,14 @@ class PortletInstance implements \JsonSerializable
      */
     public function getFinalHtml(): string
     {
-        return $this->portlet->getFinalHtml($this);
+        $result = $this->portlet->getFinalHtml($this);
+
+        Shop::fire('shop.OPC.PortletInstance.getFinalHtml', [
+            'portletInstance' => $this,
+            'result' => &$result
+        ]);
+
+        return $result;
     }
 
     /**

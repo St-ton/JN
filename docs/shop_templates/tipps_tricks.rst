@@ -28,7 +28,7 @@ Die wichtigsten LESS-Variablen im Überblick
 Farben
 ------
 
-.. code-block:: scss
+.. code-block:: less
 
     @brand-primary:         #428bca;
     @brand-success:         #5cb85c;
@@ -60,7 +60,7 @@ Farben
 Schrift
 -------
 
-.. code-block:: scss
+.. code-block:: less
 
     @font-family-sans-serif:  "Helvetica Neue", Helvetica, Arial, sans-serif;
     @font-family-serif:       Georgia, "Times New Roman", Times, serif;
@@ -75,7 +75,7 @@ Schrift
 | **@font-size-base:** Standardschriftgröße für Fliestext, Links etc.
 |
 
-.. code-block:: scss
+.. code-block:: less
 
     @headings-font-family:    inherit;
     @headings-font-weight:    500;
@@ -97,7 +97,7 @@ Schrift
 Buttons
 -------
 
-.. code-block:: scss
+.. code-block:: less
 
     @btn-font-weight:                normal;
 
@@ -125,7 +125,7 @@ Buttons
 Navigation
 ----------
 
-.. code-block:: scss
+.. code-block:: less
 
     @navbar-default-color:             #777;
     @navbar-default-bg:                #f8f8f8;

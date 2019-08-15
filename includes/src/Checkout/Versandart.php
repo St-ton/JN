@@ -6,6 +6,7 @@
 
 namespace JTL\Checkout;
 
+use Illuminate\Support\Collection;
 use JTL\DB\ReturnType;
 use JTL\Helpers\GeneralObject;
 use JTL\Shop;
@@ -127,6 +128,11 @@ class Versandart
     public $cPriceLocalized;
 
     /**
+     * @var Collection
+     */
+    public $shippingSurcharges;
+
+    /**
      * Versandart constructor.
      * @param int $id
      */
@@ -166,6 +172,8 @@ class Versandart
             'kVersandart',
             (int)$this->kVersandart
         );
+
+        $this->loadShippingSurcharges();
 
         return 1;
     }
@@ -327,5 +335,75 @@ class Versandart
                 self::cloneShippingSection($subSections, $section, 'kVersandzuschlag', $newKey, $subKey);
             }
         }
+    }
+
+    /**
+     * load zip surcharges for shipping method
+     */
+    public function loadShippingSurcharges(): void
+    {
+        $cache   = Shop::Container()->getCache();
+        $cacheID = 'surchargeFullShippingMethod' . $this->kVersandart;
+        if (($surcharges = $cache->get($cacheID)) !== false) {
+            $this->setShippingSurcharges($surcharges);
+
+            return;
+        }
+
+        $this->setShippingSurcharges(Shop::Container()->getDB()->queryPrepared(
+            'SELECT kVersandzuschlag
+                FROM tversandzuschlag
+                WHERE kVersandart = :kVersandart
+                ORDER BY kVersandzuschlag DESC',
+            ['kVersandart' => $this->kVersandart],
+            ReturnType::COLLECTION
+        )->map(function ($surcharge) {
+            return new ShippingSurcharge($surcharge->kVersandzuschlag);
+        }));
+
+        $cache->set($cacheID, $this->getShippingSurcharges(), [\CACHING_GROUP_OBJECT]);
+    }
+
+    /**
+     * @param string $ISO
+     * @return Collection
+     */
+    public function getShippingSurchargesForCountry(string $ISO): Collection
+    {
+        return $this->getShippingSurcharges()->filter(function (ShippingSurcharge $surcharge) use ($ISO) {
+            return $surcharge->getISO() === $ISO;
+        });
+    }
+
+    /**
+     * @param string $zip
+     * @param string $ISO
+     * @return ShippingSurcharge|null
+     */
+    public function getShippingSurchargeForZip(string $zip, string $ISO): ?ShippingSurcharge
+    {
+        return $this->getShippingSurchargesForCountry($ISO)->filter(function (ShippingSurcharge $surcharge) use ($zip) {
+            return $surcharge->hasZIPCode($zip);
+        })->pop();
+    }
+
+
+    /**
+     * @return Collection
+     */
+    public function getShippingSurcharges(): Collection
+    {
+        return $this->shippingSurcharges;
+    }
+
+    /**
+     * @param Collection $shippingSurcharges
+     * @return Versandart
+     */
+    private function setShippingSurcharges(Collection $shippingSurcharges): self
+    {
+        $this->shippingSurcharges = $shippingSurcharges;
+
+        return $this;
     }
 }

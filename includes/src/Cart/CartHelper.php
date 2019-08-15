@@ -565,7 +565,7 @@ class CartHelper
     {
         $alertHelper = Shop::Container()->getAlertService();
         // Prüfen ob nicht schon die maximale Anzahl an Artikeln auf der Vergleichsliste ist
-        $products = $_SESSION['Vergleichsliste']->oArtikel_arr ?? [];
+        $products = Frontend::get('Vergleichsliste')->oArtikel_arr ?? [];
         if ($maxItems <= \count($products)) {
             Shop::Container()->getAlertService()->addAlert(
                 Alert::TYPE_ERROR,
@@ -608,27 +608,17 @@ class CartHelper
                 $productID  = Product::getArticleForParent($productID);
                 $variations = Product::getSelectedPropertiesForVarCombiArticle($productID, 1);
             }
-            $compareList = $_SESSION['Vergleichsliste'] ?? null;
+            $compareList = Frontend::getCompareList();
             /** @var ComparisonList $compareList */
-            if ($compareList !== null) {
-                if ($compareList->productExists($productID)) {
-                    $alertHelper->addAlert(
-                        Alert::TYPE_ERROR,
-                        Shop::Lang()->get('comparelistProductexists', 'messages'),
-                        'comparelistProductexists',
-                        ['dismissable' => false]
-                    );
-                } else {
-                    $compareList->addProduct($productID);
-                    $alertHelper->addAlert(
-                        Alert::TYPE_NOTE,
-                        Shop::Lang()->get('comparelistProductadded', 'messages'),
-                        'comparelistProductadded'
-                    );
-                }
+            if ($compareList->productExists($productID)) {
+                $alertHelper->addAlert(
+                    Alert::TYPE_ERROR,
+                    Shop::Lang()->get('comparelistProductexists', 'messages'),
+                    'comparelistProductexists',
+                    ['dismissable' => false]
+                );
             } else {
-                // Vergleichsliste neu in der Session anlegen
-                new ComparisonList($productID, $variations);
+                $compareList->addProduct($productID, $variations);
                 $alertHelper->addAlert(
                     Alert::TYPE_NOTE,
                     Shop::Lang()->get('comparelistProductadded', 'messages'),

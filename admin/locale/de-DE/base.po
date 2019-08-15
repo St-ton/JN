@@ -1656,6 +1656,15 @@ msgstr "Antarktis"
 msgid "date"
 msgstr "Datum"
 
+msgid "europeanUnion"
+msgstr "Europäische Union"
+
+msgid "notEuropeanUnionEurope"
+msgstr "Nicht Europäische Union in Europa"
+
+msgid "countries"
+msgstr "Länder"
+
 msgid "syntax"
 msgstr "Syntax"
 
@@ -1877,3 +1886,6 @@ msgstr "Alle deaktivieren"
 
 msgid "selectPickerDoneButtonText"
 msgstr "Schließen"
+
+msgid "none"
+msgstr "Keine"

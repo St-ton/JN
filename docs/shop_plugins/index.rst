@@ -9,13 +9,13 @@ Plugins
     bootstrapping
     variablen
     hooks
-    hinweise
+    hook_list
     container
     cache
     mailing
-    hook_list
     fehlercodes
-    short_checkout
     sicherheit
+    short_checkout
+    hinweise
 
 .. include:: /shop_plugins/map.rst.inc

@@ -124,7 +124,6 @@ if (($res = Request::getInt('fillOut', -1)) > -1) {
         $warning = Shop::Lang()->get('yourbasketisempty', 'checkout');
     } elseif ($res === 10) {
         $warning = Shop::Lang()->get('missingProducts', 'checkout');
-        CartHelper::deleteAllSpecialItems();
     } elseif ($res === UPLOAD_ERROR_NEED_UPLOAD) {
         $warning = Shop::Lang()->get('missingFilesUpload', 'checkout');
     }

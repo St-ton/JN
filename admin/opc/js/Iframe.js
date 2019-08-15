@@ -5,10 +5,11 @@
 
 class Iframe
 {
-    constructor(io, gui, page, shopUrl, templateUrl)
+    constructor(opc, io, gui, page, shopUrl, templateUrl)
     {
         bindProtoOnHandlers(this);
 
+        this.opc         = opc;
         this.io          = io;
         this.gui         = gui;
         this.page        = page;
@@ -48,9 +49,10 @@ class Iframe
         }).then(() => {
             this.ctx  = this.iframe[0].contentWindow;
             this.jq   = this.ctx.$;
-            this.ctx.opcFrame = this;
             this.head = this.jq('head');
             this.body = this.jq('body');
+
+            this.ctx.opc = this.opc;
 
             this.loadStylesheet(this.shopUrl + '/admin/opc/css/iframe.css');
             this.loadStylesheet(this.shopUrl + '/templates/NOVA/themes/base/fontawesome/css/all.min.css');
@@ -473,6 +475,8 @@ class Iframe
         if(this.selectedElm !== null) {
             var area = this.selectedElm.parent();
             var copiedElm = this.selectedElm.clone();
+
+            this.opc.emit('clone-portlet', copiedElm);
             copiedElm.insertAfter(this.selectedElm);
             copiedElm.removeClass('opc-selected');
             copiedElm.removeClass('opc-hovered');

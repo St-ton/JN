@@ -6,6 +6,57 @@
 var localDateFormat = 'DD.MM.YYYY - HH:mm';
 var internalDateFormat = 'YYYY-MM-DD HH:mm:ss';
 
+class Subject
+{
+    constructor()
+    {
+        this.listeners = [];
+    }
+
+    on(cb)
+    {
+        this.listeners.includes(cb) || this.listeners.push(cb);
+    }
+
+    off(cb)
+    {
+        this.listeners.includes(cb) && this.listeners.splice(this.listeners.indexOf(cb), 1);
+    }
+
+    emit(data)
+    {
+        this.listeners.forEach(cb => cb(data));
+    }
+}
+
+class Emitter
+{
+    constructor()
+    {
+        this.subjects = {};
+    }
+
+    subject(name)
+    {
+        return this.subjects[name] = this.subjects[name] || new Subject();
+    }
+
+    on(name, cb)
+    {
+        this.subject(name).on(cb);
+    }
+
+    off(name, cb)
+    {
+        this.subject(name).off(cb);
+    }
+
+    emit(name, data)
+    {
+        this.subject(name).emit(data);
+    }
+}
+
 function noop() {}
 
 function installJqueryFixes()

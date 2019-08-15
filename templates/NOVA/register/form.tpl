@@ -18,7 +18,7 @@
                 {input type="hidden" name="checkout" value=$checkout|default:''}
                 {input type="hidden" name="form" value="1"}
                 {input type="hidden" name="editRechnungsadresse" value=$editRechnungsadresse}
-                {include file='snippets/opc_mount_point.tpl' id='opc_before_submit'}
+                {opcMountPoint id='opc_before_submit'}
                 {button type="submit" value="1" variant="primary" size="lg" class="float-right submit_once"}
                     {lang key='sendCustomerData' section='account data'}
                 {/button}

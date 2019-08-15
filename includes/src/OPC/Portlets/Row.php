@@ -30,6 +30,10 @@ class Row extends Portlet
     public function getPropertyDesc(): array
     {
         return [
+//            'dropper' => [
+//                'type' => InputType::CUSTOM,
+//                'template' => 'dropper-extension'
+//            ],
             'layout' => [
                 'type'    => InputType::ROW_LAYOUT,
                 'label'   => __('Layout'),
@@ -60,7 +64,7 @@ class Row extends Portlet
                     ],
                 ],
                 'default' => [
-                    'preset' => 1,
+                    'preset' => 0,
                     'xs' => '12+12',
                     'sm' => '6+6',
                     'md' => '6+6',

@@ -36,7 +36,7 @@
         {/if}
         {if isset($oBestseller_arr) && $oBestseller_arr|@count > 0}
             {block name='productlist-bestseller'}
-                {include file='snippets/opc_mount_point.tpl' id='opc_before_bestseller'}
+                {opcMountPoint id='opc_before_bestseller'}
                 {lang key='bestseller' section='global' assign='slidertitle'}
                 {include file='snippets/product_slider.tpl' id='slider-top-products'
                         productlist=$oBestseller_arr title=$slidertitle}
@@ -45,7 +45,7 @@
 
         {block name='productlist-results'}
             {if $Suchergebnisse->getProducts()|@count > 0}
-                {include file='snippets/opc_mount_point.tpl' id='opc_before_products'}
+                {opcMountPoint id='opc_before_products'}
                 <div class="row {if $style !== 'list'}row-eq-height row-eq-img-height{/if} {$style}" id="product-list" itemprop="mainEntity" itemscope itemtype="http://schema.org/ItemList">
                     {foreach $Suchergebnisse->getProducts() as $Artikel}
                         <div class="product-wrapper {$grid}" itemprop="itemListElement" itemscope itemtype="http://schema.org/Product">

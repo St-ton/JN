@@ -3,7 +3,7 @@
  * @license https://jtl-url.de/jtlshoplicense
  *}
 {if count($LivesucheTop) > 0 || count($LivesucheLast) > 0}
-    {include file='snippets/opc_mount_point.tpl' id='opc_before_livesearch'}
+    {opcMountPoint id='opc_before_livesearch'}
 
     <div class="row" id="livesearch">
         <div class="col-xs-6">

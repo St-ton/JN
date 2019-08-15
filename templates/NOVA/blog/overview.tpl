@@ -5,7 +5,7 @@
 {block name='blog-overview'}
     {container}
         {block name='blog-overview-heading'}
-            {include file='snippets/opc_mount_point.tpl' id='opc_before_heading'}
+            {opcMountPoint id='opc_before_heading'}
             <h1>{lang key='news' section='news'}</h1>
         {/block}
 
@@ -13,7 +13,7 @@
             {include file='snippets/extension.tpl'}
         {/block}
     {/container}
-    {include file='snippets/opc_mount_point.tpl' id='opc_before_filter'}
+    {opcMountPoint id='opc_before_filter'}
     {block name='filter'}
         {container}
         {row}
@@ -92,7 +92,7 @@
                 <div id="newsContent" itemprop="mainEntity" itemscope itemtype="https://schema.org/Blog">
                     {if $oNewsCat->getID() > 0}
                         {block name='blog-overview-subheading'}
-                            {include file='snippets/opc_mount_point.tpl' id='opc_before_news_category_heading'}
+                            {opcMountPoint id='opc_before_news_category_heading'}
                             <h2>{$oNewsCat->getName()}</h2>
                         {/block}
                         {block name='blog-overview-preview-image'}
@@ -110,7 +110,7 @@
                             {include file='snippets/pagination.tpl' oPagination=$oPagination cThisUrl='news.php' parts=['label']}
                         {/block}
                     {/if}
-                    {include file='snippets/opc_mount_point.tpl' id='opc_before_news_list'}
+                    {opcMountPoint id='opc_before_news_list'}
                     {row class="mt-4"}
                         {block name='blog-overview-previews'}
                             {foreach $oNewsUebersicht_arr as $oNewsUebersicht}
@@ -123,7 +123,7 @@
                         {/block}
                     {/row}
                 </div>
-                {include file='snippets/opc_mount_point.tpl' id='opc_after_news_list'}
+                {opcMountPoint id='opc_after_news_list'}
                 {block name='blog-overview-include-pagination'}
                     {include file='snippets/pagination.tpl' oPagination=$oPagination cThisUrl='news.php' parts=['pagi']}
                 {/block}

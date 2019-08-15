@@ -1656,6 +1656,15 @@ msgstr "Antarctica"
 msgid "date"
 msgstr "Date"
 
+msgid "europeanUnion"
+msgstr "European Union"
+
+msgid "notEuropeanUnionEurope"
+msgstr "Not European Union in Europe"
+
+msgid "countries"
+msgstr "Countries"
+
 msgid "syntax"
 msgstr "Syntax"
 
@@ -1877,3 +1886,6 @@ msgstr "Deselect all"
 
 msgid "selectPickerDoneButtonText"
 msgstr "Close"
+
+msgid "none"
+msgstr "None"

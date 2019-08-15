@@ -10,13 +10,15 @@
     <div class="dropdown-header">{__('pagesMenu')}</div>
     <ul class="backend-search-section">
         {foreach $adminMenuItems as $item}
-            <li class="backend-search-item has-icon" tabindex="-1">
-                <span class="title">
-                    {include file="img/icons/{$item->icon}.svg"}
-                </span>
-                <span class="path">
-                    <a href="{$item->link}">{$item->path}</a>
-                </span>
+            <li class="has-icon" tabindex="-1">
+                <a class="dropdown-item" href="{$item->link}">
+                    <span class="title">
+                        {include file="img/icons/{$item->icon}.svg"}
+                        <span class="path">
+                            {$item->path}
+                        </span>
+                    </span>
+                </a>
             </li>
         {/foreach}
     </ul>
@@ -52,7 +54,7 @@
     <div class="dropdown-header"><a href="versandarten.php" class="value">{__('shippingTypesOverview')}</a></div>
     <ul>
         {foreach $shippings as $shipping}
-            <li class="dropdown-item" tabindex="-1">
+            <li class="dropdown-item is-form-submit" tabindex="-1">
                 <form method="post" action="versandarten.php">
                     {$jtl_token}
                     <input type="hidden" name="edit" value="{$shipping->kVersandart}">
@@ -76,6 +78,9 @@
     </ul>
 {/if}
 
+{if empty($adminMenuItems) && empty($settings) && empty($shippings) && empty($paymentMethods)}
+    <span class="{if !$standalonePage}ml-3{/if}">{__('noSearchResult')}</span>
+{/if}
 {if $standalonePage}
         </div>
     </div>

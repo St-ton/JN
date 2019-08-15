@@ -3,10 +3,10 @@
  * @license https://jtl-url.de/jtlshoplicense
  *}
 {block name='page-freegift'}
-    {include file='snippets/opc_mount_point.tpl' id='opc_before_free_gift'}
+    {opcMountPoint id='opc_before_free_gift'}
     <p>{lang key='freeGiftFromOrderValue'}</p>
     {if !empty($oArtikelGeschenk_arr)}
-        {include file='snippets/opc_mount_point.tpl' id='opc_before_free_gift_list'}
+        {opcMountPoint id='opc_before_free_gift_list'}
         {row id="freegift"}
             {block name='page-freegift-freegifts'}
                 {foreach $oArtikelGeschenk_arr as $oArtikelGeschenk}

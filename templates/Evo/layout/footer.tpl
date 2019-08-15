@@ -4,7 +4,7 @@
  *}
 {block name='content-all-closingtags'}
     {block name='content-closingtag'}
-        {include file='snippets/opc_mount_point.tpl' id='opc_content'}
+        {opcMountPoint id='opc_content'}
     </div>{* /content *}
     {/block}
 

@@ -10,7 +10,7 @@
     {assign var='moreLink' value=null}
     {assign var='moreTitle' value=null}
 
-    {include file='snippets/opc_mount_point.tpl' id='opc_before_boxes'}
+    {opcMountPoint id='opc_before_boxes'}
 
     {foreach $StartseiteBoxen as $Box}
         {if isset($Box->Artikel->elemente) && count($Box->Artikel->elemente) > 0 && isset($Box->cURL)}
@@ -37,7 +37,7 @@
 {if isset($oNews_arr) && $oNews_arr|@count > 0}
     <hr>
 
-    {include file='snippets/opc_mount_point.tpl' id='opc_before_news'}
+    {opcMountPoint id='opc_before_news'}
 
     <h2>{lang key='news' section='news'}</h2>
     <div itemprop="about" itemscope itemtype="http://schema.org/Blog">

@@ -38,11 +38,12 @@
                             {/if}
                         </td>
                         <td class="text-center">
-                            <h4 class="label-wrap">
-                                <span class="label {if $plugin->getState() === \JTL\Plugin\State::ACTIVATED}success label-success{elseif $plugin->getState() === \JTL\Plugin\State::DISABLED}success label-info{elseif $plugin->getState() === \JTL\Plugin\State::ERRONEOUS}success label-default{elseif $plugin->getState() === \JTL\Plugin\State::UPDATE_FAILED || $plugin->getState() === \JTL\Plugin\State::LICENSE_KEY_MISSING}info label-info{elseif $plugin->getState() === \JTL\Plugin\State::LICENSE_KEY_INVALID}danger label-danger{/if}">
-                                    {$mapper->map($plugin->getState())}
-                                </span>
-                            </h4>
+                            <span class="label {if $plugin->getState() === \JTL\Plugin\State::ACTIVATED} text-success
+                                    {elseif $plugin->getState() === \JTL\Plugin\State::DISABLED} text-warning
+                                    {elseif $plugin->getState() === \JTL\Plugin\State::ERRONEOUS || $plugin->getState() === \JTL\Plugin\State::LICENSE_KEY_INVALID}} text-danger
+                                    {elseif $plugin->getState() === \JTL\Plugin\State::UPDATE_FAILED || $plugin->getState() === \JTL\Plugin\State::LICENSE_KEY_MISSING} text-warning{/if}">
+                                {$mapper->map($plugin->getState())}
+                            </span>
                         </td>
                         <td class="text-center">{(string)$plugin->getMeta()->getSemVer()}{if $plugin->getMeta()->isUpdateAvailable()} <span class="error">{(string)$plugin->getCurrentVersion()}</span>{/if}</td>
                         <td class="text-center">{$plugin->getDateInstalled()->format('d.m.Y H:i')}</td>
@@ -117,11 +118,12 @@
                             {/if}
                         </td>
                         <td class="text-center">
-                            <h4 class="label-wrap">
-                            <span class="label {if $plugin->getState() === \JTL\Plugin\State::ACTIVATED}success label-success{elseif $plugin->getState() === \JTL\Plugin\State::DISABLED}success label-info{elseif $plugin->getState() === \JTL\Plugin\State::ERRONEOUS}success label-default{elseif $plugin->getState() === \JTL\Plugin\State::UPDATE_FAILED || $plugin->getState() === \JTL\Plugin\State::LICENSE_KEY_MISSING}info label-info{elseif $plugin->getState() === \JTL\Plugin\State::LICENSE_KEY_INVALID}danger label-danger{/if}">
+                            <span class="label {if $plugin->getState() === \JTL\Plugin\State::ACTIVATED} text-success
+                                {elseif $plugin->getState() === \JTL\Plugin\State::DISABLED} text-warning
+                                {elseif $plugin->getState() === \JTL\Plugin\State::ERRONEOUS || $plugin->getState() === \JTL\Plugin\State::LICENSE_KEY_INVALID}} text-danger
+                                {elseif $plugin->getState() === \JTL\Plugin\State::UPDATE_FAILED || $plugin->getState() === \JTL\Plugin\State::LICENSE_KEY_MISSING} text-warning{/if}">
                                 {$mapper->map($plugin->getState())}
                             </span>
-                            </h4>
                         </td>
                         <td class="text-center">{(string)$plugin->getMeta()->getSemVer()}{if $plugin->getMeta()->isUpdateAvailable()} <span class="error">{(string)$plugin->getCurrentVersion()}</span>{/if}</td>
                         <td class="text-center">{$plugin->getMeta()->getDateInstalled()->format('d.m.Y H:i')}</td>
@@ -180,11 +182,12 @@
                             {/if}
                         </td>
                         <td class="text-center">
-                            <h4 class="label-wrap">
-                                <span class="label {if $plugin->getState() === \JTL\Plugin\State::ACTIVATED}success label-success{elseif $plugin->getState() === \JTL\Plugin\State::DISABLED}success label-info{elseif $plugin->getState() === \JTL\Plugin\State::ERRONEOUS}success label-default{elseif $plugin->getState() === \JTL\Plugin\State::UPDATE_FAILED || $plugin->getState() === \JTL\Plugin\State::LICENSE_KEY_MISSING}info label-info{elseif $plugin->getState() === \JTL\Plugin\State::LICENSE_KEY_INVALID}danger label-danger{/if}">
-                                    {$mapper->map($plugin->getState())}
-                                </span>
-                            </h4>
+                            <span class="label {if $plugin->getState() === \JTL\Plugin\State::ACTIVATED} text-success
+                                    {elseif $plugin->getState() === \JTL\Plugin\State::DISABLED} text-warning
+                                    {elseif $plugin->getState() === \JTL\Plugin\State::ERRONEOUS || $plugin->getState() === \JTL\Plugin\State::LICENSE_KEY_INVALID}} text-danger
+                                    {elseif $plugin->getState() === \JTL\Plugin\State::UPDATE_FAILED || $plugin->getState() === \JTL\Plugin\State::LICENSE_KEY_MISSING} text-warning{/if}">
+                                {$mapper->map($plugin->getState())}
+                            </span>
                         </td>
                         <td class="text-center">{(string)$plugin->getMeta()->getSemVer()}{if $plugin->getMeta()->isUpdateAvailable()} <span class="error">{(string)$plugin->getCurrentVersion()}</span>{/if}</td>
                         <td class="text-center">{$plugin->getMeta()->getDateInstalled()->format('d.m.Y H:i')}</td>
@@ -248,11 +251,12 @@
                             {/if}
                         </td>
                         <td class="text-center plugin-status">
-                            <h4 class="label-wrap">
-                                <span class="label {if $plugin->getState() === \JTL\Plugin\State::ACTIVATED}success label-success{elseif $plugin->getState() === \JTL\Plugin\State::DISABLED}success label-info{elseif $plugin->getState() === \JTL\Plugin\State::ERRONEOUS}success label-default{elseif $plugin->getState() === \JTL\Plugin\State::UPDATE_FAILED || $plugin->getState() === \JTL\Plugin\State::LICENSE_KEY_MISSING}info label-info{elseif $plugin->getState() === \JTL\Plugin\State::LICENSE_KEY_INVALID}danger label-danger{/if}">
-                                    {$mapper->map($plugin->getState())}
-                                </span>
-                            </h4>
+                            <span class="label {if $plugin->getState() === \JTL\Plugin\State::ACTIVATED} text-success
+                                    {elseif $plugin->getState() === \JTL\Plugin\State::DISABLED} text-warning
+                                    {elseif $plugin->getState() === \JTL\Plugin\State::ERRONEOUS || $plugin->getState() === \JTL\Plugin\State::LICENSE_KEY_INVALID}} text-danger
+                                    {elseif $plugin->getState() === \JTL\Plugin\State::UPDATE_FAILED || $plugin->getState() === \JTL\Plugin\State::LICENSE_KEY_MISSING} text-warning{/if}">
+                                {$mapper->map($plugin->getState())}
+                            </span>
                         </td>
                         <td class="text-center plugin-version">{(string)$plugin->getMeta()->getSemVer()}{if $plugin->getMeta()->isUpdateAvailable() } <span class="label label-danger error">{(string)$plugin->getCurrentVersion()}</span>{/if}</td>
                         <td class="text-center plugin-install-date">{$plugin->getMeta()->getDateInstalled()->format('d.m.Y H:i')}</td>

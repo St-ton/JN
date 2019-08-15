@@ -439,13 +439,13 @@ class Iframe
             this.dragNewPortletGroup = group;
         }
 
-        this.setDragged(this.jq('<i class="fa fa-spinner fa-pulse"></i>'));
+        this.setDragged(this.jq('<i class="fas fa-spinner fa-pulse"></i>'));
     }
 
     dragNewBlueprint(id)
     {
         this.dragNewBlueprintId = id || 0;
-        this.setDragged(this.jq('<i class="fa fa-spinner fa-pulse"></i>'));
+        this.setDragged(this.jq('<i class="fas fa-spinner fa-pulse"></i>'));
     }
 
     onBtnConfig()

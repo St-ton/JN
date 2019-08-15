@@ -7,7 +7,7 @@
 {/block}
 
 {block name='content'}
-    {include file='snippets/opc_mount_point.tpl' id='opc_before_heading'}
+    {opcMountPoint id='opc_before_heading'}
 
     <h1>{lang key='basket' section='global'}</h1>
     
@@ -21,7 +21,7 @@
     
     {if ($Warenkorb->PositionenArr|@count > 0)}
         {block name='basket'}
-            {include file='snippets/opc_mount_point.tpl' id='opc_before_basket'}
+            {opcMountPoint id='opc_before_basket'}
             <div class="basket_wrapper">
                 <div class="basket-well">
                     {block name='basket-items'}
@@ -59,7 +59,7 @@
                 </div>
                 <hr>
                 {if $Einstellungen.kaufabwicklung.warenkorb_versandermittlung_anzeigen === 'Y'}
-                    {include file='snippets/opc_mount_point.tpl' id='opc_before_shipping_calculator'}
+                    {opcMountPoint id='opc_before_shipping_calculator'}
                     <form id="basket-shipping-estimate-form" method="post" action="{get_static_route id='warenkorb.php'}">
                         {$jtl_token}
                         {include file='snippets/shipping_calculator.tpl' checkout=true}

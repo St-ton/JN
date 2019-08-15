@@ -2,7 +2,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license https://jtl-url.de/jtlshoplicense
  *}
-{include file='snippets/opc_mount_point.tpl' id='opc_before_newsletter'}
+{opcMountPoint id='opc_before_newsletter'}
 
 <div id="toptags">{lang key='newsletterhistory' section='global'}</div>
 <table class="newsletter">

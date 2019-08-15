@@ -9,7 +9,7 @@
 {else}
     <article itemprop="mainEntity" itemscope itemtype="https://schema.org/BlogPosting">
         <meta itemprop="mainEntityOfPage" content="{$oNewsArchiv->getURL()}">
-        {include file='snippets/opc_mount_point.tpl' id='opc_before_heading'}
+        {opcMountPoint id='opc_before_heading'}
         <h1 itemprop="headline">
             {$oNewsArchiv->getTitle()}
         </h1>
@@ -36,13 +36,13 @@
             {if isset($oNewsArchiv->dErstellt)}<time itemprop="dateModified" class="hidden">{$oNewsArchiv->dErstellt}</time>{/if}
         </div>
 
-        {include file='snippets/opc_mount_point.tpl' id='opc_before_content'}
+        {opcMountPoint id='opc_before_content'}
         <div itemprop="articleBody" class="row">
             <div class="col-xs-12">
                 {$oNewsArchiv->getContent()}
             </div>
         </div>
-        {include file='snippets/opc_mount_point.tpl' id='opc_after_content'}
+        {opcMountPoint id='opc_after_content'}
 
         {if isset($Einstellungen.news.news_kategorie_unternewsanzeigen) && $Einstellungen.news.news_kategorie_unternewsanzeigen === 'Y' && !empty($oNewsKategorie_arr)}
             <div class="top10 news-categorylist">

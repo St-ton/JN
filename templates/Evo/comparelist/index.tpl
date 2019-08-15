@@ -7,14 +7,14 @@
 {/block}
 
 {block name='content'}
-    {include file='snippets/opc_mount_point.tpl' id='opc_before_heading'}
+    {opcMountPoint id='opc_before_heading'}
 
     <h1>{lang key='compare' section='global'}</h1>
 
     {include file='snippets/extension.tpl'}
     
     {if $oVergleichsliste->oArtikel_arr|@count > 1}
-        {include file='snippets/opc_mount_point.tpl' id='opc_before_compare_list'}
+        {opcMountPoint id='opc_before_compare_list'}
 
         <div class="comparelist table-responsive">
             <table class="table table-striped table-bordered table-condensed table">

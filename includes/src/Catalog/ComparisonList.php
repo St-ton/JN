@@ -38,7 +38,7 @@ class ComparisonList
     {
         if ($productID > 0) {
             $this->addProduct($productID, $variations);
-        } elseif (isset($_SESSION['Vergleichsliste'])) {
+        } else {
             $this->loadFromSession();
         }
     }
@@ -108,6 +108,9 @@ class ComparisonList
             $product->Variationen = $variations;
         }
         $this->oArtikel_arr[] = $product;
+        if (Frontend::get('Vergleichsliste') === null) {
+            Frontend::set('Vergleichsliste', $this);
+        }
         \executeHook(\HOOK_VERGLEICHSLISTE_CLASS_EINFUEGEN);
 
         return $this;
@@ -368,7 +371,8 @@ class ComparisonList
         if (\count($this->oArtikel_arr) === 0) {
             return;
         }
-        $data = Shop::Container()->getDB()->queryPrepared(
+        $db   = Shop::Container()->getDB();
+        $data = $db->queryPrepared(
             'SELECT COUNT(kVergleichsliste) AS nVergleiche
                 FROM tvergleichsliste
                 WHERE cIP = :ip
@@ -380,14 +384,13 @@ class ComparisonList
             $ins        = new stdClass();
             $ins->cIP   = Request::getRealIP();
             $ins->dDate = \date('Y-m-d H:i:s');
-            $id         = Shop::Container()->getDB()->insert('tvergleichsliste', $ins);
+            $id         = $db->insert('tvergleichsliste', $ins);
             foreach ($this->oArtikel_arr as $product) {
                 $item                   = new stdClass();
                 $item->kVergleichsliste = $id;
                 $item->kArtikel         = $product->kArtikel;
                 $item->cArtikelName     = $product->cName;
-
-                Shop::Container()->getDB()->insert('tvergleichslistepos', $item);
+                $db->insert('tvergleichslistepos', $item);
             }
         }
     }

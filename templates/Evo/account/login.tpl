@@ -3,7 +3,7 @@
  * @license https://jtl-url.de/jtlshoplicense
  *}
 <h1>{if !empty($oRedirect->cName)}{$oRedirect->cName}{else}{lang key='loginTitle' section='login'}{/if}</h1>
-{include file='snippets/opc_mount_point.tpl' id='opc_before_login'}
+{opcMountPoint id='opc_before_login'}
 {if !$bCookieErlaubt}
     <div class="alert alert-danger hidden" id="no-cookies-warning" style="display:none;">
      <strong>{lang key='noCookieHeader' section='errorMessages'}</strong>

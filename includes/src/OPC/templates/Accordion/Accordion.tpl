@@ -16,7 +16,8 @@
         {if $isPreview}
             <div class="opc-Accordion-group">
                 <div id="heading-{$groupId}">
-                    <a href="#" data-toggle="collapse" data-target="#{$groupId}" class="opc-Accordion-head collapsed">
+                    <a href="#" data-toggle="collapse" data-target="#{$groupId}" class="opc-Accordion-head collapsed"
+                       data-parent="#{$uid}">
                         {$group} <i class="fas fa-chevron-up"></i>
                     </a>
                 </div>

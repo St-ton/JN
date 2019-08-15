@@ -763,3 +763,7 @@ function onChangeFormSubmit()
         $(this).closest('form').submit();
     });
 }
+
+function closeTooltips() {
+    $('.tooltip[role="tooltip"]').remove();
+}

@@ -10,7 +10,7 @@
     {block name='contact-index-content'}
         {if !empty($Spezialcontent->titel)}
             {block name='contact-index-heading'}
-                {include file='snippets/opc_mount_point.tpl' id='opc_before_heading'}
+                {opcMountPoint id='opc_before_heading'}
                 {container}
                     <div class="title h2">
                         {$Spezialcontent->titel}
@@ -27,7 +27,7 @@
         {if isset($step)}
             {container}
                 {if $step === 'formular'}
-                    {include file='snippets/opc_mount_point.tpl' id='opc_before_form'}
+                    {opcMountPoint id='opc_before_form'}
                     {if !empty($Spezialcontent->oben)}
                         {block name='contact-index-custom-content-top'}
                             <div class="custom_content">
@@ -229,7 +229,7 @@
                                 {/if}
                                 {block name='contact-index-form-submit'}
                                     {input type="hidden" name="kontakt" value="1"}
-                                    {include file='snippets/opc_mount_point.tpl' id='opc_before_submit'}
+                                    {opcMountPoint id='opc_before_submit'}
                                     {button type="submit" variant="primary"}{lang key='sendMessage' section='contact'}{/button}
                                 {/block}
                             {/block}

@@ -51,20 +51,20 @@
                         {/block}
 
                         {block name='blog-details-heading'}
-                            {include file='snippets/opc_mount_point.tpl' id='opc_before_heading'}
+                            {opcMountPoint id='opc_before_heading'}
                             <h1 itemprop="headline">
                                 {$oNewsArchiv->getTitle()}
                             </h1>
                         {/block}
 
                         {block name='blog-details-article-content'}
-                            {include file='snippets/opc_mount_point.tpl' id='opc_before_content'}
+                            {opcMountPoint id='opc_before_content'}
                             {row itemprop="articleBody" class="mb-4"}
                                 {col cols=12 class="blog-content"}
                                     {$oNewsArchiv->getContent()}
                                 {/col}
                             {/row}
-                            {include file='snippets/opc_mount_point.tpl' id='opc_after_content'}
+                            {opcMountPoint id='opc_after_content'}
                         {/block}
 
                         {if isset($Einstellungen.news.news_kategorie_unternewsanzeigen) && $Einstellungen.news.news_kategorie_unternewsanzeigen === 'Y' && !empty($oNewsKategorie_arr)}

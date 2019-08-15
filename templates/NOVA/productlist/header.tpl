@@ -5,14 +5,14 @@
 {block name='productlist-header'}
     {if !isset($oNavigationsinfo) || isset($Suchergebnisse) && isset($oNavigationsinfo) && empty($oNavigationsinfo->getName())}
         {block name='productlist-header-heading'}
-            {include file='snippets/opc_mount_point.tpl' id='opc_before_heading'}
+            {opcMountPoint id='opc_before_heading'}
             <div class="h1">{$Suchergebnisse->getSearchTermWrite()}</div>
         {/block}
     {/if}
 
     {if $Suchergebnisse->getSearchUnsuccessful() == true}
         {block name='productlist-header-alert'}
-            {include file='snippets/opc_mount_point.tpl' id='opc_before_no_results'}
+            {opcMountPoint id='opc_before_no_results'}
             {alert variant="info"}{lang key='noResults' section='productOverview'}{/alert}
         {/block}
         {block name='productlist-header-form-search'}
@@ -43,7 +43,7 @@
                 {/if}
                 <div class="title mb-4">
                     {if $oNavigationsinfo->getName()}
-                        {include file='snippets/opc_mount_point.tpl' id='opc_before_heading'}
+                        {opcMountPoint id='opc_before_heading'}
                         <h1>{$oNavigationsinfo->getName()}</h1>
                     {/if}
                 </div>
@@ -68,7 +68,7 @@
 
     {block name='productlist-header-subcategories'}
         {if $Einstellungen.navigationsfilter.artikeluebersicht_bild_anzeigen !== 'N' && $oUnterKategorien_arr|@count > 0}
-            {include file='snippets/opc_mount_point.tpl' id='opc_before_subcategories'}
+            {opcMountPoint id='opc_before_subcategories'}
             {row class="row-eq-height content-cats-small clearfix"}
                 {foreach $oUnterKategorien_arr as $subCategory}
                     {col cols=6 md=4 lg=3}
@@ -112,7 +112,7 @@
     {if $Suchergebnisse->getProducts()|@count <= 0 && isset($KategorieInhalt)}
         {if isset($KategorieInhalt->TopArtikel->elemente) && $KategorieInhalt->TopArtikel->elemente|@count > 0}
             {block name='productlist-header-include-product-slider-top'}
-                {include file='snippets/opc_mount_point.tpl' id='opc_before_category_top'}
+                {opcMountPoint id='opc_before_category_top'}
                 {lang key='topOffer' assign='slidertitle'}
                 {include file='snippets/product_slider.tpl' id='slider-top-products' productlist=$KategorieInhalt->TopArtikel->elemente title=$slidertitle}
             {/block}
@@ -120,7 +120,7 @@
 
         {if isset($KategorieInhalt->BestsellerArtikel->elemente) && $KategorieInhalt->BestsellerArtikel->elemente|@count > 0}
             {block name='productlist-header-include-product-slider-bestseller'}
-                {include file='snippets/opc_mount_point.tpl' id='opc_before_category_bestseller'}
+                {opcMountPoint id='opc_before_category_bestseller'}
                 {lang key='bestsellers'  assign='slidertitle'}
                 {include file='snippets/product_slider.tpl' id='slider-bestseller-products' productlist=$KategorieInhalt->BestsellerArtikel->elemente title=$slidertitle}
             {/block}

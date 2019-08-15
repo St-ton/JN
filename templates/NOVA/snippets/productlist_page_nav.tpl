@@ -4,14 +4,14 @@
  *}
 {block name='snippets-productlist-page-nav'}
     {if $Suchergebnisse->getProductCount() > 0}
-        {include file='snippets/opc_mount_point.tpl' id='opc_before_page_nav_'|cat:$navid}
+        {opcMountPoint id='opc_before_page_nav_'|cat:$navid}
         {row class="no-gutters productlist-page-nav"}
             {if count($NaviFilter->getSearchResults()->getProducts()) > 0}
                 {block name='snippets-productlist-page-nav-result-options-sort'}
                     {col cols=12 md="auto" class="displayoptions mb-3 mb-md-0"}
                         {block name='snippets-productlist-page-nav-include-result-options'}
                             {if count($Suchergebnisse->getProducts()) > 0}
-                                {include file='snippets/opc_mount_point.tpl' id='opc_before_result_options'}
+                                {opcMountPoint id='opc_before_result_options'}
                             {/if}
                             {if $navid === 'header'}
                                 <div id="improve_search">

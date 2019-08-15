@@ -469,7 +469,7 @@
             <div class="modal-header">
                 <h2 class="modal-title">{__('deleteComment')}</h2>
             </div>
-            <div class="modal-body py-5"></div>
+            <div class="modal-body"></div>
             <div class="modal-footer">
                 <p>{__('wantToConfirm')}</p>
                 <div class="row">

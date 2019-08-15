@@ -21,7 +21,7 @@
 {/if}
 
 {if $Suchergebnisse->getPages()->getMaxPage() > 1}
-    {include file='snippets/opc_mount_point.tpl' id='opc_before_footer'}
+    {opcMountPoint id='opc_before_footer'}
     <div class="row">
         <div class="col-xs-6 col-md-8 col-lg-9">
             <ul class="pagination pagination-ajax">

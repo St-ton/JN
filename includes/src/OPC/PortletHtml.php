@@ -64,6 +64,16 @@ trait PortletHtml
             . '<span>' . $this->getTitle() . '</span>';
     }
 
+    public function getFrontendScriptUrls()
+    {
+        return [];
+    }
+
+    public function getEditorInitScriptUrls()
+    {
+        return [];
+    }
+
     /**
      * @return string
      */
@@ -73,7 +83,7 @@ trait PortletHtml
 
         if ($plugin !== null) {
             /** @var Plugin $plugin */
-            return $plugin->getPaths()->getPortletsPath() . 'templates/';
+            return $plugin->getPaths()->getPortletsPath() . 'templates/' . $this->getClass() . '/';
         }
 
         return \PFAD_ROOT . \PFAD_INCLUDES . 'src/OPC/templates/' . $this->getClass() . '/';
@@ -88,7 +98,7 @@ trait PortletHtml
 
         if ($plugin !== null) {
             /** @var Plugin $plugin */
-            return $plugin->getPaths()->getPortletsUrl() . 'templates/';
+            return $plugin->getPaths()->getPortletsUrl() . 'templates/' . $this->getClass() . '/';
         }
 
         return Shop::getURL() . '/' . \PFAD_INCLUDES . 'src/OPC/templates/' . $this->getClass() . '/';

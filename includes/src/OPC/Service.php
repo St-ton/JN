@@ -114,6 +114,16 @@ class Service
 
     /**
      * @param bool $withInactive
+     * @return array|Portlet[]
+     * @throws \Exception
+     */
+    public function getAllPortlets(bool $withInactive = false)
+    {
+        return $this->db->getAllPortlets();
+    }
+
+    /**
+     * @param bool $withInactive
      * @return Blueprint[]
      * @throws \Exception
      */

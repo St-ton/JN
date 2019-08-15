@@ -23,6 +23,16 @@ class Subject
         this.listeners.includes(cb) && this.listeners.splice(this.listeners.indexOf(cb), 1);
     }
 
+    once(cb)
+    {
+        let tmpCB = data => {
+            cb();
+            this.off(tmpCB);
+        };
+
+        this.on(tmpCB);
+    }
+
     emit(data)
     {
         this.listeners.forEach(cb => cb(data));
@@ -49,6 +59,11 @@ class Emitter
     off(name, cb)
     {
         this.subject(name).off(cb);
+    }
+
+    once(name, cb)
+    {
+        this.subject(name).one(cb);
     }
 
     emit(name, data)

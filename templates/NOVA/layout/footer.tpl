@@ -93,7 +93,7 @@
                             {if $Einstellungen.template.footer.socialmedia_footer === 'Y'}
                                 {block name='layout-footer-socialmedia'}
                                     {col cols=12 class="footer-additional-wrapper col-auto mx-auto"}
-                                        <ul class="list-unstyled d-flex flex-row">
+                                        <ul class="list-unstyled d-flex flex-row flex-wrap">
                                         {if !empty($Einstellungen.template.footer.facebook)}
                                             <li class="mr-2">
                                                 {link href="{if $Einstellungen.template.footer.facebook|strpos:'http' !== 0}https://{/if}{$Einstellungen.template.footer.facebook}"

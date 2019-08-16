@@ -13932,6 +13932,7 @@ Supports Thumbs: false
   border-color: #525252;
   color: #525252;
   background-color: transparent;
+  padding: 0.6rem 0.75rem;
 }
 .btn-icon-secondary:hover {
   border-color: #525252;

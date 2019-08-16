@@ -103,7 +103,7 @@
         <div id="portletPreviewLabel" class="opc-label" style="display:none"></div>
 
         <div id="dropTargetBlueprint" class="opc-droptarget" style="display:none">
-            <div>
+            <div class="opc-droptarget-hover">
                 <img src="{$shopUrl}/admin/opc/gfx/icon-drop-target.svg" class="opc-droptarget-icon" alt="Drop Target">
                 <span>{__('dropPortletHere')}</span>
                 <i class="opc-droptarget-info fas fa-info-circle" data-toggle="tooltip" data-placement="left"></i>

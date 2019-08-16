@@ -1,5 +1,6 @@
 .opc-Heading {
     display: flex;
+    align-items: center;
     overflow: hidden;
     background-color: #fff;
 
@@ -16,24 +17,20 @@
 
     .opc-Heading-label {
         color: #5cbcf6;
-        text-transform: uppercase;
         font-weight: bold;
-        font-size: 12px;
+        font-size: 20px;
         padding: 10px;
-        height: 48px;
         background-color: #F5F7FA;
         margin: 8px;
         border-radius: 4px;
-        width: 168px;
         text-align: center;
         flex: none;
         max-width: calc(100% - 16px);
         white-space: nowrap;
         z-index: 1;
+        line-height: 1;
 
         .opc-Heading-icon {
-            font-size: 20px;
-            margin-right: 6px;
             vertical-align: middle;
         }
 
@@ -45,11 +42,9 @@
 
     .opc-Heading-propinfo {
         padding: 10px 2px;
-        font-size: 13px;
-        white-space: nowrap;
 
-        i {
-            margin-right: 4px;
+        h1, h2, h3, h4, h5, h6 {
+            margin: 0;
         }
     }
 }

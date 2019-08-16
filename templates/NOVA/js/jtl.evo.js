@@ -786,14 +786,19 @@
                     if (error) {
                         return;
                     }
-                    var $wlPrivate = $('span[data-switch-label-state="private-' + data.response.wlID + '"]'),
-                        $wlPublic  = $('span[data-switch-label-state="public-' + data.response.wlID + '"]');
+                    var $wlPrivate    = $('span[data-switch-label-state="private-' + data.response.wlID + '"]'),
+                        $wlPublic     = $('span[data-switch-label-state="public-' + data.response.wlID + '"]'),
+                        $wlURLWrapper = $('#wishlist-url-wrapper'),
+                        $wlURL        = $('#wishlist-url');
                     if (data.response.state) {
                         $wlPrivate.addClass('d-none');
                         $wlPublic.removeClass('d-none');
+                        $wlURLWrapper.removeClass('d-none');
+                        $wlURL.val($wlURL.data('static-route') + data.response.url)
                     } else {
                         $wlPrivate.removeClass('d-none');
                         $wlPublic.addClass('d-none');
+                        $wlURLWrapper.addClass('d-none');
                     }
                 });
             });

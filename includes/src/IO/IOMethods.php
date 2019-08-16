@@ -1344,6 +1344,7 @@ class IOMethods
         $response        = new stdClass();
         $response->wlID  = $wlID;
         $response->state = $state;
+        $response->url   = Wishlist::instanceByID($wlID)->cURLID;
 
         $objResponse->script('this.response = ' . \json_encode($response) . ';');
         return $objResponse;

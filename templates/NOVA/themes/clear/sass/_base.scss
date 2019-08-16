@@ -2555,7 +2555,7 @@ table caption {
 .text-decoration-underline { text-decoration: underline; }
 /* wishlist */
 input.form-control[name="wishlist-url"] {
-  background: $cool-white;
+  background: $gray-lighter;
   /*@include border-radius($dropdown-border-radius);*/
 }
 .input-like {
@@ -2769,7 +2769,6 @@ input.form-control[name="wishlist-url"] {
   input:not([type="checkbox"]):not([type="radio"]), select {
     width:100%;
     border:1px solid #ccc;
-    border-radius:4px;
     outline:none;
     padding:0 15px;
     &:focus{
@@ -2782,11 +2781,11 @@ input.form-control[name="wishlist-url"] {
         font-size: 12px;
       }
     }
-    &:not([value=""]):not(:focus){
+    &:not([value=""]):not(:focus), &[type="date"], &[type="datetime-local"], &[type="color"], &[type="file"]{
       & + label{
         top: -10px;
         background: #fff;
-        padding: 3px 6px;
+        padding: 3px 6px 0px 6px;
         left: 10px;
         color: $gray-dark;
         font-size: 12px;
@@ -2930,6 +2929,12 @@ a.nice-deco {
       transition: all ease 0.2s;
     }
   }
+}
+
+.sticky-bottom {
+  position: sticky;
+  bottom: 0;
+  z-index: 999;
 }
 
 .clickable-row {

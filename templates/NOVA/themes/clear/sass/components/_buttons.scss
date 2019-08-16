@@ -173,6 +173,18 @@
   }
 }
 
+.btn-icon-secondary {
+  border-color: $gray-dark;
+  color: $gray-dark;
+  background-color: transparent;
+  padding: 0.6rem 0.75rem;
+  @include hover {
+    border-color: $gray-dark;
+    color: $white;
+    background-color: $gray-dark;
+  }
+}
+
 .btn-outline-secondary { border-color: $gray-darker; background-color: transparent; color: $yiq-text-dark;
   @include hover { border-color: $gray-darker; background-color: $gray-medium; color: $yiq-text-dark; }
 
@@ -191,6 +203,7 @@
     color: $white;
   }
 }
+
 .btn-outline-danger:hover {
   &:hover {
     color: $white;

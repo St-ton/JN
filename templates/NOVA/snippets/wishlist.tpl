@@ -260,30 +260,26 @@
                         {if $Einstellungen.global.global_wunschliste_freunde_aktiv === 'Y'}
                             {block name='snippets-wishlist-link-copy'}
                                 {inputgroupaddon append=true}
-                                    {button
-                                    class="copyToClipboard input-like"
-                                    name="copy"
-                                    variant="light"
-                                    value="copyToClipboard"
-                                    disabled=(!$hasItems)
-                                    title="{lang key='copied'}"
-                                    data=["clipboard-target"=>"#wishlist-url"]
-                                    }
+                                    {button variant="link"
+                                        class="copyToClipboard btn-outline-secondary"
+                                        name="copy"
+                                        value="copyToClipboard"
+                                        disabled=(!$hasItems)
+                                        title="{lang key='copied'}"
+                                        data=["clipboard-target"=>"#wishlist-url"]}
                                         <i class="far fa-copy"></i>
                                     {/button}
                                 {/inputgroupaddon}
                             {/block}
                             {block name='snippets-wishlist-link-envelop'}
                                 {inputgroupaddon append=true}
-                                    {button
-                                    type="submit"
-                                    name="action"
-                                    variant="light"
-                                    class="input-like"
-                                    value="sendViaMail"
-                                    disabled=(!$hasItems)
-                                    title="{lang key='wishlistViaEmail' section='login'}"
-                                    }
+                                    {button type="submit"
+                                        variant="link"
+                                        name="action"
+                                        class="btn-outline-secondary"
+                                        value="sendViaMail"
+                                        disabled=(!$hasItems)
+                                        title="{lang key='wishlistViaEmail' section='login'}"}
                                         <i class="far fa-envelope"></i>
                                     {/button}
                                 {/inputgroupaddon}

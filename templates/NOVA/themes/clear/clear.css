@@ -16860,7 +16860,7 @@ table caption {
 
 /* wishlist */
 input.form-control[name=wishlist-url] {
-  background: #f8f8f8;
+  background: #f5f7fa;
   /*@include border-radius($dropdown-border-radius);*/
 }
 

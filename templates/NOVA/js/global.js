@@ -581,7 +581,7 @@ $(document).ready(function () {
 
 function setClickableRow ()
 {
-    $('.clickable-row').click(function() {
+    $('.clickable-row').on('click', function() {
         window.location = $(this).data('href');
     });
 }

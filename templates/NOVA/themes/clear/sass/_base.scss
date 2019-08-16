@@ -2555,7 +2555,7 @@ table caption {
 .text-decoration-underline { text-decoration: underline; }
 /* wishlist */
 input.form-control[name="wishlist-url"] {
-  background: $cool-white;
+  background: $gray-lighter;
   /*@include border-radius($dropdown-border-radius);*/
 }
 .input-like {

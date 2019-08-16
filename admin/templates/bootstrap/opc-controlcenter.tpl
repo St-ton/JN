@@ -235,7 +235,7 @@
                     </button>
                     <h2>{__('preview')}</h2>
                 </div>
-                <div class="modal-body py-5">
+                <div class="modal-body">
                     <iframe id="previewFrame" src="" style="zoom:0.60" width="99.6%" height="850" frameborder="0"></iframe>
                 </div>
                 <div class="modal-footer">

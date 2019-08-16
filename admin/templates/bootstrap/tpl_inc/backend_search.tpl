@@ -34,6 +34,12 @@
                     lastIoSearchCall = ioCall('adminSearch', [lastSearchTerm], function (html) {
                         if (html) {
                             searchDropdown.html(html).addClass('show');
+                            $('a.dropdown-item').on('click', function () {
+                                window.location = $(this).attr('href');
+                            });
+                            $('.dropdown-item form').on('click', function () {
+                                    $(this).submit();
+                            });
                         } else {
                             searchDropdown.removeClass('show');
                         }
@@ -58,7 +64,11 @@
                             window.location.href = 'searchresults.php?cSuche=' + searchString;
                         }
                     } else {
-                        window.location.href = selectedSearchItem.find('a').attr('href');
+                        if (selectedSearchItem.hasClass('is-form-submit')) {
+                            selectedSearchItem.find('form').submit();
+                        } else {
+                            window.location.href = selectedSearchItem.attr('href');
+                        }
                     }
                 } else if(e.key === 'ArrowDown' || e.key === 'ArrowUp') {
                     arrowNavigate(e.key === 'ArrowDown');
@@ -80,7 +90,7 @@
         function arrowNavigate(down = false)
         {
             if(searchItems === null) {
-                searchItems = searchDropdown.find('.backend-search-item');
+                searchItems = searchDropdown.find('.dropdown-item');
             }
 
             if (searchItems.length > 0) {
@@ -109,7 +119,7 @@
                 } else {
                     selectedSearchItem = $(searchItems[selectedSearchIndex]);
                     selectedSearchItem.addClass('selected');
-                    selectedSearchItem.find('a').focus();
+                    selectedSearchItem.focus();
                     var mark = selectedSearchItem.find('mark');
                     if (mark.length > 0) {
                         searchInput.val(mark[0].innerText);

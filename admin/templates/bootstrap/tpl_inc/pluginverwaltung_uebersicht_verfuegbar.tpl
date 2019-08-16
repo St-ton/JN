@@ -47,7 +47,7 @@
             <input type="hidden" name="pluginverwaltung_uebersicht" value="1" />
             <div>
                 <div class="subheading1">{__('pluginListNotInstalled')}</div>
-                <hr class="mb-n3">
+                <hr class="mb-3">
                 <div class="table-responsive">
                     <!-- license-modal definition -->
                     <div id="licenseModal" class="modal fade" role="dialog">
@@ -59,7 +59,7 @@
                                     </button>
                                     <h2 class="modal-title">{__('licensePlugin')}</h2>
                                 </div>
-                                <div class="modal-body py-5">
+                                <div class="modal-body">
                                     {* license.md content goes here via js *}
                                 </div>
                                 <div class="modal-footer">
@@ -99,14 +99,14 @@
                                     </div>
                                     {if $listingItem->isShop5Compatible() === false}
                                         {if $listingItem->isShop4Compatible() === false}
-                                            <span title="{__('dangerPluginNotCompatibleShop4')}" class="label warning label-danger" data-toggle="tooltip">
+                                            <span title="{__('dangerPluginNotCompatibleShop4')}" class="label text-danger" data-toggle="tooltip">
                                                 <span class="icon-hover">
                                                     <span class="fal fa-exclamation-triangle"></span>
                                                     <span class="fas fa-exclamation-triangle"></span>
                                                 </span>
                                             </span>
                                         {else}
-                                            <span title="{__('dangerPluginNotCompatibleShop5')}" class="label warning label-warning" data-toggle="tooltip">
+                                            <span title="{__('dangerPluginNotCompatibleShop5')}" class="label text-warning" data-toggle="tooltip">
                                                 <span class="icon-hover">
                                                     <span class="fal fa-exclamation-triangle"></span>
                                                     <span class="fas fa-exclamation-triangle"></span>
@@ -117,7 +117,7 @@
                                 </td>
                                 <td>
                                     <label for="plugin-check-{$listingItem->getDir()}">{$listingItem->getName()}</label>
-                                    <p>{$listingItem->getDescription()}</p>
+                                    <p><small>{$listingItem->getDescription()}</small></p>
                                     {if $listingItem->isShop4Compatible() === false && $listingItem->isShop5Compatible() === false}
                                         <div class="alert alert-info">{__('dangerPluginNotCompatibleShop4')}</div>
                                     {/if}

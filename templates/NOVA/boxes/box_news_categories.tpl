@@ -7,7 +7,7 @@
         {block name='boxes-box-news-categories-content'}
             {nav vertical=true}
                 {foreach $oBox->getItems() as $newsCategory}
-                    {if $newsCategory@index === 2}{break}{/if}
+                    {if $newsCategory@index === 10}{break}{/if}
                     {navitem href=$newsCategory->cURLFull title=$newsCategory->cName}
                         {$newsCategory->cName} <span class="badge badge-light float-right">{$newsCategory->nAnzahlNews}</span>
                     {/navitem}

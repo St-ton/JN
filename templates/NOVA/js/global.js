@@ -574,14 +574,14 @@ $(document).ready(function () {
     initWow();
     setClickableRow();
 
-    $('.label-slide input').on('keyup', function() {
+    $('.label-slide input').on('change', function() {
         $(this).attr('value', $(this).val());
     });
 });
 
 function setClickableRow ()
 {
-    $('.clickable-row').click(function() {
+    $('.clickable-row').on('click', function() {
         window.location = $(this).data('href');
     });
 }

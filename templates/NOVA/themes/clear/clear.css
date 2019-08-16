@@ -13928,6 +13928,18 @@ Supports Thumbs: false
   transform: translateY(-50%);
 }
 
+.btn-icon-secondary {
+  border-color: #525252;
+  color: #525252;
+  background-color: transparent;
+  padding: 0.6rem 0.75rem;
+}
+.btn-icon-secondary:hover {
+  border-color: #525252;
+  color: #ffffff;
+  background-color: #525252;
+}
+
 .btn-outline-secondary {
   border-color: #525252;
   background-color: transparent;
@@ -16849,7 +16861,7 @@ table caption {
 
 /* wishlist */
 input.form-control[name=wishlist-url] {
-  background: #f8f8f8;
+  background: #f5f7fa;
   /*@include border-radius($dropdown-border-radius);*/
 }
 
@@ -17061,7 +17073,6 @@ input.form-control[name=wishlist-url] {
 .label-slide .form-group input:not([type=checkbox]):not([type=radio]), .label-slide .form-group select {
   width: 100%;
   border: 1px solid #ccc;
-  border-radius: 4px;
   outline: none;
   padding: 0 15px;
 }
@@ -17073,10 +17084,10 @@ input.form-control[name=wishlist-url] {
   color: #525252;
   font-size: 12px;
 }
-.label-slide .form-group input:not([type=checkbox]):not([type=radio]):not([value=""]):not(:focus) + label, .label-slide .form-group select:not([value=""]):not(:focus) + label {
+.label-slide .form-group input:not([type=checkbox]):not([type=radio]):not([value=""]):not(:focus) + label, .label-slide .form-group input:not([type=checkbox]):not([type=radio])[type=date] + label, .label-slide .form-group input:not([type=checkbox]):not([type=radio])[type=datetime-local] + label, .label-slide .form-group input:not([type=checkbox]):not([type=radio])[type=color] + label, .label-slide .form-group input:not([type=checkbox]):not([type=radio])[type=file] + label, .label-slide .form-group select:not([value=""]):not(:focus) + label, .label-slide .form-group select[type=date] + label, .label-slide .form-group select[type=datetime-local] + label, .label-slide .form-group select[type=color] + label, .label-slide .form-group select[type=file] + label {
   top: -10px;
   background: #fff;
-  padding: 3px 6px;
+  padding: 3px 6px 0px 6px;
   left: 10px;
   color: #525252;
   font-size: 12px;
@@ -17243,6 +17254,12 @@ a.nice-deco:focus::after {
   left: 100%;
   width: 0%;
   transition: all ease 0.2s;
+}
+
+.sticky-bottom {
+  position: sticky;
+  bottom: 0;
+  z-index: 999;
 }
 
 .clickable-row {

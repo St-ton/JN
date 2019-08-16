@@ -122,6 +122,8 @@ class PageService
 
         Shop::fire('shop.OPC.PageService.renderMountPoint', [
             'output' => &$output,
+            'id' => $id,
+            'title' => $title,
         ]);
 
         return $output;

@@ -142,12 +142,12 @@
                                             {cardbody}
                                             {block name='basket-index-coupon-form'}
                                                 {form class="form-inline evo-validate" id="basket-coupon-form" method="post" action="{get_static_route id='warenkorb.php'}"}
-                                                {formgroup class="mw-100{if !empty($invalidCouponCode)} has-error{/if}"}
-                                                {inputgroup}
-                                                {input aria=["label"=>"{lang key='couponCode' section='account data'}"] type="text" name="Kuponcode" id="couponCode" maxlength="32" placeholder="{lang key='couponCode' section='account data'}" required=true}
-                                                {button type="submit" value=1}{lang key='useCoupon' section='checkout'}{/button}
-                                                {/inputgroup}
-                                                {/formgroup}
+                                                    {formgroup class="mw-100{if !empty($invalidCouponCode)} has-error{/if}"}
+                                                    {inputgroup}
+                                                        {input aria=["label"=>"{lang key='couponCode' section='account data'}"] type="text" name="Kuponcode" id="couponCode" maxlength="32" placeholder="{lang key='couponCode' section='account data'}" required=true}
+                                                        {button type="submit" value=1}{lang key='useCoupon' section='checkout'}{/button}
+                                                    {/inputgroup}
+                                                    {/formgroup}
                                                 {/form}
                                             {/block}
                                             {/cardbody}

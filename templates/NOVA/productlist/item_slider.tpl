@@ -12,13 +12,6 @@
                     {assign var=alt value=$Artikel->cName}
                 {/if}
                 <div class="image-box">
-                    {*{block name='searchspecial-overlay'}
-                        {if isset($Artikel->oSuchspecialBild)}
-                            {block name='productlist-item-slider-include-searchspecials'}
-                                {include file='snippets/ribbon.tpl'}
-                            {/block}
-                        {/if}
-                    {/block}*}
                     {image data=["lazy" => $Artikel->Bilder[0]->cURLKlein] src="{$imageBaseURL}gfx/trans.png" alt=$alt class=""}
                 </div>
                 <meta itemprop="image" content="{$Artikel->Bilder[0]->cURLNormal}">

@@ -56,10 +56,17 @@
                         </tbody>
                     </table>
                 </div>
-                <div class=" ard-footer save-wrapper">
+                <div class="card-footer save-wrapper">
                     <div class="row">
                         <div class="ml-auto col-sm-6 col-xl-auto">
-                            <button name="speichern" type="submit" value="{__('save')}" class="btn btn-primary btn-block">{__('saveWithIcon')}</button>
+                            <a class="btn btn-outline-primary btn-block" href="pluginverwaltung.php">
+                                {__('goBack')}
+                            </a>
+                        </div>
+                        <div class="col-sm-6 col-xl-auto">
+                            <button name="speichern" type="submit" value="{__('save')}" class="btn btn-primary btn-block">
+                                {__('saveWithIcon')}
+                            </button>
                         </div>
                     </div>
                 </div>

@@ -573,7 +573,7 @@ $(document).ready(function () {
     addCloseMenuDropdownListener();
     initWow();
 
-    $('.label-slide input').on('keyup', function() {
+    $('.label-slide input').on('change', function() {
         $(this).attr('value', $(this).val());
     });
 });

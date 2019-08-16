@@ -288,9 +288,9 @@ function dbupdaterStatusTpl($pluginID = null)
     $updateError            = $updater->error();
     if (ADMIN_MIGRATION === true) {
         if ($pluginID !== null && is_numeric($pluginID)) {
-            $loader  = new PluginLoader($db, Shop::Container()->getCache());
-            $plugin  = $loader->init($pluginID);
-            $manager = new PluginMigrationManager(
+            $loader           = new PluginLoader($db, Shop::Container()->getCache());
+            $plugin           = $loader->init($pluginID);
+            $manager          = new PluginMigrationManager(
                 $db,
                 $plugin->getPaths()->getBasePath() . PFAD_PLUGIN_MIGRATIONS,
                 $plugin->getPluginID(),

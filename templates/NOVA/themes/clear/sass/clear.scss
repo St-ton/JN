@@ -1,3 +1,5 @@
+@import 'functions';
+
 // theme variables
 @import "variables";
 
@@ -37,3 +39,6 @@
 
 // theme base
 @import "base";
+
+/* utilities */
+@import 'utilities/all';

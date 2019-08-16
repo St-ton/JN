@@ -61,7 +61,9 @@
                 {col cols=12 md=6}
                     {card no-body=true}
                         {cardheader class="bg-info"}
-                            {lang key='myDownloads'}
+                            <span class="h3">
+                                {lang key='myDownloads'}
+                            </span>
                         {/cardheader}
                         {cardbody class="p-0"}
                             <div id="account-download-accordion">

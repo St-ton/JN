@@ -33,9 +33,7 @@
                                             {$order->cBestellNr}
                                         {/col}
                                         {col cols=6 md=4 order=5 order-md=4}
-                                            <span class="{if $order->cStatus == BESTELLUNG_STATUS_IN_BEARBEITUNG}text-success{/if}">
-                                                {lang key='orderStatus' section='login'}: {$order->Status}
-                                            </span>
+                                            {lang key='orderStatus' section='login'}: {$order->Status}
                                         {/col}
                                         {col cols=2 md=1 order=3 order-md=5 class="text-right"}
                                             <i class="fa fa-eye"></i>

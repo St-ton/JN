@@ -16,15 +16,17 @@
     {block name='account-order-details-order-details-data'}
         {card no-body=true class='mb-3'}
             {cardheader}
-                {row}
+                {row class='align-items-center'}
                 {block name='account-order-details-order-heading'}
-                    {col cols=12 md=3 class='border-md-right'}
-                        <strong><i class="far fa-calendar-alt"></i> {$Bestellung->dErstelldatum_de}</strong>
+                    {col cols=12 lg=3 class='border-lg-right'}
+                        <span class="font-weight-bold">
+                            <span class="far fa-calendar mr-2"></span>{$Bestellung->dErstelldatum_de}
+                        </span>
                     {/col}
-                    {col cols=12 md=5}
+                    {col cols=6 class='col-lg-auto'}
                         {lang key='yourOrderId' section='checkout'}: {$Bestellung->cBestellNr}
                     {/col}
-                    {col cols=12 md=4}
+                    {col cols=6 class='col-lg-auto text-right text-lg-left'}
                         {lang key='orderStatus' section='login'}: {$Bestellung->Status}
                     {/col}
                 {/block}
@@ -33,104 +35,94 @@
             {if isset($Kunde) && $Kunde->kKunde > 0}
                 {cardbody}
                     {row}
-                        {col cols=12 md=3 class='border-md-right'}
+                        {col cols=12 lg=3 class='border-lg-right'}
                             {block name='account-order-details-total'}
-                            {row class='mb-3'}<strong class='mb-3'>{lang key='orderOverview' section='account data'}</strong>{/row}
-                            {row}
-                                {col md=8 class='p-0'}<span class="price_label">{lang key='subtotal' section='account data'}:</span>{/col}
-                                {col md=4 class='p-0 pr-2 text-right'}<span>{$Bestellung->WarensummeLocalized[1]}</span>{/col}
-                            {/row}
-                            {if $Bestellung->GuthabenNutzen == 1}
-                                    {row}
-                                        {col md=8  class='p-0'}<span class="price_label">{lang key='useCredit' section='account data'}:</span>{/col}
-                                        {col md=4  class='p-0 pr-2 text-right'}<span>{$Bestellung->GutscheinLocalized}</span>{/col}
-                                    {/row}
-                                {/if}
-                                {row class='info'}
-                                    {col md=8 class='p-0'}
-                                        <span class="price_label">
-                                            <strong>{lang key='totalSum' section='global'}</strong>{if $NettoPreise} {lang key='gross' section='global'}{/if}:
-                                        </span>
-                                    {/col}
-                                    {col md=4 class='p-0 pr-2 text-right'}<span class="price"><strong>{$Bestellung->WarensummeLocalized[0]}</strong></span>{/col}
-                                {/row}
-                                {if $Einstellungen.global.global_steuerpos_anzeigen !== 'N'}
-                                    {foreach $Bestellung->Steuerpositionen as $taxPosition}
-                                        {row class='text-muted'}
-                                            {col md=8 class='p-0'}<small>{$taxPosition->cName}</small>{/col}
-                                            {col md=4 class='p-0 pr-2 text-right'}<small>{$taxPosition->cPreisLocalized}</small>{/col}
-                                        {/row}
-                                    {/foreach}
-                                {/if}
+                                <span class="subheadline">{lang key='orderOverview' section='account data'}</span>
+                                <ul class="list-unstyled mt-lg-5 border-bottom pb-3 pb-lg-5">
+                                    <li class="mb-2">
+                                        {lang key='subtotal' section='account data'}: <span class="float-right text-nowrap">{$Bestellung->WarensummeLocalized[1]}</span>
+                                    </li>
+                                    {if $Bestellung->GuthabenNutzen == 1}
+                                    <li class="mb-2">
+                                        {lang key='useCredit' section='account data'}: <span class="float-right text-nowrap">$Bestellung->GutscheinLocalized}</span>
+                                    </li>
+                                    {/if}
+                                    <li class="font-weight-bold mb-2">
+                                        {lang key='totalSum' section='global'} {if $NettoPreise} {lang key='gross' section='global'}{/if}:
+                                        <span class="float-right text-nowrap">{$Bestellung->WarensummeLocalized[0]}</span>
+                                    </li>
+                                    {if $Einstellungen.global.global_steuerpos_anzeigen !== 'N'}
+                                        {foreach $Bestellung->Steuerpositionen as $taxPosition}
+                                            <li class="text-muted font-size-sm">
+                                                {$taxPosition->cName} <span class="float-right text-nowrap">{$taxPosition->cPreisLocalized}</span>
+                                            </li>
+                                        {/foreach}
+                                    {/if}
+                                </ul>
                             {/block}
-                            <hr class="mt-5 mb-5">
-                            {row class='mb-3'}
-                                {block name='account-order-details-payment'}
-                                    {col md=12 sm=6 class='p-0'}
-                                        {lang key='paymentOptions' section='global'}: <small>{$Bestellung->cZahlungsartName}</small>
-                                    {/col}
-                                    {col md=12 sm=6 class='p-0'}
-                                        <small>
-                                            {if $Bestellung->cStatus != BESTELLUNG_STATUS_STORNO && $Bestellung->dBezahldatum_de !== '00.00.0000'}
-                                                {lang key='payedOn' section='login'} {$Bestellung->dBezahldatum_de}
-                                            {else}
-                                                {if ($Bestellung->cStatus == BESTELLUNG_STATUS_OFFEN || $Bestellung->cStatus == BESTELLUNG_STATUS_IN_BEARBEITUNG)
-                                                && (($Bestellung->Zahlungsart->cModulId !== 'za_ueberweisung_jtl'
-                                                    && $Bestellung->Zahlungsart->cModulId !== 'za_nachnahme_jtl'
-                                                    && $Bestellung->Zahlungsart->cModulId !== 'za_rechnung_jtl'
-                                                    && $Bestellung->Zahlungsart->cModulId !== 'za_barzahlung_jtl')
-                                                && (isset($Bestellung->Zahlungsart->bPayAgain) && $Bestellung->Zahlungsart->bPayAgain))}
-                                                    {link href="bestellab_again.php?kBestellung={$Bestellung->kBestellung}"}{lang key='payNow' section='global'}{/link}
+                            <ul class="list-unstyled mt-lg-5">
+                                <li class="mb-4">
+                                    {block name='account-order-details-payment'}
+                                        {lang key='paymentOptions' section='global'}:
+                                        <span class="text-muted d-block font-size-sm">
+                                            <ul class="list-unstyled">
+                                                <li>{$Bestellung->cZahlungsartName}</li>
+                                                <li>
+                                                    {if $Bestellung->cStatus != BESTELLUNG_STATUS_STORNO && $Bestellung->dBezahldatum_de !== '00.00.0000'}
+                                                        {lang key='payedOn' section='login'} {$Bestellung->dBezahldatum_de}
+                                                    {else}
+                                                        {if ($Bestellung->cStatus == BESTELLUNG_STATUS_OFFEN || $Bestellung->cStatus == BESTELLUNG_STATUS_IN_BEARBEITUNG)
+                                                        && (($Bestellung->Zahlungsart->cModulId !== 'za_ueberweisung_jtl'
+                                                        && $Bestellung->Zahlungsart->cModulId !== 'za_nachnahme_jtl'
+                                                        && $Bestellung->Zahlungsart->cModulId !== 'za_rechnung_jtl'
+                                                        && $Bestellung->Zahlungsart->cModulId !== 'za_barzahlung_jtl')
+                                                        && (isset($Bestellung->Zahlungsart->bPayAgain) && $Bestellung->Zahlungsart->bPayAgain))}
+                                                            {link href="bestellab_again.php?kBestellung={$Bestellung->kBestellung}"}{lang key='payNow' section='global'}{/link}
+                                                        {else}
+                                                            {lang key='notPayedYet' section='login'}
+                                                        {/if}
+                                                    {/if}
+                                                </li>
+                                            </ul>
+                                        </span>
+                                    {/block}
+                                </li>
+                                <li class="mb-4">
+                                    {block name='account-order-details-shipping'}
+                                        {lang key='shippingOptions' section='global'}:
+                                        <span class="text-muted d-block font-size-sm">
+                                            <ul class="list-unstyled">
+                                                <li>{$Bestellung->cVersandartName}</li>
+                                                {if $Bestellung->cStatus == BESTELLUNG_STATUS_VERSANDT}
+                                                    <li>{lang key='shippedOn' section='login'} {$Bestellung->dVersanddatum_de}</li>
+                                                {elseif $Bestellung->cStatus == BESTELLUNG_STATUS_TEILVERSANDT}
+                                                    <li>{$Bestellung->Status}</li>
                                                 {else}
-                                                    {lang key='notPayedYet' section='login'}
+                                                    <li><span>{lang key='notShippedYet' section='login'}</span></li>
+                                                    {if $Bestellung->cStatus != BESTELLUNG_STATUS_STORNO}
+                                                        <li>
+                                                            <span>{lang key='shippingTime' section='global'}: {if isset($cEstimatedDeliveryEx)}{$cEstimatedDeliveryEx}{else}{$Bestellung->cEstimatedDelivery}{/if}</span>
+                                                        </li>
+                                                    {/if}
                                                 {/if}
-                                            {/if}
-                                        </small>
-                                    {/col}
-                                {/block}
-                            {/row}
-                            {row class='mb-3'}
-                                {block name='account-order-details-shipping'}
-                                    {col md=12 sm=6 class='p-0'}
-                                        {lang key='shippingOptions' section='global'}: <small>{$Bestellung->cVersandartName}</small>
-                                    {/col}
-                                    {col md=12 sm=6 class='p-0'}
-                                        <small>
-                                            {if $Bestellung->cStatus == BESTELLUNG_STATUS_VERSANDT}
-                                                {lang key='shippedOn' section='login'} {$Bestellung->dVersanddatum_de}
-                                            {elseif $Bestellung->cStatus == BESTELLUNG_STATUS_TEILVERSANDT}
-                                                {$Bestellung->Status}
-                                            {else}
-                                                <span>{lang key='notShippedYet' section='login'}</span><br />
-                                                {if $Bestellung->cStatus != BESTELLUNG_STATUS_STORNO}
-                                                    <span>{lang key='shippingTime' section='global'}: {if isset($cEstimatedDeliveryEx)}{$cEstimatedDeliveryEx}{else}{$Bestellung->cEstimatedDelivery}{/if}</span>
-                                                {/if}
-                                            {/if}
-                                        </small>
-                                    {/col}
-                                {/block}
-                            {/row}
-                            {row class='mb-3'}
-                                {block name='account-order-details-billing-address'}
-                                    {col md=12 sm=6 class='p-0'}
+                                            </ul>
+                                        </span>
+                                    {/block}
+                                </li>
+                                <li class="mb-4">
+                                    {block name='account-order-details-billing-address'}
                                         {lang key='billingAdress' section='checkout'}:
-                                    {/col}
-                                    {col md=12 sm=6 class='p-0'}
-                                    <small>
-                                        {block name='account-order-details-include-inc-billing-address'}
-                                            {include file='checkout/inc_billing_address.tpl' orderDetail=true}
-                                        {/block}
-                                    </small>
-                                    {/col}
-                                {/block}
-                            {/row}
-                            {row class='mb-3'}
-                                {block name='account-order-details-shipping-address'}
-                                    {col md=12 sm=6 class='p-0'}
+                                        <span class="text-muted d-block font-size-sm">
+                                            {block name='account-order-details-include-inc-billing-address'}
+                                                {include file='checkout/inc_billing_address.tpl' orderDetail=true}
+                                            {/block}
+                                        </span>
+                                    {/block}
+                                </li>
+                                <li class="mb-4">
+                                    {block name='account-order-details-shipping-address'}
                                         {lang key='shippingAdress' section='checkout'}:
-                                    {/col}
-                                    {col md=12 sm=6 class='p-0'}
-                                        <small>
+                                        <span class="text-muted d-block font-size-sm">
                                             {if !empty($Lieferadresse->kLieferadresse)}
                                                 {block name='account-order-details-include-inc-delivery-address'}
                                                     {include file='checkout/inc_delivery_address.tpl' orderDetail=true}
@@ -138,13 +130,13 @@
                                             {else}
                                                 {lang key='shippingAdressEqualBillingAdress' section='account data'}
                                             {/if}
-                                        </small>
-                                    {/col}
-                                {/block}
-                            {/row}
+                                        </span>
+                                    {/block}
+                                </li>
+                            </ul>
                         {/col}
-                        {col md=9}
-                            <strong>{lang key='basket'}</strong>
+                        {col cols=12 lg=9}
+                            <span class="subheadline">{lang key='basket'}</span>
                             {block name='account-order-details-include-order-item'}
                                 {include file='account/order_item.tpl' tplscope='confirmation'}
                             {/block}

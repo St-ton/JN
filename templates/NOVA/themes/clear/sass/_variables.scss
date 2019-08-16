@@ -4,6 +4,8 @@ $gray-lighter:                      #f5f7fa;
 $gray-light:                        #9b9b9b;
 $gray:                              #707070;
 $gray-dark:                         #525252;
+$gray-medium:                       #ebebeb;
+$gray-darker:                       #525252;
 $sand:                              #ebebeb;
 $cool-white:                        #f8f8f8;
 $primary:                           #F8BF00;
@@ -17,23 +19,44 @@ $bg-warning:                        #F9F2DC;
 $danger:                            #B90000;
 $bg-danger:                         #E8CCD2;
 
+$white:                             #ffffff;
+
 $dark:                              $gray-dark;
 $gray-100:                          $gray-lighter;
 $gray-500:                          $gray-light;
 $gray-600:                          $gray;
 $gray-700:                          $gray-dark;
 
+$yiq-text-dark:                     $gray-darker;
+$yiq-text-light:                    $gray-light;
 // grid
 
 $grid-gutter-width:                 32px;
+
+/* grid breakpoints */
+
+$grid-breakpoints: (
+        xs: 0,
+        sm: 576px,
+        md: 768px,
+        lg: 992px,
+        xl: 1300px
+);
 
 // font
 
 $font-family-sans-serif:            "Open Sans", Helvetica, Arial, sans-serif;
 $headings-font-family:              "Montserrat", Helvetica, Arial, sans-serif;
 $headings-margin-bottom:            1.5rem;
-$font-size-base:                    0.95rem;
 $line-height-base:                  1.5;
+
+$font-family-sans-serif:            'Open Sans', sans-serif;
+$font-accent :                      Montserrat, sans-serif;
+
+$font-size-base:                    .95rem;
+$font-size-lg:                      $font-size-base * 1.25;
+$font-size-sm:                      $font-size-base * .875;
+$font-size-xs:                      $font-size-base * .75;
 
 $font-weight-normal:                400;
 $font-weight-semibold:              600;
@@ -41,9 +64,9 @@ $font-weight-bold:                  600;
 
 // heading
 
-$h1-font-size:                      $font-size-base * 1.4286;
-$h2-font-size:                      $font-size-base * 1.1429;
-$h3-font-size:                      $font-size-base;
+$h1-font-size:                      $font-size-base * 1.7;
+$h2-font-size:                      $font-size-base * 1.5;
+$h3-font-size:                      $font-size-base * 1.125;
 $h4-font-size:                      $font-size-base;
 $h5-font-size:                      $font-size-base;
 $h6-font-size:                      $font-size-base;
@@ -66,7 +89,7 @@ $body-color:                        $gray-600;
 
 $headings-color:                    $gray-700;
 
-$text-muted:                        $gray-600;
+$text-muted:                        $gray-500;
 
 $link-color:                        $gray-700;
 $link-decoration:                   underline;
@@ -79,6 +102,11 @@ $breadcrumb-divider-back:           "\f30a";
 $breadcrumb-active-color:           $gray-dark;
 
 $border-radius:                     .125rem !default;
+$border-radius-lg:                  $border-radius;
+$border-radius-sm:                  $border-radius;
+
+$border-width:                      1px;
+$border-color:                      $gray-medium;
 
 $card-bg:                           #fff;
 
@@ -92,6 +120,7 @@ $list-group-disabled-bg:            #fff;
 $progress-bar-color:                $gray;
 
 $table-accent-bg:                   $gray-lighter;
+$table-hover-bg:                    $gray-lighter;
 
 // spacer
 
@@ -136,8 +165,13 @@ $tooltip-margin:                    .25rem;
 $border-width:                      1px;
 $input-btn-padding-y:               .375rem;
 $input-height:                      calc(#{$line-height-base * 1em} + #{$input-btn-padding-y * 2} + #{$border-width * 9});
-$custom-control-indicator-bg:       $sand;
-$custom-control-indicator-border-color: transparent;
+$input-border-color:                $gray;
+$custom-select-indicator-padding:   rem(30px);
+$custom-select-indicator-color:     $white;
+$custom-select-indicator-bg:        $input-border-color;
+$custom-select-box-shadow:          none;
+
+
 
 // pagination
 

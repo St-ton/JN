@@ -572,8 +572,16 @@ $(document).ready(function () {
     addCopyToClipboardListener();
     addCloseMenuDropdownListener();
     initWow();
+    setClickableRow();
 
     $('.label-slide input').on('change', function() {
         $(this).attr('value', $(this).val());
     });
 });
+
+function setClickableRow ()
+{
+    $('.clickable-row').click(function() {
+        window.location = $(this).data('href');
+    });
+}

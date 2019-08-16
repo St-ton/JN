@@ -171,3 +171,14 @@
     transform: translateY(-50%);
   }
 }
+
+.btn-icon-secondary {
+  border-color: $gray-dark;
+  color: $gray-dark;
+  background-color: transparent;
+  @include hover {
+    border-color: $gray-dark;
+    color: $white;
+    background-color: $gray-dark;
+  }
+}

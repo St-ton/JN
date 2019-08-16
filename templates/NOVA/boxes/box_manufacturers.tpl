@@ -8,9 +8,10 @@
             {if $oBox->getManufacturers()|@count > 8}
                 {block name='boxes-box-manufacturers-dropdown'}
                     {dropdown class="w-100" variant="secondary btn-block" text="{lang key='selectManufacturer'}<span class='caret'></span>"}
-                        {foreach $oBox->getManufacturers() as $hst}
+                        {foreach $oBox->getManufacturers() as $manufacturer}
+                            {if $manufacturer@index === 10}{break}{/if}
                            {dropdownitem href=$hst->cSeo}
-                                {$hst->cName|escape:'html'}
+                                {$manufacturer->cName|escape:'html'}
                             {/dropdownitem}
                         {/foreach}
                     {/dropdown}
@@ -18,10 +19,11 @@
             {else}
                 {block name='boxes-box-manufacturers-link'}
                     {nav vertical=true}
-                        {foreach $oBox->getManufacturers() as $hst}
+                        {foreach $oBox->getManufacturers() as $manufacturer}
+                            {if $manufacturer@index === 10}{break}{/if}
                             {navitem}
-                                {link href=$hst->cSeo title=$hst->cName|escape:'html'}
-                                    {$hst->cName|escape:'html'}
+                                {link href=$manufacturer->cSeo title=$manufacturer->cName|escape:'html'}
+                                    {$manufacturer->cName|escape:'html'}
                                 {/link}
                             {/navitem}
                         {/foreach}

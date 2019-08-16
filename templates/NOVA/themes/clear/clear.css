@@ -13923,6 +13923,17 @@ Supports Thumbs: false
   transform: translateY(-50%);
 }
 
+.btn-icon-secondary {
+  border-color: #525252;
+  color: #525252;
+  background-color: transparent;
+}
+.btn-icon-secondary:hover {
+  border-color: #525252;
+  color: #fff;
+  background-color: #525252;
+}
+
 .tooltip .tooltip-inner {
   border: 1px solid #525252;
 }

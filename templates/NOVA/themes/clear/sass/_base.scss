@@ -2761,6 +2761,7 @@ input.form-control[name="wishlist-url"] {
 
 .card-header {
   background-color: $gray-lighter;
+  border-bottom: 0;
 }
 
 .label-slide .form-group{
@@ -2929,4 +2930,14 @@ a.nice-deco {
       transition: all ease 0.2s;
     }
   }
+}
+
+.clickable-row {
+  cursor: pointer;
+}
+
+.subheadline {
+  font-weight: $font-weight-bold;
+  margin-bottom: $spacer;
+  display: block;
 }

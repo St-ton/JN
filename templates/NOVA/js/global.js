@@ -573,7 +573,6 @@ $(document).ready(function () {
     addCloseMenuDropdownListener();
     initWow();
     setClickableRow();
-    setWishlistVisibility();
 
     $('.label-slide input').on('keyup', function() {
         $(this).attr('value', $(this).val());
@@ -584,23 +583,5 @@ function setClickableRow ()
 {
     $('.clickable-row').click(function() {
         window.location = $(this).data('href');
-    });
-}
-
-function setWishlistVisibility()
-{
-    $('.wl-visibility-switch').on('change', function () {
-        $.evo.io().call('setWishlistVisibility', [$(this).data('wl-id'), $(this).is(":checked")], $(this), function(error, data) {
-            if (error) {
-                return;
-            }
-            if (data.response.state) {
-                $('span[data-switch-label-state="private-' + data.response.wlID + '"]').addClass('d-none');
-                $('span[data-switch-label-state="public-' + data.response.wlID + '"]').removeClass('d-none');
-            } else {
-                $('span[data-switch-label-state="private-' + data.response.wlID + '"]').removeClass('d-none');
-                $('span[data-switch-label-state="public-' + data.response.wlID + '"]').addClass('d-none');
-            }
-        });
     });
 }

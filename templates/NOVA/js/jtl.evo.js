@@ -780,6 +780,25 @@
             $(sticky).css('top', navHeight);
         },
 
+        setWishlistVisibilitySwitches: function() {
+            $('.wl-visibility-switch').on('change', function () {
+                $.evo.io().call('setWishlistVisibility', [$(this).data('wl-id'), $(this).is(":checked")], $(this), function(error, data) {
+                    if (error) {
+                        return;
+                    }
+                    var $wlPrivate = $('span[data-switch-label-state="private-' + data.response.wlID + '"]'),
+                        $wlPublic  = $('span[data-switch-label-state="public-' + data.response.wlID + '"]');
+                    if (data.response.state) {
+                        $wlPrivate.addClass('d-none');
+                        $wlPublic.removeClass('d-none');
+                    } else {
+                        $wlPrivate.removeClass('d-none');
+                        $wlPublic.addClass('d-none');
+                    }
+                });
+            });
+        },
+
         /**
          * $.evo.extended() is deprecated, please use $.evo instead
          */
@@ -807,6 +826,7 @@
             this.setCompareListHeight();
             this.checkMenuScroll();
             this.fixStickyElements();
+            this.setWishlistVisibilitySwitches();
         }
     };
 

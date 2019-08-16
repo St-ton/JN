@@ -24,8 +24,8 @@
         {/row}
     {/block}
     {block name='account-my-account-account-data'}
-        {row class='mb-5'}
-            {col cols=12 lg=6}
+        {row}
+            {col cols=12 lg=6 class='mb-5'}
                 {block name='account-my-account-orders-content'}
                     {card no-body=true}
                         {cardheader class="bg-info"}
@@ -58,11 +58,7 @@
                                             <td>{$order->dBestelldatum}</td>
                                             <td class="text-right">{$order->cBestellwertLocalized}</td>
                                             <td class="text-right">
-                                                <span class="{if $order->cStatus === $smarty.const.BESTELLUNG_STATUS_OFFEN ||$order->cStatus === $smarty.const.BESTELLUNG_STATUS_IN_BEARBEITUNG }text-warning
-                                                    {elseif $order->cStatus === $smarty.const.BESTELLUNG_STATUS_BEZAHLT || $order->cStatus === $smarty.const.BESTELLUNG_STATUS_VERSANDT}text-success
-                                                    {elseif $order->cStatus === $smarty.const.BESTELLUNG_STATUS_STORNO}text-warning{/if}">
-                                                    {$order->Status}
-                                                </span>
+                                               {$order->Status}
                                             </td>
                                             <td class="text-right d-none d-md-block">
                                                 <i class="fa fa-eye"></i>
@@ -79,7 +75,7 @@
                     {/card}
                 {/block}
             {/col}
-            {col cols=12 lg=6}
+            {col cols=12 lg=6 class='mb-5'}
                 {block name='account-my-account-billing-address'}
                     {card no-body=true}
                         {cardheader class="bg-info"}
@@ -140,8 +136,8 @@
             {/col}
         {/row}
 
-        {row class='mb-5'}
-            {col cols=12 lg=6}
+        {row}
+            {col cols=12 lg=6 class='mb-5'}
                 {block name='account-my-account-wishlist-content'}
                     {card no-body=true id='my-wishlists'}
                         {cardheader class="bg-info"}
@@ -163,14 +159,14 @@
                                                 <small>{$wishlist->productCount} {lang key='products'}</small>
                                             </td>
                                             <td class="text-right">
-                                                <div class="d-inline-flex flex-nowrap">
+                                                <div class="d-inline-flex flex-nowrap mr-1">
                                                     <span data-switch-label-state="public-{$wishlist->kWunschliste}" class="{if $wishlist->nOeffentlich != 1}d-none{/if}">
                                                         {lang key='public'}
                                                     </span>
                                                     <span data-switch-label-state="private-{$wishlist->kWunschliste}" class="{if $wishlist->nOeffentlich == 1}d-none{/if}">
                                                         {lang key='private'}
                                                     </span>
-                                                    <div class="custom-control custom-switch ml-2" data-toggle="tooltip" title="Wunschzettel privat machen">
+                                                    <div class="custom-control custom-switch ml-2">
                                                         <input type='checkbox'
                                                                class='custom-control-input wl-visibility-switch'
                                                                id="wl-visibility-{$wishlist->kWunschliste}"
@@ -192,7 +188,7 @@
                     {/card}
                 {/block}
             {/col}
-            {col cols=12 lg=6}
+            {col cols=12 lg=6 class='mb-5'}
                 {block name='account-my-account-comparelist'}
                     {card no-body=true}
                         {cardheader class='bg-info'}
@@ -210,7 +206,7 @@
                                     {lang key='compareListNoItems'}
                                 {/if}
                             </p>
-                            {link class="btn btn-outline-secondary btn-sm" href="{get_static_route id='vergleichsliste.php'}"}
+                            {link class="btn btn-outline-secondary" href="{get_static_route id='vergleichsliste.php'}"}
                                 {lang key='goToCompareList' section='comparelist'}
                             {/link}
                         {/cardbody}
@@ -226,7 +222,7 @@
     {/block}
 
     {block name='account-my-account-actions'}
-        {row class='mb-5'}
+        {row}
             {col class="col-md-auto"}
                 {link class='btn btn-outline-danger btn-block mb-3 mb-md-0' href="{get_static_route id='jtl.php' params=['del' => 1]}"}
                     <span class="fa fa-chain-broken"></span> {lang key='deleteAccount' section='login'}

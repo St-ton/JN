@@ -19,6 +19,8 @@ $bg-warning:                        #F9F2DC;
 $danger:                            #B90000;
 $bg-danger:                         #E8CCD2;
 
+$white:                             #ffffff;
+
 $dark:                              $gray-dark;
 $gray-100:                          $gray-lighter;
 $gray-500:                          $gray-light;
@@ -118,6 +120,7 @@ $list-group-disabled-bg:            #fff;
 $progress-bar-color:                $gray;
 
 $table-accent-bg:                   $gray-lighter;
+$table-hover-bg:                    $gray-lighter;
 
 // spacer
 
@@ -162,8 +165,13 @@ $tooltip-margin:                    .25rem;
 $border-width:                      1px;
 $input-btn-padding-y:               .375rem;
 $input-height:                      calc(#{$line-height-base * 1em} + #{$input-btn-padding-y * 2} + #{$border-width * 9});
-$custom-control-indicator-bg:       $sand;
-$custom-control-indicator-border-color: transparent;
+$input-border-color:                $gray;
+$custom-select-indicator-padding:   rem(30px);
+$custom-select-indicator-color:     $white;
+$custom-select-indicator-bg:        $input-border-color;
+$custom-select-box-shadow:          none;
+
+
 
 // pagination
 

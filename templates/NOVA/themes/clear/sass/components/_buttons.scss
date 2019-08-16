@@ -184,3 +184,15 @@
   &:not(:disabled):not(.disabled).active,
   .show > &.dropdown-toggle { border-color: $gray-darker; background-color: $gray-medium; color: $yiq-text-dark; }
 }
+
+.btn-danger {
+  color: $white;
+  &:hover {
+    color: $white;
+  }
+}
+.btn-outline-danger:hover {
+  &:hover {
+    color: $white;
+  }
+}

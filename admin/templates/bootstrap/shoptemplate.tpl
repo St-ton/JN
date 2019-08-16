@@ -59,7 +59,7 @@
                         <div class="row">
                             {foreach $oSection->oSettings_arr as $oSetting}
                                 {if $oSetting->cKey === 'theme_default' && isset($themePreviews) && $themePreviews !== null}
-                                    <div class="col-xs-12">
+                                    <div class="col-sm-8 ml-auto">
                                         <div class="item form-group form-row align-items-center" id="theme-preview-wrap" style="display: none;">
                                             <span class="input-group-addon"><strong>{__('preview')}</strong></span>
                                             <img id="theme-preview" alt="" />

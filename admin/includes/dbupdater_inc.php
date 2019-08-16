@@ -296,6 +296,7 @@ function dbupdaterStatusTpl($pluginID = null)
                 $plugin->getPluginID(),
                 $plugin->getMeta()->getSemVer()
             );
+            $updatesAvailable = \count($manager->getPendingMigrations()) > 0;
             $smarty->assign('migrationURL', 'plugin.php')
                    ->assign('pluginID', $pluginID);
         } else {

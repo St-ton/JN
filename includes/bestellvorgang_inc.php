@@ -1429,8 +1429,13 @@ function gibZahlungsart(int $paymentMethodID)
     }
     $plugin = gibPluginZahlungsart($method->cModulId);
     if ($plugin) {
-        $method->cZusatzschrittTemplate =
-            $plugin->oPluginZahlungsmethodeAssoc_arr[$method->cModulId]->cZusatzschrittTemplate;
+        if ($plugin->isExtension()) {
+            $paymentMethod                  = $plugin->getPaymentMethods()->getMethodByID($method->cModulId);
+            $method->cZusatzschrittTemplate = $paymentMethod !== null ? $paymentMethod->getAdditionalTemplate() : '';
+        } else {
+            $method->cZusatzschrittTemplate = $plugin->oPluginZahlungsmethodeAssoc_arr[$method->cModulId]
+                ->cZusatzschrittTemplate;
+        }
     }
 
     return $method;

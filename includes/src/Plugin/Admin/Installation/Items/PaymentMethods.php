@@ -40,8 +40,8 @@ class PaymentMethods extends AbstractItem
     public function install(): int
     {
         $base     = $this->plugin->bExtension === 1
-            ? \PFAD_ROOT . \PLUGIN_DIR . $this->plugin->cVerzeichnis . '/' . \PFAD_PLUGIN_PAYMENTMETHOD
-            : \PFAD_ROOT . \PFAD_PLUGIN . $this->plugin->cVerzeichnis . '/' . \PFAD_PLUGIN_VERSION .
+            ? \PLUGIN_DIR . $this->plugin->cVerzeichnis . '/' . \PFAD_PLUGIN_PAYMENTMETHOD
+            : \PFAD_PLUGIN . $this->plugin->cVerzeichnis . '/' . \PFAD_PLUGIN_VERSION .
             $this->plugin->nVersion . '/' . \PFAD_PLUGIN_PAYMENTMETHOD;
         $shopURL  = Shop::getURL(true) . '/';
         $pluginID = $this->plugin->kPlugin;

@@ -1,11 +1,19 @@
-HOOK_BACKEND_ACCOUNT_PREPARE_EDIT (ab Version 4.05)
-===================================================
+HOOK_BACKEND_ACCOUNT_PREPARE_EDIT (ab Version 4.05) (223)
+=========================================================
+
+Triggerpunkt
+""""""""""""
+
+Erweiterte Attribute in das Formular zur Bearbeitung von Backend-Nutzern
+
+Beschreibung
+""""""""""""
 
 Dieser Hook ist ein Backend-Hook und wird in ``admin/includes/benutzerverwaltung_inc.php`` zur Integration der erweiterten
 Attribute in das Formular zur Bearbeitung von Backend-Nutzern getriggert.
 
 Parameter
----------
+"""""""""
 
 ``Account`` **oAccount**
     In **oAccount** wird ein ``Account``-Objekt mit den Grunddaten des zu bearbeiteten Nutzers übergeben. Die Felder entsprechen
@@ -24,7 +32,7 @@ Parameter
     erwartet. Hierfür kann auf Funktionen des JTLSmarty-Objekts in **smarty** zurückgegriffen werden.
 
 Beispiel für eine Implementierung
----------------------------------
+"""""""""""""""""""""""""""""""""
 
 .. code-block:: php
 

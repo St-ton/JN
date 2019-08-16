@@ -322,7 +322,7 @@
                         </div>
                     {/if}
                     <div class="col-sm-6 col-xl-auto">
-                        <button name="speichern" type="button" value="{__('save')}" onclick="checkfile(event);" class="btn btn-primary btn-block">
+                        <button name="speichern" type="submit" value="{__('save')}" class="btn btn-primary btn-block">
                             {__('saveWithIcon')}
                         </button>
                     </div>

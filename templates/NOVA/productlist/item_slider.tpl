@@ -19,7 +19,7 @@
                             {/block}
                         {/if}
                     {/block}*}
-                    {image data=["lazy" => $Artikel->Bilder[0]->cURLKlein] src="{$imageBaseURL}gfx/trans.png" alt=$alt class="img-fluid"}
+                    {image data=["lazy" => $Artikel->Bilder[0]->cURLKlein] src="{$imageBaseURL}gfx/trans.png" alt=$alt class=""}
                 </div>
                 <meta itemprop="image" content="{$Artikel->Bilder[0]->cURLNormal}">
                 <meta itemprop="url" content="{$Artikel->cURLFull}">
@@ -27,7 +27,7 @@
         {/block}
         {block name='productlist-item-slider-caption'}
             <div class="caption">
-                <div class="title word-break mt-2">
+                <div class="title mt-2">
                     {if isset($showPartsList) && $showPartsList === true && isset($Artikel->fAnzahl_stueckliste)}
                         <span class="article-bundle-info">
                             <span class="bundle-amount">{$Artikel->fAnzahl_stueckliste}</span> <span class="bundle-times">x</span>
@@ -43,12 +43,12 @@
                             <small>{include file='productdetails/rating.tpl' stars=$Artikel->fDurchschnittsBewertung}</small>
                         {/block}
                     {/if}
-                    {block name='productlist-item-slider-include-price'}
-                        <div itemprop="offers" itemscope itemtype="http://schema.org/Offer">
-                            {include file='productdetails/price.tpl' Artikel=$Artikel tplscope=$tplscope}
-                        </div>
-                    {/block}
                 {/if}
+                {block name='productlist-item-slider-include-price'}
+                    <div itemprop="offers" itemscope itemtype="http://schema.org/Offer">
+                        {include file='productdetails/price.tpl' Artikel=$Artikel tplscope=$tplscope}
+                    </div>
+                {/block}
             </div>
         {/block}
     </div>

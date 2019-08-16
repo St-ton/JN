@@ -392,8 +392,7 @@ class IOMethods
         Frontend::getInstance()->setStandardSessionVars();
         $response->nType     = 2;
         $response->productID = $productID;
-        $response->nCount    = isset($_SESSION['Vergleichsliste']->oArtikel_arr) ?
-            \count($_SESSION['Vergleichsliste']->oArtikel_arr) : 0;
+        $response->nCount    = \count(Frontend::get('Vergleichsliste')->oArtikel_arr ?? []);
         $response->cTitle    = Shop::Lang()->get('compare');
         $response->cNavBadge = $smarty->assign('Einstellungen', $conf)
                                       ->fetch('layout/header_shop_nav_compare.tpl');

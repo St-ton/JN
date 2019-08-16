@@ -17,7 +17,7 @@
     {block name='filter'}
         {container}
         {row}
-            {col}
+            {col cols="auto"}
             {get_static_route id='news.php' assign=routeURL}
                 {block name='blog-overview-form'}
                     {form id="frm_filter" name="frm_filter" action=$cCanonicalURL|default:$routeURL class="form-inline mb-4"}

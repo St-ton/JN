@@ -40,6 +40,7 @@ $plzimportInc        = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'plz_ort_import_
 $redirectInc         = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'redirect_inc.php';
 $dbupdaterInc        = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'dbupdater_inc.php';
 $dbcheckInc          = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'dbcheck_inc.php';
+$versandartenInc     = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'versandarten_inc.php';
 
 $io->register('getPages', [$jsonApi, 'getPages'])
    ->register('getCategories', [$jsonApi, 'getCategories'])
@@ -88,6 +89,11 @@ $io->register('getPages', [$jsonApi, 'getPages'])
    ->register('saveBannerAreas', 'saveBannerAreasIO', $bannerInc, 'DISPLAY_BANNER_VIEW')
    ->register('createSearchIndex', 'createSearchIndex', $sucheinstellungInc, 'SETTINGS_ARTICLEOVERVIEW_VIEW')
    ->register('clearSearchCache', 'clearSearchCache', $sucheinstellungInc, 'SETTINGS_ARTICLEOVERVIEW_VIEW')
-   ->register('adminSearch', 'adminSearch', $sucheInc, 'SETTINGS_SEARCH_VIEW');
+   ->register('adminSearch', 'adminSearch', $sucheInc, 'SETTINGS_SEARCH_VIEW')
+   ->register('saveShippingSurcharge', 'saveShippingSurcharge', $versandartenInc, 'ORDER_SHIPMENT_VIEW')
+   ->register('deleteShippingSurcharge', 'deleteShippingSurcharge', $versandartenInc, 'ORDER_SHIPMENT_VIEW')
+   ->register('deleteShippingSurchargeZIP', 'deleteShippingSurchargeZIP', $versandartenInc, 'ORDER_SHIPMENT_VIEW')
+   ->register('createShippingSurchargeZIP', 'createShippingSurchargeZIP', $versandartenInc, 'ORDER_SHIPMENT_VIEW')
+   ->register('getShippingSurcharge', 'getShippingSurcharge', $versandartenInc, 'ORDER_SHIPMENT_VIEW');
 
 $io->respondAndExit($io->handleRequest($_REQUEST['io']));

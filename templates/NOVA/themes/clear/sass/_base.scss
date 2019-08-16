@@ -2101,6 +2101,24 @@ a.no-deco {
 #comments .pagination-wrapper > .text-muted {
   display: none;
 }
+
+.pagination-wrapper {
+  border-top: 1px solid $gray-lighter;
+  border-bottom: 1px solid $gray-lighter;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  .page-link.active {
+    font-weight: $font-weight-bold;
+    &::after {
+      content: "";
+      position: absolute;
+      bottom: 0.3rem;
+      left: 0.75rem;
+      width: calc(100% - 2 * 0.75rem);
+      border-bottom: 3px solid #F8BF00;
+    }
+  }
+}
 /*blockquote {
   background: #f9f9f9;
   border-left: 8px solid #ccc;

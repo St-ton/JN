@@ -3,7 +3,16 @@ import sys, os
 from sphinx.highlighting import lexers
 from pygments.lexers.web import PhpLexer
 
-extensions = ['sphinx.ext.autodoc', 'sphinx.ext.doctest', 'sphinx.ext.todo', 'sphinx.ext.coverage', 'sphinx.ext.mathjax', 'sphinx.ext.ifconfig', 'sensio.sphinx.configurationblock']
+extensions = [
+        'sphinx.ext.autodoc',
+        'sphinx.ext.doctest',
+        'sphinx.ext.todo',
+        'sphinx.ext.coverage',
+        'sphinx.ext.mathjax',
+        'sphinx.ext.ifconfig',
+        'sensio.sphinx.configurationblock',
+        'sphinxcontrib.phpdomain'
+        ]
 source_suffix = '.rst'
 master_doc = 'index'
 project = 'JTL-Shop'
@@ -17,8 +26,13 @@ language = 'de'
 
 htmlhelp_basename = 'Shopdoc'
 man_pages = [
-    ('index', 'shop', u'JTL-Shop Documentation',
-     [u'JTL-Software GmbH'], 1)
+    (
+        'index',
+        'shop',
+        u'JTL-Shop Documentation',
+        [u'JTL-Software-GmbH'],
+        1
+    )
 ]
 sys.path.append(os.path.abspath('_exts'))
 lexers['php'] = PhpLexer(startinline=True)

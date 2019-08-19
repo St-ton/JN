@@ -110,7 +110,7 @@ class CacheRedis implements ICachingMethod
             $exp = $expiration ?? $this->options['lifetime'];
             // the journal and negative expiration values should not cause an expiration
             if ($cacheID !== $this->journalID && $exp > -1) {
-                $this->redis->setTimeout($cacheID, $exp);
+                $this->redis->expire($cacheID, $exp);
             }
 
             return $res;
@@ -129,7 +129,7 @@ class CacheRedis implements ICachingMethod
         try {
             $res = $this->redis->mset($idContent);
             foreach (\array_keys($idContent) as $_cacheID) {
-                $this->redis->setTimeout($_cacheID, $expiration ?? $this->options['lifetime']);
+                $this->redis->expire($_cacheID, $expiration ?? $this->options['lifetime']);
             }
 
             return $res;
@@ -190,7 +190,7 @@ class CacheRedis implements ICachingMethod
     public function flush($cacheID): bool
     {
         try {
-            return $this->redis->delete($cacheID) > 0;
+            return $this->redis->del($cacheID) > 0;
         } catch (RedisException $e) {
             echo 'Redis exception: ' . $e->getMessage();
 

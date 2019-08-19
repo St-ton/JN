@@ -60,7 +60,7 @@
                 <div class="row">
                     <div class="ml-auto col-sm-6 col-xl-auto">
                         <button type="button" class="btn btn-outline-primary btn-block mb-2" onclick="window.location.href = 'slider.php';">
-                            <i class="fa fa-angle-double-left"></i> {__('pageBack')}
+                            <i class="fa fa-angle-double-left"></i> {__('goBack')}
                         </button>
                     </div>
                     <div class="col-sm-6 col-xl-auto">

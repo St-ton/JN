@@ -1,17 +1,25 @@
-HOOK_BESTELLABSCHLUSS_INC_WARENKORBINDB (ab Version 4.06)
-=========================================================
+HOOK_BESTELLABSCHLUSS_INC_WARENKORBINDB (ab Version 4.06) (228)
+===============================================================
+
+Triggerpunkt
+""""""""""""
+
+Unmittelbar vor dem Speichern des Warenkorbs im Bestellabschluß
+
+Beschreibung
+""""""""""""
 
 Der Hook wird unmittelbar vor dem Speichern des Warenkorbs im Bestellabschluß getriggert. Der Warenkorb wird als Referenz
 übergeben und kann durch das Plugin modifiziert werden.
 
 Parameter
----------
+"""""""""
 
 ``Warenkorb`` **oWarenkorb**
     In **oWarenkorb** wird ein ``Warenkorb``-Objekt als Referenz übergeben.
 
 Beispiel für eine Implementierung
----------------------------------
+"""""""""""""""""""""""""""""""""
 
 .. code-block:: php
 

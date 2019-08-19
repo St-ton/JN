@@ -7,144 +7,169 @@
 </script>
 
 {include file='tpl_inc/seite_header.tpl' cTitel=__('shippingmethods') cBeschreibung=__('isleListsHint') cDokuURL=__('shippingmethodsURL')}
+
 <div id="content">
-    {foreach $versandarten as $versandart}
-        <div class="card">
-            <div class="card-header">
-                <div class="card-title">{$versandart->cName}</div>
-            </div>
-            <table class="table table-list">
+    <div class="dropdown mb-4">
+        <button class="btn btn-primary" type="button" id="versandart" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <span class="fal fa-plus mr-2"></span>{__('createShippingMethod')}
+        </button>
+        <div class="dropdown-menu" aria-labelledby="versandart">
+            {foreach $versandberechnungen as $versandberechnung}
+                <a class="dropdown-item">
+                    <form name="versandart_neu" method="post" action="versandarten.php">
+                        {$jtl_token}
+                        <input type="hidden" name="neu" value="1" />
+                        <input type="hidden" id="l{$versandberechnung@index}" name="kVersandberechnung" value="{$versandberechnung->kVersandberechnung}" {if $versandberechnung@index == 0}checked="checked"{/if} />
+                        <button type="submit" class="btn btn-link p-0">{$versandberechnung->cName}</button>
+                    </form>
+                </a>
+            {/foreach}
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-body">
+            <table class="table table-responsive table-align-top">
+                <thead>
+                    <tr>
+                        <th>{__('shippingTypeName')}</th>
+                        <th>{__('shippingclasses')}</th>
+                        <th>{__('customerclass')}</th>
+                        <th>{__('paymentMethods')}</th>
+                        <th class="text-center min-w">{__('shippingPrice')}</th>
+                        <th></th>
+                    </tr>
+                </thead>
                 <tbody>
+                {foreach $versandarten as $versandart}
                     <tr>
-                        <td style="width:160px">{__('shippingTypeName')}</td>
                         <td>
-                            {foreach $versandart->oVersandartSprachen_arr as $oVersandartSprachen}
-                                {$oVersandartSprachen->cName}{if !$oVersandartSprachen@last}, {/if}
-                            {/foreach}
+                            {$versandart->cName}
+                            <hr class="my-1">
+                            <span class="d-block">
+                                {foreach $versandart->countries as $country}
+                                    {if $country@iteration == 20}
+                                        <span class="collapse" aria-expanded="false" id="show-all-countries-{$versandart->kVersandart}">
+                                        {$collapse=1}
+                                    {/if}
+                                    <a href="versandarten.php?zuschlag=1&kVersandart={$versandart->kVersandart}&cISO={$country->getISO()}&token={$smarty.session.jtl_token}"
+                                        data-toggle="tooltip"
+                                        title="{__('isleListsDesc')}">
+                                        <span class="small">
+                                            {if in_array($country->getISO(), $versandart->shippingSurchargeCountries)}
+                                                <u>{$country->getName()}*</u>
+                                            {else}
+                                                {$country->getName()}
+                                            {/if}
+                                        </span>
+                                        {if !$country@last},{/if}
+                                    </a>
+                                    {if $country@iteration > 20 && $country@last}
+                                        </span>
+                                        <button class="btn btn-link float-right" data-toggle="collapse" data-target="#show-all-countries-{$versandart->kVersandart}">
+                                            {__('showAll')} <span class="far fa-chevron-down"></span>
+                                        </button>
+                                    {/if}
+                                {/foreach}
+                            </span>
                         </td>
-                    </tr>
-                    <tr>
-                        <td>{__('countries')}</td>
                         <td>
-                            {foreach $versandart->land_arr as $land}
-                                <a href="versandarten.php?zuschlag=1&kVersandart={$versandart->kVersandart}&cISO={$land}&token={$smarty.session.jtl_token}"><span class="label label-{if isset($versandart->zuschlag_arr[$land])}success{else}default{/if}">{$land}</span></a>
-                            {/foreach}
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>{__('shippingclasses')}</td>
-                        <td>
+                            <ul class="list-unstyled">
                             {if $versandart->versandklassen|@count == 1 && $versandart->versandklassen[0] === 'Alle'}
-                                {__('all')}
+                                <li><span class="badge badge-primary text-wrap">{__('all')}</span></li>
                             {else}
                                 {foreach $versandart->versandklassen as $versandklasse}
-                                    [{$versandklasse}] &nbsp;
+                                    <li><span class="badge badge-primary text-wrap">{$versandklasse}</span></li>
                                 {/foreach}
                             {/if}
+                            </ul>
                         </td>
-                    </tr>
-                    <tr>
-                        <td>{__('customerclass')}</td>
                         <td>
+                            <ul class="list-unstyled">
                             {foreach $versandart->cKundengruppenName_arr as $cKundengruppenName}
-                                {$cKundengruppenName}
+                                <li>{$cKundengruppenName}</li>
                             {/foreach}
+                            </ul>
                         </td>
-                    </tr>
-                    <tr>
-                        <td>{__('taxshippingcosts')}</td>
-                        <td>{if $versandart->eSteuer === 'netto'}{__('net')}{else}{__('gross')}{/if}</td>
-                    </tr>
-                    <tr>
-                        <td>{__('shippingtime')}</td>
-                        <td>{$versandart->nMinLiefertage} - {$versandart->nMaxLiefertage} {__('days')}</td>
-                    </tr>
-                    <tr>
-                        <td>{__('paymentMethods')}</td>
                         <td>
+                            <ul class="list-unstyled">
                             {foreach $versandart->versandartzahlungsarten as $zahlungsart}
-                                {$zahlungsart->zahlungsart->cName}{if isset($zahlungsart->zahlungsart->cAnbieter) &&
-                                    $zahlungsart->zahlungsart->cAnbieter|strlen > 0} ({$zahlungsart->zahlungsart->cAnbieter}){/if} {if $zahlungsart->fAufpreis!=0}{if $zahlungsart->cAufpreisTyp != "%"}{getCurrencyConversionSmarty fPreisBrutto=$zahlungsart->fAufpreis bSteuer=false}{else}{$zahlungsart->fAufpreis}%{/if}{/if}
-                                <br />
+                                <li>
+                                    {$zahlungsart->zahlungsart->cName}
+                                    {if isset($zahlungsart->zahlungsart->cAnbieter) && $zahlungsart->zahlungsart->cAnbieter|strlen > 0}
+                                        ({$zahlungsart->zahlungsart->cAnbieter})
+                                    {/if}
+                                    {if $zahlungsart->fAufpreis!=0}
+                                        {if $zahlungsart->cAufpreisTyp != "%"}
+                                            {getCurrencyConversionSmarty fPreisBrutto=$zahlungsart->fAufpreis bSteuer=false}
+                                        {else}
+                                            {$zahlungsart->fAufpreis}%
+                                        {/if}
+                                    {/if}
+                                </li>
                             {/foreach}
+                            </ul>
                         </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            {if $versandart->versandberechnung->cModulId === 'vm_versandberechnung_gewicht_jtl' || $versandart->versandberechnung->cModulId === 'vm_versandberechnung_warenwert_jtl' || $versandart->versandberechnung->cModulId === 'vm_versandberechnung_artikelanzahl_jtl'}
-                                {__('priceScale')}
-                            {elseif $versandart->versandberechnung->cModulId === 'vm_versandkosten_pauschale_jtl'}
-                                {__('shippingPrice')}
-                            {/if}
-                        </td>
-                        <td>
+                        <td class="text-center">
+                            <ul class="list-unstyled">
                             {if $versandart->versandberechnung->cModulId === 'vm_versandberechnung_gewicht_jtl' || $versandart->versandberechnung->cModulId === 'vm_versandberechnung_warenwert_jtl' || $versandart->versandberechnung->cModulId === 'vm_versandberechnung_artikelanzahl_jtl'}
                                 {foreach $versandart->versandartstaffeln as $versandartstaffel}
                                     {if $versandartstaffel->fBis != 999999999}
-                                        {__('upTo')} {$versandartstaffel->fBis} {$versandart->einheit} {getCurrencyConversionSmarty fPreisBrutto=$versandartstaffel->fPreis bSteuer=false}
-                                        <br />
+                                        <li>
+                                            {__('upTo')} {$versandartstaffel->fBis} {$versandart->einheit} {$versandartstaffel->fPreis}
+                                            {getHelpDesc cDesc="{getCurrencyConversionSmarty fPreisBrutto=$versandartstaffel->fPreis bSteuer=false}"}
+                                        </li>
                                     {/if}
                                 {/foreach}
                             {elseif $versandart->versandberechnung->cModulId === 'vm_versandkosten_pauschale_jtl'}
-                                {getCurrencyConversionSmarty fPreisBrutto=$versandart->fPreis bSteuer=false}
+                                <li>
+                                    {$versandart->fPreis}
+                                    {getHelpDesc cDesc="{getCurrencyConversionSmarty fPreisBrutto=$versandart->fPreis bSteuer=false}"}
+                                </li>
                             {/if}
+                            </ul>
+                        </td>
+                        <td>
+                            <form method="post" action="versandarten.php">
+                                {$jtl_token}
+                                <div class="btn-group">
+                                    <button name="del"
+                                            value="{$versandart->kVersandart}"
+                                            class="btn btn-link px-2"
+                                            onclick="return confirmDelete('{$versandart->cName}');"
+                                            title="{__('delete')}"
+                                            data-toggle="tooltip">
+										<span class="icon-hover">
+											<span class="fal fa-trash-alt"></span>
+											<span class="fas fa-trash-alt"></span>
+										</span>
+                                    </button>
+                                    <button name="clone"
+                                            value="{$versandart->kVersandart}"
+                                            class="btn btn-link px-2"
+                                            title="{__('duplicate')}"
+                                            data-toggle="tooltip">
+										<span class="icon-hover">
+											<span class="fal fa-clone"></span>
+											<span class="fas fa-clone"></span>
+										</span>
+                                    </button>
+                                    <button name="edit"
+                                            value="{$versandart->kVersandart}"
+                                            class="btn btn-link px-2"
+                                            title="{__('edit')}"
+                                            data-toggle="tooltip">
+										<span class="icon-hover">
+											<span class="fal fa-edit"></span>
+											<span class="fas fa-edit"></span>
+										</span>
+                                    </button>
+                                </div>
+                            </form>
                         </td>
                     </tr>
-                    {if $versandart->fVersandkostenfreiAbX>0}
-                        <tr>
-                            <td>{__('freeFrom')}</td>
-                            <td>{getCurrencyConversionSmarty fPreisBrutto=$versandart->fVersandkostenfreiAbX bSteuer=false} ({if $versandart->eSteuer === 'netto'}{__('net')}{else}{__('gross')}{/if})</td>
-                        </tr>
-                    {/if}
-                    {if $versandart->fDeckelung>0}
-                        <tr>
-                            <td>{__('maxCostsUpTo')}</td>
-                            <td>{getCurrencyConversionSmarty fPreisBrutto=$versandart->fDeckelung bSteuer=false}</td>
-                        </tr>
-                    {/if}
+                {/foreach}
                 </tbody>
             </table>
-            <div class="card-footer text-right">
-                <form method="post" action="versandarten.php">
-                    {$jtl_token}
-                    <div class="row">
-                        <div class="ml-auto col-sm-6 col-xl-auto text-right">
-                            <button name="del" value="{$versandart->kVersandart}" class="btn btn-danger" onclick="return confirmDelete('{$versandart->cName}');"><i class="fas fa-trash-alt"></i> {__('delete')}</button>
-                        </div>
-                        <div class="col-sm-6 col-xl-auto">
-                            <button name="clone" value="{$versandart->kVersandart}" class="btn btn-default clone">{__('duplicate')}</button>
-                        </div>
-                        <div class="col-sm-6 col-xl-auto">
-                            <button name="edit" value="{$versandart->kVersandart}" class="btn btn-primary"><i class="fal fa-edit"></i> {__('edit')}</button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
-    {/foreach}
-
-    <div id="settings">
-        <div class="card">
-            <div class="card-header">
-                <div class="card-title">{__('createShippingMethod')}</div>
-            </div>
-            <form name="versandart_neu" method="post" action="versandarten.php">
-                {$jtl_token}
-                <div class="card-body">
-                    <input type="hidden" name="neu" value="1" />
-                    {foreach $versandberechnungen as $versandberechnung}
-                        <div class="item">
-                            <div class="for">
-                                <input type="radio" id="l{$versandberechnung@index}" name="kVersandberechnung" value="{$versandberechnung->kVersandberechnung}" {if $versandberechnung@index == 0}checked="checked"{/if} />
-                                <label for="l{$versandberechnung@index}">{$versandberechnung->cName}</label>
-                            </div>
-                        </div>
-                    {/foreach}
-                </div>
-                <div class="card-footer text-right">
-                    <button type="submit" value="{__('createShippingMethod')}" class="btn btn-primary"><i class="fa fa-share"></i> {__('createShippingMethod')}</button>
-                </div>
-            </form>
         </div>
     </div>
 </div>

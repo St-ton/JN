@@ -63,8 +63,8 @@ class FileCheck
                     }
                 } else {
                     [$hash, $file] = \explode(';', $shopFile);
-                    $currentHash = '';
-                    $path        = $prefix . $file;
+                    $currentHash   = '';
+                    $path          = $prefix . $file;
                     if (\file_exists($path)) {
                         $currentHash = \md5_file($path);
                     }
@@ -91,7 +91,7 @@ class FileCheck
         $version    = Version::parse(\APPLICATION_VERSION);
         $versionStr = $version->getMajor() . '-' . $version->getMinor() . '-' . $version->getPatch();
         if ($version->hasPreRelease()) {
-            $preRelease = $version->getPreRelease();
+            $preRelease  = $version->getPreRelease();
             $versionStr .= '-' . $preRelease->getGreek();
             if ($preRelease->getReleaseNumber() > 0) {
                 $versionStr .= '-' . $preRelease->getReleaseNumber();

@@ -45,23 +45,9 @@ class ProductStream extends Portlet
                     'gallery'    => __('presentationGallery'),
                     'list'       => __('presentationList'),
                     'slider'     => __('presentationSlider'),
-                    'vertSlider' => __('presentationSliderVertical'),
+                    'richSlider' => __('Rich Slider'),
                 ],
                 'default' => 'gallery',
-                'childrenFor' => [
-                    'slider' => [
-                        'sliderTitle'  => [
-                            'label' => __('sliderTitle'),
-                            'width' => 50,
-                        ],
-                        'productCount' => [
-                            'type'    => InputType::NUMBER,
-                            'label'   => __('numberVisibleItems'),
-                            'width'   => 50,
-                            'default' => 3,
-                        ],
-                    ]
-                ]
             ],
             'filters'      => [
                 'type'     => InputType::FILTER,

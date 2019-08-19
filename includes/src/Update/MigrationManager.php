@@ -159,7 +159,7 @@ class MigrationManager
             $migrationFile = new \ReflectionClass($migration->getName());
 
             throw new Exception(
-                '"'.$e->getMessage().'" in: '.$migrationFile->getFileName(),
+                '"' . $e->getMessage() . '" in: ' . $migrationFile->getFileName(),
                 (int)$e->getCode()
             );
         }

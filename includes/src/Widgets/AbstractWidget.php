@@ -41,11 +41,11 @@ abstract class AbstractWidget implements WidgetInterface
     /**
      * @inheritdoc
      */
-    public function __construct(JTLSmarty $smarty = null, DbInterface $db = null, $oPlugin = null)
+    public function __construct(JTLSmarty $smarty = null, DbInterface $db = null, $plugin = null)
     {
         $this->oSmarty = $smarty ?? Shop::Smarty(false, ContextType::BACKEND);
         $this->oDB     = $db ?? Shop::Container()->getDB();
-        $this->oPlugin = $oPlugin;
+        $this->oPlugin = $plugin;
         $this->init();
     }
 
@@ -90,11 +90,11 @@ abstract class AbstractWidget implements WidgetInterface
     }
 
     /**
-     * @param PluginInterface $oPlugin
+     * @param PluginInterface $plugin
      */
-    public function setPlugin(PluginInterface $oPlugin): void
+    public function setPlugin(PluginInterface $plugin): void
     {
-        $this->oPlugin = $oPlugin;
+        $this->oPlugin = $plugin;
     }
 
     /**

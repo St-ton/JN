@@ -7,7 +7,6 @@
 namespace JTL\Plugin\Data;
 
 use JTL\Plugin\PluginInterface;
-use JTL\Shop;
 use stdClass;
 use function Functional\first;
 use function Functional\reindex;

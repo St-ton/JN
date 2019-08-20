@@ -71,82 +71,84 @@
                     {block name='snippets-wishlist-actions'}
                         {col class="col-auto"}
                             {dropdown variant="link" class="no-chevron wishlist-options" text="<i class='fas fa-ellipsis-v'></i>" aria=["label"=>"{lang key='rename' section='wishlistOptions'}"]}
-                                {dropdownitem class="text-center"}
+                                {dropdownitem class="text-center position-relative"}
                                 {block name='snippets-wishlist-actions-rename'}
-                                    {button type="submit" variant="link" data=["toggle" => "collapse", "target"=>"#edit-wishlist-name"]}
-                                    {lang key='rename'}
+                                    {button type="submit" variant="link" class="stretched-link" data=["toggle" => "collapse", "target"=>"#edit-wishlist-name"]}
+                                        {lang key='rename'}
                                     {/button}
                                 {/block}
                                 {/dropdownitem}
-                                {dropdownitem class="text-center"}
+                                {dropdownitem class="text-center position-relative"}
                                 {block name='snippets-wishlist-actions-remove-products'}
                                     {form
-                                    method="post"
-                                    action="{get_static_route id='wunschliste.php'}{if $CWunschliste->nStandard != 1}?wl={$CWunschliste->kWunschliste}{/if}"
-                                    name="Wunschliste"
+                                        method="post"
+                                        action="{get_static_route id='wunschliste.php'}{if $CWunschliste->nStandard != 1}?wl={$CWunschliste->kWunschliste}{/if}"
+                                        name="Wunschliste"
                                     }
-                                    {input type="hidden" name="wla" value="1"}
-                                    {input type="hidden" name="kWunschliste" value=$CWunschliste->kWunschliste}
-                                    {input type="hidden" name="action" value="removeAll"}
-                                    {button type="submit" variant="link"}
-                                    {lang key='wlRemoveAllProducts' section='wishlist'}
-                                    {/button}
+                                        {input type="hidden" name="wla" value="1"}
+                                        {input type="hidden" name="kWunschliste" value=$CWunschliste->kWunschliste}
+                                        {input type="hidden" name="action" value="removeAll"}
+                                        {button type="submit" variant="link" class="stretched-link"}
+                                            {lang key='wlRemoveAllProducts' section='wishlist'}
+                                        {/button}
                                     {/form}
                                 {/block}
                                 {/dropdownitem}
-                                {dropdownitem class="text-center"}
+                                {dropdownitem class="text-center position-relative"}
                                 {block name='snippets-wishlist-actions-add-all-cart'}
                                     {form
-                                    method="post"
-                                    action="{get_static_route id='wunschliste.php'}{if $CWunschliste->nStandard != 1}?wl={$CWunschliste->kWunschliste}{/if}"
-                                    name="Wunschliste"
+                                        method="post"
+                                        action="{get_static_route id='wunschliste.php'}{if $CWunschliste->nStandard != 1}?wl={$CWunschliste->kWunschliste}{/if}"
+                                        name="Wunschliste"
                                     }
-                                    {input type="hidden" name="wla" value="1"}
-                                    {input type="hidden" name="kWunschliste" value=$CWunschliste->kWunschliste}
-                                    {input type="hidden" name="action" value="addAllToCart"}
-                                    {button type="submit" variant="link"}
-                                    {lang key='wishlistAddAllToCart' section='login'}
-                                    {/button}
+                                        {input type="hidden" name="wla" value="1"}
+                                        {input type="hidden" name="kWunschliste" value=$CWunschliste->kWunschliste}
+                                        {input type="hidden" name="action" value="addAllToCart"}
+                                        {button type="submit" variant="link" class="stretched-link"}
+                                            {lang key='wishlistAddAllToCart' section='login'}
+                                        {/button}
                                     {/form}
                                 {/block}
                                 {/dropdownitem}
-                                {dropdownitem class="text-center"}
+                                {dropdownitem class="text-center position-relative"}
                                 {block name='snippets-wishlist-actions-delete-wl'}
                                     {form method="post" action="{get_static_route id='wunschliste.php'}"}
-                                    {input type="hidden" name="kWunschliste" value=$CWunschliste->kWunschliste}
-                                    {input type="hidden" name="kWunschlisteTarget" value=$CWunschliste->kWunschliste}
-                                    {input type="hidden" name="action" value="delete"}
-                                    {button type="submit" variant="link"}
-                                    {lang key='wlDelete' section='wishlist'}
-                                    {/button}
+                                        {input type="hidden" name="kWunschliste" value=$CWunschliste->kWunschliste}
+                                        {input type="hidden" name="kWunschlisteTarget" value=$CWunschliste->kWunschliste}
+                                        {input type="hidden" name="action" value="delete"}
+                                        {button type="submit" variant="link" class="stretched-link"}
+                                            {lang key='wlDelete' section='wishlist'}
+                                        {/button}
                                     {/form}
                                 {/block}
                                 {/dropdownitem}
                                 {if $CWunschliste->nStandard != 1}
-                                    {dropdownitem class="text-center"}
+                                    {dropdownitem class="text-center position-relative"}
                                     {block name='snippets-wishlist-actions-set-active'}
                                         {form method="post" action="{get_static_route id='wunschliste.php'}"}
-                                        {input type="hidden" name="kWunschliste" value=$CWunschliste->kWunschliste}
-                                        {input type="hidden" name="kWunschlisteTarget" value=$CWunschliste->kWunschliste}
-                                        {input type="hidden" name="action" value="setAsDefault"}
-                                        {button type="submit"
-                                        variant="link"
-                                        title="{lang key='setAsStandardWishlist' section='wishlist'}"
-                                        data=["toggle" => "tooltip", "placement" => "bottom"]
-                                        }
-                                        {lang key='activate'}
-                                        {/button}
+                                            {input type="hidden" name="kWunschliste" value=$CWunschliste->kWunschliste}
+                                            {input type="hidden" name="kWunschlisteTarget" value=$CWunschliste->kWunschliste}
+                                            {input type="hidden" name="action" value="setAsDefault"}
+                                            {button type="submit"
+                                                variant="link"
+                                                class="stretched-link"
+                                                title="{lang key='setAsStandardWishlist' section='wishlist'}"
+                                                data=["toggle" => "tooltip", "placement" => "bottom"]
+                                            }
+                                                {lang key='activate'}
+                                            {/button}
                                         {/form}
                                     {/block}
                                     {/dropdownitem}
                                 {/if}
-                                {dropdownitem class="text-center"}
+                                {dropdownitem class="text-center position-relative"}
                                 {block name='snippets-wishlist-actions-add-new'}
                                     {button type="submit"
-                                    variant="link"
-                                    data=["toggle" => "collapse", "target"=>"#create-new-wishlist"]
+                                        variant="link"
+                                        class="stretched-link"
+                                        data=["toggle" => "collapse", "target"=>"#create-new-wishlist"]
                                     }
-                                    {lang key='wishlistAddNew' section='login'}
+                                        {lang key='wishlistAddNew' section='login'}
                                     {/button}
                                 {/block}
                                 {/dropdownitem}

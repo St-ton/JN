@@ -137,6 +137,7 @@
             <File Path="themes/base/slick/slick-lightbox.css"/>
             <File Path="js/password/password.min.css"/>
             <File Path="themes/clear/clear.css"/>
+            <File Path="themes/clear/custom.css"/>
         </CSS>
         <JS Name="jtl3.js">
             <File Path="js/jquery.backstretch.min.js"/>

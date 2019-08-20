@@ -1690,3 +1690,16 @@ define('HOOK_BESTELLABSCHLUSS_INC_WARENKORBINDB', 228);
  * @file admin/shopzuruecksetzen.php
  */
 define('HOOK_BACKEND_SHOP_RESET_AFTER', 229);
+
+// hook 230 is reserved for 5.0.0
+
+/**
+ * before the ordernumber is returned from baueBestellnummer().
+ *
+ * @since 4.06.14
+ * @file includes/bestellabschluss_inc.php
+ * @param int orderNo
+ * @param string prefix
+ * @param string suffix
+ */
+define('HOOK_BESTELLABSCHLUSS_INC_BAUEBESTELLNUMMER', 231);

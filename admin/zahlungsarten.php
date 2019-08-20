@@ -14,7 +14,7 @@ use JTL\Helpers\Text;
 use JTL\Language\LanguageHelper;
 use JTL\Pagination\Filter;
 use JTL\Pagination\Pagination;
-use JTL\Plugin\Helper;
+use JTL\Plugin\Helper as PluginHelper;
 use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
@@ -101,8 +101,8 @@ if (Request::postInt('einstellungen_bearbeiten') === 1
     $db->update('tzahlungsart', 'kZahlungsart', (int)$paymentMethod->kZahlungsart, $upd);
     // Weiche fuer eine normale Zahlungsart oder eine Zahlungsart via Plugin
     if (mb_strpos($paymentMethod->cModulId, 'kPlugin_') !== false) {
-        $kPlugin     = Helper::getIDByModuleID($paymentMethod->cModulId);
-        $cModulId    = Helper::getModuleIDByPluginID($kPlugin, $paymentMethod->cName);
+        $kPlugin     = PluginHelper::getIDByModuleID($paymentMethod->cModulId);
+        $cModulId    = PluginHelper::getModuleIDByPluginID($kPlugin, $paymentMethod->cName);
         $Conf        = $db->query(
             "SELECT *
                 FROM tplugineinstellungenconf
@@ -218,8 +218,8 @@ if ($step === 'einstellen') {
         }
         // Weiche fuer eine normale Zahlungsart oder eine Zahlungsart via Plugin
         if (mb_strpos($paymentMethod->cModulId, 'kPlugin_') !== false) {
-            $kPlugin     = Helper::getIDByModuleID($paymentMethod->cModulId);
-            $cModulId    = Helper::getModuleIDByPluginID($kPlugin, $paymentMethod->cName);
+            $kPlugin     = PluginHelper::getIDByModuleID($paymentMethod->cModulId);
+            $cModulId    = PluginHelper::getModuleIDByPluginID($kPlugin, $paymentMethod->cName);
             $Conf        = $db->query(
                 "SELECT *
                     FROM tplugineinstellungenconf
@@ -379,9 +379,16 @@ if ($step === 'uebersicht') {
         ['nActive', 'nNutzbar'],
         [1, 1],
         '*',
-        'cAnbieter, cName, nSort, kZahlungsart'
+        'cAnbieter, cName, nSort, kZahlungsart, cModulId'
     );
     foreach ($methods as $method) {
+        $pluginID = PluginHelper::getIDByModuleID($method->cModulId);
+        if ($pluginID > 0) {
+            Shop::Container()->getGetText()->loadPluginLocale(
+                'base',
+                PluginHelper::getLoaderByPluginID($pluginID)->init($pluginID)
+            );
+        }
         $method->nEingangAnzahl = (int)$db->executeQueryPrepared(
             'SELECT COUNT(*) AS `nAnzahl`
             FROM `tzahlungseingang` AS ze
@@ -392,6 +399,8 @@ if ($step === 'uebersicht') {
         )->nAnzahl;
         $method->nLogCount      = ZahlungsLog::count($method->cModulId);
         $method->nErrorLogCount = ZahlungsLog::count($method->cModulId, JTLLOG_LEVEL_ERROR);
+        $method->cName          = __($method->cName);
+        $method->cAnbieter      = __($method->cAnbieter);
     }
     $smarty->assign('zahlungsarten', $methods);
 }

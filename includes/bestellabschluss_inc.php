@@ -932,6 +932,11 @@ function baueBestellnummer()
         [date('Y'), date('m'), date('d'), date('W')],
         $conf['kaufabwicklung']['bestellabschluss_bestellnummer_suffix']
     );
+    executeHook(HOOK_BESTELLABSCHLUSS_INC_BAUEBESTELLNUMMER, [
+        'orderNo' => &$nBestellnummer,
+        'prefix'  => &$cPraefix,
+        'suffix'  => &$cSuffix
+    ]);
 
     return $cPraefix . $nBestellnummer . $cSuffix;
 }

@@ -35,11 +35,8 @@ class Tax
         if (!GeneralObject::hasCount('Steuersatz', $_SESSION)) {
             self::setTaxRates();
         }
-        if (GeneralObject::isCountable('Steuersatz', $_SESSION['Steuersatz'])
-            && !isset($_SESSION['Steuersatz'][$taxID])
-        ) {
-            $keys  = \array_keys($_SESSION['Steuersatz']);
-            $taxID = $keys[0];
+        if (GeneralObject::isCountable('Steuersatz', $_SESSION) && !isset($_SESSION['Steuersatz'][$taxID])) {
+            $taxID = \array_keys($_SESSION['Steuersatz'])[0];
         }
 
         return $_SESSION['Steuersatz'][$taxID];

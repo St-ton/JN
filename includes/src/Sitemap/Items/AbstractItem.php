@@ -104,7 +104,7 @@ abstract class AbstractItem implements ItemInterface
     /**
      * @inheritdoc
      */
-    public function setChangeFreq(string $changeFreq): void
+    public function setChangeFreq(?string $changeFreq): void
     {
         $this->changeFreq = $changeFreq;
     }
@@ -120,7 +120,7 @@ abstract class AbstractItem implements ItemInterface
     /**
      * @inheritdoc
      */
-    public function setImage(string $image): void
+    public function setImage(?string $image): void
     {
         $this->image = $image;
     }
@@ -136,7 +136,7 @@ abstract class AbstractItem implements ItemInterface
     /**
      * @inheritdoc
      */
-    public function setLastModificationTime($time): void
+    public function setLastModificationTime(?string $time): void
     {
         $this->lastModificationTime = $time;
     }
@@ -168,7 +168,7 @@ abstract class AbstractItem implements ItemInterface
     /**
      * @inheritdoc
      */
-    public function setPriority(string $priority): void
+    public function setPriority(?string $priority): void
     {
         $this->priority = $priority;
     }
@@ -192,7 +192,7 @@ abstract class AbstractItem implements ItemInterface
     /**
      * @inheritdoc
      */
-    public function setLanguageCode(string $langCode): void
+    public function setLanguageCode(?string $langCode): void
     {
         $this->languageCode = $langCode;
     }
@@ -208,7 +208,7 @@ abstract class AbstractItem implements ItemInterface
     /**
      * @inheritdoc
      */
-    public function setLanguageCode639(string $langCode): void
+    public function setLanguageCode639(?string $langCode): void
     {
         $this->languageCode639 = $langCode;
     }

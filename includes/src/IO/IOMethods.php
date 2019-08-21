@@ -391,8 +391,7 @@ class IOMethods
         Frontend::getInstance()->setStandardSessionVars();
         $response->nType     = 2;
         $response->productID = $productID;
-        $response->nCount    = isset($_SESSION['Vergleichsliste']->oArtikel_arr) ?
-            \count($_SESSION['Vergleichsliste']->oArtikel_arr) : 0;
+        $response->nCount    = \count(Frontend::get('Vergleichsliste')->oArtikel_arr ?? []);
         $response->cTitle    = Shop::Lang()->get('compare');
         $response->cNavBadge = $smarty->assign('Einstellungen', $conf)
                                       ->fetch('layout/header_shop_nav_compare.tpl');
@@ -794,6 +793,7 @@ class IOMethods
         $options->nDownload                 = 0;
         $options->nMain                     = 1;
         $options->nWarenlager               = 1;
+        $options->nVariationen              = 1;
         $product                            = new Artikel();
         $product->fuelleArtikel($kVaterArtikel, $options, Frontend::getCustomerGroup()->getID());
         $weightDiff   = 0;
@@ -945,6 +945,7 @@ class IOMethods
             $options->nDownload                 = 0;
             $options->nMain                     = 1;
             $options->nWarenlager               = 1;
+            $options->nVariationen              = 1;
             $product                            = new Artikel();
             $product->fuelleArtikel($parentProductID, $options);
             // Alle Variationen ohne Freifeld

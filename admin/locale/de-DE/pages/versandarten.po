@@ -128,23 +128,23 @@ msgstr "Zuschlagsliste"
 msgid "additionalFee"
 msgstr "Zuschlag"
 
-msgid "plz"
+msgid "zip"
 msgstr "PLZ"
 
 msgid "additionalFeeDelete"
 msgstr "Zuschlagsliste löschen"
 
-msgid "additionalFeeEdit"
-msgstr "Zuschlagsliste bearbeiten"
-
-msgid "createNewList"
+msgid "createList"
 msgstr "Neue Zuschlagsliste erstellen"
 
-msgid "createEditList"
+msgid "editList"
 msgstr "Zuschlagsliste bearbeiten"
 
-msgid "orPlzRange"
+msgid "orZipRange"
 msgstr "oder PLZ-Bereich"
+
+msgid "zipRange"
+msgstr "PLZ-Bereich"
 
 msgid "add"
 msgstr "Hinzufügen"
@@ -276,10 +276,10 @@ msgid "errorShippingMethodDuplicated"
 msgstr "Versandart konnte nicht dupliziert werden."
 
 msgid "errorZIPOverlap"
-msgstr "Die PLZ %s überschneidet sich mit %s.<br/>Bitte geben Sie eine andere PLZ an."
+msgstr "Die PLZ %s überschneidet sich mit einer PLZ in dem Versandzuschlag „%s“.<br/>Bitte geben Sie eine andere PLZ an."
 
 msgid "errorZIPAreaOverlap"
-msgstr "Der PLZ-Bereich %s überschneidet sich mit %s.<br/>Bitte geben Sie einen anderen PLZ-Bereich an."
+msgstr "Der PLZ-Bereich %s überschneidet sich mit einer PLZ in dem Versandzuschlag „%s“.<br/>Bitte geben Sie einen anderen PLZ-Bereich an."
 
 msgid "successZIPAdd"
 msgstr "PLZ wurde erfolgreich hinzugefügt."
@@ -344,3 +344,21 @@ msgstr "Versandkosten nach Warenwert und Lieferland"
 # shipping types (tversandberechnung)
 msgid "shippingType_vm_versandberechnung_gewicht_jtl"
 msgstr "Versandkosten nach Gewicht und Lieferland"
+
+msgid "surchargeListFor"
+msgstr "Zuschlagliste für "
+
+msgid "surchargeList"
+msgstr "Zuschlagliste"
+
+msgid "surcharge"
+msgstr "Zuschlag"
+
+msgid "addZip"
+msgstr "PLZ hinzufügen"
+
+msgid "deleteZip"
+msgstr "PLZ löschen"
+
+msgid "countriesSelected"
+msgstr "ausgewählt"

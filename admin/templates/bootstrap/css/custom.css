@@ -347,7 +347,6 @@
   min-width: 256px;
 }
 .backend-wrapper > .backend-main > .backend-content {
-  padding: 32px;
   background: #f5f7fa;
   flex: auto;
 }
@@ -2678,5 +2677,12 @@ input[type=number] {
 }
 .rotate-180 {
   font-size: 10px;
+}
+.select2-container {
+  min-width: 100%;
+  max-width: inherit;
+}
+.save-wrapper .row > div {
+  margin-bottom: 8px;
 }
 /*# sourceMappingURL=custom.css.map */

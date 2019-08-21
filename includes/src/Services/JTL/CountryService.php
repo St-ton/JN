@@ -132,4 +132,46 @@ class CountryService implements CountryServiceInterface
 
         return $countryMatch ? $countryMatch->getISO() : null;
     }
+
+    /**
+     * @param bool $getEU - get all countries in EU and all countries in Europe not in EU
+     * @param array|null $selectedCountries
+     * @return array
+     */
+    public function getCountriesGroupedByContinent(bool $getEU = false, array $selectedCountries = []): array
+    {
+        $continentsTMP                = [];
+        $continentsSelectedCountryTMP = [];
+        $continents                   = [];
+        foreach ($this->getCountryList() as $country) {
+            $countrySelected                           = \in_array($country->getISO(), $selectedCountries, true);
+            $continentsTMP[$country->getContinent()][] = $country;
+            if ($countrySelected) {
+                $continentsSelectedCountryTMP[$country->getContinent()][] = $country;
+            }
+            if ($getEU) {
+                if ($country->isEU()) {
+                    $continentsTMP[__('europeanUnion')][] = $country;
+                    if ($countrySelected) {
+                        $continentsSelectedCountryTMP[__('europeanUnion')][] = $country;
+                    }
+                } elseif ($country->getContinent() === __('Europa')) {
+                    $continentsTMP[__('notEuropeanUnionEurope')][] = $country;
+                    if ($countrySelected) {
+                        $continentsSelectedCountryTMP[__('notEuropeanUnionEurope')][] = $country;
+                    }
+                }
+            }
+        }
+        foreach ($continentsTMP as $continent => $countries) {
+            $continents[] = (object)[
+                'name'                   => $continent,
+                'countries'              => $countries,
+                'countriesCount'         => \count($countries),
+                'countriesSelectedCount' => \count($continentsSelectedCountryTMP[$continent] ?? [])
+            ];
+        }
+
+        return $continents;
+    }
 }

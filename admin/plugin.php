@@ -110,10 +110,8 @@ if ($step === 'plugin_uebersicht' && $pluginID > 0) {
                 $plugin->getMeta()->getSemVer()
             );
             $migrations = count($manager->getMigrations());
-            if ($migrations > 0) {
-                $smarty->assign('manager', $manager)
-                       ->assign('updatesAvailable', $migrations > count($manager->getExecutedMigrations()));
-            }
+            $smarty->assign('manager', $manager)
+                   ->assign('updatesAvailable', $migrations > count($manager->getExecutedMigrations()));
         }
         $smarty->assign('oPlugin', $plugin);
         if ($updated === true) {

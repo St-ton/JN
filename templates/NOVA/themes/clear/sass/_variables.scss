@@ -80,6 +80,12 @@ $btn-decoration:                    none;
 $btn-hover-decoration:              none;
 $btn-font-weight:                   $font-weight-semibold;
 
+// transition
+
+$transition-base-duration	: .2s;
+$transition-base-timing 	: ease-in-out;
+$transition-base			: all $transition-base-duration $transition-base-timing;
+
 // styles
 
 $highlight-border-size:             .375rem;
@@ -91,14 +97,14 @@ $headings-color:                    $gray-700;
 
 $text-muted:                        $gray-500;
 
-$link-color:                        $gray-700;
+/* links */
+
+$link-color:                        $gray-darker;
 $link-decoration:                   underline;
-$link-hover-color:                  $link-color;
+$link-hover-color:                  $primary;
 $link-hover-decoration:             none;
 
-$breadcrumb-divider:                "/";
-//$breadcrumb-divider:                "\f054";
-$breadcrumb-divider-back:           "\f30a";
+//$breadcrumb-divider:                "/";
 $breadcrumb-active-color:           $gray-dark;
 
 $border-radius:                     .125rem !default;

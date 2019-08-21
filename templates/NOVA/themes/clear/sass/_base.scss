@@ -3,6 +3,9 @@
 html {
   scroll-behavior: smooth;
 }
+
+a { transition: color $transition-base-duration $transition-base-timing; }
+
 #pushed-success {
   border: 1px solid $gray-lighter;
   margin-bottom: 5rem;
@@ -125,6 +128,16 @@ body.unboxed-layout {
     .container { max-width: 1310px; }
   }
 }
+@include media-breakpoint-down(md) {
+  #navbarToggler {
+    position: absolute;
+    background: #fff;
+    width: 100%;
+    padding: map_get($spacers,3) 0 map_get($spacers,2) map_get($spacers,3);
+    left: 0;
+    box-shadow: 0 2px 16px 0 rgba(0,0,0,0.06);;
+  }
+}
 @include media-breakpoint-up(md) {
   #navbarToggler {
     white-space: nowrap;
@@ -161,7 +174,7 @@ body.unboxed-layout {
     }
   }
 }
-#evo-main-nav-wrapper {
+#main-nav-wrapper {
   @include media-breakpoint-up(lg) {
     margin-left: - map_get($spacers,4);
     margin-right: - map_get($spacers,4);
@@ -265,7 +278,6 @@ body.unboxed-layout {
       overflow-x: hidden;
       position: absolute;
       top: 50px;
-      left: $grid-gutter-width/2;
       right: 0;
       clear: both;
       background: white;
@@ -339,12 +351,13 @@ body.unboxed-layout {
     text-decoration: none;
     border-right: 1px solid $gray-light;
     border-radius: 0;
+    padding: 0 map_get($spacers, 3);
     &:last-child {
       border-right: 0;
     }
-    &:hover {
-      text-decoration: underline;
-    }
+  }
+  a {
+    text-decoration: none;
   }
 }
 
@@ -1204,30 +1217,6 @@ $jqcloud-classes: 7;
   height: 200px;
 }
 
-.breadcrumb {
-  border-top: 1px solid $sand;
-  border-bottom: 1px solid $sand;
-  a { text-decoration: none; }
-  > li {
-    &.last a {
-      color: $breadcrumb-active-color;
-      font-weight: $font-weight-semibold;
-    }
-  }
-  .breadcrumb-item + .breadcrumb-item::before,
-  .breadcrumb-item.back::before {
-    font-family: 'Font Awesome 5 Free', Arial, sans-serif;
-    font-style: normal;
-    font-weight: 900;
-  }
-  .breadcrumb-item + .breadcrumb-item::before {
-    content: $breadcrumb-divider;
-  }
-  .breadcrumb-item.back::before {
-    content: $breadcrumb-divider-back;
-  }
-}
-
 #navbar-filter {
   padding: 0 0 15px;
 }
@@ -1573,11 +1562,6 @@ footer {
     .card-title {
       color: $gray-dark;
     }
-    a {
-      &:hover {
-        font-weight: 600;
-      }
-    }
     .card-body {
       padding: 0;
     }
@@ -1643,9 +1627,6 @@ footer {
   border: 0;
   a {
     text-decoration: none;
-    &:hover {
-      text-decoration: underline;
-    }
   }
 }
 
@@ -1717,8 +1698,8 @@ footer {
     width: auto;
     border: none;
     margin: 0;
-    margin-top: -6px;
     @include media-breakpoint-up(md) {
+      margin-top: -6px;
       @include box-shadow($dropdown-box-shadow);
     }
   }

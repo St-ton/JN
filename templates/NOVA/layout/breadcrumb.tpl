@@ -11,11 +11,11 @@
                 {breadcrumb id="breadcrumb" itemprop="breadcrumb" itemscope=true itemtype="http://schema.org/BreadcrumbList" class="p-0 py-2"}
                     {block name='layout-breadcrumb-xs-back'}
                         {$parent = $Brotnavi[$Brotnavi|count -2|max:0]}
-                        {breadcrumbitem class="d-xs-flex d-sm-none back"
+                        {breadcrumbitem class="breadcrumb-back"
                             href=$parent->getURLFull()
                             title=$parent->getName()|escape:'html'
                         }
-                            <span itemprop="name">{$parent->getName()}</span>
+                            <span class="fas fa-long-arrow-alt-left mr-2"></span><span itemprop="name">{$parent->getName()}</span>
                         {/breadcrumbitem}
                     {/block}
                     {block name='layout-breadcrumb-items'}

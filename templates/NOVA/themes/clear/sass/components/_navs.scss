@@ -1,0 +1,31 @@
+
+.nav-dividers {
+	.nav-item { position: relative;
+		&:not(:last-child)::after { content: ''; position: absolute; right: 0; top: $nav-link-padding-y; height: calc(100% - #{2 * $nav-link-padding-y}); border-right: rem(1px) solid currentColor; }
+	}
+}
+
+.nav-link { text-decoration: none; }
+
+// custom navbar toggler
+.navbar-toggler { font-size: 0; border: 0; height: rem(35px); padding: 0;
+	&:focus, &.focus { outline: 0; }
+
+	.navbar-toggler-icon { background-image: none; height: rem(3px); background-color: transparent; width: rem(26px); display: inline-block; position: relative; transition: all .2s; border-radius: 1rem;
+		&:before, &:after { content: ''; height: inherit; width: inherit; transform-origin: center; background-color: currentColor; display: inherit; position: absolute; left: 50%; transform: translateX(-50%); transition: all .2s; border-radius: inherit; }
+		&:before { transform: translateX(-50%) rotate(45deg); }
+		&:after { transform: translateX(-50%) rotate(-45deg); }
+	}
+
+	&.collapsed {
+		.navbar-toggler-icon { background-color: currentColor;
+			&:before { transform: translateX(-50%) translateY(rem(-8px)); }
+			&:after { transform: translateX(-50%) translateY(rem(8px)); }
+		}
+
+		&:hover .navbar-toggler-icon {
+			&:before { transform: translateX(-50%) translateY(rem(-10px)); }
+			&:after { transform: translateX(-50%) translateY(rem(10px)); }
+		}
+	}
+}

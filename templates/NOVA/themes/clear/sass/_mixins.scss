@@ -1,4 +1,7 @@
 // mixins
+@mixin fa($var) { content: #{"'\\" + $var + "'"} !important; font-family: 'Font Awesome 5 Free' !important; }
+@mixin far($var) { @include fa($var); font-weight: 400; }
+@mixin fas($var) { @include fa($var); font-weight: 900; }
 
 @mixin font-face($name, $path, $locals: '', $style: null, $weight: null, $ucrange: '', $exts: eot woff2 woff ttf svg) {
   $src: null;

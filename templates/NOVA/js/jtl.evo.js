@@ -144,6 +144,21 @@
             }
 
             $('.news-slider:not(.slick-initialized)').slick(optionsNewsSlider);
+
+            // freegift slider at basket
+            $('#freegift form .row').slick({
+                slidesToShow:   3,
+                slidesToScroll: 3,
+                infinite: false,
+                responsive: [
+                    {
+                        breakpoint: 480,
+                        settings: {
+                            slidesToShow: 2
+                        }
+                    }
+                ]
+            });
         },
 
         addSliderTouchSupport: function () {
@@ -775,7 +790,7 @@
 
         fixStickyElements: function() {
             var sticky    = '.cart-summary';
-            var navHeight = $('#evo-main-nav-wrapper').outerHeight(true);
+            var navHeight = $('#main-nav-wrapper').outerHeight(true);
             navHeight = navHeight === undefined ? 0 : parseInt(navHeight + 40);
             $(sticky).css('top', navHeight);
         },

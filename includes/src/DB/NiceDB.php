@@ -240,7 +240,7 @@ class NiceDB implements DbInterface
             return $this;
         }
         $backtrace = $this->debugLevel > 2 ? \debug_backtrace() : null;
-        $explain = 'EXPLAIN ' . $stmt;
+        $explain   = 'EXPLAIN ' . $stmt;
         try {
             if ($assigns !== null) {
                 $res = $this->pdo->prepare($explain);

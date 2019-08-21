@@ -546,9 +546,9 @@ final class Model
 
     /**
      * @param int|null $languageID
-     * @return array|null
+     * @return array
      */
-    public function getAttachments(int $languageID = null): ?array
+    public function getAttachments(int $languageID = null): array
     {
         return $this->attachments[$languageID ?? Shop::getLanguageID()] ?? [];
     }
@@ -586,9 +586,9 @@ final class Model
 
     /**
      * @param int|null $languageID
-     * @return array|null
+     * @return array
      */
-    public function getAttachmentNames(int $languageID = null): ?array
+    public function getAttachmentNames(int $languageID = null): array
     {
         return $this->attachmentNames[$languageID ?? Shop::getLanguageID()] ?? [];
     }

@@ -43,12 +43,13 @@
 
             setTimeout(() => updateHeight_{$uid}());
 
-            function flipCard()
+            function flipCard(e)
             {
                 flipcardInner.toggleClass('flipped');
                 flipcard.find('.opc-Flipcard-label-front').toggleClass('active');
                 flipcard.find('.opc-Flipcard-label-back').toggleClass('active');
                 updateHeight_{$uid}();
+                e.preventDefault();
             }
         }
 

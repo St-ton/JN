@@ -84,11 +84,11 @@
         {include file="./config.select.tpl"
             propname="{$propname}[border-style]"
             propid="{$propname}-border-style"
-            propval=$propval['border-style']
+            propval=$propval['border-style']|default:''
             propdesc=[
                 'label'   => __('Border style'),
                 'options' => [
-                    'hidden' => __('hidden'),
+                    ''       => __('unset'),
                     'dotted' => __('dotted'),
                     'dashed' => __('dashed'),
                     'solid'  => __('solid')

@@ -1,26 +1,18 @@
 {$imgAttribs = $instance->getImageAttributes(null, null, null, 1, $portlet->getPlaceholderImgUrl())}
 
-{if $isPreview}
-    <div data-portlet="{$instance->getDataAttribute()}"
-         class="opc-Banner {if !empty($imgAttribs.src)}opc-Banner-with-image{/if}"
-         {if !empty($imgAttribs.src)}style="background-image: url('{$imgAttribs.src}')"{/if}>
-        <div>
-            {file_get_contents($portlet->getTemplateUrl()|cat:'icon.svg')}
-            <span>{__('Banner')}</span>
-        </div>
-    </div>
-{else}
-    <div style="{$instance->getStyleString()}"
-         class="banner {$instance->getAnimationClass()}"
-         {$instance->getAnimationDataAttributeString()}>
-        {image
-            src=$imgAttribs.src
-            srcset=$imgAttribs.srcset
-            sizes=$imgAttribs.srcsizes
-            alt=$imgAttribs.alt
-            title=$imgAttribs.title
-            fluid=true
-        }
+<div style="{$instance->getStyleString()}"
+     class="banner {$instance->getAnimationClass()}"
+     {if $isPreview}data-portlet="{$instance->getDataAttribute()}"{/if}
+     {$instance->getAnimationDataAttributeString()}>
+    {image
+        src=$imgAttribs.src
+        srcset=$imgAttribs.srcset
+        sizes=$imgAttribs.srcsizes
+        alt=$imgAttribs.alt
+        title=$imgAttribs.title
+        fluid=true
+    }
+    {if !$isPreview}
         {foreach $instance->getProperty('zones') as $zone}
             {$product = null}
             {$title   = ''}
@@ -58,5 +50,5 @@
                 </div>
             </a>
         {/foreach}
-    </div>
-{/if}
+    {/if}
+</div>

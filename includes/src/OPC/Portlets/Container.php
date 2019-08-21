@@ -37,6 +37,7 @@ class Container extends Portlet
             ],
             'boxed' => [
                 'type'  => InputType::CHECKBOX,
+                'default' => false,
                 'label' => __('boxedContainer'),
                 'width' => 50,
             ],

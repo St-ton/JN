@@ -358,8 +358,8 @@ msgstr "Lightbox"
 msgid "linked"
 msgstr "Verlinkung"
 
-msgid "hidden"
-msgstr "versteckt"
+msgid "unset"
+msgstr "nicht gesetzt"
 
 msgid "dotted"
 msgstr "gepunktet"

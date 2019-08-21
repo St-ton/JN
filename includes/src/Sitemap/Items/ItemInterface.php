@@ -18,9 +18,9 @@ interface ItemInterface
     public function getLastModificationTime(): ?string;
 
     /**
-     * @param string $time
+     * @param string|null $time
      */
-    public function setLastModificationTime($time): void;
+    public function setLastModificationTime(?string $time): void;
 
     /**
      * @return void
@@ -33,9 +33,9 @@ interface ItemInterface
     public function getImage(): ?string;
 
     /**
-     * @param string $image
+     * @param string|null $image
      */
-    public function setImage(string $image): void;
+    public function setImage(?string $image): void;
 
     /**
      * @return void
@@ -58,9 +58,9 @@ interface ItemInterface
     public function getChangeFreq(): ?string;
 
     /**
-     * @param string $changeFreq
+     * @param string|null $changeFreq
      */
-    public function setChangeFreq(string $changeFreq): void;
+    public function setChangeFreq(?string $changeFreq): void;
 
     /**
      * @return string|null
@@ -68,9 +68,9 @@ interface ItemInterface
     public function getPriority(): ?string;
 
     /**
-     * @param string $priority
+     * @param string|null $priority
      */
-    public function setPriority(string $priority): void;
+    public function setPriority(?string $priority): void;
 
     /**
      * @param int $langID
@@ -83,9 +83,9 @@ interface ItemInterface
     public function getLanguageID(): ?int;
 
     /**
-     * @param string $langCode
+     * @param string|null $langCode
      */
-    public function setLanguageCode(string $langCode): void;
+    public function setLanguageCode(?string $langCode): void;
 
     /**
      * @return string|null
@@ -93,9 +93,9 @@ interface ItemInterface
     public function getLanguageCode(): ?string;
 
     /**
-     * @param string $langCode
+     * @param string|null $langCode
      */
-    public function setLanguageCode639(string $langCode): void;
+    public function setLanguageCode639(?string $langCode): void;
 
     /**
      * @return null|string

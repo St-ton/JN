@@ -131,7 +131,7 @@ if (isset($_SESSION['Kunde']) && $_SESSION['Kunde']) {
         );
 
         if (empty($shippingMethods)) {
-            $alertHelper->addAlert(
+            $alertService->addAlert(
                 Alert::TYPE_DANGER,
                 Shop::Lang()->get('noShippingAvailable', 'checkout'),
                 'noShippingAvailable'

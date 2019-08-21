@@ -7,7 +7,8 @@
 {$images = $instance->getProperty('images')}
 
 {if $isPreview && empty($images)}
-    <div data-portlet="{$instance->getDataAttribute()}" class="opc-Gallery">
+    <div data-portlet="{$instance->getDataAttribute()}" class="opc-Gallery"
+         style="{$instance->getStyleString()}">
         <div>
             {file_get_contents($portlet->getTemplateUrl()|cat:'icon.svg')}
             <span>{__('Gallery')}</span>
@@ -15,7 +16,8 @@
     </div>
 {elseif $galleryStyle === 'columns'}
     <div class="gallery-columns" {$dataStr|default:''}
-         id="{$instance->getUid()}">
+         id="{$instance->getUid()}"
+         style="{$instance->getStyleString()}">
         {foreach $images as $key => $image}
             {$imgAttribs = $instance->getImageAttributes($image.url, $image.alt, '')}
             <a {if $isPreview === false}

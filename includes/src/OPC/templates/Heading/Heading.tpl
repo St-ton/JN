@@ -1,17 +1,6 @@
-{if $isPreview}
-    <div data-portlet="{$instance->getDataAttribute()}" class="opc-Heading">
-        <div class="opc-Heading-label">
-            <i class="fas fa-heading opc-Heading-icon"></i>
-            <span class="opc-Heading-label-text">{__('Heading')}</span>
-        </div>
-        <div class="opc-Heading-propinfo">
-            {if !empty($instance->getProperty('text'))}
-                <div><i class="fas fa-font fa-fw"></i> {$instance->getProperty('text')}</div>
-            {/if}
-        </div>
-    </div>
-{else}
-    <h{$instance->getProperty('level')}>
-        {$instance->getProperty('text')}
-    </h{$instance->getProperty('level')}>
-{/if}
+<h{$instance->getProperty('level')} style="{$instance->getStyleString()}"
+                                    {if $isPreview}data-portlet="{$instance->getDataAttribute()}"{/if}
+                                    class="{$instance->getAnimationClass()}"
+                                    {$instance->getAnimationDataAttributeString()}>
+    {$instance->getProperty('text')}
+</h{$instance->getProperty('level')}>

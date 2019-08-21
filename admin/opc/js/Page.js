@@ -239,7 +239,9 @@ class Page
         withDom = withDom || false;
 
         var data     = portlet.data('portlet');
-        var result   = {"class": data.class, title: data.title, properties: data.properties, subareas: {}};
+        var result   = {
+            "class": data.class, title: data.title, properties: data.properties, subareas: {}, uid: data.uid
+        };
         var subareas = portlet.find('.opc-area').not(portlet.find('[data-portlet] .opc-area'));
 
         if (data.class === 'MissingPortlet') {

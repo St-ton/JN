@@ -44,7 +44,7 @@
     <script src="{$shopUrl}/admin/opc/js/PreviewFrame.js"></script>
 
     <script>
-        let opc = new OPC({
+        window.opc = new OPC({
             jtlToken:    '{$smarty.session.jtl_token}',
             shopUrl:     '{$shopUrl}',
             templateUrl: '{$templateUrl}',

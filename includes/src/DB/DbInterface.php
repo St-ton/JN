@@ -278,13 +278,6 @@ interface DbInterface extends \Serializable
     );
 
     /**
-     * @param string $stmt
-     * @param array  $params
-     * @return \Generator|int
-     */
-    public function executeYield(string $stmt, array $params = []);
-
-    /**
      * delete row from table
      *
      * @param string           $tableName - table name

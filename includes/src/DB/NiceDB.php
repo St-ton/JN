@@ -774,33 +774,6 @@ class NiceDB implements DbInterface
     }
 
     /**
-     * @inheritdoc
-     */
-    public function executeYield(string $stmt, array $params = [])
-    {
-        try {
-            $res  = $this->pdo->prepare($stmt);
-            $stmt = $this->readableQuery($stmt, $params);
-            foreach ($params as $k => $v) {
-                $this->_bind($res, $k, $v);
-            }
-            if ($res->execute() === false) {
-                return;
-            }
-        } catch (PDOException $e) {
-            $this->handleException($e, $stmt);
-            if ($this->transactionCount > 0) {
-                throw $e;
-            }
-
-            return;
-        }
-        while (($row = $res->fetchObject()) !== false) {
-            yield $row;
-        }
-    }
-
-    /**
      * executes query and returns misc data
      *
      * @param int           $type - Type [0 => query, 1 => prepared]

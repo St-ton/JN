@@ -543,7 +543,7 @@ class NiceDB implements DbInterface
                 $value = '';
             }
             $lc = \mb_convert_case($value, \MB_CASE_LOWER);
-            if ($lc === 'now()' || $lc = 'current_timestamp') {
+            if ($lc === 'now()' || $lc === 'current_timestamp') {
                 $insData['`' . $column . '`'] = $value;
                 if (!\in_array($column, $excludeUpdate, true)) {
                     $updData[] = '`' . $column . '` = ' . $value;
@@ -568,13 +568,13 @@ class NiceDB implements DbInterface
         try {
             $res = $stmt->execute($assigns);
         } catch (PDOException $e) {
-            $this->handleException($e, $stmt, $assigns);
+            $this->handleException($e, $sql, $assigns);
 
             return -1;
         }
 
         if (!$res) {
-            $this->logError($stmt);
+            $this->logError($sql);
 
             return -1;
         }

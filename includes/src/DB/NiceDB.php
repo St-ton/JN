@@ -543,7 +543,7 @@ class NiceDB implements DbInterface
                 $value = '';
             }
             $lc = \mb_convert_case($value, \MB_CASE_LOWER);
-            if ($lc === 'now()' || $lc = 'current_timestamp') {
+            if ($lc === 'now()' || $lc === 'current_timestamp') {
                 $insData['`' . $column . '`'] = $value;
                 if (!\in_array($column, $excludeUpdate, true)) {
                     $updData[] = '`' . $column . '` = ' . $value;

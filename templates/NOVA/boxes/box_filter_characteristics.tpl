@@ -6,7 +6,7 @@
     {if $nSeitenTyp === $smarty.const.PAGE_ARTIKELLISTE && (!$device->isMobile() || $device->isTablet())}
         {foreach $oBox->getItems() as $Merkmal}
             <div{if $Merkmal@last} class="mb-7"{/if}>
-                <div class="h4">
+                <div>
                     {button
                     variant="link"
                     class="text-decoration-none pl-0 text-left"
@@ -47,7 +47,7 @@
                     {/if}
                 {/block}
                 {/collapse}
-                {if !$Merkmal@last}<hr class="mt-0 mb-3">{/if}
+                {if !$Merkmal@last}<hr class="my-2">{/if}
             </div>
         {/foreach}
     {/if}

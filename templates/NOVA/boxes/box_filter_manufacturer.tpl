@@ -4,7 +4,7 @@
  *}
 {block name='boxes-box-filter-manufacturer'}
     {if $nSeitenTyp === $smarty.const.PAGE_ARTIKELLISTE && (!$device->isMobile() || $device->isTablet())}
-        <div class="h4">
+        <div>
             {button
             variant="link"
             class="text-decoration-none pl-0 text-left"
@@ -20,6 +20,6 @@
                 {include file='snippets/filter/manufacturer.tpl' filter=$oBox->getItems()}
         {/block}
         {/collapse}
-        <hr class="mt-0 mb-3">
+        <hr class="my-2">
     {/if}
 {/block}

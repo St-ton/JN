@@ -5,7 +5,7 @@
 {block name='boxes-box-filter-pricerange'}
     {if !empty($oBox->getItems()->getOptions()) && $nSeitenTyp === $smarty.const.PAGE_ARTIKELLISTE && (!$device->isMobile() || $device->isTablet())}
         {block name='boxes-box-filter-pricerange-content'}
-            <div class="h4">
+            <div>
                 {button
                 variant="link"
                 class="text-decoration-none pl-0 text-left"
@@ -22,7 +22,7 @@
                     {include file='snippets/filter/price_slider.tpl' id='price-slider-box'}
                 {/block}
             {/collapse}
-            <hr class="mt-0 mb-3">
+            <hr class="my-2">
         {/block}
     {/if}
 {/block}

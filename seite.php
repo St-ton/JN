@@ -114,8 +114,8 @@ if ($link->getLinkType() === LINKTYP_STARTSEITE) {
     );
 }
 
-require_once PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
 executeHook(HOOK_SEITE_PAGE_IF_LINKART);
+require_once PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
 $smarty->assign('Link', $link)
        ->assign('bSeiteNichtGefunden', Shop::getPageType() === PAGE_404)
        ->assign('cFehler', !empty($cFehler) ? $cFehler : null)

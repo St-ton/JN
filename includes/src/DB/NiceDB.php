@@ -574,7 +574,7 @@ class NiceDB implements DbInterface
         }
 
         if (!$res) {
-            $this->logError($stmt);
+            $this->logError($sql);
 
             return -1;
         }

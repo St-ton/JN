@@ -568,7 +568,7 @@ class NiceDB implements DbInterface
         try {
             $res = $stmt->execute($assigns);
         } catch (PDOException $e) {
-            $this->handleException($e, $stmt, $assigns);
+            $this->handleException($e, $sql, $assigns);
 
             return -1;
         }

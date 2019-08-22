@@ -14,17 +14,11 @@ msgstr "Galerie"
 msgid "presentationList"
 msgstr "Liste"
 
+msgid "presentationSimpleSlider"
+msgstr "Einfacher Slider mit Bildern"
+
 msgid "presentationSlider"
-msgstr "Slider"
-
-msgid "presentationSliderVertical"
-msgstr "vertikaler Slider"
-
-msgid "sliderTitle"
-msgstr "Slidertitel"
-
-msgid "numberVisibleItems"
-msgstr "Anzahl sichtbare Artikel"
+msgstr "Slider mit Namen und Preisen"
 
 msgid "itemFilter"
 msgstr "Artikelfilter"

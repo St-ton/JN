@@ -210,7 +210,7 @@ class PageDB
     public function getPublicPage(string $id): ?Page
     {
         $publicRow = $this->getPublicPageRow($id);
-        $page = null;
+        $page      = null;
 
         if (\is_object($publicRow)) {
             $page = $this->getPageFromRow($publicRow);

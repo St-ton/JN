@@ -30,7 +30,7 @@
                 {/block}
                 {block name='register-form-customer-account-password'}
                     {col md=8}
-                        {row id="create_account_data" class="collapse collapse-non-validate {if empty($checkout)
+                        {formrow id="create_account_data" class="collapse collapse-non-validate {if empty($checkout)
                         || $smarty.session.Warenkorb->hasDigitalProducts()
                         || $Einstellungen.kaufabwicklung.bestellvorgang_unregistriert === 'N'}show{else}hidden{/if}" aria-expanded="true"}
                             {block name='register-form-customer-account-password-first'}
@@ -84,7 +84,7 @@
                                     {/formgroup}
                                 {/col}
                             {/block}
-                        {/row}
+                        {/formrow}
                     {/col}
                 {/block}
             {/row}

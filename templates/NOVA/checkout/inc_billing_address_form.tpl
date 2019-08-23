@@ -25,7 +25,7 @@
                 <div class="h3">{lang key='billingAdress' section='account data'}</div>
             {/col}
             {col md=8}
-                {row}
+                {formrow}
                     {* salutation / title *}
                     {block name='checkout-inc-billing-address-form-salutation-title'}
                         {if $Einstellungen.kunden.kundenregistrierung_abfragen_anrede !== 'N'}
@@ -371,7 +371,7 @@
                             {/col}
                         {/block}
                     {/if}
-                {/row}
+                {/formrow}
             {/col}
         {/row}
     </fieldset>
@@ -382,7 +382,7 @@
                 <div class="h3">{lang key='contactInformation' section='account data'}</div>
             {/col}
             {col cols=12 md=8}
-                {row}
+                {formrow}
                     {block name='checkout-inc-billing-address-form-mail'}
                         {col cols=12}
                             {if isset($cPost_var['email'])}
@@ -494,7 +494,7 @@
                             {/col}
                         {/block}
                     {/if}
-                {/row}
+                {/formrow}
             {/col}
         {/row}
     </fieldset>

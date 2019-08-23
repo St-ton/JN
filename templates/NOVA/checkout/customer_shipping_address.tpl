@@ -3,7 +3,7 @@
  * @license https://jtl-url.de/jtlshoplicense
  *}
 {block name='checkout-customer-shipping-address'}
-    {row}
+    {formrow}
         {$name = 'shipping_address'}
         {* salutation / title *}
         {block name='checkout-customer-shipping-address-salution-title'}
@@ -265,5 +265,5 @@
                 {/formgroup}
             {/col}
         {/block}
-    {/row}
+    {/formrow}
 {/block}

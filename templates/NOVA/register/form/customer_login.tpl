@@ -46,12 +46,18 @@
                 {input type="hidden" name="r" value=$oRedirect->nRedirect}
                 {input type="hidden" name="cURL" value=$oRedirect->cURL}
             {/if}
-            {button type="submit" variant="primary" block=(!isset($withSidebar) || $withSidebar === 0)}
-                {lang key='login' section='checkout'}
-            {/button}
-            {link class="small" href="{get_static_route id='pass.php'}" class="ml-3"}
-                <span class="fa fa-question-circle"></span> {lang key='forgotPassword'}
-            {/link}
+            {row}
+                {col lg=6}
+                    {button type="submit" variant="primary" block=true}
+                        {lang key='login' section='checkout'}
+                    {/button}
+                {/col}
+                {col lg=6}
+                    {link class="btn btn-link btn-block text-decoration-underline" href="{get_static_route id='pass.php'}"}
+                        {lang key='forgotPassword'}
+                    {/link}
+                {/col}
+            {/row}
         {/formgroup}
     {/block}
 {/block}

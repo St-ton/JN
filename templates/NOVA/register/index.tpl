@@ -44,13 +44,13 @@
                                 <h1>{lang key='createNewAccount' section='account data'}</h1>
                             {/if}
                             {include file='snippets/opc_mount_point.tpl' id='opc_before_form_card'}
-                            {card id="panel-register-form"}
+                            <div id="panel-register-form">
                                 {block name='register-index-include-form'}
                                     {include file='snippets/opc_mount_point.tpl' id='opc_before_form'}
                                     {include file='register/form.tpl'}
                                     {include file='snippets/opc_mount_point.tpl' id='opc_after_form'}
                                 {/block}
-                            {/card}
+                            </div>
                         {/col}
                     {/row}
                 {/block}

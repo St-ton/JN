@@ -120,13 +120,11 @@ header > [class*="container"],
   box-shadow: 0 2px 16px 0 rgba(0,0,0,0.06);
 }
 
-body.unboxed-layout {
-  header > [class*="container"],
-  #main-wrapper #content-wrapper { box-shadow: none; background: transparent; }
-  header, #main-wrapper { background: #fff; }
-  @include media-breakpoint-up(lg) {
-    .container { max-width: 1310px; }
-  }
+header > [class*="container"],
+#main-wrapper #content-wrapper { box-shadow: none; background: transparent; }
+header, #main-wrapper { background: #fff; }
+@include media-breakpoint-up(lg) {
+  .container { max-width: 1310px; }
 }
 @include media-breakpoint-down(md) {
   #navbarToggler {
@@ -2254,6 +2252,10 @@ input.form-control[name="wishlist-url"] {
   }
 }
 
+.custom-checkbox + .description {
+  margin-left: $custom-control-gutter + $custom-control-indicator-size;
+}
+
 #filter-checkboxes .custom-checkbox label,
 #filter-checkboxes .custom-checkbox ::after {
   cursor: pointer;
@@ -2450,7 +2452,8 @@ legend {
   border-bottom: solid 1px $sand;
 }
 
-label[for="city"] {
+label[for="city"],
+label[for="register-shipping_address-city"] {
   padding: 0;
 }
 

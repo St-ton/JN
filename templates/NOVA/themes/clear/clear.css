@@ -17149,7 +17149,7 @@ input.form-control[name=wishlist-url] {
 .label-slide .form-group input:not([type=checkbox]):not([type=radio]), .label-slide .form-group select {
   width: 100%;
   outline: none;
-  padding: 0 15px;
+  padding: 10px 15px;
 }
 .label-slide .form-group input:not([type=checkbox]):not([type=radio]):focus + label, .label-slide .form-group select:focus + label {
   top: -10px;
@@ -17162,7 +17162,7 @@ input.form-control[name=wishlist-url] {
 .label-slide .form-group input:not([type=checkbox]):not([type=radio]):not([value=""]):not(:focus) + label, .label-slide .form-group input:not([type=checkbox]):not([type=radio])[type=date] + label, .label-slide .form-group input:not([type=checkbox]):not([type=radio])[type=datetime-local] + label, .label-slide .form-group input:not([type=checkbox]):not([type=radio])[type=color] + label, .label-slide .form-group input:not([type=checkbox]):not([type=radio])[type=file] + label, .label-slide .form-group select:not([value=""]):not(:focus) + label, .label-slide .form-group select[type=date] + label, .label-slide .form-group select[type=datetime-local] + label, .label-slide .form-group select[type=color] + label, .label-slide .form-group select[type=file] + label {
   top: -10px;
   background: #fff;
-  padding: 3px 6px 0px 6px;
+  padding: 3px 6px 0 6px;
   left: 10px;
   color: #525252;
   font-size: 12px;

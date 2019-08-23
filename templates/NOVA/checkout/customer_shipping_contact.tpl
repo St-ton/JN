@@ -33,7 +33,7 @@
                                 {include file='snippets/form_group_simple.tpl'
                                     options=[
                                         "tel", "{$prefix}-{$name}-mobil", "{$prefix}[{$name}][mobil]",
-                                        {$Lieferadresse->cMobil|default:null}, {lang key='mobil' section='account data'},
+                                        {$Lieferadresse->cMobil|default:null}, {lang key='mobile' section='account data'},
                                         $Einstellungen.kunden.lieferadresse_abfragen_mobil, null, "shipping mobile tel"
                                     ]
                                 }

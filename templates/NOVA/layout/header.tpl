@@ -349,7 +349,7 @@
     {/block}
     {block name='layout-header-content-all-starttags'}
         {block name='layout-header-content-wrapper-starttag'}
-            <div id="content-wrapper" class="container-fluid mt-0 pt-4 {if $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp}px-4 px-xl-7{else}px-0{/if}">
+            <div id="content-wrapper" class="container-fluid mt-0 pt-7 {if $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp}px-4 px-xl-7{else}px-0{/if}">
         {/block}
 
         {block name='layout-header-breadcrumb'}

@@ -95,7 +95,7 @@
 
         {* street / number *}
         {block name='checkout-customer-shipping-address-street'}
-            {col md=8}
+            {col cols=8}
                 {include file='snippets/form_group_simple.tpl'
                     options=[
                         "text", "{$prefix}-{$name}-street", "{$prefix}[{$name}][strasse]",
@@ -104,7 +104,7 @@
                     ]
                 }
             {/col}
-            {col md=4}
+            {col cols=4}
                 {include file='snippets/form_group_simple.tpl'
                     options=[
                         "text", "{$prefix}-{$name}-streetnumber", "{$prefix}[{$name}][hausnummer]",

@@ -2383,7 +2383,7 @@ input.form-control[name="wishlist-url"] {
   input:not([type="checkbox"]):not([type="radio"]), select {
     width:100%;
     outline:none;
-    padding:0 15px;
+    padding:10px 15px;
     &:focus{
       & + label{
         top: -10px;
@@ -2398,7 +2398,7 @@ input.form-control[name="wishlist-url"] {
       & + label{
         top: -10px;
         background: #fff;
-        padding: 3px 6px 0px 6px;
+        padding: 3px 6px 0 6px;
         left: 10px;
         color: $gray-dark;
         font-size: 12px;

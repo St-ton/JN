@@ -18,15 +18,17 @@
         <div class="card-body  collapse" id="pageCheckModifiedFiles">
             <p class="small text-muted">{__('fileCheckModifiedFilesNote')}</p>
             <div id="contentModifiedFilesCheck">
-                <table class="table req">
+                <table class="table table-sm table-borderless req">
                     <thead>
                     <tr>
-                        <th>{__('file')}</th>
+                        <th class="text-left">{__('file')}</th>
+                        <th class="text-right">{__('lastModified')}</th>
                     </tr>
                     </thead>
                     {foreach $modifiedFiles as $file}
                         <tr class="filestate mod{$file@iteration % 2} modified">
-                            <td>{$file}</td>
+                            <td class="text-left">{$file->name}</td>
+                            <td class="text-right">{$file->lastModified}</td>
                         </tr>
                     {/foreach}
                 </table>
@@ -45,15 +47,17 @@
         <div class="card-body  collapse" id="pageCheckOrphanedFiles">
             <p class="small text-muted">{__('fileCheckOrphanedFilesNote')}</p>
             <div id="contentOrphanedFilesCheck">
-                <table class="table req">
+                <table class="table table-sm table-borderless req">
                     <thead>
                         <tr>
-                            <th>{__('file')}</th>
+                            <th class="text-left">{__('file')}</th>
+                            <th class="text-right">{__('lastModified')}</th>
                         </tr>
                     </thead>
                     {foreach $orphanedFiles as $file}
                         <tr class="filestate mod{$file@iteration % 2} orphaned">
-                            <td>{$file}</td>
+                            <td class="text-left">{$file->name}</td>
+                            <td class="text-right">{$file->lastModified}</td>
                         </tr>
                     {/foreach}
                 </table>

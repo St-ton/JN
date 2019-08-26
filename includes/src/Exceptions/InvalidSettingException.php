@@ -20,6 +20,6 @@ class InvalidSettingException extends Exception
      */
     public function __construct($message)
     {
-        parent::__construct('Einstellgunsfehler: '.$message);
+        parent::__construct('Einstellungsfehler: ' . $message);
     }
 }

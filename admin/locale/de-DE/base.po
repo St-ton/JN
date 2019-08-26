@@ -578,6 +578,21 @@ msgstr "zentriert"
 msgid "activated"
 msgstr "Aktiviert"
 
+msgid "modified"
+msgstr "Modifiziert"
+
+msgid "unmodified"
+msgstr "Unmodifiziert"
+
+msgid "tplChecksums"
+msgstr "Template Dateienchecksummen"
+
+msgid "modifiedFiles"
+msgstr "Modifizierte Dateien"
+
+msgid "lastModified"
+msgstr "Zuletzt bearbeitet"
+
 msgid "files"
 msgstr "Dateien"
 
@@ -1884,7 +1899,7 @@ msgstr "Alle aktivieren"
 msgid "selectPickerDeselectAllText"
 msgstr "Alle deaktivieren"
 
-msgid "selectPickerDoneButtonText"
+msgid "close"
 msgstr "Schließen"
 
 msgid "none"

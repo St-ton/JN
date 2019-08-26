@@ -49,12 +49,12 @@
                                 {block name='contact-index-fieldset-contact'}
                                 <fieldset>
                                     {row class="{if !empty($Spezialcontent->oben)}mt-5{/if}"}
-                                         {col lg=4}
+                                         {col cols=12 lg=4}
                                             {block name='contact-index-legend-contact'}
                                                 <legend class="border-0 h3">{lang key='contact'}</legend>
                                             {/block}
                                         {/col}
-                                        {col lg=8}
+                                        {col cols=12 lg=8}
                                             {block name='contact-index-salution'}
                                                 {row}
                                                     {if $Einstellungen.kontakt.kontakt_abfragen_anrede !== 'N'}
@@ -172,12 +172,12 @@
                                 {block name='contact-index-fieldset-message'}
                                 <fieldset>
                                     {row}
-                                        {col lg=4}
+                                        {col cols=12 lg=4}
                                             {block name='contact-index-legend-message'}
                                                 <legend class="border-0 h3">{lang key='message' section='contact'}</legend>
                                             {/block}
                                         {/col}
-                                        {col lg=8}
+                                        {col cols=12 lg=8}
                                             {if $betreffs}
                                                 {block name='contact-index-form-subject'}
                                                     {if isset($fehlendeAngaben.betreff)}
@@ -245,8 +245,8 @@
                                 {block name='contact-index-form-submit'}
                                     {include file='snippets/opc_mount_point.tpl' id='opc_before_submit'}
                                     {row}
-                                        {col lg=4}{/col}
-                                        {col lg=8}
+                                        {col cols=12 lg=4}{/col}
+                                        {col cols=12 lg=8}
                                             {row}
                                                 {col md=4 xl=3 class='ml-auto'}
                                                 {input type='hidden' name='kontakt' value='1'}

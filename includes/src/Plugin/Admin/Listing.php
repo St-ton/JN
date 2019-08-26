@@ -188,7 +188,11 @@ final class Listing
 
                 if ($desc !== $msgid) {
                     $item->setDescription($desc);
+                } else {
+                    $item->setDescription(__($item->getDescription()));
                 }
+                $item->setAuthor(__($item->getAuthor()));
+                $item->setName(__($item->getName()));
             }
 
             if ($code === InstallCode::DUPLICATE_PLUGIN_ID && $installedPlugins->contains($dir)) {

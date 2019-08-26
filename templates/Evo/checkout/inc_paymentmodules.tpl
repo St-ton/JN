@@ -9,7 +9,7 @@
     {else}
         {$method = null}
     {/if}
-    {if ($method === null || $Bestellung->Zahlungsart->cModulId !== $method->cModulId)
+    {if ($method === null || $Bestellung->Zahlungsart->cModulId !== $method->getModuleID())
     && $Bestellung->Zahlungsart->cModulId !== 'za_kreditkarte_jtl' && $Bestellung->Zahlungsart->cModulId !== 'za_lastschrift_jtl'}
         {if isset($smarty.session.Zahlungsart->nWaehrendBestellung) && $smarty.session.Zahlungsart->nWaehrendBestellung == 1}
             <div class="alert alert-info">{lang key='orderConfirmationPre' section='checkout'}</div>
@@ -37,8 +37,8 @@
             {include file='checkout/modules/paypal/bestellabschluss.tpl'}
         {elseif $Bestellung->Zahlungsart->cModulId === 'za_kreditkarte_jtl'}
             {include file='account/retrospective_payment.tpl'}
-        {elseif $method !== null && $Bestellung->Zahlungsart->cModulId === $method->cModulId}
-            {include file=$method->cTemplateFileURL}
+        {elseif $method !== null && $Bestellung->Zahlungsart->cModulId === $method->getModuleID()}
+            {include file=$method->getTemplateFilePath()}
         {/if}
         <br />
     </div>

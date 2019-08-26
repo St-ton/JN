@@ -223,7 +223,7 @@ interface DbInterface extends \Serializable
      * @return array|object|int - 0 if fails, 1 if successful or LastInsertID if specified
      * @throws \InvalidArgumentException
      */
-    public function executeQuery($stmt, $return, bool $echo = false, $fnInfo = null);
+    public function executeQuery(string $stmt, int $return, bool $echo = false, $fnInfo = null);
 
     /**
      * @param string   $stmt
@@ -254,9 +254,9 @@ interface DbInterface extends \Serializable
      * @throws \InvalidArgumentException
      */
     public function executeQueryPrepared(
-        $stmt,
+        string $stmt,
         array $params,
-        $return,
+        int $return,
         bool $echo = false,
         $fnInfo = null
     );
@@ -270,19 +270,12 @@ interface DbInterface extends \Serializable
      * @return int|object|array
      */
     public function queryPrepared(
-        $stmt,
-        $params,
-        $return,
+        string $stmt,
+        array $params,
+        int $return,
         bool $echo = false,
         $fnINfo = null
     );
-
-    /**
-     * @param string $stmt
-     * @param array  $params
-     * @return \Generator|int
-     */
-    public function executeYield($stmt, array $params = []);
 
     /**
      * delete row from table
@@ -351,6 +344,7 @@ interface DbInterface extends \Serializable
      *
      * @param string $entry - entry to log
      * @return $this
+     * @deprecated since 5.0.0
      */
     public function writeLog(string $entry): DbInterface;
 

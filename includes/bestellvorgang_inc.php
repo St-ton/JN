@@ -63,6 +63,7 @@ function pruefeVersandartWahl($shippingMethod, $formValues = 0, $bMsg = true): b
 
     if ($nReturnValue) {
         $step = 'Zahlung';
+        Shop::Container()->getAlertService()->removeAlertByKey('fillShipping');
 
         return true;
     }

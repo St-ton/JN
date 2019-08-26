@@ -15,6 +15,7 @@ use JTL\Helpers\Tax;
 use JTL\Helpers\Text;
 use JTL\Language\LanguageHelper;
 use JTL\Pagination\Pagination;
+use JTL\Plugin\Helper as PluginHelper;
 use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
@@ -347,8 +348,19 @@ if ($step === 'neue Versandart') {
         ['nActive', 'nNutzbar'],
         [1, 1],
         '*',
-        'cAnbieter, nSort, cName'
+        'cAnbieter, nSort, cName, cModulId'
     );
+    foreach ($zahlungsarten as $zahlungsart) {
+        $pluginID = PluginHelper::getIDByModuleID($zahlungsart->cModulId);
+        if ($pluginID > 0) {
+            Shop::Container()->getGetText()->loadPluginLocale(
+                'base',
+                PluginHelper::getLoaderByPluginID($pluginID)->init($pluginID)
+            );
+        }
+        $zahlungsart->cName     = __($zahlungsart->cName);
+        $zahlungsart->cAnbieter = __($zahlungsart->cAnbieter);
+    }
     $smarty->assign('versandKlassen', $db->selectAll('tversandklasse', [], [], '*', 'kVersandklasse'));
     $tmpID = 0;
     if (isset($shippingMethod->kVersandart) && $shippingMethod->kVersandart > 0) {
@@ -403,6 +415,15 @@ if ($step === 'uebersicht') {
                 1
             );
             $smp->cAufpreisTyp = $smp->cAufpreisTyp === 'prozent' ? '%' : '';
+            $pluginID          = PluginHelper::getIDByModuleID($smp->zahlungsart->cModulId);
+            if ($pluginID > 0) {
+                Shop::Container()->getGetText()->loadPluginLocale(
+                    'base',
+                    PluginHelper::getLoaderByPluginID($pluginID)->init($pluginID)
+                );
+            }
+            $smp->zahlungsart->cName     = __($smp->zahlungsart->cName);
+            $smp->zahlungsart->cAnbieter = __($smp->zahlungsart->cAnbieter);
         }
         $method->versandartstaffeln         = $db->selectAll(
             'tversandartstaffel',

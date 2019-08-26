@@ -387,7 +387,7 @@
                             {row class="gallery"}
                             {foreach $wishlistItems as $wlPosition}
                                 {col cols=12 sm=6 md=4 xl=3 class="product-wrapper mb-7"}
-                                    <div id="result-wrapper_buy_form_{$wlPosition->kWunschlistePos}" class="product-cell text-center hover-enabled">
+                                    <div id="result-wrapper_buy_form_{$wlPosition->kWunschlistePos}" data-wrapper="true" class="product-cell text-center hover-enabled">
                                         {if $isCurrenctCustomer === true}
                                             {block name='snippets-wishlist-form-basket-remove'}
                                                 {button

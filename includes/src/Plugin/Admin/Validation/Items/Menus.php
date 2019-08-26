@@ -57,11 +57,13 @@ final class Menus extends AbstractItem
                 if (empty($customLink['Name']) || \mb_strlen($hits[0]) !== \mb_strlen($customLink['Name'])) {
                     return InstallCode::INVALID_CUSTOM_LINK_NAME;
                 }
-                if (empty($customLink['Filename'])) {
-                    return InstallCode::INVALID_CUSTOM_LINK_FILE_NAME;
-                }
-                if (!\file_exists($dir . \PFAD_PLUGIN_ADMINMENU . $customLink['Filename'])) {
-                    return InstallCode::MISSING_CUSTOM_LINK_FILE;
+                if (isset($customLink['Filename'])) {
+                    if (empty($customLink['Filename'])) {
+                        return InstallCode::INVALID_CUSTOM_LINK_FILE_NAME;
+                    }
+                    if (!\file_exists($dir . \PFAD_PLUGIN_ADMINMENU . $customLink['Filename'])) {
+                        return InstallCode::MISSING_CUSTOM_LINK_FILE;
+                    }
                 }
             }
         }

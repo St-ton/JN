@@ -473,17 +473,19 @@ class Iframe
     onBtnClone()
     {
         if(this.selectedElm !== null) {
-            var area = this.selectedElm.parent();
-            var copiedElm = this.selectedElm.clone();
-
-            this.opc.emit('clone-portlet', copiedElm);
-            copiedElm.insertAfter(this.selectedElm);
-            copiedElm.removeClass('opc-selected');
-            copiedElm.removeClass('opc-hovered');
-            this.pagetree.updateArea(area);
-            this.setSelected(this.selectedElm);
-            this.updateDropTargets();
-            this.gui.setUnsaved(true, true);
+            let data = this.page.portletToJSON(this.selectedElm);
+            data.uid = null;
+            this.io.getPortletPreviewHtml(data)
+                .then(html => {
+                    let copiedElm = this.jq(html);
+                    this.opc.emit('clone-portlet', copiedElm);
+                    copiedElm.insertAfter(this.selectedElm);
+                    let area = copiedElm.parent();
+                    this.pagetree.updateArea(area);
+                    this.setSelected(copiedElm);
+                    this.updateDropTargets();
+                    this.gui.setUnsaved(true, true);
+                });
         }
     }
 

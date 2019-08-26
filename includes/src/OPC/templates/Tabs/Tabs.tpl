@@ -4,7 +4,7 @@
     {tabs}
         {foreach $instance->getProperty('tabs') as $i => $tabTitle}
             {$tabId = $instance->getUid()|cat:'-'|cat:$i}
-            {$areaId = 'tab-'|cat:$tabId}
+            {$areaId = 'tab-'|cat:$i}
             {tab id=$tabId title=$tabTitle active=$i==0}
                 <div data-area-id="{$areaId}" class="opc-area">
                     {if $isPreview}

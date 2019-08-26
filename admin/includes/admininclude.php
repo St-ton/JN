@@ -68,7 +68,7 @@ require PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'smartyinclude.php';
 Shop::Container()->singleton(CaptchaServiceInterface::class, function () {
     return new SimpleCaptchaService(true);
 });
-Shop::bootstrap();
+Shop::bootstrap(false);
 
 if ($oAccount->logged()) {
     if (!$session->isValid()) {

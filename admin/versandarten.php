@@ -352,7 +352,7 @@ if ($step === 'neue Versandart') {
         '*',
         'cAnbieter, nSort, cName'
     );
-    $tmpID = (int)($shippingMethod->kVersandart ?? 0);
+    $tmpID         = (int)($shippingMethod->kVersandart ?? 0);
     $smarty->assign('versandKlassen', $db->selectAll('tversandklasse', [], [], '*', 'kVersandklasse'))
            ->assign('zahlungsarten', $zahlungsarten)
            ->assign('versandlaender', $versandlaender)

@@ -29,17 +29,16 @@ final class FrontendLinks extends AbstractItem
             return InstallCode::MISSING_FRONTEND_LINKS;
         }
         foreach ($node['Link'] as $i => $link) {
-            if (!\is_array($link)) {
-                return InstallCode::MISSING_FRONTEND_LINKS;
-            }
-            $i    = (string)$i;
-            $link = $this->sanitizeLinkData($link);
+            $i = (string)$i;
             \preg_match('/[0-9]+\sattr/', $i, $hits1);
             \preg_match('/[0-9]+/', $i, $hits2);
-
             if (\mb_strlen($hits2[0]) !== \mb_strlen($i)) {
                 continue;
             }
+            if (!\is_array($link)) {
+                return InstallCode::MISSING_FRONTEND_LINKS;
+            }
+            $link = $this->sanitizeLinkData($link);
             if (\mb_strlen($link['Filename']) === 0) {
                 return InstallCode::INVALID_FRONTEND_LINK_FILENAME;
             }

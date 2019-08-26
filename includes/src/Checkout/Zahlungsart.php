@@ -535,8 +535,9 @@ class Zahlungsart extends MainModel
                 ],
                 ReturnType::SINGLE_OBJECT
             );
-
-            $this->loadObject($data);
+            if ($data !== false) {
+                $this->loadObject($data);
+            }
         }
 
         return $this;

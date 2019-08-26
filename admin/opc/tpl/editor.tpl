@@ -55,10 +55,8 @@
         opc.init();
     </script>
 
-    {foreach $opc->getAllPortlets() as $portlet}
-        {foreach $portlet->getEditorInitScriptUrls() as $scriptUrl}
-            <script src="{$portlet->getTemplateUrl()|cat:$scriptUrl}"></script>
-        {/foreach}
+    {foreach $opc->getPortletInitScriptUrls() as $scriptUrl}
+        <script src="{$scriptUrl}"></script>
     {/foreach}
 </head>
 <body>

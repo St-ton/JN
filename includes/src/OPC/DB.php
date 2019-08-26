@@ -10,7 +10,7 @@ use Exception;
 use InvalidArgumentException;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
-use JTL\OPC\Portlets\MissingPortlet;
+use JTL\OPC\Portlets\MissingPortlet\MissingPortlet;
 use JTL\Plugin\PluginLoader;
 use JTL\Shop;
 
@@ -178,13 +178,21 @@ class DB
     }
 
     /**
+     * @param bool $withInactive
      * @return Portlet[]
      * @throws Exception
      */
-    public function getAllPortlets(): array
+    public function getAllPortlets(bool $withInactive = false): array
     {
-        $portlets   = [];
-        $portletsDB = $this->shopDB->selectAll('topcportlet', [], [], 'cClass', 'cTitle');
+        $portlets = [];
+
+        $portletsDB = $this->shopDB->selectAll(
+            'topcportlet',
+            $withInactive ? [] : 'bActive',
+            $withInactive ? [] : 1,
+            'cClass',
+            'cTitle'
+        );
 
         foreach ($portletsDB as $portletDB) {
             $portlets[] = $this->getPortlet($portletDB->cClass);
@@ -225,9 +233,9 @@ class DB
         if ($fromPlugin) {
             $loader    = new PluginLoader($this->shopDB, Shop::Container()->getCache());
             $plugin    = $loader->init((int)$portletDB->kPlugin);
-            $fullClass = '\Plugin\\' . $plugin->getPluginID() . '\Portlets\\' . $class;
+            $fullClass = '\Plugin\\' . $plugin->getPluginID() . '\Portlets\\' . $class . '\\' . $class;
         } else {
-            $fullClass = '\JTL\OPC\Portlets\\' . $class;
+            $fullClass = '\JTL\OPC\Portlets\\' . $class . '\\'. $class;
         }
 
         if ($isInstalled && $isActive) {

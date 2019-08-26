@@ -62,8 +62,8 @@ if ($step === 'agbwrb_uebersicht') {
     $agbWrb = [];
     $data   = Shop::Container()->getDB()->selectAll('ttext', 'kSprache', (int)$_SESSION['kSprache']);
     // Assoc Array mit kKundengruppe machen
-    foreach ($data as $i => $oAGBWRBTMP) {
-        $agbWrb[$oAGBWRBTMP->kKundengruppe] = $oAGBWRBTMP;
+    foreach ($data as $item) {
+        $agbWrb[(int)$item->kKundengruppe] = $item;
     }
     $smarty->assign('oKundengruppe_arr', $customerGroups)
            ->assign('oAGBWRB_arr', $agbWrb);

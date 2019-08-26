@@ -94,7 +94,7 @@ $customers = Shop::Container()->getDB()->query(
 );
 
 foreach ($customers as $item) {
-    $customer = new Customer($item->kKunde);
+    $customer = new Customer((int)$item->kKunde);
 
     $item->cNachname = $customer->cNachname;
     $item->cFirma    = $customer->cFirma;
@@ -106,8 +106,7 @@ $smarty->assign('oKunde_arr', $customers)
 if (isset($_GET['a']) && (int)$_GET['a'] > 0) {
     $step       = 'anzeigen';
     $customerID = (int)$_GET['a'];
-
-    $persCart = Shop::Container()->getDB()->query(
+    $persCart   = Shop::Container()->getDB()->query(
         'SELECT COUNT(*) AS nAnzahl
             FROM twarenkorbperspos
             JOIN twarenkorbpers 
@@ -117,7 +116,7 @@ if (isset($_GET['a']) && (int)$_GET['a'] > 0) {
     );
 
     $oPagiWarenkorb = (new Pagination('warenkorb'))
-        ->setItemCount($persCart->nAnzahl)
+        ->setItemCount((int)$persCart->nAnzahl)
         ->assemble();
 
     $carts = Shop::Container()->getDB()->query(
@@ -134,7 +133,7 @@ if (isset($_GET['a']) && (int)$_GET['a'] > 0) {
         ReturnType::ARRAY_OF_OBJECTS
     );
     foreach ($carts as $cart) {
-        $customer = new Customer($cart->kKundeTMP);
+        $customer = new Customer((int)$cart->kKundeTMP);
 
         $cart->cNachname = $customer->cNachname;
         $cart->cFirma    = $customer->cFirma;

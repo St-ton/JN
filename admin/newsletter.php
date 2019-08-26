@@ -40,7 +40,7 @@ $activeSearchSQL           = new stdClass();
 $activeSearchSQL->cJOIN    = '';
 $activeSearchSQL->cWHERE   = '';
 $customerGroup             = $db->select('tkundengruppe', 'cStandard', 'Y');
-$_SESSION['Kundengruppe']  = new CustomerGroup($customerGroup->kKundengruppe);
+$_SESSION['Kundengruppe']  = new CustomerGroup((int)$customerGroup->kKundengruppe);
 
 setzeSprache();
 if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {

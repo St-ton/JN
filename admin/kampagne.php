@@ -81,11 +81,11 @@ if (Request::verifyGPCDataInt('neu') === 1 && Form::validateToken()) {
 } elseif (Request::verifyGPCDataInt('erstellen_speichern') === 1 && Form::validateToken()) {
     // Speichern / Editieren
     $campaign             = new Kampagne();
-    $campaign->cName      = $_POST['cName'];
+    $campaign->cName      = $_POST['cName'] ?? '';
     $campaign->cParameter = $_POST['cParameter'];
-    $campaign->cWert      = $_POST['cWert'];
-    $campaign->nDynamisch = $_POST['nDynamisch'];
-    $campaign->nAktiv     = $_POST['nAktiv'];
+    $campaign->cWert      = $_POST['cWert'] ?? '';
+    $campaign->nDynamisch = $_POST['nDynamisch'] ?? 0;
+    $campaign->nAktiv     = $_POST['nAktiv'] ?? 0;
     $campaign->dErstellt  = 'NOW()';
 
     // Editieren
@@ -94,7 +94,6 @@ if (Request::verifyGPCDataInt('neu') === 1 && Form::validateToken()) {
     }
 
     $res = speicherKampagne($campaign);
-
     if ($res === 1) {
         $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successCampaignSave'), 'successCampaignSave');
     } else {

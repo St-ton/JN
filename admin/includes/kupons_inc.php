@@ -286,7 +286,7 @@ function augmentCoupon($coupon)
     $coupon->dLastUse = date_create(
         is_string($maxCreated->dLastUse)
         ? $maxCreated->dLastUse
-        : null
+        : ''
     );
 }
 
@@ -503,8 +503,8 @@ function validateCoupon($coupon)
         }
     }
 
-    $validFrom  = date_create($coupon->dGueltigAb);
-    $validUntil = date_create($coupon->dGueltigBis);
+    $validFrom  = date_create($coupon->dGueltigAb ?? '');
+    $validUntil = date_create($coupon->dGueltigBis ?? '');
     if ($validFrom === false) {
         $errors[] = __('errorPeriodBeginFormat');
     }

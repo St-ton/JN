@@ -307,9 +307,12 @@ class GUI
     {
         initDragStart(e);
 
-        var portletBtn = $(e.target).closest('.portletButton');
+        let portletBtn = $(e.target).closest('.portletButton');
 
-        this.iframe.dragNewPortlet(portletBtn.data('portlet-class'));
+        this.iframe.dragNewPortlet(
+            portletBtn.data('portlet-class'),
+            portletBtn.data('portlet-group'),
+        );
     }
 
     onPortletButtonDragEnd(e)
@@ -342,7 +345,10 @@ class GUI
 
         this.page.loadRev(revId)
             .catch(er => this.showError('Error while loading draft preview: ' + er.error.message))
-            .then(this.iframe.onPageLoad);
+            .then(this.iframe.onPageLoad)
+            .then(() => {
+                this.iframe.loadMissingPortletPreviewStyles();
+            });
 
         this.setUnsaved(revId !== 0);
     }

@@ -9,6 +9,7 @@
     width: 100%;
     text-align: left;
     margin-bottom: 16px;
+    text-transform: capitalize;
 
     .fas {
       float: right;
@@ -58,11 +59,12 @@
       height: 96px;
       position: relative;
 
-      > img {
+      > svg {
         position: absolute;
         left: 50%;
         top: 36%;
         transform: translate(-50%, -50%);
+        color: $primary-color;
       }
 
       > i {

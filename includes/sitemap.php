@@ -13,9 +13,7 @@ use JTL\Visitor;
 define('JTL_INCLUDE_ONLY_DB', 1);
 require_once __DIR__ . '/globalinclude.php';
 
-$cDatei = isset($_GET['datei'])
-    ? getRequestFile($_GET['datei'])
-    : null;
+$cDatei = getRequestFile(Request::getVar('datei', ''));
 
 if ($cDatei === null) {
     http_response_code(503);

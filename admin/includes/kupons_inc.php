@@ -12,6 +12,7 @@ use JTL\Checkout\Kupon;
 use JTL\Customer\Customer;
 use JTL\DB\ReturnType;
 use JTL\Helpers\GeneralObject;
+use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Language\LanguageModel;
 use JTL\Mail\Mail\Mail;
@@ -286,7 +287,7 @@ function augmentCoupon($coupon)
     $coupon->dLastUse = date_create(
         is_string($maxCreated->dLastUse)
         ? $maxCreated->dLastUse
-        : null
+        : ''
     );
 }
 
@@ -334,34 +335,34 @@ function createNewCoupon($cKuponTyp)
  */
 function createCouponFromInput()
 {
-    $coupon                        = new Kupon((int)$_POST['kKuponBearbeiten']);
+    $coupon                        = new Kupon(Request::postInt('kKuponBearbeiten'));
     $coupon->cKuponTyp             = $_POST['cKuponTyp'];
     $coupon->cName                 = htmlspecialchars($_POST['cName'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
     $coupon->fWert                 = !empty($_POST['fWert']) ? (float)str_replace(',', '.', $_POST['fWert']) : null;
     $coupon->cWertTyp              = !empty($_POST['cWertTyp']) ? $_POST['cWertTyp'] : null;
     $coupon->cZusatzgebuehren      = !empty($_POST['cZusatzgebuehren']) ? $_POST['cZusatzgebuehren'] : 'N';
-    $coupon->nGanzenWKRabattieren  = !empty($_POST['nGanzenWKRabattieren']) ? (int)$_POST['nGanzenWKRabattieren'] : 0;
+    $coupon->nGanzenWKRabattieren  = Request::postInt('nGanzenWKRabattieren');
     $coupon->kSteuerklasse         = !empty($_POST['kSteuerklasse']) ? (int)$_POST['kSteuerklasse'] : null;
     $coupon->fMindestbestellwert   = (float)str_replace(',', '.', $_POST['fMindestbestellwert']);
     $coupon->cCode                 = !empty($_POST['cCode']) ? $_POST['cCode'] : '';
     $coupon->cLieferlaender        = !empty($_POST['cLieferlaender'])
         ? mb_convert_case($_POST['cLieferlaender'], MB_CASE_UPPER)
         : '';
-    $coupon->nVerwendungen         = !empty($_POST['nVerwendungen']) ? (int)$_POST['nVerwendungen'] : 0;
-    $coupon->nVerwendungenProKunde = !empty($_POST['nVerwendungenProKunde']) ? (int)$_POST['nVerwendungenProKunde'] : 0;
+    $coupon->nVerwendungen         = Request::postInt('nVerwendungen');
+    $coupon->nVerwendungenProKunde = Request::postInt('nVerwendungenProKunde');
     $coupon->cArtikel              = !empty($_POST['cArtikel']) ? ';' . trim($_POST['cArtikel'], ";\t\n\r") . ';' : '';
     $coupon->cHersteller           = '-1';
-    $coupon->kKundengruppe         = (int)$_POST['kKundengruppe'];
+    $coupon->kKundengruppe         = Request::postInt('kKundengruppe');
     $coupon->dGueltigAb            = normalizeDate(!empty($_POST['dGueltigAb'])
         ? $_POST['dGueltigAb']
         : date_create()->format('Y-m-d H:i') . ':00');
     $coupon->dGueltigBis           = normalizeDate(!empty($_POST['dGueltigBis']) ? $_POST['dGueltigBis'] : '');
-    $coupon->cAktiv                = isset($_POST['cAktiv']) && $_POST['cAktiv'] === 'Y' ? 'Y' : 'N';
+    $coupon->cAktiv                = Request::postVar('cAktiv') === 'Y' ? 'Y' : 'N';
     $coupon->cKategorien           = '-1';
     if ($coupon->cKuponTyp !== Kupon::TYPE_NEWCUSTOMER) {
         $coupon->cKunden = '-1';
     }
-    if (isset($_POST['bOpenEnd']) && $_POST['bOpenEnd'] === 'Y') {
+    if (Request::postVar('bOpenEnd') === 'Y') {
         $coupon->dGueltigBis = null;
     } elseif (!empty($_POST['dDauerTage'])) {
         $coupon->dGueltigBis     = '';
@@ -381,9 +382,7 @@ function createCouponFromInput()
     }
     if (isset($_POST['couponCreation'])) {
         $massCreationCoupon                  = new stdClass();
-        $massCreationCoupon->cActiv          = !empty($_POST['couponCreation'])
-            ? (int)$_POST['couponCreation']
-            : 0;
+        $massCreationCoupon->cActiv          = Request::postInt('couponCreation');
         $massCreationCoupon->numberOfCoupons = ($massCreationCoupon->cActiv === 1 && !empty($_POST['numberOfCoupons']))
             ? (int)$_POST['numberOfCoupons']
             : 2;
@@ -409,18 +408,18 @@ function createCouponFromInput()
  * Get the number of existing coupons of type $cKuponTyp
  *
  * @param string $type
- * @param string $cWhereSQL
+ * @param string $whereSQL
  * @return int
  */
-function getCouponCount($type = Kupon::TYPE_STANDARD, $cWhereSQL = ''): int
+function getCouponCount(string $type = Kupon::TYPE_STANDARD, string $whereSQL = ''): int
 {
     return (int)Shop::Container()->getDB()->query(
-        "SELECT COUNT(kKupon) AS count
+        "SELECT COUNT(kKupon) AS cnt
             FROM tkupon
             WHERE cKuponTyp = '" . $type . "'" .
-            ($cWhereSQL !== '' ? ' AND ' . $cWhereSQL : ''),
+            ($whereSQL !== '' ? ' AND ' . $whereSQL : ''),
         ReturnType::SINGLE_OBJECT
-    )->count;
+    )->cnt;
 }
 
 /**
@@ -503,8 +502,8 @@ function validateCoupon($coupon)
         }
     }
 
-    $validFrom  = date_create($coupon->dGueltigAb);
-    $validUntil = date_create($coupon->dGueltigBis);
+    $validFrom  = date_create($coupon->dGueltigAb ?? '');
+    $validUntil = date_create($coupon->dGueltigBis ?? '');
     if ($validFrom === false) {
         $errors[] = __('errorPeriodBeginFormat');
     }
@@ -574,7 +573,7 @@ function saveCoupon($coupon, $languages)
                 foreach ($languages as $language) {
                     $code          = $language->getIso();
                     $postVarName   = 'cName_' . $code;
-                    $localizedName = isset($_POST[$postVarName]) && $_POST[$postVarName] !== ''
+                    $localizedName = Request::postVar($postVarName, '') !== ''
                         ? htmlspecialchars($_POST[$postVarName], ENT_COMPAT | ENT_HTML401, JTL_CHARSET)
                         : $coupon->cName;
 
@@ -590,7 +589,7 @@ function saveCoupon($coupon, $languages)
             foreach ($languages as $language) {
                 $code          = $language->getIso();
                 $postVarName   = 'cName_' . $code;
-                $localizedName = isset($_POST[$postVarName]) && $_POST[$postVarName] !== ''
+                $localizedName = Request::postVar($postVarName, '') !== ''
                     ? htmlspecialchars($_POST[$postVarName], ENT_COMPAT | ENT_HTML401, JTL_CHARSET)
                     : $coupon->cName;
 

@@ -510,6 +510,7 @@ function sendeMail($moduleID, $data, $mail = null)
  */
 function pruefeGlobaleEmailBlacklist($cEmail)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $blackList = Shop::Container()->getDB()->select('temailblacklist', 'cEmail', $cEmail);
     if (isset($blackList->cEmail) && mb_strlen($blackList->cEmail) > 0) {
         $block                = new stdClass();
@@ -530,6 +531,7 @@ function pruefeGlobaleEmailBlacklist($cEmail)
  */
 function verschickeMail($mail)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $sent          = false;
     $kEmailvorlage = null;
     $conf          = Shop::getSettings([CONF_EMAILBLACKLIST]);
@@ -658,6 +660,7 @@ function verschickeMail($mail)
  */
 function injectSubject($object, $subject)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $a     = [];
     $b     = [];
     $keys1 = array_keys(get_object_vars($object));
@@ -695,6 +698,7 @@ function injectSubject($object, $subject)
  */
 function lokalisiereInhalt($object)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     if (isset($object->tgutschein->fWert) && $object->tgutschein->fWert != 0) {
         $object->tgutschein->cLocalizedWert = Preise::getLocalizedPriceString($object->tgutschein->fWert, null, false);
     }
@@ -710,6 +714,7 @@ function lokalisiereInhalt($object)
  */
 function lokalisiereKunde($lang, $customer)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     if (Shop::Lang()->gibISO() !== $lang->cISO) {
         Shop::Lang()->setzeSprache($lang->cISO);
     }
@@ -739,6 +744,7 @@ function lokalisiereKunde($lang, $customer)
  */
 function lokalisiereLieferadresse($lang, $deliveryAddress)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $langRow = (mb_convert_case($lang->cISO, MB_CASE_LOWER) === 'ger') ? 'cDeutsch' : 'cEnglisch';
     $land    = Shop::Container()->getDB()->select(
         'tland',
@@ -766,6 +772,7 @@ function lokalisiereLieferadresse($lang, $deliveryAddress)
  */
 function getPDFAttachments($pdfString, $nameString)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $result    = [];
     $pdfData   = Text::parseSSK(trim($pdfString, ";\t\n\r\0"));
     $names     = Text::parseSSK(trim($nameString, ";\t\n\r\0"));
@@ -797,6 +804,7 @@ function getPDFAttachments($pdfString, $nameString)
  */
 function SendNiceMailReply($fromName, $fromMail, $replyTo, $to, $subject, $text, $html = '')
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $eol = "\n";
     if (mb_stripos(PHP_OS, 'WIN') === 0) {
         $eol = "\r\n";
@@ -855,6 +863,7 @@ function SendNiceMailReply($fromName, $fromMail, $replyTo, $to, $subject, $text,
  */
 function encode_iso88591($string)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $text = '=?' . JTL_CHARSET . '?Q?';
     $max  = mb_strlen($string);
     for ($i = 0; $i < $max; $i++) {

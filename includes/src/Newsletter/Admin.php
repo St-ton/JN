@@ -388,7 +388,7 @@ final class Admin
                 'kNewslettervorlage',
                 $templateID
             );
-            $uploadDir = PFAD_ROOT . \PFAD_BILDER . \PFAD_NEWSLETTERBILDER;
+            $uploadDir = \PFAD_ROOT . \PFAD_BILDER . \PFAD_NEWSLETTERBILDER;
             foreach ($defaultTpl->oNewslettervorlageStdVar_arr as $i => $nlTplStdVar) {
                 $imageExists = false;
                 if ($nlTplStdVar->cTyp === 'BILD') {

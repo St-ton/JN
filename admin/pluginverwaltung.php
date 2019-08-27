@@ -114,18 +114,18 @@ if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::vali
     // Eine Aktion wurde von der Uebersicht aus gestartet
     $pluginIDs = array_map('\intval', $_POST['kPlugin'] ?? []);
     // Lizenzkey eingeben
-    if (isset($_POST['lizenzkey']) && (int)$_POST['lizenzkey'] > 0) {
-        $kPlugin = (int)$_POST['lizenzkey'];
+    if (Request::postInt('lizenzkey') > 0) {
+        $kPlugin = Request::postInt('lizenzkey');
         $step    = 'pluginverwaltung_lizenzkey';
         $loader  = Helper::getLoaderByPluginID($kPlugin, $db, $cache);
         $oPlugin = $loader->init($kPlugin, true);
         $smarty->assign('oPlugin', $oPlugin)
                ->assign('kPlugin', $kPlugin);
         $cache->flushTags([CACHING_GROUP_CORE, CACHING_GROUP_LANGUAGE, CACHING_GROUP_PLUGIN]);
-    } elseif (isset($_POST['lizenzkeyadd']) && (int)$_POST['lizenzkeyadd'] === 1 && (int)$_POST['kPlugin'] > 0) {
+    } elseif (Request::postInt('lizenzkeyadd') === 1 && Request::postInt('kPlugin') > 0) {
         // Lizenzkey eingeben
         $step    = 'pluginverwaltung_lizenzkey';
-        $kPlugin = (int)$_POST['kPlugin'];
+        $kPlugin = Request::postInt('kPlugin');
         $data    = $db->select('tplugin', 'kPlugin', $kPlugin);
         if (isset($data->kPlugin) && $data->kPlugin > 0) {
             $loader  = Helper::getLoader((int)$data->bExtension === 1, $db, $cache);

@@ -387,7 +387,7 @@ class Product
                 } elseif (!isset($_SESSION['variBoxAnzahl_arr'])) {
                     \header('Location: ' . Shop::getURL() .
                         '/?a=' . $productID .
-                        '&n=' . (int)$_POST['anzahl'] .
+                        '&n=' . Request::postInt('anzahl') .
                         '&r=' . \R_VARWAEHLEN, true, 302);
                     exit();
                 }
@@ -399,7 +399,7 @@ class Product
                 ) {
                     \header('Location: ' . Shop::getURL() .
                         '/?a=' . $productID .
-                        '&n=' . (int)$_POST['anzahl'] .
+                        '&n=' . Request::postInt('anzahl') .
                         '&r=' . \R_VARWAEHLEN, true, 302);
                     exit();
                 }
@@ -416,7 +416,7 @@ class Product
         if (!$exists && !isset($_SESSION['variBoxAnzahl_arr'])) {
             \header('Location: ' . Shop::getURL() .
                 '/?a=' . $productID .
-                '&n=' . (int)$_POST['anzahl'] .
+                '&n=' . Request::postInt('anzahl') .
                 '&r=' . \R_VARWAEHLEN, true, 301);
             exit();
         }
@@ -511,7 +511,7 @@ class Product
                 } elseif (!isset($_SESSION['variBoxAnzahl_arr']) && $redirect) {
                     \header('Location: ' . Shop::getURL() .
                         '/?a=' . $productID .
-                        '&n=' . (int)$_POST['anzahl'] .
+                        '&n=' . Request::postInt('anzahl') .
                         '&r=' . \R_VARWAEHLEN, true, 302);
                     exit();
                 }
@@ -523,7 +523,7 @@ class Product
                 ) {
                     \header('Location: ' . Shop::getURL() .
                         '/?a=' . $productID .
-                        '&n=' . (int)$_POST['anzahl'] .
+                        '&n=' . Request::postInt('anzahl') .
                         '&r=' . \R_VARWAEHLEN, true, 302);
                     exit();
                 }
@@ -540,7 +540,7 @@ class Product
         if (!$exists && $redirect && !isset($_SESSION['variBoxAnzahl_arr'])) {
             \header('Location: ' . Shop::getURL() .
                 '/?a=' . $productID .
-                '&n=' . (int)$_POST['anzahl'] .
+                '&n=' . Request::postInt('anzahl') .
                 '&r=' . \R_VARWAEHLEN, true, 302);
             exit();
         }
@@ -1274,7 +1274,7 @@ class Product
                     ->setSalutation('')
                     ->setFirstName('')
                     ->setLastName('')
-                    ->setProductId((int)$_POST['a'])
+                    ->setProductId(Request::postInt('a'))
                     ->setEmail(Text::filterXSS($dbHandler->escape(\strip_tags($_POST['email']))) ?: '')
                     ->setLanguageID(Shop::getLanguage())
                     ->setRealIP(Request::getRealIP());

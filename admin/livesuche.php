@@ -75,7 +75,7 @@ if (Request::verifyGPCDataInt('nSort') > 0) {
     $smarty->assign('nSort', -1);
 }
 
-if (isset($_POST['livesuche']) && (int)$_POST['livesuche'] === 1) { //Formular wurde abgeschickt
+if (Request::postInt('livesuche') === 1) { //Formular wurde abgeschickt
     // Suchanfragen aktualisieren
     if (isset($_POST['suchanfragenUpdate'])) {
         if (GeneralObject::hasCount('kSuchanfrageAll', $_POST)) {
@@ -324,7 +324,7 @@ if (isset($_POST['livesuche']) && (int)$_POST['livesuche'] === 1) { //Formular w
             $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorAtLeastOneSearch'), 'errorAtLeastOneSearch');
         }
     }
-} elseif (isset($_POST['livesuche']) && (int)$_POST['livesuche'] === 2) { // Erfolglos mapping
+} elseif (Request::postInt('livesuche') === 2) { // Erfolglos mapping
     if (isset($_POST['erfolglosEdit'])) { // Editieren
         $smarty->assign('nErfolglosEditieren', 1);
     } elseif (isset($_POST['erfolglosUpdate'])) { // Update
@@ -337,7 +337,7 @@ if (isset($_POST['livesuche']) && (int)$_POST['livesuche'] === 1) { //Formular w
         );
         foreach ($failedQueries as $failedQuery) {
             $idx = 'mapping_' . $failedQuery->kSuchanfrageErfolglos;
-            if (isset($_POST[$idx]) && mb_strlen($_POST[$idx]) > 0) {
+            if (mb_strlen(Request::postVar($idx, '')) > 0) {
                 if (mb_convert_case($failedQuery->cSuche, MB_CASE_LOWER) !==
                     mb_convert_case($_POST[$idx], MB_CASE_LOWER)
                 ) {
@@ -416,7 +416,7 @@ if (isset($_POST['livesuche']) && (int)$_POST['livesuche'] === 1) { //Formular w
                         'errorSearchMapSelf'
                     );
                 }
-            } elseif ((int)$_POST['nErfolglosEditieren'] === 1) {
+            } elseif (Request::postInt('nErfolglosEditieren') === 1) {
                 $idx = 'cSuche_' . $failedQuery->kSuchanfrageErfolglos;
 
                 $failedQuery->cSuche = Text::filterXSS($_POST[$idx]);
@@ -454,7 +454,7 @@ if (isset($_POST['livesuche']) && (int)$_POST['livesuche'] === 1) { //Formular w
         }
     }
     $smarty->assign('tab', 'erfolglos');
-} elseif (isset($_POST['livesuche']) && (int)$_POST['livesuche'] === 3) { // Blacklist
+} elseif (Request::postInt('livesuche') === 3) { // Blacklist
     $blacklist = $_POST['suchanfrageblacklist'];
     $blacklist = explode(';', $blacklist);
     $count     = count($blacklist);
@@ -470,7 +470,7 @@ if (isset($_POST['livesuche']) && (int)$_POST['livesuche'] === 1) { //Formular w
     }
     $smarty->assign('tab', 'blacklist');
     $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successBlacklistRefresh'), 'successBlacklistRefresh');
-} elseif (isset($_POST['livesuche']) && (int)$_POST['livesuche'] === 4) { // Mappinglist
+} elseif (Request::postInt('livesuche') === 4) { // Mappinglist
     if (isset($_POST['delete'])) {
         if (is_array($_POST['kSuchanfrageMapping'])) {
             foreach ($_POST['kSuchanfrageMapping'] as $mappingID) {
@@ -506,23 +506,23 @@ if (isset($_POST['livesuche']) && (int)$_POST['livesuche'] === 1) { //Formular w
 }
 
 $queryCount        = (int)$db->query(
-    'SELECT COUNT(*) AS nAnzahl
+    'SELECT COUNT(*) AS cnt
         FROM tsuchanfrage
         WHERE kSprache = ' . (int)$_SESSION['kSprache'] . $cLivesucheSQL->cWhere,
     ReturnType::SINGLE_OBJECT
-)->nAnzahl;
+)->cnt;
 $failedQueryCount  = (int)$db->query(
-    'SELECT COUNT(*) AS nAnzahl
+    'SELECT COUNT(*) AS cnt
         FROM tsuchanfrageerfolglos
         WHERE kSprache = ' . (int)$_SESSION['kSprache'],
     ReturnType::SINGLE_OBJECT
-)->nAnzahl;
+)->cnt;
 $mappingCount      = (int)$db->query(
-    'SELECT COUNT(*) AS nAnzahl
+    'SELECT COUNT(*) AS cnt
         FROM tsuchanfragemapping
         WHERE kSprache = ' . (int)$_SESSION['kSprache'],
     ReturnType::SINGLE_OBJECT
-)->nAnzahl;
+)->cnt;
 $paginationQueries = (new Pagination('suchanfragen'))
     ->setItemCount($queryCount)
     ->assemble();

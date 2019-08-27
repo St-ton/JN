@@ -10,6 +10,7 @@ use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Language\LanguageHelper;
+use JTL\Plugin\Helper as PluginHelper;
 use JTL\Plugin\State;
 use JTL\Shop;
 use JTL\Smarty\ContextType;
@@ -79,12 +80,16 @@ foreach ($adminMenu as $rootName => $rootEntry) {
 
             foreach ($pluginLinks as $pluginLink) {
                 $pluginLink->kPlugin = (int)$pluginLink->kPlugin;
+                Shop::Container()->getGetText()->loadPluginLocale(
+                    'base',
+                    PluginHelper::getLoaderByPluginID($pluginLink->kPlugin)->init($pluginLink->kPlugin)
+                );
 
                 $link = (object)[
-                    'cLinkname' => $pluginLink->cName,
+                    'cLinkname' => __($pluginLink->cName),
                     'cURL'      => $shopURL . '/' . PFAD_ADMIN . 'plugin.php?kPlugin=' . $pluginLink->kPlugin,
                     'cRecht'    => 'PLUGIN_ADMIN_VIEW',
-                    'key'       => "$rootKey.$secondKey." . $pluginLink->kPlugin,
+                    'key'       => $rootKey . $secondKey . $pluginLink->kPlugin,
                 ];
 
                 $linkGruppe->oLink_arr[] = $link;

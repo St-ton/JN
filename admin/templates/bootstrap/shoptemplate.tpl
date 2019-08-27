@@ -297,6 +297,52 @@
                                     <span class="label label-success">{__('activated')} {if $oTemplate->eTyp === 'mobil'} ({__('mobileDevices')}{/if}</span>
                                 </h4>
                             {/if}
+                            {if !empty($oTemplate->checksums)}
+                                {if $oTemplate->checksums === true}
+                                    <span class="badge badge-success">{__('unmodified')}</span>
+                                {else}
+                                    <span class="badge badge-warning cursor-pointer" title="{__('tplChecksums')}"
+                                        data-toggle="modal" data-target="#tplModal{$oTemplate->cName}">{__('modified')}</span>
+                                    <div class="modal fade" id="tplModal{$oTemplate->cName}" tabindex="-1" role="dialog"
+                                        aria-labelledby="tplModal{$oTemplate->cName}Label" aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                    <h5 class="modal-title" id="tplModal{$oTemplate->cName}Label">
+                                                        {$oTemplate->cName} – {__('modifiedFiles')} ({$oTemplate->checksums|count})
+                                                    </h5>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <div class="table-responsive table-">
+                                                        <table class="table table-sm table-borderless">
+                                                            <thead>
+                                                            <tr>
+                                                                <th class="text-left">{__('file')}</th>
+                                                                <th class="text-right">{__('lastModified')}</th>
+                                                            </tr>
+                                                            </thead>
+                                                            {foreach $oTemplate->checksums as $file}
+                                                                <tr>
+                                                                    <td class="text-left">{$file->name}</td>
+                                                                    <td class="text-right">
+                                                                        <small class="text-muted">{$file->lastModified}</small>
+                                                                    </td>
+                                                                </tr>
+                                                            {/foreach}
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer text-right">
+                                                    <button type="button" class="btn btn-primary" data-dismiss="modal">{__('close')}</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {/if}
+                            {/if}
                         </td>
                         <td class="text-vcenter text-center">
                             {$oTemplate->cVersion}

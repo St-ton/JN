@@ -6,6 +6,7 @@
 
 use JTL\Alert\Alert;
 use JTL\Helpers\Form;
+use JTL\Helpers\Request;
 use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
@@ -14,7 +15,7 @@ $oAccount->permission('SETTINGS_GLOBAL_META_VIEW', true, true);
 /** @global \JTL\Smarty\JTLSmarty $smarty */
 $db = Shop::Container()->getDB();
 setzeSprache();
-if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1 && Form::validateToken()) {
+if (Request::postInt('einstellungen') === 1 && Form::validateToken()) {
     saveAdminSectionSettings(CONF_METAANGABEN, $_POST);
     $title     = $_POST['Title'];
     $desc      = $_POST['Meta_Description'];

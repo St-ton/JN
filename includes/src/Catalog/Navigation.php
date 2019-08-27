@@ -415,6 +415,7 @@ class Navigation
                 $breadCrumb[] = $ele;
                 break;
 
+            case \PAGE_UMFRAGE:
             case \PAGE_NEWSLETTER:
                 if ($this->link !== null) {
                     $ele->setName($this->link->getName());
@@ -424,24 +425,7 @@ class Navigation
                 }
                 break;
 
-            case \PAGE_UMFRAGE:
-                if ($this->link !== null) {
-                    $ele->setName($this->link->getName());
-                    $ele->setURL($this->link->getURL());
-                    $ele->setURLFull($this->link->getURL());
-                    $breadCrumb[] = $ele;
-                }
-                break;
-
             case \PAGE_NEWSDETAIL:
-                $url     = $this->linkService->getStaticRoute('news.php', false);
-                $urlFull = $this->linkService->getStaticRoute('news.php');
-                $ele->setName($this->language->get('news', 'breadcrumb'));
-                $ele->setURL($url);
-                $ele->setURLFull($urlFull);
-                $breadCrumb[] = $ele;
-                break;
-
             case \PAGE_NEWS:
                 $url     = $this->linkService->getStaticRoute('news.php', false);
                 $urlFull = $this->linkService->getStaticRoute('news.php');

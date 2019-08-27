@@ -37,7 +37,7 @@ class DeleteFileCacheCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $io                       = $this->getIO();
-        $localFileSystem          = new Filesystem(new LocalFilesystem(['root' => PFAD_ROOT]));
+        $localFileSystem          = new Filesystem(new LocalFilesystem(['root' => \PFAD_ROOT]));
         $standardTplCacheResponse = $localFileSystem->deleteDirectory('/templates_c/filecache/', true);
 
         if ($standardTplCacheResponse) {

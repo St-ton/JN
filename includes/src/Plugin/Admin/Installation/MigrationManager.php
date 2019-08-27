@@ -257,48 +257,49 @@ final class MigrationManager
      */
     public function getMigrations(): array
     {
-        if (!\is_array($this->migrations) || \count($this->migrations) === 0) {
-            $migrations = [];
-            $executed   = $this->getExecutedMigrations();
-            $path       = $this->getPath();
-            if (!\is_dir($path)) {
-                return [];
-            }
-            foreach (new DirectoryIterator($path) as $fileinfo) {
-                if ($fileinfo->isDot() || $fileinfo->getExtension() !== 'php') {
-                    continue;
-                }
-                $baseName = $fileinfo->getBasename();
-                if ($this->helper->isValidMigrationFileName($baseName)) {
-                    $filePath = $fileinfo->getPathname();
-                    $id       = $this->helper->getIdFromFileName($baseName);
-                    $class    = $this->helper->mapFileNameToClassName($fileinfo, $this->pluginID);
-                    $date     = $executed[(int)$id] ?? null;
-                    require_once $filePath;
-
-                    if (!\class_exists($class)) {
-                        throw new InvalidArgumentException(\sprintf(
-                            'Could not find class "%s" in file "%s"',
-                            $class,
-                            $filePath
-                        ));
-                    }
-                    $migration = new $class($this->db, 'Plugin migration from ' . $this->pluginID, $date);
-                    /** @var IMigration $migration */
-                    if (!\is_subclass_of($migration, IMigration::class)) {
-                        throw new InvalidArgumentException(\sprintf(
-                            'The class "%s" in file "%s" must implement IMigration interface',
-                            $class,
-                            $filePath
-                        ));
-                    }
-
-                    $migrations[$id] = $migration;
-                }
-            }
-            \ksort($migrations);
-            $this->setMigrations($migrations);
+        if (\is_array($this->migrations) && \count($this->migrations) > 0) {
+            return $this->migrations;
         }
+        $migrations = [];
+        $executed   = $this->getExecutedMigrations();
+        $path       = $this->getPath();
+        if (!\is_dir($path)) {
+            return [];
+        }
+        foreach (new DirectoryIterator($path) as $fileinfo) {
+            if ($fileinfo->isDot() || $fileinfo->getExtension() !== 'php') {
+                continue;
+            }
+            $baseName = $fileinfo->getBasename();
+            if ($this->helper->isValidMigrationFileName($baseName)) {
+                $filePath = $fileinfo->getPathname();
+                $id       = $this->helper->getIdFromFileName($baseName);
+                $class    = $this->helper->mapFileNameToClassName($fileinfo, $this->pluginID);
+                $date     = $executed[(int)$id] ?? null;
+                require_once $filePath;
+
+                if (!\class_exists($class)) {
+                    throw new InvalidArgumentException(\sprintf(
+                        'Could not find class "%s" in file "%s"',
+                        $class,
+                        $filePath
+                    ));
+                }
+                $migration = new $class($this->db, 'Plugin migration from ' . $this->pluginID, $date);
+                /** @var IMigration $migration */
+                if (!\is_subclass_of($migration, IMigration::class)) {
+                    throw new InvalidArgumentException(\sprintf(
+                        'The class "%s" in file "%s" must implement IMigration interface',
+                        $class,
+                        $filePath
+                    ));
+                }
+
+                $migrations[$id] = $migration;
+            }
+        }
+        \ksort($migrations);
+        $this->setMigrations($migrations);
 
         return $this->migrations;
     }
@@ -310,10 +311,12 @@ final class MigrationManager
      */
     public function getCurrentId(): int
     {
-        $version = $this->db->query(
+        $version = $this->db->queryPrepared(
             'SELECT kMigration 
                 FROM tpluginmigration 
+                WHERE pluginID = :pid
                 ORDER BY kMigration DESC',
+            ['pid' => $this->pluginID],
             ReturnType::SINGLE_OBJECT
         );
 
@@ -327,10 +330,12 @@ final class MigrationManager
     {
         if ($this->executedMigrations === null) {
             $this->executedMigrations = [];
-            $migrations               = $this->db->executeQuery(
+            $migrations               = $this->db->queryPrepared(
                 'SELECT * 
                     FROM tpluginmigration 
+                    WHERE pluginID = :pid
                     ORDER BY kMigration ASC',
+                ['pid' => $this->pluginID],
                 ReturnType::ARRAY_OF_OBJECTS
             );
             foreach ($migrations as $m) {

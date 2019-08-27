@@ -5,6 +5,7 @@
  */
 
 use JTL\Alert\Alert;
+use JTL\Helpers\Request;
 use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
@@ -12,7 +13,7 @@ require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('MODULE_PRICECHART_VIEW', true, true);
 /** @global \JTL\Smarty\JTLSmarty $smarty */
 
-if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1) {
+if (Request::postInt('einstellungen') === 1) {
     Shop::Container()->getAlertService()->addAlert(
         Alert::TYPE_SUCCESS,
         saveAdminSectionSettings(CONF_PREISVERLAUF, $_POST),

@@ -9,36 +9,36 @@
         </label>
         {if $draftStatus === 0}
             <span class="opc-draft-status opc-public">
-                <i class="fa fas fa-circle fa-xs"></i> {__('publicUpper')}
+                <i class="fa fas fa-circle fa-xs"></i> {__('active')}
             </span>
         {elseif $draftStatus === 1}
             <span class="opc-draft-status opc-planned">
-                <i class="fa fas fa-circle fa-xs"></i> {__('plannedUpper')}
+                <i class="fa fas fa-circle fa-xs"></i> {__('planned')}
             </span>
         {elseif $draftStatus === 2}
             <span class="opc-draft-status opc-status-draft">
-                <i class="fa fas fa-circle fa-xs"></i> {__('draftUpper')}
+                <i class="fa fas fa-circle fa-xs"></i> {__('draft')}
             </span>
         {elseif $draftStatus === 3}
             <span class="opc-draft-status opc-backdate">
-                <i class="fa fas fa-circle fa-xs"></i> {__('pastUpper')}
+                <i class="fa fas fa-circle fa-xs"></i> {__('past')}
             </span>
         {/if}
         <div class="opc-draft-info">
             <div class="opc-draft-info-line">
                 {if $draftStatus === 0}
                     {if $draft->getPublishTo() === null}
-                        <span class="opc-public">{__('publicSince')}</span>
+                        <span class="opc-public">{__('activeSince')}</span>
                         {$draft->getPublishFrom()|date_format:'%d.%m.%Y - %H:%M'}
                     {else}
-                        <span class="opc-public">{__('publicUntil')}</span>
+                        <span class="opc-public">{__('activeUntil')}</span>
                         {$draft->getPublishTo()|date_format:'%d.%m.%Y - %H:%M'}
                     {/if}
                 {elseif $draftStatus === 1}
-                    <span class="opc-planned">{__('plannedFrom')}</span>
+                    <span class="opc-planned">{__('scheduledFor')}</span>
                     {$draft->getPublishFrom()|date_format:'%d.%m.%Y - %H:%M'}
                 {elseif $draftStatus === 2}
-                    <span class="opc-status-draft">{__('noPublicationPlanned')}</span>
+                    <span class="opc-status-draft">{__('notScheduled')}</span>
                 {elseif $draftStatus === 3}
                     <span class="opc-backdate">{__('expiredOn')}</span>
                     {$draft->getPublishTo()|date_format:'%d.%m.%Y - %H:%M'}
@@ -63,16 +63,6 @@
                             data-toggle="dropdown" title="{__('useForOtherLang')}" data-container="#opc">
                         <img src="{$ShopURL}/admin/opc/gfx/icon-copysprache.svg" alt="{__('useForOtherLang')}">
                     </button>
-                    <script>
-                        $(function() {
-                            $('#opc-draft-{$draft->getKey()} .opc-draft-actions [data-toggle="dropdown"]').tooltip({
-                                placement: 'bottom',
-                                trigger: 'hover',
-                            }).on('click', function() {
-                                $(this).tooltip('hide');
-                            });
-                        });
-                    </script>
                     <div class="dropdown-menu opc-dropdown-menu">
                         {foreach $languages as $lang}
                             {if $lang->id !== $currentLanguage->id}

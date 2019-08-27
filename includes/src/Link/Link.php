@@ -305,6 +305,7 @@ final class Link extends AbstractLink
      */
     public function map(array $localizedLinks): LinkInterface
     {
+        \executeHook(\HOOK_LINK_PRE_MAP, ['data' => $localizedLinks]);
         $baseURL = Shop::getURL(true) . '/';
         foreach ($localizedLinks as $link) {
             $link = $this->sanitizeLinkData($link);
@@ -346,6 +347,7 @@ final class Link extends AbstractLink
             }
         }
         $this->setChildLinks($this->buildChildLinks());
+        \executeHook(\HOOK_LINK_MAPPED, ['link' => $this]);
 
         return $this;
     }

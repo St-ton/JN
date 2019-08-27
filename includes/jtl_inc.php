@@ -10,6 +10,7 @@
  */
 function gibRedirect()
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return new stdClass();
 }
 
@@ -21,6 +22,7 @@ function gibRedirect()
  */
 function pruefeKategorieSichtbarkeit()
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return true;
 }
 
@@ -30,6 +32,7 @@ function pruefeKategorieSichtbarkeit()
  */
 function setzeWarenkorbPersInWarenkorb(): bool
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return false;
 }
 
@@ -40,6 +43,7 @@ function setzeWarenkorbPersInWarenkorb(): bool
  */
 function pruefeWarenkorbArtikelSichtbarkeit(): void
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
 }
 
 /**
@@ -47,4 +51,5 @@ function pruefeWarenkorbArtikelSichtbarkeit(): void
  */
 function fuehreLoginAus(): void
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
 }

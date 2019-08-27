@@ -46,7 +46,7 @@ if ($step === 'plugin_uebersicht' && $pluginID > 0) {
                             AND kPlugin = :plgn
                             AND cConf != 'N'
                             AND kPluginAdminMenu = :kpm",
-                    ['plgn' => $pluginID, 'kpm' => (int)$_POST['kPluginAdminMenu']],
+                    ['plgn' => $pluginID, 'kpm' => Request::postInt('kPluginAdminMenu')],
                     ReturnType::ARRAY_OF_OBJECTS
                 )
                 : [];
@@ -110,10 +110,8 @@ if ($step === 'plugin_uebersicht' && $pluginID > 0) {
                 $plugin->getMeta()->getSemVer()
             );
             $migrations = count($manager->getMigrations());
-            if ($migrations > 0) {
-                $smarty->assign('manager', $manager)
-                       ->assign('updatesAvailable', $migrations > count($manager->getExecutedMigrations()));
-            }
+            $smarty->assign('manager', $manager)
+                   ->assign('updatesAvailable', $migrations > count($manager->getExecutedMigrations()));
         }
         $smarty->assign('oPlugin', $plugin);
         if ($updated === true) {

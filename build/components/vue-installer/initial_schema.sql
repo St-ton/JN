@@ -4392,7 +4392,7 @@ CREATE TABLE `ttemplate` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 /*!40000 ALTER TABLE `ttemplate` DISABLE KEYS */;
-INSERT INTO `ttemplate` VALUES ('Evo','standard',NULL,'Evo','JTL-Software-GmbH','https://www.jtl-software.de','5.0.0','preview.png'),('bootstrap','admin',NULL,'bootstrap','JTL-Software-GmbH','https://www.jtl-software.de','1.0.0','preview.png');
+INSERT INTO `ttemplate` VALUES ('NOVA','standard',NULL,'NOVA','JTL-Software-GmbH','https://www.jtl-software.de','0.8.0','preview.png'),('bootstrap','admin',NULL,'bootstrap','JTL-Software-GmbH','https://www.jtl-software.de','1.0.0','preview.png');
 /*!40000 ALTER TABLE `ttemplate` ENABLE KEYS */;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;

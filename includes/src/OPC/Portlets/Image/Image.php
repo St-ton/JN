@@ -73,12 +73,6 @@ class Image extends Portlet
                 ],
                 'width' => 50,
             ],
-            'responsive' => [
-                'label'      => __('imageResponsive'),
-                'type'       => InputType::CHECKBOX,
-                'default'    => true,
-                'width' => 50,
-            ],
             'alt'        => [
                 'label' => __('alternativeText'),
             ],

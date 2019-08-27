@@ -37,7 +37,7 @@ class JTLSmarty extends \SmartyBC
     public $template;
 
     /**
-     * @var array
+     * @var JTLSmarty[]
      */
     private static $instance = [];
 

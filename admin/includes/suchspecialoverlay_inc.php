@@ -22,7 +22,7 @@ function gibAlleSuchspecialOverlays()
     );
     foreach ($types as $type) {
         $overlays[] = JTL\Media\Image\Overlay::getInstance(
-            $type->kSuchspecialOverlay,
+            (int)$type->kSuchspecialOverlay,
             (int)$_SESSION['kSprache']
         );
     }

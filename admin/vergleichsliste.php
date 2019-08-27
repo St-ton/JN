@@ -109,10 +109,10 @@ for ($i = 0; $i < $configCount; $i++) {
 }
 
 $listCount  = (int)$db->query(
-    'SELECT COUNT(*) AS nAnzahl
+    'SELECT COUNT(*) AS cnt
         FROM tvergleichsliste',
     ReturnType::SINGLE_OBJECT
-)->nAnzahl;
+)->cnt;
 $pagination = (new Pagination())
     ->setItemCount($listCount)
     ->assemble();

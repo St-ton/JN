@@ -489,14 +489,14 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
         }
     }
     if ($step === 'umfrage_uebersicht') {
-        $surveyCount = $db->query(
-            'SELECT COUNT(*) AS nAnzahl
+        $surveyCount = (int)$db->query(
+            'SELECT COUNT(*) AS cnt
                 FROM tumfrage
                 WHERE kSprache = ' . (int)$_SESSION['kSprache'],
             ReturnType::SINGLE_OBJECT
-        );
+        )->cnt;
         $pagination  = (new Pagination())
-            ->setItemCount((int)$surveyCount->nAnzahl)
+            ->setItemCount($surveyCount)
             ->assemble();
         $surveys     = $db->query(
             "SELECT tumfrage.*, DATE_FORMAT(tumfrage.dGueltigVon, '%d.%m.%Y %H:%i') AS dGueltigVon_de, 

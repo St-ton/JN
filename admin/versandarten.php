@@ -46,7 +46,7 @@ if (Form::validateToken()) {
         $shippingType = getShippingTypes(Request::verifyGPCDataInt('kVersandberechnung'));
     }
 
-    if (Request::postInt('del') > 0 && Versandart::deleteInDB($_POST['del'])) {
+    if (Request::postInt('del') > 0 && Versandart::deleteInDB((int)$_POST['del'])) {
         $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successShippingMethodDelete'), 'successShippingMethodDelete');
         Shop::Container()->getCache()->flushTags([CACHING_GROUP_OPTION, CACHING_GROUP_ARTICLE]);
     }
@@ -361,12 +361,9 @@ if ($step === 'neue Versandart') {
         $zahlungsart->cName     = __($zahlungsart->cName);
         $zahlungsart->cAnbieter = __($zahlungsart->cAnbieter);
     }
-    $smarty->assign('versandKlassen', $db->selectAll('tversandklasse', [], [], '*', 'kVersandklasse'));
-    $tmpID = 0;
-    if (isset($shippingMethod->kVersandart) && $shippingMethod->kVersandart > 0) {
-        $tmpID = $shippingMethod->kVersandart;
-    }
-    $smarty->assign('zahlungsarten', $zahlungsarten)
+    $tmpID = (int)($shippingMethod->kVersandart ?? 0);
+    $smarty->assign('versandKlassen', $db->selectAll('tversandklasse', [], [], '*', 'kVersandklasse'))
+        ->assign('zahlungsarten', $zahlungsarten)
         ->assign('versandlaender', $versandlaender)
         ->assign('continents', $countryHelper->getCountriesGroupedByContinent(
             true,

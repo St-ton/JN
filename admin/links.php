@@ -206,7 +206,8 @@ if ($action !== '' && Form::validateToken()) {
             $checks->doPlausi('lnk');
 
             if (count($checks->getPlausiVar()) === 0) {
-                $link = $linkAdmin->createOrUpdateLink($_POST);
+                $files = [];
+                $link  = $linkAdmin->createOrUpdateLink($_POST);
                 if (Request::postInt('kLink') === 0) {
                     $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successLinkCreate'), 'successLinkCreate');
                 } else {

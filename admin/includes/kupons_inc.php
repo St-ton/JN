@@ -287,7 +287,7 @@ function augmentCoupon($coupon)
     $coupon->dLastUse = date_create(
         is_string($maxCreated->dLastUse)
         ? $maxCreated->dLastUse
-        : null
+        : ''
     );
 }
 
@@ -408,18 +408,18 @@ function createCouponFromInput()
  * Get the number of existing coupons of type $cKuponTyp
  *
  * @param string $type
- * @param string $cWhereSQL
+ * @param string $whereSQL
  * @return int
  */
-function getCouponCount($type = Kupon::TYPE_STANDARD, $cWhereSQL = ''): int
+function getCouponCount(string $type = Kupon::TYPE_STANDARD, string $whereSQL = ''): int
 {
     return (int)Shop::Container()->getDB()->query(
-        "SELECT COUNT(kKupon) AS count
+        "SELECT COUNT(kKupon) AS cnt
             FROM tkupon
             WHERE cKuponTyp = '" . $type . "'" .
-            ($cWhereSQL !== '' ? ' AND ' . $cWhereSQL : ''),
+            ($whereSQL !== '' ? ' AND ' . $whereSQL : ''),
         ReturnType::SINGLE_OBJECT
-    )->count;
+    )->cnt;
 }
 
 /**
@@ -502,8 +502,8 @@ function validateCoupon($coupon)
         }
     }
 
-    $validFrom  = date_create($coupon->dGueltigAb);
-    $validUntil = date_create($coupon->dGueltigBis);
+    $validFrom  = date_create($coupon->dGueltigAb ?? '');
+    $validUntil = date_create($coupon->dGueltigBis ?? '');
     if ($validFrom === false) {
         $errors[] = __('errorPeriodBeginFormat');
     }

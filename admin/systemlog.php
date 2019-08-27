@@ -62,7 +62,7 @@ $filter->assemble();
 $searchString     = $searchfield->getValue();
 $selectedLevel    = $levelSelect->getSelectedOption()->getValue();
 $totalLogCount    = Jtllog::getLogCount();
-$filteredLogCount = Jtllog::getLogCount($searchString, $selectedLevel);
+$filteredLogCount = Jtllog::getLogCount($searchString, (int)$selectedLevel);
 $pagination       = (new Pagination('syslog'))
     ->setItemsPerPageOptions([10, 20, 50, 100, -1])
     ->setItemCount($filteredLogCount)

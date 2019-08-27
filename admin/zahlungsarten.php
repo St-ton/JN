@@ -16,6 +16,7 @@ use JTL\Pagination\Filter;
 use JTL\Pagination\Pagination;
 use JTL\Plugin\Helper as PluginHelper;
 use JTL\Shop;
+use JTL\Checkout\Zahlungsart;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
@@ -203,17 +204,13 @@ if (Request::postInt('einstellungen_bearbeiten') === 1
 }
 
 if ($step === 'einstellen') {
-    $paymentMethod = $db->select(
-        'tzahlungsart',
-        'kZahlungsart',
-        Request::verifyGPCDataInt('kZahlungsart')
-    );
-    if ($paymentMethod === null) {
+    $paymentMethod = new Zahlungsart(Request::verifyGPCDataInt('kZahlungsart'));
+    if ($paymentMethod->getZahlungsart() === null) {
         $step = 'uebersicht';
         $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorPaymentMethodNotFound'), 'errorNotFound');
     } else {
         // Bei SOAP oder CURL => versuche die Zahlungsart auf nNutzbar = 1 zu stellen, falls nicht schon geschehen
-        if ((int)$paymentMethod->nSOAP === 1 || (int)$paymentMethod->nCURL === 1 || (int)$paymentMethod->nSOCKETS === 1) {
+        if ($paymentMethod->getSOAP() === 1 || $paymentMethod->getCURL() === 1 || $paymentMethod->getSOCKETS() === 1) {
             PaymentMethod::activatePaymentMethod($paymentMethod);
         }
         // Weiche fuer eine normale Zahlungsart oder eine Zahlungsart via Plugin
@@ -390,13 +387,13 @@ if ($step === 'uebersicht') {
             );
         }
         $method->nEingangAnzahl = (int)$db->executeQueryPrepared(
-            'SELECT COUNT(*) AS `nAnzahl`
+            'SELECT COUNT(*) AS `cnt`
             FROM `tzahlungseingang` AS ze
                 JOIN `tbestellung` AS b ON ze.`kBestellung` = b.`kBestellung`
             WHERE b.`kZahlungsart` = :kzahlungsart',
             ['kzahlungsart' => $method->kZahlungsart],
             ReturnType::SINGLE_OBJECT
-        )->nAnzahl;
+        )->cnt;
         $method->nLogCount      = ZahlungsLog::count($method->cModulId);
         $method->nErrorLogCount = ZahlungsLog::count($method->cModulId, JTLLOG_LEVEL_ERROR);
         $method->cName          = __($method->cName);

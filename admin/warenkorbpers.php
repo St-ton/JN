@@ -57,20 +57,15 @@ if (Request::getInt('l') > 0 && Form::validateToken()) {
     unset($persCart);
 }
 $customerCount = (int)Shop::Container()->getDB()->query(
-    'SELECT COUNT(*) AS count
-        FROM
-        (
-            SELECT tkunde.kKunde
-            FROM tkunde
-            JOIN twarenkorbpers 
-                ON tkunde.kKunde = twarenkorbpers.kKunde
-            JOIN twarenkorbperspos 
-                ON twarenkorbperspos.kWarenkorbPers = twarenkorbpers.kWarenkorbPers
-            ' . $searchSQL->cWHERE . '
-            GROUP BY tkunde.kKunde
-        ) AS tAnzahl',
+    'SELECT COUNT(DISTINCT tkunde.kKunde) AS cnt
+         FROM tkunde
+         JOIN twarenkorbpers
+             ON tkunde.kKunde = twarenkorbpers.kKunde
+         JOIN twarenkorbperspos
+             ON twarenkorbperspos.kWarenkorbPers = twarenkorbpers.kWarenkorbPers
+         ' . $searchSQL->cWHERE,
     ReturnType::SINGLE_OBJECT
-)->count;
+)->cnt;
 
 $oPagiKunden = (new Pagination('kunden'))
     ->setItemCount($customerCount)
@@ -93,7 +88,7 @@ $customers = Shop::Container()->getDB()->query(
 );
 
 foreach ($customers as $item) {
-    $customer = new Customer($item->kKunde);
+    $customer = new Customer((int)$item->kKunde);
 
     $item->cNachname = $customer->cNachname;
     $item->cFirma    = $customer->cFirma;
@@ -105,16 +100,16 @@ $smarty->assign('oKunde_arr', $customers)
 if (Request::getInt('a') > 0) {
     $step           = 'anzeigen';
     $customerID     = Request::getInt('a');
-    $persCart       = Shop::Container()->getDB()->query(
-        'SELECT COUNT(*) AS nAnzahl
+    $persCartCount  = (int)Shop::Container()->getDB()->query(
+        'SELECT COUNT(*) AS cnt
             FROM twarenkorbperspos
             JOIN twarenkorbpers 
                 ON twarenkorbpers.kWarenkorbPers = twarenkorbperspos.kWarenkorbPers
             WHERE twarenkorbpers.kKunde = ' . $customerID,
         ReturnType::SINGLE_OBJECT
-    );
+    )->cnt;
     $cartPagination = (new Pagination('warenkorb'))
-        ->setItemCount($persCart->nAnzahl)
+        ->setItemCount($persCartCount)
         ->assemble();
 
     $carts = Shop::Container()->getDB()->query(
@@ -131,7 +126,7 @@ if (Request::getInt('a') > 0) {
         ReturnType::ARRAY_OF_OBJECTS
     );
     foreach ($carts as $cart) {
-        $customer = new Customer($cart->kKundeTMP);
+        $customer = new Customer((int)$cart->kKundeTMP);
 
         $cart->cNachname = $customer->cNachname;
         $cart->cFirma    = $customer->cFirma;

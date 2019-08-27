@@ -289,7 +289,7 @@ function holeAlleKampagnen(bool $internalOnly = false, bool $activeOnly = true)
         ReturnType::ARRAY_OF_OBJECTS
     );
     foreach ($items as $item) {
-        $campaign = new Kampagne($item->kKampagne);
+        $campaign = new Kampagne((int)$item->kKampagne);
         if (isset($campaign->kKampagne) && $campaign->kKampagne > 0) {
             $campaigns[$campaign->kKampagne] = $campaign;
         }

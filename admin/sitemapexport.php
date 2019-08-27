@@ -38,16 +38,14 @@ if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
     $smarty->assign('cTab', Request::verifyGPDataString('tab'));
 }
 
-if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
+if (Request::postInt('einstellungen') > 0) {
     $alertHelper->addAlert(
         Alert::TYPE_SUCCESS,
         saveAdminSectionSettings(CONF_SITEMAP, $_POST),
         'saveSettings'
     );
 } elseif (Request::verifyGPCDataInt('download_edit') === 1) {
-    $trackers = isset($_POST['kSitemapTracker'])
-        ? array_map('\intval', $_POST['kSitemapTracker'])
-        : [];
+    $trackers = array_map('\intval', Request::postVar('kSitemapTracker', []));
     if (count($trackers) > 0) {
         Shop::Container()->getDB()->query(
             'DELETE
@@ -58,9 +56,7 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
     }
     $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successSitemapDLDelete'), 'successSitemapDLDelete');
 } elseif (Request::verifyGPCDataInt('report_edit') === 1) {
-    $reports = isset($_POST['kSitemapReport'])
-        ? array_map('\intval', $_POST['kSitemapReport'])
-        : [];
+    $reports = array_map('\intval', Request::postVar('kSitemapReport', []));
     if (count($reports) > 0) {
         Shop::Container()->getDB()->query(
             'DELETE
@@ -75,7 +71,7 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
 $yearDownloads = Request::verifyGPCDataInt('nYear_downloads');
 $yearReports   = Request::verifyGPCDataInt('nYear_reports');
 
-if (isset($_POST['action']) && $_POST['action'] === 'year_downloads_delete' && Form::validateToken()) {
+if (Request::postVar('action') === 'year_downloads_delete' && Form::validateToken()) {
     Shop::Container()->getDB()->query(
         'DELETE FROM tsitemaptracker
             WHERE YEAR(tsitemaptracker.dErstellt) = ' . $yearDownloads,
@@ -89,7 +85,7 @@ if (isset($_POST['action']) && $_POST['action'] === 'year_downloads_delete' && F
     $yearDownloads = 0;
 }
 
-if (isset($_POST['action']) && $_POST['action'] === 'year_reports_delete' && Form::validateToken()) {
+if (Request::postVar('action') === 'year_reports_delete' && Form::validateToken()) {
     Shop::Container()->getDB()->query(
         'DELETE FROM tsitemapreport
             WHERE YEAR(tsitemapreport.dErstellt) = ' . $yearReports,

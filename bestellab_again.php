@@ -24,7 +24,7 @@ $order      = new Bestellung($orderID, true);
 //bei Gastbestellungen ist ggf das Kundenobjekt bereits entfernt bzw nRegistriert = 0
 if ($order->oKunde !== null
     && (int)$order->oKunde->nRegistriert === 1
-    && (int)$order->kKunde !== (int)$_SESSION['Kunde']->kKunde
+    && (int)$order->kKunde !== Frontend::getCustomer()->getID()
 ) {
     header('Location: ' . $linkHelper->getStaticRoute('jtl.php'), true, 303);
     exit;
@@ -114,18 +114,19 @@ if ($pluginID > 0) {
     $loader = Helper::getLoaderByPluginID($pluginID, $db);
     $plugin = $loader->init($pluginID);
     if ($plugin !== null) {
-        $methods = $plugin->getPaymentMethods()->getMethodsAssoc();
-        require_once $plugin->getPaths()->getVersionedPath() . PFAD_PLUGIN_PAYMENTMETHOD .
-            $methods[$moduleID]->cClassPfad;
+        $pluginPaymentMethod = $plugin->getPaymentMethods()->getMethodByID($moduleID);
+        if ($pluginPaymentMethod === null) {
+            return false;
+        }
+        $className = $pluginPaymentMethod->getClassName();
         /** @var PaymentMethod $paymentMethod */
-        $pluginName              = $methods[$moduleID]->cClassName;
-        $paymentMethod           = new $pluginName($moduleID);
+        $paymentMethod           = new $className($moduleID);
         $paymentMethod->cModulId = $moduleID;
         $paymentMethod->preparePaymentProcess($order);
         Shop::Smarty()->assign('oPlugin', $plugin);
     }
 } elseif ($moduleID === 'za_lastschrift_jtl') {
-    $customerAccountData = gibKundenKontodaten($_SESSION['Kunde']->kKunde);
+    $customerAccountData = gibKundenKontodaten(Frontend::getCustomer()->getID());
     if ($customerAccountData->kKunde > 0) {
         Shop::Smarty()->assign('oKundenKontodaten', $customerAccountData);
     }

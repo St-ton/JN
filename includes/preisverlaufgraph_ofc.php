@@ -5,6 +5,7 @@
  */
 
 use JTL\Catalog\Product\Preisverlauf;
+use JTL\Helpers\Request;
 use JTL\Session\Frontend;
 use JTL\Shop;
 
@@ -41,11 +42,10 @@ function expandPriceArray($data, $max)
 if (isset($_GET['kArtikel'])) {
     $session         = Frontend::getInstance();
     $conf            = Shop::getSettings([CONF_PREISVERLAUF]);
-    $productID       = (int)$_GET['kArtikel'];
-    $customerGroupID = (int)$_GET['kKundengruppe'];
-    $taxClassID      = (int)$_GET['kSteuerklasse'];
+    $productID       = Request::getInt('kArtikel');
+    $customerGroupID = Request::getInt('kKundengruppe');
+    $taxClassID      = Request::getInt('kSteuerklasse');
     $month           = (int)$conf['preisverlauf']['preisverlauf_anzahl_monate'];
-
     if (count($conf) > 0) {
         $priceConfig           = new stdClass();
         $priceConfig->Waehrung = Frontend::getCurrency()->getName();

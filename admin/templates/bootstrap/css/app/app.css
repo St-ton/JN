@@ -13251,7 +13251,7 @@ body {
   padding-left: 2.5rem;
 }
 #dropdown-search > ul > li {
-  margin-bottom: 1.5rem;
+  margin-bottom: 0.5rem;
 }
 #dropdown-search > ul > li > .dropdown-item .title {
   font-weight: 600;

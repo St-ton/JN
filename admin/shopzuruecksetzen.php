@@ -7,6 +7,7 @@
 use JTL\Alert\Alert;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
+use JTL\Helpers\Request;
 use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
@@ -16,7 +17,7 @@ $oAccount->permission('RESET_SHOP_VIEW', true, true);
 /** @global \JTL\Smarty\JTLSmarty $smarty */
 $alertHelper = Shop::Container()->getAlertService();
 $db          = Shop::Container()->getDB();
-if (isset($_POST['zuruecksetzen']) && (int)$_POST['zuruecksetzen'] === 1 && Form::validateToken()) {
+if (Request::postInt('zuruecksetzen') === 1 && Form::validateToken()) {
     $options = $_POST['cOption_arr'];
     if (is_array($options) && count($options) > 0) {
         foreach ($options as $option) {

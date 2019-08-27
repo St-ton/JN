@@ -75,12 +75,13 @@ if (isset($_REQUEST['action']) && Form::validateToken()) {
             break;
         case 'delvar':
             // Variable loeschen
-            $lang->loesche($_GET['kSprachsektion'], $_GET['cName']);
+            $name = Request::getVar('cName');
+            $lang->loesche(Request::getInt('kSprachsektion'), $name);
             Shop::Container()->getCache()->flushTags([CACHING_GROUP_LANGUAGE]);
             Shop::Container()->getDB()->query('UPDATE tglobals SET dLetzteAenderung = NOW()', ReturnType::DEFAULT);
             $alertHelper->addAlert(
                 Alert::TYPE_SUCCESS,
-                sprintf(__('successVarRemove'), $_GET['cName']),
+                sprintf(__('successVarRemove'), $name),
                 'successVarRemove'
             );
             break;

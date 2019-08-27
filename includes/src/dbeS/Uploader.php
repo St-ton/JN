@@ -8,6 +8,7 @@ namespace JTL\dbeS;
 
 use JTL\Extensions\Upload\File;
 use JTL\Extensions\Upload\Upload;
+use JTL\Helpers\Request;
 
 /**
  * Class Uploader
@@ -25,7 +26,7 @@ class Uploader extends NetSyncHandler
         }
         switch ($request) {
             case NetSyncRequest::UPLOADFILES:
-                $orderID = (int)$_POST['kBestellung'];
+                $orderID = Request::postInt('kBestellung');
                 if ($orderID > 0) {
                     $systemFiles = [];
                     $uploads     = Upload::gibBestellungUploads($orderID);
@@ -55,7 +56,7 @@ class Uploader extends NetSyncHandler
                 break;
 
             case NetSyncRequest::UPLOADFILEDATA:
-                $uploadID = (int)$_GET['kFileID'];
+                $uploadID = Request::getInt('kFileID');
                 if ($uploadID > 0) {
                     $uploadFile = new File();
                     if ($uploadFile->loadFromDB($uploadID)) {

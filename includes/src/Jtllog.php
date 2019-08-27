@@ -164,6 +164,7 @@ class Jtllog
      */
     public static function getLog(string $cFilter = '', int $nLevel = 0, int $nLimitN = 0, int $nLimitM = 1000): array
     {
+        \trigger_error(__FUNCTION__ . ' is deprecated.', \E_USER_DEPRECATED);
         $logs       = [];
         $conditions = [];
         $values     = ['limitfrom' => $nLimitN, 'limitto' => $nLimitM];
@@ -197,18 +198,18 @@ class Jtllog
     }
 
     /**
-     * @param string $cWhereSQL
-     * @param string $cLimitSQL
+     * @param string $whereSQL
+     * @param string $limitSQL
      * @return array
      */
-    public static function getLogWhere(string $cWhereSQL = '', $cLimitSQL = ''): array
+    public static function getLogWhere(string $whereSQL = '', $limitSQL = ''): array
     {
         return Shop::Container()->getDB()->query(
             'SELECT *
                 FROM tjtllog' .
-            ($cWhereSQL !== '' ? ' WHERE ' . $cWhereSQL : '') .
-            ' ORDER BY dErstellt DESC ' .
-            ($cLimitSQL !== '' ? ' LIMIT ' . $cLimitSQL : ''),
+            ($whereSQL !== '' ? ' WHERE ' . $whereSQL : '') .
+            ' ORDER BY dErstellt DESC, kLog DESC ' .
+            ($limitSQL !== '' ? ' LIMIT ' . $limitSQL : ''),
             ReturnType::ARRAY_OF_OBJECTS
         );
     }
@@ -266,7 +267,7 @@ class Jtllog
     }
 
     /**
-     * @param array $ids
+     * @param int[] $ids
      * @return int
      */
     public static function deleteIDs(array $ids): int

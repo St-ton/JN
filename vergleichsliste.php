@@ -48,7 +48,7 @@ Shop::Smarty()->assign('nBreiteTabelle', $nBreiteArtikel * count($compareList->o
     ->assign('Link', $link)
     ->assign('oMerkmale_arr', $attrVar[0])
     ->assign('oVariationen_arr', $attrVar[1])
-    ->assign('print', (isset($_GET['print']) && (int)$_GET['print'] === 1) ? 1 : 0)
+    ->assign('print', (int)(Request::getInt('print') === 1))
     ->assign('oVergleichsliste', $compareList)
     ->assign('Einstellungen_Vergleichsliste', $conf);
 

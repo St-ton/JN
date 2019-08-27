@@ -7,6 +7,7 @@
 use JTL\Alert\Alert;
 use JTL\Cron\Admin\Controller;
 use JTL\Helpers\Form;
+use JTL\Helpers\Request;
 use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
@@ -20,13 +21,13 @@ $inserted = 0;
 $tab      = 'overview';
 if (Form::validateToken()) {
     if (isset($_POST['reset'])) {
-        $updated = $admin->resetQueueEntry((int)$_POST['reset']);
+        $updated = $admin->resetQueueEntry(Request::postInt('reset'));
     } elseif (isset($_POST['delete'])) {
-        $deleted = $admin->deleteQueueEntry((int)$_POST['delete']);
-    } elseif (isset($_POST['add-cron']) && (int)$_POST['add-cron'] === 1) {
+        $deleted = $admin->deleteQueueEntry(Request::postInt('delete'));
+    } elseif (Request::postInt('add-cron') === 1) {
         $inserted = $admin->addQueueEntry($_POST);
         $tab      = 'add-cron';
-    } elseif (isset($_POST['a']) && $_POST['a'] === 'saveSettings') {
+    } elseif (Request::postVar('a') === 'saveSettings') {
         $tab = 'settings';
         if (isset($_POST['cron_freq'])) {
             $_POST['cron_freq'] = max(1, $_POST['cron_freq']);

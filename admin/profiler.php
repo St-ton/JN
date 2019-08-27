@@ -7,6 +7,7 @@
 use JTL\Alert\Alert;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
+use JTL\Helpers\Request;
 use JTL\Profiler;
 use JTL\Shop;
 
@@ -19,14 +20,14 @@ $tab         = 'uebersicht';
 $sqlData     = null;
 $alertHelper = Shop::Container()->getAlertService();
 if (isset($_POST['delete-run-submit']) && Form::validateToken()) {
-    if (isset($_POST['run-id']) && is_numeric($_POST['run-id'])) {
+    if (is_numeric(Request::postVar('run-id'))) {
         $res = deleteProfileRun(false, (int)$_POST['run-id']);
         if (is_numeric($res) && $res > 0) {
             $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successEntryDelete'), 'successEntryDelete');
         } else {
             $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorEntryDelete'), 'errorEntryDelete');
         }
-    } elseif (isset($_POST['delete-all']) && $_POST['delete-all'] === 'y') {
+    } elseif (Request::postVar('delete-all') === 'y') {
         $res = deleteProfileRun(true);
         if (is_numeric($res) && $res > 0) {
             $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successEntriesDelete'), 'successEntriesDelete');

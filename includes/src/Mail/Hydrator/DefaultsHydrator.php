@@ -89,6 +89,54 @@ class DefaultsHydrator implements HydratorInterface
     }
 
     /**
+     * @inheritdoc
+     */
+    public function getSmarty(): JTLSmarty
+    {
+        return $this->smarty;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setSmarty(JTLSmarty $smarty): void
+    {
+        $this->smarty = $smarty;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getDB(): DbInterface
+    {
+        return $this->db;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setDB(DbInterface $db): void
+    {
+        $this->db = $db;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getSettings(): Shopsetting
+    {
+        return $this->settings;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function setSettings(Shopsetting $settings): void
+    {
+        $this->settings = $settings;
+    }
+
+    /**
      * @param object            $lang
      * @param stdClass|Customer $customer
      * @return mixed

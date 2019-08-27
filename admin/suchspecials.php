@@ -29,7 +29,7 @@ if (Request::verifyGPCDataInt('einstellungen') === 1) {
         saveAdminSectionSettings(CONF_SUCHSPECIAL, $_POST),
         'saveSettings'
     );
-} elseif (isset($_POST['suchspecials']) && (int)$_POST['suchspecials'] === 1 && Form::validateToken()) {
+} elseif (Request::postInt('suchspecials') === 1 && Form::validateToken()) {
     $searchSpecials   = $db->selectAll(
         'tseo',
         ['cKey', 'kSprache'],

@@ -17,7 +17,7 @@
                         </div><!-- .panel -->
                     {/if}
                     <div class="panel-idx-{$confItem@index}{if $confItem@index === 0} first{/if} mb-3">
-                    <div class="subheading1">{$confItem->niceName}
+                    <div class="subheading1">{__($confItem->niceName)}
                         {if $confItem->description|strlen > 0}
                             <span class="card-title-addon">{getHelpDesc cDesc=$confItem->description}</span>
                         {/if}

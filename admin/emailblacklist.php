@@ -7,6 +7,7 @@
 use JTL\Alert\Alert;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
+use JTL\Helpers\Request;
 use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
@@ -14,14 +15,14 @@ require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('SETTINGS_EMAIL_BLACKLIST_VIEW', true, true);
 /** @global \JTL\Smarty\JTLSmarty $smarty */
 $step = 'emailblacklist';
-if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
+if (Request::postInt('einstellungen') > 0) {
     Shop::Container()->getAlertService()->addAlert(
         Alert::TYPE_SUCCESS,
         saveAdminSectionSettings(CONF_EMAILBLACKLIST, $_POST),
         'saveSettings'
     );
 }
-if (isset($_POST['emailblacklist']) && (int)$_POST['emailblacklist'] === 1 && Form::validateToken()) {
+if (Request::postInt('emailblacklist') === 1 && Form::validateToken()) {
     $addresses = explode(';', $_POST['cEmail']);
     if (is_array($addresses) && count($addresses) > 0) {
         Shop::Container()->getDB()->query('TRUNCATE temailblacklist', ReturnType::AFFECTED_ROWS);

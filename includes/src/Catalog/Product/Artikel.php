@@ -5609,8 +5609,8 @@ class Artikel
         if (!isset($_SESSION['Kundengruppe'])) {
             $_SESSION['Kundengruppe'] = (new CustomerGroup())->loadDefaultGroup();
         }
-        $customerGroupID       = Frontend::getCustomer()->kKundengruppe > 0
-            ? Frontend::getCustomer()->kKundengruppe
+        $customerGroupID       = Frontend::getCustomer()->getGroupID() > 0
+            ? Frontend::getCustomer()->getGroupID()
             : Frontend::getCustomerGroup()->getID();
         $helper                = ShippingMethod::getInstance();
         $shippingFreeCountries = isset($this->Preise->fVK[0])

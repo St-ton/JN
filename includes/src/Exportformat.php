@@ -1118,7 +1118,7 @@ class Exportformat
             if ($queueObject->jobQueueID > 0 && empty($queueObject->cronID)) {
                 $this->db->delete('texportqueue', 'kExportqueue', $queueObject->jobQueueID);
             }
-            if (isset($_GET['back']) && $_GET['back'] === 'admin') {
+            if (Request::getVar('back') === 'admin') {
                 \header('Location: exportformate.php?action=exported&token=' .
                     $_SESSION['jtl_token'] . '&kExportformat=' . (int)$this->queue->foreignKeyID);
                 exit;

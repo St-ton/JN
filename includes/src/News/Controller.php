@@ -13,6 +13,7 @@ use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Helpers\URL;
+use JTL\Helpers\CMS;
 use JTL\Pagination\Pagination;
 use JTL\Session\Frontend;
 use JTL\Shop;
@@ -176,6 +177,8 @@ class Controller
             );
         }
 
+        $conf = Shop::getConfig([CONF_NEWS]);
+
         $this->smarty->assign('oNewsKommentar_arr', $comments)
                      ->assign('oPagiComments', $pagination)
                      ->assign('oNewsKategorie_arr', $newsCategories)
@@ -183,7 +186,10 @@ class Controller
                      ->assign('meta_title', $newsItem->getMetaTitle())
                      ->assign('meta_description', $newsItem->getMetaDescription())
                      ->assign('userCanComment', Frontend::getCustomer()->getID() > 0)
-                     ->assign('meta_keywords', $newsItem->getMetaKeyword());
+                     ->assign('meta_keywords', $newsItem->getMetaKeyword())
+                     ->assign('oNews_arr', $conf['news']['news_benutzen'] === 'Y'
+                        ? CMS::getHomeNews($conf)
+                        : []);
     }
 
     /**

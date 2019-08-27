@@ -12,8 +12,7 @@
         {block name='layout-footer-aside'}
             {has_boxes position='left' assign='hasLeftBox'}
 
-            {if ($Einstellungen.template.sidebar_settings.show_sidebar_product_list === 'Y' && $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp
-                    || $Einstellungen.template.sidebar_settings.show_sidebar_product_list === 'N')
+            {if $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp
                 && !$bExclusive
                 && $hasLeftBox
                 && !empty($boxes.left|strip_tags|trim)
@@ -93,67 +92,89 @@
                             {row class="footer-additional"}
                             {if $Einstellungen.template.footer.socialmedia_footer === 'Y'}
                                 {block name='layout-footer-socialmedia'}
-                                    {col cols=12 class="footer-additional-wrapper"}
+                                    {col cols=12 class="footer-additional-wrapper col-auto mx-auto"}
+                                        <ul class="list-unstyled d-flex flex-row flex-wrap">
                                         {if !empty($Einstellungen.template.footer.facebook)}
-                                            {link href="{if $Einstellungen.template.footer.facebook|strpos:'http' !== 0}https://{/if}{$Einstellungen.template.footer.facebook}"
-                                                class="btn-social btn-facebook btn" title="Facebook" target="_blank" rel="noopener"}
-                                                <i class="fab fa-facebook-f"></i>
-                                            {/link}
+                                            <li class="mr-2">
+                                                {link href="{if $Einstellungen.template.footer.facebook|strpos:'http' !== 0}https://{/if}{$Einstellungen.template.footer.facebook}"
+                                                    class="btn-icon-secondary btn-facebook btn" aria=['label'=>"{lang key='visit_us_on' section='aria' printf='Facebook'}"] title="Facebook" target="_blank" rel="noopener"}
+                                                    <span class="fab fa-facebook-f fa-fw fa-lg"></span>
+                                                {/link}
+                                            </li>
                                         {/if}
                                         {if !empty($Einstellungen.template.footer.twitter)}
-                                            {link href="{if $Einstellungen.template.footer.twitter|strpos:'http' !== 0}https://{/if}{$Einstellungen.template.footer.twitter}"
-                                                class="btn-social btn-twitter btn" title="Twitter" target="_blank" rel="noopener"}
-                                                <i class="fab fa-twitter"></i>
-                                            {/link}
+                                            <li class="mr-2">
+                                                {link href="{if $Einstellungen.template.footer.twitter|strpos:'http' !== 0}https://{/if}{$Einstellungen.template.footer.twitter}"
+                                                    class="btn-icon-secondary btn-twitter btn" aria=['label'=>"{lang key='visit_us_on' section='aria' printf='Twitter'}"] title="Twitter" target="_blank" rel="noopener"}
+                                                    <i class="fab fa-twitter fa-fw fa-lg"></i>
+                                                {/link}
+                                            </li>
                                         {/if}
                                         {if !empty($Einstellungen.template.footer.googleplus)}
-                                            {link href="{if $Einstellungen.template.footer.googleplus|strpos:'http' !== 0}https://{/if}{$Einstellungen.template.footer.googleplus}"
-                                                class="btn-social btn-googleplus btn" title="Google+" target="_blank" rel="noopener"}
-                                                <i class="fab fa-google-plus-g"></i>
-                                            {/link}
+                                            <li class="mr-2">
+                                                {link href="{if $Einstellungen.template.footer.googleplus|strpos:'http' !== 0}https://{/if}{$Einstellungen.template.footer.googleplus}"
+                                                    class="btn-icon-secondary btn-googleplus btn" aria=['label'=>"{lang key='visit_us_on' section='aria' printf='Google+'}"] title="Google+" target="_blank" rel="noopener"}
+                                                    <i class="fab fa-google-plus-g fa-fw fa-lg"></i>
+                                                {/link}
+                                            </li>
                                         {/if}
                                         {if !empty($Einstellungen.template.footer.youtube)}
-                                            {link href="{if $Einstellungen.template.footer.youtube|strpos:'http' !== 0}https://{/if}{$Einstellungen.template.footer.youtube}"
-                                                class="btn-social btn-youtube btn" title="YouTube" target="_blank" rel="noopener"}
-                                                <i class="fab fa-youtube"></i>
-                                            {/link}
+                                            <li class="mr-2">
+                                                {link href="{if $Einstellungen.template.footer.youtube|strpos:'http' !== 0}https://{/if}{$Einstellungen.template.footer.youtube}"
+                                                    class="btn-icon-secondary btn-youtube btn" aria=['label'=>"{lang key='visit_us_on' section='aria' printf='YouTube'}"] title="YouTube" target="_blank" rel="noopener"}
+                                                    <i class="fab fa-youtube fa-fw fa-lg"></i>
+                                                {/link}
+                                            </li>
                                         {/if}
                                         {if !empty($Einstellungen.template.footer.vimeo)}
-                                            {link href="{if $Einstellungen.template.footer.vimeo|strpos:'http' !== 0}https://{/if}{$Einstellungen.template.footer.vimeo}"
-                                                class="btn-social btn-vimeo btn" title="Vimeo" target="_blank" rel="noopener"}
-                                                <i class="fab fa-vimeo-v"></i>
-                                            {/link}
+                                            <li class="mr-2">
+                                                {link href="{if $Einstellungen.template.footer.vimeo|strpos:'http' !== 0}https://{/if}{$Einstellungen.template.footer.vimeo}"
+                                                    class="btn-icon-secondary btn-vimeo btn" aria=['label'=>"{lang key='visit_us_on' section='aria' printf='Vimeo'}"]  title="Vimeo" target="_blank" rel="noopener"}
+                                                    <i class="fab fa-vimeo-v fa-fw fa-lg"></i>
+                                                {/link}
+                                            </li>
                                         {/if}
                                         {if !empty($Einstellungen.template.footer.pinterest)}
-                                            {link href="{if $Einstellungen.template.footer.pinterest|strpos:'http' !== 0}https://{/if}{$Einstellungen.template.footer.pinterest}"
-                                                class="btn-social btn-pinterest btn" title="Pinterest" target="_blank" rel="noopener"}
-                                                <i class="fab fa-pinterest-p"></i>
-                                            {/link}
+                                            <li class="mr-2">
+                                                {link href="{if $Einstellungen.template.footer.pinterest|strpos:'http' !== 0}https://{/if}{$Einstellungen.template.footer.pinterest}"
+                                                    class="btn-icon-secondary btn-pinterest btn" aria=['label'=>"{lang key='visit_us_on' section='aria' printf='Pinterest'}"]  title="Pinterest" target="_blank" rel="noopener"}
+                                                    <i class="fab fa-pinterest-p fa-fw fa-lg"></i>
+                                                {/link}
+                                            </li>
                                         {/if}
                                         {if !empty($Einstellungen.template.footer.instagram)}
-                                            {link href="{if $Einstellungen.template.footer.instagram|strpos:'http' !== 0}https://{/if}{$Einstellungen.template.footer.instagram}"
-                                                class="btn-social btn-instagram btn" title="Instagram" target="_blank" rel="noopener"}
-                                                <i class="fab fa-instagram"></i>
-                                            {/link}
+                                            <li class="mr-2">
+                                                {link href="{if $Einstellungen.template.footer.instagram|strpos:'http' !== 0}https://{/if}{$Einstellungen.template.footer.instagram}"
+                                                    class="btn-icon-secondary btn-instagram btn" aria=['label'=>"{lang key='visit_us_on' section='aria' printf='Instagram'}"]  title="Instagram" target="_blank" rel="noopener"}
+                                                    <i class="fab fa-instagram fa-fw fa-lg"></i>
+                                                {/link}
+                                            </li>
                                         {/if}
                                         {if !empty($Einstellungen.template.footer.skype)}
-                                            {link href="{if $Einstellungen.template.footer.skype|strpos:'http' !== 0}https://{/if}{$Einstellungen.template.footer.skype}"
-                                                class="btn-social btn-skype btn" title="Skype" target="_blank" rel="noopener"}
-                                                <i class="fab fa-skype"></i>
-                                            {/link}
+                                            <li class="mr-2">
+                                                {link href="{if $Einstellungen.template.footer.skype|strpos:'http' !== 0}https://{/if}{$Einstellungen.template.footer.skype}"
+                                                    class="btn-icon-secondary btn-skype btn" aria=['label'=>"{lang key='visit_us_on' section='aria' printf='Skype'}"]  title="Skype" target="_blank" rel="noopener"}
+                                                    <i class="fab fa-skype fa-fw fa-lg"></i>
+                                                {/link}
+                                            </li>
                                         {/if}
                                         {if !empty($Einstellungen.template.footer.xing)}
-                                            {link href="{if $Einstellungen.template.footer.xing|strpos:'http' !== 0}https://{/if}{$Einstellungen.template.footer.xing}"
-                                                class="btn-social btn-xing btn" title="Xing" target="_blank" rel="noopener"}
-                                                <i class="fab fa-xing"></i>
-                                            {/link}
+                                            <li class="mr-2">
+                                                {link href="{if $Einstellungen.template.footer.xing|strpos:'http' !== 0}https://{/if}{$Einstellungen.template.footer.xing}"
+                                                    class="btn-icon-secondary btn-xing btn" aria=['label'=>"{lang key='visit_us_on' section='aria' printf='Xing'}"]  title="Xing" target="_blank" rel="noopener"}
+                                                    <i class="fab fa-xing fa-fw fa-lg"></i>
+                                                {/link}
+                                            </li>
                                         {/if}
                                         {if !empty($Einstellungen.template.footer.linkedin)}
-                                            {link href="{if $Einstellungen.template.footer.linkedin|strpos:'http' !== 0}https://{/if}{$Einstellungen.template.footer.linkedin}"
-                                                class="btn-social btn-linkedin btn" title="Linkedin" target="_blank" rel="noopener"}
-                                                <i class="fab fa-linkedin-in"></i>
-                                            {/link}
+                                            <li class="mr-0">
+                                                {link href="{if $Einstellungen.template.footer.linkedin|strpos:'http' !== 0}https://{/if}{$Einstellungen.template.footer.linkedin}"
+                                                    class="btn-icon-secondary btn-linkedin btn" aria=['label'=>"{lang key='visit_us_on' section='aria' printf='Linkedin'}"]  title="Linkedin" target="_blank" rel="noopener"}
+                                                    <i class="fab fa-linkedin-in fa-fw fa-lg"></i>
+                                                {/link}
+                                            </li>
                                         {/if}
+                                        </ul>
                                     {/col}
                                 {/block}
                             {/if}
@@ -251,12 +272,6 @@
     {* JavaScripts *}
     {block name='layout-footer-js'}
         {$dbgBarBody}
-        {block name='layout-footer-script-jtl-load'}
-            {if (!isset($Einstellungen.template.general.use_cron)
-                    || $Einstellungen.template.general.use_cron === 'Y') && $smarty.now % 10 === 0}
-                <script defer src="includes/cron_inc.php"></script>
-            {/if}
-        {/block}
         {captchaMarkup getBody=false}
     {/block}
     </body>

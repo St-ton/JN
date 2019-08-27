@@ -1,4 +1,5 @@
 // theme buttons
+.btn { text-decoration: none; }
 
 .btn-primary {
   @include button-variant($primary, $primary, $primary, $primary, $primary, $primary);
@@ -169,5 +170,42 @@
     /* product added to the cart - move the svg back inside the button */
     top: 50%;
     transform: translateY(-50%);
+  }
+}
+
+.btn-icon-secondary {
+  border-color: $gray-dark;
+  color: $gray-dark;
+  background-color: transparent;
+  padding: 0.6rem 0.75rem;
+  @include hover {
+    border-color: $gray-dark;
+    color: $white;
+    background-color: $gray-dark;
+  }
+}
+
+.btn-outline-secondary { border-color: $gray-darker; background-color: transparent; color: $yiq-text-dark;
+  @include hover { border-color: $gray-darker; background-color: $gray-medium; color: $yiq-text-dark; }
+
+  &:focus, &.focus { border-color: $gray-darker; background-color: transparent; color: $yiq-text-dark; }
+
+  &.disabled, &:disabled { background-color: transparent; color: $gray-medium; border-color: $gray-medium; }
+
+  &:not(:disabled):not(.disabled):active,
+  &:not(:disabled):not(.disabled).active,
+  .show > &.dropdown-toggle { border-color: $gray-darker; background-color: $gray-medium; color: $yiq-text-dark; }
+}
+
+.btn-danger {
+  color: $white;
+  &:hover {
+    color: $white;
+  }
+}
+
+.btn-outline-danger:hover {
+  &:hover {
+    color: $white;
   }
 }

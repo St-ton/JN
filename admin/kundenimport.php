@@ -8,6 +8,7 @@ use JTL\Alert\Alert;
 use JTL\Customer\Customer;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
+use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
@@ -18,8 +19,8 @@ require_once __DIR__ . '/includes/admininclude.php';
 $oAccount->permission('IMPORT_CUSTOMER_VIEW', true, true);
 /** @global \JTL\Smarty\JTLSmarty $smarty */
 
-if (isset($_POST['kundenimport'], $_FILES['csv']['tmp_name'])
-    && (int)$_POST['kundenimport'] === 1
+if (isset($_FILES['csv']['tmp_name'])
+    && Request::postInt('kundenimport') === 1
     && $_FILES['csv']
     && Form::validateToken()
     && mb_strlen($_FILES['csv']['tmp_name']) > 0
@@ -123,7 +124,7 @@ function checkformat($data, $format)
         }
     }
 
-    if ((int)$_POST['PasswortGenerieren'] !== 1) {
+    if (Request::postInt('PasswortGenerieren') !== 1) {
         if (!in_array('cPasswort', $fmt, true) || !in_array('cMail', $fmt, true)) {
             return -1;
         }
@@ -142,8 +143,8 @@ function checkformat($data, $format)
 function processImport($fmt, $data)
 {
     $customer                = new Customer();
-    $customer->kKundengruppe = (int)$_POST['kKundengruppe'];
-    $customer->kSprache      = (int)$_POST['kSprache'];
+    $customer->kKundengruppe = Request::postInt('kKundengruppe');
+    $customer->kSprache      = Request::postInt('kSprache');
     $customer->cAbgeholt     = 'Y';
     $customer->cSperre       = 'N';
     $customer->cAktiv        = 'Y';
@@ -158,7 +159,7 @@ function processImport($fmt, $data)
     if (Text::filterEmailAddress($customer->cMail) === false) {
         return sprintf(__('errorInvalidEmail'), $customer->cMail);
     }
-    if ((int)$_POST['PasswortGenerieren'] !== 1
+    if (Request::postInt('PasswortGenerieren') !== 1
         && (!$customer->cPasswort || $customer->cPasswort === 'd41d8cd98f00b204e9800998ecf8427e')
     ) {
         return __('errorNoPassword');
@@ -201,7 +202,7 @@ function processImport($fmt, $data)
         }
     }
     $password = '';
-    if ((int)$_POST['PasswortGenerieren'] === 1) {
+    if (Request::postInt('PasswortGenerieren') === 1) {
         $password            = Shop::Container()->getPasswordService()->generate(PASSWORD_DEFAULT_LENGTH);
         $customer->cPasswort = Shop::Container()->getPasswordService()->hash($password);
     }
@@ -211,7 +212,7 @@ function processImport($fmt, $data)
     $tmp->cStrasse    = $customer->cStrasse;
     $tmp->cHausnummer = $customer->cHausnummer;
     if ($customer->insertInDB()) {
-        if ((int)$_POST['PasswortGenerieren'] === 1) {
+        if (Request::postInt('PasswortGenerieren') === 1) {
             $customer->cPasswortKlartext = $password;
             $customer->cNachname         = $tmp->cNachname;
             $customer->cFirma            = $tmp->cFirma;

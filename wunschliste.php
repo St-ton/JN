@@ -12,6 +12,7 @@ use JTL\Helpers\Product;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Kampagne;
+use JTL\Pagination\Pagination;
 use JTL\Session\Frontend;
 use JTL\Shop;
 
@@ -84,7 +85,7 @@ if ($action !== null && Form::validateToken()) {
             case 'sendViaMail':
                 if ($wl->cURLID !== '' && $wl->nOeffentlich && $wl->isSelfControlled()) {
                     $step = 'wunschliste anzeigen';
-                    if (isset($_POST['send']) && (int)$_POST['send'] === 1) {
+                    if (Request::postInt('send') === 1) {
                         if ($conf['global']['global_wunschliste_anzeigen'] === 'Y') {
                             $mails = explode(' ', Text::filterXSS($_POST['email']));
                             $alertHelper->addAlert(
@@ -300,7 +301,15 @@ if ($customerID > 0) {
     );
     exit;
 }
+
+$pagination = (new Pagination())
+    ->setItemArray($wishlist->CWunschlistePos_arr)
+    ->setItemCount(count($wishlist->CWunschlistePos_arr))
+    ->assemble();
+
 Shop::Smarty()->assign('CWunschliste', $wishlist)
+    ->assign('pagination', $pagination)
+    ->assign('wishlistItems', $pagination->getPageItems())
     ->assign('oWunschliste_arr', $wishlists)
     ->assign('newWL', Request::verifyGPCDataInt('newWL'))
     ->assign('wlsearch', $searchQuery)

@@ -26,20 +26,20 @@ $db          = Shop::Container()->getDB();
 if (Form::validateToken()) {
     if (isset($_POST['action'])) {
         $action = $_POST['action'];
-    } elseif (isset($_GET['kVerpackung']) && Request::verifyGPCDataInt('kVerpackung') >= 0) {
+    } elseif (Request::getInt('kVerpackung', -1) >= 0) {
         $action = 'edit';
     }
 }
 
 if ($action === 'save') {
-    $packagingID                    = (int)$_POST['kVerpackung'];
+    $packagingID                    = Request::postInt('kVerpackung');
     $customerGroupIDs               = $_POST['kKundengruppe'] ?? null;
     $packaging                      = new stdClass();
     $packaging->fBrutto             = (float)str_replace(',', '.', $_POST['fBrutto'] ?? 0);
     $packaging->fMindestbestellwert = (float)str_replace(',', '.', $_POST['fMindestbestellwert'] ?? 0);
     $packaging->fKostenfrei         = (float)str_replace(',', '.', $_POST['fKostenfrei'] ?? 0);
-    $packaging->kSteuerklasse       = isset($_POST['kSteuerklasse']) ? (int)$_POST['kSteuerklasse'] : 0;
-    $packaging->nAktiv              = isset($_POST['nAktiv']) ? (int)$_POST['nAktiv'] : 0;
+    $packaging->kSteuerklasse       = Request::postInt('kSteuerklasse');
+    $packaging->nAktiv              = Request::postInt('nAktiv');
     $packaging->cName               = htmlspecialchars(
         strip_tags(trim($_POST['cName_' . $languages[0]->cISO])),
         ENT_COMPAT | ENT_HTML401,
@@ -155,15 +155,15 @@ $taxClasses     = $db->query(
     ReturnType::ARRAY_OF_OBJECTS
 );
 
-$packagingCount = $db->query(
-    'SELECT count(kVerpackung) AS count
+$packagingCount = (int)$db->query(
+    'SELECT COUNT(kVerpackung) AS cnt
             FROM tverpackung',
     ReturnType::SINGLE_OBJECT
-);
+)->cnt;
 $itemsPerPage   = 10;
 $pagination     = (new Pagination('standard'))
     ->setItemsPerPageOptions([$itemsPerPage, $itemsPerPage * 2, $itemsPerPage * 5])
-    ->setItemCount($packagingCount->count)
+    ->setItemCount($packagingCount)
     ->assemble();
 $packagings     = $db->query(
     'SELECT * FROM tverpackung 

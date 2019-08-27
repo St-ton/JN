@@ -134,6 +134,7 @@ final class LinkGroup implements LinkGroupInterface
         )), function ($e) {
             return (int)$e;
         }));
+        \executeHook(\HOOK_LINKGROUP_MAPPED, ['group' => $this]);
 
         return $this;
     }
@@ -159,9 +160,7 @@ final class LinkGroup implements LinkGroupInterface
      */
     public function getName(int $idx = null): string
     {
-        $idx = $idx ?? Shop::getLanguageID();
-
-        return $this->names[$idx] ?? '';
+        return $this->names[$idx ?? Shop::getLanguageID()] ?? '';
     }
 
     /**

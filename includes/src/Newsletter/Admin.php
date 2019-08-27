@@ -388,7 +388,7 @@ final class Admin
                 'kNewslettervorlage',
                 $templateID
             );
-            $uploadDir = PFAD_ROOT . \PFAD_BILDER . \PFAD_NEWSLETTERBILDER;
+            $uploadDir = \PFAD_ROOT . \PFAD_BILDER . \PFAD_NEWSLETTERBILDER;
             foreach ($defaultTpl->oNewslettervorlageStdVar_arr as $i => $nlTplStdVar) {
                 $imageExists = false;
                 if ($nlTplStdVar->cTyp === 'BILD') {
@@ -758,7 +758,7 @@ final class Admin
             $this->db->insert('tnewsletterempfaengerhistory', $hist);
         }
         try {
-            (new Optin())
+            (new Optin(OptinNewsletter::class))
                 ->bulkDeleteOptins($recipients, 'cOptCode');
         } catch (EmptyResultSetException $e) {
             // suppress exception, because a optin implementation class is not needed here
@@ -793,7 +793,9 @@ final class Admin
                 DATE_FORMAT(tnewsletterempfaenger.dEingetragen, '%d.%m.%Y %H:%i') AS dEingetragen_de,
                 DATE_FORMAT(tnewsletterempfaenger.dLetzterNewsletter, '%d.%m.%Y %H:%i') AS dLetzterNewsletter_de,
                 tkunde.kKundengruppe, tkundengruppe.cName, tnewsletterempfaengerhistory.cOptIp,
-                DATE_FORMAT(tnewsletterempfaengerhistory.dOptCode, '%d.%m.%Y %H:%i') AS optInDate
+                IF (tnewsletterempfaengerhistory.dOptCode != '',
+                    DATE_FORMAT(tnewsletterempfaengerhistory.dOptCode, '%d.%m.%Y %H:%i'),
+                    DATE_FORMAT(toptin.dActivated, '%d.%m.%Y %H:%i')) AS optInDate
                 FROM tnewsletterempfaenger
                 LEFT JOIN tkunde
                     ON tkunde.kKunde = tnewsletterempfaenger.kKunde
@@ -802,6 +804,7 @@ final class Admin
                 LEFT JOIN tnewsletterempfaengerhistory
                     ON tnewsletterempfaengerhistory.cEmail = tnewsletterempfaenger.cEmail
                       AND tnewsletterempfaengerhistory.cAktion = 'Eingetragen'
+                LEFT JOIN toptin ON toptin.cMail = tnewsletterempfaenger.cEmail
                 WHERE tnewsletterempfaenger.kSprache = " . (int)$_SESSION['kSprache'] .
             $searchSQL->cWHERE . '
                 ORDER BY tnewsletterempfaenger.dEingetragen DESC' . $limitSQL,

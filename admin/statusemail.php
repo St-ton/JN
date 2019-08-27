@@ -6,6 +6,7 @@
 
 use JTL\Alert\Alert;
 use JTL\Helpers\Form;
+use JTL\Helpers\Request;
 use JTL\Shop;
 use JTL\Statusmail;
 
@@ -20,9 +21,9 @@ $step        = 'statusemail_uebersicht';
 $statusMail  = new Statusmail(Shop::Container()->getDB());
 
 if (Form::validateToken()) {
-    if (isset($_POST['action']) && $_POST['action'] === 'sendnow') {
+    if (Request::postVar('action') === 'sendnow') {
         $statusMail->sendAllActiveStatusMails();
-    } elseif (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1) {
+    } elseif (Request::postInt('einstellungen') === 1) {
         if ($statusMail->updateConfig()) {
             $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successChangesSave'), 'successChangesSave');
         } else {

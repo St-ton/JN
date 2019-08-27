@@ -28,13 +28,13 @@ if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
     $smarty->assign('cTab', Request::verifyGPDataString('tab'));
 }
 
-if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
+if (Request::postInt('einstellungen') > 0) {
     $alertHelper->addAlert(
         Alert::TYPE_SUCCESS,
         saveAdminSectionSettings(CONF_KUNDENFELD, $_POST),
         'saveSettings'
     );
-} elseif (isset($_POST['kundenfelder']) && (int)$_POST['kundenfelder'] === 1 && Form::validateToken()) {
+} elseif (Request::postInt('kundenfelder') === 1 && Form::validateToken()) {
     $success = true;
     if (isset($_POST['loeschen'])) {
         $fieldIDs = $_POST['kKundenfeld'];
@@ -86,9 +86,9 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
             ),
             'cWawi'       => Text::filterXSS(str_replace(['"', "'"], '', $_POST['cWawi'])),
             'cTyp'        => Text::filterXSS($_POST['cTyp']),
-            'nSort'       => (int)$_POST['nSort'],
-            'nPflicht'    => (int)$_POST['nPflicht'],
-            'nEditierbar' => (int)$_POST['nEdit'],
+            'nSort'       => Request::postInt('nSort'),
+            'nPflicht'    => Request::postInt('nPflicht'),
+            'nEditierbar' => Request::postInt('nEdit'),
         ];
 
         $cfValues = $_POST['cfValues'] ?? null;

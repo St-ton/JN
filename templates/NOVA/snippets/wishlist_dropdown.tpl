@@ -8,7 +8,12 @@
             {row class="py-2{if $wishlist@iteration %2} bg-info{/if}"}
                 {col md=6}
                     <p>{link href="{get_static_route id='wunschliste.php'}?wl={$wishlist->kWunschliste}"}{$wishlist->cName}{/link}<br />
-                        <small>{if $wishlist->nOeffentlich === 1}{lang key='public'}{else}{lang key='private'}{/if}</small>
+                        <span data-switch-label-state="public-{$wishlist->kWunschliste}" class="{if $wishlist->nOeffentlich != 1}d-none{/if}">
+                            {lang key='public'}
+                        </span>
+                        <span data-switch-label-state="private-{$wishlist->kWunschliste}" class="{if $wishlist->nOeffentlich == 1}d-none{/if}">
+                            {lang key='private'}
+                        </span>
                     </p>
                 {/col}
                 {col md=6 class='text-right'}

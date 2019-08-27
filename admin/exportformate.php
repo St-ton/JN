@@ -9,6 +9,7 @@ use JTL\Backend\Revision;
 use JTL\DB\ReturnType;
 use JTL\Exportformat;
 use JTL\Helpers\Form;
+use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Shop;
 
@@ -25,11 +26,10 @@ $oSmartyError->nCode = 0;
 $link                = null;
 $db                  = Shop::Container()->getDB();
 $alertHelper         = Shop::Container()->getAlertService();
-if (isset($_GET['neuerExport']) && (int)$_GET['neuerExport'] === 1 && Form::validateToken()) {
+if (Request::getInt('neuerExport') === 1 && Form::validateToken()) {
     $step = 'neuer Export';
 }
-if (isset($_GET['kExportformat'])
-    && (int)$_GET['kExportformat'] > 0
+if (Request::getInt('kExportformat') > 0
     && !isset($_GET['action'])
     && Form::validateToken()
 ) {
@@ -45,14 +45,14 @@ if (isset($_GET['kExportformat'])
         }
     }
 }
-if (isset($_POST['neu_export']) && (int)$_POST['neu_export'] === 1 && Form::validateToken()) {
+if (Request::postInt('neu_export') === 1 && Form::validateToken()) {
     $ef          = new Exportformat(0, $db);
     $checkResult = $ef->check($_POST);
     if ($checkResult === true) {
         unset($_SESSION['exportSyntaxErrorCount']);
         $kExportformat = $ef->getExportformat();
         if ($kExportformat > 0) {
-            $kExportformat = (int)$_POST['kExportformat'];
+            $kExportformat = Request::postInt('kExportformat');
             $revision      = new Revision($db);
             $revision->addRevision('export', $kExportformat);
             $ef->update();
@@ -107,8 +107,8 @@ if (isset($_POST['neu_export']) && (int)$_POST['neu_export'] === 1 && Form::vali
         }
     } else {
         $_POST['cContent']   = str_replace('<tab>', "\t", $_POST['cContent']);
-        $_POST['cKopfzeile'] = isset($_POST['cKopfzeile']) ? str_replace('<tab>', "\t", $_POST['cKopfzeile']) : '';
-        $_POST['cFusszeile'] = isset($_POST['cFusszeile']) ? str_replace('<tab>', "\t", $_POST['cFusszeile']) : '';
+        $_POST['cKopfzeile'] = str_replace('<tab>', "\t", Request::postVar('cKopfzeile', ''));
+        $_POST['cFusszeile'] = str_replace('<tab>', "\t", Request::postVar('cFusszeile', ''));
         $smarty->assign('cPlausiValue_arr', $checkResult)
                ->assign('cPostVar_arr', Text::filterXSS($_POST));
         $step = 'neuer Export';
@@ -117,12 +117,12 @@ if (isset($_POST['neu_export']) && (int)$_POST['neu_export'] === 1 && Form::vali
 }
 $action        = null;
 $kExportformat = null;
-if (isset($_POST['action']) && mb_strlen($_POST['action']) > 0 && (int)$_POST['kExportformat'] > 0) {
+if (mb_strlen(Request::postVar('action', '')) > 0 && Request::postInt('kExportformat') > 0) {
     $action        = $_POST['action'];
-    $kExportformat = (int)$_POST['kExportformat'];
-} elseif (isset($_GET['action']) && mb_strlen($_GET['action']) > 0 && (int)$_GET['kExportformat'] > 0) {
+    $kExportformat = Request::postInt('kExportformat');
+} elseif (mb_strlen(Request::getVar('action', '')) > 0 && Request::getInt('kExportformat') > 0) {
     $action        = $_GET['action'];
-    $kExportformat = (int)$_GET['kExportformat'];
+    $kExportformat = Request::getInt('kExportformat');
 }
 if ($action !== null && $kExportformat !== null && Form::validateToken()) {
     switch ($action) {
@@ -268,11 +268,11 @@ if ($step === 'neuer Export') {
            ->assign('oKampagne_arr', holeAlleKampagnen());
 
     $exportformat = null;
-    if (isset($_POST['kExportformat']) && (int)$_POST['kExportformat'] > 0) {
+    if (Request::postInt('kExportformat') > 0) {
         $exportformat                  = $db->select(
             'texportformat',
             'kExportformat',
-            (int)$_POST['kExportformat']
+            Request::postInt('kExportformat')
         );
         $exportformat->cKopfzeile      = str_replace("\t", '<tab>', $exportformat->cKopfzeile);
         $exportformat->cContent        = str_replace("\t", '<tab>', $exportformat->cContent);

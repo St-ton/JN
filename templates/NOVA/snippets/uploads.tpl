@@ -176,7 +176,7 @@
                                             {block name='snippets-uploads-scheme-script'}
                                                 {inline_script}<script>
                                                     $(function () {
-                                                        var $el =  $('#fileinput{$oUploadSchema@index}{$oUpload@index}');
+                                                        var $el   = $('#fileinput{$oUploadSchema@index}{$oUpload@index}');
                                                         var $url1 = '{$ShopURL}/uploads/{$oUpload->cUnique}';
                                                         $el.fileinput({
                                                             uploadUrl:             '{$ShopURL}/{$smarty.const.PFAD_UPLOAD_CALLBACK}',
@@ -187,7 +187,7 @@
                                                             required:              true,
                                                             browseClass:           'btn btn-light',
                                                             fileActionSettings:    {
-                                                                showZoom: false,
+                                                                showZoom:   false,
                                                                 showRemove: false
                                                             },
                                                             allowedFileExtensions: [{$oUpload->cDateiListe|replace:'*.':'\''|replace:';':'\','|cat:'\''}],
@@ -202,7 +202,7 @@
                                                                 prodID:     "{$oUploadSchema->prodID}",
                                                                 cname:      "{$oUploadSchema->cName|replace:" ":"_"}"
                                                                 {if !empty($oUploadSchema->WarenkorbPosEigenschaftArr)},
-                                                                variation:  "{strip}
+                                                                variation: "{strip}
                                                                 {foreach name=variationen from=$oUploadSchema->WarenkorbPosEigenschaftArr item=Variation}_{$Variation->cEigenschaftWertName|trans|replace:" ":"_"}{/foreach}
                                                                     "{/strip}
                                                                 {/if}
@@ -210,12 +210,12 @@
                                                             maxFileSize:           {$nMaxUploadSize/1024},
                                                             elErrorContainer:      '#kv-error-{$oUploadSchema@index}{$oUpload@index}',
                                                             maxFilesNum:           1
-                                                        }).on("filebrowse", function(event, files) {
+                                                        }).on("filebrowse", function (event, files) {
                                                             $el.fileinput('clear');
-                                                        }).on("filebatchselected", function(event, files) {
+                                                        }).on("filebatchselected", function (event, files) {
                                                             $el.fileinput("upload");
-                                                        }).on('filebatchuploadsuccess', function(event, data) {
-                                                            var msgField = $('#queue{$oUploadSchema@index}{$oUpload@index} .current-upload'),
+                                                        }).on('filebatchuploadsuccess', function (event, data) {
+                                                            var msgField       = $('#queue{$oUploadSchema@index}{$oUpload@index} .current-upload'),
                                                                 uploadMsgField = $('.uploadifyMsg');
                                                             if (typeof data.response !== 'undefined' && typeof data.response.cName !== 'undefined') {
                                                                 msgField.html('<i class="fas fa-check" aria-hidden="true"></i>' + data.response.cName + ' (' + data.response.cKB + ' KB)');
@@ -225,9 +225,9 @@
                                                             $('#msgWarning').hide();
                                                             uploadMsgField.find('.alert-danger').hide();
                                                             $('#buy-form').find('.upload-error').removeClass('upload-error');
-                                                        }).on('fileuploaderror', function() {
+                                                        }).on('fileuploaderror', function () {
                                                             $('#upload-{$oUploadSchema@index}{$oUpload@index} .fileinput-upload').addClass('disabled');
-                                                        }).on('fileloaded', function() {
+                                                        }).on('fileloaded', function () {
                                                             $('#upload-{$oUploadSchema@index}{$oUpload@index} .fileinput-upload').removeClass('disabled');
                                                         });
                                                     });

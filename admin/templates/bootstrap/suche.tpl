@@ -13,10 +13,8 @@
             <li class="has-icon" tabindex="-1">
                 <a class="dropdown-item" href="{$item->link}">
                     <span class="title">
-                        {include file="img/icons/{$item->icon}.svg"}
-                        <span class="path">
-                            {$item->path}
-                        </span>
+                        <span class="mr-2">{include file="img/icons/{$item->icon}.svg"}</span>
+                        {$item->path}
                     </span>
                 </a>
             </li>
@@ -58,7 +56,7 @@
                 <form method="post" action="versandarten.php">
                     {$jtl_token}
                     <input type="hidden" name="edit" value="{$shipping->kVersandart}">
-                    <button type="submit" class="btn btn-link">{$shipping->cName}</button>
+                    <button type="submit" class="btn btn-link p-0">{$shipping->cName}</button>
                 </form>
             </li>
         {/foreach}

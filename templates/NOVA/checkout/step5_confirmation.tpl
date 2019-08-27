@@ -196,10 +196,10 @@
 
                     {if isset($wrbNotice) || isset($agbNotice)}
                         {block name='checkout-step5-confirmation-alert-agb'}
-                            {alert variant="info" class="my-5"}
+                            <div class="my-5">
                                 {if isset($agbNotice)}<p>{$agbNotice}</p>{/if}
                                 {if isset($wrbNotice)}<p>{$wrbNotice}</p>{/if}
-                            {/alert}
+                            </div>
                         {/block}
                     {/if}
 

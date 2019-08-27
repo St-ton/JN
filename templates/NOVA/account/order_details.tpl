@@ -4,10 +4,10 @@
  *}
 {block name='account-order-details'}
     {block name='account-order-details-script-location'}
-        <script type="text/javascript">
-            if (top.location !== self.location) {ldelim}
+        <script>
+            if (top.location !== self.location) {
                 top.location = self.location.href;
-            {rdelim}
+            }
         </script>
     {/block}
     {block name='account-order-details-heading'}

@@ -42,7 +42,7 @@
             {/block}
         </div>
         {block name='snippets-slider-script'}
-            <script type="text/javascript">
+            {inline_script}<script>
                 {if $oSlider->getUseKB() === false}
                     jtl.ready(function () {ldelim}
                         var slider = $('#slider-{$oSlider->getID()}');
@@ -139,7 +139,7 @@
                         {rdelim});
                     {rdelim});
                 {/if}
-            </script>
+            </script>{/inline_script}
         {/block}
     {/if}
 {/block}

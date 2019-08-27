@@ -14,13 +14,13 @@
             {/alert}
         {/block}
         {block name='account-login-script-no-cookie'}
-            <script type="text/javascript">
-               $(function() {ldelim}
-                   if (navigator.cookieEnabled === false) {ldelim}
+            {inline_script}<script>
+               $(function() {
+                   if (navigator.cookieEnabled === false) {
                        $('#no-cookies-warning').show();
-                   {rdelim}
-               {rdelim});
-            </script>
+                   }
+               });
+            </script>{/inline_script}
         {/block}
     {elseif !$alertNote}
         {block name='account-login-alert'}

@@ -122,15 +122,10 @@
         {/if}
     </div>
     {block name='snippets-pagination-script'}
-        {literal}
-            <script type="text/javascript">
-                var deferredTasks = window.deferredTasks || [];
-                deferredTasks.push(["ready",function (){
-                    $('.pagination-wrapper select').on('change', function () {
-                        this.form.submit();
-                    });
-                }]);
-            </script>
-        {/literal}
+        {inline_script}<script>
+            $('.pagination-wrapper select').on('change', function () {
+                this.form.submit();
+            });
+        </script>{/inline_script}
     {/block}
 {/block}

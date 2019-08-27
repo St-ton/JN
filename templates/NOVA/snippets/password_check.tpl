@@ -1,4 +1,4 @@
-<script>
+{inline_script}<script>
     $(window).on('load', function () {
         $('{$id}').password({
             shortPass: '{lang key='passwordTooShort' section='login' printf=$Einstellungen.kunden.kundenregistrierung_passwortlaenge}',
@@ -16,4 +16,4 @@
             minimumLength: {$Einstellungen.kunden.kundenregistrierung_passwortlaenge}
         });
     });
-</script>
+</script>{/inline_script}

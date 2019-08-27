@@ -350,29 +350,6 @@ if ($step === 'neue Versandart') {
         '*',
         'cAnbieter, nSort, cName, cModulId'
     );
-<<<<<<< HEAD
-    $tmpID         = (int)($shippingMethod->kVersandart ?? 0);
-    $smarty->assign('versandKlassen', $db->selectAll('tversandklasse', [], [], '*', 'kVersandklasse'))
-           ->assign('zahlungsarten', $zahlungsarten)
-           ->assign('versandlaender', $versandlaender)
-           ->assign('continents', $countryHelper->getCountriesGroupedByContinent(
-               true,
-               explode(' ', $shippingMethod->cLaender ?? '')
-           ))
-           ->assign('versandberechnung', $shippingType)
-           ->assign('waehrung', $defaultCurrency->cName)
-           ->assign('kundengruppen', $db->query(
-               'SELECT kKundengruppe, cName FROM tkundengruppe ORDER BY kKundengruppe',
-               ReturnType::ARRAY_OF_OBJECTS
-           ))
-           ->assign('oVersandartSpracheAssoc_arr', getShippingLanguage($tmpID, $languages))
-           ->assign('gesetzteVersandklassen', isset($shippingMethod->cVersandklassen)
-               ? gibGesetzteVersandklassen($shippingMethod->cVersandklassen)
-               : null)
-           ->assign('gesetzteKundengruppen', isset($shippingMethod->cKundengruppen)
-               ? gibGesetzteKundengruppen($shippingMethod->cKundengruppen)
-               : null);
-=======
     foreach ($zahlungsarten as $zahlungsart) {
         $pluginID = PluginHelper::getIDByModuleID($zahlungsart->cModulId);
         if ($pluginID > 0) {
@@ -384,12 +361,9 @@ if ($step === 'neue Versandart') {
         $zahlungsart->cName     = __($zahlungsart->cName);
         $zahlungsart->cAnbieter = __($zahlungsart->cAnbieter);
     }
-    $smarty->assign('versandKlassen', $db->selectAll('tversandklasse', [], [], '*', 'kVersandklasse'));
-    $tmpID = 0;
-    if (isset($shippingMethod->kVersandart) && $shippingMethod->kVersandart > 0) {
-        $tmpID = $shippingMethod->kVersandart;
-    }
-    $smarty->assign('zahlungsarten', $zahlungsarten)
+    $tmpID = (int)($shippingMethod->kVersandart ?? 0);
+    $smarty->assign('versandKlassen', $db->selectAll('tversandklasse', [], [], '*', 'kVersandklasse'))
+        ->assign('zahlungsarten', $zahlungsarten)
         ->assign('versandlaender', $versandlaender)
         ->assign('continents', $countryHelper->getCountriesGroupedByContinent(
             true,
@@ -408,7 +382,6 @@ if ($step === 'neue Versandart') {
         ->assign('gesetzteKundengruppen', isset($shippingMethod->cKundengruppen)
             ? gibGesetzteKundengruppen($shippingMethod->cKundengruppen)
             : null);
->>>>>>> master
 }
 if ($step === 'uebersicht') {
     $customerGroups  = $db->query(

@@ -212,7 +212,7 @@ if ($action !== '' && Form::validateToken()) {
                     $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successLinkCreate'), 'successLinkCreate');
                 } else {
                     $alertHelper->addAlert(
-                        Alert::TYPE_SUCCadmin/versandarten.phpESS,
+                        Alert::TYPE_SUCCESS,
                         sprintf(__('successLinkEdit'), $link->getDisplayName()),
                         'successLinkEdit'
                     );

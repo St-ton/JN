@@ -44,7 +44,7 @@ function gibBestellungsUebersicht(string $limitSQL, string $query): array
  */
 function gibAnzahlBestellungen($query): int
 {
-    $filterSQL  = (mb_strlen($query) > 0)
+    $filterSQL = (mb_strlen($query) > 0)
         ? " WHERE cBestellNr LIKE '%" . Shop::Container()->getDB()->escape($query) . "%'"
         : '';
 

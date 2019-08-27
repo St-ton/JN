@@ -13,7 +13,7 @@
     {$languages         = $smarty.session.Sprachen}
     {$currentLanguage   = $smarty.session.currentLanguage}
 
-    <script>
+    {inline_script}<script>
         let languages = [
             {foreach $languages as $lang}
                 {
@@ -236,7 +236,7 @@
                 $(this).tooltip('hide');
             });
         }
-    </script>
+    </script>{/inline_script}
     <div id="opc">
         {if $pageDrafts|count === 0}
             <nav id="opc-startmenu">

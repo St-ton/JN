@@ -74,7 +74,7 @@
         || $useAvailabilityNotification || $useMediaGroup || !empty($separatedTabs)}
             {if $tabanzeige}
                 {block name='productdetails-tabs-tabs'}
-                    {include file='snippets/opc_mount_point.tpl' id='opc_before_tabs'}
+                    {opcMountPoint id='opc_before_tabs'}
                     {container class="mb-7"}
                         {tabs id="product-tabs"}
                         {if $useDescription}
@@ -83,7 +83,7 @@
                                     <div id="tab-description">
                                         {block name='productdetails-tabs-tab-content'}
                                             {block name='tab-description-media-types'}
-                                                {include file='snippets/opc_mount_point.tpl' id='opc_before_desc'}
+                                                {opcMountPoint id='opc_before_desc'}
                                                 <div class="desc">
                                                     {$Artikel->cBeschreibung}
                                                     {if $useDescriptionWithMediaGroup}
@@ -94,7 +94,7 @@
                                                         {/foreach}
                                                     {/if}
                                                 </div>
-                                                {include file='snippets/opc_mount_point.tpl' id='opc_after_desc'}
+                                                {opcMountPoint id='opc_after_desc'}
                                             {/block}
                                             {block name='productdetails-tabs-tab-description-include-attributes'}
                                                 {include file='productdetails/attributes.tpl' tplscope='details'
@@ -209,7 +209,7 @@
                                             {cardbody}
                                                 {block name='productdetails-tabs-card-description'}
                                                     {block name='productdetails-tabs-card-description-content'}
-                                                        {include file='snippets/opc_mount_point.tpl' id='opc_before_desc'}
+                                                        {opcMountPoint id='opc_before_desc'}
                                                         <div class="desc">
                                                             {$Artikel->cBeschreibung}
                                                             {if $useDescriptionWithMediaGroup}
@@ -225,7 +225,7 @@
                                                                 {/foreach}
                                                             {/if}
                                                         </div>
-                                                        {include file='snippets/opc_mount_point.tpl' id='opc_after_desc'}
+                                                        {opcMountPoint id='opc_after_desc'}
                                                     {/block}
                                                     {block name='productdetails-tabs-card-description-attributes'}
                                                         {if (!empty($Artikel->cBeschreibung) || $useDescriptionWithMediaGroup) && $showAttributesTable}

@@ -4,7 +4,7 @@
  *}
 {block name='page-manufacturers'}
     {container}
-        {include file='snippets/opc_mount_point.tpl' id='opc_before_manufacturers'}
+        {opcMountPoint id='opc_before_manufacturers'}
         {block name='page-manufacturers-content'}
             <div class="card-columns manufacturers-columns">
                 {foreach $oHersteller_arr as $Hersteller}

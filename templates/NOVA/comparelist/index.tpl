@@ -12,7 +12,7 @@
     {block name='comparelist-index-content'}
         {container}
             {block name='comparelist-index-heading'}
-                {include file='snippets/opc_mount_point.tpl' id='opc_before_heading'}
+                {opcMountPoint id='opc_before_heading'}
                 <h1>{lang key='compare' section='global'}</h1>
             {/block}
             {block name='comparelist-index-include-extension'}
@@ -22,7 +22,7 @@
 
             {if $oVergleichsliste->oArtikel_arr|@count > 0}
                 {block name='comparelist-index-filter'}
-                    {include file='snippets/opc_mount_point.tpl' id='opc_before_filter'}
+                    {opcMountPoint id='opc_before_filter'}
                     <div id="filter-checkboxes" class="mb-3">
                         {row}
                             {col}

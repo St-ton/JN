@@ -41,7 +41,7 @@
                 {/block}
             {/if}
 
-            {include file='snippets/opc_mount_point.tpl' id='opc_before_account'}
+            {opcMountPoint id='opc_before_account'}
 
             {row id="account"}
                 {col cols=12}

@@ -24,15 +24,10 @@ if (Request::verifyGPCDataInt('einstellungen') === 1) {
     $alertHelper->addAlert(Alert::TYPE_SUCCESS, saveAdminSettings($settingsIDs, $_POST), 'saveSettings');
 }
 $itemCount     = (int)Shop::Container()->getDB()->query(
-    'SELECT COUNT(tWunsch.kWunschliste) AS cnt
-        FROM
-        (
-            SELECT twunschliste.kWunschliste
-            FROM twunschliste
-            JOIN twunschlistepos 
-                ON twunschliste.kWunschliste = twunschlistepos.kWunschliste
-            GROUP BY twunschliste.kWunschliste
-        ) AS tWunsch',
+    'SELECT COUNT(DISTINCT twunschliste.kWunschliste) AS cnt
+         FROM twunschliste
+         JOIN twunschlistepos
+             ON twunschliste.kWunschliste = twunschlistepos.kWunschliste',
     ReturnType::SINGLE_OBJECT
 )->cnt;
 $productCount  = (int)Shop::Container()->getDB()->query(

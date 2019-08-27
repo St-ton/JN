@@ -259,7 +259,7 @@ build_add_files_to_patch_dir()
     rsync -R admin/includes/shopmd5files/${APPLICATION_VERSION_STR}.csv ${PATCH_DIR};
     rsync -R includes/defines_inc.php ${PATCH_DIR};
 
-    if [[ -f "${PATCH_DIR}/includes/composer.lock" ]]; then
+    if [[ -f "${PATCH_DIR}/includes/composer.json" ]]; then
         mkdir /tmp/composer_${PATCH_VERSION};
         mkdir /tmp/composer_${PATCH_VERSION}/includes;
         git show ${PATCH_VERSION}:includes/composer.json > /tmp/composer_${PATCH_VERSION}/includes/composer.json;

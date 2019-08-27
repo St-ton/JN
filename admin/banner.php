@@ -29,7 +29,7 @@ if (!empty($_POST) && (isset($_POST['cName']) || isset($_POST['kImageMap'])) && 
     if (mb_strlen($name) === 0) {
         $checks['cName'] = 1;
     }
-    $bannerPath = Request::postVar('cPath') !== '' ? $_POST['cPath'] : null;
+    $bannerPath = Request::postVar('cPath', '') !== '' ? $_POST['cPath'] : null;
     if (isset($_FILES['oFile'])
         && $_FILES['oFile']['error'] === UPLOAD_ERR_OK
         && move_uploaded_file($_FILES['oFile']['tmp_name'], PFAD_ROOT . PFAD_BILDER_BANNER . $_FILES['oFile']['name'])

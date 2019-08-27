@@ -318,7 +318,7 @@
                 $('#quantity', $wrapper)
                     .each(function(i, item) {
                         var $item   = $(item),
-                            wrapper = '#' + $item.closest('form').closest('div').attr('id');
+                            wrapper = '#' + $item.closest('form').closest('div[data-wrapper="true"]').attr('id');
 
                         $item.on('change', function () {
                             that.variationPrice($(this), true, wrapper);

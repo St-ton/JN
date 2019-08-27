@@ -673,8 +673,11 @@ final class Shop
      * @param string $context
      * @return JTLSmarty
      */
-    public function _Smarty(bool $fast = false, string $context = ContextType::FRONTEND): JTLSmarty
+    public function _Smarty(bool $fast = false, string $context = null): JTLSmarty
     {
+        if ($context === null) {
+            $context = self::isFrontend() ? ContextType::FRONTEND : ContextType::BACKEND;
+        }
         return JTLSmarty::getInstance($fast, $context);
     }
 

@@ -57,18 +57,13 @@ if (Request::getInt('l') > 0 && Form::validateToken()) {
     unset($persCart);
 }
 $customerCount = (int)Shop::Container()->getDB()->query(
-    'SELECT COUNT(*) AS cnt
-        FROM
-        (
-            SELECT tkunde.kKunde
-            FROM tkunde
-            JOIN twarenkorbpers 
-                ON tkunde.kKunde = twarenkorbpers.kKunde
-            JOIN twarenkorbperspos 
-                ON twarenkorbperspos.kWarenkorbPers = twarenkorbpers.kWarenkorbPers
-            ' . $searchSQL->cWHERE . '
-            GROUP BY tkunde.kKunde
-        ) AS tAnzahl',
+    'SELECT COUNT(DISTINCT tkunde.kKunde) AS cnt
+         FROM tkunde
+         JOIN twarenkorbpers
+             ON tkunde.kKunde = twarenkorbpers.kKunde
+         JOIN twarenkorbperspos
+             ON twarenkorbperspos.kWarenkorbPers = twarenkorbpers.kWarenkorbPers
+         ' . $searchSQL->cWHERE,
     ReturnType::SINGLE_OBJECT
 )->cnt;
 

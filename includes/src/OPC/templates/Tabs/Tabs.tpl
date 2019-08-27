@@ -1,4 +1,6 @@
-<div {$instance->getAttributeString()} {if $isPreview}{$instance->getDataAttributeString()}{/if}>
+<div {$instance->getAttributeString()}
+     {if $isPreview}{$instance->getDataAttributeString()}{/if}
+     class="opc-Tabs">
     {tabs}
         {foreach $instance->getProperty('tabs') as $i => $tabTitle}
             {$tabId = $instance->getUid()|cat:'-'|cat:$i}

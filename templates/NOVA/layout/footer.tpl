@@ -5,7 +5,7 @@
 {block name='layout-footer'}
     {block name='layout-footer-content-all-closingtags'}
         {block name='layout-footer-content-closingtag'}
-            {include file='snippets/opc_mount_point.tpl' id='opc_content'}
+            {include file='snippets/opc_mount_point.tpl' id='opc_content' title='Default Area'}
             </div>{* /content *}
         {/block}
 
@@ -167,7 +167,7 @@
                                     id="language-dropdown-footer"
                                     variant="link btn-sm"
                                     class="d-block d-md-none col-6 text-center language-dropdown"
-                                    text="<i class='fa fa-language'></i> {lang key='language'}"}
+                                    text="<i class='fas fa-language'></i> {lang key='language'}"}
                                     {foreach $smarty.session.Sprachen as $oSprache}
                                         {dropdownitem href="{$oSprache->url}" rel="nofollow" }
                                             {$oSprache->displayLanguage}
@@ -264,41 +264,50 @@
                         script.onload = script.onreadystatechange = function() {
                             if (!done && (!this.readyState || this.readyState === "loaded" || this.readyState === "complete")) {
                                 done = true;
+
                                 // Process async variable
-                                var deferredTasks = window.deferredTasks || [];
+                                window.deferredTasks = window.deferredTasks || [];
+
                                 while(deferredTasks.length) { // there is some syncing to be done
                                     var obj = deferredTasks.shift();
-                                    if (obj[0] =="ready") {
+                                    if (obj[0] === "ready") {
                                         $(obj[1]);
-                                    }else if (obj[0] =="load"){
-                                        $(window).on("load",obj[1]);
+                                    } else if (obj[0] === "load"){
+                                        $(window).on("load", obj[1]);
                                     }
                                 }
-                                deferredTasks = {
-                                    push: function(param){
-                                        if (param[0] =="ready") {
+
+                                window.deferredTasks = {
+                                    push: function(param)
+                                    {
+                                        if (param[0] === "ready") {
                                             $(param[1]);
-                                        }else if (param[0] =="load"){
-                                            $(window).on("load",param[1]);
+                                        } else if (param[0] === "load"){
+                                            $(window).on("load", param[1]);
                                         }
                                     }
                                 };
+
                                 // End of processing
                                 script.onload = script.onreadystatechange = null;
+
                                 if (head && script.parentNode) {
                                     head.removeChild(script);
                                 }
                             }
                         };
+
                         head.appendChild(script);
                     })();
 
                      // helper function to load scripts.
-                    function loadScript(url){
+                    function loadScript(url)
+                    {
                         var script = document.createElement("script");
                         script.type = 'text/javascript';
                         script.async = false;
                         script.src = url;
+
                         var s = document.getElementsByTagName("script")[0];
                         s.parentNode.insertBefore(script, s);
                     }

@@ -21,6 +21,7 @@ class Iframe
         this.dropTarget         = null;
         this.dragNewPortletCls  = null;
         this.dragNewBlueprintId = 0;
+        this.loadedStylesheets  = [];
     }
 
     init(pagetree)
@@ -35,6 +36,7 @@ class Iframe
             'btnBlueprint',
             'btnParent',
             'btnTrash',
+            'dropTargetBlueprint',
         ]);
 
         this.pagetree = pagetree;
@@ -50,6 +52,7 @@ class Iframe
             this.body = this.jq('body');
 
             this.loadStylesheet(this.shopUrl + '/admin/opc/css/iframe.css');
+            this.loadStylesheet(this.shopUrl + '/templates/NOVA/themes/base/fontawesome/css/all.min.css');
 
             this.loadScript(
                 this.shopUrl + '/templates/NOVA/js/popper.min.js',
@@ -95,7 +98,13 @@ class Iframe
         return new this.ctx.Popper(
             document.body,
             elm[0],
-            {placement: 'top-start', modifiers: {computeStyle: {gpuAcceleration: false }}}
+            {
+                placement: 'top-start',
+                modifiers: {computeStyle: {gpuAcceleration: false }, offset: {offset:"8,0"}},
+                onUpdate: data => {
+                    $(data.instance.popper).css('top', data.styles.top + 1 + "px");
+                },
+            }
         );
     }
 
@@ -110,8 +119,16 @@ class Iframe
     updateDropTargets()
     {
         this.stripDropTargets();
-        this.areas().append('<div class="opc-droptarget">');
-        this.portlets().before('<div class="opc-droptarget">');
+
+        this.areas().each((i, area) => {
+            area = this.jq(area);
+            let droptarget = this.dropTargetBlueprint.clone().attr('id', '').show();
+            droptarget.find('.opc-droptarget-info').attr('title', area.data('title') || area.data('area-id'));
+            area.append(droptarget.clone());
+            area.children('[data-portlet]').before(droptarget.clone());
+        });
+
+        this.areas().find('.opc-droptarget-info').tooltip();
     }
 
     stripDropTargets()
@@ -136,9 +153,26 @@ class Iframe
 
     loadStylesheet(url, isLess)
     {
-        this
-            .jq('<link rel="stylesheet' + (isLess ? '/less' : '') + '" href="' + url + '">')
-            .appendTo(this.head);
+        if (this.loadedStylesheets.indexOf(url) === -1) {
+            this.loadedStylesheets.push(url);
+            this
+                .jq('<link rel="stylesheet' + (isLess ? '/less' : '') + '" href="' + url + '">')
+                .appendTo(this.head);
+        }
+    }
+
+    loadPortletPreviewCss(portletCls)
+    {
+        this.loadStylesheet(
+            this.shopUrl + '/includes/src/OPC/templates/' + portletCls + '/preview.css'
+        );
+    }
+
+    loadMissingPortletPreviewStyles()
+    {
+        this.portlets().each((i, elm) => {
+            this.loadPortletPreviewCss($(elm).data('portlet').class);
+        });
     }
 
     loadScript(url, callback)
@@ -225,6 +259,12 @@ class Iframe
     {
         var elm = this.jq(e.target);
 
+        if(elm.parent().hasClass('opc-droptarget')) {
+            elm = elm.parent();
+        } else if(elm.parent().parent().hasClass('opc-droptarget')) {
+            elm = elm.parent().parent();
+        }
+
         if(elm.hasClass('opc-droptarget') && !this.isDescendant(elm, this.draggedElm)) {
             this.setDropTarget(elm);
         }
@@ -238,13 +278,15 @@ class Iframe
     onPortletDrop(e)
     {
         if(this.dropTarget !== null) {
-            var oldArea = this.draggedElm.parent();
+            let oldArea = this.draggedElm.parent();
 
             this.dropTarget.replaceWith(this.draggedElm);
             this.updateDropTargets();
             this.setSelected(this.draggedElm);
 
             if(this.dragNewPortletCls) {
+                let portletCls = this.dragNewPortletCls;
+
                 this.newPortletDropTarget = this.draggedElm;
                 this.setSelected();
                 this.io.createPortlet(this.dragNewPortletCls)
@@ -252,7 +294,12 @@ class Iframe
                         this.newPortletDropTarget.remove();
                         return this.gui.showError(er.error.message);
                     })
-                    .then(this.onNewPortletCreated);
+                    .then(this.onNewPortletCreated)
+                    .then(() => {
+                        if (this.dragNewPortletGroup && this.dragNewPortletGroup === 'content') {
+                            this.gui.openConfigurator(this.selectedElm);
+                        }
+                    });
             } else if(this.dragNewBlueprintId > 0) {
                 this.newPortletDropTarget = this.draggedElm;
                 this.setSelected();
@@ -271,17 +318,18 @@ class Iframe
 
     onNewPortletCreated(data)
     {
-        var newElement = this.createPortletElm(data);
+        let newElement = this.createPortletElm(data);
 
         this.newPortletDropTarget.replaceWith(newElement);
 
-        var newArea = newElement.parent();
+        let newArea = newElement.parent();
 
         this.pagetree.updateArea(newArea);
         this.setSelected(newElement);
         this.updateDropTargets();
         this.gui.setUnsaved(true, true);
         this.page.updateFlipcards();
+        this.loadMissingPortletPreviewStyles();
     }
 
     createPortletElm(previewHtml)
@@ -383,9 +431,14 @@ class Iframe
         this.dropTarget = elm;
     }
 
-    dragNewPortlet(cls)
+    dragNewPortlet(cls, group)
     {
-        this.dragNewPortletCls = cls || null;
+        this.dragNewPortletCls   = cls || null;
+
+        if (group) {
+            this.dragNewPortletGroup = group;
+        }
+
         this.setDragged(this.jq('<i class="fa fa-spinner fa-pulse"></i>'));
     }
 

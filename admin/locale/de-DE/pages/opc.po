@@ -2,14 +2,8 @@ msgid ""
 msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
-msgid "The OPC update is not installed properly. Please update your migrations."
+msgid "opcNotInstalled"
 msgstr "Das Update für den OnPage Composer wurde nicht ordnungsgemäß installiert. Bitte aktualisieren Sie die Migrationen."
-
-msgid "Draft"
-msgstr "Entwurf"
-
-msgid "replaced"
-msgstr "ersetzt"
 
 # OPC GUI
 
@@ -172,9 +166,6 @@ msgstr "Nein, Änderungen verwerfen"
 msgid "yesRestore"
 msgstr "Ja, weiter bearbeiten"
 
-msgid "portletLabel"
-msgstr "Portlet-Label"
-
 msgid "editSettings"
 msgstr "Einstellungen bearbeiten"
 
@@ -189,9 +180,6 @@ msgstr "Nächsthöhere Ebene auswählen"
 
 msgid "deleteSelect"
 msgstr "Auswahl löschen [Entf]"
-
-msgid "portletPreviewLabel"
-msgstr "Portlet-Preview-Label"
 
 msgid "templateTitle"
 msgstr "Name der Vorlage"
@@ -257,7 +245,7 @@ msgid "pastUpper"
 msgstr "VERGANGEN"
 
 msgid "publicSince"
-msgstr "öffentlich seit"
+msgstr "veröffentlicht am"
 
 msgid "publicUntil"
 msgstr "öffentlich bis"
@@ -273,9 +261,6 @@ msgstr "bis"
 
 msgid "noPublicationPlanned"
 msgstr "keine Veröffentlichung geplant"
-
-msgid "expiredOn"
-msgstr "abgelaufen am"
 
 msgid "duplicate"
 msgstr "Duplizieren"
@@ -373,8 +358,8 @@ msgstr "Lightbox"
 msgid "linked"
 msgstr "Verlinkung"
 
-msgid "hidden"
-msgstr "versteckt"
+msgid "unset"
+msgstr "nicht gesetzt"
 
 msgid "dotted"
 msgstr "gepunktet"
@@ -399,3 +384,34 @@ msgstr "Großer Desktop (LG)"
 
 msgid "Custom"
 msgstr "Benutzerdefiniert"
+
+
+msgid "active"
+msgstr "aktiv"
+
+msgid "planned"
+msgstr "geplant"
+
+msgid "draft"
+msgstr "Entwurf"
+
+msgid "past"
+msgstr "vergangen"
+
+msgid "activeSince"
+msgstr "Aktiv seit"
+
+msgid "activeUntil"
+msgstr "Aktiv bis"
+
+msgid "scheduledFor"
+msgstr "Geplant ab"
+
+msgid "notScheduled"
+msgstr "Unveröffentlicht"
+
+msgid "expiredOn"
+msgstr "Abgelaufen am"
+
+msgid "dropPortletHere"
+msgstr "Portlet hier einfügen"

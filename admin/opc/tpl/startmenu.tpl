@@ -29,6 +29,12 @@
             id: {$currentLanguage->id},
         };
 
+        if(window.JTL_SHOP_NOVA) {
+            pushDeferredTask("ready", updateTooltips);
+        } else {
+            $(updateTooltips);
+        }
+
         function openOpcStartMenu()
         {
             $('#opcSidebar').addClass('opc-open');
@@ -172,6 +178,7 @@
                             { },
                             () => {
                                 opcDraftCheckboxChanged();
+                                updateTooltips();
                             }
                         );
                     }
@@ -199,6 +206,7 @@
                             { },
                             () => {
                                 opcDraftCheckboxChanged();
+                                updateTooltips();
                             }
                         );
                     }
@@ -211,6 +219,23 @@
             let draftKeys = getSelectedOpcDraftkeys();
             $('#opc-bulk-actions').attr('disabled', draftKeys.length === 0);
         }
+
+        function updateTooltips()
+        {
+            $('.tooltip').remove();
+
+            $('.opc-draft-actions [data-toggle="tooltip"]').tooltip({
+                placement: 'bottom',
+                trigger: 'hover',
+            });
+
+            $('.opc-draft-actions [data-toggle="dropdown"]').tooltip({
+                placement: 'bottom',
+                trigger: 'hover',
+            }).on('click', function() {
+                $(this).tooltip('hide');
+            });
+        }
     </script>
     <div id="opc">
         {if $pageDrafts|count === 0}
@@ -220,7 +245,7 @@
                     <input type="hidden" name="pageId" value="{$curPageId}">
                     <input type="hidden" name="pageUrl" value="{$curPageUrl}">
                     <button type="submit" name="action" value="extend" class="opc-btn-primary">
-                        <img src="{$ShopURL}/admin/opc/gfx/icon-OPC.svg" alt="OPC Start Icon" id="opc-start-icon">
+                        <img src="{$ShopURL}/admin/opc/gfx/icon-opc.svg" alt="OPC Start Icon" id="opc-start-icon">
                         <span id="opc-start-label">{__('onPageComposer')}</span>
                     </button>
                 </form>
@@ -228,7 +253,7 @@
         {else}
             <nav id="opc-startmenu">
                 <button type="button" class="opc-btn-primary" onclick="openOpcStartMenu()">
-                    <img src="{$ShopURL}/admin/opc/gfx/icon-OPC.svg" alt="OPC Start Icon" id="opc-start-icon">
+                    <img src="{$ShopURL}/admin/opc/gfx/icon-opc.svg" alt="OPC Start Icon" id="opc-start-icon">
                     <span id="opc-start-label">{__('onPageComposer')}</span>
                 </button>
             </nav>

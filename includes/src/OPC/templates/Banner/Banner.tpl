@@ -1,33 +1,18 @@
 {$imgAttribs = $instance->getImageAttributes(null, null, null, 1, $portlet->getPlaceholderImgUrl())}
 
-{if $isPreview}
-    <div style="text-align: center; {$instance->getStyleString()}"
-         class="{$instance->getAnimationClass()}"
-         {$instance->getAnimationDataAttributeString()}
-         {$instance->getDataAttributeString()}>
-        {image
-            src=$imgAttribs.src
-            srcset=$imgAttribs.srcset
-            sizes=$imgAttribs.srcsizes
-            alt=$imgAttribs.alt
-            style='filter: grayscale(50%) opacity(60%)'
-            title=$imgAttribs.title
-            fluid=true
-        }
-        <p style="color: #5cbcf6; font-size: 40px; font-weight: bold; margin-top: -56px;">Banner</p>
-    </div>
-{else}
-    <div style="{$instance->getStyleString()}"
-         class="banner {$instance->getAnimationClass()}"
-         {$instance->getAnimationDataAttributeString()}>
-        {image
-            src=$imgAttribs.src
-            srcset=$imgAttribs.srcset
-            sizes=$imgAttribs.srcsizes
-            alt=$imgAttribs.alt
-            title=$imgAttribs.title
-            fluid=true
-        }
+<div style="{$instance->getStyleString()}"
+     class="banner {$instance->getAnimationClass()}"
+     {if $isPreview}data-portlet="{$instance->getDataAttribute()}"{/if}
+     {$instance->getAnimationDataAttributeString()}>
+    {image
+        src=$imgAttribs.src
+        srcset=$imgAttribs.srcset
+        sizes=$imgAttribs.srcsizes
+        alt=$imgAttribs.alt
+        title=$imgAttribs.title
+        fluid=true
+    }
+    {if !$isPreview}
         {foreach $instance->getProperty('zones') as $zone}
             {$product = null}
             {$title   = ''}
@@ -65,5 +50,5 @@
                 </div>
             </a>
         {/foreach}
-    </div>
-{/if}
+    {/if}
+</div>

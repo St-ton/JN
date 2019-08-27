@@ -10,7 +10,7 @@
     {/block}
 
     {block name='productlist-index-content'}
-        <div id="result-wrapper">
+        <div id="result-wrapper" data-wrapper="true">
             {block name='productlist-index-include-productlist-header'}
                 {include file='productlist/header.tpl'}
             {/block}

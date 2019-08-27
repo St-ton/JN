@@ -422,10 +422,6 @@ final class LinkService implements LinkServiceInterface
                             $link->setIsActive(true);
                         }
                         break;
-                    case \PAGE_ARTIKEL:
-                    case \PAGE_ARTIKELLISTE:
-                    case \PAGE_BESTELLVORGANG:
-                        break;
                     case \PAGE_EIGENE:
                         $parent = $link->getParent();
                         if ($parent === 0 && $this->isChildActive($linkID, Shop::$kLink)) {
@@ -484,6 +480,9 @@ final class LinkService implements LinkServiceInterface
                             $link->setIsActive(true);
                         }
                         break;
+                    case \PAGE_ARTIKEL:
+                    case \PAGE_ARTIKELLISTE:
+                    case \PAGE_BESTELLVORGANG:
                     default:
                         break;
                 }

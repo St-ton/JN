@@ -36,7 +36,7 @@ class Banner extends Portlet
      */
     public function getPlaceholderImgUrl(): string
     {
-        return $this->getTemplateUrl() . 'preview.banner.png';
+        return $this->getTemplateUrl() . 'preview.banner.jpg';
     }
 
     /**

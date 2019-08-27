@@ -28,16 +28,12 @@ if (!isset($_SESSION['Vergleichsliste'])) {
 }
 $_SESSION['Vergleichsliste']->nZeitFilter = 1;
 $_SESSION['Vergleichsliste']->nAnzahl     = 10;
-if (isset($_POST['zeitfilter']) && (int)$_POST['zeitfilter'] === 1) {
-    $_SESSION['Vergleichsliste']->nZeitFilter = isset($_POST['nZeitFilter'])
-        ? (int)$_POST['nZeitFilter']
-        : 0;
-    $_SESSION['Vergleichsliste']->nAnzahl     = isset($_POST['nAnzahl'])
-        ? (int)$_POST['nAnzahl']
-        : 0;
+if (Request::postInt('zeitfilter') === 1) {
+    $_SESSION['Vergleichsliste']->nZeitFilter = Request::postInt('nZeitFilter');
+    $_SESSION['Vergleichsliste']->nAnzahl     = Request::postInt('nAnzahl');
 }
 
-if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1 && Form::validateToken()) {
+if (Request::postInt('einstellungen') === 1 && Form::validateToken()) {
     $configData  = $db->query(
         'SELECT *
             FROM teinstellungenconf
@@ -113,10 +109,10 @@ for ($i = 0; $i < $configCount; $i++) {
 }
 
 $listCount  = (int)$db->query(
-    'SELECT COUNT(*) AS nAnzahl
+    'SELECT COUNT(*) AS cnt
         FROM tvergleichsliste',
     ReturnType::SINGLE_OBJECT
-)->nAnzahl;
+)->cnt;
 $pagination = (new Pagination())
     ->setItemCount($listCount)
     ->assemble();

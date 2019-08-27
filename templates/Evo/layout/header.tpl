@@ -71,6 +71,9 @@
         {if \JTL\Shop::isAdmin() && $opc->isEditMode() === false && $opc->isPreviewMode() === false}
             <link type="text/css" href="{$ShopURL}/admin/opc/css/startmenu.css" rel="stylesheet">
         {/if}
+        {foreach $opcPageService->getCurPage()->getCssList($opc->isEditMode()) as $cssFile => $cssTrue}
+            <link rel="stylesheet" href="{$cssFile}">
+        {/foreach}
         {* RSS *}
         {if isset($Einstellungen.rss.rss_nutzen) && $Einstellungen.rss.rss_nutzen === 'Y'}
             <link rel="alternate" type="application/rss+xml" title="Newsfeed {$Einstellungen.global.global_shopname}" href="{$ShopURL}/rss.xml">

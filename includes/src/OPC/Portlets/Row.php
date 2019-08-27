@@ -35,10 +35,6 @@ class Row extends Portlet
                 'label'   => __('Layout'),
                 'presets' => [
                     [
-                        'name' => '1 ' . __('Column'),
-                        'layout' => ['12', '12', '12', '12'],
-                    ],
-                    [
                         'name' => '2 ' . __('Columns'),
                         'layout' => ['12+12', '6+6', '6+6', '6+6'],
                     ],

@@ -11,7 +11,7 @@
 
     {block name='checkout-index-content'}
 
-        <div id="result-wrapper">
+        <div id="result-wrapper" data-wrapper="true">
             {container}
                 <div id="checkout">
                     {block name='checkout-index-include-inc-steps'}

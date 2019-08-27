@@ -289,7 +289,7 @@ function holeAlleKampagnen(bool $internalOnly = false, bool $activeOnly = true)
         ReturnType::ARRAY_OF_OBJECTS
     );
     foreach ($items as $item) {
-        $campaign = new Kampagne($item->kKampagne);
+        $campaign = new Kampagne((int)$item->kKampagne);
         if (isset($campaign->kKampagne) && $campaign->kKampagne > 0) {
             $campaigns[$campaign->kKampagne] = $campaign;
         }
@@ -318,8 +318,7 @@ function setzeSprache()
 {
     if (Form::validateToken() && Request::verifyGPCDataInt('sprachwechsel') === 1) {
         // Wähle explizit gesetzte Sprache als aktuelle Sprache
-        $language = Shop::Container()->getDB()->select('tsprache', 'kSprache', (int)$_POST['kSprache']);
-
+        $language = Shop::Container()->getDB()->select('tsprache', 'kSprache', Request::postInt('kSprache'));
         if ((int)$language->kSprache > 0) {
             $_SESSION['kSprache']    = (int)$language->kSprache;
             $_SESSION['cISOSprache'] = $language->cISO;
@@ -329,7 +328,6 @@ function setzeSprache()
     if (!isset($_SESSION['kSprache'])) {
         // Wähle Standardsprache als aktuelle Sprache
         $language = Shop::Container()->getDB()->select('tsprache', 'cShopStandard', 'Y');
-
         if ((int)$language->kSprache > 0) {
             $_SESSION['kSprache']    = (int)$language->kSprache;
             $_SESSION['cISOSprache'] = $language->cISO;
@@ -338,7 +336,6 @@ function setzeSprache()
     if (isset($_SESSION['kSprache']) && empty($_SESSION['cISOSprache'])) {
         // Fehlendes cISO ergänzen
         $language = Shop::Container()->getDB()->select('tsprache', 'kSprache', (int)$_SESSION['kSprache']);
-
         if ((int)$language->kSprache > 0) {
             $_SESSION['cISOSprache'] = $language->cISO;
         }

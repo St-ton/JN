@@ -5609,8 +5609,8 @@ class Artikel
         if (!isset($_SESSION['Kundengruppe'])) {
             $_SESSION['Kundengruppe'] = (new CustomerGroup())->loadDefaultGroup();
         }
-        $customerGroupID       = Frontend::getCustomer()->kKundengruppe > 0
-            ? Frontend::getCustomer()->kKundengruppe
+        $customerGroupID       = Frontend::getCustomer()->getGroupID() > 0
+            ? Frontend::getCustomer()->getGroupID()
             : Frontend::getCustomerGroup()->getID();
         $helper                = ShippingMethod::getInstance();
         $shippingFreeCountries = isset($this->Preise->fVK[0])
@@ -5910,18 +5910,13 @@ class Artikel
      */
     public function getShippingAndTaxData(): array
     {
-        $net = isset($_SESSION['Kundengruppe']->nNettoPreise)
-            ? Frontend::getCustomerGroup()->isMerchant()
-            : false;
         if (!isset($_SESSION['Kundengruppe'])) {
             $_SESSION['Kundengruppe'] = (new CustomerGroup())->loadDefaultGroup();
-            $net                      = Frontend::getCustomerGroup()->isMerchant();
         }
         if (!isset($_SESSION['Link_Versandseite'])) {
             Frontend::setSpecialLinks();
         }
         $taxText = $this->AttributeAssoc[\ART_ATTRIBUT_STEUERTEXT] ?? false;
-
         if (!$taxText && $this->AttributeAssoc === null) {
             $taxText = $this->gibAttributWertNachName(\ART_ATTRIBUT_STEUERTEXT);
         }
@@ -5931,7 +5926,7 @@ class Artikel
             : '';
 
         return [
-            'net'                   => $net,
+            'net'                   => Frontend::getCustomerGroup()->isMerchant(),
             'text'                  => $taxText,
             'tax'                   => $this->formatTax(Tax::getSalesTax($this->kSteuerklasse)),
             'shippingFreeCountries' => $countriesString,

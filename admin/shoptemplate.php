@@ -30,7 +30,7 @@ $lessColors     = [];
 $lessColorsSkin = [];
 $template       = Template::getInstance();
 $db             = Shop::Container()->getDB();
-$admin          = (isset($_GET['admin']) && $_GET['admin'] === 'true');
+$admin          = Request::getVar('admin') === 'true';
 $templateHelper = TemplateHelper::getInstance(true);
 $templateHelper->disableCaching();
 if (isset($_POST['key'], $_POST['upload'])) {
@@ -46,18 +46,16 @@ if (isset($_POST['key'], $_POST['upload'])) {
     }
     die(json_encode($response));
 }
-if (isset($_GET['check'])) {
-    if ($_GET['check'] === 'true') {
-        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successTemplateSave'), 'successTemplateSave');
-    } elseif ($_GET['check'] === 'false') {
-        $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorTemplateSave'), 'errorTemplateSave');
-    }
+if (Request::getVar('check') === 'true') {
+    $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successTemplateSave'), 'successTemplateSave');
+} elseif (Request::getVar('check') === 'false') {
+    $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorTemplateSave'), 'errorTemplateSave');
 }
-if (isset($_POST['type']) && $_POST['type'] === 'layout' && Form::validateToken()) {
+if (Request::postVar('type') === 'layout' && Form::validateToken()) {
     $scss      = new SimpleCSS();
     $dir       = basename($_POST['ordner']);
     $customCSS = $scss->getCustomCSSFile($dir);
-    if (isset($_POST['reset']) && (int)$_POST['reset'] === 1) {
+    if (Request::postInt('reset') === 1) {
         if (file_exists($customCSS) && is_writable($customCSS)) {
             $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successLayoutReset'), 'successLayoutReset');
         } else {
@@ -87,7 +85,7 @@ if (isset($_POST['type']) && $_POST['type'] === 'layout' && Form::validateToken(
         }
     }
 }
-if (isset($_POST['type']) && $_POST['type'] === 'settings' && Form::validateToken()) {
+if (Request::postVar('type') === 'settings' && Form::validateToken()) {
     $dir          = $db->escape($_POST['ordner']);
     $parentFolder = null;
     $tplXML       = $template->leseXML($dir);
@@ -172,7 +170,7 @@ if (isset($_POST['type']) && $_POST['type'] === 'settings' && Form::validateToke
         ($bCheck ? 'true' : 'false'), true, 301);
     exit;
 }
-if (isset($_GET['settings']) && mb_strlen($_GET['settings']) > 0 && Form::validateToken()) {
+if (mb_strlen(Request::getVar('settings', '')) > 0 && Form::validateToken()) {
     $dir          = $db->escape($_GET['settings']);
     $oTpl         = $templateHelper->getData($dir, $admin);
     $tplXML       = $templateHelper->getXML($dir, false);
@@ -200,63 +198,63 @@ if (isset($_GET['settings']) && mb_strlen($_GET['settings']) > 0 && Form::valida
         // re-init smarty with new template - problematic because of re-including functions.php
         header('Location: ' . $shopURL . PFAD_ADMIN . 'shoptemplate.php', true, 301);
         exit;
-    } else {
-        // iterate over each "Section"
-        foreach ($tplConfXML as $_conf) {
-            // iterate over each "Setting" in this "Section"
-            foreach ($_conf->oSettings_arr as $_setting) {
-                if ($_setting->cType === 'upload'
-                    && isset($_setting->rawAttributes['target'], $_setting->rawAttributes['targetFileName'])
-                    && !file_exists(PFAD_ROOT . PFAD_TEMPLATES . $dir . '/' . $_setting->rawAttributes['target']
-                        . $_setting->rawAttributes['targetFileName'])
-                ) {
-                    $_setting->cValue = null;
-                }
-            }
-            if (isset($_conf->cKey, $_conf->oSettings_arr)
-                && $_conf->cKey === 'theme'
-                && count($_conf->oSettings_arr) > 0
+    }
+    // iterate over each "Section"
+    foreach ($tplConfXML as $_conf) {
+        // iterate over each "Setting" in this "Section"
+        foreach ($_conf->oSettings_arr as $_setting) {
+            if ($_setting->cType === 'upload'
+                && isset($_setting->rawAttributes['target'], $_setting->rawAttributes['targetFileName'])
+                && !file_exists(PFAD_ROOT . PFAD_TEMPLATES . $dir . '/' . $_setting->rawAttributes['target']
+                    . $_setting->rawAttributes['targetFileName'])
             ) {
-                foreach ($_conf->oSettings_arr as $_themeConf) {
-                    if (isset($_themeConf->cKey, $_themeConf->oOptions_arr)
-                        && $_themeConf->cKey === 'theme_default'
-                        && count($_themeConf->oOptions_arr) > 0
-                    ) {
-                        foreach ($_themeConf->oOptions_arr as $_theme) {
-                            $previewImage = isset($_theme->cOrdner)
-                                ? PFAD_ROOT . PFAD_TEMPLATES . $_theme->cOrdner . '/themes/' .
-                                $_theme->cValue . '/preview.png'
-                                : PFAD_ROOT . PFAD_TEMPLATES . $dir . '/themes/' . $_theme->cValue . '/preview.png';
-                            if (file_exists($previewImage)) {
-                                $base                     = $shopURL . PFAD_TEMPLATES;
-                                $preview[$_theme->cValue] = isset($_theme->cOrdner)
-                                    ? $base . $_theme->cOrdner . '/themes/' . $_theme->cValue . '/preview.png'
-                                    : $base . $dir . '/themes/' . $_theme->cValue . '/preview.png';
-                            }
+                $_setting->cValue = null;
+            }
+        }
+        if (isset($_conf->cKey, $_conf->oSettings_arr)
+            && $_conf->cKey === 'theme'
+            && count($_conf->oSettings_arr) > 0
+        ) {
+            foreach ($_conf->oSettings_arr as $_themeConf) {
+                if (isset($_themeConf->cKey, $_themeConf->oOptions_arr)
+                    && $_themeConf->cKey === 'theme_default'
+                    && count($_themeConf->oOptions_arr) > 0
+                ) {
+                    foreach ($_themeConf->oOptions_arr as $_theme) {
+                        $previewImage = isset($_theme->cOrdner)
+                            ? PFAD_ROOT . PFAD_TEMPLATES . $_theme->cOrdner . '/themes/' .
+                            $_theme->cValue . '/preview.png'
+                            : PFAD_ROOT . PFAD_TEMPLATES . $dir . '/themes/' . $_theme->cValue . '/preview.png';
+                        if (file_exists($previewImage)) {
+                            $base                     = $shopURL . PFAD_TEMPLATES;
+                            $preview[$_theme->cValue] = isset($_theme->cOrdner)
+                                ? $base . $_theme->cOrdner . '/themes/' . $_theme->cValue . '/preview.png'
+                                : $base . $dir . '/themes/' . $_theme->cValue . '/preview.png';
                         }
-                        break;
                     }
+                    break;
                 }
             }
         }
-        foreach ($tplLessXML as $_less) {
-            if (isset($_less->cName)) {
-                $themesLess = $_less;
-                $less       = new LessParser();
-                foreach ($themesLess->oFiles_arr as $filePaths) {
-                    if ($themesLess->cName === $currentSkin) {
-                        $less->read($frontendTemplate . '/' . $filePaths->cPath);
-                        $lessVarsSkin   = $less->getStack();
-                        $lessColorsSkin = $less->getColors();
-                    }
-                    $less->read($frontendTemplate . '/' . $filePaths->cPath);
-                    $lessVarsTPL   = $less->getStack();
-                    $lessColorsTPL = $less->getColors();
-                }
-                $lessVars[$themesLess->cName]   = $lessVarsTPL;
-                $lessColors[$themesLess->cName] = $lessColorsTPL;
-            }
+    }
+    foreach ($tplLessXML as $_less) {
+        if (!isset($_less->cName)) {
+            continue;
         }
+        $themesLess = $_less;
+        $less       = new LessParser();
+        foreach ($themesLess->oFiles_arr as $filePaths) {
+            if ($themesLess->cName === $currentSkin) {
+                $less->read($frontendTemplate . '/' . $filePaths->cPath);
+                $lessVarsSkin   = $less->getStack();
+                $lessColorsSkin = $less->getColors();
+            }
+            $less->read($frontendTemplate . '/' . $filePaths->cPath);
+            $lessVarsTPL   = $less->getStack();
+            $lessColorsTPL = $less->getColors();
+        }
+        $lessVars[$themesLess->cName]   = $lessVarsTPL;
+        $lessColors[$themesLess->cName] = $lessColorsTPL;
     }
 
     $smarty->assign('oTemplate', $oTpl)
@@ -269,7 +267,7 @@ if (isset($_GET['settings']) && mb_strlen($_GET['settings']) > 0 && Form::valida
            ->assign('themesLessColorsSkin', $lessColorsSkin)
            ->assign('themesLessColorsJSON', json_encode($lessColors))
            ->assign('oEinstellungenXML', $tplConfXML);
-} elseif (isset($_GET['switch']) && mb_strlen($_GET['switch']) > 0) {
+} elseif (mb_strlen(Request::getVar('switch', '')) > 0) {
     if (__switchTemplate($_GET['switch'], ($admin === true ? 'admin' : 'standard'))) {
         $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successTemplateSave'), 'successTemplateSave');
     } else {

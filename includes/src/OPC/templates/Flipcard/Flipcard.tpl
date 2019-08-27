@@ -2,13 +2,14 @@
 
 <div id="{$uid}" {if $isPreview}{$instance->getDataAttributeString()}{/if}
      {$instance->getAnimationDataAttributeString()}
-     class="flipcard {$instance->getProperty('flip-dir')} {$instance->getAnimationClass()}"
+     class="flipcard opc-Flipcard {$instance->getProperty('flip-dir')} {$instance->getAnimationClass()}"
      style="{$instance->getStyleString()}">
     {if $isPreview}
-        <button type="button" class="btn btn-default">
-            <i class="fa fa-exchange"></i>
-            <i class="fa fa-exchange-alt"></i>
-        </button>
+        <a href="#" class="opc-Flipcard-flip-btn">
+            <span class="opc-Flipcard-label opc-Flipcard-label-front active">Vorderseite</span>
+            <i class="fas fa-exchange-alt"></i>
+            <span class="opc-Flipcard-label opc-Flipcard-label-back">Rückseite</span>
+        </a>
     {/if}
     <div class="flipcard-inner">
         <div class="flipcard-face flipcard-front {if $isPreview}opc-area{/if}"
@@ -29,26 +30,36 @@
         </div>
     </div>
     <script>
-        $(function() {
+        function initFlipcard_{$uid}()
+        {
             var flipcard      = $('#{$uid}');
             var flipcardInner = flipcard.find('.flipcard-inner');
 
             {if $isPreview}
-                flipcard.find('.btn').click(flipCard);
+                flipcard.find('.opc-Flipcard-flip-btn').click(flipCard);
             {else}
                 flipcard.click(flipCard);
             {/if}
 
-            updateHeight_{$uid}();
+            setTimeout(() => updateHeight_{$uid}());
 
-            function flipCard()
+            function flipCard(e)
             {
                 flipcardInner.toggleClass('flipped');
+                flipcard.find('.opc-Flipcard-label-front').toggleClass('active');
+                flipcard.find('.opc-Flipcard-label-back').toggleClass('active');
                 updateHeight_{$uid}();
+                e.preventDefault();
             }
-        });
+        }
 
-        $('#{$uid}')[0].updateFlipcardHeight = updateHeight_{$uid};
+        if(window.JTL_SHOP_NOVA) {
+            pushDeferredTask("ready", initFlipcard_{$uid});
+        } else {
+            $(initFlipcard_{$uid});
+        }
+
+        document.getElementById('{$uid}').updateFlipcardHeight = updateHeight_{$uid};
 
         function updateHeight_{$uid}()
         {

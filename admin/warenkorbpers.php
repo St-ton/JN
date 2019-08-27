@@ -38,9 +38,8 @@ if (mb_strlen(Request::verifyGPDataString('cSuche')) > 0) {
 
     $smarty->assign('cSuche', $cSuche);
 }
-if (isset($_POST['einstellungen'])
-    && (int)$_POST['einstellungen'] === 1
-    && (isset($_POST['speichern']) || (isset($_POST['a']) && $_POST['a'] === 'speichern'))
+if (Request::postInt('einstellungen') === 1
+    && (isset($_POST['speichern']) || Request::postVar('a') === 'speichern')
     && Form::validateToken()
 ) {
     $step = 'uebersicht';
@@ -48,8 +47,8 @@ if (isset($_POST['einstellungen'])
     $smarty->assign('tab', 'einstellungen');
 }
 
-if (isset($_GET['l']) && (int)$_GET['l'] > 0 && Form::validateToken()) {
-    $customerID = (int)$_GET['l'];
+if (Request::getInt('l') > 0 && Form::validateToken()) {
+    $customerID = Request::getInt('l');
     $persCart   = new PersistentCart($customerID);
     if ($persCart->entferneSelf()) {
         $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successCartPersPosDelete'), 'successCartPersPosDelete');
@@ -58,20 +57,15 @@ if (isset($_GET['l']) && (int)$_GET['l'] > 0 && Form::validateToken()) {
     unset($persCart);
 }
 $customerCount = (int)Shop::Container()->getDB()->query(
-    'SELECT COUNT(*) AS count
-        FROM
-        (
-            SELECT tkunde.kKunde
-            FROM tkunde
-            JOIN twarenkorbpers 
-                ON tkunde.kKunde = twarenkorbpers.kKunde
-            JOIN twarenkorbperspos 
-                ON twarenkorbperspos.kWarenkorbPers = twarenkorbpers.kWarenkorbPers
-            ' . $searchSQL->cWHERE . '
-            GROUP BY tkunde.kKunde
-        ) AS tAnzahl',
+    'SELECT COUNT(DISTINCT tkunde.kKunde) AS cnt
+         FROM tkunde
+         JOIN twarenkorbpers
+             ON tkunde.kKunde = twarenkorbpers.kKunde
+         JOIN twarenkorbperspos
+             ON twarenkorbperspos.kWarenkorbPers = twarenkorbpers.kWarenkorbPers
+         ' . $searchSQL->cWHERE,
     ReturnType::SINGLE_OBJECT
-)->count;
+)->cnt;
 
 $oPagiKunden = (new Pagination('kunden'))
     ->setItemCount($customerCount)
@@ -94,30 +88,28 @@ $customers = Shop::Container()->getDB()->query(
 );
 
 foreach ($customers as $item) {
-    $customer = new Customer($item->kKunde);
+    $customer = new Customer((int)$item->kKunde);
 
     $item->cNachname = $customer->cNachname;
     $item->cFirma    = $customer->cFirma;
 }
 
 $smarty->assign('oKunde_arr', $customers)
-       ->assign('oPagiKunden', $oPagiKunden);
+    ->assign('oPagiKunden', $oPagiKunden);
 
-if (isset($_GET['a']) && (int)$_GET['a'] > 0) {
-    $step       = 'anzeigen';
-    $customerID = (int)$_GET['a'];
-
-    $persCart = Shop::Container()->getDB()->query(
-        'SELECT COUNT(*) AS nAnzahl
+if (Request::getInt('a') > 0) {
+    $step           = 'anzeigen';
+    $customerID     = Request::getInt('a');
+    $persCartCount  = (int)Shop::Container()->getDB()->query(
+        'SELECT COUNT(*) AS cnt
             FROM twarenkorbperspos
             JOIN twarenkorbpers 
                 ON twarenkorbpers.kWarenkorbPers = twarenkorbperspos.kWarenkorbPers
             WHERE twarenkorbpers.kKunde = ' . $customerID,
         ReturnType::SINGLE_OBJECT
-    );
-
-    $oPagiWarenkorb = (new Pagination('warenkorb'))
-        ->setItemCount($persCart->nAnzahl)
+    )->cnt;
+    $cartPagination = (new Pagination('warenkorb'))
+        ->setItemCount($persCartCount)
         ->assemble();
 
     $carts = Shop::Container()->getDB()->query(
@@ -130,21 +122,21 @@ if (isset($_GET['a']) && (int)$_GET['a'] > 0) {
             JOIN twarenkorbperspos 
                 ON twarenkorbpers.kWarenkorbPers = twarenkorbperspos.kWarenkorbPers
             WHERE twarenkorbpers.kKunde = " . $customerID . '
-            LIMIT ' . $oPagiWarenkorb->getLimitSQL(),
+            LIMIT ' . $cartPagination->getLimitSQL(),
         ReturnType::ARRAY_OF_OBJECTS
     );
     foreach ($carts as $cart) {
-        $customer = new Customer($cart->kKundeTMP);
+        $customer = new Customer((int)$cart->kKundeTMP);
 
         $cart->cNachname = $customer->cNachname;
         $cart->cFirma    = $customer->cFirma;
     }
 
     $smarty->assign('oWarenkorbPersPos_arr', $carts)
-           ->assign('kKunde', $customerID)
-           ->assign('oPagiWarenkorb', $oPagiWarenkorb);
+        ->assign('kKunde', $customerID)
+        ->assign('oPagiWarenkorb', $cartPagination);
 }
 
 $smarty->assign('step', $step)
-       ->assign('oConfig_arr', getAdminSectionSettings($settingsIDs))
-       ->display('warenkorbpers.tpl');
+    ->assign('oConfig_arr', getAdminSectionSettings($settingsIDs))
+    ->display('warenkorbpers.tpl');

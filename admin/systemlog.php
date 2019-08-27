@@ -12,6 +12,7 @@ use JTL\Pagination\Filter;
 use JTL\Pagination\Operation;
 use JTL\Pagination\Pagination;
 use JTL\Shop;
+use Monolog\Logger;
 
 /**
  * @global \JTL\Smarty\JTLSmarty     $smarty
@@ -51,9 +52,9 @@ if (Form::validateToken()) {
 $filter      = new Filter('syslog');
 $levelSelect = $filter->addSelectfield(__('systemlogLevel'), 'nLevel');
 $levelSelect->addSelectOption(__('all'), Operation::CUSTOM);
-$levelSelect->addSelectOption(__('systemlogDebug'), \Monolog\Logger::DEBUG, Operation::EQUALS);
-$levelSelect->addSelectOption(__('systemlogNotice'), \Monolog\Logger::INFO, Operation::EQUALS);
-$levelSelect->addSelectOption(__('systemlogError'), \Monolog\Logger::ERROR, Operation::GREATER_THAN_EQUAL);
+$levelSelect->addSelectOption(__('systemlogDebug'), Logger::DEBUG, Operation::EQUALS);
+$levelSelect->addSelectOption(__('systemlogNotice'), Logger::INFO, Operation::EQUALS);
+$levelSelect->addSelectOption(__('systemlogError'), Logger::ERROR, Operation::GREATER_THAN_EQUAL);
 $filter->addDaterangefield(__('Zeitraum'), 'dErstellt');
 $searchfield = $filter->addTextfield(__('systemlogSearch'), 'cLog', Operation::CONTAINS);
 $filter->assemble();
@@ -61,7 +62,7 @@ $filter->assemble();
 $searchString     = $searchfield->getValue();
 $selectedLevel    = $levelSelect->getSelectedOption()->getValue();
 $totalLogCount    = Jtllog::getLogCount();
-$filteredLogCount = Jtllog::getLogCount($searchString, $selectedLevel);
+$filteredLogCount = Jtllog::getLogCount($searchString, (int)$selectedLevel);
 $pagination       = (new Pagination('syslog'))
     ->setItemsPerPageOptions([10, 20, 50, 100, -1])
     ->setItemCount($filteredLogCount)

@@ -375,13 +375,12 @@ final class Orders extends AbstractSync
     private function getPaymentMethodFromXML($order, array $xml): ?stdClass
     {
         if (empty($xml['tbestellung']['cZahlungsartName'])) {
-            return new stdClass();
+            return null;
         }
         // Von Wawi kommt in $xml['tbestellung']['cZahlungsartName'] nur der deutsche Wert,
         // deshalb immer Abfrage auf tzahlungsart.cName
         $paymentMethodName = $xml['tbestellung']['cZahlungsartName'];
-
-        return $this->db->executeQueryPrepared(
+        $res               = $this->db->executeQueryPrepared(
             'SELECT tzahlungsart.kZahlungsart, IFNULL(tzahlungsartsprache.cName, tzahlungsart.cName) AS cName
             FROM tzahlungsart
             LEFT JOIN tzahlungsartsprache
@@ -402,6 +401,8 @@ final class Orders extends AbstractSync
             ],
             ReturnType::SINGLE_OBJECT
         );
+
+        return isset($res->kZahlungsart) ? $res : null;
     }
 
     /**

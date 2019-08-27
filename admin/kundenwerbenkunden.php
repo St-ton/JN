@@ -23,7 +23,7 @@ setzeSprache();
 if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
     $smarty->assign('cTab', Request::verifyGPDataString('tab'));
 }
-if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
+if (Request::postInt('einstellungen') > 0) {
     $alertHelper->addAlert(
         Alert::TYPE_SUCCESS,
         saveAdminSectionSettings(CONF_KUNDENWERBENKUNDEN, $_POST),
@@ -45,31 +45,31 @@ if (Request::verifyGPCDataInt('KwK') === 1
     }
 }
 if ($step === 'kwk_uebersicht') {
-    $regCount    = Shop::Container()->getDB()->query(
-        'SELECT COUNT(*) AS nAnzahl
+    $regCount    = (int)Shop::Container()->getDB()->query(
+        'SELECT COUNT(*) AS cnt
             FROM tkundenwerbenkunden
             WHERE nRegistriert = 0',
         ReturnType::SINGLE_OBJECT
-    );
-    $nonRegCount = Shop::Container()->getDB()->query(
-        'SELECT COUNT(*) AS nAnzahl
+    )->cnt;
+    $nonRegCount = (int)Shop::Container()->getDB()->query(
+        'SELECT COUNT(*) AS cnt
             FROM tkundenwerbenkunden
             WHERE nRegistriert = 1',
         ReturnType::SINGLE_OBJECT
-    );
-    $bonusCount  = Shop::Container()->getDB()->query(
-        'SELECT COUNT(*) AS nAnzahl
+    )->cnt;
+    $bonusCount  = (int)Shop::Container()->getDB()->query(
+        'SELECT COUNT(*) AS cnt
             FROM tkundenwerbenkundenbonus',
         ReturnType::SINGLE_OBJECT
-    );
+    )->cnt;
     $pagiNonReg  = (new Pagination('nichtreg'))
-        ->setItemCount($regCount->nAnzahl)
+        ->setItemCount($regCount)
         ->assemble();
     $pagiReg     = (new Pagination('reg'))
-        ->setItemCount($nonRegCount->nAnzahl)
+        ->setItemCount($nonRegCount)
         ->assemble();
     $pagiBonus   = (new Pagination('praemie'))
-        ->setItemCount($bonusCount->nAnzahl)
+        ->setItemCount($bonusCount)
         ->assemble();
 
     $nonRegistered = Shop::Container()->getDB()->query(
@@ -101,7 +101,7 @@ if ($step === 'kwk_uebersicht') {
         ReturnType::ARRAY_OF_OBJECTS
     );
     foreach ($registered as $customer) {
-        $regCstmr = new Customer($customer->kKunde ?? 0);
+        $regCstmr = new Customer((int)($customer->kKunde ?? 0));
 
         $customer->cBestandVorname  = $regCstmr->cVorname;
         $customer->cBestandNachname = $regCstmr->cNachname;

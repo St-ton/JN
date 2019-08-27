@@ -19,12 +19,12 @@ setzeSprache();
 $oAccount->permission('OBJECTCACHE_VIEW', true, true);
 $notice       = '';
 $error        = '';
-$cacheAction  = '';
 $step         = 'uebersicht';
 $tab          = 'uebersicht';
-$action       = (isset($_POST['a']) && Form::validateToken()) ? $_POST['a'] : null;
 $cache        = null;
 $opcacheStats = null;
+$action       = Form::validateToken() ? Request::postVar('a') : null;
+$cacheAction  = Request::postVar('cache-action', '');
 $db           = Shop::Container()->getDB();
 $getText      = Shop::Container()->getGetText();
 $alertHelper  = Shop::Container()->getAlertService();
@@ -50,9 +50,6 @@ if (is_object($deactivated) && isset($deactivated->cWert)) {
     $currentlyDisabled = ($deactivated->cWert !== '')
         ? unserialize($deactivated->cWert)
         : [];
-}
-if ($action !== null && isset($_POST['cache-action'])) {
-    $cacheAction = $_POST['cache-action'];
 }
 switch ($action) {
     case 'cacheMassAction':
@@ -87,7 +84,7 @@ switch ($action) {
                 }
                 break;
             case 'activate':
-                if (isset($_POST['cache-types']) && is_array($_POST['cache-types'])) {
+                if (is_array(Request::postVar('cache-types'))) {
                     foreach ($_POST['cache-types'] as $cacheType) {
                         $index = array_search($cacheType, $currentlyDisabled, true);
                         if (is_int($index)) {
@@ -246,15 +243,9 @@ switch ($action) {
         //do benchmarks
         $tab      = 'benchmark';
         $testData = 'simple short string';
-        $runCount = 1000;
-        $repeat   = 1;
         $methods  = 'all';
-        if (isset($_POST['repeat'])) {
-            $repeat = (int)$_POST['repeat'];
-        }
-        if (isset($_POST['runcount'])) {
-            $runCount = (int)$_POST['runcount'];
-        }
+        $repeat   = Request::postInt('repeat', 1);
+        $runCount = Request::postInt($_POST['runcount'], 1000);
         if (isset($_POST['testdata'])) {
             switch ($_POST['testdata']) {
                 case 'array':
@@ -272,7 +263,7 @@ switch ($action) {
                     break;
             }
         }
-        if (isset($_POST['methods']) && is_array($_POST['methods'])) {
+        if (is_array(Request::postVar('methods'))) {
             $methods = $_POST['methods'];
         }
         if ($cache !== null) {

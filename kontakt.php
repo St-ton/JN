@@ -8,6 +8,7 @@ use JTL\Alert\Alert;
 use JTL\CheckBox;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
+use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Session\Frontend;
 use JTL\Shop;
@@ -26,21 +27,21 @@ $specialContent = new stdClass();
 $alertHelper    = Shop::Container()->getAlertService();
 $lang           = Shop::getLanguageCode();
 if (Form::checkSubject()) {
-    $step            = 'formular';
-    $fehlendeAngaben = [];
-    if (isset($_POST['kontakt']) && (int)$_POST['kontakt'] === 1) {
-        $fehlendeAngaben = Form::getMissingContactFormData();
+    $step        = 'formular';
+    $missingData = [];
+    if (Request::postInt('kontakt') === 1) {
+        $missingData     = Form::getMissingContactFormData();
         $customerGroupID = Frontend::getCustomerGroup()->getID();
         $checkBox        = new CheckBox();
-        $fehlendeAngaben = array_merge(
-            $fehlendeAngaben,
+        $missingData     = array_merge(
+            $missingData,
             $checkBox->validateCheckBox(CHECKBOX_ORT_KONTAKT, $customerGroupID, $_POST, true)
         );
-        $nReturnValue    = Form::eingabenKorrekt($fehlendeAngaben);
+        $ok              = Form::eingabenKorrekt($missingData);
         $smarty->assign('cPost_arr', Text::filterXSS($_POST));
         executeHook(HOOK_KONTAKT_PAGE_PLAUSI);
 
-        if ($nReturnValue) {
+        if ($ok) {
             $step = 'floodschutz';
             if (!Form::checkFloodProtection($conf['kontakt']['kontakt_sperre_minuten'])) {
                 $msg = Form::baueKontaktFormularVorgaben();
@@ -99,7 +100,7 @@ if (Form::checkSubject()) {
            ->assign('code', false)
            ->assign('betreffs', $subjects)
            ->assign('Vorgaben', Form::baueKontaktFormularVorgaben())
-           ->assign('fehlendeAngaben', $fehlendeAngaben)
+           ->assign('fehlendeAngaben', $missingData)
            ->assign('nAnzeigeOrt', CHECKBOX_ORT_KONTAKT);
 } else {
     Shop::Container()->getLogService()->error('Kein Kontaktbetreff vorhanden! Bitte im Backend unter ' .

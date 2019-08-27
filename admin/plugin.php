@@ -12,6 +12,7 @@ use JTL\Helpers\Text;
 use JTL\Plugin\Admin\Installation\MigrationManager;
 use JTL\Plugin\Data\Config;
 use JTL\Plugin\Helper;
+use JTL\Plugin\Helper as PluginHelper;
 use JTL\Plugin\Plugin;
 use JTL\Shop;
 
@@ -32,6 +33,7 @@ $db              = Shop::Container()->getDB();
 $cache           = Shop::Container()->getCache();
 $plugin          = null;
 $alertHelper     = Shop::Container()->getAlertService();
+$activeTab       = -1;
 if ($step === 'plugin_uebersicht' && $pluginID > 0) {
     if (Request::verifyGPCDataInt('Setting') === 1) {
         $updated = true;
@@ -46,7 +48,7 @@ if ($step === 'plugin_uebersicht' && $pluginID > 0) {
                             AND kPlugin = :plgn
                             AND cConf != 'N'
                             AND kPluginAdminMenu = :kpm",
-                    ['plgn' => $pluginID, 'kpm' => (int)$_POST['kPluginAdminMenu']],
+                    ['plgn' => $pluginID, 'kpm' => Request::postInt('kPluginAdminMenu')],
                     ReturnType::ARRAY_OF_OBJECTS
                 )
                 : [];
@@ -89,14 +91,14 @@ if ($step === 'plugin_uebersicht' && $pluginID > 0) {
         }
     }
     if (Request::verifyGPCDataInt('kPluginAdminMenu') > 0) {
-        $smarty->assign('defaultTabbertab', Request::verifyGPCDataInt('kPluginAdminMenu'));
+        $activeTab = Request::verifyGPCDataInt('kPluginAdminMenu');
     }
     if (mb_strlen(Request::verifyGPDataString('cPluginTab')) > 0) {
-        $smarty->assign('defaultTabbertab', Request::verifyGPDataString('cPluginTab'));
+        $activeTab = Request::verifyGPDataString('cPluginTab');
     }
-    $data = $db->select('tplugin', 'kPlugin', $pluginID);
-    if ($data !== null) {
-        $loader = Helper::getLoader((int)$data->bExtension === 1, $db, $cache);
+    $smarty->assign('defaultTabbertab', $activeTab);
+        $loader = Helper::getLoaderByPluginID($pluginID, $db, $cache);
+    if ($loader !== null) {
         $plugin = $loader->init($pluginID, $invalidateCache);
     }
     if ($plugin !== null) {
@@ -110,10 +112,8 @@ if ($step === 'plugin_uebersicht' && $pluginID > 0) {
                 $plugin->getMeta()->getSemVer()
             );
             $migrations = count($manager->getMigrations());
-            if ($migrations > 0) {
-                $smarty->assign('manager', $manager)
-                       ->assign('updatesAvailable', $migrations > count($manager->getExecutedMigrations()));
-            }
+            $smarty->assign('manager', $manager)
+                   ->assign('updatesAvailable', $migrations > count($manager->getExecutedMigrations()));
         }
         $smarty->assign('oPlugin', $plugin);
         if ($updated === true) {
@@ -130,14 +130,15 @@ if ($step === 'plugin_uebersicht' && $pluginID > 0) {
                 $parseDown  = new Parsedown();
                 $content    = $parseDown->text(Text::convertUTF8(file_get_contents($menu->file)));
                 $menu->html = $smarty->assign('content', $content)->fetch($menu->tpl);
-            } elseif ($menu->configurable === false
-                && $menu->file !== ''
-                && file_exists($plugin->getPaths()->getAdminPath() . $menu->file)
-            ) {
-                ob_start();
-                require $plugin->getPaths()->getAdminPath() . $menu->file;
-                $menu->html = ob_get_contents();
-                ob_end_clean();
+            } elseif ($menu->configurable === false) {
+                if ($menu->file !== '' && file_exists($plugin->getPaths()->getAdminPath() . $menu->file)) {
+                    ob_start();
+                    require $plugin->getPaths()->getAdminPath() . $menu->file;
+                    $menu->html = ob_get_clean();
+                } elseif ($plugin->isBootstrap() === true) {
+                    $menu->html = PluginHelper::bootstrap($pluginID, $loader)
+                        ->renderAdminMenuTab($menu->name, $menu->id, $smarty);
+                }
             } elseif ($menu->configurable === true) {
                 $smarty->assign('oPluginAdminMenu', $menu);
                 $menu->html = $smarty->fetch('tpl_inc/plugin_options.tpl');

@@ -24,6 +24,7 @@ class Accordion extends Portlet
             'groups' => [
                 'type' => InputType::TEXT_LIST,
                 'label' => __('groupName'),
+                'default' => [__('groupName')]
             ],
             'expanded' => [
                 'type' => InputType::CHECKBOX,

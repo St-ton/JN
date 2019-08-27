@@ -1,0 +1,21 @@
+.opc-Flipcard {
+  background-color: #fff;
+}
+.opc-Flipcard .opc-Flipcard-flip-btn {
+  display: inline-block;
+  margin: 8px;
+  font-size: 14px;
+  font-weight: normal;
+  text-decoration: none;
+  color: #999;
+  border-bottom: 2px solid transparent !important;
+}
+.opc-Flipcard .opc-Flipcard-flip-btn i {
+  margin: 0 8px;
+}
+.opc-Flipcard .opc-Flipcard-label.active {
+  border-bottom: 2px solid #435A6B !important;
+  color: #435A6B;
+}
+
+/*# sourceMappingURL=preview.css.map */

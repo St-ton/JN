@@ -40,7 +40,9 @@
         {/if}
     </div>
     <script>
-        function countdown(date) {
+        function countdown_{$instance->getUid()}()
+        {
+            var date = "{$instance->getProperty('date')} {$instance->getProperty('time')}";
             // Set the date we're counting down to
             var countDownDate = new Date(date).getTime();
             // Update the count down every 1 second
@@ -76,6 +78,10 @@
             }, 1000);
         }
 
-        countdown("{$instance->getProperty('date')} {$instance->getProperty('time')}");
+        if(window.JTL_SHOP_NOVA) {
+            pushDeferredTask("ready", countdown_{$instance->getUid()});
+        } else {
+            $(countdown_{$instance->getUid()});
+        }
     </script>
 </div>

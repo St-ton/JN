@@ -85,7 +85,7 @@ if ($action !== null && Form::validateToken()) {
             case 'sendViaMail':
                 if ($wl->cURLID !== '' && $wl->nOeffentlich && $wl->isSelfControlled()) {
                     $step = 'wunschliste anzeigen';
-                    if (isset($_POST['send']) && (int)$_POST['send'] === 1) {
+                    if (Request::postInt('send') === 1) {
                         if ($conf['global']['global_wunschliste_anzeigen'] === 'Y') {
                             $mails = explode(' ', Text::filterXSS($_POST['email']));
                             $alertHelper->addAlert(

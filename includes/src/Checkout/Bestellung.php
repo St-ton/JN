@@ -658,9 +658,9 @@ class Bestellung
                             $net   += $_item->fPreis * $_item->nAnzahl;
                             $ust    = Tax::getSalesTax($_item->kSteuerklasse ?? 0);
                             $gross += Tax::getGross($_item->fPreis * $_item->nAnzahl, $ust);
-                            if ((int)$_item->kKonfigitem === 0 &&
-                                \is_string($_item->cUnique) &&
-                                !empty($_item->cUnique)
+                            if ((int)$_item->kKonfigitem === 0
+                                && \is_string($_item->cUnique)
+                                && !empty($_item->cUnique)
                             ) {
                                 $parentIdx = $idx;
                             }

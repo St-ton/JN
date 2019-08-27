@@ -29,12 +29,13 @@ if ($nice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
     $group    = new Group();
     $question = new Question();
     $step     = 'uebersicht';
+    $csrfOK   = Form::validateToken();
     setzeSprache();
 
     if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
         $tab = Request::verifyGPDataString('tab');
     }
-    if (isset($_POST['a']) && Form::validateToken()) {
+    if (isset($_POST['a']) && $csrfOK) {
         if ($_POST['a'] === 'newGrp') {
             $step = 'edit-group';
         } elseif ($_POST['a'] === 'newQuest') {
@@ -45,14 +46,14 @@ if ($nice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
                 ENT_COMPAT | ENT_HTML401,
                 JTL_CHARSET
             );
-            $question->kMerkmal                = (int)$_POST['kMerkmal'];
-            $question->kAuswahlAssistentGruppe = (int)$_POST['kAuswahlAssistentGruppe'];
-            $question->nSort                   = (int)$_POST['nSort'];
-            $question->nAktiv                  = (int)$_POST['nAktiv'];
+            $question->kMerkmal                = Request::postInt('kMerkmal');
+            $question->kAuswahlAssistentGruppe = Request::postInt('kAuswahlAssistentGruppe');
+            $question->nSort                   = Request::postInt('nSort');
+            $question->nAktiv                  = Request::postInt('nAktiv');
 
             $checks = [];
-            if (isset($_POST['kAuswahlAssistentFrage']) && (int)$_POST['kAuswahlAssistentFrage'] > 0) {
-                $question->kAuswahlAssistentFrage = (int)$_POST['kAuswahlAssistentFrage'];
+            if (Request::postInt('kAuswahlAssistentFrage') > 0) {
+                $question->kAuswahlAssistentFrage = Request::postInt('kAuswahlAssistentFrage');
                 $checks                           = $question->updateQuestion();
             } else {
                 $checks = $question->saveQuestion();
@@ -68,22 +69,18 @@ if ($nice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
                     ->assign('kAuswahlAssistentFrage', (int)($_POST['kAuswahlAssistentFrage'] ?? 0));
             }
         }
-    } elseif (isset($_GET['a'], $_GET['q'])
-        && $_GET['a'] === 'delQuest'
-        && (int)$_GET['q'] > 0
-        && Form::validateToken()
-    ) {
-        if ($question->deleteQuestion([$_GET['q']])) {
+    } elseif ($csrfOK && Request::getVar('a') === 'delQuest' && Request::getInt('q') > 0) {
+        if ($question->deleteQuestion([Request::getInt('q')])) {
             $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successQuestionDeleted'), 'successQuestionDeleted');
         } else {
             $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorQuestionDeleted'), 'errorQuestionDeleted');
         }
-    } elseif (isset($_GET['a']) && $_GET['a'] === 'editQuest' && (int)$_GET['q'] > 0 && Form::validateToken()) {
+    } elseif ($csrfOK && Request::getVar('a') === 'editQuest' && Request::getInt('q') > 0) {
         $step = 'edit-question';
-        $smarty->assign('oFrage', new Question((int)$_GET['q'], false));
+        $smarty->assign('oFrage', new Question(Request::getInt('q'), false));
     }
 
-    if (isset($_POST['a']) && Form::validateToken()) {
+    if (isset($_POST['a']) && $csrfOK) {
         if ($_POST['a'] === 'addGrp') {
             $group->kSprache      = (int)$_SESSION['kSprache'];
             $group->cName         = htmlspecialchars(
@@ -92,11 +89,11 @@ if ($nice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
                 JTL_CHARSET
             );
             $group->cBeschreibung = $_POST['cBeschreibung'];
-            $group->nAktiv        = (int)$_POST['nAktiv'];
+            $group->nAktiv        = Request::postInt('nAktiv');
 
             $checks = [];
-            if (isset($_POST['kAuswahlAssistentGruppe']) && (int)$_POST['kAuswahlAssistentGruppe'] > 0) {
-                $group->kAuswahlAssistentGruppe = (int)$_POST['kAuswahlAssistentGruppe'];
+            if (Request::postInt('kAuswahlAssistentGruppe') > 0) {
+                $group->kAuswahlAssistentGruppe = Request::postInt('kAuswahlAssistentGruppe');
                 $checks                         = $group->updateGroup($_POST);
             } else {
                 $checks = $group->saveGroup($_POST);
@@ -110,9 +107,7 @@ if ($nice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
                 $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorFillRequired'), 'errorFillRequired');
                 $smarty->assign('cPost_arr', Text::filterXSS($_POST))
                     ->assign('cPlausi_arr', $checks)
-                    ->assign('kAuswahlAssistentGruppe', (isset($_POST['kAuswahlAssistentGruppe'])
-                        ? (int)$_POST['kAuswahlAssistentGruppe']
-                        : 0));
+                    ->assign('kAuswahlAssistentGruppe', Request::postInt('kAuswahlAssistentGruppe'));
             }
         } elseif ($_POST['a'] === 'delGrp') {
             if ($group->deleteGroup($_POST['kAuswahlAssistentGruppe_arr'] ?? [])) {
@@ -128,13 +123,9 @@ if ($nice->checkErweiterung(SHOP_ERWEITERUNG_AUSWAHLASSISTENT)) {
                 'saveSettings'
             );
         }
-    } elseif (isset($_GET['a'], $_GET['g'])
-        && $_GET['a'] === 'editGrp'
-        && (int)$_GET['g'] > 0
-        && Form::validateToken()
-    ) {
+    } elseif ($csrfOK && Request::getVar('a') === 'editGrp' && Request::getInt('g') > 0) {
         $step = 'edit-group';
-        $smarty->assign('oGruppe', new Group((int)$_GET['g'], false, false, true));
+        $smarty->assign('oGruppe', new Group(Request::getInt('g'), false, false, true));
     }
     if ($step === 'uebersicht') {
         $smarty->assign(

@@ -1,5 +1,5 @@
 <div class="box-styles row">
-    <div class="box-config col-7">
+    <div class="box-config col-8">
         <div class="outer-box">
             <div class="top-row">
                 <div>
@@ -80,15 +80,15 @@
             </label>
         </div>
     </div>
-    <div class="border-config col-5">
+    <div class="border-config col-4">
         {include file="./config.select.tpl"
             propname="{$propname}[border-style]"
             propid="{$propname}-border-style"
-            propval=$propval['border-style']
+            propval=$propval['border-style']|default:''
             propdesc=[
                 'label'   => __('Border style'),
                 'options' => [
-                    'hidden' => __('hidden'),
+                    ''       => __('unset'),
                     'dotted' => __('dotted'),
                     'dashed' => __('dashed'),
                     'solid'  => __('solid')

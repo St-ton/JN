@@ -85,9 +85,9 @@ if (Request::verifyGPCDataInt('abonnieren') > 0) {
         );
         $smarty->assign('oFehlendeAngaben', (object)['cUnsubscribeEmail' => 1]);
     }
-} elseif (isset($_GET['show']) && (int)$_GET['show'] > 0) {
+} elseif (Request::getInt('show') > 0) {
     $option = 'anzeigen';
-    if (Helper::customerGroupHasHistory((int)$_GET['show'], Frontend::getCustomer()->getID())) {
+    if (Helper::customerGroupHasHistory(Request::getInt('show'), Frontend::getCustomer()->getID())) {
         $smarty->assign('oNewsletterHistory', $history);
     }
 }

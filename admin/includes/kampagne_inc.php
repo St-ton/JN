@@ -1350,32 +1350,27 @@ function setzeDetailZeitraum($dateData)
     // Ansicht und Zeitraum
     if (Request::verifyGPCDataInt('zeitraum') === 1) {
         // Ansicht
-        if (isset($_POST['nAnsicht']) && (int)$_POST['nAnsicht'] > 0) {
+        if (Request::postInt('nAnsicht') > 0) {
             $_SESSION['Kampagne']->nDetailAnsicht = $_POST['nAnsicht'];
         }
         // Zeitraum
-        if (isset($_POST['cFromDay'], $_POST['cFromMonth'], $_POST['cFromYear'])
-            && (int)$_POST['cFromDay'] > 0
-            && (int)$_POST['cFromMonth'] > 0
-            && (int)$_POST['cFromYear'] > 0
+        if (Request::postInt('cFromDay') > 0
+            && Request::postInt('cFromMonth') > 0
+            && Request::postInt('cFromYear') > 0
         ) {
-            $_SESSION['Kampagne']->cFromDate_arr['nJahr']  = (int)$_POST['cFromYear'];
-            $_SESSION['Kampagne']->cFromDate_arr['nMonat'] = (int)$_POST['cFromMonth'];
-            $_SESSION['Kampagne']->cFromDate_arr['nTag']   = (int)$_POST['cFromDay'];
-            $_SESSION['Kampagne']->cFromDate               = (int)$_POST['cFromYear'] . '-' .
-                (int)$_POST['cFromMonth'] . '-' .
-                (int)$_POST['cFromDay'];
+            $_SESSION['Kampagne']->cFromDate_arr['nJahr']  = Request::postInt('cFromYear');
+            $_SESSION['Kampagne']->cFromDate_arr['nMonat'] = Request::postInt('cFromMonth');
+            $_SESSION['Kampagne']->cFromDate_arr['nTag']   = Request::postInt('cFromDay');
+            $_SESSION['Kampagne']->cFromDate               = Request::postInt('cFromYear') . '-' .
+                Request::postInt('cFromMonth') . '-' .
+                Request::postInt('cFromDay');
         }
-        if (isset($_POST['cToDay'], $_POST['cToMonth'], $_POST['cToYear'])
-            && (int)$_POST['cToDay'] > 0
-            && (int)$_POST['cToMonth'] > 0
-            && (int)$_POST['cToYear'] > 0
-        ) {
-            $_SESSION['Kampagne']->cToDate_arr['nJahr']  = (int)$_POST['cToYear'];
-            $_SESSION['Kampagne']->cToDate_arr['nMonat'] = (int)$_POST['cToMonth'];
-            $_SESSION['Kampagne']->cToDate_arr['nTag']   = (int)$_POST['cToDay'];
-            $_SESSION['Kampagne']->cToDate               = (int)$_POST['cToYear'] . '-' .
-                (int)$_POST['cToMonth'] . '-' . (int)$_POST['cToDay'];
+        if (Request::postInt('cToDay') > 0 && Request::postInt('cToMonth') > 0 && Request::postInt('cToYear') > 0) {
+            $_SESSION['Kampagne']->cToDate_arr['nJahr']  = Request::postInt('cToYear');
+            $_SESSION['Kampagne']->cToDate_arr['nMonat'] = Request::postInt('cToMonth');
+            $_SESSION['Kampagne']->cToDate_arr['nTag']   = Request::postInt('cToDay');
+            $_SESSION['Kampagne']->cToDate               = Request::postInt('cToYear') . '-' .
+                Request::postInt('cToMonth') . '-' . Request::postInt('cToDay');
         }
     }
 

@@ -686,20 +686,19 @@ function updateStock(int $productID, $amount, $packeinheit)
 }
 
 /**
- * @param Artikel   $partListProduct
+ * @param Artikel   $bomProduct
  * @param int|float $amount
  * @return int|float - neuer Lagerbestand
  */
-function aktualisiereStuecklistenLagerbestand($partListProduct, $amount)
+function aktualisiereStuecklistenLagerbestand($bomProduct, $amount)
 {
-    $amount              = (float)$amount;
-    $kStueckListe        = (int)$partListProduct->kStueckliste;
-    $bestandAlt          = (float)$partListProduct->fLagerbestand;
-    $bestandNeu          = $bestandAlt;
-    $bestandUeberverkauf = $bestandAlt;
-
+    $amount        = (float)$amount;
+    $bomID         = (int)$bomProduct->kStueckliste;
+    $oldStockLevel = (float)$bomProduct->fLagerbestand;
+    $newStockLevel = $oldStockLevel;
+    $negStockLevel = $oldStockLevel;
     if ($amount <= 0) {
-        return $bestandNeu;
+        return $newStockLevel;
     }
     // Gibt es lagerrelevante Komponenten in der Stückliste?
     $components = Shop::Container()->getDB()->queryPrepared(
@@ -709,20 +708,18 @@ function aktualisiereStuecklistenLagerbestand($partListProduct, $amount)
               ON tartikel.kArtikel = tstueckliste.kArtikel
             WHERE tstueckliste.kStueckliste = :slid
                 AND tartikel.cLagerBeachten = 'Y'",
-        ['slid' => $kStueckListe],
+        ['slid' => $bomID],
         ReturnType::ARRAY_OF_OBJECTS
     );
 
     if (is_array($components) && count($components) > 0) {
         // wenn ja, dann wird für diese auch der Bestand aktualisiert
-        $options = Artikel::getDefaultOptions();
-
+        $options                             = Artikel::getDefaultOptions();
         $options->nKeineSichtbarkeitBeachten = 1;
         foreach ($components as $component) {
             $tmpArtikel = new Artikel();
             $tmpArtikel->fuelleArtikel($component->kArtikel, $options);
-
-            $komponenteBestand = floor(
+            $compStockLevel = floor(
                 aktualisiereLagerbestand(
                     $tmpArtikel,
                     $amount * $component->fAnzahl,
@@ -730,52 +727,51 @@ function aktualisiereStuecklistenLagerbestand($partListProduct, $amount)
                 ) / $component->fAnzahl
             );
 
-            if ($komponenteBestand < $bestandNeu && $tmpArtikel->cLagerKleinerNull !== 'Y') {
+            if ($compStockLevel < $newStockLevel && $tmpArtikel->cLagerKleinerNull !== 'Y') {
                 // Neuer Bestand ist der Kleinste Komponententbestand aller Artikel ohne Überverkauf
-                $bestandNeu = $komponenteBestand;
-            } elseif ($komponenteBestand < $bestandUeberverkauf) {
+                $newStockLevel = $compStockLevel;
+            } elseif ($compStockLevel < $negStockLevel) {
                 // Für Komponenten mit Überverkauf wird der kleinste Bestand ermittelt.
-                $bestandUeberverkauf = $komponenteBestand;
+                $negStockLevel = $compStockLevel;
             }
         }
     }
 
     // Ist der alte gleich dem neuen Bestand?
-    if ($bestandAlt === $bestandNeu) {
+    if ($oldStockLevel === $newStockLevel) {
         // Es sind keine lagerrelevanten Komponenten vorhanden, die den Bestand der Stückliste herabsetzen.
-        if ($bestandUeberverkauf === $bestandNeu) {
+        if ($negStockLevel === $newStockLevel) {
             // Es gibt auch keine Komponenten mit Überverkäufen, die den Bestand verringern, deshalb wird
             // der Bestand des Stücklistenartikels anhand des Verkaufs verringert
-            $bestandNeu -= $amount * $partListProduct->fPackeinheit;
+            $newStockLevel -= $amount * $bomProduct->fPackeinheit;
         } else {
             // Da keine lagerrelevanten Komponenten vorhanden sind, wird der kleinste Bestand der
             // Komponentent mit Überverkauf verwendet.
-            $bestandNeu = $bestandUeberverkauf;
+            $newStockLevel = $negStockLevel;
         }
 
         Shop::Container()->getDB()->update(
             'tartikel',
             'kArtikel',
-            (int)$partListProduct->kArtikel,
-            (object)['fLagerbestand' => $bestandNeu]
+            (int)$bomProduct->kArtikel,
+            (object)['fLagerbestand' => $newStockLevel]
         );
     }
     // Kein Lagerbestands-Update für die Stückliste notwendig! Dies erfolgte bereits über die Komponentenabfrage und
     // die dortige Lagerbestandsaktualisierung!
 
-    return $bestandNeu;
+    return $newStockLevel;
 }
 
 /**
- * @param int       $kKomponenteArtikel
- * @param int|float $fLagerbestand
- * @param bool      $bLagerKleinerNull
+ * @param int       $productID
+ * @param int|float $stockLevel
+ * @param bool      $allowNegativeStock
  */
-function aktualisiereKomponenteLagerbestand(int $kKomponenteArtikel, $fLagerbestand, $bLagerKleinerNull): void
+function aktualisiereKomponenteLagerbestand(int $productID, float $stockLevel, bool $allowNegativeStock): void
 {
-    $db            = Shop::Container()->getDB();
-    $fLagerbestand = (float)$fLagerbestand;
-    $partLists     = $db->queryPrepared(
+    $db   = Shop::Container()->getDB();
+    $boms = $db->queryPrepared(
         "SELECT tstueckliste.kStueckliste, tstueckliste.fAnzahl,
                 tartikel.kArtikel, tartikel.fLagerbestand, tartikel.cLagerKleinerNull
             FROM tstueckliste
@@ -783,19 +779,19 @@ function aktualisiereKomponenteLagerbestand(int $kKomponenteArtikel, $fLagerbest
                 ON tartikel.kStueckliste = tstueckliste.kStueckliste
             WHERE tstueckliste.kArtikel = :cid
                 AND tartikel.cLagerBeachten = 'Y'",
-        ['cid' => $kKomponenteArtikel],
+        ['cid' => $productID],
         ReturnType::ARRAY_OF_OBJECTS
     );
-    foreach ($partLists as $partList) {
+    foreach ($boms as $bom) {
         // Ist der aktuelle Bestand der Stückliste größer als dies mit dem Bestand der Komponente möglich wäre?
-        $max = floor($fLagerbestand / $partList->fAnzahl);
-        if ($max < (float)$partList->fLagerbestand && (!$bLagerKleinerNull || $partList->cLagerKleinerNull === 'Y')) {
+        $max = floor($stockLevel / $bom->fAnzahl);
+        if ($max < (float)$bom->fLagerbestand && (!$allowNegativeStock || $bom->cLagerKleinerNull === 'Y')) {
             // wenn ja, dann den Bestand der Stückliste entsprechend verringern, aber nur wenn die Komponente nicht
             // überberkaufbar ist oder die gesamte Stückliste Überverkäufe zulässt
             $db->update(
                 'tartikel',
                 'kArtikel',
-                (int)$partList->kArtikel,
+                (int)$bom->kArtikel,
                 (object)['fLagerbestand' => $max]
             );
         }
@@ -805,10 +801,10 @@ function aktualisiereKomponenteLagerbestand(int $kKomponenteArtikel, $fLagerbest
 /**
  * @param int       $productID
  * @param int|float $amount
- * @param null|int  $kStueckliste
+ * @param null|int  $bomID
  * @deprecated since 4.06 - use aktualisiereStuecklistenLagerbestand instead
  */
-function AktualisiereAndereStuecklisten(int $productID, $amount, $kStueckliste = null): void
+function AktualisiereAndereStuecklisten(int $productID, $amount, $bomID = null): void
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     if ($productID > 0) {
@@ -819,35 +815,34 @@ function AktualisiereAndereStuecklisten(int $productID, $amount, $kStueckliste =
 }
 
 /**
- * @param int       $kStueckliste
+ * @param int       $bomID
  * @param float     $fPackeinheitSt
- * @param float     $fLagerbestandSt
+ * @param float     $stockLevel
  * @param int|float $amount
  * @deprecated since 4.06 - dont use anymore
  */
-function AktualisiereStueckliste(int $kStueckliste, $fPackeinheitSt, $fLagerbestandSt, $amount): void
+function AktualisiereStueckliste(int $bomID, $fPackeinheitSt, float $stockLevel, $amount): void
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
-    $fLagerbestand = (float)$fLagerbestandSt;
     Shop::Container()->getDB()->update(
         'tartikel',
         'kStueckliste',
-        $kStueckliste,
-        (object)['fLagerbestand' => $fLagerbestand]
+        $bomID,
+        (object)['fLagerbestand' => $stockLevel]
     );
 }
 
 /**
  * @param Artikel        $product
  * @param null|int|float $amount
- * @param bool           $bStueckliste
+ * @param bool           $isBom
  * @deprecated since 4.06 - use aktualisiereStuecklistenLagerbestand instead
  */
-function AktualisiereLagerStuecklisten($product, $amount = null, $bStueckliste = false): void
+function AktualisiereLagerStuecklisten($product, $amount = null, $isBom = false): void
 {
     trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     if (isset($product->kArtikel) && $product->kArtikel > 0) {
-        if ($bStueckliste) {
+        if ($isBom) {
             aktualisiereStuecklistenLagerbestand($product, $amount);
         } else {
             aktualisiereKomponenteLagerbestand(
@@ -867,26 +862,25 @@ function KuponVerwendungen($order): void
     $db          = Shop::Container()->getDB();
     $cart        = Frontend::getCart();
     $couponID    = 0;
-    $cKuponTyp   = '';
+    $couponType  = '';
     $couponGross = 0;
     if (isset($_SESSION['VersandKupon']->kKupon) && $_SESSION['VersandKupon']->kKupon > 0) {
         $couponID    = (int)$_SESSION['VersandKupon']->kKupon;
-        $cKuponTyp   = Kupon::TYPE_SHIPPING;
+        $couponType  = Kupon::TYPE_SHIPPING;
         $couponGross = $_SESSION['Versandart']->fPreis;
     }
     if (isset($_SESSION['NeukundenKupon']->kKupon) && $_SESSION['NeukundenKupon']->kKupon > 0) {
-        $couponID  = (int)$_SESSION['NeukundenKupon']->kKupon;
-        $cKuponTyp = Kupon::TYPE_NEWCUSTOMER;
+        $couponID   = (int)$_SESSION['NeukundenKupon']->kKupon;
+        $couponType = Kupon::TYPE_NEWCUSTOMER;
     }
     if (isset($_SESSION['Kupon']->kKupon) && $_SESSION['Kupon']->kKupon > 0) {
-        $couponID  = (int)$_SESSION['Kupon']->kKupon;
-        $cKuponTyp = Kupon::TYPE_STANDARD;
+        $couponID   = (int)$_SESSION['Kupon']->kKupon;
+        $couponType = Kupon::TYPE_STANDARD;
     }
     foreach ($cart->PositionenArr as $item) {
         $item->nPosTyp = (int)$item->nPosTyp;
         if (!isset($_SESSION['VersandKupon'])
-            && ($item->nPosTyp === C_WARENKORBPOS_TYP_KUPON
-                || $item->nPosTyp === C_WARENKORBPOS_TYP_NEUKUNDENKUPON)
+            && ($item->nPosTyp === C_WARENKORBPOS_TYP_KUPON || $item->nPosTyp === C_WARENKORBPOS_TYP_NEUKUNDENKUPON)
         ) {
             $couponGross = Tax::getGross(
                 $item->fPreisEinzelNetto,
@@ -894,46 +888,47 @@ function KuponVerwendungen($order): void
             ) * (-1);
         }
     }
-    if ($couponID > 0) {
-        $db->queryPrepared(
-            'UPDATE tkupon
-              SET nVerwendungenBisher = nVerwendungenBisher + 1
-              WHERE kKupon = :couponID',
-            ['couponID' => $couponID],
-            ReturnType::DEFAULT
-        );
-
-        $db->queryPrepared(
-            'INSERT INTO `tkuponkunde` (kKupon, cMail, dErstellt, nVerwendungen)
-                VALUES (:couponID, :email, NOW(), :used)
-                ON DUPLICATE KEY UPDATE
-                  nVerwendungen = nVerwendungen + 1',
-            [
-                'couponID' => $couponID,
-                'email'    => Kupon::hash(Frontend::getCustomer()->cMail),
-                'used'     => 1
-            ],
-            ReturnType::DEFAULT
-        );
-
-        $db->insert('tkuponflag', (object)[
-            'cKuponTyp'  => $cKuponTyp,
-            'cEmailHash' => Kupon::hash(Frontend::getCustomer()->cMail),
-            'dErstellt'  => 'NOW()'
-        ]);
-
-        $couponOrder                     = new KuponBestellung();
-        $couponOrder->kKupon             = $couponID;
-        $couponOrder->kBestellung        = $order->kBestellung;
-        $couponOrder->kKunde             = $cart->kKunde;
-        $couponOrder->cBestellNr         = $order->cBestellNr;
-        $couponOrder->fGesamtsummeBrutto = $order->fGesamtsumme;
-        $couponOrder->fKuponwertBrutto   = $couponGross;
-        $couponOrder->cKuponTyp          = $cKuponTyp;
-        $couponOrder->dErstellt          = 'NOW()';
-
-        $couponOrder->save();
+    if ($couponID <= 0) {
+        return;
     }
+    $db->queryPrepared(
+        'UPDATE tkupon
+          SET nVerwendungenBisher = nVerwendungenBisher + 1
+          WHERE kKupon = :couponID',
+        ['couponID' => $couponID],
+        ReturnType::DEFAULT
+    );
+
+    $db->queryPrepared(
+        'INSERT INTO `tkuponkunde` (kKupon, cMail, dErstellt, nVerwendungen)
+            VALUES (:couponID, :email, NOW(), :used)
+            ON DUPLICATE KEY UPDATE
+              nVerwendungen = nVerwendungen + 1',
+        [
+            'couponID' => $couponID,
+            'email'    => Kupon::hash(Frontend::getCustomer()->cMail),
+            'used'     => 1
+        ],
+        ReturnType::DEFAULT
+    );
+
+    $db->insert('tkuponflag', (object)[
+        'cKuponTyp'  => $couponType,
+        'cEmailHash' => Kupon::hash(Frontend::getCustomer()->cMail),
+        'dErstellt'  => 'NOW()'
+    ]);
+
+    $couponOrder                     = new KuponBestellung();
+    $couponOrder->kKupon             = $couponID;
+    $couponOrder->kBestellung        = $order->kBestellung;
+    $couponOrder->kKunde             = $cart->kKunde;
+    $couponOrder->cBestellNr         = $order->cBestellNr;
+    $couponOrder->fGesamtsummeBrutto = $order->fGesamtsumme;
+    $couponOrder->fKuponwertBrutto   = $couponGross;
+    $couponOrder->cKuponTyp          = $couponType;
+    $couponOrder->dErstellt          = 'NOW()';
+
+    $couponOrder->save();
 }
 
 /**
@@ -969,6 +964,11 @@ function baueBestellnummer(): string
         [date('Y'), date('m'), date('d'), date('W')],
         $conf['kaufabwicklung']['bestellabschluss_bestellnummer_suffix']
     );
+    executeHook(HOOK_BESTELLABSCHLUSS_INC_BAUEBESTELLNUMMER, [
+        'orderNo' => &$orderNo,
+        'prefix'  => &$prefix,
+        'suffix'  => &$suffix
+    ]);
 
     return $prefix . $orderNo . $suffix;
 }
@@ -988,35 +988,35 @@ function speicherUploads($order): void
  */
 function setzeSmartyWeiterleitung(Bestellung $order): void
 {
+    $moduleID = $_SESSION['Zahlungsart']->cModulId;
     speicherUploads($order);
     $logger = Shop::Container()->getLogService();
     if ($logger->isHandling(JTLLOG_LEVEL_DEBUG)) {
         $logger->withName('cModulId')->debug(
             'setzeSmartyWeiterleitung wurde mit folgender Zahlungsart ausgefuehrt: ' .
             print_r($_SESSION['Zahlungsart'], true),
-            [$_SESSION['Zahlungsart']->cModulId]
+            [$moduleID]
         );
     }
-    $pluginID = Helper::getIDByModuleID($_SESSION['Zahlungsart']->cModulId);
+    $pluginID = Helper::getIDByModuleID($moduleID);
     if ($pluginID > 0) {
         $loader = Helper::getLoaderByPluginID($pluginID);
         $plugin = $loader->init($pluginID);
         global $oPlugin;
         $oPlugin = $plugin;
         if ($plugin !== null) {
-            $methods = $plugin->getPaymentMethods()->getMethodsAssoc();
-            require_once $plugin->getPaths()->getVersionedPath() . PFAD_PLUGIN_PAYMENTMETHOD .
-                $methods[$_SESSION['Zahlungsart']->cModulId]->cClassPfad;
-            $pluginClass = $methods[$_SESSION['Zahlungsart']->cModulId]->cClassName;
+            $pluginPaymentMethod = $plugin->getPaymentMethods()->getMethodByID($moduleID);
+            if ($pluginPaymentMethod === null) {
+                return;
+            }
+            $className = $pluginPaymentMethod->getClassName();
             /** @var PaymentMethod $paymentMethod */
-            $paymentMethod           = new $pluginClass($_SESSION['Zahlungsart']->cModulId);
-            $paymentMethod->cModulId = $_SESSION['Zahlungsart']->cModulId;
+            $paymentMethod           = new $className($moduleID);
+            $paymentMethod->cModulId = $moduleID;
             $paymentMethod->preparePaymentProcess($order);
             Shop::Smarty()->assign('oPlugin', $plugin);
         }
-    } elseif ($_SESSION['Zahlungsart']->cModulId === 'za_kreditkarte_jtl'
-        || $_SESSION['Zahlungsart']->cModulId === 'za_lastschrift_jtl'
-    ) {
+    } elseif ($moduleID === 'za_kreditkarte_jtl' || $moduleID === 'za_lastschrift_jtl') {
         Shop::Smarty()->assign('abschlussseite', 1);
     }
 
@@ -1029,7 +1029,6 @@ function setzeSmartyWeiterleitung(Bestellung $order): void
 function fakeBestellung()
 {
     /** @var array('Warenkorb' => Warenkorb) $_SESSION */
-
     if (isset($_POST['kommentar'])) {
         $_SESSION['kommentar'] = mb_substr(
             strip_tags(Shop::Container()->getDB()->escape($_POST['kommentar'])),

@@ -88,7 +88,7 @@ final class MigrationHelper
      * Returns names like 'Migration12345678901234'.
      *
      * @param DirectoryIterator $file
-     * @param string             $pluginID
+     * @param string            $pluginID
      * @return string
      */
     public function mapFileNameToClassName(DirectoryIterator $file, string $pluginID): string
@@ -220,25 +220,22 @@ final class MigrationHelper
      * @param string $description
      * @param string $author
      * @return string
-     * @throws \SmartyException
+     * @throws \SmartyExceptionincludes/src/Plugin/MigrationHelper.php
      * @throws \Exception
      */
     public static function create(string $pluginDir, string $description, string $author): string
     {
         $plugin = Shop::Container()->getDB()->select('tplugin', 'cVerzeichnis', $pluginDir);
-
         if (empty($plugin)) {
             throw new \Exception('There is no plugin for the given dir name.');
         }
 
-        $datetime  = new \DateTime('NOW');
-        $timestamp = $datetime->format('YmdHis');
-
-        $filePath = 'Migration'.$timestamp;
-
-        $relPath       = 'plugins/'.$pluginDir.'/Migrations';
-        $migrationPath = $relPath.'/'.$filePath.'.php';
-        $fileSystem    = new Filesystem(new LocalFilesystem(['root' => PFAD_ROOT]));
+        $datetime      = new \DateTime('NOW');
+        $timestamp     = $datetime->format('YmdHis');
+        $filePath      = 'Migration' . $timestamp;
+        $relPath       = 'plugins/' . $pluginDir . '/Migrations';
+        $migrationPath = $relPath . '/' . $filePath . '.php';
+        $fileSystem    = new Filesystem(new LocalFilesystem(['root' => \PFAD_ROOT]));
 
         if (!$fileSystem->exists($relPath)) {
             throw new \Exception('Migrations path doesn\'t exist!');
@@ -250,7 +247,7 @@ final class MigrationHelper
             ->assign('created', $datetime->format(\DateTime::RSS))
             ->assign('pluginDir', $pluginDir)
             ->assign('timestamp', $timestamp)
-            ->fetch(PFAD_ROOT.'includes/src/Console/Command/Plugin/Template/migration.class.tpl');
+            ->fetch(\PFAD_ROOT . 'includes/src/Console/Command/Plugin/Template/migration.class.tpl');
 
         $fileSystem->put($migrationPath, $content);
 

@@ -24,7 +24,7 @@ if (Request::verifyGPCDataInt('einstellungen') === 1) {
     $alertHelper->addAlert(Alert::TYPE_SUCCESS, saveAdminSettings($settingsIDs, $_POST), 'saveSettings');
 }
 $itemCount     = (int)Shop::Container()->getDB()->query(
-    'SELECT COUNT(tWunsch.kWunschliste) AS nAnzahl
+    'SELECT COUNT(tWunsch.kWunschliste) AS cnt
         FROM
         (
             SELECT twunschliste.kWunschliste
@@ -34,19 +34,19 @@ $itemCount     = (int)Shop::Container()->getDB()->query(
             GROUP BY twunschliste.kWunschliste
         ) AS tWunsch',
     ReturnType::SINGLE_OBJECT
-)->nAnzahl;
+)->cnt;
 $productCount  = (int)Shop::Container()->getDB()->query(
-    'SELECT COUNT(*) AS nAnzahl
+    'SELECT COUNT(*) AS cnt
         FROM twunschlistepos',
     ReturnType::SINGLE_OBJECT
-)->nAnzahl;
+)->cnt;
 $friends       = (int)Shop::Container()->getDB()->query(
-    'SELECT COUNT(*) AS nAnzahl
+    'SELECT COUNT(*) AS cnt
         FROM twunschliste
         JOIN twunschlisteversand 
             ON twunschliste.kWunschliste = twunschlisteversand.kWunschliste',
     ReturnType::SINGLE_OBJECT
-)->nAnzahl;
+)->cnt;
 $oPagiPos      = (new Pagination('pos'))
     ->setItemCount($itemCount)
     ->assemble();

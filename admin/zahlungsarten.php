@@ -387,13 +387,13 @@ if ($step === 'uebersicht') {
             );
         }
         $method->nEingangAnzahl = (int)$db->executeQueryPrepared(
-            'SELECT COUNT(*) AS `nAnzahl`
+            'SELECT COUNT(*) AS `cnt`
             FROM `tzahlungseingang` AS ze
                 JOIN `tbestellung` AS b ON ze.`kBestellung` = b.`kBestellung`
             WHERE b.`kZahlungsart` = :kzahlungsart',
             ['kzahlungsart' => $method->kZahlungsart],
             ReturnType::SINGLE_OBJECT
-        )->nAnzahl;
+        )->cnt;
         $method->nLogCount      = ZahlungsLog::count($method->cModulId);
         $method->nErrorLogCount = ZahlungsLog::count($method->cModulId, JTLLOG_LEVEL_ERROR);
         $method->cName          = __($method->cName);

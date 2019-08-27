@@ -506,23 +506,23 @@ if (Request::postInt('livesuche') === 1) { //Formular wurde abgeschickt
 }
 
 $queryCount        = (int)$db->query(
-    'SELECT COUNT(*) AS nAnzahl
+    'SELECT COUNT(*) AS cnt
         FROM tsuchanfrage
         WHERE kSprache = ' . (int)$_SESSION['kSprache'] . $cLivesucheSQL->cWhere,
     ReturnType::SINGLE_OBJECT
-)->nAnzahl;
+)->cnt;
 $failedQueryCount  = (int)$db->query(
-    'SELECT COUNT(*) AS nAnzahl
+    'SELECT COUNT(*) AS cnt
         FROM tsuchanfrageerfolglos
         WHERE kSprache = ' . (int)$_SESSION['kSprache'],
     ReturnType::SINGLE_OBJECT
-)->nAnzahl;
+)->cnt;
 $mappingCount      = (int)$db->query(
-    'SELECT COUNT(*) AS nAnzahl
+    'SELECT COUNT(*) AS cnt
         FROM tsuchanfragemapping
         WHERE kSprache = ' . (int)$_SESSION['kSprache'],
     ReturnType::SINGLE_OBJECT
-)->nAnzahl;
+)->cnt;
 $paginationQueries = (new Pagination('suchanfragen'))
     ->setItemCount($queryCount)
     ->assemble();

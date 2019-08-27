@@ -601,29 +601,29 @@ if (Form::validateToken()) {
 }
 if ($step === 'uebersicht') {
     $recipientsCount   = (int)$db->query(
-        'SELECT COUNT(*) AS nAnzahl
+        'SELECT COUNT(*) AS cnt
             FROM tnewsletterempfaenger
             WHERE tnewsletterempfaenger.nAktiv = 0' . $inactiveSearchSQL->cWHERE,
         ReturnType::SINGLE_OBJECT
-    )->nAnzahl;
+    )->cnt;
     $queueCount        = (int)$db->query(
-        "SELECT COUNT(*) AS jobQueueCount
+        "SELECT COUNT(*) AS cnt
             FROM tjobqueue
             WHERE jobType = 'newsletter'",
         ReturnType::SINGLE_OBJECT
-    )->jobQueueCount;
+    )->cnt;
     $templateCount     = (int)$db->query(
-        'SELECT COUNT(*) AS nAnzahl
+        'SELECT COUNT(*) AS cnt
             FROM tnewslettervorlage
             WHERE kSprache = ' . (int)$_SESSION['kSprache'],
         ReturnType::SINGLE_OBJECT
-    )->nAnzahl;
+    )->cnt;
     $historyCount      = (int)$db->query(
-        'SELECT COUNT(*) AS nAnzahl
+        'SELECT COUNT(*) AS cnt
             FROM tnewsletterhistory
             WHERE kSprache = ' . (int)$_SESSION['kSprache'],
         ReturnType::SINGLE_OBJECT
-    )->nAnzahl;
+    )->cnt;
     $pagiInactive      = (new Pagination('inaktive'))
         ->setItemCount($recipientsCount)
         ->assemble();

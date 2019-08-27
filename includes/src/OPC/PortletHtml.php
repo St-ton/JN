@@ -62,11 +62,6 @@ trait PortletHtml
         return '<i class="' . $faClasses . '"></i><span>' . $this->getTitle() . '</span>';
     }
 
-    public function getFrontendScripts()
-    {
-        return [];
-    }
-
     /**
      * @return string[]
      */

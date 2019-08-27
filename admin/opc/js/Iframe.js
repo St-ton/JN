@@ -167,7 +167,7 @@ class Iframe
     loadPortletPreviewCss(portletCls)
     {
         this.loadStylesheet(
-            this.shopUrl + '/includes/src/OPC/templates/' + portletCls + '/preview.css'
+            this.shopUrl + '/includes/src/OPC/Portlets/' + portletCls + '/preview.css'
         );
     }
 

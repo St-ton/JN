@@ -6,16 +6,16 @@
     {strip}
     {has_boxes position='left' assign='hasLeftBox'}
     {if !empty($Brotnavi) && !$bExclusive && !$bAjaxRequest && $nSeitenTyp !== $smarty.const.PAGE_STARTSEITE && $nSeitenTyp !== $smarty.const.PAGE_BESTELLVORGANG && $nSeitenTyp !== $smarty.const.PAGE_BESTELLSTATUS}
-        {row class="breadcrumb-wrapper mb-5"}
+        {row class="breadcrumb-wrapper"}
             {col}
                 {breadcrumb id="breadcrumb" itemprop="breadcrumb" itemscope=true itemtype="http://schema.org/BreadcrumbList" class="p-0 py-2"}
                     {block name='layout-breadcrumb-xs-back'}
                         {$parent = $Brotnavi[$Brotnavi|count -2|max:0]}
-                        {breadcrumbitem class="d-xs-flex d-sm-none back"
+                        {breadcrumbitem class="breadcrumb-back"
                             href=$parent->getURLFull()
                             title=$parent->getName()|escape:'html'
                         }
-                            <span itemprop="name">{$parent->getName()}</span>
+                            <span class="fas fa-long-arrow-alt-left mr-2"></span><span itemprop="name">{$parent->getName()}</span>
                         {/breadcrumbitem}
                     {/block}
                     {block name='layout-breadcrumb-items'}

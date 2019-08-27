@@ -103,12 +103,12 @@ class Status
      */
     protected function validModifiedFileStruct(): bool
     {
-        require_once \PFAD_ROOT . \PFAD_ADMIN . \PFAD_INCLUDES . 'filecheck_inc.php';
+        $check   = new FileCheck();
+        $files   = [];
+        $stats   = 0;
+        $md5file = \PFAD_ROOT . \PFAD_ADMIN . \PFAD_INCLUDES . \PFAD_SHOPMD5 . $check->getVersionString() . '.csv';
 
-        $files = [];
-        $stats = 0;
-
-        return \getAllModifiedFiles($files, $stats) === 1
+        return $check->validateCsvFile($md5file, $files, $stats) === FileCheck::OK
             ? $stats === 0
             : false;
     }
@@ -120,12 +120,14 @@ class Status
      */
     protected function validOrphanedFilesStruct(): bool
     {
-        require_once \PFAD_ROOT . \PFAD_ADMIN . \PFAD_INCLUDES . 'filecheck_inc.php';
+        $check             = new FileCheck();
+        $files             = [];
+        $stats             = 0;
+        $orphanedFilesFile = \PFAD_ROOT . \PFAD_ADMIN .
+            \PFAD_INCLUDES . \PFAD_SHOPMD5
+            . 'deleted_files_' . $check->getVersionString() . '.csv';
 
-        $files = [];
-        $stats = 0;
-
-        return \getAllOrphanedFiles($files, $stats) === 1
+        return $check->validateCsvFile($orphanedFilesFile, $files, $stats) === FileCheck::OK
             ? $stats === 0
             : false;
     }
@@ -373,12 +375,12 @@ class Status
                     WHERE KEY_NAME = 'idx_tartikel_fulltext'",
                 ReturnType::SINGLE_OBJECT
             )
-            || !Shop::Container()->getDB()->query(
-                "SHOW INDEX 
+                || !Shop::Container()->getDB()->query(
+                    "SHOW INDEX 
                     FROM tartikelsprache 
                     WHERE KEY_NAME = 'idx_tartikelsprache_fulltext'",
-                ReturnType::SINGLE_OBJECT
-            ));
+                    ReturnType::SINGLE_OBJECT
+                ));
     }
 
     /**

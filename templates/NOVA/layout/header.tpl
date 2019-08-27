@@ -242,7 +242,7 @@
 
     {has_boxes position='left' assign='hasLeftPanel'}
     {block name='layout-header-body-tag'}
-        <body data-page="{$nSeitenTyp}" {if isset($Link) && !empty($Link->getIdentifier())} id="{$Link->getIdentifier()}"{/if}{if $isFluidTemplate} class="unboxed-layout"{/if}>
+        <body data-page="{$nSeitenTyp}" {if isset($Link) && !empty($Link->getIdentifier())} id="{$Link->getIdentifier()}"{/if}>
     {/block}
 
     {if !$bExclusive}
@@ -266,11 +266,10 @@
                     {/block}
 
                     {block name='layout-header-category-nav'}
-
-                        {navbar id="evo-main-nav-wrapper" toggleable=true fill=true class="navbar-expand-md accordion row py-2 py-md-0 px-0"}
-                            {col id="logo" md="auto" order=2 order-md=1 class="col-auto mr-auto bg-white" style="z-index: 1;"}
+                        {navbar id="main-nav-wrapper" toggleable=true fill=true class="navbar-expand-md accordion row py-0 px-0"}
+                            {col id="logo" cols=4 md="auto" order=2 order-md=1 class="mr-auto bg-white" style="z-index: 1;"}
                                 {block name='layout-header-logo'}
-                                    <div class="navbar-brand ml-lg-2" itemprop="publisher" itemscope itemtype="http://schema.org/Organization" itemid="">
+                                    <div class="navbar-brand mr-0 ml-lg-2" itemprop="publisher" itemscope itemtype="http://schema.org/Organization" itemid="">
                                         <span itemprop="name" class="d-none">{$meta_publisher}</span>
                                         <meta itemprop="url" content="{$ShopURL}">
                                         <meta itemprop="logo" content="{$ShopLogoURL}">
@@ -295,22 +294,22 @@
 
                             {col md=12 order=1 order-md=5 order-xl=5 class="no-flex-grow {if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG}d-none{/if}"}
                                 {block name='layout-header-navbar-toggler'}
-                                    {navbartoggle data=["target"=>"#navbarToggler"] class="d-flex d-md-none"}
+                                    {navbartoggle data=["target"=>"#navbarToggler"] class="d-flex d-md-none collapsed"}
                                 {/block}
                             {/col}
 
                             {col cols=12 col-md=auto order=5 order-xl=2 class="col-xl {if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG}d-none{/if}"}
                                 {*categories*}
                                 {block name='layout-header-include-categories-mega'}
-                                    <div id="navbarToggler" class="collapse navbar-collapse" data-parent="#evo-main-nav-wrapper">
+                                    <div id="navbarToggler" class="collapse navbar-collapse" data-parent="#main-nav-wrapper">
                                         {button id="scrollMenuLeft"  variant="light" class="d-none" aria=["label" => {lang key="scrollMenuLeft" section="aria"}]}
-                                            <i class="fas fa-chevron-left"></i>
+                                            <i class="fas fa-arrow-left"></i>
                                         {/button}
                                         {navbarnav class="megamenu show"}
                                             {include file='snippets/categories_mega.tpl'}
                                         {/navbarnav}
                                         {button id="scrollMenuRight" variant="light" class="d-none" aria=["label" => {lang key="scrollMenuRight" section="aria"}]}
-                                            <i class="fas fa-chevron-right"></i>
+                                            <i class="fas fa-arrow-right"></i>
                                         {/button}
                                     </div>
                                 {/block}
@@ -319,7 +318,7 @@
                             {col order=6 order-md=2 cols=12 order-lg=3
                                  class="col-md-auto bg-white{if $nSeitenTyp === $smarty.const.PAGE_BESTELLVORGANG} d-none{/if}"}
                                 {block name='layout-header-include-header-nav-search'}
-                                    {collapse id="nav-search-collapse" tag="div" data=["parent"=>"#evo-main-nav-wrapper"] class="d-md-flex mx-auto float-md-right"}
+                                    {collapse id="nav-search-collapse" tag="div" data=["parent"=>"#main-nav-wrapper"] class="d-md-flex mx-auto float-md-right w-100"}
                                         {include file='layout/header_nav_search.tpl'}
                                     {/collapse}
                                 {/block}
@@ -360,24 +359,24 @@
     {/block}
     {block name='layout-header-content-all-starttags'}
         {block name='layout-header-content-wrapper-starttag'}
-            <div id="content-wrapper" class="container-fluid mt-0 pt-4 {if $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp}px-4 px-xl-7{else}px-0{/if}">
+            <div id="content-wrapper" class="container-fluid mt-0 pt-7 {if $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp}px-4 px-xl-7{else}px-0{/if}">
         {/block}
 
         {block name='layout-header-breadcrumb'}
-            {container}
+            {container fluid=($smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp) class="{if $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp}px-0{/if}"}
                 {block name='layout-header-product-pagination'}
-                    {if $Einstellungen.artikeldetails.artikeldetails_navi_blaettern === 'Y' && isset($NavigationBlaettern)}
-                        <div class="d-none d-lg-block product-pagination next">
+                    {*{if $Einstellungen.artikeldetails.artikeldetails_navi_blaettern === 'Y' && isset($NavigationBlaettern)}
+                        <div class="d-none d-xl-block product-pagination next">
                             {if isset($NavigationBlaettern->naechsterArtikel) && $NavigationBlaettern->naechsterArtikel->kArtikel}
                                 {link href=$NavigationBlaettern->naechsterArtikel->cURLFull title=$NavigationBlaettern->naechsterArtikel->cName}<span class="fa fa-chevron-right"></span>{/link}
                             {/if}
                         </div>
-                        <div class="d-none d-lg-block product-pagination previous">
+                        <div class="d-none d-xl-block product-pagination previous">
                             {if isset($NavigationBlaettern->vorherigerArtikel) && $NavigationBlaettern->vorherigerArtikel->kArtikel}
                                 {link href=$NavigationBlaettern->vorherigerArtikel->cURLFull title=$NavigationBlaettern->vorherigerArtikel->cName}<span class="fa fa-chevron-left"></span>{/link}
                             {/if}
                         </div>
-                    {/if}
+                    {/if}*}
                 {/block}
                 {include file='layout/breadcrumb.tpl'}
             {/container}
@@ -388,8 +387,7 @@
         {/block}
 
         {block name='layout-header-content-starttag'}
-            <div id="content" class="col-12{if !$bExclusive && !empty($boxes.left|strip_tags|trim) && ($Einstellungen.template.sidebar_settings.show_sidebar_product_list === 'Y' && $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp
-            || $Einstellungen.template.sidebar_settings.show_sidebar_product_list === 'N')} col-lg-9{/if} order-lg-1 mb-6">
+            <div id="content" class="col-12{if !$bExclusive && !empty($boxes.left|strip_tags|trim) && $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp} col-lg-9{/if} order-lg-1 mb-6">
         {/block}
 
         {block name='layout-header-alert'}

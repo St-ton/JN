@@ -138,7 +138,7 @@ if ($action !== '' && Form::validateToken()) {
         case 'move-to-linkgroup':
             $res = $linkAdmin->updateLinkGroup(
                 $linkID,
-                (int)$_POST['kLinkgruppeAlt'],
+                Request::postInt('kLinkgruppeAlt'),
                 $linkGroupID
             );
             if ($res === LinkAdmin::ERROR_LINK_ALREADY_EXISTS) {
@@ -206,8 +206,9 @@ if ($action !== '' && Form::validateToken()) {
             $checks->doPlausi('lnk');
 
             if (count($checks->getPlausiVar()) === 0) {
-                $link = $linkAdmin->createOrUpdateLink($_POST);
-                if ((int)$_POST['kLink'] === 0) {
+                $files = [];
+                $link  = $linkAdmin->createOrUpdateLink($_POST);
+                if (Request::postInt('kLink') === 0) {
                     $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successLinkCreate'), 'successLinkCreate');
                 } else {
                     $alertHelper->addAlert(
@@ -219,7 +220,7 @@ if ($action !== '' && Form::validateToken()) {
                 $clearCache = true;
                 $kLink      = $link->getID();
                 $step       = 'uebersicht';
-                $continue   = (isset($_POST['continue']) && (int)$_POST['continue'] === 1);
+                $continue   = Request::postInt('continue') === 1;
                 if ($continue) {
                     $step           = 'neuer Link';
                     $_POST['kLink'] = $kLink;
@@ -278,8 +279,8 @@ if ($action !== '' && Form::validateToken()) {
             } else {
                 $step = 'neuer Link';
                 $link = new Link($db);
-                $link->setLinkGroupID((int)$_POST['kLinkgruppe']);
-                $link->setLinkGroups([(int)$_POST['kLinkgruppe']]);
+                $link->setLinkGroupID(Request::postInt('kLinkgruppe'));
+                $link->setLinkGroups([Request::postInt('kLinkgruppe')]);
                 $checkVars = $checks->getPlausiVar();
                 if (isset($checkVars['nSpezialseite'])) {
                     $alertHelper->addAlert(Alert::TYPE_ERROR, __('isDuplicateSpecialLink'), 'isDuplicateSpecialLink');

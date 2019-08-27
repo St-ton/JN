@@ -23,14 +23,12 @@ setzeSprache();
 if (Request::verifyGPCDataInt('suchspecialoverlay') === 1) {
     $step = 'suchspecialoverlay_detail';
     $oID  = Request::verifyGPCDataInt('kSuchspecialOverlay');
-    if (isset($_POST['speicher_einstellung'])
-        && (int)$_POST['speicher_einstellung'] === 1
+    if (Request::postInt('speicher_einstellung') === 1
         && Form::validateToken()
+        && speicherEinstellung($oID, $_POST, $_FILES['cSuchspecialOverlayBild'])
     ) {
-        if (speicherEinstellung($oID, $_POST, $_FILES['cSuchspecialOverlayBild'])) {
-            Shop::Container()->getCache()->flushTags([CACHING_GROUP_OPTION, CACHING_GROUP_ARTICLE]);
-            $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successConfigSave'), 'successConfigSave');
-        }
+        Shop::Container()->getCache()->flushTags([CACHING_GROUP_OPTION, CACHING_GROUP_ARTICLE]);
+        $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successConfigSave'), 'successConfigSave');
     }
     if ($oID > 0) {
         $smarty->assign('oSuchspecialOverlay', gibSuchspecialOverlay($oID));

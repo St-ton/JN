@@ -19,9 +19,9 @@ interface WidgetInterface
     /**
      * @param JTLSmarty       $smarty
      * @param DbInterface     $db
-     * @param PluginInterface $oPlugin
+     * @param PluginInterface $plugin
      */
-    public function __construct(JTLSmarty $smarty = null, DbInterface $db = null, $oPlugin = null);
+    public function __construct(JTLSmarty $smarty = null, DbInterface $db = null, $plugin = null);
 
     /**
      * @return JTLSmarty
@@ -49,9 +49,9 @@ interface WidgetInterface
     public function getPlugin(): PluginInterface;
 
     /**
-     * @param PluginInterface $oPlugin
+     * @param PluginInterface $plugin
      */
-    public function setPlugin(PluginInterface $oPlugin): void;
+    public function setPlugin(PluginInterface $plugin): void;
 
     /**
      *

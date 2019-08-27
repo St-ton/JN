@@ -227,7 +227,7 @@ function benutzerverwaltungDeleteAttributes(stdClass $oAccount): bool
  */
 function benutzerverwaltungActionAccountLock(array &$messages): string
 {
-    $adminID = (int)$_POST['id'];
+    $adminID = Request::postInt('id');
     $account = Shop::Container()->getDB()->select('tadminlogin', 'kAdminlogin', $adminID);
     if (!empty($account->kAdminlogin) && (int)$account->kAdminlogin === (int)$_SESSION['AdminAccount']->kAdminlogin) {
         $messages['error'] .= __('errorSelfLock');
@@ -261,7 +261,7 @@ function benutzerverwaltungActionAccountLock(array &$messages): string
  */
 function benutzerverwaltungActionAccountUnLock(array &$messages): string
 {
-    $adminID = (int)$_POST['id'];
+    $adminID = Request::postInt('id');
     $account = Shop::Container()->getDB()->select('tadminlogin', 'kAdminlogin', $adminID);
     if (is_object($account)) {
         $result = true;
@@ -293,7 +293,7 @@ function benutzerverwaltungActionAccountEdit(JTLSmarty $smarty, array &$messages
     $_SESSION['AdminAccount']->TwoFA_valid = true;
 
     $db          = Shop::Container()->getDB();
-    $adminID     = (isset($_POST['id']) ? (int)$_POST['id'] : null);
+    $adminID     = Request::postInt('id', null);
     $qrCode      = '';
     $knownSecret = '';
     if ($adminID !== null) {
@@ -311,20 +311,20 @@ function benutzerverwaltungActionAccountEdit(JTLSmarty $smarty, array &$messages
     if (isset($_POST['save'])) {
         $errors              = [];
         $tmpAcc              = new stdClass();
-        $tmpAcc->kAdminlogin = isset($_POST['kAdminlogin']) ? (int)$_POST['kAdminlogin'] : 0;
+        $tmpAcc->kAdminlogin = Request::postInt('kAdminlogin');
         $tmpAcc->cName       = htmlspecialchars(trim($_POST['cName']), ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
         $tmpAcc->cMail       = htmlspecialchars(trim($_POST['cMail']), ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
         $tmpAcc->language    = $_POST['language'];
         $tmpAcc->cLogin      = trim($_POST['cLogin']);
         $tmpAcc->cPass       = trim($_POST['cPass']);
-        $tmpAcc->b2FAauth    = (int)$_POST['b2FAauth'];
+        $tmpAcc->b2FAauth    = Request::postInt('b2FAauth');
         $tmpAttribs          = $_POST['extAttribs'] ?? [];
 
         if (0 < mb_strlen($_POST['c2FAsecret'])) {
             $tmpAcc->c2FAauthSecret = trim($_POST['c2FAsecret']);
         }
 
-        $validUntil = (isset($_POST['dGueltigBisAktiv']) && ($_POST['dGueltigBisAktiv'] === '1'));
+        $validUntil = Request::postInt('dGueltigBisAktiv') === 1;
         if ($validUntil) {
             try {
                 $tmpAcc->dGueltigBis = new DateTime($_POST['dGueltigBis']);
@@ -335,8 +335,7 @@ function benutzerverwaltungActionAccountEdit(JTLSmarty $smarty, array &$messages
                 $tmpAcc->dGueltigBis = $tmpAcc->dGueltigBis->format('Y-m-d H:i:s');
             }
         }
-        $tmpAcc->kAdminlogingruppe = (int)$_POST['kAdminlogingruppe'];
-
+        $tmpAcc->kAdminlogingruppe = Request::postInt('kAdminlogingruppe');
         if ((bool)$tmpAcc->b2FAauth && !isset($tmpAcc->c2FAauthSecret)) {
             $errors['c2FAsecret'] = 1;
         }
@@ -501,7 +500,7 @@ function benutzerverwaltungActionAccountEdit(JTLSmarty $smarty, array &$messages
  */
 function benutzerverwaltungActionAccountDelete(array &$messages): string
 {
-    $adminID    = (int)$_POST['id'];
+    $adminID    = Request::postInt('id');
     $groupCount = (int)Shop::Container()->getDB()->query(
         'SELECT COUNT(*) AS nCount
             FROM tadminlogin
@@ -547,15 +546,11 @@ function benutzerverwaltungActionGroupEdit(JTLSmarty $smarty, array &$messages):
 {
     $db      = Shop::Container()->getDB();
     $debug   = isset($_POST['debug']);
-    $groupID = isset($_POST['id'])
-        ? (int)$_POST['id']
-        : null;
+    $groupID = Request::postInt('id', null);
     if (isset($_POST['save'])) {
         $errors                        = [];
         $adminGroup                    = new stdClass();
-        $adminGroup->kAdminlogingruppe = isset($_POST['kAdminlogingruppe'])
-            ? (int)$_POST['kAdminlogingruppe']
-            : 0;
+        $adminGroup->kAdminlogingruppe = Request::postInt('kAdminlogingruppe');
         $adminGroup->cGruppe           = htmlspecialchars(
             trim($_POST['cGruppe']),
             ENT_COMPAT | ENT_HTML401,
@@ -641,7 +636,7 @@ function benutzerverwaltungActionGroupEdit(JTLSmarty $smarty, array &$messages):
  */
 function benutzerverwaltungActionGroupDelete(array &$messages): string
 {
-    $groupID = (int)$_POST['id'];
+    $groupID = Request::postInt('id');
     $data    = Shop::Container()->getDB()->query(
         'SELECT COUNT(*) AS member_count
             FROM tadminlogin

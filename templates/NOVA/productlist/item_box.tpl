@@ -8,7 +8,7 @@
     {else}
         {hasOnlyListableVariations artikel=$Artikel maxVariationCount=$Einstellungen.template.productlist.variation_select_productlist maxWerteCount=$Einstellungen.template.productlist.variation_max_werte_productlist assign='hasOnlyListableVariations'}
     {/if}
-    <div id="result-wrapper_buy_form_{$Artikel->kArtikel}" class="product-cell text-center{if $Einstellungen.template.productlist.hover_productlist === 'Y'} hover-enabled{/if}{if isset($listStyle) && $listStyle === 'gallery'} active{/if}{if isset($class)} {$class}{/if}">
+    <div id="result-wrapper_buy_form_{$Artikel->kArtikel}" data-wrapper="true" class="product-cell text-center{if $Einstellungen.template.productlist.hover_productlist === 'Y'} hover-enabled{/if}{if isset($listStyle) && $listStyle === 'gallery'} active{/if}{if isset($class)} {$class}{/if}">
         {block name='productlist-item-box-image'}
             {link class="image-wrapper" href=$Artikel->cURLFull}
                 {if isset($Artikel->Bilder[0]->cAltAttribut)}
@@ -59,7 +59,7 @@
         {/block}
         {block name='productlist-item-box-caption'}
             <div class="caption mt-2 text-left">
-                <div class="h4 title" itemprop="name">{link href=$Artikel->cURLFull}{$Artikel->cKurzbezeichnung}{/link}</div>
+                <div class="h4 title" itemprop="name">{link href=$Artikel->cURLFull class="text-truncate-fade"}{$Artikel->cKurzbezeichnung}{/link}</div>
                 {if $Artikel->cName !== $Artikel->cKurzbezeichnung}<meta itemprop="alternateName" content="{$Artikel->cName}">{/if}
                 <meta itemprop="url" content="{$Artikel->cURLFull}">
                 {if $Einstellungen.bewertung.bewertung_anzeigen === 'Y' && $Artikel->fDurchschnittsBewertung > 0}

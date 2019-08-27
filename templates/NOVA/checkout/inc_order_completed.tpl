@@ -5,11 +5,11 @@
 {block name='checkout-inc-order-completed'}
     {card id="order-confirmation"}
         {block name='checkout-inc-order-completed-alert'}
-            {alert variant="info"}{lang key='orderConfirmationPost' section='checkout'}{/alert}
+            <p>{lang key='orderConfirmationPost' section='checkout'}</p>
         {/block}
         {block name='checkout-inc-order-completed-id-payment'}
-            <p>{lang key='yourOrderId' section='checkout'}: {$Bestellung->cBestellNr}</p>
-            <p>{lang key='yourChosenPaymentOption' section='checkout'}: {$Bestellung->cZahlungsartName}</p>
+            <p><span class="font-weight-bold">{lang key='yourOrderId' section='checkout'}:</span> {$Bestellung->cBestellNr}</p>
+            <p><span class="font-weight-bold">{lang key='yourChosenPaymentOption' section='checkout'}:</span> {$Bestellung->cZahlungsartName}</p>
         {/block}
     {/card}
 {/block}

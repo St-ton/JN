@@ -237,69 +237,42 @@
                                 {block name='checkout-inc-order-items-quantity'}
                                     {if $tplscope === 'cart'}
                                         {if $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_ARTIKEL}
-                                            {if !isset($Einstellungen.template.theme.qty_modify_dropdown) || $Einstellungen.template.theme.qty_modify_dropdown === 'Y'}
-                                                {if $oPosition->istKonfigVater()}
-                                                    <div class="qty-wrapper">
-                                                        {$oPosition->nAnzahl|replace_delim} {if !empty($oPosition->Artikel->cEinheit)}{$oPosition->Artikel->cEinheit}{/if}
-                                                        {link class="btn btn-light configurepos ml-3"
-                                                            href="index.php?a={$oPosition->kArtikel}&ek={$oPosition@index}"}
-                                                            <i class="fa fa-cogs"></i><span class="d-none d-md-inline-flex ml-1">{lang key='configure'}</span>
-                                                        {/link}
-                                                    </div>
-                                                {else}
-                                                    <div class="qty-wrapper dropdown">
-                                                        {inputgroup id="quantity-grp{$oPosition@index}" class="choose_quantity"}
-                                                            {input type="{if $oPosition->Artikel->cTeilbar === 'Y' && $oPosition->Artikel->fAbnahmeintervall == 0}text{else}number{/if}"
-                                                                min="{if $oPosition->Artikel->fMindestbestellmenge}{$oPosition->Artikel->fMindestbestellmenge}{else}0{/if}"
-                                                                required=($oPosition->Artikel->fAbnahmeintervall > 0)
-                                                                step="{if $oPosition->Artikel->fAbnahmeintervall > 0}{$oPosition->Artikel->fAbnahmeintervall}{/if}"
-                                                                id="quantity[{$oPosition@index}]" class="quantity text-right" name="anzahl[{$oPosition@index}]"
-                                                                aria=["label"=>"{lang key='quantity'}"]
-                                                                value=$oPosition->nAnzahl
-                                                                data=["decimals"=>{getDecimalLength quantity=$oPosition->Artikel->fAbnahmeintervall}]
-                                                            }
-                                                            {*{inputgroupaddon append=true}
-                                                                {if $oPosition->cEinheit}
-                                                                    {inputgrouptext class="unit form-control"}
-                                                                        {$oPosition->cEinheit}
-                                                                    {/inputgrouptext}
-                                                                {/if}
-                                                            {/inputgroupaddon}*}
-                                                        {/inputgroup}
-                                                    </div>
-                                                {/if}
+                                            {if $oPosition->istKonfigVater()}
+                                                <div class="qty-wrapper">
+                                                    {$oPosition->nAnzahl|replace_delim} {if !empty($oPosition->Artikel->cEinheit)}{$oPosition->Artikel->cEinheit}{/if}
+                                                    {link class="btn btn-light configurepos ml-3"
+                                                        href="index.php?a={$oPosition->kArtikel}&ek={$oPosition@index}"}
+                                                        <i class="fa fa-cogs"></i><span class="d-none d-md-inline-flex ml-1">{lang key='configure'}</span>
+                                                    {/link}
+                                                </div>
                                             {else}
-                                                {if $oPosition->istKonfigVater()}
-                                                    <div class="qty-wrapper">
-                                                        {buttongroup vertical=true id="quantity-grp{$oPosition@index}"}
-                                                            {input name="anzahl[{$oPosition@index}]" type="text" class="text-center mb-3" value=$oPosition->nAnzahl readonly=true}
-                                                            {link class="btn btn-light configurepos ml-3"
-                                                                href="index.php?a={$oPosition->kArtikel}&ek={$oPosition@index}"}
-                                                                <span class="d-none d-sm-block d-md-none"><i class="fa fa-cogs"></i></span>
-                                                                <span class="d-sm-none d-md-block">{lang key='configure'}</span>
-                                                            {/link}
-                                                        {/buttongroup}
-                                                    </div>
-                                                {else}
-                                                    <div class="p-3">
-                                                        {buttongroup vertical=true id="quantity-grp{$oPosition@index}"}
-                                                            {input name="anzahl[{$oPosition@index}]" id="quantity{$oPosition@index}" class="quantity text-right" size="3" value=$oPosition->nAnzahl}
-                                                            {if $oPosition->Artikel->cEinheit}
-                                                                {button class="unit d-none d-sm-block " disabled=true}{$oPosition->Artikel->cEinheit}{/button}
+                                                <div class="qty-wrapper dropdown">
+                                                    {inputgroup id="quantity-grp{$oPosition@index}" class="choose_quantity"}
+                                                        {input type="{if $oPosition->Artikel->cTeilbar === 'Y' && $oPosition->Artikel->fAbnahmeintervall == 0}text{else}number{/if}"
+                                                            min="{if $oPosition->Artikel->fMindestbestellmenge}{$oPosition->Artikel->fMindestbestellmenge}{else}0{/if}"
+                                                            required=($oPosition->Artikel->fAbnahmeintervall > 0)
+                                                            step="{if $oPosition->Artikel->fAbnahmeintervall > 0}{$oPosition->Artikel->fAbnahmeintervall}{/if}"
+                                                            id="quantity[{$oPosition@index}]" class="quantity text-right" name="anzahl[{$oPosition@index}]"
+                                                            aria=["label"=>"{lang key='quantity'}"]
+                                                            value=$oPosition->nAnzahl
+                                                            data=["decimals"=>{getDecimalLength quantity=$oPosition->Artikel->fAbnahmeintervall}]
+                                                        }
+                                                        {*{inputgroupaddon append=true}
+                                                            {if $oPosition->cEinheit}
+                                                                {inputgrouptext class="unit form-control"}
+                                                                    {$oPosition->cEinheit}
+                                                                {/inputgrouptext}
                                                             {/if}
-                                                            {button type="submit" title="{lang key='refresh' section='checkout'}"}<i class="fa fa-sync"></i>{/button}
-                                                        {/buttongroup}
-                                                    </div>
-                                                {/if}
+                                                        {/inputgroupaddon}*}
+                                                    {/inputgroup}
+                                                </div>
                                             {/if}
                                         {elseif $oPosition->nPosTyp == $C_WARENKORBPOS_TYP_GRATISGESCHENK}
                                             {input name="anzahl[{$oPosition@index}]" type="hidden" value="1"}
 
                                         {/if}
                                     {else}
-                                        <div class="text-muted small">
-                                            <strong>{lang key='quantity'}: </strong>{$oPosition->nAnzahl|replace_delim} {if !empty($oPosition->Artikel->cEinheit)}{$oPosition->Artikel->cEinheit}{/if}
-                                        </div>
+                                        {$oPosition->nAnzahl|replace_delim} {if !empty($oPosition->Artikel->cEinheit)}{$oPosition->Artikel->cEinheit}{/if}
                                     {/if}
                                 {/block}
                             {/col}

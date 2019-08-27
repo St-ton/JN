@@ -9,13 +9,16 @@
         || $Einstellungen.kunden.lieferadresse_abfragen_mobil !== 'N'
     }
         {$name = 'shipping_address'}
-        <fieldset>
-            <legend>{lang key='contactInformation' section='account data'}</legend>
-            {if $Einstellungen.kunden.lieferadresse_abfragen_email !== 'N' || $Einstellungen.kunden.lieferadresse_abfragen_mobil !== 'N'}
-                {block name='checkout-customer-shipping-contact-mail-phone'}
-                    {row}
+        {col cols=12}<hr>{/col}
+        {col cols=12 md=4}
+            <div class="h3">{lang key='contactInformation' section='account data'}</div>
+        {/col}
+        {col md=8}
+            {formrow}
+                {if $Einstellungen.kunden.lieferadresse_abfragen_email !== 'N' || $Einstellungen.kunden.lieferadresse_abfragen_mobil !== 'N'}
+                    {block name='checkout-customer-shipping-contact-mail-phone'}
                         {if $Einstellungen.kunden.lieferadresse_abfragen_email !== 'N'}
-                        {col cols=12 md=6}
+                        {col md=6}
                             {include file='snippets/form_group_simple.tpl'
                                 options=[
                                     "email", "{$prefix}-{$name}-email", "{$prefix}[{$name}][email]",
@@ -26,24 +29,22 @@
                         {/col}
                         {/if}
                         {if $Einstellungen.kunden.lieferadresse_abfragen_mobil !== 'N'}
-                            {col cols=12 md=6}
+                            {col md=6}
                                 {include file='snippets/form_group_simple.tpl'
                                     options=[
                                         "tel", "{$prefix}-{$name}-mobil", "{$prefix}[{$name}][mobil]",
-                                        {$Lieferadresse->cMobil|default:null}, {lang key='mobil' section='account data'},
+                                        {$Lieferadresse->cMobil|default:null}, {lang key='mobile' section='account data'},
                                         $Einstellungen.kunden.lieferadresse_abfragen_mobil, null, "shipping mobile tel"
                                     ]
                                 }
                             {/col}
                         {/if}
-                    {/row}
-                {/block}
-            {/if}
-            {if $Einstellungen.kunden.lieferadresse_abfragen_tel !== 'N' || $Einstellungen.kunden.lieferadresse_abfragen_fax !== 'N'}
-                {block name='checkout-customer-shipping-contact-mobile-fax'}
-                    {row}
+                    {/block}
+                {/if}
+                {if $Einstellungen.kunden.lieferadresse_abfragen_tel !== 'N' || $Einstellungen.kunden.lieferadresse_abfragen_fax !== 'N'}
+                    {block name='checkout-customer-shipping-contact-mobile-fax'}
                         {if $Einstellungen.kunden.lieferadresse_abfragen_tel !== 'N'}
-                            {col cols=12 md=6}
+                            {col md=6}
                                 {include file='snippets/form_group_simple.tpl'
                                     options=[
                                         "tel", "{$prefix}-{$name}-tel", "{$prefix}[{$name}][tel]",
@@ -54,7 +55,7 @@
                             {/col}
                         {/if}
                         {if $Einstellungen.kunden.lieferadresse_abfragen_fax !== 'N'}
-                            {col cols=12 md=6}
+                            {col md=6}
                                 {include file='snippets/form_group_simple.tpl'
                                     options=[
                                         "tel", "{$prefix}-{$name}-fax", "{$prefix}[{$name}][fax]",
@@ -64,9 +65,9 @@
                                 }
                             {/col}
                         {/if}
-                    {/row}
-                {/block}
-            {/if}
-        </fieldset>
+                    {/block}
+                {/if}
+            {/formrow}
+        {/col}
     {/if}
 {/block}

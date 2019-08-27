@@ -80,13 +80,13 @@ if (Form::validateToken()) {
         } elseif ($_POST['action'] === 'loeschen') {
             $action = 'loeschen';
         }
-    } elseif (isset($_GET['kKupon']) && Request::verifyGPCDataInt('kKupon') >= 0) {
+    } elseif (Request::getInt('kKupon', -1) >= 0) {
         $action = 'bearbeiten';
     }
 }
 
 if ($action === 'bearbeiten') {
-    $couponID = isset($_GET['kKupon']) ? (int)$_GET['kKupon'] : (int)$_POST['kKuponBearbeiten'];
+    $couponID = (int)($_GET['kKupon'] ?? $_POST['kKuponBearbeiten'] ?? 0);
     if ($couponID > 0) {
         $coupon = getCoupon($couponID);
     } else {
@@ -156,7 +156,7 @@ if ($action === 'bearbeiten') {
         $names = [];
         foreach ($languages as $language) {
             $postVarName                = 'cName_' . $language->getIso();
-            $names[$language->getIso()] = (isset($_POST[$postVarName]) && $_POST[$postVarName] !== '')
+            $names[$language->getIso()] = Request::postVar($postVarName, '') !== ''
                 ? $_POST[$postVarName]
                 : $coupon->cName;
         }

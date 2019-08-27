@@ -3,7 +3,7 @@
  * @license https://jtl-url.de/jtlshoplicense
  *}
 {block name='basket-cart-dropdown'}
-    {collapse id="nav-cart-collapse" tag="div"  data=["parent"=>"#evo-main-nav-wrapper"] class="mt-md-2 py-0"}
+    {collapse id="nav-cart-collapse" tag="div"  data=["parent"=>"#main-nav-wrapper"] class="mt-md-2 py-0 w-100"}
         {if $smarty.session.Warenkorb->PositionenArr|@count > 0}
             {block name='basket-cart-dropdown-cart-items-content'}
                 <div class="p-3">

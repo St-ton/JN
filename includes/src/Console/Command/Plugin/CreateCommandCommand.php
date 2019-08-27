@@ -73,7 +73,7 @@ class CreateCommandCommand extends Command
         $datetime      = new \DateTime('NOW');
         $relPath       = 'plugins/' . $pluginId . '/Commands';
         $migrationPath = $relPath . '/' . $commandName . '.php';
-        $fileSystem    = new Filesystem(new LocalFilesystem(['root' => PFAD_ROOT]));
+        $fileSystem    = new Filesystem(new LocalFilesystem(['root' => \PFAD_ROOT]));
 
         if (!$fileSystem->exists($relPath)) {
             throw new \Exception('Commands path doesn\'t exist!');

@@ -60,14 +60,14 @@ if (isset($_GET['err'])) {
         unset($_SESSION['last_error']);
     }
 }
-if (isset($_POST['resetConfirm']) && (int)$_POST['resetConfirm'] > 0) {
-    $mailTemplate = $controller->getTemplateByID((int)$_POST['resetConfirm']);
+if (Request::postInt('resetConfirm') > 0) {
+    $mailTemplate = $controller->getTemplateByID(Request::postInt('resetConfirm'));
     if ($mailTemplate !== null) {
         $step = 'zuruecksetzen';
     }
 }
-if (isset($_POST['resetEmailvorlage'], $_POST['resetConfirmJaSubmit'])
-    && (int)$_POST['resetEmailvorlage'] === 1
+if (isset($_POST['resetConfirmJaSubmit'])
+    && Request::postInt('resetEmailvorlage') === 1
     && $emailTemplateID > 0
     && Form::validateToken()
     && $controller->getTemplateByID($emailTemplateID) !== null
@@ -75,8 +75,8 @@ if (isset($_POST['resetEmailvorlage'], $_POST['resetConfirmJaSubmit'])
     $controller->resetTemplate($emailTemplateID);
     $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successTemplateReset'), 'successTemplateReset');
 }
-if (isset($_POST['preview']) && (int)$_POST['preview'] > 0) {
-    $state = $controller->sendPreviewMails((int)$_POST['preview']);
+if (Request::postInt('preview') > 0) {
+    $state = $controller->sendPreviewMails(Request::postInt('preview'));
     if ($state === $controller::OK) {
         $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successEmailSend'), 'successEmailSend');
     } elseif ($state === $controller::ERROR_CANNOT_SEND) {
@@ -144,12 +144,12 @@ if ($emailTemplateID > 0 && Request::verifyGPCDataInt('Aendern') === 1 && Form::
 }
 if ((($emailTemplateID > 0 && $continue === true)
         || $step === 'prebearbeiten'
-        || (isset($_GET['a']) && $_GET['a'] === 'pdfloeschen')
+        || Request::getVar('a') === 'pdfloeschen'
     ) && Form::validateToken()
 ) {
     $uploadDir = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_EMAILPDFS;
-    if (isset($_GET['kS'], $_GET['a'], $_GET['token'])
-        && $_GET['a'] === 'pdfloeschen'
+    if (isset($_GET['kS'], $_GET['token'])
+        && Request::getVar('a') === 'pdfloeschen'
         && $_GET['token'] === $_SESSION['jtl_token']
     ) {
         $languageID = Request::verifyGPCDataInt('kS');

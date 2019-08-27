@@ -10,7 +10,7 @@
         && (!empty($Suchergebnisse->getSearchSpecialFilterOptions()) || $ssf->isInitialized())
         && (!$device->isMobile() || $device->isTablet())}
         {if $nSeitenTyp === $smarty.const.PAGE_ARTIKELLISTE}
-            <div class="h4">
+            <div>
                 {button
                 variant="link"
                 class="text-decoration-none pl-0 text-left"
@@ -26,7 +26,7 @@
                     {include file='snippets/filter/genericFilterItem.tpl' filter=$ssf}
                 {/block}
             {/collapse}
-            <hr class="mt-0 mb-3">
+            <hr class="my-2">
         {/if}
     {/if}
 {/block}

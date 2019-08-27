@@ -347,8 +347,7 @@ class CartHelper
             return self::checkCompareList($productID, (int)$conf['vergleichsliste']['vergleichsliste_anzahl']);
         }
         if ($productID > 0
-            && isset($_POST['wke'])
-            && (int)$_POST['wke'] === 1
+            && Request::postInt('wke') === 1
             && !isset($_POST['Vergleichsliste'])
             && !isset($_POST['Wunschliste'])
         ) { //warenkorbeingang?
@@ -363,10 +362,10 @@ class CartHelper
      * @param int|float $count
      * @return bool
      */
-    private static function checkCart($productID, $count)
+    private static function checkCart(int $productID, $count)
     {
         // VariationsBox ist vorhanden => Prüfen ob Anzahl gesetzt wurde
-        if (isset($_POST['variBox']) && (int)$_POST['variBox'] === 1) {
+        if (Request::postInt('variBox') === 1) {
             if (self::checkVariboxAmount($_POST['variBoxAnzahl'] ?? [])) {
                 self::addVariboxToCart(
                     $_POST['variBoxAnzahl'],
@@ -416,8 +415,7 @@ class CartHelper
         $ignoreLimits      = isset($_POST['konfig_ignore_limits']);
         // Beim Bearbeiten die alten Positionen löschen
         if (isset($_POST['kEditKonfig'])) {
-            $kEditKonfig = (int)$_POST['kEditKonfig'];
-            self::deleteCartItem($kEditKonfig);
+            self::deleteCartItem(Request::postInt('kEditKonfig'));
         }
 
         foreach ($configGroups as $itemList) {
@@ -1530,7 +1528,7 @@ class CartHelper
         $drop = null;
         $post = false;
         $cart = Frontend::getCart();
-        if (isset($_POST['dropPos']) && $_POST['dropPos'] === 'assetToUse') {
+        if (Request::postVar('dropPos') === 'assetToUse') {
             $_SESSION['Bestellung']->GuthabenNutzen   = false;
             $_SESSION['Bestellung']->fGuthabenGenutzt = 0;
             unset($_POST['dropPos']);
@@ -1755,7 +1753,7 @@ class CartHelper
     public static function checkQuickBuy(): string
     {
         $msg = '';
-        if (!isset($_POST['schnellkauf']) || (int)$_POST['schnellkauf'] <= 0 || empty($_POST['ean'])) {
+        if (Request::postInt('schnellkauf') <= 0 || empty($_POST['ean'])) {
             return $msg;
         }
         $msg = Shop::Lang()->get('eanNotExist') . ' ' .

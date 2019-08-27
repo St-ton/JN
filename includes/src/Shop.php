@@ -419,6 +419,11 @@ final class Shop
     private static $optinCode;
 
     /**
+     * @var bool
+     */
+    private static $isFrontend = true;
+
+    /**
      * @var array
      */
     private static $mapping = [
@@ -829,12 +834,14 @@ final class Shop
 
     /**
      * Load plugin event driven system
+     * @param bool $isFrontend
      */
-    public static function bootstrap(): void
+    public static function bootstrap(bool $isFrontend = true): void
     {
-        $db      = self::Container()->getDB();
-        $cache   = self::Container()->getCache();
-        $cacheID = 'plgnbtsrp';
+        self::$isFrontend = $isFrontend;
+        $db               = self::Container()->getDB();
+        $cache            = self::Container()->getCache();
+        $cacheID          = 'plgnbtsrp';
         if (($plugins = $cache->get($cacheID)) === false) {
             $plugins = $db->queryPrepared(
                 'SELECT kPlugin, bBootstrap, bExtension
@@ -856,6 +863,14 @@ final class Shop
                 $p->boot($dispatcher);
             }
         }
+    }
+
+    /**
+     * @return bool
+     */
+    public static function isFrontend(): bool
+    {
+        return self::$isFrontend === true;
     }
 
     /**

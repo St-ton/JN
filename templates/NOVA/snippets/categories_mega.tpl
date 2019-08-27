@@ -44,9 +44,6 @@
                     || ((isset($activeParent)
                         && isset($activeParent->kKategorie))
                         && $activeParent->kKategorie == $category->getID())} active{/if}">
-                        {if $category@first}
-                            <div class="wee d-none d-md-block"></div>
-                        {/if}
                         {link href=$category->getURL() title=$category->getName() class="float-right subcat-link d-inline-block d-md-none"}
                             <i class="fas fa-arrow-alt-circle-right"></i>
                         {/link}
@@ -74,9 +71,10 @@
                                                                 {link href=$sub->getURL() title=$sub->getName()}
                                                                     {if $Einstellungen.template.megamenu.show_category_images !== 'N'}
                                                                         <div class="d-none d-md-block">
-                                                                            {image fluid-grow=true lazy=true src="{$imageBaseURL}gfx/trans.png"
+                                                                            {image fluid-grow=false lazy=true src="{$imageBaseURL}gfx/trans.png"
                                                                                 alt=$category->getShortName()|escape:'html'
-                                                                                data=["src" => $sub->getImageURL()]}
+                                                                                data=["src" => $sub->getImageURL()]
+                                                                                class="img-fluid"}
                                                                         </div>
                                                                     {/if}
                                                                     <div class="title pt-2">
@@ -124,16 +122,12 @@
                                 {/if}
                             {/row}
                         {/container}
-
                         </div>
                     </li>
                     {*{/navitemdropdown}*}
                 {else}
                     {navitem href=$category->getURL() title=$category->getName()
                         class="{if $category->getID() === $activeId}active{/if}"}
-                        {if $category@first}
-                            <div class="wee d-none d-md-block"></div>
-                        {/if}
                         {$category->getShortName()}
                     {/navitem}
                 {/if}

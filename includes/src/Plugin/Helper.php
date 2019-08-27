@@ -355,11 +355,11 @@ class Helper
     /**
      * Holt alle PluginSprachvariablen (falls vorhanden)
      *
-     * @param int $kPlugin
+     * @param int $pluginID
      * @return array
      * @former gibSprachVariablen()
      */
-    public static function getLanguageVariables(int $kPlugin): array
+    public static function getLanguageVariables(int $pluginID): array
     {
         $langVars = Shop::Container()->getDB()->queryPrepared(
             'SELECT l.kPluginSprachvariable, l.kPlugin, l.cName, l.cBeschreibung,
@@ -373,7 +373,7 @@ class Helper
                     AND tpluginsprachvariablesprache.cISO = COALESCE(c.cISO, tpluginsprachvariablesprache.cISO)
             WHERE l.kPlugin = :pid
             ORDER BY l.kPluginSprachvariable',
-            ['pid' => $kPlugin],
+            ['pid' => $pluginID],
             ReturnType::ARRAY_OF_ASSOC_ARRAYS
         );
         if (\count($langVars) === 0) {

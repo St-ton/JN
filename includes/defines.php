@@ -51,6 +51,7 @@ ini_set('session.use_trans_sid', 0);
 ifndef('ES_LOGGING', 1);
 ifndef('ES_DB_LOGGING', 0);
 ifndef('DEBUG_LEVEL', 0);
+ifndef('NICEDB_DEBUG_STMT_LEN', 500);
 ifndef('NICEDB_EXCEPTION_ECHO', false);
 ifndef('NICEDB_EXCEPTION_BACKTRACE', false);
 // PHP Error Handler

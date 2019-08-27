@@ -6,10 +6,10 @@
     <div class="order-items card-table mr-3 ml-3">
         {foreach $Bestellung->Positionen as $oPosition}
             {if !(is_string($oPosition->cUnique) && !empty($oPosition->cUnique) && (int)$oPosition->kKonfigitem > 0)} {*!istKonfigKind()*}
-                {row class="type-{$oPosition->nPosTyp} mt-3"}
+                {row class="type-{$oPosition->nPosTyp}"}
                     {col cols=12 md="{if $Einstellungen.kaufabwicklung.bestellvorgang_einzelpreise_anzeigen === 'Y'}7{else}9{/if}"}
                         {row}
-                            {col md=4 class='pr-1 pl-1'}
+                            {col cols=3 md=4 class='pr-1 pl-1'}
                                 {if !empty($oPosition->Artikel->cVorschaubild)}
                                     {block name='account-order-item-image'}
                                         {link href=$oPosition->Artikel->cURLFull title=$oPosition->cName|trans}
@@ -150,11 +150,11 @@
                     {/col}
 
                     {block name='account-order-item-price'}
-                    {col class='qty-col text-right text-nowrap' md=1 cols=12}
+                    {col class='qty-col text-right' md=1 cols=6}
                         {$oPosition->nAnzahl|replace_delim} {if !empty($oPosition->Artikel->cEinheit)}{$oPosition->Artikel->cEinheit}{/if}x
                     {/col}
                     {if $Einstellungen.kaufabwicklung.bestellvorgang_einzelpreise_anzeigen === 'Y'}
-                        {col class='price-col text-right hidden-xs text-nowrap' md=2 cols=12}
+                        {col class='price-col text-right hidden-xs text-nowrap' md=2 cols=3}
                             {if $oPosition->nPosTyp == $smarty.const.C_WARENKORBPOS_TYP_ARTIKEL}
                                 {if !(is_string($oPosition->cUnique) && !empty($oPosition->cUnique) && (int)$oPosition->kKonfigitem === 0)} {*!istKonfigVater()*}
                                     {$oPosition->cEinzelpreisLocalized[$NettoPreise]}
@@ -164,7 +164,7 @@
                             {/if}
                         {/col}
                     {/if}
-                    {col class='price-col text-right text-nowrap' md=2 cols=12}
+                    {col class='price-col text-right' md=2 cols=3}
                         <strong class="price_overall">
                             {if is_string($oPosition->cUnique) && !empty($oPosition->cUnique) && (int)$oPosition->kKonfigitem === 0}
                                 {$oPosition->cKonfigpreisLocalized[$NettoPreise]}
@@ -175,6 +175,9 @@
                     {/col}
                     {/block}
                 {/row}
+            {/if}
+            {if !$oPosition@last}
+                <hr class="my-3">
             {/if}
         {/foreach}
     </div>

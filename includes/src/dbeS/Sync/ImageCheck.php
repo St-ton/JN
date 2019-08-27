@@ -45,7 +45,7 @@ final class ImageCheck extends AbstractSync
             $sqls[] = '(kBild = ' . $item->id . " && cPfad = '" . $hash . "')";
         }
         $sqlOr  = \implode(' || ', $sqls);
-        $sql    = 'SELECT kBild AS id, cPfad AS hash FROM tbild WHERE ' .$sqlOr;
+        $sql    = 'SELECT kBild AS id, cPfad AS hash FROM tbild WHERE ' . $sqlOr;
         $images = $this->db->query($sql, ReturnType::ARRAY_OF_OBJECTS);
         foreach ($images as $image) {
             $image->id = (int)$image->id;

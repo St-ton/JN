@@ -33,16 +33,15 @@ if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
 }
 $oNice = Nice::getInstance();
 if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
-    if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
+    if (Request::postInt('einstellungen') > 0) {
         $alertHelper->addAlert(Alert::TYPE_SUCCESS, saveAdminSectionSettings(CONF_UMFRAGE, $_POST), 'saveSettings');
     }
     if (Request::verifyGPCDataInt('umfrage') === 1 && Form::validateToken()) {
-        if (isset($_POST['umfrage_erstellen']) && (int)$_POST['umfrage_erstellen'] === 1) {
+        if (Request::postInt('umfrage_erstellen') === 1) {
             $step = 'umfrage_erstellen';
-        } elseif (isset($_GET['umfrage_editieren']) && (int)$_GET['umfrage_editieren'] === 1) {
+        } elseif (Request::getInt('umfrage_editieren') === 1) {
             $step     = 'umfrage_editieren';
-            $surveyID = (int)$_GET['kUmfrage'];
-
+            $surveyID = Request::getInt('kUmfrage');
             if ($surveyID > 0) {
                 $survey                    = $db->query(
                     "SELECT *, DATE_FORMAT(dGueltigVon, '%d.%m.%Y %H:%i') AS dGueltigVon_de, 
@@ -60,10 +59,10 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                 $step = 'umfrage_uebersicht';
             }
         }
-        if (isset($_GET['a']) && $_GET['a'] === 'a_loeschen') {
+        if (Request::getVar('a') === 'a_loeschen') {
             $step                 = 'umfrage_frage_bearbeiten';
-            $questionID           = (int)$_GET['kUF'];
-            $kUmfrageFrageAntwort = (int)$_GET['kUFA'];
+            $questionID           = Request::getInt('kUF');
+            $kUmfrageFrageAntwort = Request::getInt('kUFA');
             if ($kUmfrageFrageAntwort > 0) {
                 $db->query(
                     'DELETE tumfragefrageantwort, tumfragedurchfuehrungantwort
@@ -76,10 +75,10 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                 );
             }
             Shop::Container()->getCache()->flushTags([CACHING_GROUP_CORE]);
-        } elseif (isset($_GET['a']) && $_GET['a'] === 'o_loeschen') {
+        } elseif (Request::getVar('a') === 'o_loeschen') {
             $step                 = 'umfrage_frage_bearbeiten';
-            $questionID           = (int)$_GET['kUF'];
-            $kUmfrageMatrixOption = (int)$_GET['kUFO'];
+            $questionID           = Request::getInt('kUF');
+            $kUmfrageMatrixOption = Request::getInt('kUFO');
             if ($kUmfrageMatrixOption > 0) {
                 $db->query(
                     'DELETE tumfragematrixoption, tumfragedurchfuehrungantwort
@@ -95,16 +94,13 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
         }
 
         // Umfrage speichern
-        if (isset($_POST['umfrage_speichern']) && (int)$_POST['umfrage_speichern']) {
+        if (Request::postInt('umfrage_speichern') > 0) {
             $step = 'umfrage_erstellen';
-
-            if (isset($_POST['umfrage_edit_speichern'], $_POST['kUmfrage'])
-                && (int)$_POST['umfrage_edit_speichern'] === 1 && (int)$_POST['kUmfrage'] > 0
-            ) {
-                $surveyID = (int)$_POST['kUmfrage'];
+            if (Request::postInt('umfrage_edit_speichern') === 1 && Request::postInt('kUmfrage') > 0) {
+                $surveyID = Request::postInt('kUmfrage');
             }
             $name     = htmlspecialchars($_POST['cName'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
-            $couponID = isset($_POST['kKupon']) ? (int)$_POST['kKupon'] : 0;
+            $couponID = Request::postInt('kKupon');
             if ($couponID <= 0 || !isset($couponID)) {
                 $couponID = 0;
             }
@@ -117,13 +113,11 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
             if ($fGuthaben <= 0 || !isset($couponID)) {
                 $fGuthaben = 0;
             }
-            $nBonuspunkte = isset($_POST['nBonuspunkte'])
-                ? (int)$_POST['nBonuspunkte']
-                : 0;
+            $nBonuspunkte = Request::postInt('nBonuspunkte');
             if ($nBonuspunkte <= 0 || !isset($couponID)) {
                 $nBonuspunkte = 0;
             }
-            $active      = (int)$_POST['nAktiv'];
+            $active      = Request::postInt('nAktiv');
             $dGueltigVon = $_POST['dGueltigVon'];
             $dGueltigBis = $_POST['dGueltigBis'];
 
@@ -157,7 +151,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                     $survey->dGueltigBis = $validUntil;
 
                     $nNewsOld = 0;
-                    if (isset($_POST['umfrage_edit_speichern']) && (int)$_POST['umfrage_edit_speichern'] === 1) {
+                    if (Request::postInt('umfrage_edit_speichern') === 1) {
                         $nNewsOld = 1;
                         $step     = 'umfrage_uebersicht';
                         $db->delete('tumfrage', 'kUmfrage', $surveyID);
@@ -197,12 +191,12 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
             } else {
                 $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorDataMissing'), 'errorDataMissing');
             }
-        } elseif (isset($_POST['umfrage_frage_speichern']) && (int)$_POST['umfrage_frage_speichern'] === 1) {
-            $surveyID      = (int)$_POST['kUmfrage'];
-            $questionID    = isset($_POST['kUmfrageFrage']) ? (int)$_POST['kUmfrageFrage'] : 0;
+        } elseif (Request::postInt('umfrage_frage_speichern') === 1) {
+            $surveyID      = Request::postInt('kUmfrage');
+            $questionID    = Request::postInt('kUmfrageFrage');
             $name          = htmlspecialchars($_POST['cName'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
             $type          = $_POST['cTyp'];
-            $sort          = isset($_POST['nSort']) ? (int)$_POST['nSort'] : 0;
+            $sort          = Request::postInt('nSort');
             $description   = $_POST['cBeschreibung'] ?? '';
             $nameOption    = $_POST['cNameOption'] ?? null;
             $nameAnswer    = $_POST['cNameAntwort'] ?? null;
@@ -228,12 +222,10 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                 $question->nNotwendig    = $required;
 
                 $nNewsOld = 0;
-                if (isset($_POST['umfrage_frage_edit_speichern'])
-                    && (int)$_POST['umfrage_frage_edit_speichern'] === 1
-                ) {
+                if (Request::postInt('umfrage_frage_edit_speichern') === 1) {
                     $nNewsOld   = 1;
                     $step       = 'umfrage_vorschau';
-                    $questionID = (int)$_POST['kUmfrageFrage'];
+                    $questionID = Request::postInt('kUmfrageFrage');
                     if (!pruefeTyp($type, $questionID)) {
                         $alertHelper->addAlert(
                             Alert::TYPE_ERROR,
@@ -280,7 +272,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                 $step = 'umfrage_frage_erstellen';
                 $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorMinNameTypeMissing'), 'errorMinNameTypeMissing');
             }
-        } elseif (isset($_POST['umfrage_loeschen']) && (int)$_POST['umfrage_loeschen'] === 1) {
+        } elseif (Request::postInt('umfrage_loeschen') === 1) {
             // Umfrage loeschen
             $surveyIDs = Request::verifyGPDataIntegerArray('kUmfrage');
             if (count($surveyIDs) > 0) {
@@ -313,14 +305,13 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
             } else {
                 $alertHelper->addAlert(Alert::TYPE_ERROR, __('successAtLeastOnePoll'), 'successAtLeastOnePoll');
             }
-        } elseif (isset($_POST['umfrage_frage_loeschen']) && (int)$_POST['umfrage_frage_loeschen'] === 1) {
+        } elseif (Request::postInt('umfrage_frage_loeschen') === 1) {
             // Frage loeschen
             $step = 'umfrage_vorschau';
             // Ganze Frage loeschen mit allen Antworten und Matrixen
             if (is_array($_POST['kUmfrageFrage']) && count($_POST['kUmfrageFrage']) > 0) {
                 foreach ($_POST['kUmfrageFrage'] as $questionID) {
                     $questionID = (int)$questionID;
-
                     loescheFrage($questionID);
                 }
 
@@ -364,9 +355,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                 $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successOptionDelete'), 'successOptionDelete');
             }
             Shop::Container()->getCache()->flushTags([CACHING_GROUP_CORE]);
-        } elseif (isset($_POST['umfrage_frage_hinzufuegen'])
-            && (int)$_POST['umfrage_frage_hinzufuegen'] === 1
-        ) {
+        } elseif (Request::postInt('umfrage_frage_hinzufuegen') === 1) {
             $step = 'umfrage_frage_erstellen';
             $smarty->assign('kUmfrageTMP', $tmpID);
         } elseif (Request::verifyGPCDataInt('umfrage_statistik') === 1) {
@@ -384,13 +373,12 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                 $step = 'umfrage_vorschau';
                 $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorNoStatistic'), 'errorNoStatistic');
             }
-        } elseif (isset($_GET['a']) && $_GET['a'] === 'zeige_sonstige') {
+        } elseif (Request::getVar('a') === 'zeige_sonstige') {
             // Umfragestatistik Sonstige Texte anzeigen
             $step       = 'umfrage_statistik';
-            $questionID = (int)$_GET['uf'];
-            $maxAnswers = (int)$_GET['aa'];
-            $limit      = (int)$_GET['ma'];
-
+            $questionID = Request::getInt('uf');
+            $maxAnswers = Request::getInt('aa');
+            $limit      = Request::getInt('ma');
             if ($questionID > 0 && $limit > 0) {
                 $step = 'umfrage_statistik_sonstige_texte';
                 $smarty->assign('oUmfrageFrage', holeSonstigeTextAntworten(
@@ -399,11 +387,9 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                     $limit
                 ));
             }
-        } elseif ((isset($_GET['fe']) && (int)$_GET['fe'] === 1) ||
-            ($step === 'umfrage_frage_bearbeiten' && Form::validateToken())
-        ) { // Frage bearbeiten
+        } elseif (Request::getInt('fe') === 1 || ($step === 'umfrage_frage_bearbeiten' && Form::validateToken())) {
+            // Frage bearbeiten
             $step = 'umfrage_frage_erstellen';
-
             if (Request::verifyGPCDataInt('kUmfrageFrage') > 0) {
                 $questionID = Request::verifyGPCDataInt('kUmfrageFrage');
             } else {
@@ -431,7 +417,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                 ->assign('kUmfrageTMP', $tmpID);
         }
         // Umfrage Detail
-        if ((isset($_GET['ud']) && (int)$_GET['ud'] === 1) || $step === 'umfrage_vorschau') {
+        if (Request::getInt('ud') === 1 || $step === 'umfrage_vorschau') {
             $surveyID = Request::verifyGPCDataInt('kUmfrage');
             if ($surveyID > 0) {
                 $step   = 'umfrage_vorschau';
@@ -489,10 +475,7 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
                 $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorPollSelect'), 'errorPollSelect');
             }
         }
-        if ($tmpID > 0
-            && (!isset($_POST['umfrage_frage_edit_speichern']) || (int)$_POST['umfrage_frage_edit_speichern'] !== 1)
-            && (!isset($_GET['fe']) || (int)$_GET['fe']) !== 1
-        ) {
+        if ($tmpID > 0 && Request::getInt('fe') !== 1 && Request::postInt('umfrage_frage_edit_speichern') !== 1) {
             $smarty->assign(
                 'oUmfrageFrage_arr',
                 $db->selectAll(
@@ -506,14 +489,14 @@ if ($oNice->checkErweiterung(SHOP_ERWEITERUNG_UMFRAGE)) {
         }
     }
     if ($step === 'umfrage_uebersicht') {
-        $surveyCount = $db->query(
-            'SELECT COUNT(*) AS nAnzahl
+        $surveyCount = (int)$db->query(
+            'SELECT COUNT(*) AS cnt
                 FROM tumfrage
                 WHERE kSprache = ' . (int)$_SESSION['kSprache'],
             ReturnType::SINGLE_OBJECT
-        );
+        )->cnt;
         $pagination  = (new Pagination())
-            ->setItemCount((int)$surveyCount->nAnzahl)
+            ->setItemCount($surveyCount)
             ->assemble();
         $surveys     = $db->query(
             "SELECT tumfrage.*, DATE_FORMAT(tumfrage.dGueltigVon, '%d.%m.%Y %H:%i') AS dGueltigVon_de, 

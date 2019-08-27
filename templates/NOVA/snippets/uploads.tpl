@@ -196,62 +196,65 @@
                                             {/block}
                                             {block name='snippets-uploads-scheme-script'}
                                                 <script type="text/javascript">
-                                                    $(function () {
-                                                        var $el =  $('#fileinput{$oUploadSchema@index}{$oUpload@index}');
-                                                        var $url1 = '{$ShopURL}/uploads/{$oUpload->cUnique}';
-                                                        $el.fileinput({
-                                                            uploadUrl:             '{$ShopURL}/{$smarty.const.PFAD_UPLOAD_CALLBACK}',
-                                                            uploadAsync:           false,
-                                                            showPreview:           false,
-                                                            showUpload:            false,
-                                                            showRemove:            false,
-                                                            required:              true,
-                                                            browseClass:           'btn btn-light',
-                                                            fileActionSettings:    {
-                                                                showZoom: false,
-                                                                showRemove: false
-                                                            },
-                                                            allowedFileExtensions: [{$oUpload->cDateiListe|replace:'*.':'\''|replace:';':'\','|cat:'\''}],
-                                                            language:              '{$uploaderLang}',
-                                                            theme:                 'fas',
-                                                            browseOnZoneClick:     true,
-                                                            uploadExtraData:       {
-                                                                sid:        "{$cSessionID}",
-                                                                jtl_token:  "{$smarty.session.jtl_token}",
-                                                                uniquename: "{$oUpload->cUnique}",
-                                                                uploader:   "4.00",
-                                                                prodID:     "{$oUploadSchema->prodID}",
-                                                                cname:      "{$oUploadSchema->cName|replace:" ":"_"}"
-                                                                {if !empty($oUploadSchema->WarenkorbPosEigenschaftArr)},
-                                                                variation:  "{strip}
-                                                                {foreach name=variationen from=$oUploadSchema->WarenkorbPosEigenschaftArr item=Variation}_{$Variation->cEigenschaftWertName|trans|replace:" ":"_"}{/foreach}
-                                                                    "{/strip}
-                                                                {/if}
-                                                            },
-                                                            maxFileSize:           {$nMaxUploadSize/1024},
-                                                            elErrorContainer:      '#kv-error-{$oUploadSchema@index}{$oUpload@index}',
-                                                            maxFilesNum:           1
-                                                        }).on("filebrowse", function(event, files) {
-                                                            $el.fileinput('clear');
-                                                        }).on("filebatchselected", function(event, files) {
-                                                            $el.fileinput("upload");
-                                                        }).on('filebatchuploadsuccess', function(event, data) {
-                                                            var msgField = $('#queue{$oUploadSchema@index}{$oUpload@index} .current-upload'),
-                                                                uploadMsgField = $('.uploadifyMsg');
-                                                            if (typeof data.response !== 'undefined' && typeof data.response.cName !== 'undefined') {
-                                                                msgField.html('<i class="fas fa-check" aria-hidden="true"></i>' + data.response.cName + ' (' + data.response.cKB + ' KB)');
-                                                            } else {
-                                                                msgField.html('{lang key='uploadError'}');
-                                                            }
-                                                            $('#msgWarning').hide();
-                                                            uploadMsgField.find('.alert-danger').hide();
-                                                            $('#buy-form').find('.upload-error').removeClass('upload-error');
-                                                        }).on('fileuploaderror', function() {
-                                                            $('#upload-{$oUploadSchema@index}{$oUpload@index} .fileinput-upload').addClass('disabled');
-                                                        }).on('fileloaded', function() {
-                                                            $('#upload-{$oUploadSchema@index}{$oUpload@index} .fileinput-upload').removeClass('disabled');
+                                                    var deferredTasks = window.deferredTasks || [];
+                                                    deferredTasks.push(["ready",function () {
+                                                        $(function () {
+                                                            var $el   = $('#fileinput{$oUploadSchema@index}{$oUpload@index}');
+                                                            var $url1 = '{$ShopURL}/uploads/{$oUpload->cUnique}';
+                                                            $el.fileinput({
+                                                                uploadUrl:             '{$ShopURL}/{$smarty.const.PFAD_UPLOAD_CALLBACK}',
+                                                                uploadAsync:           false,
+                                                                showPreview:           false,
+                                                                showUpload:            false,
+                                                                showRemove:            false,
+                                                                required:              true,
+                                                                browseClass:           'btn btn-light',
+                                                                fileActionSettings:    {
+                                                                    showZoom:   false,
+                                                                    showRemove: false
+                                                                },
+                                                                allowedFileExtensions: [{$oUpload->cDateiListe|replace:'*.':'\''|replace:';':'\','|cat:'\''}],
+                                                                language:              '{$uploaderLang}',
+                                                                theme:                 'fas',
+                                                                browseOnZoneClick:     true,
+                                                                uploadExtraData:       {
+                                                                    sid:        "{$cSessionID}",
+                                                                    jtl_token:  "{$smarty.session.jtl_token}",
+                                                                    uniquename: "{$oUpload->cUnique}",
+                                                                    uploader:   "4.00",
+                                                                    prodID:     "{$oUploadSchema->prodID}",
+                                                                    cname:      "{$oUploadSchema->cName|replace:" ":"_"}"
+                                                                    {if !empty($oUploadSchema->WarenkorbPosEigenschaftArr)},
+                                                                    variation: "{strip}
+                                                                    {foreach name=variationen from=$oUploadSchema->WarenkorbPosEigenschaftArr item=Variation}_{$Variation->cEigenschaftWertName|trans|replace:" ":"_"}{/foreach}
+                                                                        "{/strip}
+                                                                    {/if}
+                                                                },
+                                                                maxFileSize:           {$nMaxUploadSize/1024},
+                                                                elErrorContainer:      '#kv-error-{$oUploadSchema@index}{$oUpload@index}',
+                                                                maxFilesNum:           1
+                                                            }).on("filebrowse", function (event, files) {
+                                                                $el.fileinput('clear');
+                                                            }).on("filebatchselected", function (event, files) {
+                                                                $el.fileinput("upload");
+                                                            }).on('filebatchuploadsuccess', function (event, data) {
+                                                                var msgField       = $('#queue{$oUploadSchema@index}{$oUpload@index} .current-upload'),
+                                                                    uploadMsgField = $('.uploadifyMsg');
+                                                                if (typeof data.response !== 'undefined' && typeof data.response.cName !== 'undefined') {
+                                                                    msgField.html('<i class="fas fa-check" aria-hidden="true"></i>' + data.response.cName + ' (' + data.response.cKB + ' KB)');
+                                                                } else {
+                                                                    msgField.html('{lang key='uploadError'}');
+                                                                }
+                                                                $('#msgWarning').hide();
+                                                                uploadMsgField.find('.alert-danger').hide();
+                                                                $('#buy-form').find('.upload-error').removeClass('upload-error');
+                                                            }).on('fileuploaderror', function () {
+                                                                $('#upload-{$oUploadSchema@index}{$oUpload@index} .fileinput-upload').addClass('disabled');
+                                                            }).on('fileloaded', function () {
+                                                                $('#upload-{$oUploadSchema@index}{$oUpload@index} .fileinput-upload').removeClass('disabled');
+                                                            });
                                                         });
-                                                    });
+                                                    }]);
                                                 </script>
                                             {/block}
                                         {/col}

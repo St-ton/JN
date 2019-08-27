@@ -41,7 +41,7 @@ class DeleteTemplateCacheCommand extends Command
     {
         $io              = $this->getIO();
         $adminTpl        = $this->getOption('admin');
-        $localFileSystem = new Filesystem(new LocalFilesystem(['root' => PFAD_ROOT]));
+        $localFileSystem = new Filesystem(new LocalFilesystem(['root' => \PFAD_ROOT]));
         $activeTemplate  = Shop::Container()->getDB()->select('ttemplate', 'eTyp', 'standard');
 
         $standardTplCacheResponse = $localFileSystem->deleteDirectory('/templates_c/' . $activeTemplate->name);

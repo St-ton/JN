@@ -5,6 +5,7 @@
  */
 
 use JTL\DB\ReturnType;
+use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Shop;
 
@@ -16,6 +17,7 @@ use JTL\Shop;
  */
 function gibDateiname($splits, $fileCounter)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     if (is_array($splits) && count($splits) > 1) {
         return $splits[0] . $fileCounter . $splits[1];
     }
@@ -31,6 +33,7 @@ function gibDateiname($splits, $fileCounter)
  */
 function gibDateiPfad($splits, $fileCounter)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     return PFAD_ROOT . PFAD_EXPORT . gibDateiname($splits, $fileCounter);
 }
 
@@ -40,33 +43,30 @@ function gibDateiPfad($splits, $fileCounter)
  */
 function pruefeExportformat()
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $checks = [];
     // Name
-    if (!isset($_POST['cName']) || mb_strlen($_POST['cName']) === 0) {
+    if (mb_strlen(Request::postVar('cName', '')) === 0) {
         $checks['cName'] = 1;
     }
     // Dateiname
-    if (!isset($_POST['cDateiname']) || mb_strlen($_POST['cDateiname']) === 0) {
+    if (mb_strlen(Request::postVar('cDateiname', '')) === 0) {
         $checks['cDateiname'] = 1;
     }
     // Dateiname Endung fehlt
-    if (mb_strpos($_POST['cDateiname'], '.') === false) {
+    if (mb_strpos(Request::postVar('cDateiname', ''), '.') === false) {
         $checks['cDateiname'] = 2;
     }
-    // Content
-    if (!isset($_POST['cContent']) || mb_strlen($_POST['cContent']) === 0) {
+    if (mb_strlen(Request::postVar('cContent', '')) === 0) {
         $checks['cContent'] = 1;
     }
-    // Sprache
-    if (!isset($_POST['kSprache']) || (int)$_POST['kSprache'] === 0) {
+    if (Request::postInt('kSprache') === 0) {
         $checks['kSprache'] = 1;
     }
-    // Sprache
-    if (!isset($_POST['kWaehrung']) || (int)$_POST['kWaehrung'] === 0) {
+    if (Request::postInt('kWaehrung') === 0) {
         $checks['kWaehrung'] = 1;
     }
-    // Kundengruppe
-    if (!isset($_POST['kKundengruppe']) || (int)$_POST['kKundengruppe'] === 0) {
+    if (Request::postInt('kKundengruppe') === 0) {
         $checks['kKundengruppe'] = 1;
     }
 
@@ -81,6 +81,7 @@ function pruefeExportformat()
  */
 function splitteExportDatei($export)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     if (isset($export->nSplitgroesse)
         && (int)$export->nSplitgroesse > 0
         && file_exists(PFAD_ROOT . PFAD_EXPORT . $export->cDateiname)
@@ -144,6 +145,7 @@ function splitteExportDatei($export)
  */
 function schreibeKopfzeile($dateiHandle, $cKopfzeile, $cKodierung)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     if ($cKopfzeile) {
         if ($cKodierung === 'UTF-8' || $cKodierung === 'UTF-8noBOM') {
             if ($cKodierung === 'UTF-8') {
@@ -164,6 +166,7 @@ function schreibeKopfzeile($dateiHandle, $cKopfzeile, $cKodierung)
  */
 function schreibeFusszeile($dateiHandle, $cFusszeile, $cKodierung)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     if (mb_strlen($cFusszeile) > 0) {
         if ($cKodierung === 'UTF-8' || $cKodierung === 'UTF-8noBOM') {
             fwrite($dateiHandle, $cFusszeile);
@@ -180,6 +183,7 @@ function schreibeFusszeile($dateiHandle, $cFusszeile, $cKodierung)
  */
 function loescheExportDateien($cDateiname, $cDateinameSplit)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     if (is_dir(PFAD_ROOT . PFAD_EXPORT)) {
         $dir = opendir(PFAD_ROOT . PFAD_EXPORT);
         if ($dir !== false) {
@@ -196,11 +200,12 @@ function loescheExportDateien($cDateiname, $cDateinameSplit)
 /**
  * @param int $kExportformat
  * @return array
+ * @deprecated since 4.05
  */
-function getEinstellungenExport($kExportformat)
+function getEinstellungenExport(int $kExportformat)
 {
-    $kExportformat = (int)$kExportformat;
-    $ret           = [];
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
+    $ret = [];
     if ($kExportformat > 0) {
         $conf = Shop::Container()->getDB()->selectAll(
             'texportformateinstellungen',
@@ -225,6 +230,7 @@ function getEinstellungenExport($kExportformat)
  */
 function baueArtikelExportSQL(&$export)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $sql          = [];
     $sql['Where'] = '';
     $sql['Join']  = '';
@@ -272,6 +278,7 @@ function baueArtikelExportSQL(&$export)
  */
 function holeMaxExportArtikelAnzahl(&$export)
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     $data = baueArtikelExportSQL($export);
     $conf = Shop::getSettings([CONF_GLOBAL]);
     $sql  = 'AND tartikel.dErscheinungsdatum IS NULL OR (DATE(tartikel.dErscheinungsdatum) <= CURDATE())';

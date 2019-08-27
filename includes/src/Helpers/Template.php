@@ -7,6 +7,7 @@
 namespace JTL\Helpers;
 
 use DirectoryIterator;
+use JTL\Backend\FileCheck;
 use JTL\DB\ReturnType;
 use JTL\Shop;
 use SimpleXMLElement;
@@ -100,9 +101,9 @@ class Template
         $templates = [];
         $folders   = $this->getAdminTemplateFolders();
         foreach ($folders as $folder) {
-            $oTemplate = $this->getData($folder, true);
-            if ($oTemplate) {
-                $templates[] = $oTemplate;
+            $templateData = $this->getData($folder, true);
+            if ($templateData) {
+                $templates[] = $templateData;
             }
         }
 
@@ -114,8 +115,7 @@ class Template
      */
     public function getStoredTemplates(): array
     {
-        $storedTemplates = [];
-
+        $storedTemplates  = [];
         $subTemplateDir   = 'original' . \DIRECTORY_SEPARATOR;
         $storeTemplateDir = \PFAD_ROOT . \PFAD_TEMPLATES . $subTemplateDir;
 
@@ -148,9 +148,9 @@ class Template
         $templates = [];
         $folders   = $this->getFrontendTemplateFolders();
         foreach ($folders as $folder) {
-            $oTemplate = $this->getData($folder, false);
-            if ($oTemplate) {
-                $templates[] = $oTemplate;
+            $templateData = $this->getData($folder, false);
+            if ($templateData) {
+                $templates[] = $templateData;
             }
         }
 
@@ -241,39 +241,39 @@ class Template
      */
     public function getXML($cOrdner, bool $isAdmin = null)
     {
-        $isAdmin  = $isAdmin ?? $this->isAdmin;
-        $cXMLFile = $isAdmin === false
+        $isAdmin = $isAdmin ?? $this->isAdmin;
+        $xmlFile = $isAdmin === false
             ? \PFAD_ROOT . \PFAD_TEMPLATES . $cOrdner . \DIRECTORY_SEPARATOR . \TEMPLATE_XML
             : \PFAD_ROOT . \PFAD_ADMIN . \PFAD_TEMPLATES . $cOrdner . \DIRECTORY_SEPARATOR . \TEMPLATE_XML;
-        if (!\file_exists($cXMLFile)) {
+        if (!\file_exists($xmlFile)) {
             return null;
         }
         if (\defined('LIBXML_NOWARNING')) {
             //try to suppress warning if opening fails
-            $oXML = \simplexml_load_file($cXMLFile, 'SimpleXMLElement', \LIBXML_NOWARNING);
+            $xml = \simplexml_load_file($xmlFile, 'SimpleXMLElement', \LIBXML_NOWARNING);
         } else {
-            $oXML = \simplexml_load_file($cXMLFile);
+            $xml = \simplexml_load_file($xmlFile);
         }
-        if ($oXML === false) {
-            $oXML = \simplexml_load_string(\file_get_contents($cXMLFile));
+        if ($xml === false) {
+            $xml = \simplexml_load_string(\file_get_contents($xmlFile));
         }
 
-        if (\is_a($oXML, SimpleXMLElement::class)) {
-            $oXML->Ordner = $cOrdner;
+        if (\is_a($xml, SimpleXMLElement::class)) {
+            $xml->Ordner = $cOrdner;
         } else {
-            $oXML = null;
+            $xml = null;
         }
 
-        return $oXML;
+        return $xml;
     }
 
     /**
-     * @param string $cOrdner
+     * @param string $dir
      * @return array|bool
      */
-    public function getConfig(string $cOrdner)
+    public function getConfig(string $dir)
     {
-        $settingsData = Shop::Container()->getDB()->selectAll('ttemplateeinstellungen', 'cTemplate', $cOrdner);
+        $settingsData = Shop::Container()->getDB()->selectAll('ttemplateeinstellungen', 'cTemplate', $dir);
         if (\is_array($settingsData) && \count($settingsData) > 0) {
             $settings = [];
             foreach ($settingsData as $oSetting) {
@@ -290,24 +290,24 @@ class Template
     }
 
     /**
-     * @param string    $cOrdner
+     * @param string    $dir
      * @param bool|null $isAdmin
      * @return bool|stdClass
      */
-    public function getData($cOrdner, bool $isAdmin = null)
+    public function getData($dir, bool $isAdmin = null)
     {
         $isAdmin = $isAdmin ?? $this->isAdmin;
-        $cacheID = 'tpl_' . $cOrdner . ($isAdmin ? '_admin' : '');
+        $cacheID = 'tpl_' . $dir . ($isAdmin ? '_admin' : '');
         if ($this->cachingEnabled === true && ($template = Shop::Container()->getCache()->get($cacheID)) !== false) {
             return $template;
         }
         $template = new stdClass();
-        $xml      = $this->getXML($cOrdner, $isAdmin);
+        $xml      = $this->getXML($dir, $isAdmin);
         if (!$xml) {
             return false;
         }
         $template->cName        = \trim((string)$xml->Name);
-        $template->cOrdner      = (string)$cOrdner;
+        $template->cOrdner      = (string)$dir;
         $template->cAuthor      = \trim((string)$xml->Author);
         $template->cURL         = \trim((string)$xml->URL);
         $template->cVersion     = \trim((string)$xml->Version);
@@ -324,13 +324,13 @@ class Template
         if (!Text::is_utf8($template->cDescription)) {
             $template->cDescription = Text::convertUTF8($template->cDescription);
         }
-
         if (!empty($xml->Parent)) {
             $parentConfig = $this->getData($xml->Parent, $isAdmin);
-
             if ($parentConfig !== false && empty($template->cVersion)) {
                 $template->cVersion = $parentConfig->cVersion;
             }
+        } else {
+            $template->checksums = $this->getChecksums((string)$dir);
         }
 
         $templates = Shop::Container()->getDB()->query(
@@ -354,5 +354,24 @@ class Template
         }
 
         return $template;
+    }
+
+    /**
+     * @param string $dirname
+     * @return array|bool|null
+     */
+    private function getChecksums(string $dirname)
+    {
+        $files       = [];
+        $errorsCount = 0;
+        $base        = \PFAD_ROOT . \PFAD_TEMPLATES . \basename($dirname) . '/';
+        $checker     = new FileCheck();
+
+        $res = $checker->validateCsvFile($base . 'checksums.csv', $files, $errorsCount, $base);
+        if ($res === FileCheck::ERROR_INPUT_FILE_MISSING || $res === FileCheck::ERROR_NO_HASHES_FOUND) {
+            return null;
+        }
+
+        return $errorsCount === 0 ? true : $files;
     }
 }

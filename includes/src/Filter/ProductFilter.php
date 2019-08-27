@@ -1681,6 +1681,7 @@ class ProductFilter
             $opt->nAttribute            = 1;
             $opt->nArtikelAttribute     = 1;
             $opt->nVariationKombiKinder = 1;
+            $opt->nVariationen          = 1;
             $opt->nWarenlager           = 1;
             $opt->nRatings              = \PRODUCT_LIST_SHOW_RATINGS === true ? 1 : 0;
             $opt->nVariationDetailPreis = (int)$this->getFilterConfig()->getConfig('artikeldetails')

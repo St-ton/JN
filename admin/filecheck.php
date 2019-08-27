@@ -5,6 +5,7 @@
  */
 
 use JTL\Alert\Alert;
+use JTL\Backend\FileCheck;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Shop;
@@ -15,23 +16,27 @@ require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'filecheck_inc.php';
 $oAccount->permission('FILECHECK_VIEW', true, true);
 
 /** @global \JTL\Smarty\JTLSmarty $smarty */
-$zipArchiveError            = '';
-$backupMessage              = '';
-$modifiedFilesError         = '';
-$orphanedFilesError         = '';
-$modifiedFiles              = [];
-$orphanedFiles              = [];
-$errorsCounModifiedFiles    = 0;
-$errorsCountOrphanedFiles   = 0;
-$validateModifiedFilesState = getAllModifiedFiles($modifiedFiles, $errorsCounModifiedFiles);
-$validateOrphanedFilesState = getAllOrphanedFiles($orphanedFiles, $errorsCountOrphanedFiles);
-$alertHelper                = Shop::Container()->getAlertService();
-if ($validateModifiedFilesState !== 1) {
-    switch ($validateModifiedFilesState) {
-        case 2:
+$fileChecker        = new FileCheck();
+$zipArchiveError    = '';
+$backupMessage      = '';
+$modifiedFilesError = '';
+$orphanedFilesError = '';
+$md5basePath        = PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . PFAD_SHOPMD5;
+$coreMD5HashFile    = $md5basePath . $fileChecker->getVersionString() . '.csv';
+$orphanedFilesFile  = $md5basePath . 'deleted_files_' . $fileChecker->getVersionString() . '.csv';
+$modifiedFiles      = [];
+$orphanedFiles      = [];
+$modifiedFilesCount = 0;
+$orphanedFilesCount = 0;
+$modifiedFilesCheck = $fileChecker->validateCsvFile($coreMD5HashFile, $modifiedFiles, $modifiedFilesCount);
+$orphanedFilesCheck = $fileChecker->validateCsvFile($orphanedFilesFile, $orphanedFiles, $orphanedFilesCount);
+$alertHelper        = Shop::Container()->getAlertService();
+if ($modifiedFilesCheck !== FileCheck::OK) {
+    switch ($modifiedFilesCheck) {
+        case FileCheck::ERROR_INPUT_FILE_MISSING:
             $modifiedFilesError = __('errorFileNotFound');
             break;
-        case 3:
+        case FileCheck::ERROR_NO_HASHES_FOUND:
             $modifiedFilesError = __('errorFileListEmpty');
             break;
         default:
@@ -39,12 +44,12 @@ if ($validateModifiedFilesState !== 1) {
             break;
     }
 }
-if ($validateOrphanedFilesState !== 1) {
-    switch ($validateOrphanedFilesState) {
-        case 2:
+if ($orphanedFilesCheck !== FileCheck::OK) {
+    switch ($orphanedFilesCheck) {
+        case FileCheck::ERROR_INPUT_FILE_MISSING:
             $orphanedFilesError = __('errorFileNotFound');
             break;
-        case 3:
+        case FileCheck::ERROR_NO_HASHES_FOUND:
             $orphanedFilesError = __('errorFileListEmpty');
             break;
         default:
@@ -53,7 +58,7 @@ if ($validateOrphanedFilesState !== 1) {
     }
 } elseif (Request::verifyGPCDataInt('delete-orphans') === 1 && Form::validateToken()) {
     $backup   = PFAD_ROOT . PFAD_EXPORT_BACKUP . 'orphans_' . date_format(date_create(), 'Y-m-d_H:i:s') . '.zip';
-    $count    = deleteOrphanedFiles($orphanedFiles, $backup);
+    $count    = $fileChecker->deleteOrphanedFiles($orphanedFiles, $backup);
     $newCount = count($orphanedFiles);
     if ($count === -1) {
         $zipArchiveError = sprintf(__('errorCreatingZipArchive'), $backup);
@@ -65,9 +70,9 @@ if ($validateOrphanedFilesState !== 1) {
     }
 }
 
-$modifiedFilesCheck = !empty($modifiedFilesError) || count($modifiedFiles) > 0;
-$orphanedFilesCheck = !empty($orphanedFilesError) || count($orphanedFiles) > 0;
-if (!$modifiedFilesCheck && !$orphanedFilesCheck) {
+$hasModifiedFiles = !empty($modifiedFilesError) || count($modifiedFiles) > 0;
+$hasOrphanedFiles = !empty($orphanedFilesError) || count($orphanedFiles) > 0;
+if (!$hasModifiedFiles && !$hasOrphanedFiles) {
     $alertHelper->addAlert(
         Alert::TYPE_NOTE,
         __('fileCheckNoneModifiedOrphanedFiles'),
@@ -102,9 +107,9 @@ $smarty->assign('modifiedFilesError', $modifiedFilesError !== '')
     ->assign('orphanedFilesError', $orphanedFilesError !== '')
     ->assign('modifiedFiles', $modifiedFiles)
     ->assign('orphanedFiles', $orphanedFiles)
-    ->assign('modifiedFilesCheck', $modifiedFilesCheck)
-    ->assign('orphanedFilesCheck', $orphanedFilesCheck)
-    ->assign('errorsCounModifiedFiles', $errorsCounModifiedFiles)
-    ->assign('errorsCountOrphanedFiles', $errorsCountOrphanedFiles)
-    ->assign('deleteScript', generateBashScript())
+    ->assign('modifiedFilesCheck', $hasModifiedFiles)
+    ->assign('orphanedFilesCheck', $hasOrphanedFiles)
+    ->assign('errorsCountModifiedFiles', $modifiedFilesCount)
+    ->assign('errorsCountOrphanedFiles', $orphanedFilesCount)
+    ->assign('deleteScript', $fileChecker->generateBashScript())
     ->display('filecheck.tpl');

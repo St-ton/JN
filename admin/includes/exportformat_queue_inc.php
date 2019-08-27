@@ -399,7 +399,7 @@ function exportformatQueueActionFertiggestellt(JTLSmarty $smarty): string
  */
 function exportformatQueueActionErstellenEintragen(JTLSmarty $smarty, array &$messages): string
 {
-    $id                    = (int)$_POST['kExportformat'];
+    $id                    = Request::postInt('kExportformat');
     $start                 = $_POST['dStart'];
     $freq                  = !empty($_POST['nAlleXStundenCustom'])
         ? (int)$_POST['nAlleXStundenCustom']
@@ -411,10 +411,7 @@ function exportformatQueueActionErstellenEintragen(JTLSmarty $smarty, array &$me
     if ($id > 0) {
         if (dStartPruefen($start)) {
             if ($freq >= 1) {
-                $cronID = (isset($_POST['kCron']) && (int)$_POST['kCron'] > 0)
-                    ? (int)$_POST['kCron']
-                    : null;
-                $state  = erstelleExportformatCron($id, $start, $freq, $cronID);
+                $state = erstelleExportformatCron($id, $start, $freq, Request::postInt('kCron'));
                 if ($state === 1) {
                     $messages['notice'] .= __('successQueueCreate');
                     $step                = 'erstellen_success';

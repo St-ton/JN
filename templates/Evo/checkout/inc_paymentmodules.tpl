@@ -4,7 +4,12 @@
  *}
 {if !isset($abschlussseite) || $abschlussseite !== 1}
     {assign var=cModulId value=$Bestellung->Zahlungsart->cModulId}
-    {if (empty($oPlugin->oPluginZahlungsmethodeAssoc_arr[$cModulId]->cModulId) || $Bestellung->Zahlungsart->cModulId != $oPlugin->oPluginZahlungsmethodeAssoc_arr[$cModulId]->cModulId)
+    {if $oPlugin !== null && $oPlugin instanceof JTL\Plugin\PluginInterface}
+        {$method = $oPlugin->getPaymentMethods()->getMethodByID($cModulId)}
+    {else}
+        {$method = null}
+    {/if}
+    {if ($method === null || $Bestellung->Zahlungsart->cModulId !== $method->getModuleID())
     && $Bestellung->Zahlungsart->cModulId !== 'za_kreditkarte_jtl' && $Bestellung->Zahlungsart->cModulId !== 'za_lastschrift_jtl'}
         {if isset($smarty.session.Zahlungsart->nWaehrendBestellung) && $smarty.session.Zahlungsart->nWaehrendBestellung == 1}
             <div class="alert alert-info">{lang key='orderConfirmationPre' section='checkout'}</div>
@@ -32,8 +37,8 @@
             {include file='checkout/modules/paypal/bestellabschluss.tpl'}
         {elseif $Bestellung->Zahlungsart->cModulId === 'za_kreditkarte_jtl'}
             {include file='account/retrospective_payment.tpl'}
-        {elseif !empty($oPlugin->oPluginZahlungsmethodeAssoc_arr[$cModulId]->cModulId) && $Bestellung->Zahlungsart->cModulId == $oPlugin->oPluginZahlungsmethodeAssoc_arr[$cModulId]->cModulId}
-            {include file=$oPlugin->oPluginZahlungsmethodeAssoc_arr[$cModulId]->cTemplateFileURL}
+        {elseif $method !== null && $Bestellung->Zahlungsart->cModulId === $method->getModuleID()}
+            {include file=$method->getTemplateFilePath()}
         {/if}
         <br />
     </div>

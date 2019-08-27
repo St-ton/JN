@@ -160,12 +160,12 @@ class LegacyPluginLoader extends AbstractLoader
     }
 
     /**
-     * @param PluginInterface $extension
+     * @param PluginInterface $plugin
      * @return Widget
      */
-    protected function loadWidgets(PluginInterface $extension): Widget
+    protected function loadWidgets(PluginInterface $plugin): Widget
     {
-        $widgets = parent::loadWidgets($extension);
+        $widgets = parent::loadWidgets($plugin);
         foreach ($widgets->getWidgets() as $widget) {
             $widget->className = \str_replace('\Plugin' . $widget->namespace, 'Widget', $widget->className);
             $widget->namespace = null;

@@ -39,6 +39,10 @@ class PaymentMethods extends AbstractItem
      */
     public function install(): int
     {
+        $base     = $this->plugin->bExtension === 1
+            ? \PLUGIN_DIR . $this->plugin->cVerzeichnis . '/' . \PFAD_PLUGIN_PAYMENTMETHOD
+            : \PFAD_PLUGIN . $this->plugin->cVerzeichnis . '/' . \PFAD_PLUGIN_VERSION .
+            $this->plugin->nVersion . '/' . \PFAD_PLUGIN_PAYMENTMETHOD;
         $shopURL  = Shop::getURL(true) . '/';
         $pluginID = $this->plugin->kPlugin;
         foreach ($this->getNode() as $i => $data) {
@@ -68,9 +72,7 @@ class PaymentMethods extends AbstractItem
             $method->nSOAP                  = (int)$data['Soap'];
             $method->nSOCKETS               = (int)$data['Sockets'];
             $method->cBild                  = isset($data['PictureURL'])
-                ? $shopURL . \PFAD_PLUGIN . $this->plugin->cVerzeichnis . '/' .
-                \PFAD_PLUGIN_VERSION . $this->plugin->nVersion . '/' .
-                \PFAD_PLUGIN_PAYMENTMETHOD . $data['PictureURL']
+                ? $shopURL . $base . $data['PictureURL']
                 : '';
             $method->nNutzbar               = 0;
             if ($method->nCURL === 0 && $method->nSOAP === 0 && $method->nSOCKETS === 0) {
@@ -95,10 +97,10 @@ class PaymentMethods extends AbstractItem
 
             $this->db->insert('tpluginzahlungsartklasse', $paymentClass);
 
-            $iso                  = '';
-            $allLanguages         = LanguageHelper::getAllLanguages(2);
-            $bZahlungsartStandard = false;
-            $localized            = new stdClass();
+            $iso          = '';
+            $allLanguages = LanguageHelper::getAllLanguages(2);
+            $default      = false;
+            $localized    = new stdClass();
             foreach ($data['MethodLanguage'] as $l => $loc) {
                 $l = (string)$l;
                 \preg_match('/[0-9]+\sattr/', $l, $hits1);
@@ -112,9 +114,9 @@ class PaymentMethods extends AbstractItem
                     $localizedMethod->cName        = $loc['Name'];
                     $localizedMethod->cGebuehrname = $loc['ChargeName'];
                     $localizedMethod->cHinweisText = $loc['InfoText'];
-                    if (!$bZahlungsartStandard) {
-                        $localized            = $localizedMethod;
-                        $bZahlungsartStandard = true;
+                    if (!$default) {
+                        $localized = $localizedMethod;
+                        $default   = true;
                     }
                     $tmpID = $this->db->insert('tzahlungsartsprache', $localizedMethod);
                     if (!$tmpID) {
@@ -164,147 +166,163 @@ class PaymentMethods extends AbstractItem
 
                 $this->db->insert('tplugineinstellungenconf', $plgnConf);
             }
+            $configCode = $this->addConfig($data, $pluginID, $moduleID);
+            if ($configCode !== InstallCode::OK) {
+                return $configCode;
+            }
+        }
 
-            if (GeneralObject::hasCount('Setting', $data)) {
-                $type         = '';
-                $initialValue = '';
-                $sort         = 0;
-                $configurable = 'Y';
-                $multiple     = false;
-                foreach ($data['Setting'] as $j => $config) {
-                    $j = (string)$j;
-                    \preg_match('/[0-9]+\sattr/', $j, $hits3);
-                    \preg_match('/[0-9]+/', $j, $hits4);
-                    if (isset($hits3[0]) && \mb_strlen($hits3[0]) === \mb_strlen($j)) {
-                        $type         = $config['type'];
-                        $multiple     = (isset($config['multiple'])
-                            && $config['multiple'] === 'Y'
-                            && $type === InputType::SELECT);
-                        $initialValue = $multiple === true
-                            ? \serialize([$config['initialValue']])
-                            : $config['initialValue'];
-                        $sort         = $config['sort'];
-                        $configurable = $config['conf'];
-                    } elseif (\mb_strlen($hits4[0]) === \mb_strlen($j)) {
-                        $conf          = new stdClass();
-                        $conf->kPlugin = $pluginID;
-                        $conf->cName   = $moduleID . '_' . $config['ValueName'];
-                        $conf->cWert   = $initialValue;
-                        if ($this->db->select('tplugineinstellungen', 'cName', $conf->cName) !== null) {
-                            $this->db->update(
-                                'tplugineinstellungen',
-                                'cName',
-                                $conf->cName,
-                                $conf
-                            );
-                        } else {
-                            $this->db->insert('tplugineinstellungen', $conf);
-                        }
-                        $plgnConf                   = new stdClass();
-                        $plgnConf->kPlugin          = $pluginID;
-                        $plgnConf->kPluginAdminMenu = 0;
-                        $plgnConf->cName            = $config['Name'];
-                        $plgnConf->cBeschreibung    = (!isset($config['Description'])
-                            || \is_array($config['Description']))
-                            ? ''
-                            : $config['Description'];
-                        $plgnConf->cWertName        = $moduleID . '_' . $config['ValueName'];
-                        $plgnConf->cInputTyp        = $type;
-                        $plgnConf->nSort            = $sort;
-                        $plgnConf->cConf            = ($type === InputType::SELECT && $multiple === true)
-                            ? Config::TYPE_DYNAMIC
-                            : $configurable;
-                        $plgnConfTmpID              = $this->db->select(
-                            'tplugineinstellungenconf',
-                            'cWertName',
-                            $plgnConf->cWertName
-                        );
-                        if ($plgnConfTmpID !== null) {
-                            $this->db->update(
-                                'tplugineinstellungenconf',
-                                'cWertName',
-                                $plgnConf->cWertName,
-                                $plgnConf
-                            );
-                            $kPluginEinstellungenConf = $plgnConfTmpID->kPluginEinstellungenConf;
-                        } else {
-                            $kPluginEinstellungenConf = $this->db->insert(
-                                'tplugineinstellungenconf',
-                                $plgnConf
-                            );
-                        }
-                        // tplugineinstellungenconfwerte füllen
-                        if ($kPluginEinstellungenConf <= 0) {
-                            return InstallCode::SQL_CANNOT_SAVE_PAYMENT_METHOD_SETTING;
-                        }
-                        // Ist der Typ eine Selectbox => Es müssen SelectboxOptionen vorhanden sein
-                        if ($type === InputType::SELECT) {
-                            if (GeneralObject::hasCount('OptionsSource', $config)) {
-                                //do nothing for now
-                            } elseif (\count($config['SelectboxOptions'][0]) === 1) {
-                                foreach ($config['SelectboxOptions'][0]['Option'] as $y => $option) {
-                                    $y = (string)$y;
-                                    \preg_match('/[0-9]+\sattr/', $y, $hits6);
-                                    if (isset($hits6[0]) && \mb_strlen($hits6[0]) === \mb_strlen($y)) {
-                                        $cWert = $option['value'];
-                                        $sort  = $option['sort'];
-                                        $yx    = \mb_substr($y, 0, \mb_strpos($y, ' '));
-                                        $name  = $config['SelectboxOptions'][0]['Option'][$yx];
+        return InstallCode::OK;
+    }
 
-                                        $plgnConfValues                           = new stdClass();
-                                        $plgnConfValues->kPluginEinstellungenConf = $kPluginEinstellungenConf;
-                                        $plgnConfValues->cName                    = $name;
-                                        $plgnConfValues->cWert                    = $cWert;
-                                        $plgnConfValues->nSort                    = $sort;
+    /**
+     * @param array  $data
+     * @param int    $pluginID
+     * @param string $moduleID
+     * @return int
+     */
+    private function addConfig(array $data, int $pluginID, string $moduleID): int
+    {
+        if (!GeneralObject::hasCount('Setting', $data)) {
+            return InstallCode::OK;
+        }
+        $type         = '';
+        $initialValue = '';
+        $sort         = 0;
+        $configurable = 'Y';
+        $multiple     = false;
+        foreach ($data['Setting'] as $j => $config) {
+            $j = (string)$j;
+            \preg_match('/[0-9]+\sattr/', $j, $hits3);
+            \preg_match('/[0-9]+/', $j, $hits4);
+            if (isset($hits3[0]) && \mb_strlen($hits3[0]) === \mb_strlen($j)) {
+                $type         = $config['type'];
+                $multiple     = (isset($config['multiple'])
+                    && $config['multiple'] === 'Y'
+                    && $type === InputType::SELECT);
+                $initialValue = $multiple === true
+                    ? \serialize([$config['initialValue']])
+                    : $config['initialValue'];
+                $sort         = $config['sort'];
+                $configurable = $config['conf'];
+            } elseif (\mb_strlen($hits4[0]) === \mb_strlen($j)) {
+                $conf          = new stdClass();
+                $conf->kPlugin = $pluginID;
+                $conf->cName   = $moduleID . '_' . $config['ValueName'];
+                $conf->cWert   = $initialValue;
+                if ($this->db->select('tplugineinstellungen', 'cName', $conf->cName) !== null) {
+                    $this->db->update(
+                        'tplugineinstellungen',
+                        'cName',
+                        $conf->cName,
+                        $conf
+                    );
+                } else {
+                    $this->db->insert('tplugineinstellungen', $conf);
+                }
+                $plgnConf                   = new stdClass();
+                $plgnConf->kPlugin          = $pluginID;
+                $plgnConf->kPluginAdminMenu = 0;
+                $plgnConf->cName            = $config['Name'];
+                $plgnConf->cBeschreibung    = (!isset($config['Description'])
+                    || \is_array($config['Description']))
+                    ? ''
+                    : $config['Description'];
+                $plgnConf->cWertName        = $moduleID . '_' . $config['ValueName'];
+                $plgnConf->cInputTyp        = $type;
+                $plgnConf->nSort            = $sort;
+                $plgnConf->cConf            = ($type === InputType::SELECT && $multiple === true)
+                    ? Config::TYPE_DYNAMIC
+                    : $configurable;
+                $plgnConfTmpID              = $this->db->select(
+                    'tplugineinstellungenconf',
+                    'cWertName',
+                    $plgnConf->cWertName
+                );
+                if ($plgnConfTmpID !== null) {
+                    $this->db->update(
+                        'tplugineinstellungenconf',
+                        'cWertName',
+                        $plgnConf->cWertName,
+                        $plgnConf
+                    );
+                    $configID = (int)$plgnConfTmpID->kPluginEinstellungenConf;
+                } else {
+                    $configID = $this->db->insert(
+                        'tplugineinstellungenconf',
+                        $plgnConf
+                    );
+                }
+                // tplugineinstellungenconfwerte füllen
+                if ($configID <= 0) {
+                    return InstallCode::SQL_CANNOT_SAVE_PAYMENT_METHOD_SETTING;
+                }
+                // Ist der Typ eine Selectbox => Es müssen SelectboxOptionen vorhanden sein
+                if ($type === InputType::SELECT) {
+                    if (GeneralObject::hasCount('OptionsSource', $config)) {
+                        //do nothing for now
+                    } elseif (\count($config['SelectboxOptions'][0]) === 1) {
+                        foreach ($config['SelectboxOptions'][0]['Option'] as $y => $option) {
+                            $y = (string)$y;
+                            \preg_match('/[0-9]+\sattr/', $y, $hits6);
+                            if (isset($hits6[0]) && \mb_strlen($hits6[0]) === \mb_strlen($y)) {
+                                $value = $option['value'];
+                                $sort  = $option['sort'];
+                                $yx    = \mb_substr($y, 0, \mb_strpos($y, ' '));
+                                $name  = $config['SelectboxOptions'][0]['Option'][$yx];
 
-                                        $this->db->insert(
-                                            'tplugineinstellungenconfwerte',
-                                            $plgnConfValues
-                                        );
-                                    }
-                                }
-                            } elseif (\count($config['SelectboxOptions'][0]) === 2) {
-                                $idx                                      = $config['SelectboxOptions'][0];
                                 $plgnConfValues                           = new stdClass();
-                                $plgnConfValues->kPluginEinstellungenConf = $kPluginEinstellungenConf;
-                                $plgnConfValues->cName                    = $idx['Option'];
-                                $plgnConfValues->cWert                    = $idx['Option attr']['value'];
-                                $plgnConfValues->nSort                    = $idx['Option attr']['sort'];
+                                $plgnConfValues->kPluginEinstellungenConf = $configID;
+                                $plgnConfValues->cName                    = $name;
+                                $plgnConfValues->cWert                    = $value;
+                                $plgnConfValues->nSort                    = $sort;
+
+                                $this->db->insert(
+                                    'tplugineinstellungenconfwerte',
+                                    $plgnConfValues
+                                );
+                            }
+                        }
+                    } elseif (\count($config['SelectboxOptions'][0]) === 2) {
+                        $idx                                      = $config['SelectboxOptions'][0];
+                        $plgnConfValues                           = new stdClass();
+                        $plgnConfValues->kPluginEinstellungenConf = $configID;
+                        $plgnConfValues->cName                    = $idx['Option'];
+                        $plgnConfValues->cWert                    = $idx['Option attr']['value'];
+                        $plgnConfValues->nSort                    = $idx['Option attr']['sort'];
+
+                        $this->db->insert('tplugineinstellungenconfwerte', $plgnConfValues);
+                    }
+                } elseif ($type === InputType::RADIO) {
+                    if (GeneralObject::hasCount('OptionsSource', $config)) {
+                        //do nothing for now
+                    } elseif (\count($config['RadioOptions'][0]) === 1) { // Es gibt mehr als eine Option
+                        foreach ($config['RadioOptions'][0]['Option'] as $y => $option) {
+                            \preg_match('/[0-9]+\sattr/', $y, $hits6);
+                            if (\mb_strlen($hits6[0]) === \mb_strlen($y)) {
+                                $value = $option['value'];
+                                $sort  = $option['sort'];
+                                $yx    = \mb_substr($y, 0, \mb_strpos($y, ' '));
+                                $name  = $config['RadioOptions'][0]['Option'][$yx];
+
+                                $plgnConfValues                           = new stdClass();
+                                $plgnConfValues->kPluginEinstellungenConf = $configID;
+                                $plgnConfValues->cName                    = $name;
+                                $plgnConfValues->cWert                    = $value;
+                                $plgnConfValues->nSort                    = $sort;
 
                                 $this->db->insert('tplugineinstellungenconfwerte', $plgnConfValues);
                             }
-                        } elseif ($type === InputType::RADIO) {
-                            if (GeneralObject::hasCount('OptionsSource', $config)) {
-                                //do nothing for now
-                            } elseif (\count($config['RadioOptions'][0]) === 1) { // Es gibt mehr als eine Option
-                                foreach ($config['RadioOptions'][0]['Option'] as $y => $option) {
-                                    \preg_match('/[0-9]+\sattr/', $y, $hits6);
-                                    if (\mb_strlen($hits6[0]) === \mb_strlen($y)) {
-                                        $cWert = $option['value'];
-                                        $sort  = $option['sort'];
-                                        $yx    = \mb_substr($y, 0, \mb_strpos($y, ' '));
-                                        $name  = $config['RadioOptions'][0]['Option'][$yx];
-
-                                        $plgnConfValues                           = new stdClass();
-                                        $plgnConfValues->kPluginEinstellungenConf = $kPluginEinstellungenConf;
-                                        $plgnConfValues->cName                    = $name;
-                                        $plgnConfValues->cWert                    = $cWert;
-                                        $plgnConfValues->nSort                    = $sort;
-
-                                        $this->db->insert('tplugineinstellungenconfwerte', $plgnConfValues);
-                                    }
-                                }
-                            } elseif (\count($config['RadioOptions'][0]) === 2) { //Es gibt nur 1 Option
-                                $idx                                      = $config['RadioOptions'][0];
-                                $plgnConfValues                           = new stdClass();
-                                $plgnConfValues->kPluginEinstellungenConf = $kPluginEinstellungenConf;
-                                $plgnConfValues->cName                    = $idx['Option'];
-                                $plgnConfValues->cWert                    = $idx['Option attr']['value'];
-                                $plgnConfValues->nSort                    = $idx['Option attr']['sort'];
-
-                                $this->db->insert('tplugineinstellungenconfwerte', $plgnConfValues);
-                            }
                         }
+                    } elseif (\count($config['RadioOptions'][0]) === 2) { //Es gibt nur 1 Option
+                        $idx                                      = $config['RadioOptions'][0];
+                        $plgnConfValues                           = new stdClass();
+                        $plgnConfValues->kPluginEinstellungenConf = $configID;
+                        $plgnConfValues->cName                    = $idx['Option'];
+                        $plgnConfValues->cWert                    = $idx['Option attr']['value'];
+                        $plgnConfValues->nSort                    = $idx['Option attr']['sort'];
+
+                        $this->db->insert('tplugineinstellungenconfwerte', $plgnConfValues);
                     }
                 }
             }

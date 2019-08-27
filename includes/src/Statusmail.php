@@ -12,6 +12,7 @@ use JTL\Alert\Alert;
 use JTL\Cron\LegacyCron;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
+use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Mail\Mail\Attachment;
 use JTL\Mail\Mail\Mail;
@@ -57,7 +58,7 @@ class Statusmail
      */
     public function updateConfig(): bool
     {
-        if ((int)$_POST['nAktiv'] === 0
+        if (Request::postInt('nAktiv') === 0
             || (Text::filterEmailAddress($_POST['cEmail']) !== false
                 && \is_array($_POST['cIntervall_arr'])
                 && \count($_POST['cIntervall_arr']) > 0
@@ -79,7 +80,7 @@ class Statusmail
                 $statusMail->cEmail    = $_POST['cEmail'];
                 $statusMail->nInterval = $interval;
                 $statusMail->cInhalt   = Text::createSSK($_POST['cInhalt_arr']);
-                $statusMail->nAktiv    = (int)$_POST['nAktiv'];
+                $statusMail->nAktiv    = Request::postInt('nAktiv');
                 $statusMail->dLastSent = 'NOW()';
 
                 $id = $this->db->insert('tstatusemail', $statusMail);

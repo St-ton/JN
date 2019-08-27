@@ -23,7 +23,7 @@ setzeSprache();
 if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
     $smarty->assign('cTab', Request::verifyGPDataString('tab'));
 }
-if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
+if (Request::postInt('einstellungen') > 0) {
     $alertHelper->addAlert(
         Alert::TYPE_SUCCESS,
         saveAdminSectionSettings(CONF_KUNDENWERBENKUNDEN, $_POST),

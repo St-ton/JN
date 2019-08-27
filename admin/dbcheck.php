@@ -8,6 +8,7 @@
 
 use JTL\Alert\Alert;
 use JTL\Helpers\Form;
+use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use JTL\Shop;
 use JTL\Update\DBMigrationHelper;
@@ -25,7 +26,7 @@ $maintenanceResult = null;
 $engineUpdate      = null;
 $fulltextIndizes   = null;
 
-if (isset($_POST['update']) && Text::filterXSS($_POST['update']) === 'script' && Form::validateToken()) {
+if (Request::postVar('update') === 'script' && Form::validateToken()) {
     $scriptName = 'innodb_and_utf8_update_'
         . str_replace('.', '_', Shop::Container()->getDB()->getConfig()['host']) . '_'
         . Shop::Container()->getDB()->getConfig()['database'] . '_'

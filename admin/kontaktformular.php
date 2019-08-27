@@ -8,6 +8,7 @@ use JTL\Alert\Alert;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\GeneralObject;
+use JTL\Helpers\Request;
 use JTL\Language\LanguageHelper;
 use JTL\Shop;
 use function Functional\map;
@@ -22,14 +23,14 @@ $step        = 'uebersicht';
 $alertHelper = Shop::Container()->getAlertService();
 $db          = Shop::Container()->getDB();
 $languages   = LanguageHelper::getAllLanguages();
-if (isset($_GET['del']) && (int)$_GET['del'] > 0 && Form::validateToken()) {
-    $db->delete('tkontaktbetreff', 'kKontaktBetreff', (int)$_GET['del']);
-    $db->delete('tkontaktbetreffsprache', 'kKontaktBetreff', (int)$_GET['del']);
+if (Request::getInt('del') > 0 && Form::validateToken()) {
+    $db->delete('tkontaktbetreff', 'kKontaktBetreff', Request::getInt('del'));
+    $db->delete('tkontaktbetreffsprache', 'kKontaktBetreff', Request::getInt('del'));
 
     $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successSubjectDelete'), 'successSubjectDelete');
 }
 
-if (isset($_POST['content']) && (int)$_POST['content'] === 1 && Form::validateToken()) {
+if (Request::postInt('content') === 1 && Form::validateToken()) {
     $db->delete('tspezialcontentsprache', 'nSpezialContent', SC_KONTAKTFORMULAR);
     foreach ($languages as $language) {
         $code                             = $language->getIso();
@@ -62,7 +63,7 @@ if (isset($_POST['content']) && (int)$_POST['content'] === 1 && Form::validateTo
     $tab = 'content';
 }
 
-if (isset($_POST['betreff']) && (int)$_POST['betreff'] === 1 && Form::validateToken()) {
+if (Request::postInt('betreff') === 1 && Form::validateToken()) {
     if ($_POST['cName'] && $_POST['cMail']) {
         $newSubject        = new stdClass();
         $newSubject->cName = htmlspecialchars($_POST['cName'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
@@ -73,16 +74,13 @@ if (isset($_POST['betreff']) && (int)$_POST['betreff'] === 1 && Form::validateTo
         if (GeneralObject::hasCount('cKundengruppen', $_POST) && in_array(0, $_POST['cKundengruppen'])) {
             $newSubject->cKundengruppen = 0;
         }
-        $newSubject->nSort = 0;
-        if ((int)$_POST['nSort'] > 0) {
-            $newSubject->nSort = (int)$_POST['nSort'];
-        }
-        $subjectID = 0;
-        if ((int)$_POST['kKontaktBetreff'] === 0) {
+        $newSubject->nSort = Request::postInt('nSort');
+        $subjectID         = 0;
+        if (Request::postInt('kKontaktBetreff') === 0) {
             $subjectID = $db->insert('tkontaktbetreff', $newSubject);
             $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successSubjectCreate'), 'successSubjectCreate');
         } else {
-            $subjectID = (int)$_POST['kKontaktBetreff'];
+            $subjectID = Request::postInt('kKontaktBetreff');
             $db->update('tkontaktbetreff', 'kKontaktBetreff', $subjectID, $newSubject);
             $alertHelper->addAlert(
                 Alert::TYPE_SUCCESS,
@@ -117,7 +115,7 @@ if (isset($_POST['betreff']) && (int)$_POST['betreff'] === 1 && Form::validateTo
     $tab = 'subjects';
 }
 
-if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1) {
+if (Request::postInt('einstellungen') === 1) {
     $alertHelper->addAlert(
         Alert::TYPE_SUCCESS,
         saveAdminSectionSettings(CONF_KONTAKTFORMULAR, $_POST),
@@ -126,9 +124,7 @@ if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1) {
     $tab = 'config';
 }
 
-if (((isset($_GET['kKontaktBetreff']) && (int)$_GET['kKontaktBetreff'] > 0)
-        || (isset($_GET['neu']) && (int)$_GET['neu'] === 1)) && Form::validateToken()
-) {
+if ((Request::getInt('kKontaktBetreff') > 0 || Request::getInt('neu') === 1) && Form::validateToken()) {
     $step = 'betreff';
 }
 
@@ -170,11 +166,11 @@ if ($step === 'uebersicht') {
 
 if ($step === 'betreff') {
     $newSubject = null;
-    if (isset($_GET['kKontaktBetreff']) && (int)$_GET['kKontaktBetreff'] > 0) {
+    if (Request::getInt('kKontaktBetreff') > 0) {
         $newSubject = $db->select(
             'tkontaktbetreff',
             'kKontaktBetreff',
-            (int)$_GET['kKontaktBetreff']
+            Request::getInt('kKontaktBetreff')
         );
     }
 

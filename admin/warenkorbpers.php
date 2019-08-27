@@ -38,9 +38,8 @@ if (mb_strlen(Request::verifyGPDataString('cSuche')) > 0) {
 
     $smarty->assign('cSuche', $cSuche);
 }
-if (isset($_POST['einstellungen'])
-    && (int)$_POST['einstellungen'] === 1
-    && (isset($_POST['speichern']) || (isset($_POST['a']) && $_POST['a'] === 'speichern'))
+if (Request::postInt('einstellungen') === 1
+    && (isset($_POST['speichern']) || Request::postVar('a') === 'speichern')
     && Form::validateToken()
 ) {
     $step = 'uebersicht';
@@ -48,8 +47,8 @@ if (isset($_POST['einstellungen'])
     $smarty->assign('tab', 'einstellungen');
 }
 
-if (isset($_GET['l']) && (int)$_GET['l'] > 0 && Form::validateToken()) {
-    $customerID = (int)$_GET['l'];
+if (Request::getInt('l') > 0 && Form::validateToken()) {
+    $customerID = Request::getInt('l');
     $persCart   = new PersistentCart($customerID);
     if ($persCart->entferneSelf()) {
         $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successCartPersPosDelete'), 'successCartPersPosDelete');
@@ -101,13 +100,12 @@ foreach ($customers as $item) {
 }
 
 $smarty->assign('oKunde_arr', $customers)
-       ->assign('oPagiKunden', $oPagiKunden);
+    ->assign('oPagiKunden', $oPagiKunden);
 
-if (isset($_GET['a']) && (int)$_GET['a'] > 0) {
-    $step       = 'anzeigen';
-    $customerID = (int)$_GET['a'];
-
-    $persCart = Shop::Container()->getDB()->query(
+if (Request::getInt('a') > 0) {
+    $step           = 'anzeigen';
+    $customerID     = Request::getInt('a');
+    $persCart       = Shop::Container()->getDB()->query(
         'SELECT COUNT(*) AS nAnzahl
             FROM twarenkorbperspos
             JOIN twarenkorbpers 
@@ -115,8 +113,7 @@ if (isset($_GET['a']) && (int)$_GET['a'] > 0) {
             WHERE twarenkorbpers.kKunde = ' . $customerID,
         ReturnType::SINGLE_OBJECT
     );
-
-    $oPagiWarenkorb = (new Pagination('warenkorb'))
+    $cartPagination = (new Pagination('warenkorb'))
         ->setItemCount($persCart->nAnzahl)
         ->assemble();
 
@@ -130,7 +127,7 @@ if (isset($_GET['a']) && (int)$_GET['a'] > 0) {
             JOIN twarenkorbperspos 
                 ON twarenkorbpers.kWarenkorbPers = twarenkorbperspos.kWarenkorbPers
             WHERE twarenkorbpers.kKunde = " . $customerID . '
-            LIMIT ' . $oPagiWarenkorb->getLimitSQL(),
+            LIMIT ' . $cartPagination->getLimitSQL(),
         ReturnType::ARRAY_OF_OBJECTS
     );
     foreach ($carts as $cart) {
@@ -141,10 +138,10 @@ if (isset($_GET['a']) && (int)$_GET['a'] > 0) {
     }
 
     $smarty->assign('oWarenkorbPersPos_arr', $carts)
-           ->assign('kKunde', $customerID)
-           ->assign('oPagiWarenkorb', $oPagiWarenkorb);
+        ->assign('kKunde', $customerID)
+        ->assign('oPagiWarenkorb', $cartPagination);
 }
 
 $smarty->assign('step', $step)
-       ->assign('oConfig_arr', getAdminSectionSettings($settingsIDs))
-       ->display('warenkorbpers.tpl');
+    ->assign('oConfig_arr', getAdminSectionSettings($settingsIDs))
+    ->display('warenkorbpers.tpl');

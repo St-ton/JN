@@ -32,9 +32,9 @@ class ContainerBase extends IlluminateContainer implements ContainerInterface
 
     /**
      * @param string $id
-     * @return callable|null
+     * @return mixed
      */
-    public function getFactoryMethod($id): ?callable
+    public function getFactoryMethod($id)
     {
         return $this->get($id);
     }

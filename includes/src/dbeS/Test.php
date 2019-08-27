@@ -10,6 +10,7 @@ namespace JTL\dbeS;
 
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
+use JTL\Helpers\Request;
 use JTL\Shop;
 
 /**
@@ -37,7 +38,7 @@ class Test
      */
     public function execute(): string
     {
-        if (!isset($_POST['wawiversion']) || (int)$_POST['wawiversion'] < \JTL_MIN_WAWI_VERSION) {
+        if (Request::postInt('wawiversion') < \JTL_MIN_WAWI_VERSION) {
             \syncException(
                 'Ihr JTL-Shop Version ' . \APPLICATION_VERSION .
                 ' benötigt für den Datenabgleich mindestens JTL-Wawi Version ' . (\JTL_MIN_WAWI_VERSION / 100000.0) .
@@ -46,7 +47,7 @@ class Test
             );
         }
         $versionStr = null;
-        if (isset($_POST['kKunde']) && (int)$_POST['kKunde'] > 0) {
+        if (Request::postInt('kKunde') > 0) {
             $state = $this->db->query(
                 "SHOW TABLE STATUS LIKE 'tkunde'",
                 ReturnType::SINGLE_OBJECT
@@ -58,7 +59,7 @@ class Test
                 );
             }
         }
-        if (isset($_POST['kBestellung']) && (int)$_POST['kBestellung'] > 0) {
+        if (Request::postInt('kBestellung') > 0) {
             $state = $this->db->query(
                 "SHOW TABLE STATUS LIKE 'tbestellung'",
                 ReturnType::SINGLE_OBJECT
@@ -70,7 +71,7 @@ class Test
                 );
             }
         }
-        if (isset($_POST['kLieferadresse']) && (int)$_POST['kLieferadresse'] > 0) {
+        if (Request::postInt('kLieferadresse') > 0) {
             $state = $this->db->query(
                 "SHOW TABLE STATUS LIKE 'tlieferadresse'",
                 ReturnType::SINGLE_OBJECT
@@ -82,7 +83,7 @@ class Test
                 );
             }
         }
-        if (isset($_POST['kZahlungseingang']) && (int)$_POST['kZahlungseingang'] > 0) {
+        if (Request::postInt('kZahlungseingang') > 0) {
             $state = $this->db->query(
                 "SHOW TABLE STATUS LIKE 'tzahlungseingang'",
                 ReturnType::SINGLE_OBJECT

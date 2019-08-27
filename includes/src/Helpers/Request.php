@@ -18,6 +18,45 @@ class Request
 {
     /**
      * @param string $var
+     * @param null   $default
+     * @return mixed|null
+     */
+    public static function getVar(string $var, $default = null)
+    {
+        return $_GET[$var] ?? $default;
+    }
+
+    /**
+     * @param string $var
+     * @param null   $default
+     * @return mixed|null
+     */
+    public static function postVar(string $var, $default = null)
+    {
+        return $_POST[$var] ?? $default;
+    }
+
+    /**
+     * @param string $var
+     * @param mixed  $default
+     * @return mixed
+     */
+    public static function getInt(string $var, $default = 0)
+    {
+        return isset($_GET[$var]) ? (int)$_GET[$var] : $default;
+    }
+    /**
+     * @param string $var
+     * @param mixed  $default
+     * @return mixed
+     */
+    public static function postInt(string $var, $default = 0)
+    {
+        return isset($_POST[$var]) ? (int)$_POST[$var] : $default;
+    }
+
+    /**
+     * @param string $var
      * @return bool
      * @since 5.0.0
      */

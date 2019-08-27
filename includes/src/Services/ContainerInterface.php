@@ -29,7 +29,7 @@ interface ContainerInterface extends \Psr\Container\ContainerInterface
 
     /**
      * @param string $id
-     * @return callable|null
+     * @return mixed
      */
-    public function getFactoryMethod($id): ?callable;
+    public function getFactoryMethod($id);
 }

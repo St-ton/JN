@@ -23,7 +23,7 @@ $tab         = mb_strlen(Request::verifyGPDataString('tab')) > 0 ? Request::veri
 
 setzeSprache();
 $step = $controller->handleRequest();
-if ((isset($_GET['a']) && $_GET['a'] === 'editieren') || $step === 'bewertung_editieren') {
+if (Request::getVar('a') === 'editieren' || $step === 'bewertung_editieren') {
     $step = 'bewertung_editieren';
     $smarty->assign('review', $controller->getReview(Request::verifyGPCDataInt('kBewertung')));
     if (Request::verifyGPCDataInt('nFZ') === 1) {

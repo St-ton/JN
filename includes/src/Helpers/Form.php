@@ -160,9 +160,7 @@ class Form
             $msg->cMobil    = $_SESSION['Kunde']->cMobil;
             $msg->cFax      = $_SESSION['Kunde']->cFax;
         }
-        $msg->kKontaktBetreff = isset($_POST['subject'])
-            ? (int)$_POST['subject']
-            : null;
+        $msg->kKontaktBetreff = Request::postInt('subject', null);
         $msg->cNachricht      = isset($_POST['nachricht'])
             ? Text::filterXSS($_POST['nachricht'])
             : null;
@@ -266,7 +264,7 @@ class Form
     public static function editMessage()
     {
         $betreff = isset($_POST['subject'])
-            ? Shop::Container()->getDB()->select('tkontaktbetreff', 'kKontaktBetreff', (int)$_POST['subject'])
+            ? Shop::Container()->getDB()->select('tkontaktbetreff', 'kKontaktBetreff', Request::postInt('subject'))
             : null;
         if (empty($betreff->kKontaktBetreff)) {
             return false;

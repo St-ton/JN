@@ -27,7 +27,7 @@ class ProductDownloads extends NetSyncHandler
 
             case NetSyncRequest::DOWNLOADFILESINFOLDER:
                 $preview = (int)$_POST['bPreview'];
-                if (!isset($_POST['cBasePath']) || empty($_POST['cBasePath'])) {
+                if (empty($_POST['cBasePath'])) {
                     $_POST['cBasePath'] = $preview ? \PFAD_DOWNLOADS_PREVIEW : \PFAD_DOWNLOADS;
                 }
                 $basePath = $_POST['cBasePath'];

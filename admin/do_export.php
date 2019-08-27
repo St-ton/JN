@@ -7,6 +7,7 @@
 use JTL\Cron\QueueEntry;
 use JTL\Exportformat;
 use JTL\Helpers\Form;
+use JTL\Helpers\Request;
 use JTL\Shop;
 
 require_once __DIR__ . '/includes/admininclude.php';
@@ -14,11 +15,11 @@ require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'exportformat_inc.php';
 
 @ini_set('max_execution_time', 0);
 
-if (!isset($_GET['e']) || !((int)$_GET['e'] > 0) || !Form::validateToken()) {
+if (Request::getInt('e') < 1 || !Form::validateToken()) {
     die('0');
 }
 $db    = Shop::Container()->getDB();
-$queue = $db->select('texportqueue', 'kExportqueue', (int)$_GET['e']);
+$queue = $db->select('texportqueue', 'kExportqueue', Request::getInt('e'));
 if (!isset($queue->kExportformat) || !$queue->kExportformat || !$queue->nLimit_m) {
     die('1');
 }
@@ -40,7 +41,7 @@ $queue->foreignKeyID  = $queue->kExportformat;
 $ef->startExport(
     new QueueEntry($queue),
     isset($_GET['ajax']),
-    isset($_GET['back']) && $_GET['back'] === 'admin',
+    Request::getVar('back') === 'admin',
     false,
-    (isset($_GET['max']) ? (int)$_GET['max'] : null)
+    Request::getInt('max', null)
 );

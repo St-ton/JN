@@ -157,7 +157,7 @@ abstract class Bootstrapper implements BootstrapperInterface
     /**
      * @inheritdoc
      */
-    public function renderAdminMenuTab(string $tabName, JTLSmarty $smarty): string
+    public function renderAdminMenuTab(string $tabName, int $menuID, JTLSmarty $smarty): string
     {
         return '';
     }

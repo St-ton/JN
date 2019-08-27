@@ -136,7 +136,8 @@ if ($step === 'plugin_uebersicht' && $pluginID > 0) {
                     require $plugin->getPaths()->getAdminPath() . $menu->file;
                     $menu->html = ob_get_clean();
                 } elseif ($plugin->isBootstrap() === true) {
-                    $menu->html = PluginHelper::bootstrap($pluginID, $loader)->renderAdminMenuTab($menu->name, $smarty);
+                    $menu->html = PluginHelper::bootstrap($pluginID, $loader)
+                        ->renderAdminMenuTab($menu->name, $menu->id, $smarty);
                 }
             } elseif ($menu->configurable === true) {
                 $smarty->assign('oPluginAdminMenu', $menu);

@@ -657,7 +657,7 @@
             if (typeof target === 'undefined') {
                 target = document.getElementsByClassName('product-offer')[0];
             }
-            if (target.id === 'result-wrapper' || $(target).hasClass('product-offer')) {
+            if ((typeof target !== 'undefined' && target.id === 'result-wrapper') || $(target).hasClass('product-offer')) {
                 opts.position = 'fixed';
             }
 

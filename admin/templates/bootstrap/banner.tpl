@@ -360,8 +360,8 @@
     </div>
     {elseif $action === 'area'}
     <script type="text/javascript" src="{$shopURL}/includes/libs/flashchart/js/json/json2.js"></script>
-    <script type="text/javascript" src="{$shopURL}/{$PFAD_ADMIN}/{$currentTemplateDir}js/clickareas.js"></script>
-    <link rel="stylesheet" href="{$shopURL}/{$PFAD_ADMIN}/{$currentTemplateDir}css/clickareas.css" type="text/css" media="screen" />
+    <script type="text/javascript" src="{$templateBaseURL}js/clickareas.js"></script>
+    <link rel="stylesheet" href="{$templateBaseURL}css/clickareas.css" type="text/css" media="screen" />
     <script type="text/javascript">
         $(function () {ldelim}
             $.clickareas({ldelim}

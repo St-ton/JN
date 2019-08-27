@@ -58,10 +58,6 @@ class Panel extends Portlet
     public function getPropertyDesc(): array
     {
         return [
-            'panel-class' => [
-                'label' => __('cssClass'),
-                'width' => 50,
-            ],
             'panel-state' => [
                 'label' => __('type'),
                 'type'  => InputType::SELECT,

@@ -1888,9 +1888,10 @@ table caption {
   display: flex;
   flex-basis: 100%;
   align-items: center;
-  color: $gray-light;
+  color: $headings-color;
   margin: 8px 0px;
-  font-size: large;
+  font-size: $h2-font-size;
+  font-family: $headings-font-family;
 
   &::before,
   &::after {
@@ -1900,7 +1901,7 @@ table caption {
     height: 2px;
     font-size: 0px;
     line-height: 0px;
-    margin: 0px 8px;
+    margin: 0px 30px;
   }
   a {
     text-decoration: none;

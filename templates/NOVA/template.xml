@@ -30,9 +30,7 @@
                 <Option Value="N">im Contentbereich</Option>
                 <Option Value="Y">zwischen Header und Content</Option>
             </Setting>
-            <Setting Description="Mitlaufendes Header-Megamenü?" Key="static_header" Type="select" Value="N">
-                <Option Value="N">Nein</Option>
-                <Option Value="Y">Ja</Option>
+            <Setting Description="Mitlaufendes Header-Megamenü?" Key="static_header" Type="hidden" Value="Y">
             </Setting>
             <Setting Description="Favicon" Key="favicon" Type="upload" Value="favicon.ico" maxFileSize="123456" showPreview="false" allowedFileExtensions="['ico','png']" accept="image/*" target="themes/base/images/" targetFileName="favicon.ico"/>
         </Section>

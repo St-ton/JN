@@ -16656,9 +16656,10 @@ table caption {
   display: flex;
   flex-basis: 100%;
   align-items: center;
-  color: #9b9b9b;
+  color: #525252;
   margin: 8px 0px;
-  font-size: large;
+  font-size: 1.425rem;
+  font-family: "Montserrat", Helvetica, Arial, sans-serif;
 }
 .hr-sect::before, .hr-sect::after {
   content: "";
@@ -16667,7 +16668,7 @@ table caption {
   height: 2px;
   font-size: 0px;
   line-height: 0px;
-  margin: 0px 8px;
+  margin: 0px 30px;
 }
 .hr-sect a {
   text-decoration: none;

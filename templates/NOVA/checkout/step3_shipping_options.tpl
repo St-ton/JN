@@ -156,13 +156,11 @@
     {/row}
     {if isset($smarty.get.editZahlungsart)}
         {block name='checkout-step3-shipping-options-script-scroll'}
-            {literal}
-                {inline_script}<script>
-                    $(document).ready(function () {
-                        $.evo.extended().smoothScrollToAnchor('#fieldset-payment');
-                    });
-                </script>{/inline_script}
-            {/literal}
+            {inline_script}<script>
+                $(document).ready(function () {
+                    $.evo.extended().smoothScrollToAnchor('#fieldset-payment');
+                });
+            </script>{/inline_script}
         {/block}
     {/if}
 {/block}

@@ -5252,7 +5252,7 @@ a.close.disabled {
 
 @media (min-width: 576px) {
   .modal-dialog {
-    max-width: 500px;
+    max-width: 700px;
     margin: 1.75rem auto;
   }
 
@@ -14250,6 +14250,149 @@ aside .last-seen-link {
   color: #ffffff;
 }
 
+.productbox {
+  position: relative;
+}
+@media (min-width: 1300px) {
+  .productbox.productbox-hover .productbox-inner::before {
+    content: "";
+    background-color: #fff;
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    transition: all 0.2s ease-in-out;
+  }
+  .productbox.productbox-hover:hover {
+    z-index: 2;
+  }
+  .productbox.productbox-hover:hover .productbox-inner::before {
+    box-shadow: 0 0 0.3125rem rgba(0, 0, 0, 0.2);
+    left: -1rem;
+    right: -1rem;
+    top: -1rem;
+    bottom: -1rem;
+  }
+  .productbox.productbox-hover:hover .productbox-ribbon.ribbon {
+    top: -0.5rem;
+    left: -1.5rem;
+  }
+  .productbox.productbox-hover:not(:hover) .productbox-onhover {
+    opacity: 0;
+  }
+  .productbox.productbox-hover.productbox-column {
+    width: 100%;
+    height: 100%;
+  }
+  .productbox.productbox-hover.productbox-column:hover .productbox-inner {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+  }
+  .productbox.productbox-hover.productbox-column:not(:hover) .productbox-onhover {
+    display: none;
+  }
+}
+.productbox:not(.productbox-show-variations) .productbox-variations {
+  display: none;
+}
+.productbox .form-counter .btn, .productbox .form-counter .input-group-text {
+  padding-left: 0.5rem;
+  padding-right: 0.5rem;
+}
+
+.productbox-inner {
+  position: relative;
+}
+
+.productbox-quick-actions {
+  position: absolute;
+  right: 0.5rem;
+  top: 0.5rem;
+  display: flex;
+  z-index: 1;
+  justify-content: flex-end;
+}
+.productbox-quick-actions .btn {
+  margin: 0.25rem;
+}
+
+.productbox-ribbon.ribbon {
+  position: absolute;
+  z-index: 1;
+  top: 1rem;
+  left: -0.5rem;
+  transition: all 0.2s ease-in-out;
+}
+
+.productbox-sale-percentage {
+  position: relative;
+  top: -4rem;
+}
+
+.productbox-image {
+  position: relative;
+  margin-bottom: 1rem;
+}
+
+.productbox-title {
+  display: block;
+}
+
+.productbox-variations {
+  margin-bottom: 1rem;
+}
+
+.productbox-price {
+  font-size: 1.1875rem;
+}
+
+.productbox-onhover {
+  transition: 0.2s;
+}
+
+.productbox-column .productbox-details {
+  display: none;
+}
+
+.productbox-row .productbox-title {
+  margin-bottom: 1rem;
+}
+.productbox-row .productbox-details {
+  display: none;
+}
+@media (min-width: 1300px) {
+  .productbox-row .productbox-options {
+    text-align: right;
+  }
+  .productbox-row .productbox-details {
+    display: block;
+  }
+}
+
+.productbox-compare .productbox-vat, .productbox-compare .productbox-status,
+.productbox-compare .productbox-delivery, .productbox-compare .productbox-actions {
+  display: none;
+}
+
+.productbox-sidebar .productbox-title {
+  margin-bottom: 0;
+}
+.productbox-sidebar .productbox-options {
+  text-align: left;
+}
+.productbox-sidebar .productbox-image {
+  margin-bottom: 0;
+}
+.productbox-sidebar .productbox-ribbon.ribbon,
+.productbox-sidebar .productbox-quick-actions, .productbox-sidebar .productbox-vat,
+.productbox-sidebar .productbox-details, .productbox-sidebar .productbox-status,
+.productbox-sidebar .productbox-delivery, .productbox-sidebar .productbox-actions {
+  display: none;
+}
+
 .tooltip .tooltip-inner {
   border: 1px solid #525252;
 }
@@ -14704,12 +14847,6 @@ html {
 
 a {
   transition: color 0.2s ease-in-out;
-}
-
-#pushed-success {
-  border: 1px solid #f5f7fa;
-  margin-bottom: 5rem;
-  box-shadow: 0 2px 16px 0 rgba(0, 0, 0, 0.06);
 }
 
 .alert .alert-heading {
@@ -15654,7 +15791,7 @@ ul.partlist-items {
     text-align: right;
   }
   .list .product-cell .price_wrapper .price {
-    font-size: 1.425rem;
+    font-size: 1.06875rem;
     font-weight: bold;
   }
 }
@@ -16156,7 +16293,7 @@ a[data-toggle=collapse][aria-expanded=true] i.fa-chevron-down,
 
 .price {
   font-family: "Montserrat", Helvetica, Arial, sans-serif;
-  font-size: 1.425rem;
+  font-size: 1.06875rem;
   font-weight: bold;
   color: #525252;
 }
@@ -17872,7 +18009,7 @@ a.nice-deco:focus::after {
   font-size: 2.85rem !important;
 }
 
-.text-accent {
+.text-accent, .productbox-price {
   font-family: Montserrat, sans-serif !important;
   font-weight: 600 !important;
 }

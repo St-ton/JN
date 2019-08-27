@@ -2107,19 +2107,19 @@ final class Shop
                 $faviconUrl .= '/favicon-default.ico';
             }
         } else {
-            $smarty           = JTLSmarty::getInstance(false, true);
+            $smarty           = JTLSmarty::getInstance();
             $templateDir      = $smarty->getTemplateDir($smarty->context);
-            $shopTemplatePath = \str_replace(\PFAD_ROOT, '', $templateDir);
-            $faviconUrl       = self::getURL();
+            $shopTemplatePath = $smarty->getTemplateUrlPath();
+            $faviconUrl       = self::getURL() . '/';
 
             if (\file_exists($templateDir . 'themes/base/images/favicon.ico')) {
-                $faviconUrl .= '/' . $shopTemplatePath . 'themes/base/images/favicon.ico';
+                $faviconUrl .= $shopTemplatePath . 'themes/base/images/favicon.ico';
             } elseif (\file_exists($templateDir . 'favicon.ico')) {
-                $faviconUrl .= '/' . $shopTemplatePath . 'favicon.ico';
+                $faviconUrl .= $shopTemplatePath . 'favicon.ico';
             } elseif (\file_exists(\PFAD_ROOT . 'favicon.ico')) {
-                $faviconUrl .= '/favicon.ico';
+                $faviconUrl .= 'favicon.ico';
             } else {
-                $faviconUrl .= '/favicon-default.ico';
+                $faviconUrl .= 'favicon-default.ico';
             }
         }
 

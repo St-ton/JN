@@ -5,7 +5,7 @@
 {block name='layout-header-shop-nav-account'}
     {if empty($smarty.session.Kunde->kKunde)}
         {block name='layout-header-shop-nav-account-logged-out'}
-            {collapse id="nav-account-collapse" tag="div"  data=["parent"=>"#evo-main-nav-wrapper"] class="mt-md-2 py-0"}
+            {collapse id="nav-account-collapse" tag="div"  data=["parent"=>"#main-nav-wrapper"] class="mt-md-2 py-0 w-100"}
                 {form action="{get_static_route id='jtl.php' secure=true}" method="post" class="evo-validate px-5 pt-5 pb-3"}
                     {block name='layout-header-shop-nav-account-form-content'}
                         <fieldset id="quick-login">
@@ -58,7 +58,7 @@
         {/block}
     {else}
         {block name='layout-header-shop-nav-account-logged-in'}
-            {collapse id="nav-account-collapse" tag="div"  data=["parent"=>"#evo-main-nav-wrapper"] class="mt-md-2 text-center"}
+            {collapse id="nav-account-collapse" tag="div"  data=["parent"=>"#main-nav-wrapper"] class="mt-md-2 text-center w-100"}
                 {dropdownitem href="{get_static_route id='jtl.php' secure=true}" rel="nofollow" title="{lang key='myAccount'}"}
                     {lang key='myAccount'}
                 {/dropdownitem}

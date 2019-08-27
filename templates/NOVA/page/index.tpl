@@ -45,20 +45,20 @@
             {include file='snippets/opc_mount_point.tpl' id='opc_before_news'}
 
             {container}
-            {block name='page-index-subheading-news'}
-                <div class="h2">{lang key='news' section='news'}</div>
-            {/block}
-            {block name='page-index-news'}
-                {row itemprop="about" itemscope=true itemtype="http://schema.org/Blog" class="news-slider mx-0"}
-                    {foreach $oNews_arr as $oNewsUebersicht}
-                        {col}
-                            {block name='page-index-include-preview'}
-                                {include file='blog/preview.tpl'}
-                            {/block}
-                        {/col}
-                    {/foreach}
-                {/row}
-            {/block}
+                {block name='page-index-subheading-news'}
+                    <div class="h2">{lang key='news' section='news'}</div>
+                {/block}
+                {block name='page-index-news'}
+                    {row itemprop="about" itemscope=true itemtype="http://schema.org/Blog" class="news-slider mx-0"}
+                        {foreach $oNews_arr as $oNewsUebersicht}
+                            {col}
+                                {block name='page-index-include-preview'}
+                                    {include file='blog/preview.tpl'}
+                                {/block}
+                            {/col}
+                        {/foreach}
+                    {/row}
+                {/block}
             {/container}
         {/if}
     {/block}

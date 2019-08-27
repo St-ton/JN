@@ -10,7 +10,7 @@
     {block name='basket-index-content'}
         {container}
             {row}
-                {col}
+                {col cols=12 md=8}
                     {block name='basket-index-heading'}
                         {include file='snippets/opc_mount_point.tpl' id='opc_before_heading'}
                         <h1>{lang key='basket'} ({count($smarty.session.Warenkorb->PositionenArr)} {lang key='products'})</h1>
@@ -68,13 +68,13 @@
                                                             {row}
                                                                 {block name='basket-index-freegifts'}
                                                                     {foreach $oArtikelGeschenk_arr as $oArtikelGeschenk}
-                                                                        {col cols=6 md=4}
+                                                                        {col cols=12}
                                                                             <div class="freegift mb-4">
                                                                                 <div class="custom-control custom-radio pl-0">
                                                                                     <input class="custom-control-input " type="radio" id="gift{$oArtikelGeschenk->kArtikel}" name="gratisgeschenk" value="{$oArtikelGeschenk->kArtikel}" onclick="submit();">
                                                                                     <label for="gift{$oArtikelGeschenk->kArtikel}" class="p-3 custom-control-label {if $selectedFreegift===$oArtikelGeschenk->kArtikel}badge-check{/if}">
                                                                                         {if $selectedFreegift===$oArtikelGeschenk->kArtikel}{badge class="badge-circle"}<i class="fas fa-check mx-auto"></i>{/badge}{/if}
-                                                                                        {image src=$oArtikelGeschenk->Bilder[0]->cURLKlein class="image" alt=$oArtikelGeschenk->cName}
+                                                                                        {image src=$oArtikelGeschenk->Bilder[0]->cURLKlein class="image" fluid=true alt=$oArtikelGeschenk->cName}
                                                                                         <div class="caption">
                                                                                             <p class="small text-muted">{lang key='freeGiftFrom1'} {$oArtikelGeschenk->cBestellwert} {lang key='freeGiftFrom2'}</p>
                                                                                             <p>{$oArtikelGeschenk->cName}</p>
@@ -139,15 +139,15 @@
                                         {/block}
                                         {/cardheader}
                                         {collapse id="coupon-form"}
-                                            {cardbody}
+                                            {cardbody class="bg-info"}
                                             {block name='basket-index-coupon-form'}
                                                 {form class="form-inline evo-validate" id="basket-coupon-form" method="post" action="{get_static_route id='warenkorb.php'}"}
-                                                {formgroup class="mw-100{if !empty($invalidCouponCode)} has-error{/if}"}
-                                                {inputgroup}
-                                                {input aria=["label"=>"{lang key='couponCode' section='account data'}"] type="text" name="Kuponcode" id="couponCode" maxlength="32" placeholder="{lang key='couponCode' section='account data'}" required=true}
-                                                {button type="submit" value=1}{lang key='useCoupon' section='checkout'}{/button}
-                                                {/inputgroup}
-                                                {/formgroup}
+                                                    {formgroup class="mw-100{if !empty($invalidCouponCode)} has-error{/if}"}
+                                                    {inputgroup}
+                                                        {input aria=["label"=>"{lang key='couponCode' section='account data'}"] type="text" name="Kuponcode" id="couponCode" maxlength="32" placeholder="{lang key='couponCode' section='account data'}" required=true}
+                                                        {button type="submit" value=1}{lang key='useCoupon' section='checkout'}{/button}
+                                                    {/inputgroup}
+                                                    {/formgroup}
                                                 {/form}
                                             {/block}
                                             {/cardbody}

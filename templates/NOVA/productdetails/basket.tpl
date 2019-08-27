@@ -24,32 +24,38 @@
             {elseif $Artikel->inWarenkorbLegbar == 1 }
                 {if !$showMatrix}
                     {block name='productdetails-basket-form-inline'}
-                        {inputgroup id="quantity-grp" class="choose_quantity"}
-                            {input type="{if $Artikel->cTeilbar === 'Y' && $Artikel->fAbnahmeintervall == 0}text{else}number{/if}"
-                                min="{if $Artikel->fMindestbestellmenge}{$Artikel->fMindestbestellmenge}{else}0{/if}"
-                                required=($Artikel->fAbnahmeintervall > 0)
-                                step="{if $Artikel->fAbnahmeintervall > 0}{$Artikel->fAbnahmeintervall}{/if}"
-                                id="quantity" class="quantity" name="anzahl"
-                                aria=["label"=>"{lang key='quantity'}"]
-                                value="{if $Artikel->fAbnahmeintervall > 0 || $Artikel->fMindestbestellmenge > 1}{if $Artikel->fMindestbestellmenge > $Artikel->fAbnahmeintervall}{$Artikel->fMindestbestellmenge}{else}{$Artikel->fAbnahmeintervall}{/if}{else}1{/if}"
-                                data=["decimals"=>{getDecimalLength quantity=$Artikel->fAbnahmeintervall}]
-                            }
-                            {if $Artikel->cEinheit}
-                                {inputgroupappend}
-                                    {inputgrouptext class="unit form-control"}
-                                        {$Artikel->cEinheit}
-                                    {/inputgrouptext}
-                                {/inputgroupappend}
-                            {/if}
-                            {button aria=["label"=>"{lang key='addToCart'}"] name="inWarenkorb" type="submit" value="{lang key='addToCart'}" class="ml-4" variant="primary"}
-                                <span class="btn-basket-check">
-                                    <span class="fas fa-shopping-cart d-sm-none"></span><span class="d-none d-sm-block">{lang key='addToCart'}</span>
-                                </span>
-                                <svg x="0px" y="0px" width="32px" height="32px" viewBox="0 0 32 32">
-                                    <path stroke-dasharray="19.79 19.79" stroke-dashoffset="19.79" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="square" stroke-miterlimit="10" d="M9,17l3.9,3.9c0.1,0.1,0.2,0.1,0.3,0L23,11"/>
-                                </svg>
-                            {/button}
-                        {/inputgroup}
+                        {row class="align-items-center"}
+                            {col cols=12 sm=6 class="mb-3 mb-md-0"}
+                                {inputgroup id="quantity-grp" class="choose_quantity"}
+                                    {input type="{if $Artikel->cTeilbar === 'Y' && $Artikel->fAbnahmeintervall == 0}text{else}number{/if}"
+                                        min="{if $Artikel->fMindestbestellmenge}{$Artikel->fMindestbestellmenge}{else}0{/if}"
+                                        required=($Artikel->fAbnahmeintervall > 0)
+                                        step="{if $Artikel->fAbnahmeintervall > 0}{$Artikel->fAbnahmeintervall}{/if}"
+                                        id="quantity" class="quantity" name="anzahl"
+                                        aria=["label"=>"{lang key='quantity'}"]
+                                        value="{if $Artikel->fAbnahmeintervall > 0 || $Artikel->fMindestbestellmenge > 1}{if $Artikel->fMindestbestellmenge > $Artikel->fAbnahmeintervall}{$Artikel->fMindestbestellmenge}{else}{$Artikel->fAbnahmeintervall}{/if}{else}1{/if}"
+                                        data=["decimals"=>{getDecimalLength quantity=$Artikel->fAbnahmeintervall}]
+                                    }
+                                    {if $Artikel->cEinheit}
+                                        {inputgroupappend}
+                                            {inputgrouptext class="unit form-control"}
+                                                {$Artikel->cEinheit}
+                                            {/inputgrouptext}
+                                        {/inputgroupappend}
+                                    {/if}
+                                {/inputgroup}
+                            {/col}
+                            {col cols=12 sm=6}
+                                {button aria=["label"=>"{lang key='addToCart'}"] block=true name="inWarenkorb" type="submit" value="{lang key='addToCart'}" variant="primary"}
+                                    <span class="btn-basket-check">
+                                        <span class="fas fa-shopping-cart d-sm-none"></span><span class="d-none d-sm-block">{lang key='addToCart'}</span>
+                                    </span>
+                                    <svg x="0px" y="0px" width="32px" height="32px" viewBox="0 0 32 32">
+                                        <path stroke-dasharray="19.79 19.79" stroke-dashoffset="19.79" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linecap="square" stroke-miterlimit="10" d="M9,17l3.9,3.9c0.1,0.1,0.2,0.1,0.3,0L23,11"/>
+                                    </svg>
+                                {/button}
+                            {/col}
+                        {/row}
                     {/block}
                 {/if}
             {/if}

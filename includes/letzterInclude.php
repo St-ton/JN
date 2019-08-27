@@ -62,7 +62,7 @@ $customerGroupID    = ($id = Frontend::getCustomer()->kKundengruppe) > 0
     ? $id
     : Frontend::getCustomerGroup()->getID();
 $globalMetaData     = $globalMetaData[Shop::getLanguageID()] ?? null;
-$pagetType          = Shop::getPageType();
+$pageType           = Shop::getPageType();
 $specialPageTypes   = [
     PAGE_REGISTRIERUNG,
     PAGE_WARENKORB,
@@ -108,7 +108,7 @@ $expandedCategories->getOpenCategories($AktuelleKategorie);
 if (!isset($NaviFilter)) {
     $NaviFilter = Shop::run();
 }
-$linkHelper->activate($pagetType);
+$linkHelper->activate($pageType);
 $origin = (isset($_SESSION['Kunde']->cLand) && mb_strlen($_SESSION['Kunde']->cLand) > 0)
     ? $_SESSION['Kunde']->cLand
     : '';
@@ -167,7 +167,7 @@ $smarty->assign('linkgroups', $linkHelper->getLinkGroups())
        ->assign('bAjaxRequest', Request::isAjaxRequest())
        ->assign('jtl_token', Form::getTokenInput())
        ->assign('ShopLogoURL', Shop::getLogo(true))
-       ->assign('nSeitenTyp', $pagetType)
+       ->assign('nSeitenTyp', $pageType)
        ->assign('bExclusive', isset($_GET['exclusive_content']))
        ->assign('bAdminWartungsmodus', isset($bAdminWartungsmodus) && $bAdminWartungsmodus)
        ->assign('WarensummeLocalized', $cart->gibGesamtsummeWarenLocalized())
@@ -215,11 +215,11 @@ require_once PFAD_ROOT . PFAD_INCLUDES . 'filter_inc.php';
 Visitor::generateData();
 Kampagne::checkCampaignParameters();
 Shop::Lang()->generateLanguageAndCurrencyLinks();
-$ep = new ExtensionPoint($pagetType, Shop::getParameters(), Shop::getLanguageID(), $customerGroupID);
+$ep = new ExtensionPoint($pageType, Shop::getParameters(), Shop::getLanguageID(), $customerGroupID);
 $ep->load();
 executeHook(HOOK_LETZTERINCLUDE_INC);
 $boxes       = Shop::Container()->getBoxService();
-$boxesToShow = $boxes->render($boxes->buildList($pagetType), $pagetType);
+$boxesToShow = $boxes->render($boxes->buildList($pageType), $pageType);
 /* @global null|Artikel $AktuellerArtikel */
 if (isset($AktuellerArtikel->kArtikel) && $AktuellerArtikel->kArtikel > 0) {
     $boxes->addRecentlyViewed($AktuellerArtikel->kArtikel);

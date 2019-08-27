@@ -15,11 +15,14 @@
         {/block}
         {block name='account-login-script-no-cookie'}
             <script type="text/javascript">
-               $(function() {ldelim}
-                   if (navigator.cookieEnabled === false) {ldelim}
-                       $('#no-cookies-warning').show();
-                   {rdelim}
-               {rdelim});
+                var deferredTasks = window.deferredTasks || [];
+                deferredTasks.push(["ready",function () {
+                    $(function () {
+                        if (navigator.cookieEnabled === false) {
+                            $('#no-cookies-warning').show();
+                        }
+                    });
+                }]);
             </script>
         {/block}
     {elseif !$alertNote}

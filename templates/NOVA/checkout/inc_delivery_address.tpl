@@ -3,38 +3,29 @@
  * @license https://jtl-url.de/jtlshoplicense
  *}
 {block name='checkout-inc-delivery-address'}
-    {if isset($orderDetail)}
-        {if $Lieferadresse->cFirma}
-            {$Lieferadresse->cFirma}
-            <br />
+    <ul class="list-unstyled">
+        {if isset($orderDetail)}
+            {if $Lieferadresse->cFirma}<li>{$Lieferadresse->cFirma}</li>{/if}
+            {if $Lieferadresse->cZusatz}<li>{$Lieferadresse->cZusatz}</li>{/if}
+            <li>{$Lieferadresse->cTitel} {$Lieferadresse->cVorname} {$Lieferadresse->cNachname}</li>
+            <li>
+                {$Lieferadresse->cStrasse} {$Lieferadresse->cHausnummer}, {if $Lieferadresse->cAdressZusatz}{$Lieferadresse->cAdressZusatz},{/if}
+                {$Lieferadresse->cPLZ} {$Lieferadresse->cOrt},
+                {if $Lieferadresse->cLand}{$Lieferadresse->cLand}{/if}
+            </li>
+        {else}
+            {if $Lieferadresse->cFirma}<li>{$Lieferadresse->cFirma}</li>{/if}
+            {if $Lieferadresse->cZusatz}<li>{$Lieferadresse->cZusatz}</li>{/if}
+            <li>{$Lieferadresse->cTitel} {$Lieferadresse->cVorname} {$Lieferadresse->cNachname}</li>
+            <li>{$Lieferadresse->cStrasse} {$Lieferadresse->cHausnummer}</li>
+            {if $Lieferadresse->cAdressZusatz}<li>{$Lieferadresse->cAdressZusatz}</li>{/if}
+            <li>{$Lieferadresse->cPLZ} {$Lieferadresse->cOrt}</li>
+            {if $Lieferadresse->cBundesland}<li>{$Lieferadresse->cBundesland}</li>{/if}
+            {if $Lieferadresse->angezeigtesLand}<li>{$Lieferadresse->angezeigtesLand}</li>{/if}
         {/if}
-        {if $Lieferadresse->cZusatz}
-            {$Lieferadresse->cZusatz}
-            <br />
-        {/if}
-        {$Lieferadresse->cTitel} {$Lieferadresse->cVorname} {$Lieferadresse->cNachname}
-        <br />{$Lieferadresse->cStrasse} {$Lieferadresse->cHausnummer}, {if $Lieferadresse->cAdressZusatz}{$Lieferadresse->cAdressZusatz},{/if}
-        {$Lieferadresse->cPLZ} {$Lieferadresse->cOrt},
-        {if $Lieferadresse->cLand}{$Lieferadresse->cLand}<br />{/if}
-    {else}
-        {if $Lieferadresse->cFirma}
-            {$Lieferadresse->cFirma}
-            <br />
-        {/if}
-        {if $Lieferadresse->cZusatz}
-            {$Lieferadresse->cZusatz}
-            <br />
-        {/if}
-        {$Lieferadresse->cTitel} {$Lieferadresse->cVorname} {$Lieferadresse->cNachname}
-        <br />{$Lieferadresse->cStrasse} {$Lieferadresse->cHausnummer}
-        <br />{if $Lieferadresse->cAdressZusatz}{$Lieferadresse->cAdressZusatz}<br />{/if}
-        {$Lieferadresse->cPLZ} {$Lieferadresse->cOrt}<br />{if $Lieferadresse->cBundesland}{$Lieferadresse->cBundesland}
-            <br />
-        {/if}
-        {if $Lieferadresse->angezeigtesLand}{$Lieferadresse->angezeigtesLand}<br /><br />{/if}
-    {/if}
-    {if $Lieferadresse->cTel}{lang key='tel' section='account data'}: {$Lieferadresse->cTel}<br />{/if}
-    {if $Lieferadresse->cFax}{lang key='fax' section='account data'}: {$Lieferadresse->cFax}<br />{/if}
-    {if $Lieferadresse->cMobil}{lang key='mobile' section='account data'}: {$Lieferadresse->cMobil}<br />{/if}
-    {if $Lieferadresse->cMail}{$Lieferadresse->cMail}<br />{/if}
+        {if $Lieferadresse->cTel}<li>{lang key='tel' section='account data'}: {$Lieferadresse->cTel}</li>{/if}
+        {if $Lieferadresse->cFax}<li>{lang key='fax' section='account data'}: {$Lieferadresse->cFax}</li>{/if}
+        {if $Lieferadresse->cMobil}<li>{lang key='mobile' section='account data'}: {$Lieferadresse->cMobil}</li>{/if}
+        {if $Lieferadresse->cMail}<li>{$Lieferadresse->cMail}</li>{/if}
+    </ul>
 {/block}

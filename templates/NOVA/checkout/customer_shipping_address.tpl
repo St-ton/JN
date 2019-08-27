@@ -3,12 +3,12 @@
  * @license https://jtl-url.de/jtlshoplicense
  *}
 {block name='checkout-customer-shipping-address'}
-    {$name = 'shipping_address'}
-    {* salutation / title *}
-    {block name='checkout-customer-shipping-address-salution-title'}
-        {row}
+    {formrow}
+        {$name = 'shipping_address'}
+        {* salutation / title *}
+        {block name='checkout-customer-shipping-address-salution-title'}
             {if $Einstellungen.kunden.lieferadresse_abfragen_anrede !== 'N'}
-                {col cols=12 md=6}
+                {col md=6}
                     {formgroup
                         class="{if !empty($fehlendeAngaben.anrede)} has-error{/if}"
                         label="{lang key='salutation' section='account data'}{if $Einstellungen.kunden.lieferadresse_abfragen_anrede === 'O'}<span class='optional'> - {lang key='optional'}</span>{/if}"
@@ -28,7 +28,7 @@
                 {/col}
             {/if}
             {if $Einstellungen.kunden.lieferadresse_abfragen_titel !== 'N'}
-                {col cols=12 md=6}
+                {col md=6}
                     {include file='snippets/form_group_simple.tpl'
                         options=[
                             "text", "{$prefix}-{$name}-title", "{$prefix}[{$name}][titel]",
@@ -39,13 +39,12 @@
                     }
                 {/col}
             {/if}
-        {/row}
-    {/block}
+            <div class="w-100"></div>
+        {/block}
 
-    {* firstname lastname *}
-    {block name='checkout-customer-shipping-address-firstname-lastname'}
-        {row}
-            {col cols=12 md=6}
+        {* firstname lastname *}
+        {block name='checkout-customer-shipping-address-firstname-lastname'}
+            {col md=6}
                 {include file='snippets/form_group_simple.tpl'
                     options=[
                         "text", "{$prefix}-{$name}-firstName", "{$prefix}[{$name}][vorname]",
@@ -55,7 +54,7 @@
                     ]
                 }
             {/col}
-            {col cols=12 md=6}
+            {col md=6}
                 {include file='snippets/form_group_simple.tpl'
                     options=[
                         "text", "{$prefix}-{$name}-lastName", "{$prefix}[{$name}][nachname]",
@@ -64,14 +63,13 @@
                     ]
                 }
             {/col}
-        {/row}
-    {/block}
+            <div class="w-100"></div>
+        {/block}
 
-    {* firm / firmtext *}
-    {block name='checkout-customer-shipping-address-company'}
-        {row}
+        {* firm / firmtext *}
+        {block name='checkout-customer-shipping-address-company'}
             {if $Einstellungen.kunden.kundenregistrierung_abfragen_firma !== 'N'}
-                {col cols=12 md=6}
+                {col md=6}
                     {include file='snippets/form_group_simple.tpl'
                         options=[
                             "text", "{$prefix}-{$name}-firm", "{$prefix}[{$name}][firma]",
@@ -82,7 +80,7 @@
                 {/col}
             {/if}
             {if $Einstellungen.kunden.kundenregistrierung_abfragen_firmazusatz !== 'N'}
-                {col cols=12 md=6}
+                {col md=6}
                     {include file='snippets/form_group_simple.tpl'
                         options=[
                             "text", "{$prefix}-{$name}-firmext", "{$prefix}[{$name}][firmazusatz]",
@@ -92,13 +90,12 @@
                     }
                 {/col}
             {/if}
-        {/row}
-    {/block}
+            <div class="w-100"></div>
+        {/block}
 
-    {* street / number *}
-    {block name='checkout-customer-shipping-address-street'}
-        {row}
-            {col cols=12 md=8}
+        {* street / number *}
+        {block name='checkout-customer-shipping-address-street'}
+            {col cols=8}
                 {include file='snippets/form_group_simple.tpl'
                     options=[
                         "text", "{$prefix}-{$name}-street", "{$prefix}[{$name}][strasse]",
@@ -107,7 +104,7 @@
                     ]
                 }
             {/col}
-            {col cols=12 md=4}
+            {col cols=4}
                 {include file='snippets/form_group_simple.tpl'
                     options=[
                         "text", "{$prefix}-{$name}-streetnumber", "{$prefix}[{$name}][hausnummer]",
@@ -116,14 +113,13 @@
                     ]
                 }
             {/col}
-        {/row}
-    {/block}
+            <div class="w-100"></div>
+        {/block}
 
-    {* address addition *}
-    {if $Einstellungen.kunden.lieferadresse_abfragen_adresszusatz !== 'N'}
-        {block name='checkout-customer-shipping-address-addition'}
-            {row}
-                {col cols=12 md=6}
+        {* address addition *}
+        {if $Einstellungen.kunden.lieferadresse_abfragen_adresszusatz !== 'N'}
+            {block name='checkout-customer-shipping-address-addition'}
+                {col md=6}
                     {include file='snippets/form_group_simple.tpl'
                         options=[
                             "text", "{$prefix}-{$name}-street2", "{$prefix}[{$name}][adresszusatz]",
@@ -132,25 +128,24 @@
                         ]
                     }
                 {/col}
-            {/row}
-        {/block}
-    {/if}
+                <div class="w-100"></div>
+            {/block}
+        {/if}
 
-    {* country *}
-    {if isset($Lieferadresse->cLand)}
-        {assign var=cIso value=$Lieferadresse->cLand}
-    {elseif !empty($Kunde->cLand)}
-        {assign var=cIso value=$Kunde->cLand}
-    {elseif !empty($Einstellungen.kunden.kundenregistrierung_standardland)}
-        {assign var=cIso value=$Einstellungen.kunden.kundenregistrierung_standardland}
-    {elseif isset($laender[0]->cISO)}
-        {assign var=cIso value=$laender[0]->cISO}
-    {else}
-        {assign var=cIso value=''}
-    {/if}
-    {block name='checkout-customer-shipping-address-country'}
-        {row}
-            {col cols=12 md=6}
+        {* country *}
+        {if isset($Lieferadresse->cLand)}
+            {assign var=cIso value=$Lieferadresse->cLand}
+        {elseif !empty($Kunde->cLand)}
+            {assign var=cIso value=$Kunde->cLand}
+        {elseif !empty($Einstellungen.kunden.kundenregistrierung_standardland)}
+            {assign var=cIso value=$Einstellungen.kunden.kundenregistrierung_standardland}
+        {elseif isset($laender[0]->cISO)}
+            {assign var=cIso value=$laender[0]->cISO}
+        {else}
+            {assign var=cIso value=''}
+        {/if}
+        {block name='checkout-customer-shipping-address-country'}
+            {col cols=12}
                 {formgroup label="{lang key='country' section='account data'}" label-for="{$prefix}-{$name}-country"}
                     {select name="{$prefix}[{$name}][land]" id="{$prefix}-{$name}-country" class="country-input" autocomplete="shipping country"}
                         <option value="" selected disabled>{lang key='country' section='account data'}</option>
@@ -169,7 +164,7 @@
                 {else}
                     {assign var=cState value=''}
                 {/if}
-                {col cols=12 md=6}
+                {col cols=12}
                     {formgroup
                         class="{if isset($fehlendeAngaben.bundesland)} has-error{/if}"
                         label="{lang key='state' section='account data'}{if $Einstellungen.kunden.lieferadresse_abfragen_bundesland !== 'Y'}<span class='optional'> - {lang key='optional'}</span>{/if}"
@@ -209,13 +204,11 @@
                     {/formgroup}
                 {/col}
             {/if}
-        {/row}
-    {/block}
+        {/block}
 
-    {* zip / city *}
-    {block name='checkout-customer-shipping-address-city'}
-        {row}
-            {col cols=12 md=4}
+        {* zip / city *}
+        {block name='checkout-customer-shipping-address-city'}
+            {col md=4}
                 {formgroup
                     class="{if !empty($fehlendeAngaben.plz)} has-error{/if}"
                     label="{lang key='plz' section='account data'}"
@@ -245,17 +238,17 @@
                 {/formgroup}
             {/col}
 
-            {col cols=12 md=8}
+            {col md=8}
                 {formgroup
                     class="{if !empty($fehlendeAngaben.ort)} has-error{/if}"
-                    label="{lang key='city' section='account data'}"
+                    label=""
                     label-for="{$prefix}-{$name}-city"
                 }
                     {input type="text"
                             name="{$prefix}[{$name}][ort]"
                             value="{if isset($Lieferadresse->cOrt)}{$Lieferadresse->cOrt}{/if}"
                             id="{$prefix}-{$name}-city"
-                            class="city_input"
+                            class="city_input typeahead"
                             placeholder="{lang key='city' section='account data'}"
                             required=true
                             autocomplete="shipping address-level2"
@@ -271,6 +264,6 @@
                     {/if}
                 {/formgroup}
             {/col}
-        {/row}
-    {/block}
+        {/block}
+    {/formrow}
 {/block}

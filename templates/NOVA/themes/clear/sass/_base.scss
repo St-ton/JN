@@ -2232,9 +2232,18 @@ input.form-control[name="wishlist-url"] {
   .table {
     width: 98%;
     thead th {
+      &:first-child {
+        z-index: $zindex-dropdown + 1;
+      }
+      &:not(:first-child) {
+        z-index: $zindex-dropdown + 2;
+      }
       background: #fff;
       vertical-align: top;
       z-index: $zindex-dropdown - 1;
+    }
+    tbody td:first-child {
+      background-color: #f5f7fa;
     }
   }
 

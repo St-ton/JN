@@ -79,12 +79,12 @@
                 {/block}
                 {block name='comparelist-index-products'}
                     <div class="comparelist table-responsive">
-                        <table class="table table-bordered table-sm">
+                        <table class="table table-bordered table-hover table-sm">
                             <thead>
                             <tr>
                                 <th class="sticky-top">&nbsp;</th>
                                 {foreach $oVergleichsliste->oArtikel_arr as $oArtikel}
-                                    <th style="width:{$Einstellungen_Vergleichsliste.vergleichsliste.vergleichsliste_spaltengroesse}px;" class="text-center sticky-top equal-height">
+                                    <th class="text-center sticky-top equal-height min-w">
                                         <div class="stretched">
                                             <div>
                                                 <div class="text-right">

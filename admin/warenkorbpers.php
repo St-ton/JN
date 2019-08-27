@@ -57,7 +57,7 @@ if (Request::getInt('l') > 0 && Form::validateToken()) {
     unset($persCart);
 }
 $customerCount = (int)Shop::Container()->getDB()->query(
-    'SELECT COUNT(*) AS count
+    'SELECT COUNT(*) AS cnt
         FROM
         (
             SELECT tkunde.kKunde
@@ -70,7 +70,7 @@ $customerCount = (int)Shop::Container()->getDB()->query(
             GROUP BY tkunde.kKunde
         ) AS tAnzahl',
     ReturnType::SINGLE_OBJECT
-)->count;
+)->cnt;
 
 $oPagiKunden = (new Pagination('kunden'))
     ->setItemCount($customerCount)

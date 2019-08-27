@@ -156,10 +156,10 @@ $taxClasses     = $db->query(
 );
 
 $packagingCount = (int)$db->query(
-    'SELECT COUNT(kVerpackung) AS count
+    'SELECT COUNT(kVerpackung) AS cnt
             FROM tverpackung',
     ReturnType::SINGLE_OBJECT
-)->count;
+)->cnt;
 $itemsPerPage   = 10;
 $pagination     = (new Pagination('standard'))
     ->setItemsPerPageOptions([$itemsPerPage, $itemsPerPage * 2, $itemsPerPage * 5])

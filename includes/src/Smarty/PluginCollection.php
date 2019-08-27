@@ -180,4 +180,21 @@ class PluginCollection
 
         return \strftime($format, $timestamp);
     }
+
+    /**
+     * @param array $params
+     * @param mixed $content
+     * @return string
+     */
+    public function inlineScript(array $params, $content)
+    {
+        if (!empty($content)) {
+            $content = trim($content);
+            $content = preg_replace('/^<script>/', '', $content);
+            $content = preg_replace('/<\/script>$/', '', $content);
+            return '<script defer src="data:text/javascript;base64,' . base64_encode($content) . '"></script>';
+        }
+
+        return '';
+    }
 }

@@ -9,6 +9,9 @@
           {else}itemtype="http://schema.org/WebPage"{/if}{/block}>
     {block name='layout-header-head'}
     <head>
+        {inline_script}<script>
+            console.log("inline script");
+        </script>{/inline_script}
         <script>
             window.JTL_SHOP_NOVA = true;
             window.JTL_SHOP_NOVA_READY = false;

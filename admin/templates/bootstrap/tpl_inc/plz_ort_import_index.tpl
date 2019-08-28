@@ -40,7 +40,7 @@
                 </button>
                 <h2><i class="fal fa-exclamation-triangle"></i> {__('plz_ort_import')}</h2>
             </div>
-            <div class="modal-body py-5">
+            <div class="modal-body">
                 {__('plz_ort_import_tmp_exists')}
             </div>
             <div class="modal-footer">
@@ -65,7 +65,7 @@
                 </button>
                 <h2><i class="fa fa-question-circle"></i> {__('plz_ort_import')}</h2>
             </div>
-            <div class="modal-body py-5">
+            <div class="modal-body">
                 {{__('plz_ort_import_help')}|sprintf:{$smarty.const.PLZIMPORT_URL}}
             </div>
             <div class="modal-footer text-right">
@@ -133,7 +133,7 @@
         $('[data-callback]').attr('disabled', true);
         ioCall('plzimportActionUpdateIndex', [], function(result) {
             if (result) {
-                $('#importForm .card-body').html(result.listHTML);
+                window.location.reload();
             }
             $('[data-callback]').attr('disabled', false);
         });

@@ -10,6 +10,7 @@ use JTL\DB\ReturnType;
 use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\Language\LanguageHelper;
+use JTL\Plugin\Helper as PluginHelper;
 use JTL\Plugin\State;
 use JTL\Shop;
 use JTL\Smarty\ContextType;
@@ -18,12 +19,11 @@ use JTL\Smarty\JTLSmarty;
 require_once __DIR__ . '/admin_menu.php';
 
 $smarty             = JTLSmarty::getInstance(false, ContextType::BACKEND);
-$templateDir        = $smarty->getTemplateDir($smarty->context);
 $template           = AdminTemplate::getInstance();
 $config             = Shop::getSettings([CONF_GLOBAL]);
 $shopURL            = Shop::getURL();
 $db                 = Shop::Container()->getDB();
-$currentTemplateDir = str_replace(PFAD_ROOT . PFAD_ADMIN, '', $templateDir);
+$currentTemplateDir = $smarty->getTemplateUrlPath();
 $resourcePaths      = $template->getResources(isset($config['template']['general']['use_minify'])
     && $config['template']['general']['use_minify'] === 'Y');
 $adminLoginGruppe   = !empty($oAccount->account()->oGroup->kAdminlogingruppe)
@@ -79,12 +79,16 @@ foreach ($adminMenu as $rootName => $rootEntry) {
 
             foreach ($pluginLinks as $pluginLink) {
                 $pluginLink->kPlugin = (int)$pluginLink->kPlugin;
+                Shop::Container()->getGetText()->loadPluginLocale(
+                    'base',
+                    PluginHelper::getLoaderByPluginID($pluginLink->kPlugin)->init($pluginLink->kPlugin)
+                );
 
                 $link = (object)[
-                    'cLinkname' => $pluginLink->cName,
+                    'cLinkname' => __($pluginLink->cName),
                     'cURL'      => $shopURL . '/' . PFAD_ADMIN . 'plugin.php?kPlugin=' . $pluginLink->kPlugin,
                     'cRecht'    => 'PLUGIN_ADMIN_VIEW',
-                    'key'       => "$rootKey.$secondKey." . $pluginLink->kPlugin,
+                    'key'       => $rootKey . $secondKey . $pluginLink->kPlugin,
                 ];
 
                 $linkGruppe->oLink_arr[] = $link;
@@ -172,16 +176,11 @@ foreach ($adminMenu as $rootName => $rootEntry) {
     }
     $rootKey++;
 }
-
-if (is_array($currentTemplateDir)) {
-    $currentTemplateDir = $currentTemplateDir[$smarty->context];
-}
 if (empty($template->version)) {
     $adminTplVersion = '1.0.0';
 } else {
     $adminTplVersion = $template->version;
 }
-
 $langTag = $_SESSION['AdminAccount']->language ?? Shop::Container()->getGetText()->getDefaultLanguage();
 $smarty->assign('URL_SHOP', $shopURL)
        ->assign('jtl_token', Form::getTokenInput())
@@ -192,6 +191,7 @@ $smarty->assign('URL_SHOP', $shopURL)
        ->assign('session_name', session_name())
        ->assign('session_id', session_id())
        ->assign('currentTemplateDir', $currentTemplateDir)
+       ->assign('templateBaseURL', $shopURL . '/' . \PFAD_ADMIN . $currentTemplateDir)
        ->assign('lang', 'german')
        ->assign('admin_css', $resourcePaths['css'])
        ->assign('admin_js', $resourcePaths['js'])

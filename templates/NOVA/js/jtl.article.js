@@ -301,7 +301,7 @@
             $('.simple-variations input[type="radio"], .simple-variations select', $wrapper)
                 .each(function(i, item) {
                     var $item   = $(item),
-                        wrapper = '#' + $item.closest('form').closest('div').attr('id');
+                        wrapper = '#' + $item.closest('form').closest('div[data-wrapper="true"]').attr('id');
 
                     $item.on('change', function () {
                         that.variationPrice($(this), true, wrapper);
@@ -318,7 +318,7 @@
                 $('#quantity', $wrapper)
                     .each(function(i, item) {
                         var $item   = $(item),
-                            wrapper = '#' + $item.closest('form').closest('div').attr('id');
+                            wrapper = '#' + $item.closest('form').closest('div[data-wrapper="true"]').attr('id');
 
                         $item.on('change', function () {
                             that.variationPrice($(this), true, wrapper);
@@ -587,7 +587,7 @@
                         if (typeof item.src !== 'undefined' && item.src.length > 0) {
                             var $jsLink = $('head script[src="' + item.src + '"]');
                             if ($jsLink.length === 0) {
-                                $('head').append('<script type="text/javascript" src="' + item.src + '" >');
+                                $('head').append('<script defer src="' + item.src + '" >');
                             }
                         }
                     });

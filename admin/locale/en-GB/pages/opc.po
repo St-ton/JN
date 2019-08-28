@@ -2,14 +2,8 @@ msgid ""
 msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
-msgid "The OPC update is not installed properly. Please update your migrations."
-msgstr "Could not properly install the OnPage Composer update. Please update the migrations."
-
-msgid "Draft"
-msgstr "Draft"
-
-msgid "replaced"
-msgstr "replaced"
+msgid "opcNotInstalled"
+msgstr "The OPC update was not installed properly. Please update the migrations."
 
 # OPC GUI
 
@@ -172,9 +166,6 @@ msgstr "No, edit current version"
 msgid "yesRestore"
 msgstr "Yes, restore changes"
 
-msgid "portletLabel"
-msgstr "Portlet label"
-
 msgid "editSettings"
 msgstr "Edit settings"
 
@@ -189,9 +180,6 @@ msgstr "Select next higher level"
 
 msgid "deleteSelect"
 msgstr "Delete selection [Del]"
-
-msgid "portletPreviewLabel"
-msgstr "Portlet preview label"
 
 msgid "templateTitle"
 msgstr "Template name"
@@ -257,7 +245,7 @@ msgid "pastUpper"
 msgstr "PAST"
 
 msgid "publicSince"
-msgstr "public since"
+msgstr "published since"
 
 msgid "publicUntil"
 msgstr "public until"
@@ -273,9 +261,6 @@ msgstr "public from"
 
 msgid "noPublicationPlanned"
 msgstr "no pulication planned"
-
-msgid "expiredOn"
-msgstr "expired on"
 
 msgid "duplicate"
 msgstr "Duplicate"
@@ -366,3 +351,34 @@ msgstr "Desktop (MD)"
 
 msgid "desktopLG"
 msgstr "Large Desktop (LG)"
+
+
+msgid "active"
+msgstr "active"
+
+msgid "planned"
+msgstr "geplant"
+
+msgid "draft"
+msgstr "Entwurf"
+
+msgid "past"
+msgstr "vergangen"
+
+msgid "activeSince"
+msgstr "active since"
+
+msgid "activeUntil"
+msgstr "active until"
+
+msgid "scheduledFor"
+msgstr "scheduled for"
+
+msgid "notScheduled"
+msgstr "not scheduled"
+
+msgid "expiredOn"
+msgstr "expired on"
+
+msgid "dropPortletHere"
+msgstr "Drop Portlet here"

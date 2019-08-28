@@ -21,7 +21,7 @@
                             <tr>
                                 <td>
                                     <strong>{$listingItem->getName()}</strong>
-                                    <p>{$listingItem->getDescription()}</p>
+                                    <p><small>{$listingItem->getDescription()}</small></p>
                                 </td>
                                 <td class="text-center">
                                     <p>

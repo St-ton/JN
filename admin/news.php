@@ -61,7 +61,7 @@ if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
     }
 }
 if (Request::verifyGPCDataInt('news') === 1 && Form::validateToken()) {
-    if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] > 0) {
+    if (Request::postInt('einstellungen') > 0) {
         $controller->setMsg(saveAdminSectionSettings(CONF_NEWS, $_POST, [CACHING_GROUP_OPTION, CACHING_GROUP_NEWS]));
         if (count($languages) > 0) {
             $db->query('TRUNCATE tnewsmonatspraefix', ReturnType::AFFECTED_ROWS);
@@ -83,7 +83,7 @@ if (Request::verifyGPCDataInt('news') === 1 && Form::validateToken()) {
             }
         }
     } elseif ((isset($_POST['erstellen'], $_POST['news_erstellen']) && (int)$_POST['erstellen'] === 1)
-        || (isset($_POST['news_erstellen']) && (int)$_POST['news_erstellen'] === 1)
+        || Request::postInt('news_erstellen') === 1
     ) {
         $newsCategories = $controller->getAllNewsCategories();
         if (count($newsCategories) > 0) {
@@ -97,7 +97,7 @@ if (Request::verifyGPCDataInt('news') === 1 && Form::validateToken()) {
             $controller->setStep('news_uebersicht');
         }
     } elseif ((isset($_POST['erstellen'], $_POST['news_kategorie_erstellen']) && (int)$_POST['erstellen'] === 1)
-        || (isset($_POST['news_kategorie_erstellen']) && (int)$_POST['news_kategorie_erstellen'] === 1)
+        || Request::postInt('news_kategorie_erstellen') === 1
     ) {
         $controller->setStep('news_kategorie_erstellen');
     } elseif (Request::verifyGPCDataInt('nkedit') === 1 && Request::verifyGPCDataInt('kNews') > 0) {
@@ -140,9 +140,9 @@ if (Request::verifyGPCDataInt('news') === 1 && Form::validateToken()) {
                 $smarty->assign('nFZ', 1);
             }
         }
-    } elseif (isset($_POST['news_speichern']) && (int)$_POST['news_speichern'] === 1) {
+    } elseif (Request::postInt('news_speichern') === 1) {
         $controller->createOrUpdateNewsItem($_POST, $languages, $author);
-    } elseif (isset($_POST['news_loeschen']) && (int)$_POST['news_loeschen'] === 1) {
+    } elseif (Request::postInt('news_loeschen') === 1) {
         if (GeneralObject::hasCount('kNews', $_POST)) {
             $controller->deleteNewsItems($_POST['kNews'], $author);
             $controller->setMsg(__('successNewsDelete'));
@@ -150,9 +150,9 @@ if (Request::verifyGPCDataInt('news') === 1 && Form::validateToken()) {
         } else {
             $controller->setErrorMsg(__('errorAtLeastOneNews'));
         }
-    } elseif (isset($_POST['news_kategorie_speichern']) && (int)$_POST['news_kategorie_speichern'] === 1) {
+    } elseif (Request::postInt('news_kategorie_speichern') === 1) {
         $newsCategory = $controller->createOrUpdateCategory($_POST, $languages);
-    } elseif (isset($_POST['news_kategorie_loeschen']) && (int)$_POST['news_kategorie_loeschen'] === 1) {
+    } elseif (Request::postInt('news_kategorie_loeschen') === 1) {
         $controller->setStep('news_uebersicht');
         if (isset($_POST['kNewsKategorie'])) {
             $controller->deleteCategories($_POST['kNewsKategorie']);
@@ -161,11 +161,11 @@ if (Request::verifyGPCDataInt('news') === 1 && Form::validateToken()) {
         } else {
             $controller->setErrorMsg(__('errorAtLeastOneNewsCat'));
         }
-    } elseif (isset($_GET['newskategorie_editieren']) && (int)$_GET['newskategorie_editieren'] === 1) {
+    } elseif (Request::getInt('newskategorie_editieren') === 1) {
         if (mb_strlen(Request::verifyGPDataString('delpic')) > 0) {
             if ($controller->deleteNewsImage(
                 Request::verifyGPDataString('delpic'),
-                (int)$_GET['kNewsKategorie'],
+                Request::getInt('kNewsKategorie'),
                 $uploadDirCat
             )) {
                 $controller->setMsg(__('successNewsImageDelete'));
@@ -173,9 +173,9 @@ if (Request::verifyGPCDataInt('news') === 1 && Form::validateToken()) {
                 $controller->setErrorMsg(__('errorNewsImageDelete'));
             }
         }
-        if (isset($_GET['kNewsKategorie']) && (int)$_GET['kNewsKategorie'] > 0) {
+        if (Request::getInt('kNewsKategorie') > 0) {
             $controller->setStep('news_kategorie_erstellen');
-            $newsCategory->load((int)$_GET['kNewsKategorie'], false);
+            $newsCategory->load(Request::getInt('kNewsKategorie'), false);
             if ($newsCategory->getID() > 0) {
                 $smarty->assign('oNewsKategorie', $newsCategory);
                 if (is_dir($uploadDirCat . $newsCategory->getID())) {
@@ -186,13 +186,10 @@ if (Request::verifyGPCDataInt('news') === 1 && Form::validateToken()) {
                 }
             } else {
                 $controller->setStep('news_uebersicht');
-                $controller->setErrorMsg(sprintf(__('errorNewsCatNotFound'), (int)$_GET['kNewsKategorie']));
+                $controller->setErrorMsg(sprintf(__('errorNewsCatNotFound'), Request::getInt('kNewsKategorie')));
             }
         }
-    } elseif (isset($_POST['newskommentar_freischalten'])
-        && (int)$_POST['newskommentar_freischalten']
-        && !isset($_POST['kommentareloeschenSubmit'])
-    ) {
+    } elseif (Request::postInt('newskommentar_freischalten') > 0 && !isset($_POST['kommentareloeschenSubmit'])) {
         $deleteIDs = Request::verifyGPDataIntegerArray('kNewsKommentar');
         if (count($deleteIDs) > 0) {
             foreach ($deleteIDs as $id) {
@@ -211,11 +208,11 @@ if (Request::verifyGPCDataInt('news') === 1 && Form::validateToken()) {
     )) {
         $controller->deleteComments($_POST['kNewsKommentar']);
     }
-    if ((isset($_GET['news_editieren']) && (int)$_GET['news_editieren'] === 1) || $controller->getContinueWith() > 0) {
+    if (Request::getInt('news_editieren') === 1 || $controller->getContinueWith() > 0) {
         $newsCategories = $controller->getAllNewsCategories();
         $newsItemID     = $controller->getContinueWith() > 0
             ? $controller->getContinueWith()
-            : (int)$_GET['kNews'];
+            : Request::getInt('kNews');
         if (mb_strlen(Request::verifyGPDataString('delpic')) > 0) {
             if ($controller->deleteNewsImage(Request::verifyGPDataString('delpic'), $newsItemID, $uploadDir)) {
                 $controller->setMsg(__('successNewsImageDelete'));
@@ -254,9 +251,7 @@ if (Request::verifyGPCDataInt('news') === 1 && Form::validateToken()) {
                 $smarty->assign('oDatei_arr', $controller->getNewsImages($newsItem->getID(), $uploadDir));
             }
             $smarty->assign('oNews', $newsItem);
-            if ((isset($_POST['kommentare_loeschen']) && (int)$_POST['kommentare_loeschen'] === 1)
-                || isset($_POST['kommentareloeschenSubmit'])
-            ) {
+            if (Request::postInt('kommentare_loeschen') === 1 || isset($_POST['kommentareloeschenSubmit'])) {
                 $controller->deleteComments($_POST['kNewsKommentar'] ?? [], $newsItem);
             }
 

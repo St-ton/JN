@@ -13,7 +13,7 @@ use JTL\Shop;
  * @param string $query
  * @return array
  */
-function gibBestellungsUebersicht($limitSQL, $query): array
+function gibBestellungsUebersicht(string $limitSQL, string $query): array
 {
     $orders       = [];
     $searchFilter = '';
@@ -47,16 +47,12 @@ function gibAnzahlBestellungen($query): int
     $filterSQL = (mb_strlen($query) > 0)
         ? " WHERE cBestellNr LIKE '%" . Shop::Container()->getDB()->escape($query) . "%'"
         : '';
-    $order     = Shop::Container()->getDB()->query(
-        'SELECT COUNT(*) AS nAnzahl
+
+    return (int)Shop::Container()->getDB()->query(
+        'SELECT COUNT(*) AS cnt
             FROM tbestellung' . $filterSQL,
         ReturnType::SINGLE_OBJECT
-    );
-    if (isset($order->nAnzahl) && $order->nAnzahl > 0) {
-        return (int)$order->nAnzahl;
-    }
-
-    return 0;
+    )->cnt;
 }
 
 /**
@@ -69,20 +65,15 @@ function setzeAbgeholtZurueck(array $orderIDs): int
         return 1;
     }
 
-    $orderIDs  = array_map(
-        function ($i) {
-            return (int)$i;
-        },
-        $orderIDs
-    );
+    $orderList = implode(',', array_map('\intval', $orderIDs));
     $customers = Shop::Container()->getDB()->query(
         'SELECT kKunde
             FROM tbestellung
-            WHERE kBestellung IN(' . implode(',', $orderIDs) . ")
+            WHERE kBestellung IN(' . $orderList . ")
                 AND cAbgeholt = 'Y'",
         ReturnType::ARRAY_OF_OBJECTS
     );
-    if (is_array($customers) && count($customers) > 0) {
+    if (count($customers) > 0) {
         $customerIDs = [];
         foreach ($customers as $customer) {
             $customer->kKunde = (int)$customer->kKunde;
@@ -94,22 +85,22 @@ function setzeAbgeholtZurueck(array $orderIDs): int
             "UPDATE tkunde
                 SET cAbgeholt = 'N'
                 WHERE kKunde IN(" . implode(',', $customerIDs) . ')',
-            ReturnType::AFFECTED_ROWS
+            ReturnType::DEFAULT
         );
     }
     Shop::Container()->getDB()->query(
         "UPDATE tbestellung
             SET cAbgeholt = 'N'
-            WHERE kBestellung IN(" . implode(',', $orderIDs) . ")
+            WHERE kBestellung IN(" . $orderList . ")
                 AND cAbgeholt = 'Y'",
-        ReturnType::AFFECTED_ROWS
+        ReturnType::DEFAULT
     );
     Shop::Container()->getDB()->query(
         "UPDATE tzahlungsinfo
             SET cAbgeholt = 'N'
-            WHERE kBestellung IN(" . implode(',', $orderIDs) . ")
+            WHERE kBestellung IN(" . $orderList . ")
                 AND cAbgeholt = 'Y'",
-        ReturnType::AFFECTED_ROWS
+        ReturnType::DEFAULT
     );
 
     return -1;

@@ -13,48 +13,15 @@
                 <Option Value="Y">Ja</Option>
                 <Option Value="N">Nein</Option>
             </Setting>
-            <Setting Description="Komprimierung des HTML-Ausgabedokuments (Achtung - Performancelastig!)" Key="minify_html" Type="select" Value="N">
-                <Option Value="Y">Ja</Option>
-                <Option Value="N">Nein</Option>
-            </Setting>
-            <Setting Description="Komprimierung von Inline-CSS-Code (Achtung - Performancelastig!)" Key="minify_html_css" Type="select" Value="N">
-                <Option Value="Y">Ja</Option>
-                <Option Value="N">Nein</Option>
-            </Setting>
-            <Setting Description="Komprimierung von Inline-JavaScript-Code (Achtung - Performancelastig!)" Key="minify_html_js" Type="select" Value="N">
-                <Option Value="Y">Ja</Option>
-                <Option Value="N">Nein</Option>
-            </Setting>
             <Setting Description="Aufgabenplaner-Blindgrafik aktivieren?" Key="use_cron" Type="select" Value="Y">
                 <Option Value="N">Nein</Option>
                 <Option Value="Y">Ja</Option>
             </Setting>
         </Section>
         <Section Name="Theme" Key="theme">
-            <Setting Description="Theme" Key="theme_default" Type="select" Value="evo">
+            <Setting Description="Theme" Key="theme_default" Type="select" Value="clear" Editable="false">
                 <Option Value="clear">clear - Handgemacht mit <![CDATA[&hearts;]]> von JTL</Option>
             </Setting>
-            <!--<Setting Description="Hintergrundbild" Key="background_image" Type="select" Value="">
-                <Option Value="">- Kein Hintergrundbild -</Option>
-                <Option Value="arktis">Arktis - Berge und Schnee</Option>
-                <Option Value="berge">Tal - Ein gr<![CDATA[&uuml;]]>nes Tal</Option>
-                <Option Value="buero">B<![CDATA[&uuml;]]>ro - Ein Schreibtisch mit Computer</Option>
-                <Option Value="feld">Wiese - Eine gr<![CDATA[&uuml;]]>ne Wiese</Option>
-                <Option Value="hoehle">H<![CDATA[&ouml;]]>hle - Warmes Farbenspiel in einer H<![CDATA[&ouml;]]>hle</Option>
-                <Option Value="meer-1">Meer 1 - Wolkiger Sonnenuntergang am Meer</Option>
-                <Option Value="meer-2">Meer 2 - Sonniger Tag am Meer mit Steg</Option>
-                <Option Value="meer-3">Meer 3 - Ein Schauspiel wilder Gezeiten</Option>
-                <Option Value="sonnenuntergang-1">Sonnenuntergang 1 - Diesiger Sonnenuntergang an der K<![CDATA[&uuml;]]>ste</Option>
-                <Option Value="sonnenuntergang-2">Sonnenuntergang 2 - Warmer Sonnenuntergang am Meer</Option>
-                <Option Value="sterne">Sterne - Sternklarer Himmel bei Nacht</Option>
-                <Option Value="vulkan">Vulkan - Inaktiver Vulkan in einer Pr<![CDATA[&auml;]]>rie</Option>
-                <Option Value="wolken">Wolken - <![CDATA[&Uuml;]]>ber den Wolken...</Option>
-                <Option Value="custom">Custom - Ihr eigenes Hintergrundbild (themes/IhrTheme/background.jpg)</Option>
-            </Setting>-->
-            <!--<Setting Description="Layout" Key="pagelayout" Type="select" Value="fluid">
-                <Option Value="fluid">fluid - Inhalt soll gesamten Bildschirm nutzen</Option>
-                <Option Value="boxed">boxed - Der Inhalt hat eine Maximalbreite</Option>
-            </Setting>-->
             <Setting Description="Sliderposition" Key="slider_full_width" Type="select" Value="N">
                 <Option Value="N">im Contentbereich</Option>
                 <Option Value="Y">zwischen Header und Content</Option>
@@ -67,13 +34,7 @@
                 <Option Value="N">Nein</Option>
                 <Option Value="Y">Ja</Option>
             </Setting>
-            <Setting Description="Hintergrundfarbe" Key="backgroundcolor" Type="colorpicker" Value="#eee"/>
-            <Setting Description="Favicon" Key="favicon" Type="upload" Value="favicon.ico" maxFileSize="123456" showPreview="false" allowedFileExtensions="['ico','png']" accept="image/*" target="themes/base/images/" targetFileName="favicon.ico">
-            </Setting>
-            <Setting Description="Warenkorb-Mengen-Optionen in Dropdown anzeigen?" Key="qty_modify_dropdown" Type="select" Value="Y">
-                <Option Value="N">Nein</Option>
-                <Option Value="Y">Ja</Option>
-            </Setting>
+            <Setting Description="Favicon" Key="favicon" Type="upload" Value="favicon.ico" maxFileSize="123456" showPreview="false" allowedFileExtensions="['ico','png']" accept="image/*" target="themes/base/images/" targetFileName="favicon.ico"/>
         </Section>
         <Section Name="Megamenu" Key="megamenu">
             <Setting Description="Kategorien (anstelle einer Kategoriebox / Boxenverwaltung)" Key="show_categories" Type="select" Value="Y">
@@ -106,7 +67,7 @@
                 <Option Value="Y">Ja</Option>
                 <Option Value="N">Nein</Option>
             </Setting>
-            <Setting Description="Variationsauswahl anzeigen (&lt;small&gt;Nur in Verbindung mit &quot;Hovereffekt für Zusatzinfos&quot;&lt;/small&gt;" Key="variation_select_productlist" Type="select" Value="N">
+            <Setting Description="Variationsauswahl anzeigen (&lt;small&gt;Nur in Verbindung mit &quot;Hovereffekt für Zusatzinfos&quot;&lt;/small&gt;)" Key="variation_select_productlist" Type="select" Value="N">
                 <Option Value="N"><![CDATA[Nein]]></Option>
                 <Option Value="1"><![CDATA[max. 1]]></Option>
                 <Option Value="2"><![CDATA[max. 2]]></Option>
@@ -121,7 +82,7 @@
                 <Option Value="12"><![CDATA[max. 12]]></Option>
                 <Option Value="9999"><![CDATA[keine Beschr&auml;nkung]]></Option>
             </Setting>
-            <Setting Description="Filteroptionen bei Seitenanruf anzeigen?" Key="initial_display_filter" Type="select" Value="Y">
+            <Setting Description="Filteroptionen bei Seitenaufruf anzeigen?" Key="initial_display_filter" Type="select" Value="Y">
                 <Option Value="Y">Ja</Option>
                 <Option Value="N">Nein</Option>
             </Setting>
@@ -132,11 +93,8 @@
                 <Option Value="12"><![CDATA[max. 12]]></Option>
                 <Option Value="-1"><![CDATA[keine Beschr&auml;nkung]]></Option>
             </Setting>
-            <Setting Description="Overlays in Listenansichten" Key="ribbon_type" Type="select" Value="c">
-                <Option Value="a">Variante A</Option>
-                <Option Value="b">Variante B</Option>
-                <Option Value="c">Variante C</Option>
-                <Option Value="custom">custom (eigenes CSS)</Option>
+            <Setting Description="Overlays in Listenansichten" Key="ribbon_type" Type="select" Value="c" Editable="false">
+                <Option Value="c">Band (Ribbon)</Option>
             </Setting>
             <Setting Description="Position des Overlays" Key="ribbon_position" Type="select" Value="top-left">
                 <Option Value="top-left">oben links</Option>
@@ -146,10 +104,6 @@
             </Setting>
         </Section>
         <Section Name="Seitenleiste Einstellungen" Key="sidebar_settings">
-            <Setting Description="Seitenleiste nur auf Artikellisten anzeigen (empfohlen)" Key="show_sidebar_product_list" Type="select" Value="Y">
-                <Option Value="Y">Ja</Option>
-                <Option Value="N">Nein</Option>
-            </Setting>
             <Setting Description="Preisspanne immer anzeigen (empfohlen)" Key="always_show_price_range" Type="select" Value="Y">
                 <Option Value="Y">Ja</Option>
                 <Option Value="N">Nein</Option>
@@ -175,12 +129,6 @@
             <Setting Description="Pinterest-Link" Key="pinterest" Type="text" Value=""/>
             <Setting Description="Skype-Link" Key="skype" Type="text" Value=""/>
         </Section>
-        <Section Name="Entwickler-Einstellungen" Key="demo">
-            <Setting Description="LiveStyler aktivieren? (Bitte ebenfalls das Plugin Evo Theme-Editor aktivieren)" Key="demo_mode" Type="select" Value="N">
-                <Option Value="Y">Ja</Option>
-                <Option Value="N">Nein</Option>
-            </Setting>
-        </Section>
     </Settings>
     <Minify>
         <CSS Name="clear.css">
@@ -189,6 +137,7 @@
             <File Path="themes/base/slick/slick-lightbox.css"/>
             <File Path="js/password/password.min.css"/>
             <File Path="themes/clear/clear.css"/>
+            <File Path="themes/clear/custom.css"/>
         </CSS>
         <JS Name="jtl3.js">
             <File Path="js/jquery.backstretch.min.js"/>
@@ -198,6 +147,7 @@
             <File Path="js/bootstrap.bundle.min.js"/>
             <File Path="js/bootstrap-select.min.js"/>
             <File Path="js/bootstrap-tabdrop.js"/>
+            <File Path="js/slick.js"/>
             <File Path="js/eModal.min.js"/>
             <File Path="js/jquery.nivo.slider.pack.js"/>
             <File Path="js/jtl.evo.js"/>
@@ -206,8 +156,7 @@
             <File Path="js/clipboard.min.js"/>
             <File Path="js/wow.min.js"/>
             <File Path="js/global.js"/>
-            <File Path="js/slick.js"/>
-            <File Path="js/slick-lightbox.min.js"/>
+            <!--<File Path="js/slick-lightbox.min.js"/>-->
             <File Path="js/jquery.serialize-object.js"/>
             <File Path="js/jtl.io.js"/>
             <File Path="js/jtl.article.js"/>

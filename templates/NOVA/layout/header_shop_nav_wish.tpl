@@ -26,7 +26,7 @@
                     {/badge}
                 </sup>
             {/navitem}
-            {collapse id="nav-wishlist-collapse" tag="div"  data=["parent"=>"#evo-main-nav-wrapper"] class="mt-md-2"}
+            {collapse id="nav-wishlist-collapse" tag="div"  data=["parent"=>"#main-nav-wrapper"] class="mt-md-2 w-100"}
                 <div id="wishlist-dropdown-container" class="p-3">
                     {block name='layout-header-shop-nav-wish-include-wishlist-dropdown'}
                         {include file='snippets/wishlist_dropdown.tpl'}

@@ -32,7 +32,7 @@
                                     </button>
                                     <h2 class="modal-title">{__('danger')}!</h2>
                                 </div>
-                                <div class="modal-body py-5">
+                                <div class="modal-body">
                                     <p>{__('sureEmailDelete')}</p>
                                 </div>
                                 <div class="modal-footer">

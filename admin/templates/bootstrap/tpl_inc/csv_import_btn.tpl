@@ -66,7 +66,7 @@
                     </button>
                     <h2 class="modal-title">{__('importCsvChooseType')}</h2>
                 </div>
-                <div class="modal-body py-5">
+                <div class="modal-body">
                     <label for="importType-{$importerId}" class="sr-only">{__('importCsvChooseType')}</label>
                     <select class="custom-select" name="importType" id="importType-{$importerId}">
                         <option value="0">{__('importCsvType0')}</option>

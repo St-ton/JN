@@ -12020,8 +12020,9 @@ ul li:last-child, ol li:last-child {
 }
 
 .modal-body {
-  padding: 0 1rem 0 0;
+  padding: 1rem 1rem 1rem 0;
   margin: 0 1rem 0 0;
+  border-top: 1px solid #F1F1F3;
 }
 
 .modal-footer {
@@ -12312,6 +12313,42 @@ ul li:last-child, ol li:last-child {
 .bs-tooltip-left .arrow::before,
 .bs-tooltip-auto[x-placement^=left] .arrow::before {
   border-left-color: #435a6b;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+  background-color: transparent;
+}
+
+::-webkit-scrollbar-track {
+  border-radius: 0;
+  background: #f5f7fa;
+  border: 1px solid #f5f7fa;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 4px;
+  background: #435a6b;
+  border: 0;
+}
+
+#sidebar .navigation::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+  background-color: transparent;
+}
+
+#sidebar .navigation::-webkit-scrollbar-track {
+  border-radius: 0;
+  background: transparent;
+  border: 1px solid transparent;
+}
+
+#sidebar .navigation::-webkit-scrollbar-thumb {
+  border-radius: 4px;
+  background: #7dcdfe;
+  border: 0;
 }
 
 .min-w-sm {
@@ -12674,7 +12711,7 @@ body {
 }
 
 #content_wrapper {
-  padding: 1rem 0.5rem;
+  padding-top: 0.5rem;
 }
 @media (min-width: 768px) {
   #content_wrapper {
@@ -12689,6 +12726,7 @@ body {
 
 .content-header {
   margin-bottom: 3rem;
+  padding: 0 0.5rem;
 }
 .content-header .breadcrumb {
   font-size: 0.8203125rem;
@@ -12699,11 +12737,27 @@ body {
 @media (min-width: 768px) {
   .content-header {
     margin-top: -1rem;
+    padding: 0;
   }
 }
 @media (min-width: 1600px) {
   .content-header {
     margin-top: -3rem;
+  }
+}
+
+#content > .row, .content-header > .row {
+  margin-right: 0;
+}
+#content > .row > div:last-child, .content-header > .row > div:last-child {
+  padding-right: 0;
+}
+@media (min-width: 768px) {
+  #content > .row, .content-header > .row {
+    margin-right: -1.5rem;
+  }
+  #content > .row > div:last-child, .content-header > .row > div:last-child {
+    padding-right: 1.5rem;
   }
 }
 
@@ -13165,6 +13219,9 @@ body {
   display: flex;
   flex-direction: column;
 }
+#dropdown-search .dropdown-item.selected {
+  background: #abd1f6;
+}
 #dropdown-search .dropdown-divider {
   margin-bottom: 1.5rem;
 }
@@ -13194,7 +13251,7 @@ body {
   padding-left: 2.5rem;
 }
 #dropdown-search > ul > li {
-  margin-bottom: 1.5rem;
+  margin-bottom: 0.5rem;
 }
 #dropdown-search > ul > li > .dropdown-item .title {
   font-weight: 600;

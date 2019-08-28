@@ -283,7 +283,7 @@ $(document).ready(function() {
                                             </button>
                                             <h2 class="modal-title">{__('emergencyCode')}</h2>
                                         </div>
-                                        <div class="modal-body py-5">
+                                        <div class="modal-body">
                                             <div id="EmergencyCodes">
                                                 <div class="iframewrapper">
                                                     <iframe src="" id="printframe" name="printframe" frameborder="0" width="100%" height="300" align="middle"></iframe>

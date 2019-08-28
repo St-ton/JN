@@ -23,14 +23,14 @@ use JTL\XMLParser;
  */
 function getAdminSectionSettings($configSectionID)
 {
-    Shop::Container()->getGetText()->loadConfigLocales();
-
+    $gettext = Shop::Container()->getGetText();
+    $gettext->loadConfigLocales();
     $db = Shop::Container()->getDB();
     if (is_array($configSectionID)) {
         $confData = $db->query(
             'SELECT *
                 FROM teinstellungenconf
-                WHERE kEinstellungenConf IN (' . implode(',', $configSectionID) . ')
+                WHERE kEinstellungenConf IN (' . implode(',', array_map('\intval', $configSectionID)) . ')
                 ORDER BY nSort',
             ReturnType::ARRAY_OF_OBJECTS
         );
@@ -50,7 +50,7 @@ function getAdminSectionSettings($configSectionID)
         $conf->nStandardAnzeigen     = (int)$conf->nStandardAnzeigen;
         $conf->nModul                = (int)$conf->nModul;
 
-        Shop::Container()->getGetText()->localizeConfig($conf);
+        $gettext->localizeConfig($conf);
 
         if ($conf->cInputTyp === 'listbox') {
             $conf->ConfWerte = $db->selectAll(
@@ -75,8 +75,7 @@ function getAdminSectionSettings($configSectionID)
                 '*',
                 'nSort'
             );
-
-            Shop::Container()->getGetText()->localizeConfigValues($conf, $conf->ConfWerte);
+            $gettext->localizeConfigValues($conf, $conf->ConfWerte);
         }
 
         if ($conf->cInputTyp === 'listbox') {
@@ -116,13 +115,10 @@ function getAdminSectionSettings($configSectionID)
  */
 function saveAdminSettings(array $settingsIDs, array &$post, $tags = [CACHING_GROUP_OPTION])
 {
-    array_walk($settingsIDs, function (&$i) {
-        $i = (int)$i;
-    });
     $confData = Shop::Container()->getDB()->query(
         'SELECT *
             FROM teinstellungenconf
-            WHERE kEinstellungenConf IN (' . implode(',', $settingsIDs) . ')
+            WHERE kEinstellungenConf IN (' . implode(',', \array_map('\intval', $settingsIDs)) . ')
             ORDER BY nSort',
         ReturnType::ARRAY_OF_OBJECTS
     );
@@ -215,7 +211,8 @@ function saveAdminSectionSettings(int $configSectionID, array &$post, $tags = [C
     if (!Form::validateToken()) {
         return __('errorCSRF');
     }
-    $confData = Shop::Container()->getDB()->selectAll(
+    $db       = Shop::Container()->getDB();
+    $confData = $db->selectAll(
         'teinstellungenconf',
         ['kEinstellungenSektion', 'cConf'],
         [$configSectionID, 'Y'],
@@ -248,12 +245,12 @@ function saveAdminSectionSettings(int $configSectionID, array &$post, $tags = [C
         }
 
         if ($config->cInputTyp !== 'listbox' && $config->cInputTyp !== 'selectkdngrp') {
-            Shop::Container()->getDB()->delete(
+            $db->delete(
                 'teinstellungen',
                 ['kEinstellungenSektion', 'cName'],
                 [$configSectionID, $config->cWertName]
             );
-            Shop::Container()->getDB()->insert('teinstellungen', $val);
+            $db->insert('teinstellungen', $val);
         }
     }
     Shop::Container()->getCache()->flushTags($tags);
@@ -289,7 +286,7 @@ function holeAlleKampagnen(bool $internalOnly = false, bool $activeOnly = true)
         ReturnType::ARRAY_OF_OBJECTS
     );
     foreach ($items as $item) {
-        $campaign = new Kampagne($item->kKampagne);
+        $campaign = new Kampagne((int)$item->kKampagne);
         if (isset($campaign->kKampagne) && $campaign->kKampagne > 0) {
             $campaigns[$campaign->kKampagne] = $campaign;
         }
@@ -318,8 +315,7 @@ function setzeSprache()
 {
     if (Form::validateToken() && Request::verifyGPCDataInt('sprachwechsel') === 1) {
         // Wähle explizit gesetzte Sprache als aktuelle Sprache
-        $language = Shop::Container()->getDB()->select('tsprache', 'kSprache', (int)$_POST['kSprache']);
-
+        $language = Shop::Container()->getDB()->select('tsprache', 'kSprache', Request::postInt('kSprache'));
         if ((int)$language->kSprache > 0) {
             $_SESSION['kSprache']    = (int)$language->kSprache;
             $_SESSION['cISOSprache'] = $language->cISO;
@@ -329,7 +325,6 @@ function setzeSprache()
     if (!isset($_SESSION['kSprache'])) {
         // Wähle Standardsprache als aktuelle Sprache
         $language = Shop::Container()->getDB()->select('tsprache', 'cShopStandard', 'Y');
-
         if ((int)$language->kSprache > 0) {
             $_SESSION['kSprache']    = (int)$language->kSprache;
             $_SESSION['cISOSprache'] = $language->cISO;
@@ -338,7 +333,6 @@ function setzeSprache()
     if (isset($_SESSION['kSprache']) && empty($_SESSION['cISOSprache'])) {
         // Fehlendes cISO ergänzen
         $language = Shop::Container()->getDB()->select('tsprache', 'kSprache', (int)$_SESSION['kSprache']);
-
         if ((int)$language->kSprache > 0) {
             $_SESSION['cISOSprache'] = $language->cISO;
         }
@@ -553,10 +547,10 @@ function reloadFavs()
  */
 function getNotifyDropIO()
 {
-    Shop::Smarty()->assign('notifications', Notification::getInstance());
-
     return [
-        'tpl'  => Shop::Smarty()->fetch('tpl_inc/notify_drop.tpl'),
+        'tpl'  => Shop::Smarty()
+            ->assign('notifications', Notification::getInstance())
+            ->fetch('tpl_inc/notify_drop.tpl'),
         'type' => 'notify'
     ];
 }

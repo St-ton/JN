@@ -14,13 +14,13 @@
             {/alert}
         {/block}
         {block name='account-login-script-no-cookie'}
-            <script type="text/javascript">
-               $(function() {ldelim}
-                   if (navigator.cookieEnabled === false) {ldelim}
+            {inline_script}<script>
+               $(function() {
+                   if (navigator.cookieEnabled === false) {
                        $('#no-cookies-warning').show();
-                   {rdelim}
-               {rdelim});
-            </script>
+                   }
+               });
+            </script>{/inline_script}
         {/block}
     {elseif !$alertNote}
         {block name='account-login-alert'}
@@ -29,7 +29,7 @@
     {/if}
 
     {block name='account-login-form'}
-        {include file='snippets/opc_mount_point.tpl' id='opc_before_login'}
+        {opcMountPoint id='opc_before_login'}
         {row}
             {col sm=8 lg=6}
                 {form id="login_form" action="{get_static_route id='jtl.php'}" method="post" role="form" class="evo-validate label-slide"}

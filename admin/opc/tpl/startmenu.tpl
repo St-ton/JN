@@ -13,7 +13,7 @@
     {$languages         = $smarty.session.Sprachen}
     {$currentLanguage   = $smarty.session.currentLanguage}
 
-    <script>
+    {inline_script}<script>
         let languages = [
             {foreach $languages as $lang}
                 {
@@ -28,6 +28,8 @@
         let currentLanguage = {
             id: {$currentLanguage->id},
         };
+
+        $(updateTooltips);
 
         function openOpcStartMenu()
         {
@@ -172,6 +174,7 @@
                             { },
                             () => {
                                 opcDraftCheckboxChanged();
+                                updateTooltips();
                             }
                         );
                     }
@@ -199,6 +202,7 @@
                             { },
                             () => {
                                 opcDraftCheckboxChanged();
+                                updateTooltips();
                             }
                         );
                     }
@@ -211,7 +215,24 @@
             let draftKeys = getSelectedOpcDraftkeys();
             $('#opc-bulk-actions').attr('disabled', draftKeys.length === 0);
         }
-    </script>
+
+        function updateTooltips()
+        {
+            $('.tooltip').remove();
+
+            $('.opc-draft-actions [data-toggle="tooltip"]').tooltip({
+                placement: 'bottom',
+                trigger: 'hover',
+            });
+
+            $('.opc-draft-actions [data-toggle="dropdown"]').tooltip({
+                placement: 'bottom',
+                trigger: 'hover',
+            }).on('click', function() {
+                $(this).tooltip('hide');
+            });
+        }
+    </script>{/inline_script}
     <div id="opc">
         {if $pageDrafts|count === 0}
             <nav id="opc-startmenu">
@@ -220,7 +241,7 @@
                     <input type="hidden" name="pageId" value="{$curPageId}">
                     <input type="hidden" name="pageUrl" value="{$curPageUrl}">
                     <button type="submit" name="action" value="extend" class="opc-btn-primary">
-                        <img src="{$ShopURL}/admin/opc/gfx/icon-OPC.svg" alt="OPC Start Icon" id="opc-start-icon">
+                        <img src="{$ShopURL}/admin/opc/gfx/icon-opc.svg" alt="OPC Start Icon" id="opc-start-icon">
                         <span id="opc-start-label">{__('onPageComposer')}</span>
                     </button>
                 </form>
@@ -228,7 +249,7 @@
         {else}
             <nav id="opc-startmenu">
                 <button type="button" class="opc-btn-primary" onclick="openOpcStartMenu()">
-                    <img src="{$ShopURL}/admin/opc/gfx/icon-OPC.svg" alt="OPC Start Icon" id="opc-start-icon">
+                    <img src="{$ShopURL}/admin/opc/gfx/icon-opc.svg" alt="OPC Start Icon" id="opc-start-icon">
                     <span id="opc-start-label">{__('onPageComposer')}</span>
                 </button>
             </nav>

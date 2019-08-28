@@ -40,7 +40,7 @@ $activeSearchSQL           = new stdClass();
 $activeSearchSQL->cJOIN    = '';
 $activeSearchSQL->cWHERE   = '';
 $customerGroup             = $db->select('tkundengruppe', 'cStandard', 'Y');
-$_SESSION['Kundengruppe']  = new CustomerGroup($customerGroup->kKundengruppe);
+$_SESSION['Kundengruppe']  = new CustomerGroup((int)$customerGroup->kKundengruppe);
 
 setzeSprache();
 if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
@@ -48,7 +48,7 @@ if (mb_strlen(Request::verifyGPDataString('tab')) > 0) {
 }
 $instance = new Newsletter($db, $conf);
 if (Form::validateToken()) {
-    if (isset($_POST['einstellungen']) && (int)$_POST['einstellungen'] === 1) {
+    if (Request::postInt('einstellungen') === 1) {
         if (isset($_POST['speichern'])) {
             $step = 'uebersicht';
             $alertHelper->addAlert(
@@ -57,10 +57,8 @@ if (Form::validateToken()) {
                 'saveSettings'
             );
         }
-    } elseif ((isset($_POST['newsletterabonnent_loeschen'])
-            && (int)$_POST['newsletterabonnent_loeschen'] === 1)
-        || (Request::verifyGPCDataInt('inaktiveabonnenten') === 1
-            && isset($_POST['abonnentloeschenSubmit']))
+    } elseif (Request::postInt('newsletterabonnent_loeschen') === 1
+        || (Request::verifyGPCDataInt('inaktiveabonnenten') === 1 && isset($_POST['abonnentloeschenSubmit']))
     ) {
         if ($admin->deleteSubscribers($_POST['kNewsletterEmpfaenger'])) {
             $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successNewsletterAboDelete'), 'successNewsletterAboDelete');
@@ -71,9 +69,7 @@ if (Form::validateToken()) {
                 'errorAtLeastOneNewsletterAbo'
             );
         }
-    } elseif (isset($_POST['abonnentfreischaltenSubmit'])
-        && Request::verifyGPCDataInt('inaktiveabonnenten') === 1
-    ) {
+    } elseif (isset($_POST['abonnentfreischaltenSubmit']) && Request::verifyGPCDataInt('inaktiveabonnenten') === 1) {
         if ($admin->activateSubscribers($_POST['kNewsletterEmpfaenger'])) {
             $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successNewsletterAbounlock'), 'successNewsletterAbounlock');
         } else {
@@ -83,14 +79,14 @@ if (Form::validateToken()) {
                 'errorAtLeastOneNewsletterAbo'
             );
         }
-    } elseif (isset($_POST['newsletterabonnent_neu']) && (int)$_POST['newsletterabonnent_neu'] === 1) {
+    } elseif (Request::postInt('newsletterabonnent_neu') === 1) {
         // Newsletterabonnenten hinzufuegen
         $newsletter               = new stdClass();
         $newsletter->cAnrede      = $_POST['cAnrede'] ?? '';
         $newsletter->cVorname     = $_POST['cVorname'];
         $newsletter->cNachname    = $_POST['cNachname'];
         $newsletter->cEmail       = $_POST['cEmail'];
-        $newsletter->kSprache     = (int)$_POST['kSprache'];
+        $newsletter->kSprache     = Request::postInt('kSprache');
         $newsletter->dEingetragen = 'NOW()';
         $newsletter->cOptCode     = $instance->createCode('cOptCode', $newsletter->cEmail);
         $newsletter->cLoeschCode  = $instance->createCode('cLoeschCode', $newsletter->cEmail);
@@ -113,7 +109,7 @@ if (Form::validateToken()) {
                 $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successNewsletterAboAdd'), 'successNewsletterAboAdd');
             }
         }
-    } elseif (isset($_POST['newsletterqueue']) && (int)$_POST['newsletterqueue'] === 1) { // Queue
+    } elseif (Request::postInt('newsletterqueue') === 1) { // Queue
         if (isset($_POST['loeschen'])) {
             if (!empty($_POST['kNewsletterQueue']) && is_array($_POST['kNewsletterQueue'])) {
                 $noticeTMP = '';
@@ -154,9 +150,7 @@ if (Form::validateToken()) {
                 $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorAtLeastOneNewsletter'), 'errorAtLeastOneNewsletter');
             }
         }
-    } elseif ((isset($_POST['newsletterhistory']) && (int)$_POST['newsletterhistory'] === 1)
-        || (isset($_GET['newsletterhistory']) && (int)$_GET['newsletterhistory'] === 1)
-    ) {
+    } elseif (Request::postInt('newsletterhistory') === 1 || Request::getInt('newsletterhistory') === 1) {
         if (isset($_POST['loeschen'])) {
             if (is_array($_POST['kNewsletterHistory'])) {
                 $noticeTMP = '';
@@ -349,9 +343,7 @@ if (Form::validateToken()) {
         if (isset($_POST['vorlage_erstellen'])) {
             $step   = 'vorlage_erstellen';
             $option = 'erstellen';
-        } elseif ((isset($_GET['editieren']) && (int)$_GET['editieren'] > 0)
-            || (isset($_GET['vorbereiten']) && (int)$_GET['vorbereiten'] > 0)
-        ) {
+        } elseif (Request::getInt('editieren') > 0 || Request::getInt('vorbereiten') > 0) {
             // Vorlage editieren/vorbereiten
             $step         = 'vorlage_erstellen';
             $nlTemplateID = Request::verifyGPCDataInt('vorbereiten');
@@ -609,29 +601,29 @@ if (Form::validateToken()) {
 }
 if ($step === 'uebersicht') {
     $recipientsCount   = (int)$db->query(
-        'SELECT COUNT(*) AS nAnzahl
+        'SELECT COUNT(*) AS cnt
             FROM tnewsletterempfaenger
             WHERE tnewsletterempfaenger.nAktiv = 0' . $inactiveSearchSQL->cWHERE,
         ReturnType::SINGLE_OBJECT
-    )->nAnzahl;
+    )->cnt;
     $queueCount        = (int)$db->query(
-        "SELECT COUNT(*) AS jobQueueCount
+        "SELECT COUNT(*) AS cnt
             FROM tjobqueue
             WHERE jobType = 'newsletter'",
         ReturnType::SINGLE_OBJECT
-    )->jobQueueCount;
+    )->cnt;
     $templateCount     = (int)$db->query(
-        'SELECT COUNT(*) AS nAnzahl
+        'SELECT COUNT(*) AS cnt
             FROM tnewslettervorlage
             WHERE kSprache = ' . (int)$_SESSION['kSprache'],
         ReturnType::SINGLE_OBJECT
-    )->nAnzahl;
+    )->cnt;
     $historyCount      = (int)$db->query(
-        'SELECT COUNT(*) AS nAnzahl
+        'SELECT COUNT(*) AS cnt
             FROM tnewsletterhistory
             WHERE kSprache = ' . (int)$_SESSION['kSprache'],
         ReturnType::SINGLE_OBJECT
-    )->nAnzahl;
+    )->cnt;
     $pagiInactive      = (new Pagination('inaktive'))
         ->setItemCount($recipientsCount)
         ->assemble();

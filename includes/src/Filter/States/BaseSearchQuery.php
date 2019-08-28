@@ -13,6 +13,7 @@ use JTL\Filter\Join;
 use JTL\Filter\Option;
 use JTL\Filter\ProductFilter;
 use JTL\Filter\StateSQL;
+use JTL\Helpers\Request;
 use JTL\Language\LanguageHelper;
 use JTL\MagicCompatibilityTrait;
 use JTL\Session\Frontend;
@@ -105,7 +106,7 @@ class BaseSearchQuery extends AbstractFilter
         $minChars    = ($min = (int)$this->getConfig('artikeluebersicht')['suche_min_zeichen']) > 0
             ? $min
             : 3;
-        if (\mb_strlen($name) > 0 || (isset($_GET['qs']) && $_GET['qs'] === '')) {
+        if (\mb_strlen($name) > 0 || Request::getVar('qs') === '') {
             \preg_match(
                 '/[\S]{' . $minChars . ',}/u',
                 \str_replace(' ', '', $name),

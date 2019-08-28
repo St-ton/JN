@@ -59,7 +59,7 @@
                         <div class="row">
                             {foreach $oSection->oSettings_arr as $oSetting}
                                 {if $oSetting->cKey === 'theme_default' && isset($themePreviews) && $themePreviews !== null}
-                                    <div class="col-xs-12">
+                                    <div class="col-sm-8 ml-auto">
                                         <div class="item form-group form-row align-items-center" id="theme-preview-wrap" style="display: none;">
                                             <span class="input-group-addon"><strong>{__('preview')}</strong></span>
                                             <img id="theme-preview" alt="" />
@@ -267,7 +267,7 @@
                                 <li>
                                     <h3 style="margin:0">{$oTemplate->cName}</h3>
                                     {if !empty($oTemplate->cDescription)}
-                                        <p class="small">{$oTemplate->cDescription}</p>
+                                        <div class="small">{$oTemplate->cDescription}</div>
                                     {/if}
                                     <span class="label label-default">
                                      <i class="far fa-folder" aria-hidden="true"></i> {$oTemplate->cOrdner}
@@ -279,12 +279,11 @@
                                             <span class="label label-warning"><i class="fal fa-info-circle" aria-hidden="true"></i> <abbr title="{__('originalExists')} ({$oStored->cVersion})">{$oStored->cVersion}</abbr></span>
                                         {/foreach}
                                     {/if}
-                                    <!--
-                                    {if !empty($oTemplate->cURL)}<a href="{$oTemplate->cURL}">{/if}
-                                        {$oTemplate->cAuthor}
-                                        {if !empty($oTemplate->cURL)}</a>
-                                    {/if}
-                                    -->
+                                    <div class="font-size-sm">
+                                        {if !empty($oTemplate->cURL)}<a href="{$oTemplate->cURL}" target="_blank">{/if}
+                                            {$oTemplate->cAuthor}
+                                        {if !empty($oTemplate->cURL)}</a>{/if}
+                                    </div>
                                 </li>
                             </ul>
                         </td>
@@ -297,6 +296,52 @@
                                 <h4 class="label-wrap">
                                     <span class="label label-success">{__('activated')} {if $oTemplate->eTyp === 'mobil'} ({__('mobileDevices')}{/if}</span>
                                 </h4>
+                            {/if}
+                            {if !empty($oTemplate->checksums)}
+                                {if $oTemplate->checksums === true}
+                                    <span class="badge badge-success">{__('unmodified')}</span>
+                                {else}
+                                    <span class="badge badge-warning cursor-pointer" title="{__('tplChecksums')}"
+                                        data-toggle="modal" data-target="#tplModal{$oTemplate->cName}">{__('modified')}</span>
+                                    <div class="modal fade" id="tplModal{$oTemplate->cName}" tabindex="-1" role="dialog"
+                                        aria-labelledby="tplModal{$oTemplate->cName}Label" aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                    <h5 class="modal-title" id="tplModal{$oTemplate->cName}Label">
+                                                        {$oTemplate->cName} – {__('modifiedFiles')} ({$oTemplate->checksums|count})
+                                                    </h5>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <div class="table-responsive table-">
+                                                        <table class="table table-sm table-borderless">
+                                                            <thead>
+                                                            <tr>
+                                                                <th class="text-left">{__('file')}</th>
+                                                                <th class="text-right">{__('lastModified')}</th>
+                                                            </tr>
+                                                            </thead>
+                                                            {foreach $oTemplate->checksums as $file}
+                                                                <tr>
+                                                                    <td class="text-left">{$file->name}</td>
+                                                                    <td class="text-right">
+                                                                        <small class="text-muted">{$file->lastModified}</small>
+                                                                    </td>
+                                                                </tr>
+                                                            {/foreach}
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer text-right">
+                                                    <button type="button" class="btn btn-primary" data-dismiss="modal">{__('close')}</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {/if}
                             {/if}
                         </td>
                         <td class="text-vcenter text-center">

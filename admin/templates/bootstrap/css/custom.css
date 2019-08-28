@@ -347,7 +347,6 @@
   min-width: 256px;
 }
 .backend-wrapper > .backend-main > .backend-content {
-  padding: 32px;
   background: #f5f7fa;
   flex: auto;
 }
@@ -2338,7 +2337,7 @@ td.nowrap {
   right: 0;
   bottom: 0;
   position: absolute;
-  /*background-size: cover;*/
+  background-size: cover;
   background-repeat: no-repeat;
   background-position: center center;
 }
@@ -2682,5 +2681,8 @@ input[type=number] {
 .select2-container {
   min-width: 100%;
   max-width: inherit;
+}
+.save-wrapper .row > div {
+  margin-bottom: 8px;
 }
 /*# sourceMappingURL=custom.css.map */

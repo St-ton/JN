@@ -33,7 +33,7 @@ $alertHelper      = Shop::Container()->getAlertService();
 
 Shop::Container()->getGetText()->loadAdminLocale('pages/einstellungen');
 
-if (isset($_GET['action']) && $_GET['action'] === 'createIndex') {
+if (Request::getVar('action') === 'createIndex') {
     header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
     header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
     header('Cache-Control: no-cache, must-revalidate');
@@ -62,7 +62,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'createIndex') {
         // Fehler beim Index löschen ignorieren
     }
 
-    if ($_GET['create'] === 'Y') {
+    if (Request::getVar('create') === 'Y') {
         $searchCols = array_map(function ($item) {
             return explode('.', $item, 2)[1];
         }, JTL\Filter\States\BaseSearchQuery::getSearchRows());
@@ -142,13 +142,8 @@ if (isset($_GET['action']) && $_GET['action'] === 'createIndex') {
     exit;
 }
 
-if (isset($_POST['einstellungen_bearbeiten'])
-    && (int)$_POST['einstellungen_bearbeiten'] === 1
-    && $kSektion > 0
-    && Form::validateToken()
-) {
-    $sucheFulltext = isset($_POST['suche_fulltext']) ? in_array($_POST['suche_fulltext'], ['Y', 'B'], true) : false;
-
+if (Request::postInt('einstellungen_bearbeiten') === 1 && $kSektion > 0 && Form::validateToken()) {
+    $sucheFulltext = in_array(Request::postVar('suche_fulltext', []), ['Y', 'B'], true);
     if ($sucheFulltext) {
         if (version_compare($mysqlVersion, '5.6', '<')) {
             //Volltextindizes werden von MySQL mit InnoDB erst ab Version 5.6 unterstützt

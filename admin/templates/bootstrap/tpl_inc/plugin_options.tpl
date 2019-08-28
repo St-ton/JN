@@ -16,12 +16,13 @@
                         </div><!-- .panel-body -->
                         </div><!-- .panel -->
                     {/if}
-                    <div class="panel-idx-{$confItem@index}{if $confItem@index === 0} first{/if}">
-                    <div class="subheading1">{$confItem->niceName}
+                    <div class="panel-idx-{$confItem@index}{if $confItem@index === 0} first{/if} mb-3">
+                    <div class="subheading1">{__($confItem->niceName)}
                         {if $confItem->description|strlen > 0}
                             <span class="card-title-addon">{getHelpDesc cDesc=$confItem->description}</span>
                         {/if}
                     </div>
+                    <hr>
                     <div class="">
                     {assign var=open value=1}
                 {elseif $confItem->inputType === JTL\Plugin\Admin\InputType::NONE}

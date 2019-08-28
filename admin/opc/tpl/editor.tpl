@@ -44,7 +44,7 @@
     <script src="{$shopUrl}/admin/opc/js/PreviewFrame.js"></script>
 
     <script>
-        let opc = new OPC({
+        window.opc = new OPC({
             jtlToken:    '{$smarty.session.jtl_token}',
             shopUrl:     '{$shopUrl}',
             templateUrl: '{$templateUrl}',
@@ -54,6 +54,10 @@
 
         opc.init();
     </script>
+
+    {foreach $opc->getPortletInitScriptUrls() as $scriptUrl}
+        <script src="{$scriptUrl}"></script>
+    {/foreach}
 </head>
 <body>
     <div id="iconpicker" data-placement="inline" style="display: none"></div>
@@ -81,29 +85,33 @@
         {include file="./modals/tour.tpl"}
         {include file="./modals/restore_unsaved.tpl"}
 
-        <div id="portletToolbar" class="opc-portlet-toolbar btn-group" style="display:none">
-            <button type="button" class="btn btn-default btn-sm opc-label" id="portletLabel">
-                {__('portletLabel')}
+        <div id="portletToolbar" class="opc-portlet-toolbar" style="display:none">
+            <button type="button" class="opc-toolbar-btn opc-label" id="portletLabel"></button>
+            <button type="button" class="opc-toolbar-btn" id="btnConfig" title="{__('editSettings')}">
+                <i class="fas fa-pen"></i>
             </button>
-            <button type="button" class="btn btn-default btn-sm" id="btnConfig" title="{__('editSettings')}">
-                <i class="fa fa-edit"></i>
+            <button type="button" class="opc-toolbar-btn" id="btnClone" title="{__('copySelect')}">
+                <i class="far fa-clone"></i>
             </button>
-            <button type="button" class="btn btn-default btn-sm" id="btnClone" title="{__('copySelect')}">
-                <i class="fa fa-clone"></i>
+            <button type="button" class="opc-toolbar-btn" id="btnBlueprint" title="{__('saveTemplate')}">
+                <i class="far fa-star"></i>
             </button>
-            <button type="button" class="btn btn-default btn-sm" id="btnBlueprint" title="{__('saveTemplate')}">
-                <i class="fa fa-star"></i>
+            <button type="button" class="opc-toolbar-btn" id="btnParent" title="{__('goUp')}">
+                <i class="fas fa-level-up-alt"></i>
             </button>
-            <button type="button" class="btn btn-default btn-sm" id="btnParent" title="{__('goUp')}">
-                <i class="fa fa-level-up fas fa-level-up-alt"></i>
-            </button>
-            <button type="button" class="btn btn-default btn-sm" id="btnTrash" title="{__('deleteSelect')}">
-                <i class="fa fa-trash-alt"></i>
+            <button type="button" class="opc-toolbar-btn" id="btnTrash" title="{__('deleteSelect')}">
+                <i class="fas fa-trash"></i>
             </button>
         </div>
 
-        <div id="portletPreviewLabel" class="opc-label" style="display:none">
-            {__('portletPreviewLabel')}
+        <div id="portletPreviewLabel" class="opc-label" style="display:none"></div>
+
+        <div id="dropTargetBlueprint" class="opc-droptarget" style="display:none">
+            <div class="opc-droptarget-hover">
+                <img src="{$shopUrl}/admin/opc/gfx/icon-drop-target.svg" class="opc-droptarget-icon" alt="Drop Target">
+                <span>{__('dropPortletHere')}</span>
+                <i class="opc-droptarget-info fas fa-info-circle" data-toggle="tooltip" data-placement="left"></i>
+            </div>
         </div>
     </div>
 </body>

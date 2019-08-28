@@ -1733,12 +1733,23 @@ define('HOOK_BACKEND_SHOP_RESET_AFTER', 229);
 /**
  * on removing a cart position that has been deactivated / deleted in the meantime
  *
- * @param CartItem - oPosition
- * @param bool         - &delete
- *@since 5.0.0
+ * @param CartItem oPosition
+ * @param bool     delete
+ * @since 5.0.0
  * @file classes/Warenkorb.php
  */
 define('HOOK_WARENKORB_CLASS_LOESCHEDEAKTIVIERTEPOS', 230);
+
+/**
+ * before the ordernumber is returned from baueBestellnummer().
+ *
+ * @since 4.06.14
+ * @file includes/bestellabschluss_inc.php
+ * @param int orderNo
+ * @param string prefix
+ * @param string suffix
+ */
+define('HOOK_BESTELLABSCHLUSS_INC_BAUEBESTELLNUMMER', 231);
 
 /**
  * in ProductFilter::initBaseStates() after initializing the base filters
@@ -1882,7 +1893,6 @@ define('HOOK_SITEMAP_EXPORT_GENERATE', 285);
  */
 define('HOOK_SITEMAP_EXPORT_INIT', 286);
 
-
 /**
  * @since 5.0.0
  * @file includes/src/Mail/Mailer.php
@@ -1890,3 +1900,31 @@ define('HOOK_SITEMAP_EXPORT_INIT', 286);
  * @param \JTL\Mail\Mail mail
  */
 define('HOOK_MAIL_PRERENDER', 290);
+
+/**
+ * @since 5.0.0
+ * @file includes/src/Link/Link.php
+ * @param array data
+ */
+define('HOOK_LINK_PRE_MAP', 300);
+
+/**
+ * @since 5.0.0
+ * @file includes/src/Link/Link.php
+ * @param \JTL\Link\Link link
+ */
+define('HOOK_LINK_MAPPED', 301);
+
+/**
+ * @since 5.0.0
+ * @file includes/src/Link/LinkGroup.php
+ * @param \JTL\Link\LinkGroup group
+ */
+define('HOOK_LINKGROUP_MAPPED', 302);
+
+/**
+ * @since 5.0.0
+ * @file includes/src/Link/LinkGroupList.php
+ * @param \JTL\Link\LinkGroupList list
+ */
+define('HOOK_LINKGROUPS_LOADED', 303);

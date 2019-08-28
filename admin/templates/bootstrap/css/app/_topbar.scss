@@ -50,7 +50,13 @@
 
 #dropdown-search { border-radius: $border-radius; font-size: $font-size-sm; width: rem(570px);
 	.dropdown-header { color: $subheading1-color; }
-	.dropdown-item { display: flex; flex-direction: column; }
+	.dropdown-item {
+		display: flex;
+		flex-direction: column;
+		&.selected {
+			background: #abd1f6
+		}
+	}
 	.dropdown-divider { margin-bottom: map-get($spacers, 4); }
 
 	.title { white-space: normal; }
@@ -63,7 +69,7 @@
 	}
 
 	> ul { list-style: disc; padding-left: 2.5rem;
-		> li { margin-bottom: map-get($spacers, 4);
+		> li { margin-bottom: map-get($spacers, 2);
 			> .dropdown-item .title { font-weight: $font-weight-semibold; }
 		}
 		li .dropdown-item { margin-left: -2.5rem; padding-left: 2.5rem; width: calc(100% + 2.5rem); }

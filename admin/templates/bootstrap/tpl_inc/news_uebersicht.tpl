@@ -1,4 +1,4 @@
-<script type="text/javascript" src="{$URL_SHOP}/{$PFAD_ADMIN}{$currentTemplateDir}js/sorttable.js"></script>
+<script type="text/javascript" src="{$templateBaseURL}js/sorttable.js"></script>
 <script>
     $(window).on('load', function(){
         $('#submitDelete').on('click', function(){
@@ -469,7 +469,7 @@
             <div class="modal-header">
                 <h2 class="modal-title">{__('deleteComment')}</h2>
             </div>
-            <div class="modal-body py-5"></div>
+            <div class="modal-body"></div>
             <div class="modal-footer">
                 <p>{__('wantToConfirm')}</p>
                 <div class="row">

@@ -5,15 +5,14 @@
 {block name='layout-footer'}
     {block name='layout-footer-content-all-closingtags'}
         {block name='layout-footer-content-closingtag'}
-            {include file='snippets/opc_mount_point.tpl' id='opc_content'}
+            {opcMountPoint id='opc_content' title='Default Area'}
             </div>{* /content *}
         {/block}
 
         {block name='layout-footer-aside'}
             {has_boxes position='left' assign='hasLeftBox'}
 
-            {if ($Einstellungen.template.sidebar_settings.show_sidebar_product_list === 'Y' && $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp
-                    || $Einstellungen.template.sidebar_settings.show_sidebar_product_list === 'N')
+            {if $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp
                 && !$bExclusive
                 && $hasLeftBox
                 && !empty($boxes.left|strip_tags|trim)
@@ -93,67 +92,89 @@
                             {row class="footer-additional"}
                             {if $Einstellungen.template.footer.socialmedia_footer === 'Y'}
                                 {block name='layout-footer-socialmedia'}
-                                    {col cols=12 class="footer-additional-wrapper"}
+                                    {col cols=12 class="footer-additional-wrapper col-auto mx-auto"}
+                                        <ul class="list-unstyled d-flex flex-row flex-wrap">
                                         {if !empty($Einstellungen.template.footer.facebook)}
-                                            {link href="{if $Einstellungen.template.footer.facebook|strpos:'http' !== 0}https://{/if}{$Einstellungen.template.footer.facebook}"
-                                                class="btn-social btn-facebook btn" title="Facebook" target="_blank" rel="noopener"}
-                                                <i class="fab fa-facebook-f"></i>
-                                            {/link}
+                                            <li class="mr-2">
+                                                {link href="{if $Einstellungen.template.footer.facebook|strpos:'http' !== 0}https://{/if}{$Einstellungen.template.footer.facebook}"
+                                                    class="btn-icon-secondary btn-facebook btn" aria=['label'=>"{lang key='visit_us_on' section='aria' printf='Facebook'}"] title="Facebook" target="_blank" rel="noopener"}
+                                                    <span class="fab fa-facebook-f fa-fw fa-lg"></span>
+                                                {/link}
+                                            </li>
                                         {/if}
                                         {if !empty($Einstellungen.template.footer.twitter)}
-                                            {link href="{if $Einstellungen.template.footer.twitter|strpos:'http' !== 0}https://{/if}{$Einstellungen.template.footer.twitter}"
-                                                class="btn-social btn-twitter btn" title="Twitter" target="_blank" rel="noopener"}
-                                                <i class="fab fa-twitter"></i>
-                                            {/link}
+                                            <li class="mr-2">
+                                                {link href="{if $Einstellungen.template.footer.twitter|strpos:'http' !== 0}https://{/if}{$Einstellungen.template.footer.twitter}"
+                                                    class="btn-icon-secondary btn-twitter btn" aria=['label'=>"{lang key='visit_us_on' section='aria' printf='Twitter'}"] title="Twitter" target="_blank" rel="noopener"}
+                                                    <i class="fab fa-twitter fa-fw fa-lg"></i>
+                                                {/link}
+                                            </li>
                                         {/if}
                                         {if !empty($Einstellungen.template.footer.googleplus)}
-                                            {link href="{if $Einstellungen.template.footer.googleplus|strpos:'http' !== 0}https://{/if}{$Einstellungen.template.footer.googleplus}"
-                                                class="btn-social btn-googleplus btn" title="Google+" target="_blank" rel="noopener"}
-                                                <i class="fab fa-google-plus-g"></i>
-                                            {/link}
+                                            <li class="mr-2">
+                                                {link href="{if $Einstellungen.template.footer.googleplus|strpos:'http' !== 0}https://{/if}{$Einstellungen.template.footer.googleplus}"
+                                                    class="btn-icon-secondary btn-googleplus btn" aria=['label'=>"{lang key='visit_us_on' section='aria' printf='Google+'}"] title="Google+" target="_blank" rel="noopener"}
+                                                    <i class="fab fa-google-plus-g fa-fw fa-lg"></i>
+                                                {/link}
+                                            </li>
                                         {/if}
                                         {if !empty($Einstellungen.template.footer.youtube)}
-                                            {link href="{if $Einstellungen.template.footer.youtube|strpos:'http' !== 0}https://{/if}{$Einstellungen.template.footer.youtube}"
-                                                class="btn-social btn-youtube btn" title="YouTube" target="_blank" rel="noopener"}
-                                                <i class="fab fa-youtube"></i>
-                                            {/link}
+                                            <li class="mr-2">
+                                                {link href="{if $Einstellungen.template.footer.youtube|strpos:'http' !== 0}https://{/if}{$Einstellungen.template.footer.youtube}"
+                                                    class="btn-icon-secondary btn-youtube btn" aria=['label'=>"{lang key='visit_us_on' section='aria' printf='YouTube'}"] title="YouTube" target="_blank" rel="noopener"}
+                                                    <i class="fab fa-youtube fa-fw fa-lg"></i>
+                                                {/link}
+                                            </li>
                                         {/if}
                                         {if !empty($Einstellungen.template.footer.vimeo)}
-                                            {link href="{if $Einstellungen.template.footer.vimeo|strpos:'http' !== 0}https://{/if}{$Einstellungen.template.footer.vimeo}"
-                                                class="btn-social btn-vimeo btn" title="Vimeo" target="_blank" rel="noopener"}
-                                                <i class="fab fa-vimeo-v"></i>
-                                            {/link}
+                                            <li class="mr-2">
+                                                {link href="{if $Einstellungen.template.footer.vimeo|strpos:'http' !== 0}https://{/if}{$Einstellungen.template.footer.vimeo}"
+                                                    class="btn-icon-secondary btn-vimeo btn" aria=['label'=>"{lang key='visit_us_on' section='aria' printf='Vimeo'}"]  title="Vimeo" target="_blank" rel="noopener"}
+                                                    <i class="fab fa-vimeo-v fa-fw fa-lg"></i>
+                                                {/link}
+                                            </li>
                                         {/if}
                                         {if !empty($Einstellungen.template.footer.pinterest)}
-                                            {link href="{if $Einstellungen.template.footer.pinterest|strpos:'http' !== 0}https://{/if}{$Einstellungen.template.footer.pinterest}"
-                                                class="btn-social btn-pinterest btn" title="Pinterest" target="_blank" rel="noopener"}
-                                                <i class="fab fa-pinterest-p"></i>
-                                            {/link}
+                                            <li class="mr-2">
+                                                {link href="{if $Einstellungen.template.footer.pinterest|strpos:'http' !== 0}https://{/if}{$Einstellungen.template.footer.pinterest}"
+                                                    class="btn-icon-secondary btn-pinterest btn" aria=['label'=>"{lang key='visit_us_on' section='aria' printf='Pinterest'}"]  title="Pinterest" target="_blank" rel="noopener"}
+                                                    <i class="fab fa-pinterest-p fa-fw fa-lg"></i>
+                                                {/link}
+                                            </li>
                                         {/if}
                                         {if !empty($Einstellungen.template.footer.instagram)}
-                                            {link href="{if $Einstellungen.template.footer.instagram|strpos:'http' !== 0}https://{/if}{$Einstellungen.template.footer.instagram}"
-                                                class="btn-social btn-instagram btn" title="Instagram" target="_blank" rel="noopener"}
-                                                <i class="fab fa-instagram"></i>
-                                            {/link}
+                                            <li class="mr-2">
+                                                {link href="{if $Einstellungen.template.footer.instagram|strpos:'http' !== 0}https://{/if}{$Einstellungen.template.footer.instagram}"
+                                                    class="btn-icon-secondary btn-instagram btn" aria=['label'=>"{lang key='visit_us_on' section='aria' printf='Instagram'}"]  title="Instagram" target="_blank" rel="noopener"}
+                                                    <i class="fab fa-instagram fa-fw fa-lg"></i>
+                                                {/link}
+                                            </li>
                                         {/if}
                                         {if !empty($Einstellungen.template.footer.skype)}
-                                            {link href="{if $Einstellungen.template.footer.skype|strpos:'http' !== 0}https://{/if}{$Einstellungen.template.footer.skype}"
-                                                class="btn-social btn-skype btn" title="Skype" target="_blank" rel="noopener"}
-                                                <i class="fab fa-skype"></i>
-                                            {/link}
+                                            <li class="mr-2">
+                                                {link href="{if $Einstellungen.template.footer.skype|strpos:'http' !== 0}https://{/if}{$Einstellungen.template.footer.skype}"
+                                                    class="btn-icon-secondary btn-skype btn" aria=['label'=>"{lang key='visit_us_on' section='aria' printf='Skype'}"]  title="Skype" target="_blank" rel="noopener"}
+                                                    <i class="fab fa-skype fa-fw fa-lg"></i>
+                                                {/link}
+                                            </li>
                                         {/if}
                                         {if !empty($Einstellungen.template.footer.xing)}
-                                            {link href="{if $Einstellungen.template.footer.xing|strpos:'http' !== 0}https://{/if}{$Einstellungen.template.footer.xing}"
-                                                class="btn-social btn-xing btn" title="Xing" target="_blank" rel="noopener"}
-                                                <i class="fab fa-xing"></i>
-                                            {/link}
+                                            <li class="mr-2">
+                                                {link href="{if $Einstellungen.template.footer.xing|strpos:'http' !== 0}https://{/if}{$Einstellungen.template.footer.xing}"
+                                                    class="btn-icon-secondary btn-xing btn" aria=['label'=>"{lang key='visit_us_on' section='aria' printf='Xing'}"]  title="Xing" target="_blank" rel="noopener"}
+                                                    <i class="fab fa-xing fa-fw fa-lg"></i>
+                                                {/link}
+                                            </li>
                                         {/if}
                                         {if !empty($Einstellungen.template.footer.linkedin)}
-                                            {link href="{if $Einstellungen.template.footer.linkedin|strpos:'http' !== 0}https://{/if}{$Einstellungen.template.footer.linkedin}"
-                                                class="btn-social btn-linkedin btn" title="Linkedin" target="_blank" rel="noopener"}
-                                                <i class="fab fa-linkedin-in"></i>
-                                            {/link}
+                                            <li class="mr-0">
+                                                {link href="{if $Einstellungen.template.footer.linkedin|strpos:'http' !== 0}https://{/if}{$Einstellungen.template.footer.linkedin}"
+                                                    class="btn-icon-secondary btn-linkedin btn" aria=['label'=>"{lang key='visit_us_on' section='aria' printf='Linkedin'}"]  title="Linkedin" target="_blank" rel="noopener"}
+                                                    <i class="fab fa-linkedin-in fa-fw fa-lg"></i>
+                                                {/link}
+                                            </li>
                                         {/if}
+                                        </ul>
                                     {/col}
                                 {/block}
                             {/if}
@@ -167,7 +188,7 @@
                                     id="language-dropdown-footer"
                                     variant="link btn-sm"
                                     class="d-block d-md-none col-6 text-center language-dropdown"
-                                    text="<i class='fa fa-language'></i> {lang key='language'}"}
+                                    text="<i class='fas fa-language'></i> {lang key='language'}"}
                                     {foreach $smarty.session.Sprachen as $oSprache}
                                         {dropdownitem href="{$oSprache->url}" rel="nofollow" }
                                             {$oSprache->displayLanguage}
@@ -251,114 +272,6 @@
     {* JavaScripts *}
     {block name='layout-footer-js'}
         {$dbgBarBody}
-        {block name='layout-footer-script-jtl-load'}
-            {block name='layout-footer-jquery'}
-                <script>
-                    (function () {
-                        var done = false;
-                        var script = document.createElement("script"),
-                        head = document.head || document.documentElement;
-                        script.src = '{$ShopURL}/{if empty($parentTemplateDir)}{$currentTemplateDir}{else}{$parentTemplateDir}{/if}js/jquery-3.4.1.min.js';
-                        script.type = 'text/javascript';
-                        script.async = false;
-                        script.onload = script.onreadystatechange = function() {
-                            if (!done && (!this.readyState || this.readyState === "loaded" || this.readyState === "complete")) {
-                                done = true;
-                                // Process async variable
-                                var deferredTasks = window.deferredTasks || [];
-                                while(deferredTasks.length) { // there is some syncing to be done
-                                    var obj = deferredTasks.shift();
-                                    if (obj[0] =="ready") {
-                                        $(obj[1]);
-                                    }else if (obj[0] =="load"){
-                                        $(window).on("load",obj[1]);
-                                    }
-                                }
-                                deferredTasks = {
-                                    push: function(param){
-                                        if (param[0] =="ready") {
-                                            $(param[1]);
-                                        }else if (param[0] =="load"){
-                                            $(window).on("load",param[1]);
-                                        }
-                                    }
-                                };
-                                // End of processing
-                                script.onload = script.onreadystatechange = null;
-                                if (head && script.parentNode) {
-                                    head.removeChild(script);
-                                }
-                            }
-                        };
-                        head.appendChild(script);
-                    })();
-
-                     // helper function to load scripts.
-                    function loadScript(url){
-                        var script = document.createElement("script");
-                        script.type = 'text/javascript';
-                        script.async = false;
-                        script.src = url;
-                        var s = document.getElementsByTagName("script")[0];
-                        s.parentNode.insertBefore(script, s);
-                    }
-
-                    {if !isset($Einstellungen.template.general.use_minify) || $Einstellungen.template.general.use_minify === 'N'}
-                        {if isset($cPluginJsHead_arr)}
-                            {foreach $cPluginJsHead_arr as $cJS}
-                                loadScript("{$ShopURL}/{$cJS}?v={$nTemplateVersion}");
-                            {/foreach}
-                        {/if}
-                    {else}
-                        {if isset($cPluginJsHead_arr) && $cPluginJsHead_arr|@count > 0}
-                            loadScript("{$ShopURL}/asset/plugin_js_head?v={$nTemplateVersion}");
-                        {/if}
-                    {/if}
-                    {if !isset($Einstellungen.template.general.use_minify) || $Einstellungen.template.general.use_minify === 'N'}
-                        {foreach $cJS_arr as $cJS}
-                            loadScript("{$ShopURL}/{$cJS}?v={$nTemplateVersion}");
-                        {/foreach}
-                        {if isset($cPluginJsBody_arr)}
-                            {foreach $cPluginJsBody_arr as $cJS}
-                                loadScript("{$ShopURL}/{$cJS}?v={$nTemplateVersion}");
-                            {/foreach}
-                        {/if}
-                    {else}
-                        loadScript("{$ShopURL}/asset/jtl3.js?v={$nTemplateVersion}");
-                        {if isset($cPluginJsBody_arr) && $cPluginJsBody_arr|@count > 0}
-                            loadScript("{$ShopURL}/asset/plugin_js_body?v={$nTemplateVersion}");
-                        {/if}
-                    {/if}
-
-                    {assign var=customJSPath value=$currentTemplateDir|cat:'/js/custom.js'}
-                    {if file_exists($customJSPath)}
-                        loadScript("{$ShopURL}/{$customJSPath}?v={$nTemplateVersion}");
-                    {/if}
-
-                    {assign var=availableLocale value=array('ar','az', 'bg','ca', 'cr', 'cs', 'da', 'de', 'el', 'es','et', 'fa','fi', 'fr', 'gl',
-                    'he','hu','id','it','ja','ka','kr','kz', 'lt', 'nl','no', 'pl', 'pt', 'ro','ru','sk','sl','sv','th','tr', 'uk','uz','vi','zh')}
-
-                    {if isset($smarty.session.currentLanguage->cISO639) && $smarty.session.currentLanguage->cISO639|in_array:$availableLocale}
-                        {assign var=uploaderLang value=$smarty.session.currentLanguage->cISO639}
-                    {else}
-                        {assign var=uploaderLang value='LANG'}
-                    {/if}
-
-                    loadScript("{if empty($parentTemplateDir)}{$currentTemplateDir}{else}{$parentTemplateDir}{/if}js/fileinput/fileinput.min.js");
-                    loadScript("{if empty($parentTemplateDir)}{$currentTemplateDir}{else}{$parentTemplateDir}{/if}js/fileinput/themes/fas/theme.min.js");
-                    loadScript("{if empty($parentTemplateDir)}{$currentTemplateDir}{else}{$parentTemplateDir}{/if}js/fileinput/locales/{$uploaderLang}.js");
-                </script>
-            {/block}
-
-            {if (!isset($Einstellungen.template.general.use_cron) || $Einstellungen.template.general.use_cron === 'Y') && $smarty.now % 10 === 0}
-                <script>
-                    var deferredTasks = window.deferredTasks || [];
-                    deferredTasks.push(["ready",function () {
-                        $.get('includes/cron_inc.php');
-                    }]);
-                </script>
-            {/if}
-        {/block}
         {captchaMarkup getBody=false}
     {/block}
     </body>

@@ -142,7 +142,7 @@ function clearInput(inputField) {ldelim}
                 <div class="row">
                     <div class="ml-auto col-sm-6 col-xl-auto">
                         <a class="btn btn-outline-primary btn-block" href="umfrage.php">
-                            <i class="fa fa-angle-double-left"></i> {__('pageBack')}
+                            <i class="fa fa-angle-double-left"></i> {__('goBack')}
                         </a>
                     </div>
                     <div class="col-sm-6 col-xl-auto">

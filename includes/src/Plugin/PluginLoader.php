@@ -87,9 +87,9 @@ class PluginLoader extends AbstractLoader
         $getText->setLanguage($_SESSION['AdminAccount']->language ?? $getText->getDefaultLanguage());
         $extension->setID($id);
         $extension->setIsExtension(true);
-        $extension->setMeta($this->loadMetaData($obj));
         $extension->setPaths($paths);
         $getText->loadPluginLocale('base', $extension);
+        $extension->setMeta($this->loadMetaData($obj));
         $this->loadMarkdownFiles($paths->getBasePath(), $extension->getMeta());
         $this->loadAdminMenu($extension);
         $extension->setState((int)$obj->nStatus);

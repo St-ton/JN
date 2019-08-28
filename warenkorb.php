@@ -11,6 +11,7 @@ use JTL\Catalog\Product\Preise;
 use JTL\Checkout\Kupon;
 use JTL\DB\ReturnType;
 use JTL\Extensions\Upload\Upload;
+use JTL\Helpers\Request;
 use JTL\Helpers\ShippingMethod;
 use JTL\Session\Frontend;
 use JTL\Shop;
@@ -113,17 +114,17 @@ if (isset($_POST['gratis_geschenk'], $_POST['gratisgeschenk']) && (int)$_POST['g
         }
     }
 }
-if (isset($_GET['fillOut'])) {
+if (($res = Request::getInt('fillOut', -1)) > -1) {
     $mbw = Frontend::getCustomerGroup()->getAttribute(KNDGRP_ATTRIBUT_MINDESTBESTELLWERT);
-    if ((int)$_GET['fillOut'] === 9 && $mbw > 0 && $cart->gibGesamtsummeWaren(true, false) < $mbw) {
+    if ($res === 9 && $mbw > 0 && $cart->gibGesamtsummeWaren(true, false) < $mbw) {
         $warning = Shop::Lang()->get('minordernotreached', 'checkout') . ' ' . Preise::getLocalizedPriceString($mbw);
-    } elseif ((int)$_GET['fillOut'] === 8) {
+    } elseif ($res === 8) {
         $warning = Shop::Lang()->get('orderNotPossibleNow', 'checkout');
-    } elseif ((int)$_GET['fillOut'] === 3) {
+    } elseif ($res === 3) {
         $warning = Shop::Lang()->get('yourbasketisempty', 'checkout');
-    } elseif ((int)$_GET['fillOut'] === 10) {
+    } elseif ($res === 10) {
         $warning = Shop::Lang()->get('missingProducts', 'checkout');
-    } elseif ((int)$_GET['fillOut'] === UPLOAD_ERROR_NEED_UPLOAD) {
+    } elseif ($res === UPLOAD_ERROR_NEED_UPLOAD) {
         $warning = Shop::Lang()->get('missingFilesUpload', 'checkout');
     }
 }

@@ -2,7 +2,7 @@
     <div class="row no-gutters align-items-center flex-nowrap topbar px-3">
         <div class="col">
             <a href="index.php" title="{__('dashboard')}">
-                <img class="brand-logo" width="101" height="32" src="{$currentTemplateDir}gfx/JTL-Shop-Logo-rgb.png" alt="JTL-Shop">
+                <img class="brand-logo" width="101" height="32" src="{$templateBaseURL}gfx/JTL-Shop-Logo-rgb.png" alt="JTL-Shop">
             </a>
         </div>
         <div class="col-auto ml-auto">
@@ -28,7 +28,8 @@
                 {else}
                     <li id="root-menu-entry-{$rootEntryName}"
                         class="nav-item {if isset($oLinkOberGruppe->class)}{$oLinkOberGruppe->class}{/if}
-                               {if $oLinkOberGruppe->key === $currentMenuPath[0]}active{/if}">
+                               {if $oLinkOberGruppe->key === $currentMenuPath[0]}active{/if}
+                                {if $oLinkOberGruppe@last} mb-5{/if}">
                         <a href="#" class="nav-link {if !($oLinkOberGruppe->key === $currentMenuPath[0])} collapsed{/if}">
                             <span class="category-icon">{include file="img/icons/{$oLinkOberGruppe->icon}.svg"}</span>
                             <span class="category-title">{$oLinkOberGruppe->cName}</span>

@@ -11,7 +11,7 @@
 
     {block name='checkout-index-content'}
 
-        <div id="result-wrapper">
+        <div id="result-wrapper" data-wrapper="true">
             {container}
                 <div id="checkout">
                     {block name='checkout-index-include-inc-steps'}
@@ -37,7 +37,7 @@
 
         {if (isset($nWarenkorb2PersMerge) && $nWarenkorb2PersMerge === 1)}
             {block name='checkout-index-script-basket-merge'}
-                <script type="text/javascript">
+                {inline_script}<script>
                     $(window).on('load', function() {
                         $(function() {
                             eModal.addLabel('{lang key='yes' section='global'}', '{lang key='no' section='global'}');
@@ -53,14 +53,14 @@
                             );
                         });
                     });
-                </script>
+                </script>{/inline_script}
             {/block}
         {/if}
         {block name='checkout-index-script-location'}
-            <script type="text/javascript">
-                if (top.location !== self.location) {ldelim}
+            <script>
+                if (top.location !== self.location) {
                     top.location = self.location.href;
-                {rdelim}
+                }
             </script>
         {/block}
     {/block}

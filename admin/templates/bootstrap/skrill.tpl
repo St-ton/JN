@@ -20,7 +20,7 @@
             <div class="card-body">
                 <p>{__('mbIntro')}</p>
                 <p class="center" style="text-align: center">
-                    <img src="{$URL_SHOP}/{$PFAD_ADMIN}{$currentTemplateDir}/gfx/skrill_intro.jpg" alt="Skrill" />
+                    <img src="{$templateBaseURL}/gfx/skrill_intro.jpg" alt="Skrill" />
                 </p>
             </div>
             <div class="card-footer">

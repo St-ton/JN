@@ -8,6 +8,7 @@ use JTL\Backend\AdminLoginStatus;
 use JTL\Backend\Notification;
 use JTL\Backend\Revision;
 use JTL\Helpers\Form;
+use JTL\Helpers\Request;
 use JTL\Language\LanguageHelper;
 use JTL\Services\JTL\CaptchaServiceInterface;
 use JTL\Services\JTL\SimpleCaptchaService;
@@ -68,7 +69,7 @@ require PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'smartyinclude.php';
 Shop::Container()->singleton(CaptchaServiceInterface::class, function () {
     return new SimpleCaptchaService(true);
 });
-Shop::bootstrap();
+Shop::bootstrap(false);
 
 if ($oAccount->logged()) {
     if (!$session->isValid()) {
@@ -77,15 +78,13 @@ if ($oAccount->logged()) {
     }
 
     Shop::fire('backend.notification', Notification::getInstance()->buildDefault());
-    if (isset($_POST['revision-action'], $_POST['revision-type'], $_POST['revision-id'])
-        && Form::validateToken()
-    ) {
+    if (isset($_POST['revision-action'], $_POST['revision-type'], $_POST['revision-id']) && Form::validateToken()) {
         $revision = new Revision($db);
         if ($_POST['revision-action'] === 'restore') {
             $revision->restoreRevision(
                 $_POST['revision-type'],
                 $_POST['revision-id'],
-                isset($_POST['revision-secondary']) && $_POST['revision-secondary'] === '1'
+                Request::postInt('revision-secondary') === 1
             );
         } elseif ($_POST['revision-action'] === 'delete') {
             $revision->deleteRevision($_POST['revision-id']);

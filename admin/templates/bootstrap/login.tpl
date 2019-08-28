@@ -12,11 +12,11 @@
 <div class="vertical-center">
     <div class="container">
         <div id="login_wrapper">
-            <p class="text-center">
-                <img src="{$currentTemplateDir}gfx/shop-login.png" alt="JTL-Shop" class="logo" />
-            </p>
             <div id="login_outer" class="card">
                 <div class="card-body">
+                    <p class="text-center mb-4">
+                        <img class="brand-logo" width="120" height="38" src="{$templateBaseURL}gfx/JTL-Shop-Logo-rgb.png" alt="JTL-Shop">
+                    </p>
                     {if $alertError}
                         {include file='snippets/alert_list.tpl'}
                         <script type="text/javascript">
@@ -28,11 +28,6 @@
                         </script>
                     {elseif isset($pw_updated) && $pw_updated === true}
                         <div class="alert alert-success" role="alert"><i class="fal fa-info-circle"></i> {__('successPasswordChange')}</div>
-                    {else}
-                        {if !isset($smarty.session.AdminAccount->TwoFA_active) || false === $smarty.session.AdminAccount->TwoFA_active }  {* added for 2FA *}
-                            <p class="text-muted">{__('loginLong')}</p>
-                        {else}
-                        {/if}
                     {/if}
 
                     <form method="post" action="index.php" class="form-horizontal" role="form">
@@ -106,7 +101,7 @@
                                 {captchaMarkup getBody=true}
                             {/if}
                         {/if}
-                        <button type="submit" value="Anmelden" tabindex="100" class="btn btn-primary btn-block mt-2">{__('login')}</button>
+                        <button type="submit" value="Anmelden" tabindex="100" class="btn btn-primary btn-block mt-3">{__('login')}</button>
                         {if isset($smarty.session.AdminAccount->TwoFA_active) && true === $smarty.session.AdminAccount->TwoFA_active }
                             <button type="button" tabindex="110" class="btn btn-default btn-block btn-md" onclick="switchUser();">{__('changerUser')}</button>
                         {/if}
@@ -114,7 +109,7 @@
                 </div>
             </div>
             <p class="forgot-pw-wrap">
-                <a href="pass.php" title="{__('forgotPassword')}"><i class="fa fa-lock"></i> {__('forgotPassword')}</a>
+                <small><a href="pass.php" title="{__('forgotPassword')}"><i class="fa fa-lock"></i> {__('forgotPassword')}</a></small>
             </p>
         </div>
     </div>

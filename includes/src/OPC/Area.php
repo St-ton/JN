@@ -67,6 +67,11 @@ class Area implements \JsonSerializable
             $result .= $portletInstance->getPreviewHtml();
         }
 
+        Shop::fire('shop.OPC.Area.getPreviewHtml', [
+            'area' => $this,
+            'result' => &$result
+        ]);
+
         return $result;
     }
 
@@ -80,7 +85,31 @@ class Area implements \JsonSerializable
             $result .= $portletInstance->getFinalHtml();
         }
 
+        Shop::fire('shop.OPC.Area.getFinalHtml', [
+            'area' => $this,
+            'result' => &$result
+        ]);
+
         return $result;
+    }
+
+    public function getCssList($preview = false)
+    {
+        $list = [];
+
+        foreach ($this->content as $portletInstance) {
+            $cssFile = $portletInstance->getPortlet()->getCssFile($preview);
+
+            if (!empty($cssFile)) {
+                $list[$cssFile] = true;
+            }
+
+            foreach ($portletInstance->getSubareaList()->getAreas() as $area) {
+                $list = $list + $area->getCssList($preview);
+            }
+        }
+
+        return $list;
     }
 
     /**

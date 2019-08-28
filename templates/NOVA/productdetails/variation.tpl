@@ -129,7 +129,7 @@
                                                 {* /do nothing *}
                                             {else}
                                                 {block name='productdetails-variation-swatch-inner'}
-                                                <label class="variation block{if $bSelected} active{/if}{if $Variationswert->notExists} not-available{/if}"
+                                                <label class="variation{if $bSelected} active{/if}{if $Variationswert->notExists} not-available{/if}"
                                                         data-type="swatch"
                                                         data-original="{$Variationswert->cName}"
                                                         data-key="{$Variationswert->kEigenschaft}"

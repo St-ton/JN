@@ -437,6 +437,7 @@
   float: right;
   width: 84px;
   white-space: nowrap;
+  text-transform: uppercase;
 }
 #opc #opcSidebar #opc-sidebar-content #opc-draft-list .opc-draft .opc-draft-info {
   position: relative;

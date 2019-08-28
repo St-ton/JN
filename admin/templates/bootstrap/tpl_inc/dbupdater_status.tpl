@@ -15,7 +15,7 @@
                     <tr>
                         <th width="5%">#</th>
                         <th width="60%">{__('migration')}</th>
-                        <th width="25%" class="text-center">{if $filter != 2}{__('executed')}{/if}</th>
+                        <th width="25%" class="text-center">{if $filter !== 2}{__('executed')}{/if}</th>
                         <th width="10%" class="text-center"></th>
                     </tr>
                     </thead>
@@ -24,7 +24,7 @@
                       {$executedMigrations = $manager->getExecutedMigrations()}
                       {foreach $manager->getMigrations()|@array_reverse as $m}
                           {$executed = $m->getId()|in_array:$executedMigrations}
-                          {if $filter == 0 || ($filter == 1 && $executed) || ($filter == 2 && !$executed)}
+                          {if $filter === 0 || ($filter === 1 && $executed) || ($filter === 2 && !$executed)}
                               <tr>
                                   <td>{$migrationIndex++}</td>
                                   <td>

@@ -20,27 +20,23 @@
 
             {if isset($nWarenkorb2PersMerge) && $nWarenkorb2PersMerge === 1}
                 {block name='account-index-script-basket-merge'}
-                    <script type="text/javascript">
-                        $(window).on('load', function() {
-                            $(function() {
-                                eModal.addLabel('{lang key='yes' section='global'}', '{lang key='no' section='global'}');
-                                var options = {
-                                    message: '{lang key='basket2PersMerge' section='login'}',
-                                    label: '{lang key='yes' section='global'}',
-                                    title: '{lang key='basket' section='global'}'
-                                };
-                                eModal.confirm(options).then(
-                                    function() {
-                                        window.location = "{get_static_route id='bestellvorgang.php'}?basket2Pers=1"
-                                    }
-                                );
-                            });
-                        });
-                    </script>
+                    {inline_script}<script>
+                        eModal.addLabel('{lang key='yes' section='global'}', '{lang key='no' section='global'}');
+                        var options = {
+                            message: '{lang key='basket2PersMerge' section='login'}',
+                            label: '{lang key='yes' section='global'}',
+                            title: '{lang key='basket' section='global'}'
+                        };
+                        eModal.confirm(options).then(
+                            function() {
+                                window.location = "{get_static_route id='bestellvorgang.php'}?basket2Pers=1"
+                            }
+                        );
+                    </script>{/inline_script}
                 {/block}
             {/if}
 
-            {include file='snippets/opc_mount_point.tpl' id='opc_before_account'}
+            {opcMountPoint id='opc_before_account'}
 
             {row id="account"}
                 {col cols=12}

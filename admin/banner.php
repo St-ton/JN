@@ -8,6 +8,7 @@ use JTL\Alert\Alert;
 use JTL\Boxes\Admin\BoxAdmin;
 use JTL\Customer\CustomerGroup;
 use JTL\Helpers\Form;
+use JTL\Helpers\Request;
 use JTL\ImageMap;
 use JTL\Language\LanguageHelper;
 use JTL\Pagination\Pagination;
@@ -23,12 +24,12 @@ $db          = Shop::Container()->getDB();
 if (!empty($_POST) && (isset($_POST['cName']) || isset($_POST['kImageMap'])) && Form::validateToken()) {
     $checks     = [];
     $imageMap   = new ImageMap($db);
-    $imageMapID = (isset($_POST['kImageMap']) ? (int)$_POST['kImageMap'] : null);
+    $imageMapID = Request::postInt('kImageMap', null);
     $name       = htmlspecialchars($_POST['cName'], ENT_COMPAT | ENT_HTML401, JTL_CHARSET);
     if (mb_strlen($name) === 0) {
         $checks['cName'] = 1;
     }
-    $bannerPath = (isset($_POST['cPath']) && $_POST['cPath'] !== '' ? $_POST['cPath'] : null);
+    $bannerPath = Request::postVar('cPath', '') !== '' ? $_POST['cPath'] : null;
     if (isset($_FILES['oFile'])
         && $_FILES['oFile']['error'] === UPLOAD_ERR_OK
         && move_uploaded_file($_FILES['oFile']['tmp_name'], PFAD_ROOT . PFAD_BILDER_BANNER . $_FILES['oFile']['name'])
@@ -40,7 +41,7 @@ if (!empty($_POST) && (isset($_POST['cName']) || isset($_POST['kImageMap'])) && 
     }
     $dateFrom  = null;
     $dateUntil = null;
-    if (isset($_POST['vDatum']) && $_POST['vDatum'] !== '') {
+    if (Request::postVar('vDatum') !== '') {
         try {
             $dateFrom = new DateTime($_POST['vDatum']);
             $dateFrom = $dateFrom->format('Y-m-d H:i:s');
@@ -48,7 +49,7 @@ if (!empty($_POST) && (isset($_POST['cName']) || isset($_POST['kImageMap'])) && 
             $checks['vDatum'] = 1;
         }
     }
-    if (isset($_POST['bDatum']) && $_POST['bDatum'] !== '') {
+    if (Request::postVar('bDatum') !== '') {
         try {
             $dateUntil = new DateTime($_POST['bDatum']);
             $dateUntil = $dateUntil->format('Y-m-d H:i:s');
@@ -69,9 +70,9 @@ if (!empty($_POST) && (isset($_POST['cName']) || isset($_POST['kImageMap'])) && 
             $imageMap->update($imageMapID, $name, $bannerPath, $dateFrom, $dateUntil);
         }
         // extensionpoint
-        $languageID      = (int)$_POST['kSprache'];
-        $customerGroupID = (int)$_POST['kKundengruppe'];
-        $pageType        = (int)$_POST['nSeitenTyp'];
+        $languageID      = Request::postInt('kSprache');
+        $customerGroupID = Request::postInt('kKundengruppe');
+        $pageType        = Request::postInt('nSeitenTyp');
         $key             = $_POST['cKey'];
         $keyValue        = '';
         $value           = '';
@@ -151,7 +152,7 @@ if (!empty($_POST) && (isset($_POST['cName']) || isset($_POST['kImageMap'])) && 
 }
 switch ($action) {
     case 'area':
-        $imageMap = holeBanner((int)$_POST['id'], false);
+        $imageMap = holeBanner(Request::postInt('id'), false);
         if (!is_object($imageMap)) {
             $alertHelper->addAlert(Alert::TYPE_ERROR, __('errrorBannerNotFound'), 'errrorBannerNotFound');
             $action = 'view';
@@ -189,7 +190,7 @@ switch ($action) {
         break;
 
     case 'delete':
-        if (entferneBanner((int)$_POST['id'])) {
+        if (entferneBanner(Request::postInt('id'))) {
             $alertHelper->addAlert(Alert::TYPE_SUCCESS, __('successDeleted'), 'successDeleted');
         } else {
             $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorDeleted'), 'errorDeleted');

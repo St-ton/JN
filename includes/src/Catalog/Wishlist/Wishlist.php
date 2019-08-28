@@ -781,10 +781,8 @@ class Wishlist
     {
         $db = Shop::Container()->getDB();
         foreach (['wishlistName', 'WunschlisteName'] as $wishlistName) {
-            if (isset($_POST[$wishlistName]) && $_POST[$wishlistName] !== '') {
-                $name = Text::htmlentities(
-                    Text::filterXSS(\mb_substr($_POST[$wishlistName], 0, 254))
-                );
+            if (Request::postVar($wishlistName, '') !== '') {
+                $name = Text::htmlentities(Text::filterXSS(\mb_substr($_POST[$wishlistName], 0, 254)));
                 $db->update('twunschliste', 'kWunschliste', $id, (object)['cName' => $name]);
             }
         }

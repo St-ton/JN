@@ -36,7 +36,7 @@ $shopURL        = Shop::getURL() . '/';
 $alertHelper    = Shop::Container()->getAlertService();
 if ($productNote = Product::mapErrorCode(
     Request::verifyGPDataString('cHinweis'),
-    (isset($_GET['fB']) && (float)$_GET['fB'] > 0) ? (float)$_GET['fB'] : 0.0
+    ((float)Request::getVar('fB', 0) > 0) ? (float)$_GET['fB'] : 0.0
 )) {
     $alertHelper->addAlert(Alert::TYPE_NOTE, $productNote, 'productNote', ['showInAlertListTemplate' => false]);
 }
@@ -48,7 +48,7 @@ if (isset($_POST['a'])
     && Product::addProductBundleToCart($_POST['a'])
 ) {
     $alertHelper->addAlert(Alert::TYPE_NOTE, Shop::Lang()->get('basketAllAdded', 'messages'), 'allAdded');
-    Shop::$kArtikel = (int)$_POST['aBundle'];
+    Shop::$kArtikel = Request::postInt('aBundle');
 }
 $AktuellerArtikel = (new Artikel())->fuelleArtikel(Shop::$kArtikel, Artikel::getDetailOptions());
 // Warenkorbmatrix Anzeigen auf Artikel Attribut pruefen und falls vorhanden setzen
@@ -114,9 +114,9 @@ if (empty($cCanonicalURL)) {
 $AktuellerArtikel->berechneSieSparenX($conf['artikeldetails']['sie_sparen_x_anzeigen']);
 $productNotices = Product::getProductMessages();
 
-if (isset($_POST['fragezumprodukt']) && (int)$_POST['fragezumprodukt'] === 1) {
+if (Request::postInt('fragezumprodukt') === 1) {
     $productNotices = Product::checkProductQuestion($productNotices, $conf);
-} elseif (isset($_POST['benachrichtigung_verfuegbarkeit']) && (int)$_POST['benachrichtigung_verfuegbarkeit'] === 1) {
+} elseif (Request::postInt('benachrichtigung_verfuegbarkeit') === 1) {
     $productNotices = Product::checkAvailabilityMessage($productNotices);
 }
 $AktuelleKategorie  = new Kategorie($AktuellerArtikel->gibKategorie());

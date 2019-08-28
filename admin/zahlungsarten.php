@@ -14,8 +14,9 @@ use JTL\Helpers\Text;
 use JTL\Language\LanguageHelper;
 use JTL\Pagination\Filter;
 use JTL\Pagination\Pagination;
-use JTL\Plugin\Helper;
+use JTL\Plugin\Helper as PluginHelper;
 use JTL\Shop;
+use JTL\Checkout\Zahlungsart;
 
 require_once __DIR__ . '/includes/admininclude.php';
 
@@ -61,17 +62,18 @@ if ($action !== 'logreset' && Request::verifyGPCDataInt('kZahlungsart') > 0 && F
     }
 }
 
-if (isset($_POST['einstellungen_bearbeiten'], $_POST['kZahlungsart'])
-    && (int)$_POST['einstellungen_bearbeiten'] === 1 && (int)$_POST['kZahlungsart'] > 0 && Form::validateToken()
+if (Request::postInt('einstellungen_bearbeiten') === 1
+    && Request::postInt('kZahlungsart') > 0
+    && Form::validateToken()
 ) {
     $step              = 'uebersicht';
     $paymentMethod     = $db->select(
         'tzahlungsart',
         'kZahlungsart',
-        (int)$_POST['kZahlungsart']
+        Request::postInt('kZahlungsart')
     );
-    $nMailSenden       = (int)$_POST['nMailSenden'];
-    $nMailSendenStorno = (int)$_POST['nMailSendenStorno'];
+    $nMailSenden       = Request::postInt('nMailSenden');
+    $nMailSendenStorno = Request::postInt('nMailSendenStorno');
     $nMailBits         = 0;
     if (is_array($_POST['kKundengruppe'])) {
         $cKundengruppen = Text::createSSK($_POST['kKundengruppe']);
@@ -89,21 +91,19 @@ if (isset($_POST['einstellungen_bearbeiten'], $_POST['kZahlungsart'])
         $cKundengruppen = '';
     }
 
-    $nWaehrendBestellung = isset($_POST['nWaehrendBestellung'])
-        ? (int)$_POST['nWaehrendBestellung']
-        : $paymentMethod->nWaehrendBestellung;
+    $nWaehrendBestellung = Request::postInt('nWaehrendBestellung', $paymentMethod->nWaehrendBestellung);
 
     $upd                      = new stdClass();
     $upd->cKundengruppen      = $cKundengruppen;
-    $upd->nSort               = (int)$_POST['nSort'];
+    $upd->nSort               = Request::postInt('nSort');
     $upd->nMailSenden         = $nMailBits;
     $upd->cBild               = $_POST['cBild'];
     $upd->nWaehrendBestellung = $nWaehrendBestellung;
     $db->update('tzahlungsart', 'kZahlungsart', (int)$paymentMethod->kZahlungsart, $upd);
     // Weiche fuer eine normale Zahlungsart oder eine Zahlungsart via Plugin
     if (mb_strpos($paymentMethod->cModulId, 'kPlugin_') !== false) {
-        $kPlugin     = Helper::getIDByModuleID($paymentMethod->cModulId);
-        $cModulId    = Helper::getModuleIDByPluginID($kPlugin, $paymentMethod->cName);
+        $kPlugin     = PluginHelper::getIDByModuleID($paymentMethod->cModulId);
+        $cModulId    = PluginHelper::getModuleIDByPluginID($kPlugin, $paymentMethod->cName);
         $Conf        = $db->query(
             "SELECT *
                 FROM tplugineinstellungenconf
@@ -178,7 +178,7 @@ if (isset($_POST['einstellungen_bearbeiten'], $_POST['kZahlungsart'])
     if (!isset($localized)) {
         $localized = new stdClass();
     }
-    $localized->kZahlungsart = (int)$_POST['kZahlungsart'];
+    $localized->kZahlungsart = Request::postInt('kZahlungsart');
     foreach (LanguageHelper::getAllLanguages() as $lang) {
         $langCode               = $lang->getCode();
         $localized->cISOSprache = $langCode;
@@ -193,7 +193,7 @@ if (isset($_POST['einstellungen_bearbeiten'], $_POST['kZahlungsart'])
         $db->delete(
             'tzahlungsartsprache',
             ['kZahlungsart', 'cISOSprache'],
-            [(int)$_POST['kZahlungsart'], $langCode]
+            [Request::postInt('kZahlungsart'), $langCode]
         );
         $db->insert('tzahlungsartsprache', $localized);
     }
@@ -204,23 +204,19 @@ if (isset($_POST['einstellungen_bearbeiten'], $_POST['kZahlungsart'])
 }
 
 if ($step === 'einstellen') {
-    $paymentMethod = $db->select(
-        'tzahlungsart',
-        'kZahlungsart',
-        Request::verifyGPCDataInt('kZahlungsart')
-    );
-    if ($paymentMethod === null) {
+    $paymentMethod = new Zahlungsart(Request::verifyGPCDataInt('kZahlungsart'));
+    if ($paymentMethod->getZahlungsart() === null) {
         $step = 'uebersicht';
         $alertHelper->addAlert(Alert::TYPE_ERROR, __('errorPaymentMethodNotFound'), 'errorNotFound');
     } else {
         // Bei SOAP oder CURL => versuche die Zahlungsart auf nNutzbar = 1 zu stellen, falls nicht schon geschehen
-        if ((int)$paymentMethod->nSOAP === 1 || (int)$paymentMethod->nCURL === 1 || (int)$paymentMethod->nSOCKETS === 1) {
+        if ($paymentMethod->getSOAP() === 1 || $paymentMethod->getCURL() === 1 || $paymentMethod->getSOCKETS() === 1) {
             PaymentMethod::activatePaymentMethod($paymentMethod);
         }
         // Weiche fuer eine normale Zahlungsart oder eine Zahlungsart via Plugin
         if (mb_strpos($paymentMethod->cModulId, 'kPlugin_') !== false) {
-            $kPlugin     = Helper::getIDByModuleID($paymentMethod->cModulId);
-            $cModulId    = Helper::getModuleIDByPluginID($kPlugin, $paymentMethod->cName);
+            $kPlugin     = PluginHelper::getIDByModuleID($paymentMethod->cModulId);
+            $cModulId    = PluginHelper::getModuleIDByPluginID($kPlugin, $paymentMethod->cName);
             $Conf        = $db->query(
                 "SELECT *
                     FROM tplugineinstellungenconf
@@ -380,19 +376,28 @@ if ($step === 'uebersicht') {
         ['nActive', 'nNutzbar'],
         [1, 1],
         '*',
-        'cAnbieter, cName, nSort, kZahlungsart'
+        'cAnbieter, cName, nSort, kZahlungsart, cModulId'
     );
     foreach ($methods as $method) {
+        $pluginID = PluginHelper::getIDByModuleID($method->cModulId);
+        if ($pluginID > 0) {
+            Shop::Container()->getGetText()->loadPluginLocale(
+                'base',
+                PluginHelper::getLoaderByPluginID($pluginID)->init($pluginID)
+            );
+        }
         $method->nEingangAnzahl = (int)$db->executeQueryPrepared(
-            'SELECT COUNT(*) AS `nAnzahl`
+            'SELECT COUNT(*) AS `cnt`
             FROM `tzahlungseingang` AS ze
                 JOIN `tbestellung` AS b ON ze.`kBestellung` = b.`kBestellung`
             WHERE b.`kZahlungsart` = :kzahlungsart',
             ['kzahlungsart' => $method->kZahlungsart],
             ReturnType::SINGLE_OBJECT
-        )->nAnzahl;
+        )->cnt;
         $method->nLogCount      = ZahlungsLog::count($method->cModulId);
         $method->nErrorLogCount = ZahlungsLog::count($method->cModulId, JTLLOG_LEVEL_ERROR);
+        $method->cName          = __($method->cName);
+        $method->cAnbieter      = __($method->cAnbieter);
     }
     $smarty->assign('zahlungsarten', $methods);
 }

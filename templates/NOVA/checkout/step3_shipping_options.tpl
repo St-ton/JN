@@ -4,7 +4,7 @@
  *}
 {block name='checkout-step3-shipping-options'}
     {row}
-        {col cols=12 md=8}
+        {col cols=12 lg=9}
             {if !isset($Versandarten)}
                 {block name='checkout-step3-shipping-options-alert'}
                     {alert variant="danger"}{lang key='noShippingMethodsAvailable' section='checkout'}{/alert}
@@ -15,18 +15,19 @@
                         {block name='checkout-step3-shipping-options-fieldset-shipping-payment'}
                             <fieldset id="checkout-shipping-payment" class="mb-7">
                                 {block name='checkout-step3-shipping-options-legend-shipping-options'}
-                                    <legend>{lang key='shippingOptions'}</legend>
+                                    <div class="h2">{lang key='shippingOptions'}</div>
                                 {/block}
                                 {block name='checkout-step3-shipping-options-shipping-address-link'}
                                     <div class="mb-3">
-                                        {lang key='shippingTo' section='checkout'}:
-                                        {link href="{get_static_route id='bestellvorgang.php'}?editLieferadresse=1"}
-                                            {$Lieferadresse->cStrasse}, {$Lieferadresse->cPLZ} {$Lieferadresse->cOrt}, {$Lieferadresse->cLand}
+                                        {lang key='shippingTo' section='checkout'}: {$Lieferadresse->cStrasse}, {$Lieferadresse->cPLZ} {$Lieferadresse->cOrt}, {$Lieferadresse->cLand}
+                                        {link href="{get_static_route id='bestellvorgang.php'}?editLieferadresse=1" class="ml-3"}
+                                            {lang key='edit' section='global'}
                                         {/link}
                                         <span class="ml-1 fa fa-pencil-alt"></span>
                                     </div>
                                 {/block}
-                                <div class="mb-3 form-group pl-md-7">
+                                <hr class="my-3">
+                                <div class="mb-3 form-group">
                                     {radiogroup stacked=true}
                                         {foreach $Versandarten as $versandart}
                                             {block name='checkout-step3-shipping-options-shipment'}
@@ -95,23 +96,23 @@
                         {block name='checkout-step3-shipping-options-fieldset-payment'}
                             <fieldset id="fieldset-payment" class="mb-7">
                                 {block name='checkout-step3-shipping-options-legend-payment'}
-                                    <legend>{lang key='paymentOptions'}</legend>
+                                    <div class="h2">{lang key='paymentOptions'}</div>
                                 {/block}
-                                <div class="pl-md-7">
-                                    {$step4_payment_content}
-                                </div>
+                                <hr class="my-3">
+                                {$step4_payment_content}
                             </fieldset>
                         {/block}
                         {if isset($Verpackungsarten) && $Verpackungsarten|@count > 0}
                             {block name='checkout-step3-shipping-options-fieldset-packaging-types'}
                                 <fieldset class="mb-7">
                                     {block name='checkout-step3-shipping-options-legend-packaging-types'}
-                                        <legend>{lang section='checkout' key='additionalPackaging'}</legend>
+                                        <div class="h2">{lang section='checkout' key='additionalPackaging'}</div>
                                     {/block}
+                                    <hr class="my-3">
                                     {checkboxgroup stacked=true}
                                     {foreach $Verpackungsarten as $oVerpackung}
                                         {block name='checkout-step3-shipping-options-packaging'}
-                                            <div class="mb-3 pl-md-7">
+                                            <div class="mb-3">
                                             {checkbox
                                                 name="kVerpackung[]"
                                                 value=$oVerpackung->kVerpackung
@@ -156,13 +157,11 @@
     {/row}
     {if isset($smarty.get.editZahlungsart)}
         {block name='checkout-step3-shipping-options-script-scroll'}
-            {literal}
-                <script type="text/javascript">
-                    $(document).ready(function () {
-                        $.evo.extended().smoothScrollToAnchor('#fieldset-payment');
-                    });
-                </script>
-            {/literal}
+            {inline_script}<script>
+                $(document).ready(function () {
+                    $.evo.extended().smoothScrollToAnchor('#fieldset-payment');
+                });
+            </script>{/inline_script}
         {/block}
     {/if}
 {/block}

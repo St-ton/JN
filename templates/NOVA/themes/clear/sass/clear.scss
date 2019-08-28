@@ -1,3 +1,5 @@
+@import 'functions';
+
 // theme variables
 @import "variables";
 
@@ -23,17 +25,20 @@
 // theme fonts
 @import "fonts";
 
-// theme buttons
+// components
+@import "components/grid";
+@import "components/boxes";
+@import "components/navs";
+@import "components/breadcrumbs";
 @import "components/buttons";
-
-// theme tooltip
+@import "components/productbox";
 @import "components/tooltip";
-
-// theme ui_slider
 @import "components/ui_slider";
-
-// ribbons
 @import "components/ribbons";
+@import "components/slider";
 
 // theme base
 @import "base";
+
+/* utilities */
+@import 'utilities/all';

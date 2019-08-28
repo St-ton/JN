@@ -3,7 +3,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 
 msgid "Text"
-msgstr "Text"
+msgstr "Rich Text"
 
 msgid "exampleRichText"
 msgstr "<p>Rich Text Content</p>"

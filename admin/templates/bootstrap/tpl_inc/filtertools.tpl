@@ -87,17 +87,17 @@
             {/foreach}
             <div class="col-md-auto">
                 <div class="form-group mt-2">
-                    <button type="submit" class="btn btn-outline-primary btn-block" name="action" value="{$oFilter->getId()}_resetfilter"
-                            title="{__('resetFilter')}" id="{$oFilter->getId()}_btn_resetfilter">
-                        <i class="fa fa-eraser"></i>
+                    <button type="submit" class="btn btn-primary btn-block" name="action" value="{$oFilter->getId()}_filter"
+                            title="{__('useFilter')}" id="{$oFilter->getId()}_btn_filter">
+                        <i class="fal fa-search"></i>
                     </button>
                 </div>
             </div>
             <div class="col-md-auto">
                 <div class="form-group mt-2">
-                    <button type="submit" class="btn btn-primary btn-block" name="action" value="{$oFilter->getId()}_filter"
-                            title="{__('useFilter')}" id="{$oFilter->getId()}_btn_filter">
-                        <i class="fal fa-search"></i>
+                    <button type="submit" class="btn btn-outline-primary btn-block" name="action" value="{$oFilter->getId()}_resetfilter"
+                            title="{__('resetFilter')}" id="{$oFilter->getId()}_btn_resetfilter">
+                        <i class="fa fa-eraser"></i>
                     </button>
                 </div>
             </div>

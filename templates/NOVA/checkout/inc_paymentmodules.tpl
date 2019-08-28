@@ -4,9 +4,13 @@
  *}
 {block name='checkout-inc-paymentmodules'}
     {if !isset($abschlussseite) || $abschlussseite !== 1}
+        {if $oPlugin !== null && $oPlugin instanceof JTL\Plugin\PluginInterface}
+            {$method = $oPlugin->getPaymentMethods()->getMethodByID($cModulId)}
+        {else}
+            {$method = null}
+        {/if}
         {assign var=cModulId value=$Bestellung->Zahlungsart->cModulId}
-        {if (empty($oPlugin->oPluginZahlungsmethodeAssoc_arr[$cModulId]->cModulId)
-                || $Bestellung->Zahlungsart->cModulId != $oPlugin->oPluginZahlungsmethodeAssoc_arr[$cModulId]->cModulId)
+        {if ($method === null || $Bestellung->Zahlungsart->cModulId !== $method->cModulId)
             && $Bestellung->Zahlungsart->cModulId !== 'za_kreditkarte_jtl'
             && $Bestellung->Zahlungsart->cModulId !== 'za_lastschrift_jtl'
         }
@@ -25,8 +29,8 @@
         }
             {block name='checkout-inc-paymentmodules-during-order'}
                 <div class="pament-method-during-order">
-                    <p>{lang key='yourOrderId' section='checkout'}: <strong>{$Bestellung->cBestellNr}</strong></p>
-                    <p>{lang key='yourChosenPaymentOption' section='checkout'}: <strong>{$Bestellung->cZahlungsartName}</strong></p>
+                    <p><span class="font-weight-bold">{lang key='yourOrderId' section='checkout'}: </span>>{$Bestellung->cBestellNr}</p>
+                    <p><span class="font-weight-bold">{lang key='yourChosenPaymentOption' section='checkout'}: </span>>{$Bestellung->cZahlungsartName}</p>
                 </div>
             {/block}
         {/if}
@@ -44,9 +48,9 @@
                     {include file='checkout/modules/paypal/bestellabschluss.tpl'}
                 {elseif $Bestellung->Zahlungsart->cModulId === 'za_kreditkarte_jtl'}
                     {include file='account/retrospective_payment.tpl'}
-                {elseif !empty($oPlugin->oPluginZahlungsmethodeAssoc_arr[$cModulId]->cModulId) && $Bestellung->Zahlungsart->cModulId == $oPlugin->oPluginZahlungsmethodeAssoc_arr[$cModulId]->cModulId}
+                {elseif $method !== null && $Bestellung->Zahlungsart->cModulId === $method->cModulId}
                     {block name='checkout-inc-paymentmodules-include-plugin'}
-                        {include file=$oPlugin->oPluginZahlungsmethodeAssoc_arr[$cModulId]->cTemplateFileURL}
+                        {include file=$method->cTemplateFileURL}
                     {/block}
                 {/if}
                 <br />

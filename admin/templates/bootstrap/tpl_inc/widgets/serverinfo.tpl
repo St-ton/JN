@@ -1,5 +1,5 @@
 {config_load file="$lang.conf" section='systemcheck'}
-<div class="widget-custom-data">
+<div class="widget-custom-data table-responsive">
     <table class="table table-condensed table-hover table-blank">
         <tbody>
             <tr>

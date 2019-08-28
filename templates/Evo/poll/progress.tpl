@@ -2,7 +2,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license https://jtl-url.de/jtlshoplicense
  *}
-{include file='snippets/opc_mount_point.tpl' id='opc_before_heading'}
+{opcMountPoint id='opc_before_heading'}
 
 {if !empty($oUmfrage->getName())}
     <h1>{$oUmfrage->getName()}</h1>
@@ -11,7 +11,7 @@
 {/if}
 
 {if $oUmfrage->getQuestionCount() > 0}
-    {include file='snippets/opc_mount_point.tpl' id='opc_before_questions'}
+    {opcMountPoint id='opc_before_questions'}
     <form method="post" action="{if empty($oUmfrage->getURL())}{get_static_route id='umfrage.php'}{else}{$ShopURL}/{$oUmfrage->getURL()}{/if}" class="evo-validate">
         {$jtl_token}
         <input name="u" type="hidden" value="{$oUmfrage->getID()}" />
@@ -197,7 +197,7 @@
         </div>
         <input name="s" type="hidden" value="{$nAktuelleSeite}" />
         {if $nAktuelleSeite == $nAnzahlSeiten}
-            {include file='snippets/opc_mount_point.tpl' id='opc_before_submit'}
+            {opcMountPoint id='opc_before_submit'}
             <input name="end" type="submit" value="{lang key='umfrageSubmit' section='umfrage'}" class="btn btn-primary submit top17" />
         {/if}
     </form>

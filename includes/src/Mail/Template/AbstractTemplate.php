@@ -153,10 +153,6 @@ abstract class AbstractTemplate implements TemplateInterface
      */
     protected function initLegalData(): array
     {
-        $agb                   = new stdClass();
-        $wrb                   = new stdClass();
-        $wrbForm               = new stdClass();
-        $dse                   = new stdClass();
         $data                  = $this->db->selectAll(
             'ttext',
             ['kKundengruppe'],
@@ -168,14 +164,18 @@ abstract class AbstractTemplate implements TemplateInterface
                 return (int)$e->kSprache === $this->languageID;
             }
         ) ?? first($data);
-        $agb->cContentText     = $this->sanitizeText($data->cAGBContentText);
-        $agb->cContentHtml     = $this->sanitizeText($data->cAGBContentHtml);
-        $wrb->cContentText     = $this->sanitizeText($data->cWRBContentText);
-        $wrb->cContentHtml     = $this->sanitizeText($data->cWRBContentHtml);
-        $dse->cContentText     = $this->sanitizeText($data->cDSEContentText);
-        $dse->cContentHtml     = $this->sanitizeText($data->cDSEContentHtml);
-        $wrbForm->cContentHtml = $this->sanitizeText($data->cWRBFormContentHtml);
-        $wrbForm->cContentText = $this->sanitizeText($data->cWRBFormContentText);
+        $agb                   = new stdClass();
+        $wrb                   = new stdClass();
+        $wrbForm               = new stdClass();
+        $dse                   = new stdClass();
+        $agb->cContentText     = $this->sanitizeText($data->cAGBContentText ?? '');
+        $agb->cContentHtml     = $this->sanitizeText($data->cAGBContentHtml ?? '');
+        $wrb->cContentText     = $this->sanitizeText($data->cWRBContentText ?? '');
+        $wrb->cContentHtml     = $this->sanitizeText($data->cWRBContentHtml ?? '');
+        $dse->cContentText     = $this->sanitizeText($data->cDSEContentText ?? '');
+        $dse->cContentHtml     = $this->sanitizeText($data->cDSEContentHtml ?? '');
+        $wrbForm->cContentHtml = $this->sanitizeText($data->cWRBFormContentHtml ?? '');
+        $wrbForm->cContentText = $this->sanitizeText($data->cWRBFormContentText ?? '');
 
         $this->legalData = [
             'agb'     => $agb,

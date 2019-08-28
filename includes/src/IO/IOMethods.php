@@ -88,7 +88,8 @@ class IOMethods
                         ->register('checkDeliveryCountry', [$this, 'checkDeliveryCountry'])
                         ->register('setSelectionWizardAnswers', [$this, 'setSelectionWizardAnswers'])
                         ->register('getCitiesByZip', [$this, 'getCitiesByZip'])
-                        ->register('getOpcDraftsHtml', [$this, 'getOpcDraftsHtml']);
+                        ->register('getOpcDraftsHtml', [$this, 'getOpcDraftsHtml'])
+                        ->register('setWishlistVisibility', [$this, 'setWishlistVisibility']);
     }
 
     /**
@@ -793,6 +794,7 @@ class IOMethods
         $options->nDownload                 = 0;
         $options->nMain                     = 1;
         $options->nWarenlager               = 1;
+        $options->nVariationen              = 1;
         $product                            = new Artikel();
         $product->fuelleArtikel($kVaterArtikel, $options, Frontend::getCustomerGroup()->getID());
         $weightDiff   = 0;
@@ -944,6 +946,7 @@ class IOMethods
             $options->nDownload                 = 0;
             $options->nMain                     = 1;
             $options->nWarenlager               = 1;
+            $options->nVariationen              = 1;
             $product                            = new Artikel();
             $product->fuelleArtikel($parentProductID, $options);
             // Alle Variationen ohne Freifeld
@@ -1322,6 +1325,28 @@ class IOMethods
         $_SESSION['xcrsf_token'] = \json_encode(['name' => $name, 'token' => $token]);
         $objResponse->script("doXcsrfToken('" . $name . "', '" . $token . "');");
 
+        return $objResponse;
+    }
+
+    /**
+     * @param int $wlID
+     * @param bool $state
+     * @return IOResponse
+     */
+    public function setWishlistVisibility(int $wlID, bool $state): IOResponse
+    {
+        if ($state) {
+            Wishlist::setPublic($wlID);
+        } else {
+            Wishlist::setPrivate($wlID);
+        }
+        $objResponse     = new IOResponse();
+        $response        = new stdClass();
+        $response->wlID  = $wlID;
+        $response->state = $state;
+        $response->url   = Wishlist::instanceByID($wlID)->cURLID;
+
+        $objResponse->script('this.response = ' . \json_encode($response) . ';');
         return $objResponse;
     }
 }

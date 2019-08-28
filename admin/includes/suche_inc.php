@@ -103,6 +103,7 @@ function adminMenuSearch($query)
                     'title' => $subMenuName,
                     'path'  => highlightSearchTerm($menuName . ' > ' . $subMenuName, $query),
                     'link'  => $subMenu->link,
+                    'icon'  => $menu->icon
                 ];
             }
         }

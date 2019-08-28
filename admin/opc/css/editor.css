@@ -314,6 +314,7 @@
   width: 100%;
   text-align: left;
   margin-bottom: 16px;
+  text-transform: capitalize;
 }
 #portlets .portletGroupBtn .fas {
   float: right;
@@ -355,11 +356,12 @@
   height: 96px;
   position: relative;
 }
-#portlets .portletButton > .portletBtnInner > img {
+#portlets .portletButton > .portletBtnInner > svg {
   position: absolute;
   left: 50%;
   top: 36%;
   transform: translate(-50%, -50%);
+  color: #5cbcf6;
 }
 #portlets .portletButton > .portletBtnInner > i {
   display: block;

@@ -6,15 +6,13 @@
 
 use JTL\Alert\Alert;
 use JTL\Helpers\Request;
+use JTL\Session\Frontend;
 use JTL\Shop;
 
 require_once __DIR__ . '/includes/globalinclude.php';
 
 $linkHelper = Shop::Container()->getLinkService();
-if (isset($_SESSION['Kunde']->kKunde)
-    && $_SESSION['Kunde']->kKunde > 0
-    && Request::verifyGPCDataInt('editRechnungsadresse') === 0
-) {
+if (Request::verifyGPCDataInt('editRechnungsadresse') === 0 && Frontend::getCustomer()->getID() > 0) {
     header('Location: ' . $linkHelper->getStaticRoute('jtl.php'), true, 301);
 }
 
@@ -34,16 +32,14 @@ $kLink = $linkHelper->getSpecialPageLinkKey(LINKTYP_REGISTRIEREN);
 $link  = $linkHelper->getPageLink($kLink);
 $step  = 'formular';
 $titel = Shop::Lang()->get('newAccount', 'login');
-$edit  = isset($_GET['editRechnungsadresse'])
-    ? (int)$_GET['editRechnungsadresse']
-    : 0;
+$edit  = Request::getInt('editRechnungsadresse');
 if (isset($_POST['editRechnungsadresse'])) {
     $edit = (int)$_POST['editRechnungsadresse'];
 }
-if (isset($_POST['form']) && (int)$_POST['form'] === 1) {
+if (Request::postInt('form') === 1) {
     kundeSpeichern($_POST);
 }
-if (isset($_GET['editRechnungsadresse']) && (int)$_GET['editRechnungsadresse'] === 1) {
+if (Request::getInt('editRechnungsadresse') === 1) {
     gibKunde();
 }
 if ($step === 'formular') {

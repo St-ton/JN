@@ -419,6 +419,11 @@ final class Shop
     private static $optinCode;
 
     /**
+     * @var bool
+     */
+    private static $isFrontend = true;
+
+    /**
      * @var array
      */
     private static $mapping = [
@@ -668,8 +673,11 @@ final class Shop
      * @param string $context
      * @return JTLSmarty
      */
-    public function _Smarty(bool $fast = false, string $context = ContextType::FRONTEND): JTLSmarty
+    public function _Smarty(bool $fast = false, string $context = null): JTLSmarty
     {
+        if ($context === null) {
+            $context = self::isFrontend() ? ContextType::FRONTEND : ContextType::BACKEND;
+        }
         return JTLSmarty::getInstance($fast, $context);
     }
 
@@ -829,12 +837,14 @@ final class Shop
 
     /**
      * Load plugin event driven system
+     * @param bool $isFrontend
      */
-    public static function bootstrap(): void
+    public static function bootstrap(bool $isFrontend = true): void
     {
-        $db      = self::Container()->getDB();
-        $cache   = self::Container()->getCache();
-        $cacheID = 'plgnbtsrp';
+        self::$isFrontend = $isFrontend;
+        $db               = self::Container()->getDB();
+        $cache            = self::Container()->getCache();
+        $cacheID          = 'plgnbtsrp';
         if (($plugins = $cache->get($cacheID)) === false) {
             $plugins = $db->queryPrepared(
                 'SELECT kPlugin, bBootstrap, bExtension
@@ -856,6 +866,14 @@ final class Shop
                 $p->boot($dispatcher);
             }
         }
+    }
+
+    /**
+     * @return bool
+     */
+    public static function isFrontend(): bool
+    {
+        return self::$isFrontend === true;
     }
 
     /**
@@ -2092,19 +2110,19 @@ final class Shop
                 $faviconUrl .= '/favicon-default.ico';
             }
         } else {
-            $smarty           = JTLSmarty::getInstance(false, true);
+            $smarty           = JTLSmarty::getInstance();
             $templateDir      = $smarty->getTemplateDir($smarty->context);
-            $shopTemplatePath = \str_replace(\PFAD_ROOT, '', $templateDir);
-            $faviconUrl       = self::getURL();
+            $shopTemplatePath = $smarty->getTemplateUrlPath();
+            $faviconUrl       = self::getURL() . '/';
 
             if (\file_exists($templateDir . 'themes/base/images/favicon.ico')) {
-                $faviconUrl .= '/' . $shopTemplatePath . 'themes/base/images/favicon.ico';
+                $faviconUrl .= $shopTemplatePath . 'themes/base/images/favicon.ico';
             } elseif (\file_exists($templateDir . 'favicon.ico')) {
-                $faviconUrl .= '/' . $shopTemplatePath . 'favicon.ico';
+                $faviconUrl .= $shopTemplatePath . 'favicon.ico';
             } elseif (\file_exists(\PFAD_ROOT . 'favicon.ico')) {
-                $faviconUrl .= '/favicon.ico';
+                $faviconUrl .= 'favicon.ico';
             } else {
-                $faviconUrl .= '/favicon-default.ico';
+                $faviconUrl .= 'favicon-default.ico';
             }
         }
 

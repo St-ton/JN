@@ -37,7 +37,7 @@
         {/block}
     {/if}
     {block name='productdetails-popups-script'}
-        {inline_script}<script type="text/javascript">
+        {inline_script}<script>
             $(function() {
                 {if isset($fehlendeAngaben_benachrichtigung) && count($fehlendeAngaben_benachrichtigung) > 0 && ($verfuegbarkeitsBenachrichtigung == 2 || $verfuegbarkeitsBenachrichtigung == 3)}
                     show_popup('n{$kArtikel}', '{lang key='requestNotification'}');

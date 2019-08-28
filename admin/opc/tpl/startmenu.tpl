@@ -29,11 +29,7 @@
             id: {$currentLanguage->id},
         };
 
-        if(window.JTL_SHOP_NOVA) {
-            pushDeferredTask("ready", updateTooltips);
-        } else {
-            $(updateTooltips);
-        }
+        $(updateTooltips);
 
         function openOpcStartMenu()
         {

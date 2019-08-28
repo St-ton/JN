@@ -39,7 +39,7 @@
             {$instance->getSubareaFinalHtml('cntdwn-footer')}
         {/if}
     </div>
-    <script>
+    {inline_script}<script>
         function countdown_{$instance->getUid()}()
         {
             var date = "{$instance->getProperty('date')} {$instance->getProperty('time')}";
@@ -78,10 +78,6 @@
             }, 1000);
         }
 
-        if(window.JTL_SHOP_NOVA) {
-            pushDeferredTask("ready", countdown_{$instance->getUid()});
-        } else {
-            $(countdown_{$instance->getUid()});
-        }
-    </script>
+        $(countdown_{$instance->getUid()});
+    </script>{/inline_script}
 </div>

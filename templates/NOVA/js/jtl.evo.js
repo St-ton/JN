@@ -29,6 +29,31 @@
                 slidesToShow: 1
             });
 
+            $('.evo-slider-half:not(.slick-initialized)').slick({
+                //dots: true,
+                arrows: true,
+                lazyLoad: 'ondemand',
+                slidesToShow: 3,
+                responsive: [
+                    {
+                        breakpoint: 992, // md
+                        settings: {
+                            slidesToShow: 1,
+                            centerMode: true,
+                            centerPadding: '60px',
+                        }
+                    },
+                    {
+                        breakpoint: 1200, // lg
+                        settings: {
+                            slidesToShow: 2,
+                            centerMode: true,
+                            centerPadding: '60px',
+                        }
+                    }
+                ]
+            });
+
             $('.evo-box-vertical:not(.slick-initialized)').slick({
                 //dots: true,
                 arrows:          true,
@@ -357,7 +382,7 @@
 
         showNotify: function(options) {
             eModal.alert({
-                size: 'lg',
+                size: 'xl',
                 buttons: false,
                 title: options.title,
                 message: options.text,

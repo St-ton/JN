@@ -8,7 +8,7 @@
     {if isset($bWarenkorbHinzugefuegt) && $bWarenkorbHinzugefuegt}
         {block name='productdetails-details-include-pushed-success'}
             {container}
-                {include file='productdetails/pushed_success.tpl'}
+                {include file='productdetails/pushed_success.tpl' card=true}
             {/container}
         {/block}
     {else}

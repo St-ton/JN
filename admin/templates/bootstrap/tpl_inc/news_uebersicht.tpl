@@ -1,4 +1,4 @@
-<script type="text/javascript" src="{$URL_SHOP}/{$PFAD_ADMIN}{$currentTemplateDir}js/sorttable.js"></script>
+<script type="text/javascript" src="{$templateBaseURL}js/sorttable.js"></script>
 <script>
     $(window).on('load', function(){
         $('#submitDelete').on('click', function(){

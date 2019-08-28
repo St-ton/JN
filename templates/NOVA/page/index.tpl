@@ -11,7 +11,7 @@
         {assign var=moreLink value=null}
         {assign var=moreTitle value=null}
 
-        {include file='snippets/opc_mount_point.tpl' id='opc_before_boxes'}
+        {opcMountPoint id='opc_before_boxes'}
 
         {block name='page-index-boxes'}
             {foreach $StartseiteBoxen as $Box}
@@ -42,7 +42,7 @@
         {if isset($oNews_arr) && $oNews_arr|@count > 0}
             <hr>
 
-            {include file='snippets/opc_mount_point.tpl' id='opc_before_news'}
+            {opcMountPoint id='opc_before_news'}
 
             {container}
                 {block name='page-index-subheading-news'}

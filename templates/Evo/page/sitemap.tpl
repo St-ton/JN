@@ -4,7 +4,7 @@
  *}
 {if $Einstellungen.sitemap.sitemap_seiten_anzeigen === 'Y'}
     {block name='sitemap-pages'}
-        {include file='snippets/opc_mount_point.tpl' id='opc_before_pages'}
+        {opcMountPoint id='opc_before_pages'}
 
         <div class="sitemap panel panel-default">
             <div class="panel-heading">
@@ -30,7 +30,7 @@
 {/if}
 {if $Einstellungen.sitemap.sitemap_kategorien_anzeigen === 'Y' && isset($oKategorieliste->elemente) && $oKategorieliste->elemente|@count > 0}
     {block name='sitemap-categories'}
-        {include file='snippets/opc_mount_point.tpl' id='opc_before_categories'}
+        {opcMountPoint id='opc_before_categories'}
 
         <div class="sitemap panel panel-default">
             <div class="panel-heading">
@@ -100,7 +100,7 @@
 {/if}
 {if $Einstellungen.sitemap.sitemap_hersteller_anzeigen === 'Y' && $oHersteller_arr|@count > 0}
     {block name='sitemap-manufacturer'}
-        {include file='snippets/opc_mount_point.tpl' id='opc_before_manufacturers'}
+        {opcMountPoint id='opc_before_manufacturers'}
 
         <div class="sitemap panel panel-default">
             <div class="panel-heading">
@@ -120,7 +120,7 @@
 {/if}
 {if $Einstellungen.news.news_benutzen === 'Y' && $Einstellungen.sitemap.sitemap_news_anzeigen === 'Y' && !empty($oNewsMonatsUebersicht_arr) && $oNewsMonatsUebersicht_arr|@count > 0}
     {block name='sitemap-news'}
-        {include file='snippets/opc_mount_point.tpl' id='opc_before_news'}
+        {opcMountPoint id='opc_before_news'}
 
         <div class="sitemap panel panel-default">
             <div class="panel-heading">
@@ -150,7 +150,7 @@
 {/if}
 {if $Einstellungen.news.news_benutzen === 'Y' && $Einstellungen.sitemap.sitemap_newskategorien_anzeigen === 'Y' && !empty($oNewsKategorie_arr) && $oNewsKategorie_arr|@count > 0}
     {block name='sitemap-news-categories'}
-        {include file='snippets/opc_mount_point.tpl' id='opc_before_news_categories'}
+        {opcMountPoint id='opc_before_news_categories'}
 
         <div class="sitemap panel panel-default">
             <div class="panel-heading">

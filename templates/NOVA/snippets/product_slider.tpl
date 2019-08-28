@@ -12,7 +12,7 @@
         {if $tplscope === 'box'}
             {block name='snippets-product-slider-box'}
                 {card class="{if $tplscope === 'box'} box box-slider  mb-7{/if}{if isset($class) && $class|strlen > 0} {$class}{/if}" id="{if isset($id) && $id|strlen > 0}{$id}{/if}"}
-                    {if $title|strlen > 0}
+                    {if !empty($title)}
                         {block name='snippets-product-slider-box-title'}
                             <div class="h4 card-title">
                                 {$title}
@@ -25,7 +25,7 @@
                         {/block}
                     {/if}
                     {block name='snippets-product-slider-box-products'}
-                        <div class="mb-4 {if $tplscope === 'box'}{block name='product-box-slider-class'}evo-box-slider{/block}{else}{block name='product-slider-class'}evo-slider{/block}{/if}">
+                        <div class="mb-4 {if $tplscope === 'box'}{block name='product-box-slider-class'}evo-box-slider{/block}{elseif $tplscope === 'half'}evo-slider-half{block name='product-slider-class'}evo-slider{/block}{/if}">
                             {foreach $productlist as $product}
                                 {block name='snippets-product-slider-include-item-slider-box'}
                                     <div class="product-wrapper{if isset($style)} {$style}{/if}" {if isset($Link) && $Link->getLinkType() === $smarty.const.LINKTYP_STARTSEITE}itemprop="about"{else}itemprop="isRelatedTo"{/if} itemscope itemtype="http://schema.org/Product">
@@ -40,7 +40,7 @@
         {else}
             {block name='snippets-product-slider-other'}
                 <div class="mb-5{if isset($class) && $class|strlen > 0} {$class}{/if}"{if isset($id) && $id|strlen > 0} id="{$id}"{/if}>
-                    {if $title|strlen > 0}
+                    {if !empty($title)}
                         {block name='snippets-product-slider-other-title'}
                             <div class="hr-sect my-4">
                                 {if !empty($moreLink)}
@@ -54,7 +54,7 @@
                         {/block}
                     {/if}
                     {block name='snippets-product-slider-other-products'}
-                        <div class="mb-4 {block name='product-slider-class'}evo-slider{/block}">
+                        <div class="mb-4 {block name='product-slider-class'}{if $tplscope === 'half'}evo-slider-half{else}evo-slider{/if}{/block}">
                             {foreach $productlist as $product}
                                 {block name='snippets-product-slider-include-item-slider'}
                                     <div class="product-wrapper{if isset($style)} {$style}{/if}" {if isset($Link) && $Link->getLinkType() === $smarty.const.LINKTYP_STARTSEITE}itemprop="about"{else}itemprop="isRelatedTo"{/if} itemscope itemtype="http://schema.org/Product">

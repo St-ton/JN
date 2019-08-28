@@ -6,12 +6,6 @@ html {
 
 a { transition: color $transition-base-duration $transition-base-timing; }
 
-#pushed-success {
-  border: 1px solid $gray-lighter;
-  margin-bottom: 5rem;
-  box-shadow: 0 2px 16px 0 rgba(0,0,0,.06);
-}
-
 .alert {
   .alert-heading {
     margin: (-$alert-padding-y) (-$alert-padding-x);
@@ -853,7 +847,7 @@ ul.partlist-items {
     }
 
     .product-detail-cell { text-align: right; }
-    .price_wrapper .price { font-size: $h2-font-size;  font-weight: bold;}
+    .price_wrapper .price { font-size: $h3-font-size;  font-weight: bold;}
   }
 }
 
@@ -1380,7 +1374,7 @@ a[data-toggle="collapse"][aria-expanded=true],
 //price
 .price {
   font-family: $headings-font-family;
-  font-size: $h2-font-size;
+  font-size: $h3-font-size;
   font-weight: bold;
   color: $gray-dark;
 }
@@ -2239,9 +2233,18 @@ input.form-control[name="wishlist-url"] {
   .table {
     width: 98%;
     thead th {
+      &:first-child {
+        z-index: $zindex-dropdown + 1;
+      }
+      &:not(:first-child) {
+        z-index: $zindex-dropdown + 2;
+      }
       background: #fff;
       vertical-align: top;
       z-index: $zindex-dropdown - 1;
+    }
+    tbody td:first-child {
+      background-color: #f5f7fa;
     }
   }
 

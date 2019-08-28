@@ -232,13 +232,15 @@ abstract class AbstractLoader implements LoaderInterface
     {
         $i     = -1;
         $menus = \array_map(function ($menu) use (&$i) {
-            $menu->cName            = __($menu->cName);
             $menu->name             = $menu->cName;
+            $menu->cName            = __($menu->cName);
+            $menu->displayName      = $menu->cName;
             $menu->kPluginAdminMenu = (int)$menu->kPluginAdminMenu;
-            $menu->id               = (int)$menu->kPluginAdminMenu;
+            $menu->id               = $menu->kPluginAdminMenu;
             $menu->kPlugin          = (int)$menu->kPlugin;
-            $menu->pluginID         = (int)$menu->kPlugin;
+            $menu->pluginID         = $menu->kPlugin;
             $menu->nSort            = (int)$menu->nSort;
+            $menu->sort             = $menu->nSort;
             $menu->nConf            = (int)$menu->nConf;
             $menu->configurable     = (bool)$menu->nConf;
             $menu->file             = $menu->cDateiname;
@@ -278,8 +280,9 @@ abstract class AbstractLoader implements LoaderInterface
             $menu->pluginID         = $menu->kPlugin;
             $menu->nSort            = $items->count() + 1;
             $menu->sort             = $menu->nSort;
-            $menu->cName            = 'Dokumentation';
-            $menu->name             = $menu->cName;
+            $menu->name             = 'docs';
+            $menu->cName            = __('Dokumentation');
+            $menu->displayName      = $menu->cName;
             $menu->cDateiname       = $meta->getReadmeMD();
             $menu->file             = $menu->cDateiname;
             $menu->idx              = $lastIdx;
@@ -299,8 +302,9 @@ abstract class AbstractLoader implements LoaderInterface
             $menu->pluginID         = $menu->kPlugin;
             $menu->nSort            = $items->count() + 1;
             $menu->sort             = $menu->nSort;
-            $menu->cName            = 'Lizenzvereinbarungen';
-            $menu->name             = $menu->cName;
+            $menu->name             = 'licsense';
+            $menu->cName            = __('Lizenzvereinbarungen');
+            $menu->displayName      = $menu->cName;
             $menu->cDateiname       = $meta->getLicenseMD();
             $menu->file             = $menu->cDateiname;
             $menu->idx              = $lastIdx;
@@ -320,8 +324,9 @@ abstract class AbstractLoader implements LoaderInterface
             $menu->pluginID         = $menu->kPlugin;
             $menu->nSort            = $items->count() + 1;
             $menu->sort             = $menu->nSort;
-            $menu->cName            = 'Changelog';
-            $menu->name             = $menu->cName;
+            $menu->name             = 'changelog';
+            $menu->cName            = __('Changelog');
+            $menu->displayName      = $menu->cName;
             $menu->cDateiname       = $meta->getChangelogMD();
             $menu->file             = $menu->cDateiname;
             $menu->idx              = $lastIdx;

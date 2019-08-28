@@ -45,14 +45,17 @@ class PageService
     /**
      * PageService constructor.
      * @param Service $opc
-     * @param PageDB  $pageDB
-     * @param Locker  $locker
+     * @param PageDB $pageDB
+     * @param Locker $locker
+     * @throws \SmartyException
      */
     public function __construct(Service $opc, PageDB $pageDB, Locker $locker)
     {
         $this->opc    = $opc;
         $this->pageDB = $pageDB;
         $this->locker = $locker;
+
+        Shop::Smarty()->registerPlugin('function', 'opcMountPoint', [$this, 'renderMountPoint']);
     }
 
     /**
@@ -96,6 +99,34 @@ class PageService
             $publicFunctionName = 'opc' . \ucfirst($functionName);
             $io->register($publicFunctionName, [$this, $functionName], null, 'CONTENT_PAGE_VIEW');
         }
+    }
+
+    /**
+     * @param $params
+     * @param $smarty
+     * @return string
+     * @throws \Exception
+     */
+    public function renderMountPoint($params)
+    {
+        $id     = $params['id'];
+        $title  = $params['title'] ?? $id;
+        $output = '';
+
+        if ($this->opc->isEditMode()) {
+            $output = '<div class="opc-area opc-rootarea" data-area-id="' . $id . '" data-title="' . $title
+                . '"></div>';
+        } elseif ($this->getCurPage()->getAreaList()->hasArea($id)) {
+            $output = $this->getCurPage()->getAreaList()->getArea($id)->getFinalHtml();
+        }
+
+        Shop::fire('shop.OPC.PageService.renderMountPoint', [
+            'output' => &$output,
+            'id' => $id,
+            'title' => $title,
+        ]);
+
+        return $output;
     }
 
     /**

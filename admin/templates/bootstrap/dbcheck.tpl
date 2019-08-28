@@ -127,7 +127,7 @@
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h2><span>&nbsp;</span> <img src="{$shopURL}/{$PFAD_ADMIN}/{$currentTemplateDir}gfx/widgets/ajax-loader.gif"></h2>
+                <h2><span>&nbsp;</span> <img src="{$templateBaseURL}gfx/widgets/ajax-loader.gif"></h2>
             </div>
             <div class="modal-body">
                 <div class="progress" data-notify="progressbar">

@@ -3,14 +3,14 @@
  * @license https://jtl-url.de/jtlshoplicense
  *}
 
-{include file='snippets/opc_mount_point.tpl' id='opc_before_heading'}
+{opcMountPoint id='opc_before_heading'}
 
 <h1>{lang key='umfrage' section='umfrage'}</h1>
 
 {include file='snippets/extension.tpl'}
 
 {if $oUmfrage_arr|@count > 0}
-    {include file='snippets/opc_mount_point.tpl' id='opc_before_overview'}
+    {opcMountPoint id='opc_before_overview'}
     <div id="voting_overview">
         {block name='poll-overview'}
             {foreach $oUmfrage_arr as $oUmfrage}

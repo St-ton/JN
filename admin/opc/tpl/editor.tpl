@@ -44,7 +44,7 @@
     <script src="{$shopUrl}/admin/opc/js/PreviewFrame.js"></script>
 
     <script>
-        let opc = new OPC({
+        window.opc = new OPC({
             jtlToken:    '{$smarty.session.jtl_token}',
             shopUrl:     '{$shopUrl}',
             templateUrl: '{$templateUrl}',
@@ -54,6 +54,10 @@
 
         opc.init();
     </script>
+
+    {foreach $opc->getPortletInitScriptUrls() as $scriptUrl}
+        <script src="{$scriptUrl}"></script>
+    {/foreach}
 </head>
 <body>
     <div id="iconpicker" data-placement="inline" style="display: none"></div>

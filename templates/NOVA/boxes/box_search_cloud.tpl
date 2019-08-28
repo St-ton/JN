@@ -4,28 +4,25 @@
  *}
 {block name='boxes-box-search-cloud'}
     {block name='boxes-box-search-cloud-script'}
-        <script>
-            var deferredTasks = window.deferredTasks || [];
-            deferredTasks.push(["ready",function () {
-                $(window).on('load', function () {
-                    var searchItems     = {$oBox->getItems()|json_encode},
-                        searchcloudTags = [];
+        {inline_script}<script>
+            $(window).on('load', function () {
+                var searchItems     = {$oBox->getItems()|json_encode},
+                    searchcloudTags = [];
 
-                    $.each(searchItems, function (key, value) {
-                        searchcloudTags.push({
-                            text:   value.cSuche,
-                            weight: value.nAnzahlGesuche,
-                            link:   'index.php?qs=' + value.cSuche
-                        });
-                    });
-
-                    $('#sidebox{$oBox->getID()} .searchcloud').jQCloud(searchcloudTags, {
-                        autoResize: true,
-                        steps:      7
+                $.each(searchItems, function (key, value) {
+                    searchcloudTags.push({
+                        text:   value.cSuche,
+                        weight: value.nAnzahlGesuche,
+                        link:   'index.php?qs=' + value.cSuche
                     });
                 });
-            }]);
-        </script>
+
+                $('#sidebox{$oBox->getID()} .searchcloud').jQCloud(searchcloudTags, {
+                    autoResize: true,
+                    steps:      7
+                });
+            });
+        </script>{/inline_script}
     {/block}
     {card class="box box-searchcloud mb-7" id="sidebox{$oBox->getID()}" title="{lang key='searchcloud'}"}
         {block name='boxes-box-search-cloud-content'}

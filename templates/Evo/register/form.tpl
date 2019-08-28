@@ -13,7 +13,7 @@
     <input type="hidden" name="form" value="1">
     <input type="hidden" name="editRechnungsadresse" value="{$editRechnungsadresse}">
 
-    {include file='snippets/opc_mount_point.tpl' id='opc_before_submit'}
+    {opcMountPoint id='opc_before_submit'}
 
     <input type="submit" class="btn btn-primary btn-lg pull-right submit submit_once" value="{lang key='sendCustomerData' section='account data'}">
 </form>

@@ -4,7 +4,7 @@
  *}
 {block name='page-newsletter-archive'}
     {container}
-        {include file='snippets/opc_mount_point.tpl' id='opc_before_newsletter'}
+        {opcMountPoint id='opc_before_newsletter'}
         {block name='page-newsletter-archive-toptags'}
             <div id="toptags">{lang key='newsletterhistory'}</div>
         {/block}

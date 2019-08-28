@@ -1,3 +1,6 @@
+variables:
+  GLOBAL_CI_REGISTRY_URL: "registry.gitlab.com/jtl-software/jtl-shop/core"
+
 stages:
   - codeQuality
   - cleanUpCodeQuality
@@ -23,7 +26,7 @@ stages:
       -v $(pwd):/code \
       -w /code \
       --name="$CI_CONTAINER_NAME" \
-      $CI_REGISTRY_IMAGE/codesniffer \
+      $GLOBAL_CI_REGISTRY_URL/codesniffer \
       sh -c "bash build/scripts/global-codesniffer.sh /code"
 
     docker stop "$CI_CONTAINER_NAME"
@@ -45,7 +48,7 @@ stages:
       -w '/creation' \
       --volume $(pwd):/dockerBuild \
       --name="$CI_CONTAINER_NAME" \
-      $CI_REGISTRY_IMAGE/testing-php$PHP_VERSION_TEST_STEP \
+      $GLOBAL_CI_REGISTRY_URL/testing-php$PHP_VERSION_TEST_STEP \
       sh -c "cp -r /dockerBuild/. /creation; bash build/scripts/tests.sh"
 
     docker stop "$CI_CONTAINER_NAME"
@@ -97,7 +100,7 @@ stages:
       --volume $(pwd):/dockerBuild \
       --name="$CI_CONTAINER_NAME" \
       --network mysql-php-network \
-      $CI_REGISTRY_IMAGE/build-deploy \
+      $GLOBAL_CI_REGISTRY_URL/build-deploy \
       bash
 
     docker exec \
@@ -183,6 +186,12 @@ stages:
 
 code_quality:
   stage: codeQuality
+  image: docker:19.03.1
+  services:
+    - docker:19.03.1-dind
+  variables:
+    DOCKER_DRIVER: overlay2
+    DOCKER_TLS_CERTDIR: "/certs"
   script:
     - *codeQualityScripts
     - codeQualityCheck
@@ -192,13 +201,16 @@ code_quality:
     - branches
   except:
     - master
-  tags:
-    - build
 
 removeContainerCodeQuality:
   stage: cleanUpCodeQuality
+  image: docker:19.03.1
+  services:
+    - docker:19.03.1-dind
   variables:
     GIT_STRATEGY: none
+    DOCKER_DRIVER: overlay2
+    DOCKER_TLS_CERTDIR: "/certs"
   script:
     - *cleanUpTesting
     - failedCodeQuality
@@ -208,13 +220,16 @@ removeContainerCodeQuality:
     - master
     - /^release\/.*$/
   when: on_failure
-  tags:
-    - build
 
 test_PHP_7.2:
   stage: test
+  image: docker:19.03.1
+  services:
+    - docker:19.03.1-dind
   variables:
     PHP_VERSION_TEST_STEP: '7.2'
+    DOCKER_DRIVER: overlay2
+    DOCKER_TLS_CERTDIR: "/certs"
   script:
     - *testingScript
     - testing
@@ -222,13 +237,16 @@ test_PHP_7.2:
     - branches
   except:
     - master
-  tags:
-    - build
 
 test_PHP_7.3:
   stage: test
+  image: docker:19.03.1
+  services:
+    - docker:19.03.1-dind
   variables:
     PHP_VERSION_TEST_STEP: '7.3'
+    DOCKER_DRIVER: overlay2
+    DOCKER_TLS_CERTDIR: "/certs"
   script:
     - *testingScript
     - testing
@@ -236,13 +254,17 @@ test_PHP_7.3:
     - branches
   except:
     - master
-  tags:
-    - build
 
 removeContainerPHP7.2:
   stage: cleanUpTest
+  image: docker:19.03.1
+  services:
+    - docker:19.03.1-dind
   variables:
+    GIT_STRATEGY: none
     PHP_VERSION_TEST_STEP: '7.2'
+    DOCKER_DRIVER: overlay2
+    DOCKER_TLS_CERTDIR: "/certs"
   script:
     - *cleanUpTesting
     - failedTesting
@@ -252,13 +274,17 @@ removeContainerPHP7.2:
     - master
     - /^release\/.*$/
   when: on_failure
-  tags:
-    - build
 
 removeContainerPHP7.3:
   stage: cleanUpTest
+  image: docker:19.03.1
+  services:
+    - docker:19.03.1-dind
   variables:
+    GIT_STRATEGY: none
     PHP_VERSION_TEST_STEP: '7.3'
+    DOCKER_DRIVER: overlay2
+    DOCKER_TLS_CERTDIR: "/certs"
   script:
     - *cleanUpTesting
     - failedTesting
@@ -268,8 +294,6 @@ removeContainerPHP7.3:
     - master
     - /^release\/.*$/
   when: on_failure
-  tags:
-    - build
 
 build:
   stage: build

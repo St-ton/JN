@@ -7,6 +7,7 @@
 namespace JTL\OPC;
 
 use Exception;
+use JTL\Shop;
 use JTL\Backend\Revision;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
@@ -209,12 +210,18 @@ class PageDB
     public function getPublicPage(string $id): ?Page
     {
         $publicRow = $this->getPublicPageRow($id);
+        $page      = null;
 
-        if (!\is_object($publicRow)) {
-            return null;
+        if (\is_object($publicRow)) {
+            $page = $this->getPageFromRow($publicRow);
         }
 
-        return $this->getPageFromRow($publicRow);
+        Shop::fire('shop.OPC.PageDB.getPublicPage', [
+            'id' => $id,
+            'page' => &$page
+        ]);
+
+        return $page;
     }
 
     /**
@@ -231,6 +238,10 @@ class PageDB
         ) {
             throw new Exception('The OPC page data to be saved is incomplete or invalid.');
         }
+
+        Shop::fire('shop.OPC.PageDB.saveDraft:afterValidate', [
+            'page' => &$page
+        ]);
 
         $page->setLastModified(\date('Y-m-d H:i:s'));
 
@@ -375,6 +386,11 @@ class PageDB
         if ($areaData !== null) {
             $page->getAreaList()->deserialize($areaData);
         }
+
+        Shop::fire('shop.OPC.PageDB.getPageRow', [
+            'row' => &$row,
+            'page' => &$page
+        ]);
 
         return $page;
     }

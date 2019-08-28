@@ -5,7 +5,7 @@
 {block name='layout-footer'}
     {block name='layout-footer-content-all-closingtags'}
         {block name='layout-footer-content-closingtag'}
-            {include file='snippets/opc_mount_point.tpl' id='opc_content' title='Default Area'}
+            {opcMountPoint id='opc_content' title='Default Area'}
             </div>{* /content *}
         {/block}
 
@@ -272,114 +272,6 @@
     {* JavaScripts *}
     {block name='layout-footer-js'}
         {$dbgBarBody}
-        {block name='layout-footer-script-jtl-load'}
-            {block name='layout-footer-jquery'}
-                <script>
-                    (function () {
-                        var done = false;
-                        var script = document.createElement("script"),
-                        head = document.head || document.documentElement;
-                        script.src = '{$ShopURL}/{if empty($parentTemplateDir)}{$currentTemplateDir}{else}{$parentTemplateDir}{/if}js/jquery-3.4.1.min.js';
-                        script.type = 'text/javascript';
-                        script.async = false;
-                        script.onload = script.onreadystatechange = function() {
-                            if (!done && (!this.readyState || this.readyState === "loaded" || this.readyState === "complete")) {
-                                done = true;
-
-                                // Process async variable
-                                window.deferredTasks = window.deferredTasks || [];
-
-                                while(deferredTasks.length) { // there is some syncing to be done
-                                    var obj = deferredTasks.shift();
-                                    if (obj[0] === "ready") {
-                                        $(obj[1]);
-                                    } else if (obj[0] === "load"){
-                                        $(window).on("load", obj[1]);
-                                    }
-                                }
-
-                                window.deferredTasks = {
-                                    push: function(param)
-                                    {
-                                        if (param[0] === "ready") {
-                                            $(param[1]);
-                                        } else if (param[0] === "load"){
-                                            $(window).on("load", param[1]);
-                                        }
-                                    }
-                                };
-
-                                // End of processing
-                                script.onload = script.onreadystatechange = null;
-
-                                if (head && script.parentNode) {
-                                    head.removeChild(script);
-                                }
-                            }
-                        };
-
-                        head.appendChild(script);
-                    })();
-
-                     // helper function to load scripts.
-                    function loadScript(url)
-                    {
-                        var script = document.createElement("script");
-                        script.type = 'text/javascript';
-                        script.async = false;
-                        script.src = url;
-
-                        var s = document.getElementsByTagName("script")[0];
-                        s.parentNode.insertBefore(script, s);
-                    }
-
-                    {if !isset($Einstellungen.template.general.use_minify) || $Einstellungen.template.general.use_minify === 'N'}
-                        {if isset($cPluginJsHead_arr)}
-                            {foreach $cPluginJsHead_arr as $cJS}
-                                loadScript("{$ShopURL}/{$cJS}?v={$nTemplateVersion}");
-                            {/foreach}
-                        {/if}
-                    {else}
-                        {if isset($cPluginJsHead_arr) && $cPluginJsHead_arr|@count > 0}
-                            loadScript("{$ShopURL}/asset/plugin_js_head?v={$nTemplateVersion}");
-                        {/if}
-                    {/if}
-                    {if !isset($Einstellungen.template.general.use_minify) || $Einstellungen.template.general.use_minify === 'N'}
-                        {foreach $cJS_arr as $cJS}
-                            loadScript("{$ShopURL}/{$cJS}?v={$nTemplateVersion}");
-                        {/foreach}
-                        {if isset($cPluginJsBody_arr)}
-                            {foreach $cPluginJsBody_arr as $cJS}
-                                loadScript("{$ShopURL}/{$cJS}?v={$nTemplateVersion}");
-                            {/foreach}
-                        {/if}
-                    {else}
-                        loadScript("{$ShopURL}/asset/jtl3.js?v={$nTemplateVersion}");
-                        {if isset($cPluginJsBody_arr) && $cPluginJsBody_arr|@count > 0}
-                            loadScript("{$ShopURL}/asset/plugin_js_body?v={$nTemplateVersion}");
-                        {/if}
-                    {/if}
-
-                    {assign var=customJSPath value=$currentTemplateDir|cat:'/js/custom.js'}
-                    {if file_exists($customJSPath)}
-                        loadScript("{$ShopURL}/{$customJSPath}?v={$nTemplateVersion}");
-                    {/if}
-
-                    {assign var=availableLocale value=array('ar','az', 'bg','ca', 'cr', 'cs', 'da', 'de', 'el', 'es','et', 'fa','fi', 'fr', 'gl',
-                    'he','hu','id','it','ja','ka','kr','kz', 'lt', 'nl','no', 'pl', 'pt', 'ro','ru','sk','sl','sv','th','tr', 'uk','uz','vi','zh')}
-
-                    {if isset($smarty.session.currentLanguage->cISO639) && $smarty.session.currentLanguage->cISO639|in_array:$availableLocale}
-                        {assign var=uploaderLang value=$smarty.session.currentLanguage->cISO639}
-                    {else}
-                        {assign var=uploaderLang value='LANG'}
-                    {/if}
-
-                    loadScript("{if empty($parentTemplateDir)}{$currentTemplateDir}{else}{$parentTemplateDir}{/if}js/fileinput/fileinput.min.js");
-                    loadScript("{if empty($parentTemplateDir)}{$currentTemplateDir}{else}{$parentTemplateDir}{/if}js/fileinput/themes/fas/theme.min.js");
-                    loadScript("{if empty($parentTemplateDir)}{$currentTemplateDir}{else}{$parentTemplateDir}{/if}js/fileinput/locales/{$uploaderLang}.js");
-                </script>
-            {/block}
-        {/block}
         {captchaMarkup getBody=false}
     {/block}
     </body>

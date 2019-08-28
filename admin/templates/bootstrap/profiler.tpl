@@ -1,7 +1,7 @@
 {include file='tpl_inc/header.tpl'}
 {config_load file="$lang.conf" section='pluginprofiler'}
 {include file='tpl_inc/seite_header.tpl' cTitel=__('pluginprofiler') cBeschreibung=__('pluginprofilerDesc') cDokuURL=__('pluginprofilerURL')}
-<script type="text/javascript" src="{$shopURL}/{$PFAD_ADMIN}/{$currentTemplateDir}js/profiler.js"></script>
+<script type="text/javascript" src="{$templateBaseURL}js/profiler.js"></script>
 <script type="text/javascript">
 var pies = [];
 {foreach $pluginProfilerData as $pie}

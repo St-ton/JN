@@ -15,7 +15,7 @@
             <div id="login_outer" class="card">
                 <div class="card-body">
                     <p class="text-center mb-4">
-                        <img class="brand-logo" width="120" height="38" src="{$currentTemplateDir}gfx/JTL-Shop-Logo-rgb.png" alt="JTL-Shop">
+                        <img class="brand-logo" width="120" height="38" src="{$templateBaseURL}gfx/JTL-Shop-Logo-rgb.png" alt="JTL-Shop">
                     </p>
                     {if $alertError}
                         {include file='snippets/alert_list.tpl'}

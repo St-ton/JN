@@ -37,9 +37,8 @@
 
         {if (isset($nWarenkorb2PersMerge) && $nWarenkorb2PersMerge === 1)}
             {block name='checkout-index-script-basket-merge'}
-                <script type="text/javascript">
-                    var deferredTasks = window.deferredTasks || [];
-                    deferredTasks.push(["ready", function () {
+                {inline_script}<script>
+                    $(window).on('load', function() {
                         $(function() {
                             eModal.addLabel('{lang key='yes' section='global'}', '{lang key='no' section='global'}');
                             var options = {
@@ -53,15 +52,15 @@
                                 }
                             );
                         });
-                    }]);
-                </script>
+                    });
+                </script>{/inline_script}
             {/block}
         {/if}
         {block name='checkout-index-script-location'}
-            <script type="text/javascript">
-                if (top.location !== self.location) {ldelim}
+            <script>
+                if (top.location !== self.location) {
                     top.location = self.location.href;
-                {rdelim}
+                }
             </script>
         {/block}
     {/block}

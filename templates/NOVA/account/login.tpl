@@ -14,16 +14,13 @@
             {/alert}
         {/block}
         {block name='account-login-script-no-cookie'}
-            <script type="text/javascript">
-                var deferredTasks = window.deferredTasks || [];
-                deferredTasks.push(["ready",function () {
-                    $(function () {
-                        if (navigator.cookieEnabled === false) {
-                            $('#no-cookies-warning').show();
-                        }
-                    });
-                }]);
-            </script>
+            {inline_script}<script>
+               $(function() {
+                   if (navigator.cookieEnabled === false) {
+                       $('#no-cookies-warning').show();
+                   }
+               });
+            </script>{/inline_script}
         {/block}
     {elseif !$alertNote}
         {block name='account-login-alert'}

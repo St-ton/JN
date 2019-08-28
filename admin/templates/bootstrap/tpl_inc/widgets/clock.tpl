@@ -1,4 +1,4 @@
-<script type="text/javascript" src="{$currentTemplateDir}js/jquery.jclock.js"></script>
+<script type="text/javascript" src="{$templateBaseURL}js/jquery.jclock.js"></script>
 <script type="text/javascript">
     $(function ($) {ldelim}
         $('#clock_time').jclock({ldelim}

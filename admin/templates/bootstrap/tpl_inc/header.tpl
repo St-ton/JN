@@ -29,7 +29,7 @@
     <script src="{$PFAD_CODEMIRROR}mode/smarty/smarty.js{$urlPostfix}"></script>
     <script src="{$PFAD_CODEMIRROR}mode/smartymixed/smartymixed.js{$urlPostfix}"></script>
     <script src="{$PFAD_CODEMIRROR}mode/sql/sql.js{$urlPostfix}"></script>
-    <script src="{$URL_SHOP}/{$PFAD_ADMIN}{$currentTemplateDir}js/codemirror_init.js{$urlPostfix}"></script>
+    <script src="{$templateBaseURL}js/codemirror_init.js{$urlPostfix}"></script>
     <script>
         var bootstrapButton = $.fn.button.noConflict();
         $.fn.bootstrapBtn = bootstrapButton;
@@ -37,8 +37,8 @@
     </script>
 
     <script type="text/javascript"
-            src="{$URL_SHOP}/{$PFAD_ADMIN}{$currentTemplateDir}js/fileinput/locales/{$language|mb_substr:0:2}.js"></script>
-    <script type="module" src="{$URL_SHOP}/{$PFAD_ADMIN}{$currentTemplateDir}js/app/app.js"></script>
+            src="{$templateBaseURL}js/fileinput/locales/{$language|mb_substr:0:2}.js"></script>
+    <script type="module" src="{$templateBaseURL}js/app/app.js"></script>
     {include file='snippets/selectpicker.tpl'}
 </head>
 <body>

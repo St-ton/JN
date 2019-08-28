@@ -10,15 +10,15 @@
 {if $instance->getProperty('background-flag') === 'image' && !empty($instance->getProperty('src'))}
     {$name = basename($instance->getProperty('src'))}
     {$class = "{$class} parallax-window"}
-    {$v = $instance->getImageAttributes("{Shop::getURL()}/{\PFAD_MEDIAFILES}Bilder/.xs/{$name}")}
+    {$v = $instance->getImageAttributes("{Shop::getURL()}/{$smarty.const.PFAD_MEDIAFILES}Bilder/.xs/{$name}")}
     {if $isPreview}
-        {$style = "{$style} background-image:url('{Shop::getURL()}/{\PFAD_MEDIAFILES}Bilder/.xs/{$name}');"}
+        {$style = "{$style} background-image:url('{Shop::getURL()}/{$smarty.const.PFAD_MEDIAFILES}Bilder/.xs/{$name}');"}
         {$style = "{$style} background-size:cover;"}
     {else}
         {$data = $data|array_merge:[
             'parallax'  => 'scroll',
             'z-index'   => '1',
-            'image-src' => "{Shop::getURL()}/{\PFAD_MEDIAFILES}Bilder/.lg/{$name}"
+            'image-src' => "{Shop::getURL()}/{$smarty.const.PFAD_MEDIAFILES}Bilder/.lg/{$name}"
         ]}
     {/if}
 {/if}
@@ -26,9 +26,9 @@
 {if $instance->getProperty('background-flag') === 'video'}
     {$style          = "{$style} overflow:hidden;"}
     {$name           = basename($instance->getProperty('video-poster'))}
-    {$videoPosterUrl = "{Shop::getURL()}/{\PFAD_MEDIAFILES}Bilder/.xs/{$name}"}
+    {$videoPosterUrl = "{Shop::getURL()}/{$smarty.const.PFAD_MEDIAFILES}Bilder/.xs/{$name}"}
     {$name           = basename($instance->getProperty('video-src'))}
-    {$videoSrcUrl    = "{Shop::getURL()}/{\PFAD_MEDIAFILES}Videos/{$name}"}
+    {$videoSrcUrl    = "{Shop::getURL()}/{$smarty.const.PFAD_MEDIAFILES}Videos/{$name}"}
 {/if}
 
 {container style=$style class=$class data=$data fluid=$fluid}

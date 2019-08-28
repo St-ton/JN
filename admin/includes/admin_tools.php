@@ -23,14 +23,14 @@ use JTL\XMLParser;
  */
 function getAdminSectionSettings($configSectionID)
 {
-    Shop::Container()->getGetText()->loadConfigLocales();
-
+    $gettext = Shop::Container()->getGetText();
+    $gettext->loadConfigLocales();
     $db = Shop::Container()->getDB();
     if (is_array($configSectionID)) {
         $confData = $db->query(
             'SELECT *
                 FROM teinstellungenconf
-                WHERE kEinstellungenConf IN (' . implode(',', $configSectionID) . ')
+                WHERE kEinstellungenConf IN (' . implode(',', array_map('\intval', $configSectionID)) . ')
                 ORDER BY nSort',
             ReturnType::ARRAY_OF_OBJECTS
         );
@@ -50,7 +50,7 @@ function getAdminSectionSettings($configSectionID)
         $conf->nStandardAnzeigen     = (int)$conf->nStandardAnzeigen;
         $conf->nModul                = (int)$conf->nModul;
 
-        Shop::Container()->getGetText()->localizeConfig($conf);
+        $gettext->localizeConfig($conf);
 
         if ($conf->cInputTyp === 'listbox') {
             $conf->ConfWerte = $db->selectAll(
@@ -75,8 +75,7 @@ function getAdminSectionSettings($configSectionID)
                 '*',
                 'nSort'
             );
-
-            Shop::Container()->getGetText()->localizeConfigValues($conf, $conf->ConfWerte);
+            $gettext->localizeConfigValues($conf, $conf->ConfWerte);
         }
 
         if ($conf->cInputTyp === 'listbox') {
@@ -116,13 +115,10 @@ function getAdminSectionSettings($configSectionID)
  */
 function saveAdminSettings(array $settingsIDs, array &$post, $tags = [CACHING_GROUP_OPTION])
 {
-    array_walk($settingsIDs, function (&$i) {
-        $i = (int)$i;
-    });
     $confData = Shop::Container()->getDB()->query(
         'SELECT *
             FROM teinstellungenconf
-            WHERE kEinstellungenConf IN (' . implode(',', $settingsIDs) . ')
+            WHERE kEinstellungenConf IN (' . implode(',', \array_map('\intval', $settingsIDs)) . ')
             ORDER BY nSort',
         ReturnType::ARRAY_OF_OBJECTS
     );
@@ -215,7 +211,8 @@ function saveAdminSectionSettings(int $configSectionID, array &$post, $tags = [C
     if (!Form::validateToken()) {
         return __('errorCSRF');
     }
-    $confData = Shop::Container()->getDB()->selectAll(
+    $db       = Shop::Container()->getDB();
+    $confData = $db->selectAll(
         'teinstellungenconf',
         ['kEinstellungenSektion', 'cConf'],
         [$configSectionID, 'Y'],
@@ -248,12 +245,12 @@ function saveAdminSectionSettings(int $configSectionID, array &$post, $tags = [C
         }
 
         if ($config->cInputTyp !== 'listbox' && $config->cInputTyp !== 'selectkdngrp') {
-            Shop::Container()->getDB()->delete(
+            $db->delete(
                 'teinstellungen',
                 ['kEinstellungenSektion', 'cName'],
                 [$configSectionID, $config->cWertName]
             );
-            Shop::Container()->getDB()->insert('teinstellungen', $val);
+            $db->insert('teinstellungen', $val);
         }
     }
     Shop::Container()->getCache()->flushTags($tags);
@@ -550,10 +547,10 @@ function reloadFavs()
  */
 function getNotifyDropIO()
 {
-    Shop::Smarty()->assign('notifications', Notification::getInstance());
-
     return [
-        'tpl'  => Shop::Smarty()->fetch('tpl_inc/notify_drop.tpl'),
+        'tpl'  => Shop::Smarty()
+            ->assign('notifications', Notification::getInstance())
+            ->fetch('tpl_inc/notify_drop.tpl'),
         'type' => 'notify'
     ];
 }

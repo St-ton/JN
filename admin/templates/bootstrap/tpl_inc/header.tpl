@@ -117,7 +117,7 @@
                         </div>
                     </div>
                 </div>
-
+                <div class="opaque-background"></div>
             </div>
             <div class="backend-content" id="content_wrapper">
 

@@ -14,8 +14,6 @@ require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'statistik_inc.php';
 $statsType = Request::verifyGPCDataInt('s');
 
 switch ($statsType) {
-    case 1:
-        break;
     case 2:
         $oAccount->permission('STATS_VISITOR_LOCATION_VIEW', true, true);
         break;

@@ -186,15 +186,15 @@ class PluginCollection
      * @param mixed $content
      * @return string
      */
-    public function inlineScript(array $params, $content)
+    public function inlineScript(array $params, $content): string
     {
-        if (!empty($content)) {
-            $content = trim($content);
-            $content = preg_replace('/^<script>/', '', $content);
-            $content = preg_replace('/<\/script>$/', '', $content);
-            return '<script defer src="data:text/javascript;base64,' . base64_encode($content) . '"></script>';
+        $content = \trim($content);
+        if (empty($content)) {
+            return $content;
         }
+        $content = \preg_replace('/^<script(.*?)>/', '', $content);
+        $content = \preg_replace('/<\/script>$/', '', $content);
 
-        return '';
+        return '<script defer src="data:text/javascript;base64,' . \base64_encode($content) . '"></script>';
     }
 }

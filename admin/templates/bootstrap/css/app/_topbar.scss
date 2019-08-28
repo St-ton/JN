@@ -46,6 +46,26 @@
 		&:not(.searching) .search { max-width: rem(85px); }
 		.search-icon { color: map-get($primary-palette, 'darker'); cursor: pointer; }
 	}
+	&:not(.searching) {
+		z-index: $zindex-sticky;
+		.opaque-background {
+			display: none;
+		}
+	}
+	&.searching {
+		z-index: $zindex-fixed + 1;
+		.opaque-background {
+			display: block;
+		}
+	}
+	.opaque-background {
+		top: map-get($spacers, 7) - 1rem;
+	}
+	@include media-breakpoint-up(lg) {
+		.opaque-background {
+			top: map-get($spacers, 7);
+		}
+	}
 }
 
 #dropdown-search { border-radius: $border-radius; font-size: $font-size-sm; width: rem(570px);

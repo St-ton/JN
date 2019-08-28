@@ -114,6 +114,38 @@ class Service
 
     /**
      * @param bool $withInactive
+     * @return Portlet[]
+     * @throws \Exception
+     */
+    public function getAllPortlets(bool $withInactive = false): array
+    {
+        return $this->db->getAllPortlets($withInactive);
+    }
+
+    /**
+     * @return array
+     * @throws \Exception
+     */
+    public function getPortletInitScriptUrls()
+    {
+        $scripts = [];
+
+        foreach ($this->getAllPortlets() as $portlet) {
+            foreach ($portlet->getEditorInitScripts() as $script) {
+                $path = $portlet->getBasePath() . $script;
+                $url  = $portlet->getBaseUrl() . $script;
+
+                if (!\array_key_exists($url, $scripts) && \file_exists($path)) {
+                    $scripts[$url] = $url;
+                }
+            }
+        }
+
+        return $scripts;
+    }
+
+    /**
+     * @param bool $withInactive
      * @return Blueprint[]
      * @throws \Exception
      */

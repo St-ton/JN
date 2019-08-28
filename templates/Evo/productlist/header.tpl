@@ -3,12 +3,12 @@
  * @license https://jtl-url.de/jtlshoplicense
  *}
 {if !isset($oNavigationsinfo) || isset($Suchergebnisse) && isset($oNavigationsinfo) && empty($oNavigationsinfo->getName())}
-    {include file='snippets/opc_mount_point.tpl' id='opc_before_heading'}
+    {opcMountPoint id='opc_before_heading'}
     <h1>{$Suchergebnisse->getSearchTermWrite()}</h1>
 {/if}
 
 {if $Suchergebnisse->getSearchUnsuccessful() == true}
-    {include file='snippets/opc_mount_point.tpl' id='opc_before_no_results'}
+    {opcMountPoint id='opc_before_no_results'}
     <div class="alert alert-info">{lang key='noResults' section='productOverview'}</div>
     <form id="suche2" action="{$ShopURL}" method="get" class="form">
         <fieldset>
@@ -31,7 +31,7 @@
 {if $oNavigationsinfo->hasData()}
     <div class="title">
         {if $oNavigationsinfo->getName()}
-            {include file='snippets/opc_mount_point.tpl' id='opc_before_heading'}
+            {opcMountPoint id='opc_before_heading'}
             <h1>{$oNavigationsinfo->getName()}</h1>
         {/if}
     </div>
@@ -62,7 +62,7 @@
 
 {block name='productlist-subcategories'}
 {if $Einstellungen.navigationsfilter.artikeluebersicht_bild_anzeigen !== 'N' && $oUnterKategorien_arr|@count > 0}
-    {include file='snippets/opc_mount_point.tpl' id='opc_before_subcategories'}
+    {opcMountPoint id='opc_before_subcategories'}
 
     <div class="row row-eq-height content-cats-small clearfix">
         {foreach $oUnterKategorien_arr as $Unterkat}
@@ -105,7 +105,7 @@
 {include file='productwizard/index.tpl'}
 
 {if count($Suchergebnisse->getProducts()) > 0}
-    {include file='snippets/opc_mount_point.tpl' id='opc_before_result_options'}
+    {opcMountPoint id='opc_before_result_options'}
     <div id="improve_search" class="form-inline clearfix">
         {include file='productlist/result_options.tpl'}
     </div>
@@ -114,13 +114,13 @@
 {if $Suchergebnisse->getProducts()|@count <= 0 && isset($KategorieInhalt)}
     {if isset($KategorieInhalt->TopArtikel->elemente) && $KategorieInhalt->TopArtikel->elemente|@count > 0}
         {$KategorieInhalt->TopArtikel->elemente|var_dump}
-        {include file='snippets/opc_mount_point.tpl' id='opc_before_category_top'}
+        {opcMountPoint id='opc_before_category_top'}
         {lang key='topOffer' section='global' assign='slidertitle'}
         {include file='snippets/product_slider.tpl' id='slider-top-products' productlist=$KategorieInhalt->TopArtikel->elemente title=$slidertitle}
     {/if}
 
     {if isset($KategorieInhalt->BestsellerArtikel->elemente) && $KategorieInhalt->BestsellerArtikel->elemente|@count > 0}
-        {include file='snippets/opc_mount_point.tpl' id='opc_before_category_bestseller'}
+        {opcMountPoint id='opc_before_category_bestseller'}
         {lang key='bestsellers' section='global' assign='slidertitle'}
         {include file='snippets/product_slider.tpl' id='slider-bestseller-products' productlist=$KategorieInhalt->BestsellerArtikel->elemente title=$slidertitle}
     {/if}

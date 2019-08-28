@@ -12,7 +12,7 @@
     {block name='comparelist-index-content'}
         {container}
             {block name='comparelist-index-heading'}
-                {include file='snippets/opc_mount_point.tpl' id='opc_before_heading'}
+                {opcMountPoint id='opc_before_heading'}
                 <h1>{lang key='compare' section='global'}</h1>
             {/block}
             {block name='comparelist-index-include-extension'}
@@ -22,7 +22,7 @@
 
             {if $oVergleichsliste->oArtikel_arr|@count > 0}
                 {block name='comparelist-index-filter'}
-                    {include file='snippets/opc_mount_point.tpl' id='opc_before_filter'}
+                    {opcMountPoint id='opc_before_filter'}
                     <div id="filter-checkboxes" class="mb-3">
                         {row}
                             {col}
@@ -79,12 +79,12 @@
                 {/block}
                 {block name='comparelist-index-products'}
                     <div class="comparelist table-responsive">
-                        <table class="table table-bordered table-sm">
+                        <table class="table table-bordered table-hover table-sm">
                             <thead>
                             <tr>
                                 <th class="sticky-top">&nbsp;</th>
                                 {foreach $oVergleichsliste->oArtikel_arr as $oArtikel}
-                                    <th style="width:{$Einstellungen_Vergleichsliste.vergleichsliste.vergleichsliste_spaltengroesse}px;" class="text-center sticky-top equal-height">
+                                    <th class="text-center sticky-top equal-height min-w">
                                         <div class="stretched">
                                             <div>
                                                 <div class="text-right">

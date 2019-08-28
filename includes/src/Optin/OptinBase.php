@@ -168,6 +168,9 @@ abstract class OptinBase extends OptinFactory
      */
     public function finishOptin(): void
     {
+        if (empty($this->foundOptinTupel)) {
+            return;
+        }
         $newRow               = new \stdClass();
         $newRow->kOptinCode   = $this->foundOptinTupel->kOptinCode;
         $newRow->kOptinClass  = $this->foundOptinTupel->kOptinClass;

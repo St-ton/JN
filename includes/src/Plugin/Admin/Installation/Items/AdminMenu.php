@@ -44,7 +44,7 @@ class AdminMenu extends AbstractItem
                     $menuItem             = new \stdClass();
                     $menuItem->kPlugin    = $this->plugin->kPlugin;
                     $menuItem->cName      = $customLink['Name'];
-                    $menuItem->cDateiname = $customLink['Filename'];
+                    $menuItem->cDateiname = $customLink['Filename'] ?? '';
                     $menuItem->nSort      = $sort;
                     $menuItem->nConf      = 0;
                     if (!$this->db->insert('tpluginadminmenu', $menuItem)) {

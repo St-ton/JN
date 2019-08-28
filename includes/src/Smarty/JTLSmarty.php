@@ -37,19 +37,14 @@ class JTLSmarty extends \SmartyBC
     public $template;
 
     /**
-     * @var JTLSmarty|null
+     * @var JTLSmarty[]
      */
-    public static $instance;
+    private static $instance = [];
 
     /**
      * @var string
      */
-    public $context = 'frontend';
-
-    /**
-     * @var int
-     */
-    public $_file_perms = 0664;
+    public $context;
 
     /**
      * @var bool
@@ -78,7 +73,7 @@ class JTLSmarty extends \SmartyBC
             $this->init($parent);
         }
         if ($context === ContextType::FRONTEND || $context === ContextType::BACKEND) {
-            self::$instance = $this;
+            self::$instance[$context] = $this;
         }
         if ($fast === false && $context !== ContextType::BACKEND) {
             \executeHook(\HOOK_SMARTY_INC, ['smarty' => $this]);
@@ -190,17 +185,15 @@ class JTLSmarty extends \SmartyBC
      */
     public static function getInstance(bool $fast = false, string $context = ContextType::FRONTEND): self
     {
-        return self::$instance ?? new self($fast, $context);
+        return self::$instance[$context] ?? new self($fast, $context);
     }
 
     /**
-     * Backslashes on Windows systems should be replaced by forward slashes in paths.
-     *
-     * @inheritdoc
+     * @return string
      */
-    public function getTemplateDir($index = null, $isConfig = false)
+    public function getTemplateUrlPath(): string
     {
-        return \str_replace('\\', '/', parent::getTemplateDir($index, $isConfig));
+        return \PFAD_TEMPLATES . $this->template->getDir() . '/';
     }
 
     /**

@@ -30,19 +30,19 @@
         <div id="new_customer" class="row">
             <div class="col-xs-12">
                 {if !isset($checkout) && empty($smarty.session.Kunde->kKunde)}
-                    {include file='snippets/opc_mount_point.tpl' id='opc_before_heading'}
+                    {opcMountPoint id='opc_before_heading'}
                     <h1>{lang key='createNewAccount' section='account data'}</h1>
                 {/if}
                 <div class="panel-wrap" id="panel-register-form">
-                    {include file='snippets/opc_mount_point.tpl' id='opc_before_form'}
+                    {opcMountPoint id='opc_before_form'}
                     {include file='register/form.tpl'}
                 </div>
             </div>
         </div>
     {elseif $step === 'formular eingegangen'}
-        {include file='snippets/opc_mount_point.tpl' id='opc_before_heading'}
+        {opcMountPoint id='opc_before_heading'}
         <h1>{lang key='accountCreated' section='global'}</h1>
-        {include file='snippets/opc_mount_point.tpl' id='opc_after_heading'}
+        {opcMountPoint id='opc_after_heading'}
         <p>{lang key='activateAccountDesc' section='global'}</p>
     {/if}
 {/block}

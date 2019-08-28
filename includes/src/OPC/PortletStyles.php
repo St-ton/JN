@@ -18,8 +18,8 @@ trait PortletStyles
      */
     final public function getCssFile($preview = false)
     {
-        $cssPath = $this->getTemplatePath() . ($preview ? 'preview' : $this->getClass()) . '.css';
-        $cssUrl  = $this->getTemplateUrl() . ($preview ? 'preview' : $this->getClass()) . '.css';
+        $cssPath = $this->getBasePath() . ($preview ? 'preview' : $this->getClass()) . '.css';
+        $cssUrl  = $this->getBaseUrl() . ($preview ? 'preview' : $this->getClass()) . '.css';
 
         if (\file_exists($cssPath)) {
             return $cssUrl;

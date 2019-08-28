@@ -5,10 +5,11 @@
 
 class Iframe
 {
-    constructor(io, gui, page, shopUrl, templateUrl)
+    constructor(opc, io, gui, page, shopUrl, templateUrl)
     {
         bindProtoOnHandlers(this);
 
+        this.opc         = opc;
         this.io          = io;
         this.gui         = gui;
         this.page        = page;
@@ -50,6 +51,8 @@ class Iframe
             this.jq   = this.ctx.$;
             this.head = this.jq('head');
             this.body = this.jq('body');
+
+            this.ctx.opc = this.opc;
 
             this.loadStylesheet(this.shopUrl + '/admin/opc/css/iframe.css');
             this.loadStylesheet(this.shopUrl + '/templates/NOVA/themes/base/fontawesome/css/all.min.css');
@@ -164,7 +167,7 @@ class Iframe
     loadPortletPreviewCss(portletCls)
     {
         this.loadStylesheet(
-            this.shopUrl + '/includes/src/OPC/templates/' + portletCls + '/preview.css'
+            this.shopUrl + '/includes/src/OPC/Portlets/' + portletCls + '/preview.css'
         );
     }
 
@@ -439,13 +442,13 @@ class Iframe
             this.dragNewPortletGroup = group;
         }
 
-        this.setDragged(this.jq('<i class="fa fa-spinner fa-pulse"></i>'));
+        this.setDragged(this.jq('<i class="fas fa-spinner fa-pulse"></i>'));
     }
 
     dragNewBlueprint(id)
     {
         this.dragNewBlueprintId = id || 0;
-        this.setDragged(this.jq('<i class="fa fa-spinner fa-pulse"></i>'));
+        this.setDragged(this.jq('<i class="fas fa-spinner fa-pulse"></i>'));
     }
 
     onBtnConfig()
@@ -470,15 +473,19 @@ class Iframe
     onBtnClone()
     {
         if(this.selectedElm !== null) {
-            var area = this.selectedElm.parent();
-            var copiedElm = this.selectedElm.clone();
-            copiedElm.insertAfter(this.selectedElm);
-            copiedElm.removeClass('opc-selected');
-            copiedElm.removeClass('opc-hovered');
-            this.pagetree.updateArea(area);
-            this.setSelected(this.selectedElm);
-            this.updateDropTargets();
-            this.gui.setUnsaved(true, true);
+            let data = this.page.portletToJSON(this.selectedElm);
+            data.uid = null;
+            this.io.getPortletPreviewHtml(data)
+                .then(html => {
+                    let copiedElm = this.jq(html);
+                    this.opc.emit('clone-portlet', copiedElm);
+                    copiedElm.insertAfter(this.selectedElm);
+                    let area = copiedElm.parent();
+                    this.pagetree.updateArea(area);
+                    this.setSelected(copiedElm);
+                    this.updateDropTargets();
+                    this.gui.setUnsaved(true, true);
+                });
         }
     }
 

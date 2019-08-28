@@ -201,7 +201,7 @@ class Status
      */
     protected function hasInstallDir(): bool
     {
-        return \is_dir(\PFAD_ROOT . 'install');
+        return \is_dir(\PFAD_ROOT . \PFAD_INSTALL);
     }
 
     /**

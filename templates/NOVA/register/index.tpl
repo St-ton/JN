@@ -40,15 +40,15 @@
                     {row id="new_customer"}
                         {col cols=12}
                             {if !isset($checkout) && empty($smarty.session.Kunde->kKunde)}
-                                {include file='snippets/opc_mount_point.tpl' id='opc_before_heading'}
+                                {opcMountPoint id='opc_before_heading'}
                                 <h1>{lang key='createNewAccount' section='account data'}</h1>
                             {/if}
-                            {include file='snippets/opc_mount_point.tpl' id='opc_before_form_card'}
+                            {opcMountPoint id='opc_before_form_card'}
                             <div id="panel-register-form">
                                 {block name='register-index-include-form'}
-                                    {include file='snippets/opc_mount_point.tpl' id='opc_before_form'}
+                                    {opcMountPoint id='opc_before_form'}
                                     {include file='register/form.tpl'}
-                                    {include file='snippets/opc_mount_point.tpl' id='opc_after_form'}
+                                    {opcMountPoint id='opc_after_form'}
                                 {/block}
                             </div>
                         {/col}
@@ -56,9 +56,9 @@
                 {/block}
             {elseif $step === 'formular eingegangen'}
                 {block name='register-index-account-created'}
-                    {include file='snippets/opc_mount_point.tpl' id='opc_before_heading'}
+                    {opcMountPoint id='opc_before_heading'}
                     <h1>{lang key='accountCreated'}</h1>
-                    {include file='snippets/opc_mount_point.tpl' id='opc_after_heading'}
+                    {opcMountPoint id='opc_after_heading'}
                     <p>{lang key='activateAccountDesc'}</p>
                 {/block}
             {/if}

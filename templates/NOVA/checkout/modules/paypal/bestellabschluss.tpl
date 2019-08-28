@@ -4,13 +4,13 @@
  *}
 {block name='checkout-modules-paypal-bestellabschluss'}
     {block name='checkout-modules-paypal-bestellabschluss-script'}
-        <script type="text/javascript">
-            $(document).ready(function () {ldelim}
+        {inline_script}<script>
+            $(document).ready(function () {
                 $('#paypal_button').hide();
                 $('#paypal_text').html('{lang key='redirect' section='global'}');
                 $('#paypal_checkout').submit();
-                {rdelim});
-        </script>
+            });
+        </script>{/inline_script}
     {/block}
 
     {block name='checkout-modules-paypal-bestellabschluss-content'}

@@ -9,14 +9,14 @@
         </div>
     {/block}
     {block name='productdetails-price-history-script'}
-        <script>
+        {inline_script}<script>
             var ctx = document.getElementById('priceHistoryChart').getContext('2d'),
                 priceHistoryChart = null,
                 chartDataCurrency = '',
-                chartData = {ldelim}
+                chartData = {
                 labels:   [],
                 datasets: [
-                    {ldelim}
+                    {
                         fillColor:            "rgba(220,220,220,0.2)",
                         strokeColor:          "rgba(220,220,220,1)",
                         pointColor:           "rgba(220,220,220,1)",
@@ -24,15 +24,15 @@
                         pointHighlightFill:   "#fff",
                         pointHighlightStroke: "rgba(220,220,220,1)",
                         data:                 []
-                    {rdelim}
+                    }
                 ]
-            {rdelim};
+            };
 
             {foreach $preisverlaufData|array_reverse as $pv}
-            chartData.labels.push('{$pv->date}');
-            chartData.datasets[0].data.push('{$pv->fPreis}');
-            chartDataCurrency = '{$pv->currency}';
+                chartData.labels.push('{$pv->date}');
+                chartData.datasets[0].data.push('{$pv->fPreis}');
+                chartDataCurrency = '{$pv->currency}';
             {/foreach}
-        </script>
+        </script>{/inline_script}
     {/block}
 {/block}

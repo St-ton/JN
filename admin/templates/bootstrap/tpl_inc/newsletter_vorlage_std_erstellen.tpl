@@ -1,5 +1,5 @@
-<link type="text/css" rel="stylesheet" href="{$shopURL}/{$PFAD_ADMIN}{$currentTemplateDir}js/js_calender/dhtmlgoodies_calendar/dhtmlgoodies_calendar.css" media="screen" />
-<script type="text/javascript" src="{$shopURL}/{$PFAD_ADMIN}{$currentTemplateDir}js/js_calender/dhtmlgoodies_calendar/dhtmlgoodies_calendar.js"></script>
+<link type="text/css" rel="stylesheet" href="{$templateBaseURL}js/js_calender/dhtmlgoodies_calendar/dhtmlgoodies_calendar.css" media="screen" />
+<script type="text/javascript" src="{$templateBaseURL}js/js_calender/dhtmlgoodies_calendar/dhtmlgoodies_calendar.js"></script>
 <script type="text/javascript">
     var fields = 0;
 

@@ -7,53 +7,70 @@
         {container}
             {opcMountPoint id='opc_before_selection_wizard'}
             {block name='selectionwizard-index-script'}
-                <script>
-                    var deferredTasks = window.deferredTasks || [];
-                    deferredTasks.push(["ready",function (){
-                        var nSelection_arr = [{$AWA->getSelections()|implode:','}];
+                {inline_script}<script>
+                    var nSelection_arr = [{$AWA->getSelections()|implode:','}];
 
-                        function setSelectionWizardAnswerJS(kMerkmalWert)
-                        {
-                            kMerkmalWert = parseInt(kMerkmalWert);
-                            nSelection_arr.push(kMerkmalWert);
-                            $.evo.io().call('setSelectionWizardAnswers', ['{$AWA->getLocationKeyName()}', {$AWA->getLocationKeyId()},
-                                {$smarty.session.kSprache}, nSelection_arr], {}, function (error, data) {
-                                    resetSelectionWizardListeners();
-                            });
+                    function setSelectionWizardAnswerJS(kMerkmalWert)
+                    {
+                        kMerkmalWert = parseInt(kMerkmalWert);
+                        nSelection_arr.push(kMerkmalWert);
 
-                            return false;
-                        }
+                        $.evo.io().call(
+                            'setSelectionWizardAnswers',
+                            [
+                                '{$AWA->getLocationKeyName()}',
+                                {$AWA->getLocationKeyId()},
+                                {$smarty.session.kSprache},
+                                nSelection_arr
+                            ],
+                            { },
+                            function (error, data) {
+                                resetSelectionWizardListeners();
+                            }
+                        );
 
-                        function resetSelectionWizardAnswerJS(nFrage)
-                        {
-                            nFrage = parseInt(nFrage);
-                            nSelection_arr.splice(nFrage);
-                            $.evo.io().call('setSelectionWizardAnswers', ['{$AWA->getLocationKeyName()}', {$AWA->getLocationKeyId()},
-                                {$smarty.session.kSprache}, nSelection_arr], { }, function (error, data) {
-                                    resetSelectionWizardListeners();
-                            });
+                        return false;
+                    }
 
-                            return false;
-                        }
+                    function resetSelectionWizardAnswerJS(nFrage)
+                    {
+                        nFrage = parseInt(nFrage);
+                        nSelection_arr.splice(nFrage);
 
-                        function resetSelectionWizardListeners()
-                        {
-                            $("[id^=kMerkmalWert]").on('change', function() {
-                                return setSelectionWizardAnswerJS($(this).val());
-                            } );
-                            $(".question-edit").on('click', function() {
-                                return resetSelectionWizardAnswerJS($(this).data('value'));
-                            } );
-                            $(".selection-wizard-answer").on('click', function() {
-                                return setSelectionWizardAnswerJS($(this).data('value'));
-                            } );
-                        }
+                        $.evo.io().call(
+                            'setSelectionWizardAnswers',
+                            [
+                                '{$AWA->getLocationKeyName()}',
+                                {$AWA->getLocationKeyId()},
+                                {$smarty.session.kSprache},
+                                nSelection_arr
+                            ],
+                            { },
+                            function (error, data) {
+                                resetSelectionWizardListeners();
+                            }
+                        );
 
-                        $(window).on("load", function() {
-                            resetSelectionWizardListeners();
+                        return false;
+                    }
+
+                    function resetSelectionWizardListeners()
+                    {
+                        $("[id^=kMerkmalWert]").on('change', function() {
+                            return setSelectionWizardAnswerJS($(this).val());
                         } );
-                    }]);
-                </script>
+                        $(".question-edit").on('click', function() {
+                            return resetSelectionWizardAnswerJS($(this).data('value'));
+                        } );
+                        $(".selection-wizard-answer").on('click', function() {
+                            return setSelectionWizardAnswerJS($(this).data('value'));
+                        } );
+                    }
+
+                    $(window).on("load", function() {
+                        resetSelectionWizardListeners();
+                    } );
+                </script>{/inline_script}
             {/block}
             {block name='selectionwizard-index-include-form'}
                 <div id="selectionwizard" class="my-7">

@@ -19,8 +19,6 @@ class Banner extends Portlet
     /**
      * @param int $productID
      * @return Artikel
-     * @throws \JTL\Exceptions\CircularReferenceException
-     * @throws \JTL\Exceptions\ServiceNotFoundException
      */
     public function getProduct(int $productID)
     {

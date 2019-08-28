@@ -33,28 +33,28 @@
                     {block name='page-sitemap-categories-content'}
                         {row}
                             {foreach $oKategorieliste->elemente as $oKategorie}
-                                {if $oKategorie->Unterkategorien|@count > 0}
+                                {if $oKategorie->getChildren()|@count > 0}
                                     {col cols=12 md=4 lg=3}
                                         <ul class="list-unstyled">
                                             <li class="py-2">
-                                                {link href=$oKategorie->cURLFull title=$oKategorie->cName class="nice-deco"}
-                                                    <strong>{$oKategorie->cKurzbezeichnung}</strong>
+                                                {link href=$oKategorie->getURL() title=$oKategorie->getName() class="nice-deco"}
+                                                    <strong>{$oKategorie->getShortName()}</strong>
                                                 {/link}
                                             </li>
-                                            {foreach $oKategorie->Unterkategorien as $oSubKategorie}
+                                            {foreach $oKategorie->getChildren() as $oSubKategorie}
                                                 <li class="py-2">
-                                                    {link href=$oSubKategorie->cURLFull title=$oKategorie->cName class="nice-deco"}
-                                                        {$oSubKategorie->cKurzbezeichnung}
+                                                    {link href=$oSubKategorie->getURL() title=$oKategorie->getName() class="nice-deco"}
+                                                        {$oSubKategorie->getShortName()}
                                                     {/link}
                                                 </li>
-                                                {if $oSubKategorie->Unterkategorien|@count > 0}
+                                                {if $oSubKategorie->getChildren()|@count > 0}
                                                     <li class="py-2">
                                                         <ul class="sub-categories list-unstyled pl-4">
-                                                            {foreach $oSubKategorie->Unterkategorien as $oSubSubKategorie}
+                                                            {foreach $oSubKategorie->getChildren() as $oSubSubKategorie}
                                                                 <li class="py-2">
-                                                                    {link href=$oSubSubKategorie->cURLFull
-                                                                       title=$oKategorie->cName class="nice-deco"}
-                                                                        {$oSubSubKategorie->cKurzbezeichnung}
+                                                                    {link href=$oSubSubKategorie->getURL()
+                                                                       title=$oKategorie->getName() class="nice-deco"}
+                                                                        {$oSubSubKategorie->getShortName()}
                                                                     {/link}
                                                                 </li>
                                                             {/foreach}
@@ -70,10 +70,10 @@
                             {col cols=12 md=4 lg=3}
                                 <ul class="list-unstyled">
                                     {foreach $oKategorieliste->elemente as $oKategorie}
-                                        {if $oKategorie->Unterkategorien|@count == 0}
+                                        {if $oKategorie->getChildren()|@count == 0}
                                             <li class="py-2">
-                                                &nbsp;&nbsp;{link href=$oKategorie->cURLFull title=$oKategorie->cName class="nice-deco"}
-                                                    {$oKategorie->cKurzbezeichnung}
+                                                &nbsp;&nbsp;{link href=$oKategorie->getURL() title=$oKategorie->getName() class="nice-deco"}
+                                                    {$oKategorie->getShortName()}
                                                 {/link}
                                             </li>
                                         {/if}

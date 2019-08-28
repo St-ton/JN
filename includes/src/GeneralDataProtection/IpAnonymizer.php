@@ -81,7 +81,7 @@ class IpAnonymizer
      * @param string
      * @param bool
      */
-    public function __construct(string $szIP = '', bool $bBeautify = false)
+    public function __construct(string $ip = '', bool $beautify = false)
     {
         try {
             $this->logger = Shop::Container()->getLogService();
@@ -92,8 +92,8 @@ class IpAnonymizer
         $this->setMaskV4('255.255.0.0');
         $this->setMaskV6('ffff:ffff:ffff:ffff:0000:0000:0000:0000');
 
-        if ($szIP !== '') {
-            $this->ip = $szIP;
+        if ($ip !== '') {
+            $this->ip = $ip;
             try {
                 $this->init();
             } catch (\Exception $e) {
@@ -103,7 +103,7 @@ class IpAnonymizer
                 return;
             }
         }
-        if ($bBeautify !== false) {
+        if ($beautify !== false) {
             $this->beautifyFlag = true;
         }
     }
@@ -136,22 +136,16 @@ class IpAnonymizer
             );
             $this->rawIp = '';
         }
-        switch (\strlen($this->rawIp)) {
-            case 4:
-                $this->placeholderIP = '0.0.0.0';
-                $this->ipMask        = $this->getMaskV4();
-                break;
-            case 16:
-                if (\defined('AF_INET6')) {
-                    $this->placeholderIP = '0000:0000:0000:0000:0000:0000:0000:0000';
-                    $this->ipMask        = $this->getMaskV6();
-                } else {
-                    // this should normally never happen! (wrong compile-time setting of PHP)
-                    throw new \RuntimeException('PHP wurde mit der Option "--disable-ipv6" compiliert!');
-                }
-                break;
-            default:
-                break;
+        $this->placeholderIP = '0.0.0.0';
+        $this->ipMask        = $this->getMaskV4();
+        if (\strlen($this->rawIp) === 16) {
+            if (\defined('AF_INET6')) {
+                $this->placeholderIP = '0000:0000:0000:0000:0000:0000:0000:0000';
+                $this->ipMask        = $this->getMaskV6();
+            } else {
+                // this should normally never happen! (wrong compile-time setting of PHP)
+                throw new \RuntimeException('PHP wurde mit der Option "--disable-ipv6" compiliert!');
+            }
         }
     }
 
@@ -160,10 +154,10 @@ class IpAnonymizer
      * @return self
      * @throws \Exception
      */
-    public function setIp(string $szIP = ''): self
+    public function setIp(string $ip = ''): self
     {
-        if ($szIP !== '') {
-            $this->ip = $szIP;
+        if ($ip !== '') {
+            $this->ip = $ip;
             $this->init();
         }
 
@@ -219,14 +213,14 @@ class IpAnonymizer
      */
     public function anonymizeLegacy(): string
     {
-        $maskParts             = \preg_split('/[\.:]/', $this->ipMask);
-        $ipParts               = \preg_split('/[\.:]/', $this->ip);
-        $len                   = \count($ipParts);
-        ($len === 4) ? $szGlue = '.' : $szGlue = ':';
+        $maskParts           = \preg_split('/[\.:]/', $this->ipMask);
+        $ipParts             = \preg_split('/[\.:]/', $this->ip);
+        $len                 = \count($ipParts);
+        ($len === 4) ? $glue = '.' : $glue = ':';
         for ($i = 0; $i < $len; $i++) {
             (\hexdec($maskParts[$i]) !== 0) ?: $ipParts{$i} = '*';
         }
-        return \implode($szGlue, $ipParts);
+        return \implode($glue, $ipParts);
     }
 
     /**
@@ -248,17 +242,17 @@ class IpAnonymizer
     /**
      * @param string
      */
-    public function setMaskV4(string $szMask): void
+    public function setMaskV4(string $mask): void
     {
-        $this->ipMaskV4 = $szMask;
+        $this->ipMaskV4 = $mask;
     }
 
     /**
      * @param string
      */
-    public function setMaskV6(string $szMask): void
+    public function setMaskV6(string $mask): void
     {
-        $this->ipMaskV6 = $szMask;
+        $this->ipMaskV6 = $mask;
     }
 
     /**
@@ -278,10 +272,10 @@ class IpAnonymizer
      * @param string
      * @return string
      */
-    private function rmLeadingZero(string $szIpString): string
+    private function rmLeadingZero(string $ipString): string
     {
-        $ipParts = \preg_split('/[\.:]/', $szIpString);
-        $glue    = \mb_strpos($szIpString, '.') !== false ? '.' : ':';
+        $ipParts = \preg_split('/[\.:]/', $ipString);
+        $glue    = \mb_strpos($ipString, '.') !== false ? '.' : ':';
 
         return \implode($glue, \array_map(function ($e) {
             return (int)$e;

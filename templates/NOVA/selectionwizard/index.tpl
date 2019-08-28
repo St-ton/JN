@@ -5,7 +5,7 @@
 {block name='selectionwizard-index'}
     {if isset($AWA)}
         {container}
-            {include file='snippets/opc_mount_point.tpl' id='opc_before_selection_wizard'}
+            {opcMountPoint id='opc_before_selection_wizard'}
             {block name='selectionwizard-index-script'}
                 <script>
                     var deferredTasks = window.deferredTasks || [];

@@ -3,7 +3,7 @@
  * @license https://jtl-url.de/jtlshoplicense
  *}
 {if isset($oImageMap)}
-    {include file='snippets/opc_mount_point.tpl' id='opc_before_banner'}
+    {opcMountPoint id='opc_before_banner'}
     <div class="banner">
         {block name='banner-map'}
             <img alt="{$oImageMap->cTitel}" src="{$oImageMap->cBildPfad}" class="img-responsive" />

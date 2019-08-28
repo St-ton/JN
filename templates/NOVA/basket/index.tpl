@@ -12,7 +12,7 @@
             {row}
                 {col cols=12 md=8}
                     {block name='basket-index-heading'}
-                        {include file='snippets/opc_mount_point.tpl' id='opc_before_heading'}
+                        {opcMountPoint id='opc_before_heading'}
                         <h1>{lang key='basket'} ({count($smarty.session.Warenkorb->PositionenArr)} {lang key='products'})</h1>
                     {/block}
                     {block name='basket-index-include-extension'}
@@ -21,7 +21,7 @@
 
                     {if ($Warenkorb->PositionenArr|@count > 0)}
                         {block name='basket-index-basket'}
-                            {include file='snippets/opc_mount_point.tpl' id='opc_before_basket'}
+                            {opcMountPoint id='opc_before_basket'}
                             <div class="basket_wrapper">
                                 {block name='basket-index-basket-items'}
                                     {block name='basket-index-form-cart'}
@@ -40,7 +40,7 @@
 
                                     {if $Einstellungen.kaufabwicklung.warenkorb_versandermittlung_anzeigen === 'Y'}
                                         {block name='basket-index-form-shipping-calc'}
-                                            {include file='snippets/opc_mount_point.tpl' id='opc_before_shipping_calculator'}
+                                            {opcMountPoint id='opc_before_shipping_calculator'}
                                             {form id="basket-shipping-estimate-form" method="post" action="{get_static_route id='warenkorb.php'}"}
                                                 {block name='basket-index-include-shipping-calculator'}
                                                     {include file='snippets/shipping_calculator.tpl' checkout=true}

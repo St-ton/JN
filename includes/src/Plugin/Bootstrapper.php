@@ -11,6 +11,7 @@ use JTL\Backend\NotificationEntry;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
 use JTL\Events\Dispatcher;
+use JTL\Smarty\JTLSmarty;
 
 /**
  * Class Bootstrapper
@@ -114,7 +115,7 @@ abstract class Bootstrapper implements BootstrapperInterface
     }
 
     /**
-     * @return PluginInterface
+     * @inheritdoc
      */
     public function getPlugin(): PluginInterface
     {
@@ -122,7 +123,7 @@ abstract class Bootstrapper implements BootstrapperInterface
     }
 
     /**
-     * @return DbInterface
+     * @inheritdoc
      */
     public function getDB(): DbInterface
     {
@@ -130,7 +131,7 @@ abstract class Bootstrapper implements BootstrapperInterface
     }
 
     /**
-     * @param DbInterface $db
+     * @inheritdoc
      */
     public function setDB(DbInterface $db): void
     {
@@ -138,7 +139,7 @@ abstract class Bootstrapper implements BootstrapperInterface
     }
 
     /**
-     * @return JTLCacheInterface
+     * @inheritdoc
      */
     public function getCache(): JTLCacheInterface
     {
@@ -146,10 +147,18 @@ abstract class Bootstrapper implements BootstrapperInterface
     }
 
     /**
-     * @param JTLCacheInterface $cache
+     * @inheritdoc
      */
     public function setCache(JTLCacheInterface $cache): void
     {
         $this->cache = $cache;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function renderAdminMenuTab(string $tabName, int $menuID, JTLSmarty $smarty): string
+    {
+        return '';
     }
 }

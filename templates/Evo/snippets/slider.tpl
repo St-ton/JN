@@ -3,7 +3,7 @@
  * @license https://jtl-url.de/jtlshoplicense
  *}
 {if isset($oSlider) && count($oSlider->getSlides()) > 0}
-    {include file='snippets/opc_mount_point.tpl' id='opc_before_slider'}
+    {opcMountPoint id='opc_before_slider'}
     <div class="slider-wrapper theme-{$oSlider->getTheme()}{if $oSlider->getControlNav()} control-nav{/if}{if $oSlider->getDirectionNav()} direction-nav{/if}{if $oSlider->getThumbnail()} thumbnail-nav{/if}">
         <div id="slider-{$oSlider->getID()}" class="nivoSlider">
             {foreach $oSlider->getSlides() as $oSlide}

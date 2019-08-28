@@ -29,7 +29,7 @@ function holeAlleKampagnenDefinitionen()
             ReturnType::ARRAY_OF_OBJECTS
         ),
         function ($e) {
-            return $e->kKampagneDef;
+            return (int)$e->kKampagneDef;
         }
     );
 }
@@ -64,28 +64,23 @@ function holeKampagneDef(int $definitionID)
  */
 function holeKampagneGesamtStats($campaigns, $definitions)
 {
-    $stats     = [];
-    $sql       = '';
-    $dateParts = Date::getDateParts($_SESSION['Kampagne']->cStamp);
+    $stats = [];
+    $sql   = '';
+    $date  = date_create($_SESSION['Kampagne']->cStamp);
     switch ((int)$_SESSION['Kampagne']->nAnsicht) {
         case 1:    // Monat
-            $sql = "WHERE '" . $dateParts['cJahr'] . '-' .
-                $dateParts['cMonat'] . "' = DATE_FORMAT(dErstellt, '%Y-%m')";
+            $sql = "WHERE '" . date_format($date, 'Y-m') . "' = DATE_FORMAT(dErstellt, '%Y-%m')";
             break;
         case 2:    // Woche
-            $dateParts = ermittleDatumWoche($dateParts['cJahr'] . '-' .
-                $dateParts['cMonat'] . '-' . $dateParts['cTag']);
+            $dateParts = ermittleDatumWoche(date_format($date, 'Y-m-d'));
             $sql       = 'WHERE dErstellt BETWEEN FROM_UNIXTIME(' .
                 $dateParts[0] . ", '%Y-%m-%d %H:%i:%s') AND FROM_UNIXTIME(" .
                 $dateParts[1] . ", '%Y-%m-%d %H:%i:%s')";
             break;
         case 3:    // Tag
-            $sql = "WHERE '" . $dateParts['cJahr'] . '-' .
-                $dateParts['cMonat'] . '-' .
-                $dateParts['cTag'] . "' = DATE_FORMAT(dErstellt, '%Y-%m-%d')";
+            $sql = "WHERE '" . date_format($date, 'Y-m-d') . "' = DATE_FORMAT(dErstellt, '%Y-%m-%d')";
             break;
     }
-
     if (GeneralObject::hasCount($campaigns) && GeneralObject::hasCount($definitions)) {
         foreach ($campaigns as $campaign) {
             foreach ($definitions as $definition) {
@@ -341,562 +336,563 @@ function holeKampagneDefDetailStats($campaignID, $definition, $cStamp, &$text, &
 {
     $cryptoService = Shop::Container()->getCryptoService();
     $data          = [];
-    if ((int)$campaignID > 0 && (int)$definition->kKampagneDef > 0 && mb_strlen($cStamp) > 0) {
-        $select = '';
-        $where  = '';
-        baueDefDetailSELECTWHERE($select, $where, $cStamp);
+    if ((int)$campaignID <= 0 || (int)$definition->kKampagneDef <= 0 || mb_strlen($cStamp) === 0) {
+        return $data;
+    }
+    $select = '';
+    $where  = '';
+    baueDefDetailSELECTWHERE($select, $where, $cStamp);
 
-        $stats = Shop::Container()->getDB()->query(
-            'SELECT kKampagne, kKampagneDef, kKey ' . $select . '
-                FROM tkampagnevorgang
-                ' . $where . '
-                    AND kKampagne = ' . (int)$campaignID . '
-                    AND kKampagneDef = ' . (int)$definition->kKampagneDef . $sql,
-            ReturnType::ARRAY_OF_OBJECTS
-        );
-        // Stamp Text
-        switch ((int)$_SESSION['Kampagne']->nDetailAnsicht) {
-            case 1:    // Jahr
-                $text = $stats[0]->cStampText;
-                break;
-            case 2:    // Monat
-                $textParts = isset($stats[0]->cStampText)
-                    ? explode('.', $stats[0]->cStampText)
-                    : [];
-                $month     = $textParts [0] ?? '';
-                $year      = $textParts [1] ?? '';
-                $text      = mappeENGMonat($month) . ' ' . $year;
-                break;
-            case 3:    // Woche
-                $dates = ermittleDatumWoche($stats[0]->cStampText);
-                $text  = date('d.m.Y', $dates[0]) . ' - ' . date('d.m.Y', $dates[1]);
-                break;
-            case 4:    // Tag
-                $text = $stats[0]->cStampText;
-                break;
-        }
+    $stats = Shop::Container()->getDB()->query(
+        'SELECT kKampagne, kKampagneDef, kKey ' . $select . '
+            FROM tkampagnevorgang
+            ' . $where . '
+                AND kKampagne = ' . (int)$campaignID . '
+                AND kKampagneDef = ' . (int)$definition->kKampagneDef . $sql,
+        ReturnType::ARRAY_OF_OBJECTS
+    );
+    // Stamp Text
+    switch ((int)$_SESSION['Kampagne']->nDetailAnsicht) {
+        case 1:    // Jahr
+            $text = $stats[0]->cStampText;
+            break;
+        case 2:    // Monat
+            $textParts = isset($stats[0]->cStampText)
+                ? explode('.', $stats[0]->cStampText)
+                : [];
+            $month     = $textParts [0] ?? '';
+            $year      = $textParts [1] ?? '';
+            $text      = mappeENGMonat($month) . ' ' . $year;
+            break;
+        case 3:    // Woche
+            $dates = ermittleDatumWoche($stats[0]->cStampText);
+            $text  = date('d.m.Y', $dates[0]) . ' - ' . date('d.m.Y', $dates[1]);
+            break;
+        case 4:    // Tag
+            $text = $stats[0]->cStampText;
+            break;
+    }
 
-        // Kampagnendefinitionen
-        switch ((int)$definition->kKampagneDef) {
-            case KAMPAGNE_DEF_HIT:    // HIT
-                $data = Shop::Container()->getDB()->query(
-                    'SELECT tkampagnevorgang.kKampagne, tkampagnevorgang.kKampagneDef, tkampagnevorgang.kKey ' .
-                        $select . ", tkampagnevorgang.cCustomData, 
-                        DATE_FORMAT(tkampagnevorgang.dErstellt, '%d.%m.%Y %H:%i') AS dErstelltVorgang_DE,
-                        IF(tbesucher.cIP IS NULL, tbesucherarchiv.cIP, tbesucher.cIP) AS cIP,
-                        IF(tbesucher.cReferer IS NULL, tbesucherarchiv.cReferer, tbesucher.cReferer) AS cReferer,
-                        IF(tbesucher.cEinstiegsseite IS NULL, 
-                            tbesucherarchiv.cEinstiegsseite, 
-                            tbesucher.cEinstiegsseite
-                        ) AS cEinstiegsseite,
-                        IF(tbesucher.cBrowser IS NULL, tbesucherarchiv.cBrowser, tbesucher.cBrowser) AS cBrowser,
-                        DATE_FORMAT(IF(tbesucher.dZeit IS NULL,
-                            tbesucherarchiv.dZeit, 
-                            tbesucher.dZeit
-                        ), '%d.%m.%Y %H:%i') AS dErstellt_DE,
-                        tbesucherbot.cUserAgent
-                        FROM tkampagnevorgang
-                        LEFT JOIN tbesucher ON tbesucher.kBesucher = tkampagnevorgang.kKey
-                        LEFT JOIN tbesucherarchiv ON tbesucherarchiv.kBesucher = tkampagnevorgang.kKey
-                        LEFT JOIN tbesucherbot ON tbesucherbot.kBesucherBot = tbesucher.kBesucherBot
-                        " . $where . '
-                            AND kKampagne = ' . (int)$campaignID . '
-                            AND kKampagneDef = ' . (int)$definition->kKampagneDef . '
-                        ORDER BY tkampagnevorgang.dErstellt DESC' . $sql,
-                    ReturnType::ARRAY_OF_OBJECTS
-                );
+    // Kampagnendefinitionen
+    switch ((int)$definition->kKampagneDef) {
+        case KAMPAGNE_DEF_HIT:    // HIT
+            $data = Shop::Container()->getDB()->query(
+                'SELECT tkampagnevorgang.kKampagne, tkampagnevorgang.kKampagneDef, tkampagnevorgang.kKey ' .
+                    $select . ", tkampagnevorgang.cCustomData, 
+                    DATE_FORMAT(tkampagnevorgang.dErstellt, '%d.%m.%Y %H:%i') AS dErstelltVorgang_DE,
+                    IF(tbesucher.cIP IS NULL, tbesucherarchiv.cIP, tbesucher.cIP) AS cIP,
+                    IF(tbesucher.cReferer IS NULL, tbesucherarchiv.cReferer, tbesucher.cReferer) AS cReferer,
+                    IF(tbesucher.cEinstiegsseite IS NULL, 
+                        tbesucherarchiv.cEinstiegsseite, 
+                        tbesucher.cEinstiegsseite
+                    ) AS cEinstiegsseite,
+                    IF(tbesucher.cBrowser IS NULL, tbesucherarchiv.cBrowser, tbesucher.cBrowser) AS cBrowser,
+                    DATE_FORMAT(IF(tbesucher.dZeit IS NULL,
+                        tbesucherarchiv.dZeit, 
+                        tbesucher.dZeit
+                    ), '%d.%m.%Y %H:%i') AS dErstellt_DE,
+                    tbesucherbot.cUserAgent
+                    FROM tkampagnevorgang
+                    LEFT JOIN tbesucher ON tbesucher.kBesucher = tkampagnevorgang.kKey
+                    LEFT JOIN tbesucherarchiv ON tbesucherarchiv.kBesucher = tkampagnevorgang.kKey
+                    LEFT JOIN tbesucherbot ON tbesucherbot.kBesucherBot = tbesucher.kBesucherBot
+                    " . $where . '
+                        AND kKampagne = ' . (int)$campaignID . '
+                        AND kKampagneDef = ' . (int)$definition->kKampagneDef . '
+                    ORDER BY tkampagnevorgang.dErstellt DESC' . $sql,
+                ReturnType::ARRAY_OF_OBJECTS
+            );
 
-                if (is_array($data) && count($data) > 0) {
-                    foreach ($data as $i => $oDaten) {
-                        $customDataParts = explode(';', $oDaten->cCustomData);
-                        $cEinstiegsseite = $customDataParts [0] ?? '';
-                        $referer         = $customDataParts [1] ?? '';
+            if (is_array($data) && count($data) > 0) {
+                foreach ($data as $i => $oDaten) {
+                    $customDataParts = explode(';', $oDaten->cCustomData);
+                    $cEinstiegsseite = $customDataParts [0] ?? '';
+                    $referer         = $customDataParts [1] ?? '';
 
-                        $data[$i]->cEinstiegsseite = $cEinstiegsseite;
-                        $data[$i]->cReferer        = $referer;
-                    }
-
-                    $members = [
-                        'cIP'                 => 'IP-Adresse',
-                        'cReferer'            => 'Referer',
-                        'cEinstiegsseite'     => 'Einstiegsseite',
-                        'cBrowser'            => 'Browser',
-                        'cUserAgent'          => 'Suchmaschine',
-                        'dErstellt_DE'        => 'Datum',
-                        'dErstelltVorgang_DE' => 'Vorgangsdatum'
-                    ];
+                    $data[$i]->cEinstiegsseite = $cEinstiegsseite;
+                    $data[$i]->cReferer        = $referer;
                 }
-                break;
-            case KAMPAGNE_DEF_VERKAUF:    // VERKAUF
-                $data = Shop::Container()->getDB()->query(
-                    'SELECT tkampagnevorgang.kKampagne, tkampagnevorgang.kKampagneDef, tkampagnevorgang.kKey ' .
-                        $select . ",
-                        DATE_FORMAT(tkampagnevorgang.dErstellt, '%d.%m.%Y %H:%i') AS dErstelltVorgang_DE,
-                        IF(tkunde.cVorname IS NULL, 'n.v.', tkunde.cVorname) AS cVorname,
-                        IF(tkunde.cNachname IS NULL, 'n.v.', tkunde.cNachname) AS cNachname,
-                        IF(tkunde.cFirma IS NULL, 'n.v.', tkunde.cFirma) AS cFirma,
-                        IF(tkunde.cMail IS NULL, 'n.v.', tkunde.cMail) AS cMail,
-                        IF(tkunde.nRegistriert IS NULL, 'n.v.', tkunde.nRegistriert) AS nRegistriert,
-                        IF(tbestellung.cZahlungsartName IS NULL,
-                            'n.v.',
-                             tbestellung.cZahlungsartName
-                         ) AS cZahlungsartName,
-                        IF(tbestellung.cVersandartName IS NULL,
-                            'n.v.', 
-                            tbestellung.cVersandartName
-                        ) AS cVersandartName,
-                        IF(tbestellung.fGesamtsumme IS NULL, 'n.v.', tbestellung.fGesamtsumme) AS fGesamtsumme,
-                        IF(tbestellung.cBestellNr IS NULL, 'n.v.', tbestellung.cBestellNr) AS cBestellNr,
-                        IF(tbestellung.cStatus IS NULL, 'n.v.', tbestellung.cStatus) AS cStatus,
-                        DATE_FORMAT(tbestellung.dErstellt, '%d.%m.%Y') AS dErstellt_DE
-                        FROM tkampagnevorgang
-                        LEFT JOIN tbestellung ON tbestellung.kBestellung = tkampagnevorgang.kKey
-                        LEFT JOIN tkunde ON tkunde.kKunde = tbestellung.kKunde
-                        " . $where . '
-                            AND kKampagne = ' . (int)$campaignID . '
-                            AND kKampagneDef = ' . (int)$definition->kKampagneDef . '
-                        ORDER BY tkampagnevorgang.dErstellt DESC',
-                    ReturnType::ARRAY_OF_OBJECTS
-                );
 
-                if (is_array($data) && count($data) > 0) {
-                    $dCount = count($data);
-                    for ($i = 0; $i < $dCount; $i++) {
-                        if ($data[$i]->cNachname !== 'n.v.') {
-                            $data[$i]->cNachname = trim($cryptoService->decryptXTEA($data[$i]->cNachname));
-                        }
-                        if ($data[$i]->cFirma !== 'n.v.') {
-                            $data[$i]->cFirma = trim($cryptoService->decryptXTEA($data[$i]->cFirma));
-                        }
-                        if ($data[$i]->nRegistriert !== 'n.v.') {
-                            $data[$i]->nRegistriert = (int)$data[$i]->nRegistriert === 1
-                                ? __('yes')
-                                : __('no');
-                        }
-                        if ($data[$i]->fGesamtsumme !== 'n.v.') {
-                            $data[$i]->fGesamtsumme = Preise::getLocalizedPriceString($data[$i]->fGesamtsumme);
-                        }
-                        if ($data[$i]->cStatus !== 'n.v.') {
-                            $data[$i]->cStatus = lang_bestellstatus($data[$i]->cStatus);
-                        }
-                    }
+                $members = [
+                    'cIP'                 => 'IP-Adresse',
+                    'cReferer'            => 'Referer',
+                    'cEinstiegsseite'     => 'Einstiegsseite',
+                    'cBrowser'            => 'Browser',
+                    'cUserAgent'          => 'Suchmaschine',
+                    'dErstellt_DE'        => 'Datum',
+                    'dErstelltVorgang_DE' => 'Vorgangsdatum'
+                ];
+            }
+            break;
+        case KAMPAGNE_DEF_VERKAUF:    // VERKAUF
+            $data = Shop::Container()->getDB()->query(
+                'SELECT tkampagnevorgang.kKampagne, tkampagnevorgang.kKampagneDef, tkampagnevorgang.kKey ' .
+                    $select . ",
+                    DATE_FORMAT(tkampagnevorgang.dErstellt, '%d.%m.%Y %H:%i') AS dErstelltVorgang_DE,
+                    IF(tkunde.cVorname IS NULL, 'n.v.', tkunde.cVorname) AS cVorname,
+                    IF(tkunde.cNachname IS NULL, 'n.v.', tkunde.cNachname) AS cNachname,
+                    IF(tkunde.cFirma IS NULL, 'n.v.', tkunde.cFirma) AS cFirma,
+                    IF(tkunde.cMail IS NULL, 'n.v.', tkunde.cMail) AS cMail,
+                    IF(tkunde.nRegistriert IS NULL, 'n.v.', tkunde.nRegistriert) AS nRegistriert,
+                    IF(tbestellung.cZahlungsartName IS NULL,
+                        'n.v.',
+                         tbestellung.cZahlungsartName
+                     ) AS cZahlungsartName,
+                    IF(tbestellung.cVersandartName IS NULL,
+                        'n.v.', 
+                        tbestellung.cVersandartName
+                    ) AS cVersandartName,
+                    IF(tbestellung.fGesamtsumme IS NULL, 'n.v.', tbestellung.fGesamtsumme) AS fGesamtsumme,
+                    IF(tbestellung.cBestellNr IS NULL, 'n.v.', tbestellung.cBestellNr) AS cBestellNr,
+                    IF(tbestellung.cStatus IS NULL, 'n.v.', tbestellung.cStatus) AS cStatus,
+                    DATE_FORMAT(tbestellung.dErstellt, '%d.%m.%Y') AS dErstellt_DE
+                    FROM tkampagnevorgang
+                    LEFT JOIN tbestellung ON tbestellung.kBestellung = tkampagnevorgang.kKey
+                    LEFT JOIN tkunde ON tkunde.kKunde = tbestellung.kKunde
+                    " . $where . '
+                        AND kKampagne = ' . (int)$campaignID . '
+                        AND kKampagneDef = ' . (int)$definition->kKampagneDef . '
+                    ORDER BY tkampagnevorgang.dErstellt DESC',
+                ReturnType::ARRAY_OF_OBJECTS
+            );
 
-                    $members = [
-                        'cZahlungsartName'    => 'Zahlungsart',
-                        'cVersandartName'     => 'Versandart',
-                        'nRegistriert'        => 'Registrierter Kunde',
-                        'cVorname'            => 'Vorname',
-                        'cNachname'           => 'Nachname',
-                        'cStatus'             => 'Status',
-                        'cBestellNr'          => 'BestellNr',
-                        'fGesamtsumme'        => 'Bestellwert',
-                        'dErstellt_DE'        => 'Bestelldatum',
-                        'dErstelltVorgang_DE' => 'Vorgangsdatum'
-                    ];
-                }
-                break;
-            case KAMPAGNE_DEF_ANMELDUNG:    // ANMELDUNG
-                $data = Shop::Container()->getDB()->query(
-                    'SELECT tkampagnevorgang.kKampagne, tkampagnevorgang.kKampagneDef, tkampagnevorgang.kKey ' .
-                        $select . ",
-                        DATE_FORMAT(tkampagnevorgang.dErstellt, '%d.%m.%Y %H:%i') AS dErstelltVorgang_DE,
-                        IF(tkunde.cVorname IS NULL, 'n.v.', tkunde.cVorname) AS cVorname,
-                        IF(tkunde.cNachname IS NULL, 'n.v.', tkunde.cNachname) AS cNachname,
-                        IF(tkunde.cFirma IS NULL, 'n.v.', tkunde.cFirma) AS cFirma,
-                        IF(tkunde.cMail IS NULL, 'n.v.', tkunde.cMail) AS cMail,
-                        IF(tkunde.nRegistriert IS NULL, 'n.v.', tkunde.nRegistriert) AS nRegistriert,
-                        DATE_FORMAT(tkunde.dErstellt, '%d.%m.%Y') AS dErstellt_DE
-                        FROM tkampagnevorgang
-                        LEFT JOIN tkunde ON tkunde.kKunde = tkampagnevorgang.kKey
-                        " . $where . '
-                            AND kKampagne = ' . (int)$campaignID . '
-                            AND kKampagneDef = ' . (int)$definition->kKampagneDef . '
-                        ORDER BY tkampagnevorgang.dErstellt DESC',
-                    ReturnType::ARRAY_OF_OBJECTS
-                );
-
-                if (is_array($data) && count($data) > 0) {
-                    $count = count($data);
-                    for ($i = 0; $i < $count; $i++) {
-                        if ($data[$i]->cNachname !== 'n.v.') {
-                            $data[$i]->cNachname = trim($cryptoService->decryptXTEA($data[$i]->cNachname));
-                        }
-                        if ($data[$i]->cFirma !== 'n.v.') {
-                            $data[$i]->cFirma = trim($cryptoService->decryptXTEA($data[$i]->cFirma));
-                        }
-                        if ($data[$i]->nRegistriert !== 'n.v.') {
-                            $data[$i]->nRegistriert = ((int)$data[$i]->nRegistriert === 1)
-                                ? __('yes')
-                                : __('no');
-                        }
-                    }
-
-                    $members = [
-                        'cVorname'            => 'Vorname',
-                        'cNachname'           => 'Nachname',
-                        'cFirma'              => 'Firma',
-                        'cMail'               => 'eMail',
-                        'nRegistriert'        => 'Registriert',
-                        'dErstellt_DE'        => 'Anmeldedatum',
-                        'dErstelltVorgang_DE' => 'Vorgangsdatum'
-                    ];
-                }
-                break;
-            case KAMPAGNE_DEF_VERKAUFSSUMME:    // VERKAUFSSUMME
-                $data   = Shop::Container()->getDB()->query(
-                    'SELECT tkampagnevorgang.kKampagne, tkampagnevorgang.kKampagneDef, tkampagnevorgang.kKey ' .
-                        $select . ",
-                        DATE_FORMAT(tkampagnevorgang.dErstellt, '%d.%m.%Y %H:%i') AS dErstelltVorgang_DE,
-                        IF(tkunde.cVorname IS NULL, 'n.v.', tkunde.cVorname) AS cVorname,
-                        IF(tkunde.cNachname IS NULL, 'n.v.', tkunde.cNachname) AS cNachname,
-                        IF(tkunde.cFirma IS NULL, 'n.v.', tkunde.cFirma) AS cFirma,
-                        IF(tkunde.cMail IS NULL, 'n.v.', tkunde.cMail) AS cMail,
-                        IF(tkunde.nRegistriert IS NULL, 'n.v.', tkunde.nRegistriert) AS nRegistriert,
-                        IF(tbestellung.cZahlungsartName IS NULL,
-                            'n.v.', 
-                            tbestellung.cZahlungsartName
-                        ) AS cZahlungsartName,
-                        IF(tbestellung.cVersandartName IS NULL, 'n.v.', tbestellung.cVersandartName) AS cVersandartName,
-                        IF(tbestellung.fGesamtsumme IS NULL, 'n.v.', tbestellung.fGesamtsumme) AS fGesamtsumme,
-                        IF(tbestellung.cBestellNr IS NULL, 'n.v.', tbestellung.cBestellNr) AS cBestellNr,
-                        IF(tbestellung.cStatus IS NULL, 'n.v.', tbestellung.cStatus) AS cStatus,
-                        DATE_FORMAT(tbestellung.dErstellt, '%d.%m.%Y') AS dErstellt_DE
-                        FROM tkampagnevorgang
-                        LEFT JOIN tbestellung ON tbestellung.kBestellung = tkampagnevorgang.kKey
-                        LEFT JOIN tkunde ON tkunde.kKunde = tbestellung.kKunde
-                        " . $where . '
-                            AND kKampagne = ' . (int)$campaignID . '
-                            AND kKampagneDef = ' . (int)$definition->kKampagneDef . '
-                        ORDER BY tkampagnevorgang.dErstellt DESC',
-                    ReturnType::ARRAY_OF_OBJECTS
-                );
+            if (is_array($data) && count($data) > 0) {
                 $dCount = count($data);
-                if (is_array($data) && $dCount > 0) {
-                    for ($i = 0; $i < $dCount; $i++) {
-                        if ($data[$i]->cNachname !== 'n.v.') {
-                            $data[$i]->cNachname = trim($cryptoService->decryptXTEA($data[$i]->cNachname));
-                        }
-                        if ($data[$i]->cFirma !== 'n.v.') {
-                            $data[$i]->cFirma = trim($cryptoService->decryptXTEA($data[$i]->cFirma));
-                        }
-                        if ($data[$i]->nRegistriert !== 'n.v.') {
-                            $data[$i]->nRegistriert = ((int)$data[$i]->nRegistriert === 1)
-                                ? __('yes')
-                                : __('no');
-                        }
-                        if ($data[$i]->fGesamtsumme !== 'n.v.') {
-                            $data[$i]->fGesamtsumme = Preise::getLocalizedPriceString($data[$i]->fGesamtsumme);
-                        }
-                        if ($data[$i]->cStatus !== 'n.v.') {
-                            $data[$i]->cStatus = lang_bestellstatus($data[$i]->cStatus);
-                        }
+                for ($i = 0; $i < $dCount; $i++) {
+                    if ($data[$i]->cNachname !== 'n.v.') {
+                        $data[$i]->cNachname = trim($cryptoService->decryptXTEA($data[$i]->cNachname));
+                    }
+                    if ($data[$i]->cFirma !== 'n.v.') {
+                        $data[$i]->cFirma = trim($cryptoService->decryptXTEA($data[$i]->cFirma));
+                    }
+                    if ($data[$i]->nRegistriert !== 'n.v.') {
+                        $data[$i]->nRegistriert = (int)$data[$i]->nRegistriert === 1
+                            ? __('yes')
+                            : __('no');
+                    }
+                    if ($data[$i]->fGesamtsumme !== 'n.v.') {
+                        $data[$i]->fGesamtsumme = Preise::getLocalizedPriceString($data[$i]->fGesamtsumme);
+                    }
+                    if ($data[$i]->cStatus !== 'n.v.') {
+                        $data[$i]->cStatus = lang_bestellstatus($data[$i]->cStatus);
+                    }
+                }
+
+                $members = [
+                    'cZahlungsartName'    => 'Zahlungsart',
+                    'cVersandartName'     => 'Versandart',
+                    'nRegistriert'        => 'Registrierter Kunde',
+                    'cVorname'            => 'Vorname',
+                    'cNachname'           => 'Nachname',
+                    'cStatus'             => 'Status',
+                    'cBestellNr'          => 'BestellNr',
+                    'fGesamtsumme'        => 'Bestellwert',
+                    'dErstellt_DE'        => 'Bestelldatum',
+                    'dErstelltVorgang_DE' => 'Vorgangsdatum'
+                ];
+            }
+            break;
+        case KAMPAGNE_DEF_ANMELDUNG:    // ANMELDUNG
+            $data = Shop::Container()->getDB()->query(
+                'SELECT tkampagnevorgang.kKampagne, tkampagnevorgang.kKampagneDef, tkampagnevorgang.kKey ' .
+                    $select . ",
+                    DATE_FORMAT(tkampagnevorgang.dErstellt, '%d.%m.%Y %H:%i') AS dErstelltVorgang_DE,
+                    IF(tkunde.cVorname IS NULL, 'n.v.', tkunde.cVorname) AS cVorname,
+                    IF(tkunde.cNachname IS NULL, 'n.v.', tkunde.cNachname) AS cNachname,
+                    IF(tkunde.cFirma IS NULL, 'n.v.', tkunde.cFirma) AS cFirma,
+                    IF(tkunde.cMail IS NULL, 'n.v.', tkunde.cMail) AS cMail,
+                    IF(tkunde.nRegistriert IS NULL, 'n.v.', tkunde.nRegistriert) AS nRegistriert,
+                    DATE_FORMAT(tkunde.dErstellt, '%d.%m.%Y') AS dErstellt_DE
+                    FROM tkampagnevorgang
+                    LEFT JOIN tkunde ON tkunde.kKunde = tkampagnevorgang.kKey
+                    " . $where . '
+                        AND kKampagne = ' . (int)$campaignID . '
+                        AND kKampagneDef = ' . (int)$definition->kKampagneDef . '
+                    ORDER BY tkampagnevorgang.dErstellt DESC',
+                ReturnType::ARRAY_OF_OBJECTS
+            );
+
+            if (is_array($data) && count($data) > 0) {
+                $count = count($data);
+                for ($i = 0; $i < $count; $i++) {
+                    if ($data[$i]->cNachname !== 'n.v.') {
+                        $data[$i]->cNachname = trim($cryptoService->decryptXTEA($data[$i]->cNachname));
+                    }
+                    if ($data[$i]->cFirma !== 'n.v.') {
+                        $data[$i]->cFirma = trim($cryptoService->decryptXTEA($data[$i]->cFirma));
+                    }
+                    if ($data[$i]->nRegistriert !== 'n.v.') {
+                        $data[$i]->nRegistriert = ((int)$data[$i]->nRegistriert === 1)
+                            ? __('yes')
+                            : __('no');
+                    }
+                }
+
+                $members = [
+                    'cVorname'            => 'Vorname',
+                    'cNachname'           => 'Nachname',
+                    'cFirma'              => 'Firma',
+                    'cMail'               => 'eMail',
+                    'nRegistriert'        => 'Registriert',
+                    'dErstellt_DE'        => 'Anmeldedatum',
+                    'dErstelltVorgang_DE' => 'Vorgangsdatum'
+                ];
+            }
+            break;
+        case KAMPAGNE_DEF_VERKAUFSSUMME:    // VERKAUFSSUMME
+            $data   = Shop::Container()->getDB()->query(
+                'SELECT tkampagnevorgang.kKampagne, tkampagnevorgang.kKampagneDef, tkampagnevorgang.kKey ' .
+                    $select . ",
+                    DATE_FORMAT(tkampagnevorgang.dErstellt, '%d.%m.%Y %H:%i') AS dErstelltVorgang_DE,
+                    IF(tkunde.cVorname IS NULL, 'n.v.', tkunde.cVorname) AS cVorname,
+                    IF(tkunde.cNachname IS NULL, 'n.v.', tkunde.cNachname) AS cNachname,
+                    IF(tkunde.cFirma IS NULL, 'n.v.', tkunde.cFirma) AS cFirma,
+                    IF(tkunde.cMail IS NULL, 'n.v.', tkunde.cMail) AS cMail,
+                    IF(tkunde.nRegistriert IS NULL, 'n.v.', tkunde.nRegistriert) AS nRegistriert,
+                    IF(tbestellung.cZahlungsartName IS NULL,
+                        'n.v.', 
+                        tbestellung.cZahlungsartName
+                    ) AS cZahlungsartName,
+                    IF(tbestellung.cVersandartName IS NULL, 'n.v.', tbestellung.cVersandartName) AS cVersandartName,
+                    IF(tbestellung.fGesamtsumme IS NULL, 'n.v.', tbestellung.fGesamtsumme) AS fGesamtsumme,
+                    IF(tbestellung.cBestellNr IS NULL, 'n.v.', tbestellung.cBestellNr) AS cBestellNr,
+                    IF(tbestellung.cStatus IS NULL, 'n.v.', tbestellung.cStatus) AS cStatus,
+                    DATE_FORMAT(tbestellung.dErstellt, '%d.%m.%Y') AS dErstellt_DE
+                    FROM tkampagnevorgang
+                    LEFT JOIN tbestellung ON tbestellung.kBestellung = tkampagnevorgang.kKey
+                    LEFT JOIN tkunde ON tkunde.kKunde = tbestellung.kKunde
+                    " . $where . '
+                        AND kKampagne = ' . (int)$campaignID . '
+                        AND kKampagneDef = ' . (int)$definition->kKampagneDef . '
+                    ORDER BY tkampagnevorgang.dErstellt DESC',
+                ReturnType::ARRAY_OF_OBJECTS
+            );
+            $dCount = count($data);
+            if (is_array($data) && $dCount > 0) {
+                for ($i = 0; $i < $dCount; $i++) {
+                    if ($data[$i]->cNachname !== 'n.v.') {
+                        $data[$i]->cNachname = trim($cryptoService->decryptXTEA($data[$i]->cNachname));
+                    }
+                    if ($data[$i]->cFirma !== 'n.v.') {
+                        $data[$i]->cFirma = trim($cryptoService->decryptXTEA($data[$i]->cFirma));
+                    }
+                    if ($data[$i]->nRegistriert !== 'n.v.') {
+                        $data[$i]->nRegistriert = ((int)$data[$i]->nRegistriert === 1)
+                            ? __('yes')
+                            : __('no');
+                    }
+                    if ($data[$i]->fGesamtsumme !== 'n.v.') {
+                        $data[$i]->fGesamtsumme = Preise::getLocalizedPriceString($data[$i]->fGesamtsumme);
+                    }
+                    if ($data[$i]->cStatus !== 'n.v.') {
+                        $data[$i]->cStatus = lang_bestellstatus($data[$i]->cStatus);
+                    }
+                }
+
+                $members = [
+                    'cZahlungsartName'    => 'Zahlungsart',
+                    'cVersandartName'     => 'Versandart',
+                    'nRegistriert'        => 'Registrierter Kunde',
+                    'cVorname'            => 'Vorname',
+                    'cNachname'           => 'Nachname',
+                    'cStatus'             => 'Status',
+                    'cBestellNr'          => 'BestellNr',
+                    'fGesamtsumme'        => 'Bestellwert',
+                    'dErstellt_DE'        => 'Bestelldatum',
+                    'dErstelltVorgang_DE' => 'Vorgangsdatum'
+                ];
+            }
+            break;
+        case KAMPAGNE_DEF_FRAGEZUMPRODUKT:    // FRAGEZUMPRODUKT
+            $data = Shop::Container()->getDB()->query(
+                'SELECT tkampagnevorgang.kKampagne, tkampagnevorgang.kKampagneDef, tkampagnevorgang.kKey ' .
+                    $select . ",
+                    DATE_FORMAT(tkampagnevorgang.dErstellt, '%d.%m.%Y %H:%i') AS dErstelltVorgang_DE,
+                    IF(tproduktanfragehistory.cVorname IS NULL,
+                        'n.v.',
+                        tproduktanfragehistory.cVorname
+                    ) AS cVorname,
+                    IF(tproduktanfragehistory.cNachname IS NULL, 
+                        'n.v.', 
+                        tproduktanfragehistory.cNachname
+                    ) AS cNachname,
+                    IF(tproduktanfragehistory.cFirma IS NULL, 'n.v.', tproduktanfragehistory.cFirma) AS cFirma,
+                    IF(tproduktanfragehistory.cTel IS NULL, 'n.v.', tproduktanfragehistory.cTel) AS cTel,
+                    IF(tproduktanfragehistory.cMail IS NULL, 'n.v.', tproduktanfragehistory.cMail) AS cMail,
+                    IF(tproduktanfragehistory.cNachricht IS NULL,
+                        'n.v.', 
+                        tproduktanfragehistory.cNachricht
+                    ) AS cNachricht,
+                    IF(tartikel.cName IS NULL, 'n.v.', tartikel.cName) AS cArtikelname,
+                    IF(tartikel.cArtNr IS NULL, 'n.v.', tartikel.cArtNr) AS cArtNr,
+                    DATE_FORMAT(tproduktanfragehistory.dErstellt, '%d.%m.%Y %H:%i') AS dErstellt_DE
+                    FROM tkampagnevorgang
+                    LEFT JOIN tproduktanfragehistory 
+                        ON tproduktanfragehistory.kProduktanfrageHistory = tkampagnevorgang.kKey
+                    LEFT JOIN tartikel ON tartikel.kArtikel = tproduktanfragehistory.kArtikel
+                    " . $where . '
+                        AND kKampagne = ' . (int)$campaignID . '
+                        AND kKampagneDef = ' . (int)$definition->kKampagneDef . '
+                    ORDER BY tkampagnevorgang.dErstellt DESC',
+                ReturnType::ARRAY_OF_OBJECTS
+            );
+
+            if (is_array($data) && count($data) > 0) {
+                $members = [
+                    'cArtikelname'        => 'Artikel',
+                    'cArtNr'              => 'Artikelnummer',
+                    'cVorname'            => 'Vorname',
+                    'cNachname'           => 'Nachname',
+                    'cFirma'              => 'Firma',
+                    'cTel'                => 'Telefon',
+                    'cMail'               => 'eMail',
+                    'cNachricht'          => 'Nachricht',
+                    'dErstellt_DE'        => 'Erstellt am',
+                    'dErstelltVorgang_DE' => 'Vorgangsdatum'
+                ];
+            }
+
+            break;
+        case KAMPAGNE_DEF_VERFUEGBARKEITSANFRAGE:    // VERFUEGBARKEITSANFRAGE
+            $data = Shop::Container()->getDB()->query(
+                'SELECT tkampagnevorgang.kKampagne, tkampagnevorgang.kKampagneDef, tkampagnevorgang.kKey ' .
+                    $select . ",
+                    DATE_FORMAT(tkampagnevorgang.dErstellt, '%d.%m.%Y %H:%i') AS dErstelltVorgang_DE,
+                    IF(tverfuegbarkeitsbenachrichtigung.cVorname IS NULL,
+                        'n.v.',
+                         tverfuegbarkeitsbenachrichtigung.cVorname
+                    ) AS cVorname,
+                    IF(tverfuegbarkeitsbenachrichtigung.cNachname IS NULL,
+                        'n.v.',
+                         tverfuegbarkeitsbenachrichtigung.cNachname
+                    ) AS cNachname,
+                    IF(tverfuegbarkeitsbenachrichtigung.cMail IS NULL, 
+                        'n.v.',
+                        tverfuegbarkeitsbenachrichtigung.cMail
+                    ) AS cMail,
+                    IF(tverfuegbarkeitsbenachrichtigung.cAbgeholt IS NULL,
+                        'n.v.',
+                        tverfuegbarkeitsbenachrichtigung.cAbgeholt
+                    ) AS cAbgeholt,
+                    IF(tartikel.cName IS NULL, 'n.v.', tartikel.cName) AS cArtikelname,
+                    IF(tartikel.cArtNr IS NULL, 'n.v.', tartikel.cArtNr) AS cArtNr,
+                    DATE_FORMAT(tverfuegbarkeitsbenachrichtigung.dErstellt, '%d.%m.%Y %H:%i') AS dErstellt_DE
+                    FROM tkampagnevorgang
+                    LEFT JOIN tverfuegbarkeitsbenachrichtigung 
+                            ON tverfuegbarkeitsbenachrichtigung.kVerfuegbarkeitsbenachrichtigung =
+                                tkampagnevorgang.kKey
+                    LEFT JOIN tartikel 
+                            ON tartikel.kArtikel = tverfuegbarkeitsbenachrichtigung.kArtikel
+                    " . $where . '
+                        AND kKampagne = ' . (int)$campaignID . '
+                        AND kKampagneDef = ' . (int)$definition->kKampagneDef . '
+                    ORDER BY tkampagnevorgang.dErstellt DESC',
+                ReturnType::ARRAY_OF_OBJECTS
+            );
+
+            if (is_array($data) && count($data) > 0) {
+                $members = [
+                    'cArtikelname'        => 'Artikel',
+                    'cArtNr'              => 'Artikelnummer',
+                    'cVorname'            => 'Vorname',
+                    'cNachname'           => 'Nachname',
+                    'cMail'               => 'eMail',
+                    'cAbgeholt'           => 'Abgeholt durch Wawi',
+                    'dErstellt_DE'        => 'Erstellt am',
+                    'dErstelltVorgang_DE' => 'Vorgangsdatum'
+                ];
+            }
+
+            break;
+        case KAMPAGNE_DEF_LOGIN:    // LOGIN
+            $data   = Shop::Container()->getDB()->query(
+                'SELECT tkampagnevorgang.kKampagne, tkampagnevorgang.kKampagneDef, tkampagnevorgang.kKey ' .
+                $select . ",
+                    DATE_FORMAT(tkampagnevorgang.dErstellt, '%d.%m.%Y %H:%i') AS dErstelltVorgang_DE,
+                    IF(tkunde.cVorname IS NULL, 'n.v.', tkunde.cVorname) AS cVorname,
+                    IF(tkunde.cNachname IS NULL, 'n.v.', tkunde.cNachname) AS cNachname,
+                    IF(tkunde.cFirma IS NULL, 'n.v.', tkunde.cFirma) AS cFirma,
+                    IF(tkunde.cMail IS NULL, 'n.v.', tkunde.cMail) AS cMail,
+                    IF(tkunde.nRegistriert IS NULL, 'n.v.', tkunde.nRegistriert) AS nRegistriert,
+                    DATE_FORMAT(tkunde.dErstellt, '%d.%m.%Y') AS dErstellt_DE
+                    FROM tkampagnevorgang
+                    LEFT JOIN tkunde 
+                            ON tkunde.kKunde = tkampagnevorgang.kKey
+                    " . $where . '
+                        AND kKampagne = ' . (int)$campaignID . '
+                        AND kKampagneDef = ' . (int)$definition->kKampagneDef . '
+                    ORDER BY tkampagnevorgang.dErstellt DESC',
+                ReturnType::ARRAY_OF_OBJECTS
+            );
+            $dCount = count($data);
+            if (is_array($data) && $dCount > 0) {
+                for ($i = 0; $i < $dCount; $i++) {
+                    if ($data[$i]->cNachname !== 'n.v.') {
+                        $data[$i]->cNachname = trim($cryptoService->decryptXTEA($data[$i]->cNachname));
+                    }
+                    if ($data[$i]->cFirma !== 'n.v.') {
+                        $data[$i]->cFirma = trim($cryptoService->decryptXTEA($data[$i]->cFirma));
                     }
 
-                    $members = [
-                        'cZahlungsartName'    => 'Zahlungsart',
-                        'cVersandartName'     => 'Versandart',
-                        'nRegistriert'        => 'Registrierter Kunde',
-                        'cVorname'            => 'Vorname',
-                        'cNachname'           => 'Nachname',
-                        'cStatus'             => 'Status',
-                        'cBestellNr'          => 'BestellNr',
-                        'fGesamtsumme'        => 'Bestellwert',
-                        'dErstellt_DE'        => 'Bestelldatum',
-                        'dErstelltVorgang_DE' => 'Vorgangsdatum'
-                    ];
-                }
-                break;
-            case KAMPAGNE_DEF_FRAGEZUMPRODUKT:    // FRAGEZUMPRODUKT
-                $data = Shop::Container()->getDB()->query(
-                    'SELECT tkampagnevorgang.kKampagne, tkampagnevorgang.kKampagneDef, tkampagnevorgang.kKey ' .
-                        $select . ",
-                        DATE_FORMAT(tkampagnevorgang.dErstellt, '%d.%m.%Y %H:%i') AS dErstelltVorgang_DE,
-                        IF(tproduktanfragehistory.cVorname IS NULL,
-                            'n.v.',
-                            tproduktanfragehistory.cVorname
-                        ) AS cVorname,
-                        IF(tproduktanfragehistory.cNachname IS NULL, 
-                            'n.v.', 
-                            tproduktanfragehistory.cNachname
-                        ) AS cNachname,
-                        IF(tproduktanfragehistory.cFirma IS NULL, 'n.v.', tproduktanfragehistory.cFirma) AS cFirma,
-                        IF(tproduktanfragehistory.cTel IS NULL, 'n.v.', tproduktanfragehistory.cTel) AS cTel,
-                        IF(tproduktanfragehistory.cMail IS NULL, 'n.v.', tproduktanfragehistory.cMail) AS cMail,
-                        IF(tproduktanfragehistory.cNachricht IS NULL,
-                            'n.v.', 
-                            tproduktanfragehistory.cNachricht
-                        ) AS cNachricht,
-                        IF(tartikel.cName IS NULL, 'n.v.', tartikel.cName) AS cArtikelname,
-                        IF(tartikel.cArtNr IS NULL, 'n.v.', tartikel.cArtNr) AS cArtNr,
-                        DATE_FORMAT(tproduktanfragehistory.dErstellt, '%d.%m.%Y %H:%i') AS dErstellt_DE
-                        FROM tkampagnevorgang
-                        LEFT JOIN tproduktanfragehistory 
-                            ON tproduktanfragehistory.kProduktanfrageHistory = tkampagnevorgang.kKey
-                        LEFT JOIN tartikel ON tartikel.kArtikel = tproduktanfragehistory.kArtikel
-                        " . $where . '
-                            AND kKampagne = ' . (int)$campaignID . '
-                            AND kKampagneDef = ' . (int)$definition->kKampagneDef . '
-                        ORDER BY tkampagnevorgang.dErstellt DESC',
-                    ReturnType::ARRAY_OF_OBJECTS
-                );
-
-                if (is_array($data) && count($data) > 0) {
-                    $members = [
-                        'cArtikelname'        => 'Artikel',
-                        'cArtNr'              => 'Artikelnummer',
-                        'cVorname'            => 'Vorname',
-                        'cNachname'           => 'Nachname',
-                        'cFirma'              => 'Firma',
-                        'cTel'                => 'Telefon',
-                        'cMail'               => 'eMail',
-                        'cNachricht'          => 'Nachricht',
-                        'dErstellt_DE'        => 'Erstellt am',
-                        'dErstelltVorgang_DE' => 'Vorgangsdatum'
-                    ];
+                    if ($data[$i]->nRegistriert !== 'n.v.') {
+                        $data[$i]->nRegistriert = ((int)$data[$i]->nRegistriert === 1)
+                            ? __('yes')
+                            : __('no');
+                    }
                 }
 
-                break;
-            case KAMPAGNE_DEF_VERFUEGBARKEITSANFRAGE:    // VERFUEGBARKEITSANFRAGE
-                $data = Shop::Container()->getDB()->query(
-                    'SELECT tkampagnevorgang.kKampagne, tkampagnevorgang.kKampagneDef, tkampagnevorgang.kKey ' .
-                        $select . ",
-                        DATE_FORMAT(tkampagnevorgang.dErstellt, '%d.%m.%Y %H:%i') AS dErstelltVorgang_DE,
-                        IF(tverfuegbarkeitsbenachrichtigung.cVorname IS NULL,
-                            'n.v.',
-                             tverfuegbarkeitsbenachrichtigung.cVorname
-                        ) AS cVorname,
-                        IF(tverfuegbarkeitsbenachrichtigung.cNachname IS NULL,
-                            'n.v.',
-                             tverfuegbarkeitsbenachrichtigung.cNachname
-                        ) AS cNachname,
-                        IF(tverfuegbarkeitsbenachrichtigung.cMail IS NULL, 
-                            'n.v.',
-                            tverfuegbarkeitsbenachrichtigung.cMail
-                        ) AS cMail,
-                        IF(tverfuegbarkeitsbenachrichtigung.cAbgeholt IS NULL,
-                            'n.v.',
-                            tverfuegbarkeitsbenachrichtigung.cAbgeholt
-                        ) AS cAbgeholt,
-                        IF(tartikel.cName IS NULL, 'n.v.', tartikel.cName) AS cArtikelname,
-                        IF(tartikel.cArtNr IS NULL, 'n.v.', tartikel.cArtNr) AS cArtNr,
-                        DATE_FORMAT(tverfuegbarkeitsbenachrichtigung.dErstellt, '%d.%m.%Y %H:%i') AS dErstellt_DE
-                        FROM tkampagnevorgang
-                        LEFT JOIN tverfuegbarkeitsbenachrichtigung 
-                                ON tverfuegbarkeitsbenachrichtigung.kVerfuegbarkeitsbenachrichtigung =
-                                    tkampagnevorgang.kKey
-                        LEFT JOIN tartikel 
-                                ON tartikel.kArtikel = tverfuegbarkeitsbenachrichtigung.kArtikel
-                        " . $where . '
-                            AND kKampagne = ' . (int)$campaignID . '
-                            AND kKampagneDef = ' . (int)$definition->kKampagneDef . '
-                        ORDER BY tkampagnevorgang.dErstellt DESC',
-                    ReturnType::ARRAY_OF_OBJECTS
-                );
-
-                if (is_array($data) && count($data) > 0) {
-                    $members = [
-                        'cArtikelname'        => 'Artikel',
-                        'cArtNr'              => 'Artikelnummer',
-                        'cVorname'            => 'Vorname',
-                        'cNachname'           => 'Nachname',
-                        'cMail'               => 'eMail',
-                        'cAbgeholt'           => 'Abgeholt durch Wawi',
-                        'dErstellt_DE'        => 'Erstellt am',
-                        'dErstelltVorgang_DE' => 'Vorgangsdatum'
-                    ];
-                }
-
-                break;
-            case KAMPAGNE_DEF_LOGIN:    // LOGIN
-                $data   = Shop::Container()->getDB()->query(
-                    'SELECT tkampagnevorgang.kKampagne, tkampagnevorgang.kKampagneDef, tkampagnevorgang.kKey ' .
-                    $select . ",
-                        DATE_FORMAT(tkampagnevorgang.dErstellt, '%d.%m.%Y %H:%i') AS dErstelltVorgang_DE,
-                        IF(tkunde.cVorname IS NULL, 'n.v.', tkunde.cVorname) AS cVorname,
-                        IF(tkunde.cNachname IS NULL, 'n.v.', tkunde.cNachname) AS cNachname,
-                        IF(tkunde.cFirma IS NULL, 'n.v.', tkunde.cFirma) AS cFirma,
-                        IF(tkunde.cMail IS NULL, 'n.v.', tkunde.cMail) AS cMail,
-                        IF(tkunde.nRegistriert IS NULL, 'n.v.', tkunde.nRegistriert) AS nRegistriert,
-                        DATE_FORMAT(tkunde.dErstellt, '%d.%m.%Y') AS dErstellt_DE
-                        FROM tkampagnevorgang
-                        LEFT JOIN tkunde 
-                                ON tkunde.kKunde = tkampagnevorgang.kKey
-                        " . $where . '
-                            AND kKampagne = ' . (int)$campaignID . '
-                            AND kKampagneDef = ' . (int)$definition->kKampagneDef . '
-                        ORDER BY tkampagnevorgang.dErstellt DESC',
-                    ReturnType::ARRAY_OF_OBJECTS
-                );
-                $dCount = count($data);
-                if (is_array($data) && $dCount > 0) {
-                    for ($i = 0; $i < $dCount; $i++) {
-                        if ($data[$i]->cNachname !== 'n.v.') {
-                            $data[$i]->cNachname = trim($cryptoService->decryptXTEA($data[$i]->cNachname));
-                        }
-                        if ($data[$i]->cFirma !== 'n.v.') {
-                            $data[$i]->cFirma = trim($cryptoService->decryptXTEA($data[$i]->cFirma));
-                        }
-
-                        if ($data[$i]->nRegistriert !== 'n.v.') {
-                            $data[$i]->nRegistriert = ((int)$data[$i]->nRegistriert === 1)
-                                ? __('yes')
-                                : __('no');
-                        }
+                $members = [
+                    'cVorname'            => 'Vorname',
+                    'cNachname'           => 'Nachname',
+                    'cFirma'              => 'Firma',
+                    'cMail'               => 'eMail',
+                    'nRegistriert'        => 'Registriert',
+                    'dErstellt_DE'        => 'Anmeldedatum',
+                    'dErstelltVorgang_DE' => 'Vorgangsdatum'
+                ];
+            }
+            break;
+        case KAMPAGNE_DEF_WUNSCHLISTE:    // WUNSCHLISTE
+            $data   = Shop::Container()->getDB()->query(
+                'SELECT tkampagnevorgang.kKampagne, tkampagnevorgang.kKampagneDef, tkampagnevorgang.kKey ' .
+                $select . ",
+                    DATE_FORMAT(tkampagnevorgang.dErstellt, '%d.%m.%Y %H:%i') AS dErstelltVorgang_DE,
+                    IF(tkunde.cVorname IS NULL, 'n.v.', tkunde.cVorname) AS cVorname,
+                    IF(tkunde.cNachname IS NULL, 'n.v.', tkunde.cNachname) AS cNachname,
+                    IF(tkunde.cFirma IS NULL, 'n.v.', tkunde.cFirma) AS cFirma,
+                    IF(tkunde.cMail IS NULL, 'n.v.', tkunde.cMail) AS cMail,
+                    IF(tkunde.nRegistriert IS NULL, 'n.v.', tkunde.nRegistriert) AS nRegistriert,
+                    IF(tartikel.cName IS NULL, 'n.v.', tartikel.cName) AS cArtikelname,
+                    IF(tartikel.cArtNr IS NULL, 'n.v.', tartikel.cArtNr) AS cArtNr,
+                    DATE_FORMAT(twunschlistepos.dHinzugefuegt, '%d.%m.%Y') AS dErstellt_DE
+                    FROM tkampagnevorgang
+                    LEFT JOIN twunschlistepos ON twunschlistepos.kWunschlistePos = tkampagnevorgang.kKey
+                    LEFT JOIN twunschliste ON twunschliste.kWunschliste = twunschlistepos.kWunschliste
+                    LEFT JOIN tkunde ON tkunde.kKunde = twunschliste.kKunde
+                    LEFT JOIN tartikel ON tartikel.kArtikel = twunschlistepos.kArtikel
+                    " . $where . '
+                        AND kKampagne = ' . (int)$campaignID . '
+                        AND kKampagneDef = ' . (int)$definition->kKampagneDef . '
+                    ORDER BY tkampagnevorgang.dErstellt DESC',
+                ReturnType::ARRAY_OF_OBJECTS
+            );
+            $dCount = count($data);
+            if (is_array($data) && $dCount > 0) {
+                for ($i = 0; $i < $dCount; $i++) {
+                    if ($data[$i]->cNachname !== 'n.v.') {
+                        $data[$i]->cNachname = trim($cryptoService->decryptXTEA($data[$i]->cNachname));
+                    }
+                    if ($data[$i]->cFirma !== 'n.v.') {
+                        $data[$i]->cFirma = trim($cryptoService->decryptXTEA($data[$i]->cFirma));
                     }
 
-                    $members = [
-                        'cVorname'            => 'Vorname',
-                        'cNachname'           => 'Nachname',
-                        'cFirma'              => 'Firma',
-                        'cMail'               => 'eMail',
-                        'nRegistriert'        => 'Registriert',
-                        'dErstellt_DE'        => 'Anmeldedatum',
-                        'dErstelltVorgang_DE' => 'Vorgangsdatum'
-                    ];
-                }
-                break;
-            case KAMPAGNE_DEF_WUNSCHLISTE:    // WUNSCHLISTE
-                $data   = Shop::Container()->getDB()->query(
-                    'SELECT tkampagnevorgang.kKampagne, tkampagnevorgang.kKampagneDef, tkampagnevorgang.kKey ' .
-                    $select . ",
-                        DATE_FORMAT(tkampagnevorgang.dErstellt, '%d.%m.%Y %H:%i') AS dErstelltVorgang_DE,
-                        IF(tkunde.cVorname IS NULL, 'n.v.', tkunde.cVorname) AS cVorname,
-                        IF(tkunde.cNachname IS NULL, 'n.v.', tkunde.cNachname) AS cNachname,
-                        IF(tkunde.cFirma IS NULL, 'n.v.', tkunde.cFirma) AS cFirma,
-                        IF(tkunde.cMail IS NULL, 'n.v.', tkunde.cMail) AS cMail,
-                        IF(tkunde.nRegistriert IS NULL, 'n.v.', tkunde.nRegistriert) AS nRegistriert,
-                        IF(tartikel.cName IS NULL, 'n.v.', tartikel.cName) AS cArtikelname,
-                        IF(tartikel.cArtNr IS NULL, 'n.v.', tartikel.cArtNr) AS cArtNr,
-                        DATE_FORMAT(twunschlistepos.dHinzugefuegt, '%d.%m.%Y') AS dErstellt_DE
-                        FROM tkampagnevorgang
-                        LEFT JOIN twunschlistepos ON twunschlistepos.kWunschlistePos = tkampagnevorgang.kKey
-                        LEFT JOIN twunschliste ON twunschliste.kWunschliste = twunschlistepos.kWunschliste
-                        LEFT JOIN tkunde ON tkunde.kKunde = twunschliste.kKunde
-                        LEFT JOIN tartikel ON tartikel.kArtikel = twunschlistepos.kArtikel
-                        " . $where . '
-                            AND kKampagne = ' . (int)$campaignID . '
-                            AND kKampagneDef = ' . (int)$definition->kKampagneDef . '
-                        ORDER BY tkampagnevorgang.dErstellt DESC',
-                    ReturnType::ARRAY_OF_OBJECTS
-                );
-                $dCount = count($data);
-                if (is_array($data) && $dCount > 0) {
-                    for ($i = 0; $i < $dCount; $i++) {
-                        if ($data[$i]->cNachname !== 'n.v.') {
-                            $data[$i]->cNachname = trim($cryptoService->decryptXTEA($data[$i]->cNachname));
-                        }
-                        if ($data[$i]->cFirma !== 'n.v.') {
-                            $data[$i]->cFirma = trim($cryptoService->decryptXTEA($data[$i]->cFirma));
-                        }
-
-                        if ($data[$i]->nRegistriert !== 'n.v.') {
-                            $data[$i]->nRegistriert = ((int)$data[$i]->nRegistriert === 1)
-                                ? __('yes')
-                                : __('no');
-                        }
+                    if ($data[$i]->nRegistriert !== 'n.v.') {
+                        $data[$i]->nRegistriert = ((int)$data[$i]->nRegistriert === 1)
+                            ? __('yes')
+                            : __('no');
                     }
-
-                    $members = [
-                        'cArtikelname'        => 'Artikel',
-                        'cArtNr'              => 'Artikelnummer',
-                        'cVorname'            => 'Vorname',
-                        'cNachname'           => 'Nachname',
-                        'cFirma'              => 'Firma',
-                        'cMail'               => 'eMail',
-                        'nRegistriert'        => 'Registriert',
-                        'dErstellt_DE'        => 'Anmeldedatum',
-                        'dErstelltVorgang_DE' => 'Vorgangsdatum'
-                    ];
                 }
-                break;
-            case KAMPAGNE_DEF_WARENKORB:    // WARENKORB
-                $customerGroupID = CustomerGroup::getDefaultGroupID();
 
-                $data = Shop::Container()->getDB()->query(
-                    'SELECT tkampagnevorgang.kKampagne, tkampagnevorgang.kKampagneDef, tkampagnevorgang.kKey ' .
-                    $select . ",
-                        DATE_FORMAT(tkampagnevorgang.dErstellt, '%d.%m.%Y %H:%i') AS dErstelltVorgang_DE,
-                        IF(tartikel.kArtikel IS NULL, 'n.v.', tartikel.kArtikel) AS kArtikel,
-                        if(tartikel.cName IS NULL, 'n.v.', tartikel.cName) AS cName,
-                        IF(tartikel.fLagerbestand IS NULL, 'n.v.', tartikel.fLagerbestand) AS fLagerbestand,
-                        IF(tartikel.cArtNr IS NULL, 'n.v.', tartikel.cArtNr) AS cArtNr,
-                        IF(tartikel.fMwSt IS NULL, 'n.v.', tartikel.fMwSt) AS fMwSt,
-                        IF(tpreisdetail.fVKNetto IS NULL, 'n.v.', tpreisdetail.fVKNetto) AS fVKNetto,
-                        DATE_FORMAT(tartikel.dLetzteAktualisierung, '%d.%m.%Y %H:%i') AS dLetzteAktualisierung_DE
-                        FROM tkampagnevorgang
-                        LEFT JOIN tartikel ON tartikel.kArtikel = tkampagnevorgang.kKey
-                        LEFT JOIN tpreis ON tpreis.kArtikel = tartikel.kArtikel
-                            AND tpreis.kKundengruppe = " . $customerGroupID . '
-                        LEFT JOIN tpreisdetail ON tpreisdetail.kPreis = tpreis.kPreis
-                            AND tpreisdetail.nAnzahlAb = 0
-                        ' . $where . '
-                            AND tkampagnevorgang.kKampagne = ' . (int)$campaignID . '
-                            AND tkampagnevorgang.kKampagneDef = ' . (int)$definition->kKampagneDef . '
-                        ORDER BY tkampagnevorgang.dErstellt DESC',
-                    ReturnType::ARRAY_OF_OBJECTS
-                );
-                if (is_array($data) && count($data) > 0) {
-                    Frontend::getCustomerGroup()->setMayViewPrices(1);
-                    $count = count($data);
-                    for ($i = 0; $i < $count; $i++) {
-                        if (isset($data[$i]->fVKNetto) && $data[$i]->fVKNetto > 0) {
-                            $data[$i]->fVKNetto = Preise::getLocalizedPriceString($data[$i]->fVKNetto);
-                        }
-                        if (isset($data[$i]->fMwSt) && $data[$i]->fMwSt > 0) {
-                            $data[$i]->fMwSt = number_format($data[$i]->fMwSt, 2) . '%';
-                        }
+                $members = [
+                    'cArtikelname'        => 'Artikel',
+                    'cArtNr'              => 'Artikelnummer',
+                    'cVorname'            => 'Vorname',
+                    'cNachname'           => 'Nachname',
+                    'cFirma'              => 'Firma',
+                    'cMail'               => 'eMail',
+                    'nRegistriert'        => 'Registriert',
+                    'dErstellt_DE'        => 'Anmeldedatum',
+                    'dErstelltVorgang_DE' => 'Vorgangsdatum'
+                ];
+            }
+            break;
+        case KAMPAGNE_DEF_WARENKORB:    // WARENKORB
+            $customerGroupID = CustomerGroup::getDefaultGroupID();
+
+            $data = Shop::Container()->getDB()->query(
+                'SELECT tkampagnevorgang.kKampagne, tkampagnevorgang.kKampagneDef, tkampagnevorgang.kKey ' .
+                $select . ",
+                    DATE_FORMAT(tkampagnevorgang.dErstellt, '%d.%m.%Y %H:%i') AS dErstelltVorgang_DE,
+                    IF(tartikel.kArtikel IS NULL, 'n.v.', tartikel.kArtikel) AS kArtikel,
+                    if(tartikel.cName IS NULL, 'n.v.', tartikel.cName) AS cName,
+                    IF(tartikel.fLagerbestand IS NULL, 'n.v.', tartikel.fLagerbestand) AS fLagerbestand,
+                    IF(tartikel.cArtNr IS NULL, 'n.v.', tartikel.cArtNr) AS cArtNr,
+                    IF(tartikel.fMwSt IS NULL, 'n.v.', tartikel.fMwSt) AS fMwSt,
+                    IF(tpreisdetail.fVKNetto IS NULL, 'n.v.', tpreisdetail.fVKNetto) AS fVKNetto,
+                    DATE_FORMAT(tartikel.dLetzteAktualisierung, '%d.%m.%Y %H:%i') AS dLetzteAktualisierung_DE
+                    FROM tkampagnevorgang
+                    LEFT JOIN tartikel ON tartikel.kArtikel = tkampagnevorgang.kKey
+                    LEFT JOIN tpreis ON tpreis.kArtikel = tartikel.kArtikel
+                        AND tpreis.kKundengruppe = " . $customerGroupID . '
+                    LEFT JOIN tpreisdetail ON tpreisdetail.kPreis = tpreis.kPreis
+                        AND tpreisdetail.nAnzahlAb = 0
+                    ' . $where . '
+                        AND tkampagnevorgang.kKampagne = ' . (int)$campaignID . '
+                        AND tkampagnevorgang.kKampagneDef = ' . (int)$definition->kKampagneDef . '
+                    ORDER BY tkampagnevorgang.dErstellt DESC',
+                ReturnType::ARRAY_OF_OBJECTS
+            );
+            if (is_array($data) && count($data) > 0) {
+                Frontend::getCustomerGroup()->setMayViewPrices(1);
+                $count = count($data);
+                for ($i = 0; $i < $count; $i++) {
+                    if (isset($data[$i]->fVKNetto) && $data[$i]->fVKNetto > 0) {
+                        $data[$i]->fVKNetto = Preise::getLocalizedPriceString($data[$i]->fVKNetto);
                     }
-
-                    $members = [
-                        'cName'                    => 'Artikel',
-                        'cArtNr'                   => 'Artikelnummer',
-                        'fVKNetto'                 => 'Netto Preis',
-                        'fMwSt'                    => 'MwSt',
-                        'fLagerbestand'            => 'Lagerbestand',
-                        'dLetzteAktualisierung_DE' => 'Letzte Aktualisierung',
-                        'dErstelltVorgang_DE'      => 'Vorgangsdatum'
-                    ];
+                    if (isset($data[$i]->fMwSt) && $data[$i]->fMwSt > 0) {
+                        $data[$i]->fMwSt = number_format($data[$i]->fMwSt, 2) . '%';
+                    }
                 }
-                break;
-            case KAMPAGNE_DEF_NEWSLETTER:    // NEWSLETTER
-                $data = Shop::Container()->getDB()->query(
-                    'SELECT tkampagnevorgang.kKampagne, tkampagnevorgang.kKampagneDef, tkampagnevorgang.kKey ' .
-                    $select . ",
-                        DATE_FORMAT(tkampagnevorgang.dErstellt, '%d.%m.%Y %H:%i') AS dErstelltVorgang_DE,
-                        IF(tnewsletter.cName IS NULL, 'n.v.', tnewsletter.cName) AS cName,
-                        IF(tnewsletter.cBetreff IS NULL, 'n.v.', tnewsletter.cBetreff) AS cBetreff,
-                        DATE_FORMAT(tnewslettertrack.dErstellt, '%d.%m.%Y %H:%i') AS dErstelltTrack_DE,
-                        IF(tnewsletterempfaenger.cVorname IS NULL, 'n.v.', tnewsletterempfaenger.cVorname) AS cVorname,
-                        IF(tnewsletterempfaenger.cNachname IS NULL,
-                            'n.v.',
-                            tnewsletterempfaenger.cNachname
-                        ) AS cNachname,
-                        IF(tnewsletterempfaenger.cEmail IS NULL, 'n.v.', tnewsletterempfaenger.cEmail) AS cEmail
-                        FROM tkampagnevorgang
-                        LEFT JOIN tnewslettertrack ON tnewslettertrack.kNewsletterTrack = tkampagnevorgang.kKey
-                        LEFT JOIN tnewsletter ON tnewsletter.kNewsletter = tnewslettertrack.kNewsletter
-                        LEFT JOIN tnewsletterempfaenger
-                            ON tnewsletterempfaenger.kNewsletterEmpfaenger = tnewslettertrack.kNewsletterEmpfaenger
-                        " . $where . '
-                            AND tkampagnevorgang.kKampagne = ' . (int)$campaignID . '
-                            AND tkampagnevorgang.kKampagneDef = ' . (int)$definition->kKampagneDef . '
-                        ORDER BY tkampagnevorgang.dErstellt DESC',
-                    ReturnType::ARRAY_OF_OBJECTS
-                );
 
-                if (is_array($data) && count($data) > 0) {
-                    $members = [
-                        'cName'               => 'Newsletter',
-                        'cBetreff'            => 'Betreff',
-                        'cVorname'            => 'Vorname',
-                        'cNachname'           => 'Nachname',
-                        'cEmail'              => 'eMail',
-                        'dErstelltTrack_DE'   => 'Datum der Öffnung',
-                        'dErstelltVorgang_DE' => 'Vorgangsdatum'
-                    ];
-                }
-                break;
-        }
+                $members = [
+                    'cName'                    => 'Artikel',
+                    'cArtNr'                   => 'Artikelnummer',
+                    'fVKNetto'                 => 'Netto Preis',
+                    'fMwSt'                    => 'MwSt',
+                    'fLagerbestand'            => 'Lagerbestand',
+                    'dLetzteAktualisierung_DE' => 'Letzte Aktualisierung',
+                    'dErstelltVorgang_DE'      => 'Vorgangsdatum'
+                ];
+            }
+            break;
+        case KAMPAGNE_DEF_NEWSLETTER:    // NEWSLETTER
+            $data = Shop::Container()->getDB()->query(
+                'SELECT tkampagnevorgang.kKampagne, tkampagnevorgang.kKampagneDef, tkampagnevorgang.kKey ' .
+                $select . ",
+                    DATE_FORMAT(tkampagnevorgang.dErstellt, '%d.%m.%Y %H:%i') AS dErstelltVorgang_DE,
+                    IF(tnewsletter.cName IS NULL, 'n.v.', tnewsletter.cName) AS cName,
+                    IF(tnewsletter.cBetreff IS NULL, 'n.v.', tnewsletter.cBetreff) AS cBetreff,
+                    DATE_FORMAT(tnewslettertrack.dErstellt, '%d.%m.%Y %H:%i') AS dErstelltTrack_DE,
+                    IF(tnewsletterempfaenger.cVorname IS NULL, 'n.v.', tnewsletterempfaenger.cVorname) AS cVorname,
+                    IF(tnewsletterempfaenger.cNachname IS NULL,
+                        'n.v.',
+                        tnewsletterempfaenger.cNachname
+                    ) AS cNachname,
+                    IF(tnewsletterempfaenger.cEmail IS NULL, 'n.v.', tnewsletterempfaenger.cEmail) AS cEmail
+                    FROM tkampagnevorgang
+                    LEFT JOIN tnewslettertrack ON tnewslettertrack.kNewsletterTrack = tkampagnevorgang.kKey
+                    LEFT JOIN tnewsletter ON tnewsletter.kNewsletter = tnewslettertrack.kNewsletter
+                    LEFT JOIN tnewsletterempfaenger
+                        ON tnewsletterempfaenger.kNewsletterEmpfaenger = tnewslettertrack.kNewsletterEmpfaenger
+                    " . $where . '
+                        AND tkampagnevorgang.kKampagne = ' . (int)$campaignID . '
+                        AND tkampagnevorgang.kKampagneDef = ' . (int)$definition->kKampagneDef . '
+                    ORDER BY tkampagnevorgang.dErstellt DESC',
+                ReturnType::ARRAY_OF_OBJECTS
+            );
+
+            if (is_array($data) && count($data) > 0) {
+                $members = [
+                    'cName'               => 'Newsletter',
+                    'cBetreff'            => 'Betreff',
+                    'cVorname'            => 'Vorname',
+                    'cNachname'           => 'Nachname',
+                    'cEmail'              => 'eMail',
+                    'dErstelltTrack_DE'   => 'Datum der Öffnung',
+                    'dErstelltVorgang_DE' => 'Vorgangsdatum'
+                ];
+            }
+            break;
     }
 
     return $data;
@@ -1112,69 +1108,35 @@ function gibDetailDatumZeitraum()
 }
 
 /**
- * @param string $cStampOld
- * @param int    $nSprung - -1 = Vergangenheit, 1 = Zukunft
- * @param int    $nAnsicht
+ * @param string $oldStamp
+ * @param int    $direction - -1 = Vergangenheit, 1 = Zukunft
+ * @param int    $view
  * @return string
  */
-function gibStamp($cStampOld, $nSprung, $nAnsicht)
+function gibStamp($oldStamp, int $direction, int $view): string
 {
-    if (mb_strlen($cStampOld) > 0 && ($nSprung == -1 || $nSprung == 1) && $nAnsicht > 0) {
-        $cFkt = ($nSprung == 1) ? 'DATE_ADD' : 'DATE_SUB';
-
-        switch ((int)$nAnsicht) {
-            case 1:    // Monat
-                $oDate = Shop::Container()->getDB()->query(
-                    'SELECT ' . $cFkt . "('" . $cStampOld . "', INTERVAL 1 MONTH) 
-                        AS cStampNew, IF(" . $cFkt . "('" . $cStampOld . "', INTERVAL 1 MONTH) > NOW(), 1, 0) 
-                        AS nGroesser",
-                    ReturnType::SINGLE_OBJECT
-                );
-
-                if ($oDate->nGroesser == 1) {
-                    return date('Y-m-d');
-                }
-
-                $parts = Date::getDateParts($oDate->cStampNew);
-
-                return $parts['cJahr'] . '-' . $parts['cMonat'] . '-' . $parts['cTag'];
-                break;
-            case 2:    // Woche
-                $oDate = Shop::Container()->getDB()->query(
-                    'SELECT ' . $cFkt . "('" . $cStampOld . "', INTERVAL 1 WEEK) 
-                        AS cStampNew, IF(" . $cFkt . "('" . $cStampOld . "', INTERVAL 1 WEEK) > NOW(), 1, 0) 
-                        AS nGroesser",
-                    ReturnType::SINGLE_OBJECT
-                );
-
-                if ($oDate->nGroesser == 1) {
-                    return date('Y-m-d');
-                }
-
-                $parts = Date::getDateParts($oDate->cStampNew);
-
-                return $parts['cJahr'] . '-' . $parts['cMonat'] . '-' . $parts['cTag'];
-                break;
-            case 3:    // Tag
-                $oDate = Shop::Container()->getDB()->query(
-                    'SELECT ' . $cFkt . "('" . $cStampOld . "', INTERVAL 1 DAY) 
-                        AS cStampNew, IF(" . $cFkt . "('" . $cStampOld . "', INTERVAL 1 DAY) > NOW(), 1, 0) 
-                        AS nGroesser",
-                    ReturnType::SINGLE_OBJECT
-                );
-
-                if ($oDate->nGroesser == 1) {
-                    return date('Y-m-d');
-                }
-
-                $parts = Date::getDateParts($oDate->cStampNew);
-
-                return $parts['cJahr'] . '-' . $parts['cMonat'] . '-' . $parts['cTag'];
-                break;
-        }
+    if (mb_strlen($oldStamp) === 0 || !in_array($direction, [1, -1], true) || !in_array($view, [1, 2, 3], true)) {
+        return $oldStamp;
     }
 
-    return $cStampOld;
+    switch ($view) {
+        case 1:
+            $interval = 'month';
+            break;
+        case 2:
+            $interval = 'week';
+            break;
+        case 3:
+        default:
+            $interval = 'day';
+            break;
+    }
+    $now     = date_create();
+    $newDate = date_create($oldStamp)->modify(($direction === 1 ? '+' : '-') . '1 ' . $interval);
+
+    return $newDate > $now
+        ? $now->format('Y-m-d')
+        : $newDate->format('Y-m-d');
 }
 
 /**
@@ -1229,12 +1191,12 @@ function speicherKampagne($campaign)
 
     if (isset($data->kKampagne)
         && $data->kKampagne > 0
-        && (!isset($campaign->kKampagne) || $campaign->kKampagne == 0)
+        && (!isset($campaign->kKampagne) || (int)$campaign->kKampagne === 0)
     ) {
         return 6;// Kampagnennamen schon vergeben
     }
     // Parameter schon vorhanden?
-    if (isset($campaign->nDynamisch) && $campaign->nDynamisch == 1) {
+    if (isset($campaign->nDynamisch) && (int)$campaign->nDynamisch === 1) {
         $data = Shop::Container()->getDB()->queryPrepared(
             'SELECT kKampagne
                 FROM tkampagne
@@ -1245,7 +1207,7 @@ function speicherKampagne($campaign)
 
         if (isset($data->kKampagne)
             && $data->kKampagne > 0
-            && (!isset($campaign->kKampagne) || $campaign->kKampagne == 0)
+            && (!isset($campaign->kKampagne) || (int)$campaign->kKampagne === 0)
         ) {
             return 7;// Kampagnenparameter schon vergeben
         }
@@ -1262,65 +1224,63 @@ function speicherKampagne($campaign)
 }
 
 /**
- * @param int $nReturnValue
+ * @param int $code
  * @return string
  */
-function mappeFehlerCodeSpeichern($nReturnValue)
+function mappeFehlerCodeSpeichern(int $code)
 {
-    if ((int)$nReturnValue > 0) {
-        switch ((int)$nReturnValue) {
-            case 2:
-                return __('errorCampaignSave');
-                break;
-            case 3:
-                return __('errorCampaignNameMissing');
-                break;
-            case 4:
-                return __('errorCampaignParameterMissing');
-                break;
-            case 5:
-                return __('errorCampaignValueMissing');
-                break;
-            case 6:
-                return __('errorCampaignNameDuplicate');
-                break;
-            case 7:
-                return __('errorCampaignParameterDuplicate');
-                break;
-        }
+    $msg = '';
+    switch ($code) {
+        case 2:
+            $msg = __('errorCampaignSave');
+            break;
+        case 3:
+            $msg = __('errorCampaignNameMissing');
+            break;
+        case 4:
+            $msg = __('errorCampaignParameterMissing');
+            break;
+        case 5:
+            $msg = __('errorCampaignValueMissing');
+            break;
+        case 6:
+            $msg = __('errorCampaignNameDuplicate');
+            break;
+        case 7:
+            $msg = __('errorCampaignParameterDuplicate');
+            break;
+        default:
+            break;
     }
 
-    return '';
+    return $msg;
 }
 
 /**
  * @param array $campaignIDs
  * @return int
  */
-function loescheGewaehlteKampagnen($campaignIDs)
+function loescheGewaehlteKampagnen(array $campaignIDs)
 {
-    if (is_array($campaignIDs) && count($campaignIDs) > 0) {
-        foreach ($campaignIDs as $i => $campaignID) {
-            if ($campaignID >= 1000) {
-                // Nur alle externen Kampagnen sind löschbar
-                $campaign = new Kampagne($campaignID);
-                if ($campaign->kKampagne !== null && $campaign->kKampagne > 0) {
-                    $campaign->deleteInDB();
-                }
-            }
-        }
-        Shop::Container()->getCache()->flush('campaigns');
-
-        return 1;
+    if (count($campaignIDs) === 0) {
+        return 0;
     }
+    foreach (\array_map('\intval', $campaignIDs) as $campaignID) {
+        if ($campaignID < 1000) {
+            // Nur externe Kampagnen sind löschbar
+            continue;
+        }
+        (new Kampagne($campaignID))->deleteInDB();
+    }
+    Shop::Container()->getCache()->flush('campaigns');
 
-    return 0;
+    return 1;
 }
 
 /**
- * @param array $dateData
+ * @param DateTimeImmutable $date
  */
-function setzeDetailZeitraum($dateData)
+function setzeDetailZeitraum(DateTimeImmutable $date): void
 {
     // 1 = Jahr
     // 2 = Monat
@@ -1330,28 +1290,26 @@ function setzeDetailZeitraum($dateData)
         $_SESSION['Kampagne']->nDetailAnsicht = 2;
     }
     if (!isset($_SESSION['Kampagne']->cFromDate_arr)) {
-        $_SESSION['Kampagne']->cFromDate_arr['nJahr']  = (int)$dateData['cJahr'];
-        $_SESSION['Kampagne']->cFromDate_arr['nMonat'] = (int)$dateData['cMonat'];
-        $_SESSION['Kampagne']->cFromDate_arr['nTag']   = (int)$dateData['cTag'];
+        $_SESSION['Kampagne']->cFromDate_arr['nJahr']  = (int)$date->format('Y');
+        $_SESSION['Kampagne']->cFromDate_arr['nMonat'] = (int)$date->format('n');
+        $_SESSION['Kampagne']->cFromDate_arr['nTag']   = (int)$date->format('j');
     }
     if (!isset($_SESSION['Kampagne']->cToDate_arr)) {
-        $_SESSION['Kampagne']->cToDate_arr['nJahr']  = (int)$dateData['cJahr'];
-        $_SESSION['Kampagne']->cToDate_arr['nMonat'] = (int)$dateData['cMonat'];
-        $_SESSION['Kampagne']->cToDate_arr['nTag']   = (int)$dateData['cTag'];
+        $_SESSION['Kampagne']->cToDate_arr['nJahr']  = (int)$date->format('Y');
+        $_SESSION['Kampagne']->cToDate_arr['nMonat'] = (int)$date->format('n');
+        $_SESSION['Kampagne']->cToDate_arr['nTag']   = (int)$date->format('j');
     }
     if (!isset($_SESSION['Kampagne']->cFromDate)) {
-        $_SESSION['Kampagne']->cFromDate = (int)$dateData['cJahr'] . '-' .
-            (int)$dateData['cMonat'] . '-' . (int)$dateData['cTag'];
+        $_SESSION['Kampagne']->cFromDate = $date->format('Y-m-d');
     }
     if (!isset($_SESSION['Kampagne']->cToDate)) {
-        $_SESSION['Kampagne']->cToDate = (int)$dateData['cJahr'] . '-' .
-            (int)$dateData['cMonat'] . '-' . (int)$dateData['cTag'];
+        $_SESSION['Kampagne']->cToDate = $date->format('Y-m-d');
     }
     // Ansicht und Zeitraum
     if (Request::verifyGPCDataInt('zeitraum') === 1) {
         // Ansicht
         if (Request::postInt('nAnsicht') > 0) {
-            $_SESSION['Kampagne']->nDetailAnsicht = $_POST['nAnsicht'];
+            $_SESSION['Kampagne']->nDetailAnsicht = Request::postInt('nAnsicht');
         }
         // Zeitraum
         if (Request::postInt('cFromDay') > 0
@@ -1383,66 +1341,67 @@ function setzeDetailZeitraum($dateData)
 function checkGesamtStatZeitParam()
 {
     $stamp = '';
-    if (mb_strlen(Request::verifyGPDataString('cZeitParam')) > 0) {
-        $span      = base64_decode(Request::verifyGPDataString('cZeitParam'));
-        $spanParts = explode(' - ', $span);
-        $dateStart = $spanParts[0] ?? '';
-        $dateEnd   = $spanParts[1] ?? '';
-        if (mb_strlen($dateEnd) === 0) {
-            [$startDay, $startMonth, $startYear] = explode('.', $dateStart);
-            [$cTagEnde, $cMonatEnde, $cJahrEnde] = explode('.', $dateStart);
-        } else {
-            [$startDay, $startMonth, $startYear] = explode('.', $dateStart);
-            [$cTagEnde, $cMonatEnde, $cJahrEnde] = explode('.', $dateEnd);
-        }
-        $_SESSION['Kampagne']->cToDate_arr['nJahr']    = (int)$cJahrEnde;
-        $_SESSION['Kampagne']->cToDate_arr['nMonat']   = (int)$cMonatEnde;
-        $_SESSION['Kampagne']->cToDate_arr['nTag']     = (int)$cTagEnde;
-        $_SESSION['Kampagne']->cToDate                 = (int)$cJahrEnde . '-' .
-            (int)$cMonatEnde . '-' .
-            (int)$cTagEnde;
-        $_SESSION['Kampagne']->cFromDate_arr['nJahr']  = (int)$startYear;
-        $_SESSION['Kampagne']->cFromDate_arr['nMonat'] = (int)$startMonth;
-        $_SESSION['Kampagne']->cFromDate_arr['nTag']   = (int)$startDay;
-        $_SESSION['Kampagne']->cFromDate               = (int)$startYear . '-' .
-            (int)$startMonth . '-' .
-            (int)$startDay;
-        // Int String Work Around
-        $month = $_SESSION['Kampagne']->cFromDate_arr['nMonat'];
-        if ($month < 10) {
-            $month = '0' . $month;
-        }
+    if (mb_strlen(Request::verifyGPDataString('cZeitParam')) === 0) {
+        return $stamp;
+    }
+    $span      = base64_decode(Request::verifyGPDataString('cZeitParam'));
+    $spanParts = explode(' - ', $span);
+    $dateStart = $spanParts[0] ?? '';
+    $dateEnd   = $spanParts[1] ?? '';
+    if (mb_strlen($dateEnd) === 0) {
+        [$startDay, $startMonth, $startYear] = explode('.', $dateStart);
+        [$endDay, $endMonth, $endYear]       = explode('.', $dateStart);
+    } else {
+        [$startDay, $startMonth, $startYear] = explode('.', $dateStart);
+        [$endDay, $endMonth, $endYear]       = explode('.', $dateEnd);
+    }
+    $_SESSION['Kampagne']->cToDate_arr['nJahr']    = (int)$endYear;
+    $_SESSION['Kampagne']->cToDate_arr['nMonat']   = (int)$endMonth;
+    $_SESSION['Kampagne']->cToDate_arr['nTag']     = (int)$endDay;
+    $_SESSION['Kampagne']->cToDate                 = (int)$endYear . '-' .
+        (int)$endMonth . '-' .
+        (int)$endDay;
+    $_SESSION['Kampagne']->cFromDate_arr['nJahr']  = (int)$startYear;
+    $_SESSION['Kampagne']->cFromDate_arr['nMonat'] = (int)$startMonth;
+    $_SESSION['Kampagne']->cFromDate_arr['nTag']   = (int)$startDay;
+    $_SESSION['Kampagne']->cFromDate               = (int)$startYear . '-' .
+        (int)$startMonth . '-' .
+        (int)$startDay;
+    // Int String Work Around
+    $month = $_SESSION['Kampagne']->cFromDate_arr['nMonat'];
+    if ($month < 10) {
+        $month = '0' . $month;
+    }
 
-        $day = $_SESSION['Kampagne']->cFromDate_arr['nTag'];
-        if ($day < 10) {
-            $day = '0' . $day;
-        }
+    $day = $_SESSION['Kampagne']->cFromDate_arr['nTag'];
+    if ($day < 10) {
+        $day = '0' . $day;
+    }
 
-        switch ((int)$_SESSION['Kampagne']->nAnsicht) {
-            case 1:    // Monat
-                $_SESSION['Kampagne']->nDetailAnsicht = 2;
-                $stamp                                = $_SESSION['Kampagne']->cFromDate_arr['nJahr'] . '-' . $month;
-                break;
-            case 2: // Woche
-                $_SESSION['Kampagne']->nDetailAnsicht = 3;
-                $stamp                                = date(
-                    'W',
-                    mktime(
-                        0,
-                        0,
-                        0,
-                        $_SESSION['Kampagne']->cFromDate_arr['nMonat'],
-                        $_SESSION['Kampagne']->cFromDate_arr['nTag'],
-                        $_SESSION['Kampagne']->cFromDate_arr['nJahr']
-                    )
-                );
-                break;
-            case 3: // Tag
-                $_SESSION['Kampagne']->nDetailAnsicht = 4;
-                $stamp                                = $_SESSION['Kampagne']->cFromDate_arr['nJahr'] . '-' .
-                    $month . '-' . $day;
-                break;
-        }
+    switch ((int)$_SESSION['Kampagne']->nAnsicht) {
+        case 1:    // Monat
+            $_SESSION['Kampagne']->nDetailAnsicht = 2;
+            $stamp                                = $_SESSION['Kampagne']->cFromDate_arr['nJahr'] . '-' . $month;
+            break;
+        case 2: // Woche
+            $_SESSION['Kampagne']->nDetailAnsicht = 3;
+            $stamp                                = date(
+                'W',
+                mktime(
+                    0,
+                    0,
+                    0,
+                    $_SESSION['Kampagne']->cFromDate_arr['nMonat'],
+                    $_SESSION['Kampagne']->cFromDate_arr['nTag'],
+                    $_SESSION['Kampagne']->cFromDate_arr['nJahr']
+                )
+            );
+            break;
+        case 3: // Tag
+            $_SESSION['Kampagne']->nDetailAnsicht = 4;
+            $stamp                                = $_SESSION['Kampagne']->cFromDate_arr['nJahr'] . '-' .
+                $month . '-' . $day;
+            break;
     }
 
     return $stamp;
@@ -1524,9 +1483,9 @@ function GetTypes()
  */
 function GetKampTypeName($type)
 {
-    $Serienames = GetTypes();
+    $types = GetTypes();
 
-    return $Serienames[$type] ?? '';
+    return $types[$type] ?? '';
 }
 
 /**
@@ -1537,30 +1496,31 @@ function GetKampTypeName($type)
 function PrepareLineChartKamp($stats, $type)
 {
     $chart = new Linechart(['active' => false]);
-    if (is_array($stats) && count($stats) > 0) {
-        $chart->setActive(true);
-        $data = [];
-        foreach ($stats as $Date => $Dates) {
-            if (mb_strpos($Date, 'Gesamt') === false) {
-                $x = '';
-                foreach ($Dates as $Key => $Stat) {
-                    if (mb_strpos($Key, 'cDatum') !== false) {
-                        $x = $Dates[$Key];
-                    }
+    if (!is_array($stats) || count($stats) === 0) {
+        return $chart;
+    }
+    $chart->setActive(true);
+    $data = [];
+    foreach ($stats as $Date => $Dates) {
+        if (mb_strpos($Date, 'Gesamt') === false) {
+            $x = '';
+            foreach ($Dates as $Key => $Stat) {
+                if (mb_strpos($Key, 'cDatum') !== false) {
+                    $x = $Dates[$Key];
+                }
 
-                    if ($Key == $type) {
-                        $obj    = new stdClass();
-                        $obj->y = (float)$Stat;
+                if ($Key == $type) {
+                    $obj    = new stdClass();
+                    $obj->y = (float)$Stat;
 
-                        $chart->addAxis((string)$x);
-                        $data[] = $obj;
-                    }
+                    $chart->addAxis((string)$x);
+                    $data[] = $obj;
                 }
             }
         }
-        $chart->addSerie(GetKampTypeName($type), $data);
-        $chart->memberToJSON();
     }
+    $chart->addSerie(GetKampTypeName($type), $data);
+    $chart->memberToJSON();
 
     return $chart;
 }

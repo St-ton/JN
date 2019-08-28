@@ -104,9 +104,7 @@ class Kampagne
         $obj->nAktiv        = $this->nAktiv;
         $obj->dErstellt     = $this->dErstellt;
         $this->kKampagne    = Shop::Container()->getDB()->insert('tkampagne', $obj);
-        $parts              = Date::getDateParts($this->dErstellt);
-        $this->dErstellt_DE = $parts['cTag'] . '.' . $parts['cMonat'] . '.' . $parts['cJahr'] . ' ' .
-            $parts['cStunde'] . ':' . $parts['cMinute'] . ':' . $parts['cSekunde'];
+        $this->dErstellt_DE = \date_format(\date_create($this->dErstellt), 'd.m.Y H:i:s');
 
         return $this->kKampagne;
     }
@@ -126,9 +124,7 @@ class Kampagne
         $obj->kKampagne  = $this->kKampagne;
 
         $res                = Shop::Container()->getDB()->update('tkampagne', 'kKampagne', $obj->kKampagne, $obj);
-        $parts              = Date::getDateParts($this->dErstellt);
-        $this->dErstellt_DE = $parts['cTag'] . '.' . $parts['cMonat'] . '.' . $parts['cJahr'] . ' ' .
-            $parts['cStunde'] . ':' . $parts['cMinute'] . ':' . $parts['cSekunde'];
+        $this->dErstellt_DE = \date_format(\date_create($this->dErstellt), 'd.m.Y H:i:s');
 
         return $res;
     }

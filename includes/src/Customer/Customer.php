@@ -507,12 +507,9 @@ class Customer
                 : \date_format(\date_create($this->dGeburtstag), 'd.m.Y');
 
             $this->cGuthabenLocalized = $this->gibGuthabenLocalized();
-            $parts                    = Date::getDateParts($this->dErstellt ?? '');
-            if (\count($parts) > 0) {
-                $this->dErstellt_DE = $parts['cTag'] . '.' .
-                    $parts['cMonat'] . '.' .
-                    $parts['cJahr'];
-            }
+            $this->dErstellt_DE       = $this->dErstellt !== null
+                ? \date_format(\date_create($this->dErstellt), 'd.m.Y')
+                : null;
             \executeHook(\HOOK_KUNDE_CLASS_LOADFROMDB);
         }
 
@@ -604,8 +601,9 @@ class Customer
 
         $this->cAnredeLocalized   = self::mapSalutation($this->cAnrede, $this->kSprache);
         $this->cGuthabenLocalized = $this->gibGuthabenLocalized();
-        $parts                    = Date::getDateParts($this->dErstellt);
-        $this->dErstellt_DE       = $parts['cTag'] . '.' . $parts['cMonat'] . '.' . $parts['cJahr'];
+        $this->dErstellt_DE       = $this->dErstellt !== null
+            ? \date_format(\date_create($this->dErstellt), 'd.m.Y')
+            : null;
 
         return $this->kKunde;
     }
@@ -615,6 +613,9 @@ class Customer
      */
     public function updateInDB(): int
     {
+        if ($this->kKunde === null) {
+            return 0;
+        }
         $this->dGeburtstag           = Date::convertDateToMysqlStandard($this->dGeburtstag);
         $this->dGeburtstag_formatted = $this->dGeburtstag === '_DBNULL_'
             ? ''
@@ -622,7 +623,6 @@ class Customer
 
         $this->verschluesselKundendaten();
         $obj = GeneralObject::copyMembers($this);
-
         unset(
             $obj->cPasswort,
             $obj->angezeigtesLand,
@@ -633,10 +633,12 @@ class Customer
             $obj->dErstellt_DE,
             $obj->cPasswortKlartext
         );
-        if ($obj->dGeburtstag === '') {
+        if ($obj->dGeburtstag === null || $obj->dGeburtstag === '') {
             $obj->dGeburtstag = '_DBNULL_';
         }
-
+        if ($obj->dErstellt === null || $obj->dErstellt === '') {
+            $obj->dErstellt = '_DBNULL_';
+        }
         $obj->cLand       = $this->pruefeLandISO($obj->cLand);
         $obj->dVeraendert = 'NOW()';
         $return           = Shop::Container()->getDB()->update('tkunde', 'kKunde', $obj->kKunde, $obj);
@@ -648,8 +650,9 @@ class Customer
 
         $this->cAnredeLocalized   = self::mapSalutation($this->cAnrede, $this->kSprache);
         $this->cGuthabenLocalized = $this->gibGuthabenLocalized();
-        $parts                    = Date::getDateParts($this->dErstellt);
-        $this->dErstellt_DE       = $parts['cTag'] . '.' . $parts['cMonat'] . '.' . $parts['cJahr'];
+        $this->dErstellt_DE       = $this->dErstellt !== null
+                ? \date_format(\date_create($this->dErstellt), 'd.m.Y')
+                : null;
 
         return $return;
     }

@@ -40,10 +40,10 @@ if ($bestellid->cId) {
 $obj              = new stdClass();
 $obj->tkunde      = $_SESSION['Kunde'];
 $obj->tbestellung = $order;
+$moduleID         = $order->Zahlungsart->cModulId;
 Shop::Smarty()->assign('Bestellung', $order);
 if (Request::verifyGPCDataInt('zusatzschritt') === 1) {
     $hasAdditionalInformation = false;
-    $moduleID                 = $order->Zahlungsart->cModulId;
     switch ($moduleID) {
         case 'za_kreditkarte_jtl':
             if ($_POST['kreditkartennr']
@@ -109,20 +109,34 @@ if (Request::verifyGPCDataInt('zusatzschritt') === 1) {
     }
 }
 // Zahlungsart als Plugin
-$pluginID = Helper::getIDByModuleID($moduleID);
+$pluginID       = Helper::getIDByModuleID($moduleID);
+$additionalStep = false;
 if ($pluginID > 0) {
     $loader = Helper::getLoaderByPluginID($pluginID, $db);
     $plugin = $loader->init($pluginID);
     if ($plugin !== null) {
+
+        gibZahlungsart()
+
+
         $pluginPaymentMethod = $plugin->getPaymentMethods()->getMethodByID($moduleID);
         if ($pluginPaymentMethod === null) {
             return false;
         }
-        $className = $pluginPaymentMethod->getClassName();
+        #$className = $pluginPaymentMethod->getClassName();
         /** @var PaymentMethod $paymentMethod */
-        $paymentMethod           = new $className($moduleID);
-        $paymentMethod->cModulId = $moduleID;
-        $paymentMethod->preparePaymentProcess($order);
+        #$paymentMethod           = new $className($moduleID);
+        #$paymentMethod->cModulId = $moduleID;
+        $paymentMethod = PaymentMethod::create($moduleID);
+        if (!$paymentMethod->handleAdditional($_POST)
+            || (Request::verifyGPCDataInt('zusatzschritt') === 1 && !$paymentMethod->validateAdditional())
+        ) {
+            $additionalStep = true;
+        } else {
+            $paymentMethod->preparePaymentProcess($order);
+        }
+
+        $order->Zahlungsart = $pluginPaymentMethod;
         Shop::Smarty()->assign('oPlugin', $plugin);
     }
 } elseif ($moduleID === 'za_lastschrift_jtl') {
@@ -145,6 +159,10 @@ unset(
 );
 
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
-Shop::Smarty()->display('checkout/order_completed.tpl');
+if ($additionalStep) {
+    Shop::Smarty()->display('account/retrospective_payment.tpl');
+} else {
+    Shop::Smarty()->display('checkout/order_completed.tpl');
+}
 
 require PFAD_ROOT . PFAD_INCLUDES . 'profiler_inc.php';

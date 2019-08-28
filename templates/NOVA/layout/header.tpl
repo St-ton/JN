@@ -9,15 +9,6 @@
           {else}itemtype="http://schema.org/WebPage"{/if}{/block}>
     {block name='layout-header-head'}
     <head>
-        <script>
-            window.JTL_SHOP_NOVA = true;
-            window.JTL_SHOP_NOVA_READY = false;
-            window.deferredTasks = [];
-
-            function pushDeferredTask(when, cb) {
-                window.deferredTasks.push([when, cb]);
-            }
-        </script>
         {block name='layout-header-head-meta'}
             <meta http-equiv="content-type" content="text/html; charset={$smarty.const.JTL_CHARSET}">
             <meta name="description" itemprop="description" content={block name='layout-header-head-meta-description'}"{$meta_description|truncate:1000:"":true}{/block}">
@@ -237,6 +228,64 @@
             {/block}
         {/if}
         {$dbgBarHead}
+
+        {if empty($parentTemplateDir)}
+            {$templateDir = $currentTemplateDir}
+        {else}
+            {$templateDir = $parentTemplateDir}
+        {/if}
+
+        <script defer src="{$ShopURL}/{$templateDir}js/jquery-3.4.1.min.js"></script>
+
+        {if !isset($Einstellungen.template.general.use_minify) || $Einstellungen.template.general.use_minify === 'N'}
+            {if isset($cPluginJsHead_arr)}
+                {foreach $cPluginJsHead_arr as $cJS}
+                    <script defer src="{$ShopURL}/{$cJS}?v={$nTemplateVersion}"></script>
+                {/foreach}
+            {/if}
+        {else}
+            {if isset($cPluginJsHead_arr) && $cPluginJsHead_arr|@count > 0}
+                <script defer src="{$ShopURL}/asset/plugin_js_head?v={$nTemplateVersion}"></script>
+            {/if}
+        {/if}
+
+        {if !isset($Einstellungen.template.general.use_minify) || $Einstellungen.template.general.use_minify === 'N'}
+            {foreach $cJS_arr as $cJS}
+                <script defer src="{$ShopURL}/{$cJS}?v={$nTemplateVersion}"></script>
+            {/foreach}
+            {if isset($cPluginJsBody_arr)}
+                {foreach $cPluginJsBody_arr as $cJS}
+                    <script defer src="{$ShopURL}/{$cJS}?v={$nTemplateVersion}"></script>
+                {/foreach}
+            {/if}
+        {else}
+            <script defer src="{$ShopURL}/asset/jtl3.js?v={$nTemplateVersion}"></script>
+            {if isset($cPluginJsBody_arr) && $cPluginJsBody_arr|@count > 0}
+                <script defer src="{$ShopURL}/asset/plugin_js_body?v={$nTemplateVersion}"></script>
+            {/if}
+        {/if}
+
+        {$customJSPath = $currentTemplateDir|cat:'/js/custom.js'}
+        {if file_exists($customJSPath)}
+            <script defer src="{$ShopURL}/{$customJSPath}?v={$nTemplateVersion}"></script>
+        {/if}
+
+        {$availableLocale = [
+            'ar', 'az', 'bg', 'ca', 'cr', 'cs', 'da', 'de', 'el', 'es', 'et', 'fa', 'fi', 'fr', 'gl', 'he', 'hu', 'id',
+            'it', 'ja', 'ka', 'kr', 'kz', 'lt', 'nl', 'no', 'pl', 'pt', 'ro', 'ru', 'sk', 'sl', 'sv', 'th', 'tr', 'uk',
+            'uz', 'vi', 'zh'
+        ]}
+
+        {if isset($smarty.session.currentLanguage->cISO639)
+                && $smarty.session.currentLanguage->cISO639|in_array:$availableLocale}
+            {$uploaderLang = $smarty.session.currentLanguage->cISO639}
+        {else}
+            {$uploaderLang = 'LANG'}
+        {/if}
+
+        <script defer src="{$templateDir}js/fileinput/fileinput.min.js"></script>
+        <script defer src="{$templateDir}js/fileinput/themes/fas/theme.min.js"></script>
+        <script defer src="{$templateDir}js/fileinput/locales/{$uploaderLang}.js"></script>
     </head>
     {/block}
 

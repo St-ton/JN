@@ -29,7 +29,7 @@
             {/if}
         </div>
     </div>
-    <script>
+    {inline_script}<script>
         function initFlipcard_{$uid}()
         {
             var flipcard      = $('#{$uid}');
@@ -53,11 +53,7 @@
             }
         }
 
-        if(window.JTL_SHOP_NOVA) {
-            pushDeferredTask("ready", initFlipcard_{$uid});
-        } else {
-            $(initFlipcard_{$uid});
-        }
+        $(initFlipcard_{$uid});
 
         document.getElementById('{$uid}').updateFlipcardHeight = updateHeight_{$uid};
 
@@ -78,5 +74,5 @@
             flipcardInner.height(height);
             flipcardFaces.height(height);
         }
-    </script>
+    </script>{/inline_script}
 </div>

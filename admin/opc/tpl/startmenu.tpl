@@ -13,7 +13,7 @@
     {$languages         = $smarty.session.Sprachen}
     {$currentLanguage   = $smarty.session.currentLanguage}
 
-    <script>
+    {inline_script}<script>
         let languages = [
             {foreach $languages as $lang}
                 {
@@ -29,11 +29,7 @@
             id: {$currentLanguage->id},
         };
 
-        if(window.JTL_SHOP_NOVA) {
-            pushDeferredTask("ready", updateTooltips);
-        } else {
-            $(updateTooltips);
-        }
+        $(updateTooltips);
 
         function openOpcStartMenu()
         {
@@ -236,7 +232,7 @@
                 $(this).tooltip('hide');
             });
         }
-    </script>
+    </script>{/inline_script}
     <div id="opc">
         {if $pageDrafts|count === 0}
             <nav id="opc-startmenu">

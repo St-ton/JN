@@ -309,7 +309,7 @@
 
         {if isset($bAjaxRequest) && $bAjaxRequest}
             {block name='comparelist-index-script-remove'}
-                <script type="text/javascript">
+                {inline_script}<script>
                     $('.modal a.remove').click(function(e) {
                         var kArtikel = $(e.currentTarget).data('id');
                         $('section.box-compare li[data-id="' + kArtikel + '"]').remove();
@@ -333,28 +333,25 @@
                             eModal.close();
                         }
                     }();
-                </script>
+                </script>{/inline_script}
             {/block}
         {/if}
         {block name='comparelist-index-script-check'}
-            <script>
-                var deferredTasks = window.deferredTasks || [];
-                deferredTasks.push(["ready",function (){
-                    $(document).ready(function () {
-                        $('.comparelist-checkbox').change(function () {
-                            $('[data-id="row-' + $(this).data('id') + '"]').toggleClass('d-none');
-                        });
-                        $('#check-all').click(function () {
-                            $('.comparelist-checkbox').prop('checked', true);
-                            $('.comparelist-row').removeClass('d-none');
-                        });
-                        $('#check-none').click(function () {
-                            $('.comparelist-checkbox').prop('checked', false);
-                            $('.comparelist-row').addClass('d-none');
-                        });
+            {inline_script}<script>
+                $(document).ready(function () {
+                    $('.comparelist-checkbox').change(function () {
+                        $('[data-id="row-' + $(this).data('id') + '"]').toggleClass('d-none');
                     });
-                }]);
-            </script>
+                    $('#check-all').click(function () {
+                        $('.comparelist-checkbox').prop('checked', true);
+                        $('.comparelist-row').removeClass('d-none');
+                    });
+                    $('#check-none').click(function () {
+                        $('.comparelist-checkbox').prop('checked', false);
+                        $('.comparelist-row').addClass('d-none');
+                    });
+                });
+            </script>{/inline_script}
         {/block}
     {/block}
 

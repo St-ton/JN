@@ -37,30 +37,27 @@
         {/block}
     {/if}
     {block name='productdetails-popups-script'}
-        <script type="text/javascript">
-            var deferredTasks = window.deferredTasks || [];
-            deferredTasks.push(["ready",function (){
-                $(function() {
-                    {if isset($fehlendeAngaben_benachrichtigung) && count($fehlendeAngaben_benachrichtigung) > 0 && ($verfuegbarkeitsBenachrichtigung == 2 || $verfuegbarkeitsBenachrichtigung == 3)}
-                        show_popup('n{$kArtikel}', '{lang key='requestNotification'}');
-                    {/if}
+        {inline_script}<script>
+            $(function() {
+                {if isset($fehlendeAngaben_benachrichtigung) && count($fehlendeAngaben_benachrichtigung) > 0 && ($verfuegbarkeitsBenachrichtigung == 2 || $verfuegbarkeitsBenachrichtigung == 3)}
+                    show_popup('n{$kArtikel}', '{lang key='requestNotification'}');
+                {/if}
 
-                    {if isset($fehlendeAngaben_fragezumprodukt) && $fehlendeAngaben_fragezumprodukt|@count > 0 && $Einstellungen.artikeldetails.artikeldetails_fragezumprodukt_anzeigen === 'P'}
-                        show_popup('z{$kArtikel}', '{lang key='productQuestion' section='productDetails'}');
-                    {/if}
-                });
+                {if isset($fehlendeAngaben_fragezumprodukt) && $fehlendeAngaben_fragezumprodukt|@count > 0 && $Einstellungen.artikeldetails.artikeldetails_fragezumprodukt_anzeigen === 'P'}
+                    show_popup('z{$kArtikel}', '{lang key='productQuestion' section='productDetails'}');
+                {/if}
+            });
 
-                function show_popup(item, title) {
-                    var html = $('#popup' + item).html();
-                    if (typeof title === 'undefined' || title.length === 0) {
-                        title = $(html).find('h3').text();
-                    }
-                    eModal.alert({
-                        message: html,
-                        title: title
-                    });
+            function show_popup(item, title) {
+                var html = $('#popup' + item).html();
+                if (typeof title === 'undefined' || title.length === 0) {
+                    title = $(html).find('h3').text();
                 }
-            }]);
-        </script>
+                eModal.alert({
+                    message: html,
+                    title: title
+                });
+            }
+        </script>{/inline_script}
     {/block}
 {/block}

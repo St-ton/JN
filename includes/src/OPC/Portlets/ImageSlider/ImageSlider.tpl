@@ -62,7 +62,7 @@
                     {/if}
                 {/foreach}
             </div>
-            <script type="text/javascript">
+            {inline_script}<script>
                 {if !empty($instance->getProperty('slider-kenburns'))}
                     // pauseTime must be set here
                     var pauseTime      = {$instance->getProperty('slider-animation-pause')};
@@ -212,12 +212,8 @@
                     };
                 {/if}
 
-                if(window.JTL_SHOP_NOVA) {
-                    pushDeferredTask("ready", initImageSlider);
-                } else {
-                    $(initImageSlider);
-                }
-            </script>
+                $(initImageSlider);
+            </script>{/inline_script}
         {/if}
     </div>
 {/if}

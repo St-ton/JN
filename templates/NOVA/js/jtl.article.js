@@ -587,7 +587,7 @@
                         if (typeof item.src !== 'undefined' && item.src.length > 0) {
                             var $jsLink = $('head script[src="' + item.src + '"]');
                             if ($jsLink.length === 0) {
-                                $('head').append('<script type="text/javascript" src="' + item.src + '" >');
+                                $('head').append('<script defer src="' + item.src + '" >');
                             }
                         }
                     });

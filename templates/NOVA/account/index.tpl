@@ -20,24 +20,19 @@
 
             {if isset($nWarenkorb2PersMerge) && $nWarenkorb2PersMerge === 1}
                 {block name='account-index-script-basket-merge'}
-                    <script type="text/javascript">
-                        var deferredTasks = window.deferredTasks || [];
-                        deferredTasks.push(["ready", function () {
-                            $(function() {
-                                eModal.addLabel('{lang key='yes' section='global'}', '{lang key='no' section='global'}');
-                                var options = {
-                                    message: '{lang key='basket2PersMerge' section='login'}',
-                                    label: '{lang key='yes' section='global'}',
-                                    title: '{lang key='basket' section='global'}'
-                                };
-                                eModal.confirm(options).then(
-                                    function() {
-                                        window.location = "{get_static_route id='bestellvorgang.php'}?basket2Pers=1"
-                                    }
-                                );
-                            });
-                        }]);
-                    </script>
+                    {inline_script}<script>
+                        eModal.addLabel('{lang key='yes' section='global'}', '{lang key='no' section='global'}');
+                        var options = {
+                            message: '{lang key='basket2PersMerge' section='login'}',
+                            label: '{lang key='yes' section='global'}',
+                            title: '{lang key='basket' section='global'}'
+                        };
+                        eModal.confirm(options).then(
+                            function() {
+                                window.location = "{get_static_route id='bestellvorgang.php'}?basket2Pers=1"
+                            }
+                        );
+                    </script>{/inline_script}
                 {/block}
             {/if}
 

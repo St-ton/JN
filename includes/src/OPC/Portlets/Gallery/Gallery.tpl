@@ -121,7 +121,7 @@
 {/if}
 
 {if $isPreview === false}
-    <script>
+    {inline_script}<script>
         var initGallery = function() {
             $('#{$instance->getUid()}').slickLightbox({
                 itemSelector: '.img-gallery-active-btn',
@@ -130,10 +130,6 @@
             });
         };
 
-        if(window.JTL_SHOP_NOVA) {
-            pushDeferredTask("ready", initGallery);
-        } else {
-            $(initGallery);
-        }
-    </script>
+        $(initGallery);
+    </script>{/inline_script}
 {/if}

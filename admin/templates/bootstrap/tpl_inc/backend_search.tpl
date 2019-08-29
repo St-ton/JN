@@ -10,7 +10,7 @@
         <div class="dropdown-menu" id="dropdown-search"></div>
     </div>
     <div class="col-auto search-btn">
-        <button class="btn btn-primary"><span class="fal fa-search"></span></button>
+        <button id="backend-search-submit" class="btn btn-primary"><span class="fal fa-search"></span></button>
     </div>
     <script>
         var lastIoSearchCall    = null;
@@ -19,7 +19,12 @@
         var selectedSearchItem  = null;
         var searchDropdown      = $('#dropdown-search');
         var searchInput         = $('#backend-search-input');
+        var searchSubmit        = $('#backend-search-submit');
         var lastSearchTerm      = '';
+
+        searchSubmit.on('click', function () {
+            window.location.href = 'searchresults.php?cSuche=' + searchInput.val();
+        });
 
         searchInput
             .on('input', function() {
@@ -59,7 +64,7 @@
             .on('keydown', function(e) {
                 if(e.key === 'Enter') {
                     if(selectedSearchItem === null) {
-                        var searchString = $('#backend-search-input').val();
+                        var searchString = searchInput.val();
                         if (searchString.length >= 3) {
                             window.location.href = 'searchresults.php?cSuche=' + searchString;
                         }

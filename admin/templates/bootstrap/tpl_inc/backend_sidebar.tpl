@@ -79,4 +79,5 @@
             {/foreach}
         </ul>
     </div>
+    <div class="opaque-background"></div>
 </div>

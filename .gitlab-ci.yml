@@ -12,6 +12,7 @@ stages:
   - tagsDeployment
   - stagingPre
   - staging
+  - stagingMarketplaceDev
 
 .codeQualityScripts: &codeQualityScripts |
   function codeQualityCheck() {
@@ -181,6 +182,49 @@ stages:
           return 1; \
       } \
       ";
+    fi
+  }
+
+.marketplaceDevScripts: &marketplaceDevScripts |
+  export FILENAME="${CI_COMMIT_REF_NAME//[\/\.]/-}";
+  export EXTRACTION_PATH="$RUNNER_PATH/shop-$FILENAME";
+
+  function downloadProcess() {
+    RUNNER_PATH_ZIP="$EXTRACTION_PATH.zip";
+    DOWNLOAD_URL="https://build.jtl-shop.de/get/shop-$FILENAME.zip";
+
+    curl -o $RUNNER_PATH_ZIP $DOWNLOAD_URL
+    unzip -qo $RUNNER_PATH_ZIP -d $EXTRACTION_PATH
+    rm $RUNNER_PATH_ZIP
+  }
+  function deployProcess() {
+    if [[ -d "$STAGING_MARKETPLACE_PATH/update/migrations/" ]]; then
+      MIGRATION_COUNT_BEFORE=$(ls -1 $STAGING_MARKETPLACE_PATH/update/migrations/ | wc -l);
+
+      sudo /usr/bin/rsync -rt -og --chown=nginx:nginx $EXTRACTION_PATH/. $STAGING_MARKETPLACE_PATH
+
+      MIGRATION_COUNT_AFTER=$(ls -1 $STAGING_MARKETPLACE_PATH/update/migrations/ | wc -l);
+
+      if [[ $MIGRATION_COUNT_AFTER -gt $MIGRATION_COUNT_BEFORE ]]; then
+        php -r "
+        require_once '$STAGING_MARKETPLACE_PATH/includes/globalinclude.php'; \
+        \$time    = date('YmdHis'); \
+        \$manager = new MigrationManager(Shop::Container()->getDB()); \
+        try { \
+            \$migrations = \$manager->migrate(\$time); \
+            foreach (\$migrations as \$migration) { \
+                echo \$migration->getName().' '.\$migration->getDescription().PHP_EOL; \
+            } \
+        } catch (Exception \$e) { \
+            \$migration = \$manager->getMigrationById(array_pop(array_reverse(\$manager->getPendingMigrations()))); \
+            \$result    = new IOError('Migration: '.\$migration->getName().' | Errorcode: '.\$e->getMessage()); \
+            echo \$result->message; \
+            return 1; \
+        } \
+        ";
+      fi
+    else
+      sudo /usr/bin/rsync -rt -og --chown=nginx:nginx $EXTRACTION_PATH/. $STAGING_MARKETPLACE_PATH
     fi
   }
 
@@ -400,3 +444,19 @@ stagingDevPhp73:
     - master
   tags:
     - dev-checkout
+
+stagingMarketplaceDev:
+  stage: stagingMarketplaceDev
+  variables:
+    GIT_STRATEGY: none
+  script:
+    - *marketplaceDevScripts
+    - downloadProcess
+    - deployProcess
+  environment:
+    name: staging marketplace dev
+    url: https://$STAGING_MARKETPLACE_DOMAIN
+  only:
+    - master
+  tags:
+    - test-marketplace

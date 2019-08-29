@@ -117,11 +117,20 @@ header > [class*="container"],
 #evo-nav-wrapper {
   box-shadow: 0 2px 16px 0 rgba(0, 0, 0, 0.06);
   height: 209px;
+  #navbarToggler .dropdown-menu{
+    top:185px;
+  }
   @include media-breakpoint-down(sm) {
     height: auto;
+    #navbarToggler .dropdown-menu{
+      top: auto;
+    }
   }
   @include media-breakpoint-up(xl) {
     height: 132px;
+    #navbarToggler .dropdown-menu{
+      top: 100px;
+    }
   }
 }
 

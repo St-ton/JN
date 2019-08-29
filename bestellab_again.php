@@ -109,34 +109,20 @@ if (Request::verifyGPCDataInt('zusatzschritt') === 1) {
     }
 }
 // Zahlungsart als Plugin
-$pluginID       = Helper::getIDByModuleID($moduleID);
-$additionalStep = false;
+$pluginID = Helper::getIDByModuleID($moduleID);
 if ($pluginID > 0) {
     $loader = Helper::getLoaderByPluginID($pluginID, $db);
     $plugin = $loader->init($pluginID);
     if ($plugin !== null) {
-
-        gibZahlungsart()
-
-
-        $pluginPaymentMethod = $plugin->getPaymentMethods()->getMethodByID($moduleID);
-        if ($pluginPaymentMethod === null) {
-            return false;
-        }
-        #$className = $pluginPaymentMethod->getClassName();
-        /** @var PaymentMethod $paymentMethod */
-        #$paymentMethod           = new $className($moduleID);
-        #$paymentMethod->cModulId = $moduleID;
         $paymentMethod = PaymentMethod::create($moduleID);
-        if (!$paymentMethod->handleAdditional($_POST)
-            || (Request::verifyGPCDataInt('zusatzschritt') === 1 && !$paymentMethod->validateAdditional())
-        ) {
-            $additionalStep = true;
-        } else {
-            $paymentMethod->preparePaymentProcess($order);
+        if ($paymentMethod !== null) {
+            if ($paymentMethod->validateAdditional()) {
+                $paymentMethod->preparePaymentProcess($order);
+            } elseif (!$paymentMethod->handleAdditional($_POST)) {
+                $order->Zahlungsart = gibZahlungsart($order->kZahlungsart);
+            }
         }
 
-        $order->Zahlungsart = $pluginPaymentMethod;
         Shop::Smarty()->assign('oPlugin', $plugin);
     }
 } elseif ($moduleID === 'za_lastschrift_jtl') {
@@ -159,10 +145,6 @@ unset(
 );
 
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
-if ($additionalStep) {
-    Shop::Smarty()->display('account/retrospective_payment.tpl');
-} else {
-    Shop::Smarty()->display('checkout/order_completed.tpl');
-}
+Shop::Smarty()->display('checkout/order_completed.tpl');
 
 require PFAD_ROOT . PFAD_INCLUDES . 'profiler_inc.php';

@@ -1651,7 +1651,7 @@ footer {
 
 // nivo
 .container-fluid .slider-wrapper {
-  margin: 0 -($grid-gutter-width/2);
+  margin: 0 (-($grid-gutter-width/2));
 }
 
 .nivo-caption {

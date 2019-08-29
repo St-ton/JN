@@ -5,21 +5,21 @@
 <script type="text/javascript">
     function changeStatType(elem) {ldelim}
         window.location.href = "statistik.php?s=" + elem.options[elem.selectedIndex].value;
-        {rdelim}
+    {rdelim}
 </script>
-{if $nTyp == $STATS_ADMIN_TYPE_BESUCHER}
+{if $nTyp === $smarty.const.STATS_ADMIN_TYPE_BESUCHER}
     {assign var=cTitel value=__('statisticTitle')|cat:': '|cat:__('visitors')}
     {assign var=cURL value=__('statisticBesucherURL')}
-{elseif $nTyp == $STATS_ADMIN_TYPE_KUNDENHERKUNFT}
+{elseif $nTyp === $smarty.const.STATS_ADMIN_TYPE_KUNDENHERKUNFT}
     {assign var=cTitel value=__('statisticTitle')|cat:': '|cat:__('statisticKundenherkunft')}
     {assign var=cURL value=__('statisticKundenherkunftURL')}
-{elseif $nTyp == $STATS_ADMIN_TYPE_SUCHMASCHINE}
+{elseif $nTyp === $smarty.const.STATS_ADMIN_TYPE_SUCHMASCHINE}
     {assign var=cTitel value=__('statisticTitle')|cat:': '|cat:__('statisticSuchmaschine')}
     {assign var=cURL value=__('statisticSuchmaschineURL')}
-{elseif $nTyp == $STATS_ADMIN_TYPE_UMSATZ}
+{elseif $nTyp === $smarty.const.STATS_ADMIN_TYPE_UMSATZ}
     {assign var=cTitel value=__('statisticTitle')|cat:': '|cat:__('statisticUmsatz')}
     {assign var=cURL value=__('statisticUmsatzURL')}
-{else $nTyp == $STATS_ADMIN_TYPE_EINSTIEGSSEITEN}
+{elseif $nTyp === $smarty.const.STATS_ADMIN_TYPE_EINSTIEGSSEITEN}
     {assign var=cTitel value=__('statisticTitle')|cat:': '|cat:__('statisticEinstiegsseite')}
     {assign var=cURL value=__('statisticEinstiegsseiteURL')}
 {/if}
@@ -32,11 +32,11 @@
                 <label class="col-sm-auto col-form-label" for="statType">{__('statisticType')}:</label>
                 <span class="col-sm-auto">
                     <select class="custom-select" name="statType" id="statType" onChange="changeStatType(this);">
-                        <option value="{$STATS_ADMIN_TYPE_BESUCHER}"{if $nTyp == $STATS_ADMIN_TYPE_BESUCHER} selected{/if}>{__('visitors')}</option>
-                        <option value="{$STATS_ADMIN_TYPE_KUNDENHERKUNFT}"{if $nTyp == $STATS_ADMIN_TYPE_KUNDENHERKUNFT} selected{/if}>{__('customerHeritage')}</option>
-                        <option value="{$STATS_ADMIN_TYPE_SUCHMASCHINE}"{if $nTyp == $STATS_ADMIN_TYPE_SUCHMASCHINE} selected{/if}>{__('searchEngines')}</option>
-                        <option value="{$STATS_ADMIN_TYPE_UMSATZ}"{if $nTyp == $STATS_ADMIN_TYPE_UMSATZ} selected{/if}>{__('sales')}</option>
-                        <option value="{$STATS_ADMIN_TYPE_EINSTIEGSSEITEN}"{if $nTyp == $STATS_ADMIN_TYPE_EINSTIEGSSEITEN} selected{/if}>{__('entryPages')}</option>
+                        <option value="{$smarty.const.STATS_ADMIN_TYPE_BESUCHER}"{if $nTyp === $smarty.const.STATS_ADMIN_TYPE_BESUCHER} selected{/if}>{__('visitors')}</option>
+                        <option value="{$smarty.const.STATS_ADMIN_TYPE_KUNDENHERKUNFT}"{if $nTyp === $smarty.const.STATS_ADMIN_TYPE_KUNDENHERKUNFT} selected{/if}>{__('customerHeritage')}</option>
+                        <option value="{$smarty.const.STATS_ADMIN_TYPE_SUCHMASCHINE}"{if $nTyp === $smarty.const.STATS_ADMIN_TYPE_SUCHMASCHINE} selected{/if}>{__('searchEngines')}</option>
+                        <option value="{$smarty.const.STATS_ADMIN_TYPE_UMSATZ}"{if $nTyp === $smarty.const.STATS_ADMIN_TYPE_UMSATZ} selected{/if}>{__('sales')}</option>
+                        <option value="{$smarty.const.STATS_ADMIN_TYPE_EINSTIEGSSEITEN}"{if $nTyp === $smarty.const.STATS_ADMIN_TYPE_EINSTIEGSSEITEN} selected{/if}>{__('entryPages')}</option>
                     </select>
                 </span>
             </div>
@@ -52,11 +52,11 @@
         {include file='tpl_inc/piechart_inc.tpl' piechart=$piechart headline=$headline id='piechart' width='100%'
             height='400px' chartpad='1.5rem'}
     {/if}
-    {if isset($oStat_arr) && $oStat_arr|@count > 0}
-        <div class="card">
-            <div class="card-body">
-                {include file='tpl_inc/filtertools.tpl' oFilter=$oFilter cParam_arr=['s' => $nTyp]}
-                {include file='tpl_inc/pagination.tpl' pagination=$pagination cParam_arr=['s' => $nTyp]}
+    <div class="card">
+        <div class="card-body">
+            {include file='tpl_inc/filtertools.tpl' oFilter=$oFilter cParam_arr=['s' => $nTyp]}
+            {include file='tpl_inc/pagination.tpl' pagination=$pagination cParam_arr=['s' => $nTyp]}
+            {if isset($oStat_arr) && $oStat_arr|@count > 0}
                 <div class="table-responsive">
                     <table class="table table-striped table-sm">
                         <thead>
@@ -73,7 +73,7 @@
                                     {foreach name=member from=$cMember_arr[$i] key=j item=cMember}
                                         {assign var=cMemberVar value=$cMember[0]}
                                         <td class="text-center">
-                                            {if $cMemberVar === 'nCount' && $nTyp == $STATS_ADMIN_TYPE_UMSATZ}
+                                            {if $cMemberVar === 'nCount' && $nTyp === $smarty.const.STATS_ADMIN_TYPE_UMSATZ}
                                                 {$oStat->$cMemberVar|number_format:2:',':'.'} &euro;
                                             {elseif $cMemberVar === 'nCount'}
                                                 {$oStat->$cMemberVar|number_format:0:',':'.'}
@@ -88,10 +88,10 @@
                         </tbody>
                     </table>
                 </div>
-            </div>
+            {else}
+                <div class="alert alert-info">{__('noData')}</div>
+            {/if}
         </div>
-    {else}
-        <div class="alert alert-info">{__('noData')}</div>
-    {/if}
+    </div>
 </div>
 {include file='tpl_inc/footer.tpl'}

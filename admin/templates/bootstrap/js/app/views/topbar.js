@@ -1,8 +1,9 @@
 
-const topbar		= '#topbar'
-const search		= `${topbar} .search input`
-const searchIcon	= `${topbar} .search-icon`
-const dropdown		= '#dropdown-search'
+const topbar		   = '#topbar'
+const search		   = `${topbar} .search input`
+const searchIcon	   = `${topbar} .search-icon`
+const searchBackground = `${topbar} .opaque-background`
+const dropdown		   = '#dropdown-search'
 
 const $topbar		= $(topbar)
 const $search		= $(search)
@@ -35,7 +36,7 @@ $(document).on('click', searchIcon, () => {
 
 $(document).on('click', (e) => {
 	let $target = $(e.target)
-	let isTopbar = $target.parents(topbar).length > 0 || $target.is(topbar)
+	let isTopbar = ($target.parents(topbar).length > 0 || $target.is(topbar)) && !$target.is(searchBackground)
 
 	if(isTopbar)
 		return

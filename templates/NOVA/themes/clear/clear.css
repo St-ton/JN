@@ -15053,6 +15053,21 @@ header > [class*=container],
   box-shadow: 0 2px 16px 0 rgba(0, 0, 0, 0.06);
 }
 
+#evo-nav-wrapper {
+  box-shadow: 0 2px 16px 0 rgba(0, 0, 0, 0.06);
+  height: 209px;
+}
+@media (max-width: 767.98px) {
+  #evo-nav-wrapper {
+    height: auto;
+  }
+}
+@media (min-width: 1300px) {
+  #evo-nav-wrapper {
+    height: 132px;
+  }
+}
+
 header > [class*=container],
 #main-wrapper #content-wrapper {
   box-shadow: none;
@@ -15075,6 +15090,10 @@ header, #main-wrapper {
     width: 100%;
     padding: 1rem 0 0.5rem 1rem;
     left: 0;
+  }
+}
+@media (max-width: 991.98px) and (max-width: 767.98px) {
+  #navbarToggler {
     box-shadow: 0 2px 16px 0 rgba(0, 0, 0, 0.06);
   }
 }
@@ -16397,6 +16416,9 @@ footer .list-group-item {
     background: transparent !important;
   }
 }
+.megamenu .dropdown-item.active {
+  background: #f5f7fa;
+}
 .megamenu .nav,
 .megamenu .header-shop-nav {
   position: relative;
@@ -16425,7 +16447,7 @@ footer .list-group-item {
     border-bottom: 0.375rem solid #F8BF00;
   }
 }
-@media (min-width: 992px) {
+@media (min-width: 768px) {
   .megamenu .dropdown {
     max-height: 600px;
     overflow-y: auto;
@@ -16441,6 +16463,9 @@ footer .list-group-item {
     position: fixed;
     top: auto;
     margin-top: 1rem;
+    /*width: 100%;
+    left: 0;
+    right: 0;*/
   }
 }
 .megamenu .dropdown-toggle::after {

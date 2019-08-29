@@ -29,8 +29,8 @@
         }
             {block name='checkout-inc-paymentmodules-during-order'}
                 <div class="pament-method-during-order">
-                    <p><span class="font-weight-bold">{lang key='yourOrderId' section='checkout'}: </span>>{$Bestellung->cBestellNr}</p>
-                    <p><span class="font-weight-bold">{lang key='yourChosenPaymentOption' section='checkout'}: </span>>{$Bestellung->cZahlungsartName}</p>
+                    <p><span class="font-weight-bold">{lang key='yourOrderId' section='checkout'}: </span>{$Bestellung->cBestellNr}</p>
+                    <p><span class="font-weight-bold">{lang key='yourChosenPaymentOption' section='checkout'}: </span>{$Bestellung->cZahlungsartName}</p>
                 </div>
             {/block}
         {/if}

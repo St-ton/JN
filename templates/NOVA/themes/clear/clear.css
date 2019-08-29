@@ -16584,7 +16584,7 @@ footer .list-group-item {
 }
 
 .container-fluid .slider-wrapper {
-  margin: -16px;
+  margin: 0 -16px;
 }
 
 .nivo-caption {

@@ -105,36 +105,34 @@
                                     <hr class="my-6">
                                     {row}
                                         {col cols=12}
-                                            {card}
-                                                <div class="h4">{lang key='newsCommentAdd' section='news'}</div>
-                                                {form method="post" action="{if !empty($oNewsArchiv->getSEO())}{$oNewsArchiv->getURL()}{else}{get_static_route id='news.php'}{/if}" class="form evo-validate" id="news-addcomment"}
-                                                    {input type="hidden" name="kNews" value=$oNewsArchiv->getID()}
-                                                    {input type="hidden" name="kommentar_einfuegen" value="1"}
-                                                    {input type="hidden" name="n" value=$oNewsArchiv->getID()}
+                                            <div class="h4">{lang key='newsCommentAdd' section='news'}</div>
+                                            {form method="post" action="{if !empty($oNewsArchiv->getSEO())}{$oNewsArchiv->getURL()}{else}{get_static_route id='news.php'}{/if}" class="form evo-validate" id="news-addcomment"}
+                                                {input type="hidden" name="kNews" value=$oNewsArchiv->getID()}
+                                                {input type="hidden" name="kommentar_einfuegen" value="1"}
+                                                {input type="hidden" name="n" value=$oNewsArchiv->getID()}
 
-                                                    {formgroup}
-                                                    {block name='blog-details-form-comment-logged-in'}
-                                                        {formgroup
-                                                            id="commentText"
-                                                            class="{if $nPlausiValue_arr.cKommentar > 0} has-error{/if}"
-                                                            label="<strong>{lang key='newsComment' section='news'}</strong>"
-                                                            label-for="comment-text"
-                                                            label-class="commentForm"
-                                                        }
-                                                            {textarea id="comment-text" name="cKommentar" required=true}{/textarea}
-                                                            {if $nPlausiValue_arr.cKommentar > 0}
-                                                                <div class="form-error-msg text-danger"><i class="fas fa-exclamation-triangle"></i>
-                                                                    {lang key='fillOut' section='global'}
-                                                                </div>
-                                                            {/if}
-                                                        {/formgroup}
-                                                        {button variant="primary" name="speichern" type="submit" class="float-right"}
-                                                            {lang key='newsCommentSave' section='news'}
-                                                        {/button}
-                                                    {/block}
+                                                {formgroup}
+                                                {block name='blog-details-form-comment-logged-in'}
+                                                    {formgroup
+                                                        id="commentText"
+                                                        class="{if $nPlausiValue_arr.cKommentar > 0} has-error{/if}"
+                                                        label="<strong>{lang key='newsComment' section='news'}</strong>"
+                                                        label-for="comment-text"
+                                                        label-class="commentForm"
+                                                    }
+                                                        {textarea id="comment-text" name="cKommentar" required=true}{/textarea}
+                                                        {if $nPlausiValue_arr.cKommentar > 0}
+                                                            <div class="form-error-msg text-danger"><i class="fas fa-exclamation-triangle"></i>
+                                                                {lang key='fillOut' section='global'}
+                                                            </div>
+                                                        {/if}
                                                     {/formgroup}
-                                                {/form}
-                                            {/card}
+                                                    {button variant="primary" name="speichern" type="submit" class="float-right"}
+                                                        {lang key='newsCommentSave' section='news'}
+                                                    {/button}
+                                                {/block}
+                                                {/formgroup}
+                                            {/form}
                                         {/col}
                                     {/row}
                                 {/block}

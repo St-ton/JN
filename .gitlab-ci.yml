@@ -198,29 +198,33 @@ stages:
     rm $RUNNER_PATH_ZIP
   }
   function deployProcess() {
-    MIGRATION_COUNT_BEFORE=$(ls -1 $STAGING_MARKETPLACE_PATH/update/migrations/ | wc -l);
+    if [[ -d "$STAGING_MARKETPLACE_PATH/update/migrations/" ]]; then
+      MIGRATION_COUNT_BEFORE=$(ls -1 $STAGING_MARKETPLACE_PATH/update/migrations/ | wc -l);
 
-    sudo /usr/bin/rsync -rt -og --chown=nginx:nginx $EXTRACTION_PATH/. $STAGING_MARKETPLACE_PATH
+      sudo /usr/bin/rsync -rt -og --chown=nginx:nginx $EXTRACTION_PATH/. $STAGING_MARKETPLACE_PATH
 
-    MIGRATION_COUNT_AFTER=$(ls -1 $STAGING_MARKETPLACE_PATH/update/migrations/ | wc -l);
+      MIGRATION_COUNT_AFTER=$(ls -1 $STAGING_MARKETPLACE_PATH/update/migrations/ | wc -l);
 
-    if [[ $MIGRATION_COUNT_AFTER -gt $MIGRATION_COUNT_BEFORE ]]; then
-      php -r "
-      require_once '$STAGING_MARKETPLACE_PATH/includes/globalinclude.php'; \
-      \$time    = date('YmdHis'); \
-      \$manager = new MigrationManager(Shop::Container()->getDB()); \
-      try { \
-          \$migrations = \$manager->migrate(\$time); \
-          foreach (\$migrations as \$migration) { \
-              echo \$migration->getName().' '.\$migration->getDescription().PHP_EOL; \
-          } \
-      } catch (Exception \$e) { \
-          \$migration = \$manager->getMigrationById(array_pop(array_reverse(\$manager->getPendingMigrations()))); \
-          \$result    = new IOError('Migration: '.\$migration->getName().' | Errorcode: '.\$e->getMessage()); \
-          echo \$result->message; \
-          return 1; \
-      } \
-      ";
+      if [[ $MIGRATION_COUNT_AFTER -gt $MIGRATION_COUNT_BEFORE ]]; then
+        php -r "
+        require_once '$STAGING_MARKETPLACE_PATH/includes/globalinclude.php'; \
+        \$time    = date('YmdHis'); \
+        \$manager = new MigrationManager(Shop::Container()->getDB()); \
+        try { \
+            \$migrations = \$manager->migrate(\$time); \
+            foreach (\$migrations as \$migration) { \
+                echo \$migration->getName().' '.\$migration->getDescription().PHP_EOL; \
+            } \
+        } catch (Exception \$e) { \
+            \$migration = \$manager->getMigrationById(array_pop(array_reverse(\$manager->getPendingMigrations()))); \
+            \$result    = new IOError('Migration: '.\$migration->getName().' | Errorcode: '.\$e->getMessage()); \
+            echo \$result->message; \
+            return 1; \
+        } \
+        ";
+      fi
+    else
+      sudo /usr/bin/rsync -rt -og --chown=nginx:nginx $EXTRACTION_PATH/. $STAGING_MARKETPLACE_PATH
     fi
   }
 

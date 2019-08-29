@@ -14,9 +14,6 @@ require_once PFAD_ROOT . PFAD_ADMIN . PFAD_INCLUDES . 'statistik_inc.php';
 $statsType = Request::verifyGPCDataInt('s');
 
 switch ($statsType) {
-    case 1:
-        $oAccount->permission('STATS_VISITOR_VIEW', true, true);
-        break;
     case 2:
         $oAccount->permission('STATS_VISITOR_LOCATION_VIEW', true, true);
         break;
@@ -30,7 +27,8 @@ switch ($statsType) {
         $oAccount->permission('STATS_LANDINGPAGES_VIEW', true, true);
         break;
     default:
-        $oAccount->redirectOnFailure();
+        $statsType = STATS_ADMIN_TYPE_BESUCHER;
+        $oAccount->permission('STATS_VISITOR_VIEW', true, true);
         break;
 }
 /** @global \JTL\Smarty\JTLSmarty $smarty */
@@ -42,22 +40,18 @@ $dateRange = $filter->addDaterangefield(
     date_create()->modify('-1 year')->modify('+1 day')->format('d.m.Y') . ' - ' . date('d.m.Y')
 );
 $filter->assemble();
-$nDateStampVon = strtotime($dateRange->getStart());
-$nDateStampBis = strtotime($dateRange->getEnd());
-
-$stats         = gibBackendStatistik($statsType, $nDateStampVon, $nDateStampBis, $interval);
+$dateFrom      = strtotime($dateRange->getStart());
+$dateUntil     = strtotime($dateRange->getEnd());
+$stats         = gibBackendStatistik($statsType, $dateFrom, $dateUntil, $interval);
 $statsTypeName = GetTypeNameStats($statsType);
 $axisNames     = getAxisNames($statsType);
-
-if ($statsType === STATS_ADMIN_TYPE_KUNDENHERKUNFT
-    || $statsType === STATS_ADMIN_TYPE_SUCHMASCHINE
-    || $statsType === STATS_ADMIN_TYPE_EINSTIEGSSEITEN
-) {
+$pie           = [STATS_ADMIN_TYPE_KUNDENHERKUNFT, STATS_ADMIN_TYPE_SUCHMASCHINE, STATS_ADMIN_TYPE_EINSTIEGSSEITEN];
+if (in_array($statsType, $pie, true)) {
     $smarty->assign('piechart', preparePieChartStats($stats, $statsTypeName, $axisNames));
 } else {
-    $smarty->assign('linechart', prepareLineChartStats($stats, $statsTypeName, $axisNames));
     $members = gibMappingDaten($statsType);
-    $smarty->assign('ylabel', $members['nCount']);
+    $smarty->assign('linechart', prepareLineChartStats($stats, $statsTypeName, $axisNames))
+        ->assign('ylabel', $members['nCount'] ?? 0);
 }
 $members = [];
 foreach ($stats as $stat) {
@@ -73,11 +67,6 @@ $smarty->assign('headline', $statsTypeName)
     ->assign('oStat_arr', $stats)
     ->assign('oStatJSON', getJSON($stats, $interval, $statsType))
     ->assign('cMember_arr', mappeDatenMember($members, gibMappingDaten($statsType)))
-    ->assign('STATS_ADMIN_TYPE_BESUCHER', STATS_ADMIN_TYPE_BESUCHER)
-    ->assign('STATS_ADMIN_TYPE_KUNDENHERKUNFT', STATS_ADMIN_TYPE_KUNDENHERKUNFT)
-    ->assign('STATS_ADMIN_TYPE_SUCHMASCHINE', STATS_ADMIN_TYPE_SUCHMASCHINE)
-    ->assign('STATS_ADMIN_TYPE_UMSATZ', STATS_ADMIN_TYPE_UMSATZ)
-    ->assign('STATS_ADMIN_TYPE_EINSTIEGSSEITEN', STATS_ADMIN_TYPE_EINSTIEGSSEITEN)
     ->assign('nPosAb', $pagination->getFirstPageItem())
     ->assign('nPosBis', $pagination->getFirstPageItem() + $pagination->getPageItemCount())
     ->assign('pagination', $pagination)

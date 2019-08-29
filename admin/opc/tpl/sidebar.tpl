@@ -11,9 +11,9 @@
                 <button type="button" class="opc-dropdown-item" id="btnExport">
                     <i class="fa fas fa-download fa-fw"></i> {__('Export')}
                 </button>
-                <button type="button" class="opc-dropdown-item" id="btnHelp">
+                {*<button type="button" class="opc-dropdown-item" id="btnHelp">
                     <i class="fa fas fa-question-circle fa-fw"></i> {__('help')}
-                </button>
+                </button>*}
             </div>
         </div>
         <h1 id="opc-sidebar-title">
@@ -141,8 +141,7 @@
 {*blueprint for blueprint entry*}
 <div class="blueprintButton" style="display:none" id="blueprintBtnBlueprint" draggable="true" data-blueprint-id="42">
     <i class="blueprint-icon fas fa-puzzle-piece"></i>
-    <span class="blueprintTitle">{__('templateTitle')}</span>
-    <div class="blueprint-btn-actions">
+    <div class="blueprint-btn-actions float-right">
         <button type="button" class="blueprintExport" data-blueprint-id="999" title="Vorlage exportieren">
             <i class="fas fa-download fa-fw"></i>
         </button>
@@ -150,6 +149,7 @@
             <i class="fas fa-trash fa-fw"></i>
         </button>
     </div>
+    <span class="blueprintTitle mr-5">{__('templateTitle')}</span>
 </div>
 {*/blueprint*}
 

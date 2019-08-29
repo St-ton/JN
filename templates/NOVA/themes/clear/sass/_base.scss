@@ -114,6 +114,18 @@ header > [class*="container"],
   box-shadow: 0 2px 16px 0 rgba(0,0,0,0.06);
 }
 
+#evo-nav-wrapper {
+  box-shadow: 0 2px 16px 0 rgba(0, 0, 0, 0.06);
+  height: 209px;
+  @include media-breakpoint-down(sm) {
+    height: auto;
+  }
+  @include media-breakpoint-up(xl) {
+    height: 132px;
+  }
+}
+
+
 header > [class*="container"],
 #main-wrapper #content-wrapper { box-shadow: none; background: transparent; }
 header, #main-wrapper { background: #fff; }
@@ -127,7 +139,9 @@ header, #main-wrapper { background: #fff; }
     width: 100%;
     padding: map_get($spacers,3) 0 map_get($spacers,2) map_get($spacers,3);
     left: 0;
-    box-shadow: 0 2px 16px 0 rgba(0,0,0,0.06);;
+    @include media-breakpoint-down(sm) {
+      box-shadow: 0 2px 16px 0 rgba(0,0,0,0.06);;
+    }
   }
 }
 @include media-breakpoint-up(md) {
@@ -1477,6 +1491,9 @@ footer {
     }
     .dropdown-item.active, .dropdown-item:hover, .dropdown-item:focus { background: transparent !important; }
   }
+  .dropdown-item.active {
+    background: $gray-lighter;
+  }
   text-align: center;
   .nav,
   .header-shop-nav {
@@ -1504,7 +1521,7 @@ footer {
       }
     }
 
-    @include media-breakpoint-up(lg) {
+    @include media-breakpoint-up(md) {
       max-height: 600px;
       overflow-y: auto;
       .mega-categories{
@@ -1518,6 +1535,9 @@ footer {
         position: fixed;
         top: auto;
         margin-top: 1rem;
+        /*width: 100%;
+        left: 0;
+        right: 0;*/
       }
     }
   }
@@ -1882,9 +1902,10 @@ table caption {
   display: flex;
   flex-basis: 100%;
   align-items: center;
-  color: $gray-light;
+  color: $headings-color;
   margin: 8px 0px;
-  font-size: large;
+  font-size: $h2-font-size;
+  font-family: $headings-font-family;
 
   &::before,
   &::after {
@@ -1894,7 +1915,7 @@ table caption {
     height: 2px;
     font-size: 0px;
     line-height: 0px;
-    margin: 0px 8px;
+    margin: 0px 30px;
   }
   a {
     text-decoration: none;

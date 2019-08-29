@@ -1,9 +1,14 @@
 <?php
 /**
  * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
+ * @license       http://jtl-url.de/jtlshoplicense
+ * @package       jtl-shop
+ * @since
  */
 
+namespace JTL\Plugin\Payment;
+
+use InvalidArgumentException;
 use JTL\Cart\Cart;
 use JTL\Checkout\Bestellung;
 use JTL\Checkout\ZahlungsLog;
@@ -15,14 +20,13 @@ use JTL\Mail\Mailer;
 use JTL\Plugin\Helper as PluginHelper;
 use JTL\Session\Frontend;
 use JTL\Shop;
+use stdClass;
 
 /**
- * Class PaymentMethod
- *
- * Represents a Method of Payment the customer can pay his order with.
- * Paypal, for example.
+ * Class Method
+ * @package JTL\Plugin\Payment
  */
-class PaymentMethod
+class Method implements MethodInterface
 {
     /**
      * i.e. za_mbqc_visa_jtl
@@ -64,6 +68,7 @@ class PaymentMethod
 
     /**
      * @var bool
+     * @deprecated since 5.0.0 - use self::canPayAgain
      */
     public $bPayAgain;
 
@@ -81,7 +86,7 @@ class PaymentMethod
      * @param string $moduleID
      * @param int    $nAgainCheckout
      */
-    public function __construct($moduleID, $nAgainCheckout = 0)
+    public function __construct(string $moduleID, int $nAgainCheckout = 0)
     {
         $this->moduleID = $moduleID;
         // extract: za_mbqc_visa_jtl => myqc_visa
@@ -94,12 +99,9 @@ class PaymentMethod
     }
 
     /**
-     * Set Members Variables
-     *
-     * @param int $nAgainCheckout
-     * @return $this
+     * @inheritDoc
      */
-    public function init($nAgainCheckout = 0)
+    public function init(int $nAgainCheckout = 0)
     {
         $this->name           = '';
         $result               = Shop::Container()->getDB()->select('tzahlungsart', 'cModulId', $this->moduleID);
@@ -108,20 +110,20 @@ class PaymentMethod
             ? (int)$result->nWaehrendBestellung
             : 0;
 
-        if ((int)$nAgainCheckout === 1) {
+        if ($nAgainCheckout === 1) {
             $this->duringCheckout = 0;
         }
         if ($this->cModulId === 'za_null_jtl' || $this->moduleID === 'za_null_jtl') {
             $this->kZahlungsart = (int)$result->kZahlungsart;
         }
+
         return $this;
     }
 
     /**
-     * @param Bestellung $order
-     * @return string|null
+     * @inheritDoc
      */
-    public function getOrderHash($order)
+    public function getOrderHash(Bestellung $order): ?string
     {
         $orderId = isset($order->kBestellung)
             ? Shop::Container()->getDB()->query(
@@ -134,12 +136,9 @@ class PaymentMethod
     }
 
     /**
-     * Payment Provider redirects customer to this URL when Payment is complete
-     *
-     * @param Bestellung $order
-     * @return string
+     * @inheritDoc
      */
-    public function getReturnURL($order)
+    public function getReturnURL(Bestellung $order): string
     {
         if (isset($_SESSION['Zahlungsart']->nWaehrendBestellung)
             && (int)$_SESSION['Zahlungsart']->nWaehrendBestellung > 0
@@ -154,7 +153,7 @@ class PaymentMethod
                     WHERE kBestellung = ' . (int)$order->kBestellung,
                 ReturnType::SINGLE_OBJECT
             );
-            if (is_object($oZahlungsID)) {
+            if (\is_object($oZahlungsID)) {
                 return Shop::getURL() . '/bestellabschluss.php?i=' . $oZahlungsID->cId;
             }
         }
@@ -163,10 +162,9 @@ class PaymentMethod
     }
 
     /**
-     * @param string $hash
-     * @return string
+     * @inheritDoc
      */
-    public function getNotificationURL($hash)
+    public function getNotificationURL(string $hash): string
     {
         $key = $this->duringCheckout ? 'sh' : 'ph';
 
@@ -174,13 +172,10 @@ class PaymentMethod
     }
 
     /**
-     * @param int    $orderID
-     * @param string $cNotifyID
-     * @return $this
+     * @inheritDoc
      */
-    public function updateNotificationID($orderID, $cNotifyID)
+    public function updateNotificationID(int $orderID, string $cNotifyID)
     {
-        $orderID = (int)$orderID;
         if ($orderID > 0) {
             $upd            = new stdClass();
             $upd->cNotifyID = Shop::Container()->getDB()->escape($cNotifyID);
@@ -192,31 +187,25 @@ class PaymentMethod
     }
 
     /**
-     * @return string
+     * @inheritDoc
      */
-    public function getShopTitle()
+    public function getShopTitle(): string
     {
         return Shop::getConfigValue(CONF_GLOBAL, 'global_shopname');
     }
 
     /**
-     * Prepares everything so that the Customer can start the Payment Process.
-     * Tells Template Engine.
-     *
-     * @param Bestellung $order
+     * @inheritDoc
      */
-    public function preparePaymentProcess($order)
+    public function preparePaymentProcess(Bestellung $order): void
     {
         // overwrite!
     }
 
     /**
-     * Sends Error Mail to Master
-     *
-     * @param string $body
-     * @return $this
+     * @inheritDoc
      */
-    public function sendErrorMail($body)
+    public function sendErrorMail(string $body)
     {
         $conf                = Shop::getSettings([CONF_EMAILS]);
         $mail                = new stdClass();
@@ -244,13 +233,9 @@ class PaymentMethod
     }
 
     /**
-     * Generates Hash (Payment oder Session Hash) and saves it to DB
-     *
-     * @param Bestellung $order
-     * @param int        $length
-     * @return string
+     * @inheritDoc
      */
-    public function generateHash($order, $length = 40)
+    public function generateHash(Bestellung $order): string
     {
         $hash = null;
         if ((int)$this->duringCheckout === 1) {
@@ -261,12 +246,12 @@ class PaymentMethod
         }
 
         if ($order->kBestellung !== null) {
-            $oBestellID                = Shop::Container()->getDB()->select(
+            $oBestellID              = Shop::Container()->getDB()->select(
                 'tbestellid',
                 'kBestellung',
                 (int)$order->kBestellung
             );
-            $hash                      = $oBestellID->cId;
+            $hash                    = $oBestellID->cId;
             $paymentID               = new stdClass();
             $paymentID->kBestellung  = $order->kBestellung;
             $paymentID->kZahlungsart = $order->kZahlungsart;
@@ -290,10 +275,9 @@ class PaymentMethod
     }
 
     /**
-     * @param string $paymentHash
-     * @return $this
+     * @inheritDoc
      */
-    public function deletePaymentHash($paymentHash)
+    public function deletePaymentHash(string $paymentHash)
     {
         Shop::Container()->getDB()->delete('tzahlungsid', 'cId', $paymentHash);
 
@@ -301,11 +285,9 @@ class PaymentMethod
     }
 
     /**
-     * @param Bestellung $order
-     * @param Object     $payment (Key, Zahlungsanbieter, Abgeholt, Zeit is set here)
-     * @return $this
+     * @inheritDoc
      */
-    public function addIncomingPayment($order, $payment)
+    public function addIncomingPayment(Bestellung $order, object $payment)
     {
         $model = (object)array_merge([
             'kBestellung'       => (int)$order->kBestellung,
@@ -325,10 +307,9 @@ class PaymentMethod
     }
 
     /**
-     * @param Bestellung $order
-     * @return $this
+     * @inheritDoc
      */
-    public function setOrderStatusToPaid($order)
+    public function setOrderStatusToPaid(Bestellung $order)
     {
         $_upd                = new stdClass();
         $_upd->cStatus       = BESTELLUNG_STATUS_BEZAHLT;
@@ -339,12 +320,9 @@ class PaymentMethod
     }
 
     /**
-     * Sends a Mail to the Customer if Payment was recieved
-     *
-     * @param Bestellung $order
-     * @return $this
+     * @inheritDoc
      */
-    public function sendConfirmationMail($order)
+    public function sendConfirmationMail(Bestellung $order)
     {
         $this->sendMail($order->kBestellung, MAILTEMPLATE_BESTELLUNG_BEZAHLT);
 
@@ -352,52 +330,44 @@ class PaymentMethod
     }
 
     /**
-     * @param Bestellung $order
-     * @param string     $hash
-     * @param array      $args
+     * @inheritDoc
      */
-    public function handleNotification($order, $hash, $args)
+    public function handleNotification(Bestellung $order, string $hash, array $args): void
     {
         // overwrite!
     }
 
     /**
-     * @param Bestellung $order
-     * @param string     $hash
-     * @param array      $args
-     *
-     * @return true, if $order should be finalized
+     * @inheritDoc
      */
-    public function finalizeOrder($order, $hash, $args)
+    public function finalizeOrder(Bestellung $order, string $hash, array $args): bool
     {
         // overwrite!
         return false;
     }
 
     /**
-     * @return bool
+     * @inheritDoc
      */
-    public function redirectOnCancel()
+    public function redirectOnCancel(): bool
     {
         // overwrite!
         return false;
     }
 
     /**
-     * @return bool
+     * @inheritDoc
      */
-    public function redirectOnPaymentSuccess()
+    public function redirectOnPaymentSuccess(): bool
     {
         // overwrite!
         return false;
     }
 
     /**
-     * @param string $msg
-     * @param int    $level
-     * @return $this
+     * @inheritDoc
      */
-    public function doLog($msg, $level = LOGLEVEL_NOTICE)
+    public function doLog(string $msg, int $level = LOGLEVEL_NOTICE)
     {
         ZahlungsLog::add($this->moduleID, $msg, null, $level);
 
@@ -405,17 +375,16 @@ class PaymentMethod
     }
 
     /**
-     * @param int $customerID
-     * @return int
+     * @inheritDoc
      */
-    public function getCustomerOrderCount($customerID)
+    public function getCustomerOrderCount(int $customerID): int
     {
-        if ((int)$customerID > 0) {
+        if ($customerID > 0) {
             $order = Shop::Container()->getDB()->query(
                 "SELECT COUNT(*) AS nAnzahl
                     FROM tbestellung
                     WHERE (cStatus = '2' || cStatus = '3' || cStatus = '4')
-                        AND kKunde = " . (int)$customerID,
+                        AND kKunde = " . $customerID,
                 ReturnType::SINGLE_OBJECT
             );
 
@@ -428,7 +397,7 @@ class PaymentMethod
     }
 
     /**
-     * @return $this
+     * @inheritDoc
      */
     public function loadSettings()
     {
@@ -438,10 +407,9 @@ class PaymentMethod
     }
 
     /**
-     * @param string $key
-     * @return mixed
+     * @inheritDoc
      */
-    public function getSetting($key)
+    public function getSetting(string $key)
     {
         $conf = Shop::getSettings([CONF_ZAHLUNGSARTEN, CONF_PLUGINZAHLUNGSARTEN]);
 
@@ -451,11 +419,9 @@ class PaymentMethod
 
     /**
      *
-     * @param object $customer
-     * @param Cart   $cart
-     * @return bool - true, if $customer with $cart may use Payment Method
+     * @inheritDoc
      */
-    public function isValid($customer, $cart)
+    public function isValid(object $customer, Cart $cart): bool
     {
         if ($this->getSetting('min_bestellungen') > 0) {
             if (isset($customer->kKunde) && $customer->kKunde > 0) {
@@ -490,7 +456,8 @@ class PaymentMethod
             }
         }
 
-        if ($this->getSetting('min') > 0 && $cart->gibGesamtsummeWaren(true) <= $this->getSetting('min')) {
+        $min = $this->getSetting('min');
+        if ($min > 0 && $cart->gibGesamtsummeWaren(true) <= $min) {
             ZahlungsLog::add(
                 $this->moduleID,
                 'Bestellwert ' . $cart->gibGesamtsummeWaren(true) .
@@ -502,7 +469,8 @@ class PaymentMethod
             return false;
         }
 
-        if ($this->getSetting('max') > 0 && $cart->gibGesamtsummeWaren(true) >= $this->getSetting('max')) {
+        $max = $this->getSetting('max');
+        if ($max > 0 && $cart->gibGesamtsummeWaren(true) >= $max) {
             ZahlungsLog::add(
                 $this->moduleID,
                 'Bestellwert ' . $cart->gibGesamtsummeWaren(true) .
@@ -514,7 +482,7 @@ class PaymentMethod
             return false;
         }
 
-        if (!$this->isValidIntern($customer, $cart)) {
+        if (!$this->isValidIntern([$customer, $cart])) {
             return false;
         }
 
@@ -522,50 +490,44 @@ class PaymentMethod
     }
 
     /**
-     * @param array $args_arr
-     * @return bool
+     * @inheritDoc
      */
-    public function isValidIntern($args_arr = [])
+    public function isValidIntern(array $args_arr = []): bool
     {
         // Overwrite
         return true;
     }
 
     /**
-     * determines, if the payment method can be selected in the checkout process
-     *
-     * @return bool
+     * @inheritDoc
      */
-    public function isSelectable()
+    public function isSelectable(): bool
     {
         // Overwrite
         return true;
     }
 
     /**
-     * @param array $post
-     * @return bool
+     * @inheritDoc
      */
-    public function handleAdditional($post)
+    public function handleAdditional(array $post): bool
     {
         return true;
     }
 
     /**
-     * @return bool
+     * @inheritDoc
      */
-    public function validateAdditional()
+    public function validateAdditional(): bool
     {
         return true;
     }
 
     /**
      *
-     * @param string $cKey
-     * @param string $cValue
-     * @return $this
+     * @inheritDoc
      */
-    public function addCache($cKey, $cValue)
+    public function addCache(string $cKey, string $cValue)
     {
         $_SESSION[$this->moduleID][$cKey] = $cValue;
 
@@ -573,10 +535,9 @@ class PaymentMethod
     }
 
     /**
-     * @param string|null $cKey
-     * @return $this
+     * @inheritDoc
      */
-    public function unsetCache($cKey = null)
+    public function unsetCache(?string $cKey = null)
     {
         if ($cKey === null) {
             unset($_SESSION[$this->moduleID]);
@@ -588,10 +549,9 @@ class PaymentMethod
     }
 
     /**
-     * @param null|string $cKey
-     * @return null
+     * @inheritDoc
      */
-    public function getCache($cKey = null)
+    public function getCache(?string $cKey = null): ?string
     {
         if ($cKey === null) {
             return $_SESSION[$this->moduleID] ?? null;
@@ -601,26 +561,21 @@ class PaymentMethod
     }
 
     /**
-     * @param int $orderID
-     * @param int $languageID
-     * @return object
+     * @inheritDoc
      */
-    public function createInvoice($orderID, $languageID)
+    public function createInvoice(int $orderID, int $languageID): object
     {
-        $invoide        = new stdClass();
-        $invoide->nType = 0;
-        $invoide->cInfo = '';
-
-        return $invoide;
+        return (object)[
+            'nType' => 0,
+            'cInfo' => '',
+        ];
     }
 
     /**
-     * @param int $orderID
-     * @return $this
+     * @inheritDoc
      */
-    public function reactivateOrder($orderID)
+    public function reactivateOrder(int $orderID)
     {
-        $orderID = (int)$orderID;
         $this->sendMail($orderID, MAILTEMPLATE_BESTELLUNG_RESTORNO);
         $upd                = new stdClass();
         $upd->cStatus       = BESTELLUNG_STATUS_IN_BEARBEITUNG;
@@ -631,14 +586,11 @@ class PaymentMethod
     }
 
     /**
-     * @param int  $orderID
-     * @param bool $delete
-     * @return $this
+     * @inheritDoc
      */
-    public function cancelOrder($orderID, $delete = false)
+    public function cancelOrder(int $orderID, bool $delete = false)
     {
         if (!$delete) {
-            $orderID = (int)$orderID;
             $this->sendMail($orderID, MAILTEMPLATE_BESTELLUNG_STORNO);
             $upd                = new stdClass();
             $upd->cStatus       = BESTELLUNG_STATUS_STORNO;
@@ -650,21 +602,18 @@ class PaymentMethod
     }
 
     /**
-     * @return bool
+     * @inheritDoc
      */
-    public function canPayAgain()
+    public function canPayAgain(): bool
     {
         // overwrite
         return false;
     }
 
     /**
-     * @param int    $orderID
-     * @param string $type
-     * @param mixed  $additional
-     * @return $this
+     * @inheritDoc
      */
-    public function sendMail($orderID, $type, $additional = null)
+    public function sendMail(int $orderID, string $type, $additional = null)
     {
         $order = new Bestellung($orderID);
         $order->fuelleBestellung(false);
@@ -680,7 +629,7 @@ class PaymentMethod
             case MAILTEMPLATE_BESTELLUNG_VERSANDT:
                 $data->tkunde      = $customer;
                 $data->tbestellung = $order;
-                if (strlen($customer->cMail) > 0) {
+                if ($customer->cMail !== '') {
                     $mailer->send($mail->createFromTemplateID($type, $data));
                 }
                 break;
@@ -688,7 +637,7 @@ class PaymentMethod
             case MAILTEMPLATE_BESTELLUNG_BEZAHLT:
                 $data->tkunde      = $customer;
                 $data->tbestellung = $order;
-                if (($order->Zahlungsart->nMailSenden & ZAHLUNGSART_MAIL_EINGANG) && strlen($customer->cMail) > 0) {
+                if (($order->Zahlungsart->nMailSenden & ZAHLUNGSART_MAIL_EINGANG) && $customer->cMail !== '') {
                     $mailer->send($mail->createFromTemplateID($type, $data));
                 }
                 break;
@@ -696,7 +645,7 @@ class PaymentMethod
             case MAILTEMPLATE_BESTELLUNG_STORNO:
                 $data->tkunde      = $customer;
                 $data->tbestellung = $order;
-                if (($order->Zahlungsart->nMailSenden & ZAHLUNGSART_MAIL_STORNO) && strlen($customer->cMail) > 0) {
+                if (($order->Zahlungsart->nMailSenden & ZAHLUNGSART_MAIL_STORNO) && $customer->cMail !== '') {
                     $mailer->send($mail->createFromTemplateID($type, $data));
                 }
                 break;
@@ -704,7 +653,7 @@ class PaymentMethod
             case MAILTEMPLATE_BESTELLUNG_RESTORNO:
                 $data->tkunde      = $customer;
                 $data->tbestellung = $order;
-                if (($order->Zahlungsart->nMailSenden & ZAHLUNGSART_MAIL_RESTORNO) && strlen($customer->cMail) > 0) {
+                if (($order->Zahlungsart->nMailSenden & ZAHLUNGSART_MAIL_RESTORNO) && $customer->cMail !== '') {
                     $mailer->send($mail->createFromTemplateID($type, $data));
                 }
                 break;
@@ -718,13 +667,13 @@ class PaymentMethod
 
     /**
      * @param string $moduleID
-     * @return PaymentMethod
+     * @return MethodInterface
      */
-    public static function create($moduleID)
+    public static function create($moduleID): MethodInterface
     {
         global $plugin;
         global $oPlugin;
-        $tmpPlugin    = $plugin;
+        $tmpPlugin     = $plugin;
         $paymentMethod = null;
         $pluginID      = PluginHelper::getIDByModuleID($moduleID);
         if ($pluginID > 0) {
@@ -750,7 +699,7 @@ class PaymentMethod
             }
         } elseif ($moduleID === 'za_null_jtl') {
             require_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'fallback/FallBackPayment.php';
-            $paymentMethod = new FallBackPayment('za_null_jtl');
+            $paymentMethod = new FallbackMethod('za_null_jtl');
         }
         $plugin = $tmpPlugin;
 

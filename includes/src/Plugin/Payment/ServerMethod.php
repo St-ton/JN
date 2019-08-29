@@ -1,20 +1,18 @@
 <?php
 /**
  * @copyright (c) JTL-Software-GmbH
- * @license http://jtl-url.de/jtlshoplicense
+ * @license       http://jtl-url.de/jtlshoplicense
+ * @package       jtl-shop
+ * @since
  */
 
-include_once PFAD_ROOT . PFAD_INCLUDES_MODULES . 'PaymentMethod.class.php';
-
-define('SPM_PORT', 443);
-define('SPM_TIMEOUT', 30);
+namespace JTL\Plugin\Payment;
 
 /**
- * Class ServerPaymentMethod
- *
- * Represents a Payment Module that needs a Server-Server-Communication
+ * Class ServerMethod
+ * @package JTL\Plugin\Payment
  */
-class ServerPaymentMethod extends PaymentMethod
+class ServerMethod extends Method
 {
     /**
      * e.g. ssl://www.moneybookers.com
@@ -38,10 +36,9 @@ class ServerPaymentMethod extends PaymentMethod
     public $path;
 
     /**
-     * @param int $nAgainCheckout
-     * @return $this
+     * @inheritDoc
      */
-    public function init($nAgainCheckout = 0)
+    public function init(int $nAgainCheckout = 0)
     {
         parent::init($nAgainCheckout);
 
@@ -59,7 +56,7 @@ class ServerPaymentMethod extends PaymentMethod
      * @param string $cLogPfad
      * @return array - array('status', 'header', 'body') status = error|success
      */
-    public function postRequest($fields, $bUTF8 = true, $bLogging = false, $cLogPfad = '')
+    public function postRequest(array $fields, bool $bUTF8 = true, bool $bLogging = false, string $cLogPfad = ''): array
     {
         // Workaround: http://bugs.php.net/bug.php?id=39039 (see last line of Method)
         $tempErrorLevel = error_reporting(0);
@@ -83,13 +80,13 @@ class ServerPaymentMethod extends PaymentMethod
         }
 
         foreach ($fields as $key => $value) {
-            $request .= "&$key=$value";
+            $request .= '&' . $key . '=' . $value;
         }
         // Send
-        $header = "POST {$this->path} HTTP/1.1\r\n"
-            . "Host: {$this->host}\r\n"
-            . "Content-Type: application/x-www-form-urlencoded;charset={$cEncoding}\r\n"
-            . 'Content-Length: ' . strlen($request) . "\r\n"
+        $header = 'POST ' . $this->path . " HTTP/1.1\r\n"
+            . 'Host: ' . $this->host . "\r\n"
+            . 'Content-Type: application/x-www-form-urlencoded;charset=' . $cEncoding . "\r\n"
+            . 'Content-Length: ' . \strlen($request) . "\r\n"
             . "Connection: close\r\n\r\n";
         fwrite($socket, $header);
         fwrite($socket, $request);

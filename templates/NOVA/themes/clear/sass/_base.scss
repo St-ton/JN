@@ -1766,7 +1766,7 @@ a.no-deco {
       bottom: 0.3rem;
       left: 0.75rem;
       width: calc(100% - 2 * 0.75rem);
-      border-bottom: 3px solid #F8BF00;
+      border-bottom: 3px solid $primary;
     }
   }
 }
@@ -2327,8 +2327,8 @@ input.form-control[name="wishlist-url"] {
     border-color: $primary;
     .badge-circle{
       display: flex;
-      background-color: #F8BF00;
-      border-color: #F8BF00;
+      background-color: $primary;
+      border-color: $primary;
       color: #fff;
       opacity: 1;
       align-items: center;
@@ -2349,8 +2349,8 @@ input.form-control[name="wishlist-url"] {
   border: 2px solid $primary;
   .badge-circle {
     display: flex;
-    background-color: #F8BF00;
-    border-color: #F8BF00;
+    background-color: $primary;
+    border-color: $primary;
     color: #fff;
     opacity: 1;
     align-items: center;

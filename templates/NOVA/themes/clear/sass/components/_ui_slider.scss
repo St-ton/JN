@@ -11,7 +11,7 @@
     border: 0;
     width: 0.7em;
     height: 0.7em;
-    box-shadow: 0px 0px 0px 5px rgba(248, 191, 0, 0.5);
+    box-shadow: 0px 0px 0px 5px rgba($primary, .5);
     &::after,
     &::before {
       content: none;

@@ -112,7 +112,7 @@ $linkHelper->activate($pageType);
 $origin = (isset($_SESSION['Kunde']->cLand) && mb_strlen($_SESSION['Kunde']->cLand) > 0)
     ? $_SESSION['Kunde']->cLand
     : '';
-$smarty->assign('linkgroups', $linkHelper->getLinkGroups())
+$smarty->assign('linkgroups', $linkHelper->getVisibleLinkGroups())
        ->assign('NaviFilter', $NaviFilter)
        ->assign('manufacturers', Manufacturer::getInstance()->getManufacturers())
        ->assign('cPluginCss_arr', $minify['plugin_css'])

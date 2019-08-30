@@ -96,7 +96,10 @@
                                 {/link}
                             {/col}
                             {col cols=6}
-                                {link href=$pushedArtikel->cURLFull class="btn btn-primary btn-block" data=["dismiss"=>"alert"] aria=["label"=>"Close"]}
+                                {link href=$pushedArtikel->cURLFull
+                                    class="btn btn-primary btn-block"
+                                    data=["dismiss"=>"{if !$card}modal{else}alert{/if}"]
+                                    aria=["label"=>"Close"]}
                                     <i class="fa fa-arrow-circle-right"></i> {lang key='continueShopping' section='checkout'}
                                 {/link}
                             {/col}

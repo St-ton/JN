@@ -7,8 +7,8 @@
     {has_boxes position='left' assign='hasLeftBox'}
     {if !empty($Brotnavi) && !$bExclusive && !$bAjaxRequest && $nSeitenTyp !== $smarty.const.PAGE_STARTSEITE && $nSeitenTyp !== $smarty.const.PAGE_BESTELLVORGANG && $nSeitenTyp !== $smarty.const.PAGE_BESTELLSTATUS}
         {row class="breadcrumb-wrapper"}
-            {col}
-                {breadcrumb id="breadcrumb" itemprop="breadcrumb" itemscope=true itemtype="http://schema.org/BreadcrumbList" class="p-0 py-2"}
+            {col cols="auto"}
+                {breadcrumb id="breadcrumb" itemprop="breadcrumb" itemscope=true itemtype="http://schema.org/BreadcrumbList" class="p-0 py-2 mb-0"}
                     {block name='layout-breadcrumb-xs-back'}
                         {$parent = $Brotnavi[$Brotnavi|count -2|max:0]}
                         {breadcrumbitem class="breadcrumb-back"
@@ -75,6 +75,18 @@
                         {/foreach}
                     {/block}
                 {/breadcrumb}
+            {/col}
+            {col}
+            {if !empty($NavigationBlaettern)}
+                {block name='layout-header-product-pagination'}
+                    {if isset($NavigationBlaettern->naechsterArtikel) && $NavigationBlaettern->naechsterArtikel->kArtikel}
+                        {link class="btn btn-default float-right" href=$NavigationBlaettern->naechsterArtikel->cURLFull title=$NavigationBlaettern->naechsterArtikel->cName}<span class="fa fa-chevron-right"></span>{/link}
+                    {/if}
+                    {if isset($NavigationBlaettern->vorherigerArtikel) && $NavigationBlaettern->vorherigerArtikel->kArtikel}
+                        {link class="btn btn-default float-right" href=$NavigationBlaettern->vorherigerArtikel->cURLFull title=$NavigationBlaettern->vorherigerArtikel->cName}<span class="fa fa-chevron-left"></span>{/link}
+                    {/if}
+                {/block}
+            {/if}
             {/col}
         {/row}
     {/if}

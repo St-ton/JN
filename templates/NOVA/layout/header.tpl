@@ -414,20 +414,6 @@
 
         {block name='layout-header-breadcrumb'}
             {container fluid=($smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp) class="{if $smarty.const.PAGE_ARTIKELLISTE === $nSeitenTyp}px-0{/if}"}
-                {block name='layout-header-product-pagination'}
-                    {*{if $Einstellungen.artikeldetails.artikeldetails_navi_blaettern === 'Y' && isset($NavigationBlaettern)}
-                        <div class="d-none d-xl-block product-pagination next">
-                            {if isset($NavigationBlaettern->naechsterArtikel) && $NavigationBlaettern->naechsterArtikel->kArtikel}
-                                {link href=$NavigationBlaettern->naechsterArtikel->cURLFull title=$NavigationBlaettern->naechsterArtikel->cName}<span class="fa fa-chevron-right"></span>{/link}
-                            {/if}
-                        </div>
-                        <div class="d-none d-xl-block product-pagination previous">
-                            {if isset($NavigationBlaettern->vorherigerArtikel) && $NavigationBlaettern->vorherigerArtikel->kArtikel}
-                                {link href=$NavigationBlaettern->vorherigerArtikel->cURLFull title=$NavigationBlaettern->vorherigerArtikel->cName}<span class="fa fa-chevron-left"></span>{/link}
-                            {/if}
-                        </div>
-                    {/if}*}
-                {/block}
                 {include file='layout/breadcrumb.tpl'}
             {/container}
         {/block}

@@ -13921,19 +13921,22 @@ aside .last-seen-link {
   transform: translateX(-50%) translateY(0.625rem);
 }
 
+.breadcrumb-wrapper {
+  margin-bottom: 2rem;
+}
+@media (min-width: 992px) {
+  .breadcrumb-wrapper {
+    border-style: solid;
+    border-color: #ebebeb;
+    border-width: 1px 0;
+  }
+}
+
 .breadcrumb {
   font-size: 0.8125rem;
 }
 .breadcrumb a {
   text-decoration: none;
-}
-@media (min-width: 992px) {
-  .breadcrumb {
-    border-style: solid;
-    border-color: #ebebeb;
-    border-width: 1px 0;
-    margin-bottom: 2rem;
-  }
 }
 
 .breadcrumb-item.active {

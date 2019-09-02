@@ -601,9 +601,12 @@ class Customer
 
         $this->cAnredeLocalized   = self::mapSalutation($this->cAnrede, $this->kSprache);
         $this->cGuthabenLocalized = $this->gibGuthabenLocalized();
-        $this->dErstellt_DE       = $this->dErstellt !== null
-            ? \date_format(\date_create($this->dErstellt), 'd.m.Y')
-            : null;
+        if ($this->dErstellt !== null) {
+            if (\mb_convert_case($this->dErstellt, MB_CASE_LOWER) === 'now()') {
+                $this->dErstellt = \date_format(\date_create(), 'Y-m-d');
+            }
+            $this->dErstellt_DE = \date_format(\date_create($this->dErstellt), 'd.m.Y');
+        }
 
         return $this->kKunde;
     }

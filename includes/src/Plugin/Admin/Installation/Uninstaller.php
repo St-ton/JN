@@ -60,12 +60,12 @@ final class Uninstaller
             return InstallCode::WRONG_PARAM;
         }
         $data = $this->db->select('tplugin', 'kPlugin', $pluginID);
-        if ((int)$data->bExtension === 1) {
-            $loader = new PluginLoader($this->db, $this->cache);
-            $plugin = $loader->init($pluginID);
-        } else {
-            $loader = new LegacyPluginLoader($this->db, $this->cache);
-            $plugin = $loader->init($pluginID);//
+        $loader = (int)$data->bExtension === 1
+            ? new PluginLoader($this->db, $this->cache)
+            : new LegacyPluginLoader($this->db, $this->cache);
+        $plugin = $loader->init($pluginID);
+        if ($plugin === null) {
+            return InstallCode::NO_PLUGIN_FOUND;
         }
         if (!$update) {
             // Plugin wird vollständig deinstalliert
@@ -73,9 +73,8 @@ final class Uninstaller
                 $p->uninstalled();
             }
             $this->executeMigrations($plugin);
-            if (isset($plugin->oPluginUninstall->kPluginUninstall)
-                && (int)$plugin->oPluginUninstall->kPluginUninstall > 0
-            ) {
+            $uninstaller = $plugin->getPaths()->getUninstaller();
+            if ($uninstaller !== null && \file_exists($uninstaller)) {
                 try {
                     include $plugin->getPaths()->getUninstaller();
                 } catch (\Exception $exc) {

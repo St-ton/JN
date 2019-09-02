@@ -126,7 +126,7 @@ class Newsletter
         $data      = $this->db->select('tnewsletter', 'kNewsletter', $newsletterID);
         $tmpGroups = \explode(';', $data->cKundengruppe);
         $cSQL      = '';
-        if (count($tmpGroups) > 0) {
+        if (\count($tmpGroups) > 0) {
             $groupIDs = \array_map('\intval', $tmpGroups);
             $noGroup  = \in_array(0, $groupIDs, true);
             if ($noGroup === false || \count($groupIDs) > 1) {
@@ -354,17 +354,17 @@ class Newsletter
     {
         $res  = [];
         $keys = \explode(';', $keyString);
-        if (!\is_array($keys) || count($keys) === 0) {
+        if (!\is_array($keys) || \count($keys) === 0) {
             return $res;
         }
         $res = \array_filter($keys, function ($e) {
-            return mb_strlen($e) > 0;
+            return \mb_strlen($e) > 0;
         });
         if ($asProductNo) {
             $res = \array_map(function ($e) {
                 return "'" . $e . "'";
             }, $res);
-            if (count($res) > 0) {
+            if (\count($res) > 0) {
                 $artNoData = $this->db->query(
                     'SELECT kArtikel
                 FROM tartikel
@@ -394,7 +394,7 @@ class Newsletter
      */
     public function getProducts($productIDs, $campaign = '', int $customerGroupID = 0, int $langID = 0): array
     {
-        if (!\is_array($productIDs) || count($productIDs) === 0) {
+        if (!\is_array($productIDs) || \count($productIDs) === 0) {
             return [];
         }
         $products       = [];
@@ -417,8 +417,8 @@ class Newsletter
                 continue;
             }
             $product->cURL = $shopURL . $product->cURL;
-            if (isset($campaign->cParameter) && mb_strlen($campaign->cParameter) > 0) {
-                $product->cURL .= (mb_strpos($product->cURL, '.php') !== false ? '&' : '?') .
+            if (isset($campaign->cParameter) && \mb_strlen($campaign->cParameter) > 0) {
+                $product->cURL .= (\mb_strpos($product->cURL, '.php') !== false ? '&' : '?') .
                     $campaign->cParameter . '=' . $campaign->cWert;
             }
             foreach ($product->Bilder as $image) {
@@ -445,7 +445,7 @@ class Newsletter
      */
     public function getManufacturers($manufacturerIDs, $campaign = 0, int $langID = 0): array
     {
-        if (!\is_array($manufacturerIDs) || count($manufacturerIDs) === 0) {
+        if (!\is_array($manufacturerIDs) || \count($manufacturerIDs) === 0) {
             return [];
         }
         $manufacturers = [];
@@ -457,11 +457,11 @@ class Newsletter
                 continue;
             }
             $manufacturer = new Hersteller($id, $langID);
-            if (mb_strpos($manufacturer->cURL, $shopURL) === false) {
+            if (\mb_strpos($manufacturer->cURL, $shopURL) === false) {
                 $manufacturer->cURL = $manufacturer->cURL = $shopURL . $manufacturer->cURL;
             }
-            if (isset($campaign->cParameter) && mb_strlen($campaign->cParameter) > 0) {
-                $sep                 = mb_strpos($manufacturer->cURL, '.php') !== false ? '&' : '?';
+            if (isset($campaign->cParameter) && \mb_strlen($campaign->cParameter) > 0) {
+                $sep                 = \mb_strpos($manufacturer->cURL, '.php') !== false ? '&' : '?';
                 $manufacturer->cURL .= $sep . $campaign->cParameter . '=' . $campaign->cWert;
             }
             $manufacturer->cBildpfadKlein  = $imageBaseURL . $manufacturer->cBildpfadKlein;
@@ -482,27 +482,28 @@ class Newsletter
      */
     public function getCategories($categoryIDs, $campaign = 0): array
     {
-        if (!\is_array($categoryIDs) || count($categoryIDs) === 0) {
+        if (!\is_array($categoryIDs) || \count($categoryIDs) === 0) {
             return [];
         }
         $categories = [];
         $shopURL    = Shop::getURL() . '/';
         foreach ($categoryIDs as $id) {
             $id = (int)$id;
-            if ($id > 0) {
-                $category = new Kategorie($id);
-                if (mb_strpos($category->cURL, $shopURL) === false) {
-                    $category->cURL = $shopURL . $category->cURL;
-                }
-                if (isset($campaign->cParameter) && mb_strlen($campaign->cParameter) > 0) {
-                    $sep = '?';
-                    if (\strpos($category->cURL, '.php') !== false) {
-                        $sep = '&';
-                    }
-                    $category->cURL .= $sep . $campaign->cParameter . '=' . $campaign->cWert;
-                }
-                $categories[] = $category;
+            if ($id <= 0) {
+                continue;
             }
+            $category = new Kategorie($id);
+            if (\mb_strpos($category->cURL, $shopURL) === false) {
+                $category->cURL = $shopURL . $category->cURL;
+            }
+            if (isset($campaign->cParameter) && \mb_strlen($campaign->cParameter) > 0) {
+                $sep = '?';
+                if (\strpos($category->cURL, '.php') !== false) {
+                    $sep = '&';
+                }
+                $category->cURL .= $sep . $campaign->cParameter . '=' . $campaign->cWert;
+            }
+            $categories[] = $category;
         }
 
         return $categories;

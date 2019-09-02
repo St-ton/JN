@@ -24,7 +24,7 @@ use JTL\Helpers\Manufacturer;
 use JTL\Helpers\Request;
 use JTL\Helpers\ShippingMethod;
 use JTL\Helpers\Text;
-use JTL\Kampagne;
+use JTL\Campaign;
 use JTL\Link\Link;
 use JTL\Session\Frontend;
 use JTL\Shop;
@@ -213,7 +213,7 @@ if (isset($breadCrumbName, $breadCrumbURL)) {
 require_once PFAD_ROOT . PFAD_INCLUDES . 'besucher.php';
 require_once PFAD_ROOT . PFAD_INCLUDES . 'filter_inc.php';
 Visitor::generateData();
-Kampagne::checkCampaignParameters();
+Campaign::checkCampaignParameters();
 Shop::Lang()->generateLanguageAndCurrencyLinks();
 $ep = new ExtensionPoint($pageType, Shop::getParameters(), Shop::getLanguageID(), $customerGroupID);
 $ep->load();

@@ -9,7 +9,7 @@ use JTL\Customer\CustomerGroup;
 use JTL\DB\ReturnType;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Request;
-use JTL\Kampagne;
+use JTL\Campaign;
 use JTL\Linechart;
 use JTL\Session\Frontend;
 use JTL\Shop;
@@ -1139,7 +1139,7 @@ function gibStamp($oldStamp, int $direction, int $view): string
 }
 
 /**
- * @param Kampagne $campaign
+ * @param Campaign $campaign
  * @return int
  *
  * Returncodes:
@@ -1269,7 +1269,7 @@ function loescheGewaehlteKampagnen(array $campaignIDs)
             // Nur externe Kampagnen sind löschbar
             continue;
         }
-        (new Kampagne($campaignID))->deleteInDB();
+        (new Campaign($campaignID))->deleteInDB();
     }
     Shop::Container()->getCache()->flush('campaigns');
 

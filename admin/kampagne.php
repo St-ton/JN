@@ -10,7 +10,7 @@ use JTL\Helpers\Date;
 use JTL\Helpers\Form;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Request;
-use JTL\Kampagne;
+use JTL\Campaign;
 use JTL\Pagination\Pagination;
 use JTL\Shop;
 
@@ -80,7 +80,7 @@ if (Request::verifyGPCDataInt('neu') === 1 && Form::validateToken()) {
     $stamp        = Request::verifyGPDataString('cStamp');
 } elseif (Request::verifyGPCDataInt('erstellen_speichern') === 1 && Form::validateToken()) {
     // Speichern / Editieren
-    $campaign             = new Kampagne();
+    $campaign             = new Campaign();
     $campaign->cName      = $_POST['cName'] ?? '';
     $campaign->cParameter = $_POST['cParameter'];
     $campaign->cWert      = $_POST['cWert'] ?? '';

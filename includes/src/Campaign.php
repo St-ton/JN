@@ -95,14 +95,14 @@ class Campaign
      */
     public function insertInDB(): int
     {
-        $obj                = new stdClass();
-        $obj->cName         = $this->cName;
-        $obj->cParameter    = $this->cParameter;
-        $obj->cWert         = $this->cWert;
-        $obj->nDynamisch    = $this->nDynamisch;
-        $obj->nAktiv        = $this->nAktiv;
-        $obj->dErstellt     = $this->dErstellt;
-        $this->kKampagne    = Shop::Container()->getDB()->insert('tkampagne', $obj);
+        $obj             = new stdClass();
+        $obj->cName      = $this->cName;
+        $obj->cParameter = $this->cParameter;
+        $obj->cWert      = $this->cWert;
+        $obj->nDynamisch = $this->nDynamisch;
+        $obj->nAktiv     = $this->nAktiv;
+        $obj->dErstellt  = $this->dErstellt;
+        $this->kKampagne = Shop::Container()->getDB()->insert('tkampagne', $obj);
         if (\mb_convert_case($this->dErstellt, MB_CASE_LOWER) === 'now()') {
             $this->dErstellt = \date_format(\date_create(), 'Y-m-d H:i:s');
         }

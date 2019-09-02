@@ -177,7 +177,7 @@ class Controller
             );
         }
 
-        $conf = Shop::getConfig([CONF_NEWS]);
+        $conf = Shop::getConfig([\CONF_NEWS]);
 
         $this->smarty->assign('oNewsKommentar_arr', $comments)
                      ->assign('oPagiComments', $pagination)

@@ -28,9 +28,10 @@ interface BootstrapperInterface
     public function installed();
 
     /**
+     * @param bool $deleteData
      * @return mixed
      */
-    public function uninstalled();
+    public function uninstalled(bool $deleteData = true);
 
     /**
      * @return mixed

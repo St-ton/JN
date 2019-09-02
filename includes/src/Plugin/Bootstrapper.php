@@ -89,7 +89,7 @@ abstract class Bootstrapper implements BootstrapperInterface
     /**
      * @inheritdoc
      */
-    public function uninstalled()
+    public function uninstalled(bool $deleteData = true)
     {
     }
 

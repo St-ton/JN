@@ -211,3 +211,12 @@ msgstr "Zuletzt aktualisiert"
 
 msgid "storeUpdateNow"
 msgstr "Aktualisieren"
+
+msgid "deletePluginData"
+msgstr "Plugindaten aus Datenbank löschen?"
+
+msgid "deletePluginDataYes"
+msgstr "Ja, alle Plugindaten löschen"
+
+msgid "deletePluginDataNo"
+msgstr "Nein, Plugindaten behalten"

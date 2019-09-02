@@ -28,6 +28,7 @@ use JTL\XMLParser;
 use function Functional\first;
 use function Functional\group;
 use function Functional\select;
+
 require_once __DIR__ . '/includes/admininclude.php';
 
 $oAccount->permission('PLUGIN_ADMIN_VIEW', true, true);

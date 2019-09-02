@@ -7,6 +7,7 @@
         {include
             file='productdetails/pushed_success.tpl'
             Artikel=$zuletztInWarenkorbGelegterArtikel
+            card=false
         }
     {/if}
 {/block}

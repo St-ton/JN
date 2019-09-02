@@ -8,7 +8,7 @@
     {if isset($bWarenkorbHinzugefuegt) && $bWarenkorbHinzugefuegt}
         {block name='productdetails-details-include-pushed-success'}
             {container}
-                {include file='productdetails/pushed_success.tpl'}
+                {include file='productdetails/pushed_success.tpl' card=true}
             {/container}
         {/block}
     {else}
@@ -18,15 +18,15 @@
     {/if}
 
     {block name='productdetails-details-form'}
-        {include file='snippets/opc_mount_point.tpl' id='opc_before_buy_form'}
+        {opcMountPoint id='opc_before_buy_form'}
         {container}
             {form id="buy_form" action=$Artikel->cURLFull class="evo-validate"}
                 {row id="product-offer"}
                     {block name='productdetails-details-include-image'}
                         {col cols=12 md=6 class="product-gallery"}
-                            {include file='snippets/opc_mount_point.tpl' id='opc_before_gallery'}
+                            {opcMountPoint id='opc_before_gallery'}
                             {include file='productdetails/image.tpl'}
-                            {include file='snippets/opc_mount_point.tpl' id='opc_after_gallery'}
+                            {opcMountPoint id='opc_after_gallery'}
                             {*{image src=$Artikel->Bilder[0]->cURLNormal fluid=true class="mx-auto d-block" alt="Responsive image"}*}
                         {/col}
                     {/block}
@@ -38,7 +38,7 @@
                         <div class="product-info-inner">
                             <div class="product-headline d-none d-sm-block">
                                 {block name='productdetails-details-info-product-title'}
-                                    {include file='snippets/opc_mount_point.tpl' id='opc_before_headline'}
+                                    {opcMountPoint id='opc_before_headline'}
                                     <h1 class="product-title mb-3" itemprop="name">{$Artikel->cName}</h1>
                                 {/block}
                             </div>
@@ -142,13 +142,13 @@
                             {block name='productdetails-details-info-description-wrapper'}
                             {if $Einstellungen.artikeldetails.artikeldetails_kurzbeschreibung_anzeigen === 'Y' && $Artikel->cKurzBeschreibung}
                                 {block name='productdetails-details-info-description'}
-                                    {include file='snippets/opc_mount_point.tpl' id='opc_before_short_desc'}
+                                    {opcMountPoint id='opc_before_short_desc'}
                                     <div class="shortdesc mb-2 d-none d-md-block" itemprop="description">
                                         {$Artikel->cKurzBeschreibung}
                                     </div>
                                 {/block}
                             {/if}
-                            {include file='snippets/opc_mount_point.tpl' id='opc_after_short_desc'}
+                            {opcMountPoint id='opc_after_short_desc'}
                             {/block}
 
                             <div class="product-offer mb-5" itemprop="offers" itemscope itemtype="http://schema.org/Offer">
@@ -216,7 +216,7 @@
                             </div>
                         </div>{* /product-info-inner *}
                         {/block}{* productdetails-info *}
-                        {include file='snippets/opc_mount_point.tpl' id='opc_after_product_info'}
+                        {opcMountPoint id='opc_after_product_info'}
                     {/col}
                     {if $Artikel->bHasKonfig}
                         {block name='productdetails-details-include-config-container'}

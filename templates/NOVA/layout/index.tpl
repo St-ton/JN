@@ -19,12 +19,12 @@
         {block name='layout-index-content'}
             {block name='layout-index-heading'}
                 {if !empty($Link->getTitle())}
-                    {include file='snippets/opc_mount_point.tpl' id='opc_before_heading'}
+                    {opcMountPoint id='opc_before_heading'}
                     {container}
                         <h1>{$Link->getTitle()}</h1>
                     {/container}
                 {elseif isset($bAjaxRequest) && $bAjaxRequest}
-                    {include file='snippets/opc_mount_point.tpl' id='opc_before_heading'}
+                    {opcMountPoint id='opc_before_heading'}
                     {container}
                         <h1>{if !empty($Link->getMetaTitle())}{$Link->getMetaTitle()}{else}{$Link->getName()}{/if}</h1>
                     {/container}
@@ -38,7 +38,7 @@
 
             {block name='layout-index-link-content'}
                 {if !empty($Link->getContent())}
-                    {include file='snippets/opc_mount_point.tpl' id='opc_before_content'}
+                    {opcMountPoint id='opc_before_content'}
                     {container}
                         {$Link->getContent()}
                     {/container}
@@ -48,7 +48,7 @@
             {block name='layout-index-link-types'}
                 {if $Link->getLinkType() === $smarty.const.LINKTYP_AGB}
                     <div id="tos" class="well well-sm">
-                        {include file='snippets/opc_mount_point.tpl' id='opc_before_tos'}
+                        {opcMountPoint id='opc_before_tos'}
                         {if $AGB !== false}
                             {container}
                                 {if $AGB->cAGBContentHtml}
@@ -58,11 +58,11 @@
                                 {/if}
                             {/container}
                         {/if}
-                        {include file='snippets/opc_mount_point.tpl' id='opc_after_tos'}
+                        {opcMountPoint id='opc_after_tos'}
                     </div>
                 {elseif $Link->getLinkType() === $smarty.const.LINKTYP_WRB}
                     <div id="revocation-instruction" class="well well-sm">
-                        {include file='snippets/opc_mount_point.tpl' id='opc_before_revocation'}
+                        {opcMountPoint id='opc_before_revocation'}
                         {if $WRB !== false}
                             {container}
                                 {if $WRB->cWRBContentHtml}
@@ -72,11 +72,11 @@
                                 {/if}
                             {/container}
                         {/if}
-                        {include file='snippets/opc_mount_point.tpl' id='opc_after_revocation'}
+                        {opcMountPoint id='opc_after_revocation'}
                     </div>
                 {elseif $Link->getLinkType() === $smarty.const.LINKTYP_WRB_FORMULAR}
                     <div id="revocation-form" class="well well-sm">
-                        {include file='snippets/opc_mount_point.tpl' id='opc_before_revocation_form'}
+                        {opcMountPoint id='opc_before_revocation_form'}
                         {if $WRB !== false}
                             {container}
                                 {if $WRB->cWRBFormContentHtml}
@@ -86,11 +86,11 @@
                                 {/if}
                             {/container}
                         {/if}
-                        {include file='snippets/opc_mount_point.tpl' id='opc_after_revocation_form'}
+                        {opcMountPoint id='opc_after_revocation_form'}
                     </div>
                 {elseif $Link->getLinkType() === $smarty.const.LINKTYP_DATENSCHUTZ}
                     <div id="data-privacy" class="well well-sm">
-                        {include file='snippets/opc_mount_point.tpl' id='opc_before_data_privacy'}
+                        {opcMountPoint id='opc_before_data_privacy'}
                         {if $WRB !== false}
                             {container}
                                 {if $WRB->cDSEContentHtml}
@@ -100,7 +100,7 @@
                                 {/if}
                             {/container}
                         {/if}
-                        {include file='snippets/opc_mount_point.tpl' id='opc_after_data_privacy'}
+                        {opcMountPoint id='opc_after_data_privacy'}
                     </div>
                 {elseif $Link->getLinkType() === $smarty.const.LINKTYP_STARTSEITE}
                     {include file='page/index.tpl'}

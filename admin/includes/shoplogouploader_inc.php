@@ -22,42 +22,42 @@ function saveShopLogo(array $files): int
         mkdir(PFAD_ROOT . PFAD_SHOPLOGO);
     }
     // Prüfe Dateiname
-    if (mb_strlen($files['shopLogo']['name']) > 0) {
-        // Prüfe Dateityp
-        if ($files['shopLogo']['type'] !== 'image/jpeg'
-            && $files['shopLogo']['type'] !== 'image/pjpeg'
-            && $files['shopLogo']['type'] !== 'image/gif'
-            && $files['shopLogo']['type'] !== 'image/png'
-            && $files['shopLogo']['type'] !== 'image/bmp'
-            && $files['shopLogo']['type'] !== 'image/x-png'
-            && $files['shopLogo']['type'] !== 'image/jpg'
-        ) {
-            // Dateityp entspricht nicht der Konvention (Nur jpg/gif/png/bmp/ Bilder) oder fehlt
-            return 3;
-        }
-        $uploadFile = PFAD_ROOT . PFAD_SHOPLOGO . basename($files['shopLogo']['name']);
-        if ($files['shopLogo']['error'] === UPLOAD_ERR_OK
-            && move_uploaded_file($files['shopLogo']['tmp_name'], $uploadFile)
-        ) {
-            $option                        = new stdClass();
-            $option->kEinstellungenSektion = CONF_LOGO;
-            $option->cName                 = 'shop_logo';
-            $option->cWert                 = $files['shopLogo']['name'];
-            Shop::Container()->getDB()->update('teinstellungen', 'cName', 'shop_logo', $option);
-            Shop::Container()->getCache()->flushTags([CACHING_GROUP_OPTION]);
+    if (empty($files['shopLogo']['name'])) {
+        return 2; // Dateiname fehlt
+    }
+    // Prüfe Dateityp
+    $allowedTypes = [
+        'image/jpeg',
+        'image/pjpeg',
+        'image/gif',
+        'image/png',
+        'image/x-png',
+        'image/bmp',
+        'image/jpg',
+        'image/svg+xml'
+    ];
+    if (!in_array($files['shopLogo']['type'], $allowedTypes, true)) {
+        // Dateityp entspricht nicht der Konvention (Nur jpg/gif/png/bmp/svg Bilder) oder fehlt
+        return 3;
+    }
+    $file = PFAD_ROOT . PFAD_SHOPLOGO . basename($files['shopLogo']['name']);
+    if ($files['shopLogo']['error'] === UPLOAD_ERR_OK && move_uploaded_file($files['shopLogo']['tmp_name'], $file)) {
+        $option                        = new stdClass();
+        $option->kEinstellungenSektion = CONF_LOGO;
+        $option->cName                 = 'shop_logo';
+        $option->cWert                 = $files['shopLogo']['name'];
+        Shop::Container()->getDB()->update('teinstellungen', 'cName', 'shop_logo', $option);
+        Shop::Container()->getCache()->flushTags([CACHING_GROUP_OPTION]);
 
-            return 1; // Alles O.K.
-        }
-
-        return 4;
+        return 1; // Alles O.K.
     }
 
-    return 2; // Dateiname fehlt
+    return 4;
 }
 
 /**
- * @var string $logo
  * @return bool
+ * @var string $logo
  */
 function deleteShopLogo(string $logo): bool
 {
@@ -68,9 +68,11 @@ function deleteShopLogo(string $logo): bool
 
 /**
  * @return bool
+ * @deprecated since 5.0.0
  */
 function loescheAlleShopBilder(): bool
 {
+    trigger_error(__FUNCTION__ . ' is deprecated.', E_USER_DEPRECATED);
     if (is_dir(PFAD_ROOT . PFAD_SHOPLOGO) && $dh = opendir(PFAD_ROOT . PFAD_SHOPLOGO)) {
         while (($file = readdir($dh)) !== false) {
             if ($file !== '.' && $file !== '..' && $file !== '.gitkeep') {
@@ -92,31 +94,17 @@ function loescheAlleShopBilder(): bool
 function mappeFileTyp(string $type): string
 {
     switch ($type) {
-        case 'image/jpeg':
-            return '.jpg';
-            break;
-        case 'image/pjpeg':
-            return '.jpg';
-            break;
         case 'image/gif':
             return '.gif';
-            break;
         case 'image/png':
-            return '.png';
-            break;
-        case 'image/bmp':
-            return '.bmp';
-            break;
-        // Adding MIME types that Internet Explorer returns
         case 'image/x-png':
             return '.png';
-            break;
+        case 'image/bmp':
+            return '.bmp';
+        case 'image/pjpeg':
         case 'image/jpg':
-            return '.jpg';
-            break;
-        //default jpg
+        case 'image/jpeg':
         default:
             return '.jpg';
-            break;
     }
 }

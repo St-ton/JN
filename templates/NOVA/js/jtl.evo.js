@@ -29,6 +29,31 @@
                 slidesToShow: 1
             });
 
+            $('.evo-slider-half:not(.slick-initialized)').slick({
+                //dots: true,
+                arrows: true,
+                lazyLoad: 'ondemand',
+                slidesToShow: 3,
+                responsive: [
+                    {
+                        breakpoint: 992, // md
+                        settings: {
+                            slidesToShow: 1,
+                            centerMode: true,
+                            centerPadding: '60px',
+                        }
+                    },
+                    {
+                        breakpoint: 1200, // lg
+                        settings: {
+                            slidesToShow: 2,
+                            centerMode: true,
+                            centerPadding: '60px',
+                        }
+                    }
+                ]
+            });
+
             $('.evo-box-vertical:not(.slick-initialized)').slick({
                 //dots: true,
                 arrows:          true,
@@ -72,29 +97,33 @@
                 arrows: true,
                 lazyLoad: 'ondemand',
                 slidesToShow: 5,
+                slidesToScroll: 5,
                 responsive: [
                     {
                         breakpoint: 576, // xs
                         settings: {
                             slidesToShow: 1,
-                            centerMode: true,
-                            centerPadding: '60px',
+                            slidesToScroll: 1,
+                            // centerMode: true,
+                            // centerPadding: '60px',
                         }
                     },
                     {
                         breakpoint: 768, // sm
                         settings: {
                             slidesToShow: 2,
-                            centerMode: true,
-                            centerPadding: '60px',
+                            slidesToScroll: 2,
+                            // centerMode: true,
+                            // centerPadding: '60px',
                         }
                     },
                     {
                         breakpoint: 992, // md
                         settings: {
                             slidesToShow: 3,
-                            centerMode: true,
-                            centerPadding: '60px',
+                            slidesToScroll: 3,
+                            // centerMode: true,
+                            // centerPadding: '60px',
                         }
                     }
                 ]
@@ -111,7 +140,7 @@
             $('.evo-slider:not(.slick-initialized)').slick(evoSliderOptions);
 
             // product list image slider
-            $('#product-list .list-gallery:not(.slick-initialized)').slick({
+            $('.product-list .list-gallery:not(.slick-initialized)').slick({
                 lazyLoad: 'ondemand',
                 infinite: false,
                 dots:     false,
@@ -353,7 +382,7 @@
 
         showNotify: function(options) {
             eModal.alert({
-                size: 'lg',
+                size: 'xl',
                 buttons: false,
                 title: options.title,
                 message: options.text,

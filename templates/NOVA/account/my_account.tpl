@@ -6,7 +6,7 @@
     {block name='heading'}
         <div class="h2 mb-4">{lang key='welcome' section='login'} {$smarty.session.Kunde->cVorname} {$smarty.session.Kunde->cNachname}</div>
     {/block}
-    {include file='snippets/opc_mount_point.tpl' id='opc_before_account_page'}
+    {opcMountPoint id='opc_before_account_page'}
     {block name='account-my-account-head-data'}
         {row}
             {col cols=12 lg=6 class="mb-5"}
@@ -215,7 +215,7 @@
             {/col}
         {/row}
     {/block}
-    {include file='snippets/opc_mount_point.tpl' id='opc_after_account_page'}
+    {opcMountPoint id='opc_after_account_page'}
 
     {block name='account-my-account-include-downloads'}
         {include file='account/downloads.tpl'}

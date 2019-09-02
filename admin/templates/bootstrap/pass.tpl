@@ -16,7 +16,7 @@
             <div id="login_outer" class="card">
                 <div class="card-body">
                     <p id="login_logo" class="mb-4">
-                        <img class="brand-logo" width="120" height="38" src="{$currentTemplateDir}gfx/JTL-Shop-Logo-rgb.png" alt="JTL-Shop">
+                        <img class="brand-logo" width="120" height="38" src="{$templateBaseURL}gfx/JTL-Shop-Logo-rgb.png" alt="JTL-Shop">
                     </p>
                     <form method="post" action="pass.php" class="form-horizontal" role="form">
                         {$jtl_token}

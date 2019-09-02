@@ -2,7 +2,7 @@
  * @copyright (c) JTL-Software-GmbH
  * @license https://jtl-url.de/jtlshoplicense
  *}
-{include file='snippets/opc_mount_point.tpl' id='opc_before_manufacturers'}
+{opcMountPoint id='opc_before_manufacturers'}
 
 <div class="row row-eq-height content-cats-small clearfix">
     {foreach $oHersteller_arr as $Hersteller}

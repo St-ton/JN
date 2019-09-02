@@ -6,7 +6,7 @@
     {container}
         {if $Einstellungen.sitemap.sitemap_seiten_anzeigen === 'Y'}
             {block name='page-sitemap-pages'}
-                {include file='snippets/opc_mount_point.tpl' id='opc_before_pages'}
+                {opcMountPoint id='opc_before_pages'}
                 {card header={lang key='sitemapSites'} class="mb-5"}
                     {block name='page-sitemap-pages-content'}
                         {row}
@@ -28,33 +28,33 @@
         {/if}
         {if $Einstellungen.sitemap.sitemap_kategorien_anzeigen === 'Y' && isset($oKategorieliste->elemente) && $oKategorieliste->elemente|@count > 0}
             {block name='page-sitemap-categories'}
-                {include file='snippets/opc_mount_point.tpl' id='opc_before_categories'}
+                {opcMountPoint id='opc_before_categories'}
                 {card header={lang key='sitemapKats'} class="mb-5"}
                     {block name='page-sitemap-categories-content'}
                         {row}
                             {foreach $oKategorieliste->elemente as $oKategorie}
-                                {if $oKategorie->Unterkategorien|@count > 0}
+                                {if $oKategorie->getChildren()|@count > 0}
                                     {col cols=12 md=4 lg=3}
                                         <ul class="list-unstyled">
                                             <li class="py-2">
-                                                {link href=$oKategorie->cURLFull title=$oKategorie->cName class="nice-deco"}
-                                                    <strong>{$oKategorie->cKurzbezeichnung}</strong>
+                                                {link href=$oKategorie->getURL() title=$oKategorie->getName() class="nice-deco"}
+                                                    <strong>{$oKategorie->getShortName()}</strong>
                                                 {/link}
                                             </li>
-                                            {foreach $oKategorie->Unterkategorien as $oSubKategorie}
+                                            {foreach $oKategorie->getChildren() as $oSubKategorie}
                                                 <li class="py-2">
-                                                    {link href=$oSubKategorie->cURLFull title=$oKategorie->cName class="nice-deco"}
-                                                        {$oSubKategorie->cKurzbezeichnung}
+                                                    {link href=$oSubKategorie->getURL() title=$oKategorie->getName() class="nice-deco"}
+                                                        {$oSubKategorie->getShortName()}
                                                     {/link}
                                                 </li>
-                                                {if $oSubKategorie->Unterkategorien|@count > 0}
+                                                {if $oSubKategorie->getChildren()|@count > 0}
                                                     <li class="py-2">
                                                         <ul class="sub-categories list-unstyled pl-4">
-                                                            {foreach $oSubKategorie->Unterkategorien as $oSubSubKategorie}
+                                                            {foreach $oSubKategorie->getChildren() as $oSubSubKategorie}
                                                                 <li class="py-2">
-                                                                    {link href=$oSubSubKategorie->cURLFull
-                                                                       title=$oKategorie->cName class="nice-deco"}
-                                                                        {$oSubSubKategorie->cKurzbezeichnung}
+                                                                    {link href=$oSubSubKategorie->getURL()
+                                                                       title=$oKategorie->getName() class="nice-deco"}
+                                                                        {$oSubSubKategorie->getShortName()}
                                                                     {/link}
                                                                 </li>
                                                             {/foreach}
@@ -70,10 +70,10 @@
                             {col cols=12 md=4 lg=3}
                                 <ul class="list-unstyled">
                                     {foreach $oKategorieliste->elemente as $oKategorie}
-                                        {if $oKategorie->Unterkategorien|@count == 0}
+                                        {if $oKategorie->getChildren()|@count == 0}
                                             <li class="py-2">
-                                                &nbsp;&nbsp;{link href=$oKategorie->cURLFull title=$oKategorie->cName class="nice-deco"}
-                                                    {$oKategorie->cKurzbezeichnung}
+                                                &nbsp;&nbsp;{link href=$oKategorie->getURL() title=$oKategorie->getName() class="nice-deco"}
+                                                    {$oKategorie->getShortName()}
                                                 {/link}
                                             </li>
                                         {/if}
@@ -87,7 +87,7 @@
         {/if}
         {if $Einstellungen.sitemap.sitemap_hersteller_anzeigen === 'Y' && $oHersteller_arr|@count > 0}
             {block name='page-sitemap-manufacturer'}
-                {include file='snippets/opc_mount_point.tpl' id='opc_before_manufacturers'}
+                {opcMountPoint id='opc_before_manufacturers'}
                 {card header={lang key='sitemapNanufacturer'} class="mb-5"}
                     {block name='page-sitemap-manufacturer-content'}
                         {row}
@@ -103,7 +103,7 @@
         {/if}
         {if $Einstellungen.news.news_benutzen === 'Y' && $Einstellungen.sitemap.sitemap_news_anzeigen === 'Y' && !empty($oNewsMonatsUebersicht_arr) && $oNewsMonatsUebersicht_arr|@count > 0}
             {block name='page-sitemap-news'}
-                {include file='snippets/opc_mount_point.tpl' id='opc_before_news'}
+                {opcMountPoint id='opc_before_news'}
                 {card header={lang key='sitemapNews'} class="mb-5"}
                     {block name='page-sitemap-news-content'}
                         {row}
@@ -131,7 +131,7 @@
             && $oNewsKategorie_arr|@count > 0
         }
             {block name='page-sitemap-news-categories'}
-                {include file='snippets/opc_mount_point.tpl' id='opc_before_news_categories'}
+                {opcMountPoint id='opc_before_news_categories'}
                 {card header={lang key='sitemapNewsCats'} class="mb-5"}
                     {block name='page-sitemap-news-categories-content'}
                         {row}

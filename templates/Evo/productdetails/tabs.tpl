@@ -70,7 +70,7 @@
 {if useDescription || $useDownloads || $useDescriptionWithMediaGroup || $useVotes || $useQuestionOnItem || $usePriceFlow
     || $useAvailabilityNotification || $useMediaGroup || !empty($separatedTabs)}
     {if $tabanzeige}
-        {include file='snippets/opc_mount_point.tpl' id='opc_before_tabs'}
+        {opcMountPoint id='opc_before_tabs'}
         <ul class="nav nav-tabs bottom15" role="tablist">
             {if $useDescription}
                 <li role="presentation" {if $setActiveClass.description} class="active"{/if}>
@@ -156,7 +156,7 @@
             <div class="tab-content-wrapper">
                 {block name='tab-description'}
                     {block name='tab-description-content'}
-                        {include file='snippets/opc_mount_point.tpl' id='opc_before_desc'}
+                        {opcMountPoint id='opc_before_desc'}
                         <div class="desc">
                             {$Artikel->cBeschreibung}
                             {if $useDescriptionWithMediaGroup}
@@ -170,7 +170,7 @@
                                 {/foreach}
                             {/if}
                         </div>
-                        {include file='snippets/opc_mount_point.tpl' id='opc_after_desc'}
+                        {opcMountPoint id='opc_after_desc'}
                     {/block}
                     {block name='tab-description-attributes'}
                         {if (!empty($Artikel->cBeschreibung) || $useDescriptionWithMediaGroup) && $showAttributesTable}

@@ -4,7 +4,7 @@
  *}
 {block name='snippets-banner'}
     {if isset($oImageMap)}
-        {include file='snippets/opc_mount_point.tpl' id='opc_before_banner'}
+        {opcMountPoint id='opc_before_banner'}
         <div class="banner mb-5">
             {block name='snippets-banner-map'}
                 {image alt=$oImageMap->cTitel src=$oImageMap->cBildPfad fluid=true}

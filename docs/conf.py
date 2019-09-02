@@ -10,8 +10,7 @@ extensions = [
         'sphinx.ext.coverage',
         'sphinx.ext.mathjax',
         'sphinx.ext.ifconfig',
-        'sensio.sphinx.configurationblock',
-        'sphinxcontrib.phpdomain'
+        'sensio.sphinx.configurationblock'
         ]
 source_suffix = '.rst'
 master_doc = 'index'
@@ -37,4 +36,5 @@ man_pages = [
 sys.path.append(os.path.abspath('_exts'))
 lexers['php'] = PhpLexer(startinline=True)
 lexers['php-annotations'] = PhpLexer(startinline=True)
-primary_domain = 'php'
+#primary_domain = 'php'
+        #'sphinxcontrib.phpdomain'

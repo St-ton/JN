@@ -2,7 +2,17 @@
 %nav-hover { background-color: map-get($primary-palette, 'dark'); color: $white; }
 
 #sidebar { background-color: map-get($primary-palette, 'medium'); color: $white; min-width: rem(250px); width: rem(250px); transition: $transition-base; display: block; z-index: $zindex-fixed; position: fixed; top: 0; left: 0; height: 100vh;
-	&:not(.show) { margin-left: rem(-250px); }
+	&:not(.show) {
+		margin-left: rem(-250px);
+		.opaque-background {
+			display: none;
+		}
+	}
+	&.show {
+		.opaque-background {
+			display: block;
+		}
+	}
 	&.collapsing { overflow: visible; }
 
 	[data-toggle="sidebar-collapse"] { display: none; transition: margin .2s; }

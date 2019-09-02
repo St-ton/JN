@@ -30,9 +30,9 @@
                 <Option Value="N">im Contentbereich</Option>
                 <Option Value="Y">zwischen Header und Content</Option>
             </Setting>
-            <Setting Description="Mitlaufendes Header-Megamenü?" Key="static_header" Type="select" Value="N">
-                <Option Value="N">Nein</Option>
+            <Setting Description="Mitlaufendes Header-Megamenü?" Key="static_header" Type="select" Editable="false" Value="Y">
                 <Option Value="Y">Ja</Option>
+                <Option Value="N">Nein</Option>
             </Setting>
             <Setting Description="Favicon" Key="favicon" Type="upload" Value="favicon.ico" maxFileSize="123456" showPreview="false" allowedFileExtensions="['ico','png']" accept="image/*" target="themes/base/images/" targetFileName="favicon.ico"/>
         </Section>
@@ -156,7 +156,7 @@
             <File Path="js/clipboard.min.js"/>
             <File Path="js/wow.min.js"/>
             <File Path="js/global.js"/>
-            <!--<File Path="js/slick-lightbox.min.js"/>-->
+            <File Path="js/slick-lightbox.min.js"/>
             <File Path="js/jquery.serialize-object.js"/>
             <File Path="js/jtl.io.js"/>
             <File Path="js/jtl.article.js"/>

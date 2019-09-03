@@ -422,7 +422,7 @@ class IOMethods
      */
     public function pushToWishlist(int $productID, $qty): IOResponse
     {
-        $conf        = Shop::getSettings([\CONF_GLOBAL, \CONF_RSS, \CONF_VERGLEICHSLISTE]);
+        $conf        = Shopsetting::getInstance()->getAll();
         $response    = new stdClass();
         $objResponse = new IOResponse();
         $qty         = (int)$qty === 0 ? 1 : (int)$qty;
@@ -515,7 +515,7 @@ class IOMethods
      */
     public function removeFromWishlist(int $productID): IOResponse
     {
-        $conf        = Shop::getSettings([\CONF_GLOBAL, \CONF_RSS, \CONF_VERGLEICHSLISTE]);
+        $conf        = Shopsetting::getInstance()->getAll();
         $response    = new stdClass();
         $objResponse = new IOResponse();
         $smarty      = Shop::Smarty();

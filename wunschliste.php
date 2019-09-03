@@ -11,7 +11,7 @@ use JTL\Helpers\Form;
 use JTL\Helpers\Product;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
-use JTL\Kampagne;
+use JTL\Campaign;
 use JTL\Pagination\Pagination;
 use JTL\Session\Frontend;
 use JTL\Shop;
@@ -322,7 +322,7 @@ Shop::Smarty()->assign('CWunschliste', $wishlist)
 require PFAD_ROOT . PFAD_INCLUDES . 'letzterInclude.php';
 
 if (isset($wishlist->kWunschliste) && $wishlist->kWunschliste > 0) {
-    $campaign = new Kampagne(KAMPAGNE_INTERN_OEFFENTL_WUNSCHZETTEL);
+    $campaign = new Campaign(KAMPAGNE_INTERN_OEFFENTL_WUNSCHZETTEL);
     if (isset($campaign->kKampagne, $campaign->cWert)
         && mb_convert_case($campaign->cWert, MB_CASE_LOWER) ===
         strtolower(Request::verifyGPDataString($campaign->cParameter))

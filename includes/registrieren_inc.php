@@ -13,7 +13,7 @@ use JTL\DB\ReturnType;
 use JTL\Helpers\ShippingMethod;
 use JTL\Helpers\Tax;
 use JTL\Helpers\Text;
-use JTL\Kampagne;
+use JTL\Campaign;
 use JTL\Language\LanguageHelper;
 use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
@@ -141,7 +141,7 @@ function kundeSpeichern(array $post)
             $knd->kKunde = $knd->insertInDB();
             // Kampagne
             if (isset($_SESSION['Kampagnenbesucher'])) {
-                Kampagne::setCampaignAction(KAMPAGNE_DEF_ANMELDUNG, $knd->kKunde, 1.0); // Anmeldung
+                Campaign::setCampaignAction(KAMPAGNE_DEF_ANMELDUNG, $knd->kKunde, 1.0); // Anmeldung
             }
             // Insert Kundenattribute
             $customerAttributes->save();

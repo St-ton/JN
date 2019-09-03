@@ -22,7 +22,7 @@ $pageUrl      = Request::verifyGPDataString('pageUrl');
 $pageName     = Request::verifyGPDataString('pageName');
 $adoptFromKey = Request::verifyGPCDataInt('adoptFromKey');
 $action       = Request::verifyGPDataString('action');
-$draftKeys    = array_map('intval', $_POST['draftKeys'] ?? []);
+$draftKeys    = array_map('\intval', $_POST['draftKeys'] ?? []);
 $shopUrl      = Shop::getURL();
 $error        = null;
 

@@ -7,16 +7,15 @@
 namespace JTL;
 
 use JTL\DB\ReturnType;
-use JTL\Helpers\Date;
 use JTL\Helpers\Request;
 use JTL\Helpers\Text;
 use stdClass;
 
 /**
- * Class Kampagne
+ * Class Campaign
  * @package JTL
  */
-class Kampagne
+class Campaign
 {
     /**
      * @var int
@@ -96,17 +95,18 @@ class Kampagne
      */
     public function insertInDB(): int
     {
-        $obj                = new stdClass();
-        $obj->cName         = $this->cName;
-        $obj->cParameter    = $this->cParameter;
-        $obj->cWert         = $this->cWert;
-        $obj->nDynamisch    = $this->nDynamisch;
-        $obj->nAktiv        = $this->nAktiv;
-        $obj->dErstellt     = $this->dErstellt;
-        $this->kKampagne    = Shop::Container()->getDB()->insert('tkampagne', $obj);
-        $parts              = Date::getDateParts($this->dErstellt);
-        $this->dErstellt_DE = $parts['cTag'] . '.' . $parts['cMonat'] . '.' . $parts['cJahr'] . ' ' .
-            $parts['cStunde'] . ':' . $parts['cMinute'] . ':' . $parts['cSekunde'];
+        $obj             = new stdClass();
+        $obj->cName      = $this->cName;
+        $obj->cParameter = $this->cParameter;
+        $obj->cWert      = $this->cWert;
+        $obj->nDynamisch = $this->nDynamisch;
+        $obj->nAktiv     = $this->nAktiv;
+        $obj->dErstellt  = $this->dErstellt;
+        $this->kKampagne = Shop::Container()->getDB()->insert('tkampagne', $obj);
+        if (\mb_convert_case($this->dErstellt, MB_CASE_LOWER) === 'now()') {
+            $this->dErstellt = \date_format(\date_create(), 'Y-m-d H:i:s');
+        }
+        $this->dErstellt_DE = \date_format(\date_create($this->dErstellt), 'd.m.Y H:i:s');
 
         return $this->kKampagne;
     }
@@ -125,10 +125,11 @@ class Kampagne
         $obj->dErstellt  = $this->dErstellt;
         $obj->kKampagne  = $this->kKampagne;
 
-        $res                = Shop::Container()->getDB()->update('tkampagne', 'kKampagne', $obj->kKampagne, $obj);
-        $parts              = Date::getDateParts($this->dErstellt);
-        $this->dErstellt_DE = $parts['cTag'] . '.' . $parts['cMonat'] . '.' . $parts['cJahr'] . ' ' .
-            $parts['cStunde'] . ':' . $parts['cMinute'] . ':' . $parts['cSekunde'];
+        $res = Shop::Container()->getDB()->update('tkampagne', 'kKampagne', $obj->kKampagne, $obj);
+        if (\mb_convert_case($this->dErstellt, MB_CASE_LOWER) === 'now()') {
+            $this->dErstellt = \date_format(\date_create(), 'Y-m-d H:i:s');
+        }
+        $this->dErstellt_DE = \date_format(\date_create($this->dErstellt), 'd.m.Y H:i:s');
 
         return $res;
     }

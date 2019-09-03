@@ -118,7 +118,7 @@ class Page
 
     loadPageFromWebStorage()
     {
-        var pageJson = window.localStorage.getItem(this.getStorageId());
+        let pageJson = window.localStorage.getItem(this.getStorageId());
 
         if(pageJson !== null) {
             this.clear();
@@ -155,7 +155,7 @@ class Page
 
     onLoad(preview)
     {
-        var areas = this.rootAreas;
+        let areas = this.rootAreas;
 
         this.clear();
 
@@ -201,18 +201,18 @@ class Page
     {
         withDom = withDom || false;
 
-        var result = {
+        let result = {
             id:    this.id,
             url:   this.url,
             key:   this.key,
             areas: {}
         };
 
-        var areas = this.rootAreas;
+        let areas = this.rootAreas;
 
         for(var i=0; i<areas.length; i++) {
-            var area     = this.jq(areas[i]);
-            var areaData = this.areaToJSON(area, withDom);
+            let area     = this.jq(areas[i]);
+            let areaData = this.areaToJSON(area, withDom);
 
             result.areas[areaData.id] = areaData;
         }
@@ -224,8 +224,8 @@ class Page
     {
         withDom = withDom || false;
 
-        var result   = {id: area.data('area-id'), content: []};
-        var portlets = area.children('[data-portlet]');
+        let result   = {id: area.data('area-id'), content: []};
+        let portlets = area.children('[data-portlet]');
 
         portlets.each((i, portlet) => {
             result.content.push(this.portletToJSON(this.jq(portlet), withDom));
@@ -238,11 +238,16 @@ class Page
     {
         withDom = withDom || false;
 
-        var data     = portlet.data('portlet');
-        var result   = {
-            "class": data.class, title: data.title, properties: data.properties, subareas: {}, uid: data.uid
+        let data = portlet.data('portlet');
+
+        let result = {
+            class: data.class,
+            title: data.title,
+            properties: data.properties,
+            subareas: {},
         };
-        var subareas = portlet.find('.opc-area').not(portlet.find('[data-portlet] .opc-area'));
+
+        let subareas = portlet.find('.opc-area').not(portlet.find('[data-portlet] .opc-area'));
 
         if (data.class === 'MissingPortlet') {
             result.missingClass = data.missingClass;

@@ -426,6 +426,7 @@
                     message: html,
                     title: title,
                     keyboard: true,
+                    buttons: false,
                     tabindex: -1})
                     .then(
                         function () {

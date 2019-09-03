@@ -340,7 +340,7 @@ class BoxService implements BoxServiceInterface
      * @param bool $visible
      * @return array
      */
-    public function buildList(int $pageType = 0, bool $active = true, bool $visible = false): array
+    public function buildList(int $pageType = \PAGE_UNBEKANNT, bool $active = true, bool $visible = false): array
     {
         $boxAdmin          = new BoxAdmin(Shop::Container()->getDB());
         $validPages        = \implode(',', $boxAdmin->getValidPageTypes());

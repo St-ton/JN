@@ -117,5 +117,5 @@ interface BoxServiceInterface
      * @param bool $visible
      * @return array
      */
-    public function buildList(int $pageType = 0, bool $active = true, bool $visible = false): array;
+    public function buildList(int $pageType = \PAGE_UNBEKANNT, bool $active = true, bool $visible = true): array;
 }

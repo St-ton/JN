@@ -765,7 +765,7 @@
         },
 
         checkMenuScroll: function() {
-            var menu = 'body[data-viewport="lg"] .megamenu, body[data-viewport="md"] .megamenu';
+            var menu = '.megamenu';
 
             if ($(menu)[0] != undefined) {
                 var scrollWidth = parseInt(Math.round($(menu)[0].scrollWidth));

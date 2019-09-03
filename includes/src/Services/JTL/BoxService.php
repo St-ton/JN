@@ -347,7 +347,7 @@ class BoxService implements BoxServiceInterface
         }
         $boxAdmin   = new BoxAdmin(Shop::Container()->getDB());
         $validPages = \implode(',', $boxAdmin->getValidPageTypes());
-        $cacheID    = 'bx_' . $pageType . '_' . Shop::getLanguageID();
+        $cacheID    = 'bx_' . $pageType . '_' . (int)$activeOnly . '_' . Shop::getLanguageID();
         $activeSQL  = $activeOnly
             ? ' AND FIND_IN_SET(tboxensichtbar.kSeite, "' . $validPages . '") > 0  
                 AND tboxen.ePosition IN (' . \implode(',', $visiblePositions) . ')'

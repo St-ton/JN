@@ -1805,7 +1805,7 @@ class ProductFilter
     {
         $groupedOrFilters = group($filters, function (FilterInterface $f) {
             return $f->getClassName() === Characteristic::class
-                ? $f->getAttributeID()
+                ? $f->getID()
                 : $f->getPrimaryKeyRow();
         });
         foreach ($groupedOrFilters as $idx => $orFilters) {

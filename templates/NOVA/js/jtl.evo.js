@@ -705,8 +705,7 @@
             }
         },
 
-        addInactivityCheck: function() {
-            var timeoutID;
+        initInputSpinner: function(target) {
             var config = {
                 decrementButton: "<i class='fas fa-minus'></i>", // button text
                 incrementButton: "<i class='fas fa-plus'></i>", // ..
@@ -720,8 +719,13 @@
                 boostMultiplier: "auto", // you can also set a constant number as multiplier
                 locale: null // the locale for number rendering; if null, the browsers language is used
             }
-            $("input[type='number']").InputSpinner(config);
+            $(target).InputSpinner(config);
+        },
 
+        addInactivityCheck: function() {
+            var timeoutID;
+
+            this.initInputSpinner("input[type='number']");
 
             function setup() {
                 $('#cart-form .nmbr-cfg-group input').on('change',resetTimer);

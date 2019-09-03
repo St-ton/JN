@@ -315,7 +315,11 @@ class Page implements \JsonSerializable
         return -1;
     }
 
-    public function getCssList($preview = false)
+    /**
+     * @param bool $preview
+     * @return array
+     */
+    public function getCssList(bool $preview = false): array
     {
         $list = [];
 

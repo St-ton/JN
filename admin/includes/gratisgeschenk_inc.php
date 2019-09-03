@@ -68,13 +68,9 @@ function holeHaeufigeGeschenke(string $sql): array
         $product->fuelleArtikel((int)$item->kArtikel, $options, 0, 0, true);
         if ($product->kArtikel > 0) {
             $product->nGGAnzahl = $item->nAnzahl;
-            $dateParts          = Date::getDateParts($item->lastOrdered);
-            $lastOrdered        = $dateParts['cTag'] . '.' . $dateParts['cMonat'] . '.' .
-                $dateParts['cJahr'] . ' ' .
-                $dateParts['cStunde'] . ':' . $dateParts['cMinute'] . ':' . $dateParts['cSekunde'];
             $res[]              = (object)[
                 'artikel'       => $product,
-                'lastOrdered'   => $lastOrdered,
+                'lastOrdered'   => date_format(date_create($item->lastOrdered), 'd.m.Y H:i:s'),
                 'avgOrderValue' => $item->avgOrderValue
             ];
         }
@@ -108,13 +104,9 @@ function holeLetzten100Geschenke(string $sql): array
         $product->fuelleArtikel((int)$item->kArtikel, $options, 0, 0, true);
         if ($product->kArtikel > 0) {
             $product->nGGAnzahl = $item->nAnzahl;
-            $dateParts          = Date::getDateParts($item->orderCreated);
-            $orderCreated       = $dateParts['cTag'] . '.' . $dateParts['cMonat'] . '.' .
-                $dateParts['cJahr'] . ' ' .
-                $dateParts['cStunde'] . ':' . $dateParts['cMinute'] . ':' . $dateParts['cSekunde'];
             $res[]              = (object)[
                 'artikel'      => $product,
-                'orderCreated' => $orderCreated,
+                'orderCreated' => date_format(date_create($item->orderCreated), 'd.m.Y H:i:s'),
                 'orderValue'   => $item->fGesamtsumme
             ];
         }

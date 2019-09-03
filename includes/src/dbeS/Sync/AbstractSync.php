@@ -19,7 +19,7 @@ use JTL\Exceptions\EmptyResultSetException;
 use JTL\Exceptions\ServiceNotFoundException;
 use JTL\Helpers\GeneralObject;
 use JTL\Helpers\Text;
-use JTL\Kampagne;
+use JTL\Campaign;
 use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
 use JTL\Optin\Optin;
@@ -234,7 +234,7 @@ abstract class AbstractSync
         if ($product === null) {
             return;
         }
-        $campaign = new Kampagne(\KAMPAGNE_INTERN_VERFUEGBARKEIT);
+        $campaign = new Campaign(\KAMPAGNE_INTERN_VERFUEGBARKEIT);
         if ($campaign->kKampagne > 0) {
             $sep            = \strpos($product->cURL, '.php') === false ? '?' : '&';
             $product->cURL .= $sep . $campaign->cParameter . '=' . $campaign->cWert;

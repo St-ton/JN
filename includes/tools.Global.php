@@ -32,7 +32,7 @@ use JTL\Helpers\Tax;
 use JTL\Helpers\Text;
 use JTL\Helpers\URL;
 use JTL\Jtllog;
-use JTL\Kampagne;
+use JTL\Campaign;
 use JTL\Language\LanguageHelper;
 use JTL\Redirect;
 use JTL\Session\Frontend;
@@ -733,7 +733,7 @@ function pruefeWarenkorbStueckliste()
 function pruefeKampagnenParameter()
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use Kampagne::checkCampaignParameters() instead.', E_USER_DEPRECATED);
-    Kampagne::checkCampaignParameters();
+    Campaign::checkCampaignParameters();
 }
 
 /**
@@ -747,7 +747,7 @@ function pruefeKampagnenParameter()
 function setzeKampagnenVorgang(int $definitionID, int $key, $value, $customData = null)
 {
     trigger_error(__FUNCTION__ . ' is deprecated. Use Kampagne::setCampaignAction() instead.', E_USER_DEPRECATED);
-    return Kampagne::setCampaignAction($definitionID, $key, $value, $customData);
+    return Campaign::setCampaignAction($definitionID, $key, $value, $customData);
 }
 
 /**

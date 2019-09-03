@@ -26,7 +26,7 @@ use JTL\Helpers\Product;
 use JTL\Helpers\Request;
 use JTL\Helpers\Tax;
 use JTL\Helpers\Text;
-use JTL\Kampagne;
+use JTL\Campaign;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use stdClass;
@@ -703,7 +703,7 @@ class CartHelper
                             $qty
                         );
                         if (isset($_SESSION['Kampagnenbesucher'])) {
-                            Kampagne::setCampaignAction(\KAMPAGNE_DEF_WUNSCHLISTE, $kWunschlistePos, $qty);
+                            Campaign::setCampaignAction(\KAMPAGNE_DEF_WUNSCHLISTE, $kWunschlistePos, $qty);
                         }
 
                         $obj           = new stdClass();
@@ -1435,7 +1435,7 @@ class CartHelper
             ->assign('bWarenkorbHinzugefuegt', true)
             ->assign('bWarenkorbAnzahl', $qty);
         if (isset($_SESSION['Kampagnenbesucher'])) {
-            Kampagne::setCampaignAction(\KAMPAGNE_DEF_WARENKORB, $productID, $qty);
+            Campaign::setCampaignAction(\KAMPAGNE_DEF_WARENKORB, $productID, $qty);
         }
         Frontend::getCart()->redirectTo((bool)$redirect, $unique);
 

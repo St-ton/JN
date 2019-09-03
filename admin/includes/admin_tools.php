@@ -12,7 +12,7 @@ use JTL\Helpers\Form;
 use JTL\Helpers\Request;
 use JTL\IO\IOError;
 use JTL\IO\IOResponse;
-use JTL\Kampagne;
+use JTL\Campaign;
 use JTL\Shop;
 use JTL\Smarty\JTLSmarty;
 use JTL\XMLParser;
@@ -286,7 +286,7 @@ function holeAlleKampagnen(bool $internalOnly = false, bool $activeOnly = true)
         ReturnType::ARRAY_OF_OBJECTS
     );
     foreach ($items as $item) {
-        $campaign = new Kampagne((int)$item->kKampagne);
+        $campaign = new Campaign((int)$item->kKampagne);
         if (isset($campaign->kKampagne) && $campaign->kKampagne > 0) {
             $campaigns[$campaign->kKampagne] = $campaign;
         }

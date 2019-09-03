@@ -119,6 +119,9 @@ if (Request::postInt('fragezumprodukt') === 1) {
 } elseif (Request::postInt('benachrichtigung_verfuegbarkeit') === 1) {
     $productNotices = Product::checkAvailabilityMessage($productNotices);
 }
+foreach ($productNotices as $productNoticeKey => $productNotice) {
+    $alertHelper->addAlert(Alert::TYPE_DANGER, $productNotice, 'productNotice' . $productNoticeKey);
+}
 $AktuelleKategorie  = new Kategorie($AktuellerArtikel->gibKategorie());
 $expandedCategories = new KategorieListe();
 $expandedCategories->getOpenCategories($AktuelleKategorie);

@@ -11,7 +11,7 @@ use JTL\CheckBox;
 use JTL\DB\ReturnType;
 use JTL\Helpers\Product;
 use JTL\Helpers\Request;
-use JTL\Kampagne;
+use JTL\Campaign;
 use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
 use JTL\Session\Frontend;
@@ -141,7 +141,7 @@ class OptinAvailAgain extends OptinBase implements OptinInterface
             ReturnType::LAST_INSERTED_ID
         );
         if (isset($_SESSION['Kampagnenbesucher'])) {
-            Kampagne::setCampaignAction(\KAMPAGNE_DEF_VERFUEGBARKEITSANFRAGE, $inquiryID, 1.0);
+            Campaign::setCampaignAction(\KAMPAGNE_DEF_VERFUEGBARKEITSANFRAGE, $inquiryID, 1.0);
         }
     }
 

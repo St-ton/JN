@@ -19,7 +19,7 @@ use JTL\DB\ReturnType;
 use JTL\Extensions\Config\Configurator;
 use JTL\Extensions\Config\Group;
 use JTL\Extensions\Config\Item;
-use JTL\Kampagne;
+use JTL\Campaign;
 use JTL\Language\LanguageHelper;
 use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
@@ -1218,7 +1218,7 @@ class Product
             'thankYouForQuestion'
         );
         if (isset($_SESSION['Kampagnenbesucher'])) {
-            Kampagne::setCampaignAction(\KAMPAGNE_DEF_FRAGEZUMPRODUKT, $inquiryID, 1.0);
+            Campaign::setCampaignAction(\KAMPAGNE_DEF_FRAGEZUMPRODUKT, $inquiryID, 1.0);
         }
 
         return Shop::Lang()->get('thankYouForQuestion', 'messages');

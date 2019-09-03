@@ -20,7 +20,7 @@ use JTL\Helpers\Manufacturer;
 use JTL\Helpers\Request;
 use JTL\Helpers\Tax;
 use JTL\Helpers\Text;
-use JTL\Kampagne;
+use JTL\Campaign;
 use JTL\Language\LanguageHelper;
 use JTL\Language\LanguageModel;
 use JTL\Link\LinkGroupCollection;
@@ -105,7 +105,7 @@ class Frontend extends AbstractSession
         }
         $this->checkWishlistDeletes()->checkComparelistDeletes();
         // Kampagnen in die Session laden
-        Kampagne::getAvailable();
+        Campaign::getAvailable();
         if (!isset($_SESSION['cISOSprache'])) {
             \session_destroy();
             die('<h1>Ihr Shop wurde installiert. Lesen Sie in unserem Guide ' .

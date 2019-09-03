@@ -29,7 +29,9 @@
             {/if}
         </div>
     </div>
-    {inline_script}<script>
+    <script>
+        document.getElementById('{$uid}').updateFlipcardHeight = updateHeight_{$uid};
+
         function initFlipcard_{$uid}()
         {
             var flipcard      = $('#{$uid}');
@@ -53,10 +55,6 @@
             }
         }
 
-        $(initFlipcard_{$uid});
-
-        document.getElementById('{$uid}').updateFlipcardHeight = updateHeight_{$uid};
-
         function updateHeight_{$uid}()
         {
             var flipcard      = $('#{$uid}');
@@ -74,5 +72,9 @@
             flipcardInner.height(height);
             flipcardFaces.height(height);
         }
+    </script>
+
+    {inline_script}<script>
+        $(initFlipcard_{$uid});
     </script>{/inline_script}
 </div>

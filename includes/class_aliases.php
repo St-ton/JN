@@ -158,7 +158,7 @@ class_alias(\JTL\Checkout\Versand::class, 'Versand', true);
 class_alias(\JTL\Checkout\Lieferschein::class, 'Lieferschein', true);
 class_alias(\JTL\Checkout\KuponBestellung::class, 'KuponBestellung', true);
 class_alias(\JTL\SingletonTrait::class, 'SingletonTrait', true);
-class_alias(\JTL\Kampagne::class, 'Kampagne', true);
+class_alias(\JTL\Campaign::class, 'Kampagne', true);
 class_alias(\JTL\PlausiTrennzeichen::class, 'PlausiTrennzeichen', true);
 class_alias(\JTL\Firma::class, 'Firma', true);
 class_alias(\JTL\MagicCompatibilityTrait::class, 'MagicCompatibilityTrait', true);

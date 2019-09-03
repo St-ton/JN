@@ -33,7 +33,7 @@ use JTL\Helpers\ShippingMethod;
 use JTL\Helpers\Tax;
 use JTL\Helpers\Text;
 use JTL\Helpers\URL;
-use JTL\Kampagne;
+use JTL\Campaign;
 use JTL\Session\Frontend;
 use JTL\Shop;
 use JTL\Shopsetting;
@@ -280,7 +280,7 @@ class IOMethods
         $objResponse->script('this.response = ' . \json_encode($response) . ';');
         // Kampagne
         if (isset($_SESSION['Kampagnenbesucher'])) {
-            Kampagne::setCampaignAction(\KAMPAGNE_DEF_WARENKORB, $productID, $amount); // Warenkorb
+            Campaign::setCampaignAction(\KAMPAGNE_DEF_WARENKORB, $productID, $amount); // Warenkorb
         }
 
         if ($config['global']['global_warenkorb_weiterleitung'] === 'Y') {

@@ -25,7 +25,7 @@
                                 showRemove: false,
                                 showDrag: false
                             },
-                            allowedFileExtensions : ['jpg', 'jpeg', 'jpe', 'gif', 'png', 'bmp'],
+                            allowedFileExtensions : ['jpg', 'jpeg', 'jpe', 'gif', 'png', 'bmp', 'svg'],
                             overwriteInitial: true,
                             deleteUrl: '{$shopURL}/{$PFAD_ADMIN}shoplogouploader.php?token={$smarty.session.jtl_token}',
                             initialPreviewCount: 1,

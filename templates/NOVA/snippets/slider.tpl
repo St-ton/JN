@@ -44,7 +44,7 @@
         {block name='snippets-slider-script'}
             {inline_script}<script>
                 {if $oSlider->getUseKB() === false}
-                    jtl.ready(function () {
+                    $(function () {
                         var slider = $('#slider-{$oSlider->getID()}');
                         $('a.slide').on('click', function () {
                             if (!this.href.match(new RegExp('^' + location.protocol + '\\/\\/' + location.host))) {
@@ -113,7 +113,7 @@
                         },10);
                     }
 
-                    jtl.ready(function () {
+                    $(function () {
                         var slider = $('#slider-{$oSlider->getID()}');
                         var endSlide=$('.nivoSlider img').length-1;
                         $('a.slide').click(function() {

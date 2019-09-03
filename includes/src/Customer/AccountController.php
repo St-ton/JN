@@ -30,7 +30,7 @@ use JTL\Helpers\Request;
 use JTL\Helpers\ShippingMethod;
 use JTL\Helpers\Tax;
 use JTL\Helpers\Text;
-use JTL\Kampagne;
+use JTL\Campaign;
 use JTL\Language\LanguageHelper;
 use JTL\Pagination\Pagination;
 use JTL\Services\JTL\AlertServiceInterface;
@@ -456,7 +456,7 @@ class AccountController
             $_SESSION['oKategorie_arr_new']
         );
         if (isset($_SESSION['Kampagnenbesucher'])) {
-            Kampagne::setCampaignAction(\KAMPAGNE_DEF_LOGIN, $customerID, 1.0); // Login
+            Campaign::setCampaignAction(\KAMPAGNE_DEF_LOGIN, $customerID, 1.0); // Login
         }
     }
 

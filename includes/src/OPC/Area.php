@@ -93,7 +93,11 @@ class Area implements \JsonSerializable
         return $result;
     }
 
-    public function getCssList($preview = false)
+    /**
+     * @param bool $preview
+     * @return array
+     */
+    public function getCssList(bool $preview = false): array
     {
         $list = [];
 

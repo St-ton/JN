@@ -211,7 +211,7 @@
             {else}
                 <div class="panel panel-default">
                     <div class="panel-heading">
-                        <h3 class="panel-title">{lang section="productDownloads" key="downloadSection"}</h3>
+                        <h3 class="panel-title">{lang key="Votes" section="global"}</h3>
                     </div>
                     <div class="panel-body" id="tab-votes">
             {/if}

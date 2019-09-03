@@ -9,6 +9,7 @@ namespace JTL\Plugin;
 use JTL\Cache\JTLCacheInterface;
 use JTL\DB\DbInterface;
 use JTL\Events\Dispatcher;
+use JTL\Link\LinkInterface;
 use JTL\Smarty\JTLSmarty;
 
 /**
@@ -89,4 +90,11 @@ interface BootstrapperInterface
      * @return string
      */
     public function renderAdminMenuTab(string $tabName, int $menuID, JTLSmarty $smarty): string;
+
+    /**
+     * @param LinkInterface $link
+     * @param JTLSmarty     $smarty
+     * @return bool
+     */
+    public function prepareFrontend(LinkInterface $link, JTLSmarty $smarty): bool;
 }

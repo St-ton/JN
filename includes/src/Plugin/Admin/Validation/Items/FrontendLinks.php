@@ -6,7 +6,9 @@
 
 namespace JTL\Plugin\Admin\Validation\Items;
 
+use JTL\Plugin\Admin\Validation\ValidationItemInterface;
 use JTL\Plugin\InstallCode;
+use JTL\Shop;
 
 /**
  * Class FrontendLinks
@@ -39,7 +41,7 @@ final class FrontendLinks extends AbstractItem
                 return InstallCode::MISSING_FRONTEND_LINKS;
             }
             $link = $this->sanitizeLinkData($link);
-            if (\mb_strlen($link['Filename']) === 0) {
+            if (\mb_strlen($link['Filename']) === 0 && $this->getContext() !== ValidationItemInterface::CONTEXT_PLUGIN) {
                 return InstallCode::INVALID_FRONTEND_LINK_FILENAME;
             }
             \preg_match(

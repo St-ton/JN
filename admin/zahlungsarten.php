@@ -241,6 +241,7 @@ if ($step === 'einstellen') {
                 );
                 $Conf[$i]->gesetzterWert = $setValue->cWert;
                 $Conf[$i]->cName         = __($Conf[$i]->cName);
+                $Conf[$i]->cBeschreibung = __($Conf[$i]->cBeschreibung);
             }
         } else {
             $Conf        = $db->selectAll(

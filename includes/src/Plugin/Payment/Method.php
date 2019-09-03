@@ -667,9 +667,10 @@ class Method implements MethodInterface
 
     /**
      * @param string $moduleID
-     * @return MethodInterface
+     * @param int    $nAgainCheckout
+     * @return MethodInterface|Null
      */
-    public static function create($moduleID): MethodInterface
+    public static function create(string $moduleID, int $nAgainCheckout = 0): ?MethodInterface
     {
         global $plugin;
         global $oPlugin;
@@ -693,7 +694,7 @@ class Method implements MethodInterface
                 if (file_exists($classFile)) {
                     require_once $classFile;
                     $className               = $pluginPaymentMethod->getClassName();
-                    $paymentMethod           = new $className($moduleID);
+                    $paymentMethod           = new $className($moduleID, $nAgainCheckout);
                     $paymentMethod->cModulId = $moduleID;
                 }
             }

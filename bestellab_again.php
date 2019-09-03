@@ -114,7 +114,7 @@ if ($pluginID > 0) {
     $loader = Helper::getLoaderByPluginID($pluginID, $db);
     $plugin = $loader->init($pluginID);
     if ($plugin !== null) {
-        $paymentMethod = PaymentMethod::create($moduleID);
+        $paymentMethod = PaymentMethod::create($moduleID, 1);
         if ($paymentMethod !== null) {
             if ($paymentMethod->validateAdditional()) {
                 $paymentMethod->preparePaymentProcess($order);

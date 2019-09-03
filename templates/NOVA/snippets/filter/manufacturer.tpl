@@ -17,7 +17,7 @@
                 <span class="value">
                     {link href="{if !empty($filterOption->getURL())}{$filterOption->getURL()}{else}#{/if}"
                         title="{$filterOption->getName()}: {$filterOption->getCount()}"
-                        data=["toggle"=>"tooltip", "placement"=>"auto"]
+                        data=["toggle"=>"tooltip", "placement"=>"top", "boundary"=>"window"]
                         class="{if $filterOption->isActive()}active{/if}"
                     }
                         {if $Einstellungen.navigationsfilter.hersteller_anzeigen_als == 'B'}

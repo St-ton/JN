@@ -879,7 +879,7 @@ final class Shop
     /**
      * @param bool $isFrontend
      */
-    public static function setIsFrontend(boll $isFrontend): void
+    public static function setIsFrontend(bool $isFrontend): void
     {
         self::$isFrontend = $isFrontend;
     }

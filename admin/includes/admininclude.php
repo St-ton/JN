@@ -66,6 +66,7 @@ $lang       = LanguageHelper::getInstance($db, $cache);
 $oAccount   = Shop::Container()->getAdminAccount();
 $updater    = new Updater($db);
 $hasUpdates = $updater->hasPendingUpdates();
+Shop::setIsFrontend(false);
 if ($updater->hasPendingUpdates() && $_SERVER['REQUEST_METHOD'] === 'GET' && strpos($_SERVER['SCRIPT_FILENAME'], 'dbupdater') === false) {
     \header('Location: ' . Shop::getURL(true) . '/' . \PFAD_ADMIN . 'dbupdater.php');
     exit;
@@ -78,8 +79,6 @@ Shop::Container()->singleton(CaptchaServiceInterface::class, function () {
 });
 if (!$hasUpdates) {
     Shop::bootstrap(false);
-} else {
-    Shop::setIsFrontend(false);
 }
 if ($oAccount->logged()) {
     if (!$session->isValid()) {

@@ -69,13 +69,12 @@
                                                         {dropdownitem tag="div" active=$sub->getID() === $activeId || (isset($activeParents[1]) && $activeParents[1]->kKategorie === $sub->getID()) class="p-3 mb-md-6"}
                                                             <div class="category-wrapper">
                                                                 {link href=$sub->getURL() title=$sub->getName()}
-                                                                    {if $Einstellungen.template.megamenu.show_category_images !== 'N'}
-                                                                        <div class="d-none d-md-block">
-                                                                            {image fluid-grow=false lazy=true src="{$imageBaseURL}gfx/trans.png"
-                                                                                alt=$category->getShortName()|escape:'html'
-                                                                                data=["src" => $sub->getImageURL()]
-                                                                                class="img-fluid"}
-                                                                        </div>
+                                                                    {if $Einstellungen.template.megamenu.show_category_images !== 'N'
+                                                                        && (!$device->isMobile() || $device->isTablet())}
+                                                                        {image fluid-grow=false lazy=true src="{$imageBaseURL}gfx/trans.png"
+                                                                            alt=$category->getShortName()|escape:'html'
+                                                                            data=["src" => $sub->getImageURL()]
+                                                                            class="img-fluid d-none d-md-block"}
                                                                     {/if}
                                                                     <div class="title pt-2">
                                                                             {$sub->getShortName()}
@@ -152,33 +151,39 @@
         {if !empty($manufacturers)}
             {assign var=linkKeyHersteller value=JTL\Shop::Container()->getLinkService()->getSpecialPageID(LINKTYP_HERSTELLER)|default:0}
             {assign var=linkSEOHersteller value=JTL\Shop::Container()->getLinkService()->getLinkByID($linkKeyHersteller)|default:null}
-            {navitemdropdown text="{if $linkSEOHersteller !== null && !empty($linkSEOHersteller->getName())}{$linkSEOHersteller->getName()}{else}{lang key='manufacturers'}{/if}"}
-                {container}
-                    {row}
-                        {foreach $manufacturers as $hst}
-                            {col cols=12 md=6 lg=3}
-                                {dropdownitem tag="div" active=($NaviFilter->hasManufacturer() && $NaviFilter->getManufacturer()->getValue() == $hst->kHersteller)}
-                                    <div class="category-wrapper manufacturer mt-3">
-                                        {if $Einstellungen.template.megamenu.show_category_images !== 'N'}
-                                            <div class="d-none d-md-block mb-3">
-                                                {link href=$hst->cURLFull title=$hst->cSeo}
-                                                    {image lazy=true data=["src" => $hst->cBildURLNormal]
-                                                         src="{$imageBaseURL}gfx/trans.png" alt=$hst->cName|escape:'html'}
-                                                {/link}
-                                            </div>
-                                        {/if}
-                                        <div class="title">
+            <li class="nav-item dropdown">
+                {link href=$category->getURL() title=$category->getName() class="float-right subcat-link d-inline-block d-md-none"}
+                    <i class="fas fa-arrow-alt-circle-right"></i>
+                {/link}
+                {link href=$linkSEOHersteller->getURL() title={lang key='manufacturers'} class="nav-link" data=["toggle"=>"dropdown"] target="_self"}
+                    {if $linkSEOHersteller !== null && !empty($linkSEOHersteller->getName())}{$linkSEOHersteller->getName()}{else}{lang key='manufacturers'}{/if}
+                {/link}
+                <div class="dropdown-menu">
+                    {container}
+                        {row}
+                            {foreach $manufacturers as $hst}
+                                {col cols=12 md=6 lg=3}
+                                    {dropdownitem tag="div" active=($NaviFilter->hasManufacturer() && $NaviFilter->getManufacturer()->getValue() == $hst->kHersteller)}
+                                        <div class="category-wrapper manufacturer mt-3">
                                             {link href=$hst->cURLFull title=$hst->cSeo}
-                                                {$hst->cName}
+                                                {if $Einstellungen.template.megamenu.show_category_images !== 'N'
+                                                    && (!$device->isMobile() || $device->isTablet())}
+                                                    {image lazy=true data=["src" => $hst->cBildURLNormal]
+                                                        src="{$imageBaseURL}gfx/trans.png" alt=$hst->cName|escape:'html'
+                                                        class="d-none d-md-block mb-3"}
+                                                {/if}
+                                                <div class="title">
+                                                    {$hst->cName}
+                                                </div>
                                             {/link}
                                         </div>
-                                    </div>
-                                {/dropdownitem}
-                            {/col}
-                        {/foreach}
-                    {/row}
-                {/container}
-            {/navitemdropdown}
+                                    {/dropdownitem}
+                                {/col}
+                            {/foreach}
+                        {/row}
+                    {/container}
+                </div>
+            </li>
         {/if}
     {/if}
     {/block}{* megamenu-manufacturers *}

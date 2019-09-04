@@ -64,10 +64,7 @@
             .on('keydown', function(e) {
                 if(e.key === 'Enter') {
                     if(selectedSearchItem === null) {
-                        var searchString = searchInput.val();
-                        if (searchString.length >= 3) {
-                            window.location.href = 'searchresults.php?cSuche=' + searchString;
-                        }
+                        window.location.href = 'searchresults.php?cSuche=' + searchInput.val();
                     } else {
                         if (selectedSearchItem.hasClass('is-form-submit')) {
                             selectedSearchItem.find('form').submit();

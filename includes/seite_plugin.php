@@ -8,10 +8,8 @@ use JTL\Plugin\Helper;
 use JTL\Shop;
 
 $kLink = (int)Shop::$kLink;
-Shop::dbg($kLink, false, 'klink:');
 if ($kLink !== null && $kLink > 0) {
     $linkFile = Shop::Container()->getDB()->select('tpluginlinkdatei', 'kLink', $kLink);
-    Shop::dbg($linkFile, true, '$linkFile');
     if (isset($linkFile->cDatei) && mb_strlen($linkFile->cDatei) > 0) {
         Shop::setPageType(PAGE_PLUGIN);
         global $oPlugin, $plugin;

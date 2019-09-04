@@ -21,13 +21,14 @@ class DBMigrationHelper
     public const SUCCESS = 'success';
     public const FAILURE = 'failure';
 
-    public const MIGRATE_NONE   = 0x0000;
-    public const MIGRATE_INNODB = 0x0001;
-    public const MIGRATE_UTF8   = 0x0002;
-    public const MIGRATE_TEXT   = 0x0004;
-    public const MIGRATE_C_UTF8 = 0x00A0;
+    public const MIGRATE_NONE    = 0x0000;
+    public const MIGRATE_INNODB  = 0x0001;
+    public const MIGRATE_UTF8    = 0x0002;
+    public const MIGRATE_TEXT    = 0x0004;
+    public const MIGRATE_C_UTF8  = 0x0010;
+    public const MIGRATE_TINYINT = 0x0020;
     public const MIGRATE_TABLE  = self::MIGRATE_INNODB | self::MIGRATE_UTF8;
-    public const MIGRATE_COLUMN = self::MIGRATE_C_UTF8 | self::MIGRATE_TEXT;
+    public const MIGRATE_COLUMN = self::MIGRATE_C_UTF8 | self::MIGRATE_TEXT | self::MIGRATE_TINYINT;
 
     /**
      * @return stdClass
@@ -110,21 +111,24 @@ class DBMigrationHelper
 
         return Shop::Container()->getDB()->queryPrepared(
             "SELECT t.`TABLE_NAME`, t.`ENGINE`, t.`TABLE_COLLATION`, t.`TABLE_COMMENT`
-                , COUNT(c.COLUMN_NAME) TEXT_FIELDS
+                , COUNT(IF(c.DATA_TYPE = 'text', c.COLUMN_NAME, NULL)) TEXT_FIELDS
+                , COUNT(IF(c.DATA_TYPE = 'tinyint', c.COLUMN_NAME, NULL)) TINY_FIELDS
                 , COUNT(IF(c.COLLATION_NAME = 'utf8_unicode_ci', NULL, c.COLLATION_NAME)) FIELD_COLLATIONS
                 FROM information_schema.TABLES t
                 LEFT JOIN information_schema.COLUMNS c 
                     ON c.TABLE_NAME = t.TABLE_NAME
                     AND c.TABLE_SCHEMA = t.TABLE_SCHEMA
-                    AND (c.COLUMN_TYPE = 'text' OR c.COLLATION_NAME != 'utf8_unicode_ci')
+                    AND (c.DATA_TYPE = 'text' OR c.DATA_TYPE = 'tinyint' OR c.COLLATION_NAME != 'utf8_unicode_ci')
                 WHERE t.`TABLE_SCHEMA` = :schema
                     AND t.`TABLE_NAME` NOT LIKE 'xplugin_%'
                     AND (t.`ENGINE` != 'InnoDB' 
                            OR t.`TABLE_COLLATION` != 'utf8_unicode_ci' 
                            OR c.COLLATION_NAME != 'utf8_unicode_ci' 
-                           OR c.COLUMN_TYPE = 'text')
+                           OR c.DATA_TYPE = 'text'
+                           OR (c.DATA_TYPE = 'tinyint' AND SUBSTRING(c.COLUMN_NAME, 1, 1) = 'k')
+                    )
                 GROUP BY t.`TABLE_NAME`, t.`ENGINE`, t.`TABLE_COLLATION`, t.`TABLE_COMMENT`
-                ORDER BY t.`TABLE_NAME`;",
+                ORDER BY t.`TABLE_NAME`",
             ['schema' => $database],
             ReturnType::ARRAY_OF_OBJECTS
         );
@@ -141,20 +145,23 @@ class DBMigrationHelper
 
         $result = Shop::Container()->getDB()->queryPrepared(
             "SELECT t.`TABLE_NAME`, t.`ENGINE`, t.`TABLE_COLLATION`, t.`TABLE_COMMENT`
-                , COUNT(c.COLUMN_NAME) TEXT_FIELDS
+                , COUNT(IF(c.DATA_TYPE = 'text', c.COLUMN_NAME, NULL)) TEXT_FIELDS
+                , COUNT(IF(c.DATA_TYPE = 'tinyint', c.COLUMN_NAME, NULL)) TINY_FIELDS
                 , COUNT(IF(c.COLLATION_NAME = 'utf8_unicode_ci', NULL, c.COLLATION_NAME)) FIELD_COLLATIONS
                 FROM information_schema.TABLES t
                 LEFT JOIN information_schema.COLUMNS c 
                     ON c.TABLE_NAME = t.TABLE_NAME
                     AND c.TABLE_SCHEMA = t.TABLE_SCHEMA
-                    AND (c.COLUMN_TYPE = 'text' OR c.COLLATION_NAME != 'utf8_unicode_ci')
+                    AND (c.DATA_TYPE = 'text' OR c.DATA_TYPE = 'tinyint' OR c.COLLATION_NAME != 'utf8_unicode_ci')
                 WHERE t.`TABLE_SCHEMA` = :schema
                     AND t.`TABLE_NAME` NOT LIKE 'xplugin_%'
                     " . (!empty($excludeStr) ? "AND t.`TABLE_NAME` NOT IN ('" . $excludeStr . "')" : '') . "
                     AND (t.`ENGINE` != 'InnoDB' 
                         OR t.`TABLE_COLLATION` != 'utf8_unicode_ci' 
                         OR c.COLLATION_NAME != 'utf8_unicode_ci' 
-                        OR c.COLUMN_TYPE = 'text')
+                        OR c.DATA_TYPE = 'text'
+                        OR (c.DATA_TYPE = 'tinyint' AND SUBSTRING(c.COLUMN_NAME, 1, 1) = 'k')
+                    )
                 GROUP BY t.`TABLE_NAME`, t.`ENGINE`, t.`TABLE_COLLATION`
                 ORDER BY t.`TABLE_NAME` LIMIT 1",
             ['schema' => $database],
@@ -173,18 +180,22 @@ class DBMigrationHelper
         $database = Shop::Container()->getDB()->getConfig()['database'];
 
         return Shop::Container()->getDB()->queryPrepared(
-            'SELECT t.`TABLE_NAME`, t.`ENGINE`, t.`TABLE_COLLATION`, t.`TABLE_COMMENT`
-                , COUNT(c.COLUMN_NAME) TEXT_FIELDS
-                , COUNT(IF(c.COLLATION_NAME = \'utf8_unicode_ci\', NULL, c.COLLATION_NAME)) FIELD_COLLATIONS
+            "SELECT t.`TABLE_NAME`, t.`ENGINE`, t.`TABLE_COLLATION`, t.`TABLE_COMMENT`
+                , COUNT(IF(c.DATA_TYPE = 'text', c.COLUMN_NAME, NULL)) TEXT_FIELDS
+                , COUNT(IF(c.DATA_TYPE = 'tinyint', c.COLUMN_NAME, NULL)) TINY_FIELDS
+                , COUNT(IF(c.COLLATION_NAME = 'utf8_unicode_ci', NULL, c.COLLATION_NAME)) FIELD_COLLATIONS
                 FROM information_schema.TABLES t
                 LEFT JOIN information_schema.COLUMNS c 
                     ON c.TABLE_NAME = t.TABLE_NAME
                     AND c.TABLE_SCHEMA = t.TABLE_SCHEMA
-                    AND (c.COLUMN_TYPE = \'text\' OR c.COLLATION_NAME != \'utf8_unicode_ci\')
+                    AND (c.DATA_TYPE = 'text'
+                        OR (c.DATA_TYPE = 'tinyint' AND SUBSTRING(c.COLUMN_NAME, 1, 1) = 'k')
+                        OR c.COLLATION_NAME != 'utf8_unicode_ci'
+                    )
                 WHERE t.`TABLE_SCHEMA` = :schema
                     AND t.`TABLE_NAME` = :table
                 GROUP BY t.`TABLE_NAME`, t.`ENGINE`, t.`TABLE_COLLATION`, t.`TABLE_COMMENT`
-                ORDER BY t.`TABLE_NAME` LIMIT 1',
+                ORDER BY t.`TABLE_NAME` LIMIT 1",
             ['schema' => $database, 'table' => $table,],
             ReturnType::SINGLE_OBJECT
         );
@@ -237,6 +248,9 @@ class DBMigrationHelper
             if (isset($table->TEXT_FIELDS) && (int)$table->TEXT_FIELDS > 0) {
                 $result |= self::MIGRATE_TEXT;
             }
+            if (isset($table->TINY_FIELDS) && (int)$table->TINY_FIELDS > 0) {
+                $result |= self::MIGRATE_TINYINT;
+            }
             if (isset($table->FIELD_COLLATIONS) && (int)$table->FIELD_COLLATIONS > 0) {
                 $result |= self::MIGRATE_C_UTF8;
             }
@@ -255,9 +269,9 @@ class DBMigrationHelper
         $database     = Shop::Container()->getDB()->getConfig()['database'];
 
         if (\version_compare($mysqlVersion->innodb->version, '5.6', '<')) {
-            $table = self::getTable($table);
+            $tableInfo = self::getTable($table);
 
-            return \mb_strpos($table->TABLE_COMMENT, ':Migrating') !== false;
+            return $tableInfo !== null && \mb_strpos($tableInfo->TABLE_COMMENT, ':Migrating') !== false;
         }
 
         $tableStatus = Shop::Container()->getDB()->queryPrepared(
@@ -284,10 +298,11 @@ class DBMigrationHelper
                 FROM information_schema.COLUMNS
                 WHERE `TABLE_SCHEMA` = :schema
                     AND `TABLE_NAME` = :table
-                    AND `CHARACTER_SET_NAME` IS NOT NULL
-                    AND (`CHARACTER_SET_NAME` != 'utf8' 
-                       OR `COLLATION_NAME` != 'utf8_unicode_ci' 
-                       OR COLUMN_TYPE = 'text')
+                    AND ((`CHARACTER_SET_NAME` IS NOT NULL AND `CHARACTER_SET_NAME` != 'utf8')
+                        OR `COLLATION_NAME` != 'utf8_unicode_ci'
+                        OR DATA_TYPE = 'text'
+                        OR (DATA_TYPE = 'tinyint' AND SUBSTRING(COLUMN_NAME, 1, 1) = 'k')
+                    )
                 ORDER BY `ORDINAL_POSITION`",
             ['schema' => $database, 'table' => $cTable],
             ReturnType::ARRAY_OF_OBJECTS
@@ -362,6 +377,8 @@ class DBMigrationHelper
 
             $columnChange = [];
             foreach ($columns as $key => $col) {
+                $characterSet = "CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci'";
+
                 /* Workaround for quoted values in MariaDB >= 10.2.7 Fix: SHOP-2593 */
                 if ($col->COLUMN_DEFAULT === 'NULL' || $col->COLUMN_DEFAULT === "'NULL'") {
                     $col->COLUMN_DEFAULT = null;
@@ -370,12 +387,17 @@ class DBMigrationHelper
                     $col->COLUMN_DEFAULT = \trim($col->COLUMN_DEFAULT, '\'');
                 }
 
-                if ($col->COLUMN_TYPE === 'text') {
+                if ($col->DATA_TYPE === 'text') {
                     $col->COLUMN_TYPE = 'MEDIUMTEXT';
                 }
 
+                if ($col->DATA_TYPE === 'tinyint' && strpos($col->COLUMN_NAME, 'k') === 0) {
+                    $col->COLUMN_TYPE = 'INT(10) UNSIGNED';
+                    $characterSet = '';
+                }
+
                 $columnChange[] = "    CHANGE COLUMN `{$col->COLUMN_NAME}` `{$col->COLUMN_NAME}` "
-                    . "{$col->COLUMN_TYPE} CHARACTER SET 'utf8' COLLATE 'utf8_unicode_ci'"
+                    . "{$col->COLUMN_TYPE} $characterSet"
                     . ($col->IS_NULLABLE === 'YES' ? ' NULL' : ' NOT NULL')
                     . ($col->IS_NULLABLE === 'NO' && $col->COLUMN_DEFAULT === null ? '' : ' DEFAULT '
                         . ($col->COLUMN_DEFAULT === null ? 'NULL' : "'{$col->COLUMN_DEFAULT}'"));
@@ -398,12 +420,16 @@ class DBMigrationHelper
     public static function migrateToInnoDButf8(string $tableName): string
     {
         $table = self::getTable($tableName);
+
+        if ($table === null) {
+            return self::FAILURE;
+        }
         if (self::isTableInUse($table->TABLE_NAME)) {
             return self::IN_USE;
         }
 
         $migration = self::isTableNeedMigration($table);
-        if (($migration & self::MIGRATE_TEXT) !== self::MIGRATE_NONE) {
+        if (($migration & self::MIGRATE_TABLE) !== self::MIGRATE_NONE) {
             $sql = self::sqlMoveToInnoDB($table);
             if (!empty($sql) && !Shop::Container()->getDB()->executeQuery($sql, ReturnType::QUERYSINGLE)) {
                 return self::FAILURE;

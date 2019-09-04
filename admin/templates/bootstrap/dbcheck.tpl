@@ -74,7 +74,7 @@
                                 </td>
                                 <td>
                                     {if $hasError}
-                                        <span class="badge red">{$cDBError_arr[$cTable]}</span>
+                                        <span class="badge red">{$cDBError_arr[$cTable]->errMsg}</span>
                                     {else}
                                         <span class="badge green">{__('ok')}</span>
                                     {/if}
@@ -253,7 +253,7 @@
         if (typeof table !== 'undefined' && table !== '') {
             updateModalWait(sprintf('{/literal}{__('migrationOf')}{literal}', table, step));
         }
-        ioCall('migrateToInnoDB_utf8', ['migrate', table, step],
+        ioCall('migrateToInnoDB_utf8', ['migrate_single', table, step],
             function (data, context) {
                 if (data && typeof data.status !== 'undefined' && data.status !== 'failure') {
                     if (data.status === 'migrate' && data.nextStep === 2) {
@@ -281,7 +281,7 @@
         if ($cols.length > 0) {
             $($cols[1]).html('<span class="badge alert-info">InnoDB</span>');
             $($cols[2]).html('<span class="badge alert-info">utf8_general_ci</span>');
-            $($cols[5]).html('<span class="badge green">{/literal}{__('migrationCancel')}{literal}</span>');
+            $($cols[5]).html('<span class="badge green">{/literal}{__('ok')}{literal}</span>');
             $($cols[6]).html('');
         }
     }

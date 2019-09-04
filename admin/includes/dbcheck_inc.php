@@ -78,13 +78,15 @@ function getDBStruct(bool $extended = false, bool $clearCache = false)
         $dbData = $db->queryPrepared(
             "SELECT t.`TABLE_NAME`, t.`ENGINE`, `TABLE_COLLATION`, t.`TABLE_ROWS`, t.`TABLE_COMMENT`,
                     t.`DATA_LENGTH` + t.`INDEX_LENGTH` AS DATA_SIZE,
-                    COUNT(c.COLUMN_NAME) TEXT_FIELDS,
+                    COUNT(IF(c.DATA_TYPE = 'text', c.COLUMN_NAME, NULL)) TEXT_FIELDS,
+                    COUNT(IF(c.DATA_TYPE = 'tinyint', c.COLUMN_NAME, NULL)) TINY_FIELDS,
                     COUNT(IF(c.COLLATION_NAME = 'utf8_unicode_ci', NULL, c.COLLATION_NAME)) FIELD_COLLATIONS
                 FROM information_schema.TABLES t
                 LEFT JOIN information_schema.COLUMNS c ON c.TABLE_NAME = t.TABLE_NAME
-                                                       AND c.TABLE_SCHEMA = t.TABLE_SCHEMA
-                                                       AND (c.COLUMN_TYPE = 'text' 
-                                                          OR c.COLLATION_NAME != 'utf8_unicode_ci')
+                    AND c.TABLE_SCHEMA = t.TABLE_SCHEMA
+                    AND (c.DATA_TYPE = 'text'
+                        OR (c.DATA_TYPE = 'tinyint' AND SUBSTRING(c.COLUMN_NAME, 1, 1) = 'k')
+                        OR c.COLLATION_NAME != 'utf8_unicode_ci')
                 WHERE t.`TABLE_SCHEMA` = :schema
                     AND t.`TABLE_NAME` NOT LIKE 'xplugin_%'
                 GROUP BY t.`TABLE_NAME`, t.`ENGINE`, `TABLE_COLLATION`, t.`TABLE_ROWS`, t.`TABLE_COMMENT`,
@@ -174,7 +176,7 @@ function getDBFileStruct()
         return [];
     }
     $cJSON         = file_get_contents($cDateiListe);
-    $oDBFileStruct = json_decode($cJSON);
+    $oDBFileStruct = json_decode($cJSON, false);
     if (is_object($oDBFileStruct)) {
         $oDBFileStruct = get_object_vars($oDBFileStruct);
     }
@@ -182,25 +184,32 @@ function getDBFileStruct()
     return $oDBFileStruct;
 }
 
+function createDBStructError(string $msg, bool $engineError = false): object
+{
+    return (object)[
+        'errMsg'        => $msg,
+        'isEngineError' => $engineError,
+    ];
+}
 /**
  * @param array $dbFileStruct
  * @param array $dbStruct
- * @return array
+ * @return object[]
  */
-function compareDBStruct(array $dbFileStruct, array $dbStruct)
+function compareDBStruct(array $dbFileStruct, array $dbStruct): array
 {
     $errors = [];
     foreach ($dbFileStruct as $table => $columns) {
         if (!array_key_exists($table, $dbStruct)) {
-            $errors[$table] = __('errorNoTable');
+            $errors[$table] = createDBStructError(__('errorNoTable'));
             continue;
         }
         if (($dbStruct[$table]->Migration & DBMigrationHelper::MIGRATE_INNODB) === DBMigrationHelper::MIGRATE_INNODB) {
-            $errors[$table] = $table . __('errorNoInnoTable');
+            $errors[$table] = createDBStructError($table . __('errorNoInnoTable'), true);
             continue;
         }
         if (($dbStruct[$table]->Migration & DBMigrationHelper::MIGRATE_UTF8) === DBMigrationHelper::MIGRATE_UTF8) {
-            $errors[$table] = $table . __('errorWrongCollation');
+            $errors[$table] = createDBStructError($table . __('errorWrongCollation'), true);
             continue;
         }
 
@@ -209,7 +218,7 @@ function compareDBStruct(array $dbFileStruct, array $dbStruct)
                 ? array_keys($dbStruct[$table]->Columns)
                 : $dbStruct[$table], true)
             ) {
-                $errors[$table] = sprintf(__('errorRowMissing'), $cColumn, $table);
+                $errors[$table] = createDBStructError(sprintf(__('errorRowMissing'), $cColumn, $table));
                 break;
             }
 
@@ -217,11 +226,17 @@ function compareDBStruct(array $dbFileStruct, array $dbStruct)
                 if (!empty($dbStruct[$table]->Columns[$cColumn]->COLLATION_NAME)
                     && $dbStruct[$table]->Columns[$cColumn]->COLLATION_NAME !== 'utf8_unicode_ci'
                 ) {
-                    $errors[$table] = sprintf(__('errorWrongCollationRow'), $cColumn);
+                    $errors[$table] = createDBStructError(sprintf(__('errorWrongCollationRow'), $cColumn));
                     break;
                 }
                 if ($dbStruct[$table]->Columns[$cColumn]->DATA_TYPE === 'text') {
-                    $errors[$table] = __('errorDatatTypeInRow') . $cColumn;
+                    $errors[$table] = createDBStructError(sprintf(__('errorDataTypeTextInRow'), $cColumn), true);
+                    break;
+                }
+                if ($dbStruct[$table]->Columns[$cColumn]->DATA_TYPE === 'tinyint'
+                    && strpos($dbStruct[$table]->Columns[$cColumn]->COLUMN_NAME, 'k') === 0
+                ) {
+                    $errors[$table] = createDBStructError(sprintf(__('errorDataTypeTinyInRow'), $cColumn), true);
                     break;
                 }
             }
@@ -310,7 +325,7 @@ function doEngineUpdateScript(string $fileName, array $shopTables)
     $result .= '-- @database: ' . $database . $nl;
     $result .= '-- @created: ' . date(DATE_RFC822) . $nl;
     $result .= '-- ' . $nl;
-    $result .= '-- @important: !!! PLEASE MAKE AN BACKUP OF STRUCTURE AND DATA FOR `' . $database . '` !!!' . $nl;
+    $result .= '-- @important: !!! PLEASE MAKE A BACKUP OF STRUCTURE AND DATA FOR `' . $database . '` !!!' . $nl;
     $result .= '-- ' . $nl;
     $result .= $nl;
     $result .= '-- ---------------------------------------------------------' .
@@ -331,22 +346,23 @@ function doEngineUpdateScript(string $fileName, array $shopTables)
             $fulltextIndizes = DBMigrationHelper::getFulltextIndizes($table->TABLE_NAME);
 
             if ($fulltextIndizes) {
-                $result .= "$nl--$nl";
-                $result .= "-- remove fulltext indizes because there is no support for innoDB on MySQL < 5.6 $nl";
+                $result .= $nl . '--' . $nl;
+                $result .= '-- remove fulltext indizes because there is no support for innoDB on MySQL < 5.6 ' . $nl;
                 foreach ($fulltextIndizes as $fulltextIndex) {
-                    $fulltextSQL[] = "ALTER TABLE `{$table->TABLE_NAME}` DROP KEY `{$fulltextIndex->INDEX_NAME}`";
+                    $fulltextSQL[] = /** @lang text */
+                        'ALTER TABLE `' . $table->TABLE_NAME . '` DROP KEY `' . $fulltextIndex->INDEX_NAME . '`';
                 }
             }
         }
 
         if (($migration & DBMigrationHelper::MIGRATE_TABLE) !== DBMigrationHelper::MIGRATE_NONE) {
-            $result .= "$nl--$nl";
+            $result .= $nl . '--' . $nl;
             if (($migration & DBMigrationHelper::MIGRATE_TABLE) === DBMigrationHelper::MIGRATE_TABLE) {
-                $result .= "-- migrate engine and collation for {$table->TABLE_NAME}$nl";
+                $result .= '-- migrate engine and collation for ' . $table->TABLE_NAME . $nl;
             } elseif (($migration & DBMigrationHelper::MIGRATE_INNODB) === DBMigrationHelper::MIGRATE_INNODB) {
-                $result .= "-- migrate engine for {$table->TABLE_NAME}$nl";
+                $result .= '-- migrate engine for ' . $table->TABLE_NAME . $nl;
             } elseif (($migration & DBMigrationHelper::MIGRATE_UTF8) === DBMigrationHelper::MIGRATE_UTF8) {
-                $result .= "-- migrate collation for {$table->TABLE_NAME}$nl";
+                $result .= '-- migrate collation for ' . $table->TABLE_NAME . $nl;
             }
         } else {
             $result .= $nl;
@@ -399,16 +415,21 @@ function doMigrateToInnoDB_utf8(string $status = 'start', string $table = '', in
     Shop::Container()->getGetText()->loadAdminLocale('pages/dbcheck');
 
     $mysqlVersion = DBMigrationHelper::getMySQLVersion();
-    $table        = Text::filterXSS($table);
+    $table        = (string)Text::filterXSS($table);
     $result       = new stdClass();
     $db           = Shop::Container()->getDB();
+    $doSingle     = false;
 
     switch (mb_convert_case($status, MB_CASE_LOWER)) {
+        case 'stop':
+            $result->nextTable = '';
+            $result->status    = 'all done';
+            break;
         case 'start':
             $shopTables = array_keys(getDBFileStruct());
             $oTable     = DBMigrationHelper::getNextTableNeedMigration($exclude);
 
-            if (is_object($oTable)) {
+            if ($oTable !== null && is_object($oTable)) {
                 if (!in_array($oTable->TABLE_NAME, $shopTables, true)) {
                     $exclude[] = $oTable->TABLE_NAME;
                     $result    = doMigrateToInnoDB_utf8('start', '', 1, $exclude);
@@ -418,10 +439,13 @@ function doMigrateToInnoDB_utf8(string $status = 'start', string $table = '', in
                     $result->status    = 'migrate';
                 }
             } else {
-                $result->nextTable = '';
-                $result->status    = 'all done';
+                $result = doMigrateToInnoDB_utf8('stop');
             }
             break;
+        /** @noinspection PhpMissingBreakStatementInspection */
+        case 'migrate_single':
+            $doSingle = true;
+            // no break
         case 'migrate':
             if (!empty($table) && $step === 1) {
                 // Migration Step 1...
@@ -444,8 +468,8 @@ function doMigrateToInnoDB_utf8(string $status = 'start', string $table = '', in
                             if ($fulltextIndizes) {
                                 foreach ($fulltextIndizes as $fulltextIndex) {
                                     $db->executeQuery(
-                                        "ALTER TABLE `{$oTable->TABLE_NAME}` 
-                                            DROP KEY `{$fulltextIndex->INDEX_NAME}`",
+                                        'ALTER TABLE `' . $oTable->TABLE_NAME . '`
+                                            DROP KEY `' . $fulltextIndex->INDEX_NAME . '`',
                                         ReturnType::QUERYSINGLE
                                     );
                                 }
@@ -475,7 +499,9 @@ function doMigrateToInnoDB_utf8(string $status = 'start', string $table = '', in
                 } else {
                     // Get next table for migration...
                     $exclude[] = $table;
-                    $result    = doMigrateToInnoDB_utf8('start', '', 1, $exclude);
+                    $result    = $doSingle
+                        ? doMigrateToInnoDB_utf8('stop')
+                        : doMigrateToInnoDB_utf8('start', '', 1, $exclude);
                 }
             } elseif (!empty($table) && $step === 2) {
                 // Migration Step 2...
@@ -486,13 +512,17 @@ function doMigrateToInnoDB_utf8(string $status = 'start', string $table = '', in
                     if (!empty($sql)) {
                         if ($db->executeQuery($sql, ReturnType::QUERYSINGLE)) {
                             // Get next table for migration...
-                            $result = doMigrateToInnoDB_utf8('start', '', 1, $exclude);
+                            $result = $doSingle
+                                ? doMigrateToInnoDB_utf8('stop')
+                                : doMigrateToInnoDB_utf8('start', '', 1, $exclude);
                         } else {
                             $result->status = 'failure';
                         }
                     } else {
                         // Get next table for migration...
-                        $result = doMigrateToInnoDB_utf8('start', '', 1, $exclude);
+                        $result = $doSingle
+                            ? doMigrateToInnoDB_utf8('stop')
+                            : doMigrateToInnoDB_utf8('start', '', 1, $exclude);
                     }
                 } else {
                     $result->status = 'in_use';

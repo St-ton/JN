@@ -20,8 +20,11 @@ msgstr "ist keine InnoDB-Tabelle"
 msgid "errorWrongCollation"
 msgstr "hat die falsche Kollation"
 
-msgid "errorDatatTypeInRow"
-msgstr "Datentyp text in Spalte"
+msgid "errorDataTypeTextInRow"
+msgstr "Datentyp text in Spalte %s"
+
+msgid "errorDataTypeTinyInRow"
+msgstr "Datentyp tinyint in Spalte %s"
 
 msgid "errorNoTable"
 msgstr "Tabelle nicht vorhanden"

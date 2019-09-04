@@ -5,18 +5,17 @@
 {block name='productdetails-details'}
     {*{has_boxes position='left' assign='hasLeftBox'}*}
     {$hasLeftBox = false}
-    {if isset($bWarenkorbHinzugefuegt) && $bWarenkorbHinzugefuegt}
-        {block name='productdetails-details-include-pushed-success'}
-            {container}
+    {container}
+        {if isset($bWarenkorbHinzugefuegt) && $bWarenkorbHinzugefuegt}
+            {block name='productdetails-details-include-pushed-success'}
                 {include file='productdetails/pushed_success.tpl' card=true}
-            {/container}
-        {/block}
-    {else}
-        {block name='productdetails-details-alert-product-note'}
+            {/block}
+        {else}
+            {block name='productdetails-details-alert-product-note'}
                 {$alertList->displayAlertByKey('productNote')}
-        {/block}
-    {/if}
-
+            {/block}
+        {/if}
+    {/container}
     {block name='productdetails-details-form'}
         {opcMountPoint id='opc_before_buy_form'}
         {container}

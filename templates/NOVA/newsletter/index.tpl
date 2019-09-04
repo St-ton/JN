@@ -19,7 +19,9 @@
                 {if empty($bBereitsAbonnent)}
                     {block name='newsletter-index-newsletter-subscribe-form'}
                         {opcMountPoint id='opc_before_newsletter_subscribe'}
-                        <div id="newsletter-subscribe" class="mb-8">
+                        {row}
+                            {col cols=12 lg=8}
+                                <div id="newsletter-subscribe" class="mb-8">
                             {block name='newsletter-index-newsletter-subscribe-subheading'}
                                 <div class="h3">{lang key='newsletterSubscribe' section='newsletter'}</div>
                             {/block}
@@ -58,26 +60,32 @@
                                     {/if}
 
                                     {block name='newsletter-index-newsletter-subscribe-form-content-submit'}
-                                        {formgroup}
-                                            {input type="hidden" name="abonnieren" value="1"}
-                                            {button type="submit" variant="primary"}
-                                                <span>{lang key='newsletterSendSubscribe' section='newsletter'}</span>
-                                            {/button}
-                                            <p class="info small">
-                                                {lang key='unsubscribeAnytime' section='newsletter'}
-                                            </p>
-                                        {/formgroup}
+                                        {row}
+                                            {col md=4 class='ml-md-auto'}
+                                                {input type="hidden" name="abonnieren" value="1"}
+                                                {button type="submit" variant="primary" block=true}
+                                                    <span>{lang key='newsletterSendSubscribe' section='newsletter'}</span>
+                                                {/button}
+                                                <p class="info small">
+                                                    {lang key='unsubscribeAnytime' section='newsletter'}
+                                                </p>
+                                            {/col}
+                                        {/row}
                                     {/block}
                                 </fieldset>
                             {/block}
                             {/form}
                         </div>
+                            {/col}
+                        {/row}
                     {/block}
                 {/if}
 
                 {block name='newsletter-index-newsletter-unsubscribe-form'}
                     {opcMountPoint id='opc_before_newsletter_unsubscribe'}
-                    <div id="newsletter-unsubscribe" class="mt-3">
+                    {row}
+                        {col cols=12 lg=8}
+                            <div id="newsletter-unsubscribe" class="mt-3">
                         {block name='newsletter-index-newsletter-unsubscribe-subheading'}
                             <div class="h3">{lang key='newsletterUnsubscribe' section='newsletter'}</div>
                         {/block}
@@ -93,13 +101,19 @@
                                 ]
                                 }
                                 {input type="hidden" name="abmelden" value="1"}
-                                {button type="submit"}
-                                    <span>{lang key='newsletterSendUnsubscribe' section='newsletter'}</span>
-                                {/button}
+                                {row}
+                                    {col md=4 class='ml-md-auto'}
+                                        {button type="submit" block=true}
+                                            <span>{lang key='newsletterSendUnsubscribe' section='newsletter'}</span>
+                                        {/button}
+                                    {/col}
+                                {/row}
                             </fieldset>
                         {/block}
                         {/form}
                     </div>
+                        {/col}
+                    {/row}
                 {/block}
             {elseif $cOption === 'anzeigen'}
                 {if isset($oNewsletterHistory) && $oNewsletterHistory->kNewsletterHistory > 0}

@@ -325,7 +325,7 @@
                             <label class="col col-sm-4 col-form-label text-sm-right">
                                 {__('freeShipping')}:
                             </label>
-                            <div class="col-sm-2 pl-sm-3 order-last order-sm-2">
+                            <div class="col-sm-4 pl-sm-3 order-last order-sm-2">
                                 <select id="versandkostenfreiAktiv" name="versandkostenfreiAktiv" class="custom-select">
                                     <option value="0">{__('no')}</option>
                                     <option value="1" {if isset($Versandart->fVersandkostenfreiAbX) && $Versandart->fVersandkostenfreiAbX > 0}selected{/if}>{__('yes')}</option>
@@ -339,7 +339,7 @@
                             <label class="col col-sm-4 col-form-label text-sm-right">
                                 {__('maxCosts')}:
                             </label>
-                            <div class="col-sm-2 pl-sm-3 order-last order-sm-2">
+                            <div class="col-sm-4 pl-sm-3 order-last order-sm-2">
                                 <select id="versanddeckelungAktiv" name="versanddeckelungAktiv" class="combo custom-select">
                                     <option value="0">{__('no')}</option>
                                     <option value="1" {if isset($Versandart->fDeckelung) && $Versandart->fDeckelung > 0}selected{/if}>{__('yes')}</option>

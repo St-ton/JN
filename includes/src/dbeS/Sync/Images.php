@@ -1512,12 +1512,10 @@ final class Images extends AbstractSync
             case 1:
                 $im = \imagecreatefromgif($img);
                 break;
-            case 2:
-                $im = \imagecreatefromjpeg($img);
-                break;
             case 3:
                 $im = \imagecreatefrompng($img);
                 break;
+            case 2:
             default:
                 $im = \imagecreatefromjpeg($img);
                 break;
@@ -1564,15 +1562,10 @@ final class Images extends AbstractSync
             case 1:
                 $im = \imagecreatefromgif($img);
                 break;
-
-            case 2:
-                $im = \imagecreatefromjpeg($img);
-                break;
-
             case 3:
                 $im = \imagecreatefrompng($img);
                 break;
-
+            case 2:
             default:
                 $im = \imagecreatefromjpeg($img);
                 break;

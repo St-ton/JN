@@ -213,7 +213,7 @@ class MediaImageRequest
             $size,
             $this->getName(),
             $number,
-            $ext
+            $ext === 'auto' ? 'jpg' : $ext
         );
 
         return $absolute === true

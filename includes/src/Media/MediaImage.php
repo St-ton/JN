@@ -32,6 +32,19 @@ class MediaImage implements IMedia
     }
 
     /**
+     * @param string|null $sourcePath
+     * @return string
+     */
+    private static function getFileExtension(string $sourcePath = null): string
+    {
+        $config = Image::getSettings()['format'];
+
+        return $config === 'auto'
+            ? \pathinfo($sourcePath)['extension'] ?? 'jpg'
+            : $config;
+    }
+
+    /**
      * @param string $type
      * @param string $id
      * @param object $mixed
@@ -56,16 +69,17 @@ class MediaImage implements IMedia
      * @param object $mixed
      * @param string $size
      * @param int    $number
+     * @param string|null $sourcePath
      * @return string
      */
-    public static function getThumb($type, $id, $mixed, $size, int $number = 1): string
+    public static function getThumb($type, $id, $mixed, $size, int $number = 1, string $sourcePath = null): string
     {
         $req   = MediaImageRequest::create([
             'id'     => $id,
             'type'   => $type,
             'number' => $number,
             'name'   => Image::getCustomName($type, $mixed),
-            'ext'    => Image::getSettings()['format'],
+            'ext'    => self::getFileExtension($sourcePath),
         ]);
         $thumb = $req->getThumb($size);
         if (!\file_exists(\PFAD_ROOT . $thumb) && !\file_exists(\PFAD_ROOT . $req->getRaw())) {
@@ -212,14 +226,14 @@ class MediaImage implements IMedia
 
             $imgFilePath = null;
             $matchFound  = false;
-
             foreach ($imgNames as $imgName) {
                 $imgName->imgPath = self::getThumb(
                     $mediaReq->type,
                     $mediaReq->id,
                     $imgName,
                     $mediaReq->size,
-                    (int)$mediaReq->number
+                    (int)$mediaReq->number,
+                    $mediaReq->name . '.' . $mediaReq->ext
                 );
                 if ('/' . $imgName->imgPath === $request) {
                     $matchFound  = true;
@@ -413,8 +427,6 @@ class MediaImage implements IMedia
                 $cols = '';
                 $conf = Image::getSettings();
                 switch ($conf['naming']['product']) {
-                    case 0:
-                        break;
                     case 1:
                         $cols = ', tartikel.cArtNr';
                         break;
@@ -427,6 +439,7 @@ class MediaImage implements IMedia
                     case 4:
                         $cols = ', tartikel.cBarcode';
                         break;
+                    case 0:
                     default:
                         break;
                 }
@@ -627,49 +640,5 @@ class MediaImage implements IMedia
         }
 
         return 0;
-    }
-
-    /**
-     * @param string $type
-     * @param int    $id
-     * @return bool
-     */
-    public static function hasImage(string $type, int $id): bool
-    {
-        return static::imageCount($type, $id) > 0;
-    }
-
-    /**
-     * @param string $type
-     * @param string $id
-     * @param object $mixed
-     * @param string $size
-     * @param int    $number
-     * @return string|int|null
-     */
-    public static function getRawOrFilesize(string $type, $id, $mixed, $size, int $number = 1)
-    {
-        $name     = Image::getCustomName($type, $mixed);
-        $settings = Image::getSettings();
-        $req      = MediaImageRequest::create([
-            'id'     => $id,
-            'type'   => $type,
-            'number' => $number,
-            'name'   => $name,
-            'ext'    => $settings['format'],
-        ]);
-        $thumb    = $req->getThumb($size);
-        $thumbAbs = \PFAD_ROOT . $thumb;
-
-        if (!\file_exists($thumbAbs) && !\file_exists(\PFAD_ROOT . $req->getRaw())) {
-            $fallback = $req->getFallbackThumb($size);
-            $thumb    = \file_exists(\PFAD_ROOT . $fallback)
-                ? \PFAD_ROOT . $fallback
-                : \BILD_KEIN_ARTIKELBILD_VORHANDEN;
-
-            return \filesize($thumb);
-        }
-
-        return $req->getPath();
     }
 }

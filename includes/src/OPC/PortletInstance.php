@@ -241,17 +241,6 @@ class PortletInstance implements \JsonSerializable
     }
 
     /**
-     * @param string $uid
-     * @return $this
-     */
-    public function setUid(string $uid): self
-    {
-        $this->uid = $uid;
-
-        return $this;
-    }
-
-    /**
      * @param string $name
      * @param string $value
      * @return $this
@@ -641,10 +630,6 @@ class PortletInstance implements \JsonSerializable
             $this->widthHeuristics = $data['widthHeuristics'];
         }
 
-        if (isset($data['uid'])) {
-            $this->setUid($data['uid']);
-        }
-
         return $this;
     }
 
@@ -659,7 +644,6 @@ class PortletInstance implements \JsonSerializable
             'title'           => $this->portlet->getTitle(),
             'properties'      => $this->properties,
             'widthHeuristics' => $this->widthHeuristics,
-            'uid'             => $this->getUid(),
         ];
 
         return $result;

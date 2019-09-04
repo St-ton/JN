@@ -330,8 +330,8 @@ final class Images extends AbstractSync
             if (empty($image->cPfad) || $image->kMerkmal <= 0) {
                 continue;
             }
-            $original    = $this->unzipPath . $image->cPfad;
-            $format      = $this->getExtension($original);
+            $original = $this->unzipPath . $image->cPfad;
+            $format   = $this->getExtension($original);
             if (!$format) {
                 $this->logger->error(
                     'Bildformat des Merkmalbildes konnte nicht ermittelt werden. Datei ' .
@@ -625,7 +625,7 @@ final class Images extends AbstractSync
             $sql
         );
         $image->cPfad = $this->getNewFilename($image->cPfad);
-        $original = $this->unzipPath . $fileName;
+        $original     = $this->unzipPath . $fileName;
         $this->createThumbnail(
             $this->brandingConfig['Artikel'],
             $original,

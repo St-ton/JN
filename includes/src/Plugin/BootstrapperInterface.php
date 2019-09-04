@@ -56,7 +56,7 @@ interface BootstrapperInterface
      * @param string      $title
      * @param null|string $description
      */
-    public function addNotify($type, $title, $description = null);
+    public function addNotify($type, $title, $description = null): void;
 
     /**
      * @return PluginInterface

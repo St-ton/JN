@@ -75,7 +75,7 @@ abstract class Bootstrapper implements BootstrapperInterface
     /**
      * @inheritdoc
      */
-    final public function addNotify($type, $title, $description = null)
+    final public function addNotify($type, $title, $description = null): void
     {
         $this->notifications[] = (new NotificationEntry($type, $title, $description))->setPluginId($this->pluginId);
     }

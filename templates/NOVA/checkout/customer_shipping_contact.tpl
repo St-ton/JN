@@ -10,11 +10,11 @@
     }
         {row}
             {$name = 'shipping_address'}
-            {col cols=12}<hr>{/col}
-            {col cols=12 md=4}
+            {col cols=12}<hr class="mt-1 mb-3">{/col}
+            {col cols=12}
                 <div class="h3">{lang key='contactInformation' section='account data'}</div>
             {/col}
-            {col md=8}
+            {col cols=12}
                 {formrow}
                     {if $Einstellungen.kunden.lieferadresse_abfragen_email !== 'N' || $Einstellungen.kunden.lieferadresse_abfragen_mobil !== 'N'}
                         {block name='checkout-customer-shipping-contact-mail-phone'}

@@ -6,6 +6,7 @@
 
 namespace JTL\Plugin\Admin\Validation\Items;
 
+use JTL\Helpers\GeneralObject;
 use JTL\Plugin\Admin\InputType;
 use JTL\Plugin\InstallCode;
 
@@ -20,9 +21,9 @@ final class PaymentMethods extends AbstractItem
      */
     public function validate(): int
     {
-        $node = $this->getInstallNode();
+        $node = $this->getInstallNode()[0]['Method'] ?? null;
         $dir  = $this->getDir();
-        if (!isset($node['PaymentMethod'][0]['Method']) || !\is_array($node['PaymentMethod'][0]['Method'])) {
+        if (!GeneralObject::isCountable($node)) {
             return InstallCode::OK;
         }
         $tsCodes = [
@@ -44,7 +45,7 @@ final class PaymentMethods extends AbstractItem
             'DIRECT_E_BANKING',
             'OTHER'
         ];
-        foreach ($node['PaymentMethod'][0]['Method'] as $i => $method) {
+        foreach ($node as $i => $method) {
             if (!\is_array($method)) {
                 continue;
             }

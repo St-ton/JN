@@ -6,6 +6,7 @@
 
 namespace JTL\Plugin\Admin\Validation\Items;
 
+use JTL\Helpers\GeneralObject;
 use JTL\Plugin\InstallCode;
 
 /**
@@ -22,14 +23,15 @@ final class Widgets extends AbstractItem
         $node     = $this->getInstallNode();
         $dir      = $this->getDir();
         $pluginID = $this->getPluginID();
-        if (!isset($node['AdminWidget']) || !\is_array($node['AdminWidget'])) {
+        if (!GeneralObject::isCountable('AdminWidget', $node)) {
             return InstallCode::OK;
         }
-        if (empty($node['AdminWidget'][0]['Widget']) || !\is_array($node['AdminWidget'][0]['Widget'])) {
+        $node = $node['AdminWidget'][0]['Widget'] ?? null;
+        $base = $dir . \PFAD_PLUGIN_ADMINMENU . \PFAD_PLUGIN_WIDGET;
+        if (!GeneralObject::hasCount($node)) {
             return InstallCode::MISSING_WIDGETS;
         }
-        $base = $dir . \PFAD_PLUGIN_ADMINMENU . \PFAD_PLUGIN_WIDGET;
-        foreach ($node['AdminWidget'][0]['Widget'] as $i => $widget) {
+        foreach ($node as $i => $widget) {
             if (!\is_array($widget)) {
                 continue;
             }

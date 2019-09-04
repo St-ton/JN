@@ -138,16 +138,20 @@
                         {/if}
                         {if isset($Versandarten)}
                             {block name='checkout-step3-shipping-options-shipping-type-submit'}
-                                <div class="mt-4 mb-7">
-                                    {button type="link" href="{get_static_route id='bestellvorgang.php'}?editRechnungsadresse=1" variant="secondary"}
-                                        {lang key='back'}
-                                    {/button}
-                                    {input type="hidden" name="versandartwahl" value="1"}
-                                    {input type="hidden" name="zahlungsartwahl" value="1"}
-                                    {button type="submit" variant="primary" class="submit_once d-none float-right"}
-                                        {lang key='continueOrder' section='account data'}
-                                    {/button}
-                                </div>
+                                {row class='mt-5'}
+                                    {col cols=12 md=5 class='ml-auto order-1 order-md-2'}
+                                        {input type="hidden" name="versandartwahl" value="1"}
+                                        {input type="hidden" name="zahlungsartwahl" value="1"}
+                                        {button type="submit" variant="primary" class="submit_once d-none mb-3" block=true}
+                                            {lang key='continueOrder' section='account data'}
+                                        {/button}
+                                    {/col}
+                                    {col cols=12 md=4 class='order-2 order-md-1'}
+                                        {button block=true type="link" href="{get_static_route id='bestellvorgang.php'}?editRechnungsadresse=1" variant="secondary"}
+                                            {lang key='back'}
+                                        {/button}
+                                    {/col}
+                                {/row}
                             {/block}
                         {/if}
                     {/form}

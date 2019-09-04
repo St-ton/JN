@@ -94,7 +94,11 @@
                 </noscript>
             {/if}
             {foreach $opcPageService->getCurPage()->getCssList($opc->isEditMode()) as $cssFile => $cssTrue}
-                <link rel="stylesheet" href="{$cssFile}">
+                <link rel="preload" href="{$cssFile}" as="style"
+                      onload="this.onload=null;this.rel='stylesheet'">
+                <noscript>
+                    <link rel="stylesheet" href="{$cssFile}">
+                </noscript>
             {/foreach}
             <script>
 
@@ -283,9 +287,9 @@
             {$uploaderLang = 'LANG'}
         {/if}
 
-        <script defer src="{$templateDir}js/fileinput/fileinput.min.js"></script>
-        <script defer src="{$templateDir}js/fileinput/themes/fas/theme.min.js"></script>
-        <script defer src="{$templateDir}js/fileinput/locales/{$uploaderLang}.js"></script>
+        <script defer src="{$ShopURL}/{$templateDir}js/fileinput/fileinput.min.js"></script>
+        <script defer src="{$ShopURL}/{$templateDir}js/fileinput/themes/fas/theme.min.js"></script>
+        <script defer src="{$ShopURL}/{$templateDir}js/fileinput/locales/{$uploaderLang}.js"></script>
     </head>
     {/block}
 

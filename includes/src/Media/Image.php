@@ -405,6 +405,9 @@ class Image
             'settings' => $settings,
             'path'     => $thumbnail
         ]);
+        if ($settings['format'] === 'jpg') {
+            $img->interlace(true);
+        }
         $img->save($thumbnail, $settings['quality']);
         if ($streamOutput) {
             echo $img->response($settings['format']);

@@ -218,14 +218,13 @@
             function copyAttributes() {
                 $input.prop("required", $original.prop("required"))
                 $input.prop("readonly", $original.prop("readonly"))
-                $input.prop("placeholder", $original.prop("placeholder"))
-                $input.prop("aria-label", $original.prop("aria-label"))
+                $input.attr("placeholder", $original.attr("placeholder"))
+                $input.attr("aria-label", $original.attr("aria-label"))
                 var disabled = $original.prop("disabled")
                 $input.prop("disabled", disabled)
                 $buttonIncrement.prop("disabled", disabled || $original.prop("readonly"))
                 $buttonDecrement.prop("disabled", disabled || $original.prop("readonly"))
                 $input.prop("class", $original.prop("class"))
-                $input.prop("aria-label", $original.prop("aria-label"))
                 // $inputGroup.prop("class", "input-group " + $original.prop("class") + " " + config.groupClass)
             }
 

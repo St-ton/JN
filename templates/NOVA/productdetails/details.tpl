@@ -55,7 +55,11 @@
                                                 <meta itemprop="worstRating" content="1"/>
                                                 <meta itemprop="reviewCount" content="{$Artikel->Bewertungen->oBewertungGesamt->nAnzahl}"/>
                                                 {block name='productdetails-details-include-rating'}
-                                                    {link href="{$Artikel->cURLFull}#tab-votes" id="jump-to-votes-tab" class="d-print-none"}
+                                                    {link href="{$Artikel->cURLFull}#tab-votes"
+                                                        id="jump-to-votes-tab"
+                                                        class="d-print-none"
+                                                        aria=["label"=>{lang key='Votes'}]
+                                                    }
                                                         {include file='productdetails/rating.tpl' stars=$Artikel->Bewertungen->oBewertungGesamt->fDurchschnitt total=$Artikel->Bewertungen->oBewertungGesamt->nAnzahl}
                                                     {/link}
                                                 {/block}

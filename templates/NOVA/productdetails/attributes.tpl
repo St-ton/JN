@@ -19,14 +19,19 @@
                                             <span class="value">{link href=$oMerkmalWert->cURLFull class="badge badge-light"}{$oMerkmalWert->cWert|escape:'html'}{/link} </span>
                                         {else}
                                             <span class="value">
-                                            {link href=$oMerkmalWert->cURLFull class="text-decoration-none" data=['toggle'=>'tooltip', 'placement'=>'top'] title=$oMerkmalWert->cWert|escape:'html'}
+                                            {link href=$oMerkmalWert->cURLFull
+                                                class="text-decoration-none"
+                                                data=['toggle'=>'tooltip', 'placement'=>'top']
+                                                title=$oMerkmalWert->cWert|escape:'html'
+                                                aria=["label"=>$oMerkmalWert->cWert|escape:'html']
+                                            }
                                                 {if $oMerkmalWert->cBildpfadKlein !== 'gfx/keinBild_kl.gif'}
                                                     {image src=$oMerkmalWert->cBildURLKlein title=$oMerkmalWert->cWert|escape:'html' alt=$oMerkmalWert->cWert|escape:'html'}
                                                 {else}
-                                                    <span class="value">{link href=$oMerkmalWert->cURLFull class="badge badge-light"}{$oMerkmalWert->cWert|escape:'html'}{/link} </span>
+                                                    {badge variant="light"}{$oMerkmalWert->cWert|escape:'html'}{/badge}
                                                 {/if}
                                             {/link}
-                                        </span>
+                                            </span>
                                         {/if}
                                     {/foreach}
                                 {/strip}

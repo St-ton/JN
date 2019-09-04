@@ -11,12 +11,12 @@
             class="{if $nSeitenTyp === $smarty.const.PAGE_VERGLEICHSLISTE} active{/if} {if empty($smarty.session.Vergleichsliste->oArtikel_arr)}d-none{/if}"
             data=['toggle' => 'collapse', 'target' => '#nav-comparelist-collapse']
         }
-            <span class="fas fa-tasks"></span>
-            <sup>
-                {badge pill=true variant="primary" id='comparelist-badge'}
+            <span class="fas fa-tasks position-relative">
+                <span class="fa-sup"
+                      title="{if !empty($smarty.session.Vergleichsliste->oArtikel_arr)}{$smarty.session.Vergleichsliste->oArtikel_arr|count}{/if}">
                     {if !empty($smarty.session.Vergleichsliste->oArtikel_arr)}{$smarty.session.Vergleichsliste->oArtikel_arr|count}{/if}
-                {/badge}
-            </sup>
+                </span>
+            </span>
         {/navitem}
         {collapse id="nav-comparelist-collapse" tag="div"  data=["parent"=>"#main-nav-wrapper"] class="mt-md-2 w-100"}
             <div id="comparelist-dropdown-container" class="p-3">

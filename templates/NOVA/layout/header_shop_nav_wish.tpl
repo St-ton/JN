@@ -15,16 +15,9 @@
                 id='shop-nav-wish'
                 class="d-none d-md-flex{if $nSeitenTyp === $smarty.const.PAGE_WUNSCHLISTE} active{/if}"
             }
-                <i class='fas fa-heart'></i>
-                <sup>
-                    {badge pill=true
-                        variant="primary"
-                        class="{if $wlCount === 0} d-none{/if}"
-                        id="badge-wl-count"
-                    }
-                    {$wlCount}
-                    {/badge}
-                </sup>
+                <i class="fas fa-heart position-relative">
+                    <span class="fa-sup {if $wlCount === 0} d-none{/if}" title="{$wlCount}">{$wlCount}</span>
+                </i>
             {/navitem}
             {collapse id="nav-wishlist-collapse" tag="div"  data=["parent"=>"#main-nav-wrapper"] class="mt-md-2 w-100"}
                 <div id="wishlist-dropdown-container" class="p-3">

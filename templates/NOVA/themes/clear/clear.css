@@ -14523,6 +14523,23 @@ input[type=radio]:checked + label, input[type=checkbox]:checked + label {
   color: #F8BF00;
 }
 
+.fa-sup {
+  position: absolute;
+  top: 0;
+  left: 100%;
+  margin-left: -0.3em;
+  background-color: #F8BF00;
+  margin-top: -1em;
+  padding: 0.4em 0.6em;
+  border-radius: 50rem;
+  font-size: 0.7em;
+  font-family: "Open Sans", sans-serif;
+  color: #525252;
+  max-width: 3em;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
 .productbox {
   position: relative;
 }

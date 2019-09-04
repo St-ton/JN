@@ -21,7 +21,7 @@ final class PaymentMethods extends AbstractItem
      */
     public function validate(): int
     {
-        $node = $this->getInstallNode()[0]['Method'] ?? null;
+        $node = $this->getInstallNode()['PaymentMethod'][0]['Method'] ?? null;
         $dir  = $this->getDir();
         if (!GeneralObject::isCountable($node)) {
             return InstallCode::OK;
@@ -80,19 +80,19 @@ final class PaymentMethods extends AbstractItem
             } else {
                 return InstallCode::INVALID_PAYMENT_METHOD_TSCODE;
             }
-            \preg_match('/[0-1]{1}/', $method['PreOrder'], $hits1);
+            \preg_match('/[0-1]/', $method['PreOrder'], $hits1);
             if (!isset($hits1[0]) || \mb_strlen($hits1[0]) !== \mb_strlen($method['PreOrder'])) {
                 return InstallCode::INVALID_PAYMENT_METHOD_PRE_ORDER;
             }
-            \preg_match('/[0-1]{1}/', $method['Soap'], $hits1);
+            \preg_match('/[0-1]/', $method['Soap'], $hits1);
             if (!isset($hits1[0]) || \mb_strlen($hits1[0]) !== \mb_strlen($method['Soap'])) {
                 return InstallCode::INVALID_PAYMENT_METHOD_SOAP;
             }
-            \preg_match('/[0-1]{1}/', $method['Curl'], $hits1);
+            \preg_match('/[0-1]/', $method['Curl'], $hits1);
             if (!isset($hits1[0]) || \mb_strlen($hits1[0]) !== \mb_strlen($method['Curl'])) {
                 return InstallCode::INVALID_PAYMENT_METHOD_CURL;
             }
-            \preg_match('/[0-1]{1}/', $method['Sockets'], $hits1);
+            \preg_match('/[0-1]/', $method['Sockets'], $hits1);
             if (!isset($hits1[0]) || \mb_strlen($hits1[0]) !== \mb_strlen($method['Sockets'])) {
                 return InstallCode::INVALID_PAYMENT_METHOD_SOCKETS;
             }

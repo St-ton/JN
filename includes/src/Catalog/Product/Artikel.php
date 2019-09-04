@@ -1331,10 +1331,18 @@ class Artikel
             for ($i = 0; $i < $imageCount; ++$i) {
                 $imgNo              = (int)$images[$i]->nNr;
                 $image              = new stdClass();
-                $image->cPfadMini   = MediaImage::getThumb(Image::TYPE_PRODUCT, $id, $this, Image::SIZE_XS, $imgNo);
-                $image->cPfadKlein  = MediaImage::getThumb(Image::TYPE_PRODUCT, $id, $this, Image::SIZE_SM, $imgNo);
-                $image->cPfadNormal = MediaImage::getThumb(Image::TYPE_PRODUCT, $id, $this, Image::SIZE_MD, $imgNo);
-                $image->cPfadGross  = MediaImage::getThumb(Image::TYPE_PRODUCT, $id, $this, Image::SIZE_LG, $imgNo);
+                $image->cPfadMini   = MediaImage::getThumb(
+                    Image::TYPE_PRODUCT, $id, $this, Image::SIZE_XS, $imgNo, $images[$i]->cPfad
+                );
+                $image->cPfadKlein  = MediaImage::getThumb(
+                    Image::TYPE_PRODUCT, $id, $this, Image::SIZE_SM, $imgNo, $images[$i]->cPfad
+                );
+                $image->cPfadNormal = MediaImage::getThumb(
+                    Image::TYPE_PRODUCT, $id, $this, Image::SIZE_MD, $imgNo, $images[$i]->cPfad
+                );
+                $image->cPfadGross  = MediaImage::getThumb(
+                    Image::TYPE_PRODUCT, $id, $this, Image::SIZE_LG, $imgNo, $images[$i]->cPfad
+                );
                 $image->nNr         = $imgNo;
                 $image->cURLMini    = $baseURL . $image->cPfadMini;
                 $image->cURLKlein   = $baseURL . $image->cPfadKlein;

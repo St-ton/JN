@@ -237,12 +237,18 @@
                                             {include file='checkout/inc_order_items.tpl' tplscope='confirmation'}
                                         </div>
                                     {/block}
-                                    {button type="submit" variant="primary" id="complete-order-button" class="submit_once float-right ml-3 mb-3"}
-                                        {lang key='orderLiableToPay' section='checkout'}
-                                    {/button}
-                                    {link href="{get_static_route id='warenkorb.php'}" class="btn btn-secondary float-right float-md-left"}
-                                        {lang key='modifyBasket' section='checkout'}
-                                    {/link}
+                                    {row class='mt-5'}
+                                        {col cols=12 md=6 lg=4 class='ml-auto order-1 order-md-2'}
+                                            {button type="submit" variant="primary" id="complete-order-button" block=true class="submit_once mb-3"}
+                                                {lang key='orderLiableToPay' section='checkout'}
+                                            {/button}
+                                        {/col}
+                                        {col cols=12 md=6 lg=3 class='order-2 order-md-1'}
+                                            {link href="{get_static_route id='warenkorb.php'}" class="btn btn-secondary btn-block"}
+                                                {lang key='modifyBasket' section='checkout'}
+                                            {/link}
+                                        {/col}
+                                    {/row}
                                 </div>
                             </div>
                             {/block}

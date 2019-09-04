@@ -1,0 +1,20 @@
+.badge {
+	border: $border-width solid transparent;
+	text-decoration: none;
+	color: $gray-lighter;
+}
+
+@each $color, $value in $theme-colors {
+	.badge-outline-#{$color} { border-color: $value; color: $value;
+		@at-root a#{&} {
+			@include hover-focus { color: color-yiq($value); background-color: darken($value, 10%); }
+
+			&:focus,
+			&.focus { outline: 0; box-shadow: 0 0 0 $badge-focus-width rgba($value, .5); }
+		}
+	}
+}
+
+.badge-secondary {
+	background-color: $gray-darker;
+}

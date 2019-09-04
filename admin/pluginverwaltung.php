@@ -151,7 +151,7 @@ if (Request::verifyGPCDataInt('pluginverwaltung_uebersicht') === 1 && Form::vali
         $cache->flushTags([CACHING_GROUP_CORE, CACHING_GROUP_LANGUAGE, CACHING_GROUP_PLUGIN]);
         $smarty->assign('kPlugin', $kPlugin)
                ->assign('oPlugin', $oPlugin);
-    } elseif (is_array($_POST['kPlugin']) && count($_POST['kPlugin']) > 0) {
+    } elseif (is_array($_POST['kPlugin'] ?? false) && count($_POST['kPlugin']) > 0) {
         $pluginIDs = array_map('\intval', $_POST['kPlugin'] ?? []);
         foreach ($pluginIDs as $kPlugin) {
             if (isset($_POST['aktivieren'])) {

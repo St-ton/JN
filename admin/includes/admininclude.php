@@ -78,6 +78,8 @@ Shop::Container()->singleton(CaptchaServiceInterface::class, function () {
 });
 if (!$hasUpdates) {
     Shop::bootstrap(false);
+} else {
+    Shop::setIsFrontend(false);
 }
 if ($oAccount->logged()) {
     if (!$session->isValid()) {

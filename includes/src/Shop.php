@@ -877,6 +877,14 @@ final class Shop
     }
 
     /**
+     * @param bool $isFrontend
+     */
+    public static function setIsFrontend(boll $isFrontend): void
+    {
+        self::$isFrontend = $isFrontend;
+    }
+
+    /**
      * @return ProductFilter
      */
     public static function run(): ProductFilter

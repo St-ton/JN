@@ -24,7 +24,7 @@ use JTL\Helpers\Product;
 use JTL\Helpers\Request;
 use JTL\Helpers\Tax;
 use JTL\Helpers\Text;
-use JTL\Kampagne;
+use JTL\Campaign;
 use JTL\Language\LanguageHelper;
 use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
@@ -345,8 +345,8 @@ function bestellungInDB($cleared = 0, $orderNo = '')
     KuponVerwendungen($order);
     // Kampagne
     if (isset($_SESSION['Kampagnenbesucher'])) {
-        Kampagne::setCampaignAction(KAMPAGNE_DEF_VERKAUF, $order->kBestellung, 1.0);
-        Kampagne::setCampaignAction(KAMPAGNE_DEF_VERKAUFSSUMME, $order->kBestellung, $order->fGesamtsumme);
+        Campaign::setCampaignAction(KAMPAGNE_DEF_VERKAUF, $order->kBestellung, 1.0);
+        Campaign::setCampaignAction(KAMPAGNE_DEF_VERKAUFSSUMME, $order->kBestellung, $order->fGesamtsumme);
     }
 
     executeHook(HOOK_BESTELLABSCHLUSS_INC_BESTELLUNGINDB_ENDE, [

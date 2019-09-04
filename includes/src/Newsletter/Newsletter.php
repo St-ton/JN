@@ -12,7 +12,7 @@ use JTL\Catalog\Hersteller;
 use JTL\Catalog\Product\Artikel;
 use JTL\DB\DbInterface;
 use JTL\DB\ReturnType;
-use JTL\Kampagne;
+use JTL\Campaign;
 use JTL\Mail\Mail\Mail;
 use JTL\Mail\Mailer;
 use JTL\Session\Frontend;
@@ -197,7 +197,7 @@ class Newsletter
         $productIDs             = $this->getKeys($template->cArtikel, true);
         $manufacturerIDs        = $this->getKeys($template->cHersteller);
         $categoryIDs            = $this->getKeys($template->cKategorie);
-        $campaign               = new Kampagne((int)$template->kKampagne);
+        $campaign               = new Campaign((int)$template->kKampagne);
         $products               = $this->getProducts($productIDs, $campaign);
         $manufacturers          = $this->getManufacturers($manufacturerIDs, $campaign);
         $categories             = $this->getCategories($categoryIDs, $campaign);

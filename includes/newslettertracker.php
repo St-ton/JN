@@ -5,7 +5,7 @@
  */
 
 use JTL\Helpers\Request;
-use JTL\Kampagne;
+use JTL\Campaign;
 use JTL\Session\Frontend;
 use JTL\Shop;
 
@@ -44,11 +44,11 @@ if (Request::verifyGPCDataInt('kK') > 0
 
         $id = Shop::Container()->getDB()->insert('tnewslettertrack', $newTracking);
         if ($id > 0) {
-            $campaign = new Kampagne($campaignID);
+            $campaign = new Campaign($campaignID);
             // Kampagnenbesucher in die Session
             $_SESSION['Kampagnenbesucher'] = $campaign;
 
-            Kampagne::setCampaignAction(KAMPAGNE_DEF_NEWSLETTER, $id, 1);
+            Campaign::setCampaignAction(KAMPAGNE_DEF_NEWSLETTER, $id, 1);
         }
     }
 }

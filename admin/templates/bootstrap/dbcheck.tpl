@@ -21,13 +21,6 @@
                 {include file='tpl_inc/dbcheck_engineupdate.tpl'}
             {else}
                 <div class="alert alert-info"><strong>{__('countTables')}:</strong> {$cDBFileStruct_arr|@count}<br /><strong>{__('showModifiedTables')}:</strong> {$cDBError_arr|@count}</div>
-                {if $cDBError_arr|@count > 0}
-                    <p>
-                        <button id="viewAll" name="viewAll" type="button" class="btn btn-primary hide" value="Alle anzeigen"><i class="fa fa-share"></i> {__('showAll')}</button>
-                        <button id="viewModified" name="viewModified" type="button" class="btn btn-danger viewModified" value="Modifizierte anzeigen"><i class="fal fa-exclamation-triangle"></i> {__('showModified')}</button>
-                    </p>
-                    <br />
-                {/if}
             {/if}
             <form action="dbcheck.php" method="post">
                 <div id="contentCheck" class="card">
@@ -98,14 +91,16 @@
                             </tr>
                         {/foreach}
                     </table>
-                    <div class="card-footer">
-                        <div class="input-group">
-                            <span class="input-group-addon">
-                                <div class="custom-control custom-checkbox">
-                                    <input class="custom-control-input" type="checkbox" name="ALL_MSG" id="ALLMSGS" onclick="AllMessages(this.form);"/> <label for="ALLMSGS">{__('markAll')}</label>
-                                    <label class="custom-control-label" for="ALLMSGS"></label>
-                                </div>
-                            </span>
+                </div>
+                <div class="save-wrapper">
+                    <div class="row">
+                        <div class="col-sm-6 col-xl-auto text-left">
+                            <div class="custom-control custom-checkbox">
+                                <input class="custom-control-input" type="checkbox" name="ALL_MSG" id="ALLMSGS" onclick="AllMessages(this.form);"/>
+                                <label class="custom-control-label" for="ALLMSGS">{__('markAll')}</label>
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-xl-auto">
                             <select name="action" class="custom-select">
                                 <option value="">{__('action')}</option>
                                 <option value="optimize">{__('optimize')}</option>
@@ -113,10 +108,16 @@
                                 <option value="analyze">{__('analyse')}</option>
                                 <option value="check">{__('check')}</option>
                             </select>
-                            <div class="input-group-btn">
-                                <button type="submit" class="btn btn-primary">{__('send')}</button>
-                            </div>
                         </div>
+                        <div class="col-sm-6 col-xl-auto">
+                            <button type="submit" class="btn btn-primary">{__('send')}</button>
+                        </div>
+                        {if $cDBError_arr|@count > 0}
+                        <div class="col-sm-6 col-xl-auto ml-auto">
+                            <button id="viewAll" name="viewAll" type="button" class="btn btn-primary hide" value="Alle anzeigen"><i class="fa fa-share"></i> {__('showAll')}</button>
+                            <button id="viewModified" name="viewModified" type="button" class="btn btn-danger viewModified" value="Modifizierte anzeigen"><i class="fal fa-exclamation-triangle"></i> {__('showModified')}</button>
+                        </div>
+                        {/if}
                     </div>
                 </div>
             </form>

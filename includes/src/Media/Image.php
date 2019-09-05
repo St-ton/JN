@@ -419,11 +419,6 @@ class Image
         }
         $img->save($thumbnail, $settings['quality']);
 
-        Shop::dbg('bild erzeugt: 107713');
-        Shop::dbg($img->getCore()->getImageColorspace());
-        Shop::dbg($img->getCore()->getSamplingFactors(), false);
-        Shop::dbg($img->exif(),true);
-
         if ($streamOutput) {
             echo $img->response($settings['format']);
         }

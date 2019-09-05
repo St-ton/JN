@@ -11,7 +11,7 @@
             </span>
             {/if}
         </i>
-        <span class="d-none d-md-block">{$WarensummeLocalized[0]}</span>
+        <span class="d-none d-md-block {if $WarenkorbArtikelPositionenanzahl != 0}ml-3{/if}">{$WarensummeLocalized[0]}</span>
     {/navitem}
     {block name='basket-cart-dropdown-label-include-cart-dropdown'}
         {include file='basket/cart_dropdown.tpl'}

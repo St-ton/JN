@@ -3694,7 +3694,7 @@ input[type=button].btn-block {
 
 .nav-link {
   display: block;
-  padding: 0.5rem 1rem;
+  padding: 0.5rem 0.8rem;
 }
 .nav-link:hover, .nav-link:focus {
   text-decoration: none;
@@ -13893,8 +13893,8 @@ aside .last-seen-link {
 }
 
 .box-slider .more {
-  padding: 1rem;
-  margin-top: -1rem;
+  padding: 0.8rem;
+  margin-top: -0.8rem;
 }
 
 .jqcloud-word.w0 {
@@ -15636,7 +15636,7 @@ header, #main-wrapper {
   }
 }
 #main-nav-wrapper .nav-link {
-  padding: 1.2rem 0.5rem;
+  padding: 1.2rem 0.8rem;
   text-decoration: none;
   display: flex;
   align-items: center;
@@ -16760,7 +16760,7 @@ footer .card .card-body {
   padding: 0;
 }
 footer .nav-link {
-  padding: 0.4rem 1rem;
+  padding: 0.4rem 0.8rem;
 }
 footer .footer-additional {
   border-top: 0;
@@ -16918,7 +16918,7 @@ footer .list-group-item {
   transition: 0.75s background-color;
 }
 .megamenu > .nav-item > a.subcat-link {
-  padding: 1.2rem 0.5rem;
+  padding: 1.2rem 0.4rem;
 }
 .megamenu > .nav-item:hover > a {
   color: #525252;

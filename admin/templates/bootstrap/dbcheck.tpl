@@ -114,8 +114,8 @@
                         </div>
                         {if $cDBError_arr|@count > 0}
                         <div class="col-sm-6 col-xl-auto ml-auto">
-                            <button id="viewAll" name="viewAll" type="button" class="btn btn-primary hide" value="Alle anzeigen"><i class="fa fa-share"></i> {__('showAll')}</button>
-                            <button id="viewModified" name="viewModified" type="button" class="btn btn-danger viewModified" value="Modifizierte anzeigen"><i class="fal fa-exclamation-triangle"></i> {__('showModified')}</button>
+                            <button id="viewAll" name="viewAll" type="button" class="btn btn-primary fade" value="Alle anzeigen"><i class="fa fa-share"></i> {__('showAll')}</button>
+                            <button id="viewModified" name="viewModified" type="button" class="btn btn-danger viewModified fade show" value="Modifizierte anzeigen"><i class="fal fa-exclamation-triangle"></i> {__('showModified')}</button>
                         </div>
                         {/if}
                     </div>
@@ -151,16 +151,16 @@
     {literal}
     $(document).ready(function () {
         $('#viewAll').on('click', function () {
-            $('#viewAll').hide();
-            $('#viewModified').show().removeClass('hide');
+            $('#viewAll').removeClass('show').hide();
+            $('#viewModified').addClass('show').show();
             $('.unmodified').show();
             $('.modified').show();
             colorLines();
         });
 
         $('#viewModified').on('click', function () {
-            $('#viewAll').show().removeClass('hide');
-            $('#viewModified').hide();
+            $('#viewAll').addClass('show').show();
+            $('#viewModified').removeClass('show').hide();
             $('.unmodified').hide();
             $('.modified').show();
             colorLines();

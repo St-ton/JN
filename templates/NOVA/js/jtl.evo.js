@@ -152,7 +152,7 @@
                 slidesToScroll: 1,
                 arrows:         true,
                 infinite:       false,
-                focusOnSelect:  true,
+                lazyLoad: 'ondemand',
                 responsive:     [
                     {
                         breakpoint: 576, // xs

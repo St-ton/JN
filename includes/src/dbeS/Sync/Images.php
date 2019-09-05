@@ -8,6 +8,7 @@ namespace JTL\dbeS\Sync;
 
 use JTL\DB\ReturnType;
 use JTL\dbeS\Starter;
+use JTL\Media\Image;
 use JTL\Shop;
 use stdClass;
 
@@ -512,7 +513,6 @@ final class Images extends AbstractSync
                 );
                 continue;
             }
-
             $image->cPfad = $this->getCategoryImageName($image, $format, $sql);
             $image->cPfad = $this->getNewFilename($image->cPfad);
             if ($this->createThumbnail(
@@ -950,7 +950,7 @@ final class Images extends AbstractSync
     ): int {
         $enlarge          = $this->config['bilder']['bilder_skalieren'] === 'Y';
         $ret              = 0;
-        $format           = $this->config['bilder']['bilder_dateiformat'];//$this->getExtension($imgFilename);
+        $format           = $this->getNewExtension($targetImage);
         [$width, $height] = \getimagesize($imgFilename);
         if ($width > 0 && $height > 0) {
             if (!$enlarge && $width < $targetWidth && $height < $targetheight) {
@@ -1012,7 +1012,7 @@ final class Images extends AbstractSync
     ): int {
         $enlarge = $this->config['bilder']['bilder_skalieren'] === 'Y';
         $ret     = 0;
-        $format  = $this->config['bilder']['bilder_dateiformat'];//$this->getExtension($imgFilename);
+        $format  = $this->getNewExtension($target);
         $im      = $this->imageloadAlpha($imgFilename);
         if (!$im) {
             $this->logger->error('Bild konnte nicht erstellt werden. Datei kein Bild?: ' . $imgFilename);
@@ -1498,6 +1498,19 @@ final class Images extends AbstractSync
     }
 
     /**
+     * @param string|null $sourcePath
+     * @return string
+     */
+    private function getNewExtension(string $sourcePath = null): string
+    {
+        $config = \mb_convert_case($this->config['bilder']['bilder_dateiformat'], \MB_CASE_LOWER);
+
+        return $config === 'auto'
+            ? \pathinfo($sourcePath)['extension'] ?? 'jpg'
+            : $config;
+    }
+
+    /**
      * @param string $img
      * @param int    $width
      * @param int    $height
@@ -1528,7 +1541,7 @@ final class Images extends AbstractSync
         $height = (int)\round($height);
         $newImg = \imagecreatetruecolor($containerWidth, $containerHeight);
         // hintergrundfarbe
-        $format = \strtolower($this->config['bilder']['bilder_dateiformat']);
+        $format = $this->getNewExtension($img);
         if ($format === 'jpg') {
             $rgb   = $this->html2rgb($this->config['bilder']['bilder_hintergrundfarbe']);
             $color = \imagecolorallocate($newImg, $rgb[0], $rgb[1], $rgb[2]);
@@ -1582,9 +1595,7 @@ final class Images extends AbstractSync
         if (!$newImg) {
             return $im;
         }
-
-        // hintergrundfarbe
-        $format = \strtolower($this->config['bilder']['bilder_dateiformat']);
+        $format = $this->getNewExtension($img);
         if ($format === 'jpg') {
             $rgb   = $this->html2rgb($this->config['bilder']['bilder_hintergrundfarbe']);
             $color = \imagecolorallocate($newImg, $rgb[0], $rgb[1], $rgb[2]);
@@ -1611,7 +1622,7 @@ final class Images extends AbstractSync
      */
     private function getNewFilename(string $path): string
     {
-        $format = \strtolower($this->config['bilder']['bilder_dateiformat']);
+        $format = $this->getNewExtension($path);
         $path   = \substr($path, 0, -3);
 
         return $path . $format;

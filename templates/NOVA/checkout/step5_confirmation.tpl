@@ -102,7 +102,8 @@
                                     cols="50"
                                     rows="3"
                                     id="comment"
-                                    placeholder="{lang key='comment' section='product rating'}"
+                                    placeholder=$orderCommentsTitle|escape:'html'
+                                    aria=["label"=>$orderCommentsTitle|escape:'html']
                                     class="border-0 p-0"
                                 }
                                     {if isset($smarty.session.kommentar)}{$smarty.session.kommentar}{/if}

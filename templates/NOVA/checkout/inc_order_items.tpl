@@ -208,11 +208,13 @@
                                                     </div>
                                                     <span class="mx-2">|</span>
                                                 {/if}
-                                                {button type="submit" variant="link" size="sm" class="pr-0 droppos border-0 text-decoration-none" name="dropPos" value=$oPosition@index title="{lang key='delete'}"}
-                                                    <span class="fa fa-trash "></span>
-                                                {/button}
-                                                {button type="submit" variant="link" size="sm" class="pl-0 droppos border-0" name="dropPos" value=$oPosition@index title="{lang key='delete'}"}
-                                                    <span>{lang key='delete'}</span>
+                                                {button type="submit" variant="link" size="sm"
+                                                    class="pl-0 droppos border-0"
+                                                    name="dropPos"
+                                                    value=$oPosition@index
+                                                    title="{lang key='delete'}"
+                                                }
+                                                    <span class="fa fa-trash "></span> <span>{lang key='delete'}</span>
                                                 {/button}
                                             </div>
                                         {/if}

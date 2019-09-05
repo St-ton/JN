@@ -120,13 +120,15 @@
                                             {if ($oArtikel->inWarenkorbLegbar === 1 || ($oArtikel->nErscheinendesProdukt === 1 && $Einstellungen.global.global_erscheinende_kaeuflich === 'Y'))}
                                                 {if $oArtikel->bHasKonfig}
                                                     {link href=$oArtikel->cURLFull class="btn btn-primary mb-3 mx-3"
-                                                    title="{lang key='product' section='global'} {lang key='configure' section='global'}"
+                                                        title="{lang key='product' section='global'} {lang key='configure' section='global'}"
+                                                        aria=["label"=>"{lang key='product' section='global'} {lang key='configure' section='global'}"]
                                                     }
                                                         <span class="fa fa-cogs"></span>
                                                     {/link}
                                                 {elseif !empty($oArtikel->Variationen)}
                                                     {link href=$oArtikel->cURLFull class="btn btn-primary mb-3 mx-3"
-                                                    title="{lang key='product' section='global'} {lang key='wishlistaddToCart' section='global'}"
+                                                        title="{lang key='product' section='global'} {lang key='wishlistaddToCart' section='global'}"
+                                                        aria=["label"=>"{lang key='product' section='global'} {lang key='wishlistaddToCart' section='global'}"]
                                                     }
                                                         <span class="fas fa-shopping-cart"></span>
                                                     {/link}
@@ -137,21 +139,24 @@
                                                             {formgroup class="quantity-wrapper"}
                                                             {inputgroup class="quantity-wrapper px-3"}
                                                             {input type="{if $oArtikel->cTeilbar === 'Y' && $oArtikel->fAbnahmeintervall == 0}text{else}number{/if}" min="0"
-                                                            step="{if $oArtikel->fAbnahmeintervall > 0}{$oArtikel->fAbnahmeintervall}{/if}"
-                                                            id="quantity{$oArtikel->kArtikel}"
-                                                            class="quantity text-right"
-                                                            name="anzahl"
-                                                            autocomplete="off"
-                                                            value="{if $oArtikel->fAbnahmeintervall > 0}{if $oArtikel->fMindestbestellmenge > $oArtikel->fAbnahmeintervall}{$oArtikel->fMindestbestellmenge}{else}{$oArtikel->fAbnahmeintervall}{/if}{else}1{/if}"}
+                                                                step="{if $oArtikel->fAbnahmeintervall > 0}{$oArtikel->fAbnahmeintervall}{/if}"
+                                                                id="quantity{$oArtikel->kArtikel}"
+                                                                class="quantity text-right"
+                                                                name="anzahl"
+                                                                autocomplete="off"
+                                                                aria=["label"=>"{lang key='quantity'}"]
+                                                                value="{if $oArtikel->fAbnahmeintervall > 0}{if $oArtikel->fMindestbestellmenge > $oArtikel->fAbnahmeintervall}{$oArtikel->fMindestbestellmenge}{else}{$oArtikel->fAbnahmeintervall}{/if}{else}1{/if}"
+                                                            }
                                                             {block name='comparelist-index-form-submit'}
                                                                 {inputgroupaddon}
                                                                     {button
-                                                                    type="submit"
-                                                                    name="addToCart"
-                                                                    value=$oArtikel->kArtikel
-                                                                    variant="primary"
-                                                                    class="ml-3"
-                                                                    title="{lang key='wishlistaddToCart' section='login'}"
+                                                                        type="submit"
+                                                                        name="addToCart"
+                                                                        value=$oArtikel->kArtikel
+                                                                        variant="primary"
+                                                                        class="ml-3"
+                                                                        title="{lang key='wishlistaddToCart' section='login'}"
+                                                                        aria=["label"=>{lang key='wishlistaddToCart' section='login'}]
                                                                     }
                                                                         <span class="fas fa-shopping-cart"></span>
                                                                     {/button}

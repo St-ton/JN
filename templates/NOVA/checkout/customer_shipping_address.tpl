@@ -240,13 +240,14 @@
                     label-for="{$prefix}-{$name}-city"
                 }
                     {input type="text"
-                            name="{$prefix}[{$name}][ort]"
-                            value="{if isset($Lieferadresse->cOrt)}{$Lieferadresse->cOrt}{/if}"
-                            id="{$prefix}-{$name}-city"
-                            class="city_input typeahead"
-                            placeholder="{lang key='city' section='account data'}"
-                            required=true
-                            autocomplete="shipping address-level2"
+                        name="{$prefix}[{$name}][ort]"
+                        value="{if isset($Lieferadresse->cOrt)}{$Lieferadresse->cOrt}{/if}"
+                        id="{$prefix}-{$name}-city"
+                        class="city_input typeahead"
+                        placeholder="{lang key='city' section='account data'}"
+                        required=true
+                        autocomplete="shipping address-level2"
+                        aria=["label"=>{lang key='city' section='account data'}]
                     }
                     {if isset($fehlendeAngaben.ort)}
                         <div class="form-error-msg text-danger"><i class="fa fa-exclamation-triangle"></i>

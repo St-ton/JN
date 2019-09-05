@@ -622,7 +622,7 @@ ul.partlist-items {
   }
 }
 .estimated-delivery {
-  color: $gray-light;
+  color: $gray;
   font-size: 12px;
 }
 
@@ -1863,7 +1863,10 @@ table caption {
     position: relative;
     float: left;
     display: inline-block;
-    text-decoration: none;
+
+    a {
+      text-decoration: none;
+    }
     &.active {
       color: $gray-dark;
       background: transparent;

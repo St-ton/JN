@@ -252,18 +252,23 @@
                                                     {else}
                                                         {inputgroup class="quantity-wrapper mt-2"}
                                                             {input type="{if $Artikel->cTeilbar === 'Y' && $Artikel->fAbnahmeintervall == 0}text{else}number{/if}" min="0"
-                                                                    step="{if $Artikel->fAbnahmeintervall > 0}{$Artikel->fAbnahmeintervall}{/if}"
-                                                                    size="2"
-                                                                    id="quantity{$Artikel->kArtikel}"
-                                                                    class="quantity"
-                                                                    name="anzahl"
-                                                                    autocomplete="off"
-                                                                    data=["decimals"=>{getDecimalLength quantity=$Artikel->fAbnahmeintervall}]
-                                                                    value="{if $Artikel->fAbnahmeintervall > 0}{if $Artikel->fMindestbestellmenge > $Artikel->fAbnahmeintervall}{$Artikel->fMindestbestellmenge}{else}{$Artikel->fAbnahmeintervall}{/if}{else}1{/if}"
+                                                                step="{if $Artikel->fAbnahmeintervall > 0}{$Artikel->fAbnahmeintervall}{/if}"
+                                                                size="2"
+                                                                id="quantity{$Artikel->kArtikel}"
+                                                                class="quantity"
+                                                                name="anzahl"
+                                                                autocomplete="off"
+                                                                aria=["label"=>{lang key='quantity'}]
+                                                                data=["decimals"=>{getDecimalLength quantity=$Artikel->fAbnahmeintervall}]
+                                                                value="{if $Artikel->fAbnahmeintervall > 0}{if $Artikel->fMindestbestellmenge > $Artikel->fAbnahmeintervall}{$Artikel->fMindestbestellmenge}{else}{$Artikel->fAbnahmeintervall}{/if}{else}1{/if}"
                                                             }
                                                             {inputgroupaddon append=true}
-                                                                {button type="submit" variant="primary" block=true id="submit{$Artikel->kArtikel}"
-                                                                        title="{lang key='addToCart'}" class="ml-3"}
+                                                                {button type="submit" variant="primary"
+                                                                    block=true id="submit{$Artikel->kArtikel}"
+                                                                    title="{lang key='addToCart'}"
+                                                                    class="ml-3"
+                                                                    aria=["label"=>{lang key='addToCart'}]
+                                                                }
                                                                     <i class="fa fa-shopping-cart"></i>
                                                                 {/button}
                                                             {/inputgroupaddon}

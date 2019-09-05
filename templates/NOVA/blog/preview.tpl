@@ -37,7 +37,7 @@
                         </div>
                     {/if}
                     <time itemprop="dateModified" class="d-none">{$oNewsUebersicht->getDateCreated()->format('Y-m-d')}</time>
-                    <time itemprop="datePublished" datetime="{$dDate}" class="d-none">{$dDate}</time><span class="align-middle">{$oNewsUebersicht->getDateValidFrom()->format('d. m. Y')}</span>
+                    <time itemprop="datePublished" datetime="{$dDate}" class="d-none">{$dDate}</time><span class="align-middle">{$oNewsUebersicht->getDateValidFrom()->format('d.m.Y')}</span>
                 {/block}
             {/col}
             {col cols=6 class="text-right"}

@@ -317,7 +317,8 @@
                                     value="{if isset($cPost_var['ort'])}{$cPost_var['ort']}{elseif isset($Kunde->cOrt)}{$Kunde->cOrt}{/if}"
                                     id="city"
                                     class="city_input typeahead"
-                                    placeholder="{lang key='city' section='account data'}"
+                                    placeholder={lang key='city' section='account data'}
+                                    aria=["label"=>{lang key='city' section='account data'}]
                                     required=true
                                     autocomplete="billing address-level2"
                                 }
@@ -532,6 +533,7 @@
                                                 id="custom_{$kKundenfeld}"
                                                 value="{$cKundenattributWert}"
                                                 placeholder=$oKundenfeld->getLabel()
+                                                aria=["label"=>$oKundenfeld->getLabel()]
                                                 required=$oKundenfeld->isRequired()
                                                 data-toggle="floatLabel"
                                                 data-value="no-js"
@@ -541,6 +543,7 @@
                                             {select
                                                 name="custom_{$kKundenfeld}"
                                                 disabled=!$isKundenattributEditable
+                                                aria=["label"=>$oKundenfeld->getLabel()]
                                                 required=$oKundenfeld->isRequired()
                                             }
                                                 <option value="" selected disabled>{lang key='pleaseChoose'}</option>
